@@ -98,7 +98,11 @@ const navSections: NavSection[] = [
         href: '/admin/threed/models',
         icon: Package,
         exact: false,
-        relatedPaths: ['/admin/threed/model-files'],
+        relatedPaths: [
+          '/admin/threed/model-categories',
+          '/admin/threed/model-files',
+          '/admin/threed/model-animations',
+        ],
       },
       { title: 'Characters', href: '/admin/threed/characters', icon: User, exact: false },
       { title: 'Layers', href: '/admin/threed/layers', icon: Layers, exact: false },

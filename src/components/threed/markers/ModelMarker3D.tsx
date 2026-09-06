@@ -27,6 +27,10 @@ import {
   type ThreeDEnvironmentCollisionBoxCandidate,
 } from '@/lib/services/threed/models/environment-collision-preview-core';
 import { resolveThreeDModelRuntimeAdapter } from '@/components/threed/models/runtime-adapters/registry';
+import {
+  resolveThreeDModelAttachmentUrl,
+  type ThreeDModelRuntimeAttachment,
+} from '@/lib/services/threed/models/model-attachment-runtime-core';
 
 // ============================================
 // TYPES
@@ -45,6 +49,7 @@ export interface ModelData {
   defaultAnimation?: string | null;
   animationSpeed?: number; // from character wrapper
   metadata?: unknown;
+  files?: ThreeDModelRuntimeAttachment[];
 }
 
 export interface ModelCollisionBounds {
@@ -84,12 +89,38 @@ interface ModelMarker3DProps {
 // MODEL CACHE
 // ============================================
 const modelCache = new Map<string, THREE.Group>();
+const modelAttachmentRequestCache = new Map<number, Promise<ThreeDModelRuntimeAttachment[]>>();
 
 // Reuse one decoder pool. Decoder files are copied from the installed Three.js
 // version and served by this App so model loading does not depend on a CDN.
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath('/assets/draco/');
 dracoLoader.setWorkerLimit(2);
+
+async function loadModelAttachments(model: ModelData): Promise<ThreeDModelRuntimeAttachment[]> {
+  const markerSnapshotAttachments = Array.isArray(model.files) ? model.files : [];
+  if (!Number.isSafeInteger(model.id) || model.id <= 0) return markerSnapshotAttachments;
+  const cached = modelAttachmentRequestCache.get(model.id);
+  if (cached) return cached;
+
+  const request = fetch(`/api/threed/models?id=${model.id}`)
+    .then(async (response) => {
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success || !Array.isArray(result.data?.files)) return markerSnapshotAttachments;
+      return result.data.files as ThreeDModelRuntimeAttachment[];
+    })
+    .catch(() => markerSnapshotAttachments)
+    .then((attachments) => attachments.filter((attachment) => (
+      attachment
+      && typeof attachment.fileName === 'string'
+      && typeof attachment.relativePath === 'string'
+      && typeof attachment.filePath === 'string'
+      && typeof attachment.fileType === 'string'
+    )))
+    .finally(() => modelAttachmentRequestCache.delete(model.id));
+  modelAttachmentRequestCache.set(model.id, request);
+  return request;
+}
 
 // ============================================
 // MODEL LOADER HOOK
@@ -116,21 +147,28 @@ function useModelLoad(
 
       try {
         const modelType = model.modelType?.toLowerCase() || 'glb';
-        const cacheKey = `${model.filePath}-${modelType}`;
+        const attachments = await loadModelAttachments(model);
+        const attachmentSignature = attachments
+          .map((attachment) => `${attachment.relativePath}:${attachment.filePath}`)
+          .sort()
+          .join('|');
+        const cacheKey = `${model.filePath}-${modelType}-${attachmentSignature}`;
 
         let m: THREE.Group;
 
         if (modelCache.has(cacheKey)) {
           m = modelCache.get(cacheKey)!.clone();
         } else {
+          const manager = new THREE.LoadingManager();
+          manager.setURLModifier((url) => resolveThreeDModelAttachmentUrl(url, attachments));
           if (modelType === 'fbx') {
-            const loader = new FBXLoader();
+            const loader = new FBXLoader(manager);
             m = await loader.loadAsync(model.filePath) as THREE.Group;
           } else if (modelType === 'obj') {
-            const loader = new OBJLoader();
+            const loader = new OBJLoader(manager);
             m = await loader.loadAsync(model.filePath) as unknown as THREE.Group;
           } else {
-            const loader = new GLTFLoader();
+            const loader = new GLTFLoader(manager);
             loader.setDRACOLoader(dracoLoader);
             const gltf = await loader.loadAsync(model.filePath);
             m = gltf.scene;

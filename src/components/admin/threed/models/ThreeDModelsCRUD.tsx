@@ -16,6 +16,7 @@ import {
   File,
   Clapperboard,
   FolderOpen,
+  FolderTree,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,10 +25,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/toast';
-import {
-  ThreeDModelCategoriesManager,
-  type ThreeDModelCategoryOption,
-} from './ThreeDModelCategoriesManager';
+import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
+import type { ThreeDModelCategoryOption } from './ThreeDModelCategoriesManager';
 import {
   buildThreeDModelAdminPayload,
   createEmptyThreeDModelAdminForm,
@@ -441,13 +440,12 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
     <div className="space-y-2">
       {ToastComponent}
 
-      {/* Header */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="flex shrink-0 items-center gap-2">
-          <Box className="w-4 h-4 text-blue-500" />
-          <span className="text-sm font-medium">Models</span>
-          <Badge variant="secondary" className="text-xs">{filteredModels.length}</Badge>
-        </div>
+      <AdminWorkspaceHeader
+        icon={Box}
+        title="Models"
+        description="Add and manage one reusable ThreeD Model at a time"
+      >
+        <Badge variant="secondary" className="text-xs">{filteredModels.length}</Badge>
         <div className="relative min-w-48 flex-1">
           <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -487,7 +485,11 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
               </div>
             </DialogContent>
           </Dialog>
-          <ThreeDModelCategoriesManager onChanged={() => { void fetchCategories(); void fetchModels(); }} />
+          <Button asChild variant="outline" size="sm" className="h-7 px-2 text-xs">
+            <Link href="/admin/threed/model-categories">
+              <FolderTree className="mr-1 h-3 w-3" /> Model Categories
+            </Link>
+          </Button>
           <Button asChild variant="outline" size="sm" className="h-7 px-2 text-xs">
             <Link href="/admin/threed/model-animations">
               <Clapperboard className="mr-1 h-3 w-3" /> Model Animations
@@ -499,7 +501,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
             </Link>
           </Button>
         </div>
-      </div>
+      </AdminWorkspaceHeader>
 
       {/* Models table */}
       {filteredModels.length === 0 ? (

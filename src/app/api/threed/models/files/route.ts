@@ -15,6 +15,7 @@ import { runtimeModelTypeFromFileName } from '@/lib/services/threed/models/model
 const MODEL_EXTS = new Set(['glb', 'gltf', 'fbx', 'obj', 'usdz']);
 const TEXTURE_EXTS = new Set(['jpg', 'jpeg', 'png', 'webp', 'tga', 'bmp']);
 const BINARY_EXTS = new Set(['bin']);
+const MAX_ATTACHMENT_DIRECTORY_LENGTH = 100;
 
 function extensionOf(name: string): string {
   const parts = name.split('.');
@@ -41,8 +42,7 @@ async function storeFile(
   loadOrder: number,
   isBinaryBuffer = false,
 ) {
-  const ext = extensionOf(file.name) || 'bin';
-  const path = `models/${modelId}/${fileType}/${Date.now()}/${relativePath}`;
+  const path = `models/${modelId}/attachments/${relativePath}`;
   const blob = await put(path, file, { access: 'public', addRandomSuffix: false });
 
   await ensureTableSequence('threed_model_files');
@@ -98,6 +98,23 @@ export async function POST(request: NextRequest) {
     if (invalidPathIndex >= 0) {
       return NextResponse.json(
         { success: false, error: `Invalid relative path for ${files[invalidPathIndex].name}` },
+        { status: 400 },
+      );
+    }
+    const missingDirectoryIndex = relativePaths.findIndex((relativePath) => !relativePath?.includes('/'));
+    if (missingDirectoryIndex >= 0) {
+      return NextResponse.json(
+        { success: false, error: `Attachment directory is required for ${files[missingDirectoryIndex].name}` },
+        { status: 400 },
+      );
+    }
+    const excessiveDirectoryIndex = relativePaths.findIndex((relativePath) => {
+      const directory = relativePath?.split('/').slice(0, -1).join('/') ?? '';
+      return directory.length > MAX_ATTACHMENT_DIRECTORY_LENGTH;
+    });
+    if (excessiveDirectoryIndex >= 0) {
+      return NextResponse.json(
+        { success: false, error: `Attachment directory cannot exceed ${MAX_ATTACHMENT_DIRECTORY_LENGTH} characters` },
         { status: 400 },
       );
     }

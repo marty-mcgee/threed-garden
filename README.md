@@ -11,6 +11,10 @@ This is a **Dual-Surface Platform**:
 
 The v0.19.8a production release establishes a focused, one-at-a-time Models administration workflow with shared Create/Edit validation, structural upload analysis, synchronized primary-file records, recoverable staged uploads, owner-scoped Blob cleanup, and consolidated Models navigation. It introduces no schema change and preserves Dashboard Scene, Runtime Marker, Character, and Rapier authority.
 
+> **Prepared release candidate:** `v0.19.8b "ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies"` (`package.json` version `0.19.8-beta`)
+
+The v0.19.8b candidate unifies Models, Model Categories, Model Animations, and Model Files as one Admin workspace family. It adds required User-defined attachment directories, primary-file dependency inspection, and Model-owned runtime resolution of attached textures and buffers. It does not change database schema, Character runtimes, Project Marker authority, or Rapier physics.
+
 The v0.19.0d production release uses shared iterative WGS84 ellipsoidal distance, bearing, and forward/reverse coordinate calculations. Calibration diagnostics expose the measured spans, solved scale, and endpoint residual. Leaflet now uses each marker's exact calibrated projection without artificial local or GPS spreading, allowing north-up 2D and 3D layouts to closely match while local XYZ remains the R3F/Rapier authority.
 
 The v0.18.9d production release keeps a selected marker and its DetailsCard active while the user navigates the Scene, starts Ecctrl Take Control in Stationary camera mode, and changes Follow to Stationary when the user zooms. Its boundary is visual and navigational only: it does not change database schema, ThreeD CRUD contracts, Runtime Marker authority, Rapier ownership, or Ecctrl behavior.

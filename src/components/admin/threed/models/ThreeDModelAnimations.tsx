@@ -4,6 +4,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { Box, Loader2, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -22,10 +23,11 @@ interface Model {
   metadata?: any;
 }
 
-export function ThreeDModelAnimations() {
+export function ThreeDModelAnimations({ initialModelId = null }: { initialModelId?: number | null }) {
   const { showToast, ToastComponent } = useToast();
+  const router = useRouter();
   const [models, setModels] = useState<Model[]>([]);
-  const [modelId, setModelId] = useState<string>('');
+  const [modelId, setModelId] = useState<string>(initialModelId ? String(initialModelId) : '');
   const [clips, setClips] = useState<string[]>([]);
   const [loadingClips, setLoadingClips] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -34,13 +36,18 @@ export function ThreeDModelAnimations() {
 
   const selectedModel = useMemo(() => models.find((m) => String(m.id) === modelId), [models, modelId]);
 
+  function handleModelChange(nextModelId: string) {
+    setModelId(nextModelId);
+    router.replace(`/admin/threed/model-animations?modelId=${encodeURIComponent(nextModelId)}`, { scroll: false });
+  }
+
   useEffect(() => {
     fetch('/api/threed/models?limit=200')
       .then((r) => r.json())
       .then((d) => {
         if (d.success && Array.isArray(d.data)) {
           setModels(d.data);
-          if (d.data.length && !modelId) setModelId(String(d.data[0].id));
+          if (d.data.length && !modelId) handleModelChange(String(d.data[0].id));
         }
       })
       .catch(() => showToast('Failed to load models', 'error'));
@@ -124,7 +131,7 @@ export function ThreeDModelAnimations() {
       <div className="flex flex-wrap items-end gap-2">
         <div className="min-w-[260px] flex-1">
           <Label className="text-xs">Model</Label>
-          <Select value={modelId} onValueChange={setModelId}>
+          <Select value={modelId} onValueChange={handleModelChange}>
             <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select a model" /></SelectTrigger>
             <SelectContent>
               {models.map((m) => (

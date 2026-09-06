@@ -18,6 +18,7 @@ import {
   type DragEvent,
   type ChangeEvent,
 } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Image,
@@ -36,6 +37,8 @@ import {
   X,
   AlertTriangle,
   Star,
+  FolderTree,
+  Link2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -51,6 +54,7 @@ import { useToast } from '@/components/ui/toast';
 interface ModelFileRow {
   id: number;
   fileName: string;
+  relativePath: string | null;
   fileType: string;
   textureType: string | null;
   filePath: string;
@@ -78,6 +82,23 @@ interface UploadItem {
   name: string;
   status: 'uploading' | 'done' | 'error';
   error?: string;
+}
+
+interface ModelDependencyRequirement {
+  fileName: string;
+  kind: 'buffer' | 'material' | 'texture';
+  relativePath: string;
+  referencedBy: string;
+  satisfied: boolean;
+  matchedFileId: number | null;
+  matchedRelativePath: string | null;
+}
+
+interface ModelDependencyAudit {
+  status: 'analyzed' | 'missing_primary' | 'not_supported';
+  primaryFileName?: string;
+  complete?: boolean;
+  requirements: ModelDependencyRequirement[];
 }
 
 type ViewMode = 'list' | 'grid';
@@ -134,6 +155,25 @@ function formatDate(iso: string | null | undefined): string {
   return isNaN(d.getTime()) ? '' : d.toLocaleString();
 }
 
+function normalizeAttachmentDirectory(directory: string): string {
+  return directory.trim().replaceAll('\\', '/').replace(/\/+$/g, '').split('/').filter(Boolean).join('/');
+}
+
+function attachmentDirectoryProblem(directory: string): string | null {
+  const raw = directory.trim().replaceAll('\\', '/');
+  if (!raw) return 'An Attachment directory is required before uploading dependency files.';
+  if (raw.length > 100) return 'Attachment directory cannot exceed 100 characters.';
+  if (raw.startsWith('/') || /^[A-Za-z]:\//.test(raw)) return 'Attachment directory must be relative.';
+  if (raw.includes('\0') || raw.includes('?') || raw.includes('#')) return 'Attachment directory contains unsupported characters.';
+  if (raw.split('/').some((segment) => segment === '..')) return 'Parent directory traversal is not allowed.';
+  return normalizeAttachmentDirectory(raw) ? null : 'An Attachment directory is required before uploading dependency files.';
+}
+
+function attachmentRelativePath(directory: string, fileName: string): string {
+  const normalizedDirectory = normalizeAttachmentDirectory(directory);
+  return normalizedDirectory ? `${normalizedDirectory}/${fileName}` : fileName;
+}
+
 function FileIcon({ type, className = 'w-4 h-4' }: { type: string; className?: string }) {
   if (type === 'model') return <Box className={`${className} text-blue-500`} />;
   if (type === 'texture') return <Image className={`${className} text-green-500`} />;
@@ -166,15 +206,20 @@ function FileCardThumbnail({ file, className }: { file: ModelFileRow; className:
 // ============================================
 export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFilesCRUDProps) {
   const { showToast, ToastComponent } = useToast();
+  const router = useRouter();
 
   const [models, setModels] = useState<Model[]>([]);
   const [modelId, setModelId] = useState<string>(initialModelId ? String(initialModelId) : '');
   const [modelDetail, setModelDetail] = useState<Model | null>(null);
   const [loadingModels, setLoadingModels] = useState(true);
   const [loadingFiles, setLoadingFiles] = useState(false);
+  const [loadingDependencies, setLoadingDependencies] = useState(false);
+  const [dependencyAudit, setDependencyAudit] = useState<ModelDependencyAudit | null>(null);
+  const [dependencyError, setDependencyError] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const [category, setCategory] = useState<string>('auto');
+  const [attachmentDirectory, setAttachmentDirectory] = useState<string>('');
   const [filter, setFilter] = useState<string>('');
   const [sort, setSort] = useState<SortMode>('name');
   const [view, setView] = useState<ViewMode>('list');
@@ -198,6 +243,14 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
   const mainModelFileId = modelDetail?.mainModelFileId ?? null;
 
   const uploading = uploadQueue.some((u) => u.status === 'uploading');
+  const normalizedAttachmentDirectory = normalizeAttachmentDirectory(attachmentDirectory);
+  const directoryProblem = attachmentDirectoryProblem(attachmentDirectory);
+
+  const handleModelChange = useCallback((nextModelId: string) => {
+    setModelId(nextModelId);
+    setAttachmentDirectory('');
+    router.replace(`/admin/threed/model-files?modelId=${encodeURIComponent(nextModelId)}`, { scroll: false });
+  }, [router]);
 
   // ============================================
   // DATA LOADING
@@ -264,14 +317,36 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
     [showToast],
   );
 
+  const loadDependencies = useCallback(async (id: number) => {
+    setLoadingDependencies(true);
+    setDependencyError(null);
+    try {
+      const response = await fetch(`/api/threed/models/files/requirements?modelId=${id}`);
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        setDependencyAudit(null);
+        setDependencyError(result?.error || 'Failed to inspect Model dependencies');
+        return;
+      }
+      setDependencyAudit(result.data as ModelDependencyAudit);
+    } catch {
+      setDependencyAudit(null);
+      setDependencyError('Failed to inspect Model dependencies');
+    } finally {
+      setLoadingDependencies(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (modelId) {
       loadFiles(Number(modelId));
+      loadDependencies(Number(modelId));
     } else {
       setModelDetail(null);
+      setDependencyAudit(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modelId]);
+  }, [modelId, loadDependencies]);
 
   // ============================================
   // SELECTION-DERIVED DATA
@@ -279,7 +354,9 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
   const filteredFiles = useMemo(() => {
     const q = filter.toLowerCase();
     const list = files.filter(
-      (f) => f.fileName.toLowerCase().includes(q) || f.fileType.toLowerCase().includes(q),
+      (f) => f.fileName.toLowerCase().includes(q)
+        || (f.relativePath ?? '').toLowerCase().includes(q)
+        || f.fileType.toLowerCase().includes(q),
     );
     const sorted = [...list].sort((a, b) => {
       switch (sort) {
@@ -320,8 +397,9 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
   // UPLOAD
   // ============================================
   const uploadOne = useCallback(
-    async (fileList: File[], index: number) => {
+    async (fileList: File[], index: number): Promise<boolean> => {
       const file = fileList[index];
+      const relativePath = attachmentRelativePath(attachmentDirectory, file.name);
       const setStatus = (status: UploadItem['status'], errorText?: string) => {
         setUploadQueue((queue) =>
           queue.map((item, i) => (i === index ? { ...item, status, error: errorText } : item)),
@@ -333,43 +411,58 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
         fd.append('modelId', modelId);
         if (category && category !== 'auto') fd.append('category', category);
         fd.append('files', file);
+        fd.append('relativePaths', relativePath);
 
         const response = await fetch('/api/threed/models/files', { method: 'POST', body: fd });
         const data = await response.json();
         if (data.success) {
           setStatus('done');
+          return true;
         } else {
           setStatus('error', data.error || 'Upload failed');
+          return false;
         }
       } catch (err) {
         setStatus('error', String(err));
+        return false;
       }
     },
-    [modelId, category],
+    [modelId, category, attachmentDirectory],
   );
 
   const handleUpload = useCallback(
     async (input: FileList | File[]) => {
-      const list = Array.from(input);
-      if (!modelId || list.length === 0) return;
+      const filesToUpload = Array.from(input);
+      if (!modelId || filesToUpload.length === 0) return;
+      const problem = attachmentDirectoryProblem(attachmentDirectory);
+      if (problem) {
+        showToast(problem, 'error');
+        return;
+      }
 
-      setUploadQueue(list.map((f) => ({ name: f.name, status: 'uploading' as const })));
+      setUploadQueue(filesToUpload.map((file) => ({
+        name: attachmentRelativePath(attachmentDirectory, file.name),
+        status: 'uploading' as const,
+      })));
 
       // Upload all files in parallel, tracking each independently.
-      await Promise.all(list.map((_, i) => uploadOne(list, i)));
+      const results = await Promise.all(filesToUpload.map((_, i) => uploadOne(filesToUpload, i)));
 
       // Refresh the file list + model counts.
       await loadFiles(Number(modelId));
       await loadModels();
+      await loadDependencies(Number(modelId));
 
-      const errors = uploadQueue.filter((u) => u.status === 'error');
+      const errorCount = results.filter((success) => !success).length;
       // Clear progress chips after showing the result.
       setTimeout(() => setUploadQueue([]), 1600);
-      if (errors.length) {
-        showToast(`${errors.length} file(s) failed`, 'error');
+      if (errorCount) {
+        showToast(`${errorCount} file(s) failed`, 'error');
+      } else {
+        showToast(`${results.length} file(s) attached`, 'success');
       }
     },
-    [modelId, uploadOne, loadFiles, loadModels, showToast, uploadQueue],
+    [modelId, uploadOne, loadFiles, loadModels, loadDependencies, showToast, attachmentDirectory],
   );
 
   const onFileInputChange = useCallback(
@@ -386,7 +479,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
       e.preventDefault();
       setIsDragging(false);
       const fl = e.dataTransfer.files;
-      if (fl && fl.length) handleUpload(fl);
+      if (fl && fl.length) void handleUpload(fl);
     },
     [handleUpload],
   );
@@ -471,8 +564,13 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
   );
 
   const requestUpload = useCallback(() => {
+    const problem = attachmentDirectoryProblem(attachmentDirectory);
+    if (problem) {
+      showToast(problem, 'error');
+      return;
+    }
     fileInputRef.current?.click();
-  }, []);
+  }, [attachmentDirectory, showToast]);
 
   // ============================================
   // RENDER HELPERS
@@ -543,6 +641,11 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
       )}
       <div className="flex-1 min-w-0">
         <p className="text-sm font-medium truncate">{file.fileName}</p>
+        {file.relativePath && file.relativePath !== file.fileName && (
+          <p className="text-[11px] font-mono text-cyan-500/90 truncate" title={file.relativePath}>
+            {file.relativePath}
+          </p>
+        )}
         <p className="text-[11px] text-muted-foreground truncate">
           {file.textureType ? `${file.textureType} · ` : ''}
           {formatSize(file.fileSize)}
@@ -561,6 +664,11 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
       <FileCardThumbnail file={file} className="w-full h-28 object-cover bg-muted/20" />
       <div className="p-2">
         <p className="text-sm font-medium truncate" title={file.fileName}>{file.fileName}</p>
+        {file.relativePath && file.relativePath !== file.fileName && (
+          <p className="text-[10px] font-mono text-cyan-500/90 truncate" title={file.relativePath}>
+            {file.relativePath}
+          </p>
+        )}
         <p className="text-[11px] text-muted-foreground truncate">
           {file.textureType ? `${file.textureType} · ` : ''}
           {formatSize(file.fileSize)}
@@ -588,7 +696,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
       <div className="flex flex-wrap items-end gap-2">
         <div className="min-w-[220px] flex-1">
           <Label htmlFor="model-files-model" className="text-xs">Model</Label>
-          <Select value={modelId} onValueChange={setModelId} disabled={loadingModels}>
+          <Select value={modelId} onValueChange={handleModelChange} disabled={loadingModels}>
             <SelectTrigger className="h-8 text-xs">
               {loadingModels ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : null}
               <SelectValue placeholder="Select a model" />
@@ -626,6 +734,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
           onClick={() => {
             loadFiles(Number(modelId));
             loadModels();
+            loadDependencies(Number(modelId));
           }}
           disabled={!modelId || loadingFiles}
         >
@@ -647,6 +756,90 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
         </div>
       )}
 
+      {/* Primary-file dependency requirements and attachment resolution. */}
+      <section className="rounded-lg border bg-muted/20 p-3" aria-labelledby="model-dependencies-title">
+        <div className="flex flex-wrap items-center gap-2">
+          <Link2 className="h-4 w-4 text-cyan-400" />
+          <h2 id="model-dependencies-title" className="text-xs font-semibold">Required Model dependencies</h2>
+          {loadingDependencies && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
+          {dependencyAudit?.status === 'analyzed' && (
+            <Badge variant={dependencyAudit.complete ? 'secondary' : 'destructive'} className="text-[10px]">
+              {dependencyAudit.requirements.filter((item) => item.satisfied).length}/{dependencyAudit.requirements.length} attached
+            </Badge>
+          )}
+        </div>
+        {dependencyError ? (
+          <p className="mt-2 text-[11px] text-amber-400">{dependencyError}</p>
+        ) : dependencyAudit?.status === 'missing_primary' ? (
+          <p className="mt-2 text-[11px] text-muted-foreground">Set a primary Model file before attaching its dependencies.</p>
+        ) : dependencyAudit?.status === 'not_supported' ? (
+          <p className="mt-2 text-[11px] text-muted-foreground">Dependency inspection currently supports FBX, GLB, and GLTF primary files.</p>
+        ) : dependencyAudit?.status === 'analyzed' && dependencyAudit.requirements.length === 0 ? (
+          <p className="mt-2 text-[11px] text-emerald-400">No external texture or buffer references were found. Dependencies may be embedded.</p>
+        ) : dependencyAudit?.status === 'analyzed' ? (
+          <div className="mt-2 grid gap-1.5 sm:grid-cols-2 xl:grid-cols-3">
+            {dependencyAudit.requirements.map((requirement) => {
+              const directory = requirement.relativePath.split('/').slice(0, -1).join('/');
+              return (
+                <div key={`${requirement.kind}:${requirement.relativePath}`} className="flex min-w-0 items-center gap-2 rounded border bg-background/30 px-2 py-1.5">
+                  {requirement.satisfied
+                    ? <Check className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
+                    : <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-400" />}
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-mono text-[10px]" title={requirement.relativePath}>{requirement.relativePath}</p>
+                    <p className="truncate text-[10px] text-muted-foreground">
+                      {requirement.satisfied ? `Attached: ${requirement.matchedRelativePath}` : `Missing ${requirement.kind}`}
+                    </p>
+                  </div>
+                  {!requirement.satisfied && directory && directory.length <= 100 && (
+                    <Button type="button" variant="ghost" size="sm" className="h-6 px-2 text-[10px]" onClick={() => setAttachmentDirectory(directory)}>
+                      Use path
+                    </Button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
+      </section>
+
+      {/* User-defined storage directory for newly attached files. */}
+      <div className="rounded-lg border bg-muted/20 p-3">
+        <div className="flex flex-wrap items-end gap-3">
+          <div className="min-w-[240px] flex-1">
+            <Label htmlFor="model-files-directory" className="text-xs">Attachment directory *</Label>
+            <div className="relative mt-1">
+              <FolderTree className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                id="model-files-directory"
+                value={attachmentDirectory}
+                onChange={(event) => setAttachmentDirectory(event.target.value)}
+                maxLength={100}
+                placeholder="textures/buildings"
+                className="h-8 pl-8 pr-14 font-mono text-xs"
+                disabled={!modelId || uploading}
+                required
+                aria-required="true"
+                aria-invalid={directoryProblem ? 'true' : 'false'}
+                aria-describedby="model-files-directory-help"
+              />
+              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
+                {attachmentDirectory.length}/100
+              </span>
+            </div>
+          </div>
+          <p className="min-w-[260px] flex-1 truncate font-mono text-[10px] text-cyan-500/90" title={`models/${modelId || '<modelId>'}/attachments/${normalizedAttachmentDirectory ? `${normalizedAttachmentDirectory}/` : ''}<filename>`}>
+            models/{modelId || '&lt;modelId&gt;'}/attachments/{normalizedAttachmentDirectory ? `${normalizedAttachmentDirectory}/` : ''}&lt;filename&gt;
+          </p>
+        </div>
+        <p
+          id="model-files-directory-help"
+          className={`mt-1.5 text-[11px] ${directoryProblem ? 'text-amber-400' : 'text-muted-foreground'}`}
+        >
+          {directoryProblem ?? 'This required relative directory is applied to every file in the next selection.'}
+        </p>
+      </div>
+
       {/* Drag-and-drop upload zone */}
       <div
         className={`relative rounded-lg border-2 border-dashed transition-colors ${
@@ -663,20 +856,20 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
           className="hidden"
           accept=".glb,.gltf,.fbx,.obj,.usdz,.jpg,.jpeg,.png,.webp,.tga,.bmp,.bin"
           onChange={onFileInputChange}
-          disabled={!modelId || uploading}
+          disabled={!modelId || uploading || !!directoryProblem}
         />
         <div className="flex flex-col items-center justify-center py-6 px-4 text-center">
           <Upload className="w-8 h-8 text-muted-foreground mb-2" />
           <p className="text-sm font-medium">Drag & drop files here</p>
-          <p className="text-xs text-muted-foreground mb-3">
-            Model, texture, binary, and supportive media files
+          <p className="text-xs text-muted-foreground mb-3 max-w-xl">
+            Selected dependency files are uploaded into the required Attachment directory defined above.
           </p>
           <Button
             type="button"
             size="sm"
             className="h-8 text-xs"
             onClick={requestUpload}
-            disabled={!modelId || uploading}
+            disabled={!modelId || uploading || !!directoryProblem}
           >
             {uploading ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Upload className="w-4 h-4 mr-1" />}
             Choose Files
@@ -704,7 +897,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
         <div className="relative flex-1 min-w-[180px]">
           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <Input
-            placeholder="Filter files by name or type..."
+            placeholder="Filter files by name, path, or type..."
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
             className="pl-7 h-8 text-xs"

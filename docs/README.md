@@ -4,6 +4,8 @@ This directory is the canonical entry point for project documentation. Choose th
 
 Current production is v0.19.8a **ThreeD Model Administration and File Management**, using package version `0.19.8-alpha`. It establishes owner-scoped manual Model CRUD, structural upload analysis, synchronized primary attachments, safe Blob lifecycle handling, and compact Models navigation without changing Dashboard Scene or physics authority. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
+Prepared release candidate v0.19.8b **ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies**, using package version `0.19.8-beta`, adds a consistent Models-family Admin workspace, required attachment-directory namespaces, dependency inspection, and Model-owned runtime texture resolution. See [ThreeD Model Administration](developers/THREED_MODEL_ADMIN.md) for its acceptance boundary. It is not listed as a confirmed production release until deployment is reported.
+
 The v0.18.9a production release adds authenticated Character Library placement and Project-instance editing while keeping GardenCharacter and EcctrlCharacter as separate runtimes. Explicit Project saves preserve marker database IDs, uncontrolled Ecctrl mounts cannot publish temporary positions, overlapping capsule spawn areas are rejected before Rapier, and rejected Character snapshots can be restored to source positions without deleting their source assets.
 
 The v0.18.7d production release prevents multiple movable Characters at one XYZ spawn from entering Rapier as overlapping Ecctrl bodies. Unsafe Characters are listed in a bounded Scene warning and remain editable through the existing Admin Character CRUD.
@@ -27,7 +29,7 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 - [ThreeD character runtimes](developers/THREED_CHARACTERS.md) — GardenCharacter and EcctrlCharacter roles, shared systems, and movement boundaries.
 - [ThreeD Marker architecture](developers/THREED_MARKERS.md) — Project asset sources, Runtime Markers, layers, identity, and Action Target boundaries.
 - [ThreeD Model runtime API](developers/THREED_MODEL_RUNTIME_API.md) — authenticated Model Library JSON and read-only runtime-structure inspection contracts.
-- [ThreeD Model Administration](developers/THREED_MODEL_ADMIN.md) — v0.19.8a production Model CRUD and attached-file management boundary.
+- [ThreeD Model Administration](developers/THREED_MODEL_ADMIN.md) — v0.19.8a production boundary and v0.19.8b Model workspace and texture-dependency release candidate.
 - [Data model](developers/DATA_MODEL.md) — modules, project junctions, assets, and runtime records.
 - [API guide](developers/API_GUIDE.md) — route families and access conventions.
 - [ThreeD FarmBot Integration Plan](developers/FARMBOT_INTEGRATION.md) — hardware security and connection boundaries.

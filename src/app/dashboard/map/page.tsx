@@ -1,5 +1,4 @@
-// app/dashboard/map/page-v0130b.tsx - v0.13.0-beta "Smart Dashboard"
-// Features: Rich Popups + Admin Links, Advanced Filtering, Interactive Stats, Live Data Indicator
+// dashboard/map/page
 'use client';
 
 import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from 'react';

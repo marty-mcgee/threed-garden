@@ -3,33 +3,31 @@
 
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import Link from 'next/link';
-import { ArrowLeft, FolderOpen, Loader2 } from 'lucide-react';
+import { ArrowLeft, Clapperboard, FolderOpen, FolderTree, Loader2 } from 'lucide-react';
 import { ThreeDModelFilesCRUD } from '@/components/admin/threed/models/ThreeDModelFilesCRUD';
+import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
 
 function ModelFilesPageInner() {
   const searchParams = useSearchParams();
   const modelIdParam = searchParams.get('modelId');
   const initialModelId = modelIdParam ? parseInt(modelIdParam) : null;
+  const modelQuery = Number.isInteger(initialModelId) && Number(initialModelId) > 0
+    ? `?modelId=${initialModelId}`
+    : '';
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center gap-3 border-b pb-4">
-        <FolderOpen className="w-6 h-6 text-blue-500" />
-        <div className="min-w-0 flex-1">
-          <h1 className="text-2xl font-bold">Model Files</h1>
-          <p className="text-sm text-muted-foreground">
-            Upload and manage model files, textures, and supportive media for ThreeD models
-          </p>
+    <div className="space-y-2">
+      <AdminWorkspaceHeader
+        icon={FolderOpen}
+        title="Model Files"
+        description="Upload and manage model files, textures, and supportive media for ThreeD Models"
+      >
+        <div className="ml-auto flex shrink-0 items-center gap-2">
+          <AdminWorkspaceLink href="/admin/threed/models" icon={ArrowLeft}>Back to Models</AdminWorkspaceLink>
+          <AdminWorkspaceLink href="/admin/threed/model-categories" icon={FolderTree}>Model Categories</AdminWorkspaceLink>
+          <AdminWorkspaceLink href={`/admin/threed/model-animations${modelQuery}`} icon={Clapperboard}>Model Animations</AdminWorkspaceLink>
         </div>
-        <Link
-          href="/admin/threed/models"
-          className="inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-white/10 bg-white/5 px-3 text-sm font-medium text-foreground no-underline transition-colors hover:bg-white/10"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Models
-        </Link>
-      </div>
+      </AdminWorkspaceHeader>
       <ThreeDModelFilesCRUD initialModelId={initialModelId} />
     </div>
   );

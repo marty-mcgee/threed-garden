@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Edit, FolderTree, Loader2, Plus, Trash2 } from 'lucide-react';
+import { Edit, Loader2, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -35,7 +34,6 @@ const EMPTY_FORM: CategoryForm = {
 
 export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => void }) {
   const { showToast, ToastComponent } = useToast();
-  const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState<ThreeDModelCategoryOption[]>([]);
   const [editing, setEditing] = useState<ThreeDModelCategoryOption | null>(null);
   const [form, setForm] = useState<CategoryForm>(EMPTY_FORM);
@@ -57,8 +55,10 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
   }
 
   useEffect(() => {
-    if (open) void loadCategories();
-  }, [open]);
+    void loadCategories();
+    // Category loading belongs to this mounted workspace.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function beginCreate() {
     setEditing(null);
@@ -122,17 +122,9 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
   }
 
   return (
-    <>
+    <div className="space-y-2">
       {ToastComponent}
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs">
-            <FolderTree className="mr-1 h-3 w-3" /> Model Categories
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
-          <DialogHeader><DialogTitle>Model Categories</DialogTitle></DialogHeader>
-          <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label>Taxonomy</Label>
@@ -186,9 +178,7 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{editing ? 'Update Category' : 'Create Category'}
               </Button>
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+      </div>
+    </div>
   );
 }

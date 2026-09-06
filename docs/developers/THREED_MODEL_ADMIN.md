@@ -2,6 +2,8 @@
 
 Production checkpoint: **v0.19.8a — ThreeD Model Administration and File Management** (`package.json` version `0.19.8-alpha`), released September 6, 2026.
 
+Prepared release candidate: **v0.19.8b — ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies** (`package.json` version `0.19.8-beta`).
+
 The initial v0.19.8a workflow deliberately manages one reusable ThreeD Model at a time. Bulk import remains implemented for future work, but it is not exposed from the primary Model administration surface during this development boundary.
 
 The Admin route uses `#020618` as its presentation background. Its header, sidebar, and footer are translucent layers of that same color, scoped to `/admin` so Dashboard presentation remains independent.
@@ -9,10 +11,11 @@ The Admin route uses `#020618` as its presentation background. Its header, sideb
 ## Admin surfaces
 
 - `/admin/threed/models` owns Model discovery, creation, editing, taxonomy, publishing state, and deletion.
+- `/admin/threed/model-categories` owns the reusable Model taxonomy list and Create/Edit form.
 - `/admin/threed/model-files?modelId=<id>` owns the selected Model's primary file, textures, binary buffers, and supportive media.
 - A Model row's file action opens the full Model Files workspace with that Model selected. The Models table does not maintain a second attachment-management dialog.
 - Both routes belong to the **Models** navigation family. Model Files keeps **Models** active in the Admin sidebar and provides a header-level **Back to Models** action.
-- The Models workspace uses one compact row for its item count, name/type search, and related actions: **Add Model**, **Model Categories**, **Model Animations**, then **Model Files**.
+- The Models workspace uses its compact toolbar as the semantic page header, avoiding a redundant title/description block. The row contains its item count, name/type search, and related actions: **Add Model**, **Model Categories**, **Model Animations**, then **Model Files**.
 
 ## Authority boundaries
 
@@ -21,6 +24,31 @@ The Admin route uses `#020618` as its presentation background. Its header, sideb
 - Vercel Blob stores file bytes; authenticated owner-scoped App API routes coordinate records and stored objects.
 - Model categories remain relational taxonomy. File names, vendor names, and derived name fragments must not become runtime field names or protocol constants.
 - This boundary introduces no database schema change and does not alter Dashboard Scene placement, Runtime Marker, Character, or Rapier ownership.
+
+## 0.19.8-beta Model attachment directories
+
+The Model Files workspace provides a required **Attachment directory** text field with a 100-character limit. It is an App-managed relative dependency directory, not a local filesystem folder selector. Files cannot be selected or dropped until this directory is valid. The directory applies to each file in the next upload selection. For example, entering `textures/walls` and selecting `base-color.png` persists `textures/walls/base-color.png`.
+
+New attachments use the stable Vercel Blob object layout `models/<modelId>/attachments/<relativePath>`. The browser submits each attachment's computed relative path through the existing owner-scoped Model Files API. The server normalizes separators, rejects absolute and parent-traversal paths, enforces the directory limit, and prevents case-insensitive relative-path conflicts for a Model. `threed_model_files.relative_path` remains authoritative for the User-defined portion of the stored object key. Existing attachment URLs remain valid and are not migrated.
+
+Persisted relative paths appear in both Model Files list and grid views and participate in workspace search. This makes User directory intent durable, inspectable, and available to the runtime dependency resolver.
+
+The Model Files dependency audit reads the selected primary FBX, GLB, or GLTF and reports every discoverable external texture or buffer reference as **Attached** or **Missing**. Exact relative paths take precedence. A filename fallback is accepted only when that filename is unique among the Model attachments, supporting FBX exports that retain exporter-workstation paths without guessing between duplicate texture names.
+
+`ModelMarker3D` uses the same resolution rule through a Model-owned Three.js `LoadingManager`. It resolves dependency requests to their attached Blob URLs before FBX, GLTF, GLB, or OBJ loading. The resolver is scoped to reusable Model markers and does not alter GardenCharacter, EcctrlCharacter, external animation, or Rapier ownership.
+
+### Attachment-directory verification
+
+1. Open `/admin/threed/model-files?modelId=<id>` for a disposable Model.
+2. Enter `textures/walls` in **Attachment directory** and select `albedo.png` with **Choose Files**.
+3. Confirm upload progress and the resulting file card show `textures/walls/albedo.png`.
+4. Confirm the stored Blob URL follows `models/<modelId>/attachments/textures/walls/albedo.png` without a generated timestamp directory.
+5. Search for `textures/walls` and confirm the attachment remains visible.
+6. Try attaching the same relative path again and confirm the API reports the existing-path conflict without replacing the prior attachment.
+7. Clear **Attachment directory** and confirm file selection and drag/drop upload remain blocked.
+8. Confirm **Required Model dependencies** identifies the primary Model's external texture or buffer references.
+9. Attach a missing dependency and confirm the audit changes from **Missing** to **Attached**.
+10. Refresh a Dashboard Project containing the Model and confirm its materials use the attached textures instead of rendering as an untextured black silhouette.
 
 ## Planned progression
 
@@ -108,7 +136,33 @@ The v0.19.8a production release includes the manually approved one-at-a-time Mod
 
 Bulk Model import remains intentionally outside this release. The candidate introduces no schema change and makes no change to Dashboard Scene rendering, Project Marker placement, Character runtimes, Rapier physics, or Model Runtime Adapter authority.
 
-The next development boundary is reserved as `0.19.8-beta`: continued Admin Models UI/UX improvement after this alpha checkpoint is deployed and documented.
+The v0.19.8b candidate continues this work through the Models-family workspace and texture-dependency boundary documented below.
+
+## v0.19.8b release candidate
+
+Release title: **ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies**.
+
+This checkpoint includes:
+
+- consistent compact workspace headers and navigation across Models, Model Categories, Model Animations, and Model Files;
+- URL-based selected-Model continuity between the Model Files and Model Animations workspaces;
+- a dedicated Model Categories page in place of the former Models-page dialog;
+- a required, validated Attachment directory that defines the User-managed relative dependency namespace for new Model attachments;
+- stable Vercel Blob attachment keys under `models/<modelId>/attachments/<relativePath>` without migrating existing stored objects;
+- owner-scoped inspection of external texture and buffer references discovered in the selected primary Model file;
+- **Attached** and **Missing** requirement states using exact relative-path matching and a safe unique-filename fallback;
+- Model-owned runtime dependency URL resolution for FBX, GLTF, GLB, and OBJ markers.
+
+The runtime resolver is deliberately limited to reusable Models. It does not modify GardenCharacter or EcctrlCharacter loading, external Character animations, Runtime Marker identity, Project placement persistence, or Rapier physics. The candidate introduces no database schema change and does not expose bulk Model import.
+
+The next isolated stage is a requirement-level **Upload Needed File** action that preselects the missing dependency path. It is intentionally not part of this checkpoint; attachments continue to use the verified required-directory upload workflow.
+
+Release-candidate validation:
+
+- `npm run typecheck`
+- `git diff --check`
+- targeted resolver checks for exact relative paths, unique filename fallback, and ambiguous filename rejection
+- manual release verification using the Models workspace, attachment-directory, dependency-status, and Dashboard loading checklist above
 
 Release preparation validation:
 
@@ -116,3 +170,51 @@ Release preparation validation:
 - `git diff --check`
 - User-confirmed manual completion of Stages 1–4
 - User-confirmed successful production build and deployment
+
+## 0.19.8-beta development
+
+### Stage 1: Models workspace navigation
+
+- `/admin/threed/models`, `/admin/threed/model-files`, and `/admin/threed/model-animations` are one Admin sidebar navigation family.
+- Model Files and Model Animations provide direct return navigation to Models and direct navigation to each other.
+- When a Model is selected, both supporting pages store its ID in `?modelId=<id>` and carry that selection to the other supporting page.
+- Models remains the reusable-asset workspace; Model Files and Model Animations retain their separate attachment and semantic animation-mapping responsibilities.
+- This stage changes presentation and route state only. It does not change Model CRUD, attachment persistence, Blob lifecycle, animation metadata, Dashboard rendering, or runtime behavior.
+
+Manual verification:
+
+1. Open Model Files and confirm **Models** remains active in the Admin sidebar.
+2. Select a Model and confirm the URL updates with its numeric `modelId` without reloading the page.
+3. Open Model Animations from Model Files and confirm the same Model is selected.
+4. Select a different Model in Model Animations, return to Model Files, and confirm the new selection is preserved.
+5. Use **Back to Models** from both supporting pages and confirm the primary Models workspace opens.
+
+### Stage 2: compact Admin workspace header
+
+`AdminWorkspaceHeader` establishes the first reusable Admin-page presentation primitive. It provides a compact semantic heading, icon, visually hidden description, responsive action area, and consistent lower border without prescribing any page's data or mutation behavior.
+
+The Models workspace supplies count, search, and actions to this header. Model Files and Model Animations use the same header for compact cross-workspace navigation. This removes their oversized title/description blocks while preserving an accessible H1 and description in the document structure.
+
+The component is deliberately presentation-only. It does not fetch, select Models, mutate records, manage URL state, upload files, map animations, or own loading and error behavior. Those responsibilities remain with each page and will be addressed separately in later beta stages.
+
+Manual verification:
+
+1. Open all three Models-family pages and confirm their heading height and lower border are visually consistent.
+2. Confirm Models retains its count, inline search, and four ordered actions.
+3. Confirm Model Files and Model Animations retain their compact navigation actions.
+4. Narrow the Admin content area and confirm header content wraps without horizontal clipping.
+5. Confirm each page exposes exactly one semantic H1 to assistive technology.
+
+### Stage 2 extension: Model Categories workspace
+
+Model Categories now uses `/admin/threed/model-categories` instead of a Models-page dialog. The existing owner-scoped category API, taxonomy records, parent selection, sorting, activation, and deletion behavior are unchanged; only presentation ownership moved from modal state to a durable route.
+
+The Models toolbar links to the new page, and Model Categories participates in the Models sidebar route family. Its compact header provides return navigation plus links to Model Animations and Model Files. `AdminWorkspaceLink` centralizes the related-page link presentation alongside `AdminWorkspaceHeader`.
+
+Manual verification:
+
+1. Select **Model Categories** from the Models toolbar and confirm a full page opens without a dialog overlay.
+2. Confirm **Models** remains active in the Admin sidebar.
+3. Create, edit, activate/deactivate, parent, and delete a disposable category using the existing category API behavior.
+4. Use the compact header to return to Models and to open Model Animations or Model Files.
+5. Return to Models and confirm category assignments in Create/Edit reflect the latest taxonomy.
