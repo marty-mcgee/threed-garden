@@ -126,7 +126,7 @@ const ASSET_TYPES = {
       { value: 'threed_plantings', label: 'Plantings' },
       { value: 'threed_beds', label: 'Beds' },
       { value: 'threed_layers', label: 'Layers' },
-      { value: 'threed_models', label: '3D Models' },
+      { value: 'threed_models', label: 'Models' },
       { value: 'threed_characters', label: 'Characters' },
       { value: 'threed_tasks', label: 'Tasks' },
       { value: 'threed_harvests', label: 'Harvests' },
@@ -170,7 +170,7 @@ const ASSET_TYPES = {
       },
       {
         id: 'threed_models',
-        label: '3D Models',
+        label: 'Models',
         icon: Package,
         assetType: 'threed_models',
         fetchEndpoint: '/api/threed/models',

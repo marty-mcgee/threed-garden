@@ -62,9 +62,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   // ✅ Don't render sidebar on server to avoid hydration mismatch
   if (!mounted) {
     return (
-      <div className="min-h-screen flex [--card-gap:1rem] [--card-padding-x:1rem] [--card-padding-y:1rem]">
+      <div className="min-h-screen flex bg-[#020618] [--card-gap:1rem] [--card-padding-x:1rem] [--card-padding-y:1rem]">
         <div className="flex-1 flex flex-col">
-          <div className="h-14 border-b bg-background/95" />
+          <div className="h-14 border-b border-white/10 bg-[#020618]/85 backdrop-blur-xl" />
           <main className="flex-1 p-2">
             {children}
           </main>
@@ -75,7 +75,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen flex [--card-gap:1rem] [--card-padding-x:1rem] [--card-padding-y:1rem]">
+    <div className="min-h-screen flex bg-[#020618] [--card-gap:1rem] [--card-padding-x:1rem] [--card-padding-y:1rem]">
       {/* Sidebar */}
       <AdminSidebar 
         isCollapsed={isCollapsed} 

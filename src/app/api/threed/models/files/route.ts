@@ -6,10 +6,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { threedModels, threedModelFiles } from '@/lib/schema/threed';
-import { and, eq } from 'drizzle-orm';
+import { and, asc, eq } from 'drizzle-orm';
 import { put } from '@vercel/blob';
 import { ensureTableSequence } from '@/lib/db/sequence';
 import { normalizeThreeDModelRelativePath } from '@/lib/services/threed/models/model-companion-core';
+import { runtimeModelTypeFromFileName } from '@/lib/services/threed/models/model-file-integrity';
 
 const MODEL_EXTS = new Set(['glb', 'gltf', 'fbx', 'obj', 'usdz']);
 const TEXTURE_EXTS = new Set(['jpg', 'jpeg', 'png', 'webp', 'tga', 'bmp']);
@@ -143,7 +144,6 @@ export async function POST(request: NextRequest) {
     }
 
     const uploaded: unknown[] = [];
-    let textureCount = model.textureCount || 0;
     let firstModelFileId = model.mainModelFileId ?? null;
 
     for (const file of files) {
@@ -179,19 +179,36 @@ export async function POST(request: NextRequest) {
         isBinaryBuffer,
       );
 
-      if (fileType === 'texture') textureCount += 1;
       if (fileType === 'model' && firstModelFileId == null) firstModelFileId = record.id;
 
       uploaded.push(record);
     }
 
-    // Update the model's file metadata
+    const completeFiles = await db.select()
+      .from(threedModelFiles)
+      .where(and(
+        eq(threedModelFiles.modelId, modelId),
+        eq(threedModelFiles.userId, session.user.id),
+      ))
+      .orderBy(asc(threedModelFiles.loadOrder), asc(threedModelFiles.id));
+    const primaryFile = completeFiles.find((file) => (
+      file.id === firstModelFileId && file.fileType === 'model'
+    )) ?? completeFiles.find((file) => file.fileType === 'model') ?? null;
+    firstModelFileId = primaryFile?.id ?? null;
+
+    // Reconcile derived attachment metadata from the complete persisted file set.
     await db
       .update(threedModels)
       .set({
-        hasExternalFiles: true,
-        textureCount,
+        ...(primaryFile ? {
+          filePath: primaryFile.filePath,
+          fileSize: primaryFile.fileSize,
+          modelType: runtimeModelTypeFromFileName(primaryFile.fileName) ?? model.modelType,
+        } : {}),
+        hasExternalFiles: completeFiles.length > 0,
+        textureCount: completeFiles.filter((file) => file.fileType === 'texture').length,
         mainModelFileId: firstModelFileId,
+        updatedAt: new Date(),
       })
       .where(and(
         eq(threedModels.id, modelId),

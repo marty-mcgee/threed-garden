@@ -3,7 +3,8 @@
 // (model files, textures, and supportive media) backed by Vercel Blob storage.
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import Link from 'next/link';
+import { useState, useEffect } from 'react';
 import {
   Plus,
   Edit,
@@ -13,9 +14,8 @@ import {
   MoreHorizontal,
   Search,
   File,
-  Image,
-  Upload,
-  X,
+  Clapperboard,
+  FolderOpen,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,15 +23,23 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
 import {
   ThreeDModelCategoriesManager,
   type ThreeDModelCategoryOption,
 } from './ThreeDModelCategoriesManager';
-import { ThreeDModelsBulkImport } from './ThreeDModelsBulkImport';
+import {
+  buildThreeDModelAdminPayload,
+  createEmptyThreeDModelAdminForm,
+  ThreeDModelFormValidationError,
+  type ThreeDModelAdminFormData,
+} from './model-admin-form-core';
+import {
+  MODEL_STATUS_OPTIONS,
+  MODEL_TYPE_OPTIONS,
+  ThreeDModelEditorFields,
+  type ThreeDModelUploadAnalysis,
+} from './ThreeDModelEditorFields';
 
 // ============================================
 // TYPES
@@ -83,81 +91,12 @@ interface Model {
   categories?: ThreeDModelCategoryOption[];
 }
 
-interface FormData {
-  modelName: string;
-  modelType: string;
+interface PendingPrimaryModelFile {
+  fileName: string;
   filePath: string;
-  fileSize: string;
-  thumbnailUrl: string;
-  usedByPlants: boolean;
-  usedByCharacters: boolean;
-  scale: string;
-  rotationY: string;
-  offsetX: string;
-  offsetY: string;
-  offsetZ: string;
-  hasLOD: boolean;
-  lodLevels: string;
-  animations: string;
-  defaultAnimation: string;
-  mainModelFileId: string;
-  isActive: boolean;
-  status: string;
-  isDefault: boolean;
-  isPublic: boolean;
-  isLibraryItem: boolean;
-  uploadedBy: string;
-  metadata: string;
-  categoryIds: number[];
+  fileSize: number;
+  modelType: string;
 }
-
-// ============================================
-// OPTIONS
-// ============================================
-const MODEL_TYPE_OPTIONS = [
-  { value: 'procedural', label: 'Procedural' },
-  { value: 'gltf', label: 'GLTF' },
-  { value: 'glb', label: 'GLB' },
-  { value: 'fbx', label: 'FBX' },
-  { value: 'usdz', label: 'USDZ' },
-  { value: 'obj', label: 'OBJ' },
-  { value: 'herb-generic', label: 'Herb - Generic' },
-  { value: 'vegetable-generic', label: 'Vegetable - Generic' },
-  { value: 'flower-generic', label: 'Flower - Generic' },
-  { value: 'fruit-generic', label: 'Fruit - Generic' },
-  { value: 'tree-generic', label: 'Tree - Generic' },
-  { value: 'custom', label: 'Custom' },
-];
-
-const MODEL_STATUS_OPTIONS = [
-  { value: 'active', label: 'Active' },
-  { value: 'pending', label: 'Pending' },
-  { value: 'maintenance', label: 'Maintenance' },
-  { value: 'dormant', label: 'Dormant' },
-  { value: 'retired', label: 'Retired' },
-];
-
-const ANIMATION_OPTIONS = [
-  { value: 'idle', label: 'Idle' },
-  { value: 'grow', label: 'Grow' },
-  { value: 'flower', label: 'Flower' },
-  { value: 'sway', label: 'Sway' },
-];
-
-const FILE_CATEGORY_OPTIONS = [
-  { value: 'auto', label: 'Auto-detect' },
-  { value: 'model', label: 'Model File' },
-  { value: 'texture', label: 'Texture' },
-  { value: 'binary', label: 'Binary Buffer (.bin)' },
-  { value: 'other', label: 'Supportive Media / Other' },
-];
-
-const FILE_TYPE_META: Record<string, { icon: 'box' | 'image' | 'file'; color: string }> = {
-  model: { icon: 'box', color: 'text-blue-500' },
-  texture: { icon: 'image', color: 'text-green-500' },
-  binary: { icon: 'file', color: 'text-orange-500' },
-  other: { icon: 'file', color: 'text-gray-500' },
-};
 
 // ============================================
 // HELPERS
@@ -185,22 +124,6 @@ const formatFileSize = (bytes: number | null): string =>
         ? `${(bytes / 1024).toFixed(1)} KB`
         : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 
-function FileIcon({ type }: { type: string }) {
-  const meta = FILE_TYPE_META[type] ?? { icon: 'file', color: 'text-gray-500' };
-  if (meta.icon === 'box') return <Box className={`w-4 h-4 ${meta.color}`} />;
-  if (meta.icon === 'image') return <Image className={`w-4 h-4 ${meta.color}`} />;
-  return <File className={`w-4 h-4 ${meta.color}`} />;
-}
-
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="border-t pt-4">
-      <Label className="text-sm font-medium">{title}</Label>
-      <div className="space-y-2 mt-2">{children}</div>
-    </div>
-  );
-}
-
 // ============================================
 // COMPONENT
 // ============================================
@@ -211,57 +134,16 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingModel, setEditingModel] = useState<Model | null>(null);
-  const [showFilesDialog, setShowFilesDialog] = useState(false);
-  const [filesModel, setFilesModel] = useState<Model | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [categories, setCategories] = useState<ThreeDModelCategoryOption[]>([]);
 
   // v0.16.4-alpha/beta: Vercel Blob upload state
   const [uploadingPrimary, setUploadingPrimary] = useState(false);
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
-  const [uploadingFiles, setUploadingFiles] = useState(false);
-  const [fileCategory, setFileCategory] = useState<string>('auto');
-  const [deletingFileId, setDeletingFileId] = useState<number | null>(null);
+  const [uploadAnalysis, setUploadAnalysis] = useState<ThreeDModelUploadAnalysis | null>(null);
+  const [pendingPrimaryFile, setPendingPrimaryFile] = useState<PendingPrimaryModelFile | null>(null);
 
-  const [formData, setFormData] = useState<FormData>({
-    modelName: '',
-    modelType: '',
-    filePath: '',
-    fileSize: '',
-    thumbnailUrl: '',
-    usedByPlants: false,
-    usedByCharacters: false,
-    scale: '1.0',
-    rotationY: '0.0',
-    offsetX: '0.0',
-    offsetY: '0.0',
-    offsetZ: '0.0',
-    hasLOD: false,
-    lodLevels: '{}',
-    animations: '[]',
-    defaultAnimation: '',
-    mainModelFileId: '',
-    isActive: true,
-    status: 'active',
-    isDefault: false,
-    isPublic: false,
-    isLibraryItem: false,
-    uploadedBy: '',
-    metadata: '{}',
-    categoryIds: [],
-  });
-
-  // Model files of type "model" (candidates for mainModelFileId) on the model being edited.
-  const mainModelFileOptions = useMemo(
-    () => (editingModel?.files ?? []).filter((f) => f.fileType === 'model'),
-    [editingModel],
-  );
-
-  // Number of texture files on the currently-connected model (derived, not manually editable).
-  const derivedTextureCount = useMemo(
-    () => (editingModel?.files ?? filesModel?.files ?? []).filter((f) => f.fileType === 'texture').length,
-    [editingModel, filesModel],
-  );
+  const [formData, setFormData] = useState<ThreeDModelAdminFormData>(createEmptyThreeDModelAdminForm);
 
   useEffect(() => {
     fetchModels();
@@ -300,32 +182,41 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
     }
   }
 
-  async function fetchModelDetail(modelId: number) {
-    try {
-      const response = await fetch(`/api/threed/models?id=${modelId}`);
-      const data = await response.json();
-      if (data.success) {
-        const model = data.data as Model;
-        setFilesModel(model);
-        setShowFilesDialog(true);
-      } else {
-        showToast(data.error || 'Failed to fetch model files', 'error');
-      }
-    } catch (error) {
-      console.error('Error fetching model files:', error);
-      showToast('Failed to fetch model files', 'error');
-    }
-  }
-
   const filteredModels = models.filter((model) =>
     model.modelName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     model.modelType.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
+  async function discardPendingPrimaryUpload(file: PendingPrimaryModelFile): Promise<boolean> {
+    try {
+      const response = await fetch('/api/threed/models/upload', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: file.filePath }),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        showToast(data.error || 'Failed to discard the previous Model upload', 'error');
+        return false;
+      }
+      setPendingPrimaryFile((current) => current?.filePath === file.filePath ? null : current);
+      return true;
+    } catch (error) {
+      console.error('Failed to discard staged primary Model upload', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToast('Failed to discard the previous Model upload', 'error');
+      return false;
+    }
+  }
+
   // Upload the primary model file (GLB/GLTF/FBX/OBJ/USDZ) to Vercel Blob.
   async function handlePrimaryFileUpload(file: File) {
     if (!file) return;
+    if (pendingPrimaryFile && !(await discardPendingPrimaryUpload(pendingPrimaryFile))) return;
     setUploadingPrimary(true);
+    setUploadAnalysis(null);
+    setPendingPrimaryFile(null);
     try {
       const fd = new FormData();
       fd.append('file', file);
@@ -334,14 +225,28 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
       if (data.success) {
         setFormData((prev) => ({
           ...prev,
+          modelName: prev.modelName.trim() ? prev.modelName : data.data.suggestedModelName,
           filePath: data.data.url,
           fileSize: String(data.data.fileSize || ''),
           modelType: MODEL_TYPE_OPTIONS.some((o) => o.value === data.data.modelType)
             ? data.data.modelType
             : 'custom',
         }));
-        showToast('Model file uploaded', 'success');
+        setUploadAnalysis(data.data.analysis ?? null);
+        setPendingPrimaryFile({
+          fileName: data.data.fileName,
+          filePath: data.data.url,
+          fileSize: data.data.fileSize,
+          modelType: data.data.modelType,
+        });
+        showToast(
+          data.data.analysis?.status === 'analyzed'
+            ? 'Model uploaded and analyzed'
+            : 'Model file uploaded',
+          'success',
+        );
       } else {
+        setPendingPrimaryFile(null);
         showToast(data.error || 'Failed to upload model file', 'error');
       }
     } catch (error) {
@@ -375,68 +280,12 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
     }
   }
 
-  // Upload additional files/textures/media to an existing model.
-  async function handleModelFilesUpload(files: FileList | File[]) {
-    if (!filesModel?.id || files.length === 0) return;
-    setUploadingFiles(true);
-    try {
-      const fd = new FormData();
-      fd.append('modelId', String(filesModel.id));
-      if (fileCategory && fileCategory !== 'auto') fd.append('category', fileCategory);
-      Array.from(files).forEach((f) => fd.append('files', f));
-      const response = await fetch('/api/threed/models/files', { method: 'POST', body: fd });
-      const data = await response.json();
-      if (data.success) {
-        showToast(`Added ${data.data?.length ?? 0} file(s)`, 'success');
-        await fetchModelDetail(filesModel.id);
-        await fetchModels();
-      } else {
-        showToast(data.error || 'Failed to upload model files', 'error');
-      }
-    } catch (error) {
-      console.error('Error uploading model files:', error);
-      showToast('Failed to upload model files', 'error');
-    } finally {
-      setUploadingFiles(false);
-    }
-  }
-
-  // Delete a single model file (blob + record).
-  async function handleDeleteFile(file: ModelFile) {
-    if (!confirm(`Delete "${file.fileName}"?`)) return;
-    setDeletingFileId(file.id);
-    try {
-      const response = await fetch(`/api/threed/models/files/${file.id}`, { method: 'DELETE' });
-      const data = await response.json();
-      if (data.success) {
-        showToast('File deleted', 'success');
-        if (filesModel?.id) await fetchModelDetail(filesModel.id);
-        await fetchModels();
-      } else {
-        showToast(data.error || 'Failed to delete file', 'error');
-      }
-    } catch (error) {
-      console.error('Error deleting file:', error);
-      showToast('Failed to delete file', 'error');
-    } finally {
-      setDeletingFileId(null);
-    }
-  }
-
   async function handleCreate() {
-    if (!formData.modelName) return showToast('Model name is required', 'error');
-    if (!formData.modelType) return showToast('Model type is required', 'error');
-    if (!formData.filePath) return showToast('File path is required', 'error');
-
     setIsSubmitting(true);
     try {
       const payload = {
-        ...formData,
-        fileSize: formData.fileSize ? parseInt(formData.fileSize) : null,
-        animations: JSON.parse(formData.animations),
-        lodLevels: JSON.parse(formData.lodLevels),
-        metadata: JSON.parse(formData.metadata),
-        mainModelFileId: formData.mainModelFileId ? parseInt(formData.mainModelFileId) : null,
+        ...buildThreeDModelAdminPayload(formData),
+        primaryFile: pendingPrimaryFile,
       };
 
       const response = await fetch('/api/threed/models', {
@@ -456,7 +305,10 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
       }
     } catch (error) {
       console.error('Error creating model:', error);
-      showToast('Failed to create model', 'error');
+      showToast(
+        error instanceof ThreeDModelFormValidationError ? error.message : 'Failed to create model',
+        'error',
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -464,19 +316,11 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
 
   async function handleUpdate() {
     if (!editingModel) return;
-    if (!formData.modelName) return showToast('Model name is required', 'error');
-    if (!formData.modelType) return showToast('Model type is required', 'error');
-    if (!formData.filePath) return showToast('File path is required', 'error');
-
     setIsSubmitting(true);
     try {
       const payload = {
-        ...formData,
-        fileSize: formData.fileSize ? parseInt(formData.fileSize) : null,
-        animations: JSON.parse(formData.animations),
-        lodLevels: JSON.parse(formData.lodLevels),
-        metadata: JSON.parse(formData.metadata),
-        mainModelFileId: formData.mainModelFileId ? parseInt(formData.mainModelFileId) : null,
+        ...buildThreeDModelAdminPayload(formData),
+        primaryFile: pendingPrimaryFile,
       };
 
       const response = await fetch(`/api/threed/models?id=${editingModel.id}`, {
@@ -487,6 +331,8 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
       const data = await response.json();
       if (data.success) {
         showToast('Model updated successfully', 'success');
+        setPendingPrimaryFile(null);
+        setUploadAnalysis(null);
         setEditingModel(null);
         await fetchModels();
         onModuleUpdate?.();
@@ -495,7 +341,10 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
       }
     } catch (error) {
       console.error('Error updating model:', error);
-      showToast('Failed to update model', 'error');
+      showToast(
+        error instanceof ThreeDModelFormValidationError ? error.message : 'Failed to update model',
+        'error',
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -520,19 +369,14 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
   }
 
   function resetForm() {
-    setFormData({
-      modelName: '', modelType: '', filePath: '', fileSize: '', thumbnailUrl: '',
-      usedByPlants: false, usedByCharacters: false,
-      scale: '1.0', rotationY: '0.0', offsetX: '0.0', offsetY: '0.0', offsetZ: '0.0',
-      hasLOD: false, lodLevels: '{}', animations: '[]', defaultAnimation: '',
-      mainModelFileId: '', isActive: true, status: 'active', isDefault: false,
-      isPublic: false, isLibraryItem: false,
-      uploadedBy: '', metadata: '{}',
-      categoryIds: [],
-    });
+    setFormData(createEmptyThreeDModelAdminForm());
+    setUploadAnalysis(null);
+    setPendingPrimaryFile(null);
   }
 
   function openEditDialog(model: Model) {
+    setUploadAnalysis(null);
+    setPendingPrimaryFile(null);
     setEditingModel(model);
     setFormData({
       modelName: model.modelName,
@@ -563,36 +407,27 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
     });
   }
 
-  function toggleCategory(categoryId: number) {
-    setFormData((current) => ({
-      ...current,
-      categoryIds: current.categoryIds.includes(categoryId)
-        ? current.categoryIds.filter((id) => id !== categoryId)
-        : [...current.categoryIds, categoryId],
-    }));
+  function handleCreateDialogChange(open: boolean) {
+    if (open) {
+      resetForm();
+      setShowCreateDialog(true);
+      return;
+    }
+    if (isSubmitting) return;
+    const stagedFile = pendingPrimaryFile;
+    setShowCreateDialog(false);
+    resetForm();
+    if (stagedFile) void discardPendingPrimaryUpload(stagedFile);
   }
 
-  const categoryAssignmentFields = (
-    <Section title="Categories">
-      {categories.filter((category) => category.isActive).length === 0 ? (
-        <p className="text-xs text-muted-foreground">Create an active Model category before assigning taxonomy.</p>
-      ) : (
-        <div className="grid grid-cols-2 gap-2">
-          {categories.filter((category) => category.isActive).map((category) => (
-            <label key={category.id} className="flex items-center gap-2 rounded border px-2 py-1.5 text-xs">
-              <input
-                type="checkbox"
-                checked={formData.categoryIds.includes(category.id)}
-                onChange={() => toggleCategory(category.id)}
-                disabled={isSubmitting}
-              />
-              <span className="truncate">{category.name}</span>
-            </label>
-          ))}
-        </div>
-      )}
-    </Section>
-  );
+  function handleEditDialogChange(open: boolean) {
+    if (open || isSubmitting) return;
+    const stagedFile = pendingPrimaryFile;
+    setEditingModel(null);
+    setUploadAnalysis(null);
+    setPendingPrimaryFile(null);
+    if (stagedFile) void discardPendingPrimaryUpload(stagedFile);
+  }
 
   if (loading) {
     return (
@@ -602,262 +437,76 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
     );
   }
 
-  const groupedFiles = (files: ModelFile[]) => {
-    const groups: Record<string, ModelFile[]> = { model: [], texture: [], binary: [], other: [] };
-    for (const f of files) {
-      const key = groups[f.fileType] ? f.fileType : 'other';
-      groups[key].push(f);
-    }
-    return groups;
-  };
-
   return (
     <div className="space-y-2">
       {ToastComponent}
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <Box className="w-4 h-4 text-blue-500" />
-          <span className="text-sm font-medium">3D Models</span>
+          <span className="text-sm font-medium">Models</span>
           <Badge variant="secondary" className="text-xs">{filteredModels.length}</Badge>
         </div>
-        <div className="flex items-center gap-2">
-        <ThreeDModelCategoriesManager onChanged={() => { void fetchCategories(); void fetchModels(); }} />
-        <ThreeDModelsBulkImport
-          categories={categories}
-          onComplete={async ({ created, failed }) => {
-            await fetchModels();
-            onModuleUpdate?.();
-            showToast(
-              failed > 0 ? `Bulk import created ${created} Model(s); ${failed} failed` : `Bulk import created ${created} Model(s)`,
-              failed > 0 ? 'error' : 'success',
-            );
-          }}
-        />
-        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-          <DialogTrigger asChild>
-            <Button size="sm" className="h-7 px-2 text-xs">
-              <Plus className="w-3 h-3 mr-1" /> Add Model
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Create New 3D Model</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 pt-4">
-              <Section title="Basic Info">
-                <div>
-                  <Label htmlFor="modelName">Model Name *</Label>
-                  <Input id="modelName" value={formData.modelName}
-                    onChange={(e) => setFormData({ ...formData, modelName: e.target.value })}
-                    disabled={isSubmitting} />
-                </div>
-                <div>
-                  <Label htmlFor="modelType">Model Type *</Label>
-                  <Select value={formData.modelType} onValueChange={(v) => setFormData({ ...formData, modelType: v })}>
-                    <SelectTrigger><SelectValue placeholder="Select model type" /></SelectTrigger>
-                    <SelectContent>
-                      {MODEL_TYPE_OPTIONS.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </Section>
-
-              <Section title="Model File">
-                <div>
-                  <Label htmlFor="filePath">File Path / URL *</Label>
-                  <Input id="filePath" value={formData.filePath}
-                    onChange={(e) => setFormData({ ...formData, filePath: e.target.value })}
-                    disabled={isSubmitting} placeholder="/models/tomato.glb" />
-                </div>
-                <div className="flex items-center gap-2">
-                  <input id="model-file-upload" type="file" className="hidden"
-                    accept=".glb,.gltf,.fbx,.obj,.usdz"
-                    onChange={(e) => { const f = e.target.files?.[0]; if (f) handlePrimaryFileUpload(f); e.target.value = ''; }}
-                    disabled={uploadingPrimary} />
-                  <Button type="button" variant="outline" size="sm" className="h-8 text-xs"
-                    onClick={() => document.getElementById('model-file-upload')?.click()} disabled={uploadingPrimary}>
-                    {uploadingPrimary ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Upload className="w-4 h-4 mr-1" />}
-                    Upload Model File
-                  </Button>
-                  {formData.filePath && <span className="text-xs text-muted-foreground truncate">✓ uploaded</span>}
-                </div>
-                <div>
-                  <Label htmlFor="fileSize" className="text-xs">File Size (bytes)</Label>
-                  <Input id="fileSize" type="number" min="0" value={formData.fileSize}
-                    onChange={(e) => setFormData({ ...formData, fileSize: e.target.value })} disabled={isSubmitting} />
-                </div>
-                <div className="space-y-2 rounded border p-2">
-                  <div>
-                    <Label htmlFor="thumbnailUrl" className="text-xs">Library Preview Image</Label>
-                    <Input id="thumbnailUrl" value={formData.thumbnailUrl}
-                      placeholder="HTTPS JPG, PNG, or WebP URL"
-                      onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })} disabled={isSubmitting} />
-                  </div>
-                  {formData.thumbnailUrl && (
-                    <img src={formData.thumbnailUrl} alt="Model Library preview" className="h-28 w-full rounded border bg-muted object-contain" />
-                  )}
-                  <div className="flex flex-wrap items-center gap-2">
-                    <input id="model-thumbnail-upload" type="file" className="hidden"
-                      accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-                      onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleThumbnailUpload(f); e.target.value = ''; }}
-                      disabled={uploadingThumbnail || isSubmitting} />
-                    <Button type="button" variant="outline" size="sm" className="h-8 text-xs"
-                      onClick={() => document.getElementById('model-thumbnail-upload')?.click()}
-                      disabled={uploadingThumbnail || isSubmitting}>
-                      {uploadingThumbnail ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />}
-                      {formData.thumbnailUrl ? 'Replace Preview' : 'Upload Preview'}
-                    </Button>
-                    {formData.thumbnailUrl && (
-                      <Button type="button" variant="ghost" size="sm" className="h-8 text-xs"
-                        onClick={() => setFormData((current) => ({ ...current, thumbnailUrl: '' }))}
-                        disabled={uploadingThumbnail || isSubmitting}>
-                        <X className="mr-1 h-4 w-4" /> Remove
-                      </Button>
-                    )}
-                  </div>
-                  <p className="text-[10px] text-muted-foreground">JPG, PNG, or WebP up to 5 MB. A square top-view image is recommended.</p>
-                </div>
-                <p className="text-[10px] text-muted-foreground">
-                  Add textures and supportive media after creating the model (via the Files dialog).
-                </p>
-              </Section>
-
-              <Section title="Transform">
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <Label htmlFor="scale" className="text-xs">Scale</Label>
-                    <Input id="scale" type="number" step="0.01" min="0.01" value={formData.scale}
-                      onChange={(e) => setFormData({ ...formData, scale: e.target.value })} disabled={isSubmitting} />
-                  </div>
-                  <div>
-                    <Label htmlFor="rotationY" className="text-xs">Rotation Y</Label>
-                    <Input id="rotationY" type="number" step="1" value={formData.rotationY}
-                      onChange={(e) => setFormData({ ...formData, rotationY: e.target.value })} disabled={isSubmitting} />
-                  </div>
-                </div>
-                <div>
-                  <Label className="text-xs">Offset (X / Y / Z)</Label>
-                  <div className="grid grid-cols-3 gap-2 mt-1">
-                    <Input placeholder="X" type="number" step="0.01" value={formData.offsetX}
-                      onChange={(e) => setFormData({ ...formData, offsetX: e.target.value })} disabled={isSubmitting} />
-                    <Input placeholder="Y" type="number" step="0.01" value={formData.offsetY}
-                      onChange={(e) => setFormData({ ...formData, offsetY: e.target.value })} disabled={isSubmitting} />
-                    <Input placeholder="Z" type="number" step="0.01" value={formData.offsetZ}
-                      onChange={(e) => setFormData({ ...formData, offsetZ: e.target.value })} disabled={isSubmitting} />
-                  </div>
-                </div>
-              </Section>
-
-              <Section title="LOD & Animation">
-                <div className="flex items-center gap-2">
-                  <Switch id="hasLOD" checked={formData.hasLOD}
-                    onCheckedChange={(v) => setFormData({ ...formData, hasLOD: v })} disabled={isSubmitting} />
-                  <Label htmlFor="hasLOD">Has LOD</Label>
-                </div>
-                <div>
-                  <Label htmlFor="lodLevels" className="text-xs">LOD Levels (JSON)</Label>
-                  <Input id="lodLevels" value={formData.lodLevels}
-                    onChange={(e) => setFormData({ ...formData, lodLevels: e.target.value })} disabled={isSubmitting} />
-                </div>
-                <div>
-                  <Label htmlFor="animations" className="text-xs">Animations (JSON array)</Label>
-                  <Input id="animations" value={formData.animations}
-                    onChange={(e) => setFormData({ ...formData, animations: e.target.value })} disabled={isSubmitting} />
-                </div>
-                <div>
-                  <Label htmlFor="defaultAnimation" className="text-xs">Default Animation</Label>
-                  <Select value={formData.defaultAnimation}
-                    onValueChange={(v) => setFormData({ ...formData, defaultAnimation: v })}>
-                    <SelectTrigger><SelectValue placeholder="Select default animation" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      {ANIMATION_OPTIONS.map((a) => <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </Section>
-
-              <Section title="Status & Flags">
-                <div>
-                  <Label htmlFor="status" className="text-xs">Model Status</Label>
-                  <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {MODEL_STATUS_OPTIONS.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch id="isActive" checked={formData.isActive}
-                    onCheckedChange={(v) => setFormData({ ...formData, isActive: v })} disabled={isSubmitting} />
-                  <Label htmlFor="isActive">Active</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch id="isDefault" checked={formData.isDefault}
-                    onCheckedChange={(v) => setFormData({ ...formData, isDefault: v })} disabled={isSubmitting} />
-                  <Label htmlFor="isDefault">Default Model</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch id="isPublic" checked={formData.isPublic}
-                    onCheckedChange={(v) => setFormData({ ...formData, isPublic: v })} disabled={isSubmitting} />
-                  <Label htmlFor="isPublic">Public</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch id="isLibraryItem" checked={formData.isLibraryItem}
-                    onCheckedChange={(v) => setFormData({ ...formData, isLibraryItem: v })} disabled={isSubmitting} />
-                  <Label htmlFor="isLibraryItem">Model Library Item</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch id="usedByPlants" checked={formData.usedByPlants}
-                    onCheckedChange={(v) => setFormData({ ...formData, usedByPlants: v })} disabled={isSubmitting} />
-                  <Label htmlFor="usedByPlants">Used by Plants</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch id="usedByCharacters" checked={formData.usedByCharacters}
-                    onCheckedChange={(v) => setFormData({ ...formData, usedByCharacters: v })} disabled={isSubmitting} />
-                  <Label htmlFor="usedByCharacters">Used by Characters</Label>
-                </div>
-                <p className="text-[10px] text-muted-foreground">
-                  Character models use Character runtime rules and are excluded from direct Model Library placement.
-                </p>
-                <div>
-                  <Label htmlFor="uploadedBy" className="text-xs">Uploaded By</Label>
-                  <Input id="uploadedBy" value={formData.uploadedBy}
-                    onChange={(e) => setFormData({ ...formData, uploadedBy: e.target.value })} disabled={isSubmitting} />
-                </div>
-                <div>
-                  <Label htmlFor="metadata" className="text-xs">Metadata (JSON)</Label>
-                  <Input id="metadata" value={formData.metadata}
-                    onChange={(e) => setFormData({ ...formData, metadata: e.target.value })} disabled={isSubmitting} />
-                </div>
-              </Section>
-
-              {categoryAssignmentFields}
-
-              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Creating...</> : 'Create Model'}
-              </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+        <div className="relative min-w-48 flex-1">
+          <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Search by name or type..."
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+            className="h-7 pl-7 text-xs"
+          />
         </div>
-      </div>
-
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-        <Input placeholder="Search by name or type..." value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)} className="pl-7 h-8 text-xs" />
+        <div className="flex flex-wrap items-center justify-end gap-2">
+          <Dialog open={showCreateDialog} onOpenChange={handleCreateDialogChange}>
+            <DialogTrigger asChild>
+              <Button size="sm" className="h-7 px-2 text-xs">
+                <Plus className="w-3 h-3 mr-1" /> Add Model
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Create New Model</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 pt-4">
+                <ThreeDModelEditorFields
+                  mode="create"
+                  form={formData}
+                  setForm={setFormData}
+                  categories={categories}
+                  isSubmitting={isSubmitting}
+                  uploadingPrimary={uploadingPrimary}
+                  uploadingThumbnail={uploadingThumbnail}
+                  uploadAnalysis={uploadAnalysis}
+                  onPrimaryFile={handlePrimaryFileUpload}
+                  onThumbnail={handleThumbnailUpload}
+                />
+                <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Creating...</> : 'Create Model'}
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+          <ThreeDModelCategoriesManager onChanged={() => { void fetchCategories(); void fetchModels(); }} />
+          <Button asChild variant="outline" size="sm" className="h-7 px-2 text-xs">
+            <Link href="/admin/threed/model-animations">
+              <Clapperboard className="mr-1 h-3 w-3" /> Model Animations
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm" className="h-7 px-2 text-xs">
+            <Link href="/admin/threed/model-files">
+              <FolderOpen className="mr-1 h-3 w-3" /> Model Files
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Models table */}
       {filteredModels.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <Box className="w-8 h-8 mx-auto mb-2 opacity-50" />
-          <p>No 3D models found</p>
-          <Button variant="outline" size="sm" className="mt-2 h-7 px-2 text-xs" onClick={() => setShowCreateDialog(true)}>
+          <p>No Models found</p>
+          <Button variant="outline" size="sm" className="mt-2 h-7 px-2 text-xs" onClick={() => handleCreateDialogChange(true)}>
             <Plus className="w-3 h-3 mr-1" /> Create your first model
           </Button>
         </div>
@@ -914,8 +563,11 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
                     </TableCell>
                     <TableCell className="py-1">
                       <div className="flex items-center justify-end gap-1">
-                        <Button variant="ghost" size="sm" onClick={() => fetchModelDetail(model.id)} title="Files">
-                          <File className="w-4 h-4" />
+                        <Button asChild variant="ghost" size="sm">
+                          <Link href={`/admin/threed/model-files?modelId=${model.id}`} title={`Manage files for ${model.modelName}`}>
+                            <File className="w-4 h-4" />
+                            <span className="sr-only">Manage files</span>
+                          </Link>
                         </Button>
                         <Button variant="ghost" size="sm" onClick={() => openEditDialog(model)} title="Edit">
                           <Edit className="w-4 h-4" />
@@ -941,225 +593,23 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
       )}
 
       {/* Edit Dialog */}
-      <Dialog open={!!editingModel} onOpenChange={(open) => !open && setEditingModel(null)}>
+      <Dialog open={!!editingModel} onOpenChange={handleEditDialogChange}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader><DialogTitle>Edit 3D Model</DialogTitle></DialogHeader>
           <div className="space-y-4 pt-4">
-            <Section title="Basic Info">
-              <div>
-                <Label htmlFor="edit-modelName">Model Name *</Label>
-                <Input id="edit-modelName" value={formData.modelName}
-                  onChange={(e) => setFormData({ ...formData, modelName: e.target.value })} disabled={isSubmitting} />
-              </div>
-              <div>
-                <Label htmlFor="edit-modelType">Model Type *</Label>
-                <Select value={formData.modelType} onValueChange={(v) => setFormData({ ...formData, modelType: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {MODEL_TYPE_OPTIONS.map((t) => <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-            </Section>
-
-            <Section title="Model File">
-              <div>
-                <Label htmlFor="edit-filePath">File Path / URL *</Label>
-                <Input id="edit-filePath" value={formData.filePath}
-                  onChange={(e) => setFormData({ ...formData, filePath: e.target.value })} disabled={isSubmitting} />
-              </div>
-              <div className="flex items-center gap-2">
-                <input id="edit-model-file-upload" type="file" className="hidden"
-                  accept=".glb,.gltf,.fbx,.obj,.usdz"
-                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handlePrimaryFileUpload(f); e.target.value = ''; }}
-                  disabled={uploadingPrimary || isSubmitting} />
-                <Button type="button" variant="outline" size="sm" className="h-8 text-xs"
-                  onClick={() => document.getElementById('edit-model-file-upload')?.click()}
-                  disabled={uploadingPrimary || isSubmitting}>
-                  {uploadingPrimary ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Upload className="w-4 h-4 mr-1" />}
-                  Upload Replacement File
-                </Button>
-                {formData.filePath && <span className="text-xs text-muted-foreground truncate">✓ file selected</span>}
-              </div>
-              <p className="text-[10px] text-muted-foreground">
-                Uploading updates this form. Click Update Model to save the replacement file URL.
-              </p>
-              <div>
-                <Label htmlFor="edit-fileSize" className="text-xs">File Size (bytes)</Label>
-                <Input id="edit-fileSize" type="number" min="0" value={formData.fileSize}
-                  onChange={(e) => setFormData({ ...formData, fileSize: e.target.value })} disabled={isSubmitting} />
-              </div>
-              <div className="space-y-2 rounded border p-2">
-                <div>
-                  <Label htmlFor="edit-thumbnailUrl" className="text-xs">Library Preview Image</Label>
-                  <Input id="edit-thumbnailUrl" value={formData.thumbnailUrl}
-                    placeholder="HTTPS JPG, PNG, or WebP URL"
-                    onChange={(e) => setFormData({ ...formData, thumbnailUrl: e.target.value })} disabled={isSubmitting} />
-                </div>
-                {formData.thumbnailUrl && (
-                  <img src={formData.thumbnailUrl} alt="Model Library preview" className="h-28 w-full rounded border bg-muted object-contain" />
-                )}
-                <div className="flex flex-wrap items-center gap-2">
-                  <input id="edit-model-thumbnail-upload" type="file" className="hidden"
-                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-                    onChange={(e) => { const f = e.target.files?.[0]; if (f) void handleThumbnailUpload(f); e.target.value = ''; }}
-                    disabled={uploadingThumbnail || isSubmitting} />
-                  <Button type="button" variant="outline" size="sm" className="h-8 text-xs"
-                    onClick={() => document.getElementById('edit-model-thumbnail-upload')?.click()}
-                    disabled={uploadingThumbnail || isSubmitting}>
-                    {uploadingThumbnail ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />}
-                    {formData.thumbnailUrl ? 'Replace Preview' : 'Upload Preview'}
-                  </Button>
-                  {formData.thumbnailUrl && (
-                    <Button type="button" variant="ghost" size="sm" className="h-8 text-xs"
-                      onClick={() => setFormData((current) => ({ ...current, thumbnailUrl: '' }))}
-                      disabled={uploadingThumbnail || isSubmitting}>
-                      <X className="mr-1 h-4 w-4" /> Remove
-                    </Button>
-                  )}
-                </div>
-                <p className="text-[10px] text-muted-foreground">JPG, PNG, or WebP up to 5 MB. A square top-view image is recommended.</p>
-              </div>
-            </Section>
-
-            <Section title="Related Model Files / Textures">
-              <div>
-                <Label htmlFor="edit-mainModelFileId" className="text-xs">Primary Model File (from associated files)</Label>
-                <Select value={formData.mainModelFileId || 'none'} onValueChange={(v) => setFormData({ ...formData, mainModelFileId: v === 'none' ? '' : v })}>
-                  <SelectTrigger><SelectValue placeholder="Select primary model file" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    {mainModelFileOptions.map((f) => (
-                      <SelectItem key={f.id} value={String(f.id)}>{f.fileName}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center justify-between rounded border px-2 py-1.5 bg-muted/30">
-                <span className="text-xs text-muted-foreground">Associated texture files</span>
-                <Badge variant="outline" className="text-[10px]">{derivedTextureCount}</Badge>
-              </div>
-              <div className="space-y-1">
-                {(editingModel?.files ?? []).map((f) => (
-                  <div key={f.id} className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <FileIcon type={f.fileType} />
-                    <span className="truncate flex-1">{f.fileName}</span>
-                    <span className="text-[10px] capitalize">{f.fileType}</span>
-                  </div>
-                ))}
-              </div>
-            </Section>
-
-            <Section title="Transform">
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <Label htmlFor="edit-scale" className="text-xs">Scale</Label>
-                  <Input id="edit-scale" type="number" step="0.01" min="0.01" value={formData.scale}
-                    onChange={(e) => setFormData({ ...formData, scale: e.target.value })} disabled={isSubmitting} />
-                </div>
-                <div>
-                  <Label htmlFor="edit-rotationY" className="text-xs">Rotation Y</Label>
-                  <Input id="edit-rotationY" type="number" step="1" value={formData.rotationY}
-                    onChange={(e) => setFormData({ ...formData, rotationY: e.target.value })} disabled={isSubmitting} />
-                </div>
-              </div>
-              <div>
-                <Label className="text-xs">Offset (X / Y / Z)</Label>
-                <div className="grid grid-cols-3 gap-2 mt-1">
-                  <Input placeholder="X" type="number" step="0.01" value={formData.offsetX}
-                    onChange={(e) => setFormData({ ...formData, offsetX: e.target.value })} disabled={isSubmitting} />
-                  <Input placeholder="Y" type="number" step="0.01" value={formData.offsetY}
-                    onChange={(e) => setFormData({ ...formData, offsetY: e.target.value })} disabled={isSubmitting} />
-                  <Input placeholder="Z" type="number" step="0.01" value={formData.offsetZ}
-                    onChange={(e) => setFormData({ ...formData, offsetZ: e.target.value })} disabled={isSubmitting} />
-                </div>
-              </div>
-            </Section>
-
-            <Section title="LOD & Animation">
-              <div className="flex items-center gap-2">
-                <Switch id="edit-hasLOD" checked={formData.hasLOD}
-                  onCheckedChange={(v) => setFormData({ ...formData, hasLOD: v })} disabled={isSubmitting} />
-                <Label htmlFor="edit-hasLOD">Has LOD</Label>
-              </div>
-              <div>
-                <Label htmlFor="edit-lodLevels" className="text-xs">LOD Levels (JSON)</Label>
-                <Input id="edit-lodLevels" value={formData.lodLevels}
-                  onChange={(e) => setFormData({ ...formData, lodLevels: e.target.value })} disabled={isSubmitting} />
-              </div>
-              <div>
-                <Label htmlFor="edit-animations" className="text-xs">Animations (JSON array)</Label>
-                <Input id="edit-animations" value={formData.animations}
-                  onChange={(e) => setFormData({ ...formData, animations: e.target.value })} disabled={isSubmitting} />
-              </div>
-              <div>
-                <Label htmlFor="edit-defaultAnimation" className="text-xs">Default Animation</Label>
-                <Select value={formData.defaultAnimation} onValueChange={(v) => setFormData({ ...formData, defaultAnimation: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None</SelectItem>
-                    {ANIMATION_OPTIONS.map((a) => <SelectItem key={a.value} value={a.value}>{a.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-            </Section>
-
-            <Section title="Status & Flags">
-              <div>
-                <Label htmlFor="edit-status" className="text-xs">Model Status</Label>
-                <Select value={formData.status} onValueChange={(v) => setFormData({ ...formData, status: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {MODEL_STATUS_OPTIONS.map((s) => <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch id="edit-isActive" checked={formData.isActive}
-                  onCheckedChange={(v) => setFormData({ ...formData, isActive: v })} disabled={isSubmitting} />
-                <Label htmlFor="edit-isActive">Active</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch id="edit-isDefault" checked={formData.isDefault}
-                  onCheckedChange={(v) => setFormData({ ...formData, isDefault: v })} disabled={isSubmitting} />
-                <Label htmlFor="edit-isDefault">Default Model</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch id="edit-isPublic" checked={formData.isPublic}
-                  onCheckedChange={(v) => setFormData({ ...formData, isPublic: v })} disabled={isSubmitting} />
-                <Label htmlFor="edit-isPublic">Public</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch id="edit-isLibraryItem" checked={formData.isLibraryItem}
-                  onCheckedChange={(v) => setFormData({ ...formData, isLibraryItem: v })} disabled={isSubmitting} />
-                <Label htmlFor="edit-isLibraryItem">Model Library Item</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch id="edit-usedByPlants" checked={formData.usedByPlants}
-                  onCheckedChange={(v) => setFormData({ ...formData, usedByPlants: v })} disabled={isSubmitting} />
-                <Label htmlFor="edit-usedByPlants">Used by Plants</Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <Switch id="edit-usedByCharacters" checked={formData.usedByCharacters}
-                  onCheckedChange={(v) => setFormData({ ...formData, usedByCharacters: v })} disabled={isSubmitting} />
-                <Label htmlFor="edit-usedByCharacters">Used by Characters</Label>
-              </div>
-              <p className="text-[10px] text-muted-foreground">
-                Character models use Character runtime rules and are excluded from direct Model Library placement.
-              </p>
-              <div>
-                <Label htmlFor="edit-uploadedBy" className="text-xs">Uploaded By</Label>
-                <Input id="edit-uploadedBy" value={formData.uploadedBy}
-                  onChange={(e) => setFormData({ ...formData, uploadedBy: e.target.value })} disabled={isSubmitting} />
-              </div>
-              <div>
-                <Label htmlFor="edit-metadata" className="text-xs">Metadata (JSON)</Label>
-                <Input id="edit-metadata" value={formData.metadata}
-                  onChange={(e) => setFormData({ ...formData, metadata: e.target.value })} disabled={isSubmitting} />
-              </div>
-            </Section>
-
-            {categoryAssignmentFields}
+            <ThreeDModelEditorFields
+              mode="edit"
+              form={formData}
+              setForm={setFormData}
+              categories={categories}
+              files={editingModel?.files}
+              isSubmitting={isSubmitting}
+              uploadingPrimary={uploadingPrimary}
+              uploadingThumbnail={uploadingThumbnail}
+              uploadAnalysis={uploadAnalysis}
+              onPrimaryFile={handlePrimaryFileUpload}
+              onThumbnail={handleThumbnailUpload}
+            />
 
             <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>
               {isSubmitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</> : 'Save Changes'}
@@ -1168,68 +618,6 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
         </DialogContent>
       </Dialog>
 
-      {/* Files Dialog */}
-      <Dialog open={showFilesDialog} onOpenChange={setShowFilesDialog}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Model Files</DialogTitle></DialogHeader>
-          <div className="space-y-3 pt-4">
-            <div className="flex items-center gap-2">
-              <Select value={fileCategory} onValueChange={setFileCategory}>
-                <SelectTrigger className="w-[180px] h-8 text-xs"><SelectValue placeholder="Auto-detect" /></SelectTrigger>
-                <SelectContent>
-                  {FILE_CATEGORY_OPTIONS.map((c) => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
-                </SelectContent>
-              </Select>
-              <input id="model-files-upload" type="file" multiple className="hidden"
-                accept=".glb,.gltf,.fbx,.obj,.usdz,.jpg,.jpeg,.png,.webp,.tga,.bmp,.bin"
-                onChange={(e) => { const f = e.target.files; if (f && f.length) handleModelFilesUpload(f); e.target.value = ''; }}
-                disabled={uploadingFiles} />
-              <Button type="button" variant="outline" size="sm" className="h-8 text-xs flex-1"
-                onClick={() => document.getElementById('model-files-upload')?.click()} disabled={uploadingFiles}>
-                {uploadingFiles ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Upload className="w-4 h-4 mr-1" />}
-                Upload
-              </Button>
-            </div>
-
-            {(filesModel?.files ?? []).length === 0 ? (
-              <div className="text-center py-4 text-muted-foreground text-sm">
-                <File className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p>No files associated with this model</p>
-              </div>
-            ) : (
-              (['model', 'texture', 'binary', 'other'] as const).map((type) => {
-                const group = groupedFiles(filesModel!.files!)[type];
-                if (group.length === 0) return null;
-                return (
-                  <div key={type}>
-                    <div className="text-xs font-medium text-muted-foreground capitalize mb-1">{type}</div>
-                    <div className="space-y-1">
-                      {group.map((file) => (
-                        <div key={file.id} className="flex items-center gap-2 p-2 border rounded-lg">
-                          <FileIcon type={file.fileType} />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium truncate">{file.fileName}</p>
-                            <p className="text-xs text-muted-foreground">
-                              {file.textureType ? `${file.textureType} · ` : ''}{formatFileSize(file.fileSize)}
-                            </p>
-                            <p className="truncate font-mono text-[10px] text-muted-foreground" title={file.relativePath || file.fileName}>
-                              {file.relativePath || file.fileName}
-                            </p>
-                          </div>
-                          <Button variant="ghost" size="icon" className="h-7 w-7"
-                            onClick={() => handleDeleteFile(file)} disabled={deletingFileId === file.id}>
-                            {deletingFileId === file.id ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <X className="w-3.5 h-3.5" />}
-                          </Button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

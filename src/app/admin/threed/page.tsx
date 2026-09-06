@@ -65,7 +65,7 @@ const sections = [
     icon: Bot,
   },
   {
-    title: '3D Models',
+    title: 'Models',
     description: 'Manage the reusable 3D model library.',
     href: '/admin/threed/models',
     icon: Package,

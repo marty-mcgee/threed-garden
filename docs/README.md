@@ -27,6 +27,7 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 - [ThreeD character runtimes](developers/THREED_CHARACTERS.md) — GardenCharacter and EcctrlCharacter roles, shared systems, and movement boundaries.
 - [ThreeD Marker architecture](developers/THREED_MARKERS.md) — Project asset sources, Runtime Markers, layers, identity, and Action Target boundaries.
 - [ThreeD Model runtime API](developers/THREED_MODEL_RUNTIME_API.md) — authenticated Model Library JSON and read-only runtime-structure inspection contracts.
+- [ThreeD Model Administration](developers/THREED_MODEL_ADMIN.md) — v0.19.8a manual Model CRUD and attached-file management release candidate.
 - [Data model](developers/DATA_MODEL.md) — modules, project junctions, assets, and runtime records.
 - [API guide](developers/API_GUIDE.md) — route families and access conventions.
 - [ThreeD FarmBot Integration Plan](developers/FARMBOT_INTEGRATION.md) — hardware security and connection boundaries.

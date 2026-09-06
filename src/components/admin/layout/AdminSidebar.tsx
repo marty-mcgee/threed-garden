@@ -59,6 +59,7 @@ interface NavItem {
   href: string;
   icon: LucideIcon;
   exact?: boolean; // ✅ If true, only match exact path (not children)
+  relatedPaths?: string[];
 }
 
 interface NavSection {
@@ -92,7 +93,13 @@ const navSections: NavSection[] = [
       { title: 'Plants', href: '/admin/threed/plants', icon: Sprout, exact: false },
       { title: 'Beds', href: '/admin/threed/beds', icon: Box, exact: false },
       { title: 'Plantings', href: '/admin/threed/plantings', icon: Bean, exact: false },
-      { title: '3D Models', href: '/admin/threed/models', icon: Package, exact: false },
+      {
+        title: 'Models',
+        href: '/admin/threed/models',
+        icon: Package,
+        exact: false,
+        relatedPaths: ['/admin/threed/model-files'],
+      },
       { title: 'Characters', href: '/admin/threed/characters', icon: User, exact: false },
       { title: 'Layers', href: '/admin/threed/layers', icon: Layers, exact: false },
       { title: 'Tasks', href: '/admin/threed/tasks', icon: ListTodo, exact: false },
@@ -144,7 +151,9 @@ function getActiveNavItemHref(pathname: string): string | null {
         return pathname === item.href;
       }
 
-      return pathname === item.href || pathname.startsWith(`${item.href}/`);
+      return pathname === item.href
+        || pathname.startsWith(`${item.href}/`)
+        || item.relatedPaths?.some((path) => pathname === path || pathname.startsWith(`${path}/`));
     })
     .sort((a, b) => b.href.length - a.href.length);
 
@@ -218,7 +227,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
     return (
       <aside 
         className={cn(
-          "flex flex-col h-screen bg-background border-r transition-all duration-300 fixed left-0 top-0 z-50",
+          "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-white/10 bg-[#020618]/90 backdrop-blur-xl transition-all duration-300",
           isCollapsed ? "w-16" : "w-64"
         )}
       >
@@ -251,7 +260,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
   return (
     <aside 
       className={cn(
-        "flex flex-col h-screen bg-background border-r transition-all duration-300 fixed left-0 top-0 z-50",
+        "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-white/10 bg-[#020618]/90 backdrop-blur-xl transition-all duration-300",
         isCollapsed ? "w-16" : "w-64"
       )}
     >

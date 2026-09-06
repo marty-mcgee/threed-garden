@@ -10,6 +10,12 @@ import {
 } from '@/lib/schema/threed';
 import { eq, and, or, desc, sql, inArray, asc, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
+import { normalizeThreeDModelRelativePath } from '@/lib/services/threed/models/model-companion-core';
+import { del } from '@vercel/blob';
+import {
+  isOwnedThreeDBlobUrl,
+  runtimeModelTypeFromFileName,
+} from '@/lib/services/threed/models/model-file-integrity';
 
 type ModelWithFiles = typeof threedModels.$inferSelect & {
   files: Array<typeof threedModelFiles.$inferSelect>;
@@ -63,8 +69,28 @@ async function updateModelAndCategories(
   modelId: number,
   updates: Partial<typeof threedModels.$inferInsert>,
   categoryIds: number[] | undefined,
+  primaryFile?: PendingPrimaryModelFile,
 ) {
   return db.transaction(async (tx) => {
+    if (primaryFile) {
+      const [createdFile] = await tx.insert(threedModelFiles).values({
+        userId,
+        modelId,
+        fileName: primaryFile.fileName,
+        relativePath: primaryFile.relativePath,
+        fileType: 'model',
+        textureType: null,
+        filePath: primaryFile.filePath,
+        fileSize: primaryFile.fileSize,
+        isBinaryBuffer: false,
+        loadOrder: 0,
+      }).returning();
+      updates.mainModelFileId = createdFile.id;
+      updates.filePath = createdFile.filePath;
+      updates.fileSize = createdFile.fileSize;
+      updates.modelType = runtimeModelTypeFromFileName(createdFile.fileName) ?? updates.modelType;
+      updates.hasExternalFiles = true;
+    }
     const [updated] = await tx.update(threedModels).set({
       ...updates,
       updatedAt: new Date(),
@@ -101,6 +127,47 @@ function normalizeThumbnailUrl(value: unknown): string | null | undefined {
   } catch {
     return undefined;
   }
+}
+
+interface PendingPrimaryModelFile {
+  fileName: string;
+  relativePath: string;
+  filePath: string;
+  fileSize: number;
+  modelType: string;
+}
+
+function normalizePendingPrimaryFile(
+  value: unknown,
+  expectedPath: unknown,
+  expectedType: unknown,
+  expectedSize: unknown,
+): PendingPrimaryModelFile | null | undefined {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value !== 'object' || Array.isArray(value)) return null;
+  const input = value as Record<string, unknown>;
+  if (Object.keys(input).some((key) => !['fileName', 'filePath', 'fileSize', 'modelType'].includes(key))) return null;
+  const fileName = typeof input.fileName === 'string' ? input.fileName.trim() : '';
+  const relativePath = normalizeThreeDModelRelativePath(fileName);
+  const filePath = typeof input.filePath === 'string' ? input.filePath : '';
+  const modelType = typeof input.modelType === 'string' ? input.modelType : '';
+  const fileSize = Number(input.fileSize);
+  if (
+    !fileName
+    || fileName.length > 255
+    || !relativePath
+    || filePath !== expectedPath
+    || modelType !== expectedType
+    || !Number.isSafeInteger(fileSize)
+    || fileSize <= 0
+    || fileSize !== Number(expectedSize)
+  ) return null;
+  try {
+    if (new URL(filePath).protocol !== 'https:') return null;
+  } catch {
+    return null;
+  }
+  return { fileName, relativePath, filePath, fileSize, modelType };
 }
 
 function serializeLibraryModel(model: ModelWithFiles) {
@@ -337,8 +404,6 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    console.log('📝 POST /api/threed/models - Request body:', body);
-
     const {
       modelName,
       modelType,
@@ -356,9 +421,6 @@ export async function POST(request: NextRequest) {
       lodLevels,
       animations,
       defaultAnimation,
-      hasExternalFiles,
-      textureCount,
-      mainModelFileId,
       isActive,
       status,
       isDefault,
@@ -367,6 +429,7 @@ export async function POST(request: NextRequest) {
       uploadedBy,
       metadata,
       categoryIds: requestedCategoryIds,
+      primaryFile: requestedPrimaryFile,
     } = body;
 
     // ✅ Validate required fields
@@ -406,8 +469,21 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       );
     }
+    const primaryFile = normalizePendingPrimaryFile(
+      requestedPrimaryFile,
+      filePath,
+      modelType,
+      fileSize,
+    );
+    if (primaryFile === null) {
+      return NextResponse.json(
+        { success: false, error: 'Uploaded primary Model file does not match this Model configuration' },
+        { status: 400 },
+      );
+    }
 
     await ensureTableSequence('threed_models');
+    if (primaryFile) await ensureTableSequence('threed_model_files');
 
     const newModel = await db.transaction(async (tx) => {
       const [createdModel] = await tx.insert(threedModels).values({
@@ -428,9 +504,11 @@ export async function POST(request: NextRequest) {
         lodLevels: lodLevels || {},
         animations: animations || [],
         defaultAnimation: defaultAnimation || null,
-        hasExternalFiles: hasExternalFiles ?? false,
-        textureCount: textureCount || 0,
-        mainModelFileId: mainModelFileId || null,
+        hasExternalFiles: Boolean(primaryFile) || (Array.isArray(body.files) && body.files.length > 0),
+        textureCount: Array.isArray(body.files)
+          ? body.files.filter((file: { fileType?: unknown }) => file?.fileType === 'texture').length
+          : 0,
+        mainModelFileId: null,
         isActive: isActive ?? true,
         status: status || 'active',
         isDefault: isDefault ?? false,
@@ -440,12 +518,38 @@ export async function POST(request: NextRequest) {
         metadata: metadata || {},
       }).returning();
 
+      let completedModel = createdModel;
+
       if (categoryIds && categoryIds.length > 0) {
         await tx.insert(threedModelCategoryAssignments).values(categoryIds.map((categoryId) => ({
           userId,
           modelId: createdModel.id,
           categoryId,
         })));
+      }
+
+      if (primaryFile) {
+        const [createdFile] = await tx.insert(threedModelFiles).values({
+          userId,
+          modelId: createdModel.id,
+          fileName: primaryFile.fileName,
+          relativePath: primaryFile.relativePath,
+          fileType: 'model',
+          textureType: null,
+          filePath: primaryFile.filePath,
+          fileSize: primaryFile.fileSize,
+          isBinaryBuffer: false,
+          loadOrder: 0,
+        }).returning();
+        const [synchronizedModel] = await tx.update(threedModels).set({
+          hasExternalFiles: true,
+          mainModelFileId: createdFile.id,
+          updatedAt: new Date(),
+        }).where(and(
+          eq(threedModels.id, createdModel.id),
+          eq(threedModels.userId, userId),
+        )).returning();
+        completedModel = synchronizedModel;
       }
 
       if (Array.isArray(body.files) && body.files.length > 0) {
@@ -463,10 +567,8 @@ export async function POST(request: NextRequest) {
           });
         }
       }
-      return createdModel;
+      return completedModel;
     });
-
-    console.log('✅ ThreeD model created:', newModel);
 
     return NextResponse.json({
       success: true,
@@ -613,6 +715,9 @@ export async function PUT(request: NextRequest) {
       categories: _categories,
       categoryIds: requestedCategoryIds,
       files: _files,
+      mainModelFileId: _mainModelFileId,
+      hasExternalFiles: _hasExternalFiles,
+      textureCount: _textureCount,
       ...updates
     } = body;
     const categoryIds = await validateOwnedCategoryIds(userId, requestedCategoryIds);
@@ -704,8 +809,46 @@ export async function PATCH(request: NextRequest) {
       categories: _categories,
       categoryIds: requestedCategoryIds,
       files: _files,
+      primaryFile: requestedPrimaryFile,
+      mainModelFileId: requestedPrimaryFileId,
+      hasExternalFiles: _hasExternalFiles,
+      textureCount: _textureCount,
       ...updates
     } = body;
+    const pendingPrimaryFile = normalizePendingPrimaryFile(
+      requestedPrimaryFile,
+      updates.filePath,
+      updates.modelType,
+      updates.fileSize,
+    );
+    if (pendingPrimaryFile === null) {
+      return NextResponse.json(
+        { success: false, error: 'Uploaded primary Model file does not match this Model configuration' },
+        { status: 400 },
+      );
+    }
+    if (!pendingPrimaryFile && requestedPrimaryFileId !== undefined && requestedPrimaryFileId !== null && requestedPrimaryFileId !== '') {
+      const primaryFileId = Number(requestedPrimaryFileId);
+      if (!Number.isInteger(primaryFileId) || primaryFileId <= 0) {
+        return NextResponse.json({ success: false, error: 'Invalid primary Model file ID' }, { status: 400 });
+      }
+      const [primaryFile] = await db.select().from(threedModelFiles).where(and(
+        eq(threedModelFiles.id, primaryFileId),
+        eq(threedModelFiles.modelId, parsedId),
+        eq(threedModelFiles.userId, userId),
+        eq(threedModelFiles.fileType, 'model'),
+      )).limit(1);
+      if (!primaryFile) {
+        return NextResponse.json(
+          { success: false, error: 'Primary file must be a Model attachment owned by this Model' },
+          { status: 400 },
+        );
+      }
+      updates.mainModelFileId = primaryFile.id;
+      updates.filePath = primaryFile.filePath;
+      updates.fileSize = primaryFile.fileSize;
+      updates.modelType = runtimeModelTypeFromFileName(primaryFile.fileName) ?? existing.modelType;
+    }
     const categoryIds = await validateOwnedCategoryIds(userId, requestedCategoryIds);
     if (categoryIds === null) {
       return NextResponse.json({ success: false, error: 'One or more Model categories are invalid' }, { status: 400 });
@@ -720,7 +863,14 @@ export async function PATCH(request: NextRequest) {
       }
       updates.thumbnailUrl = normalizedThumbnailUrl;
     }
-    const updated = await updateModelAndCategories(userId, parsedId, updates, categoryIds);
+    if (pendingPrimaryFile) await ensureTableSequence('threed_model_files');
+    const updated = await updateModelAndCategories(
+      userId,
+      parsedId,
+      updates,
+      categoryIds,
+      pendingPrimaryFile,
+    );
 
     console.log('✅ ThreeD model patched:', updated);
 
@@ -772,7 +922,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const [existing] = await db
-      .select({ id: threedModels.id })
+      .select()
       .from(threedModels)
       .where(and(
         eq(threedModels.id, parsedId),
@@ -787,21 +937,24 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // ✅ Delete associated files only after ownership is established
-    await db
-      .delete(threedModelFiles)
-      .where(eq(threedModelFiles.modelId, parsedId));
+    const attachedFiles = await db.select({ filePath: threedModelFiles.filePath })
+      .from(threedModelFiles)
+      .where(and(
+        eq(threedModelFiles.modelId, parsedId),
+        eq(threedModelFiles.userId, userId),
+      ));
 
-    // ✅ Delete the model
-    const [deleted] = await db
-      .delete(threedModels)
-      .where(
-        and(
-          eq(threedModels.id, parsedId),
-          eq(threedModels.userId, userId)
-        )
-      )
-      .returning();
+    const deleted = await db.transaction(async (tx) => {
+      await tx.delete(threedModelFiles).where(and(
+        eq(threedModelFiles.modelId, parsedId),
+        eq(threedModelFiles.userId, userId),
+      ));
+      const [record] = await tx.delete(threedModels).where(and(
+        eq(threedModels.id, parsedId),
+        eq(threedModels.userId, userId),
+      )).returning();
+      return record;
+    });
 
     if (!deleted) {
       return NextResponse.json(
@@ -810,9 +963,34 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+
+    const candidateBlobUrls = new Set([
+      existing.filePath,
+      existing.thumbnailUrl,
+      ...attachedFiles.map((file) => file.filePath),
+    ].filter((value): value is string => Boolean(value)));
+    let deletedBlobCount = 0;
+    for (const blobUrl of candidateBlobUrls) {
+      if (!isOwnedThreeDBlobUrl(blobUrl, { modelId: parsedId, userId })) continue;
+      const [modelReference, fileReference] = await Promise.all([
+        db.select({ id: threedModels.id }).from(threedModels)
+          .where(eq(threedModels.filePath, blobUrl)).limit(1),
+        db.select({ id: threedModelFiles.id }).from(threedModelFiles)
+          .where(eq(threedModelFiles.filePath, blobUrl)).limit(1),
+      ]);
+      if (modelReference.length > 0 || fileReference.length > 0) continue;
+      try {
+        await del(blobUrl);
+        deletedBlobCount += 1;
+      } catch (blobError) {
+        console.warn(`Failed to delete Blob after deleting ThreeD Model ${parsedId}:`, blobError);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       data: deleted,
+      cleanup: { deletedBlobCount },
       message: 'Model deleted successfully',
     });
   } catch (error) {

@@ -156,7 +156,7 @@ const moduleConfig: Record<ModuleType, {
       { id: 'plants', label: 'Plants', component: ThreeDPlantsCRUD, icon: Sprout },
       { id: 'plantings', label: 'Plantings', component: ThreeDPlantingsCRUD, icon: Box },
       { id: 'beds', label: 'Beds', component: ThreeDBedsCRUD, icon: Box },
-      { id: 'models', label: '3D Models', component: ThreeDModelsCRUD, icon: Package },
+      { id: 'models', label: 'Models', component: ThreeDModelsCRUD, icon: Package },
       { id: 'characters', label: 'Characters', component: ThreeDCharactersCRUD, icon: User },
       { id: 'layers', label: 'Layers', component: ThreeDLayersCRUD, icon: Layers },
       { id: 'tasks', label: 'Tasks', component: ThreeDTasksCRUD, icon: Sprout },

@@ -332,7 +332,7 @@ export const threedModelCategoryAssignments = pgTable('threed_model_category_ass
 }));
 
 // ============================================
-// 1c. threed_model_files - Associated files for 3D models
+// 1c. threed_model_files - Associated files for Models
 // ============================================
 export const threedModelFiles = pgTable('threed_model_files', {
   id: serial('id').primaryKey(),

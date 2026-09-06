@@ -37,7 +37,7 @@ export function AdminHeader() {
   const userEmail = mounted ? session?.user?.email : '';
 
   return (
-    <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-40 border-b border-white/10 bg-[#020618]/85 backdrop-blur-xl">
       <div className="grid h-14 grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 px-3">
         {/* Left: Search (optional) */}
         <div className="hidden w-full max-w-xs md:block">

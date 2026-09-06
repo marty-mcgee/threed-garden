@@ -5,8 +5,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { threedModels, threedModelFiles } from '@/lib/schema';
-import { and, eq } from 'drizzle-orm';
+import { and, asc, eq } from 'drizzle-orm';
 import { del } from '@vercel/blob';
+import {
+  isOwnedThreeDBlobUrl,
+  runtimeModelTypeFromFileName,
+} from '@/lib/services/threed/models/model-file-integrity';
 
 // DELETE /api/threed/models/files/[fileId] - Delete a specific model file
 export async function DELETE(
@@ -21,6 +25,7 @@ export async function DELETE(
         { status: 401 },
       );
     }
+    const userId = session.user.id;
 
     const { fileId: fileIdParam } = await params;
     const fileId = parseInt(fileIdParam);
@@ -53,11 +58,11 @@ export async function DELETE(
       );
     }
 
-    const [ownedModel] = await db.select({ id: threedModels.id })
+    const [ownedModel] = await db.select()
       .from(threedModels)
       .where(and(
         eq(threedModels.id, modelId),
-        eq(threedModels.userId, session.user.id),
+        eq(threedModels.userId, userId),
       ))
       .limit(1);
 
@@ -68,33 +73,77 @@ export async function DELETE(
       );
     }
 
-    // Delete from blob storage
-    try {
-      await del(file.filePath);
-    } catch (blobError) {
-      console.warn(`Failed to delete blob for file ${fileId}:`, blobError);
+    const siblingFiles = await db.select()
+      .from(threedModelFiles)
+      .where(and(
+        eq(threedModelFiles.modelId, modelId),
+        eq(threedModelFiles.userId, userId),
+      ))
+      .orderBy(asc(threedModelFiles.loadOrder), asc(threedModelFiles.id));
+    const remainingFiles = siblingFiles.filter((candidate) => candidate.id !== fileId);
+    const replacementPrimary = remainingFiles.find((candidate) => candidate.fileType === 'model') ?? null;
+    const retainedPrimary = remainingFiles.find((candidate) => (
+      candidate.id === ownedModel.mainModelFileId && candidate.fileType === 'model'
+    )) ?? replacementPrimary;
+
+    if (ownedModel.mainModelFileId === fileId && !replacementPrimary) {
+      return NextResponse.json({
+        success: false,
+        error: 'Upload another Model file and set it as primary before deleting the current primary file',
+      }, { status: 409 });
     }
 
-    // Delete from database
-    await db.delete(threedModelFiles)
-      .where(eq(threedModelFiles.id, fileId));
+    await db.transaction(async (tx) => {
+      await tx.delete(threedModelFiles).where(and(
+        eq(threedModelFiles.id, fileId),
+        eq(threedModelFiles.userId, userId),
+      ));
 
-    // Update model texture count if needed
-    if (file.fileType === 'texture') {
-      const [model] = await db.select()
-        .from(threedModels)
-        .where(eq(threedModels.id, modelId))
-        .limit(1);
+      const primaryChanged = retainedPrimary?.id !== ownedModel.mainModelFileId;
+      await tx.update(threedModels).set({
+        ...(primaryChanged ? {
+          mainModelFileId: retainedPrimary?.id ?? null,
+          ...(retainedPrimary ? {
+            filePath: retainedPrimary.filePath,
+            fileSize: retainedPrimary.fileSize,
+            modelType: runtimeModelTypeFromFileName(retainedPrimary.fileName) ?? ownedModel.modelType,
+          } : {}),
+        } : {}),
+        hasExternalFiles: remainingFiles.length > 0,
+        textureCount: remainingFiles.filter((candidate) => candidate.fileType === 'texture').length,
+        updatedAt: new Date(),
+      }).where(and(
+        eq(threedModels.id, modelId),
+        eq(threedModels.userId, userId),
+      ));
+    });
 
-      if (model) {
-        await db.update(threedModels)
-          .set({ textureCount: Math.max(0, (model.textureCount || 0) - 1) })
-          .where(eq(threedModels.id, modelId));
+    let blobDeleted = false;
+    if (isOwnedThreeDBlobUrl(file.filePath, { modelId, userId })) {
+      const [modelReference, fileReference] = await Promise.all([
+        db.select({ id: threedModels.id }).from(threedModels)
+          .where(eq(threedModels.filePath, file.filePath)).limit(1),
+        db.select({ id: threedModelFiles.id }).from(threedModelFiles)
+          .where(eq(threedModelFiles.filePath, file.filePath)).limit(1),
+      ]);
+      if (modelReference.length === 0 && fileReference.length === 0) {
+        try {
+          await del(file.filePath);
+          blobDeleted = true;
+        } catch (blobError) {
+          console.warn(`Failed to delete Blob for detached Model file ${fileId}:`, blobError);
+        }
       }
     }
 
     return NextResponse.json({
       success: true,
+      data: {
+        primaryFileId: retainedPrimary?.id ?? null,
+        textureCount: remainingFiles.filter((candidate) => candidate.fileType === 'texture').length,
+        attachmentCount: remainingFiles.length,
+        blobDeleted,
+      },
       message: 'File deleted successfully',
     });
   } catch (error) {

@@ -127,11 +127,11 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs">
-            <FolderTree className="mr-1 h-3 w-3" /> Categories
+            <FolderTree className="mr-1 h-3 w-3" /> Model Categories
           </Button>
         </DialogTrigger>
         <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
-          <DialogHeader><DialogTitle>ThreeD Model Categories</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle>Model Categories</DialogTitle></DialogHeader>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <div className="flex items-center justify-between">

@@ -12,7 +12,7 @@ export default function AdminThreeDPlantsPage() {
         <div>
           <h1 className="text-2xl font-bold">Plants</h1>
           <p className="text-sm text-muted-foreground">
-            Manage your garden plant database with 3D models and care instructions
+            Manage your garden plant database with Models and care instructions
           </p>
         </div>
       </div>

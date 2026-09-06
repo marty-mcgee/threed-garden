@@ -612,7 +612,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate }: { onModuleUpdate?: () =>
               {selectedModel && (
                 <ModelFileList
                   files={selectedModel.files ?? []}
-                  emptyText="No files attached to this model (add them in 3D Models)"
+                  emptyText="No files attached to this model (add them in Models)"
                 />
               )}
 
@@ -1071,7 +1071,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate }: { onModuleUpdate?: () =>
             {selectedModel && (
               <ModelFileList
                 files={selectedModel.files ?? []}
-                emptyText="No files attached to this model (add them in 3D Models)"
+                emptyText="No files attached to this model (add them in Models)"
               />
             )}
 
