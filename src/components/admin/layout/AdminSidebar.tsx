@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { 
   LayoutDashboard, 
   FolderOpen, 
+  FolderTree,
   Box, 
   Car, 
   Music,
@@ -60,6 +61,11 @@ interface NavItem {
   icon: LucideIcon;
   exact?: boolean; // ✅ If true, only match exact path (not children)
   relatedPaths?: string[];
+  children?: Array<{
+    title: string;
+    href: string;
+    icon: LucideIcon;
+  }>;
 }
 
 interface NavSection {
@@ -90,9 +96,6 @@ const navSections: NavSection[] = [
     icon: Box,
     items: [
       { title: 'Overview', href: '/admin/threed', icon: Carrot, exact: true },
-      { title: 'Plants', href: '/admin/threed/plants', icon: Sprout, exact: false },
-      { title: 'Beds', href: '/admin/threed/beds', icon: Box, exact: false },
-      { title: 'Plantings', href: '/admin/threed/plantings', icon: Bean, exact: false },
       {
         title: 'Models',
         href: '/admin/threed/models',
@@ -102,9 +105,20 @@ const navSections: NavSection[] = [
           '/admin/threed/model-categories',
           '/admin/threed/model-files',
           '/admin/threed/model-animations',
+          '/admin/threed/model-textures',
+        ],
+        children: [
+          { title: 'Models', href: '/admin/threed/models', icon: Package },
+          { title: 'Files', href: '/admin/threed/model-files', icon: FolderOpen },
+          { title: 'Categories', href: '/admin/threed/model-categories', icon: FolderTree },
+          { title: 'Animations', href: '/admin/threed/model-animations', icon: Music2 },
+          { title: 'Textures', href: '/admin/threed/model-textures', icon: Image },
         ],
       },
       { title: 'Characters', href: '/admin/threed/characters', icon: User, exact: false },
+      { title: 'Plants', href: '/admin/threed/plants', icon: Sprout, exact: false },
+      { title: 'Beds', href: '/admin/threed/beds', icon: Box, exact: false },
+      { title: 'Plantings', href: '/admin/threed/plantings', icon: Bean, exact: false },
       { title: 'Layers', href: '/admin/threed/layers', icon: Layers, exact: false },
       { title: 'Tasks', href: '/admin/threed/tasks', icon: ListTodo, exact: false },
       { title: 'Waterings', href: '/admin/threed/watering-schedules', icon: Droplets, exact: false },
@@ -369,6 +383,32 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
                               <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary-foreground/60" />
                             )}
                           </Button>
+                          {item.children && (
+                            <ul className="ml-5 mt-0.5 space-y-0.5 border-l border-white/10 pl-2">
+                              {item.children.map((child) => {
+                                const ChildIcon = child.icon;
+                                const childActive = pathname === child.href || pathname.startsWith(`${child.href}/`);
+                                return (
+                                  <li key={child.href}>
+                                    <Button
+                                      variant="ghost"
+                                      className={cn(
+                                        "h-7 w-full justify-start gap-2 px-2 text-xs",
+                                        childActive
+                                          ? "bg-primary/20 text-primary"
+                                          : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
+                                      )}
+                                      onClick={() => router.push(child.href)}
+                                    >
+                                      <ChildIcon className="h-3.5 w-3.5 shrink-0" />
+                                      <span>{child.title}</span>
+                                      {childActive && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />}
+                                    </Button>
+                                  </li>
+                                );
+                              })}
+                            </ul>
+                          )}
                         </li>
                       );
                     })}

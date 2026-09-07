@@ -8,6 +8,7 @@ import {
   Droplets,
   FolderOpen,
   Layers3,
+  Images,
   Package,
   Sprout,
   Trees,
@@ -81,6 +82,12 @@ const sections = [
     description: 'Map embedded and external clips to semantic actions.',
     href: '/admin/threed/model-animations',
     icon: Clapperboard,
+  },
+  {
+    title: 'Model Textures',
+    description: 'Manage reusable master Texture files for Model material assignments.',
+    href: '/admin/threed/model-textures',
+    icon: Images,
   },
   {
     title: 'Layers',

@@ -364,6 +364,57 @@ export const threedModelFiles = pgTable('threed_model_files', {
 }));
 
 // ============================================
+// 1d. threed_model_textures - Reusable owner-scoped Model Texture library
+// ============================================
+export const threedModelTextures = pgTable('threed_model_textures', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+
+  textureName: varchar('texture_name', { length: 255 }).notNull(),
+  fileName: varchar('file_name', { length: 255 }).notNull(),
+  filePath: varchar('file_path', { length: 500 }).notNull(),
+  fileSize: integer('file_size'),
+  mimeType: varchar('mime_type', { length: 100 }).notNull(),
+  width: integer('width'),
+  height: integer('height'),
+
+  isActive: boolean('is_active').notNull().default(true),
+  metadata: jsonb('metadata').default({}),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  ownerFilePathIdx: uniqueIndex('idx_threed_model_textures_owner_file_path').on(
+    table.userId,
+    table.filePath,
+  ),
+  ownerNameIdx: index('idx_threed_model_textures_owner_name').on(table.userId, table.textureName),
+  ownerActiveIdx: index('idx_threed_model_textures_owner_active').on(table.userId, table.isActive),
+}));
+
+// ============================================
+// 1e. threed_model_material_assignments - Model material/Texture junction
+// ============================================
+export const threedModelMaterialAssignments = pgTable('threed_model_material_assignments', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  modelId: integer('model_id').notNull().references(() => threedModels.id, { onDelete: 'cascade' }),
+  textureId: integer('texture_id').notNull().references(() => threedModelTextures.id, { onDelete: 'restrict' }),
+  targetKey: varchar('target_key', { length: 255 }).notNull(),
+  channel: varchar('channel', { length: 50 }).notNull().default('baseColor'),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+}, (table) => ({
+  modelTargetChannelIdx: uniqueIndex('idx_threed_model_material_assignments_target').on(
+    table.modelId,
+    table.targetKey,
+    table.channel,
+  ),
+  ownerIdx: index('idx_threed_model_material_assignments_owner').on(table.userId),
+  modelIdx: index('idx_threed_model_material_assignments_model').on(table.modelId),
+  textureIdx: index('idx_threed_model_material_assignments_texture').on(table.textureId),
+}));
+
+// ============================================
 // 2. threed_beds - Garden layout
 // ============================================
 export const threedBeds = pgTable('threed_beds', {
@@ -1555,6 +1606,7 @@ export const threedModelsRelations = relations(threedModels, ({ one, many }) => 
   }),
   modelFiles: many(threedModelFiles),
   categoryAssignments: many(threedModelCategoryAssignments),
+  materialAssignments: many(threedModelMaterialAssignments),
 }));
 
 export const threedModelCategoriesRelations = relations(threedModelCategories, ({ one, many }) => ({
@@ -1747,6 +1799,32 @@ export const threedModelFilesRelations = relations(threedModelFiles, ({ one }) =
   }),
 }));
 
+export const threedModelTexturesRelations = relations(threedModelTextures, ({ one, many }) => ({
+  owner: one(user, {
+    fields: [threedModelTextures.userId],
+    references: [user.id],
+  }),
+  materialAssignments: many(threedModelMaterialAssignments),
+}));
+
+export const threedModelMaterialAssignmentsRelations = relations(
+  threedModelMaterialAssignments,
+  ({ one }) => ({
+    owner: one(user, {
+      fields: [threedModelMaterialAssignments.userId],
+      references: [user.id],
+    }),
+    model: one(threedModels, {
+      fields: [threedModelMaterialAssignments.modelId],
+      references: [threedModels.id],
+    }),
+    texture: one(threedModelTextures, {
+      fields: [threedModelMaterialAssignments.textureId],
+      references: [threedModelTextures.id],
+    }),
+  }),
+);
+
 
 
 
@@ -1770,6 +1848,12 @@ export type NewThreedModelCategoryAssignment = typeof threedModelCategoryAssignm
 
 export type ThreedModelFile = typeof threedModelFiles.$inferSelect;
 export type NewThreedModelFile = typeof threedModelFiles.$inferInsert;
+
+export type ThreedModelTexture = typeof threedModelTextures.$inferSelect;
+export type NewThreedModelTexture = typeof threedModelTextures.$inferInsert;
+
+export type ThreedModelMaterialAssignment = typeof threedModelMaterialAssignments.$inferSelect;
+export type NewThreedModelMaterialAssignment = typeof threedModelMaterialAssignments.$inferInsert;
 
 export type ThreedBed = typeof threedBeds.$inferSelect;
 export type NewThreedBed = typeof threedBeds.$inferInsert;

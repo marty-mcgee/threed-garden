@@ -7,7 +7,9 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.19.8b "ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies"` (`package.json` version `0.19.8-beta`)
+> **Current production version:** `v0.19.8b "ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies"`
+>
+> **Prepared release candidate:** `v0.19.8c "ThreeD Model Importer and Reusable Texture Assignments"` (`package.json` version `0.19.8-centaur`)
 
 The v0.19.8b production release unifies Models, Model Categories, Model Animations, and Model Files as one Admin workspace family. It adds required User-defined attachment directories, primary-file dependency inspection, and Model-owned runtime resolution of attached textures and buffers. It introduces no database schema change and preserves Character runtimes, Project Marker authority, and Rapier physics.
 

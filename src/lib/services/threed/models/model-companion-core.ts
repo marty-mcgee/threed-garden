@@ -99,7 +99,14 @@ function inspectFbx(bytes: Uint8Array, referencedBy: string) {
   const requirements: ThreeDModelCompanionRequirement[] = [];
   const matches = text.matchAll(/([A-Za-z0-9_ .\/\\-]+\.(?:png|jpe?g|webp|tga|bmp))/gi);
   for (const match of matches) {
-    const requirement = requirementFromReference(match[1], 'texture', referencedBy);
+    const reference = match[1].trim();
+    const directRequirement = requirementFromReference(reference, 'texture', referencedBy);
+    const fileName = reference.replaceAll('\\', '/').split('/').at(-1)?.trim() ?? '';
+    const requirement = directRequirement ?? (
+      fileName && !fileName.includes('\0')
+        ? { fileName, kind: 'texture' as const, relativePath: fileName, referencedBy }
+        : null
+    );
     if (requirement) requirements.push(requirement);
   }
   return uniqueRequirements(requirements);

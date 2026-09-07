@@ -7,6 +7,8 @@ import {
   threedModelFiles,
   threedModelCategories,
   threedModelCategoryAssignments,
+  threedModelMaterialAssignments,
+  threedModelTextures,
 } from '@/lib/schema/threed';
 import { eq, and, or, desc, sql, inArray, asc, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
@@ -20,6 +22,16 @@ import {
 type ModelWithFiles = typeof threedModels.$inferSelect & {
   files: Array<typeof threedModelFiles.$inferSelect>;
   categories: Array<Pick<typeof threedModelCategories.$inferSelect, 'id' | 'name' | 'slug' | 'parentId'>>;
+  materialAssignments: ModelMaterialAssignment[];
+};
+
+type ModelMaterialAssignment = {
+  targetKey: string;
+  channel: string;
+  textureId: number;
+  textureName: string;
+  textureFileName: string;
+  textureUrl: string;
 };
 
 type ModelCategory = ModelWithFiles['categories'][number];
@@ -62,6 +74,20 @@ async function loadCategoriesByModelIds(modelIds: number[]): Promise<Map<number,
     byModel.set(row.modelId, categories);
   }
   return byModel;
+}
+
+async function loadMaterialAssignments(modelId: number): Promise<ModelMaterialAssignment[]> {
+  return db.select({
+    targetKey: threedModelMaterialAssignments.targetKey,
+    channel: threedModelMaterialAssignments.channel,
+    textureId: threedModelTextures.id,
+    textureName: threedModelTextures.textureName,
+    textureFileName: threedModelTextures.fileName,
+    textureUrl: threedModelTextures.filePath,
+  }).from(threedModelMaterialAssignments).innerJoin(
+    threedModelTextures,
+    eq(threedModelTextures.id, threedModelMaterialAssignments.textureId),
+  ).where(eq(threedModelMaterialAssignments.modelId, modelId));
 }
 
 async function updateModelAndCategories(
@@ -198,6 +224,7 @@ function serializeLibraryModel(model: ModelWithFiles) {
     isPublic: model.isPublic,
     isLibraryItem: model.isLibraryItem,
     categories: model.categories,
+    materialAssignments: model.materialAssignments,
     files: model.files.map((file) => ({
       id: file.id,
       fileName: file.fileName,
@@ -280,8 +307,11 @@ export async function GET(request: NextRequest) {
         .where(eq(threedModelFiles.modelId, model.id))
         .orderBy(threedModelFiles.loadOrder);
 
-      const categoriesByModel = await loadCategoriesByModelIds([model.id]);
-      const modelWithFiles = { ...model, files: files || [], categories: categoriesByModel.get(model.id) ?? [] };
+      const [categoriesByModel, materialAssignments] = await Promise.all([
+        loadCategoriesByModelIds([model.id]),
+        loadMaterialAssignments(model.id),
+      ]);
+      const modelWithFiles = { ...model, files: files || [], categories: categoriesByModel.get(model.id) ?? [], materialAssignments };
       const canManage = model.userId === userId;
       return NextResponse.json({
         success: true,
@@ -369,6 +399,7 @@ export async function GET(request: NextRequest) {
           ...model,
           files: files || [],
           categories: categoriesByModel.get(model.id) ?? [],
+          materialAssignments: await loadMaterialAssignments(model.id),
         };
       })
     );

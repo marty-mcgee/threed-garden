@@ -18,7 +18,6 @@ import {
   type DragEvent,
   type ChangeEvent,
 } from 'react';
-import { useRouter } from 'next/navigation';
 import {
   Box,
   Image,
@@ -47,6 +46,11 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/toast';
+import {
+  ThreeDModelAssetPreview,
+  type ThreeDModelTextureLibraryItem,
+} from './ThreeDModelAssetPreview';
+import type { ModelData } from '@/components/threed/markers/ModelMarker3D';
 
 // ============================================
 // TYPES
@@ -72,6 +76,13 @@ interface Model {
   files?: ModelFileRow[];
   mainModelFileId: number | null;
   textureCount: number;
+  scale?: string | number | null;
+  rotationY?: string | number | null;
+  offsetX?: string | number | null;
+  offsetY?: string | number | null;
+  offsetZ?: string | number | null;
+  defaultAnimation?: string | null;
+  metadata?: unknown;
 }
 
 interface ThreeDModelFilesCRUDProps {
@@ -107,14 +118,6 @@ type SortMode = 'name' | 'size' | 'type' | 'newest';
 // ============================================
 // OPTIONS / HELPERS
 // ============================================
-const FILE_CATEGORY_OPTIONS = [
-  { value: 'auto', label: 'Auto-detect' },
-  { value: 'model', label: 'Model File' },
-  { value: 'texture', label: 'Texture' },
-  { value: 'binary', label: 'Binary Buffer (.bin)' },
-  { value: 'other', label: 'Supportive Media / Other' },
-];
-
 const SORT_OPTIONS = [
   { value: 'name', label: 'Name' },
   { value: 'size', label: 'Size (largest first)' },
@@ -206,7 +209,6 @@ function FileCardThumbnail({ file, className }: { file: ModelFileRow; className:
 // ============================================
 export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFilesCRUDProps) {
   const { showToast, ToastComponent } = useToast();
-  const router = useRouter();
 
   const [models, setModels] = useState<Model[]>([]);
   const [modelId, setModelId] = useState<string>(initialModelId ? String(initialModelId) : '');
@@ -216,6 +218,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
   const [loadingDependencies, setLoadingDependencies] = useState(false);
   const [dependencyAudit, setDependencyAudit] = useState<ModelDependencyAudit | null>(null);
   const [dependencyError, setDependencyError] = useState<string | null>(null);
+  const [textureLibrary, setTextureLibrary] = useState<ThreeDModelTextureLibraryItem[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   const [category, setCategory] = useState<string>('auto');
@@ -234,23 +237,36 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
   const [copiedPath, setCopiedPath] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const pendingRequirementRef = useRef<ModelDependencyRequirement | null>(null);
 
   const selectedModel = useMemo(
     () => models.find((m) => String(m.id) === modelId) ?? null,
     [models, modelId],
   );
   const files = useMemo(() => modelDetail?.files ?? [], [modelDetail]);
+  const previewModel = useMemo<ModelData | null>(() => {
+    if (!modelDetail) return null;
+    return {
+      ...modelDetail,
+      files: modelDetail.files?.map((file) => ({
+        id: file.id,
+        fileName: file.fileName,
+        relativePath: file.relativePath || file.fileName,
+        filePath: file.filePath,
+        fileType: file.fileType,
+      })),
+    };
+  }, [modelDetail]);
   const mainModelFileId = modelDetail?.mainModelFileId ?? null;
+  const missingRequirements = useMemo(
+    () => dependencyAudit?.requirements.filter((item) => !item.satisfied) ?? [],
+    [dependencyAudit],
+  );
 
   const uploading = uploadQueue.some((u) => u.status === 'uploading');
   const normalizedAttachmentDirectory = normalizeAttachmentDirectory(attachmentDirectory);
   const directoryProblem = attachmentDirectoryProblem(attachmentDirectory);
-
-  const handleModelChange = useCallback((nextModelId: string) => {
-    setModelId(nextModelId);
-    setAttachmentDirectory('');
-    router.replace(`/admin/threed/model-files?modelId=${encodeURIComponent(nextModelId)}`, { scroll: false });
-  }, [router]);
+  const directoryHasInput = attachmentDirectory.trim().length > 0;
 
   // ============================================
   // DATA LOADING
@@ -337,8 +353,53 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
     }
   }, []);
 
+  const loadTextureLibrary = useCallback(async () => {
+    const response = await fetch('/api/threed/model-textures');
+    const result = await response.json().catch(() => null);
+    if (!response.ok || !result?.success) {
+      throw new Error(result?.error || 'Failed to load ThreeD Model Textures');
+    }
+    setTextureLibrary(Array.isArray(result.data) ? result.data : []);
+  }, []);
+
+  useEffect(() => {
+    void loadTextureLibrary().catch((loadError) => {
+      showToast(loadError instanceof Error ? loadError.message : 'Failed to load ThreeD Model Textures', 'error');
+    });
+  }, [loadTextureLibrary, showToast]);
+
+  const saveMaterialAssignment = useCallback(async ({
+    targetKeys,
+    textureFileId,
+    textureId,
+  }: {
+    targetKeys: string[];
+    textureFileId?: number;
+    textureId?: number;
+  }) => {
+    if (!modelId) throw new Error('Select a Model before saving a material assignment');
+    const response = await fetch('/api/threed/models/files/requirements', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        modelId: Number(modelId),
+        targetKeys,
+        channel: 'baseColor',
+        ...(textureId ? { textureId } : { textureFileId }),
+      }),
+    });
+    const result = await response.json().catch(() => null);
+    if (!response.ok || !result?.success) {
+      throw new Error(result?.error || 'Failed to save material assignment');
+    }
+    await loadFiles(Number(modelId));
+    await loadTextureLibrary();
+    showToast(targetKeys.length > 1 ? `Base Color saved to ${targetKeys.length} material slots` : 'Base Color assignment saved', 'success');
+  }, [loadFiles, loadTextureLibrary, modelId, showToast]);
+
   useEffect(() => {
     if (modelId) {
+      setAttachmentDirectory((current) => current || 'textures');
       loadFiles(Number(modelId));
       loadDependencies(Number(modelId));
     } else {
@@ -397,9 +458,9 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
   // UPLOAD
   // ============================================
   const uploadOne = useCallback(
-    async (fileList: File[], index: number): Promise<boolean> => {
+    async (fileList: File[], index: number, directory: string): Promise<boolean> => {
       const file = fileList[index];
-      const relativePath = attachmentRelativePath(attachmentDirectory, file.name);
+      const relativePath = attachmentRelativePath(directory, file.name);
       const setStatus = (status: UploadItem['status'], errorText?: string) => {
         setUploadQueue((queue) =>
           queue.map((item, i) => (i === index ? { ...item, status, error: errorText } : item)),
@@ -427,26 +488,26 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
         return false;
       }
     },
-    [modelId, category, attachmentDirectory],
+    [modelId, category],
   );
 
   const handleUpload = useCallback(
-    async (input: FileList | File[]) => {
+    async (input: FileList | File[], uploadDirectory = attachmentDirectory) => {
       const filesToUpload = Array.from(input);
       if (!modelId || filesToUpload.length === 0) return;
-      const problem = attachmentDirectoryProblem(attachmentDirectory);
+      const problem = attachmentDirectoryProblem(uploadDirectory);
       if (problem) {
         showToast(problem, 'error');
         return;
       }
 
       setUploadQueue(filesToUpload.map((file) => ({
-        name: attachmentRelativePath(attachmentDirectory, file.name),
+        name: attachmentRelativePath(uploadDirectory, file.name),
         status: 'uploading' as const,
       })));
 
       // Upload all files in parallel, tracking each independently.
-      const results = await Promise.all(filesToUpload.map((_, i) => uploadOne(filesToUpload, i)));
+      const results = await Promise.all(filesToUpload.map((_, i) => uploadOne(filesToUpload, i, uploadDirectory)));
 
       // Refresh the file list + model counts.
       await loadFiles(Number(modelId));
@@ -468,10 +529,22 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
   const onFileInputChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
       const fl = e.target.files;
-      if (fl && fl.length) handleUpload(fl);
+      const requirement = pendingRequirementRef.current;
+      pendingRequirementRef.current = null;
+      if (fl && fl.length && requirement) {
+        const selectedFile = fl[0];
+        if (fl.length !== 1 || selectedFile.name.toLowerCase() !== requirement.fileName.toLowerCase()) {
+          showToast(`Choose the required file: ${requirement.fileName}`, 'error');
+        } else {
+          const requiredDirectory = requirement.relativePath.split('/').slice(0, -1).join('/') || 'dependencies';
+          void handleUpload([selectedFile], requiredDirectory);
+        }
+      } else if (fl && fl.length) {
+        void handleUpload(fl);
+      }
       e.target.value = '';
     },
-    [handleUpload],
+    [handleUpload, showToast],
   );
 
   const onDrop = useCallback(
@@ -507,6 +580,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
           showToast('File deleted', 'success');
           await loadFiles(Number(modelId));
           await loadModels();
+          await loadDependencies(Number(modelId));
         } else {
           showToast(data.error || 'Failed to delete file', 'error');
         }
@@ -518,7 +592,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
         setDeleteTarget(null);
       }
     },
-    [modelId, loadFiles, loadModels, showToast],
+    [modelId, loadFiles, loadModels, loadDependencies, showToast],
   );
 
   const handleSetPrimary = useCallback(
@@ -536,6 +610,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
           showToast('Set as primary model file', 'success');
           await loadFiles(Number(modelId));
           await loadModels();
+          await loadDependencies(Number(modelId));
         } else {
           showToast(data.error || 'Failed to set primary file', 'error');
         }
@@ -546,7 +621,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
         setPrimaryFileId(null);
       }
     },
-    [modelId, loadFiles, loadModels, showToast],
+    [modelId, loadFiles, loadModels, loadDependencies, showToast],
   );
 
   const handleCopy = useCallback(
@@ -569,8 +644,21 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
       showToast(problem, 'error');
       return;
     }
+    pendingRequirementRef.current = null;
     fileInputRef.current?.click();
   }, [attachmentDirectory, showToast]);
+
+  const requestRequirementUpload = useCallback((requirement: ModelDependencyRequirement) => {
+    const directory = requirement.relativePath.split('/').slice(0, -1).join('/') || 'dependencies';
+    if (directory.length > 100) {
+      showToast('The required dependency directory exceeds the 100-character upload boundary.', 'error');
+      return;
+    }
+    setAttachmentDirectory(directory);
+    setCategory(requirement.kind === 'texture' ? 'texture' : requirement.kind === 'buffer' ? 'binary' : 'other');
+    pendingRequirementRef.current = requirement;
+    requestAnimationFrame(() => fileInputRef.current?.click());
+  }, [showToast]);
 
   // ============================================
   // RENDER HELPERS
@@ -692,77 +780,52 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
     <div className="space-y-3">
       {ToastComponent}
 
-      {/* Controls: model + category */}
-      <div className="flex flex-wrap items-end gap-2">
-        <div className="min-w-[220px] flex-1">
-          <Label htmlFor="model-files-model" className="text-xs">Model</Label>
-          <Select value={modelId} onValueChange={handleModelChange} disabled={loadingModels}>
-            <SelectTrigger className="h-8 text-xs">
-              {loadingModels ? <Loader2 className="w-3.5 h-3.5 mr-1 animate-spin" /> : null}
-              <SelectValue placeholder="Select a model" />
-            </SelectTrigger>
-            <SelectContent>
-              {models.map((m) => (
-                <SelectItem key={m.id} value={String(m.id)}>
-                  {m.modelName} ({m.modelType})
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="w-[190px]">
-          <Label htmlFor="model-files-category" className="text-xs">File category</Label>
-          <Select value={category} onValueChange={setCategory}>
-            <SelectTrigger className="h-8 text-xs">
-              <SelectValue placeholder="Auto-detect" />
-            </SelectTrigger>
-            <SelectContent>
-              {FILE_CATEGORY_OPTIONS.map((c) => (
-                <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <Button
-          type="button"
-          variant="outline"
-          size="icon"
-          className="h-8 w-8"
-          title="Refresh"
-          onClick={() => {
-            loadFiles(Number(modelId));
-            loadModels();
-            loadDependencies(Number(modelId));
-          }}
-          disabled={!modelId || loadingFiles}
-        >
-          <RefreshCw className="w-4 h-4" />
-        </Button>
-      </div>
-
-      {/* Selected model summary */}
-      {selectedModel && (
-        <div className="flex flex-wrap items-center gap-2 rounded border px-2 py-1.5 bg-muted/30">
-          <FileIcon type="model" />
-          <span className="text-xs font-medium">{selectedModel.modelName}</span>
-          <Badge variant="outline" className="text-[10px]">{selectedModel.modelType}</Badge>
-          <Badge variant="outline" className="text-[10px]">{stats.count} files</Badge>
-          <Badge variant="outline" className="text-[10px]">{formatSize(stats.totalSize)}</Badge>
-          <span className="text-[10px] text-muted-foreground truncate max-w-[240px]" title={selectedModel.filePath}>
-            {selectedModel.filePath}
-          </span>
-        </div>
-      )}
+      <div className="grid items-start gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(400px,0.85fr)]">
+          <ThreeDModelAssetPreview
+            model={previewModel}
+            attachedDependencyCount={dependencyAudit?.requirements.filter((item) => item.satisfied).length ?? 0}
+            dependencyCount={dependencyAudit?.requirements.length ?? 0}
+            title="Model Importer Canvas"
+            description="Preview the primary Model with every texture and supportive file currently available."
+            headerMeta={selectedModel ? (
+              <div className="flex min-w-0 items-center gap-2 border-l pl-3">
+                <FileIcon type="model" />
+                <span className="max-w-48 truncate text-xs font-medium" title={selectedModel.modelName}>{selectedModel.modelName}</span>
+                <Badge variant="outline" className="text-[10px]">{selectedModel.modelType}</Badge>
+                <span className="whitespace-nowrap text-[10px] text-muted-foreground">Model #{selectedModel.id}</span>
+              </div>
+            ) : null}
+            headerActions={selectedModel ? (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                title="Refresh Model Files"
+                onClick={() => {
+                  loadFiles(Number(modelId));
+                  loadModels();
+                  loadDependencies(Number(modelId));
+                }}
+                disabled={!modelId || loadingFiles || loadingModels}
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${loadingFiles || loadingModels ? 'animate-spin' : ''}`} />
+              </Button>
+            ) : null}
+            canvasClassName="h-[min(48vh,480px)] min-h-[340px]"
+            showMaterialInspector={previewModel?.modelType.toLowerCase() === 'fbx'}
+            splitMaterialInspector
+            textureLibrary={textureLibrary}
+            onSaveMaterialAssignment={saveMaterialAssignment}
+          />
 
       {/* Primary-file dependency requirements and attachment resolution. */}
-      <section className="rounded-lg border bg-muted/20 p-3" aria-labelledby="model-dependencies-title">
+      <section className="order-2 rounded-lg border bg-muted/20 p-3 lg:col-start-2 lg:row-start-1" aria-labelledby="model-dependencies-title">
         <div className="flex flex-wrap items-center gap-2">
           <Link2 className="h-4 w-4 text-cyan-400" />
           <h2 id="model-dependencies-title" className="text-xs font-semibold">Required Model dependencies</h2>
           {loadingDependencies && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
-          {dependencyAudit?.status === 'analyzed' && (
+          {dependencyAudit?.status === 'analyzed' && dependencyAudit.requirements.length > 0 && (
             <Badge variant={dependencyAudit.complete ? 'secondary' : 'destructive'} className="text-[10px]">
               {dependencyAudit.requirements.filter((item) => item.satisfied).length}/{dependencyAudit.requirements.length} attached
             </Badge>
@@ -775,11 +838,10 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
         ) : dependencyAudit?.status === 'not_supported' ? (
           <p className="mt-2 text-[11px] text-muted-foreground">Dependency inspection currently supports FBX, GLB, and GLTF primary files.</p>
         ) : dependencyAudit?.status === 'analyzed' && dependencyAudit.requirements.length === 0 ? (
-          <p className="mt-2 text-[11px] text-emerald-400">No external texture or buffer references were found. Dependencies may be embedded.</p>
+          <p className="mt-2 text-[11px] text-muted-foreground">This FBX does not expose texture filenames. Choose its texture images below and the preview will retry them by filename.</p>
         ) : dependencyAudit?.status === 'analyzed' ? (
           <div className="mt-2 grid gap-1.5 sm:grid-cols-2 xl:grid-cols-3">
             {dependencyAudit.requirements.map((requirement) => {
-              const directory = requirement.relativePath.split('/').slice(0, -1).join('/');
               return (
                 <div key={`${requirement.kind}:${requirement.relativePath}`} className="flex min-w-0 items-center gap-2 rounded border bg-background/30 px-2 py-1.5">
                   {requirement.satisfied
@@ -791,9 +853,10 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
                       {requirement.satisfied ? `Attached: ${requirement.matchedRelativePath}` : `Missing ${requirement.kind}`}
                     </p>
                   </div>
-                  {!requirement.satisfied && directory && directory.length <= 100 && (
-                    <Button type="button" variant="ghost" size="sm" className="h-6 px-2 text-[10px]" onClick={() => setAttachmentDirectory(directory)}>
-                      Use path
+                  {!requirement.satisfied && (
+                    <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-[10px]" onClick={() => requestRequirementUpload(requirement)}>
+                      <Upload className="mr-1 h-3 w-3" />
+                      Upload needed file
                     </Button>
                   )}
                 </div>
@@ -801,13 +864,22 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
             })}
           </div>
         ) : null}
-      </section>
-
       {/* User-defined storage directory for newly attached files. */}
-      <div className="rounded-lg border bg-muted/20 p-3">
-        <div className="flex flex-wrap items-end gap-3">
-          <div className="min-w-[240px] flex-1">
-            <Label htmlFor="model-files-directory" className="text-xs">Attachment directory *</Label>
+      <div id="model-texture-importer" className="mt-3 scroll-mt-4 border-t border-border/70 pt-3">
+        <div className="flex items-center gap-2">
+          <Image className="h-4 w-4 text-cyan-400" />
+          <div className="min-w-0 flex-1">
+            <h2 className="text-xs font-semibold">Provide Model textures</h2>
+            <p className="text-[11px] text-muted-foreground">Attach this Model's required textures, buffers, and supportive files.</p>
+          </div>
+        </div>
+
+        <details className="mt-2 rounded border bg-background/25 p-2 text-[11px]">
+          <summary className="cursor-pointer select-none text-muted-foreground">
+            Storage destination: <span className="font-mono text-cyan-500/90">models/{modelId || '<modelId>'}/attachments/{normalizedAttachmentDirectory}/</span>
+          </summary>
+          <div className="mt-2">
+            <Label htmlFor="model-files-directory" className="text-xs">Relative texture directory</Label>
             <div className="relative mt-1">
               <FolderTree className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -820,24 +892,18 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
                 disabled={!modelId || uploading}
                 required
                 aria-required="true"
-                aria-invalid={directoryProblem ? 'true' : 'false'}
+                aria-invalid={directoryHasInput && directoryProblem ? 'true' : 'false'}
                 aria-describedby="model-files-directory-help"
               />
               <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground">
                 {attachmentDirectory.length}/100
               </span>
             </div>
+            <p id="model-files-directory-help" className={`mt-1.5 ${directoryHasInput && directoryProblem ? 'text-amber-400' : 'text-muted-foreground'}`}>
+              {!directoryHasInput ? 'A relative directory is required.' : directoryProblem ?? 'The App selected this Model-owned directory automatically.'}
+            </p>
           </div>
-          <p className="min-w-[260px] flex-1 truncate font-mono text-[10px] text-cyan-500/90" title={`models/${modelId || '<modelId>'}/attachments/${normalizedAttachmentDirectory ? `${normalizedAttachmentDirectory}/` : ''}<filename>`}>
-            models/{modelId || '&lt;modelId&gt;'}/attachments/{normalizedAttachmentDirectory ? `${normalizedAttachmentDirectory}/` : ''}&lt;filename&gt;
-          </p>
-        </div>
-        <p
-          id="model-files-directory-help"
-          className={`mt-1.5 text-[11px] ${directoryProblem ? 'text-amber-400' : 'text-muted-foreground'}`}
-        >
-          {directoryProblem ?? 'This required relative directory is applied to every file in the next selection.'}
-        </p>
+        </details>
       </div>
 
       {/* Drag-and-drop upload zone */}
@@ -854,26 +920,16 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
           type="file"
           multiple
           className="hidden"
-          accept=".glb,.gltf,.fbx,.obj,.usdz,.jpg,.jpeg,.png,.webp,.tga,.bmp,.bin"
+          accept=".glb,.gltf,.fbx,.obj,.usdz,.bin,.mtl,image/*"
           onChange={onFileInputChange}
           disabled={!modelId || uploading || !!directoryProblem}
         />
-        <div className="flex flex-col items-center justify-center py-6 px-4 text-center">
-          <Upload className="w-8 h-8 text-muted-foreground mb-2" />
-          <p className="text-sm font-medium">Drag & drop files here</p>
-          <p className="text-xs text-muted-foreground mb-3 max-w-xl">
-            Selected dependency files are uploaded into the required Attachment directory defined above.
-          </p>
-          <Button
-            type="button"
-            size="sm"
-            className="h-8 text-xs"
-            onClick={requestUpload}
-            disabled={!modelId || uploading || !!directoryProblem}
-          >
-            {uploading ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Upload className="w-4 h-4 mr-1" />}
-            Choose Files
-          </Button>
+        <div className="flex items-center justify-center gap-3 px-3 py-3 text-center">
+          <Upload className="h-5 w-5 shrink-0 text-muted-foreground" />
+          <div>
+            <p className="text-xs font-medium">Drop Model files here</p>
+            <p className="text-[10px] text-muted-foreground">The App uses the selected destination.</p>
+          </div>
         </div>
       </div>
 
@@ -891,7 +947,14 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
           ))}
         </div>
       )}
+      </section>
+      </div>
 
+      <section className="rounded-lg border bg-muted/10" aria-labelledby="model-file-management-title">
+        <div className="px-3 py-2 text-xs font-medium" id="model-file-management-title">
+          Model files and attachments <span className="text-muted-foreground">({stats.count})</span>
+        </div>
+        <div className="space-y-3 border-t p-3">
       {/* Toolbar: search / sort / view */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="relative flex-1 min-w-[180px]">
@@ -933,6 +996,10 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
             <LayoutGrid className="w-4 h-4" />
           </Button>
         </div>
+        <Button type="button" size="sm" className="h-8 text-xs" onClick={requestUpload} disabled={!modelId || uploading || !!directoryProblem}>
+          {uploading ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Upload className="mr-1 h-3.5 w-3.5" />}
+          Upload files
+        </Button>
       </div>
 
       {/* Files content */}
@@ -986,6 +1053,8 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
           })}
         </div>
       )}
+        </div>
+      </section>
 
       {/* Delete confirmation dialog */}
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>

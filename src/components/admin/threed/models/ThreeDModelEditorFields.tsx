@@ -158,7 +158,7 @@ export function ThreeDModelEditorFields({
           {form.filePath && <span className="truncate text-xs text-muted-foreground">✓ file selected</span>}
         </div>
         {uploadAnalysis && (
-          <div className="space-y-2 rounded-md border border-cyan-500/30 bg-cyan-500/10 p-3">
+          <div className="rounded-md border border-cyan-500/30 bg-cyan-500/10 p-3">
             <div className="flex items-start gap-2">
               {uploadAnalysis.status === 'analyzed'
                 ? <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-cyan-400" />
@@ -167,20 +167,21 @@ export function ThreeDModelEditorFields({
                 <p className="text-xs font-medium">
                   {uploadAnalysis.status === 'analyzed' ? 'Model analyzed and ready to configure' : 'Model uploaded; limited analysis'}
                 </p>
-                {uploadAnalysis.message && <p className="text-[11px] text-muted-foreground">{uploadAnalysis.message}</p>}
+                {uploadAnalysis.message && uploadAnalysis.status !== 'analyzed' && <p className="text-[11px] text-muted-foreground">{uploadAnalysis.message}</p>}
               </div>
             </div>
             {uploadAnalysis.status === 'analyzed' && (
-              <>
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-                  <div className="rounded border bg-background/40 p-2"><p className="text-[10px] uppercase text-muted-foreground">Meshes</p><p className="text-sm font-semibold">{uploadAnalysis.meshCount?.toLocaleString() ?? '—'}</p></div>
-                  <div className="rounded border bg-background/40 p-2"><p className="text-[10px] uppercase text-muted-foreground">Triangles</p><p className="text-sm font-semibold">{uploadAnalysis.triangleCount?.toLocaleString() ?? '—'}</p></div>
-                  <div className="rounded border bg-background/40 p-2"><p className="text-[10px] uppercase text-muted-foreground">Components</p><p className="text-sm font-semibold">{uploadAnalysis.componentCount?.toLocaleString() ?? '—'}</p></div>
-                  <div className="rounded border bg-background/40 p-2"><p className="text-[10px] uppercase text-muted-foreground">Geometry</p><p className="truncate text-sm font-semibold capitalize">{uploadAnalysis.geometryStatus?.replace('_', ' ') ?? '—'}</p></div>
+              <details className="mt-2 text-[11px] text-muted-foreground">
+                <summary className="cursor-pointer select-none">Technical analysis</summary>
+                <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
+                  <span>Meshes</span><span className="text-right text-foreground">{uploadAnalysis.meshCount?.toLocaleString() ?? '—'}</span>
+                  <span>Triangles</span><span className="text-right text-foreground">{uploadAnalysis.triangleCount?.toLocaleString() ?? '—'}</span>
+                  <span>Components</span><span className="text-right text-foreground">{uploadAnalysis.componentCount?.toLocaleString() ?? '—'}</span>
+                  <span>Geometry</span><span className="text-right capitalize text-foreground">{uploadAnalysis.geometryStatus?.replace('_', ' ') ?? '—'}</span>
                 </div>
-                {(uploadAnalysis.skinnedMeshCount ?? 0) > 0 && <p className="text-[11px] text-muted-foreground">Includes {uploadAnalysis.skinnedMeshCount?.toLocaleString()} skinned mesh(es); configure through the Character runtime when appropriate.</p>}
-                {(uploadAnalysis.reasons?.length ?? 0) > 0 && <p className="text-[11px] text-muted-foreground">{uploadAnalysis.reasons?.join(' · ')}</p>}
-              </>
+                {(uploadAnalysis.skinnedMeshCount ?? 0) > 0 && <p className="mt-2">Includes {uploadAnalysis.skinnedMeshCount?.toLocaleString()} skinned mesh(es).</p>}
+                {(uploadAnalysis.reasons?.length ?? 0) > 0 && <p className="mt-1">{uploadAnalysis.reasons?.join(' · ')}</p>}
+              </details>
             )}
           </div>
         )}

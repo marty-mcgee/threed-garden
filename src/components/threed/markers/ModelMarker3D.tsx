@@ -31,6 +31,13 @@ import {
   resolveThreeDModelAttachmentUrl,
   type ThreeDModelRuntimeAttachment,
 } from '@/lib/services/threed/models/model-attachment-runtime-core';
+import {
+  createThreeDModelMaterialInventory,
+  resolveThreeDModelMaterialTarget,
+  type ThreeDModelMaterialInventory,
+  type ThreeDModelMaterialPreviewOverride,
+} from '@/lib/services/threed/models/model-material-inventory-core';
+import { readThreeDModelMaterialOverrides } from '@/lib/services/threed/models/model-material-override-core';
 
 // ============================================
 // TYPES
@@ -50,6 +57,14 @@ export interface ModelData {
   animationSpeed?: number; // from character wrapper
   metadata?: unknown;
   files?: ThreeDModelRuntimeAttachment[];
+  materialAssignments?: Array<{
+    targetKey: string;
+    channel: string;
+    textureId: number;
+    textureName: string;
+    textureFileName: string;
+    textureUrl: string;
+  }>;
 }
 
 export interface ModelCollisionBounds {
@@ -79,6 +94,12 @@ interface ModelMarker3DProps {
   onCollisionBoundsChange?: (bounds: ModelCollisionBounds | null) => void;
   /** Reports bounded post-transform geometry diagnostics without creating physics. */
   onGeometryAuditChange?: (audit: ModelGeometryAudit | null) => void;
+  /** Reports loaded mesh/material slots for opt-in Admin inspection only. */
+  onMaterialInventoryChange?: (inventory: ThreeDModelMaterialInventory | null) => void;
+  /** Applies one temporary Admin-preview Base Color map without mutating persisted Model data. */
+  materialPreviewOverride?: ThreeDModelMaterialPreviewOverride | null;
+  /** Highlights one temporary Admin-preview mesh/material selection. */
+  materialPreviewSelectionId?: string | null;
   /** Reports bounded marker-local collision boxes for Physics Debug only. */
   onEnvironmentCollisionPreviewChange?: (plan: ThreeDEnvironmentCollisionPreviewPlan | null) => void;
   /** Reports that this Model load has either succeeded or failed. */
@@ -153,14 +174,14 @@ function useModelLoad(
           .sort()
           .join('|');
         const cacheKey = `${model.filePath}-${modelType}-${attachmentSignature}`;
+        const manager = new THREE.LoadingManager();
+        manager.setURLModifier((url) => resolveThreeDModelAttachmentUrl(url, attachments));
 
         let m: THREE.Group;
 
         if (modelCache.has(cacheKey)) {
           m = modelCache.get(cacheKey)!.clone();
         } else {
-          const manager = new THREE.LoadingManager();
-          manager.setURLModifier((url) => resolveThreeDModelAttachmentUrl(url, attachments));
           if (modelType === 'fbx') {
             const loader = new FBXLoader(manager);
             m = await loader.loadAsync(model.filePath) as THREE.Group;
@@ -175,6 +196,42 @@ function useModelLoad(
             m.animations = gltf.animations;
           }
           modelCache.set(cacheKey, m.clone());
+        }
+
+        const savedMaterialOverrides = readThreeDModelMaterialOverrides(model.metadata);
+        const relationalAssignments = Array.isArray(model.materialAssignments)
+          ? model.materialAssignments.filter((assignment) => assignment.channel === 'baseColor')
+          : [];
+        const relationalTargetKeys = new Set(relationalAssignments.map((assignment) => assignment.targetKey));
+        const materialAssignments = [
+          ...relationalAssignments.map((assignment) => ({
+            targetKey: assignment.targetKey,
+            channel: 'baseColor' as const,
+            textureRelativePath: assignment.textureUrl,
+          })),
+          ...savedMaterialOverrides.assignments.filter((assignment) => !relationalTargetKeys.has(assignment.targetKey)),
+        ];
+        for (const assignment of materialAssignments) {
+          const target = resolveThreeDModelMaterialTarget(m, assignment.targetKey);
+          if (!target) continue;
+          const resolvedTextureUrl = resolveThreeDModelAttachmentUrl(
+            assignment.textureRelativePath,
+            attachments,
+          );
+          if (!/^(?:https:|data:|blob:)/i.test(resolvedTextureUrl)) continue;
+          const originalMaterials = Array.isArray(target.mesh.material)
+            ? [...target.mesh.material]
+            : [target.mesh.material];
+          const originalMaterial = originalMaterials[target.slotIndex];
+          if (!(originalMaterial instanceof THREE.Material)) continue;
+          const material = originalMaterial.clone() as THREE.Material & { color?: THREE.Color; map?: THREE.Texture | null };
+          const texture = await new THREE.TextureLoader(manager).loadAsync(resolvedTextureUrl);
+          texture.colorSpace = THREE.SRGBColorSpace;
+          material.map = texture;
+          material.color?.set('#ffffff');
+          material.needsUpdate = true;
+          originalMaterials[target.slotIndex] = material;
+          target.mesh.material = Array.isArray(target.mesh.material) ? originalMaterials : material;
         }
 
         // Apply model config transforms
@@ -276,7 +333,7 @@ function ModelFallback({ name, position }: { name?: string; position: [number, n
 // ============================================
 // COMPONENT
 // ============================================
-export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange, onGeometryAuditChange, onEnvironmentCollisionPreviewChange, onRuntimeSettled }: ModelMarker3DProps) {
+export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange, onGeometryAuditChange, onMaterialInventoryChange, materialPreviewOverride, materialPreviewSelectionId, onEnvironmentCollisionPreviewChange, onRuntimeSettled }: ModelMarker3DProps) {
   const { loadedModel, loading, error } = useModelLoad(model, fitBounds, applyStoredScale);
   const requestedRuntimeAdapterKey = readThreeDModelRuntimeAdapterKey(model.metadata);
   const RuntimeAdapter = resolveThreeDModelRuntimeAdapter(requestedRuntimeAdapterKey);
@@ -292,6 +349,70 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
   useEffect(() => {
     if (!loading && (loadedModel || error || !model.filePath)) onRuntimeSettled?.();
   }, [error, loadedModel, loading, model.filePath, onRuntimeSettled]);
+
+  useEffect(() => {
+    onMaterialInventoryChange?.(
+      loadedModel ? createThreeDModelMaterialInventory(loadedModel) : null,
+    );
+    return () => onMaterialInventoryChange?.(null);
+  }, [loadedModel, onMaterialInventoryChange]);
+
+  useEffect(() => {
+    if (!loadedModel || !materialPreviewSelectionId) return;
+    const target = resolveThreeDModelMaterialTarget(loadedModel, materialPreviewSelectionId);
+    if (!target) return;
+    const { mesh } = target;
+    const outline = new THREE.LineSegments(
+      new THREE.EdgesGeometry(mesh.geometry),
+      new THREE.LineBasicMaterial({ color: '#22d3ee', depthTest: false, transparent: true, opacity: 0.9 }),
+    );
+    outline.name = 'ThreeDMaterialPreviewSelection';
+    outline.renderOrder = 10;
+    mesh.add(outline);
+    return () => {
+      mesh.remove(outline);
+      outline.geometry.dispose();
+      (outline.material as THREE.Material).dispose();
+    };
+  }, [loadedModel, materialPreviewSelectionId]);
+
+  useEffect(() => {
+    if (!loadedModel || !materialPreviewOverride) return;
+    const targetAssignment = resolveThreeDModelMaterialTarget(loadedModel, materialPreviewOverride.targetKey);
+    if (!targetAssignment) return;
+    const { mesh, slotIndex } = targetAssignment;
+
+    const originalMaterial = mesh.material;
+    const materials = Array.isArray(originalMaterial) ? [...originalMaterial] : [originalMaterial];
+    const target = materials[slotIndex];
+    if (!(target instanceof THREE.Material)) return;
+    const previewMaterial = target.clone() as THREE.Material & { color?: THREE.Color; map?: THREE.Texture | null };
+    materials[slotIndex] = previewMaterial;
+    mesh.material = Array.isArray(originalMaterial) ? materials : previewMaterial;
+
+    let cancelled = false;
+    let previewTexture: THREE.Texture | null = null;
+    void new THREE.TextureLoader().loadAsync(materialPreviewOverride.textureUrl).then((texture) => {
+      if (cancelled) {
+        texture.dispose();
+        return;
+      }
+      previewTexture = texture;
+      texture.colorSpace = THREE.SRGBColorSpace;
+      previewMaterial.map = texture;
+      previewMaterial.color?.set('#ffffff');
+      previewMaterial.needsUpdate = true;
+    }).catch((loadError) => {
+      console.error('ModelMarker3D: failed to load temporary material preview texture', loadError);
+    });
+
+    return () => {
+      cancelled = true;
+      mesh.material = originalMaterial;
+      previewTexture?.dispose();
+      previewMaterial.dispose();
+    };
+  }, [loadedModel, materialPreviewOverride]);
 
   useEffect(() => {
     collisionMeasurementRef.current = {

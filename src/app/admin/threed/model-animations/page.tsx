@@ -3,7 +3,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import { ArrowLeft, Clapperboard, FolderOpen, FolderTree, Loader2 } from 'lucide-react';
+import { ArrowLeft, Clapperboard, FolderOpen, FolderTree, Images, Loader2 } from 'lucide-react';
 import { ThreeDModelAnimations } from '@/components/admin/threed/models/ThreeDModelAnimations';
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
 
@@ -26,6 +26,7 @@ function ModelAnimationsPageInner() {
           <AdminWorkspaceLink href="/admin/threed/models" icon={ArrowLeft}>Back to Models</AdminWorkspaceLink>
           <AdminWorkspaceLink href="/admin/threed/model-categories" icon={FolderTree}>Model Categories</AdminWorkspaceLink>
           <AdminWorkspaceLink href={`/admin/threed/model-files${modelQuery}`} icon={FolderOpen}>Model Files</AdminWorkspaceLink>
+          <AdminWorkspaceLink href="/admin/threed/model-textures" icon={Images}>Model Textures</AdminWorkspaceLink>
         </div>
       </AdminWorkspaceHeader>
       <ThreeDModelAnimations initialModelId={initialModelId} />

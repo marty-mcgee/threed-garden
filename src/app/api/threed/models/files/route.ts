@@ -7,10 +7,13 @@ import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { threedModels, threedModelFiles } from '@/lib/schema/threed';
 import { and, asc, eq } from 'drizzle-orm';
-import { put } from '@vercel/blob';
+import { BlobNotFoundError, head, put } from '@vercel/blob';
 import { ensureTableSequence } from '@/lib/db/sequence';
 import { normalizeThreeDModelRelativePath } from '@/lib/services/threed/models/model-companion-core';
-import { runtimeModelTypeFromFileName } from '@/lib/services/threed/models/model-file-integrity';
+import {
+  isOwnedThreeDBlobUrl,
+  runtimeModelTypeFromFileName,
+} from '@/lib/services/threed/models/model-file-integrity';
 
 const MODEL_EXTS = new Set(['glb', 'gltf', 'fbx', 'obj', 'usdz']);
 const TEXTURE_EXTS = new Set(['jpg', 'jpeg', 'png', 'webp', 'tga', 'bmp']);
@@ -41,11 +44,40 @@ async function storeFile(
   textureType: string | null,
   loadOrder: number,
   isBinaryBuffer = false,
+  replaceFileId: number | null = null,
 ) {
   const path = `models/${modelId}/attachments/${relativePath}`;
-  const blob = await put(path, file, { access: 'public', addRandomSuffix: false });
+  // Dependency identity belongs to relativePath in Postgres. The public Blob URL
+  // must remain collision-free because a loader may cache a 404 for the expected
+  // dependency pathname before the User supplies that attachment.
+  const blob = await put(path, file, {
+    access: 'public',
+    addRandomSuffix: true,
+    contentType: file.type || undefined,
+  });
 
   await ensureTableSequence('threed_model_files');
+
+  if (replaceFileId !== null) {
+    return db
+      .update(threedModelFiles)
+      .set({
+        fileName: file.name,
+        relativePath,
+        fileType,
+        textureType,
+        filePath: blob.url,
+        fileSize: file.size,
+        isBinaryBuffer,
+        loadOrder,
+      })
+      .where(and(
+        eq(threedModelFiles.id, replaceFileId),
+        eq(threedModelFiles.modelId, modelId),
+        eq(threedModelFiles.userId, userId),
+      ))
+      .returning();
+  }
 
   return db
     .insert(threedModelFiles)
@@ -144,26 +176,51 @@ export async function POST(request: NextRequest) {
     }
 
     const existingFiles = await db
-      .select({ relativePath: threedModelFiles.relativePath, fileName: threedModelFiles.fileName })
+      .select({
+        id: threedModelFiles.id,
+        relativePath: threedModelFiles.relativePath,
+        fileName: threedModelFiles.fileName,
+        filePath: threedModelFiles.filePath,
+        loadOrder: threedModelFiles.loadOrder,
+      })
       .from(threedModelFiles)
       .where(and(
         eq(threedModelFiles.modelId, modelId),
         eq(threedModelFiles.userId, session.user.id),
       ));
-    const existingPaths = new Set(existingFiles.map((entry) =>
-      (entry.relativePath || entry.fileName).toLowerCase()));
-    const conflictingPath = relativePaths.find((relativePath) => relativePath && existingPaths.has(relativePath.toLowerCase()));
-    if (conflictingPath) {
-      return NextResponse.json(
-        { success: false, error: `An attachment already uses relative path: ${conflictingPath}` },
-        { status: 409 },
-      );
+    const existingByPath = new Map(existingFiles.map((entry) => [
+      (entry.relativePath || entry.fileName).toLowerCase(),
+      entry,
+    ]));
+    const staleReplacementByPath = new Map<string, (typeof existingFiles)[number]>();
+    for (const relativePath of relativePaths) {
+      if (!relativePath) continue;
+      const existing = existingByPath.get(relativePath.toLowerCase());
+      if (!existing) continue;
+      if (!isOwnedThreeDBlobUrl(existing.filePath, { modelId, userId: session.user.id })) {
+        return NextResponse.json(
+          { success: false, error: `An attachment already uses relative path: ${relativePath}` },
+          { status: 409 },
+        );
+      }
+      try {
+        await head(existing.filePath);
+        return NextResponse.json(
+          { success: false, error: `An attachment already uses relative path: ${relativePath}` },
+          { status: 409 },
+        );
+      } catch (blobError) {
+        if (!(blobError instanceof BlobNotFoundError)) throw blobError;
+        staleReplacementByPath.set(relativePath.toLowerCase(), existing);
+      }
     }
 
     const uploaded: unknown[] = [];
     let firstModelFileId = model.mainModelFileId ?? null;
 
     for (const file of files) {
+      const relativePath = relativePaths[uploaded.length]!;
+      const staleReplacement = staleReplacementByPath.get(relativePath.toLowerCase()) ?? null;
       const ext = extensionOf(file.name);
       let fileType: string;
       let textureType: string | null = null;
@@ -189,11 +246,12 @@ export async function POST(request: NextRequest) {
         session.user.id,
         modelId,
         file,
-        relativePaths[uploaded.length]!,
+        relativePath,
         fileType,
         textureType,
-        uploaded.length,
+        staleReplacement?.loadOrder ?? uploaded.length,
         isBinaryBuffer,
+        staleReplacement?.id ?? null,
       );
 
       if (fileType === 'model' && firstModelFileId == null) firstModelFileId = record.id;

@@ -1,6 +1,7 @@
 import { normalizeThreeDModelRelativePath } from './model-companion-core';
 
 export interface ThreeDModelRuntimeAttachment {
+  id?: number;
   fileName: string;
   relativePath: string;
   filePath: string;

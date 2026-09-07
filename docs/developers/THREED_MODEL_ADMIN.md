@@ -2,6 +2,8 @@
 
 Production checkpoint: **v0.19.8b — ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies** (`package.json` version `0.19.8-beta`), released September 6, 2026.
 
+Prepared release candidate: **v0.19.8c — ThreeD Model Importer and Reusable Texture Assignments** (`package.json` version `0.19.8-centaur`).
+
 The initial v0.19.8a workflow deliberately manages one reusable ThreeD Model at a time. Bulk import remains implemented for future work, but it is not exposed from the primary Model administration surface during this development boundary.
 
 The Admin route uses `#020618` as its presentation background. Its header, sidebar, and footer are translucent layers of that same color, scoped to `/admin` so Dashboard presentation remains independent.
@@ -216,3 +218,190 @@ Manual verification:
 3. Create, edit, activate/deactivate, parent, and delete a disposable category using the existing category API behavior.
 4. Use the compact header to return to Models and to open Model Animations or Model Files.
 5. Return to Models and confirm category assignments in Create/Edit reflect the latest taxonomy.
+
+### Stage 3: dependency-directed upload and available-assets preview
+
+The Model Files workspace turns each missing dependency into an explicit **Upload needed file** action. Each discovered requirement opens a single-file chooser for the expected filename, derives the requirement's directory and file category, and submits through the existing authenticated Model Files route. A mismatched filename is refused before upload. Requirements without an exported directory use the bounded `dependencies` directory and continue to resolve through the released unique-filename fallback.
+
+The texture importer remains part of `/admin/threed/model-files?modelId=<id>` and is never presented as a modal overlay. On wide screens, a compact sticky Model Importer Canvas occupies the left side while dependency status, attachment destination, and the drop target form one right-side working surface. Texture management remains available when inspection reports zero named requirements, because some FBX exports do not retain discoverable external filenames. Supportive files may be attached at any time without preventing the reusable Model record from remaining manageable.
+
+The primary workspace emphasizes the existing Model preview, Texture assignment, and Model files. Search, sorting, view controls, upload, attachment records, and attachment actions remain visible in the consolidated **Model files and attachments** section. New selections default to the stable Model-owned `textures` directory. The User can inspect or change that destination through its disclosure, but does not have to invent a path before performing the normal texture upload.
+
+FBX inspection retains absolute exporter references safely by extracting their required filename. For example, a source reference such as `C:\\vendor\\barn\\textures\\Barn_Wall.png` becomes the visible requirement `Barn_Wall.png`; the uploaded object is stored under `models/<modelId>/attachments/textures/Barn_Wall.png`, and the runtime's unique-filename fallback resolves the original workstation path without reproducing it in Blob storage.
+
+The same workspace presents an interactive **Model preview** using the selected primary Model file and every attachment currently available to that Model. It reuses `ModelMarker3D` and its Model-owned `LoadingManager` resolver, so Admin preview and Dashboard runtime exercise one attachment-resolution contract. The preview supplies only lights, a reference grid, fitted camera bounds, and orbit controls; it creates no Rapier world, Project Marker, or persisted transform.
+
+After an upload, deletion, or primary-file change, the workspace refreshes the file records, dependency audit, and preview inputs. Missing attachments may still be supplied later; the preview deliberately shows the best currently resolvable version of the Model rather than blocking all presentation until the dependency set is complete.
+
+Manual verification:
+
+1. Select a Model with one or more missing texture dependencies and confirm the preview appears using its currently available assets.
+2. Select **Upload needed file** for one requirement and confirm the chooser accepts one file with the displayed filename.
+3. Use the consolidated attachment drop target and confirm the upload remains inline without opening a popup.
+4. At desktop width, confirm the Canvas remains visible on the left while the upload workflow is used on the right.
+5. Confirm the normal workflow defaults to the Model-owned `textures` destination and the **Model files and attachments** controls are visible without another disclosure.
+6. Choose a differently named file and confirm the App refuses it before upload.
+7. Choose the correct file and confirm its resulting Blob path uses the automatically selected Model-owned directory.
+8. Confirm the dependency changes from **Missing** to **Attached** and the preview reloads with the newly available asset.
+9. Orbit and zoom the preview, then use **Reset preview camera** and confirm the Model is fitted again.
+10. Delete the test attachment and confirm the dependency audit and available-assets preview both refresh.
+11. Confirm no Project Marker, Character runtime, or Rapier behavior changes while using the Admin preview.
+
+### Stage 4: Canvas-first Model importer
+
+**Add Model** now opens an **Import New Model** workspace instead of a narrow form-only dialog. The primary Importer Canvas occupies the larger left surface, while the existing validated Model editor remains independently scrollable on the right. Uploading a staged primary Model file renders it immediately before the reusable Model record is created. Changes to scale, Y rotation, and X/Y/Z offsets feed the same preview so the User can judge the configured result before submitting.
+
+The importer reuses the attachment-aware Model rendering component but creates no Project Marker and no Rapier world. Its primary-file staging and final **Create Model** transaction remain the existing owner-scoped contracts. The create action remains unavailable until a primary file path exists or finishes uploading.
+
+Structural statistics no longer dominate the import workflow. A successful upload presents one readiness confirmation; mesh, triangle, component, geometry, skinned-mesh, and reason details remain available under the collapsed **Technical analysis** disclosure.
+
+This first importer stage supports the primary Model file and existing Library preview-image form upload. Staging supportive textures before the Model has an authoritative ID remains the next controlled transaction boundary; the released post-creation Model Files workflow remains available in the meantime.
+
+Manual verification:
+
+1. Open `/admin/threed/models`, select **Add Model**, and confirm the large Importer Canvas appears beside the configuration form.
+2. Upload a valid FBX, GLB, GLTF, or OBJ and confirm it renders before selecting **Create Model**.
+3. Change scale, Y rotation, and each offset and confirm the Canvas reflects those changes without closing the importer.
+4. Orbit and zoom the Model, then reset the preview camera.
+5. Confirm structural counts are hidden until **Technical analysis** is expanded.
+6. Close the importer without creating and confirm the existing staged-primary cleanup behavior remains intact.
+7. Complete one disposable import and confirm its transactional primary-file record remains available in Model Files.
+
+### Stage 5: reusable ThreeD Model Textures and material assignments
+
+The Admin sidebar exposes the Models family as a three-level hierarchy:
+**ThreeD → Models → Models | Files | Animations | Categories | Textures**. The
+Models parent remains active throughout the family, while the exact workspace child
+receives its own active state. These links are direct routes and do not depend on
+opening the Models page toolbar first.
+
+The approved relational boundary separates a reusable Model Texture from a Model-owned
+attachment. `threed_model_textures` owns one User's master image asset and Blob URL;
+`threed_model_material_assignments` maps a stable Model material target and channel
+to that Texture. A single Texture can therefore serve every material slot on one
+Model and can also be reused by many Models without duplicate uploads.
+
+Assignments are unique by Model, stable target key, and material channel. Deleting
+a Model removes only its assignments. Deleting an assigned Texture is restricted,
+so the App must first show its usage and require deliberate reassignment or removal.
+Both tables are owner-scoped, and API operations must verify that the Model,
+Texture, assignment, and authenticated User share that owner.
+
+The initial channel remains `baseColor`, matching the current FBX Material
+Assignment Inspector. The varchar channel field deliberately leaves a bounded
+extension point for normal, roughness, metallic, emissive, and occlusion maps after
+their rendering behavior is separately implemented and verified.
+
+Transition rule: existing `metadata.materialOverrides` remain a runtime fallback
+until the ThreeD Model Textures API, relational assignment API, Admin picker, and runtime
+read path are complete. Introducing the tables must not invalidate already saved
+Model material assignments.
+
+Initial schema review:
+
+- the generated proposal creates only `threed_model_textures` and
+  `threed_model_material_assignments`;
+- it adds their owner, Model, Texture, lookup, and uniqueness indexes;
+- Model deletion cascades its assignment rows;
+- Texture deletion is restricted while an assignment references it;
+- it contains no drop, rename, truncation, or alteration of an existing table.
+
+Before feature verification, the approved name was refined from ThreeD Textures to
+ThreeD Model Textures. The follow-up migration renames `threed_textures` to
+`threed_model_textures` in place, preserving its rows and IDs. It replaces only the
+old table-named foreign-key constraints and indexes with equivalent
+`threed_model_textures` names. It does not drop a table, column, assignment, Blob
+reference, or Texture record.
+
+The repository ignores generated `/drizzle` artifacts and uses the controlled
+`db:push` workflow. Apply the reviewed additive schema only to the intended
+development database before exercising ThreeD Model Textures routes or UI.
+
+The first working vertical slice adds the authenticated
+`/api/threed/model-textures` reusable Model Texture endpoint and the dedicated
+`/admin/threed/model-textures` CRUD workspace. Uploads are stored once under the
+User-owned `textures/<userId>/` Blob namespace. The workspace supports search,
+rename, activation, assignment-usage visibility, and deletion only while unused.
+
+Master Texture creation belongs exclusively to this workspace. The Model Files
+workspace consumes the library through **Select Existing Model Texture**; it does
+not create reusable master records. Model-owned dependency attachments remain a
+separate workflow because they satisfy filenames embedded in FBX, OBJ/MTL, or GLTF
+assets. The FBX Texture Assignment Inspector can persist a selected existing Model
+Texture to one material slot or every bounded visible slot in one action.
+
+Relational assignments are returned with Model API records. `ModelMarker3D` applies
+them before the legacy metadata mirror and uses that mirror only for target keys
+that do not yet have a relational assignment. This establishes a refresh-safe
+transition for Admin preview and Dashboard runtime without requiring existing
+Models to be migrated in one destructive operation.
+
+For a newly imported FBX, Model Files presents **Assign Existing Texture** as the
+default next action as soon as material slots are detected. The User selects one
+active ThreeD Model Texture and the App assigns it to every bounded detected slot
+in one transaction. Mesh counts, unavailable-map counts, temporary local testing,
+and individual slot assignment remain under **Advanced per-slot Texture
+assignments**. If the User has not created a master Texture yet, the same primary
+surface links directly to the dedicated Model Textures workspace.
+
+The Model Files presentation uses its `?modelId=` route as the selected-Model
+authority and no longer repeats a Model selector above the Canvas. A compact Model
+identity strip retains the name, type, ID, and Refresh action. Duplicate Texture
+upload buttons were removed from the Canvas and dependency guidance. Dependency
+status, attachment destination, and the compact drop target share one right-hand
+surface. The single general **Upload files** action belongs to the always-visible
+**Model files and attachments** section because primary files, attachments, paths,
+and cleanup are core workspace responsibilities rather than optional diagnostics.
+The bounded Canvas height keeps file records within the initial desktop working area.
+
+Manual verification for the completed feature boundary:
+
+1. Open `/admin/threed/model-textures`, upload one master Texture, and confirm it appears once in the User's ThreeD Model Textures library.
+2. Open Model Files, use **Select Existing Model Texture**, and assign it to all seven slots of a test FBX in one action.
+3. Refresh the Model Importer and confirm all seven selections and the Canvas preview remain textured.
+4. Assign the same Texture to a second Model without uploading another Blob.
+5. Confirm usage reports both Models and prevents accidental deletion of the assigned Texture.
+6. Load both Models in the Dashboard and confirm the saved Texture resolves without changing marker, collider, or Character runtime behavior.
+
+## v0.19.8c release candidate
+
+Release title: **ThreeD Model Importer and Reusable Texture Assignments**.
+
+This checkpoint advances the one-at-a-time Model workflow from attachment discovery to a complete visual configuration surface:
+
+- adds the Canvas-first Model importer with live primary-file preview and transform feedback;
+- establishes the dedicated **Model Textures** Admin workspace for reusable, owner-scoped master Texture assets;
+- persists refresh-safe Model material assignments while retaining legacy metadata as a compatibility fallback;
+- supports assigning one existing Texture to every bounded FBX material slot in one transaction;
+- applies saved relational assignments in both the Admin preview and Dashboard Model runtime;
+- keeps dependency-directed uploads and Model-owned file attachments available for formats that reference external filenames;
+- exposes Models, Files, Animations, Categories, and Textures as direct third-level Admin navigation;
+- consolidates Model Files into a compact two-column workspace with the selected Model in the Canvas header, dependency/upload controls above Texture assignment, and always-visible file management.
+
+The approved schema adds `threed_model_textures` as reusable Texture authority and `threed_model_material_assignments` as the Model/material-slot/channel mapping authority. Model-owned files remain in `threed_model_files`; reusable Texture records do not replace external dependency attachments. Vercel Blob remains file-byte storage behind authenticated owner-scoped routes.
+
+Release boundaries:
+
+- bulk Model import remains deferred;
+- PSD files remain authoring sources rather than browser runtime textures;
+- the initial persisted Texture channel is `baseColor`;
+- the Admin preview creates no Project Marker or Rapier world;
+- GardenCharacter, EcctrlCharacter, Runtime Marker identity, Project placement persistence, and physics authority are unchanged;
+- no MQTT publishing, FarmBot command, or physical-device capability is introduced.
+
+Release preparation validation:
+
+- `npm run typecheck`
+- `git diff --check`
+- User-confirmed Model Files layout and workflow verification
+- development schema generated and pushed successfully by the User
+
+Production gate:
+
+1. Run the manual production build.
+2. Deploy through the established GitHub/Vercel workflow.
+3. Open Models and import one primary Model file.
+4. Open Model Textures and confirm an existing reusable Texture is selectable.
+5. Open Model Files, assign that Texture to all detected FBX slots, refresh, and confirm the assignment and Canvas appearance persist.
+6. Load the configured Model in a Dashboard Project and confirm its Texture resolves without a marker, collider, Character, or Scene regression.
+7. Record `v0.19.8c` in `docs/releases` only after production deployment is confirmed.

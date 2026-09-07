@@ -4,7 +4,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Plus,
   Edit,
@@ -17,6 +17,7 @@ import {
   Clapperboard,
   FolderOpen,
   FolderTree,
+  Images,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -39,6 +40,8 @@ import {
   ThreeDModelEditorFields,
   type ThreeDModelUploadAnalysis,
 } from './ThreeDModelEditorFields';
+import { ThreeDModelAssetPreview } from './ThreeDModelAssetPreview';
+import type { ModelData } from '@/components/threed/markers/ModelMarker3D';
 
 // ============================================
 // TYPES
@@ -143,6 +146,33 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
   const [pendingPrimaryFile, setPendingPrimaryFile] = useState<PendingPrimaryModelFile | null>(null);
 
   const [formData, setFormData] = useState<ThreeDModelAdminFormData>(createEmptyThreeDModelAdminForm);
+  const importerPreviewModel = useMemo<ModelData | null>(() => {
+    if (!formData.filePath.trim()) return null;
+    return {
+      id: 0,
+      modelName: formData.modelName.trim() || pendingPrimaryFile?.fileName || 'New Model',
+      modelType: formData.modelType,
+      filePath: formData.filePath,
+      scale: formData.scale,
+      rotationY: formData.rotationY,
+      offsetX: formData.offsetX,
+      offsetY: formData.offsetY,
+      offsetZ: formData.offsetZ,
+      defaultAnimation: formData.defaultAnimation || null,
+      files: [],
+    };
+  }, [
+    formData.defaultAnimation,
+    formData.filePath,
+    formData.modelName,
+    formData.modelType,
+    formData.offsetX,
+    formData.offsetY,
+    formData.offsetZ,
+    formData.rotationY,
+    formData.scale,
+    pendingPrimaryFile?.fileName,
+  ]);
 
   useEffect(() => {
     fetchModels();
@@ -462,26 +492,42 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
                 <Plus className="w-3 h-3 mr-1" /> Add Model
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Create New Model</DialogTitle>
+            <DialogContent className="max-h-[92vh] overflow-hidden p-0 sm:max-w-[min(96vw,1200px)]">
+              <DialogHeader className="border-b px-5 py-4">
+                <DialogTitle>Import New Model</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4 pt-4">
-                <ThreeDModelEditorFields
-                  mode="create"
-                  form={formData}
-                  setForm={setFormData}
-                  categories={categories}
-                  isSubmitting={isSubmitting}
-                  uploadingPrimary={uploadingPrimary}
-                  uploadingThumbnail={uploadingThumbnail}
-                  uploadAnalysis={uploadAnalysis}
-                  onPrimaryFile={handlePrimaryFileUpload}
-                  onThumbnail={handleThumbnailUpload}
-                />
-                <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Creating...</> : 'Create Model'}
-                </Button>
+              <div className="grid min-h-0 md:grid-cols-[minmax(0,1.35fr)_minmax(360px,0.65fr)]">
+                <div className="border-b bg-slate-950/40 p-4 md:border-b-0 md:border-r">
+                  <ThreeDModelAssetPreview
+                    model={importerPreviewModel}
+                    attachedDependencyCount={0}
+                    dependencyCount={0}
+                    title="Importer Canvas"
+                    description="Upload a Model, then adjust its transform and inspect every change here before creation."
+                    canvasClassName="h-[min(68vh,680px)] min-h-[420px]"
+                  />
+                </div>
+                <div className="max-h-[calc(92vh-73px)] overflow-y-auto">
+                  <div className="space-y-4 p-5">
+                    <ThreeDModelEditorFields
+                      mode="create"
+                      form={formData}
+                      setForm={setFormData}
+                      categories={categories}
+                      isSubmitting={isSubmitting}
+                      uploadingPrimary={uploadingPrimary}
+                      uploadingThumbnail={uploadingThumbnail}
+                      uploadAnalysis={uploadAnalysis}
+                      onPrimaryFile={handlePrimaryFileUpload}
+                      onThumbnail={handleThumbnailUpload}
+                    />
+                    <div className="sticky bottom-0 border-t bg-background/95 pt-3 backdrop-blur">
+                      <Button onClick={handleCreate} className="w-full" disabled={isSubmitting || uploadingPrimary || !formData.filePath.trim()}>
+                        {isSubmitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Creating...</> : 'Create Model'}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </DialogContent>
           </Dialog>
@@ -498,6 +544,11 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
           <Button asChild variant="outline" size="sm" className="h-7 px-2 text-xs">
             <Link href="/admin/threed/model-files">
               <FolderOpen className="mr-1 h-3 w-3" /> Model Files
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="sm" className="h-7 px-2 text-xs">
+            <Link href="/admin/threed/model-textures">
+              <Images className="mr-1 h-3 w-3" /> Model Textures
             </Link>
           </Button>
         </div>
