@@ -11,6 +11,10 @@ This is a **Dual-Surface Platform**:
 
 The v0.19.8d production release completes the Dashboard handoff for configured reusable Models. It adds owner-safe discovery, readiness filtering, runtime-matched Library previews, guarded placement, and an adjustable per-Project-instance scale without changing reusable Model transforms.
 
+> **Current release candidate:** `v0.19.9 "Guided ThreeD Project Creation and First-Run Experience"` (`package.json` version `0.19.9`)
+
+The v0.19.9 candidate turns the existing Project Tour into a focused, state-derived first-run sequence. It recommends Environment, Model, and Character foundations one step at a time while preserving direct access for advanced Users and reusing the established Library and placement transactions.
+
 The v0.19.0d production release uses shared iterative WGS84 ellipsoidal distance, bearing, and forward/reverse coordinate calculations. Calibration diagnostics expose the measured spans, solved scale, and endpoint residual. Leaflet now uses each marker's exact calibrated projection without artificial local or GPS spreading, allowing north-up 2D and 3D layouts to closely match while local XYZ remains the R3F/Rapier authority.
 
 The v0.18.9d production release keeps a selected marker and its DetailsCard active while the user navigates the Scene, starts Ecctrl Take Control in Stationary camera mode, and changes Follow to Stationary when the user zooms. Its boundary is visual and navigational only: it does not change database schema, ThreeD CRUD contracts, Runtime Marker authority, Rapier ownership, or Ecctrl behavior.

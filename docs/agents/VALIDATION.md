@@ -251,6 +251,17 @@ For the FarmBot parent-identity schema revision, inspect the `db:push` proposal 
 - Confirm a new Project without saved view state starts with **Default Daylight**, even if another Project previously used `sunset`. Confirm an existing Project with an explicitly saved Environment still restores that choice.
 - Run `npm run validate:project-templates`, `npm run typecheck`, `npm run validate:assets`, `npm run validate:threed-runtime-markers`, `npm run validate:threed-orchestration`, and `git diff --check`. The client-run production build remains the release gate.
 
+## v0.19.9 Guided ThreeD Project creation checks
+
+- Create or open an empty ThreeD Starter Project and confirm the Tour remains hidden until the complete Scene presentation finishes.
+- Confirm the Tour recommends **Choose Environment**, then **Place a Model**, then **Add a Character** as each existing placement transaction adds the corresponding Runtime Marker.
+- Confirm the progress bar and count advance from 0/3 through 3/3 without a Tour-specific API request or database record.
+- Select a non-current compact step and confirm the corresponding existing Library opens without marking the step complete prematurely.
+- After all three foundations exist, confirm **Explore the Scene** dismisses the Tour and **Setup** can reopen it.
+- Change Projects while the Tour or a Library is open and confirm no progress, selection, placement, DetailsCard, or dismissed state carries into the incoming Project.
+- Confirm the Tour never creates an asset, automatically saves a Project, remounts the Canvas/Rapier world, or changes Character runtime routing.
+- Run `npm run validate:project-templates`, `npm run validate:threed-project-session`, `npm run validate:threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. The client-run production build remains the release gate.
+
 ## v0.18.6b release-candidate checks
 
 - Run `npm run validate:threed-runtime-markers` and confirm all registry, builder, snapshot validation, and saved-position merge groups pass.

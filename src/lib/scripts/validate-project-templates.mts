@@ -6,6 +6,10 @@ import {
   PROJECT_TEMPLATES,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/project/project-templates.ts';
+import {
+  createProjectTourState,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/project/project-tour-core.ts';
 
 const checks: Array<{ name: string; run: () => void }> = [
   {
@@ -37,6 +41,24 @@ const checks: Array<{ name: string; run: () => void }> = [
       assert.equal(getProjectTemplate('unknown'), null);
       assert.equal(getProjectTemplate(null), null);
       assert.equal(getProjectTemplate({ key: 'blank' }), null);
+    },
+  },
+  {
+    name: 'Project Tour recommends Environment, Model, and Character in order',
+    run: () => {
+      assert.equal(createProjectTourState({ hasEnvironment: false, hasSceneModel: false, hasCharacter: false }).currentStep?.key, 'environment');
+      assert.equal(createProjectTourState({ hasEnvironment: true, hasSceneModel: false, hasCharacter: false }).currentStep?.key, 'model');
+      assert.equal(createProjectTourState({ hasEnvironment: true, hasSceneModel: true, hasCharacter: false }).currentStep?.key, 'character');
+    },
+  },
+  {
+    name: 'Project Tour completion derives only from existing Project foundations',
+    run: () => {
+      const state = createProjectTourState({ hasEnvironment: true, hasSceneModel: true, hasCharacter: true });
+      assert.equal(state.completedStepCount, 3);
+      assert.equal(state.totalStepCount, 3);
+      assert.equal(state.currentStep, null);
+      assert.equal(state.isComplete, true);
     },
   },
 ];

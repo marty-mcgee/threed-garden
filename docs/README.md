@@ -4,6 +4,8 @@ This directory is the canonical entry point for project documentation. Choose th
 
 Current production is v0.19.8d **ThreeD Model Library Import and Scene Presentation**, using package version `0.19.8-delta`. It carries configured reusable Models into owner-safe Dashboard discovery, readiness-aware inspection, runtime-matched preview, and adjustable per-instance placement without changing Character or Rapier authority. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
+Current release candidate is v0.19.9 **Guided ThreeD Project Creation and First-Run Experience**, using package version `0.19.9`. It focuses the existing post-load Project Tour into a Runtime-Marker-derived Environment → Model → Character sequence without creating another persistence or placement path.
+
 The v0.18.9a production release adds authenticated Character Library placement and Project-instance editing while keeping GardenCharacter and EcctrlCharacter as separate runtimes. Explicit Project saves preserve marker database IDs, uncontrolled Ecctrl mounts cannot publish temporary positions, overlapping capsule spawn areas are rejected before Rapier, and rejected Character snapshots can be restored to source positions without deleting their source assets.
 
 The v0.18.7d production release prevents multiple movable Characters at one XYZ spawn from entering Rapier as overlapping Ecctrl bodies. Unsafe Characters are listed in a bounded Scene warning and remain editable through the existing Admin Character CRUD.
@@ -48,6 +50,7 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 
 ## Development plans
 
+- [plans: docs: v0.19.9 — Guided ThreeD Project Creation and First-Run Experience](plans/v0.19.9.md) — active staged plan for focused Project Tour progression, contextual workspace handoff, placement review, and completion guidance.
 - [plans: docs: v0.19.8d — ThreeD Model Library Import and Scene Presentation](plans/v0.19.8d.md) — completed five-stage progression that brought configured reusable Models into the Dashboard Library and Scene.
 
 ## Releases

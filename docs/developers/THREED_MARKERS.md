@@ -899,3 +899,13 @@ Before placement, the User may set a per-instance placement scale and review the
 This release candidate also corrects attachment lookup identity: Project Model marker `data.id` remains the Project marker record, while reusable Model attachments are requested with `data.modelId`. It does not change stable Project marker identity, the persistent Canvas/Rapier world, unrelated marker mounts, or GardenCharacter/EcctrlCharacter separation.
 
 This checkpoint was released successfully to production as **v0.19.8d — ThreeD Model Library Import and Scene Presentation** (`package.json` version `0.19.8-delta`) on September 7, 2026.
+
+## v0.19.9 Guided ThreeD Project creation boundary
+
+The post-load Project Tour now recommends one foundation at a time in the explicit order **Environment → Model → Character**. Its current step, progress count, and completion state are derived from the existing Runtime Marker collection. The Tour stores no duplicate asset status and creates no persistence authority.
+
+The recommended step receives one prominent continuation action and a short explanation of the existing workspace it opens. A compact three-step control retains direct access to every Environment, Model, and Character Library for advanced Users working out of order. After all three foundations exist, the Tour presents a deliberate **Explore the Scene** completion handoff. Project Settings remains available as a secondary action.
+
+The established lifecycle remains unchanged: the Tour appears only after the complete Scene presentation, yields to the existing Library workspace, returns after a successful placement during its transient Project session, dismisses explicitly, and resets when the Project changes. It does not automatically create an asset, save the Project, remount the Canvas/Rapier world, or alter GardenCharacter/EcctrlCharacter routing.
+
+This is the approved release-candidate boundary for **v0.19.9 — Guided ThreeD Project Creation and First-Run Experience** (`package.json` version `0.19.9`).
