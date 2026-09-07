@@ -27,7 +27,7 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 - [ThreeD character runtimes](developers/THREED_CHARACTERS.md) — GardenCharacter and EcctrlCharacter roles, shared systems, and movement boundaries.
 - [ThreeD Marker architecture](developers/THREED_MARKERS.md) — Project asset sources, Runtime Markers, layers, identity, and Action Target boundaries.
 - [ThreeD Model runtime API](developers/THREED_MODEL_RUNTIME_API.md) — authenticated Model Library JSON and read-only runtime-structure inspection contracts.
-- [ThreeD Model Administration](developers/THREED_MODEL_ADMIN.md) — v0.19.8b production Model administration, file-management, workspace, and texture-dependency boundary.
+- [ThreeD Model Administration](developers/THREED_MODEL_ADMIN.md) — v0.19.8c production Model importer, reusable Texture, material-assignment, and Model Files workspace boundary.
 - [Data model](developers/DATA_MODEL.md) — modules, project junctions, assets, and runtime records.
 - [API guide](developers/API_GUIDE.md) — route families and access conventions.
 - [ThreeD FarmBot Integration Plan](developers/FARMBOT_INTEGRATION.md) — hardware security and connection boundaries.
@@ -45,6 +45,10 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 ## v0.19.0 development
 
 - [Legacy ThreeD integration assessment](developers/LEGACY_THREED_INTEGRATION.md) — legacy possibility inventory and the current-App shared Model Library placement contract.
+
+## Pre-release plans
+
+- [plans: docs: v0.19.8d — ThreeD Model Library Import and Scene Presentation](plans/v0.19.8d.md) — approved five-stage plan for bringing configured reusable Models into the Dashboard Library and Scene.
 
 ## Releases
 
