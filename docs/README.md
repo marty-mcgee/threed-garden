@@ -2,9 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.19.8c **ThreeD Model Importer and Reusable Texture Assignments**, using package version `0.19.8-centaur`. It adds a Canvas-first importer, reusable Model Textures, persistent material assignments, and a consolidated Model Files workspace without changing Character or Rapier authority. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
-
-Current release candidate is v0.19.8d **ThreeD Model Library Import and Scene Presentation**, using package version `0.19.8-delta`. It carries configured reusable Models into owner-safe Dashboard discovery, readiness-aware inspection, runtime-matched preview, and adjustable per-instance placement.
+Current production is v0.19.8d **ThreeD Model Library Import and Scene Presentation**, using package version `0.19.8-delta`. It carries configured reusable Models into owner-safe Dashboard discovery, readiness-aware inspection, runtime-matched preview, and adjustable per-instance placement without changing Character or Rapier authority. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
 The v0.18.9a production release adds authenticated Character Library placement and Project-instance editing while keeping GardenCharacter and EcctrlCharacter as separate runtimes. Explicit Project saves preserve marker database IDs, uncontrolled Ecctrl mounts cannot publish temporary positions, overlapping capsule spawn areas are rejected before Rapier, and rejected Character snapshots can be restored to source positions without deleting their source assets.
 
@@ -48,13 +46,15 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 
 - [Legacy ThreeD integration assessment](developers/LEGACY_THREED_INTEGRATION.md) — legacy possibility inventory and the current-App shared Model Library placement contract.
 
-## Pre-release plans
+## Development plans
 
-- [plans: docs: v0.19.8d — ThreeD Model Library Import and Scene Presentation](plans/v0.19.8d.md) — approved five-stage plan for bringing configured reusable Models into the Dashboard Library and Scene.
+- [plans: docs: v0.19.8d — ThreeD Model Library Import and Scene Presentation](plans/v0.19.8d.md) — completed five-stage progression that brought configured reusable Models into the Dashboard Library and Scene.
 
 ## Releases
 
 - [Release index](releases/README.md)
+- [v0.19.8d production checkpoint](releases/v0.19.8d.md)
+- [v0.19.8c production checkpoint](releases/v0.19.8c.md)
 - [v0.19.8b production checkpoint](releases/v0.19.8b.md)
 - [v0.19.8a production checkpoint](releases/v0.19.8a.md)
 - [v0.19.7b production checkpoint](releases/v0.19.7b.md)

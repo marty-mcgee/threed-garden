@@ -897,3 +897,5 @@ Selecting a Library Model mounts a bounded interactive preview through the exist
 Before placement, the User may set a per-instance placement scale and review the effective reusable-base × placement result. The placement transaction stores that multiplier on the existing `project_threed_markers` authority and does not mutate the reusable Admin Model. Reopening the Library performs a fresh read so recently prepared Models and classifications become visible without restarting the Dashboard.
 
 This release candidate also corrects attachment lookup identity: Project Model marker `data.id` remains the Project marker record, while reusable Model attachments are requested with `data.modelId`. It does not change stable Project marker identity, the persistent Canvas/Rapier world, unrelated marker mounts, or GardenCharacter/EcctrlCharacter separation.
+
+This checkpoint was released successfully to production as **v0.19.8d — ThreeD Model Library Import and Scene Presentation** (`package.json` version `0.19.8-delta`) on September 7, 2026.
