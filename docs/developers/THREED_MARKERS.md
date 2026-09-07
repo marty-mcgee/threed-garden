@@ -885,3 +885,15 @@ A transient Project-scoped onboarding session keeps the Project Tour active thro
 The registered **Default Daylight** key is now the sole fallback for Projects without saved ThreeD view state. Browser-wide Environment inheritance was removed so a prior Project's unsaved selection cannot leak into a new Project. An explicitly saved Project Environment remains authoritative and restores normally.
 
 This checkpoint was released successfully to production as **v0.19.6 — ThreeD Dashboard Project Templates and Onboarding** (`package.json` version `0.19.6`) on September 4, 2026. It adds no database schema, automatic asset placement, copied content, new marker ownership, or changes to the persistent Canvas/Rapier and Character runtime boundaries.
+
+## v0.19.8d ThreeD Model Library import and Scene presentation boundary
+
+The Dashboard Model Library now derives explicit **Ready**, **Needs configuration**, and **Unavailable** states from the reusable Model's primary file, Model-owned attachments, and saved relational material assignments. Ready Models retain the established click and drag placement paths. Incomplete Models remain visible for diagnosis but cannot create a broken Project placement; their owner receives a direct route to Model Files.
+
+Authenticated owners can discover their own active non-Character Models without publishing them to other Users. Cross-owner discovery still requires active status plus both Public and Model Library Item classification. Character runtime Models remain excluded. The Admin classification label explicitly states this consequence, and new manual Model imports default to Library-item classification while Public sharing remains opt-in.
+
+Selecting a Library Model mounts a bounded interactive preview through the existing `ModelMarker3D` runtime adapter. The preview therefore uses the same primary Model file, dependency attachments, reusable Texture assignments, saved base scale, Y rotation, and offsets as Admin and Scene rendering. It creates no Project Marker or Rapier world.
+
+Before placement, the User may set a per-instance placement scale and review the effective reusable-base × placement result. The placement transaction stores that multiplier on the existing `project_threed_markers` authority and does not mutate the reusable Admin Model. Reopening the Library performs a fresh read so recently prepared Models and classifications become visible without restarting the Dashboard.
+
+This release candidate also corrects attachment lookup identity: Project Model marker `data.id` remains the Project marker record, while reusable Model attachments are requested with `data.modelId`. It does not change stable Project marker identity, the persistent Canvas/Rapier world, unrelated marker mounts, or GardenCharacter/EcctrlCharacter separation.

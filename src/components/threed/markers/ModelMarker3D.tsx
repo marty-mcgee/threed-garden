@@ -44,6 +44,8 @@ import { readThreeDModelMaterialOverrides } from '@/lib/services/threed/models/m
 // ============================================
 export interface ModelData {
   id: number;
+  /** Reusable Model authority when `id` belongs to a Project marker instance. */
+  modelId?: number;
   modelName: string;
   modelType: string;
   filePath: string;
@@ -104,6 +106,8 @@ interface ModelMarker3DProps {
   onEnvironmentCollisionPreviewChange?: (plan: ThreeDEnvironmentCollisionPreviewPlan | null) => void;
   /** Reports that this Model load has either succeeded or failed. */
   onRuntimeSettled?: () => void;
+  /** Reports a bounded load failure to opt-in preview surfaces. */
+  onRuntimeError?: (message: string | null) => void;
 }
 
 // ============================================
@@ -120,11 +124,14 @@ dracoLoader.setWorkerLimit(2);
 
 async function loadModelAttachments(model: ModelData): Promise<ThreeDModelRuntimeAttachment[]> {
   const markerSnapshotAttachments = Array.isArray(model.files) ? model.files : [];
-  if (!Number.isSafeInteger(model.id) || model.id <= 0) return markerSnapshotAttachments;
-  const cached = modelAttachmentRequestCache.get(model.id);
+  const reusableModelId = Number.isSafeInteger(model.modelId) && Number(model.modelId) > 0
+    ? Number(model.modelId)
+    : model.id;
+  if (!Number.isSafeInteger(reusableModelId) || reusableModelId <= 0) return markerSnapshotAttachments;
+  const cached = modelAttachmentRequestCache.get(reusableModelId);
   if (cached) return cached;
 
-  const request = fetch(`/api/threed/models?id=${model.id}`)
+  const request = fetch(`/api/threed/models?id=${reusableModelId}`)
     .then(async (response) => {
       const result = await response.json().catch(() => null);
       if (!response.ok || !result?.success || !Array.isArray(result.data?.files)) return markerSnapshotAttachments;
@@ -138,8 +145,8 @@ async function loadModelAttachments(model: ModelData): Promise<ThreeDModelRuntim
       && typeof attachment.filePath === 'string'
       && typeof attachment.fileType === 'string'
     )))
-    .finally(() => modelAttachmentRequestCache.delete(model.id));
-  modelAttachmentRequestCache.set(model.id, request);
+    .finally(() => modelAttachmentRequestCache.delete(reusableModelId));
+  modelAttachmentRequestCache.set(reusableModelId, request);
   return request;
 }
 
@@ -333,7 +340,7 @@ function ModelFallback({ name, position }: { name?: string; position: [number, n
 // ============================================
 // COMPONENT
 // ============================================
-export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange, onGeometryAuditChange, onMaterialInventoryChange, materialPreviewOverride, materialPreviewSelectionId, onEnvironmentCollisionPreviewChange, onRuntimeSettled }: ModelMarker3DProps) {
+export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange, onGeometryAuditChange, onMaterialInventoryChange, materialPreviewOverride, materialPreviewSelectionId, onEnvironmentCollisionPreviewChange, onRuntimeSettled, onRuntimeError }: ModelMarker3DProps) {
   const { loadedModel, loading, error } = useModelLoad(model, fitBounds, applyStoredScale);
   const requestedRuntimeAdapterKey = readThreeDModelRuntimeAdapterKey(model.metadata);
   const RuntimeAdapter = resolveThreeDModelRuntimeAdapter(requestedRuntimeAdapterKey);
@@ -349,6 +356,11 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
   useEffect(() => {
     if (!loading && (loadedModel || error || !model.filePath)) onRuntimeSettled?.();
   }, [error, loadedModel, loading, model.filePath, onRuntimeSettled]);
+
+  useEffect(() => {
+    onRuntimeError?.(error ? 'The configured Model preview could not be loaded.' : null);
+    return () => onRuntimeError?.(null);
+  }, [error, onRuntimeError]);
 
   useEffect(() => {
     onMaterialInventoryChange?.(

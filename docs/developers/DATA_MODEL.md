@@ -19,7 +19,7 @@ Beds, plantings, characters, FarmBots, and models become runtime markers from pr
 
 ### ThreeD Model Library visibility
 
-The current development schema adds `threed_models.is_public` and `threed_models.is_library_item`, both defaulting to false. Ownership remains on `user_id`: these flags allow an active model to appear in the shared read-only ThreeD Model Library but never grant update, upload, file deletion, or model deletion authority. Shared-library reads require both flags plus active model status and exclude `used_by_characters = true`. Character models must enter the Scene through the separate Character architecture. Owner-scoped Admin reads retain the complete management record; shared reads expose only rendering and associated-file fields.
+The current schema stores `threed_models.is_public` and `threed_models.is_library_item`. New manual Model imports default to Library-item classification while Public sharing remains off until explicitly enabled. Ownership remains on `user_id`: an authenticated owner can discover their own active non-Character Models in the Dashboard Library, while another User's Model requires both Public and Library-item flags plus active status. These flags never grant update, upload, file deletion, or Model deletion authority. Models with `used_by_characters = true` remain excluded and must enter the Scene through the separate Character architecture. Owner-scoped Admin reads retain the complete management record; shared reads expose only bounded rendering and associated-file fields.
 
 Admin Model CRUD persists the existing `used_by_plants` and `used_by_characters` flags on create and update. These fields classify reuse; they do not replace `model_type`, which describes the asset file/loader format.
 

@@ -18,6 +18,7 @@ import {
   isOwnedThreeDBlobUrl,
   runtimeModelTypeFromFileName,
 } from '@/lib/services/threed/models/model-file-integrity';
+import { createThreeDModelLibraryReadiness } from '@/lib/services/threed/models/model-library-readiness-core';
 
 type ModelWithFiles = typeof threedModels.$inferSelect & {
   files: Array<typeof threedModelFiles.$inferSelect>;
@@ -196,7 +197,7 @@ function normalizePendingPrimaryFile(
   return { fileName, relativePath, filePath, fileSize, modelType };
 }
 
-function serializeLibraryModel(model: ModelWithFiles) {
+function serializeLibraryModel(model: ModelWithFiles, viewerUserId: string) {
   return {
     id: model.id,
     modelName: model.modelName,
@@ -223,8 +224,10 @@ function serializeLibraryModel(model: ModelWithFiles) {
     isDefault: model.isDefault,
     isPublic: model.isPublic,
     isLibraryItem: model.isLibraryItem,
+    canManage: model.userId === viewerUserId,
     categories: model.categories,
     materialAssignments: model.materialAssignments,
+    libraryReadiness: createThreeDModelLibraryReadiness(model),
     files: model.files.map((file) => ({
       id: file.id,
       fileName: file.fileName,
@@ -317,7 +320,7 @@ export async function GET(request: NextRequest) {
         success: true,
         data: canManage
           ? modelWithFiles
-          : serializeLibraryModel(modelWithFiles),
+          : serializeLibraryModel(modelWithFiles, userId),
       });
     }
 
@@ -325,11 +328,16 @@ export async function GET(request: NextRequest) {
     type ModelStatus = NonNullable<(typeof threedModels.$inferSelect)['status']>;
     const conditions: SQL[] = scope === 'library'
       ? [
-          eq(threedModels.isPublic, true),
-          eq(threedModels.isLibraryItem, true),
           eq(threedModels.isActive, true),
           eq(threedModels.status, 'active'),
           sql`${threedModels.usedByCharacters} IS NOT TRUE`,
+          or(
+            eq(threedModels.userId, userId),
+            and(
+              eq(threedModels.isPublic, true),
+              eq(threedModels.isLibraryItem, true),
+            ),
+          )!,
         ]
       : [eq(threedModels.userId, userId)];
 
@@ -407,7 +415,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: scope === 'library'
-        ? modelsWithFiles.map(serializeLibraryModel)
+        ? modelsWithFiles.map((model) => serializeLibraryModel(model, userId))
         : modelsWithFiles,
       pagination: {
         limit,

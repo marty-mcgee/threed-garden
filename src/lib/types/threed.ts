@@ -239,6 +239,35 @@ export interface ThreeDModelLibraryItem {
   metadata?: unknown;
   isPublic: boolean;
   isLibraryItem: boolean;
+  canManage: boolean;
+  files: Array<{
+    id: number;
+    fileName: string;
+    relativePath: string;
+    fileType: string;
+    textureType: string | null;
+    filePath: string;
+    fileSize: number | null;
+    isBinaryBuffer: boolean;
+    loadOrder: number;
+  }>;
+  materialAssignments: Array<{
+    targetKey: string;
+    channel: string;
+    textureId: number;
+    textureName: string;
+    textureFileName: string;
+    textureUrl: string;
+  }>;
+  libraryReadiness: {
+    status: 'ready' | 'needs_configuration' | 'unavailable';
+    primaryFileAvailable: boolean;
+    textureAssignmentCount: number;
+    textureFileCount: number;
+    supportingFileCount: number;
+    dependencyStatus: 'available' | 'unverified';
+    issues: Array<'missing_primary_file' | 'missing_texture_source'>;
+  };
   categories: Array<{
     id: number;
     name: string;

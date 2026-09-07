@@ -282,9 +282,13 @@ export function ThreeDModelEditorFields({
           ['isPublic', 'Public'],
           ['isLibraryItem', 'Model Library Item'],
           ['usedByPlants', 'Used by Plants'],
-          ['usedByCharacters', 'Used by Characters'],
+          ['usedByCharacters', 'Character runtime Model'],
         ] as const).map(([key, label]) => <div key={key} className="flex items-center gap-2"><Switch id={id(key)} checked={form[key]} onCheckedChange={(value) => update(key, value)} disabled={disabled} /><Label htmlFor={id(key)}>{label}</Label></div>)}
-        <p className="text-[10px] text-muted-foreground">Character Models use Character runtime rules and are excluded from direct Model Library placement.</p>
+        <p className={`text-[10px] ${form.usedByCharacters ? 'text-amber-300' : 'text-muted-foreground'}`}>
+          {form.usedByCharacters
+            ? 'Character runtime Models are excluded from the Dashboard Model Library and use the separate Character Library.'
+            : 'Leave Character runtime Model off for ordinary props, buildings, environments, and other placeable Models.'}
+        </p>
         <div><Label htmlFor={id('uploadedBy')} className="text-xs">Uploaded By</Label><Input id={id('uploadedBy')} value={form.uploadedBy} onChange={(event) => update('uploadedBy', event.target.value)} disabled={disabled} /></div>
         <div><Label htmlFor={id('metadata')} className="text-xs">Metadata (JSON object)</Label><Input id={id('metadata')} value={form.metadata} onChange={(event) => update('metadata', event.target.value)} disabled={disabled} /></div>
       </Section>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Box, Loader2, Search, X } from 'lucide-react';
+import { AlertTriangle, Box, CheckCircle2, ExternalLink, Loader2, Search, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,8 +11,30 @@ import {
 } from '@/lib/services/threed/markers/model-library-drag-core';
 import type { MapViewMode } from '@/lib/types/map';
 import type { ThreeDModelLibraryItem } from '@/lib/types/threed';
+import type { ThreeDModelLibraryReadinessFilter } from '@/components/map/hooks/useThreeDModelLibraryCollection';
+import { ThreeDModelLibraryPreview } from '@/components/threed/models/ThreeDModelLibraryPreview';
 
 type ModelCategory = ThreeDModelLibraryItem['categories'][number];
+
+const READINESS_LABELS = {
+  ready: 'Ready',
+  needs_configuration: 'Needs configuration',
+  unavailable: 'Unavailable',
+} as const;
+
+function ModelReadinessBadge({ model }: { model: ThreeDModelLibraryItem }) {
+  const ready = model.libraryReadiness.status === 'ready';
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[9px] font-medium ${
+      ready
+        ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300'
+        : 'border-amber-500/40 bg-amber-500/10 text-amber-300'
+    }`}>
+      {ready ? <CheckCircle2 className="h-2.5 w-2.5" /> : <AlertTriangle className="h-2.5 w-2.5" />}
+      {READINESS_LABELS[model.libraryReadiness.status]}
+    </span>
+  );
+}
 
 interface ThreeDModuleOption {
   id: number;
@@ -30,6 +52,8 @@ interface ThreeDModelLibraryPanelProps {
   onSelectedCategoryChange: (slug: string) => void;
   search: string;
   onSearchChange: (value: string) => void;
+  readiness: ThreeDModelLibraryReadinessFilter;
+  onReadinessChange: (value: ThreeDModelLibraryReadinessFilter) => void;
   allModelCount: number;
   visibleModels: ThreeDModelLibraryItem[];
   inspectedModel: ThreeDModelLibraryItem | null;
@@ -58,6 +82,8 @@ export function ThreeDModelLibraryPanel({
   onSelectedCategoryChange,
   search,
   onSearchChange,
+  readiness,
+  onReadinessChange,
   allModelCount,
   visibleModels,
   inspectedModel,
@@ -75,6 +101,11 @@ export function ThreeDModelLibraryPanel({
   onClose,
 }: ThreeDModelLibraryPanelProps) {
   if (!isOpen) return null;
+
+  const numericPlacementScale = Number(placementScaleMultiplier);
+  const placementScaleIsValid = Number.isFinite(numericPlacementScale)
+    && numericPlacementScale >= 0.0001
+    && numericPlacementScale <= 10_000;
 
   const placementSurface = viewMode === 'combined'
     ? 'Combined View'
@@ -132,6 +163,20 @@ export function ThreeDModelLibraryPanel({
       </label>
 
       <label className="mb-2 block text-xs">
+        <span className="mb-1 block text-muted-foreground">Readiness</span>
+        <select
+          className="h-8 w-full rounded-md border bg-background px-2 text-xs"
+          value={readiness}
+          onChange={(event) => onReadinessChange(event.target.value as ThreeDModelLibraryReadinessFilter)}
+        >
+          <option value="all">All readiness states</option>
+          <option value="ready">Ready to place</option>
+          <option value="needs_configuration">Needs configuration</option>
+          <option value="unavailable">Unavailable</option>
+        </select>
+      </label>
+
+      <label className="mb-2 block text-xs">
         <span className="mb-1 block text-muted-foreground">Search by name</span>
         <span className="relative block">
           <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -168,11 +213,53 @@ export function ThreeDModelLibraryPanel({
               <X className="h-3 w-3" />
             </Button>
           </div>
+          {inspectedModel.libraryReadiness.primaryFileAvailable && (
+            <ThreeDModelLibraryPreview model={inspectedModel} />
+          )}
           <div className="grid grid-cols-2 gap-x-2 text-muted-foreground">
-            <span>Base scale</span><span className="text-right text-foreground">{Number(inspectedModel.scale ?? 1)}</span>
+            <span>Saved base scale</span><span className="text-right text-foreground">{Number(inspectedModel.scale ?? 1)}</span>
             <span>Y rotation</span><span className="text-right text-foreground">{Number(inspectedModel.rotationY ?? 0)}°</span>
             <span>File size</span><span className="text-right text-foreground">{inspectedModel.fileSize ? `${(inspectedModel.fileSize / 1024 / 1024).toFixed(1)} MB` : '—'}</span>
+            <span>Texture assignments</span><span className="text-right text-foreground">{inspectedModel.libraryReadiness.textureAssignmentCount}</span>
+            <span>Dependencies</span><span className="text-right text-foreground">{inspectedModel.libraryReadiness.dependencyStatus === 'available' ? `${inspectedModel.libraryReadiness.supportingFileCount} available` : 'Not yet verified'}</span>
           </div>
+          <div className="flex items-center justify-between gap-2 pt-1">
+            <span className="text-muted-foreground">Library readiness</span>
+            <ModelReadinessBadge model={inspectedModel} />
+          </div>
+          <label className="block rounded border bg-background/60 p-1.5">
+            <span className="mb-1 flex items-center justify-between gap-2 text-muted-foreground">
+              <span>Placement scale</span>
+              <span>
+                Effective: {placementScaleIsValid
+                  ? (Number(inspectedModel.scale ?? 1) * numericPlacementScale).toLocaleString(undefined, { maximumFractionDigits: 6 })
+                  : '—'}
+              </span>
+            </span>
+            <Input
+              type="number"
+              min="0.0001"
+              max="10000"
+              step="any"
+              value={placementScaleMultiplier}
+              disabled={placing}
+              onChange={(event) => onPlacementScaleMultiplierChange(event.target.value)}
+              className="h-7 px-2 text-xs"
+              aria-label="Model placement scale multiplier"
+            />
+            <span className={`mt-1 block text-[9px] ${placementScaleIsValid ? 'text-muted-foreground' : 'text-amber-300'}`}>
+              {placementScaleIsValid
+                ? `Saved base ${Number(inspectedModel.scale ?? 1)} × placement ${numericPlacementScale}`
+                : 'Enter a scale from 0.0001 to 10,000.'}
+            </span>
+          </label>
+          {inspectedModel.libraryReadiness.issues.length > 0 && (
+            <p className="pt-1 text-amber-300">
+              {inspectedModel.libraryReadiness.issues.includes('missing_primary_file')
+                ? 'A usable primary Model file is required.'
+                : 'Configure a reusable Texture or Model-owned Texture attachment before placement.'}
+            </p>
+          )}
           {inspectedModel.categories?.length > 0 && (
             <div className="flex flex-wrap gap-1 pt-1">
               {inspectedModel.categories.map((category) => (
@@ -180,7 +267,14 @@ export function ThreeDModelLibraryPanel({
               ))}
             </div>
           )}
-          <Button type="button" size="sm" className="mt-1 h-6 w-full text-[10px]" disabled={!selectedModuleId || placing} onClick={() => onBeginPlacement(inspectedModel)}>
+          {inspectedModel.canManage && inspectedModel.libraryReadiness.status !== 'ready' && (
+            <Button asChild type="button" variant="outline" size="sm" className="mt-1 h-6 w-full text-[10px]">
+              <a href={`/admin/threed/model-files?modelId=${inspectedModel.id}`} target="_blank" rel="noreferrer">
+                Configure Model <ExternalLink className="ml-1 h-3 w-3" />
+              </a>
+            </Button>
+          )}
+          <Button type="button" size="sm" className="mt-1 h-6 w-full text-[10px]" disabled={!selectedModuleId || placing || inspectedModel.libraryReadiness.status !== 'ready' || !placementScaleIsValid} onClick={() => onBeginPlacement(inspectedModel)}>
             Place Selected in {placementSurface}
           </Button>
         </div>
@@ -233,10 +327,12 @@ export function ThreeDModelLibraryPanel({
           </p>
         ) : (
           <div className="grid grid-cols-2 gap-2">
-            {visibleModels.map((model) => (
+            {visibleModels.map((model) => {
+              const readyToPlace = model.libraryReadiness.status === 'ready';
+              return (
               <div
                 key={model.id}
-                draggable={Boolean(selectedModuleId) && !placing}
+                draggable={Boolean(selectedModuleId) && !placing && readyToPlace}
                 onDragStart={(event) => {
                   onBeginPlacement(model);
                   event.dataTransfer.effectAllowed = 'copy';
@@ -253,7 +349,7 @@ export function ThreeDModelLibraryPanel({
                     onInspectModel(model.id);
                   }
                 }}
-                className={`group cursor-grab overflow-hidden rounded border bg-card text-left active:cursor-grabbing ${inspectedModelId === model.id ? 'border-cyan-500 ring-1 ring-cyan-500/40' : ''}`}
+                className={`group overflow-hidden rounded border bg-card text-left ${readyToPlace ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'} ${inspectedModelId === model.id ? 'border-cyan-500 ring-1 ring-cyan-500/40' : ''}`}
               >
                 <div className="flex aspect-square w-full items-center justify-center overflow-hidden bg-muted/40">
                   {model.thumbnailUrl ? (
@@ -264,13 +360,17 @@ export function ThreeDModelLibraryPanel({
                 </div>
                 <div className="min-w-0 p-2">
                   <div className="truncate text-xs font-medium">{model.modelName}</div>
-                  <div className="text-[10px] uppercase text-muted-foreground">{model.modelType}</div>
-                  <Button type="button" size="sm" className="mt-1.5 h-6 w-full text-[10px]" disabled={!selectedModuleId || placing} draggable={false} onClick={(event) => { event.stopPropagation(); onBeginPlacement(model); }}>
-                    Place
+                  <div className="mt-0.5 flex flex-wrap items-center justify-between gap-1">
+                    <div className="text-[10px] uppercase text-muted-foreground">{model.modelType}</div>
+                    <ModelReadinessBadge model={model} />
+                  </div>
+                  <Button type="button" size="sm" variant={readyToPlace ? 'default' : 'outline'} className="mt-1.5 h-6 w-full text-[10px]" disabled={!selectedModuleId || placing || !readyToPlace} draggable={false} onClick={(event) => { event.stopPropagation(); onBeginPlacement(model); }}>
+                    {readyToPlace ? 'Place' : 'Inspect to configure'}
                   </Button>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

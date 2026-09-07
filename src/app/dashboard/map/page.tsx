@@ -214,6 +214,7 @@ function UnifiedMapPageInner() {
   const [libraryModels, setLibraryModels] = useState<ThreeDModelLibraryItem[]>([]);
   const [libraryCategorySlug, setLibraryCategorySlug] = useState('all');
   const [libraryModelSearch, setLibraryModelSearch] = useState('');
+  const [libraryReadinessFilter, setLibraryReadinessFilter] = useState<'all' | 'ready' | 'needs_configuration' | 'unavailable'>('all');
   const [inspectedLibraryModelId, setInspectedLibraryModelId] = useState<number | null>(null);
   const [libraryCharacters, setLibraryCharacters] = useState<ThreeDCharacterLibraryItem[]>([]);
   const [libraryFarmBots, setLibraryFarmBots] = useState<ThreeDFarmBotLibraryItem[]>([]);
@@ -549,11 +550,13 @@ function UnifiedMapPageInner() {
     setPlacementModelRole(initialRole);
     setIsProjectSummaryOpen(false);
     setSelectedMarker(null);
-    if (libraryModels.length > 0 || loadingLibraryModels) return;
+    if (loadingLibraryModels) return;
 
     setLoadingLibraryModels(true);
     try {
-      const response = await fetch('/api/threed/models?scope=library&limit=100');
+      const response = await fetch('/api/threed/models?scope=library&limit=100', {
+        cache: 'no-store',
+      });
       const result = await response.json().catch(() => null);
       if (!response.ok || !result?.success) {
         throw new Error(result?.error || `Model Library failed (${response.status})`);
@@ -570,14 +573,28 @@ function UnifiedMapPageInner() {
     } finally {
       setLoadingLibraryModels(false);
     }
-  }, [libraryModels.length, loadingLibraryModels]);
+  }, [loadingLibraryModels]);
 
   const beginModelLibraryPlacement = useCallback((model: ThreeDModelLibraryItem) => {
     if (!placementThreedId || placingModel) return;
+    if (model.libraryReadiness.status !== 'ready') {
+      showToastRef.current('Configure this Model before placing it in a Project.', 'error');
+      setInspectedLibraryModelId(model.id);
+      return;
+    }
+    if (inspectedLibraryModelId !== model.id) {
+      setPlacementScaleMultiplier('1');
+    }
     setInspectedLibraryModelId(model.id);
     setPlacementModel(model);
-    setPlacementScaleMultiplier('1');
-  }, [placementThreedId, placingModel]);
+  }, [inspectedLibraryModelId, placementThreedId, placingModel]);
+
+  const inspectModelLibraryItem = useCallback((modelId: number | null) => {
+    if (modelId !== inspectedLibraryModelId) {
+      setPlacementScaleMultiplier('1');
+    }
+    setInspectedLibraryModelId(modelId);
+  }, [inspectedLibraryModelId]);
 
   const openCharacterLibrary = useCallback(async () => {
     setIsProjectAssetsOpen(false);
@@ -2121,6 +2138,7 @@ function UnifiedMapPageInner() {
     libraryCategorySlug,
     inspectedLibraryModelId,
     libraryModelSearch,
+    libraryReadinessFilter,
   );
   const { placedCharacterIds, placedFarmBotIds } = useThreeDPlacedLibraryAssets(data.threed.raw);
   const openEnvironmentDetails = useCallback((marker = projectEnvironmentMarkers[0]) => {
@@ -2393,11 +2411,16 @@ function UnifiedMapPageInner() {
           setLibraryModelSearch(value);
           setInspectedLibraryModelId(null);
         }}
+        readiness={libraryReadinessFilter}
+        onReadinessChange={(value) => {
+          setLibraryReadinessFilter(value);
+          setInspectedLibraryModelId(null);
+        }}
         allModelCount={libraryModels.length}
         visibleModels={visibleLibraryModels}
         inspectedModel={inspectedLibraryModel}
         inspectedModelId={inspectedLibraryModelId}
-        onInspectModel={setInspectedLibraryModelId}
+        onInspectModel={inspectModelLibraryItem}
         placementModel={placementModel}
         placementScaleMultiplier={placementScaleMultiplier}
         onPlacementScaleMultiplierChange={setPlacementScaleMultiplier}

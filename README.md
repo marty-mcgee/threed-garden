@@ -11,6 +11,10 @@ This is a **Dual-Surface Platform**:
 
 The v0.19.8c production release adds a Canvas-first Model importer, reusable owner-scoped Model Textures, persistent material-slot assignments, assign-to-all Texture reuse, and a consolidated Model Files workspace. It preserves Model-owned dependency files, Character runtimes, Project Marker authority, and Rapier physics.
 
+> **Current release candidate:** `v0.19.8d "ThreeD Model Library Import and Scene Presentation"` (`package.json` version `0.19.8-delta`)
+
+The v0.19.8d candidate completes the Dashboard handoff for configured reusable Models. It adds owner-safe discovery, readiness filtering, runtime-matched Library previews, guarded placement, and an adjustable per-Project-instance scale without changing reusable Model transforms.
+
 The v0.19.0d production release uses shared iterative WGS84 ellipsoidal distance, bearing, and forward/reverse coordinate calculations. Calibration diagnostics expose the measured spans, solved scale, and endpoint residual. Leaflet now uses each marker's exact calibrated projection without artificial local or GPS spreading, allowing north-up 2D and 3D layouts to closely match while local XYZ remains the R3F/Rapier authority.
 
 The v0.18.9d production release keeps a selected marker and its DetailsCard active while the user navigates the Scene, starts Ecctrl Take Control in Stationary camera mode, and changes Follow to Stationary when the user zooms. Its boundary is visual and navigational only: it does not change database schema, ThreeD CRUD contracts, Runtime Marker authority, Rapier ownership, or Ecctrl behavior.

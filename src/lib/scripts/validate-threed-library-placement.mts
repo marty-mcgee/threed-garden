@@ -10,6 +10,10 @@ import {
   transitionThreeDLibraryWorkspace,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/markers/library-workspace-core.ts';
+import {
+  createThreeDModelLibraryReadiness,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/models/model-library-readiness-core.ts';
 
 const position = { x: 12.5, y: 3, z: -8.25 };
 
@@ -96,4 +100,45 @@ assert.equal(transitionThreeDLibraryWorkspace('characters', 'models', false), 'c
 assert.equal(transitionThreeDLibraryWorkspace('characters', 'characters', false), null);
 console.log('✓ Library workspace permits exactly one active Library');
 
-console.log('Validated 4 ThreeD Library placement and workspace groups.');
+const configuredFbxReadiness = createThreeDModelLibraryReadiness({
+  modelType: 'fbx',
+  filePath: 'https://assets.example.test/barn.fbx',
+  mainModelFileId: 10,
+  files: [
+    { id: 10, fileType: 'model', filePath: 'https://assets.example.test/barn.fbx' },
+    { id: 11, fileType: 'texture', filePath: 'https://assets.example.test/barn.png' },
+  ],
+  materialAssignments: [{ targetKey: 'mesh:0', channel: 'baseColor' }],
+});
+assert.deepEqual(configuredFbxReadiness, {
+  status: 'ready',
+  primaryFileAvailable: true,
+  textureAssignmentCount: 1,
+  textureFileCount: 1,
+  supportingFileCount: 1,
+  dependencyStatus: 'available',
+  issues: [],
+});
+
+const untexturedFbxReadiness = createThreeDModelLibraryReadiness({
+  modelType: 'fbx',
+  filePath: 'https://assets.example.test/barn.fbx',
+  mainModelFileId: 10,
+  files: [{ id: 10, fileType: 'model', filePath: 'https://assets.example.test/barn.fbx' }],
+  materialAssignments: [],
+});
+assert.equal(untexturedFbxReadiness.status, 'needs_configuration');
+assert.deepEqual(untexturedFbxReadiness.issues, ['missing_texture_source']);
+
+const missingPrimaryReadiness = createThreeDModelLibraryReadiness({
+  modelType: 'glb',
+  filePath: '',
+  mainModelFileId: null,
+  files: [],
+  materialAssignments: [],
+});
+assert.equal(missingPrimaryReadiness.status, 'unavailable');
+assert.deepEqual(missingPrimaryReadiness.issues, ['missing_primary_file']);
+console.log('✓ Model Library readiness distinguishes configured, incomplete, and unavailable assets');
+
+console.log('Validated 5 ThreeD Library placement, workspace, and readiness groups.');

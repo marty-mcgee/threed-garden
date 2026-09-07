@@ -56,7 +56,7 @@ export function createEmptyThreeDModelAdminForm(): ThreeDModelAdminFormData {
     status: 'active',
     isDefault: false,
     isPublic: false,
-    isLibraryItem: false,
+    isLibraryItem: true,
     uploadedBy: '',
     metadata: '{}',
     categoryIds: [],

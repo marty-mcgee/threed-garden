@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import type { ThreeDModelLibraryItem } from '@/lib/types/threed';
 
 type ThreeDModelLibraryCategory = ThreeDModelLibraryItem['categories'][number];
+export type ThreeDModelLibraryReadinessFilter = 'all' | ThreeDModelLibraryItem['libraryReadiness']['status'];
 
 interface ThreeDModelLibraryCollection {
   categories: ThreeDModelLibraryCategory[];
@@ -16,6 +17,7 @@ export function useThreeDModelLibraryCollection(
   categorySlug: string,
   inspectedModelId: number | null,
   search: string,
+  readiness: ThreeDModelLibraryReadinessFilter,
 ): ThreeDModelLibraryCollection {
   return useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
@@ -32,8 +34,9 @@ export function useThreeDModelLibraryCollection(
         || model.categories?.some((category) => category.slug === categorySlug))
       && (normalizedSearch.length === 0
         || model.modelName.toLowerCase().includes(normalizedSearch))
+      && (readiness === 'all' || model.libraryReadiness.status === readiness)
     ));
 
     return { categories, inspectedModel, visibleModels };
-  }, [categorySlug, inspectedModelId, models, search]);
+  }, [categorySlug, inspectedModelId, models, readiness, search]);
 }
