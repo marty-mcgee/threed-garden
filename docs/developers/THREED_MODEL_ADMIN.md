@@ -1,8 +1,6 @@
 # ThreeD Model Administration
 
-Production checkpoint: **v0.19.8b — ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies** (`package.json` version `0.19.8-beta`), released September 6, 2026.
-
-Prepared release candidate: **v0.19.8c — ThreeD Model Importer and Reusable Texture Assignments** (`package.json` version `0.19.8-centaur`).
+Production checkpoint: **v0.19.8c — ThreeD Model Importer and Reusable Texture Assignments** (`package.json` version `0.19.8-centaur`), released September 7, 2026.
 
 The initial v0.19.8a workflow deliberately manages one reusable ThreeD Model at a time. Bulk import remains implemented for future work, but it is not exposed from the primary Model administration surface during this development boundary.
 
@@ -363,7 +361,7 @@ Manual verification for the completed feature boundary:
 5. Confirm usage reports both Models and prevents accidental deletion of the assigned Texture.
 6. Load both Models in the Dashboard and confirm the saved Texture resolves without changing marker, collider, or Character runtime behavior.
 
-## v0.19.8c release candidate
+## v0.19.8c production checkpoint
 
 Release title: **ThreeD Model Importer and Reusable Texture Assignments**.
 
@@ -404,4 +402,4 @@ Production gate:
 4. Open Model Textures and confirm an existing reusable Texture is selectable.
 5. Open Model Files, assign that Texture to all detected FBX slots, refresh, and confirm the assignment and Canvas appearance persist.
 6. Load the configured Model in a Dashboard Project and confirm its Texture resolves without a marker, collider, Character, or Scene regression.
-7. Record `v0.19.8c` in `docs/releases` only after production deployment is confirmed.
+7. Production deployment and the configured FBX Model Files workspace were confirmed September 7, 2026.

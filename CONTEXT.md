@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.8b — ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies** |
-| Current release candidate | **v0.19.8c — ThreeD Model Importer and Reusable Texture Assignments** (`package.json` version `0.19.8-centaur`) |
-| Current development milestone | **Release candidate: Canvas-first Model import, reusable Model Textures, persistent material assignments, and a consolidated Model Files workspace** |
+| Current stable version | **v0.19.8c — ThreeD Model Importer and Reusable Texture Assignments** (`package.json` version `0.19.8-centaur`) |
+| Current release candidate | **None — v0.19.8c is deployed** |
+| Current development milestone | **Production checkpoint: Canvas-first Model import, reusable Model Textures, persistent material assignments, and a consolidated Model Files workspace** |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |

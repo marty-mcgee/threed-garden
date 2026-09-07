@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.19.8b **ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies**. The prepared candidate is v0.19.8c **ThreeD Model Importer and Reusable Texture Assignments**, using package version `0.19.8-centaur`. It adds a Canvas-first importer, reusable Model Textures, persistent material assignments, and a consolidated Model Files workspace without changing Character or Rapier authority. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is v0.19.8c **ThreeD Model Importer and Reusable Texture Assignments**, using package version `0.19.8-centaur`. It adds a Canvas-first importer, reusable Model Textures, persistent material assignments, and a consolidated Model Files workspace without changing Character or Rapier authority. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
 The v0.18.9a production release adds authenticated Character Library placement and Project-instance editing while keeping GardenCharacter and EcctrlCharacter as separate runtimes. Explicit Project saves preserve marker database IDs, uncontrolled Ecctrl mounts cannot publish temporary positions, overlapping capsule spawn areas are rejected before Rapier, and rejected Character snapshots can be restored to source positions without deleting their source assets.
 
