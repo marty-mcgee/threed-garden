@@ -2,6 +2,7 @@
 
 This directory records confirmed production checkpoints, not every development iteration.
 
+- [v0.19.9 — Guided ThreeD Project Creation and First-Run Experience](v0.19.9.md)
 - [v0.19.8d — ThreeD Model Library Import and Scene Presentation](v0.19.8d.md)
 - [v0.19.8c — ThreeD Model Importer and Reusable Texture Assignments](v0.19.8c.md)
 - [v0.19.8b — ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies](v0.19.8b.md)

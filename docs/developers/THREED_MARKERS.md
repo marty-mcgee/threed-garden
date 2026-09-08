@@ -908,4 +908,4 @@ The recommended step receives one prominent continuation action and a short expl
 
 The established lifecycle remains unchanged: the Tour appears only after the complete Scene presentation, yields to the existing Library workspace, returns after a successful placement during its transient Project session, dismisses explicitly, and resets when the Project changes. It does not automatically create an asset, save the Project, remount the Canvas/Rapier world, or alter GardenCharacter/EcctrlCharacter routing.
 
-This is the approved release-candidate boundary for **v0.19.9 — Guided ThreeD Project Creation and First-Run Experience** (`package.json` version `0.19.9`).
+This checkpoint was released successfully to production as **v0.19.9 — Guided ThreeD Project Creation and First-Run Experience** (`package.json` version `0.19.9`) on September 7, 2026.

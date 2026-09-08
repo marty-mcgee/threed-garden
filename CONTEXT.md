@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.8d — ThreeD Model Library Import and Scene Presentation** (`package.json` version `0.19.8-delta`) |
-| Current release candidate | **v0.19.9 — Guided ThreeD Project Creation and First-Run Experience** (`package.json` version `0.19.9`) |
-| Current development milestone | **Release candidate: focused New Project Tour progression and first-run guidance** |
+| Current stable version | **v0.19.9 — Guided ThreeD Project Creation and First-Run Experience** (`package.json` version `0.19.9`) |
+| Current release candidate | **None — v0.19.9 is deployed** |
+| Current development milestone | **Production checkpoint: focused New Project Tour progression and first-run guidance** |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
