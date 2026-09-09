@@ -2,6 +2,7 @@
 'use client';
 
 import { Github, Heart, Zap } from 'lucide-react';
+import { version } from '../../../../package.json';
 
 export function AdminFooter() {
   const currentYear = new Date().getFullYear();
@@ -11,7 +12,7 @@ export function AdminFooter() {
       <div className="flex items-center gap-2">
         <span>© {currentYear} Marty McGee Neon</span>
         <span className="hidden sm:inline">•</span>
-        <span className="hidden sm:inline">v0.19.8a</span>
+        <span className="hidden sm:inline">v{version}</span>
       </div>
       <div className="flex items-center gap-4">
         <a 

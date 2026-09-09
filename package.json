@@ -27,7 +27,10 @@
     "threed:models:manifest:legacy": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/generate-legacy-threed-model-manifest.mts",
     "threed:models:import:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-import.mts",
     "threed:models:import": "node --import tsx src/lib/scripts/import-threed-models.ts",
-    "validate:threed-model-import": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-import-contract.mts"
+    "validate:threed-model-import": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-import-contract.mts",
+    "validate:threed-model-bulk-preparation": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-bulk-preparation.mts",
+    "validate:threed-model-bulk-runner": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-bulk-runner.mts",
+    "validate:threed-fbx-material-targets": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-fbx-material-targets.mts"
   },
   "dependencies": {
     "@auth/core": "^0.34.3",

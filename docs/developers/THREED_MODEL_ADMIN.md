@@ -1,8 +1,8 @@
 # ThreeD Model Administration
 
-Production checkpoint: **v0.19.8c — ThreeD Model Importer and Reusable Texture Assignments** (`package.json` version `0.19.8-centaur`), released September 7, 2026.
+Last production checkpoint for this importer workflow: **v0.19.8c — ThreeD Model Importer and Reusable Texture Assignments** (released package version `0.19.8-centaur`), September 7, 2026. The App's later confirmed production feature checkpoint is v0.19.9.
 
-The initial v0.19.8a workflow deliberately manages one reusable ThreeD Model at a time. Bulk import remains implemented for future work, but it is not exposed from the primary Model administration surface during this development boundary.
+The initial v0.19.8a workflow deliberately managed one reusable ThreeD Model at a time. The User-accepted v0.19.10a alpha candidate adds **Bulk Import FBX** to the dedicated Models workspace; the single-Model importer remains available. See [bulk-import implementation and validation](../plans/v0.19.10a-implementation.md) and the [deployment handoff](../plans/v0.19.10a-release.md). Production deployment confirmation is pending; GLB/GLTF bulk importing is the [next planned beta](../plans/v0.19.10b.md).
 
 The Admin route uses `#020618` as its presentation background. Its header, sidebar, and footer are translucent layers of that same color, scoped to `/admin` so Dashboard presentation remains independent.
 
@@ -14,6 +14,8 @@ The Admin route uses `#020618` as its presentation background. Its header, sideb
 - A Model row's file action opens the full Model Files workspace with that Model selected. The Models table does not maintain a second attachment-management dialog.
 - Both routes belong to the **Models** navigation family. Model Files keeps **Models** active in the Admin sidebar and provides a header-level **Back to Models** action.
 - The Models workspace uses its compact toolbar as the semantic page header, avoiding a redundant title/description block. The row contains its item count, name/type search, and related actions: **Add Model**, **Model Categories**, **Model Animations**, then **Model Files**.
+- **Bulk Import FBX** is available beside **Add Model** in `/admin/threed/models`. The embedded Project CRUD retains its single-Model entry point because its parent refresh unmounts child workspaces. Bulk imports create reusable Models without assigning them to a Project.
+- Bulk **Batch defaults → Assign Existing Texture File** reuses an active saved Texture as Base Color for all detected material slots. Each Model can inherit the batch selection, choose another Texture, or select None. Assignments are saved and verified during import; missing named texture files remain a separate dependency check. **Resolve missing texture files later (keep inactive)** applies the selected Texture now and retains the Model for further review.
 
 ## Authority boundaries
 

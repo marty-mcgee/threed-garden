@@ -23,6 +23,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
       - name: Validate production animation assets
         run: npm run validate:assets
 
@@ -36,3 +41,15 @@ jobs:
 
       - name: TypeScript type check
         run: bun run typecheck
+
+      - name: Validate Model import contracts
+        run: npm run validate:threed-model-import
+
+      - name: Validate FBX bulk preparation
+        run: npm run validate:threed-model-bulk-preparation
+
+      - name: Validate FBX bulk import sequencing
+        run: npm run validate:threed-model-bulk-runner
+
+      - name: Validate FBX material targets
+        run: npm run validate:threed-fbx-material-targets

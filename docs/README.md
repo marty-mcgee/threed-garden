@@ -48,9 +48,11 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 
 ## Development plans
 
-Current development is **v0.19.10a — ThreeD Model Bulk Importing**, using package version `0.19.10-alpha`. FBX bulk importing is the first focus; single-Model GLB/GLTF and OBJ work is deferred.
+The User-accepted **v0.19.10a — ThreeD Model Bulk Importing** checkpoint is prepared for deployment with package version `0.19.10-alpha`: FBX batches, local textures and existing reusable Texture assignments. Production confirmation is pending. The next planned beta adds GLB/GLTF bulk importing and texture/buffer requirements; OBJ remains deferred.
 
-- [v0.19.10a — ThreeD Model Bulk Importing](plans/v0.19.10a.md) — active development boundary built on the working single-Model FBX workflow.
+- [v0.19.10a — ThreeD Model Bulk Importing](plans/v0.19.10a.md) — accepted FBX/Texture alpha boundary.
+- [Alpha deployment handoff](plans/v0.19.10a-release.md) — release title, included behavior, validation and deployment verification.
+- [v0.19.10b — GLB/GLTF bulk importing](plans/v0.19.10b.md) — beta preparation and acceptance criteria; no beta behavior in the alpha package.
 
 - [plans: docs: v0.19.9 — Guided ThreeD Project Creation and First-Run Experience](plans/v0.19.9.md) — completed production plan for focused Project Tour progression, with later guidance ideas deferred.
 - [plans: docs: v0.19.8d — ThreeD Model Library Import and Scene Presentation](plans/v0.19.8d.md) — completed five-stage progression that brought configured reusable Models into the Dashboard Library and Scene.

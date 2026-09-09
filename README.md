@@ -9,7 +9,9 @@ This is a **Dual-Surface Platform**:
 
 > **Current production version:** `v0.19.9 "Guided ThreeD Project Creation and First-Run Experience"` (released package version `0.19.9`)
 
-> **Current development version:** `v0.19.10a "ThreeD Model Bulk Importing"` (`package.json` version `0.19.10-alpha`). Start with FBX bulk importing; single-Model GLB/GLTF and OBJ work follows later. See the [development plan](docs/plans/v0.19.10a.md).
+> **Prepared release candidate:** `v0.19.10a "ThreeD Model Bulk Importing"` (`package.json` version `0.19.10-alpha`). User-accepted FBX bulk importing with local textures and existing reusable Texture assignments. See the [deployment handoff](docs/plans/v0.19.10a-release.md); production deployment confirmation is pending.
+
+> **Next planned milestone:** `v0.19.10b` (`0.19.10-beta`) — GLB/GLTF bulk importing and texture/buffer requirements. See the [beta plan](docs/plans/v0.19.10b.md). The deployment package remains alpha; OBJ work is deferred.
 
 The v0.19.9 production release turns the existing Project Tour into a focused, state-derived first-run sequence. It recommends Environment, Model, and Character foundations one step at a time while preserving direct access for advanced Users and reusing the established Library and placement transactions.
 

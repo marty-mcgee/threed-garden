@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.19.9 — Guided ThreeD Project Creation and First-Run Experience** (released package version `0.19.9`) |
-| Current release candidate | **v0.19.10a — ThreeD Model Bulk Importing** (`package.json` version `0.19.10-alpha`; development only, not release-ready) |
-| Current development milestone | **FBX bulk importing, building on the working single-Model FBX upload and configuration workflow; single-Model GLB/GLTF and OBJ work deferred** |
+| Current release candidate | **v0.19.10a — ThreeD Model Bulk Importing** (`package.json` version `0.19.10-alpha`; User-accepted FBX/Texture checkpoint, prepared for deployment; production confirmation pending) |
+| Next planned milestone | **v0.19.10b — GLB/GLTF bulk importing with texture and buffer requirements** (planned `0.19.10-beta`; alpha package retained until its deployment; OBJ deferred) |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -38,7 +38,9 @@
 | GitHub Actions validation | ✅ Released in v0.17.1 |
 | Repository TypeScript baseline | ✅ Repaired during v0.17.2 development |
 
-The active development boundary is documented in [v0.19.10a — ThreeD Model Bulk Importing](docs/plans/v0.19.10a.md). v0.19.9 remains the confirmed production checkpoint.
+The accepted alpha boundary is documented in [v0.19.10a — ThreeD Model Bulk Importing](docs/plans/v0.19.10a.md), with its [deployment handoff](docs/plans/v0.19.10a-release.md) and [next beta plan](docs/plans/v0.19.10b.md). v0.19.9 remains the last confirmed production feature checkpoint; the User also confirmed deployment of the v0.19.10a planning documentation.
+
+The alpha bulk importer uses the existing owner-scoped Model lifecycle: primary upload and registration, Model-owned attachments, optional reusable Base Color Texture assignments, saved-state verification, then explicit activation after a dependency audit. Material keys come from the existing server FBX parse and shared preview inventory. Preparation writes nothing; known partial imports retain their Model IDs for review. The release has no schema or Scene-runtime change. GLB/GLTF bulk support belongs to beta, including proof of external binary/image dependencies and runtime material-target parity before enabling assignments.
 
 ## 🧠 Current Character / World-Action Architecture
 

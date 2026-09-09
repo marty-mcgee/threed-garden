@@ -7,8 +7,21 @@ import {
   createThreeDEnvironmentMeshInventory,
   createThreeDModelSourceComponentPage,
   type ThreeDModelSourceComponentPageOptions,
-} from './environment-collision-core';
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from './environment-collision-core.ts';
+import {
+  createThreeDModelMaterialInventory,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from './model-material-inventory-core.ts';
 import type { ThreeDGltfRuntimeInspection } from './gltf-runtime-inspection-core';
+
+export interface ThreeDFbxRuntimeInspection extends ThreeDGltfRuntimeInspection {
+  materialTargets: {
+    targetKeys: string[];
+    materialSlotCount: number;
+    omittedSlotCount: number;
+  };
+}
 
 class InertTextureLoader {
   setPath() { return this; }
@@ -24,7 +37,7 @@ class InertTextureLoader {
 export function inspectThreeDFbxStructure(
   bytes: ArrayBuffer,
   componentPage: ThreeDModelSourceComponentPageOptions = { offset: 0, limit: 100 },
-): ThreeDGltfRuntimeInspection {
+): ThreeDFbxRuntimeInspection {
   const manager = new THREE.LoadingManager();
   manager.addHandler(/.*/, new InertTextureLoader() as unknown as THREE.Loader);
   const object = new FBXLoader(manager).parse(bytes, '');
@@ -73,10 +86,16 @@ export function inspectThreeDFbxStructure(
     invalidMeshCount,
     hasFiniteBounds: !bounds.isEmpty() && boundsValues.every(Number.isFinite),
   };
+  const materials = createThreeDModelMaterialInventory(object);
   return {
     ...auditInput,
     ...assessThreeDEnvironmentGeometry(auditInput),
     meshInventory: createThreeDEnvironmentMeshInventory(inventory),
     sourceComponents: createThreeDModelSourceComponentPage(inventory, componentPage),
+    materialTargets: {
+      targetKeys: materials.slots.map((slot) => slot.id),
+      materialSlotCount: materials.materialSlotCount,
+      omittedSlotCount: materials.omittedSlotCount,
+    },
   };
 }

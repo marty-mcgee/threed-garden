@@ -41,6 +41,7 @@ import {
   type ThreeDModelUploadAnalysis,
 } from './ThreeDModelEditorFields';
 import { ThreeDModelAssetPreview } from './ThreeDModelAssetPreview';
+import { ThreeDModelsBulkImport } from './ThreeDModelsBulkImport';
 import type { ModelData } from '@/components/threed/markers/ModelMarker3D';
 
 // ============================================
@@ -191,8 +192,8 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
     }
   }
 
-  async function fetchModels() {
-    setLoading(true);
+  async function fetchModels(showLoading = true) {
+    if (showLoading) setLoading(true);
     try {
       const response = await fetch('/api/threed/models?limit=200');
       const data = await response.json();
@@ -207,7 +208,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
       showToast('Failed to fetch models', 'error');
       setModels([]);
     } finally {
-      setLoading(false);
+      if (showLoading) setLoading(false);
     }
   }
 
@@ -473,7 +474,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
       <AdminWorkspaceHeader
         icon={Box}
         title="Models"
-        description="Add and manage one reusable ThreeD Model at a time"
+        description="Import and manage reusable ThreeD Models"
       >
         <Badge variant="secondary" className="text-xs">{filteredModels.length}</Badge>
         <div className="relative min-w-48 flex-1">
@@ -486,6 +487,10 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
           />
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
+          {!onModuleUpdate && <ThreeDModelsBulkImport categories={categories} onComplete={async () => {
+            // Keep the bulk queue mounted while refreshing saved Model summaries.
+            await fetchModels(false);
+          }} />}
           <Dialog open={showCreateDialog} onOpenChange={handleCreateDialogChange}>
             <DialogTrigger asChild>
               <Button size="sm" className="h-7 px-2 text-xs">

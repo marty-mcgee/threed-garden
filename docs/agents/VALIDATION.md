@@ -27,6 +27,10 @@ git diff --check
 npm run validate:assets
 npm run validate:threed-library-placement
 npm run validate:threed-project-session
+npm run validate:threed-model-import
+npm run validate:threed-model-bulk-preparation
+npm run validate:threed-model-bulk-runner
+npm run validate:threed-fbx-material-targets
 npm run validate:threed-runtime-markers
 npm run validate:threed-orchestration
 npm run validate:farmbot-crypto
@@ -342,7 +346,10 @@ After applying the FarmBot peripheral-binding schema to an approved development 
 
 - Production animation asset validation is a blocking check.
 - TypeScript type checking is a blocking validation step.
+- Model import contracts, FBX bulk preparation, mocked import sequencing and FBX material-target parity are blocking validation steps. The workflow explicitly uses Node 24 for the native TypeScript scripts and retains the existing **Assets and TypeScript** job/check name.
 - Vercel remains the production-build gate because its build uses the configured deployment environment.
+
+For Model importer changes, run the four `validate:threed-model-import`, `validate:threed-model-bulk-preparation`, `validate:threed-model-bulk-runner` and `validate:threed-fbx-material-targets` scripts listed above. They are offline: the runner uses mocked requests and the FBX validator reads a tracked asset without network requests. They do not establish authenticated uploads or rendered material appearance for every asset. Use the [alpha deployment handoff](../plans/v0.19.10a-release.md) for the release smoke checks.
 
 ## TypeScript baseline
 

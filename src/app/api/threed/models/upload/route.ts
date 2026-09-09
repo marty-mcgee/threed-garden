@@ -69,14 +69,15 @@ async function inspectUploadedModel(file: File, modelType: string) {
   }
 
   const bytes = new Uint8Array(await file.arrayBuffer());
-  const inspection = modelType === 'fbx'
+  const fbxInspection = modelType === 'fbx'
     ? inspectThreeDFbxStructure(bytes.buffer, { offset: 0, limit: 12 })
-    : inspectThreeDGltfStructure(
-      modelType === 'glb'
-        ? parseThreeDGlbJsonChunk(bytes)
-        : JSON.parse(new TextDecoder().decode(bytes)),
-      { offset: 0, limit: 12 },
-    );
+    : null;
+  const inspection = fbxInspection ?? inspectThreeDGltfStructure(
+    modelType === 'glb'
+      ? parseThreeDGlbJsonChunk(bytes)
+      : JSON.parse(new TextDecoder().decode(bytes)),
+    { offset: 0, limit: 12 },
+  );
 
   return {
     status: 'analyzed' as const,
@@ -89,6 +90,7 @@ async function inspectUploadedModel(file: File, modelType: string) {
     reasons: inspection.reasons,
     componentCount: inspection.sourceComponents.total,
     components: inspection.sourceComponents.items,
+    ...(fbxInspection ? { materialTargets: fbxInspection.materialTargets } : {}),
   };
 }
 
