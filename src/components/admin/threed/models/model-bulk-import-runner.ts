@@ -34,8 +34,25 @@ export interface BulkImportInput {
   offsetZ: string;
   configureLater: boolean;
   previewFile?: File;
-  attachments: Array<{ file: File; relativePath: string }>;
+  attachments: Array<{ file: File; relativePath: string; fileType?: 'texture' | 'binary' }>;
 }
+
+export interface BulkGltfMaterialTargets {
+  targetKeys: string[];
+  materialSlotCount: number;
+  omittedSlotCount: number;
+}
+
+export type BulkGltfBundleInspector = (
+  file: File,
+  attachments: BulkImportInput['attachments'],
+  configureLater: boolean,
+) => Promise<BulkGltfMaterialTargets>;
+
+const inspectGltfBundle: BulkGltfBundleInspector = async (file, attachments, configureLater) => {
+  const { inspectBulkGltfBundle } = await import('./model-gltf-bundle-inspection');
+  return inspectBulkGltfBundle(file, attachments, configureLater);
+};
 
 export interface BulkImportResult {
   status: 'imported' | 'failed' | 'unknown';
@@ -169,14 +186,20 @@ export async function runBulkModel(
   input: BulkImportInput,
   onProgress: (label: string) => void,
   request: typeof fetch = fetch,
+  inspectBundle: BulkGltfBundleInspector = inspectGltfBundle,
 ): Promise<BulkImportResult> {
   // Validate before the first upload. Inputs are an immutable snapshot of a reviewed row.
+  const sourceFile = input.file;
+  const previewFile = input.previewFile;
+  const configureLater = input.configureLater;
+  const activateAfterImport = input.settings.isActive;
+  const modelType = sourceFile.name.split('.').at(-1)?.toLowerCase() as 'fbx' | 'glb' | 'gltf';
   let form: ReturnType<typeof buildThreeDModelAdminPayload>;
-  let attachments: Array<{ file: File; relativePath: string; fileType: 'texture' | 'other' }>;
+  let attachments: Array<{ file: File; relativePath: string; fileType: 'texture' | 'binary' | 'other' }>;
   const { existingTextureId = null, ...modelSettings } = input.settings;
   try {
-    checkFile(input.file, /\.fbx$/i);
-    if (!normalizeThreeDModelRelativePath(input.file.name)) throw new Error('Invalid primary filename.');
+    checkFile(sourceFile, /\.(?:fbx|glb|gltf)$/i);
+    if (!normalizeThreeDModelRelativePath(sourceFile.name)) throw new Error('Invalid primary filename.');
     for (const value of [input.settings.scale, input.rotationY, input.offsetX, input.offsetY, input.offsetZ]) {
       if (!value.trim()) throw new Error('Every transform must contain a finite number.');
     }
@@ -187,10 +210,11 @@ export async function runBulkModel(
     form = buildThreeDModelAdminPayload({
       ...createEmptyThreeDModelAdminForm(),
       ...modelSettings,
+      categoryIds: [...modelSettings.categoryIds],
       modelName: input.modelName,
-      modelType: 'fbx',
-      filePath: 'https://pending.invalid/model.fbx',
-      fileSize: String(input.file.size),
+      modelType,
+      filePath: `https://pending.invalid/model.${modelType}`,
+      fileSize: String(sourceFile.size),
       rotationY: input.rotationY,
       offsetX: input.offsetX,
       offsetY: input.offsetY,
@@ -199,19 +223,21 @@ export async function runBulkModel(
       status: 'pending',
     });
     attachments = input.attachments.map((entry) => {
-      checkFile(entry.file, /\.(?:png|jpe?g|webp|tga|bmp)$/i);
-      return { ...entry, relativePath: attachmentPath(entry.relativePath), fileType: 'texture' };
+      const fileType = entry.fileType ?? 'texture';
+      if (fileType !== 'texture' && fileType !== 'binary') throw new Error('Unsupported attachment type.');
+      checkFile(entry.file, fileType === 'binary' ? /\.bin$/i : /\.(?:png|jpe?g|webp|tga|bmp)$/i);
+      return { ...entry, relativePath: attachmentPath(entry.relativePath), fileType };
     });
-    if (input.previewFile) {
-      await checkPreview(input.previewFile);
-      const previewName = input.previewFile.name.toLowerCase();
+    if (previewFile) {
+      await checkPreview(previewFile);
+      const previewName = previewFile.name.toLowerCase();
       if (attachments.some((entry) => entry.file.name.toLowerCase() === previewName
         || entry.relativePath.split('/').at(-1)?.toLowerCase() === previewName)) {
         throw new Error('The preview filename must be distinct from texture filenames.');
       }
       attachments.push({
-        file: input.previewFile,
-        relativePath: attachmentPath(`previews/${input.previewFile.name}`),
+        file: previewFile,
+        relativePath: attachmentPath(`previews/${previewFile.name}`),
         fileType: 'other',
       });
     }
@@ -250,6 +276,29 @@ export async function runBulkModel(
     return result('failed', message, true);
   };
 
+  if (modelType !== 'fbx') {
+    onProgress(`Validating local ${modelType.toUpperCase()} resources and geometry`);
+    try {
+      // File objects retain the exact reviewed bytes across local inspection and upload.
+      const bundleAttachments = attachments.flatMap((entry) => entry.fileType === 'other' ? [] : [{
+        file: entry.file, relativePath: entry.relativePath, fileType: entry.fileType,
+      }]);
+      const inventory = await inspectBundle(sourceFile, bundleAttachments, configureLater);
+      if (existingTextureId !== null) {
+        materialTargets = assignmentTargets({ status: 'analyzed', materialTargets: inventory });
+        if (!materialTargets) {
+          return result('failed', 'The local Model did not provide a complete set of 1–500 supported material slots. Remove the existing Texture selection to configure after import, or choose another Model.', true);
+        }
+      }
+    } catch (error) {
+      // These diagnostics come from the local bundle inspector, never an API response.
+      const detail = error instanceof Error ? error.message.replace(/\s+/g, ' ').trim().slice(0, 400) : '';
+      return result('failed', detail
+        ? `Local ${modelType.toUpperCase()} validation failed: ${detail} Missing geometry cannot be deferred.`
+        : 'The local GLB/GLTF bundle could not be validated. Check geometry buffers, image files, and supported glTF resources before retrying. Missing geometry cannot be deferred.', true);
+    }
+  }
+
   if (existingTextureId !== null) {
     onProgress('Checking selected existing Texture');
     try {
@@ -267,16 +316,16 @@ export async function runBulkModel(
     }
   }
 
-  onProgress('Uploading and analyzing FBX');
+  onProgress(`Uploading and analyzing ${modelType.toUpperCase()}`);
   const primaryBody = new FormData();
-  primaryBody.append('file', input.file);
+  primaryBody.append('file', sourceFile);
   let upload: Reply;
   try { upload = await send(request, PRIMARY_ROUTE, { method: 'POST', body: primaryBody }); }
   catch { return result('unknown', 'The upload response was lost. Check the import result before uploading this file again.'); }
   if (!upload.ok && REJECTED_BEFORE_WRITE.has(upload.status)) {
     return result('failed', upload.status === 413
       ? 'The upload transport rejected this file size. Use a smaller file and retry.'
-      : 'The server rejected the FBX before creation. Check its format and your signed-in session, then retry.', true);
+      : `The server rejected the ${modelType.toUpperCase()} before creation. Check its format and your signed-in session, then retry.`, true);
   }
   const uploaded = data(upload);
   if (httpsUrl(uploaded?.url)) stagedUrl = uploaded.url;
@@ -284,10 +333,10 @@ export async function runBulkModel(
     return result('unknown', 'The upload outcome is unconfirmed. Check the import result before uploading this file again.');
   }
   analysis = uploaded.analysis;
-  if (uploaded.fileName !== input.file.name || uploaded.fileSize !== input.file.size || uploaded.modelType !== 'fbx') {
-    return failBeforeCreate('The upload returned inconsistent primary file details. Its staged file was discarded; check the FBX before retrying.');
+  if (uploaded.fileName !== sourceFile.name || uploaded.fileSize !== sourceFile.size || uploaded.modelType !== modelType) {
+    return failBeforeCreate(`The upload returned inconsistent primary file details. Its staged file was discarded; check the ${modelType.toUpperCase()} before retrying.`);
   }
-  if (existingTextureId !== null) {
+  if (existingTextureId !== null && modelType === 'fbx') {
     materialTargets = assignmentTargets(analysis);
     if (!materialTargets) {
       return failBeforeCreate('The FBX did not provide a complete set of 1–500 supported material slots. Its staged upload was discarded. Remove the existing Texture selection to configure after import, or choose another FBX.');
@@ -296,8 +345,8 @@ export async function runBulkModel(
   const primaryFile = {
     fileName: uploaded.fileName,
     filePath: stagedUrl,
-    fileSize: input.file.size,
-    modelType: 'fbx',
+    fileSize: sourceFile.size,
+    modelType,
   };
   onProgress('Creating inactive Model and registering primary file');
   let created: Reply;
@@ -345,7 +394,7 @@ export async function runBulkModel(
     const primary = files.find((entry) => entry.id === saved?.mainModelFileId);
     if (!saved || saved.id !== modelId || !positiveId(saved.mainModelFileId)
       || saved.isActive !== false || saved.status !== 'pending'
-      || saved.filePath !== primaryFile.filePath || saved.modelType !== 'fbx'
+      || saved.filePath !== primaryFile.filePath || saved.modelType !== modelType
       || !primary || primary.fileType !== 'model' || primary.filePath !== primaryFile.filePath
       || primary.fileName !== primaryFile.fileName || primary.fileSize !== primaryFile.fileSize) {
       return result('failed', 'Model created; primary registration or inactive state could not be verified. Review Model files.');
@@ -354,7 +403,8 @@ export async function runBulkModel(
       const matches = files.filter((file) => file.relativePath === entry.relativePath);
       const match = matches[0];
       if (matches.length !== 1 || !positiveId(match?.id) || match.fileName !== entry.file.name
-        || match.fileSize !== entry.file.size || match.fileType !== entry.fileType || !httpsUrl(match.filePath)) {
+        || match.fileSize !== entry.file.size || match.fileType !== entry.fileType || !httpsUrl(match.filePath)
+        || (entry.fileType === 'binary' && match.isBinaryBuffer !== true)) {
         return result('failed', 'Model created inactive; saved attachments did not match the reviewed batch. Review Model files.');
       }
       if (entry.fileType === 'other') previewUrl = match.filePath;
@@ -412,17 +462,25 @@ export async function runBulkModel(
   let audit: JsonObject | null = null;
   try { audit = data(await send(request, `${FILES_ROUTE}/requirements?modelId=${modelId}`)); }
   catch { /* A failed read must never activate the Model. */ }
+  if (modelType !== 'fbx' && (audit?.status !== 'analyzed' || !Array.isArray(audit.requirements)
+    || audit.requirements.some((requirement) => {
+      const entry = object(requirement);
+      return !entry || (entry.kind !== 'texture' && entry.kind !== 'buffer')
+        || typeof entry.satisfied !== 'boolean' || (entry.kind === 'buffer' && !entry.satisfied);
+    }))) {
+    return result('failed', 'Model created inactive; the saved geometry dependency audit is incomplete or unavailable. Review Model files before continuing. Missing geometry cannot be deferred.');
+  }
   const auditComplete = audit?.status === 'analyzed' && audit.complete === true
     && Array.isArray(audit.requirements)
     && audit.requirements.every((requirement) => object(requirement)?.satisfied === true);
-  if (input.configureLater || !auditComplete) {
-    return result('imported', input.configureLater
+  if (configureLater || !auditComplete) {
+    return result('imported', configureLater
       ? textureAssigned
         ? 'Imported inactive/pending. Review remaining files and the Model before activation.'
         : 'Imported inactive/pending. Configure textures and review the Model before activation.'
       : 'Imported inactive/pending. Texture inspection needs review before activation.');
   }
-  if (!input.settings.isActive) {
+  if (!activateAfterImport) {
     return result('imported', 'Imported inactive/pending. Named texture dependencies checked; review the Model before activation.');
   }
   onProgress('Activating reviewed Model');

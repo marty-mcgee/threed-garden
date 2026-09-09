@@ -3,6 +3,8 @@ import {
   type ThreeDModelCompanionRequirement,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../../../../lib/services/threed/models/model-companion-core.ts';
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+import { MAX_GLTF_BUNDLE_BYTES, type GltfBundleInspection } from '../../../../lib/services/threed/models/model-gltf-bundle-core.ts';
 
 export const MAX_BULK_MODELS = 100;
 // Leave multipart overhead below the deployed Function request-body limit.
@@ -50,6 +52,12 @@ export interface BulkDraft {
   requirements: ThreeDModelCompanionRequirement[];
   inspecting: boolean;
   inspectionError?: string;
+  gltfResources?: {
+    embeddedResourceCount: number;
+    embeddedByteLength: number;
+    externalBuffers: Array<{ relativePath: string; byteLength: number }>;
+    textures: { embeddedImageCount: number; bufferImageCount: number; externalFileCount: number };
+  };
   choices: Record<string, { sourceId: string; relativePath: string }>;
   extras?: Array<{ id: string; sourceId: string; relativePath: string }>;
 }
@@ -58,7 +66,7 @@ export interface BulkPreparedModel {
   ready: boolean;
   issues: string[];
   unresolved: string[];
-  attachments: Array<{ source: BulkSource; relativePath: string }>;
+  attachments: Array<{ source: BulkSource; relativePath: string; fileType: 'texture' | 'binary' }>;
   settings: BulkDefaults;
   matches: Array<{
     requirement: ThreeDModelCompanionRequirement;
@@ -88,7 +96,15 @@ function selectedFileIssue(file: File): string | null {
 }
 
 export function validateBulkPrimary(file: File): string | null {
-  return extension(file.name) !== 'fbx' ? 'Select an FBX Model file.' : selectedFileIssue(file);
+  return !['fbx', 'glb', 'gltf'].includes(extension(file.name)) ? 'Select an FBX, GLB, or GLTF Model file.' : selectedFileIssue(file);
+}
+
+export function bulkCompanionType(file: File): 'texture' | 'binary' {
+  return extension(file.name) === 'bin' ? 'binary' : 'texture';
+}
+
+export function validateBulkCompanion(file: File): string | null {
+  return bulkCompanionType(file) === 'binary' ? selectedFileIssue(file) : validateBulkTexture(file);
 }
 
 export function validateBulkTexture(file: File): string | null {
@@ -127,9 +143,29 @@ export function createBulkDefaults(): BulkDefaults {
 export function createBulkDraft(source: BulkSource): BulkDraft {
   return {
     id: source.id, source,
-    modelName: source.file.name.replace(/\.fbx$/i, '').replace(/[._-]+/g, ' ').replace(/\s+/g, ' ').trim(),
+    modelName: source.file.name.replace(/\.(?:fbx|glb|gltf)$/i, '').replace(/[._-]+/g, ' ').replace(/\s+/g, ' ').trim(),
     rotationY: '0.0', offsetX: '0.0', offsetY: '0.0', offsetZ: '0.0',
     overrides: {}, configureLater: false, requirements: [], inspecting: true, choices: {}, extras: [],
+  };
+}
+
+/** Keep only preparation counts and buffer declarations from the validated bundle. */
+export function summarizeBulkGltfResources(inspection: GltfBundleInspection): NonNullable<BulkDraft['gltfResources']> {
+  let embeddedImageCount = 0;
+  let bufferImageCount = 0;
+  const externalImages = new Set<string>();
+  for (const image of inspection.images) {
+    if (image.embedded !== undefined) embeddedImageCount += 1;
+    else if (image.bufferView !== undefined) bufferImageCount += 1;
+    // The bundle inspector already normalizes these paths.
+    else if (image.relativePath) externalImages.add(image.relativePath.toLowerCase());
+  }
+  return {
+    embeddedResourceCount: inspection.embeddedResourceCount,
+    embeddedByteLength: inspection.embeddedByteLength,
+    externalBuffers: inspection.buffers.flatMap((buffer) => buffer.relativePath
+      ? [{ relativePath: buffer.relativePath, byteLength: buffer.byteLength }] : []),
+    textures: { embeddedImageCount, bufferImageCount, externalFileCount: externalImages.size },
   };
 }
 
@@ -149,7 +185,7 @@ export function requirementKey(requirement: ThreeDModelCompanionRequirement): st
 
 export function defaultDestination(reference: string): string {
   const normalized = safePath(reference);
-  return normalized ? normalized.includes('/') ? normalized : `textures/${normalized}` : reference;
+  return normalized ? normalized.includes('/') ? normalized : `${extension(normalized) === 'bin' ? 'buffers' : 'textures'}/${normalized}` : reference;
 }
 
 export function resolveBulkSettings(draft: BulkDraft, defaults: BulkDefaults): BulkDefaults {
@@ -166,11 +202,11 @@ function automaticSource(draft: BulkDraft, requirement: ThreeDModelCompanionRequ
     const exact = pool.filter((source) => source.selectionRoot === draft.source.selectionRoot
       && safePath(source.sourcePath)?.toLowerCase() === expected);
     if (exact.length === 1) return { source: exact[0] };
-    if (exact.length > 1) return { issue: 'Choose texture: multiple files have this source path.' };
+    if (exact.length > 1) return { issue: 'Choose file: multiple files have this source path.' };
   }
   const candidates = pool.filter((source) => source.file.name.toLowerCase() === requirement.fileName.toLowerCase());
   return candidates.length === 1 ? { source: candidates[0] }
-    : { issue: candidates.length ? 'Choose texture: multiple files have this name.' : 'Missing texture.' };
+    : { issue: candidates.length ? 'Choose file: multiple files have this name.' : `Missing ${requirement.kind === 'buffer' ? 'binary buffer' : 'texture'}.` };
 }
 
 export function prepareBulkModel(draft: BulkDraft, defaults: BulkDefaults, pool: readonly BulkSource[], existingTextures?: readonly BulkExistingTexture[]): BulkPreparedModel {
@@ -179,7 +215,7 @@ export function prepareBulkModel(draft: BulkDraft, defaults: BulkDefaults, pool:
   const addIssue = (issue: string) => { if (!issues.includes(issue)) issues.push(issue) };
   const primaryIssue = validateBulkPrimary(draft.source.file);
   if (primaryIssue) addIssue(primaryIssue);
-  if (draft.inspecting) addIssue('Texture reference scan is still running.');
+  if (draft.inspecting) addIssue('Dependency scan is still running.');
   if (draft.inspectionError) addIssue(draft.inspectionError);
   if (settings.existingTextureId != null) {
     if (!Number.isSafeInteger(settings.existingTextureId) || settings.existingTextureId <= 0) {
@@ -206,15 +242,17 @@ export function prepareBulkModel(draft: BulkDraft, defaults: BulkDefaults, pool:
     const issue = previewMetadataIssue(draft.previewFile);
     if (issue) addIssue(issue);
     if (draft.requirements.some((requirement) => requirement.fileName.toLowerCase() === draft.previewFile?.name.toLowerCase())) {
-      addIssue('Preview filename conflicts with a texture reference; rename or remove the preview.');
+      addIssue('Preview filename conflicts with a dependency reference; rename or remove the preview.');
     }
   }
 
-  type Attachment = { source: BulkSource; relativePath: string; keys: Set<string>; extra: boolean };
+  type Attachment = { source: BulkSource; relativePath: string; fileType: 'texture' | 'binary'; keys: Set<string>; extra: boolean };
   const attachments: Attachment[] = [];
   function addAttachment(source: BulkSource, path: string, key?: string): string | undefined {
     const relativePath = safePath(path);
-    const issue = validateBulkTexture(source.file)
+    const fileType = bulkCompanionType(source.file);
+    const issue = validateBulkCompanion(source.file)
+      ?? (extension(draft.source.file.name) !== 'fbx' && fileType === 'texture' && !['png', 'jpg', 'jpeg', 'webp'].includes(extension(source.file.name)) ? 'GLB/GLTF textures must be PNG, JPG, or WebP.' : null)
       ?? (!relativePath ? 'Enter a safe relative attachment path.' : null)
       ?? (!relativePath?.includes('/') ? 'Attachment directory is required.' : null)
       ?? ((relativePath?.split('/').slice(0, -1).join('/').length ?? 0) > 100 ? 'Attachment directory cannot exceed 100 characters.' : null)
@@ -233,7 +271,7 @@ export function prepareBulkModel(draft: BulkDraft, defaults: BulkDefaults, pool:
         return message;
       }
       existing.keys.add(key);
-    } else attachments.push({ source, relativePath, keys: new Set(key ? [key] : []), extra: !key });
+    } else attachments.push({ source, relativePath, fileType, keys: new Set(key ? [key] : []), extra: !key });
   }
 
   const requirements = [...new Map(draft.requirements.map((requirement) => [requirementKey(requirement), requirement])).values()];
@@ -244,18 +282,28 @@ export function prepareBulkModel(draft: BulkDraft, defaults: BulkDefaults, pool:
     const source = choice ? pool.find((candidate) => candidate.id === choice.sourceId) : suggested?.source;
     const relativePath = choice?.relativePath ?? defaultDestination(requirement.relativePath);
     let issue = source ? undefined : choice
-      ? choice.sourceId ? 'Selected texture is no longer available.' : 'Texture left unmatched.'
+      ? choice.sourceId ? 'Selected file is no longer available.' : 'File left unmatched.'
       : suggested?.issue;
     if (source && source.file.name.toLowerCase() !== requirement.fileName.toLowerCase()) {
-      issue = `Selected texture must be named ${requirement.fileName}.`;
+      issue = `Selected file must be named ${requirement.fileName}.`;
       addIssue(issue);
-    } else if (source) issue = addAttachment(source, relativePath, key);
+    } else if (source && (requirement.kind === 'buffer') !== (bulkCompanionType(source.file) === 'binary')) {
+      issue = `Select a ${requirement.kind === 'buffer' ? '.bin buffer' : 'texture image'} for ${requirement.relativePath}.`;
+      addIssue(issue);
+    } else if (source) {
+      issue = addAttachment(source, relativePath, key);
+      const buffer = draft.gltfResources?.externalBuffers.find((entry) => entry.relativePath.toLowerCase() === requirement.relativePath.toLowerCase());
+      if (buffer && source.file.size < buffer.byteLength) {
+        issue = `Binary buffer ${requirement.fileName} is shorter than the Model requires (${buffer.byteLength} bytes).`;
+        addIssue(issue);
+      }
+    }
     return { requirement, sourceId: source?.id ?? choice?.sourceId ?? '', relativePath, automatic: !choice, issue };
   });
   for (const extra of draft.extras ?? []) {
     const source = pool.find((candidate) => candidate.id === extra.sourceId);
     if (source) addAttachment(source, extra.relativePath);
-    else addIssue('An extra texture is no longer available; remove or replace its attachment.');
+    else addIssue('An extra file is no longer available; remove or replace its attachment.');
   }
 
   const unresolved: string[] = [];
@@ -286,16 +334,23 @@ export function prepareBulkModel(draft: BulkDraft, defaults: BulkDefaults, pool:
     const resolved = exact.length === 1 ? exact[0] : exact.length ? undefined
       : group?.byPath.size === 1 ? group.byPath.values().next().value : undefined;
     if (!match.issue && (suffixConflict || !resolved || resolved.source.id !== match.sourceId)) {
-      match.issue = suffixConflict ? 'Competing attachment suffixes make this texture ambiguous.'
-        : 'Attachment destinations do not resolve this texture unambiguously.';
+      match.issue = suffixConflict ? 'Competing attachment suffixes make this dependency ambiguous.'
+        : 'Attachment destinations do not resolve this dependency unambiguously.';
     }
-    if (match.issue || !match.sourceId) unresolved.push(match.requirement.relativePath);
+    if (match.issue || !match.sourceId) {
+      unresolved.push(match.requirement.relativePath);
+      if (match.requirement.kind === 'buffer') addIssue(`Required binary buffer unresolved: ${match.requirement.relativePath}.`);
+    }
     else resolvedKeys.add(requirementKey(match.requirement));
+  }
+  if (draft.gltfResources && Math.max(draft.source.file.size, draft.gltfResources.embeddedByteLength)
+    + attachments.reduce((bytes, attachment) => bytes + attachment.source.file.size, 0) > MAX_GLTF_BUNDLE_BYTES) {
+    addIssue('GLB/GLTF bundles support up to 32 MiB of embedded and selected resources per Model.');
   }
   return {
     ready: !issues.length && (!unresolved.length || draft.configureLater), issues, unresolved, settings, matches,
     attachments: attachments.filter((attachment) => !draft.configureLater || attachment.extra
       || [...attachment.keys].some((key) => resolvedKeys.has(key)))
-      .map(({ source, relativePath }) => ({ source, relativePath })),
+      .map(({ source, relativePath, fileType }) => ({ source, relativePath, fileType })),
   };
 }

@@ -31,6 +31,9 @@ npm run validate:threed-model-import
 npm run validate:threed-model-bulk-preparation
 npm run validate:threed-model-bulk-runner
 npm run validate:threed-fbx-material-targets
+npm run validate:threed-gltf-bundle
+npm run validate:threed-gltf-material-targets
+npm run validate:threed-model-bulk-preview
 npm run validate:threed-runtime-markers
 npm run validate:threed-orchestration
 npm run validate:farmbot-crypto
@@ -346,10 +349,14 @@ After applying the FarmBot peripheral-binding schema to an approved development 
 
 - Production animation asset validation is a blocking check.
 - TypeScript type checking is a blocking validation step.
-- Model import contracts, FBX bulk preparation, mocked import sequencing and FBX material-target parity are blocking validation steps. The workflow explicitly uses Node 24 for the native TypeScript scripts and retains the existing **Assets and TypeScript** job/check name.
+- Model import contracts, mixed-format bulk preparation, mocked import sequencing, GLB/GLTF bundle validation FBX/GLTF material-target parity and local preview snapshots are blocking validation steps. The workflow explicitly uses Node 24 for the native TypeScript scripts and retains the existing **Assets and TypeScript** job/check name.
 - Vercel remains the production-build gate because its build uses the configured deployment environment.
 
-For Model importer changes, run the four `validate:threed-model-import`, `validate:threed-model-bulk-preparation`, `validate:threed-model-bulk-runner` and `validate:threed-fbx-material-targets` scripts listed above. They are offline: the runner uses mocked requests and the FBX validator reads a tracked asset without network requests. They do not establish authenticated uploads or rendered material appearance for every asset. Use the [alpha deployment handoff](../plans/v0.19.10a-release.md) for the release smoke checks.
+For Model importer changes, run the seven `validate:threed-model-import`, `validate:threed-model-bulk-preparation`, `validate:threed-model-bulk-runner`, `validate:threed-fbx-material-targets`, `validate:threed-gltf-bundle`, `validate:threed-gltf-material-targets` and `validate:threed-model-bulk-preview` scripts listed above. They are offline: the runner uses mocked requests, the FBX validator reads a tracked asset, and the GLTF validators use original synthetic fixtures and the installed GLTFLoader. The native GLTF material checks exercise topology and inventory without browser image/worker decoding.
+
+When GLTF browser inspection changes, additionally bundle and run the exported `runGltfMaterialTargetChecks(true)` from `src/lib/scripts/validate-threed-gltf-material-targets.mts` in Chromium with the repository's `/assets/draco/` files served at the same origin. This runs the additional image, deferred-resource, retained-scene cleanup and DRACO checks against the real browser inspector. For local FBX preview changes, also supply the tracked `public/assets/animations/farming/SK_Chr_Farmer_Male_01.fbx` as a `File` in the optional third argument: `runGltfMaterialTargetChecks(true, console.log, farmerFile)`. This adds actual FBX image resolution, missing/invalid/ambiguous image and disposal checks. The suite generates its fixtures locally; it needs no authenticated API or third-party asset download. The browser harness is not part of the native CI command. See the [beta implementation record](../plans/v0.19.10b-implementation.md) for the completed checks and remaining authenticated/Scene verification, and the [alpha deployment handoff](../plans/v0.19.10a-release.md) for preserved FBX smoke checks. Automated checks alone do not establish deployed uploads or every asset's rendered appearance.
+
+For importer presentation or popup changes, exercise the actual component with an authenticated-session wrapper and mocked APIs in a browser. Check expanded sections, highlighted requirements, owner-specific default recall/reset, scale shortcuts, retained disabled result fields, and desktop/mobile scrolling. Use **Preview Model** below Queued Models and verify inline placement, on-demand rendering, refresh, and cleanup on close or Model change. Use **Open preview window** to verify the same-origin handshake, actual full-size WebGL rendering with transforms and original/selected textures, missing-buffer errors, labeled missing-image placeholders, refresh/reset/close behavior and blocked-popup feedback. Preparation and preview must issue no upload or Model-mutation requests.
 
 ## TypeScript baseline
 

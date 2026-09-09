@@ -7,11 +7,11 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.19.9 "Guided ThreeD Project Creation and First-Run Experience"` (released package version `0.19.9`)
+> **Current production version:** `v0.19.10a "ThreeD Model Bulk Importing"` (released package version `0.19.10-alpha`, commit `16a92ae`). Successful Vercel production deployment confirmed September 9, 2026. See the [release record](docs/releases/v0.19.10a.md).
 
-> **Prepared release candidate:** `v0.19.10a "ThreeD Model Bulk Importing"` (`package.json` version `0.19.10-alpha`). User-accepted FBX bulk importing with local textures and existing reusable Texture assignments. See the [deployment handoff](docs/plans/v0.19.10a-release.md); production deployment confirmation is pending.
+The alpha release adds FBX bulk importing with shared local texture files, batch/per-Model existing Texture assignments, registered primary files, verified saved configuration and guarded recovery.
 
-> **Next planned milestone:** `v0.19.10b` (`0.19.10-beta`) — GLB/GLTF bulk importing and texture/buffer requirements. See the [beta plan](docs/plans/v0.19.10b.md). The deployment package remains alpha; OBJ work is deferred.
+> **Prepared release:** `v0.19.10b` (`0.19.10-beta`) — mixed FBX/GLB/GLTF bulk importing, embedded resources, external images and binary buffers, and reusable Texture assignments. The User manually tested and accepted the checkpoint and its local build gate; automated checks pass. Deployment is pending. See the [production handoff](docs/plans/v0.19.10b-release.md). See the [beta implementation](docs/plans/v0.19.10b-implementation.md). OBJ work is deferred.
 
 The v0.19.9 production release turns the existing Project Tour into a focused, state-derived first-run sequence. It recommends Environment, Model, and Character foundations one step at a time while preserving direct access for advanced Users and reusing the established Library and placement transactions.
 

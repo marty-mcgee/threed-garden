@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.9 — Guided ThreeD Project Creation and First-Run Experience** (released package version `0.19.9`) |
-| Current release candidate | **v0.19.10a — ThreeD Model Bulk Importing** (`package.json` version `0.19.10-alpha`; User-accepted FBX/Texture checkpoint, prepared for deployment; production confirmation pending) |
-| Next planned milestone | **v0.19.10b — GLB/GLTF bulk importing with texture and buffer requirements** (planned `0.19.10-beta`; alpha package retained until its deployment; OBJ deferred) |
+| Current stable version | **v0.19.10a — ThreeD Model Bulk Importing** (released package version `0.19.10-alpha`, commit `16a92ae`; Vercel production confirmed by the User September 9, 2026) |
+| Current development version | **v0.19.10b — GLB/GLTF bulk importing with texture and buffer requirements** (`0.19.10-beta`; manually accepted and prepared for deployment) |
+| Beta release verification | User manually tested and accepted the checkpoint and local build gate; automated checks pass. Deployment and production smoke checks remain. See [handoff](docs/plans/v0.19.10b-release.md). OBJ is deferred. |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -38,9 +38,9 @@
 | GitHub Actions validation | ✅ Released in v0.17.1 |
 | Repository TypeScript baseline | ✅ Repaired during v0.17.2 development |
 
-The accepted alpha boundary is documented in [v0.19.10a — ThreeD Model Bulk Importing](docs/plans/v0.19.10a.md), with its [deployment handoff](docs/plans/v0.19.10a-release.md) and [next beta plan](docs/plans/v0.19.10b.md). v0.19.9 remains the last confirmed production feature checkpoint; the User also confirmed deployment of the v0.19.10a planning documentation.
+The production alpha boundary is documented in the [v0.19.10a release record](docs/releases/v0.19.10a.md), with its [completed plan](docs/plans/v0.19.10a.md) and [deployment preparation record](docs/plans/v0.19.10a-release.md). The [beta plan](docs/plans/v0.19.10b.md) and [implementation record](docs/plans/v0.19.10b-implementation.md) describe the current development work separately.
 
-The alpha bulk importer uses the existing owner-scoped Model lifecycle: primary upload and registration, Model-owned attachments, optional reusable Base Color Texture assignments, saved-state verification, then explicit activation after a dependency audit. Material keys come from the existing server FBX parse and shared preview inventory. Preparation writes nothing; known partial imports retain their Model IDs for review. The release has no schema or Scene-runtime change. GLB/GLTF bulk support belongs to beta, including proof of external binary/image dependencies and runtime material-target parity before enabling assignments.
+The bulk importer uses the existing owner-scoped Model lifecycle: primary upload and registration, Model-owned attachments, optional reusable Base Color Texture assignments, saved-state verification, then explicit activation after a dependency audit. FBX material keys come from the existing server parse and shared preview inventory. Beta GLB/GLTF keys come from bounded browser GLTFLoader inspection of the exact selected bundle and the same inventory before any upload. External `.bin` files are binary attachments; missing buffers always block, while missing images may be explicitly deferred with the Model inactive. Preparation writes nothing; known partial imports retain their Model IDs for review. The expanded bulk form remembers validated batch defaults per User in browser storage and highlights file requirements. On-demand local FBX/GLB/GLTF rendering appears directly beneath Queued Models, reusing the viewer offered by the optional authenticated `/threed/model-import-preview` window. Inline rendering uses a captured File/settings snapshot; the separate window receives it through a same-origin token-bound handshake. Each viewer owns and disposes its decoded resources, applies the shared material inventory and grounding rules, and performs no Model writes. These changes introduce no schema, API or Scene-runtime changes.
 
 ## 🧠 Current Character / World-Action Architecture
 

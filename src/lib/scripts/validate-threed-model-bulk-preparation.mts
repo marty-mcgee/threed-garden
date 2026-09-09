@@ -2,13 +2,25 @@ import assert from 'node:assert/strict';
 import {
   MAX_BULK_FILE_BYTES, MAX_BULK_MODELS, createBulkDefaults, createBulkDraft,
   defaultDestination, prepareBulkModel, requirementKey, resolveBulkSettings,
-  validateBulkPreview, validateBulkPrimary, validateBulkTexture,
+  validateBulkPreview, validateBulkPrimary, validateBulkTexture, validateBulkCompanion, summarizeBulkGltfResources,
   type BulkDraft, type BulkSource,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../../components/admin/threed/models/model-bulk-preparation-core.ts';
 import type {
   ThreeDModelCompanionRequirement,
 } from '../services/threed/models/model-companion-core.ts';
+import {
+  inspectThreeDGltfBundle,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/models/model-gltf-bundle-core.ts';
+import {
+  triangleGltfFixture, encodeGltf, encodeGlb,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from './fixtures/gltf-bundle-fixtures.ts';
+import {
+  BULK_SCALE_PRESETS, createBulkPreferencesStorageKey, readBulkPreferences, serializeBulkPreferences,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../../components/admin/threed/models/model-bulk-preferences-core.ts';
 
 let groups = 0;
 async function group(label: string, run: () => void | Promise<void>) {
@@ -36,7 +48,7 @@ function choose(row: BulkDraft, index: number, sourceId: string, relativePath = 
 }
 const defaults = createBulkDefaults();
 
-console.log('\nThreeD FBX bulk preparation validation');
+console.log('\nThreeD Model bulk preparation validation');
 console.log('─'.repeat(44));
 
 await group('primary limits reject unsupported, empty and transport-oversize files before reads', () => {
@@ -45,7 +57,8 @@ await group('primary limits reject unsupported, empty and transport-oversize fil
   assert.equal(validateBulkPrimary(file('HOUSE.FBX', MAX_BULK_FILE_BYTES)), null);
   assert.match(validateBulkPrimary(file('house.fbx', MAX_BULK_FILE_BYTES + 1))!, /4 MiB/);
   assert.match(validateBulkPrimary(file('house.fbx', 0))!, /empty/);
-  assert.match(validateBulkPrimary(file('house.glb'))!, /FBX/);
+  assert.equal(validateBulkPrimary(file('house.GLB')), null);
+  assert.equal(validateBulkPrimary(file('house.GLTF')), null);
   assert.match(validateBulkPrimary(file('house.obj'))!, /FBX/);
   assert.match(validateBulkPrimary(file(`${'a'.repeat(252)}.fbx`))!, /255/);
   assert.equal(validateBulkPrimary(file(`${'a'.repeat(251)}.fbx`)), null);
@@ -330,6 +343,216 @@ await group('existing Base Color assignment leaves named-file dependencies and i
   assert.equal(plan.attachments.length, 0);
   assert.equal(plan.unresolved.length, 1);
   assert.equal(prepareBulkModel(row, batch, [], []).ready, false);
+});
+
+await group('GLB/GLTF names and binary selections preserve the common limits and image distinction', () => {
+  assert.equal(createBulkDraft(source('gltf', 'Town_House.GLTF')).modelName, 'Town House');
+  assert.equal(createBulkDraft(source('glb', 'Town_House.GLB')).modelName, 'Town House');
+  assert.equal(validateBulkCompanion(file('mesh.BIN')), null);
+  assert.match(validateBulkTexture(file('mesh.bin'))!, /Textures/);
+  assert.match(validateBulkCompanion(file('mesh.bin', 0))!, /empty/);
+  assert.match(validateBulkCompanion(file('mesh.bin', MAX_BULK_FILE_BYTES + 1))!, /4 MiB/);
+  assert.equal(defaultDestination('mesh.bin'), 'buffers/mesh.bin');
+  assert.equal(defaultDestination('geometry/mesh.bin'), 'geometry/mesh.bin');
+});
+
+function gltfDraft(): BulkDraft {
+  return { ...draft(), source: source('gltf', 'house.gltf'),
+    requirements: [{ ...requirement('mesh.bin'), kind: 'buffer' }, requirement('wall.png')],
+    gltfResources: { embeddedResourceCount: 0, embeddedByteLength: 0, externalBuffers: [{ relativePath: 'mesh.bin', byteLength: 12 }],
+      textures: { embeddedImageCount: 0, bufferImageCount: 0, externalFileCount: 1 } },
+  };
+}
+
+await group('binary dependencies stay mandatory when textures are deferred or an existing Texture is selected', () => {
+  const row = gltfDraft();
+  row.configureLater = true;
+  row.overrides.existingTextureId = 10;
+  const catalog = [{ id: 10, textureName: 'Farm', fileName: 'farm.png', isActive: true }];
+  const missing = prepareBulkModel(row, defaults, [], catalog);
+  assert.equal(missing.ready, false);
+  assert.ok(missing.issues.some((issue) => issue.includes('binary buffer')));
+  const ready = prepareBulkModel(row, defaults, [source('buffer', 'mesh.bin')], catalog);
+  assert.equal(ready.ready, true);
+  assert.equal(ready.settings.isActive, false);
+  assert.equal(ready.settings.existingTextureId, 10);
+  assert.deepEqual(ready.attachments.map(({ fileType, relativePath }) => ({ fileType, relativePath })), [{ fileType: 'binary', relativePath: 'buffers/mesh.bin' }]);
+  assert.deepEqual(ready.unresolved, ['wall.png']);
+});
+
+await group('GLTF binary sizes, duplicate choices and pool removal recalculate readiness', () => {
+  const row = gltfDraft();
+  const buffer = source('buffer', 'mesh.bin');
+  const image = source('image');
+  assert.equal(prepareBulkModel(row, defaults, [buffer, image]).ready, true);
+  const short = { ...buffer, file: file('mesh.bin', 8) };
+  assert.equal(prepareBulkModel(row, defaults, [short, image]).ready, false);
+  const duplicate = source('duplicate', 'mesh.bin');
+  assert.equal(prepareBulkModel(row, defaults, [buffer, duplicate, image]).ready, false);
+  choose(row, 0, 'duplicate');
+  assert.equal(prepareBulkModel(row, defaults, [buffer, duplicate, image]).ready, true);
+  assert.equal(prepareBulkModel(row, defaults, [buffer, image]).ready, false);
+});
+
+await group('GLTF image support and typed attachments cannot confuse a buffer with a texture', () => {
+  const row = gltfDraft();
+  const pool = [source('buffer', 'mesh.bin'), source('image')];
+  const ready = prepareBulkModel(row, defaults, pool);
+  assert.deepEqual(ready.attachments.map((entry) => entry.fileType), ['binary', 'texture']);
+  row.requirements[0].kind = 'texture';
+  assert.equal(prepareBulkModel(row, defaults, pool).ready, false);
+  row.requirements = [requirement('wall.tga')];
+  assert.equal(prepareBulkModel(row, defaults, [source('image', 'wall.tga')]).ready, false);
+  assert.equal(prepareBulkModel(draft(['wall.tga']), defaults, [source('image', 'wall.tga')]).ready, true);
+});
+
+await group('GLTF aggregate resources and mixed-format rows are bounded independently', () => {
+  const gltf = gltfDraft();
+  const glb = { ...draft(), source: source('glb', 'house.glb'), gltfResources: { embeddedResourceCount: 1, embeddedByteLength: 32 * 1024 * 1024, externalBuffers: [],
+    textures: { embeddedImageCount: 0, bufferImageCount: 0, externalFileCount: 0 } } };
+  const fbx = draft();
+  glb.extras = [{ id: 'extra', sourceId: 'image', relativePath: 'textures/wall.png' }];
+  const plans = [fbx, glb, gltf].map((row) => prepareBulkModel(row, defaults, [source('image')]));
+  assert.deepEqual(plans.map((plan) => plan.ready), [true, false, false]);
+  assert.ok(plans[1].issues.some((issue) => issue.includes('32 MiB')));
+});
+
+await group('GLB summaries count embedded images separately from geometry buffers and retain no binary data', () => {
+  const fixture = triangleGltfFixture();
+  const secondImageOffset = Math.ceil((44 + fixture.image.byteLength) / 4) * 4;
+  const bin = new Uint8Array(secondImageOffset + fixture.image.byteLength);
+  bin.set(fixture.geometry);
+  bin.set(fixture.image, 44);
+  bin.set(fixture.image, secondImageOffset);
+  const document = {
+    ...fixture.document, buffers: [{ byteLength: bin.byteLength }],
+    bufferViews: [...fixture.document.bufferViews,
+      { buffer: 0, byteOffset: 44, byteLength: fixture.image.byteLength },
+      { buffer: 0, byteOffset: secondImageOffset, byteLength: fixture.image.byteLength }],
+    images: [{ bufferView: 2, mimeType: 'image/png' }, { bufferView: 3, mimeType: 'image/png' }],
+    textures: [{ source: 0 }, { source: 1 }],
+    materials: [{ ...fixture.document.materials[0], normalTexture: { index: 1 } }],
+  };
+  const inspection = inspectThreeDGltfBundle('field.glb', encodeGlb(document, bin));
+  const summary = summarizeBulkGltfResources(inspection);
+  assert.equal(summary.embeddedResourceCount, 3);
+  assert.equal(summary.embeddedByteLength, bin.byteLength);
+  assert.deepEqual(summary.externalBuffers, []);
+  assert.deepEqual(summary.textures, { embeddedImageCount: 2, bufferImageCount: 0, externalFileCount: 0 });
+  assert.equal('document' in summary, false);
+  assert.equal('images' in summary, false);
+  assert.equal('buffers' in summary, false);
+  assert.ok(JSON.stringify(summary).length < 300, 'Preparation metadata must not retain embedded bytes');
+});
+
+await group('GLTF data-URI images are described as embedded in the primary file', () => {
+  const fixture = triangleGltfFixture();
+  const imageData = btoa(Array.from(fixture.image, (byte) => String.fromCharCode(byte)).join(''));
+  const inspection = inspectThreeDGltfBundle('field.gltf', encodeGltf({
+    ...fixture.document, images: [{ uri: `data:image/png;base64,${imageData}` }],
+  }));
+  const summary = summarizeBulkGltfResources(inspection);
+  assert.deepEqual(summary.textures, { embeddedImageCount: 1, bufferImageCount: 0, externalFileCount: 0 });
+  assert.deepEqual(summary.externalBuffers, [{ relativePath: 'buffers/triangle.bin', byteLength: 42 }]);
+  assert.equal(summary.embeddedByteLength, fixture.image.byteLength);
+});
+
+await group('images in external GLTF binary buffers are not mislabeled as embedded in the primary', () => {
+  const fixture = triangleGltfFixture();
+  const inspection = inspectThreeDGltfBundle('field.gltf', encodeGltf({
+    ...fixture.document, buffers: [{ uri: 'buffers/field.bin', byteLength: 44 + fixture.image.byteLength }],
+    bufferViews: [...fixture.document.bufferViews, { buffer: 0, byteOffset: 44, byteLength: fixture.image.byteLength }],
+    images: [{ bufferView: 2, mimeType: 'image/png' }],
+  }));
+  const summary = summarizeBulkGltfResources(inspection);
+  assert.equal(summary.embeddedResourceCount, 1, 'The existing generic resource count is preserved');
+  assert.deepEqual(summary.textures, { embeddedImageCount: 0, bufferImageCount: 1, externalFileCount: 0 });
+  assert.deepEqual(summary.externalBuffers, [{ relativePath: 'buffers/field.bin', byteLength: 44 + fixture.image.byteLength }]);
+  assert.equal(summary.embeddedByteLength, 0);
+});
+
+await group('separate texture files count unique normalized paths without counting repeated image declarations twice', () => {
+  const fixture = triangleGltfFixture();
+  const inspection = inspectThreeDGltfBundle('field.gltf', encodeGltf({
+    ...fixture.document, images: [{ uri: 'textures/pixel.png' }, { uri: './textures/PIXEL.png' }, { uri: 'textures/another.png' }],
+  }));
+  assert.deepEqual(summarizeBulkGltfResources(inspection).textures, { embeddedImageCount: 0, bufferImageCount: 0, externalFileCount: 2 });
+});
+
+await group('a geometry-only GLB reports no texture images despite its embedded binary buffer', () => {
+  const fixture = triangleGltfFixture();
+  const inspection = inspectThreeDGltfBundle('untextured.glb', encodeGlb({
+    ...fixture.document, buffers: [{ byteLength: fixture.geometry.byteLength }], images: [], textures: [], materials: [{}],
+  }, fixture.geometry));
+  const summary = summarizeBulkGltfResources(inspection);
+  assert.equal(summary.embeddedResourceCount, 1);
+  assert.deepEqual(summary.textures, { embeddedImageCount: 0, bufferImageCount: 0, externalFileCount: 0 });
+});
+
+await group('remembered defaults round-trip explicit choices and references without changing first-use defaults', () => {
+  const chosen = { ...createBulkDefaults(), scale: '0.02', categoryIds: [4, 9], existingTextureId: 12,
+    isLibraryItem: false, isPublic: true, usedByPlants: true, usedByCharacters: true, isActive: true };
+  const encoded = serializeBulkPreferences(chosen);
+  assert.ok(encoded);
+  const restored = readBulkPreferences(encoded);
+  assert.deepEqual(restored, chosen);
+  restored!.categoryIds.push(15);
+  assert.deepEqual(chosen.categoryIds, [4, 9]);
+  assert.deepEqual(readBulkPreferences(encoded)!.categoryIds, [4, 9]);
+  assert.equal(createBulkDefaults().scale, '1.0');
+  assert.equal(createBulkDefaults().isPublic, false);
+  assert.equal(createBulkDefaults().isActive, false);
+});
+
+await group('preference reads reject malformed, unknown-version, oversized and incomplete records', () => {
+  for (const raw of [null, '', '{', 'null', '[]', '{}', 'x'.repeat(8193),
+    JSON.stringify({ version: 2, defaults }),
+    JSON.stringify({ version: '1', defaults }),
+    JSON.stringify({ version: 1, defaults: { scale: '1' } }),
+    JSON.stringify({ version: 1, defaults: { ...defaults, isPublic: 'false' } }),
+    JSON.stringify({ version: 1, defaults: { ...defaults, isActive: 1 } }),
+    JSON.stringify({ version: 1, defaults: { ...defaults, existingTextureId: '12' } }),
+  ]) assert.equal(readBulkPreferences(raw), null);
+});
+
+await group('invalid transient numeric and reference choices cannot replace valid saved preferences', () => {
+  const saved = serializeBulkPreferences({ ...defaults, scale: '0.02' });
+  for (const scale of ['', ' ', '0', '-1', '0.009', 'Infinity', 'NaN', '1e999', '12px', '1'.repeat(65)]) {
+    const next = serializeBulkPreferences({ ...defaults, scale });
+    assert.equal(next, null, scale);
+    assert.equal(readBulkPreferences(next ?? saved)!.scale, '0.02');
+  }
+  for (const patch of [{ categoryIds: [0] }, { categoryIds: [-1] }, { categoryIds: [1.5] },
+    { categoryIds: [Number.MAX_SAFE_INTEGER + 1] }, { categoryIds: [1, 1] }, { categoryIds: Array<number>(1) },
+    { categoryIds: Array.from({ length: 51 }, (_, index) => index + 1) },
+    { existingTextureId: 0 }, { existingTextureId: 1.5 }, { existingTextureId: Infinity }]) {
+    assert.equal(serializeBulkPreferences({ ...defaults, ...patch }), null);
+  }
+  assert.ok(serializeBulkPreferences({ ...defaults, scale: '0.01',
+    categoryIds: Array.from({ length: 50 }, (_, index) => index + 1), existingTextureId: Number.MAX_SAFE_INTEGER }));
+  assert.deepEqual(BULK_SCALE_PRESETS.map(({ label, value }) => [label, value]), [['1%', '0.01'], ['2%', '0.02'], ['100%', '1']]);
+});
+
+await group('preferences whitelist excludes files, paths, draft overrides and unknown metadata', () => {
+  const extra = { ...defaults, file: file('private.fbx'), path: '/private/folder',
+    configureLater: true, overrides: { scale: '2' }, extras: ['private'], results: { private: true } };
+  const encoded = serializeBulkPreferences(extra);
+  assert.ok(encoded);
+  assert.deepEqual(JSON.parse(encoded).defaults, defaults);
+  const raw = JSON.stringify({ version: 1, defaults: extra, unknown: 'ignored' });
+  assert.deepEqual(readBulkPreferences(raw), defaults);
+});
+
+await group('preference storage keys separate owners and reject absent or malformed identity', () => {
+  const first = createBulkPreferencesStorageKey('owner-1');
+  const second = createBulkPreferencesStorageKey('owner-2');
+  assert.ok(first);
+  assert.notEqual(first, second);
+  assert.notEqual(createBulkPreferencesStorageKey('owner/a'), createBulkPreferencesStorageKey('owner%2Fa'));
+  assert.match(createBulkPreferencesStorageKey('owner/a')!, /owner%2Fa$/);
+  for (const id of [null, undefined, '', ' owner ', 'owner\n', '\ud800', 'x'.repeat(257)]) {
+    assert.equal(createBulkPreferencesStorageKey(id), null);
+  }
 });
 
 console.log('─'.repeat(44));

@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.19.9 **Guided ThreeD Project Creation and First-Run Experience**, released with package version `0.19.9`. It focuses the existing post-load Project Tour into a Runtime-Marker-derived Environment → Model → Character sequence without creating another persistence or placement path. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is v0.19.10a **ThreeD Model Bulk Importing**, released with package version `0.19.10-alpha` and commit `16a92ae`. The User confirmed successful Vercel production deployment September 9, 2026. It adds FBX bulk importing, shared local textures and existing reusable Texture assignments. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
 The v0.18.9a production release adds authenticated Character Library placement and Project-instance editing while keeping GardenCharacter and EcctrlCharacter as separate runtimes. Explicit Project saves preserve marker database IDs, uncontrolled Ecctrl mounts cannot publish temporary positions, overlapping capsule spawn areas are rejected before Rapier, and rejected Character snapshots can be restored to source positions without deleting their source assets.
 
@@ -27,7 +27,7 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 - [ThreeD character runtimes](developers/THREED_CHARACTERS.md) — GardenCharacter and EcctrlCharacter roles, shared systems, and movement boundaries.
 - [ThreeD Marker architecture](developers/THREED_MARKERS.md) — Project asset sources, Runtime Markers, layers, identity, and Action Target boundaries.
 - [ThreeD Model runtime API](developers/THREED_MODEL_RUNTIME_API.md) — authenticated Model Library JSON and read-only runtime-structure inspection contracts.
-- [ThreeD Model Administration](developers/THREED_MODEL_ADMIN.md) — v0.19.8c production Model importer, reusable Texture, material-assignment, and Model Files workspace boundary.
+- [ThreeD Model Administration](developers/THREED_MODEL_ADMIN.md) — production FBX bulk importer, beta GLB/GLTF support, reusable Texture assignments and the single-Model/Model Files workflows.
 - [Data model](developers/DATA_MODEL.md) — modules, project junctions, assets, and runtime records.
 - [API guide](developers/API_GUIDE.md) — route families and access conventions.
 - [ThreeD FarmBot Integration Plan](developers/FARMBOT_INTEGRATION.md) — hardware security and connection boundaries.
@@ -48,11 +48,13 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 
 ## Development plans
 
-The User-accepted **v0.19.10a — ThreeD Model Bulk Importing** checkpoint is prepared for deployment with package version `0.19.10-alpha`: FBX batches, local textures and existing reusable Texture assignments. Production confirmation is pending. The next planned beta adds GLB/GLTF bulk importing and texture/buffer requirements; OBJ remains deferred.
+**v0.19.10a — ThreeD Model Bulk Importing** is released to production with package version `0.19.10-alpha`. Current development is **v0.19.10b** (`0.19.10-beta`), implementing GLB/GLTF bulk importing and texture/buffer requirements. The User manually tested and accepted the checkpoint and its local build gate; beta is prepared for deployment. OBJ remains deferred.
 
-- [v0.19.10a — ThreeD Model Bulk Importing](plans/v0.19.10a.md) — accepted FBX/Texture alpha boundary.
-- [Alpha deployment handoff](plans/v0.19.10a-release.md) — release title, included behavior, validation and deployment verification.
-- [v0.19.10b — GLB/GLTF bulk importing](plans/v0.19.10b.md) — beta preparation and acceptance criteria; no beta behavior in the alpha package.
+- [v0.19.10a — ThreeD Model Bulk Importing](plans/v0.19.10a.md) — released FBX/Texture alpha boundary.
+- [Alpha deployment preparation record](plans/v0.19.10a-release.md) — release scope, validation and deployment confirmation.
+- [v0.19.10b — GLB/GLTF bulk importing](plans/v0.19.10b.md) — beta design and acceptance criteria.
+- [Beta production handoff](plans/v0.19.10b-release.md) — manual acceptance, passing checks, commit scope and deployment steps.
+- [Beta implementation and verification](plans/v0.19.10b-implementation.md) — supported resources, local inspection, automated results and remaining release checks.
 
 - [plans: docs: v0.19.9 — Guided ThreeD Project Creation and First-Run Experience](plans/v0.19.9.md) — completed production plan for focused Project Tour progression, with later guidance ideas deferred.
 - [plans: docs: v0.19.8d — ThreeD Model Library Import and Scene Presentation](plans/v0.19.8d.md) — completed five-stage progression that brought configured reusable Models into the Dashboard Library and Scene.
@@ -60,6 +62,7 @@ The User-accepted **v0.19.10a — ThreeD Model Bulk Importing** checkpoint is pr
 ## Releases
 
 - [Release index](releases/README.md)
+- [v0.19.10a production checkpoint](releases/v0.19.10a.md)
 - [v0.19.9 production checkpoint](releases/v0.19.9.md)
 - [v0.19.8d production checkpoint](releases/v0.19.8d.md)
 - [v0.19.8c production checkpoint](releases/v0.19.8c.md)

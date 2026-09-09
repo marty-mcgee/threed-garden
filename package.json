@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.19.10-alpha",
+  "version": "0.19.10-beta",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -30,7 +30,10 @@
     "validate:threed-model-import": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-import-contract.mts",
     "validate:threed-model-bulk-preparation": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-bulk-preparation.mts",
     "validate:threed-model-bulk-runner": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-bulk-runner.mts",
-    "validate:threed-fbx-material-targets": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-fbx-material-targets.mts"
+    "validate:threed-fbx-material-targets": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-fbx-material-targets.mts",
+    "validate:threed-gltf-bundle": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-gltf-bundle.mts",
+    "validate:threed-gltf-material-targets": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-gltf-material-targets.mts",
+    "validate:threed-model-bulk-preview": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-bulk-preview.mts"
   },
   "dependencies": {
     "@auth/core": "^0.34.3",

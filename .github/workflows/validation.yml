@@ -45,11 +45,20 @@ jobs:
       - name: Validate Model import contracts
         run: npm run validate:threed-model-import
 
-      - name: Validate FBX bulk preparation
+      - name: Validate Model bulk preparation
         run: npm run validate:threed-model-bulk-preparation
 
-      - name: Validate FBX bulk import sequencing
+      - name: Validate Model bulk import sequencing
         run: npm run validate:threed-model-bulk-runner
 
       - name: Validate FBX material targets
         run: npm run validate:threed-fbx-material-targets
+
+      - name: Validate GLB/GLTF bundles
+        run: npm run validate:threed-gltf-bundle
+
+      - name: Validate GLB/GLTF material targets
+        run: npm run validate:threed-gltf-material-targets
+
+      - name: Validate local Model preview snapshots
+        run: npm run validate:threed-model-bulk-preview

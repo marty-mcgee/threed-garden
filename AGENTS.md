@@ -38,13 +38,13 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.19.9 "Guided ThreeD Project Creation and First-Run Experience" (released package version `0.19.9`).
+Current production version: v0.19.10a "ThreeD Model Bulk Importing" (released package version `0.19.10-alpha`, commit `16a92ae`). The User confirmed successful Vercel production deployment on September 9, 2026. See `docs/releases/v0.19.10a.md`.
 
-Current release candidate: v0.19.10a "ThreeD Model Bulk Importing" (`package.json` version `0.19.10-alpha`). The User accepted the FBX and Texture bulk importer checkpoint on September 9, 2026 and requested production deployment preparation. Preserve this alpha scope: shared local textures, existing reusable Texture assignments, primary registration, verified inactive creation and guarded recovery. See `docs/plans/v0.19.10a-release.md` for the deployment handoff.
+Preserve the released alpha scope: FBX bulk importing, shared local textures, existing reusable Texture assignments, primary registration, verified inactive creation and guarded recovery.
 
-Next planned milestone: v0.19.10b (`0.19.10-beta`) adds GLB/GLTF bulk importing and texture/buffer requirements. See `docs/plans/v0.19.10b.md`. Keep the package on alpha for its deployment; beta implementation and the package bump follow the alpha checkpoint. OBJ remains deferred.
+Current development: v0.19.10b (`0.19.10-beta`) implements mixed FBX/GLB/GLTF bulk importing, embedded resources, typed external dependencies and reusable Texture assignments. GLB/GLTF imports must pass bounded local GLTFLoader inspection before uploading; missing geometry cannot be deferred. See `docs/plans/v0.19.10b-implementation.md`. The User manually tested and accepted the local checkpoint and its build gate on September 9, 2026. See `docs/plans/v0.19.10b-release.md` for production preparation; deployment and live smoke checks remain. For this release-preparation chat, do not run `npm run build`: the User owns that manual gate and has marked it passed. OBJ remains deferred.
 
-v0.19.10a is prepared for deployment; its production deployment and smoke checks are not yet confirmed. v0.19.0b preserves the authenticated `project_threed_markers` create/update paths, stable Runtime Marker ownership, persistent Canvas/Rapier world, synchronized Model visuals and fixed colliders, and Character runtime separation. Existing Project Models may be repositioned through the Leaflet 2D Map or explicit ThreeD Scene Move Model mode; this does not authorize free-form R3F dragging or other Sub-Module movement changes. The developer-local `reference/` directory remains ignored and is not production source or a deployed asset path.
+v0.19.0b preserves the authenticated `project_threed_markers` create/update paths, stable Runtime Marker ownership, persistent Canvas/Rapier world, synchronized Model visuals and fixed colliders, and Character runtime separation. Existing Project Models may be repositioned through the Leaflet 2D Map or explicit ThreeD Scene Move Model mode; this does not authorize free-form R3F dragging or other Sub-Module movement changes. The developer-local `reference/` directory remains ignored and is not production source or a deployed asset path.
 
 The v0.18.7c candidate defines ThreeD Layers as the Scene transaction boundary. Layer operations must preserve one persistent Canvas and Rapier world, stable `marker_id` identity, saved transforms, and Sub-Module-owned rendering and physics. They must not remount unrelated markers or issue duplicate imperative Rapier initialization writes. The Rapier frame-error circuit is containment only; activation is release-blocking.
 
@@ -78,7 +78,7 @@ as release-blocking.
 
 ## ThreeD FarmBot Integration Plan rules
 
-- Current App production checkpoint: v0.19.9 "Guided ThreeD Project Creation and First-Run Experience". The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+- Current App production checkpoint: v0.19.10a "ThreeD Model Bulk Importing". The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 - ThreeD owns the provider-neutral MQTT service. FarmBot and future integrations such as OpenFarm may depend on ThreeD services; `src/lib/services/threed/mqtt` must never import provider adapters.
 - Treat each documented FarmBot phase as a separate approval gate; approval of one phase does not authorize the next phase, new external resources, schema changes, MQTT connections, or physical commands.
 - FarmBot credentials are server-only and must never enter client state, API/map responses, logs, or public environment variables.

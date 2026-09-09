@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {
   runBulkModel,
   type BulkImportInput,
+  type BulkGltfBundleInspector,
 // @ts-expect-error Node's native TypeScript validator requires the explicit extension.
 } from '../../components/admin/threed/models/model-bulk-import-runner.ts';
 
@@ -108,6 +109,23 @@ const assignStep = (keys = targetKeys, textureId = 21, reply = () => ok({ id: 7,
     assert.deepEqual(JSON.parse(body), { modelId: 7, targetKeys: keys, channel: 'baseColor', textureId });
   },
 });
+const localInventory = { targetKeys, materialSlotCount: targetKeys.length, omittedSlotCount: 0 };
+function formatFixture(modelType: 'glb' | 'gltf', upperCase = false) {
+  // The injected inspector below proves orchestration; actual loader fixtures have their own validator.
+  const file = new File([`local ${modelType} fixture bytes`], `barn.${upperCase ? modelType.toUpperCase() : modelType}`);
+  const url = PRIMARY_URL.replace(/fbx$/, modelType);
+  const primaryFile = { ...primary, fileName: file.name, relativePath: file.name, filePath: url, fileSize: file.size };
+  const model = (files: unknown[] = []) => ({ ...saved(), modelType, filePath: url, files: [primaryFile, ...files] });
+  const upload = uploadStep(() => ok({ ...uploaded, fileName: file.name, fileSize: file.size, modelType, url }));
+  const create = createStep();
+  create.check = (init) => {
+    const payload = JSON.parse(String(init.body));
+    assert.equal(payload.modelType, modelType);
+    assert.equal(payload.filePath, url);
+    assert.deepEqual(payload.primaryFile, { fileName: file.name, filePath: url, fileSize: file.size, modelType });
+  };
+  return { file, url, modelType, model, upload, create };
+}
 
 let groups = 0;
 async function group(label: string, run: () => Promise<void>) {
@@ -482,6 +500,218 @@ await group('invalid existing Texture identities are blocked locally without req
     client.done();
     assert.equal(outcome.status, 'failed');
     assert.equal(outcome.modelId, undefined);
+  }
+});
+
+await group('GLB and GLTF always inspect the same primary File before requests without Texture selection', async () => {
+  for (const modelType of ['glb', 'gltf'] as const) {
+    const fixture = formatFixture(modelType, true);
+    const row = input({ file: fixture.file });
+    const client = mock([fixture.upload, fixture.create, savedStep(fixture.model()), auditStep()]);
+    let inspections = 0;
+    const inspector: BulkGltfBundleInspector = async (file, attachments, deferred) => {
+      inspections += 1;
+      assert.equal(client.calls.length, 0);
+      assert.equal(file, fixture.file);
+      assert.deepEqual(attachments, []);
+      assert.equal(deferred, false);
+      row.file = fbx; // A later caller mutation must not change the File that was inspected.
+      return localInventory;
+    };
+    fixture.upload.check = (init) => assert.equal((init.body as FormData).get('file'), fixture.file);
+    const outcome = await runBulkModel(row, () => {}, client.request, inspector);
+    client.done();
+    assert.equal(inspections, 1);
+    assert.equal(outcome.status, 'imported');
+    assert.equal(client.calls.some((call) => call.url === FILES), false);
+  }
+});
+
+await group('GLTF binary and image attachments retain classifications and saved buffer identity', async () => {
+  const fixture = formatFixture('gltf');
+  const binary = new File([new Uint8Array(12)], 'mesh.bin');
+  const texture = png('albedo.png');
+  const rows = [
+    { id: 12, fileName: binary.name, fileSize: binary.size, relativePath: 'buffers/mesh.bin', fileType: 'binary',
+      isBinaryBuffer: true, filePath: 'https://fixture.blob.vercel-storage.com/mesh.bin' },
+    { id: 13, fileName: texture.name, fileSize: texture.size, relativePath: 'textures/albedo.png', fileType: 'texture',
+      isBinaryBuffer: false, filePath: 'https://fixture.blob.vercel-storage.com/albedo.png' },
+  ];
+  const client = mock([fixture.upload, fixture.create,
+    ...rows.map((row): Step => ({ url: FILES, method: 'POST', reply: () => ok([row]), check(init) {
+      const body = init.body as FormData;
+      assert.equal(body.get('category'), row.fileType);
+      assert.equal(body.get('relativePaths'), row.relativePath);
+      assert.equal((body.get('files') as File).name, row.fileName);
+    } })), savedStep(fixture.model(rows)),
+    auditStep({ ...ready, requirements: [{ kind: 'buffer', satisfied: true }, { kind: 'texture', satisfied: true }] }),
+  ]);
+  const inspector: BulkGltfBundleInspector = async (file, attachments) => {
+    assert.equal(file, fixture.file);
+    assert.equal(client.calls.length, 0);
+    assert.deepEqual(attachments.map(({ relativePath, fileType }) => ({ relativePath, fileType })), [
+      { relativePath: 'buffers/mesh.bin', fileType: 'binary' },
+      { relativePath: 'textures/albedo.png', fileType: 'texture' },
+    ]);
+    return localInventory;
+  };
+  const outcome = await runBulkModel(input({ file: fixture.file, attachments: [
+    { file: binary, relativePath: 'buffers\\mesh.bin', fileType: 'binary' },
+    { file: texture, relativePath: 'textures/albedo.png' },
+  ] }), () => {}, client.request, inspector);
+  client.done();
+  assert.equal(outcome.status, 'imported');
+});
+
+await group('malformed or missing local GLTF geometry rejects every import mode before mutation', async () => {
+  for (const modelType of ['glb', 'gltf'] as const) {
+    for (const configureLater of [false, true]) {
+      for (const existingTextureId of [null, 21]) {
+        const fixture = formatFixture(modelType);
+        const client = mock([]);
+        const outcome = await runBulkModel(input({ file: fixture.file, configureLater,
+          settings: { ...input().settings, existingTextureId },
+        }), () => {}, client.request, async () => { throw new Error('Required binary buffer buffers/mesh.bin is missing.'); });
+        client.done();
+        assert.equal(outcome.status, 'failed');
+        assert.equal(outcome.canRetry, true);
+        assert.equal(outcome.modelId, undefined);
+        assert.match(outcome.message, /Missing geometry cannot be deferred/);
+        assert.match(outcome.message, /buffers\/mesh\.bin is missing/);
+      }
+    }
+  }
+});
+
+await group('GLB and GLTF assignments use actual local target discovery instead of server JSON guesses', async () => {
+  for (const modelType of ['glb', 'gltf'] as const) {
+    const fixture = formatFixture(modelType);
+    fixture.upload.reply = () => ok({ ...uploaded, modelType, fileName: fixture.file.name,
+      fileSize: fixture.file.size, url: fixture.url,
+      analysis: { ...uploaded.analysis, materialTargets: {
+        targetKeys: ['mesh:99:material:9'], materialSlotCount: 1, omittedSlotCount: 0,
+      } },
+    });
+    const client = mock([catalogStep(), fixture.upload, fixture.create, savedStep(fixture.model()),
+      assignStep(), savedStep({ ...fixture.model(), materialAssignments: assignmentsSaved().materialAssignments }), auditStep()]);
+    let inspections = 0;
+    const outcome = await runBulkModel(textureInput(21, { file: fixture.file }), () => {}, client.request, async () => {
+      inspections += 1;
+      assert.equal(client.calls.length, 0);
+      return localInventory;
+    });
+    client.done();
+    assert.equal(inspections, 1);
+    assert.equal(outcome.status, 'imported');
+    assert.match(outcome.message, /Existing Texture assigned to 2 material slots/);
+  }
+});
+
+await group('incomplete local GLTF material targets block selected Texture imports without staged uploads', async () => {
+  for (const inventory of [
+    { targetKeys: [], materialSlotCount: 0, omittedSlotCount: 0 },
+    { ...localInventory, omittedSlotCount: 1 },
+    { ...localInventory, materialSlotCount: 3 },
+    { ...localInventory, targetKeys: [targetKeys[0], targetKeys[0]] },
+  ]) {
+    const fixture = formatFixture('gltf');
+    const client = mock([]);
+    const outcome = await runBulkModel(textureInput(21, { file: fixture.file }), () => {}, client.request, async () => inventory);
+    client.done();
+    assert.equal(outcome.status, 'failed');
+    assert.equal(outcome.canRetry, true);
+    assert.equal(outcome.stagedUrl, undefined);
+    assert.equal(outcome.modelId, undefined);
+  }
+});
+
+await group('missing saved binary flags and missing or unavailable geometry audits never report import success', async () => {
+  const fixture = formatFixture('gltf');
+  const binary = new File([new Uint8Array(12)], 'mesh.bin');
+  const binaryRow = { id: 12, fileName: binary.name, fileSize: binary.size, relativePath: 'buffers/mesh.bin',
+    fileType: 'binary', isBinaryBuffer: false, filePath: 'https://fixture.blob.vercel-storage.com/mesh.bin' };
+  const client = mock([fixture.upload, fixture.create, { url: FILES, method: 'POST', reply: () => ok([binaryRow]) },
+    savedStep(fixture.model([binaryRow]))]);
+  const outcome = await runBulkModel(input({ file: fixture.file, configureLater: true,
+    attachments: [{ file: binary, relativePath: 'buffers/mesh.bin', fileType: 'binary' }],
+  }), () => {}, client.request, async () => localInventory);
+  client.done();
+  assert.equal(outcome.status, 'failed');
+  assert.equal(outcome.modelId, 7);
+  assert.equal(outcome.canRetry, false);
+  for (const audit of [null, { ...ready, complete: false, requirements: [{ kind: 'buffer', satisfied: false }] },
+    { ...ready, requirements: [{ satisfied: true }] }]) {
+    const inspected = mock([fixture.upload, fixture.create, savedStep(fixture.model()), auditStep(audit)]);
+    const result = await runBulkModel(input({ file: fixture.file, configureLater: true }), () => {}, inspected.request,
+      async () => localInventory);
+    inspected.done();
+    assert.equal(result.status, 'failed');
+    assert.equal(result.modelId, 7);
+    assert.equal(result.canRetry, false);
+    assert.match(result.message, /Missing geometry cannot be deferred/);
+  }
+});
+
+await group('GLTF image deferral remains inactive after valid geometry and does not waive filename requirements', async () => {
+  const fixture = formatFixture('gltf');
+  const client = mock([fixture.upload, fixture.create, savedStep(fixture.model()),
+    auditStep({ ...ready, complete: false, requirements: [{ kind: 'texture', satisfied: false }] })]);
+  const outcome = await runBulkModel(activeInput({ file: fixture.file, configureLater: true }), () => {}, client.request,
+    async (_file, _attachments, deferred) => { assert.equal(deferred, true); return localInventory; });
+  client.done();
+  assert.equal(outcome.status, 'imported');
+  assert.match(outcome.message, /inactive\/pending/);
+});
+
+await group('unsupported primaries and mistyped binary attachments fail before local loader or mutation', async () => {
+  for (const row of [
+    input({ file: new File(['obj'], 'model.obj') }), input({ file: new File(['usdz'], 'model.usdz') }),
+    input({ file: formatFixture('gltf').file, attachments: [{ file: png('buffer.png'), relativePath: 'buffers/buffer.png', fileType: 'binary' }] }),
+    input({ file: formatFixture('gltf').file, attachments: [{ file: new File(['bin'], 'mesh.bin'), relativePath: 'buffers/mesh.bin', fileType: 'texture' }] }),
+  ]) {
+    const client = mock([]);
+    let inspected = false;
+    const outcome = await runBulkModel(row, () => {}, client.request, async () => { inspected = true; return localInventory; });
+    client.done();
+    assert.equal(outcome.status, 'failed');
+    assert.equal(inspected, false);
+  }
+});
+
+await group('GLTF upload type mismatches clean staged files while lost creation retains its outcome boundary', async () => {
+  const fixture = formatFixture('gltf');
+  const client = mock([uploadStep(() => ok({ ...uploaded, fileName: fixture.file.name,
+    fileSize: fixture.file.size, url: fixture.url, modelType: 'fbx' })),
+  { url: UPLOAD, method: 'DELETE', reply: () => Response.json({ success: true }),
+    check(init) { assert.deepEqual(JSON.parse(String(init.body)), { url: fixture.url }); } }]);
+  const outcome = await runBulkModel(input({ file: fixture.file }), () => {}, client.request, async () => localInventory);
+  client.done();
+  assert.equal(outcome.status, 'failed');
+  assert.equal(outcome.canRetry, true);
+  assert.equal(outcome.stagedUrl, undefined);
+  for (const modelType of ['glb', 'gltf'] as const) {
+    const row = formatFixture(modelType);
+    const failed = mock([row.upload, createStep(lost)]);
+    const result = await runBulkModel(input({ file: row.file }), () => {}, failed.request, async () => localInventory);
+    failed.done();
+    assert.equal(result.status, 'unknown');
+    assert.equal(result.canRetry, false);
+    assert.equal(result.modelId, undefined);
+    assert.equal(result.stagedUrl, row.url);
+  }
+});
+
+await group('local GLTF diagnostics identify the failed resource with bounded text and a safe fallback', async () => {
+  const fixture = formatFixture('gltf');
+  for (const error of [new Error(`Image textures/albedo.png could not be decoded. ${'x'.repeat(1_000)}`), 'unexpected failure']) {
+    const client = mock([]);
+    const outcome = await runBulkModel(input({ file: fixture.file }), () => {}, client.request, async () => { throw error; });
+    client.done();
+    assert.equal(outcome.status, 'failed');
+    assert.equal(outcome.canRetry, true);
+    assert.ok(outcome.message.length < 550);
+    if (error instanceof Error) assert.match(outcome.message, /textures\/albedo\.png could not be decoded/);
+    else assert.match(outcome.message, /bundle could not be validated/);
   }
 });
 
