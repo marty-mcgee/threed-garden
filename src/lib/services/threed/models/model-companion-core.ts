@@ -1,3 +1,5 @@
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+import { inspectObjLibraries, inspectObjMaterial } from './model-obj-core.ts';
 export type ThreeDModelCompanionKind = 'buffer' | 'material' | 'texture';
 
 export interface ThreeDModelCompanionRequirement {
@@ -18,26 +20,6 @@ export function normalizeThreeDModelRelativePath(reference: string): string | nu
   } catch {
     return null;
   }
-}
-
-function resolveThreeDModelReference(reference: string, referencedByRelativePath: string): string | null {
-  const cleaned = reference.trim().replaceAll('\\', '/').split(/[?#]/, 1)[0];
-  if (!cleaned || /^(?:data|blob|https?):/i.test(cleaned) || cleaned.startsWith('/') || /^[A-Za-z]:\//.test(cleaned)) return null;
-  let decoded: string;
-  try { decoded = decodeURIComponent(cleaned) } catch { return null }
-  const resolved = normalizeThreeDModelRelativePath(referencedByRelativePath)?.split('/').slice(0, -1) ?? [];
-  for (const segment of decoded.split('/')) {
-    if (!segment || segment === '.') continue;
-    if (segment === '..') {
-      if (!resolved.length) return null;
-      resolved.pop();
-    } else if (segment.includes('\0')) {
-      return null;
-    } else {
-      resolved.push(segment);
-    }
-  }
-  return resolved.length ? resolved.join('/') : null;
 }
 
 function requirementFromReference(
@@ -81,17 +63,6 @@ function inspectGltfJson(value: unknown, referencedBy: string) {
     ...uriRequirements(record.buffers, 'buffer', referencedBy),
     ...uriRequirements(record.images, 'texture', referencedBy),
   ]);
-}
-
-function inspectObj(text: string, referencedBy: string) {
-  const requirements: ThreeDModelCompanionRequirement[] = [];
-  for (const line of text.split(/\r?\n/)) {
-    const match = line.match(/^\s*mtllib\s+(.+?)\s*$/i);
-    if (!match) continue;
-    const requirement = requirementFromReference(match[1].replace(/^"|"$/g, ''), 'material', referencedBy);
-    if (requirement) requirements.push(requirement);
-  }
-  return uniqueRequirements(requirements);
 }
 
 function inspectFbx(bytes: Uint8Array, referencedBy: string) {
@@ -139,7 +110,7 @@ export function inspectThreeDModelPrimary(
   bytes: Uint8Array,
 ): ThreeDModelCompanionRequirement[] {
   const extension = fileName.split('.').pop()?.toLowerCase();
-  if (extension === 'obj') return inspectObj(new TextDecoder().decode(bytes), fileName);
+  if (extension === 'obj') return inspectObjLibraries(new TextDecoder().decode(bytes), fileName);
   if (extension === 'gltf') return inspectGltfJson(JSON.parse(new TextDecoder().decode(bytes)) as unknown, fileName);
   if (extension === 'glb') return inspectGlb(bytes, fileName);
   if (extension === 'fbx') return inspectFbx(bytes, fileName);
@@ -151,17 +122,7 @@ export function inspectThreeDModelMaterial(
   text: string,
   materialRelativePath = fileName,
 ): ThreeDModelCompanionRequirement[] {
-  const requirements: ThreeDModelCompanionRequirement[] = [];
-  for (const line of text.split(/\r?\n/)) {
-    const match = line.match(/^\s*(?:map_[A-Za-z0-9_]+|bump|disp|decal)\s+(.+?)\s*$/i);
-    if (!match) continue;
-    const candidate = match[1].trim().split(/\s+/).at(-1)?.replace(/^"|"$/g, '') ?? '';
-    const relativePath = resolveThreeDModelReference(candidate, materialRelativePath);
-    if (!relativePath) continue;
-    const requirement = requirementFromReference(relativePath, 'texture', materialRelativePath);
-    if (requirement) requirements.push(requirement);
-  }
-  return uniqueRequirements(requirements);
+  return uniqueRequirements(inspectObjMaterial(/^\s*newmtl\s/im.test(text) ? text : `newmtl ScanDefault\n${text}`, materialRelativePath).requirements);
 }
 
 export function isThreeDModelRequirementSatisfied(

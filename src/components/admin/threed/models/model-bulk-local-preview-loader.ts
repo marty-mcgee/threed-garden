@@ -236,6 +236,13 @@ async function loadBulkFbxBundle(file: File, attachments: Companion[], allowMiss
 /** Local asset ownership stays with the popup; no Model upload or API is used. */
 export function loadBulkLocalModel(file: File, attachments: Companion[], allowMissingTextures: boolean): Promise<BulkLocalModelLease> {
   if (/\.(?:glb|gltf)$/i.test(file.name)) return loadBulkGltfBundle(file, attachments, allowMissingTextures);
+  if (/\.obj$/i.test(file.name)) {
+    const selected = [file, ...attachments.map((entry) => entry.file)];
+    if (selected.some((entry) => entry.size <= 0 || entry.size > MAX_FILE_BYTES) || selected.reduce((n, entry) => n + entry.size, 0) > MAX_BUNDLE_BYTES) return Promise.reject(new Error('OBJ selected files must fit the 4 MiB file and 32 MiB bundle limits.'));
+    return import('../../../../lib/services/threed/models/model-obj-loader').then(({ loadObjBundle }) => loadObjBundle(
+      { fileName: file.name, relativePath: file.name, read: async () => new Uint8Array(await file.arrayBuffer()) },
+      attachments.map((entry) => ({ fileName: entry.file.name, relativePath: entry.relativePath, read: async () => new Uint8Array(await entry.file.arrayBuffer()) })), allowMissingTextures));
+  }
   if (/\.fbx$/i.test(file.name)) return loadBulkFbxBundle(file, attachments, allowMissingTextures);
-  return Promise.reject(new Error('Choose an FBX, GLB or GLTF Model for the local preview.'));
+  return Promise.reject(new Error('Choose an FBX, GLB, GLTF or OBJ Model for the local preview.'));
 }

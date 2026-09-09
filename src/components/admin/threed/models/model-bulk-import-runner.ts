@@ -34,7 +34,7 @@ export interface BulkImportInput {
   offsetZ: string;
   configureLater: boolean;
   previewFile?: File;
-  attachments: Array<{ file: File; relativePath: string; fileType?: 'texture' | 'binary' }>;
+  attachments: Array<{ file: File; relativePath: string; fileType?: 'texture' | 'binary' | 'other' }>;
 }
 
 export interface BulkGltfMaterialTargets {
@@ -50,6 +50,11 @@ export type BulkGltfBundleInspector = (
 ) => Promise<BulkGltfMaterialTargets>;
 
 const inspectGltfBundle: BulkGltfBundleInspector = async (file, attachments, configureLater) => {
+  if (/\.obj$/i.test(file.name)) {
+    const { loadBulkLocalModel } = await import('./model-bulk-local-preview-loader');
+    const lease = await loadBulkLocalModel(file, attachments, configureLater);
+    try { return lease.materialTargets; } finally { lease.dispose(); }
+  }
   const { inspectBulkGltfBundle } = await import('./model-gltf-bundle-inspection');
   return inspectBulkGltfBundle(file, attachments, configureLater);
 };
@@ -193,12 +198,12 @@ export async function runBulkModel(
   const previewFile = input.previewFile;
   const configureLater = input.configureLater;
   const activateAfterImport = input.settings.isActive;
-  const modelType = sourceFile.name.split('.').at(-1)?.toLowerCase() as 'fbx' | 'glb' | 'gltf';
+  const modelType = sourceFile.name.split('.').at(-1)?.toLowerCase() as 'fbx' | 'glb' | 'gltf' | 'obj';
   let form: ReturnType<typeof buildThreeDModelAdminPayload>;
   let attachments: Array<{ file: File; relativePath: string; fileType: 'texture' | 'binary' | 'other' }>;
   const { existingTextureId = null, ...modelSettings } = input.settings;
   try {
-    checkFile(sourceFile, /\.(?:fbx|glb|gltf)$/i);
+    checkFile(sourceFile, /\.(?:fbx|glb|gltf|obj)$/i);
     if (!normalizeThreeDModelRelativePath(sourceFile.name)) throw new Error('Invalid primary filename.');
     for (const value of [input.settings.scale, input.rotationY, input.offsetX, input.offsetY, input.offsetZ]) {
       if (!value.trim()) throw new Error('Every transform must contain a finite number.');
@@ -224,8 +229,8 @@ export async function runBulkModel(
     });
     attachments = input.attachments.map((entry) => {
       const fileType = entry.fileType ?? 'texture';
-      if (fileType !== 'texture' && fileType !== 'binary') throw new Error('Unsupported attachment type.');
-      checkFile(entry.file, fileType === 'binary' ? /\.bin$/i : /\.(?:png|jpe?g|webp|tga|bmp)$/i);
+      if (fileType !== 'texture' && fileType !== 'binary' && !(modelType === 'obj' && fileType === 'other')) throw new Error('Unsupported attachment type.');
+      checkFile(entry.file, fileType === 'binary' ? /\.bin$/i : fileType === 'other' ? /\.mtl$/i : /\.(?:png|jpe?g|webp|tga|bmp)$/i);
       return { ...entry, relativePath: attachmentPath(entry.relativePath), fileType };
     });
     if (previewFile) {
@@ -280,7 +285,7 @@ export async function runBulkModel(
     onProgress(`Validating local ${modelType.toUpperCase()} resources and geometry`);
     try {
       // File objects retain the exact reviewed bytes across local inspection and upload.
-      const bundleAttachments = attachments.flatMap((entry) => entry.fileType === 'other' ? [] : [{
+      const bundleAttachments = attachments.flatMap((entry) => entry.file === previewFile ? [] : [{
         file: entry.file, relativePath: entry.relativePath, fileType: entry.fileType,
       }]);
       const inventory = await inspectBundle(sourceFile, bundleAttachments, configureLater);
@@ -294,8 +299,8 @@ export async function runBulkModel(
       // These diagnostics come from the local bundle inspector, never an API response.
       const detail = error instanceof Error ? error.message.replace(/\s+/g, ' ').trim().slice(0, 400) : '';
       return result('failed', detail
-        ? `Local ${modelType.toUpperCase()} validation failed: ${detail} Missing geometry cannot be deferred.`
-        : 'The local GLB/GLTF bundle could not be validated. Check geometry buffers, image files, and supported glTF resources before retrying. Missing geometry cannot be deferred.', true);
+        ? `Local ${modelType.toUpperCase()} validation failed: ${detail} Missing geometry or material libraries cannot be deferred.`
+        : 'The local Model bundle could not be validated. Check geometry, material libraries and image files before retrying. Missing geometry or material libraries cannot be deferred.', true);
     }
   }
 
@@ -407,7 +412,7 @@ export async function runBulkModel(
         || (entry.fileType === 'binary' && match.isBinaryBuffer !== true)) {
         return result('failed', 'Model created inactive; saved attachments did not match the reviewed batch. Review Model files.');
       }
-      if (entry.fileType === 'other') previewUrl = match.filePath;
+      if (entry.file === previewFile) previewUrl = match.filePath;
     }
   } catch {
     return result('failed', 'Model created; saved files could not be verified. Review Model files before continuing.');
@@ -465,10 +470,10 @@ export async function runBulkModel(
   if (modelType !== 'fbx' && (audit?.status !== 'analyzed' || !Array.isArray(audit.requirements)
     || audit.requirements.some((requirement) => {
       const entry = object(requirement);
-      return !entry || (entry.kind !== 'texture' && entry.kind !== 'buffer')
-        || typeof entry.satisfied !== 'boolean' || (entry.kind === 'buffer' && !entry.satisfied);
+      return !entry || (entry.kind !== 'texture' && entry.kind !== 'buffer' && !(modelType === 'obj' && entry.kind === 'material'))
+        || typeof entry.satisfied !== 'boolean' || (entry.kind !== 'texture' && !entry.satisfied);
     }))) {
-    return result('failed', 'Model created inactive; the saved geometry dependency audit is incomplete or unavailable. Review Model files before continuing. Missing geometry cannot be deferred.');
+    return result('failed', 'Model created inactive; the saved required-file dependency audit is incomplete or unavailable. Review Model files before continuing. Missing geometry or material libraries cannot be deferred.');
   }
   const auditComplete = audit?.status === 'analyzed' && audit.complete === true
     && Array.isArray(audit.requirements)

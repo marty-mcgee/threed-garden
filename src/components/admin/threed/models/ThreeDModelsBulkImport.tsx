@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { inspectThreeDModelPrimary } from '@/lib/services/threed/models/model-companion-core';
+import { inspectObjGeometry } from '@/lib/services/threed/models/model-obj-core';
 import { inspectThreeDGltfBundle } from '@/lib/services/threed/models/model-gltf-bundle-core';
 import type { ThreeDModelCategoryOption } from './ThreeDModelCategoriesManager';
 import {
@@ -21,7 +22,7 @@ import { createBulkModelPreviewSnapshot, openBulkModelPreview, type BulkModelPre
 
 const InlineModelPreview = lazy(() => import('./ThreeDModelImportPreview').then((module) => ({ default: module.ThreeDModelImportPreview })));
 
-const COMPANION_ACCEPT = '.bin,.png,.jpg,.jpeg,.webp,.tga,.bmp';
+const COMPANION_ACCEPT = '.mtl,.bin,.png,.jpg,.jpeg,.webp,.tga,.bmp';
 const FLAGS = [
   ['isLibraryItem', 'Library Item'], ['isPublic', 'Public'], ['usedByPlants', 'Used by Plants'],
   ['usedByCharacters', 'Used by Characters'], ['isActive', 'Active after import'],
@@ -207,7 +208,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
         try {
           const bytes = new Uint8Array(await draft.source.file.arrayBuffer());
           const gltf = /\.(?:glb|gltf)$/i.test(draft.source.file.name) ? inspectThreeDGltfBundle(draft.source.file.name, bytes) : undefined;
-          const requirements = gltf?.requirements ?? inspectThreeDModelPrimary(draft.source.file.name, bytes);
+          const requirements = gltf?.requirements ?? (/\.obj$/i.test(draft.source.file.name) ? inspectObjGeometry(new TextDecoder('utf-8', { fatal: true }).decode(bytes), draft.source.file.name).requirements : inspectThreeDModelPrimary(draft.source.file.name, bytes));
           if (requirements.length > 500) throw new Error('More than 500 file references detected. Review this file with Add Model.');
           const gltfResources = gltf && summarizeBulkGltfResources(gltf);
           changeDrafts((current) => current.map((entry) => entry.id === draft.id ? { ...entry, inspecting: false, requirements, gltfResources } : entry));
@@ -225,9 +226,12 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
     const selectionRoot = crypto.randomUUID();
     const skipped: string[] = [];
     const additions: BulkSource[] = [];
+    let materialBytes = pool.filter((source) => /\.mtl$/i.test(source.file.name)).reduce((total, source) => total + source.file.size, 0);
     for (const file of Array.from(files)) {
       if (pool.some((entry) => entry.file === file)) continue;
-      const error = validateBulkCompanion(file);
+      const material = /\.mtl$/i.test(file.name);
+      if (material) materialBytes += file.size;
+      const error = validateBulkCompanion(file) ?? (material && materialBytes > 32 * 1024 * 1024 ? 'Selected material libraries exceed 32 MiB.' : null);
       if (error || pool.length + additions.length >= 500) {
         skipped.push(`${file.name}: ${error ?? '500-file companion selection limit reached'}`);
         continue;
@@ -235,6 +239,14 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
       additions.push({ id: crypto.randomUUID(), file, sourcePath: file.webkitRelativePath || file.name, selectionRoot });
     }
     setPool((current) => [...current, ...additions]);
+    scansRef.current = scansRef.current.then(async () => {
+      for (const source of additions.filter((entry) => /\.mtl$/i.test(entry.file.name))) {
+        let patch: Partial<BulkSource>;
+        try { patch = { materialText: new TextDecoder('utf-8', { fatal: true }).decode(await source.file.arrayBuffer()) }; }
+        catch { patch = { materialError: `Unable to read material library: ${source.file.name}.` }; }
+        if (mountedRef.current) setPool((current) => current.map((entry) => entry.id === source.id ? { ...entry, ...patch } : entry));
+      }
+    });
     setNotice(skipped.join(' · '));
   }
 
@@ -319,10 +331,10 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
     <DialogContent className="flex h-[92dvh] max-h-[92dvh] flex-col gap-0 overflow-hidden p-0 sm:max-w-[min(96vw,1150px)]">
       <DialogHeader className="shrink-0 border-b px-4 py-4 pr-12 sm:pl-6">
         <DialogTitle>Bulk Import Models</DialogTitle>
-        <DialogDescription>Prepare FBX, GLB and GLTF Models with their textures and binary files, then import ready rows. Files upload only when you start importing.</DialogDescription>
+        <DialogDescription>Prepare FBX, GLB, GLTF and OBJ Models with their material libraries, textures and binary files, then import ready rows. Files upload only when you start importing.</DialogDescription>
       </DialogHeader>
       <div data-slot="bulk-import-body" role="region" aria-label="Bulk import configuration" tabIndex={0} className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6">
-      <input ref={primaryRef} aria-label="Select Model files" type="file" multiple accept=".fbx,.glb,.gltf" className="hidden" disabled={importing}
+      <input ref={primaryRef} aria-label="Select Model files" type="file" multiple accept=".fbx,.glb,.gltf,.obj" className="hidden" disabled={importing}
         onChange={(event) => { addPrimaries(event.target.files); event.target.value = ''; }} />
       <input ref={textureRef} aria-label="Select shared texture and binary files" type="file" multiple accept={COMPANION_ACCEPT} className="hidden" disabled={importing}
         onChange={(event) => { addTextures(event.target.files); event.target.value = ''; }} />
@@ -330,7 +342,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
         onChange={(event) => { if (selected) void choosePreview(event.target.files?.[0], selected.id); event.target.value = ''; }} />
       <div className="flex flex-wrap items-center gap-2">
         <Button type="button" size="sm" disabled={importing || drafts.length >= MAX_BULK_MODELS} onClick={() => primaryRef.current?.click()}><Upload className="mr-1 h-3 w-3" />Choose Model files</Button>
-        <Button type="button" variant="outline" size="sm" disabled={importing} onClick={() => textureRef.current?.click()}>Add textures / .bin files</Button>
+        <Button type="button" variant="outline" size="sm" disabled={importing} onClick={() => textureRef.current?.click()}>Add MTL / textures / .bin files</Button>
         <Badge variant="secondary">{drafts.length}/100 Models</Badge>
         <span className="text-xs text-muted-foreground">Up to 4 MiB per file for bulk uploads.</span>
       </div>
@@ -363,9 +375,9 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
         <span className="text-muted-foreground" role="status">{texturesLoading ? 'Loading existing Textures…' : textureError || `${activeTextures.length} active existing Textures available`}</span>
         <Button type="button" variant="outline" size="sm" disabled={importing || texturesLoading} onClick={() => setTextureRefresh((value) => value + 1)}>Refresh existing Textures</Button>
       </div>
-      <section aria-label="Shared texture and binary files" className="rounded border p-3">
-        <h3 className="text-sm font-medium">Shared texture and binary files ({pool.length}/500)</h3>
-        <p className="my-2 text-xs text-muted-foreground">Select local images and .bin files to resolve Model dependencies. Use Assign Existing Texture File to reuse a saved Base Color Texture. Embedded GLB/GLTF resources need no extra attachment.</p>
+      <section aria-label="Shared material, texture and binary files" className="rounded border p-3">
+        <h3 className="text-sm font-medium">Shared material, texture and binary files ({pool.length}/500)</h3>
+        <p className="my-2 text-xs text-muted-foreground">Select .MTL material libraries, their texture images and .bin files to resolve Model dependencies. Use Assign Existing Texture File to reuse a saved Base Color Texture. Embedded GLB/GLTF resources need no extra attachment.</p>
         {pool.length === 0 && <p className="text-xs text-muted-foreground">No shared files selected.</p>}
         <div className="space-y-1">{pool.map((source, index) => <div key={source.id} className="flex items-center justify-between gap-2 text-xs">
           <span className="break-all">#{index + 1} {source.sourcePath} · {sizeLabel(source.file.size)}</span>
@@ -432,22 +444,22 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
                     : selectedPlan.unresolved.length > 0 ? selected.configureLater ? 'Ready — missing textures deferred' : 'Missing files'
                     : 'Ready to import'}</span>
                 </div>
-                {!selected.inspecting && !selected.inspectionError && !selected.requirements.length && <p className="text-xs">{selected.gltfResources ? 'No external files required. Embedded resources stay in the Model file.' : 'No named textures detected — review after import. This scan does not verify FBX structure or appearance.'}</p>}
+                {!selected.inspecting && !selected.inspectionError && !selected.requirements.length && <p className="text-xs">{selected.gltfResources ? 'No external files required. Embedded resources stay in the Model file.' : /\.obj$/i.test(selected.source.file.name) ? 'No material library referenced. This OBJ uses vertex colors or default materials.' : 'No named textures detected — review after import. This scan does not verify FBX structure or appearance.'}</p>}
                 {selectedPlan.matches.map((match) => <div key={requirementKey(match.requirement)} className="space-y-1 rounded border border-current/20 bg-background p-2 text-foreground">
-                  <p className="break-all text-xs font-medium">{match.requirement.kind === 'buffer' ? 'Required binary buffer' : 'Texture'}: {match.requirement.relativePath}</p>
-                  <select aria-label={`${match.requirement.kind === 'buffer' ? 'Buffer' : 'Texture'} for ${match.requirement.relativePath}`} className={selectClass} value={selectedPool.some((entry) => entry.id === match.sourceId) ? match.sourceId : ''}
+                  <p className="break-all text-xs font-medium">{match.requirement.kind === 'buffer' ? 'Required binary buffer' : match.requirement.kind === 'material' ? 'Required material library' : 'Texture'}: {match.requirement.relativePath}</p>
+                  <select aria-label={`${match.requirement.kind === 'buffer' ? 'Buffer' : match.requirement.kind === 'material' ? 'Material library' : 'Texture'} for ${match.requirement.relativePath}`} className={selectClass} value={selectedPool.some((entry) => entry.id === match.sourceId) ? match.sourceId : ''}
                     onChange={(event) => updateDraft(selected.id, { choices: { ...selected.choices, [requirementKey(match.requirement)]: { sourceId: event.target.value, relativePath: match.relativePath || defaultDestination(match.requirement.relativePath) } } })}>
-                    <option value="">Choose file / leave unresolved</option>{selectedPool.map((source, index) => ({ source, index })).filter(({ source }) => (match.requirement.kind === 'buffer') === (bulkCompanionType(source.file) === 'binary')).map(({ source, index }) => <option key={source.id} value={source.id}>#{index + 1} {source.sourcePath} ({sizeLabel(source.file.size)})</option>)}
+                    <option value="">Choose file / leave unresolved</option>{selectedPool.map((source, index) => ({ source, index })).filter(({ source }) => (match.requirement.kind === 'buffer' ? 'binary' : match.requirement.kind === 'material' ? 'other' : 'texture') === bulkCompanionType(source.file)).map(({ source, index }) => <option key={source.id} value={source.id}>#{index + 1} {source.sourcePath} ({sizeLabel(source.file.size)})</option>)}
                   </select>
                   <Input aria-label={`Destination for ${match.requirement.relativePath}`} value={match.relativePath} onChange={(event) => updateDraft(selected.id, { choices: { ...selected.choices, [requirementKey(match.requirement)]: { sourceId: match.sourceId, relativePath: event.target.value } } })} />
                   <p className={`text-[11px] ${match.issue || !match.sourceId ? 'font-medium text-amber-800 dark:text-amber-300' : 'text-muted-foreground'}`}>{match.issue || (match.automatic ? 'Suggested match — change if needed' : match.sourceId ? 'Selected explicitly' : 'Missing or ambiguous') }</p>
                   {selected.choices[requirementKey(match.requirement)] && <button type="button" className="text-[11px] underline" onClick={() => { const choices = { ...selected.choices }; delete choices[requirementKey(match.requirement)]; updateDraft(selected.id, { choices }); }}>Use suggested match</button>}
                 </div>)}
                 <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={selected.configureLater} onChange={(event) => updateDraft(selected.id, { configureLater: event.target.checked })} />Resolve missing texture files later (keep inactive)</label>
-                {selected.requirements.some((entry) => entry.kind === 'buffer') && <p className="text-xs">Required .bin files cannot be deferred, including files that contain texture images.</p>}
+                {selected.requirements.some((entry) => entry.kind !== 'texture') && <p className="text-xs">Required .bin buffers and .mtl material libraries cannot be deferred. Add their referenced texture images separately.</p>}
                 {(selectedPlan.issues.length > 0 || selectedPlan.unresolved.length > 0) && <div className="space-y-1 text-xs" role="status">
                   {selectedPlan.issues.map((issue, index) => <p key={`issue-${index}`} className="break-words font-medium text-red-800 dark:text-red-300">{issue}</p>)}
-                  {selectedPlan.unresolved.map((issue, index) => <p key={`unresolved-${index}`} className="break-words font-medium text-amber-800 dark:text-amber-300">{issue}{selected.configureLater && !selectedPlan.matches.some((match) => match.requirement.relativePath === issue && match.requirement.kind === 'buffer') ? ' — configure after import' : ''}</p>)}
+                  {selectedPlan.unresolved.map((issue, index) => <p key={`unresolved-${index}`} className="break-words font-medium text-amber-800 dark:text-amber-300">{issue}{selected.configureLater && !selectedPlan.matches.some((match) => match.requirement.relativePath === issue && match.requirement.kind !== 'texture') ? ' — configure after import' : ''}</p>)}
                 </div>}
                 <div className="space-y-2 border-t border-current/20 pt-3">
                   <h4 className="text-xs font-medium">Additional file attachments</h4>

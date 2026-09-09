@@ -20,8 +20,8 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.19.10b — ThreeD Model Bulk Importing** (released package version `0.19.10-beta`, commit `ab5f1ea`; production confirmed by the User September 9, 2026) |
-| Current development version | No later release candidate designated; package remains at the released `0.19.10-beta`. |
-| Beta release verification | User manually tested and accepted the checkpoint and local build gate; automated checks pass. Production deployment is User-confirmed; detailed live regression checks remain available. See [handoff](docs/plans/v0.19.10b-release.md). OBJ is deferred. |
+| Current development version | **v0.19.10c — ThreeD Model Bulk Importing** (`0.19.10-centaur`): OBJ/MTL and texture support implemented; production handoff prepared at the User’s request, deployment pending. See [centaur handoff](docs/plans/v0.19.10c-release.md). |
+| Beta release verification | User manually tested and accepted the checkpoint and local build gate; automated checks pass. Production deployment is User-confirmed; detailed live regression checks remain available. See [handoff](docs/plans/v0.19.10b-release.md). OBJ work is now the separate centaur candidate. |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |

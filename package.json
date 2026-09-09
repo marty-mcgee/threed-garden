@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.19.10-beta",
+  "version": "0.19.10-centaur",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -33,6 +33,7 @@
     "validate:threed-fbx-material-targets": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-fbx-material-targets.mts",
     "validate:threed-gltf-bundle": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-gltf-bundle.mts",
     "validate:threed-gltf-material-targets": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-gltf-material-targets.mts",
+    "validate:threed-obj-bundle": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-obj-bundle.mts",
     "validate:threed-model-bulk-preview": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-bulk-preview.mts"
   },
   "dependencies": {

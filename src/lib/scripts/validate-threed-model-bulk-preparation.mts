@@ -59,7 +59,7 @@ await group('primary limits reject unsupported, empty and transport-oversize fil
   assert.match(validateBulkPrimary(file('house.fbx', 0))!, /empty/);
   assert.equal(validateBulkPrimary(file('house.GLB')), null);
   assert.equal(validateBulkPrimary(file('house.GLTF')), null);
-  assert.match(validateBulkPrimary(file('house.obj'))!, /FBX/);
+  assert.match(validateBulkPrimary(file('house.usdz'))!, /FBX/);
   assert.match(validateBulkPrimary(file(`${'a'.repeat(252)}.fbx`))!, /255/);
   assert.equal(validateBulkPrimary(file(`${'a'.repeat(251)}.fbx`)), null);
   assert.match(validateBulkPrimary(file('%2e%2e.fbx'))!, /filename/);

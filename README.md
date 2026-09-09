@@ -11,7 +11,7 @@ This is a **Dual-Surface Platform**:
 
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 
-See the [completed deployment handoff](docs/plans/v0.19.10b-release.md) and [implementation record](docs/plans/v0.19.10b-implementation.md). No subsequent release candidate is designated. OBJ work remains deferred.
+See the [completed deployment handoff](docs/plans/v0.19.10b-release.md) and [implementation record](docs/plans/v0.19.10b-implementation.md). The next candidate is **v0.19.10c** (`0.19.10-centaur`), adding OBJ importing with MTL material libraries and their texture images, inline/window previews, and saved single-Model material rendering. See the [centaur implementation and validation](docs/plans/v0.19.10c.md). The [production handoff](docs/plans/v0.19.10c-release.md) is prepared at the User’s request; deployment remains pending.
 
 The v0.19.9 production release turns the existing Project Tour into a focused, state-derived first-run sequence. It recommends Environment, Model, and Character foundations one step at a time while preserving direct access for advanced Users and reusing the established Library and placement transactions.
 

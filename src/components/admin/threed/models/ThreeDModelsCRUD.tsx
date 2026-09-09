@@ -508,12 +508,18 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
                     attachedDependencyCount={0}
                     dependencyCount={0}
                     title="Importer Canvas"
-                    description="Upload a Model, then adjust its transform and inspect every change here before creation."
+                    description={formData.modelType === 'obj' ? 'OBJ geometry preview. Attach its MTL material library and referenced images in Model Files after creation to see the final materials.' : 'Upload a Model, then adjust its transform and inspect every change here before creation.'}
                     canvasClassName="h-[min(68vh,680px)] min-h-[420px]"
                   />
                 </div>
                 <div className="max-h-[calc(92vh-73px)] overflow-y-auto">
                   <div className="space-y-4 p-5">
+                    {formData.modelType === 'obj' && (
+                      <p className="rounded-md border border-cyan-500/40 bg-cyan-500/10 p-3 text-sm">
+                        Create this Model, then attach its .MTL files and referenced texture images in Model Files.
+                        To prepare and preview the complete bundle before uploading, use Bulk Import Models — it also accepts a single OBJ.
+                      </p>
+                    )}
                     <ThreeDModelEditorFields
                       mode="create"
                       form={formData}

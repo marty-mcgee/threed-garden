@@ -15,3 +15,5 @@ Use [Safe change areas](SAFE_CHANGE_AREAS.md), [Task checklists](TASK_CHECKLISTS
 Read [ThreeD character runtimes](../developers/THREED_CHARACTERS.md) before changing GardenCharacter, EcctrlCharacter, character routing, or Phase 5 orchestration.
 
 Read [ThreeD Marker architecture](../developers/THREED_MARKERS.md) before changing Runtime Marker creation, marker identity, ThreeD Layers, marker visibility, Action Target resolution, or marker adapters.
+
+The active importer candidate is [v0.19.10c — OBJ/MTL](../plans/v0.19.10c.md). Production remains v0.19.10b; keep candidate validation separate from the released beta acceptance.

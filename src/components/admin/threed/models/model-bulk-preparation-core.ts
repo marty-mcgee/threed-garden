@@ -1,3 +1,5 @@
+// @ts-expect-error Native TypeScript validation requires explicit extensions.
+import { inspectObjMaterial } from '../../../../lib/services/threed/models/model-obj-core.ts';
 import {
   normalizeThreeDModelRelativePath,
   type ThreeDModelCompanionRequirement,
@@ -36,6 +38,8 @@ export interface BulkSource {
   file: File;
   sourcePath: string;
   selectionRoot: string;
+  materialText?: string;
+  materialError?: string;
 }
 
 export interface BulkDraft {
@@ -66,7 +70,7 @@ export interface BulkPreparedModel {
   ready: boolean;
   issues: string[];
   unresolved: string[];
-  attachments: Array<{ source: BulkSource; relativePath: string; fileType: 'texture' | 'binary' }>;
+  attachments: Array<{ source: BulkSource; relativePath: string; fileType: 'texture' | 'binary' | 'other' }>;
   settings: BulkDefaults;
   matches: Array<{
     requirement: ThreeDModelCompanionRequirement;
@@ -96,15 +100,15 @@ function selectedFileIssue(file: File): string | null {
 }
 
 export function validateBulkPrimary(file: File): string | null {
-  return !['fbx', 'glb', 'gltf'].includes(extension(file.name)) ? 'Select an FBX, GLB, or GLTF Model file.' : selectedFileIssue(file);
+  return !['fbx', 'glb', 'gltf', 'obj'].includes(extension(file.name)) ? 'Select an FBX, GLB, GLTF, or OBJ Model file.' : selectedFileIssue(file);
 }
 
-export function bulkCompanionType(file: File): 'texture' | 'binary' {
-  return extension(file.name) === 'bin' ? 'binary' : 'texture';
+export function bulkCompanionType(file: File): 'texture' | 'binary' | 'other' {
+  return extension(file.name) === 'bin' ? 'binary' : extension(file.name) === 'mtl' ? 'other' : 'texture';
 }
 
 export function validateBulkCompanion(file: File): string | null {
-  return bulkCompanionType(file) === 'binary' ? selectedFileIssue(file) : validateBulkTexture(file);
+  return bulkCompanionType(file) !== 'texture' ? selectedFileIssue(file) : validateBulkTexture(file);
 }
 
 export function validateBulkTexture(file: File): string | null {
@@ -143,7 +147,7 @@ export function createBulkDefaults(): BulkDefaults {
 export function createBulkDraft(source: BulkSource): BulkDraft {
   return {
     id: source.id, source,
-    modelName: source.file.name.replace(/\.(?:fbx|glb|gltf)$/i, '').replace(/[._-]+/g, ' ').replace(/\s+/g, ' ').trim(),
+    modelName: source.file.name.replace(/\.(?:fbx|glb|gltf|obj)$/i, '').replace(/[._-]+/g, ' ').replace(/\s+/g, ' ').trim(),
     rotationY: '0.0', offsetX: '0.0', offsetY: '0.0', offsetZ: '0.0',
     overrides: {}, configureLater: false, requirements: [], inspecting: true, choices: {}, extras: [],
   };
@@ -185,7 +189,7 @@ export function requirementKey(requirement: ThreeDModelCompanionRequirement): st
 
 export function defaultDestination(reference: string): string {
   const normalized = safePath(reference);
-  return normalized ? normalized.includes('/') ? normalized : `${extension(normalized) === 'bin' ? 'buffers' : 'textures'}/${normalized}` : reference;
+  return normalized ? normalized.includes('/') ? normalized : `${extension(normalized) === 'bin' ? 'buffers' : extension(normalized) === 'mtl' ? 'materials' : 'textures'}/${normalized}` : reference;
 }
 
 export function resolveBulkSettings(draft: BulkDraft, defaults: BulkDefaults): BulkDefaults {
@@ -206,7 +210,7 @@ function automaticSource(draft: BulkDraft, requirement: ThreeDModelCompanionRequ
   }
   const candidates = pool.filter((source) => source.file.name.toLowerCase() === requirement.fileName.toLowerCase());
   return candidates.length === 1 ? { source: candidates[0] }
-    : { issue: candidates.length ? 'Choose file: multiple files have this name.' : `Missing ${requirement.kind === 'buffer' ? 'binary buffer' : 'texture'}.` };
+    : { issue: candidates.length ? 'Choose file: multiple files have this name.' : `Missing ${requirement.kind === 'buffer' ? 'binary buffer' : requirement.kind === 'material' ? 'material library' : 'texture'}.` };
 }
 
 export function prepareBulkModel(draft: BulkDraft, defaults: BulkDefaults, pool: readonly BulkSource[], existingTextures?: readonly BulkExistingTexture[]): BulkPreparedModel {
@@ -246,13 +250,15 @@ export function prepareBulkModel(draft: BulkDraft, defaults: BulkDefaults, pool:
     }
   }
 
-  type Attachment = { source: BulkSource; relativePath: string; fileType: 'texture' | 'binary'; keys: Set<string>; extra: boolean };
+  type Attachment = { source: BulkSource; relativePath: string; fileType: 'texture' | 'binary' | 'other'; keys: Set<string>; extra: boolean };
   const attachments: Attachment[] = [];
   function addAttachment(source: BulkSource, path: string, key?: string): string | undefined {
     const relativePath = safePath(path);
     const fileType = bulkCompanionType(source.file);
     const issue = validateBulkCompanion(source.file)
-      ?? (extension(draft.source.file.name) !== 'fbx' && fileType === 'texture' && !['png', 'jpg', 'jpeg', 'webp'].includes(extension(source.file.name)) ? 'GLB/GLTF textures must be PNG, JPG, or WebP.' : null)
+      ?? (['glb', 'gltf'].includes(extension(draft.source.file.name)) && fileType === 'texture' && !['png', 'jpg', 'jpeg', 'webp'].includes(extension(source.file.name)) ? 'GLB/GLTF textures must be PNG, JPG, or WebP.' : null)
+      ?? (extension(draft.source.file.name) === 'obj' && fileType === 'texture' && !['png', 'jpg', 'jpeg', 'webp', 'bmp'].includes(extension(source.file.name)) ? 'OBJ textures must be PNG, JPG, WebP or BMP.' : null)
+      ?? (fileType === 'other' && extension(draft.source.file.name) !== 'obj' ? 'MTL libraries belong to OBJ Models.' : null)
       ?? (!relativePath ? 'Enter a safe relative attachment path.' : null)
       ?? (!relativePath?.includes('/') ? 'Attachment directory is required.' : null)
       ?? ((relativePath?.split('/').slice(0, -1).join('/').length ?? 0) > 100 ? 'Attachment directory cannot exceed 100 characters.' : null)
@@ -274,7 +280,22 @@ export function prepareBulkModel(draft: BulkDraft, defaults: BulkDefaults, pool:
     } else attachments.push({ source, relativePath, fileType, keys: new Set(key ? [key] : []), extra: !key });
   }
 
-  const requirements = [...new Map(draft.requirements.map((requirement) => [requirementKey(requirement), requirement])).values()];
+  const discovered = [...draft.requirements];
+  if (/\.obj$/i.test(draft.source.file.name)) {
+    for (const library of draft.requirements.filter((entry) => entry.kind === 'material')) {
+      const choice = draft.choices[requirementKey(library)];
+      const source = choice ? pool.find((entry) => entry.id === choice.sourceId) : automaticSource(draft, library, pool).source;
+      if (!source || bulkCompanionType(source.file) !== 'other') continue;
+      if (source.materialError) addIssue(source.materialError);
+      else if (source.materialText === undefined) addIssue(`Reading material library: ${source.file.name}.`);
+      else {
+        try { discovered.push(...inspectObjMaterial(source.materialText, library.relativePath).requirements); }
+        catch (error) { addIssue(`${source.file.name}: ${error instanceof Error ? error.message : 'Invalid MTL.'}`); }
+      }
+      if (discovered.length > 500) { addIssue('OBJ has more than 500 dependency references.'); break; }
+    }
+  }
+  const requirements = [...new Map(discovered.slice(0, 500).map((requirement) => [requirementKey(requirement), requirement])).values()];
   const matches: BulkPreparedModel['matches'] = requirements.map((requirement) => {
     const key = requirementKey(requirement);
     const choice = draft.choices[key];
@@ -287,8 +308,8 @@ export function prepareBulkModel(draft: BulkDraft, defaults: BulkDefaults, pool:
     if (source && source.file.name.toLowerCase() !== requirement.fileName.toLowerCase()) {
       issue = `Selected file must be named ${requirement.fileName}.`;
       addIssue(issue);
-    } else if (source && (requirement.kind === 'buffer') !== (bulkCompanionType(source.file) === 'binary')) {
-      issue = `Select a ${requirement.kind === 'buffer' ? '.bin buffer' : 'texture image'} for ${requirement.relativePath}.`;
+    } else if (source && (requirement.kind === 'buffer' ? 'binary' : requirement.kind === 'material' ? 'other' : 'texture') !== bulkCompanionType(source.file)) {
+      issue = `Select a ${requirement.kind === 'buffer' ? '.bin buffer' : requirement.kind === 'material' ? '.mtl material library' : 'texture image'} for ${requirement.relativePath}.`;
       addIssue(issue);
     } else if (source) {
       issue = addAttachment(source, relativePath, key);
@@ -339,13 +360,13 @@ export function prepareBulkModel(draft: BulkDraft, defaults: BulkDefaults, pool:
     }
     if (match.issue || !match.sourceId) {
       unresolved.push(match.requirement.relativePath);
-      if (match.requirement.kind === 'buffer') addIssue(`Required binary buffer unresolved: ${match.requirement.relativePath}.`);
+      if (match.requirement.kind !== 'texture') addIssue(`Required ${match.requirement.kind === 'material' ? 'material library' : 'binary buffer'} unresolved: ${match.requirement.relativePath}.`);
     }
     else resolvedKeys.add(requirementKey(match.requirement));
   }
-  if (draft.gltfResources && Math.max(draft.source.file.size, draft.gltfResources.embeddedByteLength)
+  if ((draft.gltfResources || /\.obj$/i.test(draft.source.file.name)) && Math.max(draft.source.file.size, draft.gltfResources?.embeddedByteLength ?? 0)
     + attachments.reduce((bytes, attachment) => bytes + attachment.source.file.size, 0) > MAX_GLTF_BUNDLE_BYTES) {
-    addIssue('GLB/GLTF bundles support up to 32 MiB of embedded and selected resources per Model.');
+    addIssue('Model bundles support up to 32 MiB of embedded and selected resources per Model.');
   }
   return {
     ready: !issues.length && (!unresolved.length || draft.configureLater), issues, unresolved, settings, matches,

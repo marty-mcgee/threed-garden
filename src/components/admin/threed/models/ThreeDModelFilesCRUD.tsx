@@ -813,7 +813,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
               </Button>
             ) : null}
             canvasClassName="h-[min(48vh,480px)] min-h-[340px]"
-            showMaterialInspector={previewModel?.modelType.toLowerCase() === 'fbx'}
+            showMaterialInspector={['fbx', 'obj'].includes(previewModel?.modelType.toLowerCase() ?? '')}
             splitMaterialInspector
             textureLibrary={textureLibrary}
             onSaveMaterialAssignment={saveMaterialAssignment}
@@ -831,14 +831,17 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
             </Badge>
           )}
         </div>
+        {selectedModel?.modelType.toLowerCase() === 'obj' && (
+          <p className="mt-2 text-[11px] text-muted-foreground">Attach each required .MTL material library first. Its referenced texture images will then appear below. Materials update in the preview when their files are attached.</p>
+        )}
         {dependencyError ? (
           <p className="mt-2 text-[11px] text-amber-400">{dependencyError}</p>
         ) : dependencyAudit?.status === 'missing_primary' ? (
           <p className="mt-2 text-[11px] text-muted-foreground">Set a primary Model file before attaching its dependencies.</p>
         ) : dependencyAudit?.status === 'not_supported' ? (
-          <p className="mt-2 text-[11px] text-muted-foreground">Dependency inspection currently supports FBX, GLB, and GLTF primary files.</p>
+          <p className="mt-2 text-[11px] text-muted-foreground">Dependency inspection supports FBX, GLB, GLTF and OBJ primary files.</p>
         ) : dependencyAudit?.status === 'analyzed' && dependencyAudit.requirements.length === 0 ? (
-          <p className="mt-2 text-[11px] text-muted-foreground">This FBX does not expose texture filenames. Choose its texture images below and the preview will retry them by filename.</p>
+          <p className="mt-2 text-[11px] text-muted-foreground">{selectedModel?.modelType.toLowerCase() === 'fbx' ? 'This FBX does not expose texture filenames. Choose its texture images below and the preview will retry them by filename.' : 'No external files are referenced. Embedded resources, vertex colors or default materials remain in use.'}</p>
         ) : dependencyAudit?.status === 'analyzed' ? (
           <div className="mt-2 grid gap-1.5 sm:grid-cols-2 xl:grid-cols-3">
             {dependencyAudit.requirements.map((requirement) => {

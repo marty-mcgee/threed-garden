@@ -31,6 +31,16 @@ The **Model textures** summary beneath the selected GLB/GLTF filename counts emb
 
 For GLB/GLTF, PNG, JPEG and static WebP images, embedded/data resources and locally decoded DRACO geometry are supported. The original material configuration remains when **Assign Existing Texture File** is None. Before upload, the selected bundle is loaded locally to check resource decoding and discover the default scene's material slots. A malformed bundle or missing binary buffer blocks its row, including when texture deferral is selected. Missing images may be explicitly deferred inactive. Unsupported extensions and nonlocal dependency URLs produce an actionable row error. See the [beta resource limits and manual checks](../plans/v0.19.10b-implementation.md).
 
+### Centaur OBJ/MTL candidate
+
+Development package `0.19.10-centaur` adds `.obj` to **Choose Model files** and `.mtl` to **Add MTL / textures / .bin files**. Use this workflow for one OBJ or a mixed batch. Selecting a declared material library discovers its image maps in the highlighted **File requirements** section. Bare `.mtl` names default to `materials/`; bare image names default to `textures/`. MTL records use the existing `other` file type and cannot become thumbnails.
+
+Every declared MTL must be supplied and unambiguous. Missing images may be deferred inactive; an existing Base Color Texture does not replace the need for an MTL library. **None** retains the authored MTL appearance. OBJ previews work beneath Queued Models and in the optional separate window, using the same material loader as saved Models.
+
+**Add Model** preserves the staged-primary workflow: upload an OBJ to preview geometry, create the Model, then open **Model Files** and attach the required MTL libraries followed by their images. The staged preview explicitly omits unavailable materials. Model Files exposes OBJ material slots and the existing Texture assignment controls. To see the complete bundle before any upload, use **Bulk Import Models**, including for a single OBJ.
+
+The tested subset includes ordinary OBJ polygons, lines/points, negative indices, vertex colors, multiple named materials, and MTL diffuse/specular/emissive/alpha/bump/normal/displacement maps. Texture images support PNG, JPEG, static WebP and BMP. Required MTL and unsupported map errors are explicit. OBJ/MTL use local relative references; external URLs, paths outside the bundle, curves/free-form surfaces and unsupported MTL extensions are not supported. Bulk files remain limited to 4 MiB each; the OBJ loader bounds bundle bytes and decoded geometry to 32 MiB each. See the [complete limits, evidence and remaining manual checks](../plans/v0.19.10c.md). Production remains beta until deployment is confirmed.
+
 ## Authority boundaries
 
 - `threed_models` remains the reusable Model record authority.
@@ -47,9 +57,9 @@ New attachments use the stable Vercel Blob object layout `models/<modelId>/attac
 
 Persisted relative paths appear in both Model Files list and grid views and participate in workspace search. This makes User directory intent durable, inspectable, and available to the runtime dependency resolver.
 
-The Model Files dependency audit reads the selected primary FBX, GLB, or GLTF and reports every discoverable external texture or buffer reference as **Attached** or **Missing**. Exact relative paths take precedence. A filename fallback is accepted only when that filename is unique among the Model attachments, supporting FBX exports that retain exporter-workstation paths without guessing between duplicate texture names.
+The Model Files dependency audit reads the selected primary FBX, GLB, GLTF or OBJ and reports every discoverable external texture, material library or buffer reference as **Attached** or **Missing**. Exact relative paths take precedence. A filename fallback is accepted only when that filename is unique among the Model attachments, supporting FBX exports that retain exporter-workstation paths without guessing between duplicate texture names.
 
-`ModelMarker3D` uses the same resolution rule through a Model-owned Three.js `LoadingManager`. It resolves dependency requests to their attached Blob URLs before FBX, GLTF, GLB, or OBJ loading. The resolver is scoped to reusable Model markers and does not alter GardenCharacter, EcctrlCharacter, external animation, or Rapier ownership.
+`ModelMarker3D` resolves FBX/GLTF/GLB dependencies through a Model-owned Three.js `LoadingManager`. OBJ uses the shared bounded OBJ/MTL loader, resolving libraries and images only to selected attachment URLs and rejecting ambiguous matches. The resolver is scoped to reusable Model markers and does not alter GardenCharacter, EcctrlCharacter, external animation, or Rapier ownership.
 
 ### Attachment-directory verification
 
@@ -92,7 +102,7 @@ Stage 2 separates the shared editor from CRUD orchestration. `ThreeDModelEditorF
 
 ## Stage 3 upload analysis
 
-The manual primary-file upload route analyzes supported Model structure before committing a new Blob. FBX, GLB, and GLTF uploads use the same bounded geometry-inspection services as the runtime inspection API. OBJ and USDZ remain valid uploads but report that structural analysis is not yet available.
+The manual primary-file upload route analyzes supported Model structure before committing a new Blob. FBX, GLB, and GLTF uploads use the same bounded geometry-inspection services as the runtime inspection API. OBJ and USDZ remain valid uploads but report that server-side structural analysis is not yet available. The centaur OBJ bulk workflow independently validates the local geometry/material bundle before calling this unchanged upload API.
 
 The upload response provides configuration guidance rather than new authority:
 

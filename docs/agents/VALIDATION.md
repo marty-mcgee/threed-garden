@@ -33,6 +33,7 @@ npm run validate:threed-model-bulk-runner
 npm run validate:threed-fbx-material-targets
 npm run validate:threed-gltf-bundle
 npm run validate:threed-gltf-material-targets
+npm run validate:threed-obj-bundle
 npm run validate:threed-model-bulk-preview
 npm run validate:threed-runtime-markers
 npm run validate:threed-orchestration
@@ -425,3 +426,9 @@ Every completed change should report:
 - commands run and exact outcomes;
 - unrelated worktree changes observed but not modified;
 - assumptions, remaining risks, and manual checks still required.
+
+## OBJ/MTL candidate validation
+
+Run `npm run validate:threed-obj-bundle` when changing OBJ parsing, MTL discovery, shared material rendering or OBJ readiness. Six native groups use original synthetic fixtures and actual Three.js loaders without network access. The validator exports `runObjBundleChecks(true)` for a browser harness: nine groups additionally verify image decoding, UV transforms/clamping, missing/corrupt images, saved attachment URL resolution and the explicit staged geometry preview. See [centaur evidence and manual gates](../plans/v0.19.10c.md).
+
+Also run the importer preparation, runner and preview validators, plus GLTF/FBX material checks when touching their shared helpers. Browser checks use mocked API routes and must not create real records. The current User instruction prohibits `npm run build` in this chat; the build remains a manual gate.

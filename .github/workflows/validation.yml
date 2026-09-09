@@ -62,3 +62,6 @@ jobs:
 
       - name: Validate local Model preview snapshots
         run: npm run validate:threed-model-bulk-preview
+
+      - name: Validate OBJ and MTL bundles
+        run: npm run validate:threed-obj-bundle

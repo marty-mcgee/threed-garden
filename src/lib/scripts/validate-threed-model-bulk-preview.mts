@@ -1,4 +1,8 @@
 import assert from 'node:assert/strict';
+// @ts-expect-error Native validator needs explicit extensions.
+import { objWithMaterial, objTexturedMaterial, objImage } from './fixtures/obj-bundle-fixtures.ts';
+// @ts-expect-error Native validator needs explicit extensions.
+import { inspectObjGeometry } from '../services/threed/models/model-obj-core.ts';
 import {
   createBulkModelPreviewSnapshot, validateBulkModelPreviewSnapshot,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
@@ -49,16 +53,34 @@ function snapshot() {
 console.log('\nThreeD Model bulk preview snapshot validation');
 console.log('─'.repeat(44));
 
-group('local File objects for FBX, GLB and GLTF pass the preview message boundary', () => {
+group('local File objects for FBX, GLB, GLTF and OBJ pass the preview message boundary', () => {
   const glb = encodeGlb({ ...fixture.document, buffers: [{ byteLength: fixture.geometry.byteLength }] }, fixture.geometry);
   for (const file of [new File(['; FBX 7.4.0 project file'], 'triangle.FBX'),
-    new File([new Uint8Array(glb)], 'triangle.GLB'), primary]) {
+    new File([new Uint8Array(glb)], 'triangle.GLB'), new File(['v 0 0 0\nv 1 0 0\nv 0 1 0\nf 1 2 3'], 'triangle.OBJ'), primary]) {
     const { row, plan } = prepared(file);
     const result = createBulkModelPreviewSnapshot(row, plan);
     assert.equal(result.file, file);
     assert.equal(result.modelName, 'triangle');
     assert.doesNotThrow(() => validateBulkModelPreviewSnapshot(result));
   }
+});
+
+group('OBJ preview snapshots retain declared MTL and its image while excluding the thumbnail', () => {
+  const file = new File([objWithMaterial], 'triangle.obj');
+  const row = createBulkDraft(source('obj', file));
+  row.inspecting = false;
+  row.requirements = inspectObjGeometry(objWithMaterial, file.name).requirements;
+  row.previewFile = new File([objImage], 'thumbnail.png', { type: 'image/png' });
+  const material = { ...source('mtl', new File([objTexturedMaterial], 'paint.mtl')), materialText: objTexturedMaterial };
+  const image = source('map', new File([objImage], 'paint atlas.png'));
+  const plan = prepareBulkModel(row, createBulkDefaults(), [material, image]);
+  const captured = createBulkModelPreviewSnapshot(row, plan);
+  assert.equal(plan.ready, true);
+  assert.deepEqual(captured.attachments.map((entry) => [entry.file.name, entry.relativePath]), [
+    ['paint.mtl', 'materials/paint.mtl'], ['paint atlas.png', 'images/paint atlas.png'],
+  ]);
+  assert.deepEqual(captured.missingTexturePaths, []);
+  assert.doesNotThrow(() => validateBulkModelPreviewSnapshot(captured));
 });
 
 group('preview captures effective scale, Texture and transforms independently of later importer edits', () => {
@@ -133,7 +155,7 @@ group('invalid or transient transforms are rejected before opening a preview', (
 
 group('message validation rejects fake files, unsupported files, malformed IDs, names and attachment entries', () => {
   for (const value of [null, undefined, 1, 'model', {}, []]) assert.throws(() => validateBulkModelPreviewSnapshot(value));
-  for (const file of [{ name: 'model.fbx', size: 1 }, new Blob(['file']), new File(['obj'], 'model.obj'),
+  for (const file of [{ name: 'model.fbx', size: 1 }, new Blob(['file']), new File(['usdz'], 'model.usdz'),
     new File([], 'empty.fbx'), new File(['model'], '%2e%2e.fbx')]) {
     assert.throws(() => validateBulkModelPreviewSnapshot({ ...snapshot(), file }));
   }
