@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.10a — ThreeD Model Bulk Importing** (released package version `0.19.10-alpha`, commit `16a92ae`; Vercel production confirmed by the User September 9, 2026) |
-| Current development version | **v0.19.10b — GLB/GLTF bulk importing with texture and buffer requirements** (`0.19.10-beta`; manually accepted and prepared for deployment) |
-| Beta release verification | User manually tested and accepted the checkpoint and local build gate; automated checks pass. Deployment and production smoke checks remain. See [handoff](docs/plans/v0.19.10b-release.md). OBJ is deferred. |
+| Current stable version | **v0.19.10b — ThreeD Model Bulk Importing** (released package version `0.19.10-beta`, commit `ab5f1ea`; production confirmed by the User September 9, 2026) |
+| Current development version | No later release candidate designated; package remains at the released `0.19.10-beta`. |
+| Beta release verification | User manually tested and accepted the checkpoint and local build gate; automated checks pass. Production deployment is User-confirmed; detailed live regression checks remain available. See [handoff](docs/plans/v0.19.10b-release.md). OBJ is deferred. |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -38,7 +38,7 @@
 | GitHub Actions validation | ✅ Released in v0.17.1 |
 | Repository TypeScript baseline | ✅ Repaired during v0.17.2 development |
 
-The production alpha boundary is documented in the [v0.19.10a release record](docs/releases/v0.19.10a.md), with its [completed plan](docs/plans/v0.19.10a.md) and [deployment preparation record](docs/plans/v0.19.10a-release.md). The [beta plan](docs/plans/v0.19.10b.md) and [implementation record](docs/plans/v0.19.10b-implementation.md) describe the current development work separately.
+The production alpha boundary is documented in the [v0.19.10a release record](docs/releases/v0.19.10a.md), with its [completed plan](docs/plans/v0.19.10a.md) and [deployment preparation record](docs/plans/v0.19.10a-release.md). The [beta plan](docs/plans/v0.19.10b.md) and [implementation record](docs/plans/v0.19.10b-implementation.md) record the completed beta work. The current [beta production release](docs/releases/v0.19.10b.md) is commit `ab5f1ea`.
 
 The bulk importer uses the existing owner-scoped Model lifecycle: primary upload and registration, Model-owned attachments, optional reusable Base Color Texture assignments, saved-state verification, then explicit activation after a dependency audit. FBX material keys come from the existing server parse and shared preview inventory. Beta GLB/GLTF keys come from bounded browser GLTFLoader inspection of the exact selected bundle and the same inventory before any upload. External `.bin` files are binary attachments; missing buffers always block, while missing images may be explicitly deferred with the Model inactive. Preparation writes nothing; known partial imports retain their Model IDs for review. The expanded bulk form remembers validated batch defaults per User in browser storage and highlights file requirements. On-demand local FBX/GLB/GLTF rendering appears directly beneath Queued Models, reusing the viewer offered by the optional authenticated `/threed/model-import-preview` window. Inline rendering uses a captured File/settings snapshot; the separate window receives it through a same-origin token-bound handshake. Each viewer owns and disposes its decoded resources, applies the shared material inventory and grounding rules, and performs no Model writes. These changes introduce no schema, API or Scene-runtime changes.
 

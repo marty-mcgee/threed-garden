@@ -2,6 +2,7 @@
 
 This directory records confirmed production checkpoints, not every development iteration.
 
+- [v0.19.10b — ThreeD Model Bulk Importing](v0.19.10b.md)
 - [v0.19.10a — ThreeD Model Bulk Importing](v0.19.10a.md)
 - [v0.19.9 — Guided ThreeD Project Creation and First-Run Experience](v0.19.9.md)
 - [v0.19.8d — ThreeD Model Library Import and Scene Presentation](v0.19.8d.md)

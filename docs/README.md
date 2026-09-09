@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.19.10a **ThreeD Model Bulk Importing**, released with package version `0.19.10-alpha` and commit `16a92ae`. The User confirmed successful Vercel production deployment September 9, 2026. It adds FBX bulk importing, shared local textures and existing reusable Texture assignments. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is v0.19.10b **ThreeD Model Bulk Importing**, package `0.19.10-beta`, commit `ab5f1ea`. The User confirmed successful production deployment September 9, 2026. It includes FBX/GLB/GLTF bulk importing, texture/buffer requirements, reusable Texture assignments and inline Model preview. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
 The v0.18.9a production release adds authenticated Character Library placement and Project-instance editing while keeping GardenCharacter and EcctrlCharacter as separate runtimes. Explicit Project saves preserve marker database IDs, uncontrolled Ecctrl mounts cannot publish temporary positions, overlapping capsule spawn areas are rejected before Rapier, and rejected Character snapshots can be restored to source positions without deleting their source assets.
 
@@ -48,12 +48,12 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 
 ## Development plans
 
-**v0.19.10a — ThreeD Model Bulk Importing** is released to production with package version `0.19.10-alpha`. Current development is **v0.19.10b** (`0.19.10-beta`), implementing GLB/GLTF bulk importing and texture/buffer requirements. The User manually tested and accepted the checkpoint and its local build gate; beta is prepared for deployment. OBJ remains deferred.
+**v0.19.10b — ThreeD Model Bulk Importing** is released to production as `0.19.10-beta`. The alpha records preserve its FBX/Texture baseline. No later release candidate is designated; OBJ remains deferred.
 
 - [v0.19.10a — ThreeD Model Bulk Importing](plans/v0.19.10a.md) — released FBX/Texture alpha boundary.
 - [Alpha deployment preparation record](plans/v0.19.10a-release.md) — release scope, validation and deployment confirmation.
 - [v0.19.10b — GLB/GLTF bulk importing](plans/v0.19.10b.md) — beta design and acceptance criteria.
-- [Beta production handoff](plans/v0.19.10b-release.md) — manual acceptance, passing checks, commit scope and deployment steps.
+- [Beta production handoff](plans/v0.19.10b-release.md) — completed deployment, manual acceptance and validation evidence.
 - [Beta implementation and verification](plans/v0.19.10b-implementation.md) — supported resources, local inspection, automated results and remaining release checks.
 
 - [plans: docs: v0.19.9 — Guided ThreeD Project Creation and First-Run Experience](plans/v0.19.9.md) — completed production plan for focused Project Tour progression, with later guidance ideas deferred.
@@ -62,6 +62,7 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 ## Releases
 
 - [Release index](releases/README.md)
+- [v0.19.10b production checkpoint](releases/v0.19.10b.md)
 - [v0.19.10a production checkpoint](releases/v0.19.10a.md)
 - [v0.19.9 production checkpoint](releases/v0.19.9.md)
 - [v0.19.8d production checkpoint](releases/v0.19.8d.md)
