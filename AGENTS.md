@@ -38,13 +38,13 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.19.10b "ThreeD Model Bulk Importing" (released package version `0.19.10-beta`, commit `ab5f1ea`). The User confirmed successful production deployment on September 9, 2026. See `docs/releases/v0.19.10b.md`.
+Current production version: v0.19.10c "ThreeD Model Bulk Importing" (released package version `0.19.10-centaur`, commit `a618a66`). The User confirmed successful production deployment on September 9, 2026. See `docs/releases/v0.19.10c.md`.
 
 Preserve the released alpha scope: FBX bulk importing, shared local textures, existing reusable Texture assignments, primary registration, verified inactive creation and guarded recovery.
 
 Released beta: v0.19.10b (`0.19.10-beta`) implements mixed FBX/GLB/GLTF bulk importing, embedded resources, typed external dependencies and reusable Texture assignments. GLB/GLTF imports must pass bounded local GLTFLoader inspection before uploading; missing geometry cannot be deferred. See `docs/plans/v0.19.10b-implementation.md`. The User manually tested and accepted the local checkpoint and its build gate on September 9, 2026. See `docs/plans/v0.19.10b-release.md` for the completed deployment handoff and retained live regression checklist. Production deployment is User-confirmed. For this chat, do not run `npm run build`: the User owns that manual gate. The prior acceptance applies to beta.
 
-Current development candidate: v0.19.10c (`0.19.10-centaur`) adds OBJ bulk importing, required MTL libraries, referenced images and shared local/saved OBJ material rendering. Preserve mandatory MTL checks, inactive image deferral, MTL classification as `other` (never a thumbnail), and the staged single-Model geometry preview. Run `npm run validate:threed-obj-bundle` with the existing importer checks. See `docs/plans/v0.19.10c.md`; the User has requested production preparation, recorded in `docs/plans/v0.19.10c-release.md`. Build/live verification remain User-owned and production deployment is not yet confirmed.
+Released centaur: v0.19.10c (`0.19.10-centaur`) adds OBJ bulk importing, required MTL libraries, referenced images and shared local/saved OBJ material rendering. Preserve mandatory MTL checks, inactive image deferral, MTL classification as `other` (never a thumbnail), and the staged single-Model geometry preview. Run `npm run validate:threed-obj-bundle` with the existing importer checks. See `docs/plans/v0.19.10c.md`; production deployment of `a618a66` is User-confirmed. See the completed handoff in `docs/plans/v0.19.10c-release.md`. No later release candidate is designated.
 
 v0.19.0b preserves the authenticated `project_threed_markers` create/update paths, stable Runtime Marker ownership, persistent Canvas/Rapier world, synchronized Model visuals and fixed colliders, and Character runtime separation. Existing Project Models may be repositioned through the Leaflet 2D Map or explicit ThreeD Scene Move Model mode; this does not authorize free-form R3F dragging or other Sub-Module movement changes. The developer-local `reference/` directory remains ignored and is not production source or a deployed asset path.
 
@@ -80,7 +80,7 @@ as release-blocking.
 
 ## ThreeD FarmBot Integration Plan rules
 
-- Current App production checkpoint: v0.19.10b "ThreeD Model Bulk Importing". The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+- Current App production checkpoint: v0.19.10c "ThreeD Model Bulk Importing". The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 - ThreeD owns the provider-neutral MQTT service. FarmBot and future integrations such as OpenFarm may depend on ThreeD services; `src/lib/services/threed/mqtt` must never import provider adapters.
 - Treat each documented FarmBot phase as a separate approval gate; approval of one phase does not authorize the next phase, new external resources, schema changes, MQTT connections, or physical commands.
 - FarmBot credentials are server-only and must never enter client state, API/map responses, logs, or public environment variables.

@@ -1,6 +1,6 @@
 # ThreeD Model Administration
 
-Current production checkpoint: **v0.19.10b — ThreeD Model Bulk Importing** (released package version `0.19.10-beta`, commit `ab5f1ea`). The User confirmed successful Vercel production deployment September 9, 2026. See the [release record](../releases/v0.19.10b.md).
+Current production checkpoint: **v0.19.10c — ThreeD Model Bulk Importing** (released package version `0.19.10-centaur`, commit `a618a66`). The User confirmed successful Vercel production deployment September 9, 2026. See the [release record](../releases/v0.19.10c.md).
 
 The initial v0.19.8a workflow deliberately managed one reusable ThreeD Model at a time. The v0.19.10a alpha release adds **Bulk Import FBX** to the dedicated Models workspace; the single-Model importer remains available. See [alpha implementation and validation](../plans/v0.19.10a-implementation.md). The released beta is **v0.19.10b** (`0.19.10-beta`): **Bulk Import Models** supports mixed FBX/GLB/GLTF batches, embedded resources, external images and `.bin` files. See [beta implementation and verification](../plans/v0.19.10b-implementation.md); the User has manually accepted the local checkpoint and its build gate. Production deployment is confirmed; see the [completed handoff](../plans/v0.19.10b-release.md).
 
@@ -31,15 +31,15 @@ The **Model textures** summary beneath the selected GLB/GLTF filename counts emb
 
 For GLB/GLTF, PNG, JPEG and static WebP images, embedded/data resources and locally decoded DRACO geometry are supported. The original material configuration remains when **Assign Existing Texture File** is None. Before upload, the selected bundle is loaded locally to check resource decoding and discover the default scene's material slots. A malformed bundle or missing binary buffer blocks its row, including when texture deferral is selected. Missing images may be explicitly deferred inactive. Unsupported extensions and nonlocal dependency URLs produce an actionable row error. See the [beta resource limits and manual checks](../plans/v0.19.10b-implementation.md).
 
-### Centaur OBJ/MTL candidate
+### Released centaur OBJ/MTL workflow
 
-Development package `0.19.10-centaur` adds `.obj` to **Choose Model files** and `.mtl` to **Add MTL / textures / .bin files**. Use this workflow for one OBJ or a mixed batch. Selecting a declared material library discovers its image maps in the highlighted **File requirements** section. Bare `.mtl` names default to `materials/`; bare image names default to `textures/`. MTL records use the existing `other` file type and cannot become thumbnails.
+Released package `0.19.10-centaur` adds `.obj` to **Choose Model files** and `.mtl` to **Add MTL / textures / .bin files**. Use this workflow for one OBJ or a mixed batch. Selecting a declared material library discovers its image maps in the highlighted **File requirements** section. Bare `.mtl` names default to `materials/`; bare image names default to `textures/`. MTL records use the existing `other` file type and cannot become thumbnails.
 
 Every declared MTL must be supplied and unambiguous. Missing images may be deferred inactive; an existing Base Color Texture does not replace the need for an MTL library. **None** retains the authored MTL appearance. OBJ previews work beneath Queued Models and in the optional separate window, using the same material loader as saved Models.
 
 **Add Model** preserves the staged-primary workflow: upload an OBJ to preview geometry, create the Model, then open **Model Files** and attach the required MTL libraries followed by their images. The staged preview explicitly omits unavailable materials. Model Files exposes OBJ material slots and the existing Texture assignment controls. To see the complete bundle before any upload, use **Bulk Import Models**, including for a single OBJ.
 
-The tested subset includes ordinary OBJ polygons, lines/points, negative indices, vertex colors, multiple named materials, and MTL diffuse/specular/emissive/alpha/bump/normal/displacement maps. Texture images support PNG, JPEG, static WebP and BMP. Required MTL and unsupported map errors are explicit. OBJ/MTL use local relative references; external URLs, paths outside the bundle, curves/free-form surfaces and unsupported MTL extensions are not supported. Bulk files remain limited to 4 MiB each; the OBJ loader bounds bundle bytes and decoded geometry to 32 MiB each. See the [complete limits, evidence and remaining manual checks](../plans/v0.19.10c.md). Production remains beta until deployment is confirmed.
+The tested subset includes ordinary OBJ polygons, lines/points, negative indices, vertex colors, multiple named materials, and MTL diffuse/specular/emissive/alpha/bump/normal/displacement maps. Texture images support PNG, JPEG, static WebP and BMP. Required MTL and unsupported map errors are explicit. OBJ/MTL use local relative references; external URLs, paths outside the bundle, curves/free-form surfaces and unsupported MTL extensions are not supported. Bulk files remain limited to 4 MiB each; the OBJ loader bounds bundle bytes and decoded geometry to 32 MiB each. See the [complete limits, evidence and remaining manual checks](../plans/v0.19.10c.md). Production deployment of centaur is User-confirmed.
 
 ## Authority boundaries
 
