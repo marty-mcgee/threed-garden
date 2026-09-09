@@ -7,7 +7,9 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.19.9 "Guided ThreeD Project Creation and First-Run Experience"` (`package.json` version `0.19.9`)
+> **Current production version:** `v0.19.9 "Guided ThreeD Project Creation and First-Run Experience"` (released package version `0.19.9`)
+
+> **Current development version:** `v0.19.10a "ThreeD Model Bulk Importing"` (`package.json` version `0.19.10-alpha`). Start with FBX bulk importing; single-Model GLB/GLTF and OBJ work follows later. See the [development plan](docs/plans/v0.19.10a.md).
 
 The v0.19.9 production release turns the existing Project Tour into a focused, state-derived first-run sequence. It recommends Environment, Model, and Character foundations one step at a time while preserving direct access for advanced Users and reusing the established Library and placement transactions.
 

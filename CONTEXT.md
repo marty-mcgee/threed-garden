@@ -19,9 +19,9 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.9 — Guided ThreeD Project Creation and First-Run Experience** (`package.json` version `0.19.9`) |
-| Current release candidate | **None — v0.19.9 is deployed** |
-| Current development milestone | **Production checkpoint: focused New Project Tour progression and first-run guidance** |
+| Current stable version | **v0.19.9 — Guided ThreeD Project Creation and First-Run Experience** (released package version `0.19.9`) |
+| Current release candidate | **v0.19.10a — ThreeD Model Bulk Importing** (`package.json` version `0.19.10-alpha`; development only, not release-ready) |
+| Current development milestone | **FBX bulk importing, building on the working single-Model FBX upload and configuration workflow; single-Model GLB/GLTF and OBJ work deferred** |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |
 | External FBX animation files | ✅ Working |
@@ -37,6 +37,8 @@
 | Production animation asset validation | ✅ Released in v0.17.1 |
 | GitHub Actions validation | ✅ Released in v0.17.1 |
 | Repository TypeScript baseline | ✅ Repaired during v0.17.2 development |
+
+The active development boundary is documented in [v0.19.10a — ThreeD Model Bulk Importing](docs/plans/v0.19.10a.md). v0.19.9 remains the confirmed production checkpoint.
 
 ## 🧠 Current Character / World-Action Architecture
 

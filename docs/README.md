@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.19.9 **Guided ThreeD Project Creation and First-Run Experience**, using package version `0.19.9`. It focuses the existing post-load Project Tour into a Runtime-Marker-derived Environment → Model → Character sequence without creating another persistence or placement path. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is v0.19.9 **Guided ThreeD Project Creation and First-Run Experience**, released with package version `0.19.9`. It focuses the existing post-load Project Tour into a Runtime-Marker-derived Environment → Model → Character sequence without creating another persistence or placement path. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
 The v0.18.9a production release adds authenticated Character Library placement and Project-instance editing while keeping GardenCharacter and EcctrlCharacter as separate runtimes. Explicit Project saves preserve marker database IDs, uncontrolled Ecctrl mounts cannot publish temporary positions, overlapping capsule spawn areas are rejected before Rapier, and rejected Character snapshots can be restored to source positions without deleting their source assets.
 
@@ -48,7 +48,11 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 
 ## Development plans
 
-- [plans: docs: v0.19.9 — Guided ThreeD Project Creation and First-Run Experience](plans/v0.19.9.md) — active staged plan for focused Project Tour progression, contextual workspace handoff, placement review, and completion guidance.
+Current development is **v0.19.10a — ThreeD Model Bulk Importing**, using package version `0.19.10-alpha`. FBX bulk importing is the first focus; single-Model GLB/GLTF and OBJ work is deferred.
+
+- [v0.19.10a — ThreeD Model Bulk Importing](plans/v0.19.10a.md) — active development boundary built on the working single-Model FBX workflow.
+
+- [plans: docs: v0.19.9 — Guided ThreeD Project Creation and First-Run Experience](plans/v0.19.9.md) — completed production plan for focused Project Tour progression, with later guidance ideas deferred.
 - [plans: docs: v0.19.8d — ThreeD Model Library Import and Scene Presentation](plans/v0.19.8d.md) — completed five-stage progression that brought configured reusable Models into the Dashboard Library and Scene.
 
 ## Releases
