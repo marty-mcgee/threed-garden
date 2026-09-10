@@ -156,8 +156,6 @@ async function importModel(
         userId,
         modelName: entry.modelName,
         modelType: entry.modelType,
-        filePath: sourceUrl,
-        fileSize: model.source.size,
         thumbnailUrl,
         usedByPlants: entry.usedByPlants,
         usedByCharacters: entry.usedByCharacters,
@@ -186,6 +184,20 @@ async function importModel(
         const [created] = await tx.insert(threedModels).values(values).returning({ id: threedModels.id });
         modelId = created.id;
       }
+
+      const primaryValues = {
+        userId, modelId, fileName: path.basename(model.source.relativePath),
+        relativePath: path.basename(model.source.relativePath), fileType: 'model',
+        filePath: sourceUrl, fileSize: model.source.size, loadOrder: 0,
+      };
+      const primaryMatches = await tx.select({ id: threedModelFiles.id }).from(threedModelFiles)
+        .where(and(eq(threedModelFiles.modelId, modelId), eq(threedModelFiles.userId, userId),
+          eq(threedModelFiles.fileType, 'model'), eq(threedModelFiles.filePath, sourceUrl)));
+      if (primaryMatches.length > 1) throw new Error('Ambiguous existing primary File records');
+      const currentPrimary = primaryMatches[0];
+      const primary = currentPrimary ?? (await tx.insert(threedModelFiles).values(primaryValues).returning({ id: threedModelFiles.id }))[0];
+      await tx.update(threedModels).set({ mainModelFileId: primary.id, hasExternalFiles: true })
+        .where(eq(threedModels.id, modelId));
 
       const assigned = await tx.select({ categoryId: threedModelCategoryAssignments.categoryId })
         .from(threedModelCategoryAssignments)

@@ -45,7 +45,7 @@ export function Modal({ isOpen, onClose, title, children, maxWidth = 'max-w-2xl'
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div 
         ref={modalRef} 
-        className="bg-background rounded-xl shadow-2xl w-full max-w-2xl border border-border"
+        className="bg-background dark:bg-zinc-900 rounded-xl shadow-2xl w-full max-w-2xl border border-border"
         style={{
           maxHeight: '85vh',
           display: 'flex',

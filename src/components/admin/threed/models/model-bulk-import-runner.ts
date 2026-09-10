@@ -34,7 +34,7 @@ export interface BulkImportInput {
   offsetZ: string;
   configureLater: boolean;
   previewFile?: File;
-  attachments: Array<{ file: File; relativePath: string; fileType?: 'texture' | 'binary' | 'other' }>;
+  attachments: Array<{ file: File; relativePath: string; fileType?: 'texture' | 'binary' | 'other'; sharedTexture?: { id: number; filePath: string } }>;
 }
 
 export interface BulkGltfMaterialTargets {
@@ -200,7 +200,7 @@ export async function runBulkModel(
   const activateAfterImport = input.settings.isActive;
   const modelType = sourceFile.name.split('.').at(-1)?.toLowerCase() as 'fbx' | 'glb' | 'gltf' | 'obj';
   let form: ReturnType<typeof buildThreeDModelAdminPayload>;
-  let attachments: Array<{ file: File; relativePath: string; fileType: 'texture' | 'binary' | 'other' }>;
+  let attachments: Array<{ file: File; relativePath: string; fileType: 'texture' | 'binary' | 'other'; sharedTexture?: { id: number; filePath: string } }>;
   const { existingTextureId = null, ...modelSettings } = input.settings;
   try {
     checkFile(sourceFile, /\.(?:fbx|glb|gltf|obj)$/i);
@@ -229,6 +229,7 @@ export async function runBulkModel(
     });
     attachments = input.attachments.map((entry) => {
       const fileType = entry.fileType ?? 'texture';
+      if (entry.sharedTexture && (modelType !== 'fbx' || fileType !== 'texture' || entry.sharedTexture.id !== existingTextureId || !positiveId(entry.sharedTexture.id) || !httpsUrl(entry.sharedTexture.filePath))) throw new Error('Invalid shared Texture reference.');
       if (fileType !== 'texture' && fileType !== 'binary' && !(modelType === 'obj' && fileType === 'other')) throw new Error('Unsupported attachment type.');
       checkFile(entry.file, fileType === 'binary' ? /\.bin$/i : fileType === 'other' ? /\.mtl$/i : /\.(?:png|jpe?g|webp|tga|bmp)$/i);
       return { ...entry, relativePath: attachmentPath(entry.relativePath), fileType };
@@ -383,7 +384,9 @@ export async function runBulkModel(
     body.append('relativePaths', entry.relativePath);
     body.append('category', entry.fileType);
     try {
-      const saved = await send(request, FILES_ROUTE, { method: 'POST', body });
+      const saved = await send(request, FILES_ROUTE, entry.sharedTexture
+        ? json('POST', { modelId, textureId: entry.sharedTexture.id, relativePath: entry.relativePath })
+        : { method: 'POST', body });
       if (!saved.ok || saved.body?.success !== true) {
         return result('failed', 'Model created inactive; an attachment was not confirmed. Review Model files before continuing.');
       }
@@ -409,6 +412,7 @@ export async function runBulkModel(
       const match = matches[0];
       if (matches.length !== 1 || !positiveId(match?.id) || match.fileName !== entry.file.name
         || match.fileSize !== entry.file.size || match.fileType !== entry.fileType || !httpsUrl(match.filePath)
+        || (entry.sharedTexture && match.filePath !== entry.sharedTexture.filePath)
         || (entry.fileType === 'binary' && match.isBinaryBuffer !== true)) {
         return result('failed', 'Model created inactive; saved attachments did not match the reviewed batch. Review Model files.');
       }

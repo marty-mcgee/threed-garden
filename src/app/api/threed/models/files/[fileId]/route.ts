@@ -1,10 +1,11 @@
+import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
 // src/app/api/threed/models/files/[fileId]/route.ts — v0.16.4-alpha
 // Route is mounted at /api/threed/models/files/[fileId] (no [id] segment),
 // so the model id is derived from the file record itself.
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { threedModels, threedModelFiles } from '@/lib/schema';
+import { threedModels, threedModelFiles, threedModelTextures } from '@/lib/schema';
 import { and, asc, eq } from 'drizzle-orm';
 import { del } from '@vercel/blob';
 import {
@@ -58,7 +59,7 @@ export async function DELETE(
       );
     }
 
-    const [ownedModel] = await db.select()
+    const [ownedModel] = await db.select(modelSelection())
       .from(threedModels)
       .where(and(
         eq(threedModels.id, modelId),
@@ -81,12 +82,11 @@ export async function DELETE(
       ))
       .orderBy(asc(threedModelFiles.loadOrder), asc(threedModelFiles.id));
     const remainingFiles = siblingFiles.filter((candidate) => candidate.id !== fileId);
-    const replacementPrimary = remainingFiles.find((candidate) => candidate.fileType === 'model') ?? null;
     const retainedPrimary = remainingFiles.find((candidate) => (
       candidate.id === ownedModel.mainModelFileId && candidate.fileType === 'model'
-    )) ?? replacementPrimary;
+    )) ?? null;
 
-    if (ownedModel.mainModelFileId === fileId && !replacementPrimary) {
+    if (ownedModel.mainModelFileId === fileId) {
       return NextResponse.json({
         success: false,
         error: 'Upload another Model file and set it as primary before deleting the current primary file',
@@ -104,8 +104,6 @@ export async function DELETE(
         ...(primaryChanged ? {
           mainModelFileId: retainedPrimary?.id ?? null,
           ...(retainedPrimary ? {
-            filePath: retainedPrimary.filePath,
-            fileSize: retainedPrimary.fileSize,
             modelType: runtimeModelTypeFromFileName(retainedPrimary.fileName) ?? ownedModel.modelType,
           } : {}),
         } : {}),
@@ -120,13 +118,15 @@ export async function DELETE(
 
     let blobDeleted = false;
     if (isOwnedThreeDBlobUrl(file.filePath, { modelId, userId })) {
-      const [modelReference, fileReference] = await Promise.all([
+      const [modelReference, fileReference, textureReference] = await Promise.all([
         db.select({ id: threedModels.id }).from(threedModels)
-          .where(eq(threedModels.filePath, file.filePath)).limit(1),
+          .where(eq(threedModels.thumbnailUrl, file.filePath)).limit(1),
         db.select({ id: threedModelFiles.id }).from(threedModelFiles)
           .where(eq(threedModelFiles.filePath, file.filePath)).limit(1),
+        db.select({ id: threedModelTextures.id }).from(threedModelTextures)
+          .where(eq(threedModelTextures.filePath, file.filePath)).limit(1),
       ]);
-      if (modelReference.length === 0 && fileReference.length === 0) {
+      if (modelReference.length === 0 && fileReference.length === 0 && textureReference.length === 0) {
         try {
           await del(file.filePath);
           blobDeleted = true;

@@ -2,9 +2,11 @@
 
 Current production checkpoint: **v0.19.10c — ThreeD Model Bulk Importing** (released package version `0.19.10-centaur`, commit `a618a66`). The User confirmed successful Vercel production deployment September 9, 2026. See the [release record](../releases/v0.19.10c.md).
 
+Current candidate: **v0.19.11 — ThreeD Model Management**, package `0.19.11`. See the [scope, verification, schema compatibility and deployment handoff](../plans/v0.19.11-release.md). Historical checkpoint sections below describe behavior at their named releases.
+
 The initial v0.19.8a workflow deliberately managed one reusable ThreeD Model at a time. The v0.19.10a alpha release adds **Bulk Import FBX** to the dedicated Models workspace; the single-Model importer remains available. See [alpha implementation and validation](../plans/v0.19.10a-implementation.md). The released beta is **v0.19.10b** (`0.19.10-beta`): **Bulk Import Models** supports mixed FBX/GLB/GLTF batches, embedded resources, external images and `.bin` files. See [beta implementation and verification](../plans/v0.19.10b-implementation.md); the User has manually accepted the local checkpoint and its build gate. Production deployment is confirmed; see the [completed handoff](../plans/v0.19.10b-release.md).
 
-The Admin route uses `#020618` as its presentation background. Its header, sidebar, and footer are translucent layers of that same color, scoped to `/admin` so Dashboard presentation remains independent.
+The Admin route uses `#020618` as its presentation background. Its header, sidebar, and footer are translucent layers of that same color, scoped to `/admin` so Dashboard presentation remains independent. Shared Dialog, Modal (including confirmations), dropdown/submenu and Select popup surfaces use solid very dark gray (`zinc-900`) backgrounds in dark mode across their consumers, visually separating popups from the main App. Popup surfaces, text and controls are fully opaque; existing backdrop dimming and light-mode backgrounds remain unchanged. This presentation change passed TypeScript and diff checks.
 
 ## Admin surfaces
 
@@ -16,6 +18,30 @@ The Admin route uses `#020618` as its presentation background. Its header, sideb
 - The Models workspace uses its compact toolbar as the semantic page header, avoiding a redundant title/description block. The row contains its item count, name/type search, and related actions: **Add Model**, **Model Categories**, **Model Animations**, then **Model Files**.
 - **Bulk Import Models** is available beside **Add Model** in `/admin/threed/models` in beta (alpha: **Bulk Import FBX**). The embedded Project CRUD retains its single-Model entry point because its parent refresh unmounts child workspaces. Bulk imports create reusable Models without assigning them to a Project.
 - Bulk **Batch defaults → Assign Existing Texture File** reuses an active saved Texture as Base Color for all detected material slots. Each Model can inherit the batch selection, choose another Texture, or select None. Assignments are saved and verified during import; missing named texture files remain a separate dependency check. **Resolve missing texture files later (keep inactive)** applies the selected Texture now and retains the Model for further review.
+
+### Matching a saved Texture to an FBX requirement
+
+When the effective batch/per-Model **Assign Existing Texture File** selection has the same filename as a required FBX image, the importer reads that active saved Texture automatically if no local file with that name was selected. Matching is case-insensitive and uses the file name, not the Texture display name. The requirement shows **Matching saved Texture — uses the shared file; no copy is uploaded**. No disk selection is needed.
+
+The saved image is downloaded once for the current set of matching selections and enters the ordinary preparation/preview snapshot as a File. Import sends only the Model ID, Texture ID and relative dependency path to the files API. The server verifies ownership of both records and stores a lightweight Model-file reference to the original Texture URL, while retaining the Base Color assignment. No PNG upload or new Blob occurs. This deliberately preserves the saved dependency audit and runtime filename resolution; selecting a Texture does not merely waive the requirement. The reusable Texture record is unchanged.
+
+None, inactive/unavailable Textures, different filenames and GLB/GLTF/OBJ dependencies do not gain this FBX fallback. Local files retain priority, including ambiguous choices requiring review. Downloads enforce HTTPS, a 30-second timeout, 4 MiB per file and a 32 MiB temporary preview-data limit. Read failures keep the row blocked and offer **Refresh existing Textures** or a local file. Selection changes cancel obsolete downloads; snapshots retain the reviewed bytes through import.
+
+Validation: `validate:threed-bulk-saved-texture`, existing preparation/runner/preview validators, TypeScript and diff checks passed. An isolated browser check reproduced eight FBX rows with one matching saved PNG: one download, zero preparation writes, ready rows, verified shared-URL file references, Base Color assignments and activation after the mocked saved audit. The eight linking requests contained identifiers/path only, no file bytes. Actual-route checks with mocked database/Blob services also verified eight references to one URL with zero uploads, idempotent linking, owner/auth/path checks and deletion protection. Model Texture deletion is blocked while either material assignments or Model-file references exist; ordinary Model/file deletion does not delete library-owned Texture URLs. No existing copies were removed and no production records were changed. This fix is included in the [v0.19.11 release candidate](../plans/v0.19.11-release.md); production deployment is not yet confirmed.
+
+### Models table and bulk deletion
+
+The Models table shows **Selection checkbox | Name | Category | Options | Type | Status | Active | Size | Actions**. Category displays all assigned category names; Options displays Default, Public, Library, Plants and Characters independently from Name. The former Files count column is replaced by these requested fields; the per-row Manage files action remains available. All columns remain accessible through horizontal scrolling on narrow screens.
+
+Name, Category, Options, Type, Status, Active and Size headers toggle ascending/descending sorting and expose `aria-sort`. Initial order is Name ascending with natural numeric comparison (for example, Model 2 before Model 10). Category sorts alphabetically by its displayed category-name combination (uncategorized rows use an empty value); Options sorts alphabetically by its displayed label combination; Type/Status/Active sort by displayed text. Size compares numeric bytes, with unknown sizes last in both directions. Equal values use Model ID for stable ordering.
+
+Each row has a selection checkbox in a narrow, unlabeled column; accessible checkbox names remain available. The header checkbox selects/deselects the visible filtered rows and shows a partial-selection state. Sorting retains selection; changing the search clears it. Selection and sorting cover the currently loaded list (the existing 200-Model request), not unseen database records.
+
+The Delete selected and Clear selection buttons use compact text and neutral outline styling. Status uses plain green text for Active, yellow for Pending, red for Maintenance, and gray for Dormant/Retired. The Active column uses a green checkmark or gray X, with accessible Active/Inactive text.
+
+**Delete selected** confirms the count, names and IDs before sending serial requests through the existing authenticated owner-scoped Model DELETE endpoint. That endpoint retains authority over Model/file records and Blob cleanup. Controls prevent a second deletion while the batch runs. Confirmed successes leave the table and selection immediately; failed or unconfirmed rows remain for review, with individual messages and a final count. There are no automatic retries. A lost response instructs the User to refresh and verify saved state. The per-row Delete action uses the same confirmation and result handling. No database/API or import behavior changes are involved.
+
+Validation for this table change (September 10, 2026): TypeScript and diff checks passed. An isolated Chromium check of the actual component with mocked APIs verified column order, category/option placement, all six sort toggles, numeric size/null ordering, selection and search reset, cancellation with zero writes, mixed success/failure deletion, retained failed selection, explicit retry and mobile horizontal scrolling. No live Models were deleted and no build was run. This is a development change after the released centaur checkpoint; no new release version is designated.
 
 ### Beta GLB/GLTF workflow
 
@@ -41,6 +67,10 @@ Every declared MTL must be supplied and unambiguous. Missing images may be defer
 
 The tested subset includes ordinary OBJ polygons, lines/points, negative indices, vertex colors, multiple named materials, and MTL diffuse/specular/emissive/alpha/bump/normal/displacement maps. Texture images support PNG, JPEG, static WebP and BMP. Required MTL and unsupported map errors are explicit. OBJ/MTL use local relative references; external URLs, paths outside the bundle, curves/free-form surfaces and unsupported MTL extensions are not supported. Bulk files remain limited to 4 MiB each; the OBJ loader bounds bundle bytes and decoded geometry to 32 MiB each. See the [complete limits, evidence and remaining manual checks](../plans/v0.19.10c.md). Production deployment of centaur is User-confirmed.
 
+## New-upload storage organization
+
+New uploads now use `threed/users/<userId>/` with readable Model asset folders, separate `primary`/`attachments` sections, and shared `textures` and `previews` folders. Original filenames and logical attachment paths remain authoritative for dependency matching. Reusable Texture references still use one stored file. Existing URLs continue to work and have not been migrated. See the [layout, compatibility checks and backup/migration follow-up](../plans/threed-model-blob-layout.md).
+
 ## Authority boundaries
 
 - `threed_models` remains the reusable Model record authority.
@@ -53,7 +83,7 @@ The tested subset includes ordinary OBJ polygons, lines/points, negative indices
 
 The Model Files workspace provides a required **Attachment directory** text field with a 100-character limit. It is an App-managed relative dependency directory, not a local filesystem folder selector. Files cannot be selected or dropped until this directory is valid. The directory applies to each file in the next upload selection. For example, entering `textures/walls` and selecting `base-color.png` persists `textures/walls/base-color.png`.
 
-New attachments use the stable Vercel Blob object layout `models/<modelId>/attachments/<relativePath>`. The browser submits each attachment's computed relative path through the existing owner-scoped Model Files API. The server normalizes separators, rejects absolute and parent-traversal paths, enforces the directory limit, and prevents case-insensitive relative-path conflicts for a Model. `threed_model_files.relative_path` remains authoritative for the User-defined portion of the stored object key. Existing attachment URLs remain valid and are not migrated.
+The released legacy attachment layout uses `models/<modelId>/attachments/<relativePath>`. The browser submits each attachment's computed relative path through the existing owner-scoped Model Files API. The server normalizes separators, rejects absolute and parent-traversal paths, enforces the directory limit, and prevents case-insensitive relative-path conflicts for a Model. `threed_model_files.relative_path` remains authoritative for the User-defined portion of the stored object key. Existing attachment URLs remain valid and are not migrated.
 
 Persisted relative paths appear in both Model Files list and grid views and participate in workspace search. This makes User directory intent durable, inspectable, and available to the runtime dependency resolver.
 
@@ -66,7 +96,7 @@ The Model Files dependency audit reads the selected primary FBX, GLB, GLTF or OB
 1. Open `/admin/threed/model-files?modelId=<id>` for a disposable Model.
 2. Enter `textures/walls` in **Attachment directory** and select `albedo.png` with **Choose Files**.
 3. Confirm upload progress and the resulting file card show `textures/walls/albedo.png`.
-4. Confirm the stored Blob URL follows `models/<modelId>/attachments/textures/walls/albedo.png` without a generated timestamp directory.
+4. Confirm the stored Blob URL follows the current owner/asset/revision layout, while the logical relative path remains `textures/walls/albedo.png`. Legacy attachment URLs remain valid.
 5. Search for `textures/walls` and confirm the attachment remains visible.
 6. Try attaching the same relative path again and confirm the API reports the existing-path conflict without replacing the prior attachment.
 7. Clear **Attachment directory** and confirm file selection and drag/drop upload remain blocked.
@@ -115,7 +145,7 @@ Malformed inspectable files fail analysis before Blob storage. A successful anal
 
 When the User selects **Create Model**, the analyzed primary upload is submitted as a bounded pending-file description. The owner-scoped Model route verifies that its URL, type, and byte count exactly match the Model configuration, then creates the `threed_models` row, its `threed_model_files` primary attachment, and the `mainModelFileId` relationship in one database transaction. A database failure cannot leave a partially connected Model record. Cleanup of a staged Blob abandoned before Model creation remains a separate lifecycle boundary.
 
-Saving an analyzed replacement from Edit follows the same contract: the replacement attachment and synchronized reusable Model fields commit together. The previous attachment remains available until the User explicitly removes it from Model Files, providing a recoverable replacement workflow.
+Saving an analyzed replacement from Edit follows the same contract: the replacement attachment and primary-file assignment commit together. The previous attachment remains available until the User explicitly removes it from Model Files, providing a recoverable replacement workflow.
 
 ### Manual verification
 
@@ -127,9 +157,9 @@ Saving an analyzed replacement from Edit follows the same contract: the replacem
 
 ### Staged primary-file cleanup
 
-An analyzed primary Model file remains staged until Create or Edit is saved. Closing the editor or selecting a different primary file requests deletion of the previous staged Blob. Cleanup is limited to an authenticated User's `models/<user-id>/upload/` path and accepts only the supported Model extensions.
+An analyzed primary Model file remains staged until Create or Edit is saved. Closing the editor or selecting a different primary file requests deletion of the previous staged Blob. Cleanup is limited to an authenticated User's new ThreeD primary-upload paths or legacy `models/<user-id>/upload/` paths and accepts only the supported Model extensions.
 
-Before deletion, the server checks both `threed_models.file_path` and `threed_model_files.file_path`. A committed file is never eligible for staged cleanup. A save in progress prevents the controlled editor from closing, avoiding a create-versus-cleanup race.
+Before deletion, the server checks committed `threed_model_files.file_path` references. Model runtime URLs are derived from these records. A committed file is never eligible for staged cleanup. A save in progress prevents the controlled editor from closing, avoiding a create-versus-cleanup race.
 
 1. Upload a disposable Model file, close the form without saving, and confirm no Model record is created.
 2. Upload one disposable file and then select another. Confirm the second file is analyzed and remains selected.
@@ -139,9 +169,9 @@ Before deletion, the server checks both `threed_models.file_path` and `threed_mo
 
 ## Stage 4 attachment integrity
 
-The authenticated server routes now maintain one consistent attachment contract. Setting a primary Model file validates that the attachment belongs to the selected Model and synchronizes `mainModelFileId`, `filePath`, `fileSize`, and `modelType`; it is no longer an ID-only update. Every attachment upload or deletion recalculates `textureCount` and `hasExternalFiles` from the complete persisted attachment set.
+The authenticated server routes now maintain one consistent attachment contract. Setting a primary Model file validates that the attachment belongs to the selected Model and owner, then updates `mainModelFileId` and consistent `modelType`. Response `filePath` and `fileSize` are derived from the assigned File. Every attachment upload or deletion recalculates `textureCount` and `hasExternalFiles` from the complete persisted attachment set.
 
-Deleting a primary attachment promotes the first remaining Model attachment by stable load order. Deleting the only primary Model attachment is refused, because `threed_models.filePath` is required and the operation would leave a non-loadable reusable Model. The User must first upload a replacement. Database records and derived Model metadata change in one transaction, then the detached Blob is removed.
+Deleting the assigned primary attachment is refused, even when other Model files exist. The User must explicitly assign a replacement first. Database records and derived Model metadata change in one transaction, then the detached Blob is removed.
 
 Deleting a complete Model transactionally removes its attachment records and Model record before Blob cleanup. Cleanup accepts only verified Vercel Blob URLs in that User or Model's expected storage paths, deduplicates URLs, and retains a Blob if any remaining Model or attachment record still references it. External URLs are never deleted by these routes.
 
@@ -149,7 +179,7 @@ Deleting a complete Model transactionally removes its attachment records and Mod
 
 1. Upload a second Model file, set it as primary, and confirm the primary badge moves. Return to Models and confirm its runtime file URL, byte size, and type match the selected attachment.
 2. Add two disposable textures, delete one, and confirm the texture total equals the remaining texture records rather than merely decrementing stale metadata.
-3. Delete the active primary while another Model attachment remains. Confirm the next load-ordered Model file becomes primary and the Model remains loadable.
+3. Delete the active primary while another Model attachment remains. Confirm deletion is refused until another Model file is explicitly assigned as primary.
 4. Attempt to delete the only primary Model attachment. Confirm the App refuses the operation and instructs the User to upload a replacement.
 5. Delete a non-primary disposable attachment. Confirm its record disappears and an owned, unshared Vercel Blob is cleaned up without changing the primary runtime file.
 6. Delete a disposable complete Model and confirm its Model and attachment records disappear. Confirm external URLs and URLs still referenced by another record are retained.
@@ -429,3 +459,29 @@ Production gate:
 5. Open Model Files, assign that Texture to all detected FBX slots, refresh, and confirm the assignment and Canvas appearance persist.
 6. Load the configured Model in a Dashboard Project and confirm its Texture resolves without a marker, collider, Character, or Scene regression.
 7. Production deployment and the configured FBX Model Files workspace were confirmed September 7, 2026.
+
+The subsequent table presentation refinement passed TypeScript and diff checks; sorting and deletion behavior are unchanged.
+
+## Primary-file relationship cleanup (unreleased)
+
+Models select their primary File through `main_model_file_id`; Model Files owns URL and size. APIs derive these values for renderers. The User approved a schema-only change without preserving old file references. Use the normal `bun db:generate` / `bun db:push` workflow; no backfill or custom triggers are required. Existing Models without a valid assignment remain unresolved. The User confirmed successful `bun db:push` with terminal output showing the primary FK/index addition and redundant-column removal. See the [current scope and implementation](../plans/threed-model-primary-file-authority.md).
+
+The Models table includes a far-right External Link icon that opens the resolved primary File URL in a new tab. When the URL is absent or is not HTTP(S), the icon is dimmed and disabled. This reflects the assigned URL; it does not probe Blob existence. TypeScript and diff checks passed for this UI addition.
+
+For an owner's saved FBX preview, an unmatched texture filename can resolve to a unique active Texture library record's existing URL. Attached texture files take precedence; duplicate saved filenames remain unresolved. The single-Model response supplies these candidates only to its owner, and other Model formats are unchanged. This is read-only resolution: no PNG is copied, no Model File or material assignment is created, and dependency audit/activation requirements are not marked satisfied by this fallback. A Texture with no usable stored URL cannot resolve. TypeScript, saved Texture checks and an actual URL-resolver check passed.
+
+The Model Files form distinguishes **Saved reference**, **Shared Texture available — preview only until linked**, and **Missing** dependencies. A matching shared FBX Texture offers **Link shared Texture**, which saves a Model File reference to the existing Texture URL through the authenticated files API and refreshes the dependency audit. It does not upload or copy the image. Only unresolved requirements offer **Upload needed file**. Requirement rows use the full panel width and wrap filenames so their names and actions remain readable. The summary counts saved references separately from preview availability.
+
+Validation for this form change: TypeScript, `validate:threed-bulk-saved-texture`, `validate:threed-model-bulk-runner` (34 groups), and diff checks passed. Visual browser verification remains manual; no production build or database operation was run.
+
+## Default fallback shapes for inaccessible Models
+
+The generic Model viewer offers a **Default Fallback Shape** choice in the Model editor: Sphere (default), Box / Block, Rectangle, Cylinder, Pyramid or Torus. The Sphere uses 45% opacity, disables depth writes and casts no opaque shadow; explicitly chosen other shapes retain their solid material. Missing or invalid preferences default to Sphere. The choice is stored as `metadata.fallbackShape`; unrelated metadata is preserved and malformed metadata JSON must be corrected before changing the selection. No schema change is needed.
+
+The generic fallback is one unit high, grounded at the marker origin and independent of imported asset scale. Previously its half-unit box was centered below the origin and inherited tiny FBX scales, making it difficult to see. Fallback shapes display no floating name or error label. Selecting the marker opens its ordinary DetailsCard, where missing primary files or observed generic Model load failures show a warning and a **Manage Model Files** link. Transient failure reports are keyed by reusable Model ID and URL and removed when the reporting visual recovers or unmounts; they are never stored in Project snapshots. Caller-supplied fallbacks retain priority and their original scale. GardenCharacter and EcctrlCharacter cylinders, procedural Plants and other Sub-Module fallbacks are unchanged. The placeholder is visual only; it does not substitute collision geometry for an unavailable Model.
+
+Project asset hydration derives the current fallback preference from the reusable Model, independently of old snapshot metadata. Generic Model position updates also refresh that preference. After changing the setting in Admin, reload the Project to read it.
+
+Validation: TypeScript, Library placement/readiness checks plus six-shape metadata-preservation and stale-preference cases, Runtime Marker checks, and diff checks passed. No production build or database operation was run by the agent. Manual checks remain: choose each shape on a generic Model, test an empty primary and a failed file URL, verify a small import scale still produces a visible grounded placeholder, confirm a repaired Model replaces the placeholder, and confirm Character cylinders and module-specific fallbacks remain as before.
+
+DetailsCard warning validation: TypeScript, Library placement checks and failure-report lifecycle cases passed. Manual verification remains: select a missing-file placeholder, select a failed-load placeholder, follow the repair link, and confirm the shape itself has no floating text. No build was run.

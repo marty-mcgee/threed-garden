@@ -149,7 +149,7 @@ export async function fetchThreeDProjectSession(
   projectId: string,
   signal: AbortSignal,
 ): Promise<ThreeDProjectSessionResult> {
-  const response = await fetch(`/api/map/threed?projectId=${projectId}`, { signal });
+  const response = await fetch(`/api/map/threed?projectId=${projectId}`, { signal, cache: 'no-store' });
   const result = await response.json();
   return buildThreeDProjectSession(result, projectId);
 }

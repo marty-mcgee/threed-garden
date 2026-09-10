@@ -2,6 +2,7 @@
 // Standalone model-file upload for the create flow: uploads the primary GLB/GLTF/FBX/OBJ
 // file to Vercel Blob and returns its public URL + inferred metadata (no DB write yet).
 import { NextRequest, NextResponse } from 'next/server';
+import { createThreeDBlobPath, isOwnedStagedModelBlobUrl } from '@/lib/services/threed/models/model-blob-paths';
 import { auth } from '@/lib/auth';
 import { del, put } from '@vercel/blob';
 import { and, eq } from 'drizzle-orm';
@@ -94,23 +95,6 @@ async function inspectUploadedModel(file: File, modelType: string) {
   };
 }
 
-function isOwnedStagedModelUrl(value: unknown, userId: string): value is string {
-  if (typeof value !== 'string' || value.length > 2_000) return false;
-  try {
-    const url = new URL(value);
-    const segments = url.pathname.split('/').filter(Boolean).map((segment) => decodeURIComponent(segment));
-    return url.protocol === 'https:'
-      && url.hostname.endsWith('.blob.vercel-storage.com')
-      && segments.length === 4
-      && segments[0] === 'models'
-      && segments[1] === userId
-      && segments[2] === 'upload'
-      && /^\d+\.(?:glb|gltf|fbx|obj|usdz)$/i.test(segments[3]);
-  } catch {
-    return false;
-  }
-}
-
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
@@ -147,7 +131,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      const path = `models/${session.user.id}/previews/${Date.now()}-${crypto.randomUUID()}.${extension}`;
+      const path = createThreeDBlobPath(session.user.id, 'previews', file.name, crypto.randomUUID());
       const blob = await put(path, file, {
         access: 'public',
         addRandomSuffix: false,
@@ -191,9 +175,9 @@ export async function POST(request: NextRequest) {
       }, { status: 422 });
     }
 
-    const path = `models/${session.user.id}/upload/${Date.now()}.${ext}`;
+    const path = createThreeDBlobPath(session.user.id, 'models', file.name, crypto.randomUUID());
 
-    const blob = await put(path, file, { access: 'public', addRandomSuffix: false });
+    const blob = await put(path, file, { access: 'public', addRandomSuffix: false, contentType: { glb: 'model/gltf-binary', gltf: 'model/gltf+json', fbx: 'application/octet-stream', obj: 'model/obj', usdz: 'model/vnd.usdz+zip' }[ext] });
 
     return NextResponse.json({
       success: true,
@@ -240,19 +224,15 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Invalid staged Model cleanup request' }, { status: 400 });
     }
     const body = parsedBody as { url: unknown };
-    if (!isOwnedStagedModelUrl(body.url, session.user.id)) {
+    if (!isOwnedStagedModelBlobUrl(body.url, session.user.id)) {
       return NextResponse.json({ success: false, error: 'Invalid staged Model upload URL' }, { status: 400 });
     }
 
-    const [referencedModel] = await db.select({ id: threedModels.id }).from(threedModels).where(and(
-      eq(threedModels.userId, session.user.id),
-      eq(threedModels.filePath, body.url),
-    )).limit(1);
     const [referencedFile] = await db.select({ id: threedModelFiles.id }).from(threedModelFiles).where(and(
       eq(threedModelFiles.userId, session.user.id),
       eq(threedModelFiles.filePath, body.url),
     )).limit(1);
-    if (referencedModel || referencedFile) {
+    if (referencedFile) {
       return NextResponse.json(
         { success: false, error: 'Committed Model files cannot be discarded as staged uploads' },
         { status: 409 },

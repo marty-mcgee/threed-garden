@@ -1,3 +1,6 @@
+import { currentModelAssets } from '@/lib/services/threed/models/model-snapshot-assets';
+import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
+import { getTableColumns } from 'drizzle-orm';
 // app/api/map/threed/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -16,6 +19,7 @@ import {
   threedHarvests,
   threedWeatherLogs,
   threedModels,
+  threedModelFiles,
 } from '@/lib/schema/threed';
 import { 
   trafficChpCadIncidents,
@@ -169,7 +173,7 @@ export async function GET(request: NextRequest) {
       try {
         const assignedAssetCondition = inArray(table.id, ids);
         const query = db
-          .select()
+          .select(tableName === 'threedModels' ? modelSelection() : getTableColumns(table))
           .from(table)
           .where(
             !includeInactive && table.isActive
@@ -297,18 +301,37 @@ export async function GET(request: NextRequest) {
 
         await processAssets(assetIdsByType, typeMap, threedData);
 
-        // v0.16.3-beta: Attach each character's referenced model (GLB/FBX/OBJ) so the
-        // 3D scene renders the actual model file instead of a fallback shape.
-        if (threedData.characters.length > 0 && threedData.models.length > 0) {
-          const modelById = new Map(threedData.models.map((m: any) => [m.id, m]));
-          threedData.characters = threedData.characters.map((character: any) => {
-            if (character.modelId != null && modelById.has(character.modelId)) {
-              return { ...character, model: modelById.get(character.modelId) };
-            }
-            return character;
-          });
-        }
       }
+
+      // Hydrate assets from current relationships, never from saved Project JSON.
+      const plantingPlantIds = [...new Set(threedData.plantings.map((item: any) => item.plantId).filter((id): id is number => Number.isSafeInteger(id) && id > 0))];
+      const plantingPlants = plantingPlantIds.length
+        ? await db.select().from(threedPlants).where(inArray(threedPlants.id, plantingPlantIds)) : [];
+      const plantingPlantById = new Map(plantingPlants.map((plant) => [plant.id, plant]));
+      const referencedModelIds = [...new Set([
+        ...threedData.models.map((item: any) => item.id),
+        ...threedData.plantings.map((item: any) => item.customModelId),
+        ...[...threedData.characters, ...threedData.plants, ...plantingPlants].map((item: any) => item.modelId),
+      ].filter((id): id is number => Number.isSafeInteger(id) && id > 0))];
+      const currentModels = referencedModelIds.length
+        ? await db.select(modelSelection()).from(threedModels).where(inArray(threedModels.id, referencedModelIds))
+        : [];
+      const currentFiles = referencedModelIds.length
+        ? await db.select().from(threedModelFiles).where(inArray(threedModelFiles.modelId, referencedModelIds))
+        : [];
+      const currentModelById = new Map(currentModels.map((model) => [model.id, {
+        ...model,
+        files: currentFiles.filter((file) => file.modelId === model.id && file.userId === model.userId && Boolean(file.filePath)),
+      }]));
+      threedData.models = threedData.models.map((model: any) => ({ ...model, ...currentModelById.get(model.id) }));
+      for (const key of ['characters', 'plants']) {
+        threedData[key] = threedData[key].map((item: any) => ({ ...item, model: currentModelById.get(item.modelId) ?? null }));
+      }
+
+      threedData.plantings = threedData.plantings.map((item: any) => {
+        const plant = plantingPlantById.get(item.plantId);
+        return { ...item, plant: plant ?? null, model: currentModelById.get(item.customModelId ?? plant?.modelId) ?? null };
+      });
 
       savedProjectMarkers = await db
         .select()
@@ -325,17 +348,20 @@ export async function GET(request: NextRequest) {
         );
       });
 
-      const modelById = new Map(threedData.models.map((model: any) => [model.id, model]));
-      savedProjectMarkers = savedProjectMarkers.map((marker) => marker.markerType === 'models'
-        ? {
-            ...marker,
-            data: {
-              ...(modelById.get(marker.sourceAssetId) ?? {}),
-              ...(marker.data as Record<string, unknown>),
-              modelId: marker.sourceAssetId,
-            },
-          }
-        : marker);
+      savedProjectMarkers = savedProjectMarkers.map((marker) => {
+        const savedData = marker.data as Record<string, unknown>;
+        if (marker.markerType === 'models') {
+          const model = currentModelById.get(marker.sourceAssetId);
+          return { ...marker, data: { ...model, ...savedData,
+            modelId: marker.sourceAssetId, ...currentModelAssets(model),
+          } };
+        }
+        if (marker.markerType === 'characters' || marker.markerType === 'plantings') {
+          const source = threedData[marker.markerType].find((item: any) => item.id === marker.sourceAssetId);
+          return { ...marker, data: { ...savedData, model: source?.model ?? null } };
+        }
+        return marker;
+      });
     }
 
     // ✅ Fetch Traffic assets

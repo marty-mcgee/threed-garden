@@ -1,3 +1,4 @@
+import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
 // app/api/threed/characters/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
@@ -101,7 +102,7 @@ export async function GET(request: NextRequest) {
 
       // ✅ Fetch related model info if available
       const [model] = character.modelId ? await db
-        .select()
+        .select(modelSelection())
         .from(threedModels)
         .where(eq(threedModels.id, character.modelId))
         .limit(1) : [];
@@ -170,7 +171,7 @@ export async function GET(request: NextRequest) {
     const charactersWithModels = await Promise.all(
       results.map(async (character) => {
         const [model] = character.modelId ? await db
-          .select()
+          .select(modelSelection())
           .from(threedModels)
           .where(eq(threedModels.id, character.modelId))
           .limit(1) : [];
@@ -287,7 +288,7 @@ export async function POST(request: NextRequest) {
     // ✅ Verify model exists if provided
     if (modelId) {
       const [model] = await db
-        .select()
+        .select(modelSelection())
         .from(threedModels)
         .where(
           and(
@@ -440,7 +441,7 @@ export async function PUT(request: NextRequest) {
     // ✅ Verify model exists if provided
     if (body.modelId) {
       const [model] = await db
-        .select()
+        .select(modelSelection())
         .from(threedModels)
         .where(
           and(
@@ -541,7 +542,7 @@ export async function PATCH(request: NextRequest) {
     // ✅ Verify model exists if provided
     if (body.modelId) {
       const [model] = await db
-        .select()
+        .select(modelSelection())
         .from(threedModels)
         .where(
           and(

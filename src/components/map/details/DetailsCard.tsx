@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useSyncExternalStore } from 'react';
+import { hasModelLoadFailure, subscribeModelLoadFailures } from '@/lib/services/threed/models/model-load-failures';
 import { Crosshair, ExternalLink, Gamepad2, Loader2, Pause, ScanSearch, X } from 'lucide-react';
 import type { ThreeDActionTarget } from '@/lib/types/map';
 import type { ThreeDRuntimeMarkerPositionResolver } from '@/components/map/UnifiedMapView';
@@ -22,6 +23,28 @@ import { BedInstanceEditor } from './BedInstanceEditor';
 import { CharacterInstancePositionEditor } from './CharacterInstancePositionEditor';
 import { ModelInstancePlacementEditor } from './ModelInstancePlacementEditor';
 import { PlantingInstanceEditor } from './PlantingInstanceEditor';
+
+function ModelFileNotice({ type, data }: { type: string; data: Record<string, any> }) {
+  const generic = type === 'model' || type === 'models';
+  const model = generic ? data : data.model;
+  const modelId = Number(generic ? data.modelId ?? data.id : model?.id ?? data.customModelId ?? data.modelId ?? data.plant?.modelId);
+  const filePath = typeof model?.filePath === 'string' ? model.filePath : '';
+  const failed = useSyncExternalStore(subscribeModelLoadFailures,
+    () => hasModelLoadFailure(modelId, filePath), () => false);
+  const requiresModel = generic || ['character', 'characters'].includes(type)
+    || (['plant', 'plants', 'planting', 'plantings'].includes(type) && modelId > 0);
+  if (!requiresModel || (filePath && !failed)) return null;
+  return (
+    <div role="status" className="my-2 rounded border border-amber-400/40 bg-amber-400/10 p-2 text-xs text-amber-200">
+      <p className="font-medium">{filePath ? 'Model file could not be loaded' : 'Main Model file is missing'}</p>
+      <p className="mt-1">A fallback shape represents this asset until its Model file is available.</p>
+      {Number.isSafeInteger(modelId) && modelId > 0 && (
+        <a href={`/admin/threed/model-files?modelId=${modelId}`} target="_blank" rel="noopener noreferrer"
+          className="mt-1 inline-block underline underline-offset-2">Manage Model Files ↗</a>
+      )}
+    </div>
+  );
+}
 
 function KvRow({ label, value }: { label: string; value: string }) {
   return (
@@ -425,6 +448,8 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
           <X className="h-4 w-4" />
         </button>
       </div>
+
+      {!isIncident && <ModelFileNotice type={normalizedType} data={d} />}
 
       <div className="mt-1.5 flex items-center gap-1">
         {!isIncident && selectedTargetCapabilities && onSetActionTarget && (

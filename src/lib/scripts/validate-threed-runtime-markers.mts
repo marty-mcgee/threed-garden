@@ -1785,3 +1785,26 @@ validationStep('Geographic axes remain explicit and unsafe coordinate inputs fai
 
 console.log('─'.repeat(42));
 console.log(`PASS  ${completedValidationSteps} validation groups completed`);
+
+// Position responses replace obsolete nested assets without replacing unrelated owners.
+const characterMarker = {
+  ...clientState.threed.raw.projectThreedMarkers[0],
+  markerType: 'characters' as const,
+  data: { model: { id: 11, filePath: 'https://fixture.test/upload/old.fbx' }, rotation: 90 },
+};
+let characterState = applyThreeDProjectClientTransaction(clientState, {
+  markers: { upsert: [characterMarker] },
+});
+for (const filePath of ['https://fixture.test/primary/current.fbx', 'https://fixture.test/primary/current.fbx', '']) {
+  characterState = applyThreeDProjectClientTransaction(characterState, {
+    markers: { upsert: [{ ...characterMarker, positionX: '8.000', data: {
+      ...characterMarker.data, model: { id: 11, filePath, files: [] },
+    } }] },
+  });
+  const record = characterState.threed.raw?.projectThreedMarkers?.[0];
+  assert.equal((record?.data?.model as { filePath: string }).filePath, filePath);
+  assert.equal(record?.positionX, '8.000');
+  assert.equal(record?.data?.rotation, 90);
+  assert.equal(characterState.threed.raw?.beds, stableBeds);
+}
+console.log('PASS: repeated Character position responses retain current primary URLs and clear missing files without replacing unrelated owners');

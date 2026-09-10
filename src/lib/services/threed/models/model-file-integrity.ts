@@ -1,3 +1,5 @@
+// @ts-expect-error Native validators require explicit extensions.
+import { isNewOwnedModelBlobUrl } from './model-blob-paths.ts';
 const VERCEL_BLOB_HOST_SUFFIX = '.blob.vercel-storage.com';
 
 const RUNTIME_MODEL_TYPES = [
@@ -25,7 +27,7 @@ export function isOwnedThreeDBlobUrl(
     const url = new URL(value);
     if (url.protocol !== 'https:' || !url.hostname.endsWith(VERCEL_BLOB_HOST_SUFFIX)) return false;
     const path = decodeURIComponent(url.pathname).replace(/^\/+/, '');
-    return path.startsWith(`models/${modelId}/`)
+    return isNewOwnedModelBlobUrl(value, userId, modelId) || path.startsWith(`models/${modelId}/`)
       || path.startsWith(`models/${userId}/upload/`)
       || path.startsWith(`models/${userId}/previews/`);
   } catch {

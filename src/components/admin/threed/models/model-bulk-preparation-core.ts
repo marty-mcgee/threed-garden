@@ -38,6 +38,7 @@ export interface BulkSource {
   file: File;
   sourcePath: string;
   selectionRoot: string;
+  sharedTexture?: { id: number; filePath: string };
   materialText?: string;
   materialError?: string;
 }

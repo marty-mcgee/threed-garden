@@ -1,11 +1,13 @@
+import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
 // src/app/api/threed/models/files/route.ts — v0.16.4-alpha
 // Adds model files, textures, binary buffers, and supportive media to an existing model.
 // Reads `modelId` and optional `category`/`textureType` from multipart form data and
 // persists each uploaded file to Vercel Blob (reusing the existing `@vercel/blob` pattern).
 import { NextRequest, NextResponse } from 'next/server';
+import { createThreeDAttachmentBlobPath } from '@/lib/services/threed/models/model-blob-paths';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { threedModels, threedModelFiles } from '@/lib/schema/threed';
+import { threedModels, threedModelFiles, threedModelTextures } from '@/lib/schema/threed';
 import { and, asc, eq } from 'drizzle-orm';
 import { BlobNotFoundError, head, put } from '@vercel/blob';
 import { ensureTableSequence } from '@/lib/db/sequence';
@@ -38,6 +40,7 @@ function detectTextureType(name: string): string {
 async function storeFile(
   userId: string,
   modelId: number,
+  primaryUrl: string,
   file: File,
   relativePath: string,
   fileType: string,
@@ -46,13 +49,13 @@ async function storeFile(
   isBinaryBuffer = false,
   replaceFileId: number | null = null,
 ) {
-  const path = `models/${modelId}/attachments/${relativePath}`;
+  const path = createThreeDAttachmentBlobPath(userId, modelId, primaryUrl, relativePath, crypto.randomUUID());
   // Dependency identity belongs to relativePath in Postgres. The public Blob URL
   // must remain collision-free because a loader may cache a 404 for the expected
   // dependency pathname before the User supplies that attachment.
   const blob = await put(path, file, {
     access: 'public',
-    addRandomSuffix: true,
+    addRandomSuffix: false,
     contentType: file.type || undefined,
   });
 
@@ -96,12 +99,46 @@ async function storeFile(
     .returning();
 }
 
+// A shared attachment stores a reference to the library Blob, never another Blob.
+async function linkSharedTexture(request: NextRequest, userId: string) {
+  const body = await request.json().catch(() => null);
+  if (!body || Object.keys(body).some((key) => !['modelId', 'textureId', 'relativePath'].includes(key))
+    || !Number.isSafeInteger(body.modelId) || body.modelId <= 0
+    || !Number.isSafeInteger(body.textureId) || body.textureId <= 0
+    || typeof body.relativePath !== 'string') return NextResponse.json({ success: false, error: 'Invalid shared Texture reference' }, { status: 400 });
+  const relativePath = normalizeThreeDModelRelativePath(body.relativePath);
+  if (!relativePath || relativePath !== body.relativePath || !relativePath.includes('/')
+    || relativePath.split('/').slice(0, -1).join('/').length > MAX_ATTACHMENT_DIRECTORY_LENGTH) {
+    return NextResponse.json({ success: false, error: 'Invalid attachment directory' }, { status: 400 });
+  }
+  await ensureTableSequence('threed_model_files');
+  const result = await db.transaction(async (tx) => {
+    const [model] = await tx.select(modelSelection()).from(threedModels).where(and(eq(threedModels.id, body.modelId), eq(threedModels.userId, userId))).limit(1).for('update');
+    const [texture] = await tx.select().from(threedModelTextures).where(and(eq(threedModelTextures.id, body.textureId), eq(threedModelTextures.userId, userId))).limit(1).for('update');
+    if (!model || !texture || !texture.isActive) return { status: 404, error: 'Model or active Texture not found' };
+    if (model.modelType !== 'fbx' || relativePath.split('/').at(-1)?.toLowerCase() !== texture.fileName.toLowerCase()
+      || !/^https:\/\//i.test(texture.filePath)) return { status: 422, error: 'Shared Texture does not match the FBX attachment' };
+    const files = await tx.select().from(threedModelFiles).where(and(eq(threedModelFiles.modelId, model.id), eq(threedModelFiles.userId, userId)));
+    const existing = files.find((file) => (file.relativePath ?? file.fileName).toLowerCase() === relativePath.toLowerCase());
+    if (existing && (existing.filePath !== texture.filePath || existing.fileType !== 'texture')) return { status: 409, error: 'Attachment path is already in use' };
+    if (!existing) {
+      await tx.insert(threedModelFiles).values({ userId, modelId: model.id, fileName: texture.fileName, relativePath, fileType: 'texture', textureType: 'baseColor', filePath: texture.filePath, fileSize: texture.fileSize, isBinaryBuffer: false, loadOrder: files.length });
+      await tx.update(threedModels).set({ hasExternalFiles: true, textureCount: files.filter((file) => file.fileType === 'texture').length + 1, updatedAt: new Date() }).where(eq(threedModels.id, model.id));
+    }
+    return { status: 200 };
+  });
+  return NextResponse.json(result.error ? { success: false, error: result.error } : { success: true }, { status: result.status });
+}
+
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
+
+    const userId = session.user.id;
+    if (request.headers.get('content-type')?.includes('application/json')) return await linkSharedTexture(request, userId);
 
     const formData = await request.formData();
     const modelIdRaw = formData.get('modelId');
@@ -163,11 +200,11 @@ export async function POST(request: NextRequest) {
     const categoryOverride = formData.get('category');
 
     const [model] = await db
-      .select()
+      .select(modelSelection())
       .from(threedModels)
       .where(and(
         eq(threedModels.id, modelId),
-        eq(threedModels.userId, session.user.id),
+        eq(threedModels.userId, userId),
       ))
       .limit(1);
 
@@ -186,7 +223,7 @@ export async function POST(request: NextRequest) {
       .from(threedModelFiles)
       .where(and(
         eq(threedModelFiles.modelId, modelId),
-        eq(threedModelFiles.userId, session.user.id),
+        eq(threedModelFiles.userId, userId),
       ));
     const existingByPath = new Map(existingFiles.map((entry) => [
       (entry.relativePath || entry.fileName).toLowerCase(),
@@ -197,7 +234,7 @@ export async function POST(request: NextRequest) {
       if (!relativePath) continue;
       const existing = existingByPath.get(relativePath.toLowerCase());
       if (!existing) continue;
-      if (!isOwnedThreeDBlobUrl(existing.filePath, { modelId, userId: session.user.id })) {
+      if (!isOwnedThreeDBlobUrl(existing.filePath, { modelId, userId: userId })) {
         return NextResponse.json(
           { success: false, error: `An attachment already uses relative path: ${relativePath}` },
           { status: 409 },
@@ -243,8 +280,9 @@ export async function POST(request: NextRequest) {
       }
 
       const [record] = await storeFile(
-        session.user.id,
+        userId,
         modelId,
+        model.filePath,
         file,
         relativePath,
         fileType,
@@ -259,36 +297,42 @@ export async function POST(request: NextRequest) {
       uploaded.push(record);
     }
 
-    const completeFiles = await db.select()
-      .from(threedModelFiles)
-      .where(and(
-        eq(threedModelFiles.modelId, modelId),
-        eq(threedModelFiles.userId, session.user.id),
-      ))
-      .orderBy(asc(threedModelFiles.loadOrder), asc(threedModelFiles.id));
-    const primaryFile = completeFiles.find((file) => (
-      file.id === firstModelFileId && file.fileType === 'model'
-    )) ?? completeFiles.find((file) => file.fileType === 'model') ?? null;
-    firstModelFileId = primaryFile?.id ?? null;
+    await db.transaction(async (tx) => {
+      const [currentModel] = await tx.select().from(threedModels).where(and(
+        eq(threedModels.id, modelId), eq(threedModels.userId, userId),
+      )).limit(1).for('update');
+      if (!currentModel) throw new Error('Model no longer exists');
+      const selectedPrimaryId = currentModel.mainModelFileId ?? firstModelFileId;
+      const completeFiles = await tx.select()
+        .from(threedModelFiles)
+        .where(and(
+          eq(threedModelFiles.modelId, modelId),
+          eq(threedModelFiles.userId, userId),
+        ))
+        .orderBy(asc(threedModelFiles.loadOrder), asc(threedModelFiles.id));
+      const primaryFile = completeFiles.find((file) => (
+        file.id === selectedPrimaryId && file.fileType === 'model'
+      )) ?? null;
+      firstModelFileId = primaryFile?.id ?? null;
 
-    // Reconcile derived attachment metadata from the complete persisted file set.
-    await db
-      .update(threedModels)
-      .set({
-        ...(primaryFile ? {
-          filePath: primaryFile.filePath,
-          fileSize: primaryFile.fileSize,
-          modelType: runtimeModelTypeFromFileName(primaryFile.fileName) ?? model.modelType,
-        } : {}),
-        hasExternalFiles: completeFiles.length > 0,
-        textureCount: completeFiles.filter((file) => file.fileType === 'texture').length,
-        mainModelFileId: firstModelFileId,
-        updatedAt: new Date(),
-      })
-      .where(and(
-        eq(threedModels.id, modelId),
-        eq(threedModels.userId, session.user.id),
-      ));
+      // Reconcile derived attachment metadata from the complete persisted file set.
+      await tx
+        .update(threedModels)
+        .set({
+          ...(primaryFile ? {
+            modelType: runtimeModelTypeFromFileName(primaryFile.fileName) ?? currentModel.modelType,
+          } : {}),
+          hasExternalFiles: completeFiles.length > 0,
+          textureCount: completeFiles.filter((file) => file.fileType === 'texture').length,
+          mainModelFileId: firstModelFileId,
+          updatedAt: new Date(),
+        })
+        .where(and(
+          eq(threedModels.id, modelId),
+          eq(threedModels.userId, userId),
+        ));
+
+    });
 
     return NextResponse.json({
       success: true,

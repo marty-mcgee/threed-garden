@@ -1,3 +1,4 @@
+import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
 import { NextRequest, NextResponse } from 'next/server';
 import { and, asc, eq } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
@@ -44,7 +45,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Invalid model ID' }, { status: 400 });
   }
 
-  const [model] = await db.select().from(threedModels).where(and(
+  const [model] = await db.select(modelSelection()).from(threedModels).where(and(
     eq(threedModels.id, modelId),
     eq(threedModels.userId, session.user.id),
   )).limit(1);
@@ -57,7 +58,6 @@ export async function GET(request: NextRequest) {
     eq(threedModelFiles.userId, session.user.id),
   )).orderBy(asc(threedModelFiles.loadOrder), asc(threedModelFiles.id));
   const primary = files.find((file) => file.id === model.mainModelFileId && file.fileType === 'model')
-    ?? files.find((file) => file.fileType === 'model')
     ?? null;
   if (!primary) {
     return NextResponse.json({ success: true, data: { status: 'missing_primary', requirements: [] } });
@@ -197,7 +197,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Choose exactly one valid Texture' }, { status: 400 });
   }
   const [[model], [attachmentTexture], [libraryTexture]] = await Promise.all([
-    db.select().from(threedModels).where(and(
+    db.select(modelSelection()).from(threedModels).where(and(
       eq(threedModels.id, modelId),
       eq(threedModels.userId, session.user.id),
     )).limit(1),

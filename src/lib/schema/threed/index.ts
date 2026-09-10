@@ -238,8 +238,6 @@ export const threedModels = pgTable('threed_models', {
 
   modelName: varchar('model_name', { length: 255 }).notNull(),
   modelType: modelTypeEnum('model_type').notNull(),
-  filePath: varchar('file_path', { length: 500 }).notNull(),
-  fileSize: integer('file_size'), // in bytes
   thumbnailUrl: text('thumbnail_url'),
   
   // Model properties
@@ -259,7 +257,7 @@ export const threedModels = pgTable('threed_models', {
 
   hasExternalFiles: boolean('has_external_files').default(false),
   textureCount: integer('texture_count').default(0),
-  mainModelFileId: integer('main_model_file_id'), // Reference to the main GLB/GLTF file in threedModelFiles
+  mainModelFileId: integer('main_model_file_id').references((): AnyPgColumn => threedModelFiles.id), // Assigned primary Model File; ownership/type validated by application routes
   
   // Status and Metadata
   isActive: boolean('is_active').default(true),
@@ -276,6 +274,7 @@ export const threedModels = pgTable('threed_models', {
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 }, (table) => ({
+  primaryFileIdx: index('idx_threed_models_primary_file').on(table.mainModelFileId),
   modelTypeIdx: index('idx_threed_models_type').on(table.modelType),
   activeIdx: index('idx_threed_models_active').on(table.isActive),
   statusIdx: index('idx_threed_models_status').on(table.status),
@@ -1604,7 +1603,12 @@ export const threedModelsRelations = relations(threedModels, ({ one, many }) => 
     fields: [threedModels.id],
     references: [threedCharacters.modelId],
   }),
-  modelFiles: many(threedModelFiles),
+  primaryFile: one(threedModelFiles, {
+    fields: [threedModels.mainModelFileId],
+    references: [threedModelFiles.id],
+    relationName: 'modelPrimaryFile',
+  }),
+  modelFiles: many(threedModelFiles, { relationName: 'modelAttachments' }),
   categoryAssignments: many(threedModelCategoryAssignments),
   materialAssignments: many(threedModelMaterialAssignments),
 }));
@@ -1796,6 +1800,7 @@ export const threedModelFilesRelations = relations(threedModelFiles, ({ one }) =
   model: one(threedModels, {
     fields: [threedModelFiles.modelId],
     references: [threedModels.id],
+    relationName: 'modelAttachments',
   }),
 }));
 

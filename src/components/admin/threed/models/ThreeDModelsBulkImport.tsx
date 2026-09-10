@@ -16,6 +16,7 @@ import {
   prepareBulkModel, requirementKey, summarizeBulkGltfResources, validateBulkPrimary, validateBulkPreview, validateBulkCompanion, bulkCompanionType,
   type BulkDefaults, type BulkDraft, type BulkSource, type BulkExistingTexture, type BulkPreparedModel,
 } from './model-bulk-preparation-core';
+import { matchingSavedBulkTexture, readSavedBulkTexture, type SavedBulkTexture } from './model-bulk-saved-texture';
 import { runBulkModel, type BulkImportResult } from './model-bulk-import-runner';
 import { BULK_SCALE_PRESETS, createBulkPreferencesStorageKey, readBulkPreferences, serializeBulkPreferences } from './model-bulk-preferences-core';
 import { createBulkModelPreviewSnapshot, openBulkModelPreview, type BulkModelPreviewSnapshot } from './model-bulk-preview-window';
@@ -56,7 +57,8 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
   const draftsRef = useRef<BulkDraft[]>([]);
   const [pool, setPool] = useState<BulkSource[]>([]);
   const [defaults, setDefaults] = useState(createBulkDefaults);
-  const [existingTextures, setExistingTextures] = useState<BulkExistingTexture[]>([]);
+  const [existingTextures, setExistingTextures] = useState<SavedBulkTexture[]>([]);
+  const [savedTextureFiles, setSavedTextureFiles] = useState<{ key: string; sources: Record<number, BulkSource>; errors: Record<number, string> }>({ key: '', sources: {}, errors: {} });
   const [texturesReady, setTexturesReady] = useState(false);
   const [texturesLoading, setTexturesLoading] = useState(false);
   const [textureError, setTextureError] = useState('');
@@ -116,7 +118,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
         const response = await fetch('/api/threed/model-textures', { signal: controller.signal, cache: 'no-store' });
         const payload = await response.json();
         if (!response.ok || payload?.success !== true || !Array.isArray(payload.data)) throw new Error('Unable to load');
-        const textures: BulkExistingTexture[] = payload.data.filter((texture: Partial<BulkExistingTexture> | null) =>
+        const textures: SavedBulkTexture[] = payload.data.filter((texture: Partial<BulkExistingTexture> | null) =>
           texture && Number.isSafeInteger(texture.id) && Number(texture.id) > 0
           && typeof texture.textureName === 'string' && typeof texture.fileName === 'string'
           && typeof texture.isActive === 'boolean');
@@ -130,6 +132,38 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
     })();
     return () => { current = false; controller.abort(); window.clearTimeout(timeout); };
   }, [open, textureRefresh]);
+
+  const neededSavedTextures = texturesReady ? [...new Map(drafts.filter((draft) => !results[draft.id]).flatMap((draft) => {
+    const texture = matchingSavedBulkTexture(draft, defaults, pool, existingTextures);
+    return texture ? [[texture.id, texture] as const] : [];
+  })).values()].sort((a, b) => a.id - b.id) : [];
+  const savedTextureKey = JSON.stringify(neededSavedTextures.map(({ id, fileName, filePath }) => ({ id, fileName, filePath })));
+  useEffect(() => {
+    if (!open) return;
+    let current = true;
+    const controller = new AbortController();
+    const sources: Record<number, BulkSource> = {};
+    const errors: Record<number, string> = {};
+    const needed: SavedBulkTexture[] = JSON.parse(savedTextureKey);
+    setSavedTextureFiles({ key: savedTextureKey, sources: {}, errors: {} });
+    void (async () => {
+      let bytes = 0;
+      for (const texture of needed) {
+        if (!current) return;
+        const timeout = window.setTimeout(() => controller.abort(), 30_000);
+        try {
+          const source = await readSavedBulkTexture(texture, controller.signal);
+          bytes += source.file.size;
+          if (bytes > 32 * 1024 * 1024) throw new Error('Saved Texture preview data exceeds 32 MiB for this batch.');
+          sources[texture.id] = source;
+        } catch (error) {
+          errors[texture.id] = error instanceof Error ? error.message : 'Saved Texture could not be read.';
+        } finally { window.clearTimeout(timeout); }
+      }
+      if (current) setSavedTextureFiles({ key: savedTextureKey, sources, errors });
+    })();
+    return () => { current = false; controller.abort(); };
+  }, [open, savedTextureKey, textureRefresh]);
 
   function changeDrafts(update: (current: BulkDraft[]) => BulkDraft[]) {
     if (!mountedRef.current) return;
@@ -149,20 +183,28 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
     changeDrafts((current) => current.map((draft) => draft.id === id ? { ...draft, ...update } : draft));
   }
   const prepared = useMemo(() => new Map(drafts.map((draft) => {
-    const plan = prepareBulkModel(draft, defaults, pool, texturesReady ? existingTextures : undefined);
+    const savedTexture = texturesReady ? matchingSavedBulkTexture(draft, defaults, pool, existingTextures) : undefined;
+    const savedSource = savedTexture && savedTextureFiles.key === savedTextureKey ? savedTextureFiles.sources[savedTexture.id] : undefined;
+    const plan = prepareBulkModel(draft, defaults, savedSource ? [...pool, savedSource] : pool, texturesReady ? existingTextures : undefined);
+    if (savedTexture && !savedSource) {
+      plan.ready = false;
+      plan.issues.push(savedTextureFiles.key === savedTextureKey && savedTextureFiles.errors[savedTexture.id]
+        ? `${savedTexture.fileName}: ${savedTextureFiles.errors[savedTexture.id]} Refresh existing Textures to retry, or select a local file.`
+        : `Loading matching saved Texture: ${savedTexture.fileName}…`);
+    }
     if (plan.settings.categoryIds.some((id) => !categories.some((category) => category.id === id && category.isActive))) {
       plan.ready = false;
       plan.issues.push('A selected category is unavailable. Remove it or choose an active category.');
     }
     return [draft.id, plan];
-  })), [drafts, defaults, pool, texturesReady, existingTextures, categories]);
+  })), [drafts, defaults, pool, texturesReady, existingTextures, categories, savedTextureFiles, savedTextureKey]);
   const eligible = drafts.filter((draft) => !results[draft.id] && prepared.get(draft.id)?.ready);
   const selectedDraft = drafts.find((draft) => draft.id === selectedId) ?? drafts[0];
   const result = selectedDraft && results[selectedDraft.id];
   const selected = result?.submitted.draft ?? selectedDraft;
   const selectedPlan = result?.submitted.plan ?? (selected && prepared.get(selected.id));
   const selectedDefaults = result?.submitted.defaults ?? defaults;
-  const selectedPool = result?.submitted.pool ?? pool;
+  const selectedPool = result?.submitted.pool ?? [...new Map([...pool, ...(selectedPlan?.attachments.map((attachment) => attachment.source) ?? [])].map((source) => [source.id, source])).values()];
   const selectedCategories = result?.submitted.categories ?? activeCategories;
   const selectedTextures = result?.submitted.textures ?? activeTextures;
   const locked = importing || !!result;
@@ -278,7 +320,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
         draft: { ...draft, overrides: { ...plan.settings, categoryIds: [...plan.settings.categoryIds] } },
         plan,
         defaults: { ...defaults, categoryIds: [...defaults.categoryIds] },
-        pool: [...pool], categories: activeCategories.map((category) => ({ ...category })),
+        pool: [...new Map([...pool, ...plan.attachments.map((attachment) => attachment.source)].map((source) => [source.id, source])).values()], categories: activeCategories.map((category) => ({ ...category })),
         textures: activeTextures.map((texture) => ({ ...texture })),
       };
       return { draft, plan, submitted };
@@ -291,7 +333,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
           file: draft.source.file, modelName: draft.modelName, settings: plan.settings,
           rotationY: draft.rotationY, offsetX: draft.offsetX, offsetY: draft.offsetY, offsetZ: draft.offsetZ,
           configureLater: draft.configureLater, previewFile: draft.previewFile,
-          attachments: plan.attachments.map((attachment) => ({ file: attachment.source.file, relativePath: attachment.relativePath, fileType: attachment.fileType })),
+          attachments: plan.attachments.map((attachment) => ({ file: attachment.source.file, relativePath: attachment.relativePath, fileType: attachment.fileType, sharedTexture: attachment.source.sharedTexture })),
         }, (label) => { if (mountedRef.current) setProgress((current) => ({ ...current, [draft.id]: label })); });
         if (outcome.modelId) created += 1;
         if (outcome.status !== 'imported') failed += 1;
@@ -377,7 +419,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
       </div>
       <section aria-label="Shared material, texture and binary files" className="rounded border p-3">
         <h3 className="text-sm font-medium">Shared material, texture and binary files ({pool.length}/500)</h3>
-        <p className="my-2 text-xs text-muted-foreground">Select .MTL material libraries, their texture images and .bin files to resolve Model dependencies. Use Assign Existing Texture File to reuse a saved Base Color Texture. Embedded GLB/GLTF resources need no extra attachment.</p>
+        <p className="my-2 text-xs text-muted-foreground">Select .MTL material libraries, their texture images and .bin files to resolve Model dependencies. Use Assign Existing Texture File to reuse a saved Base Color Texture. For FBX, a matching saved filename also supplies its required image automatically; the original stored file is linked during import. Embedded GLB/GLTF resources need no extra attachment.</p>
         {pool.length === 0 && <p className="text-xs text-muted-foreground">No shared files selected.</p>}
         <div className="space-y-1">{pool.map((source, index) => <div key={source.id} className="flex items-center justify-between gap-2 text-xs">
           <span className="break-all">#{index + 1} {source.sourcePath} · {sizeLabel(source.file.size)}</span>
@@ -452,7 +494,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
                     <option value="">Choose file / leave unresolved</option>{selectedPool.map((source, index) => ({ source, index })).filter(({ source }) => (match.requirement.kind === 'buffer' ? 'binary' : match.requirement.kind === 'material' ? 'other' : 'texture') === bulkCompanionType(source.file)).map(({ source, index }) => <option key={source.id} value={source.id}>#{index + 1} {source.sourcePath} ({sizeLabel(source.file.size)})</option>)}
                   </select>
                   <Input aria-label={`Destination for ${match.requirement.relativePath}`} value={match.relativePath} onChange={(event) => updateDraft(selected.id, { choices: { ...selected.choices, [requirementKey(match.requirement)]: { sourceId: match.sourceId, relativePath: event.target.value } } })} />
-                  <p className={`text-[11px] ${match.issue || !match.sourceId ? 'font-medium text-amber-800 dark:text-amber-300' : 'text-muted-foreground'}`}>{match.issue || (match.automatic ? 'Suggested match — change if needed' : match.sourceId ? 'Selected explicitly' : 'Missing or ambiguous') }</p>
+                  <p className={`text-[11px] ${match.issue || !match.sourceId ? 'font-medium text-amber-800 dark:text-amber-300' : 'text-muted-foreground'}`}>{match.issue || (match.sourceId.startsWith('saved-texture:') ? 'Matching saved Texture — uses the shared file; no copy is uploaded.' : match.automatic ? 'Suggested match — change if needed' : match.sourceId ? 'Selected explicitly' : 'Missing or ambiguous') }</p>
                   {selected.choices[requirementKey(match.requirement)] && <button type="button" className="text-[11px] underline" onClick={() => { const choices = { ...selected.choices }; delete choices[requirementKey(match.requirement)]; updateDraft(selected.id, { choices }); }}>Use suggested match</button>}
                 </div>)}
                 <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={selected.configureLater} onChange={(event) => updateDraft(selected.id, { configureLater: event.target.checked })} />Resolve missing texture files later (keep inactive)</label>

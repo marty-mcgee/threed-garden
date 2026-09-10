@@ -65,3 +65,18 @@ jobs:
 
       - name: Validate OBJ and MTL bundles
         run: npm run validate:threed-obj-bundle
+
+      - name: Validate saved Texture attachment reuse
+        run: npm run validate:threed-bulk-saved-texture
+
+      - name: Validate Model Blob paths and legacy compatibility
+        run: npm run validate:threed-model-blob-paths
+
+      - name: Validate Model availability and Library placement
+        run: npm run validate:threed-library-placement
+
+      - name: Validate Project sessions
+        run: npm run validate:threed-project-session
+
+      - name: Validate Runtime Markers and position updates
+        run: npm run validate:threed-runtime-markers

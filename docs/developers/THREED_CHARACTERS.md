@@ -126,3 +126,15 @@ This checkpoint was released successfully to production through GitHub and Verce
 8. Confirm the environment remains visible and the procedural ground remains hidden throughout the Character interaction.
 
 Automated release checks require `npm run validate:threed-orchestration`, `npm run validate:threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. The client-run `npm run build` remains the final production release gate.
+
+## FBX Character texture references
+
+GardenCharacter and EcctrlCharacter resolve FBX image requests through a Model-owned LoadingManager before loading the primary asset. `character-model-textures.ts` reads the current authenticated Model Files response with `no-store`, then applies the same attachment resolver and unique active saved-Texture fallback as Admin preview. Attached URLs take precedence. Images reuse their stored URLs; no upload, copy or assignment is performed. Library fallback candidates remain owner-only under the existing API policy. Failed reference reads report a loading error instead of proceeding with an unresolved primary-directory guess.
+
+GardenCharacter includes the resolved attachment signature in its model cache key. Movement routing, external animation loading, semantic actions and physics remain unchanged. TypeScript, saved Texture regression checks (including Character LoadingManager URL resolution and attachment precedence), and diff checks passed. Manual Scene verification remains required: reload the Project, check the textured FBX and network requests, then check Garden locomotion and Ecctrl Take/Release Control, WASD and task animations. The production build remains the User's manual gate.
+
+### Save Position and current Model files
+
+Character position PATCH previously returned the stored marker's nested Model snapshot unchanged, allowing an obsolete primary URL to replace the fresh Project-load URL. The handler now reads the owned Character's current Model relationship and owner-matched Files inside the existing position transaction. It replaces the snapshot's nested Model before saving and returning the marker. Missing or inaccessible Models become null; missing primary references remain empty through `modelSelection()`. Position, rotation, scale and spawn checks retain their existing behavior. No migration or bulk snapshot rewrite is required.
+
+Validation: TypeScript, Runtime Marker checks (49 existing groups plus repeated Character position-response coverage), saved Texture checks and diff review passed. The response-merge regression verifies current URLs survive repeated updates and missing URLs remain empty while unrelated source collections retain identity. Live database/Scene verification was not run: manually reload the Project, reposition and Save Position twice, then reload and confirm only the current FBX/shared Texture URLs are requested. No production build was run.

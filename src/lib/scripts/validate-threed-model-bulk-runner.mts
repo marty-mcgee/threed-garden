@@ -746,5 +746,24 @@ await group('OBJ missing material preflight makes no writes and saved missing MT
   late.done(); assert.equal(outcome.status, 'failed'); assert.equal(outcome.modelId, 7); assert.equal(outcome.canRetry, false);
 });
 
+await group('shared FBX Texture links send identifiers only and verify the original stored URL', async () => {
+  for (const wrongUrl of [false, true]) {
+    const file = png('atlas.png');
+    const sharedTexture = { id: 21, filePath: 'https://fixture.blob.vercel-storage.com/textures/owner/atlas.png' };
+    const linked = { id: 31, fileType: 'texture', fileName: file.name, fileSize: file.size, relativePath: 'textures/atlas.png', filePath: wrongUrl ? 'https://fixture.blob.vercel-storage.com/copied.png' : sharedTexture.filePath };
+    const record = saved([linked]);
+    const client = mock([catalogStep(), targetsUploadStep(), createStep(),
+      { url: FILES, method: 'POST', reply: () => ok({}), check(init) {
+        assert.equal(typeof init.body, 'string');
+        assert.deepEqual(JSON.parse(String(init.body)), { modelId: 7, textureId: 21, relativePath: linked.relativePath });
+      } }, savedStep(record),
+      ...(wrongUrl ? [] : [assignStep(), savedStep({ ...record, materialAssignments: assignmentsSaved().materialAssignments }), auditStep()]),
+    ]);
+    const result = await runBulkModel(textureInput(21, { attachments: [{ file, relativePath: linked.relativePath, fileType: 'texture', sharedTexture }] }), () => {}, client.request);
+    client.done();
+    assert.equal(result.status, wrongUrl ? 'failed' : 'imported');
+  }
+});
+
 console.log('─'.repeat(54));
 console.log(`PASS  ${groups} validation groups completed`);

@@ -4,14 +4,20 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import {
+  Check,
+  X,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
   Plus,
   Edit,
   Trash2,
   Loader2,
   Box,
   MoreHorizontal,
+  ExternalLink,
   Search,
   File,
   Clapperboard,
@@ -109,12 +115,12 @@ const getOptionLabel = (options: { value: string; label: string }[], value: stri
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'active': return 'bg-green-100 text-green-700';
-    case 'pending': return 'bg-yellow-100 text-yellow-700';
-    case 'maintenance': return 'bg-orange-100 text-orange-700';
-    case 'dormant': return 'bg-blue-100 text-blue-700';
-    case 'retired': return 'bg-gray-100 text-gray-700';
-    default: return 'bg-gray-100 text-gray-700';
+    case 'active': return 'text-green-700 dark:text-green-400';
+    case 'pending': return 'text-yellow-700 dark:text-yellow-400';
+    case 'maintenance': return 'text-red-700 dark:text-red-400';
+    case 'dormant': return 'text-gray-600 dark:text-gray-400';
+    case 'retired': return 'text-gray-600 dark:text-gray-400';
+    default: return 'text-gray-600 dark:text-gray-400';
   }
 };
 
@@ -127,6 +133,22 @@ const formatFileSize = (bytes: number | null): string =>
         ? `${(bytes / 1024).toFixed(1)} KB`
         : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 
+type ModelSortField = 'name' | 'category' | 'options' | 'type' | 'status' | 'active' | 'size';
+const modelOptions = (model: Model) => [
+  model.isDefault && 'Default', model.isPublic && 'Public', model.isLibraryItem && 'Library',
+  model.usedByPlants && 'Plants', model.usedByCharacters && 'Characters',
+].filter((label): label is string => Boolean(label));
+const modelSortText = (model: Model, field: Exclude<ModelSortField, 'size'>) => {
+  switch (field) {
+    case 'name': return model.modelName;
+    case 'category': return (model.categories ?? []).map((category) => category.name).join(', ');
+    case 'options': return modelOptions(model).join(', ');
+    case 'type': return getOptionLabel(MODEL_TYPE_OPTIONS, model.modelType);
+    case 'status': return getOptionLabel(MODEL_STATUS_OPTIONS, model.status);
+    case 'active': return model.isActive ? 'Active' : 'Inactive';
+  }
+};
+
 // ============================================
 // COMPONENT
 // ============================================
@@ -138,6 +160,12 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingModel, setEditingModel] = useState<Model | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sort, setSort] = useState<{ field: ModelSortField; direction: 'asc' | 'desc' }>({ field: 'name', direction: 'asc' });
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [deleting, setDeleting] = useState(false);
+  const deleteLock = useRef(false);
+  const [deleteReport, setDeleteReport] = useState('');
+  const [deleteFailures, setDeleteFailures] = useState<string[]>([]);
   const [categories, setCategories] = useState<ThreeDModelCategoryOption[]>([]);
 
   // v0.16.4-alpha/beta: Vercel Blob upload state
@@ -212,10 +240,37 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
     }
   }
 
-  const filteredModels = models.filter((model) =>
+  useEffect(() => {
+    setSelectedIds((current) => new Set([...current].filter((id) => models.some((model) => model.id === id))));
+  }, [models]);
+
+  const filteredModels = useMemo(() => models.filter((model) =>
     model.modelName.toLowerCase().includes(searchQuery.toLowerCase()) ||
     model.modelType.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  ).sort((a, b) => {
+    let compared: number;
+    if (sort.field === 'size') {
+      // Unknown sizes remain last in either direction; compare actual bytes.
+      if (a.fileSize === null || b.fileSize === null) {
+        if (a.fileSize !== b.fileSize) return a.fileSize === null ? 1 : -1;
+        compared = 0;
+      } else compared = a.fileSize - b.fileSize;
+    } else compared = modelSortText(a, sort.field).localeCompare(modelSortText(b, sort.field), undefined, { numeric: true, sensitivity: 'base' });
+    return (sort.direction === 'asc' ? compared : -compared) || a.id - b.id;
+  }), [models, searchQuery, sort]);
+  const selectedModels = models.filter((model) => selectedIds.has(model.id));
+  const allVisibleSelected = filteredModels.length > 0 && filteredModels.every((model) => selectedIds.has(model.id));
+  const someVisibleSelected = filteredModels.some((model) => selectedIds.has(model.id));
+
+  function sortHeading(field: ModelSortField, label: string) {
+    const active = sort.field === field;
+    const Icon = active ? sort.direction === 'asc' ? ArrowUp : ArrowDown : ArrowUpDown;
+    return <TableHead className="text-xs py-1" aria-sort={active ? sort.direction === 'asc' ? 'ascending' : 'descending' : 'none'}>
+      <button type="button" className="flex items-center gap-1 py-1 whitespace-nowrap" onClick={() => setSort((current) => ({ field, direction: current.field === field && current.direction === 'asc' ? 'desc' : 'asc' }))}>
+        {label}<Icon aria-hidden="true" className="h-3 w-3" />
+      </button>
+    </TableHead>;
+  }
 
   async function discardPendingPrimaryUpload(file: PendingPrimaryModelFile): Promise<boolean> {
     try {
@@ -380,22 +435,39 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
     }
   }
 
-  async function handleDelete(id: number, name: string) {
-    if (!confirm(`Delete model "${name}"? This action cannot be undone.`)) return;
+  async function handleDeleteModels(targets: Model[]) {
+    if (deleteLock.current || !targets.length) return;
+    const names = targets.map((model) => `• ${model.modelName} (#${model.id})`).join('\n');
+    if (!confirm(`Delete ${targets.length} Model${targets.length === 1 ? '' : 's'}?\n\n${names}\n\nTheir attached files will also be removed using the existing Model deletion rules. This action cannot be undone.`)) return;
+    deleteLock.current = true;
+    setDeleting(true);
+    setDeleteFailures([]);
+    const deleted = new Set<number>();
+    const failures: string[] = [];
     try {
-      const response = await fetch(`/api/threed/models?id=${id}`, { method: 'DELETE' });
-      const data = await response.json();
-      if (data.success) {
-        showToast('Model deleted successfully', 'success');
-        await fetchModels();
-        onModuleUpdate?.();
-      } else {
-        showToast(data.error || 'Failed to delete model', 'error');
+      for (const [index, model] of targets.entries()) {
+        setDeleteReport(`Deleting ${index + 1} of ${targets.length}: ${model.modelName}`);
+        try {
+          const response = await fetch(`/api/threed/models?id=${model.id}`, { method: 'DELETE', signal: AbortSignal.timeout(120_000) });
+          const data = await response.json();
+          if (!response.ok || data.success !== true) {
+            failures.push(`${model.modelName} (#${model.id}): ${typeof data.error === 'string' ? data.error : 'Deletion was not confirmed.'}`);
+            continue;
+          }
+          deleted.add(model.id);
+          setModels((current) => current.filter((entry) => entry.id !== model.id));
+          setSelectedIds((current) => { const next = new Set(current); next.delete(model.id); return next; });
+        } catch {
+          failures.push(`${model.modelName} (#${model.id}): Deletion was not confirmed. Refresh the page to check its saved state before trying again.`);
+        }
       }
-    } catch (error) {
-      console.error('Error deleting model:', error);
-      showToast('Failed to delete model', 'error');
+      setDeleteReport(`${deleted.size} of ${targets.length} Models deleted.${failures.length ? ` ${failures.length} deletions not confirmed; review the results below.` : ''}`);
+      setDeleteFailures(failures);
+    } finally {
+      deleteLock.current = false;
+      setDeleting(false);
     }
+    if (deleted.size) onModuleUpdate?.();
   }
 
   function resetForm() {
@@ -471,6 +543,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
     <div className="space-y-2">
       {ToastComponent}
 
+      <fieldset disabled={deleting} className="min-w-0">
       <AdminWorkspaceHeader
         icon={Box}
         title="Models"
@@ -482,7 +555,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
           <Input
             placeholder="Search by name or type..."
             value={searchQuery}
-            onChange={(event) => setSearchQuery(event.target.value)}
+            onChange={(event) => { setSearchQuery(event.target.value); setSelectedIds(new Set()); }}
             className="h-7 pl-7 text-xs"
           />
         </div>
@@ -564,6 +637,18 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
           </Button>
         </div>
       </AdminWorkspaceHeader>
+      </fieldset>
+
+      <div className="flex flex-wrap items-center gap-2 text-xs" aria-label="Bulk Model actions">
+        <span>{selectedModels.length} selected</span>
+        <Button size="sm" variant="outline" className="h-7 px-2 text-xs" disabled={deleting || !selectedModels.length} onClick={() => void handleDeleteModels(selectedModels)}>
+          {deleting ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Trash2 className="mr-1 h-3.5 w-3.5" />}Delete selected ({selectedModels.length})
+        </Button>
+        <Button size="sm" variant="outline" className="h-7 px-2 text-xs" disabled={deleting || !selectedModels.length} onClick={() => setSelectedIds(new Set())}>Clear selection</Button>
+        <span className="text-muted-foreground">Selection applies to loaded Models; changing search clears it.</span>
+      </div>
+      {deleteReport && <p role="status" className="text-sm">{deleteReport}</p>}
+      {deleteFailures.length > 0 && <ul className="list-inside list-disc text-sm text-destructive" aria-label="Model deletion results">{deleteFailures.map((failure) => <li key={failure}>{failure}</li>)}</ul>}
 
       {/* Models table */}
       {filteredModels.length === 0 ? (
@@ -576,55 +661,50 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
         </div>
       ) : (
         <div className="border rounded-lg overflow-hidden">
-          <Table>
+          <Table className="min-w-[1000px]">
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="text-xs py-1">Name</TableHead>
-                <TableHead className="hidden sm:table-cell text-xs py-1">Type</TableHead>
-                <TableHead className="hidden md:table-cell text-xs py-1">Status</TableHead>
-                <TableHead className="hidden lg:table-cell text-xs py-1">Files</TableHead>
-                <TableHead className="hidden xl:table-cell text-xs py-1">Size</TableHead>
-                <TableHead className="text-center text-xs py-1">Active</TableHead>
+                <TableHead className="w-8 px-2 py-1">
+                  <label className="flex items-center justify-center"><input type="checkbox" aria-label="Select all visible Models" disabled={deleting} checked={allVisibleSelected}
+                    ref={(element) => { if (element) element.indeterminate = someVisibleSelected && !allVisibleSelected; }}
+                    onChange={(event) => { const checked = event.target.checked; setSelectedIds((current) => { const next = new Set(current); for (const model of filteredModels) { if (checked) next.add(model.id); else next.delete(model.id); } return next; }); }} /></label>
+                </TableHead>
+                {sortHeading('name', 'Name')}
+                {sortHeading('category', 'Category')}
+                {sortHeading('options', 'Options')}
+                {sortHeading('type', 'Type')}
+                {sortHeading('status', 'Status')}
+                {sortHeading('active', 'Active')}
+                {sortHeading('size', 'Size')}
                 <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredModels.map((model) => {
-                const files = model.files ?? [];
-                const modelFiles = files.filter((f) => f.fileType === 'model').length;
-                const texCount = files.filter((f) => f.fileType === 'texture').length;
+                const mainFileUrl = model.filePath?.trim() ?? '';
+                const canOpenMainFile = /^https?:\/\//i.test(mainFileUrl);
                 return (
                   <TableRow key={model.id} className="hover:bg-muted/50">
+                    <TableCell className="w-8 px-2 py-1 text-center"><input type="checkbox" aria-label={`Bulk Edit ${model.modelName} (#${model.id})`} checked={selectedIds.has(model.id)} disabled={deleting}
+                      onChange={(event) => { const checked = event.target.checked; setSelectedIds((current) => { const next = new Set(current); if (checked) next.add(model.id); else next.delete(model.id); return next; }); }} /></TableCell>
                     <TableCell className="py-1 text-sm font-medium">
-                      <div className="flex items-center gap-2">
-                        <Box className="w-3.5 h-3.5 text-blue-500" />
-                        {model.modelName}
-                        {model.isDefault && <Badge variant="default" className="text-[10px]">Default</Badge>}
-                        {model.isPublic && <Badge variant="outline" className="text-[10px]">Public</Badge>}
-                        {model.isLibraryItem && <Badge variant="outline" className="text-[10px]">Library</Badge>}
-                        {model.usedByPlants && <Badge variant="outline" className="text-[10px]">Plants</Badge>}
-                        {model.usedByCharacters && <Badge variant="outline" className="text-[10px]">Characters</Badge>}
-                        {(model.categories ?? []).map((category) => (
-                          <Badge key={category.id} variant="secondary" className="text-[10px]">{category.name}</Badge>
-                        ))}
-                        {!model.isActive && <Badge variant="secondary" className="text-[10px]">Inactive</Badge>}
-                      </div>
+                      <div className="flex items-center gap-2"><Box className="w-3.5 h-3.5 shrink-0 text-blue-500" />{model.modelName}</div>
                     </TableCell>
-                    <TableCell className="hidden sm:table-cell py-1">
+                    <TableCell className="py-1"><div className="flex flex-wrap gap-1">{model.categories?.length ? model.categories.map((category) => <Badge key={category.id} variant="secondary" className="text-[10px]">{category.name}</Badge>) : '—'}</div></TableCell>
+                    <TableCell className="py-1"><div className="flex flex-wrap gap-1">{modelOptions(model).length ? modelOptions(model).map((label) => <Badge key={label} variant={label === 'Default' ? 'default' : 'outline'} className="text-[10px]">{label}</Badge>) : '—'}</div></TableCell>
+                    <TableCell className="py-1">
                       <Badge variant="outline" className="text-[10px]">{getOptionLabel(MODEL_TYPE_OPTIONS, model.modelType)}</Badge>
                     </TableCell>
-                    <TableCell className="hidden md:table-cell py-1">
-                      <Badge className={`text-[10px] ${getStatusColor(model.status)}`}>{getOptionLabel(MODEL_STATUS_OPTIONS, model.status)}</Badge>
+                    <TableCell className="py-1">
+                      <span className={`text-xs ${getStatusColor(model.status)}`}>{getOptionLabel(MODEL_STATUS_OPTIONS, model.status)}</span>
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell py-1 text-sm text-muted-foreground">
-                      {modelFiles} model · {texCount} tex
-                    </TableCell>
-                    <TableCell className="hidden xl:table-cell py-1 text-sm text-muted-foreground">{formatFileSize(model.fileSize)}</TableCell>
                     <TableCell className="text-center py-1">
-                      <Badge className={`text-[10px] ${model.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
-                        {model.isActive ? 'Active' : 'Inactive'}
-                      </Badge>
+                      <span className="inline-flex items-center" title={model.isActive ? 'Active' : 'Inactive'}>
+                        {model.isActive ? <Check aria-hidden="true" className="h-4 w-4 text-green-700 dark:text-green-400" /> : <X aria-hidden="true" className="h-4 w-4 text-gray-600 dark:text-gray-400" />}
+                        <span className="sr-only">{model.isActive ? 'Active' : 'Inactive'}</span>
+                      </span>
                     </TableCell>
+                    <TableCell className="py-1 text-sm text-muted-foreground">{formatFileSize(model.fileSize)}</TableCell>
                     <TableCell className="py-1">
                       <div className="flex items-center justify-end gap-1">
                         <Button asChild variant="ghost" size="sm">
@@ -633,7 +713,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
                             <span className="sr-only">Manage files</span>
                           </Link>
                         </Button>
-                        <Button variant="ghost" size="sm" onClick={() => openEditDialog(model)} title="Edit">
+                        <Button variant="ghost" size="sm" disabled={deleting} onClick={() => openEditDialog(model)} title="Edit">
                           <Edit className="w-4 h-4" />
                         </Button>
                         <DropdownMenu>
@@ -641,11 +721,26 @@ export function ThreeDModelsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => vo
                             <Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="w-4 h-4" /></Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem className="text-red-600" onClick={() => handleDelete(model.id, model.modelName)}>
+                            <DropdownMenuItem className="text-red-600" disabled={deleting} onClick={() => void handleDeleteModels([model])}>
                               <Trash2 className="w-4 h-4 mr-2" /> Delete
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
+                        {canOpenMainFile ? (
+                          <Button asChild variant="ghost" size="icon" className="h-8 w-8">
+                            <a href={mainFileUrl} target="_blank" rel="noopener noreferrer"
+                              title={`Open main file for ${model.modelName} (new tab)`}
+                              aria-label={`Open main file for ${model.modelName} (new tab)`}>
+                              <ExternalLink aria-hidden="true" className="h-4 w-4" />
+                            </a>
+                          </Button>
+                        ) : (
+                          <Button type="button" variant="ghost" size="icon" disabled
+                            className="h-8 w-8 text-muted-foreground disabled:opacity-30"
+                            title="No main file assigned" aria-label={`No main file assigned for ${model.modelName}`}>
+                            <ExternalLink aria-hidden="true" className="h-4 w-4" />
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>

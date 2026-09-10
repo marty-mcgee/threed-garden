@@ -24,6 +24,7 @@ import {
 import { Html } from '@react-three/drei';
 
 import * as THREE from 'three';
+import { loadCharacterTextureManager } from '@/lib/services/threed/models/character-model-textures';
 
 import {
   buildAnimationMap,
@@ -575,8 +576,13 @@ export function GardenCharacter({
               ?.toLowerCase() ||
             'glb';
 
+          const textureResolution = modelType === 'fbx'
+            ? await loadCharacterTextureManager(character.model!.id)
+            : null;
+          if (cancelled) return;
+
           const cacheKey =
-            `${modelPath}-${modelType}`;
+            `${modelPath}-${modelType}-${textureResolution?.signature ?? ''}`;
 
           let loadedModel:
             THREE.Group;
@@ -602,7 +608,7 @@ export function GardenCharacter({
             ) {
               case 'fbx': {
                 loadedModel =
-                  await new FBXLoader()
+                  await new FBXLoader(textureResolution?.manager)
                     .loadAsync(
                       modelPath,
                     ) as THREE.Group;

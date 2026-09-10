@@ -1,6 +1,9 @@
 // src/components/threed/markers/ModelMarker3D.tsx — v0.16.1-alpha "ThreeD Models"
 'use client';
 
+import { reportModelLoadFailure } from '@/lib/services/threed/models/model-load-failures';
+import { readModelFallbackShape, type ModelFallbackShape } from '@/lib/services/threed/models/model-fallback-core';
+import { withSavedFbxTextures } from '@/lib/services/threed/models/model-saved-texture-fallback';
 import { useRef, useState, useEffect, type ReactNode } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -58,6 +61,8 @@ export interface ModelData {
   defaultAnimation?: string | null;
   animationSpeed?: number; // from character wrapper
   metadata?: unknown;
+  /** Current reusable Model preference, refreshed independently of old Project JSON. */
+  fallbackShape?: unknown;
   files?: ThreeDModelRuntimeAttachment[];
   materialAssignments?: Array<{
     targetKey: string;
@@ -131,18 +136,21 @@ async function loadModelAttachments(model: ModelData): Promise<ThreeDModelRuntim
   const cached = modelAttachmentRequestCache.get(reusableModelId);
   if (cached) return cached;
 
-  const request = fetch(`/api/threed/models?id=${reusableModelId}`)
+  const request = fetch(`/api/threed/models?id=${reusableModelId}`, { cache: 'no-store' })
     .then(async (response) => {
       const result = await response.json().catch(() => null);
-      if (!response.ok || !result?.success || !Array.isArray(result.data?.files)) return markerSnapshotAttachments;
-      return result.data.files as ThreeDModelRuntimeAttachment[];
+      if (!response.ok || !result?.success || !Array.isArray(result.data?.files)) return [];
+      return withSavedFbxTextures(
+        result.data.modelType ?? '', result.data.files,
+        Array.isArray(result.data.textureFallbacks) ? result.data.textureFallbacks : [],
+      );
     })
-    .catch(() => markerSnapshotAttachments)
+    .catch(() => [])
     .then((attachments) => attachments.filter((attachment) => (
       attachment
       && typeof attachment.fileName === 'string'
       && typeof attachment.relativePath === 'string'
-      && typeof attachment.filePath === 'string'
+      && typeof attachment.filePath === 'string' && attachment.filePath.trim().length > 0
       && typeof attachment.fileType === 'string'
     )))
     .finally(() => modelAttachmentRequestCache.delete(reusableModelId));
@@ -166,7 +174,12 @@ function useModelLoad(
   const fitDepth = fitBounds?.depth;
 
   useEffect(() => {
-    if (!model.filePath) return;
+    if (!model.filePath) {
+      setLoadedModel(null);
+      setLoading(false);
+      setError(null);
+      return;
+    }
     let cancelled = false;
 
     const loadModel = async () => {
@@ -176,6 +189,7 @@ function useModelLoad(
       try {
         const modelType = model.modelType?.toLowerCase() || 'glb';
         const attachments = await loadModelAttachments(model);
+        if (cancelled) return;
         const attachmentSignature = attachments
           .map((attachment) => `${attachment.relativePath}:${attachment.filePath}`)
           .sort()
@@ -318,20 +332,22 @@ function useModelLoad(
 // ============================================
 // FALLBACK SHAPE
 // ============================================
-function ModelFallback({ name, position }: { name?: string; position: [number, number, number] }) {
+function ModelFallback({ position, shape }: {
+  position: [number, number, number]; shape: ModelFallbackShape;
+}) {
   return (
     <group position={position}>
-      <mesh castShadow receiveShadow>
-        <boxGeometry args={[0.5, 0.5, 0.5]} />
-        <meshStandardMaterial color="#6b7280" roughness={0.5} metalness={0.3} />
+      <mesh castShadow={shape !== 'sphere'} receiveShadow position={[0, 0.5, 0]}>
+        {shape === 'sphere' ? <sphereGeometry args={[0.5, 20, 12]} />
+          : shape === 'cylinder' ? <cylinderGeometry args={[0.35, 0.35, 1, 20]} />
+          : shape === 'rectangle' ? <boxGeometry args={[1.4, 1, 0.6]} />
+          : shape === 'pyramid' ? <coneGeometry args={[0.65, 1, 4]} />
+          : shape === 'torus' ? <torusGeometry args={[0.35, 0.15, 12, 24]} />
+          : <boxGeometry args={[1, 1, 1]} />}
+        <meshStandardMaterial color={shape === 'sphere' ? '#94a3b8' : '#6b7280'} roughness={0.5} metalness={0.3}
+          transparent={shape === 'sphere'} opacity={shape === 'sphere' ? 0.45 : 1} depthWrite={shape !== 'sphere'} />
       </mesh>
-      {name && (
-        <Html position={[0, 0.8, 0]} center transform occlude distanceFactor={1}>
-          <div className="bg-black/60 text-white px-2 py-0.5 rounded text-[10px] whitespace-nowrap pointer-events-none select-none">
-            {name}
-          </div>
-        </Html>
-      )}
+
     </group>
   );
 }
@@ -341,6 +357,11 @@ function ModelFallback({ name, position }: { name?: string; position: [number, n
 // ============================================
 export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange, onGeometryAuditChange, onMaterialInventoryChange, materialPreviewOverride, materialPreviewSelectionId, onEnvironmentCollisionPreviewChange, onRuntimeSettled, onRuntimeError }: ModelMarker3DProps) {
   const { loadedModel, loading, error } = useModelLoad(model, fitBounds, applyStoredScale);
+  const reusableModelId = model.modelId ?? model.id;
+  useEffect(() => {
+    if (!error || !model.filePath || reusableModelId <= 0) return;
+    return reportModelLoadFailure(reusableModelId, model.filePath);
+  }, [error, model.filePath, reusableModelId]);
   const requestedRuntimeAdapterKey = readThreeDModelRuntimeAdapterKey(model.metadata);
   const RuntimeAdapter = resolveThreeDModelRuntimeAdapter(requestedRuntimeAdapterKey);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
@@ -589,13 +610,12 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
 
   // Fallback if no model loaded
   if (!loadedModel || error) {
-    return (
-      <group scale={[scale, scale, scale]}>
-        {fallback || (
-          <ModelFallback name={name || model.modelName} position={position} />
-        )}
-      </group>
-    );
+    // Caller-owned procedural fallbacks retain their existing behavior and scale.
+    if (fallback) return <group scale={[scale, scale, scale]}>{fallback}</group>;
+    // Imported units are irrelevant to this one-unit placeholder: tiny FBX scales
+    // must not hide the only visible representation of the Project asset.
+    return <ModelFallback position={position}
+      shape={readModelFallbackShape(model.fallbackShape === undefined ? model.metadata : { fallbackShape: model.fallbackShape })} />;
   }
 
   return (

@@ -48,7 +48,7 @@ export function createThreeDModelLibraryReadiness(model: ReadinessModel): ThreeD
     file.id === model.mainModelFileId && file.fileType === 'model'
   ));
   const primaryFileAvailable = Boolean(
-    primaryRecord ? isRuntimeFilePath(primaryRecord.filePath) : isRuntimeFilePath(model.filePath),
+    primaryRecord && isRuntimeFilePath(primaryRecord.filePath),
   );
   const textureFileCount = model.files.filter((file) => file.fileType === 'texture').length;
   const supportingFileCount = model.files.filter((file) => file.fileType !== 'model').length;

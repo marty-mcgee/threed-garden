@@ -20,7 +20,7 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.19.10c — ThreeD Model Bulk Importing** (released package `0.19.10-centaur`, commit `a618a66`; production confirmed by the User September 9, 2026) |
-| Current development version | No later release candidate designated. Package remains at released `0.19.10-centaur`. |
+| Current development version | **v0.19.11 — ThreeD Model Management**, package `0.19.11`; prepared for deployment, not yet production-confirmed. See [handoff](docs/plans/v0.19.11-release.md). |
 | Centaur release verification | User-confirmed production deployment. TypeScript, 125 native groups, browser loaders and mocked bulk UI checks passed. See [completed handoff](docs/plans/v0.19.10c-release.md); individual live regression cases were not separately reported. |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |

@@ -1,3 +1,4 @@
+import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
 // app/api/threed/plantings/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
@@ -268,7 +269,7 @@ export async function POST(request: NextRequest) {
     // ✅ Verify custom model exists if provided
     if (customModelId) {
       const [model] = await db
-        .select()
+        .select(modelSelection())
         .from(threedModels)
         .where(
           and(

@@ -50,6 +50,7 @@ import {
   ThreeDModelAssetPreview,
   type ThreeDModelTextureLibraryItem,
 } from './ThreeDModelAssetPreview';
+import { withSavedFbxTextures } from '@/lib/services/threed/models/model-saved-texture-fallback';
 import type { ModelData } from '@/components/threed/markers/ModelMarker3D';
 
 // ============================================
@@ -218,7 +219,8 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
   const [loadingDependencies, setLoadingDependencies] = useState(false);
   const [dependencyAudit, setDependencyAudit] = useState<ModelDependencyAudit | null>(null);
   const [dependencyError, setDependencyError] = useState<string | null>(null);
-  const [textureLibrary, setTextureLibrary] = useState<ThreeDModelTextureLibraryItem[]>([]);
+  const [textureLibrary, setTextureLibrary] = useState<Array<ThreeDModelTextureLibraryItem & { isActive: boolean }>>([]);
+  const [linkingTexture, setLinkingTexture] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const [category, setCategory] = useState<string>('auto');
@@ -262,6 +264,20 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
     () => dependencyAudit?.requirements.filter((item) => !item.satisfied) ?? [],
     [dependencyAudit],
   );
+
+  const sharedRequirementTextures = useMemo(() => {
+    const result = new Map<string, ThreeDModelTextureLibraryItem>();
+    const attachments = files.map((file) => ({ ...file, relativePath: file.relativePath || file.fileName }));
+    const available = withSavedFbxTextures(modelDetail?.modelType ?? '', attachments, textureLibrary).slice(attachments.length);
+    for (const requirement of missingRequirements) {
+      if (requirement.kind !== 'texture') continue;
+      const candidate = available.find((file) => file.fileName.toLowerCase() === requirement.fileName.toLowerCase());
+      const texture = candidate && textureLibrary.find((item) => item.filePath === candidate.filePath && item.fileName === candidate.fileName);
+      if (texture) result.set(requirement.relativePath, texture);
+    }
+    return result;
+  }, [modelDetail?.modelType, missingRequirements, textureLibrary, files]);
+  const trulyMissingCount = missingRequirements.filter((item) => !sharedRequirementTextures.has(item.relativePath)).length;
 
   const uploading = uploadQueue.some((u) => u.status === 'uploading');
   const normalizedAttachmentDirectory = normalizeAttachmentDirectory(attachmentDirectory);
@@ -660,6 +676,27 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
     requestAnimationFrame(() => fileInputRef.current?.click());
   }, [showToast]);
 
+  const saveSharedRequirement = async (requirement: ModelDependencyRequirement, texture: ThreeDModelTextureLibraryItem) => {
+    if (!modelId || linkingTexture) return;
+    const directory = requirement.relativePath.split('/').slice(0, -1).join('/') || 'textures';
+    const relativePath = attachmentRelativePath(attachmentDirectoryProblem(directory) ? 'textures' : directory, texture.fileName);
+    setLinkingTexture(requirement.relativePath);
+    try {
+      const response = await fetch('/api/threed/models/files', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ modelId: Number(modelId), textureId: texture.id, relativePath }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) throw new Error(result?.error || 'Failed to link shared Texture');
+      await Promise.all([loadFiles(Number(modelId)), loadDependencies(Number(modelId)), loadModels()]);
+      showToast('Shared Texture linked — no file was uploaded or copied', 'success');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Failed to link shared Texture', 'error');
+    } finally {
+      setLinkingTexture(null);
+    }
+  };
+
   // ============================================
   // RENDER HELPERS
   // ============================================
@@ -826,11 +863,16 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
           <h2 id="model-dependencies-title" className="text-xs font-semibold">Required Model dependencies</h2>
           {loadingDependencies && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
           {dependencyAudit?.status === 'analyzed' && dependencyAudit.requirements.length > 0 && (
-            <Badge variant={dependencyAudit.complete ? 'secondary' : 'destructive'} className="text-[10px]">
-              {dependencyAudit.requirements.filter((item) => item.satisfied).length}/{dependencyAudit.requirements.length} attached
+            <Badge variant={trulyMissingCount ? 'destructive' : 'secondary'} className="text-[10px]">
+              {dependencyAudit.requirements.filter((item) => item.satisfied).length}/{dependencyAudit.requirements.length} saved
             </Badge>
           )}
         </div>
+        {sharedRequirementTextures.size > 0 && (
+          <p className="mt-2 text-[11px] text-cyan-400">
+            {sharedRequirementTextures.size} required texture(s) available from your shared library for preview. Save the reference below to complete the dependency. No new upload is needed.
+          </p>
+        )}
         {selectedModel?.modelType.toLowerCase() === 'obj' && (
           <p className="mt-2 text-[11px] text-muted-foreground">Attach each required .MTL material library first. Its referenced texture images will then appear below. Materials update in the preview when their files are attached.</p>
         )}
@@ -843,20 +885,30 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
         ) : dependencyAudit?.status === 'analyzed' && dependencyAudit.requirements.length === 0 ? (
           <p className="mt-2 text-[11px] text-muted-foreground">{selectedModel?.modelType.toLowerCase() === 'fbx' ? 'This FBX does not expose texture filenames. Choose its texture images below and the preview will retry them by filename.' : 'No external files are referenced. Embedded resources, vertex colors or default materials remain in use.'}</p>
         ) : dependencyAudit?.status === 'analyzed' ? (
-          <div className="mt-2 grid gap-1.5 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="mt-2 grid gap-2">
             {dependencyAudit.requirements.map((requirement) => {
+              const sharedTexture = sharedRequirementTextures.get(requirement.relativePath);
               return (
-                <div key={`${requirement.kind}:${requirement.relativePath}`} className="flex min-w-0 items-center gap-2 rounded border bg-background/30 px-2 py-1.5">
+                <div key={`${requirement.kind}:${requirement.relativePath}`} className="flex min-w-0 flex-wrap items-center gap-2 rounded border bg-background/30 px-2 py-2">
                   {requirement.satisfied
                     ? <Check className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
+                    : sharedTexture ? <Link2 className="h-3.5 w-3.5 shrink-0 text-cyan-400" />
                     : <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-400" />}
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate font-mono text-[10px]" title={requirement.relativePath}>{requirement.relativePath}</p>
-                    <p className="truncate text-[10px] text-muted-foreground">
-                      {requirement.satisfied ? `Attached: ${requirement.matchedRelativePath}` : `Missing ${requirement.kind}`}
+                  <div className="min-w-[12rem] flex-1">
+                    <p className="break-all font-mono text-[11px]" title={requirement.relativePath}>{requirement.relativePath}</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      {requirement.satisfied ? `Saved reference: ${requirement.matchedRelativePath}` : sharedTexture ? 'Shared Texture available — preview only until linked' : `Missing ${requirement.kind}`}
                     </p>
                   </div>
-                  {!requirement.satisfied && (
+                  {!requirement.satisfied && sharedTexture && (
+                    <Button type="button" variant="outline" size="sm" className="h-7 shrink-0 px-2 text-[10px]"
+                      disabled={linkingTexture !== null || uploading}
+                      onClick={() => void saveSharedRequirement(requirement, sharedTexture)}>
+                      {linkingTexture === requirement.relativePath ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Link2 className="mr-1 h-3 w-3" />}
+                      Link shared Texture
+                    </Button>
+                  )}
+                  {!requirement.satisfied && !sharedTexture && (
                     <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-[10px]" onClick={() => requestRequirementUpload(requirement)}>
                       <Upload className="mr-1 h-3 w-3" />
                       Upload needed file
@@ -867,7 +919,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
             })}
           </div>
         ) : null}
-      {/* User-defined storage directory for newly attached files. */}
+      {/* Logical dependency directory; the server owns the physical storage key. */}
       <div id="model-texture-importer" className="mt-3 scroll-mt-4 border-t border-border/70 pt-3">
         <div className="flex items-center gap-2">
           <Image className="h-4 w-4 text-cyan-400" />
@@ -877,12 +929,12 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
           </div>
         </div>
 
-        <details className="mt-2 rounded border bg-background/25 p-2 text-[11px]">
+        <details open className="mt-2 rounded border bg-background/25 p-2 text-[11px]">
           <summary className="cursor-pointer select-none text-muted-foreground">
-            Storage destination: <span className="font-mono text-cyan-500/90">models/{modelId || '<modelId>'}/attachments/{normalizedAttachmentDirectory}/</span>
+            Attachment directory: <span className="font-mono text-cyan-500/90">{normalizedAttachmentDirectory || '<directory>'}/</span>
           </summary>
           <div className="mt-2">
-            <Label htmlFor="model-files-directory" className="text-xs">Relative texture directory</Label>
+            <Label htmlFor="model-files-directory" className="text-xs">Model-relative attachment directory</Label>
             <div className="relative mt-1">
               <FolderTree className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
               <Input
@@ -903,7 +955,10 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
               </span>
             </div>
             <p id="model-files-directory-help" className={`mt-1.5 ${directoryHasInput && directoryProblem ? 'text-amber-400' : 'text-muted-foreground'}`}>
-              {!directoryHasInput ? 'A relative directory is required.' : directoryProblem ?? 'The App selected this Model-owned directory automatically.'}
+              {!directoryHasInput ? 'A relative directory is required.' : directoryProblem ?? 'Used to match texture, material and binary file references in this Model.'}
+            </p>
+            <p className="mt-1.5 text-muted-foreground">
+              Files are stored automatically under your ThreeD Model folder in threed/users/, with a unique folder for each upload. This directory controls dependency matching, not the full storage path.
             </p>
           </div>
         </details>
@@ -931,7 +986,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
           <Upload className="h-5 w-5 shrink-0 text-muted-foreground" />
           <div>
             <p className="text-xs font-medium">Drop Model files here</p>
-            <p className="text-[10px] text-muted-foreground">The App uses the selected destination.</p>
+            <p className="text-[10px] text-muted-foreground">Files use the attachment directory above.</p>
           </div>
         </div>
       </div>

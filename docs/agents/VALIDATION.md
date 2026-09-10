@@ -28,6 +28,7 @@ npm run validate:assets
 npm run validate:threed-library-placement
 npm run validate:threed-project-session
 npm run validate:threed-model-import
+npm run validate:threed-model-blob-paths
 npm run validate:threed-model-bulk-preparation
 npm run validate:threed-model-bulk-runner
 npm run validate:threed-fbx-material-targets
@@ -35,6 +36,7 @@ npm run validate:threed-gltf-bundle
 npm run validate:threed-gltf-material-targets
 npm run validate:threed-obj-bundle
 npm run validate:threed-model-bulk-preview
+npm run validate:threed-bulk-saved-texture
 npm run validate:threed-runtime-markers
 npm run validate:threed-orchestration
 npm run validate:farmbot-crypto
@@ -432,3 +434,13 @@ Every completed change should report:
 Run `npm run validate:threed-obj-bundle` when changing OBJ parsing, MTL discovery, shared material rendering or OBJ readiness. Six native groups use original synthetic fixtures and actual Three.js loaders without network access. The validator exports `runObjBundleChecks(true)` for a browser harness: nine groups additionally verify image decoding, UV transforms/clamping, missing/corrupt images, saved attachment URL resolution and the explicit staged geometry preview. See [centaur evidence and manual gates](../plans/v0.19.10c.md).
 
 Also run the importer preparation, runner and preview validators, plus GLTF/FBX material checks when touching their shared helpers. Browser checks use mocked API routes and must not create real records. The current User instruction prohibits `npm run build` in this chat; the build remains a manual gate.
+
+Run `npm run validate:threed-bulk-saved-texture` for matching saved FBX Texture attachment reuse. It verifies effective selection, local-file priority, format/filename exclusion, bounded download failures, shared-reference identity and preparation/preview attachment continuity with mocked fetch only. The runner validator also checks identifier-only shared Texture linking and exact stored-URL readback.
+
+Run `npm run validate:threed-model-blob-paths` when changing Model/Texture storage keys or ownership/cleanup recognition. Preserve legacy URL handling, shared Texture exclusion and original dependency filenames. See [storage layout](../plans/threed-model-blob-layout.md).
+
+For Model primary-file relationship changes, run TypeScript, Library placement/readiness and relevant importer validators. Use ordinary Drizzle schema changes; the User explicitly waived old-data migration. Model deletion must clear the primary ID before deleting its Files with the immediate FK. No custom migration/trigger validation is required. See [primary-file authority](../plans/threed-model-primary-file-authority.md).
+
+## v0.19.11 release candidate
+
+The [ThreeD Model Management handoff](../plans/v0.19.11-release.md) records the 15 passing local gates, User-confirmed behavior, manual build/deployment boundary and schema compatibility requirement. CI includes Library placement/availability, Project sessions and Runtime Markers alongside importer, shared Texture, Blob-path, asset and TypeScript checks. No connected database or Blob operation is part of these validators.

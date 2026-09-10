@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { and, asc, eq } from 'drizzle-orm';
 import { del, put } from '@vercel/blob';
+import { createThreeDBlobPath } from '@/lib/services/threed/models/model-blob-paths';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { ensureTableSequence } from '@/lib/db/sequence';
-import { threedModelMaterialAssignments, threedModelTextures } from '@/lib/schema/threed';
+import { threedModelFiles, threedModelMaterialAssignments, threedModelTextures } from '@/lib/schema/threed';
 
 export const runtime = 'nodejs';
 
@@ -52,8 +53,7 @@ export async function POST(request: NextRequest) {
   const textureName = typeof requestedName === 'string' && requestedName.trim()
     ? requestedName.trim().slice(0, 255)
     : file.name.replace(/\.[^.]+$/, '').slice(0, 255);
-  const extension = file.name.split('.').pop()?.toLowerCase() || 'texture';
-  const pathname = `textures/${session.user.id}/${crypto.randomUUID()}.${extension}`;
+  const pathname = createThreeDBlobPath(session.user.id, 'textures', file.name, crypto.randomUUID());
   const blob = await put(pathname, file, {
     access: 'public',
     addRandomSuffix: false,
@@ -121,29 +121,22 @@ export async function DELETE(request: NextRequest) {
   if (!Number.isSafeInteger(id) || id <= 0) {
     return NextResponse.json({ success: false, error: 'Invalid Model Texture ID' }, { status: 400 });
   }
-  const [[texture], assignments] = await Promise.all([
-    db.select().from(threedModelTextures).where(and(
-      eq(threedModelTextures.id, id),
-      eq(threedModelTextures.userId, session.user.id),
-    )).limit(1),
-    db.select({ id: threedModelMaterialAssignments.id }).from(threedModelMaterialAssignments).where(and(
-      eq(threedModelMaterialAssignments.textureId, id),
-      eq(threedModelMaterialAssignments.userId, session.user.id),
-    )).limit(1),
-  ]);
-  if (!texture) {
-    return NextResponse.json({ success: false, error: 'Model Texture not found' }, { status: 404 });
-  }
-  if (assignments.length > 0) {
-    return NextResponse.json({
-      success: false,
-      error: 'Model Texture is assigned to one or more Model material slots',
-    }, { status: 409 });
-  }
-  await db.delete(threedModelTextures).where(and(
-    eq(threedModelTextures.id, id),
-    eq(threedModelTextures.userId, session.user.id),
-  ));
-  await del(texture.filePath).catch(() => undefined);
+  const userId = session.user.id;
+  const result = await db.transaction(async (tx) => {
+    // Coordinate with shared-file linking so a Texture cannot disappear mid-link.
+    const [texture] = await tx.select().from(threedModelTextures).where(and(
+      eq(threedModelTextures.id, id), eq(threedModelTextures.userId, userId),
+    )).limit(1).for('update');
+    if (!texture) return { status: 404, error: 'Model Texture not found' };
+    const [assignments, references] = await Promise.all([
+      tx.select({ id: threedModelMaterialAssignments.id }).from(threedModelMaterialAssignments).where(eq(threedModelMaterialAssignments.textureId, id)).limit(1),
+      tx.select({ id: threedModelFiles.id }).from(threedModelFiles).where(eq(threedModelFiles.filePath, texture.filePath)).limit(1),
+    ]);
+    if (assignments.length || references.length) return { status: 409, error: 'Model Texture is still referenced by one or more Models' };
+    await tx.delete(threedModelTextures).where(and(eq(threedModelTextures.id, id), eq(threedModelTextures.userId, userId)));
+    return { status: 200, filePath: texture.filePath };
+  });
+  if (result.error || !result.filePath) return NextResponse.json({ success: false, error: result.error }, { status: result.status });
+  await del(result.filePath).catch(() => undefined);
   return NextResponse.json({ success: true });
 }

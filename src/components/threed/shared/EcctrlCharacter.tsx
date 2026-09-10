@@ -14,6 +14,7 @@ import { useFrame } from '@react-three/fiber';
 import { useBeforePhysicsStep } from '@react-three/rapier';
 
 import * as THREE from 'three';
+import { loadCharacterTextureManager } from '@/lib/services/threed/models/character-model-textures';
 
 import { Html } from '@react-three/drei';
 
@@ -439,6 +440,11 @@ function useCharacterModel(
               ?.toLowerCase() ||
             'glb';
 
+          const textureResolution = modelType === 'fbx'
+            ? await loadCharacterTextureManager(character.model!.id)
+            : null;
+          if (cancelled) return;
+
           let loadedModel:
             THREE.Group;
 
@@ -456,7 +462,7 @@ function useCharacterModel(
             'fbx'
           ) {
             loadedModel =
-              await new FBXLoader()
+              await new FBXLoader(textureResolution?.manager)
                 .loadAsync(
                   modelPath
                 ) as THREE.Group;

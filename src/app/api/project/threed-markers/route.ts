@@ -1,3 +1,5 @@
+import { readModelFallbackShape } from '@/lib/services/threed/models/model-fallback-core';
+import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
 import { NextRequest, NextResponse } from 'next/server';
 import { and, eq, inArray, notInArray, or, sql } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
@@ -15,6 +17,7 @@ import {
   threedCharacters,
   threedFarmbots,
   threedModels,
+  threedModelFiles,
   threedPlantings,
   threedPlants,
 } from '@/lib/schema/threed';
@@ -166,7 +169,7 @@ function getMarkerGeographicValues(
 
 async function readEligibleModel(userId: string, modelId: number) {
   const [model] = await db
-    .select()
+    .select(modelSelection())
     .from(threedModels)
     .where(and(
       eq(threedModels.id, modelId),
@@ -179,12 +182,12 @@ async function readEligibleModel(userId: string, modelId: number) {
       ),
     ))
     .limit(1);
-  return model ?? null;
+  return model?.filePath ? model : null;
 }
 
 async function readEligibleCharacter(userId: string, characterId: number) {
   const [result] = await db
-    .select({ character: threedCharacters, model: threedModels })
+    .select({ character: threedCharacters, model: modelSelection() })
     .from(threedCharacters)
     .innerJoin(threedModels, eq(threedModels.id, threedCharacters.modelId))
     .where(and(
@@ -771,7 +774,7 @@ export async function POST(request: NextRequest) {
       }
 
       const model = plant.modelId
-        ? (await db.select().from(threedModels)
+        ? (await db.select(modelSelection()).from(threedModels)
             .where(and(eq(threedModels.id, plant.modelId), eq(threedModels.isActive, true)))
             .limit(1))[0] ?? null
         : null;
@@ -1185,6 +1188,30 @@ async function updateProjectMarker(request: NextRequest, id: number) {
             `Character spawn is already occupied by ${occupiedSpawn.markerId}`,
           );
         }
+        // Position edits must not restore asset URLs from the stored marker JSON.
+        // Read through the owned Character's current Model relationship instead.
+        const [source] = await tx.select({ model: modelSelection() })
+          .from(threedCharacters)
+          .leftJoin(threedModels, and(
+            eq(threedModels.id, threedCharacters.modelId),
+            or(
+              eq(threedModels.userId, ownerId),
+              and(eq(threedModels.isPublic, true), eq(threedModels.isLibraryItem, true)),
+            ),
+          ))
+          .where(and(
+            eq(threedCharacters.id, marker.sourceAssetId),
+            eq(threedCharacters.userId, ownerId),
+          )).limit(1);
+        const model = source?.model;
+        const files = model?.id && model.userId
+          ? await tx.select().from(threedModelFiles).where(and(
+            eq(threedModelFiles.modelId, model.id),
+            eq(threedModelFiles.userId, model.userId),
+          )) : [];
+        const currentModel = model?.id
+          ? { ...model, files: files.filter((file) => Boolean(file.filePath)) }
+          : null;
         const [saved] = await tx.update(projectThreedMarkers).set({
           positionX,
           positionY,
@@ -1193,6 +1220,7 @@ async function updateProjectMarker(request: NextRequest, id: number) {
           positionSource: 'asset',
           data: {
             ...currentData,
+            model: currentModel,
             positionX: update.positionX,
             positionY: update.positionY,
             positionZ: update.positionZ,
@@ -1353,8 +1381,14 @@ async function updateProjectMarker(request: NextRequest, id: number) {
         source: 'project-marker',
       };
     }
+    const [currentModelPreferences] = await db.select({ metadata: threedModels.metadata })
+      .from(threedModels).where(and(
+        eq(threedModels.id, marker.sourceAssetId),
+        or(eq(threedModels.userId, ownerId), and(eq(threedModels.isPublic, true), eq(threedModels.isLibraryItem, true))),
+      )).limit(1);
     values.data = {
       ...currentData,
+      fallbackShape: readModelFallbackShape(currentModelPreferences?.metadata),
       ...(update.rotationX !== undefined ? { rotationX: update.rotationX } : {}),
       ...(update.rotationY !== undefined ? { rotationYInstance: update.rotationY } : {}),
       ...(update.rotationZ !== undefined ? { rotationZ: update.rotationZ } : {}),

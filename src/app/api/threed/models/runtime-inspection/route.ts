@@ -1,3 +1,4 @@
+import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
 import { NextRequest, NextResponse } from 'next/server';
 import { and, eq, or } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
@@ -132,7 +133,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'Invalid component page query' }, { status: 400 });
   }
 
-  const [model] = await db.select().from(threedModels).where(and(
+  const [model] = await db.select(modelSelection()).from(threedModels).where(and(
     eq(threedModels.id, id),
     or(
       eq(threedModels.userId, session.user.id),

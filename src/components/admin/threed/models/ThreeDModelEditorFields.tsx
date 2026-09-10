@@ -1,5 +1,6 @@
 'use client';
 
+import { MODEL_FALLBACK_SHAPES, readModelFallbackShape, setModelFallbackShape, type ModelFallbackShape } from '@/lib/services/threed/models/model-fallback-core';
 import type { Dispatch, SetStateAction } from 'react';
 import { AlertCircle, Box, CheckCircle2, File, Image, Loader2, Upload, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -103,6 +104,12 @@ export function ThreeDModelEditorFields({
   onPrimaryFile,
   onThumbnail,
 }: ThreeDModelEditorFieldsProps) {
+  let fallbackMetadata: unknown = {};
+  let fallbackMetadataValid = true;
+  try {
+    fallbackMetadata = JSON.parse(form.metadata || '{}');
+    fallbackMetadataValid = Boolean(fallbackMetadata) && typeof fallbackMetadata === 'object' && !Array.isArray(fallbackMetadata);
+  } catch { fallbackMetadataValid = false; }
   const prefix = mode === 'edit' ? 'edit-' : 'create-';
   const id = (name: string) => `${prefix}${name}`;
   const disabled = isSubmitting;
@@ -126,7 +133,7 @@ export function ThreeDModelEditorFields({
         </div>
         <div>
           <Label htmlFor={id('modelType')}>Model Type *</Label>
-          <Select value={form.modelType} onValueChange={(value) => update('modelType', value)} disabled={disabled}>
+          <Select value={form.modelType} onValueChange={(value) => update('modelType', value)} disabled={disabled || Boolean(form.filePath)}>
             <SelectTrigger id={id('modelType')}><SelectValue placeholder="Select model type" /></SelectTrigger>
             <SelectContent>{MODEL_TYPE_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
           </Select>
@@ -135,8 +142,8 @@ export function ThreeDModelEditorFields({
 
       <Section title="Model File and Preview">
         <div>
-          <Label htmlFor={id('filePath')}>File Path / URL *</Label>
-          <Input id={id('filePath')} value={form.filePath} onChange={(event) => update('filePath', event.target.value)} disabled={disabled} placeholder="/models/example.glb" />
+          <Label htmlFor={id('filePath')}>Primary Model File URL</Label>
+          <Input id={id('filePath')} value={form.filePath} readOnly disabled={disabled} placeholder="Upload or assign a Model File" />
         </div>
         <div className="flex items-center gap-2">
           <input
@@ -253,6 +260,19 @@ export function ThreeDModelEditorFields({
             {(['offsetX', 'offsetY', 'offsetZ'] as const).map((key) => <Input key={key} aria-label={key} placeholder={key.slice(-1)} type="number" step="0.01" value={form[key]} onChange={(event) => update(key, event.target.value)} disabled={disabled} />)}
           </div>
         </div>
+      </Section>
+
+      <Section title="Default Fallback Shape">
+        <Label htmlFor={id('fallbackShape')} className="text-xs">When the Model file is unavailable</Label>
+        <Select value={readModelFallbackShape(fallbackMetadata)} disabled={disabled || !fallbackMetadataValid}
+          onValueChange={(value) => update('metadata', setModelFallbackShape(form.metadata, value as ModelFallbackShape))}>
+          <SelectTrigger id={id('fallbackShape')}><SelectValue /></SelectTrigger>
+          <SelectContent>{MODEL_FALLBACK_SHAPES.map((shape) => (
+            <SelectItem key={shape} value={shape}>{shape === 'box' ? 'Box / Block' : shape[0].toUpperCase() + shape.slice(1)}</SelectItem>
+          ))}</SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground">Used by the generic Model viewer. Characters keep their existing Cylinder; other module-specific fallbacks are preserved.</p>
+        {!fallbackMetadataValid && <p className="text-xs text-amber-500">Correct the Metadata JSON below before choosing a fallback shape.</p>}
       </Section>
 
       <Section title="LOD and Animation">
