@@ -16,4 +16,4 @@ Read [ThreeD character runtimes](../developers/THREED_CHARACTERS.md) before chan
 
 Read [ThreeD Marker architecture](../developers/THREED_MARKERS.md) before changing Runtime Marker creation, marker identity, ThreeD Layers, marker visibility, Action Target resolution, or marker adapters.
 
-The current importer production checkpoint is [v0.19.10c — OBJ/MTL](../releases/v0.19.10c.md), commit `a618a66`. The current candidate is [v0.19.11 — ThreeD Model Management](../plans/v0.19.11-release.md), prepared but not yet production-confirmed.
+The current production checkpoint is [v0.19.11 — ThreeD Model Management](../releases/v0.19.11.md), commit `9cdc78e`, User-confirmed. See the [completed handoff](../plans/v0.19.11-release.md). No later candidate is designated.

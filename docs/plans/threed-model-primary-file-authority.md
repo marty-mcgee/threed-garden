@@ -18,7 +18,7 @@ The User explicitly accepts that existing Models may lose usable file references
 
 Use the normal `bun db:generate` / `bun db:push` workflow. The User already generated `drizzle/0016_premium_ikaris.sql`, which adds the primary FK/index and removes the duplicate Model columns. `db:push` applies the schema directly; it does not run generated migration files. No additional data migration is required or requested. Existing invalid non-null IDs may still be rejected by the database FK; address a concrete error if one occurs rather than silently repairing old data.
 
-The User successfully ran `bun db:push`; their supplied terminal transcript ends with `[✓] Changes applied`. The agent did not execute database changes. This application checkpoint is included in the [v0.19.11 candidate](v0.19.11-release.md). Deploy the matching application code with the schema change; old application code still expects the removed columns.
+The User successfully ran `bun db:push`; their supplied terminal transcript ends with `[✓] Changes applied`. The agent did not execute database changes. This application checkpoint is included in the [v0.19.11 release](../releases/v0.19.11.md). Deploy the matching application code with the schema change; old application code still expects the removed columns.
 
 ## Validation
 
@@ -32,7 +32,7 @@ The supplied terminal transcript confirms generation of `0016_premium_ikaris.sql
 
 After the User confirmed schema application, repository review found no remaining direct `threedModels.filePath` or `threedModels.fileSize` references. Model deletion clears the primary relationship before deleting Files within its transaction, matching the ordinary FK. TypeScript, import contract, bulk runner, OBJ/GLTF bundle, Blob path, shared Texture, Library placement/readiness, Project session and Runtime Marker validators passed. Diff whitespace checks passed. These are local checks; no new connected database operation or build was run.
 
-Manual application verification remaining: create/import a fresh Model, assign a replacement primary in Model Files, verify its preview and shared Texture, then delete a disposable Model. Existing unresolved Models are accepted under the User's no-backfill scope. Production application deployment has not been confirmed for this checkpoint.
+Manual application verification remaining: create/import a fresh Model, assign a replacement primary in Model Files, verify its preview and shared Texture, then delete a disposable Model. Existing unresolved Models are accepted under the User's no-backfill scope. Production application deployment of v0.19.11 (`9cdc78e`) is now User-confirmed; individual live regression checks are not inferred from that confirmation.
 
 ## Saved Project asset references
 

@@ -2,8 +2,9 @@
 
 This directory records confirmed production checkpoints, not every development iteration.
 
-Prepared candidate: [v0.19.11 — ThreeD Model Management](../plans/v0.19.11-release.md). Deployment has not yet been confirmed.
+Current production: **v0.19.11**, commit `9cdc78e`, User-confirmed.
 
+- [v0.19.11 — ThreeD Model Management](v0.19.11.md)
 - [v0.19.10c — ThreeD Model Bulk Importing](v0.19.10c.md)
 - [v0.19.10b — ThreeD Model Bulk Importing](v0.19.10b.md)
 - [v0.19.10a — ThreeD Model Bulk Importing](v0.19.10a.md)

@@ -441,6 +441,6 @@ Run `npm run validate:threed-model-blob-paths` when changing Model/Texture stora
 
 For Model primary-file relationship changes, run TypeScript, Library placement/readiness and relevant importer validators. Use ordinary Drizzle schema changes; the User explicitly waived old-data migration. Model deletion must clear the primary ID before deleting its Files with the immediate FK. No custom migration/trigger validation is required. See [primary-file authority](../plans/threed-model-primary-file-authority.md).
 
-## v0.19.11 release candidate
+## v0.19.11 released checkpoint
 
 The [ThreeD Model Management handoff](../plans/v0.19.11-release.md) records the 15 passing local gates, User-confirmed behavior, manual build/deployment boundary and schema compatibility requirement. CI includes Library placement/availability, Project sessions and Runtime Markers alongside importer, shared Texture, Blob-path, asset and TypeScript checks. No connected database or Blob operation is part of these validators.
