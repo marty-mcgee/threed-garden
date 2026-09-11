@@ -446,6 +446,6 @@ For Model primary-file relationship changes, run TypeScript, Library placement/r
 The [ThreeD Model Management handoff](../plans/v0.19.11-release.md) records the 15 passing local gates, User-confirmed behavior, manual build/deployment boundary and schema compatibility requirement. CI includes Library placement/availability, Project sessions and Runtime Markers alongside importer, shared Texture, Blob-path, asset and TypeScript checks. No connected database or Blob operation is part of these validators.
 
 
-## v0.19.12 prepared candidate
+## v0.19.12 released checkpoint
 
-The [release handoff](../plans/v0.19.12-release.md) records 16 passing local checks. `npm run validate:threed-model-list` is included in CI and checks pagination bounds and sort allowlists. Live SQL/browser acceptance is separate from this fixture. The User owns the build gate; do not run `npm run build` in this chat. Production deployment remains pending.
+The [release handoff](../plans/v0.19.12-release.md) records 16 passing local checks. `npm run validate:threed-model-list` is included in CI and checks pagination bounds and sort allowlists. Live SQL/browser acceptance is separate from this fixture. The User owns the build gate; do not run `npm run build` in this chat. Production deployment of `80c6a1d` is User-confirmed; individual smoke checks are not inferred from deployment success.

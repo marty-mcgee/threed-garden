@@ -2,9 +2,9 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is **v0.19.11 — ThreeD Model Management**, package `0.19.11`, application commit `9cdc78e` and release-documentation commit `3c86b86`, both User-confirmed. See the [release record](releases/v0.19.11.md). The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is **v0.19.12 — ThreeD Admin Model Workspace**, package `0.19.12`, commit `80c6a1d`, User-confirmed. See the [release record](releases/v0.19.12.md). The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
-Prepared candidate: [v0.19.12 release handoff](plans/v0.19.12-release.md). Future page work follows the [Admin ThreeD workspace blueprint](plans/admin-threed-workspace-blueprint.md).
+Completed release: [v0.19.12 release handoff](plans/v0.19.12-release.md). Future page work follows the [Admin ThreeD workspace blueprint](plans/admin-threed-workspace-blueprint.md).
 
 Read the [App overview analysis at v0.19.11](plans/app-overview-v0.19.11.md) for current functionality, verified issues, validation results and prioritized next work. The older checkpoint paragraphs below are historical summaries.
 
@@ -52,7 +52,7 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 
 ## Development plans
 
-**v0.19.11 — ThreeD Model Management** is released. FBX/GLB/GLTF and OBJ/MTL support are included. Candidate **v0.19.12 — ThreeD Admin Model Workspace** is prepared; production deployment is pending.
+**v0.19.11 — ThreeD Model Management** is released. FBX/GLB/GLTF and OBJ/MTL support are included. **v0.19.12 — ThreeD Admin Model Workspace** is now User-confirmed in production. No later candidate is designated.
 
 - [App overview and prioritized follow-up](plans/app-overview-v0.19.11.md) — baseline findings with local A05/A06 fixes and User-deferred areas.
 - [v0.19.11 completed release handoff](plans/v0.19.11-release.md) — scope, validation, deployment and compatibility.

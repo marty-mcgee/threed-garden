@@ -2,9 +2,9 @@
 
 This directory records confirmed production checkpoints, not every development iteration.
 
-Current production: **v0.19.11**, commit `9cdc78e`, User-confirmed.
+Current production: **v0.19.12**, commit `80c6a1d`, User-confirmed.
 
-- [v0.19.12 — ThreeD Admin Model Workspace](v0.19.12.md) — prepared; deployment pending
+- [v0.19.12 — ThreeD Admin Model Workspace](v0.19.12.md) — production User-confirmed
 - [v0.19.11 — ThreeD Model Management](v0.19.11.md)
 - [v0.19.10c — ThreeD Model Bulk Importing](v0.19.10c.md)
 - [v0.19.10b — ThreeD Model Bulk Importing](v0.19.10b.md)

@@ -1,8 +1,8 @@
 # ThreeD Model Administration
 
-Current production checkpoint: **v0.19.11 — ThreeD Model Management**, package `0.19.11`, commit `9cdc78e`. Successful production deployment is User-confirmed. See the [release record](../releases/v0.19.11.md) and [completed scope, verification and deployment handoff](../plans/v0.19.11-release.md). Historical checkpoint sections below describe behavior at their named releases.
+Current production checkpoint: **v0.19.12 — ThreeD Admin Model Workspace**, package `0.19.12`, commit `80c6a1d`. Successful production deployment is User-confirmed. See the [release record](../releases/v0.19.12.md) and [completed scope, verification and deployment handoff](../plans/v0.19.12-release.md). Historical checkpoint sections below describe behavior at their named releases.
 
-Prepared candidate: [v0.19.12 — ThreeD Admin Model Workspace](../plans/v0.19.12-release.md). This page is the [design blueprint for future Admin ThreeD sub-module pages](../plans/admin-threed-workspace-blueprint.md); only the Models workspace is adapted in this release.
+Released checkpoint: [v0.19.12 — ThreeD Admin Model Workspace](../plans/v0.19.12-release.md). This page is the [design blueprint for future Admin ThreeD sub-module pages](../plans/admin-threed-workspace-blueprint.md); only the Models workspace is adapted in this release.
 
 The initial v0.19.8a workflow deliberately managed one reusable ThreeD Model at a time. The v0.19.10a alpha release adds **Bulk Import FBX** to the dedicated Models workspace; the single-Model importer remains available. See [alpha implementation and validation](../plans/v0.19.10a-implementation.md). The released beta is **v0.19.10b** (`0.19.10-beta`): **Bulk Import Models** supports mixed FBX/GLB/GLTF batches, embedded resources, external images and `.bin` files. See [beta implementation and verification](../plans/v0.19.10b-implementation.md); the User has manually accepted the local checkpoint and its build gate. Production deployment is confirmed; see the [completed handoff](../plans/v0.19.10b-release.md).
 
