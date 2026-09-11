@@ -1808,3 +1808,29 @@ for (const filePath of ['https://fixture.test/primary/current.fbx', 'https://fix
   assert.equal(characterState.threed.raw?.beds, stableBeds);
 }
 console.log('PASS: repeated Character position responses retain current primary URLs and clear missing files without replacing unrelated owners');
+
+// @ts-expect-error Native Node TypeScript imports use explicit extensions.
+const { refreshModelMarkerData, currentPlantingModelId } = await import('../services/threed/models/model-snapshot-assets.ts');
+const freshModels = new Map([[12, { id: 12, filePath: 'https://fixture.test/current.fbx', files: [] }]]);
+for (const markerType of ['models', 'plantings'] as const) {
+  const staleData = { filePath: 'https://fixture.test/deleted.fbx', model: { filePath: 'https://fixture.test/deleted.fbx' }, scaleMultiplier: 2 };
+  let state = applyThreeDProjectClientTransaction(clientState, {});
+  for (const assignedId of [12, 12, 99]) {
+    const modelId = currentPlantingModelId({ customModelId: assignedId, plantModelId: 12 });
+    const model = freshModels.get(modelId!);
+    const data = markerType === 'models'
+      ? refreshModelMarkerData(staleData, assignedId, model)
+      : { ...staleData, model: model ?? null };
+    state = applyThreeDProjectClientTransaction(state, {
+      markers: { upsert: [{ ...characterMarker, markerType, positionX: '9.000', data }] },
+    });
+    const record = state.threed.raw?.projectThreedMarkers?.[0];
+    const url = markerType === 'models' ? record?.data?.filePath
+      : (record?.data?.model as { filePath: string } | null)?.filePath ?? '';
+    assert.equal(url, assignedId === 12 ? 'https://fixture.test/current.fbx' : '');
+    assert.equal(record?.positionX, '9.000');
+    assert.equal(record?.data?.scaleMultiplier, 2);
+    assert.equal(state.threed.raw?.beds, stableBeds);
+  }
+}
+console.log('PASS: Model and Planting saves retain current URLs across repeated updates and clear unavailable assignments without replacing unrelated owners');

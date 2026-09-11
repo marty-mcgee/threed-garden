@@ -150,7 +150,7 @@ assert.equal(createThreeDModelLibraryReadiness({
 }).primaryFileAvailable, false, 'Neither legacy URL nor unassigned Model Files may satisfy primary readiness');
 
 // @ts-expect-error Native Node TypeScript imports use explicit extensions.
-const { currentModelAssets } = await import('../services/threed/models/model-snapshot-assets.ts');
+const { currentModelAssets, refreshModelMarkerData, currentPlantingModelId } = await import('../services/threed/models/model-snapshot-assets.ts');
 const staleSnapshot = { filePath: 'https://example.test/deleted.fbx', files: [{ filePath: 'https://example.test/deleted.png' }], scale: 2 };
 const refreshed = { ...staleSnapshot, ...currentModelAssets({ filePath: '', fileSize: null, files: [] }) };
 assert.equal(refreshed.filePath, '');
@@ -192,3 +192,23 @@ assert.equal(hasModelLoadFailure(11, 'failed.fbx'), false);
 assert.equal(failureNotifications, 4);
 unsubscribeFailures();
 console.log('PASS: DetailsCard load-failure reports isolate Models/URLs and clear on recovery or unmount');
+
+const currentPrimary = { filePath: 'https://example.test/current.fbx', fileSize: 100, mainModelFileId: 22, files: [{ id: 22, filePath: 'https://example.test/current.fbx' }] };
+let moved = refreshModelMarkerData({ ...staleSnapshot, rotationYInstance: 45, scaleMultiplier: 3 }, 11, currentPrimary);
+for (let save = 0; save < 2; save++) {
+  moved = refreshModelMarkerData(moved, 11, currentPrimary);
+  assert.equal(moved.filePath, currentPrimary.filePath);
+  assert.deepEqual(moved.files, currentPrimary.files);
+  assert.equal(moved.rotationYInstance, 45);
+  assert.equal(moved.scaleMultiplier, 3);
+}
+const removedPrimary = refreshModelMarkerData(moved, 11, undefined);
+assert.equal(removedPrimary.filePath, '');
+assert.equal(removedPrimary.fileSize, null);
+assert.equal(removedPrimary.mainModelFileId, null);
+assert.deepEqual(removedPrimary.files, []);
+assert.equal(currentPlantingModelId({ customModelId: 11, plantModelId: 12 }), 11);
+assert.equal(currentPlantingModelId({ customModelId: null, plantModelId: 12 }), 12);
+assert.equal(currentPlantingModelId({ customModelId: null, plantModelId: null }), null);
+assert.equal(currentPlantingModelId(undefined), null);
+console.log('PASS: repeated Model saves refresh current assets, clear removed files, preserve transforms, and select current Planting assignments');

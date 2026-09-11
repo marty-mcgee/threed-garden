@@ -2,7 +2,11 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is v0.19.10b **ThreeD Model Bulk Importing**, package `0.19.10-beta`, commit `ab5f1ea`. The User confirmed successful production deployment September 9, 2026. It includes FBX/GLB/GLTF bulk importing, texture/buffer requirements, reusable Texture assignments and inline Model preview. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is **v0.19.11 — ThreeD Model Management**, package `0.19.11`, application commit `9cdc78e` and release-documentation commit `3c86b86`, both User-confirmed. See the [release record](releases/v0.19.11.md). The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+
+Prepared candidate: [v0.19.12 release handoff](plans/v0.19.12-release.md). Future page work follows the [Admin ThreeD workspace blueprint](plans/admin-threed-workspace-blueprint.md).
+
+Read the [App overview analysis at v0.19.11](plans/app-overview-v0.19.11.md) for current functionality, verified issues, validation results and prioritized next work. The older checkpoint paragraphs below are historical summaries.
 
 The v0.18.9a production release adds authenticated Character Library placement and Project-instance editing while keeping GardenCharacter and EcctrlCharacter as separate runtimes. Explicit Project saves preserve marker database IDs, uncontrolled Ecctrl mounts cannot publish temporary positions, overlapping capsule spawn areas are rejected before Rapier, and rejected Character snapshots can be restored to source positions without deleting their source assets.
 
@@ -48,7 +52,11 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 
 ## Development plans
 
-**v0.19.10b — ThreeD Model Bulk Importing** is released to production as `0.19.10-beta`. The alpha records preserve its FBX/Texture baseline. No later release candidate is designated; OBJ remains deferred.
+**v0.19.11 — ThreeD Model Management** is released. FBX/GLB/GLTF and OBJ/MTL support are included. Candidate **v0.19.12 — ThreeD Admin Model Workspace** is prepared; production deployment is pending.
+
+- [App overview and prioritized follow-up](plans/app-overview-v0.19.11.md) — baseline findings with local A05/A06 fixes and User-deferred areas.
+- [v0.19.11 completed release handoff](plans/v0.19.11-release.md) — scope, validation, deployment and compatibility.
+- [v0.19.10c — OBJ/MTL](plans/v0.19.10c.md) — released centaur implementation.
 
 - [v0.19.10a — ThreeD Model Bulk Importing](plans/v0.19.10a.md) — released FBX/Texture alpha boundary.
 - [Alpha deployment preparation record](plans/v0.19.10a-release.md) — release scope, validation and deployment confirmation.
@@ -62,6 +70,8 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 ## Releases
 
 - [Release index](releases/README.md)
+- [v0.19.11 production checkpoint](releases/v0.19.11.md)
+- [v0.19.10c production checkpoint](releases/v0.19.10c.md)
 - [v0.19.10b production checkpoint](releases/v0.19.10b.md)
 - [v0.19.10a production checkpoint](releases/v0.19.10a.md)
 - [v0.19.9 production checkpoint](releases/v0.19.9.md)

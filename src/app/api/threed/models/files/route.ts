@@ -116,13 +116,13 @@ async function linkSharedTexture(request: NextRequest, userId: string) {
     const [model] = await tx.select(modelSelection()).from(threedModels).where(and(eq(threedModels.id, body.modelId), eq(threedModels.userId, userId))).limit(1).for('update');
     const [texture] = await tx.select().from(threedModelTextures).where(and(eq(threedModelTextures.id, body.textureId), eq(threedModelTextures.userId, userId))).limit(1).for('update');
     if (!model || !texture || !texture.isActive) return { status: 404, error: 'Model or active Texture not found' };
-    if (model.modelType !== 'fbx' || relativePath.split('/').at(-1)?.toLowerCase() !== texture.fileName.toLowerCase()
+    if (model.modelType !== 'fbx' || relativePath.split('.').at(-1)?.toLowerCase() !== texture.fileName.split('.').at(-1)?.toLowerCase()
       || !/^https:\/\//i.test(texture.filePath)) return { status: 422, error: 'Shared Texture does not match the FBX attachment' };
     const files = await tx.select().from(threedModelFiles).where(and(eq(threedModelFiles.modelId, model.id), eq(threedModelFiles.userId, userId)));
     const existing = files.find((file) => (file.relativePath ?? file.fileName).toLowerCase() === relativePath.toLowerCase());
     if (existing && (existing.filePath !== texture.filePath || existing.fileType !== 'texture')) return { status: 409, error: 'Attachment path is already in use' };
     if (!existing) {
-      await tx.insert(threedModelFiles).values({ userId, modelId: model.id, fileName: texture.fileName, relativePath, fileType: 'texture', textureType: 'baseColor', filePath: texture.filePath, fileSize: texture.fileSize, isBinaryBuffer: false, loadOrder: files.length });
+      await tx.insert(threedModelFiles).values({ userId, modelId: model.id, fileName: relativePath.split('/').at(-1)!, relativePath, fileType: 'texture', textureType: 'baseColor', filePath: texture.filePath, fileSize: texture.fileSize, isBinaryBuffer: false, loadOrder: files.length });
       await tx.update(threedModels).set({ hasExternalFiles: true, textureCount: files.filter((file) => file.fileType === 'texture').length + 1, updatedAt: new Date() }).where(eq(threedModels.id, model.id));
     }
     return { status: 200 };

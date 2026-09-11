@@ -1,19 +1,20 @@
 import {
-  MAX_BULK_FILE_BYTES, resolveBulkSettings, validateBulkTexture,
+  MAX_BULK_FILE_BYTES, resolveBulkSettings, validateBulkTexture, requirementKey,
   type BulkDraft, type BulkDefaults, type BulkExistingTexture, type BulkSource,
 // @ts-expect-error Native validation requires explicit extensions.
 } from './model-bulk-preparation-core.ts';
 
 export type SavedBulkTexture = BulkExistingTexture & { filePath?: string };
 
-/** Only the effective, active, filename-matching FBX Texture can supply a missing local image. */
+/** The effective active FBX Texture supplies matching images or explicit per-requirement substitutions. */
 export function matchingSavedBulkTexture(draft: BulkDraft, defaults: BulkDefaults, pool: readonly BulkSource[], textures: readonly SavedBulkTexture[]) {
   if (!/\.fbx$/i.test(draft.source.file.name)) return undefined;
   const id = resolveBulkSettings(draft, defaults).existingTextureId;
   const texture = textures.find((entry) => entry.id === id && entry.isActive);
   if (!texture || !draft.requirements.some((requirement) => requirement.kind === 'texture'
-    && requirement.fileName.toLowerCase() === texture.fileName.toLowerCase()
-    && !pool.some((source) => source.file.name.toLowerCase() === requirement.fileName.toLowerCase()))) return undefined;
+    && (draft.choices[requirementKey(requirement)]?.sourceId === 'selected-shared-texture'
+      || (requirement.fileName.toLowerCase() === texture.fileName.toLowerCase()
+        && !pool.some((source) => source.file.name.toLowerCase() === requirement.fileName.toLowerCase()))))) return undefined;
   return texture;
 }
 

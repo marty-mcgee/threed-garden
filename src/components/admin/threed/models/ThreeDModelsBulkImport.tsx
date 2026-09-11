@@ -302,7 +302,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
       if (error) setNotice(error);
       else { updateDraft(id, { previewFile: file }); setNotice(''); }
     } catch {
-      if (mountedRef.current) setNotice('Unable to read the preview image.');
+      if (mountedRef.current && check === previewCheckRef.current) setNotice('Unable to read the preview image.');
     } finally {
       if (mountedRef.current && check === previewCheckRef.current) setCheckingPreview(false);
     }
@@ -351,6 +351,25 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
     }
   }
 
+  function clearAllSelectedFiles() {
+    if (busyRef.current) return;
+    ++previewCheckRef.current;
+    setCheckingPreview(false);
+    previewWindowCleanupRef.current?.();
+    previewWindowCleanupRef.current = null;
+    setInlinePreview(null);
+    changeDrafts(() => []);
+    setPool([]);
+    setSelectedId(null);
+    setResults({});
+    setProgress({});
+    setSavedTextureFiles({ key: '', sources: {}, errors: {} });
+    for (const ref of [primaryRef, textureRef, previewRef]) {
+      if (ref.current) ref.current.value = '';
+    }
+    setNotice('All selected files and local results cleared. Saved Models are unchanged.');
+  }
+
   function resetOverride(key: keyof BulkDefaults) {
     if (!selected) return;
     const overrides = { ...selected.overrides };
@@ -363,9 +382,18 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
   function status(draft: BulkDraft) {
     if (progress[draft.id]) return progress[draft.id];
     const outcome = results[draft.id];
-    if (outcome) return outcome.status === 'imported' ? 'Imported' : outcome.status === 'unknown' ? 'Check import result' : 'Import failed';
+    if (outcome) return outcome.status === 'imported' ? 'Imported' : outcome.status === 'unknown' ? 'Check Import Result' : 'Import failed';
     if (draft.inspecting) return 'Scanning';
-    return prepared.get(draft.id)?.ready ? draft.configureLater ? 'Ready — configure later' : 'Ready' : 'Needs attention';
+    return prepared.get(draft.id)?.ready ? draft.configureLater ? 'Ready — configure later' : 'Ready' : 'Needs Attention';
+  }
+
+  function statusColor(draft: BulkDraft) {
+    if (progress[draft.id]) return '';
+    const outcome = results[draft.id];
+    if (outcome?.status === 'imported') return 'text-green-700 dark:text-green-400';
+    if (outcome?.status === 'unknown') return 'text-yellow-700 dark:text-yellow-300';
+    if (!outcome && !draft.inspecting && !prepared.get(draft.id)?.ready) return 'text-orange-700 dark:text-orange-400';
+    return outcome?.status === 'failed' ? 'text-red-700 dark:text-red-400' : '';
   }
 
   return <Dialog open={open} onOpenChange={(value) => { if (!busyRef.current) setOpen(value); }}>
@@ -426,18 +454,21 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
           <Button type="button" variant="ghost" size="sm" disabled={importing} aria-label={`Remove companion ${index + 1}: ${source.file.name}`} onClick={() => setPool((current) => current.filter((entry) => entry.id !== source.id))}><Trash2 className="h-3 w-3" /></Button>
         </div>)}</div>
       </section>
-      {drafts.length > 0 && <div className="grid min-w-0 items-start gap-4 md:grid-cols-[minmax(220px,0.8fr)_minmax(0,1.5fr)]">
-        <div className="min-w-0 space-y-4">
-        <div className="min-w-0 space-y-1" aria-label="Queued Models"><h3 className="mb-2 text-sm font-medium">Queued Models</h3>{drafts.map((draft, index) => <div key={draft.id} className={`flex items-center gap-1 rounded border ${selected?.id === draft.id ? 'border-primary bg-muted' : ''}`}>
+      {drafts.length > 0 && <div className="grid min-w-0 items-stretch gap-4 md:grid-cols-[minmax(220px,0.8fr)_minmax(0,1.5fr)]">
+        <div className="flex min-h-0 min-w-0 flex-col gap-4 md:[contain:size]">
+        <section className="flex min-h-0 min-w-0 flex-1 flex-col" aria-label="Queued Models">
+        <h3 className="mb-2 shrink-0 text-sm font-medium">Queued Models</h3>
+        <div role="region" aria-label="Queued Model files" tabIndex={0} className="min-h-0 max-h-80 flex-1 space-y-1 overflow-y-auto overscroll-contain pr-1 md:max-h-none">{drafts.map((draft, index) => <div key={draft.id} className={`flex items-center gap-1 rounded border ${selected?.id === draft.id ? 'border-primary bg-muted' : ''}`}>
           <button type="button" className="min-w-0 flex-1 p-2 text-left" aria-pressed={selected?.id === draft.id} onClick={() => setSelectedId(draft.id)}>
             <span className="block truncate text-xs font-medium">{index + 1}. {draft.modelName || draft.source.file.name}</span>
             <span className="block truncate text-[11px] text-muted-foreground">{draft.source.sourcePath} · {sizeLabel(draft.source.file.size)}</span>
-            <span className="block text-[11px]">{status(draft)}</span>
+            <span className={`block text-[11px] ${statusColor(draft)}`}>{status(draft)}</span>
             {drafts.some((other) => other.id !== draft.id && possibleRepeat(other.source.file, draft.source.file)) && <span className="block text-[11px] text-amber-800 dark:text-amber-300">Possible duplicate — review both files</span>}
           </button>
           {!results[draft.id] && <Button type="button" variant="ghost" size="sm" disabled={importing} aria-label={`Remove Model ${index + 1}`} onClick={() => changeDrafts((current) => current.filter((entry) => entry.id !== draft.id))}><Trash2 className="h-3 w-3" /></Button>}
         </div>)}</div>
-        {selected && <section aria-label="Model preview" className="min-w-0 space-y-3">
+        </section>
+        {selected && <section aria-label="Model preview" className="min-w-0 shrink-0 space-y-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h3 className="text-sm font-medium">Model preview</h3>
             <Button type="button" variant="outline" size="sm" disabled={importing || selected.inspecting || !!selected.inspectionError} onClick={() => previewSelectedModel()}>{inlinePreview?.draftId === selected.id ? 'Refresh preview' : 'Preview Model'}</Button>
@@ -454,7 +485,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
           </div>
           <p className="text-xs text-muted-foreground">Preview below Queued Models, or open a separate window. No upload is needed.</p>
           {result && <div className="space-y-3" role="status">
-            <p className="text-sm">{result.message}</p>
+            <p className={`text-sm ${statusColor(selected)}`}><span className="font-medium">{status(selected)}</span> — {result.message}</p>
             <p className="text-xs text-muted-foreground">Submitted files and settings are shown below.</p>
             {result.modelId ? <a className="text-sm underline" href={`/admin/threed/model-files?modelId=${result.modelId}`} target="_blank" rel="noreferrer">Review Model files (new tab)</a>
               : result.status === 'unknown' && <a className="text-sm underline" href="/admin/threed/models" target="_blank" rel="noreferrer">Check Models (new tab)</a>}
@@ -489,11 +520,14 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
                 {!selected.inspecting && !selected.inspectionError && !selected.requirements.length && <p className="text-xs">{selected.gltfResources ? 'No external files required. Embedded resources stay in the Model file.' : /\.obj$/i.test(selected.source.file.name) ? 'No material library referenced. This OBJ uses vertex colors or default materials.' : 'No named textures detected — review after import. This scan does not verify FBX structure or appearance.'}</p>}
                 {selectedPlan.matches.map((match) => <div key={requirementKey(match.requirement)} className="space-y-1 rounded border border-current/20 bg-background p-2 text-foreground">
                   <p className="break-all text-xs font-medium">{match.requirement.kind === 'buffer' ? 'Required binary buffer' : match.requirement.kind === 'material' ? 'Required material library' : 'Texture'}: {match.requirement.relativePath}</p>
-                  <select aria-label={`${match.requirement.kind === 'buffer' ? 'Buffer' : match.requirement.kind === 'material' ? 'Material library' : 'Texture'} for ${match.requirement.relativePath}`} className={selectClass} value={selectedPool.some((entry) => entry.id === match.sourceId) ? match.sourceId : ''}
+                  <select aria-label={`${match.requirement.kind === 'buffer' ? 'Buffer' : match.requirement.kind === 'material' ? 'Material library' : 'Texture'} for ${match.requirement.relativePath}`} className={selectClass} value={selected.choices[requirementKey(match.requirement)]?.sourceId === 'selected-shared-texture' ? 'selected-shared-texture' : selectedPool.some((entry) => entry.id === match.sourceId) ? match.sourceId : ''}
                     onChange={(event) => updateDraft(selected.id, { choices: { ...selected.choices, [requirementKey(match.requirement)]: { sourceId: event.target.value, relativePath: match.relativePath || defaultDestination(match.requirement.relativePath) } } })}>
-                    <option value="">Choose file / leave unresolved</option>{selectedPool.map((source, index) => ({ source, index })).filter(({ source }) => (match.requirement.kind === 'buffer' ? 'binary' : match.requirement.kind === 'material' ? 'other' : 'texture') === bulkCompanionType(source.file)).map(({ source, index }) => <option key={source.id} value={source.id}>#{index + 1} {source.sourcePath} ({sizeLabel(source.file.size)})</option>)}
+                    <option value="">Choose file / leave unresolved</option>
+                    {match.requirement.kind === 'texture' && /\.fbx$/i.test(selected.source.file.name) && selectedPlan.settings.existingTextureId != null && <option value="selected-shared-texture">Use selected shared Texture for this requirement</option>}
+                    {selectedPool.map((source, index) => ({ source, index })).filter(({ source }) => (match.requirement.kind === 'buffer' ? 'binary' : match.requirement.kind === 'material' ? 'other' : 'texture') === bulkCompanionType(source.file)).map(({ source, index }) => <option key={source.id} value={source.id}>#{index + 1} {source.sourcePath} ({sizeLabel(source.file.size)})</option>)}
                   </select>
-                  <Input aria-label={`Destination for ${match.requirement.relativePath}`} value={match.relativePath} onChange={(event) => updateDraft(selected.id, { choices: { ...selected.choices, [requirementKey(match.requirement)]: { sourceId: match.sourceId, relativePath: event.target.value } } })} />
+                  {selected.choices[requirementKey(match.requirement)]?.sourceId === 'selected-shared-texture' && <p className="text-xs">Using {selectedTextures.find((texture) => texture.id === selectedPlan.settings.existingTextureId)?.fileName ?? 'the selected shared Texture'} as {match.requirement.fileName}. The existing stored file is linked, not copied.</p>}
+                  <Input aria-label={`Destination for ${match.requirement.relativePath}`} value={match.relativePath} onChange={(event) => updateDraft(selected.id, { choices: { ...selected.choices, [requirementKey(match.requirement)]: { sourceId: selected.choices[requirementKey(match.requirement)]?.sourceId ?? match.sourceId, relativePath: event.target.value } } })} />
                   <p className={`text-[11px] ${match.issue || !match.sourceId ? 'font-medium text-amber-800 dark:text-amber-300' : 'text-muted-foreground'}`}>{match.issue || (match.sourceId.startsWith('saved-texture:') ? 'Matching saved Texture — uses the shared file; no copy is uploaded.' : match.automatic ? 'Suggested match — change if needed' : match.sourceId ? 'Selected explicitly' : 'Missing or ambiguous') }</p>
                   {selected.choices[requirementKey(match.requirement)] && <button type="button" className="text-[11px] underline" onClick={() => { const choices = { ...selected.choices }; delete choices[requirementKey(match.requirement)]; updateDraft(selected.id, { choices }); }}>Use suggested match</button>}
                 </div>)}
@@ -552,9 +586,10 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
       <div data-slot="bulk-import-footer" className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t bg-background px-4 py-3 sm:px-6">
         <div className="text-xs text-muted-foreground" aria-live="polite">
           {eligible.length} ready · {eligible.filter((draft) => draft.configureLater).length} configure later · {drafts.filter((draft) => !results[draft.id] && !prepared.get(draft.id)?.ready).length} need attention
-          <p>Queue and results stay in this tab until you leave or refresh.</p>
+          <p>Clear selections to start a new batch. Clearing does not delete saved Models.</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          <Button type="button" variant="outline" size="sm" disabled={importing || (drafts.length === 0 && pool.length === 0)} onClick={clearAllSelectedFiles}>Clear All Selected Files</Button>
           <Button type="button" variant="ghost" size="sm" disabled={importing || !drafts.some((draft) => results[draft.id]?.status === 'imported')} onClick={() => changeDrafts((current) => current.filter((draft) => results[draft.id]?.status !== 'imported'))}>Clear imported rows</Button>
           <Button type="button" size="sm" disabled={importing || checkingPreview || eligible.length === 0} onClick={() => void importReady()}>{importing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{importing ? 'Importing…' : `Import ${eligible.length} ready Models`}</Button>
         </div>

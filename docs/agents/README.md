@@ -16,4 +16,4 @@ Read [ThreeD character runtimes](../developers/THREED_CHARACTERS.md) before chan
 
 Read [ThreeD Marker architecture](../developers/THREED_MARKERS.md) before changing Runtime Marker creation, marker identity, ThreeD Layers, marker visibility, Action Target resolution, or marker adapters.
 
-The current production checkpoint is [v0.19.11 — ThreeD Model Management](../releases/v0.19.11.md), commit `9cdc78e`, User-confirmed. See the [completed handoff](../plans/v0.19.11-release.md). No later candidate is designated.
+The current production checkpoint is [v0.19.11 — ThreeD Model Management](../releases/v0.19.11.md), commit `9cdc78e`, User-confirmed. See the [completed handoff](../plans/v0.19.11-release.md). The [v0.19.12 candidate](../plans/v0.19.12-release.md) is prepared, deployment pending. Use the [Admin ThreeD workspace blueprint](../plans/admin-threed-workspace-blueprint.md) for future page updates.

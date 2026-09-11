@@ -42,6 +42,9 @@ jobs:
       - name: TypeScript type check
         run: bun run typecheck
 
+      - name: Validate Model list pagination inputs
+        run: npm run validate:threed-model-list
+
       - name: Validate Model import contracts
         run: npm run validate:threed-model-import
 

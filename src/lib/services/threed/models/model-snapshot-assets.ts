@@ -11,3 +11,13 @@ export function currentModelAssets(model: Record<string, unknown> | undefined) {
     files: Array.isArray(model?.files) ? model.files : [],
   };
 }
+
+/** Overlay current file authority after saved instance settings, including empty references. */
+export function refreshModelMarkerData(saved: Record<string, unknown>, modelId: number, model: Record<string, unknown> | undefined): Record<string, unknown> & ReturnType<typeof currentModelAssets> & { modelId: number } {
+  return { ...model, ...saved, modelId, ...currentModelAssets(model) };
+}
+
+/** A current custom assignment takes precedence; a missing custom Model must not revive an old one. */
+export function currentPlantingModelId(source: { customModelId: number | null; plantModelId: number | null } | undefined) {
+  return source?.customModelId ?? source?.plantModelId ?? null;
+}

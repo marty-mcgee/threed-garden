@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.19.11",
+  "version": "0.19.12",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -36,7 +36,8 @@
     "validate:threed-obj-bundle": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-obj-bundle.mts",
     "validate:threed-model-blob-paths": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-blob-paths.mts",
     "validate:threed-bulk-saved-texture": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-bulk-saved-texture.mts",
-    "validate:threed-model-bulk-preview": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-bulk-preview.mts"
+    "validate:threed-model-bulk-preview": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-bulk-preview.mts",
+    "validate:threed-model-list": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-list.mts"
   },
   "dependencies": {
     "@auth/core": "^0.34.3",

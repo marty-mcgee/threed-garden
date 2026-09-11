@@ -18,6 +18,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
+  const fixedWorkspace = pathname === '/admin/threed/models';
 
   // ✅ Handle hydration
   useEffect(() => {
@@ -62,10 +63,10 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   // ✅ Don't render sidebar on server to avoid hydration mismatch
   if (!mounted) {
     return (
-      <div className="min-h-screen flex bg-[#020618] [--card-gap:1rem] [--card-padding-x:1rem] [--card-padding-y:1rem]">
-        <div className="flex-1 flex flex-col">
+      <div className={cn("flex bg-[#020618] [--card-gap:1rem] [--card-padding-x:1rem] [--card-padding-y:1rem]", fixedWorkspace ? "h-dvh overflow-hidden" : "min-h-screen")}>
+        <div className="min-h-0 min-w-0 flex-1 flex flex-col">
           <div className="h-14 border-b border-white/10 bg-[#020618]/85 backdrop-blur-xl" />
-          <main className="flex-1 p-2">
+          <main className={cn("flex-1 p-2", fixedWorkspace && "min-h-0 overflow-hidden")}>
             {children}
           </main>
           <div className="border-t p-2" />
@@ -75,7 +76,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen flex bg-[#020618] [--card-gap:1rem] [--card-padding-x:1rem] [--card-padding-y:1rem]">
+    <div className={cn("flex bg-[#020618] [--card-gap:1rem] [--card-padding-x:1rem] [--card-padding-y:1rem]", fixedWorkspace ? "h-dvh overflow-hidden" : "min-h-screen")}>
       {/* Sidebar */}
       <AdminSidebar 
         isCollapsed={isCollapsed} 
@@ -93,17 +94,17 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* Main content */}
       <div 
         className={cn(
-          "flex-1 flex flex-col transition-all duration-300",
+          "min-h-0 min-w-0 flex-1 flex flex-col transition-all duration-300",
           !isMobile && (isCollapsed ? "ml-16" : "ml-64")
         )}
       >
-        <AdminHeader />
+        {fixedWorkspace ? <div className="shrink-0"><AdminHeader /></div> : <AdminHeader />}
         
-        <main className="flex-1 p-2 overflow-y-auto">
+        <main className={cn("flex-1 p-2", fixedWorkspace ? "min-h-0 overflow-hidden" : "overflow-y-auto")}>
           {children}
         </main>
         
-        <AdminFooter />
+        {fixedWorkspace ? <div className="shrink-0"><AdminFooter /></div> : <AdminFooter />}
       </div>
     </div>
   );

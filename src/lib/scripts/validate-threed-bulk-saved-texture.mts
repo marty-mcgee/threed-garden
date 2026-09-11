@@ -3,7 +3,7 @@ import { register } from 'node:module';
 // @ts-expect-error Native validator requires explicit extensions.
 import { matchingSavedBulkTexture, readSavedBulkTexture } from '../../components/admin/threed/models/model-bulk-saved-texture.ts';
 // @ts-expect-error Native validator requires explicit extensions.
-import { createBulkDefaults, createBulkDraft, prepareBulkModel } from '../../components/admin/threed/models/model-bulk-preparation-core.ts';
+import { createBulkDefaults, createBulkDraft, prepareBulkModel, requirementKey } from '../../components/admin/threed/models/model-bulk-preparation-core.ts';
 // @ts-expect-error Native validator requires explicit extensions.
 import { createBulkModelPreviewSnapshot } from '../../components/admin/threed/models/model-bulk-preview-window.ts';
 const defaults = { ...createBulkDefaults(), existingTextureId: 7 };
@@ -29,6 +29,24 @@ try {
   assert.equal(plan.ready, true);
   assert.equal(plan.attachments[0].relativePath, 'textures/Atlas.png');
   assert.equal(plan.attachments[0].fileType, 'texture');
+  const otherRequirement = { ...draft.requirements[0], fileName: 'Town.png', relativePath: 'Town.png' };
+  const explicit = { ...draft, requirements: [otherRequirement], choices: {
+    [requirementKey(otherRequirement)]: { sourceId: 'selected-shared-texture', relativePath: 'textures/Town.png' },
+  } };
+  assert.equal(prepareBulkModel({ ...explicit, choices: {} }, defaults, [source], [texture]).ready, false);
+  assert.equal(matchingSavedBulkTexture(explicit, defaults, [], [texture]), texture);
+  const alias = prepareBulkModel(explicit, defaults, [source], [texture]);
+  assert.equal(alias.ready, true);
+  assert.equal(alias.attachments[0].source.file.name, 'Town.png');
+  assert.equal(alias.attachments[0].source.sharedTexture?.filePath, texture.filePath);
+  assert.equal(alias.attachments[0].relativePath, 'textures/Town.png');
+  assert.equal(createBulkModelPreviewSnapshot(explicit, alias).attachments[0].file.name, 'Town.png');
+  assert.equal(prepareBulkModel(explicit, { ...defaults, existingTextureId: null }, [source], [texture]).ready, false);
+  const jpeg = { ...otherRequirement, fileName: 'Town.jpg', relativePath: 'Town.jpg' };
+  assert.equal(prepareBulkModel({ ...explicit, requirements: [jpeg], choices: {
+    [requirementKey(jpeg)]: { sourceId: 'selected-shared-texture', relativePath: 'textures/Town.jpg' },
+  } }, defaults, [source], [texture]).ready, false);
+
   assert.equal(createBulkModelPreviewSnapshot(draft, plan).attachments[0].file, source.file);
   await assert.rejects(readSavedBulkTexture({ ...texture, filePath: 'http://fixture.test/x' }, new AbortController().signal), /HTTPS/);
   globalThis.fetch = async () => new Response('denied', { status: 403 });

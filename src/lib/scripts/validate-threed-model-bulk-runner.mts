@@ -747,10 +747,10 @@ await group('OBJ missing material preflight makes no writes and saved missing MT
 });
 
 await group('shared FBX Texture links send identifiers only and verify the original stored URL', async () => {
-  for (const wrongUrl of [false, true]) {
-    const file = png('atlas.png');
+  for (const fileName of ['atlas.png', 'Town.png']) for (const wrongUrl of [false, true]) {
+    const file = png(fileName);
     const sharedTexture = { id: 21, filePath: 'https://fixture.blob.vercel-storage.com/textures/owner/atlas.png' };
-    const linked = { id: 31, fileType: 'texture', fileName: file.name, fileSize: file.size, relativePath: 'textures/atlas.png', filePath: wrongUrl ? 'https://fixture.blob.vercel-storage.com/copied.png' : sharedTexture.filePath };
+    const linked = { id: 31, fileType: 'texture', fileName: file.name, fileSize: file.size, relativePath: `textures/${fileName}`, filePath: wrongUrl ? 'https://fixture.blob.vercel-storage.com/copied.png' : sharedTexture.filePath };
     const record = saved([linked]);
     const client = mock([catalogStep(), targetsUploadStep(), createStep(),
       { url: FILES, method: 'POST', reply: () => ok({}), check(init) {

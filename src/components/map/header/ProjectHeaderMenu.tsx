@@ -127,7 +127,7 @@ export function ProjectHeaderMenu({
               <Button type="button" variant="secondary" size="sm" className="h-8 justify-start px-2 text-xs" onClick={onChooseProject}>
                 <FolderOpen className="h-3.5 w-3.5" /> Choose Project
               </Button>
-              <Button type="button" size="sm" className="h-8 justify-start bg-cyan-600 px-2 text-xs text-white hover:bg-cyan-500" onClick={onCreateProject}>
+              <Button type="button" variant="secondary" size="sm" className="h-8 justify-start px-2 text-xs" onClick={onCreateProject}>
                 <Plus className="h-3.5 w-3.5" /> New Project
               </Button>
             </div>

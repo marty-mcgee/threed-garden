@@ -39,3 +39,37 @@ Manual application verification remaining: create/import a fresh Model, assign a
 A follow-up repository inspection found saved marker JSON could retain nested Character/Planting Models and attachment URLs, and the Model renderer retained its loaded object when its URL became empty. Project loading now hydrates current Model/File relationships (including Character and Planting sources), replaces snapshot asset URL/size/file lists, and preserves instance settings. Missing current sources yield empty references rather than saved URLs. Project and attachment requests use no-store; attachment fetch failures do not reuse persisted snapshot URLs. Clearing the Model URL clears its loaded object, and cancelled loads stop after attachment resolution.
 
 TypeScript, Library snapshot-asset regression, Project session and Runtime Marker validators passed. No connected database or Blob changes or build ran. Project #5's live request was not independently reproduced; reload and verify its Network requests in the UI.
+
+## Generic Model and Planting position responses — local follow-up
+
+The overview reproduced obsolete URLs returning through saved marker JSON after position updates. The generic Model branch refreshed only fallback preferences; the Planting branch retained its saved nested Model. Acceptance: consecutive saves must use current assignments, clear unavailable file references, preserve instance transforms and retain unrelated marker owners.
+
+`src/app/api/project/threed-markers/route.ts` now resolves accessible Models and their owner-matched File records within each affected save transaction. Generic Model responses replace primary URL/size/ID and attachment arrays, including empty values. Plantings resolve the current source Planting’s custom Model first, otherwise its Plant’s current Model. A missing or inaccessible custom assignment does not revive the saved Model or fall back to another assignment. No schema or existing-data migration is required.
+
+Validation: TypeScript, Runtime Marker, Library placement and Project session scripts passed. Regression fixtures exercise repeated position responses, missing assignments, primary removal, Planting assignment precedence, transform retention and unrelated owner stability. These are offline checks; authenticated database round trips and browser requests still need manual verification. No build, database operation or deployment was performed. In a disposable Project, replace/remove a Model primary, move/save a generic Model and a Planting twice, then reload and verify that Network never requests the deleted URL.
+
+## DetailsCard repair links — local follow-up
+
+The Model File notice previously generated a direct Admin link from any positive saved Model ID. A removed or inaccessible record therefore led to “Model not found” instead of a usable repair destination. The notice now checks the current Model API record and signed-in owner before offering “Manage Model Files”. Missing/uneditable records show an unavailable-assignment message and Models management link; request errors remain distinguishable from unavailable records. Requests use no-store and are cancelled when selection changes. This does not recreate deleted Models or change access rules.
+
+TypeScript and diff whitespace checks passed. No build or database operation ran. Manual UI checks remain: an owned Model without a primary gets its direct file link; a deleted/inaccessible Model gets the unavailable message; network failures do not masquerade as deletion. Model #39’s live database state was not inspected.
+
+## Explicit shared Texture substitution in FBX bulk imports
+
+The importer previously required the saved Texture filename to match the FBX requirement, so a selected Farm atlas could not satisfy a Town atlas reference. The approved acceptance criterion is a visible per-requirement substitution that reuses the existing Blob, preserves preview/readback checks and leaves ordinary unmatched files blocked.
+
+The texture requirement dropdown now offers **Use selected shared Texture for this requirement** when an FBX has an effective existing Texture selection. It follows that row’s selected Texture (including inherited batch defaults), displays the source and required names, and uses an in-memory filename alias for preparation/preview. The attachment API stores the required alias filename/path with the original owner-checked, active Texture URL. It does not upload another image. PNG-to-PNG and other same-extension substitutions are supported; cross-extension substitution is rejected. GLB/GLTF buffers and OBJ material rules are unchanged. Resetting to the suggested match removes the explicit substitution.
+
+TypeScript, saved Texture, bulk preparation and bulk runner validators passed. Fixtures cover explicit versus automatic matching, clearing the selected Texture, preview alias names, extension mismatch, identifier-only link requests and rejection of a copied URL during readback. No build, database changes or live uploads ran. Manual acceptance: substitute a Farm PNG for a Town PNG requirement, preview, import, and verify the attachment references the original Texture URL.
+
+## Bulk queue reset and result visibility — local follow-up
+
+Previously, “Clear imported rows” could not clear unknown/failed result rows or all companion files. The approved UI change adds **Clear All Selected Files** in the fixed footer. It clears queued Models, shared local files, result/progress records, local preview state and file inputs, invalidates pending preview validation and releases the separate preview connection. Batch defaults and saved Texture choices are preserved. It performs no server deletion and is disabled during importing. Existing Model scans cannot restore removed rows because their completion only updates still-present draft IDs.
+
+Queue and selected-result status text now uses green for **Imported**, yellow for **Needs Attention** and **Check Import Result**, and red for failed imports. TypeScript and diff whitespace checks passed; no build or live upload ran. Manual acceptance: clear a mixture of ready/imported/unknown rows and companions, reselect the same files, verify defaults remain, and confirm saved Models still exist.
+
+## Bulk queue layout refinement
+
+A long queue previously determined the two-column height and required scrolling the entire importer to reach another Model. On desktop, the settings column now determines the row height; the left column uses size containment and a flexible, independently scrollable queue above the existing preview. Narrow layouts use a bounded queue above the settings. The scroll region supports keyboard focus and contains wheel overscroll. Needs Attention is orange; Check Import Result remains yellow and Imported remains green.
+
+TypeScript and whitespace checks passed. No build ran. Browser verification remains manual: use a long queue, scroll/select its last row, open the preview, and check both desktop and narrow layouts.

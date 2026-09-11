@@ -1,4 +1,4 @@
-import { readModelFallbackShape } from '@/lib/services/threed/models/model-fallback-core';
+import { refreshModelMarkerData, currentPlantingModelId } from '@/lib/services/threed/models/model-snapshot-assets';
 import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
 import { NextRequest, NextResponse } from 'next/server';
 import { and, eq, inArray, notInArray, or, sql } from 'drizzle-orm';
@@ -1128,6 +1128,21 @@ export async function POST(request: NextRequest) {
   }
 }
 
+type MarkerTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+async function readCurrentMarkerModel(tx: MarkerTransaction, ownerId: string, modelId: number | null | undefined) {
+  if (!modelId) return undefined;
+  const [model] = await tx.select(modelSelection()).from(threedModels).where(and(
+    eq(threedModels.id, modelId),
+    or(eq(threedModels.userId, ownerId), and(eq(threedModels.isPublic, true), eq(threedModels.isLibraryItem, true))),
+  )).limit(1);
+  if (!model) return undefined;
+  const files = model.userId ? await tx.select().from(threedModelFiles).where(and(
+    eq(threedModelFiles.modelId, model.id), eq(threedModelFiles.userId, model.userId),
+  )) : [];
+  return { ...model, files: files.filter((file) => Boolean(file.filePath)) };
+}
+
 async function updateProjectMarker(request: NextRequest, id: number) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -1145,7 +1160,7 @@ async function updateProjectMarker(request: NextRequest, id: number) {
     if (!ownedProject) {
       return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
     }
-    const currentData = marker.data && typeof marker.data === 'object' ? marker.data : {};
+    const currentData: Record<string, unknown> = marker.data && typeof marker.data === 'object' && !Array.isArray(marker.data) ? marker.data as Record<string, unknown> : {};
 
     if (marker.markerType === 'characters') {
       const updateBody = typeof body === 'object' && body !== null && !Array.isArray(body)
@@ -1280,26 +1295,38 @@ async function updateProjectMarker(request: NextRequest, id: number) {
         y: update.positionY,
         z: update.positionZ,
       }, ownedProject);
-      const [updated] = await db.update(projectThreedMarkers).set({
-        positionX: update.positionX.toFixed(3),
-        positionY: update.positionY.toFixed(3),
-        positionZ: update.positionZ.toFixed(3),
-        ...geographic,
-        positionSource: 'asset',
-        data: {
-          ...currentData,
-          quantity: 1,
-          modelScale: update.modelScale,
-          positionX: update.positionX,
-          positionY: update.positionY,
-          positionZ: update.positionZ,
-        },
-        updatedAt: new Date(),
-      }).where(and(
-        eq(projectThreedMarkers.id, id),
-        eq(projectThreedMarkers.userId, session.user.id),
-        eq(projectThreedMarkers.markerType, 'plantings'),
-      )).returning();
+      const updated = await db.transaction(async (tx) => {
+        const [source] = await tx.select({
+          customModelId: threedPlantings.customModelId,
+          plantModelId: threedPlants.modelId,
+        }).from(threedPlantings)
+          .leftJoin(threedPlants, eq(threedPlants.id, threedPlantings.plantId))
+          .where(and(eq(threedPlantings.id, marker.sourceAssetId), eq(threedPlantings.userId, ownerId)))
+          .limit(1);
+        const currentModel = await readCurrentMarkerModel(tx, ownerId, currentPlantingModelId(source));
+        const [saved] = await tx.update(projectThreedMarkers).set({
+          positionX: update.positionX.toFixed(3),
+          positionY: update.positionY.toFixed(3),
+          positionZ: update.positionZ.toFixed(3),
+          ...geographic,
+          positionSource: 'asset',
+          data: {
+            ...currentData,
+            model: currentModel ?? null,
+            quantity: 1,
+            modelScale: update.modelScale,
+            positionX: update.positionX,
+            positionY: update.positionY,
+            positionZ: update.positionZ,
+          },
+          updatedAt: new Date(),
+        }).where(and(
+          eq(projectThreedMarkers.id, id),
+          eq(projectThreedMarkers.userId, ownerId),
+          eq(projectThreedMarkers.markerType, 'plantings'),
+        )).returning();
+        return saved;
+      });
       return NextResponse.json({ success: true, data: updated });
     }
 
@@ -1381,25 +1408,23 @@ async function updateProjectMarker(request: NextRequest, id: number) {
         source: 'project-marker',
       };
     }
-    const [currentModelPreferences] = await db.select({ metadata: threedModels.metadata })
-      .from(threedModels).where(and(
-        eq(threedModels.id, marker.sourceAssetId),
-        or(eq(threedModels.userId, ownerId), and(eq(threedModels.isPublic, true), eq(threedModels.isLibraryItem, true))),
-      )).limit(1);
-    values.data = {
-      ...currentData,
-      fallbackShape: readModelFallbackShape(currentModelPreferences?.metadata),
-      ...(update.rotationX !== undefined ? { rotationX: update.rotationX } : {}),
-      ...(update.rotationY !== undefined ? { rotationYInstance: update.rotationY } : {}),
-      ...(update.rotationZ !== undefined ? { rotationZ: update.rotationZ } : {}),
-      ...(update.scaleMultiplier !== undefined ? { scaleMultiplier: update.scaleMultiplier } : {}),
-    };
+    const updated = await db.transaction(async (tx) => {
+      const currentModel = await readCurrentMarkerModel(tx, ownerId, marker.sourceAssetId);
+      values.data = {
+        ...refreshModelMarkerData(currentData, marker.sourceAssetId, currentModel),
+        ...(update.rotationX !== undefined ? { rotationX: update.rotationX } : {}),
+        ...(update.rotationY !== undefined ? { rotationYInstance: update.rotationY } : {}),
+        ...(update.rotationZ !== undefined ? { rotationZ: update.rotationZ } : {}),
+        ...(update.scaleMultiplier !== undefined ? { scaleMultiplier: update.scaleMultiplier } : {}),
+      };
 
-    const [updated] = await db.update(projectThreedMarkers).set(values).where(and(
-      eq(projectThreedMarkers.id, id),
-      eq(projectThreedMarkers.userId, session.user.id),
-      eq(projectThreedMarkers.markerType, 'models'),
-    )).returning();
+      const [saved] = await tx.update(projectThreedMarkers).set(values).where(and(
+        eq(projectThreedMarkers.id, id),
+        eq(projectThreedMarkers.userId, ownerId),
+        eq(projectThreedMarkers.markerType, 'models'),
+      )).returning();
+      return saved;
+    });
     return NextResponse.json({ success: true, data: updated });
   } catch (error) {
     if (

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useSession } from 'next-auth/react';
 import { hasModelLoadFailure, subscribeModelLoadFailures } from '@/lib/services/threed/models/model-load-failures';
 import { Crosshair, ExternalLink, Gamepad2, Loader2, Pause, ScanSearch, X } from 'lucide-react';
 import type { ThreeDActionTarget } from '@/lib/types/map';
@@ -25,6 +26,8 @@ import { ModelInstancePlacementEditor } from './ModelInstancePlacementEditor';
 import { PlantingInstanceEditor } from './PlantingInstanceEditor';
 
 function ModelFileNotice({ type, data }: { type: string; data: Record<string, any> }) {
+  const { data: session, status: sessionStatus } = useSession();
+  const ownerId = session?.user?.id;
   const generic = type === 'model' || type === 'models';
   const model = generic ? data : data.model;
   const modelId = Number(generic ? data.modelId ?? data.id : model?.id ?? data.customModelId ?? data.modelId ?? data.plant?.modelId);
@@ -33,14 +36,45 @@ function ModelFileNotice({ type, data }: { type: string; data: Record<string, an
     () => hasModelLoadFailure(modelId, filePath), () => false);
   const requiresModel = generic || ['character', 'characters'].includes(type)
     || (['plant', 'plants', 'planting', 'plantings'].includes(type) && modelId > 0);
-  if (!requiresModel || (filePath && !failed)) return null;
+  const needsAttention = requiresModel && (!filePath || failed);
+  const [access, setAccess] = useState<{ id: number; status: 'editable' | 'unavailable' | 'error' } | null>(null);
+  useEffect(() => {
+    setAccess(null);
+    if (!needsAttention || !Number.isSafeInteger(modelId) || modelId <= 0 || sessionStatus === 'loading') return;
+    const controller = new AbortController();
+    // Verify the current record and ownership without downloading its primary file.
+    void fetch(`/api/threed/models?id=${modelId}`, {
+      cache: 'no-store', signal: controller.signal,
+    }).then(async (response) => {
+      const result = await response.json();
+      if (controller.signal.aborted) return;
+      setAccess({ id: modelId, status: response.ok && result.success ? (ownerId && result.data?.userId === ownerId ? 'editable' : 'unavailable')
+        : [403, 404].includes(response.status) ? 'unavailable' : 'error' });
+    }).catch(() => {
+      if (!controller.signal.aborted) setAccess({ id: modelId, status: 'error' });
+    });
+    return () => controller.abort();
+  }, [modelId, needsAttention, ownerId, sessionStatus]);
+  if (!needsAttention) return null;
+  const status = access?.id === modelId ? access.status : null;
+  const validId = Number.isSafeInteger(modelId) && modelId > 0;
   return (
     <div role="status" className="my-2 rounded border border-amber-400/40 bg-amber-400/10 p-2 text-xs text-amber-200">
-      <p className="font-medium">{filePath ? 'Model file could not be loaded' : 'Main Model file is missing'}</p>
+      <p className="font-medium">{status === 'unavailable' || !validId ? 'Assigned Model is unavailable'
+        : filePath ? 'Model file could not be loaded' : 'Main Model file is missing'}</p>
       <p className="mt-1">A fallback shape represents this asset until its Model file is available.</p>
-      {Number.isSafeInteger(modelId) && modelId > 0 && (
+      {status === 'editable' ? (
         <a href={`/admin/threed/model-files?modelId=${modelId}`} target="_blank" rel="noopener noreferrer"
           className="mt-1 inline-block underline underline-offset-2">Manage Model Files ↗</a>
+      ) : (
+        <>
+          <p className="mt-1">{!validId ? 'No Model is assigned.'
+            : status === 'unavailable' ? `Model #${modelId} no longer exists or is not editable by your account. Replace this Project asset with an available Model.`
+            : status === 'error' ? 'Could not verify Model access. Open Models management to check its assignment.'
+            : 'Checking Model access…'}</p>
+          <a href="/admin/threed/models" target="_blank" rel="noopener noreferrer"
+            className="mt-1 inline-block underline underline-offset-2">Open Models management ↗</a>
+        </>
       )}
     </div>
   );

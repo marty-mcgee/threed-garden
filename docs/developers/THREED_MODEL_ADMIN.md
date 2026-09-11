@@ -2,6 +2,8 @@
 
 Current production checkpoint: **v0.19.11 — ThreeD Model Management**, package `0.19.11`, commit `9cdc78e`. Successful production deployment is User-confirmed. See the [release record](../releases/v0.19.11.md) and [completed scope, verification and deployment handoff](../plans/v0.19.11-release.md). Historical checkpoint sections below describe behavior at their named releases.
 
+Prepared candidate: [v0.19.12 — ThreeD Admin Model Workspace](../plans/v0.19.12-release.md). This page is the [design blueprint for future Admin ThreeD sub-module pages](../plans/admin-threed-workspace-blueprint.md); only the Models workspace is adapted in this release.
+
 The initial v0.19.8a workflow deliberately managed one reusable ThreeD Model at a time. The v0.19.10a alpha release adds **Bulk Import FBX** to the dedicated Models workspace; the single-Model importer remains available. See [alpha implementation and validation](../plans/v0.19.10a-implementation.md). The released beta is **v0.19.10b** (`0.19.10-beta`): **Bulk Import Models** supports mixed FBX/GLB/GLTF batches, embedded resources, external images and `.bin` files. See [beta implementation and verification](../plans/v0.19.10b-implementation.md); the User has manually accepted the local checkpoint and its build gate. Production deployment is confirmed; see the [completed handoff](../plans/v0.19.10b-release.md).
 
 The Admin route uses `#020618` as its presentation background. Its header, sidebar, and footer are translucent layers of that same color, scoped to `/admin` so Dashboard presentation remains independent. Shared Dialog, Modal (including confirmations), dropdown/submenu and Select popup surfaces use solid very dark gray (`zinc-900`) backgrounds in dark mode across their consumers, visually separating popups from the main App. Popup surfaces, text and controls are fully opaque; existing backdrop dimming and light-mode backgrounds remain unchanged. This presentation change passed TypeScript and diff checks.
@@ -483,3 +485,21 @@ Project asset hydration derives the current fallback preference from the reusabl
 Validation: TypeScript, Library placement/readiness checks plus six-shape metadata-preservation and stale-preference cases, Runtime Marker checks, and diff checks passed. No production build or database operation was run by the agent. Manual checks remain: choose each shape on a generic Model, test an empty primary and a failed file URL, verify a small import scale still produces a visible grounded placeholder, confirm a repaired Model replaces the placeholder, and confirm Character cylinders and module-specific fallbacks remain as before.
 
 DetailsCard warning validation: TypeScript, Library placement checks and failure-report lifecycle cases passed. Manual verification remains: select a missing-file placeholder, select a failed-load placeholder, follow the repair link, and confirm the shape itself has no floating text. No build was run.
+
+## Admin Models pagination (local follow-up)
+
+The Models table now requests a bounded server page, defaulting to 50 rows, with 25/50/100/200 options, total/range counts and First/Previous/Next/Last navigation. Name/type search and Name, Category, Options, Type, Status, Active and Size sorting run in the API before pagination. Text sorts use database ordering; ID is the stable tie-breaker and unknown sizes remain last in both directions. The API preserves newest-first ordering for callers that omit sort parameters. Model type is cast to text for enum-safe search.
+
+`GET /api/threed/models` accepts `sort` (`name`, `category`, `options`, `type`, `status`, `active`, `size`, `createdAt`) and `direction` (`asc`, `desc`). Limits must be integers from 1–200; offsets must be nonnegative integers no greater than 2147483647. Invalid pagination/sort values return 400. Count and rows use the same owner/scope and search filters. Existing owner/public Library policies are unchanged.
+
+Bulk selection applies only to the current page and resets when changing page, page size, search or sort. List requests are cancelled and sequence-guarded. Successful deletion refreshes counts and refills the page; an empty final page returns to the last valid page. This is limited to the Admin Models table; other Model pickers retain their existing limits.
+
+Validation: `npm run typecheck`, `node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-list.mts`, and `git diff --check` passed. No build, live database query, schema change or deployment ran. Manual acceptance: navigate beyond record 200, search an older Model, sort both directions on every field, switch page sizes, verify selection clears, edit/import and refresh, and delete a disposable final-page row. Concurrent inserts/deletes can shift offset-page boundaries; page navigation reflects the current dataset.
+
+Pagination layout refinement: the selection count, Delete selected and Clear selection controls now share the pagination row beside the result range; the selection-scope helper sentence was removed. Controls wrap on narrow screens. TypeScript and whitespace checks passed.
+
+## Stationary Models workspace controls
+
+The standalone `/admin/threed/models` page now constrains its workspace to the dynamic viewport height. App and workspace headers, pagination and bulk controls remain above a flexible records panel. That panel scrolls vertically and horizontally, keeps its column headings sticky, contains wheel overscroll, and is keyboard-focusable. The existing fixed sidebar retains its own navigation scroll area. The shared Table component and the Models component embedded in Project management retain their previous scrolling behavior.
+
+TypeScript and diff whitespace checks passed; no build ran. Manual visual verification remains: scroll a 200-row page, use sorting and selection with the header visible, check horizontal scrolling on narrow windows, collapse the sidebar, and open the import/edit dialogs. The change introduces no data or API behavior.

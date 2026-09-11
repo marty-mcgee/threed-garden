@@ -1,3 +1,4 @@
+import { parseModelListQuery } from '@/lib/services/threed/models/model-list-query';
 import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
 // app/api/threed/models/route.ts
 import { NextRequest, NextResponse } from 'next/server';
@@ -253,6 +254,7 @@ function serializeLibraryModel(model: ModelWithFiles, viewerUserId: string) {
 //   - search (optional): Search by modelName or modelType
 //   - limit (optional): Number of records (default: 50)
 //   - offset (optional): Number of records to skip (default: 0)
+//   - sort/direction (optional): allowlisted column and asc/desc; ID breaks ties
 // ============================================
 export async function GET(request: NextRequest) {
   try {
@@ -269,8 +271,10 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search');
     const scope = searchParams.get('scope');
     const category = searchParams.get('category')?.trim().toLowerCase();
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    let listQuery;
+    try { listQuery = parseModelListQuery(searchParams); }
+    catch (error) { return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Invalid pagination' }, { status: 400 }); }
+    const { limit, offset, sort, direction } = listQuery;
 
     const userId = session.user.id;
 
@@ -363,7 +367,7 @@ export async function GET(request: NextRequest) {
     if (search) {
       conditions.push(
         sql`${threedModels.modelName} ILIKE ${`%${search}%`} OR 
-            ${threedModels.modelType} ILIKE ${`%${search}%`}`
+            ${threedModels.modelType}::text ILIKE ${`%${search}%`}`
       );
     }
 
@@ -387,14 +391,30 @@ export async function GET(request: NextRequest) {
       .from(threedModels)
       .where(where);
 
-    const total = countResult?.count || 0;
+    const total = Number(countResult?.count ?? 0);
+    const selection = modelSelection();
+    const sortFields = {
+      name: sql`lower(${threedModels.modelName})`,
+      type: sql`${threedModels.modelType}::text`,
+      status: sql`${threedModels.status}::text`,
+      active: sql`case when ${threedModels.isActive} then 'Active' else 'Inactive' end`,
+      size: selection.fileSize.sql,
+      createdAt: threedModels.createdAt,
+      category: sql`coalesce((select string_agg(lower(c.name), ', ' order by c.sort_order, c.name)
+        from ${threedModelCategoryAssignments} a join ${threedModelCategories} c on c.id = a.category_id
+        where a.model_id = ${threedModels.id}), '')`,
+      options: sql`concat_ws(', ', case when ${threedModels.isDefault} then 'Default' end,
+        case when ${threedModels.isPublic} then 'Public' end, case when ${threedModels.isLibraryItem} then 'Library' end,
+        case when ${threedModels.usedByPlants} then 'Plants' end, case when ${threedModels.usedByCharacters} then 'Characters' end)`,
+    };
+    const ordering = direction === 'asc' ? asc(sortFields[sort]) : desc(sortFields[sort]);
 
     // ✅ Get paginated results
     const results = await db
       .select(modelSelection())
       .from(threedModels)
       .where(where)
-      .orderBy(desc(threedModels.createdAt))
+      .orderBy(sort === 'size' ? sql`${ordering} nulls last` : ordering, asc(threedModels.id))
       .limit(limit)
       .offset(offset);
 

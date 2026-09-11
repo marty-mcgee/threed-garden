@@ -301,12 +301,22 @@ export function prepareBulkModel(draft: BulkDraft, defaults: BulkDefaults, pool:
     const key = requirementKey(requirement);
     const choice = draft.choices[key];
     const suggested = choice ? undefined : automaticSource(draft, requirement, pool);
-    const source = choice ? pool.find((candidate) => candidate.id === choice.sourceId) : suggested?.source;
+    const sharedChoice = choice?.sourceId === 'selected-shared-texture' && requirement.kind === 'texture'
+      && extension(draft.source.file.name) === 'fbx';
+    const shared = sharedChoice ? pool.find((candidate) => candidate.sharedTexture?.id === settings.existingTextureId) : undefined;
+    // Alias only the in-memory filename; imports retain the library Texture URL.
+    const source = shared ? { ...shared, id: `shared-alias:${shared.sharedTexture!.id}:${key}`,
+      file: new File([shared.file], requirement.fileName, { type: shared.file.type }),
+      sourcePath: `${shared.sourcePath} → ${requirement.fileName}` }
+      : choice ? pool.find((candidate) => candidate.id === choice.sourceId) : suggested?.source;
     const relativePath = choice?.relativePath ?? defaultDestination(requirement.relativePath);
     let issue = source ? undefined : choice
       ? choice.sourceId ? 'Selected file is no longer available.' : 'File left unmatched.'
       : suggested?.issue;
-    if (source && source.file.name.toLowerCase() !== requirement.fileName.toLowerCase()) {
+    if (shared && extension(shared.file.name) !== extension(requirement.fileName)) {
+      issue = 'Shared Texture substitutions must use the same image file extension.';
+      addIssue(issue);
+    } else if (source && source.file.name.toLowerCase() !== requirement.fileName.toLowerCase()) {
       issue = `Selected file must be named ${requirement.fileName}.`;
       addIssue(issue);
     } else if (source && (requirement.kind === 'buffer' ? 'binary' : requirement.kind === 'material' ? 'other' : 'texture') !== bulkCompanionType(source.file)) {
