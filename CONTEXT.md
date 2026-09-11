@@ -19,8 +19,8 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.12 — ThreeD Admin Model Workspace** (package `0.19.12`, commit `80c6a1d`; production User-confirmed). See [release record](docs/releases/v0.19.12.md). |
-| Current development version | **v0.19.13 — ThreeD Admin Sub-Module Workspace UI/UX Updates**, package `0.19.13`. See [development plan](docs/plans/v0.19.13.md); apply the released [Admin workspace blueprint](docs/plans/admin-threed-workspace-blueprint.md) incrementally. |
+| Current stable version | **v0.19.13 — ThreeD Admin Sub-Module Workspace UI/UX Updates** (package `0.19.13`, commit `c976c77`; production and manual build User-confirmed). See [release record](docs/releases/v0.19.13.md). |
+| Current development version | Remaining Admin workspace stages resumed after v0.19.13; no next release number designated. See [continuation record](docs/plans/admin-threed-workspace-continuation.md). |
 | Centaur release verification | User-confirmed production deployment. TypeScript, 125 native groups, browser loaders and mocked bulk UI checks passed. See [completed handoff](docs/plans/v0.19.10c-release.md); individual live regression cases were not separately reported. |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |

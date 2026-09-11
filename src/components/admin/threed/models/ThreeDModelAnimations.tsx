@@ -4,6 +4,7 @@
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { Box, Loader2, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -23,7 +24,11 @@ interface Model {
   metadata?: any;
 }
 
-export function ThreeDModelAnimations({ initialModelId = null }: { initialModelId?: number | null }) {
+export function ThreeDModelAnimations({ initialModelId = null, headerContainer, scrollMappings = false }: {
+  initialModelId?: number | null;
+  headerContainer?: HTMLElement | null;
+  scrollMappings?: boolean;
+}) {
   const { showToast, ToastComponent } = useToast();
   const router = useRouter();
   const [models, setModels] = useState<Model[]>([]);
@@ -124,15 +129,12 @@ export function ThreeDModelAnimations({ initialModelId = null }: { initialModelI
     }
   }
 
-  return (
-    <div className="space-y-3">
-      {ToastComponent}
-
+  const controls = (
       <div className="flex flex-wrap items-end gap-2">
         <div className="min-w-[260px] flex-1">
-          <Label className="text-xs">Model</Label>
+          <Label className="sr-only">Model</Label>
           <Select value={modelId} onValueChange={handleModelChange}>
-            <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="Select a model" /></SelectTrigger>
+            <SelectTrigger aria-label="Select Model for animation mapping" className="h-7 text-xs"><SelectValue placeholder="Select a model" /></SelectTrigger>
             <SelectContent>
               {models.map((m) => (
                 <SelectItem key={m.id} value={String(m.id)}>{m.modelName} ({m.modelType})</SelectItem>
@@ -140,14 +142,20 @@ export function ThreeDModelAnimations({ initialModelId = null }: { initialModelI
             </SelectContent>
           </Select>
         </div>
-        <Button size="sm" className="h-8 text-xs" onClick={handleSave} disabled={!selectedModel || saving || loadingClips}>
+        <Button size="sm" className="h-7 text-xs" onClick={handleSave} disabled={!selectedModel || saving || loadingClips}>
           {saving ? <Loader2 className="w-4 h-4 mr-1 animate-spin" /> : <Save className="w-4 h-4 mr-1" />}
           Save Mapping
         </Button>
       </div>
+  );
+
+  return (
+    <div className={scrollMappings ? "flex h-full min-h-0 flex-col gap-2" : "space-y-3"}>
+      {ToastComponent}
+      {headerContainer ? createPortal(controls, headerContainer) : controls}
 
       {selectedModel && (
-        <div className="flex flex-wrap items-center gap-2 rounded border px-2 py-1.5 bg-muted/30">
+        <div className="flex shrink-0 flex-wrap items-center gap-2 rounded border px-2 py-1.5 bg-muted/30">
           <Box className="w-4 h-4 text-blue-500" />
           <span className="text-xs font-medium">{selectedModel.modelName}</span>
           <Badge variant="outline" className="text-[10px]">{clips.length} clips</Badge>
@@ -155,6 +163,8 @@ export function ThreeDModelAnimations({ initialModelId = null }: { initialModelI
         </div>
       )}
 
+      <div role="region" aria-label="Animation action mappings" tabIndex={0}
+        className={scrollMappings ? "min-h-0 flex-1 overflow-auto overscroll-contain" : undefined}>
       {loadingClips ? (
         <div className="flex items-center justify-center py-10">
           <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
@@ -164,8 +174,8 @@ export function ThreeDModelAnimations({ initialModelId = null }: { initialModelI
           <p>No animation clips found in this model</p>
         </div>
       ) : (
-        <div className="rounded-lg border overflow-hidden">
-          <div className="grid grid-cols-[minmax(140px,1fr)_minmax(200px,1.5fr)] border-b bg-muted/40 px-2 py-1 text-[10px] uppercase tracking-wide text-muted-foreground">
+        <div className="min-w-[360px] rounded-lg border">
+          <div className="sticky top-0 z-10 grid grid-cols-[minmax(140px,1fr)_minmax(200px,1.5fr)] border-b bg-background px-2 py-1 text-[10px] uppercase tracking-wide text-muted-foreground">
             <span>App Action</span>
             <span>Model Clip</span>
           </div>
@@ -191,6 +201,7 @@ export function ThreeDModelAnimations({ initialModelId = null }: { initialModelI
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 }

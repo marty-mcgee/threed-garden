@@ -16,4 +16,4 @@ Read [ThreeD character runtimes](../developers/THREED_CHARACTERS.md) before chan
 
 Read [ThreeD Marker architecture](../developers/THREED_MARKERS.md) before changing Runtime Marker creation, marker identity, ThreeD Layers, marker visibility, Action Target resolution, or marker adapters.
 
-The current production checkpoint is [v0.19.12 — ThreeD Admin Model Workspace](../releases/v0.19.12.md), commit `80c6a1d`, User-confirmed. See the [completed handoff](../plans/v0.19.12-release.md). Development is now **v0.19.13 — ThreeD Admin Sub-Module Workspace UI/UX Updates**; see [the plan](../plans/v0.19.13.md). Use the [Admin ThreeD workspace blueprint](../plans/admin-threed-workspace-blueprint.md) for future page updates.
+The current production checkpoint is [v0.19.13](../releases/v0.19.13.md), commit `c976c77`; deployment and manual build are User-confirmed. Remaining Admin stages are resumed in the [continuation record](../plans/admin-threed-workspace-continuation.md). No next release number is designated. Use the [Admin workspace blueprint](../plans/admin-threed-workspace-blueprint.md) with each page's specialized behavior preserved.
