@@ -1681,17 +1681,28 @@ function UnifiedMapPageInner() {
     position: { positionX: number; positionY: number; positionZ: number },
   ) => {
     if (updatingCharacterMarkerId != null || controlledCharacterId != null) return;
+    const sourceId = data.threed.raw?.projectThreedMarkers?.find((marker) => marker.id === markerId)?.sourceAssetId;
+    const rotation = sourceId == null ? null
+      : projectRuntimeMarkerRegistryRef.current?.resolve('characters', sourceId)?.liveRotation;
     setUpdatingCharacterMarkerId(markerId);
     try {
       const response = await fetch(`/api/project/threed-markers?id=${markerId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ markerType: 'characters', ...position }),
+        body: JSON.stringify({ markerType: 'characters', ...position, ...(rotation != null ? { rotation } : {}) }),
       });
       const result = await response.json().catch(() => null);
       if (!response.ok || !result?.success) {
         throw new Error(result?.error || `Character position update failed (${response.status})`);
       }
+      // A successful explicit edit supersedes any pre-edit WASD position.
+      // Project Save reads this same registry, so it must see the saved values.
+      const savedMarker = result.data as ProjectThreeDMarkerRecord;
+      projectRuntimeMarkerRegistryRef.current?.updateLivePosition('characters', savedMarker.sourceAssetId, {
+        x: Number(savedMarker.positionX),
+        y: Number(savedMarker.positionY),
+        z: Number(savedMarker.positionZ),
+      });
       setData((current) => applyThreeDProjectClientTransaction(current, {
         markers: { upsert: [result.data as ProjectThreeDMarkerRecord] },
       }));
@@ -1712,7 +1723,7 @@ function UnifiedMapPageInner() {
     } finally {
       setUpdatingCharacterMarkerId(null);
     }
-  }, [controlledCharacterId, updatingCharacterMarkerId]);
+  }, [controlledCharacterId, updatingCharacterMarkerId, data.threed.raw?.projectThreedMarkers]);
 
   const handleDeleteCharacterInstance = useCallback(async (
     markerId: number,

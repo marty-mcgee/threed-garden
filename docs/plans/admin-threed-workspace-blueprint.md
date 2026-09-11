@@ -1,6 +1,6 @@
 # Admin ThreeD workspace blueprint
 
-Design checkpoint: **v0.19.12 — ThreeD Admin Model Workspace**. The User requested that Admin ThreeD Models become the blueprint for future Admin ThreeD sub-module pages. This is a rollout plan, not authorization to change every page in this release.
+Design checkpoint: **v0.19.12 — ThreeD Admin Model Workspace**. The User requested that Admin ThreeD Models become the blueprint for future Admin ThreeD sub-module pages. The rollout is now assigned to [v0.19.13 — ThreeD Admin Sub-Module Workspace UI/UX Updates](v0.19.13.md). Apply it incrementally; the v0.19.12 release itself changed only the Models workspace.
 
 ## Reference implementation
 

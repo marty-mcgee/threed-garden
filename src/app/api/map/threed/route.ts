@@ -1,3 +1,4 @@
+import { databaseConnectionDiagnostic } from '@/lib/db/connection-diagnostics';
 import { currentModelAssets } from '@/lib/services/threed/models/model-snapshot-assets';
 import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
 import { getTableColumns } from 'drizzle-orm';
@@ -220,8 +221,9 @@ export async function GET(request: NextRequest) {
           return processed;
         });
       } catch (err) {
-        console.error(`❌ Error fetching from ${tableName}:`, err);
-        return [];
+        // A failed read is not an empty asset collection. Do not publish a
+        // successful Project snapshot that silently omits its assigned assets.
+        throw new Error(`Failed to fetch ${tableName}`, { cause: err });
       }
     };
 
@@ -238,10 +240,6 @@ export async function GET(request: NextRequest) {
           fetchPromises.push(
             fetchItems(table, assetIdsByType[assetType], orderField, tableName)
               .then(items => ({ key, items }))
-              .catch((err) => {
-                console.error(`❌ Failed to fetch ${assetType}:`, err);
-                return { key, items: [] };
-              })
           );
         }
       });
@@ -454,6 +452,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('❌ Error fetching ThreeD map data:', error);
+    console.error('Database connection diagnostic:', JSON.stringify(databaseConnectionDiagnostic(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to fetch ThreeD data' },
       { status: 500 }

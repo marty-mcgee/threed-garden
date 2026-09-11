@@ -46,7 +46,7 @@ export function CharacterInstancePositionEditor({
   const dirty = position.positionX !== Number(initialPosition.x.toFixed(1))
     || position.positionY !== Number(initialPosition.y.toFixed(1))
     || position.positionZ !== Number(initialPosition.z.toFixed(1));
-  const editStatus = updating ? 'Saving…' : dirty ? (valid ? 'Unsaved changes' : 'Check fields') : 'Saved';
+  const editStatus = updating ? 'Saving…' : dirty ? (valid ? 'Unsaved changes' : 'Check fields') : 'Ready to save';
 
   return (
     <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
@@ -81,7 +81,7 @@ export function CharacterInstancePositionEditor({
       <div className="grid grid-cols-2 gap-1.5">
         <button
           type="button"
-          disabled={!valid || !dirty || disabled || updating || deleting}
+          disabled={!valid || disabled || updating || deleting}
           onClick={(event) => {
             event.stopPropagation();
             onSave(markerId, position);

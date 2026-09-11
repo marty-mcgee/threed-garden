@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.19.12",
+  "version": "0.19.13",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -37,7 +37,13 @@
     "validate:threed-model-blob-paths": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-blob-paths.mts",
     "validate:threed-bulk-saved-texture": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-bulk-saved-texture.mts",
     "validate:threed-model-bulk-preview": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-bulk-preview.mts",
-    "validate:threed-model-list": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-list.mts"
+    "validate:threed-model-list": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-list.mts",
+    "validate:threed-model-list-api": "node src/lib/scripts/validate-threed-model-list-api.cjs",
+    "validate:threed-database-failures": "node src/lib/scripts/validate-threed-database-failures.cjs",
+    "validate:threed-character-position-save": "node src/lib/scripts/validate-threed-character-position-save.cjs",
+    "validate:threed-character-animation-restart": "node src/lib/scripts/validate-threed-character-animation-restart.cjs",
+    "validate:threed-category-list": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-category-list.mts",
+    "validate:threed-texture-list": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-texture-list.mts"
   },
   "dependencies": {
     "@auth/core": "^0.34.3",

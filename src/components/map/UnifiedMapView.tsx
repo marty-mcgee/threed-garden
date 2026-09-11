@@ -325,8 +325,11 @@ export function UnifiedMapView({
   const handleRuntimeMarkerPositionChange = useCallback((
     moduleType: string,
     assetId: number,
-    position: { x: number; y: number; z: number },
+    position: { x: number; y: number; z: number; rotation?: number },
   ) => {
+    if (position.rotation !== undefined) {
+      runtimeMarkerRegistryRef.current?.updateLiveRotation(moduleType, assetId, position.rotation);
+    }
     const updated = runtimeMarkerRegistryRef.current?.updateLivePosition(
       moduleType,
       assetId,
@@ -368,7 +371,9 @@ export function UnifiedMapView({
         label: marker.label,
         isVisible: marker.isVisible,
         isActive: marker.isActive,
-        data: marker.data,
+        data: marker.type === 'characters' && registered.liveRotation !== null
+          ? { ...marker.data, rotation: registered.liveRotation }
+          : marker.data,
         metadata: marker.metadata,
       };
     });

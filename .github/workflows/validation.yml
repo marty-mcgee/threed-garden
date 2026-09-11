@@ -42,8 +42,26 @@ jobs:
       - name: TypeScript type check
         run: bun run typecheck
 
+      - name: Validate Texture list pagination inputs
+        run: npm run validate:threed-texture-list
+
+      - name: Validate Category list pagination inputs
+        run: npm run validate:threed-category-list
+
       - name: Validate Model list pagination inputs
         run: npm run validate:threed-model-list
+
+      - name: Validate Model list query batching
+        run: npm run validate:threed-model-list-api
+
+      - name: Validate database pool and map failure handling
+        run: npm run validate:threed-database-failures
+
+      - name: Validate Character position saving
+        run: npm run validate:threed-character-position-save
+
+      - name: Validate Character animation restart
+        run: npm run validate:threed-character-animation-restart
 
       - name: Validate Model import contracts
         run: npm run validate:threed-model-import

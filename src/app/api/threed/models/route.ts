@@ -1,3 +1,4 @@
+import { databaseConnectionDiagnostic } from '@/lib/db/connection-diagnostics';
 import { parseModelListQuery } from '@/lib/services/threed/models/model-list-query';
 import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
 // app/api/threed/models/route.ts
@@ -79,8 +80,11 @@ async function loadCategoriesByModelIds(modelIds: number[]): Promise<Map<number,
   return byModel;
 }
 
-async function loadMaterialAssignments(modelId: number): Promise<ModelMaterialAssignment[]> {
-  return db.select({
+async function loadMaterialAssignmentsByModelIds(modelIds: number[]): Promise<Map<number, ModelMaterialAssignment[]>> {
+  const byModel = new Map<number, ModelMaterialAssignment[]>();
+  if (modelIds.length === 0) return byModel;
+  const rows = await db.select({
+    modelId: threedModelMaterialAssignments.modelId,
     targetKey: threedModelMaterialAssignments.targetKey,
     channel: threedModelMaterialAssignments.channel,
     textureId: threedModelTextures.id,
@@ -90,7 +94,17 @@ async function loadMaterialAssignments(modelId: number): Promise<ModelMaterialAs
   }).from(threedModelMaterialAssignments).innerJoin(
     threedModelTextures,
     eq(threedModelTextures.id, threedModelMaterialAssignments.textureId),
-  ).where(eq(threedModelMaterialAssignments.modelId, modelId));
+  ).where(inArray(threedModelMaterialAssignments.modelId, modelIds));
+  for (const { modelId, ...assignment } of rows) {
+    const assignments = byModel.get(modelId) ?? [];
+    assignments.push(assignment);
+    byModel.set(modelId, assignments);
+  }
+  return byModel;
+}
+
+async function loadMaterialAssignments(modelId: number): Promise<ModelMaterialAssignment[]> {
+  return (await loadMaterialAssignmentsByModelIds([modelId])).get(modelId) ?? [];
 }
 
 async function updateModelAndCategories(
@@ -250,6 +264,7 @@ function serializeLibraryModel(model: ModelWithFiles, viewerUserId: string) {
 //   - status (optional): Filter by model status
 //   - isActive (optional): Filter by active status
 //   - scope=library: Public non-Character models eligible for direct placement
+//   - view=selector: Paginated identity-only choices, alphabetically ordered
 //   - category (optional): Filter by assigned category slug
 //   - search (optional): Search by modelName or modelType
 //   - limit (optional): Number of records (default: 50)
@@ -392,6 +407,16 @@ export async function GET(request: NextRequest) {
       .where(where);
 
     const total = Number(countResult?.count ?? 0);
+    // Dropdowns need identity only, not every file and material in the catalog.
+    if (searchParams.get('view') === 'selector') {
+      const models = await db.select({
+        id: threedModels.id,
+        modelName: threedModels.modelName,
+        modelType: threedModels.modelType,
+      }).from(threedModels).where(where)
+        .orderBy(asc(threedModels.modelName), asc(threedModels.id)).limit(limit).offset(offset);
+      return NextResponse.json({ success: true, data: models, pagination: { limit, offset, total } });
+    }
     const selection = modelSelection();
     const sortFields = {
       name: sql`lower(${threedModels.modelName})`,
@@ -418,25 +443,25 @@ export async function GET(request: NextRequest) {
       .limit(limit)
       .offset(offset);
 
-    const categoriesByModel = await loadCategoriesByModelIds(results.map((model) => model.id));
-
-    // ✅ Fetch related model files for each model
-    const modelsWithFiles = await Promise.all(
-      results.map(async (model) => {
-        const files = await db
-          .select()
-          .from(threedModelFiles)
-          .where(eq(threedModelFiles.modelId, model.id))
-          .orderBy(threedModelFiles.loadOrder);
-
-        return {
-          ...model,
-          files: files || [],
-          categories: categoriesByModel.get(model.id) ?? [],
-          materialAssignments: await loadMaterialAssignments(model.id),
-        };
-      })
-    );
+    const modelIds = results.map((model) => model.id);
+    const categoriesByModel = await loadCategoriesByModelIds(modelIds);
+    const files = modelIds.length === 0 ? [] : await db.select().from(threedModelFiles)
+      .where(inArray(threedModelFiles.modelId, modelIds))
+      .orderBy(asc(threedModelFiles.loadOrder), asc(threedModelFiles.id));
+    const filesByModel = new Map<number, typeof files>();
+    for (const file of files) {
+      if (file.modelId === null) continue;
+      const modelFiles = filesByModel.get(file.modelId) ?? [];
+      modelFiles.push(file);
+      filesByModel.set(file.modelId, modelFiles);
+    }
+    const assignmentsByModel = await loadMaterialAssignmentsByModelIds(modelIds);
+    const modelsWithFiles = results.map((model) => ({
+      ...model,
+      files: filesByModel.get(model.id) ?? [],
+      categories: categoriesByModel.get(model.id) ?? [],
+      materialAssignments: assignmentsByModel.get(model.id) ?? [],
+    }));
 
     return NextResponse.json({
       success: true,
@@ -451,6 +476,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching models:', error);
+    console.error('Database connection diagnostic:', JSON.stringify(databaseConnectionDiagnostic(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to fetch models' },
       { status: 500 }

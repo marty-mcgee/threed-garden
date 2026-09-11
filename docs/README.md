@@ -52,7 +52,7 @@ The v0.18.7a production release provides a non-Character ThreeD Model Library pa
 
 ## Development plans
 
-**v0.19.11 — ThreeD Model Management** is released. FBX/GLB/GLTF and OBJ/MTL support are included. **v0.19.12 — ThreeD Admin Model Workspace** is now User-confirmed in production. No later candidate is designated.
+**v0.19.11 — ThreeD Model Management** is released. FBX/GLB/GLTF and OBJ/MTL support are included. **v0.19.12 — ThreeD Admin Model Workspace** is now User-confirmed in production. Development is now **v0.19.13 — ThreeD Admin Sub-Module Workspace UI/UX Updates**; see [the plan](plans/v0.19.13.md).
 
 - [App overview and prioritized follow-up](plans/app-overview-v0.19.11.md) — baseline findings with local A05/A06 fixes and User-deferred areas.
 - [v0.19.11 completed release handoff](plans/v0.19.11-release.md) — scope, validation, deployment and compatibility.

@@ -8,6 +8,7 @@ import {
   useState,
   useCallback,
   useEffect,
+  useLayoutEffect,
 } from 'react';
 
 import { useFrame } from '@react-three/fiber';
@@ -135,6 +136,7 @@ interface EcctrlCharacterProps {
       x: number;
       y: number;
       z: number;
+      rotation?: number;
     }
   ) => void;
 
@@ -365,7 +367,7 @@ function useCharacterModel(
     loading,
     setLoading,
   ] =
-    useState(false);
+    useState(true);
 
   const [
     error,
@@ -522,10 +524,6 @@ function useCharacterModel(
                 character.model!
                   .rotationY ||
                   '0'
-              ) +
-              (
-                character.rotation ||
-                0
               )
             ) *
             Math.PI /
@@ -1121,6 +1119,10 @@ export function EcctrlCharacter({
         character.visible
     );
 
+  // Readiness belongs to the specific model object, never a previous load.
+  const [posedModel, setPosedModel] = useState<THREE.Group | null>(null);
+  const characterVisualReady = !loading && model !== null && posedModel === model;
+
   const runtimeSettlementReportedRef = useRef(false);
   const runtimeSettlementKey = `${character.id}:${character.model?.filePath ?? 'fallback'}`;
 
@@ -1130,10 +1132,10 @@ export function EcctrlCharacter({
 
   useEffect(() => {
     const hasSafeFallback = !character.model?.filePath || error != null;
-    if ((!model && !hasSafeFallback) || runtimeSettlementReportedRef.current) return;
+    if ((!characterVisualReady && !hasSafeFallback) || runtimeSettlementReportedRef.current) return;
     runtimeSettlementReportedRef.current = true;
     onRuntimeSettled?.();
-  }, [character.model?.filePath, error, model, onRuntimeSettled]);
+  }, [character.model?.filePath, error, characterVisualReady, onRuntimeSettled]);
 
   useEffect(() => {
     if (previousLayerEnabledRef.current === layerEnabled) return;
@@ -1244,10 +1246,16 @@ export function EcctrlCharacter({
         }
 
         lastControlPositionReportAtRef.current = now;
+        const quaternion = ecctrlRef.current?.currQuat;
+        const yaw = quaternion
+          ? Math.atan2(2 * (quaternion.w * quaternion.y + quaternion.x * quaternion.z),
+            1 - 2 * (quaternion.y * quaternion.y + quaternion.x * quaternion.x)) * 180 / Math.PI
+          : undefined;
         onControlChange({
           x: position.x,
           y: position.y,
           z: position.z,
+          ...(Number.isFinite(yaw) ? { rotation: yaw } : {}),
         });
       },
       [onControlChange]
@@ -1346,13 +1354,10 @@ export function EcctrlCharacter({
             .name;
 
         /**
-         * Avoid restarting the same animation.
+         * Clip names survive model replacement; action identity does not.
+         * Only skip an action that is actually running on this mixer.
          */
-        if (
-          lastClipNameRef
-            .current ===
-          clipName
-        ) {
+        if (!force && currentActionRef.current === action && action.isRunning()) {
           return;
         }
 
@@ -1369,8 +1374,9 @@ export function EcctrlCharacter({
          * Crossfade from the previous animation.
          */
         if (
-          currentActionRef
-            .current
+          currentActionRef.current
+          && currentActionRef.current !== action
+          && currentActionRef.current.getMixer() === mixer
         ) {
           currentActionRef
             .current
@@ -1427,18 +1433,20 @@ export function EcctrlCharacter({
     );
 
   /**
-   * Start with Idle when the model becomes available.
+   * Start and evaluate idle before exposing a newly loaded visual.
+   * Keep initialization in the existing action path; it dispatches no world action.
    */
-  useEffect(() => {
-    if (model) {
-      playAnimation(
-        'IDLE'
-      );
-    }
-  }, [
-    model,
-    playAnimation,
-  ]);
+  useLayoutEffect(() => {
+    if (!model || loading) return;
+    playAnimation('IDLE');
+    const mixer = mixerRef.current;
+    const action = currentActionRef.current;
+    if (actionsRef.current.size > 0 && (!mixer || action?.getMixer() !== mixer || !action.isRunning())) return;
+    // play() schedules an action; update(0) actually applies its starting pose.
+    mixer?.update(0);
+    model.updateMatrixWorld(true);
+    setPosedModel(model);
+  }, [model, loading, playAnimation, mixerRef, actionsRef]);
 
   // ======================================================
   // SEMANTIC TASK ACTIONS
@@ -2456,6 +2464,7 @@ export function EcctrlCharacter({
         ref={
           ecctrlRef
         }
+        rotation={[0, (Number(character.rotation) || 0) * Math.PI / 180, 0]}
         position={
           position
         }
@@ -2536,6 +2545,7 @@ export function EcctrlCharacter({
       ref={
         ecctrlRef
       }
+      rotation={[0, (Number(character.rotation) || 0) * Math.PI / 180, 0]}
       position={
         position
       }
@@ -2626,7 +2636,7 @@ export function EcctrlCharacter({
 
       {model && (
         <group
-          visible={layerEnabled}
+          visible={layerEnabled && characterVisualReady}
           position={[
             0,
             -GROUND_OFFSET,

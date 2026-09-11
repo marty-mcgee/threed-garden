@@ -9,6 +9,7 @@
 //   - summary stats, skeleton/empty/error states
 'use client';
 
+import { createPortal } from 'react-dom';
 import {
   useState,
   useEffect,
@@ -87,6 +88,8 @@ interface Model {
 }
 
 interface ThreeDModelFilesCRUDProps {
+  selectorContainer?: HTMLElement | null;
+  onSelectModel?: (id: number) => void;
   initialModelId?: number | null;
 }
 
@@ -208,10 +211,10 @@ function FileCardThumbnail({ file, className }: { file: ModelFileRow; className:
 // ============================================
 // COMPONENT
 // ============================================
-export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFilesCRUDProps) {
+export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer, onSelectModel }: ThreeDModelFilesCRUDProps) {
   const { showToast, ToastComponent } = useToast();
 
-  const [models, setModels] = useState<Model[]>([]);
+  const [models, setModels] = useState<Array<Pick<Model, 'id' | 'modelName' | 'modelType'>>>([]);
   const [modelId, setModelId] = useState<string>(initialModelId ? String(initialModelId) : '');
   const [modelDetail, setModelDetail] = useState<Model | null>(null);
   const [loadingModels, setLoadingModels] = useState(true);
@@ -239,6 +242,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
   const [copiedPath, setCopiedPath] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const modelsRequestRef = useRef<AbortController | null>(null);
   const pendingRequirementRef = useRef<ModelDependencyRequirement | null>(null);
 
   const selectedModel = useMemo(
@@ -288,37 +292,44 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
   // DATA LOADING
   // ============================================
   const loadModels = useCallback(async () => {
+    modelsRequestRef.current?.abort();
+    const controller = new AbortController();
+    modelsRequestRef.current = controller;
     setLoadingModels(true);
     setError(null);
     try {
-      const response = await fetch('/api/threed/models?limit=200');
-      const data = await response.json();
-      if (data.success) {
-        const list = Array.isArray(data.data) ? (data.data as Model[]) : [];
-        setModels(list);
-        if (!modelId && list.length > 0) {
-          setModelId(String(list[0].id));
-        }
-      } else {
-        const message = data.error || 'Failed to load models';
-        setError(message);
-        showToast(message, 'error');
-        setModels([]);
+      const list: Array<Pick<Model, 'id' | 'modelName' | 'modelType'>> = [];
+      let offset = 0;
+      while (true) {
+        const response = await fetch(`/api/threed/models?view=selector&limit=200&offset=${offset}`, { signal: controller.signal });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.error || 'Failed to load models');
+        const batch = Array.isArray(data.data) ? data.data as Array<Pick<Model, 'id' | 'modelName' | 'modelType'>> : [];
+        list.push(...batch);
+        offset += batch.length;
+        if (batch.length === 0 || offset >= data.pagination.total) break;
+      }
+      if (controller.signal.aborted) return;
+      setModels(list);
+      if (!modelId && list.length > 0) {
+        setModelId(String(list[0].id));
       }
     } catch (err) {
+      if (controller.signal.aborted) return;
       const message = 'Failed to load models';
       console.error(message, err);
       setError(message);
       showToast(message, 'error');
       setModels([]);
     } finally {
-      setLoadingModels(false);
+      if (!controller.signal.aborted) setLoadingModels(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showToast]);
 
   useEffect(() => {
     loadModels();
+    return () => modelsRequestRef.current?.abort();
   }, [loadModels]);
 
   const loadFiles = useCallback(
@@ -816,6 +827,24 @@ export function ThreeDModelFilesCRUD({ initialModelId = null }: ThreeDModelFiles
   return (
     <div className="space-y-3">
       {ToastComponent}
+      {selectorContainer && createPortal(
+        <select
+          aria-label="Select Model to manage files"
+          className="h-7 w-72 max-w-full rounded-md border bg-background px-2 text-xs"
+          value={modelId}
+          disabled={loadingModels || uploading || primaryFileId !== null || deletingId !== null || linkingTexture !== null}
+          onChange={(event) => {
+            const id = Number(event.target.value);
+            if (id > 0) {
+              if (onSelectModel) onSelectModel(id);
+              else setModelId(String(id));
+            }
+          }}
+        >
+          <option value="" disabled>{loadingModels ? 'Loading Models…' : 'Select Model…'}</option>
+          {modelId && !models.some((model) => String(model.id) === modelId) && <option value={modelId}>{modelDetail?.modelName ?? `Model #${modelId}`}</option>}
+          {models.map((model) => <option key={model.id} value={model.id}>{model.modelName} · {model.modelType.toUpperCase()} · #{model.id}</option>)}
+        </select>, selectorContainer)}
 
       <div className="grid items-start gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(400px,0.85fr)]">
           <ThreeDModelAssetPreview

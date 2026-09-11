@@ -51,6 +51,7 @@ export interface ThreeDRuntimeMarkerSnapshot {
   name: string;
   assetPosition: ThreeDPosition;
   livePosition: ThreeDPosition | null;
+  liveRotation: number | null;
   currentPosition: ThreeDPosition;
   positionSource: ThreeDRuntimeMarkerPositionSource;
 }
@@ -79,6 +80,7 @@ interface ThreeDRuntimeMarkerEntry {
   name: string;
   assetPosition: ThreeDPosition;
   livePosition: ThreeDPosition | null;
+  liveRotation: number | null;
 }
 
 export function normalizeThreeDRuntimeMarkerModuleType(
@@ -106,6 +108,7 @@ function validatePosition(position: ThreeDPosition): ThreeDPosition {
 function createEntry(
   registration: ThreeDRuntimeMarkerRegistration,
   livePosition: ThreeDPosition | null = null,
+  liveRotation: number | null = null,
 ): ThreeDRuntimeMarkerEntry {
   const moduleType = normalizeThreeDRuntimeMarkerModuleType(
     registration.moduleType,
@@ -130,6 +133,7 @@ function createEntry(
     name,
     assetPosition: validatePosition(registration.assetPosition),
     livePosition: livePosition ? validatePosition(livePosition) : null,
+    liveRotation,
   };
 }
 
@@ -149,6 +153,7 @@ function snapshotEntry(entry: ThreeDRuntimeMarkerEntry): ThreeDRuntimeMarkerSnap
     assetPosition,
     livePosition,
     currentPosition,
+    liveRotation: entry.liveRotation,
     positionSource: livePosition ? 'runtime' : 'asset',
   });
 }
@@ -199,7 +204,7 @@ export class ThreeDRuntimeMarkerRegistry {
       const existing = this.entries.get(candidate.key);
       replacement.set(
         candidate.key,
-        createEntry(registration, existing?.livePosition ?? null),
+        createEntry(registration, existing?.livePosition ?? null, existing?.liveRotation ?? null),
       );
     }
 
@@ -231,6 +236,18 @@ export class ThreeDRuntimeMarkerRegistry {
       && entry.livePosition?.z === nextPosition.z
     ) return true;
     entry.livePosition = nextPosition;
+    this.notify();
+    return true;
+  }
+
+  updateLiveRotation(moduleType: string, assetId: number, degrees: number): boolean {
+    const identity = resolveIdentity(moduleType, assetId);
+    if (!identity || !Number.isFinite(degrees)) return false;
+    const entry = this.entries.get(createThreeDRuntimeMarkerKey(identity));
+    if (!entry) return false;
+    const normalized = ((degrees % 360) + 360) % 360;
+    if (entry.liveRotation === normalized) return true;
+    entry.liveRotation = normalized;
     this.notify();
     return true;
   }

@@ -1,5 +1,6 @@
+import { parseCategoryListQuery } from '@/lib/services/threed/models/category-list-query';
 import { NextRequest, NextResponse } from 'next/server';
-import { and, asc, eq } from 'drizzle-orm';
+import { and, asc, desc, eq, sql } from 'drizzle-orm';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import {
@@ -86,6 +87,27 @@ export async function GET(request: NextRequest) {
 
   const conditions = [eq(threedModelCategories.userId, session.user.id)];
   if (id) conditions.push(eq(threedModelCategories.id, id));
+  let listQuery;
+  try { listQuery = id ? null : parseCategoryListQuery(new URL(request.url).searchParams); }
+  catch (error) { return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Invalid list query' }, { status: 400 }); }
+  if (listQuery) {
+    const { limit, offset, search, sort, direction } = listQuery;
+    if (search) conditions.push(sql`(${threedModelCategories.name} ilike ${`%${search}%`}
+      or ${threedModelCategories.slug} ilike ${`%${search}%`}
+      or ${threedModelCategories.description} ilike ${`%${search}%`})`);
+    const where = and(...conditions);
+    const parentName = sql<string | null>`(select p.name from ${threedModelCategories} p
+      where p.id = ${threedModelCategories.parentId} and p.user_id = ${threedModelCategories.userId})`;
+    const fields = { name: sql`lower(${threedModelCategories.name})`, slug: threedModelCategories.slug,
+      parent: sql`lower(${parentName})`, order: threedModelCategories.sortOrder,
+      active: sql`case when ${threedModelCategories.isActive} then 0 else 1 end` };
+    const ordering = direction === 'asc' ? asc(fields[sort]) : desc(fields[sort]);
+    const [count] = await db.select({ total: sql<number>`count(*)` }).from(threedModelCategories).where(where);
+    const rows = await db.select().from(threedModelCategories).where(where)
+      .orderBy(sql`${ordering} nulls last`, asc(threedModelCategories.name), asc(threedModelCategories.id))
+      .limit(limit).offset(offset);
+    return NextResponse.json({ success: true, data: rows, pagination: { limit, offset, total: Number(count?.total ?? 0) } });
+  }
   const categories = await db
     .select()
     .from(threedModelCategories)

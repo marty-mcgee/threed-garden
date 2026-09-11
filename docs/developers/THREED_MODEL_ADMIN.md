@@ -503,3 +503,19 @@ Pagination layout refinement: the selection count, Delete selected and Clear sel
 The standalone `/admin/threed/models` page now constrains its workspace to the dynamic viewport height. App and workspace headers, pagination and bulk controls remain above a flexible records panel. That panel scrolls vertically and horizontally, keeps its column headings sticky, contains wheel overscroll, and is keyboard-focusable. The existing fixed sidebar retains its own navigation scroll area. The shared Table component and the Models component embedded in Project management retain their previous scrolling behavior.
 
 TypeScript and diff whitespace checks passed; no build ran. Manual visual verification remains: scroll a 200-row page, use sorting and selection with the header visible, check horizontal scrolling on narrow windows, collapse the sidebar, and open the import/edit dialogs. The change introduces no data or API behavior.
+
+## v0.19.13 development — Model Categories workspace
+
+Model Categories now follows the Models workspace blueprint: stationary compact controls, paginated/sortable records, parent labels, Active indicators and create/edit dialogs. Page-local bulk deletion preserves the existing child-category restriction and reports partial failures. The legacy full-taxonomy API remains available to Model category selectors and importers. See [Stage 1a](../plans/v0.19.13.md#stage-1a--model-categories-implemented-locally) for implementation and validation limits. This work is not yet released; v0.19.12 remains production.
+
+## v0.19.13 development — Model Textures workspace
+
+Model Textures now uses the compact scrollable records blueprint with optional server pagination/search/sorting, thumbnail previews and existing upload/rename/activation actions. Selection is page-local and limited to apparently unreferenced Textures; bulk deletion retains the server's assignment and shared-URL checks. References counts material assignments plus Model File links, not distinct Models. Catalog requests without list parameters still return all owned Textures for importers. See the [development record](../plans/v0.19.13.md) for validation and manual checks. This change is not yet released.
+
+## v0.19.13 development — Model Files selector
+
+Model Files retains its original specialized customization layout at the User's request; the scrollable-table redesign was reverted. The only new UI is a top-header Model dropdown with all authorized Models, including those beyond the first 200. Selection updates the URL and opens that Model's complete preview, requirements and attachment workspace. This page is excluded from the generic constrained workspace layout. See [the development record](../plans/v0.19.13.md) for validation and manual checks.
+
+## Model list query load
+
+Paginated Model GET responses batch category, file and material-assignment reads by the authorized page IDs. A nonempty page uses five database calls, independent of its row count. The Model Files header uses `view=selector` for identity-only paginated choices (two calls per page) and cancels unfinished catalog requests when leaving the workspace. Existing full-list response fields and single-Model file customization remain available. `validate:threed-model-list-api` checks the actual handler using a database double; live timeout resolution still requires manual navigation verification.

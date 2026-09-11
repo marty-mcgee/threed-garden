@@ -1,5 +1,6 @@
+import { parseTextureListQuery } from '@/lib/services/threed/models/texture-list-query';
 import { NextRequest, NextResponse } from 'next/server';
-import { and, asc, eq } from 'drizzle-orm';
+import { and, asc, desc, eq, getTableColumns, sql } from 'drizzle-orm';
 import { del, put } from '@vercel/blob';
 import { createThreeDBlobPath } from '@/lib/services/threed/models/model-blob-paths';
 import { auth } from '@/lib/auth';
@@ -12,10 +13,34 @@ export const runtime = 'nodejs';
 const MAX_TEXTURE_BYTES = 32 * 1024 * 1024;
 const SUPPORTED_TEXTURE_TYPES = new Set(['image/png', 'image/jpeg', 'image/webp', 'image/bmp']);
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
+
+  let query;
+  try { query = parseTextureListQuery(new URL(request.url).searchParams); }
+  catch (error) { return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Invalid query' }, { status: 400 }); }
+  if (query) {
+    const { limit, offset, search, sort, direction } = query;
+    const conditions = [eq(threedModelTextures.userId, session.user.id)];
+    if (search) conditions.push(sql`(${threedModelTextures.textureName} ilike ${`%${search}%`}
+      or ${threedModelTextures.fileName} ilike ${`%${search}%`}
+      or ${threedModelTextures.mimeType} ilike ${`%${search}%`})`);
+    const where = and(...conditions);
+    const assignmentCount = sql<number>`(select count(*)::integer from ${threedModelMaterialAssignments} a
+      where a.texture_id = ${threedModelTextures.id} and a.user_id = ${threedModelTextures.userId})`;
+    const fileReferenceCount = sql<number>`(select count(*)::integer from ${threedModelFiles} f
+      where f.file_path = ${threedModelTextures.filePath} and f.user_id = ${threedModelTextures.userId})`;
+    const fields = { name: sql`lower(${threedModelTextures.textureName})`, fileName: sql`lower(${threedModelTextures.fileName})`,
+      type: threedModelTextures.mimeType, references: sql`${assignmentCount} + ${fileReferenceCount}`,
+      active: sql`case when ${threedModelTextures.isActive} then 0 else 1 end`, size: threedModelTextures.fileSize };
+    const order = direction === 'asc' ? asc(fields[sort]) : desc(fields[sort]);
+    const [count] = await db.select({ total: sql<number>`count(*)` }).from(threedModelTextures).where(where);
+    const rows = await db.select({ ...getTableColumns(threedModelTextures), assignmentCount, fileReferenceCount })
+      .from(threedModelTextures).where(where).orderBy(sql`${order} nulls last`, asc(threedModelTextures.id)).limit(limit).offset(offset);
+    return NextResponse.json({ success: true, data: rows, pagination: { limit, offset, total: Number(count?.total ?? 0) } });
   }
 
   const [textures, assignments] = await Promise.all([
