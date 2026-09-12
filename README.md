@@ -7,7 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.19.16 — Animations: Character and Model Assignment + Preview Interface` (package `0.19.16`, commit `e8cccf3`), deployment User-confirmed. Character preview and optional Model defaults are released; generic Model playback and broader Character/world-action UX remain deferred. See the [release record](docs/releases/v0.19.16.md) and [handoff](docs/plans/v0.19.16-release.md).
+> **Current production release:** `v0.19.17 — ThreeD UI Refinement + Scene Overlays` (commit `e16e2e4`), deployment User-confirmed. Released package metadata remains `0.19.16`. Compact ThreeD forms and stable-Canvas activity overlays are accepted. See the [release record](docs/releases/v0.19.17.md).
 
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 
