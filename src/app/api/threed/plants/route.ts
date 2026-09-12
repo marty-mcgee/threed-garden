@@ -1,13 +1,14 @@
+import { parsePlantListQuery } from '@/lib/services/threed/plants/plant-list-query';
 import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
 // app/api/threed/plants/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { 
-  threedPlants,
+  threedPlants, plantTypeEnum, plantStatusEnum,
   threedModels,
 } from '@/lib/schema/threed';
-import { eq, and, desc, sql, type SQL } from 'drizzle-orm';
+import { eq, and, asc, desc, inArray, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
@@ -32,10 +33,7 @@ export async function GET(request: NextRequest) {
     const id = searchParams.get('id');
     const type = searchParams.get('type');
     const status = searchParams.get('status');
-    const isActive = searchParams.get('isActive');
-    const search = searchParams.get('search');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const offset = parseInt(searchParams.get('offset') || '0');
+
 
     const userId = session.user.id;
 
@@ -75,6 +73,16 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    let query;
+    try {
+      query = parsePlantListQuery(searchParams);
+      if (type && !(plantTypeEnum.enumValues as readonly string[]).includes(type)) throw new Error('Invalid type');
+      if (status && !(plantStatusEnum.enumValues as readonly string[]).includes(status)) throw new Error('Invalid status');
+    } catch (error) {
+      return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Invalid query' }, { status: 400 });
+    }
+    const { limit, offset, search, isActive, sort, direction } = query;
+    const sortFields = { name: sql`lower(${threedPlants.commonName})`, plantId: threedPlants.plantId, type: threedPlants.type, status: threedPlants.status, maturity: threedPlants.daysToMaturity, active: threedPlants.isActive, createdAt: threedPlants.createdAt };
     type PlantType = NonNullable<(typeof threedPlants.$inferSelect)['type']>;
     type PlantStatus = NonNullable<(typeof threedPlants.$inferSelect)['status']>;
     const conditions: SQL[] = [eq(threedPlants.userId, userId)];
@@ -94,9 +102,9 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       conditions.push(
-        sql`${threedPlants.commonName} ILIKE ${`%${search}%`} OR 
+        sql`(${threedPlants.commonName} ILIKE ${`%${search}%`} OR
             ${threedPlants.scientificName} ILIKE ${`%${search}%`} OR
-            ${threedPlants.plantId} ILIKE ${`%${search}%`}`
+            ${threedPlants.plantId} ILIKE ${`%${search}%`})`
       );
     }
 
@@ -108,32 +116,21 @@ export async function GET(request: NextRequest) {
       .from(threedPlants)
       .where(where);
 
-    const total = countResult?.count || 0;
+    const total = Number(countResult?.count || 0);
 
     // ✅ Get paginated results
     const results = await db
       .select()
       .from(threedPlants)
       .where(where)
-      .orderBy(desc(threedPlants.createdAt))
+      .orderBy(direction === 'asc' ? asc(sortFields[sort]) : desc(sortFields[sort]), asc(threedPlants.id))
       .limit(limit)
       .offset(offset);
 
-    // ✅ Fetch related model info for each plant
-    const plantsWithModels = await Promise.all(
-      results.map(async (plant) => {
-        const [model] = plant.modelId ? await db
-          .select(modelSelection())
-          .from(threedModels)
-          .where(eq(threedModels.id, plant.modelId))
-          .limit(1) : [];
-
-        return {
-          ...plant,
-          model: model || null,
-        };
-      })
-    );
+    const modelIds = [...new Set(results.flatMap(plant => plant.modelId === null ? [] : [plant.modelId]))];
+    const models = modelIds.length ? await db.select(modelSelection()).from(threedModels).where(inArray(threedModels.id, modelIds)) : [];
+    const byId = new Map(models.map(model => [model.id, model]));
+    const plantsWithModels = results.map(plant => ({ ...plant, model: plant.modelId === null ? null : byId.get(plant.modelId) ?? null }));
 
     return NextResponse.json({
       success: true,

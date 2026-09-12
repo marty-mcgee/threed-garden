@@ -2,16 +2,20 @@
 'use client';
 
 import { Fragment, useState, useEffect } from 'react';
+import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { createPortal } from 'react-dom';
 import {
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Check,
+  Box,
   Plus,
   Edit,
   Trash2,
   Loader2,
   Bot,
   MoreHorizontal,
-  Search,
-  Filter,
   Eye,
   EyeOff,
   MapPin,
@@ -176,11 +180,11 @@ const getOptionLabel = (options: { value: string; label: string }[], value: stri
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'online': return 'bg-green-100 text-green-700';
-    case 'offline': return 'bg-gray-100 text-gray-700';
-    case 'maintenance': return 'bg-yellow-100 text-yellow-700';
-    case 'error': return 'bg-red-100 text-red-700';
-    default: return 'bg-gray-100 text-gray-700';
+    case 'online': return 'text-green-700 dark:text-green-400';
+    case 'offline': return 'text-gray-700 dark:text-gray-400';
+    case 'maintenance': return 'text-yellow-700 dark:text-yellow-400';
+    case 'error': return 'text-red-700 dark:text-red-400';
+    default: return 'text-gray-700 dark:text-gray-400';
   }
 };
 
@@ -198,17 +202,16 @@ const getBatteryIcon = (level: number | null) => {
   return <Battery className="w-3 h-3 text-red-500" />;
 };
 
-export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => void }) {
+export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { onModuleUpdate?: () => void; scrollRecords?: boolean }) {
   const { showToast, ToastComponent } = useToast();
   const [farmbots, setFarmbots] = useState<Farmbot[]>([]);
   const [beds, setBeds] = useState<Bed[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingFarmbot, setEditingFarmbot] = useState<Farmbot | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [filterActive, setFilterActive] = useState<string>('all');
   const [credentialFarmbot, setCredentialFarmbot] = useState<Farmbot | null>(null);
   const [credentialInput, setCredentialInput] = useState('');
   const [credentialLoading, setCredentialLoading] = useState(false);
@@ -232,6 +235,20 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
   const [activityFarmbot, setActivityFarmbot] = useState<Farmbot | null>(null);
   const [connectionPanelHost, setConnectionPanelHost] = useState<HTMLDivElement | null>(null);
 
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(25);
+  const [total, setTotal] = useState(0);
+  const [sort, setSort] = useState({ key: 'name', direction: 'asc' });
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [bulkNotice, setBulkNotice] = useState('');
+  const [revision, setRevision] = useState(0);
+  const fetchFarmbots = () => setRevision(value => value + 1);
+  function resetList() { setPage(0); setSelected(new Set()); setLoading(true); }
+
+
+  const listBusy = bulkBusy || credentialFarmbot !== null || activityFarmbot !== null;
+
   // ✅ Form state
   const [formData, setFormData] = useState<FormData>({
     assetCode: '',
@@ -251,29 +268,27 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
 
   // ✅ Fetch data
   useEffect(() => {
-    fetchFarmbots();
     fetchBeds();
   }, []);
 
-  const fetchFarmbots = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch('/api/threed/farmbots?limit=100');
-      const data = await response.json();
-      if (data.success) {
-        setFarmbots(Array.isArray(data.data) ? data.data : []);
-      } else {
-        showToast(data.error || 'Failed to fetch farmbots', 'error');
-        setFarmbots([]);
-      }
-    } catch (error) {
-      console.error('Error fetching farmbots:', error);
-      showToast('Failed to fetch farmbots', 'error');
-      setFarmbots([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true); setLoadError(''); setSelected(new Set());
+    const params = new URLSearchParams({ limit: String(pageSize), offset: String(page * pageSize), search: searchQuery, sort: sort.key, direction: sort.direction });
+    const timer = setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/threed/farmbots?${params}`, { signal: controller.signal, cache: 'no-store' });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.error || 'Failed to fetch Farmbots');
+        if (controller.signal.aborted) return;
+        setFarmbots(data.data); setTotal(Number(data.pagination.total));
+        if (page > 0 && page * pageSize >= data.pagination.total) setPage(Math.max(0, Math.ceil(data.pagination.total / pageSize) - 1));
+      } catch (error) {
+        if (!controller.signal.aborted) { setLoadError(error instanceof Error ? error.message : 'Failed to fetch Farmbots'); setFarmbots([]); }
+      } finally { if (!controller.signal.aborted) setLoading(false); }
+    }, 200);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [page, pageSize, searchQuery, sort, revision]);
 
   const fetchBeds = async () => {
     try {
@@ -288,12 +303,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
     }
   };
 
-  const filteredFarmbots = farmbots.filter((farmbot) =>
-    farmbot.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    farmbot.assetCode.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (farmbot.brokerDeviceId?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
-    (farmbot.notes?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
-  );
+  const filteredFarmbots = farmbots;
 
   const handleCreate = async () => {
     if (!formData.assetCode) {
@@ -388,8 +398,10 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
   };
 
   const handleDelete = async (id: number, name: string) => {
+    if (listBusy || isSubmitting) return;
     if (!confirm(`Delete FarmBot "${name}"? This action cannot be undone.`)) return;
 
+    setIsSubmitting(true);
     try {
       const response = await fetch(`/api/threed/farmbots?id=${id}`, {
         method: 'DELETE',
@@ -406,7 +418,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
     } catch (error) {
       console.error('Error deleting farmbot:', error);
       showToast('Failed to delete farmbot', 'error');
-    }
+    } finally { setIsSubmitting(false); }
   };
 
   const resetForm = () => {
@@ -832,6 +844,29 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
     }
   };
 
+  async function deleteSelected() {
+    const targets = farmbots.filter(farmbot => selected.has(farmbot.id));
+    if (listBusy || loading || isSubmitting || !targets.length || !confirm(`Delete ${targets.length} selected Farmbots? This action cannot be undone.`)) return;
+    setBulkBusy(true); setBulkNotice('');
+    let deleted = 0;
+    const failures: string[] = [];
+    for (const farmbot of targets) {
+      try {
+        const response = await fetch(`/api/threed/farmbots?id=${farmbot.id}`, { method: 'DELETE' });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.error || 'Delete failed');
+        deleted++;
+      } catch (error) { failures.push(`${farmbot.name}: ${error instanceof Error ? error.message : 'Delete failed'}`); }
+    }
+    setBulkNotice(`Deleted ${deleted} of ${targets.length} Farmbots.${failures.length ? ` ${failures.join('; ')} Check the refreshed list before retrying.` : ''}`);
+    setBulkBusy(false); setSelected(new Set()); fetchFarmbots();
+    if (deleted) onModuleUpdate?.();
+  }
+  function heading(key: string, title: string) {
+    const Icon = sort.key === key ? sort.direction === 'asc' ? ArrowUp : ArrowDown : ArrowUpDown;
+    return <TableHead className="py-1 text-xs" aria-sort={sort.key === key ? sort.direction === 'asc' ? 'ascending' : 'descending' : 'none'}><button disabled={loading || listBusy} className="inline-flex items-center gap-1" onClick={() => { resetList(); setSort({ key, direction: sort.key === key && sort.direction === 'asc' ? 'desc' : 'asc' }); }}>{title}<Icon className="h-3 w-3" aria-hidden="true" /></button></TableHead>;
+  }
+
   const renderActions = (farmbot: Farmbot) => (
     <div className="flex items-center justify-end gap-1">
       <Button
@@ -841,6 +876,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
         className={credentialFarmbot?.id === farmbot.id
           ? 'h-8 w-8 bg-muted/50 text-white hover:bg-muted/50 hover:text-white'
           : 'h-8 w-8 text-white hover:bg-muted/50 hover:text-white'}
+        disabled={bulkBusy}
         title="FarmBot Connection"
         aria-label={`FarmBot Connection for ${farmbot.name}`}
         aria-pressed={credentialFarmbot?.id === farmbot.id}
@@ -861,6 +897,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
         className={activityFarmbot?.id === farmbot.id
           ? 'h-8 w-8 bg-muted/50 text-white hover:bg-muted/50 hover:text-white'
           : 'h-8 w-8 text-white hover:bg-muted/50 hover:text-white'}
+        disabled={bulkBusy}
         title="MQTT Activity"
         aria-label={`MQTT Activity for ${farmbot.name}`}
         aria-pressed={activityFarmbot?.id === farmbot.id}
@@ -872,6 +909,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
         variant="ghost"
         size="sm"
         className="text-white hover:bg-muted/50 hover:text-white"
+        disabled={listBusy || isSubmitting}
         title="Edit FarmBot"
         aria-label={`Edit ${farmbot.name}`}
         onClick={() => openEditDialog(farmbot)}
@@ -935,30 +973,15 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
     </div>
   );
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-4">
-        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-2">
+    <div className={scrollRecords ? 'flex h-full min-h-0 flex-col gap-2' : 'space-y-2'}>
       {ToastComponent}
-
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Bot className="w-4 h-4 text-slate-500" />
-          <span className="text-sm font-medium">FarmBots</span>
-          <Badge variant="secondary" className="text-xs">
-            {filteredFarmbots.length}
-          </Badge>
-        </div>
+      <AdminWorkspaceHeader icon={Bot} title="FarmBots" description="Manage FarmBot devices and connections" className="shrink-0 [&>a]:text-[11px] [&>div:first-child>svg]:text-slate-500">
+        <Badge variant="secondary" className="text-xs">{loading || loadError ? '—' : total}</Badge>
+        <Input aria-label="Search FarmBots" placeholder="Search FarmBots by name, asset code, device ID or notes…" disabled={listBusy} value={searchQuery} onChange={event => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm" className="h-7 px-2 text-xs">
+            <Button size="sm" disabled={listBusy} className="h-7 px-2 text-[11px]">
               <Plus className="w-3 h-3 mr-1" />
               Add FarmBot
             </Button>
@@ -1167,96 +1190,44 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
             </div>
           </DialogContent>
         </Dialog>
-      </div>
+        <AdminWorkspaceLink href="/admin/threed/beds" icon={Box}>Beds</AdminWorkspaceLink>
+      </AdminWorkspaceHeader>
 
-      {/* Search & Filters */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-          <Input
-            placeholder="Search by name, device ID, notes..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-7 h-8 text-xs"
-          />
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">
+        <div className="flex flex-wrap items-center gap-2"><span>{loading ? 'Loading…' : loadError ? 'Farmbots unavailable' : `${total ? page * pageSize + 1 : 0}–${Math.min((page + 1) * pageSize, total)} of ${total} Farmbots`}</span><span aria-hidden="true">|</span><span>{selected.size} selected</span>
+          <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={loading || listBusy || isSubmitting || !!loadError || !selected.size} onClick={() => void deleteSelected()}>Delete selected ({selected.size})</Button>
+          <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={listBusy || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button>
         </div>
-        <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-[120px] h-8 text-xs">
-            <Filter className="w-3.5 h-3.5 mr-1" />
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            {FARMBOT_STATUS_OPTIONS.map((status) => (
-              <SelectItem key={status.value} value={status.value}>
-                {status.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={filterActive} onValueChange={setFilterActive}>
-          <SelectTrigger className="w-[120px] h-8 text-xs">
-            <Filter className="w-3.5 h-3.5 mr-1" />
-            <SelectValue placeholder="Active" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="true">Active</SelectItem>
-            <SelectItem value="false">Inactive</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 text-xs"
-          onClick={() => {
-            setSearchQuery('');
-            setFilterStatus('all');
-            setFilterActive('all');
-            fetchFarmbots();
-          }}
-        >
-          Clear Filters
-        </Button>
+        <div className="flex flex-wrap items-center gap-2"><label>Per page <select aria-label="Farmbots per page" className="rounded border bg-background p-1 text-[11px]" value={pageSize} disabled={loading || listBusy} onChange={event => { resetList(); setPageSize(Number(event.target.value)); }}>{[25, 50, 100, 200].map(size => <option key={size} value={size}>{size}</option>)}</select></label>
+          {(['First', 'Previous', 'Page', 'Next', 'Last'] as const).map(label => label === 'Page' ? <span key={label}>Page {page + 1} of {Math.max(1, Math.ceil(total / pageSize))}</span> : <Button key={label} size="sm" variant="outline" className="h-7 text-[11px]" disabled={loading || listBusy || !!loadError || (label === 'First' || label === 'Previous' ? page === 0 : (page + 1) * pageSize >= total)} onClick={() => { setSelected(new Set()); setLoading(true); setPage(label === 'First' ? 0 : label === 'Previous' ? page - 1 : label === 'Next' ? page + 1 : Math.max(0, Math.ceil(total / pageSize) - 1)); }}>{label}</Button>)}
+        </div>
       </div>
+      {(credentialFarmbot || activityFarmbot) && <p className="shrink-0 text-xs text-muted-foreground">Close the connection or activity panel to change pages, search, or delete selected FarmBots.</p>}
+      {bulkNotice && <p role="status" className="max-h-24 shrink-0 overflow-auto text-xs">{bulkNotice}</p>}
 
-      {/* FarmBots Table */}
-      {filteredFarmbots.length === 0 ? (
-        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
-          <Bot className="w-8 h-8 mx-auto mb-2 opacity-50" />
-          <p>No FarmBots found</p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-2 h-7 px-2 text-xs"
-            onClick={() => setShowCreateDialog(true)}
-          >
-            <Plus className="w-3 h-3 mr-1" />
-            Create your first FarmBot
-          </Button>
-        </div>
-      ) : (
-        <div className="border rounded-lg overflow-hidden">
-          <Table>
-            <TableHeader>
+      <div className={scrollRecords ? 'min-h-0 flex-1 overflow-auto overscroll-contain rounded-lg border [&>[data-slot=table-container]]:overflow-visible' : 'overflow-auto rounded-lg border'} role="region" aria-label="FarmBot records" tabIndex={0}>
+          <Table className="min-w-[850px]">
+            <TableHeader className={scrollRecords ? 'sticky top-0 z-10 bg-background' : undefined}>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="text-xs py-1">Name</TableHead>
-                <TableHead className="hidden sm:table-cell text-xs py-1">Asset code</TableHead>
-                <TableHead className="hidden md:table-cell text-xs py-1">Status</TableHead>
-                <TableHead className="hidden lg:table-cell text-xs py-1">Battery</TableHead>
-                <TableHead className="hidden xl:table-cell text-xs py-1">Position</TableHead>
-                <TableHead className="text-center text-xs py-1">Active</TableHead>
+                <TableHead className="w-8"><input type="checkbox" aria-label="Select Farmbots on this page" disabled={loading || listBusy || !!loadError || !farmbots.length} checked={farmbots.length > 0 && farmbots.every(farmbot => selected.has(farmbot.id))} ref={input => { if (input) input.indeterminate = farmbots.some(farmbot => selected.has(farmbot.id)) && !farmbots.every(farmbot => selected.has(farmbot.id)); }} onChange={event => setSelected(event.target.checked ? new Set(farmbots.map(farmbot => farmbot.id)) : new Set())} /></TableHead>
+                {heading('name', 'Name')}
+                {heading('assetCode', 'Asset code')}
+                {heading('battery', 'Battery')}
+                {heading('position', 'Position')}
+                {heading('status', 'Status')}
+                {heading('active', 'Active')}
                 <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredFarmbots.map((farmbot) => {
+              {loading ? <TableRow><TableCell colSpan={8} className="py-4 text-sm"><span role="status">Loading FarmBots…</span></TableCell></TableRow> : loadError ? <TableRow><TableCell colSpan={8} className="py-4 text-sm"><span role="alert" className="text-destructive">{loadError}</span><Button size="sm" variant="outline" className="ml-2 h-7 text-[11px]" onClick={() => void fetchFarmbots()}>Retry</Button></TableCell></TableRow> : filteredFarmbots.length === 0 ? <TableRow><TableCell colSpan={8} className="py-4 text-sm">No FarmBots found.</TableCell></TableRow> : filteredFarmbots.map((farmbot) => {
                 const connectionExpanded = credentialFarmbot?.id === farmbot.id;
                 const activityExpanded = activityFarmbot?.id === farmbot.id;
 
                 return (
                   <Fragment key={farmbot.id}>
                     <TableRow className="hover:bg-muted/50">
+                  <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${farmbot.name}`} checked={selected.has(farmbot.id)} disabled={listBusy || loading} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(farmbot.id); else next.delete(farmbot.id); return next; })} /></TableCell>
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
                       <Bot className="w-3.5 h-3.5 text-slate-500" />
@@ -1269,15 +1240,10 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell py-1 text-xs font-mono text-muted-foreground">
+                  <TableCell className="py-1 text-xs font-mono text-muted-foreground">
                     {farmbot.assetCode || '—'}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
-                    <Badge className={`text-[10px] ${getStatusColor(farmbot.status)}`}>
-                      {getOptionLabel(FARMBOT_STATUS_OPTIONS, farmbot.status)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="hidden lg:table-cell py-1 text-sm text-muted-foreground">
+                  <TableCell className="py-1 text-sm text-muted-foreground">
                     {farmbot.batteryLevel !== null ? (
                       <div className="flex items-center gap-1.5">
                         {getBatteryIcon(farmbot.batteryLevel)}
@@ -1289,30 +1255,33 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
                       '—'
                     )}
                   </TableCell>
-                  <TableCell className="hidden xl:table-cell py-1 text-xs font-mono text-muted-foreground">
+                  <TableCell className="py-1 text-xs font-mono text-muted-foreground">
                     {farmbot.positionX && farmbot.positionZ ? (
                       `(${farmbot.positionX}, ${farmbot.positionZ})`
                     ) : (
                       '—'
                     )}
                   </TableCell>
+                  <TableCell className="py-1 text-sm text-muted-foreground">
+                    <span className={`text-[10px] ${getStatusColor(farmbot.status)}`}>
+                      {getOptionLabel(FARMBOT_STATUS_OPTIONS, farmbot.status)}
+                    </span>
+                  </TableCell>
                   <TableCell className="text-center py-1">
-                    <Badge className={`text-[10px] ${farmbot.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
-                      {farmbot.isActive ? 'Active' : 'Inactive'}
-                    </Badge>
+                    {farmbot.isActive ? <Check aria-label="Active" className="mx-auto h-4 w-4 text-green-500" /> : <X aria-label="Inactive" className="mx-auto h-4 w-4 text-gray-500" />}
                   </TableCell>
                   <TableCell className="py-1 text-right">{renderActions(farmbot)}</TableCell>
                     </TableRow>
                     {connectionExpanded && (
                       <TableRow className="hover:bg-transparent">
-                        <TableCell colSpan={7} className="bg-muted/20 p-2">
+                        <TableCell colSpan={8} className="bg-muted/20 p-2">
                           <div ref={setConnectionPanelHost} />
                         </TableCell>
                       </TableRow>
                     )}
                     {activityExpanded && (
                       <TableRow className="hover:bg-transparent">
-                        <TableCell colSpan={7} className="bg-muted/20 p-2">
+                        <TableCell colSpan={8} className="bg-muted/20 p-2">
                           <FarmBotMqttActivityPanel
                             farmbot={farmbot}
                             onClose={() => setActivityFarmbot(null)}
@@ -1326,7 +1295,6 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => 
             </TableBody>
           </Table>
         </div>
-      )}
 
       {/* Edit Dialog */}
       <Dialog open={!!editingFarmbot} onOpenChange={(open) => !open && setEditingFarmbot(null)}>

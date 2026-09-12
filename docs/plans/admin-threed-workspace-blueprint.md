@@ -6,7 +6,7 @@ Design checkpoint: **v0.19.12 — ThreeD Admin Model Workspace**. The User reque
 
 - `src/components/admin/threed/models/ThreeDModelsCRUD.tsx`: compact workspace controls, pagination, selection, records panel and sticky table headings.
 - `src/components/admin/layout/AdminWorkspaceHeader.tsx`: common title/action layout.
-- `src/components/admin/layout/AdminLayout.tsx`: viewport-constrained workspace, currently enabled only for `/admin/threed/models`.
+- `src/components/admin/layout/AdminLayout.tsx`: viewport-constrained workspace enabled for individually reviewed standalone routes. Embedded Project components retain natural sizing.
 - `src/app/api/threed/models/route.ts`: owner-scoped pagination, shared count filters and server sorting.
 - `src/lib/services/threed/models/model-list-query.ts`: bounded query parsing.
 
@@ -14,7 +14,7 @@ Design checkpoint: **v0.19.12 — ThreeD Admin Model Workspace**. The User reque
 
 1. Keep App navigation, workspace controls and pagination stationary. Let records scroll independently, with visible column headings and horizontal scrolling when necessary. Keep the sidebar's own navigation scroll area usable.
 2. Place the compact title, total badge, search, create/import actions and related-module links at the top. Keep reusable controls consistent without forcing Model-specific actions onto unrelated modules.
-3. Put result range, `|`, selected count, Delete selected and Clear selection on the pagination row. Use compact button text, page-size selection and First/Previous/Next/Last controls. Permit wrapping on narrow screens.
+3. Put result range, `|`, selected count, Delete selected and Clear selection on the pagination row. Use compact button text, page-size selection and First/Previous/Page N of M/Next/Last controls. Permit wrapping on narrow screens.
 4. Search and sort the complete authorized result set on the server before pagination. Use the same filters for rows and total count, stable ID tie-breakers, bounded inputs, and module-appropriate columns. Show pending/error/empty states honestly; cancel or ignore stale requests.
 5. Scope bulk selection to the current page and clear it when paging/filtering/sorting changes. Preserve confirmation and module-specific deletion restrictions. Refresh totals after mutation and recover from an emptied final page.
 6. Use text status colors consistently: green Active/success, yellow Pending/uncertain result, orange Needs Attention, red Maintenance/failure and gray Dormant/Retired. Use a green check or gray X for boolean Active when that field exists.
@@ -37,3 +37,7 @@ Tasks/Analytics are excluded from this rollout. Their App removal scope is still
 ## Per-page verification
 
 Use enough records to span several pages, including more than 200. Check older-record search, every sortable field in both directions, null values and ties, empty results, page-size changes, rapid search/navigation, mutation refresh, partial bulk-deletion failures, and selection reset. Verify long-table scrolling, sticky headings, sidebar behavior, horizontal overflow, narrow/short windows and dialogs. Inspect owner/private/public access as applicable. Record automated checks separately from live browser/database evidence; a successful Models-page test does not certify another module.
+
+## Rollout checkpoint
+
+The planned page sequence is implemented through Harvests in the [v0.19.15 candidate](v0.19.15-release.md). Models/Categories/Textures/Animations were addressed in earlier releases. Model Files remains a specialized editor. Waterings provides separate read-only Schedules and History views; unsupported mutation controls are intentionally absent. This closes the planned workspace UI implementation sequence, not every future Admin feature or specialized Overview/Marker-management page. Manual build and final live regression remain release gates.

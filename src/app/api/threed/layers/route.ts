@@ -1,10 +1,11 @@
+import { parseLayerListQuery } from '@/lib/services/threed/layers/layer-list-query';
 // app/api/threed/layers/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { threedLayers } from '@/lib/schema/threed';
 import { projectAssets } from '@/lib/schema/project';
-import { eq, and, desc, sql, inArray } from 'drizzle-orm';
+import { eq, and, asc, desc, sql, inArray } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
@@ -27,13 +28,6 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
-    const projectId = searchParams.get('projectId');
-    const isActive = searchParams.get('isActive');
-    const isVisible = searchParams.get('isVisible');
-    const search = searchParams.get('search');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const offset = parseInt(searchParams.get('offset') || '0');
-
     const userId = session.user.id;
 
     // Get a single layer by ID
@@ -61,6 +55,12 @@ export async function GET(request: NextRequest) {
         data: layer,
       });
     }
+
+    let query;
+    try { query = parseLayerListQuery(searchParams); }
+    catch (error) { return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Invalid query' }, { status: 400 }); }
+    const { limit, offset, sort, direction, search, isActive, isVisible, projectId } = query;
+    const fields = { name: sql`lower(${threedLayers.name})`, layerId: threedLayers.layerId, type: threedLayers.layerType, visible: threedLayers.isVisible, locked: sql`coalesce(${threedLayers.metadata}->>'isLocked', 'false')`, active: threedLayers.isActive, createdAt: threedLayers.createdAt };
 
     // ✅ Build query - start with user filter
     let conditions: any[] = [eq(threedLayers.userId, userId)];
@@ -112,26 +112,28 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       conditions.push(
-        sql`${threedLayers.name} ILIKE ${`%${search}%`} OR 
+        sql`(${threedLayers.name} ILIKE ${`%${search}%`} OR
             ${threedLayers.layerId} ILIKE ${`%${search}%`} OR
-            ${threedLayers.description} ILIKE ${`%${search}%`}`
+            ${threedLayers.description} ILIKE ${`%${search}%`})`
       );
     }
+
+    const where = and(...conditions);
 
     // ✅ Get total count
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(threedLayers)
-      .where(and(...conditions));
+      .where(where);
 
-    const total = countResult?.count || 0;
+    const total = Number(countResult?.count || 0);
 
     // ✅ Get paginated results
     const results = await db
       .select()
       .from(threedLayers)
-      .where(and(...conditions))
-      .orderBy(desc(threedLayers.createdAt))
+      .where(where)
+      .orderBy(direction === 'asc' ? asc(fields[sort]) : desc(fields[sort]), asc(threedLayers.id))
       .limit(limit)
       .offset(offset);
 

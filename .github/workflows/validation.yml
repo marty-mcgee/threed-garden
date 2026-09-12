@@ -45,6 +45,30 @@ jobs:
       - name: Validate Texture list pagination inputs
         run: npm run validate:threed-texture-list
 
+      - name: Validate Waterings views and pagination
+        run: npm run validate:threed-watering-list
+
+      - name: Validate Harvest workspace queries
+        run: npm run validate:threed-harvest-list
+
+      - name: Validate FarmBots workspace list and selection
+        run: npm run validate:threed-farmbot-list
+
+      - name: Validate Layers workspace list and selection
+        run: npm run validate:threed-layer-list
+
+      - name: Validate Characters workspace list and selection
+        run: npm run validate:threed-character-list
+
+      - name: Validate Plantings workspace list and selection
+        run: npm run validate:threed-planting-list
+
+      - name: Validate Beds workspace list and selection
+        run: npm run validate:threed-bed-list
+
+      - name: Validate Plants workspace list and selection
+        run: npm run validate:threed-plant-list
+
       - name: Validate Category list pagination inputs
         run: npm run validate:threed-category-list
 

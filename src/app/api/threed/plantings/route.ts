@@ -1,15 +1,17 @@
+import { parsePlantingListQuery } from '@/lib/services/threed/plantings/planting-list-query';
 import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
 // app/api/threed/plantings/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { 
+  plantingStatusEnum,
   threedPlantings,
   threedPlants,
   threedBeds,
   threedModels,
 } from '@/lib/schema/threed';
-import { eq, and, desc, sql, type SQL } from 'drizzle-orm';
+import { eq, and, asc, desc, getTableColumns, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
@@ -36,11 +38,6 @@ export async function GET(request: NextRequest) {
     const plantId = searchParams.get('plantId');
     const bedId = searchParams.get('bedId');
     const status = searchParams.get('status');
-    const isActive = searchParams.get('isActive');
-    const search = searchParams.get('search');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const offset = parseInt(searchParams.get('offset') || '0');
-
     const userId = session.user.id;
 
     // Get a single planting by ID
@@ -86,6 +83,30 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    let query;
+    try {
+      query = parsePlantingListQuery(searchParams);
+      if (status && !(plantingStatusEnum.enumValues as readonly string[]).includes(status)) throw new Error('Invalid status');
+      for (const [key, value] of [['plantId', plantId], ['bedId', bedId]]) {
+        if (value !== null && (!/^\d+$/.test(value) || Number(value) < 1 || Number(value) > 2147483647)) throw new Error(`Invalid ${key}`);
+      }
+    } catch (error) {
+      return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Invalid query' }, { status: 400 });
+    }
+    const { limit, offset, sort, direction, search, isActive } = query;
+    const fields = {
+      plantingId: threedPlantings.plantingId,
+      plant: sql`lower(${threedPlants.commonName})`,
+      bed: sql`lower(${threedBeds.name})`,
+      growth: threedPlantings.growthStage,
+      position: sql`(${threedPlantings.positionX}, ${threedPlantings.positionZ})`,
+      status: threedPlantings.status,
+      active: threedPlantings.isActive,
+      createdAt: threedPlantings.createdAt,
+    };
+    const plantJoin = and(eq(threedPlants.id, threedPlantings.plantId), eq(threedPlants.userId, userId));
+    const bedJoin = and(eq(threedBeds.id, threedPlantings.bedId), eq(threedBeds.userId, userId));
+
     type PlantingStatus = NonNullable<(typeof threedPlantings.$inferSelect)['status']>;
     const conditions: SQL[] = [eq(threedPlantings.userId, userId)];
 
@@ -108,52 +129,32 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       conditions.push(
-        sql`${threedPlantings.plantingId} ILIKE ${`%${search}%`} OR 
-            ${threedPlantings.notes} ILIKE ${`%${search}%`}`
+        sql`(${threedPlantings.plantingId} ILIKE ${`%${search}%`} OR
+            ${threedPlantings.notes} ILIKE ${`%${search}%`} OR
+            ${threedPlants.commonName} ILIKE ${`%${search}%`} OR
+            ${threedBeds.name} ILIKE ${`%${search}%`})`
       );
     }
 
     const where = and(...conditions);
 
-    // ✅ Get total count for pagination
+    // The same one-to-one joins and owner/search conditions drive count and page.
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
       .from(threedPlantings)
+      .leftJoin(threedPlants, plantJoin)
+      .leftJoin(threedBeds, bedJoin)
       .where(where);
-
-    const total = countResult?.count || 0;
-
-    // ✅ Get paginated results
-    const results = await db
-      .select()
+    const total = Number(countResult?.count || 0);
+    const plantingsWithRelations = await db
+      .select({ ...getTableColumns(threedPlantings), plant: threedPlants, bed: threedBeds })
       .from(threedPlantings)
+      .leftJoin(threedPlants, plantJoin)
+      .leftJoin(threedBeds, bedJoin)
       .where(where)
-      .orderBy(desc(threedPlantings.createdAt))
+      .orderBy(direction === 'asc' ? asc(fields[sort]) : desc(fields[sort]), asc(threedPlantings.id))
       .limit(limit)
       .offset(offset);
-
-    // ✅ Fetch related plant and bed info for each planting
-    const plantingsWithRelations = await Promise.all(
-      results.map(async (planting) => {
-        const [plant] = planting.plantId ? await db
-          .select()
-          .from(threedPlants)
-          .where(eq(threedPlants.id, planting.plantId))
-          .limit(1) : [];
-
-        const [bed] = planting.bedId ? await db
-          .select()
-          .from(threedBeds)
-          .where(eq(threedBeds.id, planting.bedId))
-          .limit(1) : [];
-
-        return {
-          ...planting,
-          plant: plant || null,
-          bed: bed || null,
-        };
-      })
-    );
 
     return NextResponse.json({
       success: true,

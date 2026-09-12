@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.19.14",
+  "version": "0.19.15",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -47,6 +47,14 @@
     "validate:threed-database-failures": "node src/lib/scripts/validate-threed-database-failures.cjs",
     "validate:threed-character-position-save": "node src/lib/scripts/validate-threed-character-position-save.cjs",
     "validate:threed-character-animation-restart": "node src/lib/scripts/validate-threed-character-animation-restart.cjs",
+    "validate:threed-harvest-list": "node src/lib/scripts/validate-threed-harvest-list.cjs",
+    "validate:threed-watering-list": "node src/lib/scripts/validate-threed-watering-list.cjs",
+    "validate:threed-farmbot-list": "node src/lib/scripts/validate-threed-farmbot-list.cjs",
+    "validate:threed-layer-list": "node src/lib/scripts/validate-threed-layer-list.cjs",
+    "validate:threed-character-list": "node src/lib/scripts/validate-threed-character-list.cjs",
+    "validate:threed-planting-list": "node src/lib/scripts/validate-threed-planting-list.cjs",
+    "validate:threed-bed-list": "node src/lib/scripts/validate-threed-bed-list.cjs",
+    "validate:threed-plant-list": "node src/lib/scripts/validate-threed-plant-list.cjs",
     "validate:threed-category-list": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-category-list.mts",
     "validate:threed-texture-list": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-texture-list.mts"
   },

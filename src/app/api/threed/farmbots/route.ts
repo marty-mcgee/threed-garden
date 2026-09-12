@@ -1,14 +1,16 @@
+import { parseFarmbotListQuery } from '@/lib/services/threed/farmbot/farmbot-list-query';
 // app/api/threed/farmbots/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { 
+  farmbotStatusEnum,
   threedFarmbots,
   threedBeds,
   threedMqttEvents,
   threedMqttRuntime,
 } from '@/lib/schema/threed';
-import { eq, and, desc, sql, type SQL } from 'drizzle-orm';
+import { eq, and, asc, desc, inArray, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 import {
   containsFarmBotCredentialMaterial,
@@ -54,11 +56,6 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     const status = searchParams.get('status');
-    const isActive = searchParams.get('isActive');
-    const search = searchParams.get('search');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const offset = parseInt(searchParams.get('offset') || '0');
-
     const userId = session.user.id;
 
     // Get a single farmbot by ID
@@ -97,6 +94,16 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    let query;
+    try {
+      query = parseFarmbotListQuery(searchParams);
+      if (status && !(farmbotStatusEnum.enumValues as readonly string[]).includes(status)) throw new Error('Invalid status');
+    } catch (error) {
+      return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Invalid query' }, { status: 400 });
+    }
+    const { limit, offset, sort, direction, search, isActive } = query;
+    const fields = { name: sql`lower(${threedFarmbots.name})`, assetCode: threedFarmbots.assetCode, battery: threedFarmbots.batteryLevel, position: sql`(${threedFarmbots.positionX}, ${threedFarmbots.positionZ})`, status: threedFarmbots.status, active: threedFarmbots.isActive, createdAt: threedFarmbots.createdAt };
+
     type FarmBotStatus = NonNullable<(typeof threedFarmbots.$inferSelect)['status']>;
     const conditions: SQL[] = [eq(threedFarmbots.userId, userId)];
 
@@ -111,10 +118,10 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       conditions.push(
-        sql`${threedFarmbots.name} ILIKE ${`%${search}%`} OR 
+        sql`(${threedFarmbots.name} ILIKE ${`%${search}%`} OR
             ${threedFarmbots.assetCode} ILIKE ${`%${search}%`} OR
             ${threedFarmbots.brokerDeviceId} ILIKE ${`%${search}%`} OR
-            ${threedFarmbots.notes} ILIKE ${`%${search}%`}`
+            ${threedFarmbots.notes} ILIKE ${`%${search}%`})`
       );
     }
 
@@ -126,32 +133,24 @@ export async function GET(request: NextRequest) {
       .from(threedFarmbots)
       .where(where);
 
-    const total = countResult?.count || 0;
+    const total = Number(countResult?.count || 0);
 
     // ✅ Get paginated results
     const results = await db
       .select()
       .from(threedFarmbots)
       .where(where)
-      .orderBy(desc(threedFarmbots.createdAt))
+      .orderBy(direction === 'asc' ? asc(fields[sort]) : desc(fields[sort]), asc(threedFarmbots.id))
       .limit(limit)
       .offset(offset);
 
-    // ✅ Fetch related bed info for each farmbot
-    const farmbotsWithBeds = await Promise.all(
-      results.map(async (farmbot) => {
-        const [bed] = farmbot.bedId ? await db
-          .select()
-          .from(threedBeds)
-          .where(eq(threedBeds.id, farmbot.bedId))
-          .limit(1) : [];
-
-        return {
-          ...toFarmBotResponse(farmbot),
-          bed: bed || null,
-        };
-      })
-    );
+    const bedIds = [...new Set(results.flatMap(farmbot => farmbot.bedId ? [farmbot.bedId] : []))];
+    const relatedBeds = bedIds.length ? await db.select().from(threedBeds).where(and(inArray(threedBeds.id, bedIds), eq(threedBeds.userId, userId))) : [];
+    const bedsById = new Map(relatedBeds.map(bed => [bed.id, bed]));
+    const farmbotsWithBeds = results.map(farmbot => ({
+      ...toFarmBotResponse(farmbot),
+      bed: farmbot.bedId ? bedsById.get(farmbot.bedId) ?? null : null,
+    }));
 
     return NextResponse.json({
       success: true,

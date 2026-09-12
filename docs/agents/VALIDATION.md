@@ -463,3 +463,33 @@ For bulk Animation workspace upload changes, run `node src/lib/scripts/validate-
 For the Character animation assignment editor, run `node src/lib/scripts/validate-threed-character-animation-assignments.cjs`, the existing library API validator, and TypeScript. The editor fixture uses mocked requests; verify live assignment persistence separately. Saved library assignments are not yet consumed by Character Scene runtimes.
 
 Character runtimes now consume saved animation assignments on Scene load (superseding the editor-only note above). Run `npm run validate:threed-assigned-character-animations`, library API checks, Character restart checks, orchestration checks and TypeScript for this boundary. The new CI fixture exercises real FBX binding and mocked requests; it does not prove live animation appearance or world-action behavior. Use the manual Character playback checklist in `docs/developers/THREED_ANIMATIONS_LIBRARY.md`.
+
+## Plants workspace server list
+
+Run `npm run validate:threed-plant-list` and TypeScript for Plants list/pagination/bulk-selection changes. The fixture checks the actual GET handler with mocked DB responses and the bulk-delete handler with mocked fetch. It does not establish live SQL execution, browser layout, FK failure behavior or real deletion. Use the manual Plants checklist in `docs/plans/admin-threed-workspace-continuation.md`.
+
+### Beds workspace list
+
+Run `npm run validate:threed-bed-list` and TypeScript for Beds list/pagination/bulk-selection changes. The offline fixture checks authenticated GET handling, bounded pagination, grouped owner-scoped search, count/query parity, sorting, and partial bulk deletion with page-local targets. Live SQL, browser layout and actual deletion remain manual checks in the continuation plan.
+
+### Plantings workspace list
+
+Run `npm run validate:threed-planting-list` and TypeScript for Plantings list/pagination/selection changes. The offline fixture checks the actual GET with mocked joined query results and actual bulk handler with mocked requests: owner/search/join parity, bounded inputs, sorting, default behavior, constant query counts, cancellation and partial deletion. Live SQL/browser acceptance is recorded separately in the Admin continuation plan.
+
+### Characters workspace list
+
+Run `npm run validate:threed-character-list` and TypeScript for Characters pagination/search/selection changes. The offline fixture exercises actual list/bulk handlers and the existing Character Library eligibility helper with mocked queries/requests. It checks owner search/count parity, bounds, sorting, batched Model retrieval, private Model exclusion, runtime eligibility and partial bulk failures. Browser/live SQL acceptance remains separate in the continuation record.
+
+### Layers workspace list
+
+Run `npm run validate:threed-layer-list` and TypeScript for Layers list/pagination/selection changes. Offline actual-handler tests mock database/request results and check owner/Project scope, query bounds, grouped search/count parity, sorting, empty Projects, cancellation and partial deletion. Live SQL and browser checks remain separate in the continuation record.
+
+### FarmBots workspace list
+
+Run `npm run validate:threed-farmbot-list` and TypeScript for FarmBots pagination/search/selection changes. The offline fixture exercises actual list and bulk handlers plus the response sanitizer with mocked queries and requests. It checks owner/search/count parity, bounds/sorting, batched Bed reads, credential field omission and cancellation/busy/partial-deletion handling. It performs no live device operation. Browser/live SQL checks are recorded separately in the continuation plan.
+
+### Waterings read-only workspace
+
+Run `npm run validate:threed-watering-list` and TypeScript for schedule/history browsing changes. Offline actual-handler tests mock DB responses and cover query bounds, owner/search/count parity, module scope and pagination. Confirm Schedules/History navigation and units locally; tests do not establish live PostgreSQL execution or historical Project attribution. No watering or device operation is needed to test browsing.
+
+Harvest workspace list changes: run `npm run validate:threed-harvest-list`. Offline GET and bulk-handler fixtures cover query validation/auth, owner-scoped search, Project/count parity, stable sorts, Plant enrichment/provenance, and partial/page-local/cancelled deletion. Manual acceptance covers server paging/search/sorting, scope changes, selection reset and last-page recovery; use disposable records for deletion tests.

@@ -9,7 +9,8 @@ import {
   threedBeds,
 } from '@/lib/schema/threed';
 import { project, projectAssets } from '@/lib/schema/project';
-import { eq, and, desc, sql, inArray } from 'drizzle-orm';
+import { eq, and, asc, desc, sql, inArray } from 'drizzle-orm';
+import { parseHarvestListQuery } from '@/lib/services/threed/harvests/harvest-list-query';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
@@ -35,8 +36,10 @@ export async function GET(request: NextRequest) {
     const moduleId = searchParams.get('moduleId');
     const plantId = searchParams.get('plantId');
     const plantingId = searchParams.get('plantingId');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    let query;
+    try { query = parseHarvestListQuery(searchParams); }
+    catch (error) { return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Invalid query' }, { status: 400 }); }
+    const { limit, offset, search, sort, direction, isActive } = query;
 
     const parsedId = id ? Number(id) : null;
     const parsedProjectId = projectId ? Number(projectId) : null;
@@ -76,10 +79,22 @@ export async function GET(request: NextRequest) {
     }
     if (scopedHarvestIds) conditions.push(inArray(threedHarvests.id, scopedHarvestIds));
 
+    // Match the owner-scoped Plant enrichment, including legacy Planting-derived plants.
+    const plantName = sql`(select ${threedPlants.commonName} from ${threedPlants}
+      where ${threedPlants.userId} = ${userId} and ${threedPlants.id} = coalesce(${threedHarvests.plantId},
+        (select ${threedPlantings.plantId} from ${threedPlantings} where ${threedPlantings.id} = ${threedHarvests.plantingId} and ${threedPlantings.userId} = ${userId})))`;
+    if (isActive !== null) conditions.push(eq(threedHarvests.isActive, isActive === 'true'));
+    if (search) {
+      const pattern = `%${search}%`;
+      conditions.push(sql`(${threedHarvests.harvestId} ilike ${pattern} or ${threedHarvests.notes} ilike ${pattern} or ${plantName} ilike ${pattern})`);
+    }
+    const columns = { id: threedHarvests.id, harvestId: threedHarvests.harvestId, plant: plantName, quantity: threedHarvests.quantity,
+      weight: threedHarvests.weightLbs, date: threedHarvests.harvestDate, active: threedHarvests.isActive, createdAt: threedHarvests.createdAt };
+    const order = direction === 'asc' ? asc : desc;
     const where = and(...conditions);
     const [{ count }] = await db.select({ count: sql<number>`count(*)` }).from(threedHarvests).where(where);
     const harvests = await db.select().from(threedHarvests).where(where)
-      .orderBy(desc(threedHarvests.harvestDate), desc(threedHarvests.createdAt))
+      .orderBy(order(columns[sort]), order(threedHarvests.createdAt), order(threedHarvests.id))
       .limit(limit)
       .offset(offset);
 

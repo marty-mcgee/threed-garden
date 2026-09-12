@@ -20,7 +20,7 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.19.14 — ThreeD Animations Library** (package `0.19.14`, commit `a5491e9`; production User-confirmed). See [release record](docs/releases/v0.19.14.md). |
-| Current development version | No next release designated. Resume remaining Admin stages from [continuation record](docs/plans/admin-threed-workspace-continuation.md). |
+| Current development version | **v0.19.15 — ThreeD Admin Pages: UI Updates**, package `0.19.15`, release candidate. Planned page rollout implemented; User-run production build passed; deployment pending. See [handoff](docs/plans/v0.19.15-release.md) and [continuation record](docs/plans/admin-threed-workspace-continuation.md). |
 | Centaur release verification | User-confirmed production deployment. TypeScript, 125 native groups, browser loaders and mocked bulk UI checks passed. See [completed handoff](docs/plans/v0.19.10c-release.md); individual live regression cases were not separately reported. |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |

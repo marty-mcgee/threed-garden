@@ -2,17 +2,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
 import {
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Check,
+  X,
+  Box,
   Plus,
   Edit,
   Trash2,
   Loader2,
   Sprout,
+  Bean,
   MoreHorizontal,
-  Search,
-  Filter,
-  Eye,
-  EyeOff,
   MapPin,
   Calendar,
   Layers,
@@ -139,30 +143,30 @@ const getOptionLabel = (options: { value: string; label: string }[], value: stri
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'planned': return 'bg-blue-100 text-blue-700';
-    case 'planted': return 'bg-green-100 text-green-700';
-    case 'growing': return 'bg-yellow-100 text-yellow-700';
-    case 'harvesting': return 'bg-orange-100 text-orange-700';
-    case 'harvested': return 'bg-purple-100 text-purple-700';
-    case 'failed': return 'bg-red-100 text-red-700';
-    default: return 'bg-gray-100 text-gray-700';
+    case 'planned': return 'text-blue-700 dark:text-blue-400';
+    case 'planted': return 'text-green-700 dark:text-green-400';
+    case 'growing': return 'text-yellow-700 dark:text-yellow-400';
+    case 'harvesting': return 'text-orange-700 dark:text-orange-400';
+    case 'harvested': return 'text-purple-700 dark:text-purple-400';
+    case 'failed': return 'text-red-700 dark:text-red-400';
+    default: return 'text-gray-700 dark:text-gray-400';
   }
 };
 
 const getGrowthStageColor = (stage: string) => {
   switch (stage) {
-    case 'seed': return 'bg-gray-100 text-gray-700';
-    case 'seedling': return 'bg-green-100 text-green-700';
-    case 'vegetative': return 'bg-emerald-100 text-emerald-700';
-    case 'flowering': return 'bg-pink-100 text-pink-700';
-    case 'fruiting': return 'bg-orange-100 text-orange-700';
-    case 'mature': return 'bg-purple-100 text-purple-700';
-    case 'dormant': return 'bg-slate-100 text-slate-700';
-    default: return 'bg-gray-100 text-gray-700';
+    case 'seed': return 'border-gray-500/50 text-gray-700 dark:text-gray-400';
+    case 'seedling': return 'border-green-500/50 text-green-700 dark:text-green-400';
+    case 'vegetative': return 'border-emerald-500/50 text-emerald-700 dark:text-emerald-400';
+    case 'flowering': return 'border-pink-500/50 text-pink-700 dark:text-pink-400';
+    case 'fruiting': return 'border-orange-500/50 text-orange-700 dark:text-orange-400';
+    case 'mature': return 'border-purple-500/50 text-purple-700 dark:text-purple-400';
+    case 'dormant': return 'border-slate-500/50 text-slate-700 dark:text-slate-400';
+    default: return 'border-gray-500/50 text-gray-700 dark:text-gray-400';
   }
 };
 
-export function ThreeDPlantingsCRUD({ onModuleUpdate }: { onModuleUpdate?: () => void }) {
+export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: { onModuleUpdate?: () => void; scrollRecords?: boolean }) {
   const { showToast, ToastComponent } = useToast();
   const [plantings, setPlantings] = useState<Planting[]>([]);
   const [plants, setPlants] = useState<Plant[]>([]);
@@ -173,8 +177,19 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate }: { onModuleUpdate?: () =>
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingPlanting, setEditingPlanting] = useState<Planting | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [filterActive, setFilterActive] = useState<string>('all');
+  const [loadError, setLoadError] = useState('');
+
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(25);
+  const [total, setTotal] = useState(0);
+  const [sort, setSort] = useState({ key: 'plantingId', direction: 'asc' });
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [bulkNotice, setBulkNotice] = useState('');
+  const [revision, setRevision] = useState(0);
+  const fetchPlantings = () => setRevision(value => value + 1);
+  function resetList() { setPage(0); setSelected(new Set()); setLoading(true); }
+
 
   // ✅ Form state
   const [formData, setFormData] = useState<FormData>({
@@ -202,31 +217,29 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate }: { onModuleUpdate?: () =>
 
   // ✅ Fetch data
   useEffect(() => {
-    fetchPlantings();
     fetchPlants();
     fetchBeds();
     fetchModels();
   }, []);
 
-  const fetchPlantings = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch('/api/threed/plantings?limit=100');
-      const data = await response.json();
-      if (data.success) {
-        setPlantings(Array.isArray(data.data) ? data.data : []);
-      } else {
-        showToast(data.error || 'Failed to fetch plantings', 'error');
-        setPlantings([]);
-      }
-    } catch (error) {
-      console.error('Error fetching plantings:', error);
-      showToast('Failed to fetch plantings', 'error');
-      setPlantings([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true); setLoadError(''); setSelected(new Set());
+    const params = new URLSearchParams({ limit: String(pageSize), offset: String(page * pageSize), search: searchQuery, sort: sort.key, direction: sort.direction });
+    const timer = setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/threed/plantings?${params}`, { signal: controller.signal, cache: 'no-store' });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.error || 'Failed to fetch Plantings');
+        if (controller.signal.aborted) return;
+        setPlantings(data.data); setTotal(Number(data.pagination.total));
+        if (page > 0 && page * pageSize >= data.pagination.total) setPage(Math.max(0, Math.ceil(data.pagination.total / pageSize) - 1));
+      } catch (error) {
+        if (!controller.signal.aborted) { setLoadError(error instanceof Error ? error.message : 'Failed to fetch Plantings'); setPlantings([]); }
+      } finally { if (!controller.signal.aborted) setLoading(false); }
+    }, 200);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [page, pageSize, searchQuery, sort, revision]);
 
   const fetchPlants = async () => {
     try {
@@ -267,11 +280,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate }: { onModuleUpdate?: () =>
     }
   };
 
-  const filteredPlantings = plantings.filter((planting) =>
-    (planting.plantingId?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
-    (planting.plant?.commonName?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false) ||
-    (planting.bed?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
-  );
+  const filteredPlantings = plantings;
 
   // Pre-queried model files for the currently selected custom model.
   const selectedModel = models.find((m) => String(m.id) === formData.customModelId);
@@ -379,8 +388,10 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate }: { onModuleUpdate?: () =>
   };
 
   const handleDelete = async (id: number, name: string) => {
+    if (bulkBusy || isSubmitting) return;
     if (!confirm(`Delete planting "${name}"? This action cannot be undone.`)) return;
 
+    setIsSubmitting(true);
     try {
       const response = await fetch(`/api/threed/plantings?id=${id}`, {
         method: 'DELETE',
@@ -397,7 +408,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate }: { onModuleUpdate?: () =>
     } catch (error) {
       console.error('Error deleting planting:', error);
       showToast('Failed to delete planting', 'error');
-    }
+    } finally { setIsSubmitting(false); }
   };
 
   const resetForm = () => {
@@ -451,9 +462,32 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate }: { onModuleUpdate?: () =>
     });
   };
 
+  async function deleteSelected() {
+    const targets = plantings.filter(planting => selected.has(planting.id));
+    if (bulkBusy || loading || isSubmitting || !targets.length || !confirm(`Delete ${targets.length} selected Plantings? This action cannot be undone.`)) return;
+    setBulkBusy(true); setBulkNotice('');
+    let deleted = 0;
+    const failures: string[] = [];
+    for (const planting of targets) {
+      try {
+        const response = await fetch(`/api/threed/plantings?id=${planting.id}`, { method: 'DELETE' });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.error || 'Delete failed');
+        deleted++;
+      } catch (error) { failures.push(`${planting.plantingId}: ${error instanceof Error ? error.message : 'Delete failed'}`); }
+    }
+    setBulkNotice(`Deleted ${deleted} of ${targets.length} Plantings.${failures.length ? ` ${failures.join('; ')} Check the refreshed list before retrying.` : ''}`);
+    setBulkBusy(false); setSelected(new Set()); fetchPlantings();
+    if (deleted) onModuleUpdate?.();
+  }
+  function heading(key: string, title: string) {
+    const Icon = sort.key === key ? sort.direction === 'asc' ? ArrowUp : ArrowDown : ArrowUpDown;
+    return <TableHead className="py-1 text-xs" aria-sort={sort.key === key ? sort.direction === 'asc' ? 'ascending' : 'descending' : 'none'}><button disabled={loading || bulkBusy} className="inline-flex items-center gap-1" onClick={() => { resetList(); setSort({ key, direction: sort.key === key && sort.direction === 'asc' ? 'desc' : 'asc' }); }}>{title}<Icon className="h-3 w-3" aria-hidden="true" /></button></TableHead>;
+  }
+
   const renderActions = (planting: Planting) => (
     <div className="flex items-center justify-end gap-1">
-      <Button variant="ghost" size="sm" onClick={() => openEditDialog(planting)}>
+      <Button variant="ghost" size="sm" disabled={bulkBusy || isSubmitting} aria-label={`Edit ${planting.plantingId}`} onClick={() => openEditDialog(planting)}>
         <Edit className="w-4 h-4" />
       </Button>
       <DropdownMenu>
@@ -504,30 +538,15 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate }: { onModuleUpdate?: () =>
     </div>
   );
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-4">
-        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-2">
+    <div className={scrollRecords ? 'flex h-full min-h-0 flex-col gap-2' : 'space-y-2'}>
       {ToastComponent}
-
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Sprout className="w-4 h-4 text-green-500" />
-          <span className="text-sm font-medium">Plantings</span>
-          <Badge variant="secondary" className="text-xs">
-            {filteredPlantings.length}
-          </Badge>
-        </div>
+      <AdminWorkspaceHeader icon={Bean} title="Plantings" description="Manage plants in beds with growth tracking and harvest planning" className="shrink-0 [&>a]:text-[11px] [&>div:first-child>svg]:text-[#a87950]">
+        <Badge variant="secondary" className="text-xs">{loading || loadError ? '—' : total}</Badge>
+        <Input aria-label="Search Plantings" placeholder="Search Plantings by ID, Plant, Bed or notes…" disabled={bulkBusy} value={searchQuery} onChange={event => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm" className="h-7 px-2 text-xs">
+            <Button size="sm" disabled={bulkBusy} className="h-7 px-2 text-[11px]">
               <Plus className="w-3 h-3 mr-1" />
               Add Planting
             </Button>
@@ -861,128 +880,74 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate }: { onModuleUpdate?: () =>
             </div>
           </DialogContent>
         </Dialog>
-      </div>
+        <AdminWorkspaceLink href="/admin/threed/plants" icon={Sprout}>Plants</AdminWorkspaceLink>
+        <AdminWorkspaceLink href="/admin/threed/beds" icon={Box}>Beds</AdminWorkspaceLink>
+      </AdminWorkspaceHeader>
 
-      {/* Search & Filters */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-          <Input
-            placeholder="Search by ID, plant, notes..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-7 h-8 text-xs"
-          />
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">
+        <div className="flex flex-wrap items-center gap-2"><span>{loading ? 'Loading…' : loadError ? 'Plantings unavailable' : `${total ? page * pageSize + 1 : 0}–${Math.min((page + 1) * pageSize, total)} of ${total} Plantings`}</span><span aria-hidden="true">|</span><span>{selected.size} selected</span>
+          <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={loading || bulkBusy || isSubmitting || !!loadError || !selected.size} onClick={() => void deleteSelected()}>Delete selected ({selected.size})</Button>
+          <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={bulkBusy || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button>
         </div>
-        <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-[120px] h-8 text-xs">
-            <Filter className="w-3.5 h-3.5 mr-1" />
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            {PLANTING_STATUS_OPTIONS.map((status) => (
-              <SelectItem key={status.value} value={status.value}>
-                {status.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={filterActive} onValueChange={setFilterActive}>
-          <SelectTrigger className="w-[120px] h-8 text-xs">
-            <Filter className="w-3.5 h-3.5 mr-1" />
-            <SelectValue placeholder="Active" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="true">Active</SelectItem>
-            <SelectItem value="false">Inactive</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 text-xs"
-          onClick={() => {
-            setSearchQuery('');
-            setFilterStatus('all');
-            setFilterActive('all');
-            fetchPlantings();
-          }}
-        >
-          Clear Filters
-        </Button>
+        <div className="flex flex-wrap items-center gap-2"><label>Per page <select aria-label="Plantings per page" className="rounded border bg-background p-1 text-[11px]" value={pageSize} disabled={loading || bulkBusy} onChange={event => { resetList(); setPageSize(Number(event.target.value)); }}>{[25, 50, 100, 200].map(size => <option key={size} value={size}>{size}</option>)}</select></label>
+          {(['First', 'Previous', 'Page', 'Next', 'Last'] as const).map(label => label === 'Page' ? <span key={label}>Page {page + 1} of {Math.max(1, Math.ceil(total / pageSize))}</span> : <Button key={label} size="sm" variant="outline" className="h-7 text-[11px]" disabled={loading || bulkBusy || !!loadError || (label === 'First' || label === 'Previous' ? page === 0 : (page + 1) * pageSize >= total)} onClick={() => { setSelected(new Set()); setLoading(true); setPage(label === 'First' ? 0 : label === 'Previous' ? page - 1 : label === 'Next' ? page + 1 : Math.max(0, Math.ceil(total / pageSize) - 1)); }}>{label}</Button>)}
+        </div>
       </div>
+      {bulkNotice && <p role="status" className="max-h-24 shrink-0 overflow-auto text-xs">{bulkNotice}</p>}
 
-      {/* Plantings Table */}
-      {filteredPlantings.length === 0 ? (
-        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
-          <Sprout className="w-8 h-8 mx-auto mb-2 opacity-50" />
-          <p>No plantings found</p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-2 h-7 px-2 text-xs"
-            onClick={() => setShowCreateDialog(true)}
-          >
-            <Plus className="w-3 h-3 mr-1" />
-            Create your first planting
-          </Button>
-        </div>
-      ) : (
-        <div className="border rounded-lg overflow-hidden">
-          <Table>
-            <TableHeader>
+      <div className={scrollRecords ? 'min-h-0 flex-1 overflow-auto overscroll-contain rounded-lg border [&>[data-slot=table-container]]:overflow-visible' : 'overflow-auto rounded-lg border'} role="region" aria-label="Planting records" tabIndex={0}>
+          <Table className="min-w-[850px]">
+            <TableHeader className={scrollRecords ? 'sticky top-0 z-10 bg-background' : undefined}>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="text-xs py-1">ID</TableHead>
-                <TableHead className="text-xs py-1">Plant</TableHead>
-                <TableHead className="hidden sm:table-cell text-xs py-1">Bed</TableHead>
-                <TableHead className="hidden md:table-cell text-xs py-1">Status</TableHead>
-                <TableHead className="hidden lg:table-cell text-xs py-1">Growth</TableHead>
-                <TableHead className="hidden xl:table-cell text-xs py-1">Position</TableHead>
-                <TableHead className="text-center text-xs py-1">Active</TableHead>
+                <TableHead className="w-8"><input type="checkbox" aria-label="Select Plantings on this page" disabled={loading || bulkBusy || !!loadError || !plantings.length} checked={plantings.length > 0 && plantings.every(planting => selected.has(planting.id))} ref={input => { if (input) input.indeterminate = plantings.some(planting => selected.has(planting.id)) && !plantings.every(planting => selected.has(planting.id)); }} onChange={event => setSelected(event.target.checked ? new Set(plantings.map(planting => planting.id)) : new Set())} /></TableHead>
+                {heading('plant', 'Plant')}
+                {heading('bed', 'Bed')}
+                {heading('plantingId', 'Planting ID')}
+                {heading('position', 'Position')}
+                {heading('growth', 'Growth')}
+                {heading('status', 'Status')}
+                {heading('active', 'Active')}
                 <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredPlantings.map((planting) => (
+              {loading ? <TableRow><TableCell colSpan={9} className="py-4 text-sm"><span role="status">Loading Plantings…</span></TableCell></TableRow> : loadError ? <TableRow><TableCell colSpan={9} className="py-4 text-sm"><span role="alert" className="text-destructive">{loadError}</span><Button size="sm" variant="outline" className="ml-2 h-7 text-[11px]" onClick={() => void fetchPlantings()}>Retry</Button></TableCell></TableRow> : filteredPlantings.length === 0 ? <TableRow><TableCell colSpan={9} className="py-4 text-sm">No Plantings found.</TableCell></TableRow> : filteredPlantings.map((planting) => (
                 <TableRow key={planting.id} className="hover:bg-muted/50">
-                  <TableCell className="py-1 text-xs font-mono text-muted-foreground">
-                    {planting.plantingId}
-                  </TableCell>
+                  <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${planting.plantingId}`} checked={selected.has(planting.id)} disabled={bulkBusy || loading} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(planting.id); else next.delete(planting.id); return next; })} /></TableCell>
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
-                      <Sprout className="w-3.5 h-3.5 text-green-500" />
+                      <Bean aria-hidden="true" className="w-3.5 h-3.5 text-[#a87950]" />
                       {planting.plant?.commonName || 'Unknown'}
                       {!planting.isActive && (
                         <Badge variant="secondary" className="text-[10px]">Inactive</Badge>
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
+                  <TableCell className="py-1 text-sm text-muted-foreground">
                     {planting.bed?.name || '—'}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
-                    <Badge className={`text-[10px] ${getStatusColor(planting.status)}`}>
-                      {getOptionLabel(PLANTING_STATUS_OPTIONS, planting.status)}
-                    </Badge>
+                  <TableCell className="py-1 text-xs font-mono text-muted-foreground">
+                    {planting.plantingId}
                   </TableCell>
-                  <TableCell className="hidden lg:table-cell py-1 text-sm text-muted-foreground">
-                    <Badge className={`text-[10px] ${getGrowthStageColor(planting.growthStage)}`}>
-                      {getOptionLabel(GROWTH_STAGE_OPTIONS, planting.growthStage)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="hidden xl:table-cell py-1 text-xs font-mono text-muted-foreground">
+                  <TableCell className="py-1 text-xs font-mono text-muted-foreground">
                     {planting.positionX && planting.positionZ ? (
                       `(${planting.positionX}, ${planting.positionZ})`
                     ) : (
                       '—'
                     )}
                   </TableCell>
-                  <TableCell className="text-center py-1">
-                    <Badge className={`text-[10px] ${planting.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
-                      {planting.isActive ? 'Active' : 'Inactive'}
+                  <TableCell className="py-1 text-sm text-muted-foreground">
+                    <Badge variant="outline" className={`bg-transparent text-[10px] ${getGrowthStageColor(planting.growthStage)}`}>
+                      {getOptionLabel(GROWTH_STAGE_OPTIONS, planting.growthStage)}
                     </Badge>
+                  </TableCell>
+                  <TableCell className="py-1 text-sm text-muted-foreground">
+                    <span className={`text-[10px] ${getStatusColor(planting.status)}`}>
+                      {getOptionLabel(PLANTING_STATUS_OPTIONS, planting.status)}
+                    </span>
+                  </TableCell>
+                  <TableCell className="text-center py-1">
+                    {planting.isActive ? <Check aria-label="Active" className="mx-auto h-4 w-4 text-green-500" /> : <X aria-label="Inactive" className="mx-auto h-4 w-4 text-gray-500" />}
                   </TableCell>
                   <TableCell className="py-1 text-right">{renderActions(planting)}</TableCell>
                 </TableRow>
@@ -990,7 +955,6 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate }: { onModuleUpdate?: () =>
             </TableBody>
           </Table>
         </div>
-      )}
 
       {/* Edit Dialog */}
       <Dialog open={!!editingPlanting} onOpenChange={(open) => !open && setEditingPlanting(null)}>

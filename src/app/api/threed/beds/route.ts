@@ -1,9 +1,10 @@
+import { parseBedListQuery } from '@/lib/services/threed/beds/bed-list-query';
 // app/api/threed/beds/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { threedBeds } from '@/lib/schema/threed';
-import { eq, and, desc, sql, type SQL } from 'drizzle-orm';
+import { threedBeds, bedStatusEnum } from '@/lib/schema/threed';
+import { eq, and, asc, desc, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
@@ -26,11 +27,6 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     const status = searchParams.get('status');
-    const isActive = searchParams.get('isActive');
-    const search = searchParams.get('search');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const offset = parseInt(searchParams.get('offset') || '0');
-
     const userId = session.user.id;
 
     // Get a single bed by ID
@@ -59,6 +55,15 @@ export async function GET(request: NextRequest) {
       });
     }
 
+    let query;
+    try {
+      query = parseBedListQuery(searchParams);
+      if (status && !(bedStatusEnum.enumValues as readonly string[]).includes(status)) throw new Error('Invalid status');
+    } catch (error) {
+      return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Invalid query' }, { status: 400 });
+    }
+    const { limit, offset, search, isActive, sort, direction } = query;
+    const fields = { name: sql`lower(${threedBeds.name})`, bedId: threedBeds.bedId, shape: threedBeds.shape, status: threedBeds.status, dimensions: sql`(${threedBeds.widthFeet}, ${threedBeds.lengthFeet})`, position: sql`(${threedBeds.positionX}, ${threedBeds.positionZ})`, active: threedBeds.isActive, createdAt: threedBeds.createdAt };
     type BedStatus = NonNullable<(typeof threedBeds.$inferSelect)['status']>;
     const conditions: SQL[] = [eq(threedBeds.userId, userId)];
 
@@ -73,9 +78,9 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       conditions.push(
-        sql`${threedBeds.name} ILIKE ${`%${search}%`} OR 
+        sql`(${threedBeds.name} ILIKE ${`%${search}%`} OR
             ${threedBeds.bedId} ILIKE ${`%${search}%`} OR
-            ${threedBeds.description} ILIKE ${`%${search}%`}`
+            ${threedBeds.description} ILIKE ${`%${search}%`})`
       );
     }
 
@@ -87,14 +92,14 @@ export async function GET(request: NextRequest) {
       .from(threedBeds)
       .where(where);
 
-    const total = countResult?.count || 0;
+    const total = Number(countResult?.count || 0);
 
     // ✅ Get paginated results
     const results = await db
       .select()
       .from(threedBeds)
       .where(where)
-      .orderBy(desc(threedBeds.createdAt))
+      .orderBy(direction === 'asc' ? asc(fields[sort]) : desc(fields[sort]), asc(threedBeds.id))
       .limit(limit)
       .offset(offset);
 

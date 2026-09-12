@@ -1,3 +1,4 @@
+import { parseWateringListQuery } from '@/lib/services/threed/waterings/watering-list-query';
 import { NextRequest, NextResponse } from 'next/server';
 import { and, desc, eq, inArray, sql, type SQL } from 'drizzle-orm';
 
@@ -25,8 +26,10 @@ export async function GET(request: NextRequest) {
     const farmbotId = searchParams.get('farmbotId');
     const bedId = searchParams.get('bedId');
     const isActive = searchParams.get('isActive');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    let query;
+    try { query = parseWateringListQuery(searchParams); }
+    catch (error) { return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Invalid query' }, { status: 400 }); }
+    const { limit, offset, search } = query;
     const userId = session.user.id;
 
     if (id) {
@@ -109,6 +112,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    if (search) conditions.push(sql`(${threedWateringSchedules.scheduleId} ILIKE ${`%${search}%`} OR ${threedWateringSchedules.notes} ILIKE ${`%${search}%`})`);
     const where = and(...conditions);
     const [countResult] = await db
       .select({ count: sql<number>`count(*)` })
@@ -121,7 +125,8 @@ export async function GET(request: NextRequest) {
       .where(where)
       .orderBy(
         desc(threedWateringSchedules.nextWatering),
-        desc(threedWateringSchedules.createdAt)
+        desc(threedWateringSchedules.createdAt),
+        desc(threedWateringSchedules.id)
       )
       .limit(limit)
       .offset(offset);
@@ -132,7 +137,7 @@ export async function GET(request: NextRequest) {
       pagination: {
         limit,
         offset,
-        total: countResult?.count || 0,
+        total: Number(countResult?.count || 0),
       },
     });
   } catch (error) {

@@ -1,15 +1,19 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
 import {
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Check,
+  X,
   Plus,
   Edit,
   Trash2,
   Loader2,
   Layers,
   MoreHorizontal,
-  Search,
-  Filter,
   Eye,
   EyeOff,
   Lock,
@@ -130,26 +134,34 @@ const getOptionLabel = (options: { value: string; label: string }[], value: stri
   return option ? option.label : value;
 };
 
-const getStatusColor = (isActive: boolean) => {
-  return isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700';
-};
-
 interface ThreeDLayersCRUDProps {
   onModuleUpdate?: () => void;
   userId?: string;
   projectId?: number;
+  scrollRecords?: boolean;
 }
 
-export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLayersCRUDProps) {
+export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollRecords = false }: ThreeDLayersCRUDProps) {
   const { showToast, ToastComponent } = useToast();
   const [layers, setLayers] = useState<Layer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingLayer, setEditingLayer] = useState<Layer | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterType, setFilterType] = useState<string>('all');
-  const [filterActive, setFilterActive] = useState<string>('all');
+
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(25);
+  const [total, setTotal] = useState(0);
+  const [sort, setSort] = useState({ key: 'name', direction: 'asc' });
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const [bulkNotice, setBulkNotice] = useState('');
+  const [revision, setRevision] = useState(0);
+  const fetchLayers = () => setRevision(value => value + 1);
+  function resetList() { setPage(0); setSelected(new Set()); setLoading(true); }
+
 
   // ✅ Form state - Simplified to match schema
   const [formData, setFormData] = useState<FormData>({
@@ -169,45 +181,27 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
     metadata: '{}',
   });
 
-  // ✅ Fetch layers
   useEffect(() => {
-    fetchLayers();
-  }, []);
+    const controller = new AbortController();
+    setLoading(true); setLoadError(''); setSelected(new Set());
+    const params = new URLSearchParams({ limit: String(pageSize), offset: String(page * pageSize), search: searchQuery, sort: sort.key, direction: sort.direction });
+    if (projectId !== undefined) params.set('projectId', String(projectId));
+    const timer = setTimeout(async () => {
+      try {
+        const response = await fetch(`/api/threed/layers?${params}`, { signal: controller.signal, cache: 'no-store' });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.error || 'Failed to fetch Layers');
+        if (controller.signal.aborted) return;
+        setLayers(data.data); setTotal(Number(data.pagination.total));
+        if (page > 0 && page * pageSize >= data.pagination.total) setPage(Math.max(0, Math.ceil(data.pagination.total / pageSize) - 1));
+      } catch (error) {
+        if (!controller.signal.aborted) { setLoadError(error instanceof Error ? error.message : 'Failed to fetch Layers'); setLayers([]); }
+      } finally { if (!controller.signal.aborted) setLoading(false); }
+    }, 200);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [page, pageSize, searchQuery, sort, revision, projectId]);
 
-  const fetchLayers = async () => {
-    setLoading(true);
-    try {
-      const url = projectId 
-        ? `/api/threed/layers?projectId=${projectId}&limit=100`
-        : '/api/threed/layers?limit=100';
-      const response = await fetch(url);
-      const data = await response.json();
-      if (data.success) {
-        setLayers(Array.isArray(data.data) ? data.data : []);
-      } else {
-        showToast(data.error || 'Failed to fetch layers', 'error');
-        setLayers([]);
-      }
-    } catch (error) {
-      console.error('Error fetching layers:', error);
-      showToast('Failed to fetch layers', 'error');
-      setLayers([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredLayers = layers.filter((layer) => {
-    const matchesSearch = layer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      layer.layerId.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (layer.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false);
-    
-    const matchesType = filterType === 'all' || layer.layerType === filterType;
-    const matchesActive = filterActive === 'all' || 
-      (filterActive === 'true' ? layer.isActive : !layer.isActive);
-    
-    return matchesSearch && matchesType && matchesActive;
-  });
+  const filteredLayers = layers;
 
   const handleCreate = async () => {
     if (!formData.layerId) {
@@ -322,8 +316,10 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
   };
 
   const handleDelete = async (id: number, name: string) => {
+    if (bulkBusy || isSubmitting) return;
     if (!confirm(`Delete layer "${name}"? This action cannot be undone.`)) return;
 
+    setIsSubmitting(true);
     try {
       const response = await fetch(`/api/threed/layers?id=${id}`, {
         method: 'DELETE',
@@ -340,7 +336,7 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
     } catch (error) {
       console.error('Error deleting layer:', error);
       showToast('Failed to delete layer', 'error');
-    }
+    } finally { setIsSubmitting(false); }
   };
 
   const resetForm = () => {
@@ -421,11 +417,35 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
     }
   };
 
+  async function deleteSelected() {
+    const targets = layers.filter(layer => selected.has(layer.id));
+    if (bulkBusy || loading || isSubmitting || !targets.length || !confirm(`Delete ${targets.length} selected Layers? This action cannot be undone.`)) return;
+    setBulkBusy(true); setBulkNotice('');
+    let deleted = 0;
+    const failures: string[] = [];
+    for (const layer of targets) {
+      try {
+        const response = await fetch(`/api/threed/layers?id=${layer.id}`, { method: 'DELETE' });
+        const data = await response.json();
+        if (!response.ok || !data.success) throw new Error(data.error || 'Delete failed');
+        deleted++;
+      } catch (error) { failures.push(`${layer.name}: ${error instanceof Error ? error.message : 'Delete failed'}`); }
+    }
+    setBulkNotice(`Deleted ${deleted} of ${targets.length} Layers.${failures.length ? ` ${failures.join('; ')} Check the refreshed list before retrying.` : ''}`);
+    setBulkBusy(false); setSelected(new Set()); fetchLayers();
+    if (deleted) onModuleUpdate?.();
+  }
+  function heading(key: string, title: string) {
+    const Icon = sort.key === key ? sort.direction === 'asc' ? ArrowUp : ArrowDown : ArrowUpDown;
+    return <TableHead className="py-1 text-xs" aria-sort={sort.key === key ? sort.direction === 'asc' ? 'ascending' : 'descending' : 'none'}><button disabled={loading || bulkBusy} className="inline-flex items-center gap-1" onClick={() => { resetList(); setSort({ key, direction: sort.key === key && sort.direction === 'asc' ? 'desc' : 'asc' }); }}>{title}<Icon className="h-3 w-3" aria-hidden="true" /></button></TableHead>;
+  }
+
   const renderActions = (layer: Layer) => (
     <div className="flex items-center justify-end gap-1">
       <Button
         variant="ghost"
         size="sm"
+        disabled={bulkBusy || isSubmitting}
         onClick={() => toggleVisibility(layer)}
         title={layer.isVisible ? 'Hide' : 'Show'}
       >
@@ -438,6 +458,7 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
       <Button
         variant="ghost"
         size="sm"
+        disabled={bulkBusy || isSubmitting}
         onClick={() => toggleLock(layer)}
         title={layer.metadata?.isLocked ? 'Unlock' : 'Lock'}
       >
@@ -447,7 +468,7 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
           <Unlock className="w-4 h-4 text-gray-400" />
         )}
       </Button>
-      <Button variant="ghost" size="sm" onClick={() => openEditDialog(layer)}>
+      <Button variant="ghost" size="sm" disabled={bulkBusy || isSubmitting} aria-label={`Edit ${layer.name}`} onClick={() => openEditDialog(layer)}>
         <Edit className="w-4 h-4" />
       </Button>
       <DropdownMenu>
@@ -490,28 +511,14 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
     </div>
   );
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-4">
-        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-2">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Layers className="w-4 h-4 text-cyan-500" />
-          <span className="text-sm font-medium">Layers</span>
-          <Badge variant="secondary" className="text-xs">
-            {filteredLayers.length}
-          </Badge>
-        </div>
+    <div className={scrollRecords ? 'flex h-full min-h-0 flex-col gap-2' : 'space-y-2'}>
+      <AdminWorkspaceHeader icon={Layers} title="Layers" description="Manage Map 2D and ThreeD Layers" className="shrink-0 [&>div:first-child>svg]:text-cyan-500">
+        <Badge variant="secondary" className="text-xs">{loading || loadError ? '—' : total}</Badge>
+        <Input aria-label="Search Layers" placeholder="Search Layers by name, ID or description…" disabled={bulkBusy} value={searchQuery} onChange={event => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm" className="h-7 px-2 text-xs">
+            <Button size="sm" disabled={bulkBusy} className="h-7 px-2 text-[11px]">
               <Plus className="w-3 h-3 mr-1" />
               Add Layer
             </Button>
@@ -737,92 +744,38 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
             </div>
           </DialogContent>
         </Dialog>
-      </div>
+      </AdminWorkspaceHeader>
 
-      {/* Search & Filters */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-          <Input
-            placeholder="Search by name, ID, description..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-7 h-8 text-xs"
-          />
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">
+        <div className="flex flex-wrap items-center gap-2"><span>{loading ? 'Loading…' : loadError ? 'Layers unavailable' : `${total ? page * pageSize + 1 : 0}–${Math.min((page + 1) * pageSize, total)} of ${total} Layers`}</span><span aria-hidden="true">|</span><span>{selected.size} selected</span>
+          <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={loading || bulkBusy || isSubmitting || !!loadError || !selected.size} onClick={() => void deleteSelected()}>Delete selected ({selected.size})</Button>
+          <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={bulkBusy || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button>
         </div>
-        <Select value={filterType} onValueChange={setFilterType}>
-          <SelectTrigger className="w-[120px] h-8 text-xs">
-            <Filter className="w-3.5 h-3.5 mr-1" />
-            <SelectValue placeholder="Type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
-            {LAYER_TYPE_OPTIONS.map((type) => (
-              <SelectItem key={type.value} value={type.value}>
-                {type.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={filterActive} onValueChange={setFilterActive}>
-          <SelectTrigger className="w-[120px] h-8 text-xs">
-            <Filter className="w-3.5 h-3.5 mr-1" />
-            <SelectValue placeholder="Active" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All</SelectItem>
-            <SelectItem value="true">Active</SelectItem>
-            <SelectItem value="false">Inactive</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-8 text-xs"
-          onClick={() => {
-            setSearchQuery('');
-            setFilterType('all');
-            setFilterActive('all');
-            fetchLayers();
-          }}
-        >
-          Clear Filters
-        </Button>
+        <div className="flex flex-wrap items-center gap-2"><label>Per page <select aria-label="Layers per page" className="rounded border bg-background p-1 text-[11px]" value={pageSize} disabled={loading || bulkBusy} onChange={event => { resetList(); setPageSize(Number(event.target.value)); }}>{[25, 50, 100, 200].map(size => <option key={size} value={size}>{size}</option>)}</select></label>
+          {(['First', 'Previous', 'Page', 'Next', 'Last'] as const).map(label => label === 'Page' ? <span key={label}>Page {page + 1} of {Math.max(1, Math.ceil(total / pageSize))}</span> : <Button key={label} size="sm" variant="outline" className="h-7 text-[11px]" disabled={loading || bulkBusy || !!loadError || (label === 'First' || label === 'Previous' ? page === 0 : (page + 1) * pageSize >= total)} onClick={() => { setSelected(new Set()); setLoading(true); setPage(label === 'First' ? 0 : label === 'Previous' ? page - 1 : label === 'Next' ? page + 1 : Math.max(0, Math.ceil(total / pageSize) - 1)); }}>{label}</Button>)}
+        </div>
       </div>
+      {bulkNotice && <p role="status" className="max-h-24 shrink-0 overflow-auto text-xs">{bulkNotice}</p>}
 
-      {/* Layers Table */}
-      {filteredLayers.length === 0 ? (
-        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
-          <Layers className="w-8 h-8 mx-auto mb-2 opacity-50" />
-          <p>No layers found</p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-2 h-7 px-2 text-xs"
-            onClick={() => setShowCreateDialog(true)}
-          >
-            <Plus className="w-3 h-3 mr-1" />
-            Create your first layer
-          </Button>
-        </div>
-      ) : (
-        <div className="border rounded-lg overflow-hidden">
-          <Table>
-            <TableHeader>
+      <div className={scrollRecords ? 'min-h-0 flex-1 overflow-auto overscroll-contain rounded-lg border [&>[data-slot=table-container]]:overflow-visible' : 'overflow-auto rounded-lg border'} role="region" aria-label="Layer records" tabIndex={0}>
+          <Table className="min-w-[850px]">
+            <TableHeader className={scrollRecords ? 'sticky top-0 z-10 bg-background' : undefined}>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="text-xs py-1">Name</TableHead>
-                <TableHead className="hidden sm:table-cell text-xs py-1">ID</TableHead>
-                <TableHead className="hidden md:table-cell text-xs py-1">Type</TableHead>
-                <TableHead className="hidden lg:table-cell text-xs py-1">Includes</TableHead>
-                <TableHead className="text-center text-xs py-1">Visible</TableHead>
-                <TableHead className="text-center text-xs py-1">Locked</TableHead>
-                <TableHead className="text-center text-xs py-1">Active</TableHead>
+                <TableHead className="w-8"><input type="checkbox" aria-label="Select Layers on this page" disabled={loading || bulkBusy || !!loadError || !layers.length} checked={layers.length > 0 && layers.every(layer => selected.has(layer.id))} ref={input => { if (input) input.indeterminate = layers.some(layer => selected.has(layer.id)) && !layers.every(layer => selected.has(layer.id)); }} onChange={event => setSelected(event.target.checked ? new Set(layers.map(layer => layer.id)) : new Set())} /></TableHead>
+                {heading('name', 'Name')}
+                {heading('layerId', 'ID')}
+                {heading('type', 'Type')}
+                <TableHead className="text-xs py-1">Includes</TableHead>
+                {heading('visible', 'Visible')}
+                {heading('locked', 'Locked')}
+                {heading('active', 'Active')}
                 <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredLayers.map((layer) => (
+              {loading ? <TableRow><TableCell colSpan={9} className="py-4 text-sm"><span role="status">Loading Layers…</span></TableCell></TableRow> : loadError ? <TableRow><TableCell colSpan={9} className="py-4 text-sm"><span role="alert" className="text-destructive">{loadError}</span><Button size="sm" variant="outline" className="ml-2 h-7 text-[11px]" onClick={() => void fetchLayers()}>Retry</Button></TableCell></TableRow> : filteredLayers.length === 0 ? <TableRow><TableCell colSpan={9} className="py-4 text-sm">No Layers found.</TableCell></TableRow> : filteredLayers.map((layer) => (
                 <TableRow key={layer.id} className="hover:bg-muted/50">
+                  <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${layer.name}`} checked={selected.has(layer.id)} disabled={bulkBusy || loading} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(layer.id); else next.delete(layer.id); return next; })} /></TableCell>
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
                       <div 
@@ -830,15 +783,12 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
                         style={{ backgroundColor: layer.config?.color || '#ffffff' }}
                       />
                       {layer.name}
-                      {!layer.isActive && (
-                        <Badge variant="secondary" className="text-[10px]">Inactive</Badge>
-                      )}
                     </div>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell py-1 text-xs font-mono text-muted-foreground">
+                  <TableCell className="py-1 text-xs font-mono text-muted-foreground">
                     {layer.layerId || '—'}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
+                  <TableCell className="py-1 text-sm text-muted-foreground">
                     {layer.layerType ? (
                       <Badge variant="outline" className="text-[10px]">
                         {getOptionLabel(LAYER_TYPE_OPTIONS, layer.layerType)}
@@ -847,7 +797,7 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
                       '—'
                     )}
                   </TableCell>
-                  <TableCell className="hidden lg:table-cell py-1 text-xs text-muted-foreground">
+                  <TableCell className="py-1 text-xs text-muted-foreground">
                     {layer.config?.includeTypes ? (
                       <div className="flex gap-1 flex-wrap">
                         {layer.config.includeTypes.slice(0, 3).map((type) => (
@@ -866,23 +816,13 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
                     )}
                   </TableCell>
                   <TableCell className="text-center py-1">
-                    {layer.isVisible ? (
-                      <Eye className="w-4 h-4 text-green-500 mx-auto" />
-                    ) : (
-                      <EyeOff className="w-4 h-4 text-gray-400 mx-auto" />
-                    )}
+                    {layer.isVisible ? <Eye aria-label="Visible" className="w-4 h-4 text-green-500 mx-auto" /> : <EyeOff aria-label="Hidden" className="w-4 h-4 text-gray-400 mx-auto" />}
                   </TableCell>
                   <TableCell className="text-center py-1">
-                    {layer.metadata?.isLocked ? (
-                      <Lock className="w-4 h-4 text-red-500 mx-auto" />
-                    ) : (
-                      <Unlock className="w-4 h-4 text-gray-400 mx-auto" />
-                    )}
+                    {layer.metadata?.isLocked ? <Lock aria-label="Locked" className="w-4 h-4 text-red-500 mx-auto" /> : <Unlock aria-label="Unlocked" className="w-4 h-4 text-gray-400 mx-auto" />}
                   </TableCell>
                   <TableCell className="text-center py-1">
-                    <Badge className={`text-[10px] ${getStatusColor(layer.isActive)}`}>
-                      {layer.isActive ? 'Active' : 'Inactive'}
-                    </Badge>
+                    {layer.isActive ? <Check aria-label="Active" className="mx-auto h-4 w-4 text-green-500" /> : <X aria-label="Inactive" className="mx-auto h-4 w-4 text-gray-500" />}
                   </TableCell>
                   <TableCell className="py-1 text-right">{renderActions(layer)}</TableCell>
                 </TableRow>
@@ -890,7 +830,6 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId }: ThreeDLa
             </TableBody>
           </Table>
         </div>
-      )}
 
       {/* Edit Dialog */}
       <Dialog open={!!editingLayer} onOpenChange={(open) => !open && setEditingLayer(null)}>
