@@ -28,8 +28,8 @@ The User clarified that animations must be autonomous reusable assets, assignabl
 UI correction: Animations now has its own ThreeD sidebar entry and workspace, independent of Models. The interim Model-bound library UI and per-row shortcut were reverted. Assignment consumers remain later work; see the [standalone workspace record](../developers/THREED_ANIMATIONS_LIBRARY.md#standalone-library-workspace--corrected-ownership).
 
 
-## v0.19.14 release candidate
+## v0.19.14 released
 
-The autonomous Animations Library is prepared for production as **v0.19.14 — ThreeD Animations Library**, superseding the staged status above. Upload/bulk import, library management, Character assignment controls and both Character playback paths are implemented. The User confirmed schema application, 46 FBX uploads and the manual Character regression checklist. Final sidebar location is **ThreeD → Models → Animations**; ownership remains independent. Twelve automated release checks pass. Build and production deployment remain pending; see [the release handoff](v0.19.14-release.md).
+The autonomous Animations Library is released to production as **v0.19.14 — ThreeD Animations Library**, superseding the staged status above. Upload/bulk import, library management, Character assignment controls and both Character playback paths are implemented. The User confirmed schema application, 46 FBX uploads and the manual Character regression checklist. Final sidebar location is **ThreeD → Models → Animations**; ownership remains independent. Twelve automated release checks pass. Production deployment of `a5491e9` is User-confirmed; separate local build results were not reported. See [the release handoff](v0.19.14-release.md).
 
 After this release, resume the remaining Admin workspace pages in the sequence above. Model animation assignment editing, compatibility preview/retargeting, persistent upload recovery and source cleanup remain separate behavior work; this release does not complete them.

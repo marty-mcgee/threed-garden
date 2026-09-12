@@ -7,9 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.19.13 — ThreeD Admin Sub-Module Workspace UI/UX Updates` (commit `c976c77`), deployment and manual build User-confirmed. See the [release record](docs/releases/v0.19.13.md).
-
-> **Prepared release candidate:** `v0.19.14 — ThreeD Animations Library` (package `0.19.14`). Adds reusable animation uploads, bulk importing, Character action assignments and Scene playback. Manual build and production deployment remain pending. See the [release handoff](docs/plans/v0.19.14-release.md).
+> **Current production version:** `v0.19.14 — ThreeD Animations Library` (package `0.19.14`, commit `a5491e9`), deployment User-confirmed. Adds shared animation uploads, bulk importing, Character action assignments and Scene playback. See the [release record](docs/releases/v0.19.14.md) and [validation/handoff](docs/plans/v0.19.14-release.md).
 
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 
