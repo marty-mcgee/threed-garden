@@ -18,7 +18,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
-  const fixedWorkspace = pathname === '/admin/threed/models' || pathname === '/admin/threed/model-categories' || pathname === '/admin/threed/model-textures' || pathname === '/admin/threed/model-animations';
+  const fixedWorkspace = pathname === '/admin/threed/models' || pathname === '/admin/threed/model-categories' || pathname === '/admin/threed/model-textures' || pathname === '/admin/threed/animations';
 
   // ✅ Handle hydration
   useEffect(() => {

@@ -28,7 +28,7 @@ function ModelFilesPageInner() {
         <div className="ml-auto flex shrink-0 items-center gap-2">
           <AdminWorkspaceLink href="/admin/threed/models" icon={ArrowLeft}>Back to Models</AdminWorkspaceLink>
           <AdminWorkspaceLink href="/admin/threed/model-categories" icon={FolderTree}>Model Categories</AdminWorkspaceLink>
-          <AdminWorkspaceLink href={`/admin/threed/model-animations${modelQuery}`} icon={Clapperboard}>Model Animations</AdminWorkspaceLink>
+          <AdminWorkspaceLink href={`/admin/threed/animations`} icon={Clapperboard}>Animations Library</AdminWorkspaceLink>
           <AdminWorkspaceLink href="/admin/threed/model-textures" icon={Images}>Model Textures</AdminWorkspaceLink>
         </div>
       </AdminWorkspaceHeader>

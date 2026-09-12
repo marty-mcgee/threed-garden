@@ -78,9 +78,9 @@ const sections = [
     icon: FolderOpen,
   },
   {
-    title: 'Model Animations',
-    description: 'Map embedded and external clips to semantic actions.',
-    href: '/admin/threed/model-animations',
+    title: 'Animations Library',
+    description: 'Manage reusable animation assets independently of Models and Characters.',
+    href: '/admin/threed/animations',
     icon: Clapperboard,
   },
   {

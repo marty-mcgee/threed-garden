@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react';
 import {
   Plus,
+  Clapperboard,
   Edit,
   Trash2,
   Loader2,
@@ -35,6 +36,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
 import { ModelFileList, ModelFileRow } from '@/components/admin/threed/models/ModelFileList';
+
+import { CharacterAnimationAssignments } from '@/components/admin/threed/animations/CharacterAnimationAssignments';
 
 // ✅ Types
 interface Model {
@@ -294,6 +297,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate }: { onModuleUpdate?: () =
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [animationCharacter, setAnimationCharacter] = useState<Character | null>(null);
   const [editingCharacter, setEditingCharacter] = useState<Character | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -617,6 +621,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate }: { onModuleUpdate?: () =
 
   const renderActions = (character: Character) => (
     <div className="flex items-center justify-end gap-1">
+      <Button variant="ghost" size="sm" title="Assign Animations" aria-label={`Assign animations to ${character.name}`} onClick={() => setAnimationCharacter(character)}><Clapperboard className="h-4 w-4" /><span className="ml-1 text-xs">Animations</span></Button>
       <Button variant="ghost" size="sm" onClick={() => openEditDialog(character)}>
         <Edit className="w-4 h-4" />
       </Button>
@@ -1354,6 +1359,13 @@ export function ThreeDCharactersCRUD({ onModuleUpdate }: { onModuleUpdate?: () =
           </Table>
         </div>
       )}
+
+      <Dialog open={!!animationCharacter} onOpenChange={open => !open && setAnimationCharacter(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Animations — {animationCharacter?.name}</DialogTitle></DialogHeader>
+          {animationCharacter && <CharacterAnimationAssignments key={animationCharacter.id} characterId={animationCharacter.id} />}
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Dialog */}
       <Dialog open={!!editingCharacter} onOpenChange={(open) => !open && setEditingCharacter(null)}>

@@ -42,10 +42,7 @@ import {
   type AnimationMap,
 } from '@/lib/utils/animation';
 
-import {
-  getExternalAnimationSourcesForModel,
-  loadExternalCharacterAnimations,
-} from '@/lib/utils/externalCharacterAnimations';
+import { loadAssignedCharacterAnimations, assignedAnimationMap } from '@/lib/utils/assignedCharacterAnimations';
 
 import {
   planThreeDInteractionApproach,
@@ -572,40 +569,11 @@ function useCharacterModel(
                 clip.clone()
             );
 
-          /**
-           * Look for a verified external animation library
-           * for this model.
-           *
-           * Right now:
-           *
-           * Farmer Female → external library
-           * everything else → []
-           */
-          const externalSources =
-            getExternalAnimationSourcesForModel(
-              character.model!
-                .modelName,
-
-              character.model!
-                .filePath
-            );
-
-          /**
-           * Load and normalize the external FBX clips.
-           *
-           * Example:
-           *
-           * Walking.fbx
-           * internal clip "mixamo.com"
-           *
-           * becomes:
-           *
-           * clip.name = "walk"
-           */
-          const externalLibrary =
-            await loadExternalCharacterAnimations(
-              externalSources
-            );
+          // Resolve saved Character/Model mappings before loading legacy defaults.
+          const externalLibrary = await loadAssignedCharacterAnimations(
+            character.id, character.model!.id, character.model!.modelName,
+            character.model!.filePath, loadedModel,
+          );
 
           if (cancelled) {
             return;
@@ -632,6 +600,7 @@ function useCharacterModel(
             const clip
             of embeddedClips
           ) {
+            if (externalLibrary.blocked.has(clip.name.toLowerCase())) continue;
             clipByName.set(
               clip.name.toLowerCase(),
               clip
@@ -643,6 +612,7 @@ function useCharacterModel(
             of externalLibrary
               .clips
           ) {
+            if (externalLibrary.blocked.has(clip.name.toLowerCase())) continue;
             clipByName.set(
               clip.name.toLowerCase(),
               clip
@@ -724,6 +694,7 @@ function useCharacterModel(
               ),
               overrides
             );
+          animMapRef.current = assignedAnimationMap(animMapRef.current, externalLibrary.blocked, externalLibrary.assigned);
 
           // ==================================================
           // DEBUG INFO
@@ -1298,6 +1269,8 @@ export function EcctrlCharacter({
           return;
         }
 
+        if (animMapRef.current?.blockedActions?.has(state.toLowerCase())) return;
+
         let action:
           THREE.AnimationAction
           | undefined;
@@ -1441,7 +1414,7 @@ export function EcctrlCharacter({
     playAnimation('IDLE');
     const mixer = mixerRef.current;
     const action = currentActionRef.current;
-    if (actionsRef.current.size > 0 && (!mixer || action?.getMixer() !== mixer || !action.isRunning())) return;
+    if (!animMapRef.current?.blockedActions?.has('idle') && actionsRef.current.size > 0 && (!mixer || action?.getMixer() !== mixer || !action.isRunning())) return;
     // play() schedules an action; update(0) actually applies its starting pose.
     mixer?.update(0);
     model.updateMatrixWorld(true);

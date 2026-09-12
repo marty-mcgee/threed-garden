@@ -3,7 +3,7 @@ import {
   pgTable, text, timestamp, boolean, index, serial, varchar, 
   integer, decimal, numeric, jsonb, uniqueIndex, foreignKey,
   pgSchema, pgEnum, time, AnyPgColumn, real,
-  check,
+  check, unique,
 } from 'drizzle-orm/pg-core';
 import { relations, sql } from 'drizzle-orm';
 import { user } from '../auth';
@@ -1915,3 +1915,75 @@ export type NewThreeDLayer = typeof threedLayers.$inferInsert;
 // =====================================
 // ## [MM] v0.12.0
 // =====================================
+
+// Autonomous animation sources and clips. Existing Model/Character playback is unchanged.
+export const threedAnimationFiles = pgTable('threed_animation_files', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  fileName: varchar('file_name', { length: 255 }).notNull(),
+  filePath: text('file_path').notNull(),
+  fileSize: integer('file_size').notNull(),
+  format: varchar('format', { length: 10 }).notNull(),
+  checksum: varchar('checksum', { length: 64 }),
+  metadata: jsonb('metadata').notNull().default({}),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (t) => [
+  uniqueIndex('idx_animation_files_owner_path').on(t.userId, t.filePath),
+  unique('uq_animation_files_id_owner').on(t.id, t.userId),
+  check('animation_files_valid_source', sql`length(trim(${t.fileName})) > 0 AND length(trim(${t.filePath})) > 0 AND ${t.fileSize} > 0 AND ${t.format} IN ('fbx', 'glb')`),
+]);
+
+export const threedAnimations = pgTable('threed_animations', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  animationFileId: integer('animation_file_id').notNull(),
+  name: varchar('name', { length: 255 }).notNull(),
+  clipIndex: integer('clip_index').notNull(),
+  clipName: text('clip_name').notNull(),
+  duration: real('duration').notNull(),
+  metadata: jsonb('metadata').notNull().default({}),
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (t) => [
+  uniqueIndex('idx_animations_source_clip').on(t.animationFileId, t.clipIndex),
+  unique('uq_animations_id_owner').on(t.id, t.userId),
+  index('idx_animations_owner_name').on(t.userId, t.name),
+  foreignKey({ name: 'animations_source_owner_fk', columns: [t.animationFileId, t.userId], foreignColumns: [threedAnimationFiles.id, threedAnimationFiles.userId] }),
+  check('animations_valid_clip', sql`length(trim(${t.name})) > 0 AND ${t.clipIndex} >= 0 AND ${t.duration} >= 0 AND ${t.duration} < 'Infinity'::real`),
+]);
+
+export const threedModelAnimationAssignments = pgTable('threed_model_animation_assignments', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  modelId: integer('model_id').notNull().references(() => threedModels.id, { onDelete: 'cascade' }),
+  actionKey: varchar('action_key', { length: 64 }).notNull(),
+  animationId: integer('animation_id'),
+  mode: varchar('mode', { length: 10 }).notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (t) => [
+  uniqueIndex('idx_model_animation_action').on(t.modelId, t.actionKey),
+  index('idx_model_animation_owner').on(t.userId),
+  index('idx_model_animation_clip').on(t.animationId),
+  foreignKey({ name: 'model_animation_clip_owner_fk', columns: [t.animationId, t.userId], foreignColumns: [threedAnimations.id, threedAnimations.userId] }),
+  check('model_animation_mode', sql`(${t.mode} = 'assigned' AND ${t.animationId} IS NOT NULL) OR (${t.mode} = 'disabled' AND ${t.animationId} IS NULL)`),
+]);
+
+export const threedCharacterAnimationAssignments = pgTable('threed_character_animation_assignments', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  characterId: integer('character_id').notNull().references(() => threedCharacters.id, { onDelete: 'cascade' }),
+  actionKey: varchar('action_key', { length: 64 }).notNull(),
+  animationId: integer('animation_id'),
+  mode: varchar('mode', { length: 10 }).notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (t) => [
+  uniqueIndex('idx_character_animation_action').on(t.characterId, t.actionKey),
+  index('idx_character_animation_owner').on(t.userId),
+  index('idx_character_animation_clip').on(t.animationId),
+  foreignKey({ name: 'character_animation_clip_owner_fk', columns: [t.animationId, t.userId], foreignColumns: [threedAnimations.id, threedAnimations.userId] }),
+  check('character_animation_mode', sql`(${t.mode} = 'assigned' AND ${t.animationId} IS NOT NULL) OR (${t.mode} = 'disabled' AND ${t.animationId} IS NULL)`),
+]);

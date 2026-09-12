@@ -7,11 +7,13 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production version:** `v0.19.10c "ThreeD Model Bulk Importing"` (package `0.19.10-centaur`, commit `a618a66`). Successful production deployment confirmed by the User September 9, 2026. See the [release record](docs/releases/v0.19.10c.md).
+> **Current production version:** `v0.19.13 — ThreeD Admin Sub-Module Workspace UI/UX Updates` (commit `c976c77`), deployment and manual build User-confirmed. See the [release record](docs/releases/v0.19.13.md).
+
+> **Prepared release candidate:** `v0.19.14 — ThreeD Animations Library` (package `0.19.14`). Adds reusable animation uploads, bulk importing, Character action assignments and Scene playback. Manual build and production deployment remain pending. See the [release handoff](docs/plans/v0.19.14-release.md).
 
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 
-The released **v0.19.10c** adds OBJ importing with MTL material libraries and their texture images, inline/window previews, and saved single-Model material rendering. See the [implementation and validation](docs/plans/v0.19.10c.md) and [completed production handoff](docs/plans/v0.19.10c-release.md). No subsequent release candidate is designated.
+The released **v0.19.10c** adds OBJ importing with MTL material libraries and their texture images, inline/window previews, and saved single-Model material rendering. See the [implementation and validation](docs/plans/v0.19.10c.md) and [completed production handoff](docs/plans/v0.19.10c-release.md).
 
 The v0.19.9 production release turns the existing Project Tour into a focused, state-derived first-run sequence. It recommends Environment, Model, and Character foundations one step at a time while preserving direct access for advanced Users and reusing the established Library and placement transactions.
 

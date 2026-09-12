@@ -609,8 +609,8 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
             </Link>
           </Button>
           <Button asChild variant="outline" size="sm" className="h-7 px-2 text-xs">
-            <Link href="/admin/threed/model-animations">
-              <Clapperboard className="mr-1 h-3 w-3" /> Model Animations
+            <Link href="/admin/threed/animations">
+              <Clapperboard className="mr-1 h-3 w-3" /> Animations Library
             </Link>
           </Button>
           <Button asChild variant="outline" size="sm" className="h-7 px-2 text-xs">

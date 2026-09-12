@@ -51,6 +51,18 @@ jobs:
       - name: Validate Model list pagination inputs
         run: npm run validate:threed-model-list
 
+      - name: Validate bulk animation uploads
+        run: npm run validate:threed-animation-bulk
+
+      - name: Validate Character animation assignment editor
+        run: npm run validate:threed-character-animation-assignments
+
+      - name: Validate animation source uploads
+        run: npm run validate:threed-animation-upload
+
+      - name: Validate Animations Library contracts and APIs
+        run: npm run validate:threed-animation-library
+
       - name: Validate Model list query batching
         run: npm run validate:threed-model-list-api
 
@@ -59,6 +71,9 @@ jobs:
 
       - name: Validate Character position saving
         run: npm run validate:threed-character-position-save
+
+      - name: Validate assigned Character animation playback
+        run: npm run validate:threed-assigned-character-animations
 
       - name: Validate Character animation restart
         run: npm run validate:threed-character-animation-restart

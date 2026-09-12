@@ -17,3 +17,5 @@ Read [ThreeD character runtimes](../developers/THREED_CHARACTERS.md) before chan
 Read [ThreeD Marker architecture](../developers/THREED_MARKERS.md) before changing Runtime Marker creation, marker identity, ThreeD Layers, marker visibility, Action Target resolution, or marker adapters.
 
 The current production checkpoint is [v0.19.13](../releases/v0.19.13.md), commit `c976c77`; deployment and manual build are User-confirmed. Remaining Admin stages are resumed in the [continuation record](../plans/admin-threed-workspace-continuation.md). No next release number is designated. Use the [Admin workspace blueprint](../plans/admin-threed-workspace-blueprint.md) with each page's specialized behavior preserved.
+
+The approved autonomous [ThreeD Animations Library](../developers/THREED_ANIMATIONS_LIBRARY.md) has local Stage 1 schema and APIs. Live schema application, upload/inspection, Admin editors and Scene integration are separate stages; the existing Character animation paths remain authoritative.

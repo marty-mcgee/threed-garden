@@ -449,3 +449,17 @@ The [ThreeD Model Management handoff](../plans/v0.19.11-release.md) records the 
 ## v0.19.12 released checkpoint
 
 The [release handoff](../plans/v0.19.12-release.md) records 16 passing local checks. `npm run validate:threed-model-list` is included in CI and checks pagination bounds and sort allowlists. Live SQL/browser acceptance is separate from this fixture. The User owns the build gate; do not run `npm run build` in this chat. Production deployment of `80c6a1d` is User-confirmed; individual smoke checks are not inferred from deployment success.
+
+## Autonomous Animations Library
+
+Run `npm run validate:threed-animation-library` and `npm run typecheck` for library schema/API changes. The offline route/service fixtures cover auth, ownership, pagination, batched references, inheritance and deletion protection; real schema introspection checks the new constraints. They do not connect to Postgres or Blob and do not replace later concurrency/rig/playback checks. See [the Stage 1 API record](../developers/THREED_ANIMATIONS_LIBRARY.md).
+
+The interim Model-bound animation editor was reverted at the User’s request. Validate the standalone library with the API checks above and the [workspace checklist](../developers/THREED_ANIMATIONS_LIBRARY.md#standalone-library-workspace--corrected-ownership).
+
+Run `npm run validate:threed-animation-upload` for autonomous source ingestion changes, together with the library API and Blob-path validators. It parses real FBX/synthetic GLB with actual Three.js loaders and mocks persistence/storage; it does not upload files or connect to the database.
+
+For bulk Animation workspace upload changes, run `node src/lib/scripts/validate-threed-animation-bulk.cjs` and TypeScript. The handler fixture mocks network/storage and verifies sequential processing, isolated failures, result reporting and batch bounds. Browser selection and live upload acceptance remain manual.
+
+For the Character animation assignment editor, run `node src/lib/scripts/validate-threed-character-animation-assignments.cjs`, the existing library API validator, and TypeScript. The editor fixture uses mocked requests; verify live assignment persistence separately. Saved library assignments are not yet consumed by Character Scene runtimes.
+
+Character runtimes now consume saved animation assignments on Scene load (superseding the editor-only note above). Run `npm run validate:threed-assigned-character-animations`, library API checks, Character restart checks, orchestration checks and TypeScript for this boundary. The new CI fixture exercises real FBX binding and mocked requests; it does not prove live animation appearance or world-action behavior. Use the manual Character playback checklist in `docs/developers/THREED_ANIMATIONS_LIBRARY.md`.

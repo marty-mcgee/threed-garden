@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.19.13",
+  "version": "0.19.14",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -38,6 +38,11 @@
     "validate:threed-bulk-saved-texture": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-bulk-saved-texture.mts",
     "validate:threed-model-bulk-preview": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-bulk-preview.mts",
     "validate:threed-model-list": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-list.mts",
+    "validate:threed-animation-bulk": "node src/lib/scripts/validate-threed-animation-bulk.cjs",
+    "validate:threed-character-animation-assignments": "node src/lib/scripts/validate-threed-character-animation-assignments.cjs",
+    "validate:threed-animation-upload": "node src/lib/scripts/validate-threed-animation-upload.cjs",
+    "validate:threed-assigned-character-animations": "node src/lib/scripts/validate-threed-assigned-character-animations.cjs",
+    "validate:threed-animation-library": "node src/lib/scripts/validate-threed-animation-library.cjs",
     "validate:threed-model-list-api": "node src/lib/scripts/validate-threed-model-list-api.cjs",
     "validate:threed-database-failures": "node src/lib/scripts/validate-threed-database-failures.cjs",
     "validate:threed-character-position-save": "node src/lib/scripts/validate-threed-character-position-save.cjs",

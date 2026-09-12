@@ -31,10 +31,7 @@ import {
   type AnimationMap,
 } from '@/lib/utils/animation';
 
-import {
-  getExternalAnimationSourcesForModel,
-  loadExternalCharacterAnimations,
-} from '@/lib/utils/externalCharacterAnimations';
+import { loadAssignedCharacterAnimations, assignedAnimationMap } from '@/lib/utils/assignedCharacterAnimations';
 
 // ========================================================
 // TYPES
@@ -174,12 +171,15 @@ function getAnimationForMovement(
   movementType: string,
   isMoving: boolean,
   available: string[],
+  blocked?: Set<string>,
 ): string | null {
   if (
     available.length === 0
   ) {
     return null;
   }
+
+  if (!isMoving && blocked?.has('idle')) return null;
 
   const has = (
     name: string,
@@ -270,6 +270,7 @@ function getAnimationForMovement(
       }
   }
 
+  if (blocked?.has('idle')) return null;
   return has('idle')
     ? 'idle'
     : available[0];
@@ -283,6 +284,7 @@ function findClip(
   animations: THREE.AnimationClip[],
   name: string,
 ): THREE.AnimationClip | undefined {
+  if (animMap?.blockedActions?.has(name.toLowerCase())) return undefined;
   // External FBX clips are normalized to logical names such as
   // "idle", "walk", and "watering". Prefer those direct names.
   const directMatch = animations.find(
@@ -760,19 +762,10 @@ export function GardenCharacter({
           // EXTERNAL ANIMATIONS
           // ================================================
 
-          const externalSources =
-            getExternalAnimationSourcesForModel(
-              character.model!
-                .modelName,
-
-              character.model!
-                .filePath,
-            );
-
-          const externalLibrary =
-            await loadExternalCharacterAnimations(
-              externalSources,
-            );
+          const externalLibrary = await loadAssignedCharacterAnimations(
+            character.id, character.model!.id, character.model!.modelName,
+            character.model!.filePath, loadedModel,
+          );
 
           if (
             cancelled
@@ -794,6 +787,7 @@ export function GardenCharacter({
             const clip
             of embeddedClips
           ) {
+            if (externalLibrary.blocked.has(clip.name.toLowerCase())) continue;
             clipByName.set(
               clip.name.toLowerCase(),
               clip,
@@ -817,6 +811,7 @@ export function GardenCharacter({
             of externalLibrary
               .clips
           ) {
+            if (externalLibrary.blocked.has(clip.name.toLowerCase())) continue;
             clipByName.set(
               clip.name.toLowerCase(),
               clip,
@@ -887,6 +882,7 @@ export function GardenCharacter({
               ),
               overrides,
             );
+          animMapRef.current = assignedAnimationMap(animMapRef.current, externalLibrary.blocked, externalLibrary.assigned);
 
           // ================================================
           // INITIAL ACTION
@@ -922,6 +918,7 @@ export function GardenCharacter({
                   .movementType,
                 false,
                 available,
+                animMapRef.current?.blockedActions,
               );
 
             if (
@@ -1260,6 +1257,7 @@ export function GardenCharacter({
         character.movementType,
         movementState.current.isMoving,
         available,
+        animMapRef.current?.blockedActions,
       );
 
       // Force locomotion to restart, but leave currentActionRef pointing at
@@ -1431,6 +1429,7 @@ export function GardenCharacter({
                 .movementType,
               false,
               available,
+              animMapRef.current?.blockedActions,
             );
 
           if (
@@ -1872,6 +1871,7 @@ export function GardenCharacter({
               .movementType,
             isMoving,
             available,
+            animMapRef.current?.blockedActions,
           );
 
         if (

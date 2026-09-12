@@ -38,7 +38,7 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.19.13 "ThreeD Admin Sub-Module Workspace UI/UX Updates" (package `0.19.13`, commit `c976c77`). Production deployment and manual build are User-confirmed. See `docs/releases/v0.19.13.md`. Remaining Admin stages are resumed in `docs/plans/admin-threed-workspace-continuation.md`; no next release number is designated.
+Current production version: v0.19.13 "ThreeD Admin Sub-Module Workspace UI/UX Updates" (package `0.19.13`, commit `c976c77`). Production deployment and manual build are User-confirmed. See `docs/releases/v0.19.13.md`. Remaining Admin stages are resumed in `docs/plans/admin-threed-workspace-continuation.md`; v0.19.14 "ThreeD Animations Library" is prepared as a candidate (package `0.19.14`), with manual build and deployment pending. See `docs/plans/v0.19.14-release.md`.
 
 Preserve the released alpha scope: FBX bulk importing, shared local textures, existing reusable Texture assignments, primary registration, verified inactive creation and guarded recovery.
 

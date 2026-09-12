@@ -20,3 +20,16 @@ Baseline: [v0.19.13](../releases/v0.19.13.md), commit `c976c77`, User-confirmed 
 4. Waterings and Harvests: preserve Project scope and history semantics.
 
 Model Files retains its specialized customization UI. Tasks/Analytics remain excluded; Registration and Settings remain deferred. Keep presentation work separate from API or runtime changes and verify each page before widening the scope.
+
+## User direction — autonomous ThreeD Animations Library
+
+The User clarified that animations must be autonomous reusable assets, assignable to both ThreeD Models and ThreeD Characters, like shared Textures. The next behavior work therefore follows the [Animations Library design](threed-animations-library.md), rather than merely repairing the legacy per-Model clip-mapping editor. The User explicitly approved the four additive schema tables. Stage 1 now implements separate file/clip records and Model/Character assignment APIs with offline validation; live database updates remain separate. Source upload/inspection and library administration are the next stage. See the [API record](../developers/THREED_ANIMATIONS_LIBRARY.md). Existing runtime fallbacks remain intact until the bounded runtime integration stage is verified.
+
+UI correction: Animations now has its own ThreeD sidebar entry and workspace, independent of Models. The interim Model-bound library UI and per-row shortcut were reverted. Assignment consumers remain later work; see the [standalone workspace record](../developers/THREED_ANIMATIONS_LIBRARY.md#standalone-library-workspace--corrected-ownership).
+
+
+## v0.19.14 release candidate
+
+The autonomous Animations Library is prepared for production as **v0.19.14 — ThreeD Animations Library**, superseding the staged status above. Upload/bulk import, library management, Character assignment controls and both Character playback paths are implemented. The User confirmed schema application, 46 FBX uploads and the manual Character regression checklist. Final sidebar location is **ThreeD → Models → Animations**; ownership remains independent. Twelve automated release checks pass. Build and production deployment remain pending; see [the release handoff](v0.19.14-release.md).
+
+After this release, resume the remaining Admin workspace pages in the sequence above. Model animation assignment editing, compatibility preview/retargeting, persistent upload recovery and source cleanup remain separate behavior work; this release does not complete them.

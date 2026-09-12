@@ -192,7 +192,7 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
           <Input aria-label="Search categories" placeholder="Search name, slug or description…" value={search} className="h-7 min-w-48 flex-1 text-xs" onChange={(event) => { setPage(0); setSelected(new Set()); setSearch(event.target.value); }} />
           <Button size="sm" className="h-7 text-xs" onClick={beginCreate}><Plus className="h-3 w-3" />Add Category</Button>
           <AdminWorkspaceLink href="/admin/threed/models" icon={ArrowLeft}>Models</AdminWorkspaceLink>
-          <AdminWorkspaceLink href="/admin/threed/model-animations" icon={Clapperboard}>Model Animations</AdminWorkspaceLink>
+          <AdminWorkspaceLink href="/admin/threed/animations" icon={Clapperboard}>Animations Library</AdminWorkspaceLink>
           <AdminWorkspaceLink href="/admin/threed/model-files" icon={FolderOpen}>Model Files</AdminWorkspaceLink>
           <AdminWorkspaceLink href="/admin/threed/model-textures" icon={Images}>Model Textures</AdminWorkspaceLink>
         </AdminWorkspaceHeader>

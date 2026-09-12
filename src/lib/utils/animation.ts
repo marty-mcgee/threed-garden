@@ -138,6 +138,8 @@ export function looksLikePositionalClip(name: string): boolean {
 // ============================================================
 
 export interface AnimationMap {
+  /** Explicit disabled library actions must not use a legacy fallback. */
+  blockedActions?: Set<string>;
   /** The resolved clip names (originals) available on the model. */
   clipNames: string[];
   /** Resolve a logical action to its clip name (case-insensitive), or null. */

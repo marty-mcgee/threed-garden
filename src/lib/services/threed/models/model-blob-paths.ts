@@ -12,7 +12,7 @@ export function readableBlobFileName(fileName: string) {
   const stem = (dot > 0 ? base.slice(0, dot) : base).normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9_-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80) || 'file';
   return `${stem}${ext ? `.${ext}` : ''}`;
 }
-export function createThreeDBlobPath(userId: string, kind: 'models' | 'textures' | 'previews', fileName: string, id: string) {
+export function createThreeDBlobPath(userId: string, kind: 'models' | 'textures' | 'previews' | 'animations', fileName: string, id: string) {
   const name = readableBlobFileName(fileName);
   const label = name.replace(/\.[^.]+$/, '').slice(0, 32);
   return `${owner(userId)}/${kind}/${label}--${revision(id)}/${kind === 'models' ? 'primary/' : ''}${name}`;

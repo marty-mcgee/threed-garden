@@ -104,15 +104,15 @@ const navSections: NavSection[] = [
         relatedPaths: [
           '/admin/threed/model-categories',
           '/admin/threed/model-files',
-          '/admin/threed/model-animations',
           '/admin/threed/model-textures',
+          '/admin/threed/animations',
         ],
         children: [
           { title: 'Models', href: '/admin/threed/models', icon: Package },
           { title: 'Files', href: '/admin/threed/model-files', icon: FolderOpen },
           { title: 'Categories', href: '/admin/threed/model-categories', icon: FolderTree },
-          { title: 'Animations', href: '/admin/threed/model-animations', icon: Music2 },
           { title: 'Textures', href: '/admin/threed/model-textures', icon: Image },
+          { title: 'Animations', href: '/admin/threed/animations', icon: Music2 },
         ],
       },
       { title: 'Characters', href: '/admin/threed/characters', icon: User, exact: false },
