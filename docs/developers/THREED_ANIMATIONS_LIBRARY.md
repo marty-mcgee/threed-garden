@@ -190,7 +190,7 @@ Admin → ThreeD → Models has an icon-only clapperboard action per row, labele
 
 Character runtimes consume Model defaults today. Generic Scene Model playback is not implemented by assigning defaults, and the dialog states that limit. The temporary Character-only direction and editor revert were superseded by User confirmation of optional Model assignments. No schema cleanup or migration is required. Character preview is included in the accepted interface checkpoint; generic Model playback remains a separate stage. TypeScript and the assignment UI/Library API/playback fixtures pass; manual inheritance checks are in the [v0.19.16 plan](../plans/v0.19.16.md).
 
-### Character assignment and preview (v0.19.16 candidate)
+### Character assignment and preview (v0.19.16 released)
 
 Admin → ThreeD → Characters → a row’s **Animations & Preview** opens the assignment workspace. The frame automatically loads the textured resting/bind pose. Choose a library animation (or an active inherited Model default), then Preview animation; repeated clicks replay it. The same Model, mixer, Canvas and camera remain loaded. T-Pose stops playback and restores the authored pose. Closing the dialog disposes the preview context.
 
@@ -200,4 +200,4 @@ Metadata is owner-scoped. Clip tracks are checked against the Character; incompa
 
 Preview loops a clip at normal speed; it is not Ecctrl simulation, a world-action completion test, retargeting, or a Project-specific replacement Model preview. Generic Model playback is deferred. Character behavior/control UX and Water/Pick Fruit targeting/effect/completion UX are major separate follow-ups, explicitly outside this accepted interface release.
 
-Run `npm run validate:threed-character-preview-switch` with assignment, Library, assigned-character and restart checks for preview changes. See [release scope and validation](../plans/v0.19.16-release.md). Production deployment and the User-owned manual build are pending.
+Run `npm run validate:threed-character-preview-switch` with assignment, Library, assigned-character and restart checks for preview changes. See [release scope and validation](../plans/v0.19.16-release.md). Production deployment of `e8cccf3` is User-confirmed; a separate local manual build result was not reported.

@@ -19,8 +19,8 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.15 — ThreeD Admin Pages: UI Updates** (package `0.19.15`, commit `9157e06`; production and manual build User-confirmed). See [release record](docs/releases/v0.19.15.md). |
-| Current development version | **v0.19.16 — Animations: Character and Model Assignment + Preview Interface**, package `0.19.16`, User-accepted and prepared for release. Manual build/deployment pending; see [handoff](docs/plans/v0.19.16-release.md). Character behavior and world-action UX are separate deferred stages; live preview remains Character-specific. |
+| Current stable version | **v0.19.16 — Animations: Character and Model Assignment + Preview Interface** (package `0.19.16`, commit `e8cccf3`; production User-confirmed). Separate local build result not reported. See [release record](docs/releases/v0.19.16.md). |
+| Current development version | No next version designated. Character behavior/control UX and Water/Pick Fruit targeting/effect/completion UX remain separate follow-ups; generic Model playback is deferred. Preserve the released Assignment + Preview interface. |
 | Centaur release verification | User-confirmed production deployment. TypeScript, 125 native groups, browser loaders and mocked bulk UI checks passed. See [completed handoff](docs/plans/v0.19.10c-release.md); individual live regression cases were not separately reported. |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |

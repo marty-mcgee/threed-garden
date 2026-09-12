@@ -2,9 +2,9 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Prepared candidate: [v0.19.16 — Animations: Character and Model Assignment + Preview Interface](v0.19.16.md) — manual build and deployment pending.
+Current production: **v0.19.16**, commit `e8cccf3`, User-confirmed.
 
-Current production: **v0.19.15**, commit `9157e06`, User-confirmed.
+- [v0.19.16 — Animations: Character and Model Assignment + Preview Interface](v0.19.16.md) — production User-confirmed
 
 - [v0.19.15 — ThreeD Admin Pages: UI Updates](v0.19.15.md) — production and manual build User-confirmed
 

@@ -16,6 +16,6 @@ Read [ThreeD character runtimes](../developers/THREED_CHARACTERS.md) before chan
 
 Read [ThreeD Marker architecture](../developers/THREED_MARKERS.md) before changing Runtime Marker creation, marker identity, ThreeD Layers, marker visibility, Action Target resolution, or marker adapters.
 
-The current production checkpoint is [v0.19.15](../releases/v0.19.15.md), commit `9157e06`; deployment and manual build are User-confirmed. The planned Admin page rollout is released. v0.19.16 Assignment + Preview is now a prepared candidate; see [handoff](../plans/v0.19.16-release.md). Manual build and deployment remain pending. Preserve specialized Model Files, read-only Waterings and embedded Project sizing; see the [handoff](../plans/v0.19.15-release.md) and [blueprint](../plans/admin-threed-workspace-blueprint.md).
+The current production checkpoint is [v0.19.16](../releases/v0.19.16.md), commit `e8cccf3`, User-confirmed. Separate local build result was not reported. Preserve Character/Model assignments, persistent Character preview and camera preferences. Character behavior and world-action UX remain separate follow-ups; no next release version is designated. See the [handoff](../plans/v0.19.16-release.md).
 
 The autonomous [ThreeD Animations Library](../developers/THREED_ANIMATIONS_LIBRARY.md), uploads, Character assignment editor and Character playback integration shipped in v0.19.14. Dedicated Model assignment editing and compatibility/retargeting remain separate work.
