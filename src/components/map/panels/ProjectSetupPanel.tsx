@@ -45,13 +45,13 @@ export function ProjectSetupPanel({
 
   return (
     <section
-      className="absolute left-1/2 top-14 z-30 w-[min(28rem,calc(100%-2rem))] -translate-x-1/2 overflow-hidden rounded-xl border border-cyan-400/25 bg-background/95 shadow-2xl backdrop-blur-md"
+      className="absolute left-1/2 top-14 z-30 w-[min(28rem,calc(100%-2rem))] -translate-x-1/2 max-h-[calc(100%-4rem)] overflow-y-auto overscroll-contain rounded-xl border border-cyan-400/25 bg-background/95 shadow-2xl backdrop-blur-md"
       aria-labelledby="project-setup-title"
     >
       <div className="h-1 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500" />
-      <div className="p-4">
+      <div className="p-3">
         <div className="flex items-start justify-between gap-3">
-          <div className="flex gap-3">
+          <div className="flex min-w-0 gap-2">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cyan-500/15 ring-1 ring-cyan-400/30">
               <Sparkles className="h-4 w-4 text-cyan-500" aria-hidden="true" />
             </div>
@@ -78,7 +78,7 @@ export function ProjectSetupPanel({
         </div>
 
         {!hasThreeDModule && (
-          <div className="mt-4 rounded-lg border border-cyan-400/25 bg-cyan-500/10 p-3">
+          <div className="mt-3 rounded-lg border border-cyan-400/25 bg-cyan-500/10 p-3">
             <div className="text-[10px] font-semibold uppercase tracking-[0.14em] text-cyan-700 dark:text-cyan-300">
               Step 1 · Project Foundation
             </div>
@@ -87,7 +87,7 @@ export function ProjectSetupPanel({
             </p>
             <Button
               type="button"
-              className="mt-3 h-10 w-full justify-start bg-cyan-600 text-xs text-white hover:bg-cyan-500"
+              className="mt-2 h-auto min-h-8 w-full justify-start whitespace-normal py-1.5 text-left bg-cyan-600 text-xs text-white hover:bg-cyan-500"
               onClick={onOpenProjectSettings}
             >
               <ExternalLink className="h-4 w-4" />
@@ -97,7 +97,7 @@ export function ProjectSetupPanel({
         )}
 
         {hasThreeDModule && (
-          <div className="mt-4 space-y-3">
+          <div className="mt-3 space-y-3">
             <div>
               <div className="mb-1.5 flex items-center justify-between text-[10px] font-medium text-muted-foreground">
                 <span>Project foundation</span>
@@ -122,7 +122,7 @@ export function ProjectSetupPanel({
                       <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">{tour.currentStep.description}</p>
                     </div>
                   </div>
-                  <Button type="button" className="mt-3 h-9 w-full bg-cyan-600 text-xs text-white hover:bg-cyan-500" onClick={stepActions[tour.currentStep.key]}>
+                  <Button type="button" className="mt-2 h-auto min-h-8 w-full whitespace-normal py-1.5 bg-cyan-600 text-xs text-white hover:bg-cyan-500" onClick={stepActions[tour.currentStep.key]}>
                     Continue to {tour.currentStep.label}
                   </Button>
                 </div>
@@ -136,7 +136,7 @@ export function ProjectSetupPanel({
                   Project foundation complete
                 </div>
                 <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground">Your Environment, first Model, and Character are ready. Close the Tour to explore the Scene.</p>
-                <Button type="button" className="mt-3 h-9 w-full bg-emerald-600 text-xs text-white hover:bg-emerald-500" onClick={onClose}>Explore the Scene</Button>
+                <Button type="button" className="mt-2 h-auto min-h-8 w-full whitespace-normal py-1.5 bg-emerald-600 text-xs text-white hover:bg-emerald-500" onClick={onClose}>Explore the Scene</Button>
               </div>
             )}
 
@@ -158,14 +158,14 @@ export function ProjectSetupPanel({
                       {step.complete ? <CheckCircle2 className="h-3 w-3 shrink-0" aria-hidden="true" /> : <StepIcon className="h-3 w-3 shrink-0" aria-hidden="true" />}
                       Step {index + 1}
                     </span>
-                    <span className="mt-1 block truncate text-[10px]">{step.label}</span>
+                    <span className="mt-1 block break-words text-[10px] [overflow-wrap:anywhere]">{step.label}</span>
                   </button>
                 );
               })}
             </div>
 
             <div className="flex justify-end">
-              <Button type="button" variant="ghost" size="sm" className="h-7 text-[10px] text-muted-foreground" onClick={onOpenProjectSettings}>
+              <Button type="button" variant="ghost" size="sm" className="h-auto min-h-7 max-w-full whitespace-normal py-1 text-[10px] text-muted-foreground" onClick={onOpenProjectSettings}>
                 <ExternalLink className="h-3 w-3" /> Project Settings &amp; Coordinates
               </Button>
             </div>

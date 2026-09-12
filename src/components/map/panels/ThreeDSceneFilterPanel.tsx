@@ -43,20 +43,20 @@ export function ThreeDSceneFilterPanel({
 
   return (
     <Card className="border-primary/20">
-      <CardContent className="p-3">
-        <div className="flex flex-wrap items-center gap-4">
+      <CardContent className="p-2">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
           <div className="flex items-center gap-2">
             <Filter className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm font-medium">Filters</span>
+            <span className="text-xs font-medium">Filters</span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 w-full items-center gap-2 sm:w-auto">
             <Search className="h-3.5 w-3.5 text-muted-foreground" />
             <Input
               placeholder="Search markers by name..."
               value={text}
               onChange={(event) => onTextChange(event.target.value)}
-              className="h-7 w-44 text-xs"
+              className="h-7 min-w-0 flex-1 text-xs sm:w-52"
             />
             {text && (
               <Button

@@ -986,11 +986,11 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
               Add FarmBot
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
             <DialogHeader>
               <DialogTitle>Create New FarmBot</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 pt-4">
+            <div className="grid min-w-0 grid-cols-1 items-start gap-3 pt-1 md:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
               {/* Basic Info */}
               <div>
                 <Label htmlFor="assetCode">Asset code *</Label>
@@ -1016,14 +1016,14 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="status">Status</Label>
                   <Select
                     value={formData.status}
                     onValueChange={(value) => setFormData({ ...formData, status: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1051,7 +1051,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
               </div>
 
               {/* Location */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Location</Label>
                 <div className="space-y-2 mt-2">
                   <div>
@@ -1060,7 +1060,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                       value={formData.bedId}
                       onValueChange={(value) => setFormData({ ...formData, bedId: value })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full min-w-0">
                         <SelectValue placeholder="Select a bed (optional)" />
                       </SelectTrigger>
                       <SelectContent>
@@ -1075,7 +1075,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                   </div>
                   <div>
                     <Label className="text-xs">3D Position</Label>
-                    <div className="grid grid-cols-3 gap-2 mt-1">
+                    <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 mt-1">
                       <Input
                         placeholder="X"
                         type="number"
@@ -1106,7 +1106,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
               </div>
 
               {/* API Configuration */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">API Configuration</Label>
                 <div className="space-y-2 mt-2">
                   <div>
@@ -1126,9 +1126,9 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
               </div>
 
               {/* Firmware & Last Seen */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">System Info</Label>
-                <div className="grid grid-cols-2 gap-2 mt-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 mt-2">
                   <div>
                     <Label htmlFor="firmwareVersion" className="text-xs">Firmware Version</Label>
                     <Input
@@ -1165,7 +1165,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
               </div>
 
               {/* Active Status */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <div className="flex items-center gap-2">
                   <Switch
                     id="isActive"
@@ -1177,7 +1177,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                 </div>
               </div>
 
-              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
+              <Button onClick={handleCreate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -1298,11 +1298,11 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
 
       {/* Edit Dialog */}
       <Dialog open={!!editingFarmbot} onOpenChange={(open) => !open && setEditingFarmbot(null)}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
           <DialogHeader>
             <DialogTitle>Edit FarmBot</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 pt-4">
+          <div className="grid min-w-0 grid-cols-1 items-start gap-3 pt-1 md:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
             <div>
               <Label htmlFor="edit-assetCode">Asset code *</Label>
               <Input
@@ -1323,14 +1323,14 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <Label htmlFor="edit-status">Status</Label>
                 <Select
                   value={formData.status}
                   onValueChange={(value) => setFormData({ ...formData, status: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1357,7 +1357,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
             </div>
 
             {/* Location */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Location</Label>
               <div className="space-y-2 mt-2">
                 <div>
@@ -1366,7 +1366,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                     value={formData.bedId}
                     onValueChange={(value) => setFormData({ ...formData, bedId: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select a bed (optional)" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1381,7 +1381,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                 </div>
                 <div>
                   <Label className="text-xs">3D Position</Label>
-                  <div className="grid grid-cols-3 gap-2 mt-1">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 mt-1">
                     <Input
                       placeholder="X"
                       type="number"
@@ -1412,7 +1412,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
             </div>
 
             {/* API Configuration */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">API Configuration</Label>
               <div className="space-y-2 mt-2">
                 <div>
@@ -1431,9 +1431,9 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
             </div>
 
             {/* Firmware & Last Seen */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">System Info</Label>
-              <div className="grid grid-cols-2 gap-2 mt-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 mt-2">
                 <div>
                   <Label htmlFor="edit-firmwareVersion" className="text-xs">Firmware Version</Label>
                   <Input
@@ -1468,7 +1468,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
             </div>
 
             {/* Active Status */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <div className="flex items-center gap-2">
                 <Switch
                   id="edit-isActive"
@@ -1480,7 +1480,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
               </div>
             </div>
 
-            <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>
+            <Button onClick={handleUpdate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />

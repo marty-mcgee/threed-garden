@@ -99,7 +99,7 @@ export function ProjectHeaderMenu({
       </Button>
 
       {selectedProjectId && isOpen && (
-        <div className="absolute left-0 top-full z-[2000] mt-1 w-72 space-y-2 rounded-lg border bg-background/80 p-2.5 shadow-xl backdrop-blur-md">
+        <div className="absolute left-0 top-full z-[2000] mt-1 max-h-[70dvh] w-72 max-w-[calc(100vw-2rem)] space-y-2 overflow-y-auto overscroll-contain rounded-lg border bg-background p-2 shadow-xl">
           <div className="space-y-1.5 px-1">
             <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
               <FolderOpen className="h-3 w-3" />
@@ -123,11 +123,11 @@ export function ProjectHeaderMenu({
 
           <div className="border-t pt-2">
             <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Project Navigation</div>
-            <div className="mt-1 grid grid-cols-2 gap-1.5">
-              <Button type="button" variant="secondary" size="sm" className="h-8 justify-start px-2 text-xs" onClick={onChooseProject}>
+            <div className="mt-1 grid grid-cols-1 gap-1">
+              <Button type="button" variant="secondary" size="sm" className="h-8 w-full justify-start px-2 text-xs" onClick={onChooseProject}>
                 <FolderOpen className="h-3.5 w-3.5" /> Choose Project
               </Button>
-              <Button type="button" variant="secondary" size="sm" className="h-8 justify-start px-2 text-xs" onClick={onCreateProject}>
+              <Button type="button" variant="secondary" size="sm" className="h-8 w-full justify-start px-2 text-xs" onClick={onCreateProject}>
                 <Plus className="h-3.5 w-3.5" /> New Project
               </Button>
             </div>
@@ -135,26 +135,26 @@ export function ProjectHeaderMenu({
 
           <div className="space-y-0.5 border-t pt-2">
             <div className="px-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Scene Workspace</div>
-            <Button type="button" variant="ghost" size="sm" className="h-7 w-full justify-start px-2 text-xs" disabled={savingProject} onClick={onSaveProject}>
+            <Button type="button" variant="ghost" size="sm" className="h-auto min-h-7 w-full flex-wrap justify-start whitespace-normal px-2 py-1 text-left text-xs" disabled={savingProject} onClick={onSaveProject}>
               {savingProject ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
               Save ThreeD Project
             </Button>
-            <Button type="button" variant="ghost" size="sm" className="h-7 w-full justify-start px-2 text-xs" aria-controls="project-assets-panel" aria-expanded={projectAssetsOpen} onClick={onOpenProjectAssets}>
+            <Button type="button" variant="ghost" size="sm" className="h-auto min-h-7 w-full flex-wrap justify-start whitespace-normal px-2 py-1 text-left text-xs" aria-controls="project-assets-panel" aria-expanded={projectAssetsOpen} onClick={onOpenProjectAssets}>
               <ListTree className="h-3.5 w-3.5" />
               Project Assets
               <span className="ml-auto text-[10px] text-muted-foreground">{projectAssetCount}</span>
             </Button>
             {environments.map((environment) => (
-              <Button key={environment.id} type="button" variant="ghost" size="sm" className="h-7 w-full justify-start px-2 text-xs" onClick={() => onOpenEnvironment(environment.id)}>
+              <Button key={environment.id} type="button" variant="ghost" size="sm" className="h-auto min-h-7 w-full flex-wrap justify-start whitespace-normal px-2 py-1 text-left text-xs" onClick={() => onOpenEnvironment(environment.id)}>
                 <ScanSearch className="h-3.5 w-3.5" />
                 Environment Details
-                {environments.length > 1 && <span className="min-w-0 truncate text-muted-foreground">— {environment.name}</span>}
+                {environments.length > 1 && <span className="min-w-0 break-words text-muted-foreground [overflow-wrap:anywhere]">— {environment.name}</span>}
               </Button>
             ))}
           </div>
 
           <div className="border-t pt-2">
-            <Button type="button" variant="ghost" size="sm" className="h-7 w-full justify-start px-2 text-xs text-muted-foreground" onClick={onOpenProjectSettings}>
+            <Button type="button" variant="ghost" size="sm" className="h-auto min-h-7 w-full flex-wrap justify-start whitespace-normal px-2 py-1 text-left text-xs text-muted-foreground" onClick={onOpenProjectSettings}>
               <ExternalLink className="h-3.5 w-3.5" /> Project Settings &amp; Admin
             </Button>
           </div>

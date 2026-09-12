@@ -130,7 +130,7 @@ export function ThreeDModelLibraryPanel({
       {projectModules.length > 1 && (
         <label className="mb-2 block text-xs">
           <span className="mb-1 block text-muted-foreground">ThreeD Module</span>
-          <select className="h-8 w-full rounded-md border bg-background px-2 text-xs" value={selectedModuleId ?? ''} onChange={(event) => onSelectedModuleChange(Number(event.target.value))}>
+          <select className="h-8 w-full min-w-0 max-w-full rounded-md border bg-background px-2 text-xs" value={selectedModuleId ?? ''} onChange={(event) => onSelectedModuleChange(Number(event.target.value))}>
             {projectModules.map((module) => (
               <option key={module.id} value={module.id}>{module.name}</option>
             ))}
@@ -144,7 +144,7 @@ export function ThreeDModelLibraryPanel({
           <span>{categories.length > 0 ? `${categories.length} available` : 'None assigned'}</span>
         </span>
         <select
-          className="h-8 w-full rounded-md border bg-background px-2 text-xs disabled:cursor-not-allowed disabled:opacity-60"
+          className="h-8 w-full min-w-0 max-w-full rounded-md border bg-background px-2 text-xs disabled:cursor-not-allowed disabled:opacity-60"
           value={categories.length > 0 ? selectedCategorySlug : 'none'}
           disabled={categories.length === 0}
           onChange={(event) => onSelectedCategoryChange(event.target.value)}
@@ -165,7 +165,7 @@ export function ThreeDModelLibraryPanel({
       <label className="mb-2 block text-xs">
         <span className="mb-1 block text-muted-foreground">Readiness</span>
         <select
-          className="h-8 w-full rounded-md border bg-background px-2 text-xs"
+          className="h-8 w-full min-w-0 max-w-full rounded-md border bg-background px-2 text-xs"
           value={readiness}
           onChange={(event) => onReadinessChange(event.target.value as ThreeDModelLibraryReadinessFilter)}
         >
@@ -206,7 +206,7 @@ export function ThreeDModelLibraryPanel({
         <div className="mb-2 space-y-1 rounded border bg-muted/30 p-2 text-[10px]">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <div className="truncate text-xs font-medium">{inspectedModel.modelName}</div>
+              <div className="break-words text-xs font-medium [overflow-wrap:anywhere]">{inspectedModel.modelName}</div>
               <div className="uppercase text-muted-foreground">{inspectedModel.modelType}</div>
             </div>
             <Button type="button" variant="ghost" size="icon" className="h-5 w-5 shrink-0" aria-label="Close Model metadata" title="Close Model metadata" onClick={() => onInspectModel(null)}>
@@ -282,7 +282,7 @@ export function ThreeDModelLibraryPanel({
 
       {placementModel && (
         <div className="mb-2 space-y-2 rounded border border-cyan-500/40 bg-cyan-500/10 p-2 text-xs">
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-2 [&>span]:min-w-0 [&>span]:break-words [&>span]:[overflow-wrap:anywhere]">
             <span>
               Placing <strong>{placementModel.modelName}</strong>
               {placing ? '…' : ' — click a map or Scene destination'}
@@ -316,7 +316,7 @@ export function ThreeDModelLibraryPanel({
         </div>
       )}
 
-      <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
         {loading ? (
           <div className="flex items-center justify-center gap-2 py-8 text-xs text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> Loading models…
@@ -359,7 +359,7 @@ export function ThreeDModelLibraryPanel({
                   )}
                 </div>
                 <div className="min-w-0 p-2">
-                  <div className="truncate text-xs font-medium">{model.modelName}</div>
+                  <div className="break-words text-xs font-medium [overflow-wrap:anywhere]">{model.modelName}</div>
                   <div className="mt-0.5 flex flex-wrap items-center justify-between gap-1">
                     <div className="text-[10px] uppercase text-muted-foreground">{model.modelType}</div>
                     <ModelReadinessBadge model={model} />

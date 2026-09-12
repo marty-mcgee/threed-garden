@@ -61,8 +61,8 @@ export function ThreeDBedPlacementPanel({
   const inputsDisabled = placementActive || placing;
 
   return (
-    <div className="absolute bottom-0 left-0 top-10 z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-y-auto rounded-md border bg-background/90 p-3 shadow-xl backdrop-blur-md">
-      <div className="mb-3 flex items-center justify-between gap-2">
+    <div className="absolute bottom-0 left-0 top-10 z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-y-auto overscroll-contain rounded-md border bg-background/90 p-3 shadow-xl backdrop-blur-md">
+      <div className="mb-2 flex shrink-0 items-start justify-between gap-2">
         <div>
           <h2 className="text-sm font-semibold">Add ThreeD Bed</h2>
           <p className="text-[11px] text-muted-foreground">
@@ -78,7 +78,7 @@ export function ThreeDBedPlacementPanel({
         <label className="mb-2 block text-xs">
           <span className="mb-1 block text-muted-foreground">ThreeD Module</span>
           <select
-            className="h-8 w-full rounded-md border bg-background px-2 text-xs"
+            className="h-8 w-full min-w-0 max-w-full rounded-md border bg-background px-2 text-xs"
             value={selectedModuleId ?? ''}
             disabled={inputsDisabled}
             onChange={(event) => onSelectedModuleChange(Number(event.target.value))}
@@ -90,20 +90,20 @@ export function ThreeDBedPlacementPanel({
         </label>
       )}
 
-      <div className="grid grid-cols-2 gap-2 text-xs">
+      <div className="grid shrink-0 grid-cols-2 gap-2 text-xs [&>label]:min-w-0">
         <label className="col-span-2">
           <span className="mb-1 block text-muted-foreground">Bed name</span>
           <Input
             value={draft.name}
             disabled={inputsDisabled}
             maxLength={100}
-            className="h-8 text-xs"
+            className="h-8 min-w-0 text-xs"
             onChange={(event) => onDraftChange('name', event.target.value)}
           />
         </label>
         <label>
           <span className="mb-1 block text-muted-foreground">Shape</span>
-          <select className="h-8 w-full rounded-md border bg-background px-2 text-xs" value={draft.shape} disabled>
+          <select className="h-8 w-full min-w-0 max-w-full rounded-md border bg-background px-2 text-xs" value={draft.shape} disabled>
             <option value="rectangle">rectangle</option>
           </select>
         </label>
@@ -125,16 +125,16 @@ export function ThreeDBedPlacementPanel({
               step={step}
               value={draft[field]}
               disabled={inputsDisabled}
-              className="h-8 text-xs"
+              className="h-8 min-w-0 text-xs"
               onChange={(event) => onDraftChange(field, event.target.value)}
             />
           </label>
         ))}
       </div>
 
-      <div className="mt-3 flex items-center justify-end gap-2 border-t pt-3">
+      <div className="mt-3 flex shrink-0 flex-wrap items-center justify-end gap-2 border-t pt-2">
         {placementActive && (
-          <span className="mr-auto text-[11px] text-cyan-600">Click the Scene ground to place the Bed.</span>
+          <span className="w-full text-[11px] leading-relaxed text-cyan-600">Click the Scene ground to place the Bed.</span>
         )}
         <Button type="button" variant="outline" size="sm" className="h-7 text-xs" disabled={placing} onClick={onCancelPlacement}>
           Cancel

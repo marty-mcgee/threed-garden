@@ -18,7 +18,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
-  const fixedWorkspace = pathname === '/admin/threed/models' || pathname === '/admin/threed/model-categories' || pathname === '/admin/threed/model-textures' || pathname === '/admin/threed/animations' || pathname === '/admin/threed/plants' || pathname === '/admin/threed/beds' || pathname === '/admin/threed/plantings' || pathname === '/admin/threed/characters' || pathname === '/admin/threed/layers' || pathname === '/admin/threed/farmbots' || pathname === '/admin/threed/watering-schedules' || pathname === '/admin/threed/harvests';
+  const fixedWorkspace = pathname === '/admin/threed/models' || pathname === '/admin/threed/model-categories' || pathname === '/admin/threed/model-textures' || pathname === '/admin/threed/animations' || pathname === '/admin/threed/plants' || pathname === '/admin/threed/beds' || pathname === '/admin/threed/plantings' || pathname === '/admin/threed/characters' || pathname === '/admin/threed/layers' || pathname === '/admin/threed/farmbots' || pathname === '/admin/threed/watering-schedules' || pathname === '/admin/threed/harvests' || pathname === '/admin/threed/tasks';
 
   // ✅ Handle hydration
   useEffect(() => {

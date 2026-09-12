@@ -448,18 +448,18 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
               Add Harvest
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
             <DialogHeader>
               <DialogTitle>Create New Harvest</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 pt-4">
+            <div className="grid min-w-0 grid-cols-1 items-start gap-3 pt-1 md:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
               <div>
                 <Label htmlFor="projectId">Project</Label>
                 <Select
                   value={formData.projectId}
                   onValueChange={(value) => setFormData({ ...formData, projectId: value === 'none' ? '' : value })}
                 >
-                  <SelectTrigger><SelectValue placeholder="Standalone harvest" /></SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0"><SelectValue placeholder="Standalone harvest" /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">Standalone</SelectItem>
                     {projects.map((item) => (
@@ -489,7 +489,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                   value={formData.plantId}
                   onValueChange={(value) => setFormData({ ...formData, plantId: value === 'none' ? '' : value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select a plant" />
                   </SelectTrigger>
                   <SelectContent>
@@ -517,7 +517,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                     });
                   }}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select a planting" />
                   </SelectTrigger>
                   <SelectContent>
@@ -531,7 +531,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                 </Select>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="quantity">Quantity *</Label>
                   <Input
@@ -552,7 +552,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                     value={formData.unit}
                     onValueChange={(value) => setFormData({ ...formData, unit: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select unit" />
                     </SelectTrigger>
                     <SelectContent>
@@ -615,7 +615,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
               </div>
 
               {/* Active Status */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <div className="flex items-center gap-2">
                   <Switch
                     id="isActive"
@@ -627,7 +627,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                 </div>
               </div>
 
-              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
+              <Button onClick={handleCreate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -718,12 +718,12 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
 
       {/* Edit Dialog */}
       <Dialog open={!!editingHarvest} onOpenChange={(open) => !open && setEditingHarvest(null)}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
           <DialogHeader>
             <DialogTitle>Edit Harvest</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 pt-4">
-            <div className="rounded border bg-muted/30 px-3 py-2 text-xs text-muted-foreground">
+          <div className="grid min-w-0 grid-cols-1 items-start gap-3 pt-1 md:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
+            <div className="rounded border bg-muted/30 px-3 py-2 text-xs text-muted-foreground md:col-span-2">
               Source: <span className="font-medium text-foreground">{editingHarvest?.source === 'world-action' ? 'World Action' : 'Manual'}</span>
               {' · '}
               Project: <span className="font-medium text-foreground">
@@ -746,7 +746,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                 value={formData.plantId}
                 onValueChange={(value) => setFormData({ ...formData, plantId: value === 'none' ? '' : value })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full min-w-0">
                   <SelectValue placeholder="Select a plant" />
                 </SelectTrigger>
                 <SelectContent>
@@ -766,7 +766,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                 value={formData.plantingId}
                 onValueChange={(value) => setFormData({ ...formData, plantingId: value === 'none' ? '' : value })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full min-w-0">
                   <SelectValue placeholder="Select a planting" />
                 </SelectTrigger>
                 <SelectContent>
@@ -780,7 +780,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
               </Select>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <Label htmlFor="edit-quantity">Quantity *</Label>
                 <Input
@@ -799,7 +799,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                   value={formData.unit}
                   onValueChange={(value) => setFormData({ ...formData, unit: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select unit" />
                   </SelectTrigger>
                   <SelectContent>
@@ -859,7 +859,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
             </div>
 
             {/* Active Status */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <div className="flex items-center gap-2">
                 <Switch
                   id="edit-isActive"
@@ -871,7 +871,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
               </div>
             </div>
 
-            <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>
+            <Button onClick={handleUpdate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />

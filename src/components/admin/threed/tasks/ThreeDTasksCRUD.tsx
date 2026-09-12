@@ -15,6 +15,7 @@ import {
   Clock,
   X,
 } from 'lucide-react';
+import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -42,6 +43,7 @@ import {
 
 interface ThreeDTasksCRUDProps {
   threedId?: number;
+  scrollRecords?: boolean;
   onModuleUpdate?: () => void;
 }
 
@@ -85,7 +87,7 @@ const getPriorityColor = (priority: string) => {
   }
 };
 
-export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDProps) {
+export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = false }: ThreeDTasksCRUDProps) {
   const { showToast, ToastComponent } = useToast();
   const [tasks, setTasks] = useState<ThreeDTask[]>([]);
   const [loading, setLoading] = useState(true);
@@ -429,17 +431,20 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
   }
 
   return (
-    <div className="space-y-2">
+    <div className={scrollRecords ? "flex h-full min-h-0 flex-col gap-2" : "space-y-2"}>
       {ToastComponent}
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <ListTodo className="w-4 h-4 text-blue-500" />
-          <span className="text-sm font-medium">Tasks</span>
-          <Badge variant="secondary" className="text-xs">
-            {filteredTasks.length}
-          </Badge>
+      <AdminWorkspaceHeader icon={ListTodo} title="Tasks" description="Manage garden tasks and to-do items for your 3D garden" className="shrink-0">
+        <Badge variant="secondary" className="text-xs">{filteredTasks.length}</Badge>
+        <div className="relative min-w-0 w-full flex-auto sm:w-auto sm:min-w-48 sm:flex-1">
+          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+          <Input
+            placeholder="Search tasks..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="pl-7 h-7 text-xs"
+          />
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
@@ -448,11 +453,11 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
               Add Task
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
             <DialogHeader>
               <DialogTitle>Create New Task</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 pt-4">
+            <div className="grid min-w-0 grid-cols-1 items-start gap-3 pt-1 md:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
               {/* Basic Info */}
               <div>
                 <Label htmlFor="title">Task Title *</Label>
@@ -477,14 +482,14 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="type">Task Type</Label>
                   <Select
                     value={formData.type}
                     onValueChange={(value) => setFormData({ ...formData, type: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -502,7 +507,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
                     value={formData.priority}
                     onValueChange={(value) => setFormData({ ...formData, priority: value as TaskPriority })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select priority" />
                     </SelectTrigger>
                     <SelectContent>
@@ -516,14 +521,14 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="status">Status</Label>
                   <Select
                     value={formData.status}
                     onValueChange={(value) => setFormData({ ...formData, status: value as TaskStatus })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -571,12 +576,12 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
               </div>
 
               {/* ✅ Related Entities - Dropdowns */}
-              <div className="border-t pt-4 mt-2">
+              <div className="grid grid-cols-1 gap-3 rounded-md border p-3 md:col-span-2 sm:grid-cols-2 [&>label]:sm:col-span-2 [&>p]:sm:col-span-2 [&>div]:min-w-0">
                 <Label className="text-sm font-medium">Related Entities</Label>
-                <p className="text-xs text-muted-foreground mb-3">Select related entities for this task</p>
+                <p className="text-xs text-muted-foreground">Select related entities for this task</p>
 
                 {/* Plant */}
-                <div className="mb-3">
+                <div className="min-w-0">
                   <Label htmlFor="plantId" className="text-xs">Plant</Label>
                   <Select
                     value={formData.selectedPlant?.id ? String(formData.selectedPlant.id) : 'none'}
@@ -589,7 +594,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
                       }
                     }}
                   >
-                    <SelectTrigger className="h-8 text-xs">
+                    <SelectTrigger className="h-8 w-full min-w-0 text-xs">
                       <SelectValue placeholder="Select a plant..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -618,7 +623,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
                 </div>
 
                 {/* Bed */}
-                <div className="mb-3">
+                <div className="min-w-0">
                   <Label htmlFor="bedId" className="text-xs">Bed</Label>
                   <Select
                     value={formData.selectedBed?.id ? String(formData.selectedBed.id) : 'none'}
@@ -631,7 +636,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
                       }
                     }}
                   >
-                    <SelectTrigger className="h-8 text-xs">
+                    <SelectTrigger className="h-8 w-full min-w-0 text-xs">
                       <SelectValue placeholder="Select a bed..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -660,7 +665,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
                 </div>
 
                 {/* Planting */}
-                <div className="mb-3">
+                <div className="min-w-0">
                   <Label htmlFor="plantingId" className="text-xs">Planting</Label>
                   <Select
                     value={formData.selectedPlanting?.id ? String(formData.selectedPlanting.id) : 'none'}
@@ -673,7 +678,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
                       }
                     }}
                   >
-                    <SelectTrigger className="h-8 text-xs">
+                    <SelectTrigger className="h-8 w-full min-w-0 text-xs">
                       <SelectValue placeholder="Select a planting..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -702,7 +707,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
                 </div>
 
                 {/* Watering Schedule */}
-                <div className="mb-3">
+                <div className="min-w-0">
                   <Label htmlFor="wateringScheduleId" className="text-xs">Watering Schedule</Label>
                   <Select
                     value={formData.selectedWateringSchedule?.id ? String(formData.selectedWateringSchedule.id) : 'none'}
@@ -715,7 +720,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
                       }
                     }}
                   >
-                    <SelectTrigger className="h-8 text-xs">
+                    <SelectTrigger className="h-8 w-full min-w-0 text-xs">
                       <SelectValue placeholder="Select a schedule..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -755,7 +760,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
                 <Label htmlFor="isActive">Active</Label>
               </div>
 
-              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
+              <Button onClick={handleCreate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -768,21 +773,12 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
             </div>
           </DialogContent>
         </Dialog>
-      </div>
+      </AdminWorkspaceHeader>
 
-      {/* Search & Filters */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-          <Input
-            placeholder="Search tasks..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-7 h-8 text-xs"
-          />
-        </div>
+      {/* Filters */}
+      <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
         <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-[120px] h-8 text-xs">
+          <SelectTrigger className="w-full min-w-40 sm:w-auto h-7 text-[11px]">
             <Filter className="w-3.5 h-3.5 mr-1" />
             <SelectValue placeholder="Status" />
           </SelectTrigger>
@@ -796,7 +792,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
           </SelectContent>
         </Select>
         <Select value={filterPriority} onValueChange={setFilterPriority}>
-          <SelectTrigger className="w-[120px] h-8 text-xs">
+          <SelectTrigger className="w-full min-w-40 sm:w-auto h-7 text-[11px]">
             <Filter className="w-3.5 h-3.5 mr-1" />
             <SelectValue placeholder="Priority" />
           </SelectTrigger>
@@ -810,7 +806,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
           </SelectContent>
         </Select>
         <Select value={filterType} onValueChange={setFilterType}>
-          <SelectTrigger className="w-[120px] h-8 text-xs">
+          <SelectTrigger className="w-full min-w-40 sm:w-auto h-7 text-[11px]">
             <Filter className="w-3.5 h-3.5 mr-1" />
             <SelectValue placeholder="Type" />
           </SelectTrigger>
@@ -826,7 +822,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
         <Button
           variant="outline"
           size="sm"
-          className="h-8 text-xs"
+          className="h-7 text-[11px]"
           onClick={() => {
             setSearchQuery('');
             setFilterStatus('all');
@@ -841,7 +837,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
 
       {/* Tasks Table */}
       {filteredTasks.length === 0 ? (
-        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
+        <div className="min-h-0 flex-1 overflow-auto text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <ListTodo className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No tasks found</p>
           <Button
@@ -855,13 +851,14 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
           </Button>
         </div>
       ) : (
-        <div className="border rounded-lg overflow-hidden">
-          <Table>
-            <TableHeader>
+        <div role="region" aria-label="Task records" tabIndex={scrollRecords ? 0 : undefined}
+          className={scrollRecords ? "min-h-0 flex-1 overflow-auto overscroll-contain rounded-lg border [&>[data-slot=table-container]]:overflow-visible" : "border rounded-lg overflow-auto"}>
+          <Table className="min-w-[700px]">
+            <TableHeader className={scrollRecords ? "sticky top-0 z-10 bg-background" : undefined}>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="text-xs py-1">Title</TableHead>
-                <TableHead className="hidden sm:table-cell text-xs py-1">Type</TableHead>
-                <TableHead className="hidden md:table-cell text-xs py-1">Priority</TableHead>
+                <TableHead className="text-xs py-1">Type</TableHead>
+                <TableHead className="text-xs py-1">Priority</TableHead>
                 <TableHead className="text-center text-xs py-1">Status</TableHead>
                 <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
@@ -886,7 +883,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
+                  <TableCell className="py-1 text-sm text-muted-foreground">
                     {task.type ? (
                       <Badge variant="outline" className="text-[10px]">
                         {getOptionLabel(TASK_TYPE_OPTIONS, task.type)}
@@ -895,7 +892,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
                       '—'
                     )}
                   </TableCell>
-                  <TableCell className="hidden md:table-cell py-1 text-sm text-muted-foreground">
+                  <TableCell className="py-1 text-sm text-muted-foreground">
                     <Badge className={`text-[10px] ${getPriorityColor(task.priority)}`}>
                       {getOptionLabel(TASK_PRIORITY_OPTIONS, task.priority)}
                     </Badge>
@@ -915,11 +912,11 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
 
       {/* Edit Dialog */}
       <Dialog open={!!editingTask} onOpenChange={(open) => !open && setEditingTask(null)}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
           <DialogHeader>
             <DialogTitle>Edit Task</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 pt-4">
+          <div className="grid min-w-0 grid-cols-1 items-start gap-3 pt-1 md:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
             <div>
               <Label htmlFor="edit-title">Task Title *</Label>
               <Input
@@ -941,14 +938,14 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <Label htmlFor="edit-type">Task Type</Label>
                 <Select
                   value={formData.type}
                   onValueChange={(value) => setFormData({ ...formData, type: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -966,7 +963,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
                   value={formData.priority}
                   onValueChange={(value) => setFormData({ ...formData, priority: value as TaskPriority })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select priority" />
                   </SelectTrigger>
                   <SelectContent>
@@ -980,14 +977,14 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <Label htmlFor="edit-status">Status</Label>
                 <Select
                   value={formData.status}
                   onValueChange={(value) => setFormData({ ...formData, status: value as TaskStatus })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1033,12 +1030,12 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
             </div>
 
             {/* ✅ Related Entities - Dropdowns (Edit) */}
-            <div className="border-t pt-4 mt-2">
+            <div className="grid grid-cols-1 gap-3 rounded-md border p-3 md:col-span-2 sm:grid-cols-2 [&>label]:sm:col-span-2 [&>p]:sm:col-span-2 [&>div]:min-w-0">
               <Label className="text-sm font-medium">Related Entities</Label>
-              <p className="text-xs text-muted-foreground mb-3">Select related entities for this task</p>
+              <p className="text-xs text-muted-foreground">Select related entities for this task</p>
 
               {/* Plant */}
-              <div className="mb-3">
+              <div className="min-w-0">
                 <Label htmlFor="edit-plantId" className="text-xs">Plant</Label>
                 <Select
                   value={formData.selectedPlant?.id ? String(formData.selectedPlant.id) : 'none'}
@@ -1051,7 +1048,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
                     }
                   }}
                 >
-                  <SelectTrigger className="h-8 text-xs">
+                  <SelectTrigger className="h-8 w-full min-w-0 text-xs">
                     <SelectValue placeholder="Select a plant..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -1080,7 +1077,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
               </div>
 
               {/* Bed */}
-              <div className="mb-3">
+              <div className="min-w-0">
                 <Label htmlFor="edit-bedId" className="text-xs">Bed</Label>
                 <Select
                   value={formData.selectedBed?.id ? String(formData.selectedBed.id) : 'none'}
@@ -1093,7 +1090,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
                     }
                   }}
                 >
-                  <SelectTrigger className="h-8 text-xs">
+                  <SelectTrigger className="h-8 w-full min-w-0 text-xs">
                     <SelectValue placeholder="Select a bed..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -1122,7 +1119,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
               </div>
 
               {/* Planting */}
-              <div className="mb-3">
+              <div className="min-w-0">
                 <Label htmlFor="edit-plantingId" className="text-xs">Planting</Label>
                 <Select
                   value={formData.selectedPlanting?.id ? String(formData.selectedPlanting.id) : 'none'}
@@ -1135,7 +1132,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
                     }
                   }}
                 >
-                  <SelectTrigger className="h-8 text-xs">
+                  <SelectTrigger className="h-8 w-full min-w-0 text-xs">
                     <SelectValue placeholder="Select a planting..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -1164,7 +1161,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
               </div>
 
               {/* Watering Schedule */}
-              <div className="mb-3">
+              <div className="min-w-0">
                 <Label htmlFor="edit-wateringScheduleId" className="text-xs">Watering Schedule</Label>
                 <Select
                   value={formData.selectedWateringSchedule?.id ? String(formData.selectedWateringSchedule.id) : 'none'}
@@ -1177,7 +1174,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
                     }
                   }}
                 >
-                  <SelectTrigger className="h-8 text-xs">
+                  <SelectTrigger className="h-8 w-full min-w-0 text-xs">
                     <SelectValue placeholder="Select a schedule..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -1216,7 +1213,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate }: ThreeDTasksCRUDPro
               <Label htmlFor="edit-isActive">Active</Label>
             </div>
 
-            <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>
+            <Button onClick={handleUpdate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />

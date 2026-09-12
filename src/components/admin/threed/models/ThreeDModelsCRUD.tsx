@@ -770,9 +770,9 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
 
       {/* Edit Dialog */}
       <Dialog open={!!editingModel} onOpenChange={handleEditDialogChange}>
-        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
           <DialogHeader><DialogTitle>Edit 3D Model</DialogTitle></DialogHeader>
-          <div className="space-y-4 pt-4">
+          <div className="space-y-3 pt-1 [&>div]:grid [&>div]:grid-cols-1 [&>div]:items-start [&>div]:gap-3 [&>div]:space-y-0 md:[&>div]:grid-cols-2 [&_section]:min-w-0 [&_section]:rounded-md [&_section]:border [&_section]:p-3 [&_label]:text-xs [&_input:not([type=checkbox])]:h-8 [&_input:not([type=checkbox])]:min-w-0 [&_input:not([type=checkbox])]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:w-full [&_[data-slot=select-trigger]]:min-w-0 [&_[data-slot=select-trigger]]:text-xs">
             <ThreeDModelEditorFields
               mode="edit"
               form={formData}
@@ -787,7 +787,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
               onThumbnail={handleThumbnailUpload}
             />
 
-            <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>
+            <Button onClick={handleUpdate} className="h-8 w-full text-xs sm:ml-auto sm:flex sm:w-auto" disabled={isSubmitting}>
               {isSubmitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</> : 'Save Changes'}
             </Button>
           </div>

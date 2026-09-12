@@ -32,11 +32,11 @@ export function SceneOperationStatus({
       role="status"
       aria-live="polite"
     >
-      <span className="min-w-0">
-        <span className="block truncate font-medium" title={operation.label}>
+      <span className="min-w-0 flex-1">
+        <span className="block break-words font-medium [overflow-wrap:anywhere]" title={operation.label}>
           {operation.label}
         </span>
-        <span className="hidden truncate text-[10px] opacity-75 md:block">
+        <span className="mt-0.5 block break-words text-[10px] leading-relaxed opacity-75 [overflow-wrap:anywhere]">
           {operation.instruction}
         </span>
       </span>

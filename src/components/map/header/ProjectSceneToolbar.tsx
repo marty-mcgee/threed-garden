@@ -136,14 +136,14 @@ export function ProjectSceneToolbar({
           </Button>
 
           {sceneAddMenuOpen && (
-            <div className="absolute right-0 top-full z-[2000] mt-1 w-52 rounded-lg border bg-background/95 p-1.5 shadow-xl backdrop-blur-sm">
+            <div className="absolute right-0 top-full z-[2000] mt-1 max-h-[min(24rem,70dvh)] w-64 max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain rounded-lg border bg-background p-1.5 shadow-xl">
               <div className="px-2 pb-1 pt-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">ThreeD Marker Type</div>
-              <div className="grid grid-cols-2 gap-1">
-                <Button type="button" variant="ghost" size="sm" className="h-8 justify-start text-xs" onClick={onOpenModelLibrary}><Box className="h-3.5 w-3.5" /> Models</Button>
-                <Button type="button" variant="ghost" size="sm" className="h-8 justify-start text-xs" onClick={onOpenCharacterLibrary}><User className="h-3.5 w-3.5" /> Characters</Button>
-                <Button type="button" variant="ghost" size="sm" className="h-8 justify-start text-xs" onClick={onOpenFarmBotLibrary}><Settings className="h-3.5 w-3.5" /> FarmBots</Button>
-                <Button type="button" variant="ghost" size="sm" className="h-8 justify-start text-xs" onClick={onOpenBedPlacement}><Plus className="h-3.5 w-3.5" /> Bed</Button>
-                <Button type="button" variant="ghost" size="sm" className="col-span-2 h-8 justify-start text-xs" onClick={onOpenPlantingPlacement}><Sprout className="h-3.5 w-3.5" /> Planting</Button>
+              <div className="grid grid-cols-1 gap-1">
+                <Button type="button" variant="ghost" size="sm" className="h-8 w-full justify-start text-xs" onClick={onOpenModelLibrary}><Box className="h-3.5 w-3.5" /> Models</Button>
+                <Button type="button" variant="ghost" size="sm" className="h-8 w-full justify-start text-xs" onClick={onOpenCharacterLibrary}><User className="h-3.5 w-3.5" /> Characters</Button>
+                <Button type="button" variant="ghost" size="sm" className="h-8 w-full justify-start text-xs" onClick={onOpenFarmBotLibrary}><Settings className="h-3.5 w-3.5" /> FarmBots</Button>
+                <Button type="button" variant="ghost" size="sm" className="h-8 w-full justify-start text-xs" onClick={onOpenBedPlacement}><Plus className="h-3.5 w-3.5" /> Bed</Button>
+                <Button type="button" variant="ghost" size="sm" className="h-8 w-full justify-start text-xs" onClick={onOpenPlantingPlacement}><Sprout className="h-3.5 w-3.5" /> Planting</Button>
               </div>
             </div>
           )}

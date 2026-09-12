@@ -79,7 +79,7 @@ export function ThreeDFarmBotLibraryPanel({
         <label className="mb-2 block text-xs">
           <span className="mb-1 block text-muted-foreground">ThreeD Module</span>
           <select
-            className="h-8 w-full rounded-md border bg-background px-2 text-xs"
+            className="h-8 w-full min-w-0 max-w-full rounded-md border bg-background px-2 text-xs"
             value={selectedModuleId ?? ''}
             disabled={placing}
             onChange={(event) => onSelectedModuleChange(Number(event.target.value))}
@@ -92,8 +92,8 @@ export function ThreeDFarmBotLibraryPanel({
       )}
 
       {placementFarmBot && (
-        <div className="mb-2 grid grid-cols-2 gap-2 rounded border border-slate-500/40 bg-slate-500/10 p-2 text-xs">
-          <div className="col-span-2 font-medium">
+        <div className="mb-2 grid grid-cols-2 gap-2 rounded border border-slate-500/40 [&>label]:min-w-0 bg-slate-500/10 p-2 text-xs">
+          <div className="col-span-2 min-w-0 break-words font-medium [overflow-wrap:anywhere]">
             Placing {placementFarmBot.name}{placing ? '…' : ' — click the Scene ground'}
           </div>
           {DIMENSION_FIELDS.map(([field, label, step]) => (
@@ -125,7 +125,7 @@ export function ThreeDFarmBotLibraryPanel({
         </div>
       )}
 
-      <div className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
+      <div className="min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain pr-1">
         {loading ? (
           <div className="flex items-center justify-center gap-2 py-8 text-xs text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> Loading FarmBots…
@@ -136,9 +136,9 @@ export function ThreeDFarmBotLibraryPanel({
           const isPlaced = placedFarmBotIds.has(Number(farmBot.id));
           return (
             <div key={farmBot.id} className="flex items-center gap-2 rounded border p-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded bg-slate-500/10">🤖</div>
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded bg-slate-500/10">🤖</div>
               <div className="min-w-0 flex-1">
-                <div className="truncate text-xs font-medium">{farmBot.name}</div>
+                <div className="break-words text-xs font-medium [overflow-wrap:anywhere]">{farmBot.name}</div>
                 <div className="truncate text-[10px] text-muted-foreground">
                   {farmBot.assetCode} · {farmBot.status ?? 'offline'}
                 </div>

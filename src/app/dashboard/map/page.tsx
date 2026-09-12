@@ -2545,13 +2545,7 @@ function UnifiedMapPageInner() {
           setIsPlantingPlacementOpen(false);
         }}
       />
-      <div
-        className={
-          isLeftSceneWorkspaceOpen
-            ? 'sm:ml-[18.5rem] transition-[margin]'
-            : 'transition-[margin]'
-        }
-      >
+      <div>
         <ThreeDSceneFilterPanel
           isOpen={showFilterPanel}
           text={filterText}
@@ -2569,7 +2563,7 @@ function UnifiedMapPageInner() {
       </div>
 
       {/* ✅ Map Container */}
-      <Card className={`${isLeftSceneWorkspaceOpen ? 'sm:ml-[18.5rem]' : ''} transition-[margin]`}>
+      <Card>
         <CardContent className="p-0 overflow-hidden">
           <div style={{ height: 'calc(100vh - 122px)' }}>
             

@@ -56,13 +56,13 @@ export function ThreeDWateringSchedulesCRUD({ threedId, scrollRecords = false }:
   const targets = (row: Row) => [row.plantingId ? `Planting #${row.plantingId}` : '', row.plantId ? `Plant #${row.plantId}` : '', row.farmbotId ? `FarmBot #${row.farmbotId}` : '', 'bedId' in row && row.bedId ? `Bed #${row.bedId}` : ''].filter(Boolean).join(' · ') || '—';
   return <div className={scrollRecords ? 'flex h-full min-h-0 flex-col gap-2' : 'space-y-2'}>
     <AdminWorkspaceHeader icon={Droplets} title="Waterings" description="Browse watering schedules and recorded watering history" className="shrink-0 [&>a]:text-[11px]">
-      <Badge variant="secondary">{loading || error ? '—' : total}</Badge>
-      <Input aria-label={`Search watering ${view}`} placeholder={view === 'schedules' ? 'Search Schedule ID or notes…' : 'Search History ID, status or reason…'} value={search} onChange={event => { reset(); setSearch(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
+      <Badge variant="secondary" className="text-xs">{loading || error ? '—' : total}</Badge>
+      <Input aria-label={`Search watering ${view}`} placeholder={view === 'schedules' ? 'Search Schedule ID or notes…' : 'Search History ID, status or reason…'} value={search} onChange={event => { reset(); setSearch(event.target.value); }} className="h-7 w-full min-w-0 flex-auto text-xs sm:w-auto sm:min-w-48 sm:flex-1" />
       <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={loading} onClick={() => setRevision(value => value + 1)}><RefreshCw className="h-3 w-3" />Refresh</Button>
       <AdminWorkspaceLink href="/admin/threed/plantings" icon={Sprout}>Plantings</AdminWorkspaceLink>
     </AdminWorkspaceHeader>
     <Tabs value={view} onValueChange={value => { reset(); setSearch(''); setView(value as View); }} className="shrink-0">
-      <TabsList aria-label="Watering views"><TabsTrigger value="schedules">Schedules</TabsTrigger><TabsTrigger value="history">History</TabsTrigger></TabsList>
+      <TabsList aria-label="Watering views" className="group-data-[orientation=horizontal]/tabs:h-8"><TabsTrigger value="schedules" className="px-3 text-xs">Schedules</TabsTrigger><TabsTrigger value="history" className="px-3 text-xs">History</TabsTrigger></TabsList>
     </Tabs>
     <p className="shrink-0 text-xs text-muted-foreground">{view === 'schedules' ? 'Saved schedules. Schedule editing and execution are not available here yet.' : 'Recorded watering outcomes. Missing duration or volume means it was not recorded.'}{threedId !== undefined && view === 'history' ? ' This view follows currently linked Plantings and Schedules, not historical Project membership.' : ''}</p>
     <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">
@@ -76,7 +76,7 @@ export function ThreeDWateringSchedulesCRUD({ threedId, scrollRecords = false }:
       <Table className="min-w-[1100px]">
         <TableHeader className={scrollRecords ? 'sticky top-0 z-10 bg-background' : undefined}><TableRow>{headings.map(title => <TableHead key={title} className="py-1 text-xs">{title}</TableHead>)}</TableRow></TableHeader>
         <TableBody>
-          {loading ? <TableRow><TableCell colSpan={9}><span role="status">Loading {view}…</span></TableCell></TableRow> : error ? <TableRow><TableCell colSpan={9}><span role="alert" className="text-destructive">{error}</span><Button variant="outline" size="sm" className="ml-2 text-[11px]" onClick={() => setRevision(value => value + 1)}>Retry</Button></TableCell></TableRow> : rows.length === 0 ? <TableRow><TableCell colSpan={9}>No watering {view} found{search ? ' for this search' : ''}.</TableCell></TableRow> : rows.map(row => {
+          {loading ? <TableRow><TableCell colSpan={9}><span role="status">Loading {view}…</span></TableCell></TableRow> : error ? <TableRow><TableCell colSpan={9}><span role="alert" className="text-destructive">{error}</span><Button variant="outline" size="sm" className="ml-2 h-7 text-[11px]" onClick={() => setRevision(value => value + 1)}>Retry</Button></TableCell></TableRow> : rows.length === 0 ? <TableRow><TableCell colSpan={9}>No watering {view} found{search ? ' for this search' : ''}.</TableCell></TableRow> : rows.map(row => {
             const cells = 'frequency' in row
               ? [row.scheduleId, row.frequency, dateLabel(row.nextWatering), dateLabel(row.lastWatering), measurement(row.durationMs, 'ms'), measurement(row.volumeMl, 'mL'), targets(row), row.isActive ? <Check aria-label="Active" className="h-4 w-4 text-green-500" /> : <X aria-label="Inactive" className="h-4 w-4 text-gray-500" />, row.notes || '—']
               : [row.historyId, dateLabel(row.executedAt), <span className={row.status === 'success' ? 'text-green-500' : row.status === 'failed' ? 'text-red-500' : 'text-yellow-500'}>{row.status}</span>, measurement(row.durationMs, 'ms'), measurement(row.volumeMl, 'mL'), targets(row), row.scheduleId ? `#${row.scheduleId}` : '—', row.executedBy || '—', [row.skipReason, row.errorMessage].filter(Boolean).join(' · ') || '—'];

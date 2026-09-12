@@ -523,11 +523,11 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollReco
               Add Layer
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
             <DialogHeader>
               <DialogTitle>Create New Layer</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 pt-4">
+            <div className="grid min-w-0 grid-cols-1 items-start gap-3 pt-1 md:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
               {/* Basic Info */}
               <div>
                 <Label htmlFor="layerId">Layer ID *</Label>
@@ -565,14 +565,14 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollReco
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="category">Category</Label>
                   <Select
                     value={formData.category}
                     onValueChange={(value) => setFormData({ ...formData, category: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -590,7 +590,7 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollReco
                     value={formData.layerType}
                     onValueChange={(value) => setFormData({ ...formData, layerType: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -641,17 +641,17 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollReco
               </div>
 
               {/* Layer Configuration */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Layer Configuration</Label>
                 <div className="space-y-2 mt-2">
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     <div>
                       <Label htmlFor="color" className="text-xs">Color</Label>
                       <Select
                         value={formData.color}
                         onValueChange={(value) => setFormData({ ...formData, color: value })}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="w-full min-w-0">
                           <SelectValue placeholder="Select color" />
                         </SelectTrigger>
                         <SelectContent>
@@ -698,7 +698,7 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollReco
               </div>
 
               {/* Visibility & Status */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Visibility & Status</Label>
                 <div className="space-y-2 mt-2">
                   <div className="flex items-center gap-2">
@@ -731,7 +731,7 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollReco
                 </div>
               </div>
 
-              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
+              <Button onClick={handleCreate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -833,11 +833,11 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollReco
 
       {/* Edit Dialog */}
       <Dialog open={!!editingLayer} onOpenChange={(open) => !open && setEditingLayer(null)}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
           <DialogHeader>
             <DialogTitle>Edit Layer</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 pt-4">
+          <div className="grid min-w-0 grid-cols-1 items-start gap-3 pt-1 md:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
             <div>
               <Label htmlFor="edit-layerId">Layer ID *</Label>
               <Input
@@ -869,14 +869,14 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollReco
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <Label htmlFor="edit-category">Category</Label>
                 <Select
                   value={formData.category}
                   onValueChange={(value) => setFormData({ ...formData, category: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
                   <SelectContent>
@@ -894,7 +894,7 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollReco
                   value={formData.layerType}
                   onValueChange={(value) => setFormData({ ...formData, layerType: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -944,17 +944,17 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollReco
             </div>
 
             {/* Layer Configuration */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Layer Configuration</Label>
               <div className="space-y-2 mt-2">
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="edit-color" className="text-xs">Color</Label>
                     <Select
                       value={formData.color}
                       onValueChange={(value) => setFormData({ ...formData, color: value })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full min-w-0">
                         <SelectValue placeholder="Select color" />
                       </SelectTrigger>
                       <SelectContent>
@@ -1000,7 +1000,7 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollReco
             </div>
 
             {/* Visibility & Status */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Visibility & Status</Label>
               <div className="space-y-2 mt-2">
                 <div className="flex items-center gap-2">
@@ -1033,7 +1033,7 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollReco
               </div>
             </div>
 
-            <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>
+            <Button onClick={handleUpdate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />

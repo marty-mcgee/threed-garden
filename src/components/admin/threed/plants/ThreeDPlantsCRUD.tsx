@@ -554,11 +554,11 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
               Add Plant
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
             <DialogHeader>
               <DialogTitle>Create New Plant</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 pt-4">
+            <div className="grid min-w-0 grid-cols-1 items-start gap-3 pt-1 md:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
               {/* Basic Info */}
               <div>
                 <Label htmlFor="plantId">Plant ID *</Label>
@@ -584,7 +584,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="scientificName">Scientific Name</Label>
                   <Input
@@ -607,7 +607,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="family">Family</Label>
                   <Input
@@ -624,7 +624,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                     value={formData.type}
                     onValueChange={(value) => setFormData({ ...formData, type: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -638,14 +638,14 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="status">Status</Label>
                   <Select
                     value={formData.status}
                     onValueChange={(value) => setFormData({ ...formData, status: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -663,7 +663,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                     value={formData.modelId}
                     onValueChange={(value) => setFormData({ ...formData, modelId: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select a model" />
                     </SelectTrigger>
                     <SelectContent>
@@ -687,7 +687,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
               )}
 
               {/* Growth Parameters */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Growth Parameters</Label>
                 <div className="space-y-2 mt-2">
                   <div>
@@ -700,7 +700,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                       disabled={isSubmitting}
                     />
                   </div>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                     <div>
                       <Label htmlFor="daysToMaturity" className="text-xs">Days to Maturity</Label>
                       <Input
@@ -742,9 +742,9 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
               </div>
 
               {/* Spacing */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Spacing (inches)</Label>
-                <div className="grid grid-cols-3 gap-2 mt-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 mt-2">
                   <div>
                     <Label htmlFor="spacingInches" className="text-xs">Spacing</Label>
                     <Input
@@ -786,17 +786,17 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
               </div>
 
               {/* Environmental Needs */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Environmental Needs</Label>
                 <div className="space-y-2 mt-2">
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     <div>
                       <Label htmlFor="sunlight" className="text-xs">Sunlight</Label>
                       <Select
                         value={formData.sunlight}
                         onValueChange={(value) => setFormData({ ...formData, sunlight: value })}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="w-full min-w-0">
                           <SelectValue placeholder="Select sunlight" />
                         </SelectTrigger>
                         <SelectContent>
@@ -814,7 +814,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                         value={formData.waterNeeds}
                         onValueChange={(value) => setFormData({ ...formData, waterNeeds: value })}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="w-full min-w-0">
                           <SelectValue placeholder="Select water needs" />
                         </SelectTrigger>
                         <SelectContent>
@@ -827,7 +827,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                       </Select>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     <div>
                       <Label htmlFor="soilType" className="text-xs">Soil Type</Label>
                       <Input
@@ -853,7 +853,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                       />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                     <div>
                       <Label htmlFor="hardinessZone" className="text-xs">Hardiness Zone</Label>
                       <Input
@@ -889,7 +889,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
               </div>
 
               {/* Images */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Images</Label>
                 <div className="space-y-2 mt-2">
                   <div>
@@ -916,7 +916,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
               </div>
 
               {/* Descriptions */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Descriptions</Label>
                 <div className="space-y-2 mt-2">
                   <div>
@@ -956,7 +956,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
               </div>
 
               {/* Companion Planting */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Companion Planting</Label>
                 <div className="space-y-2 mt-2">
                   <div>
@@ -983,7 +983,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
               </div>
 
               {/* Source & Raw Data */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Source & Data</Label>
                 <div className="space-y-2 mt-2">
                   <div>
@@ -1010,7 +1010,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
               </div>
 
               {/* Active Status */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <div className="flex items-center gap-2">
                   <Switch
                     id="isActive"
@@ -1022,7 +1022,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                 </div>
               </div>
 
-              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
+              <Button onClick={handleCreate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -1101,11 +1101,11 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
 
       {/* Edit Dialog */}
       <Dialog open={!!editingPlant} onOpenChange={(open) => !open && setEditingPlant(null)}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
           <DialogHeader>
             <DialogTitle>Edit Plant</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 pt-4">
+          <div className="grid min-w-0 grid-cols-1 items-start gap-3 pt-1 md:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
             <div>
               <Label htmlFor="edit-plantId">Plant ID *</Label>
               <Input
@@ -1126,7 +1126,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <Label htmlFor="edit-scientificName">Scientific Name</Label>
                 <Input
@@ -1147,7 +1147,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <Label htmlFor="edit-family">Family</Label>
                 <Input
@@ -1163,7 +1163,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                   value={formData.type}
                   onValueChange={(value) => setFormData({ ...formData, type: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1177,14 +1177,14 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <Label htmlFor="edit-status">Status</Label>
                 <Select
                   value={formData.status}
                   onValueChange={(value) => setFormData({ ...formData, status: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1202,7 +1202,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                   value={formData.modelId}
                   onValueChange={(value) => setFormData({ ...formData, modelId: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select a model" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1226,7 +1226,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
             )}
 
             {/* Growth Parameters */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Growth Parameters</Label>
               <div className="space-y-2 mt-2">
                 <div>
@@ -1238,7 +1238,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                     disabled={isSubmitting}
                   />
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                   <div>
                     <Label htmlFor="edit-daysToMaturity" className="text-xs">Days to Maturity</Label>
                     <Input
@@ -1277,9 +1277,9 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
             </div>
 
             {/* Spacing */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Spacing (inches)</Label>
-              <div className="grid grid-cols-3 gap-2 mt-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 mt-2">
                 <div>
                   <Label htmlFor="edit-spacingInches" className="text-xs">Spacing</Label>
                   <Input
@@ -1318,17 +1318,17 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
             </div>
 
             {/* Environmental Needs */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Environmental Needs</Label>
               <div className="space-y-2 mt-2">
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="edit-sunlight" className="text-xs">Sunlight</Label>
                     <Select
                       value={formData.sunlight}
                       onValueChange={(value) => setFormData({ ...formData, sunlight: value })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full min-w-0">
                         <SelectValue placeholder="Select sunlight" />
                       </SelectTrigger>
                       <SelectContent>
@@ -1346,7 +1346,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                       value={formData.waterNeeds}
                       onValueChange={(value) => setFormData({ ...formData, waterNeeds: value })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full min-w-0">
                         <SelectValue placeholder="Select water needs" />
                       </SelectTrigger>
                       <SelectContent>
@@ -1359,7 +1359,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                     </Select>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="edit-soilType" className="text-xs">Soil Type</Label>
                     <Input
@@ -1383,7 +1383,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="edit-hardinessZone" className="text-xs">Hardiness Zone</Label>
                     <Input
@@ -1418,7 +1418,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
             </div>
 
             {/* Images */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Images</Label>
               <div className="space-y-2 mt-2">
                 <div>
@@ -1443,7 +1443,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
             </div>
 
             {/* Descriptions */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Descriptions</Label>
               <div className="space-y-2 mt-2">
                 <div>
@@ -1480,7 +1480,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
             </div>
 
             {/* Companion Planting */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Companion Planting</Label>
               <div className="space-y-2 mt-2">
                 <div>
@@ -1505,7 +1505,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
             </div>
 
             {/* Source & Raw Data */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Source & Data</Label>
               <div className="space-y-2 mt-2">
                 <div>
@@ -1530,7 +1530,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
             </div>
 
             {/* Active Status */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <div className="flex items-center gap-2">
                 <Switch
                   id="edit-isActive"
@@ -1542,7 +1542,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
               </div>
             </div>
 
-            <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>
+            <Button onClick={handleUpdate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />

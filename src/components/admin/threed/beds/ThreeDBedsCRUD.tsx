@@ -453,11 +453,11 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
               Add Bed
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
             <DialogHeader>
               <DialogTitle>Create New Bed</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 pt-4">
+            <div className="grid min-w-0 grid-cols-1 items-start gap-3 pt-1 md:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
               {/* Basic Info */}
               <div>
                 <Label htmlFor="bedId">Bed ID *</Label>
@@ -495,14 +495,14 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="shape">Shape</Label>
                   <Select
                     value={formData.shape}
                     onValueChange={(value) => setFormData({ ...formData, shape: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select shape" />
                     </SelectTrigger>
                     <SelectContent>
@@ -520,7 +520,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
                     value={formData.color}
                     onValueChange={(value) => setFormData({ ...formData, color: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select color" />
                     </SelectTrigger>
                     <SelectContent>
@@ -541,9 +541,9 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
               </div>
 
               {/* Dimensions */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Dimensions (feet)</Label>
-                <div className="grid grid-cols-3 gap-2 mt-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 mt-2">
                   <div>
                     <Label htmlFor="widthFeet" className="text-xs">Width</Label>
                     <Input
@@ -596,16 +596,16 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
               </div>
 
               {/* Soil & Environment */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Soil & Environment</Label>
-                <div className="grid grid-cols-2 gap-2 mt-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 mt-2">
                   <div>
                     <Label htmlFor="soilType" className="text-xs">Soil Type</Label>
                     <Select
                       value={formData.soilType}
                       onValueChange={(value) => setFormData({ ...formData, soilType: value })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full min-w-0">
                         <SelectValue placeholder="Select soil" />
                       </SelectTrigger>
                       <SelectContent>
@@ -623,7 +623,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
                       value={formData.sunExposure}
                       onValueChange={(value) => setFormData({ ...formData, sunExposure: value })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full min-w-0">
                         <SelectValue placeholder="Select exposure" />
                       </SelectTrigger>
                       <SelectContent>
@@ -639,10 +639,10 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
               </div>
 
               {/* 3D Position */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">3D Position</Label>
                 <p className="text-xs text-muted-foreground mb-2">Position in 3D space (for map and scene)</p>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                   <div>
                     <Label htmlFor="positionX" className="text-xs">X (Longitude)</Label>
                     <Input
@@ -680,7 +680,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2 mt-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 mt-2">
                   <div>
                     <Label htmlFor="rotation" className="text-xs">Rotation</Label>
                     <Input
@@ -710,7 +710,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
               </div>
 
               {/* Status */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Status</Label>
                 <div className="space-y-2 mt-2">
                   <div>
@@ -719,7 +719,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
                       value={formData.status}
                       onValueChange={(value) => setFormData({ ...formData, status: value })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full min-w-0">
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
                       <SelectContent>
@@ -747,7 +747,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
               </div>
 
               {/* Active Status */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <div className="flex items-center gap-2">
                   <Switch
                     id="isActive"
@@ -759,7 +759,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
                 </div>
               </div>
 
-              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
+              <Button onClick={handleCreate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -854,11 +854,11 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
 
       {/* Edit Dialog */}
       <Dialog open={!!editingBed} onOpenChange={(open) => !open && setEditingBed(null)}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
           <DialogHeader>
             <DialogTitle>Edit Bed</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 pt-4">
+          <div className="grid min-w-0 grid-cols-1 items-start gap-3 pt-1 md:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
             <div>
               <Label htmlFor="edit-bedId">Bed ID *</Label>
               <Input
@@ -890,14 +890,14 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <Label htmlFor="edit-shape">Shape</Label>
                 <Select
                   value={formData.shape}
                   onValueChange={(value) => setFormData({ ...formData, shape: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select shape" />
                   </SelectTrigger>
                   <SelectContent>
@@ -915,7 +915,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
                   value={formData.color}
                   onValueChange={(value) => setFormData({ ...formData, color: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select color" />
                   </SelectTrigger>
                   <SelectContent>
@@ -936,9 +936,9 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
             </div>
 
             {/* Dimensions */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Dimensions (feet)</Label>
-              <div className="grid grid-cols-3 gap-2 mt-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 mt-2">
                 <div>
                   <Label htmlFor="edit-widthFeet" className="text-xs">Width</Label>
                   <Input
@@ -987,16 +987,16 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
             </div>
 
             {/* Soil & Environment */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Soil & Environment</Label>
-              <div className="grid grid-cols-2 gap-2 mt-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 mt-2">
                 <div>
                   <Label htmlFor="edit-soilType" className="text-xs">Soil Type</Label>
                   <Select
                     value={formData.soilType}
                     onValueChange={(value) => setFormData({ ...formData, soilType: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select soil" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1014,7 +1014,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
                     value={formData.sunExposure}
                     onValueChange={(value) => setFormData({ ...formData, sunExposure: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select exposure" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1030,9 +1030,9 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
             </div>
 
             {/* 3D Position */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">3D Position</Label>
-              <div className="grid grid-cols-3 gap-2 mt-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 mt-2">
                 <div>
                   <Label htmlFor="edit-positionX" className="text-xs">X (Longitude)</Label>
                   <Input
@@ -1067,7 +1067,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
                   />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-2 mt-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 mt-2">
                 <div>
                   <Label htmlFor="edit-rotation" className="text-xs">Rotation</Label>
                   <Input
@@ -1095,7 +1095,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
             </div>
 
             {/* Status */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Status</Label>
               <div className="space-y-2 mt-2">
                 <div>
@@ -1104,7 +1104,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
                     value={formData.status}
                     onValueChange={(value) => setFormData({ ...formData, status: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1131,7 +1131,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
             </div>
 
             {/* Active Status */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <div className="flex items-center gap-2">
                 <Switch
                   id="edit-isActive"
@@ -1143,7 +1143,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
               </div>
             </div>
 
-            <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>
+            <Button onClick={handleUpdate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />

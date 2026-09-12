@@ -551,11 +551,11 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
               Add Planting
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
             <DialogHeader>
               <DialogTitle>Create New Planting</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 pt-4">
+            <div className="grid min-w-0 grid-cols-1 items-start gap-3 pt-1 md:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
               {/* Basic Info */}
               <div>
                 <Label htmlFor="plantingId">Planting ID *</Label>
@@ -575,7 +575,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
                   value={formData.plantId}
                   onValueChange={(value) => setFormData({ ...formData, plantId: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select a plant" />
                   </SelectTrigger>
                   <SelectContent>
@@ -594,7 +594,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
                   value={formData.bedId}
                   onValueChange={(value) => setFormData({ ...formData, bedId: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select a bed (optional)" />
                   </SelectTrigger>
                   <SelectContent>
@@ -614,7 +614,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
                   value={formData.customModelId}
                   onValueChange={(value) => setFormData({ ...formData, customModelId: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select a model (optional)" />
                   </SelectTrigger>
                   <SelectContent>
@@ -635,7 +635,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
                 />
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="quantity">Quantity</Label>
                   <Input
@@ -662,10 +662,10 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
               </div>
 
               {/* 3D Position */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">3D Position</Label>
                 <p className="text-xs text-muted-foreground mb-2">Position in 3D space (for map and scene)</p>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
                   <div>
                     <Label htmlFor="positionX" className="text-xs">X (Longitude)</Label>
                     <Input
@@ -706,7 +706,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
               </div>
 
               {/* Model Settings */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Model Settings</Label>
                 <div className="space-y-2 mt-2">
                   <div>
@@ -735,7 +735,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
               </div>
 
               {/* Status & Growth */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Status & Growth</Label>
                 <div className="space-y-2 mt-2">
                   <div>
@@ -744,7 +744,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
                       value={formData.status}
                       onValueChange={(value) => setFormData({ ...formData, status: value })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full min-w-0">
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
                       <SelectContent>
@@ -762,7 +762,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
                       value={formData.growthStage}
                       onValueChange={(value) => setFormData({ ...formData, growthStage: value })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full min-w-0">
                         <SelectValue placeholder="Select growth stage" />
                       </SelectTrigger>
                       <SelectContent>
@@ -780,7 +780,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
                       value={formData.health}
                       onValueChange={(value) => setFormData({ ...formData, health: value })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full min-w-0">
                         <SelectValue placeholder="Select health" />
                       </SelectTrigger>
                       <SelectContent>
@@ -796,9 +796,9 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
               </div>
 
               {/* Dates */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Dates</Label>
-                <div className="space-y-2 mt-2">
+                <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
                   <div>
                     <Label htmlFor="plantedDate" className="text-xs">Planted Date</Label>
                     <Input
@@ -855,7 +855,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
               </div>
 
               {/* Active Status */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <div className="flex items-center gap-2">
                   <Switch
                     id="isActive"
@@ -867,7 +867,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
                 </div>
               </div>
 
-              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
+              <Button onClick={handleCreate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -958,11 +958,11 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
 
       {/* Edit Dialog */}
       <Dialog open={!!editingPlanting} onOpenChange={(open) => !open && setEditingPlanting(null)}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
           <DialogHeader>
             <DialogTitle>Edit Planting</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 pt-4">
+          <div className="grid min-w-0 grid-cols-1 items-start gap-3 pt-1 md:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
             <div>
               <Label htmlFor="edit-plantingId">Planting ID *</Label>
               <Input
@@ -979,7 +979,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
                 value={formData.plantId}
                 onValueChange={(value) => setFormData({ ...formData, plantId: value })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full min-w-0">
                   <SelectValue placeholder="Select a plant" />
                 </SelectTrigger>
                 <SelectContent>
@@ -998,7 +998,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
                 value={formData.bedId}
                 onValueChange={(value) => setFormData({ ...formData, bedId: value })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full min-w-0">
                   <SelectValue placeholder="Select a bed (optional)" />
                 </SelectTrigger>
                 <SelectContent>
@@ -1018,7 +1018,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
                 value={formData.customModelId}
                 onValueChange={(value) => setFormData({ ...formData, customModelId: value })}
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full min-w-0">
                   <SelectValue placeholder="Select a model (optional)" />
                 </SelectTrigger>
                 <SelectContent>
@@ -1039,7 +1039,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
               />
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
                 <Label htmlFor="edit-quantity">Quantity</Label>
                 <Input
@@ -1065,9 +1065,9 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
             </div>
 
             {/* 3D Position */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">3D Position</Label>
-              <div className="grid grid-cols-3 gap-2 mt-2">
+              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3 mt-2">
                 <div>
                   <Label htmlFor="edit-positionX" className="text-xs">X (Longitude)</Label>
                   <Input
@@ -1105,7 +1105,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
             </div>
 
             {/* Model Settings */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Model Settings</Label>
               <div className="space-y-2 mt-2">
                 <div>
@@ -1133,7 +1133,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
             </div>
 
             {/* Status & Growth */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Status & Growth</Label>
               <div className="space-y-2 mt-2">
                 <div>
@@ -1142,7 +1142,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
                     value={formData.status}
                     onValueChange={(value) => setFormData({ ...formData, status: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1160,7 +1160,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
                     value={formData.growthStage}
                     onValueChange={(value) => setFormData({ ...formData, growthStage: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select growth stage" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1178,7 +1178,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
                     value={formData.health}
                     onValueChange={(value) => setFormData({ ...formData, health: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select health" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1194,9 +1194,9 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
             </div>
 
             {/* Dates */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Dates</Label>
-              <div className="space-y-2 mt-2">
+              <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <div>
                   <Label htmlFor="edit-plantedDate" className="text-xs">Planted Date</Label>
                   <Input
@@ -1252,7 +1252,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
             </div>
 
             {/* Active Status */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <div className="flex items-center gap-2">
                 <Switch
                   id="edit-isActive"
@@ -1264,7 +1264,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
               </div>
             </div>
 
-            <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>
+            <Button onClick={handleUpdate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />

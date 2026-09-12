@@ -237,13 +237,13 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
         </Table>
       </div>
       <Dialog open={open} onOpenChange={(value) => { if (!saving) setOpen(value); }}>
-        <DialogContent className="max-h-[90dvh] overflow-y-auto"><DialogHeader><DialogTitle>{editing ? `Edit ${editing.name}` : 'Create Category'}</DialogTitle></DialogHeader>
-          <div className="space-y-3">
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-3xl max-h-[90dvh] gap-3 overflow-y-auto p-4"><DialogHeader><DialogTitle>{editing ? `Edit ${editing.name}` : 'Create Category'}</DialogTitle></DialogHeader>
+          <div className="grid min-w-0 grid-cols-1 items-center gap-3 sm:grid-cols-2 [&_input]:h-8 [&_input]:min-w-0 [&_input]:text-xs [&_label]:text-xs">
               <Input disabled={saving} value={form.name} aria-label="Category name" placeholder="Name" onChange={(event) => setForm({ ...form, name: event.target.value })} />
               <Input disabled={saving} value={form.slug} aria-label="Category slug" placeholder="Slug (generated from name if empty)" onChange={(event) => setForm({ ...form, slug: event.target.value })} />
-              <Input disabled={saving} value={form.description} aria-label="Category description" placeholder="Description" onChange={(event) => setForm({ ...form, description: event.target.value })} />
+              <Input disabled={saving} value={form.description} className="sm:col-span-2" aria-label="Category description" placeholder="Description" onChange={(event) => setForm({ ...form, description: event.target.value })} />
               <Select disabled={saving} value={form.parentId} onValueChange={(parentId) => setForm({ ...form, parentId })}>
-                <SelectTrigger aria-label="Parent category"><SelectValue placeholder="Parent category" /></SelectTrigger>
+                <SelectTrigger className="h-8 w-full min-w-0 text-xs" aria-label="Parent category"><SelectValue placeholder="Parent category" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">No parent</SelectItem>
                   {categories.filter((category) => category.id !== editing?.id).map((category) => (
@@ -256,7 +256,7 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
                 <Switch aria-label="Category active" disabled={saving} checked={form.isActive} onCheckedChange={(isActive) => setForm({ ...form, isActive })} />
                 <Label>Active</Label>
               </div>
-              <Button type="button" className="w-full" disabled={saving} onClick={() => void saveCategory()}>
+              <Button type="button" className="h-8 w-full text-xs sm:col-span-2 sm:w-auto sm:justify-self-end" disabled={saving} onClick={() => void saveCategory()}>
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{editing ? 'Update Category' : 'Create Category'}
               </Button>
           </div>

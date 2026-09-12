@@ -67,7 +67,7 @@ export function ProjectAssetsPanel({
           aria-label="Project Assets"
           className="absolute bottom-0 left-0 top-10 z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-hidden rounded-md border bg-background/90 p-3 shadow-xl backdrop-blur-md"
         >
-          <div className="mb-2 flex items-start justify-between gap-2">
+          <div className="mb-2 flex shrink-0 items-start justify-between gap-2">
             <div className="min-w-0">
               <h2 className="text-sm font-semibold">Project Assets</h2>
               <p className="text-[11px] text-muted-foreground">
@@ -87,7 +87,7 @@ export function ProjectAssetsPanel({
             </Button>
           </div>
 
-          <div className="relative mb-2">
+          <div className="relative mb-2 shrink-0">
             <Search className="pointer-events-none absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
               ref={searchInputRef}
@@ -114,7 +114,7 @@ export function ProjectAssetsPanel({
           </div>
 
           <div
-            className="mb-2 flex gap-1 overflow-x-auto pb-1 [scrollbar-width:thin]"
+            className="mb-2 flex shrink-0 gap-1 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:thin]"
             role="group"
             aria-label="Filter Project Assets by type"
           >
@@ -144,12 +144,12 @@ export function ProjectAssetsPanel({
             ))}
           </div>
 
-          <div className="mb-2 flex items-center justify-between text-[10px] text-muted-foreground">
+          <div className="mb-2 flex shrink-0 flex-wrap items-center justify-between gap-1 text-[10px] text-muted-foreground">
             <span>{visibleProjectAssets.length} shown</span>
             <span>{projectRuntimeMarkers.length} items · Esc closes</span>
           </div>
 
-          <div className="min-h-0 flex-1 space-y-1 overflow-y-auto pr-1">
+          <div className="min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain pr-1">
             {visibleProjectAssets.length === 0 ? (
               <p className="py-8 text-center text-xs text-muted-foreground">
                 {projectRuntimeMarkers.length === 0
@@ -188,11 +188,11 @@ export function ProjectAssetsPanel({
                         {getThreeDIcon(marker.type)}
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="flex items-center gap-1 truncate text-xs font-medium">
-                          <span className="truncate">{marker.name}</span>
+                        <span className="flex flex-wrap items-center gap-x-1 gap-y-0.5 text-xs font-medium">
+                          <span className="min-w-0 break-words [overflow-wrap:anywhere]">{marker.name}</span>
                           {isSelected && <span className="shrink-0 text-[9px] font-semibold uppercase text-cyan-500">Selected</span>}
                         </span>
-                        <span className="block text-[10px] text-muted-foreground">
+                        <span className="block break-words text-[10px] leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">
                           X{currentPosition.x.toFixed(1)} Y{currentPosition.y.toFixed(1)} Z{currentPosition.z.toFixed(1)} · {Math.hypot(currentPosition.x, currentPosition.z).toFixed(1)} ft from origin
                         </span>
                       </span>
