@@ -15,6 +15,12 @@ const clipSelection = { ...getTableColumns(clips), fileName: files.fileName, fil
 const fileJoin = and(eq(files.id, clips.animationFileId), eq(files.userId, clips.userId));
 const modelUsage = sql<number>`(select count(*)::integer from ${modelAssignments} a where a.animation_id = ${clips.id} and a.user_id = ${clips.userId})`;
 const characterUsage = sql<number>`(select count(*)::integer from ${characterAssignments} a where a.animation_id = ${clips.id} and a.user_id = ${clips.userId})`;
+export async function getAnimation(userId: string, id: number) {
+  const [data] = await db.select(clipSelection).from(clips).innerJoin(files, fileJoin)
+    .where(and(eq(clips.userId, userId), eq(clips.id, id))).limit(1);
+  if (!data) throw new AnimationLibraryError(404, 'Animation not found');
+  return { data };
+}
 export async function listAnimations(userId: string, query: ReturnType<typeof parseList>) {
   const { limit, offset, search, sort, direction } = query;
   const where = and(eq(clips.userId, userId), search ? sql`(${clips.name} ilike ${`%${search}%`} or ${files.fileName} ilike ${`%${search}%`} or ${clips.clipName} ilike ${`%${search}%`})` : undefined);

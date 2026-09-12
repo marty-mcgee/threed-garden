@@ -5,8 +5,8 @@ import { resolveAssignments, type Assignment } from '@/lib/services/threed/anima
 import { getExternalAnimationSourcesForModel, loadExternalCharacterAnimations } from './externalCharacterAnimations';
 import type { AnimationMap } from './animation';
 
-type Clip = { id: number; isActive: boolean; filePath: string; format: string; clipIndex: number };
-type Mapping = { assignments: Assignment[]; inherited: Assignment[]; animations: Clip[]; modelId: number | null };
+export type AssignedAnimationClip = { id: number; isActive: boolean; filePath: string; format: string; clipIndex: number };
+type Mapping = { assignments: Assignment[]; inherited: Assignment[]; animations: AssignedAnimationClip[]; modelId: number | null };
 async function mapping(target: string, targetId: number): Promise<Mapping> {
   const response = await fetch(`/api/threed/animation-assignments?target=${target}&targetId=${targetId}`, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
   if (response.status === 404) return { assignments: [], inherited: [], animations: [], modelId: null };
@@ -14,7 +14,7 @@ async function mapping(target: string, targetId: number): Promise<Mapping> {
   if (!response.ok || !body.success) throw new Error(body.error || 'Could not load Character animation assignments');
   return body.data;
 }
-async function sourceClips(source: Clip) {
+async function sourceClips(source: AssignedAnimationClip) {
   const response = await fetch(source.filePath, { signal: AbortSignal.timeout(30000) });
   if (!response.ok) throw new Error('Assigned animation source is inaccessible');
   const bytes = await response.arrayBuffer();
@@ -42,6 +42,19 @@ async function sourceClips(source: Clip) {
   return result;
 }
 
+// Preview deliberately loads only the requested draft clip and performs the same binding check.
+export async function loadCharacterPreviewAnimation(source: AssignedAnimationClip, root: THREE.Object3D) {
+  if (!source.isActive || !source.filePath.trim()) throw new Error('Selected animation is unavailable');
+  const original = (await sourceClips(source))[source.clipIndex];
+  if (!original?.tracks.length || original.tracks.some(track => !THREE.PropertyBinding.findNode(root, THREE.PropertyBinding.parseTrackName(track.name).nodeName))) {
+    throw new Error('Selected animation does not match this Character rig');
+  }
+  const clip = original.clone();
+  // The existing stationary initial-action path poses and plays the preview.
+  clip.name = 'idle';
+  return { clips: [clip], blocked: new Set<string>(), assigned: new Set(['idle']) };
+}
+
 export function assignedAnimationMap(base: AnimationMap, blocked: Set<string>, assigned: Set<string>): AnimationMap {
   return { ...base, blockedActions: blocked, resolve: action => blocked.has(action.toLowerCase()) ? null : assigned.has(action.toLowerCase()) ? base.clipNames.find(name => name.toLowerCase() === action.toLowerCase()) ?? null : base.resolve(action) };
 }
@@ -58,19 +71,29 @@ export async function loadAssignedCharacterAnimations(characterId: number, model
   const sources = new Map<string, Promise<THREE.AnimationClip[]>>();
   const clips: THREE.AnimationClip[] = [];
   for (const row of effective) {
-    if (row.state === 'unavailable') throw new Error(`Assigned ${row.actionKey} animation is unavailable. Update the Character's Animations settings.`);
-    if (row.state !== 'assigned') continue;
-    const source = animations.find(clip => clip.id === row.animationId)!;
-    const key = `${source.format}:${source.filePath}`;
-    if (!sources.has(key)) sources.set(key, sourceClips(source));
-    const original = (await sources.get(key)!)[source.clipIndex];
-    if (!original) throw new Error(`Assigned ${row.actionKey} clip was not found in its source file`);
-    // Require the authored track targets to exist. This is binding validation, not retargeting.
-    if (!original.tracks.length || original.tracks.some(track => !THREE.PropertyBinding.findNode(root, THREE.PropertyBinding.parseTrackName(track.name).nodeName))) {
-      throw new Error(`Assigned ${row.actionKey} animation does not match this Character's rig`);
+    if (row.state === 'legacy' || row.state === 'disabled') continue;
+    const owner = row.source === 'character' ? `Character #${characterId} override` : `Model #${modelId} default`;
+    const location = row.source === 'character'
+      ? 'Admin → ThreeD → Characters → Animations & Preview'
+      : 'Admin → ThreeD → Models → Animation defaults';
+    const action = row.actionKey.replace(/([a-z])([A-Z])/g, '$1 $2');
+    try {
+      if (row.state === 'unavailable') throw new Error('Assigned animation is unavailable');
+      const source = animations.find(clip => clip.id === row.animationId)!;
+      const key = `${source.format}:${source.filePath}`;
+      if (!sources.has(key)) sources.set(key, sourceClips(source));
+      const original = (await sources.get(key)!)[source.clipIndex];
+      if (!original) throw new Error('Assigned clip was not found in its source file');
+      // Require the authored track targets to exist. This is binding validation, not retargeting.
+      if (!original.tracks.length || original.tracks.some(track => !THREE.PropertyBinding.findNode(root, THREE.PropertyBinding.parseTrackName(track.name).nodeName))) {
+        throw new Error("Assigned animation does not match this Character's rig");
+      }
+      const clip = original.clone(); clip.name = row.actionKey;
+      clips.push(clip); assigned.add(row.actionKey.toLowerCase());
+    } catch (cause) {
+      const reason = cause instanceof Error ? cause.message : 'Animation could not load';
+      throw new Error(`${action} — ${owner}, animation #${row.animationId}: ${reason}. Check ${location}.`, { cause });
     }
-    const clip = original.clone(); clip.name = row.actionKey;
-    clips.push(clip); assigned.add(row.actionKey.toLowerCase());
   }
   const legacy = await loadExternalCharacterAnimations(getExternalAnimationSourcesForModel(modelName, filePath).filter(source => !explicit.has(source.action.toLowerCase())));
   return { clips: [...legacy.clips, ...clips], blocked, assigned };

@@ -1,6 +1,8 @@
 # Releases
 
-This directory records confirmed production checkpoints, not every development iteration.
+This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
+
+Prepared candidate: [v0.19.16 — Animations: Character and Model Assignment + Preview Interface](v0.19.16.md) — manual build and deployment pending.
 
 Current production: **v0.19.15**, commit `9157e06`, User-confirmed.
 

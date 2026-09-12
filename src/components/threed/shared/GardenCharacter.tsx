@@ -31,7 +31,7 @@ import {
   type AnimationMap,
 } from '@/lib/utils/animation';
 
-import { loadAssignedCharacterAnimations, assignedAnimationMap } from '@/lib/utils/assignedCharacterAnimations';
+import { loadAssignedCharacterAnimations, loadCharacterPreviewAnimation, type AssignedAnimationClip, assignedAnimationMap } from '@/lib/utils/assignedCharacterAnimations';
 
 // ========================================================
 // TYPES
@@ -127,6 +127,10 @@ interface CharacterData {
 }
 
 interface GardenCharacterProps {
+  previewMode?: boolean;
+  previewClip?: AssignedAnimationClip;
+  previewSelection?: AssignedAnimationClip | null;
+  onPreviewState?: (error: string | null) => void;
   character: CharacterData;
 
   currentWeather?: string;
@@ -323,6 +327,10 @@ export function GardenCharacter({
   positionedByParent = false,
 
   onRuntimeSettled,
+  previewMode = false,
+  previewClip,
+  previewSelection,
+  onPreviewState,
 }: GardenCharacterProps) {
   /**
    * currentWeather remains part of the component API,
@@ -359,6 +367,8 @@ export function GardenCharacter({
   // ======================================================
   // REFS
   // ======================================================
+
+  const isPreview = previewMode || !!previewClip;
 
   const groupRef =
     useRef<THREE.Group>(
@@ -762,7 +772,7 @@ export function GardenCharacter({
           // EXTERNAL ANIMATIONS
           // ================================================
 
-          const externalLibrary = await loadAssignedCharacterAnimations(
+          const externalLibrary = previewMode ? { clips: [], blocked: new Set<string>(), assigned: new Set<string>() } : previewClip ? await loadCharacterPreviewAnimation(previewClip, loadedModel) : await loadAssignedCharacterAnimations(
             character.id, character.model!.id, character.model!.modelName,
             character.model!.filePath, loadedModel,
           );
@@ -846,8 +856,7 @@ export function GardenCharacter({
           );
 
           const mixer =
-            animations.length >
-            0
+            (isPreview || animations.length > 0)
               ? new THREE.AnimationMixer(
                   loadedModel,
                 )
@@ -856,7 +865,7 @@ export function GardenCharacter({
           mixerRef.current =
             mixer;
 
-          if (mixer) {
+          if (mixer && !isPreview) {
             animationMixers.set(
               character.id,
               mixer,
@@ -900,7 +909,7 @@ export function GardenCharacter({
             false;
 
           if (
-            mixer &&
+            !previewMode && mixer &&
             animations.length >
               0
           ) {
@@ -1001,9 +1010,12 @@ export function GardenCharacter({
           // COMPLETE
           // ================================================
 
+          if (previewMode) loadedModel.traverse(node => { if (node instanceof THREE.SkinnedMesh) node.pose(); });
+          if (isPreview) mixer?.update(0);
           if (
             !cancelled
           ) {
+            if (isPreview) onPreviewState?.(null);
             setModel(
               loadedModel,
             );
@@ -1014,6 +1026,7 @@ export function GardenCharacter({
           if (
             !cancelled
           ) {
+            if (isPreview) onPreviewState?.(error instanceof Error ? error.message : 'Preview failed');
             console.error(
               '[GardenCharacter] Error loading character:',
               error,
@@ -1088,8 +1101,37 @@ export function GardenCharacter({
       );
     };
   }, [
-    character,
+    character, previewClip, previewMode, isPreview, onPreviewState,
   ]);
+
+  // Preview-only switches retain the loaded Model, mixer and camera.
+  useEffect(() => {
+    if (!isPreview || !model || previewSelection === undefined) return;
+    if (previewSelection === null) {
+      mixerRef.current?.stopAllAction();
+      mixerRef.current?.uncacheRoot(model);
+      model.traverse(node => { if (node instanceof THREE.SkinnedMesh) node.pose(); });
+      currentActionRef.current = null;
+      onPreviewState?.(null);
+      return;
+    }
+    let cancelled = false;
+    void loadCharacterPreviewAnimation(previewSelection, model).then(({ clips }) => {
+      if (cancelled || !mixerRef.current) return;
+      const mixer = mixerRef.current;
+      const previous = currentActionRef.current;
+      const next = mixer.clipAction(clips[0]);
+      previous?.stop();
+      next.reset().play();
+      mixer.update(0);
+      currentActionRef.current = next;
+      if (previous && previous !== next) mixer.uncacheAction(previous.getClip());
+      onPreviewState?.(null);
+    }).catch(error => {
+      if (!cancelled) onPreviewState?.(error instanceof Error ? error.message : 'Animation preview failed');
+    });
+    return () => { cancelled = true; };
+  }, [model, isPreview, previewSelection, onPreviewState]);
 
   // ======================================================
   // ANIMATION SWITCHING
@@ -1309,6 +1351,7 @@ export function GardenCharacter({
    * coexist without responding to one another's action buttons.
    */
   useEffect(() => {
+    if (isPreview) return;
     const handleGardenAction = (event: Event) => {
       const customEvent = event as CustomEvent<{
         characterId?: number;
@@ -1339,7 +1382,7 @@ export function GardenCharacter({
         handleGardenAction,
       );
     };
-  }, [character.id]);
+  }, [character.id, isPreview]);
 
   // ======================================================
   // FRAME LOOP
@@ -1357,6 +1400,8 @@ export function GardenCharacter({
       mixerRef.current?.update(
         delta,
       );
+
+      if (isPreview) return; // Preview advances animation only, without Scene movement/registration.
 
       // ================================================
       // POSITION REGISTRY

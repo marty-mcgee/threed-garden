@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.19.15",
+  "version": "0.19.16",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -46,6 +46,7 @@
     "validate:threed-model-list-api": "node src/lib/scripts/validate-threed-model-list-api.cjs",
     "validate:threed-database-failures": "node src/lib/scripts/validate-threed-database-failures.cjs",
     "validate:threed-character-position-save": "node src/lib/scripts/validate-threed-character-position-save.cjs",
+    "validate:threed-character-preview-switch": "node src/lib/scripts/validate-threed-character-preview-switch.cjs",
     "validate:threed-character-animation-restart": "node src/lib/scripts/validate-threed-character-animation-restart.cjs",
     "validate:threed-harvest-list": "node src/lib/scripts/validate-threed-harvest-list.cjs",
     "validate:threed-watering-list": "node src/lib/scripts/validate-threed-watering-list.cjs",
@@ -92,7 +93,7 @@
     "leva": "^0.10.1",
     "lucide-react": "^0.564.0",
     "mqtt": "^5.15.2",
-    "next": "^16.3.3",
+    "next": "^16.3.5",
     "next-auth": "^5.0.0-beta.31",
     "node-cron": "^4.2.1",
     "pg": "^8.23.0",

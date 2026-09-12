@@ -4,6 +4,7 @@
 'use client';
 
 import Link from 'next/link';
+import { ModelAnimationAssignments } from '@/components/admin/threed/animations/CharacterAnimationAssignments';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Check,
@@ -152,6 +153,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [animationModel, setAnimationModel] = useState<Model | null>(null);
   const [editingModel, setEditingModel] = useState<Model | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sort, setSort] = useState<{ field: ModelSortField; direction: 'asc' | 'desc' }>({ field: 'name', direction: 'asc' });
@@ -718,6 +720,9 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                             <span className="sr-only">Manage files</span>
                           </Link>
                         </Button>
+                        <Button variant="ghost" size="sm" disabled={deleting || loading} onClick={() => setAnimationModel(model)} title={`Animation defaults for ${model.modelName}`} aria-label={`Animation defaults for ${model.modelName}`}>
+                          <Clapperboard className="w-4 h-4" />
+                        </Button>
                         <Button variant="ghost" size="sm" disabled={deleting || loading} onClick={() => openEditDialog(model)} title="Edit">
                           <Edit className="w-4 h-4" />
                         </Button>
@@ -755,6 +760,13 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
           </Table>
         </div>
       )}
+
+      <Dialog open={!!animationModel} onOpenChange={open => !open && setAnimationModel(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader><DialogTitle>Animation defaults — {animationModel?.modelName}</DialogTitle></DialogHeader>
+          {animationModel && <ModelAnimationAssignments key={animationModel.id} modelId={animationModel.id} />}
+        </DialogContent>
+      </Dialog>
 
       {/* Edit Dialog */}
       <Dialog open={!!editingModel} onOpenChange={handleEditDialogChange}>

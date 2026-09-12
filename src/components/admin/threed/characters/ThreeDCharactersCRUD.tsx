@@ -655,7 +655,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
 
   const renderActions = (character: Character) => (
     <div className="flex items-center justify-end gap-1">
-      <Button variant="ghost" size="sm" disabled={bulkBusy || isSubmitting} title="Assign Animations" aria-label={`Assign animations to ${character.name}`} onClick={() => setAnimationCharacter(character)}><Clapperboard className="h-4 w-4" /><span className="ml-1 text-xs">Animations</span></Button>
+      <Button variant="ghost" size="sm" disabled={bulkBusy || isSubmitting} title="Manage and preview Character animations" aria-label={`Manage and preview animations for ${character.name}`} onClick={() => setAnimationCharacter(character)}><Clapperboard className="h-4 w-4" /><span className="ml-1 text-xs">Animations & Preview</span></Button>
       <Button variant="ghost" size="sm" disabled={bulkBusy || isSubmitting} aria-label={`Edit ${character.name}`} onClick={() => openEditDialog(character)}>
         <Edit className="w-4 h-4" />
       </Button>
@@ -1301,8 +1301,8 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
         </div>
 
       <Dialog open={!!animationCharacter} onOpenChange={open => !open && setAnimationCharacter(null)}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Animations — {animationCharacter?.name}</DialogTitle></DialogHeader>
+        <DialogContent className="flex h-[90dvh] w-[calc(100%-2rem)] min-w-0 flex-col overflow-hidden sm:max-w-7xl">
+          <DialogHeader className="shrink-0 pr-8"><DialogTitle>Animations & Preview — {animationCharacter?.name}</DialogTitle></DialogHeader>
           {animationCharacter && <CharacterAnimationAssignments key={animationCharacter.id} characterId={animationCharacter.id} />}
         </DialogContent>
       </Dialog>

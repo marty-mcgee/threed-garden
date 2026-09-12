@@ -7,7 +7,7 @@ const { FBXLoader } = require('three/examples/jsm/loaders/FBXLoader.js');
 function load(path, deps, extra = {}) {
   const exports = {};
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(path, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText,
-    { exports, console, AbortSignal, ...extra, require: name => { assert.ok(name in deps, name); return deps[name]; } });
+    { exports, console, AbortSignal, Error, ...extra, require: name => { assert.ok(name in deps, name); return deps[name]; } });
   return exports;
 }
 const animation = load('src/lib/utils/animation.ts', {});
@@ -15,7 +15,7 @@ const contracts = load('src/lib/services/threed/animations/contracts.ts', { '@/l
 const bytes = fs.readFileSync('public/assets/animations/Idle.fbx');
 const buffer = bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
 const root = new FBXLoader().parse(buffer, '');
-let own, model, sourceFetches, legacy, urls;
+let own, model, sourceFetches, legacy, urls, sourceFailure;
 const source = { id: 46, isActive: true, format: 'fbx', filePath: 'https://example.invalid/shared.fbx', clipIndex: 0 };
 const runtime = load('src/lib/utils/assignedCharacterAnimations.ts', {
   three: THREE, 'three/examples/jsm/loaders/FBXLoader.js': { FBXLoader },
@@ -27,13 +27,20 @@ const runtime = load('src/lib/utils/assignedCharacterAnimations.ts', {
   },
 }, { fetch: async url => {
   urls.push(url);
-  if (!url.startsWith('/api/')) { sourceFetches++; return { ok: true, arrayBuffer: async () => buffer }; }
+  if (!url.startsWith('/api/')) { sourceFetches++; if (sourceFailure) return { ok: false }; return { ok: true, arrayBuffer: async () => buffer }; }
   return { ok: true, json: async () => ({ success: true, data: url.includes('target=character') ? own : model }) };
 } });
 const assignment = (actionKey, animationId = 46, mode = 'assigned') => ({ actionKey, animationId, mode });
-const reset = () => { own = { modelId: 5, assignments: [], inherited: [], animations: [source] }; model = { assignments: [], animations: [source] }; sourceFetches = 0; urls = []; };
+const reset = () => { own = { modelId: 5, assignments: [], inherited: [], animations: [source] }; model = { assignments: [], animations: [source] }; sourceFetches = 0; urls = []; sourceFailure = false; };
 const run = () => runtime.loadAssignedCharacterAnimations(11, 5, 'Character', '/primary.fbx', root);
 (async () => {
+  reset();
+  const preview = await runtime.loadCharacterPreviewAnimation(source, root);
+  assert.equal(preview.clips[0].name, 'idle');
+  assert.equal(sourceFetches, 1);
+  assert.ok(urls.every(url => !url.startsWith('/api/')), 'Draft preview does not read or write saved assignments');
+  await assert.rejects(runtime.loadCharacterPreviewAnimation({ ...source, isActive: false }, root), /unavailable/);
+  await assert.rejects(runtime.loadCharacterPreviewAnimation(source, new THREE.Group()), /does not match/);
   reset(); let result = await run(); assert.deepEqual(legacy, ['idle', 'walk', 'watering']); assert.equal(sourceFetches, 0);
   reset(); own.inherited = [assignment('idle')]; own.assignments = [assignment('walk'), assignment('watering', null, 'disabled')];
   result = await run(); assert.equal(sourceFetches, 1, 'One shared source fetch for multiple actions');
@@ -48,5 +55,9 @@ const run = () => runtime.loadAssignedCharacterAnimations(11, 5, 'Character', '/
   reset(); own.assignments = [assignment('idle')]; own.animations = [{ ...source, clipIndex: 999 }]; await assert.rejects(run(), /not found/);
   reset(); own.assignments = [assignment('idle')]; await assert.rejects(runtime.loadAssignedCharacterAnimations(11, 5, 'Wrong rig', '', new THREE.Group()), /does not match/);
   reset(); own.assignments = [assignment('idle')]; own.animations = [{ ...source, format: 'glb' }]; result = await run(); assert.equal(result.clips.find(c => c.name === 'idle').tracks.length, 1);
+  reset(); sourceFailure = true; own.assignments = [assignment('idle')];
+  await assert.rejects(run(), /idle — Character #11 override, animation #46: .*inaccessible.*Characters → Animations & Preview/);
+  reset(); sourceFailure = true; own.modelId = 9; model.assignments = [assignment('walk')];
+  await assert.rejects(run(), /walk — Model #5 default, animation #46: .*inaccessible.*Models → Animation defaults/);
   console.log('PASS: real FBX rig binding, GLB clip selection, shared-source fetch, inheritance/override/disabled mapping, project Model selection and explicit invalid-clip rejection (mocked requests)');
 })().catch(error => { console.error(error); process.exitCode = 1; });

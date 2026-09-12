@@ -102,6 +102,9 @@ jobs:
       - name: Validate Character animation restart
         run: npm run validate:threed-character-animation-restart
 
+      - name: Validate Character preview switching
+        run: npm run validate:threed-character-preview-switch
+
       - name: Validate Model import contracts
         run: npm run validate:threed-model-import
 

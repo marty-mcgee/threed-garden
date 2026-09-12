@@ -76,6 +76,11 @@ const body = { target: 'model', targetId: 5, actionKey: 'idle', mode: 'assigned'
     assert.equal((await request(name, method)).status, 401); assert.equal(queries.length, 0);
   }
   signedIn = true;
+  for (const id of ['0', '-1', 'oops', '2147483648']) assert.equal((await request('animations', 'GET', `id=${id}`)).status, 400);
+  assert.equal((await request('animations', 'GET', 'id=7', null, [[]])).status, 404);
+  const singleClip = await request('animations', 'GET', 'id=7', null, [[active]]);
+  assert.equal(singleClip.body.data.id, 7); assert.equal(queries.length, 1); owned(queries[0]);
+
   for (const query of ['limit=0', 'limit=201', 'offset=-1', 'offset=1e3', 'sort=sql', 'direction=sideways', `search=${'x'.repeat(201)}`]) {
     assert.equal((await request('animations', 'GET', query)).status, 400);
   }

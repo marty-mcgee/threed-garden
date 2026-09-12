@@ -179,3 +179,25 @@ Validation passed: assigned-character fixture (real tracked FBX rig binding, GLB
 At the User's latest request, Animations appears under **ThreeD → Models**, alongside Files, Categories and Textures. The Models parent recognizes `/admin/threed/animations` as an active child route. Characters returns to its direct management link without an Animations submenu. This supersedes the earlier top-level and Characters submenu placements; the independent library route, schema, uploads and assignments remain unchanged. TypeScript and diff checks passed.
 
 The User also confirmed the preceding manual Character playback checklist, including control, saved transforms and targeted Water/Pick Fruit behavior.
+
+## v0.19.16 development — assignment clarity
+
+The Character assignment dialog now separates saved source/state/clip, marks unsaved changes, links to its owner-accessible Model Files and explains that Project-specific Models may supply different defaults. Saved assignments are not labeled as verified playback. Disabled locomotion actions show a pose/movement warning. APIs and Scene playback are unchanged. See the [relationship audit and next stages](../plans/v0.19.16.md).
+
+### Optional Model defaults (v0.19.16 development — current direction)
+
+Admin → ThreeD → Models has an icon-only clapperboard action per row, labeled “Animation defaults for …”. It opens the existing assignment workflow in Model mode. Assignments remain optional; static Models require none. Use existing behavior removes that Model/action default; Disabled blocks it explicitly. Character overrides still win. The independent Library stores reusable sources, never copies per-Model files.
+
+Character runtimes consume Model defaults today. Generic Scene Model playback is not implemented by assigning defaults, and the dialog states that limit. The temporary Character-only direction and editor revert were superseded by User confirmation of optional Model assignments. No schema cleanup or migration is required. Character preview is included in the accepted interface checkpoint; generic Model playback remains a separate stage. TypeScript and the assignment UI/Library API/playback fixtures pass; manual inheritance checks are in the [v0.19.16 plan](../plans/v0.19.16.md).
+
+### Character assignment and preview (v0.19.16 candidate)
+
+Admin → ThreeD → Characters → a row’s **Animations & Preview** opens the assignment workspace. The frame automatically loads the textured resting/bind pose. Choose a library animation (or an active inherited Model default), then Preview animation; repeated clicks replay it. The same Model, mixer, Canvas and camera remain loaded. T-Pose stops playback and restores the authored pose. Closing the dialog disposes the preview context.
+
+Front and Three-quarter camera presets are available. Save view remembers position/target/quaternion per Character in localStorage; Reset view clears that browser preference. No database camera settings are changed.
+
+Metadata is owner-scoped. Clip tracks are checked against the Character; incompatible replacements report errors and leave the last successful animation visible. Preview does not save assignments, move Project Characters or perform world actions. Per-action Save is separate. Scene consumers use saved assignments after reload, retaining Character override → actual rendered Model default → legacy precedence.
+
+Preview loops a clip at normal speed; it is not Ecctrl simulation, a world-action completion test, retargeting, or a Project-specific replacement Model preview. Generic Model playback is deferred. Character behavior/control UX and Water/Pick Fruit targeting/effect/completion UX are major separate follow-ups, explicitly outside this accepted interface release.
+
+Run `npm run validate:threed-character-preview-switch` with assignment, Library, assigned-character and restart checks for preview changes. See [release scope and validation](../plans/v0.19.16-release.md). Production deployment and the User-owned manual build are pending.
