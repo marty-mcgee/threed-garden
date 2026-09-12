@@ -2,7 +2,9 @@
 
 This directory records confirmed production checkpoints, not every development iteration.
 
-Current production: **v0.19.14**, commit `a5491e9`, User-confirmed.
+Current production: **v0.19.15**, commit `9157e06`, User-confirmed.
+
+- [v0.19.15 — ThreeD Admin Pages: UI Updates](v0.19.15.md) — production and manual build User-confirmed
 
 - [v0.19.14 — ThreeD Animations Library](v0.19.14.md) — production User-confirmed
 

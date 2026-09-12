@@ -1,6 +1,6 @@
 # Admin ThreeD workspace continuation
 
-Baseline: [v0.19.13](../releases/v0.19.13.md), commit `c976c77`, User-confirmed production deployment and manual build. The User has resumed the remaining stages. Current candidate: [v0.19.15 — ThreeD Admin Pages: UI Updates](v0.19.15-release.md); the post-v0.19.14 workspace changes below remain unreleased. Earlier stage notes retain their historical status. The manual build gate remains User-owned.
+Baseline: [v0.19.13](../releases/v0.19.13.md), commit `c976c77`, User-confirmed production deployment and manual build. The User has resumed the remaining stages. Current production: [v0.19.15 — ThreeD Admin Pages: UI Updates](../releases/v0.19.15.md), commit `9157e06`; deployment and manual build User-confirmed. Earlier stage notes retain their historical status. The manual build gate remains User-owned.
 
 ## Model Animations — presentation step
 
@@ -273,3 +273,7 @@ User accepted Harvests and approved milestone validation/release preparation. Th
 TypeScript, all eight new list validators, and Model list API/database failure/Character position/animation restart/assignment editor regression fixtures passed (14 commands total); diff checks passed. User's incremental visual acceptance is recorded separately from pending final live CRUD/Project embedding and manual build. Package advances to 0.19.15; v0.19.14 remains production until deployment is confirmed. No build, database updates, commit or deployment performed. See [release scope, limitations and smoke checklist](v0.19.15-release.md).
 
 Manual build confirmation: User supplied successful `npm run build` output for package 0.19.15: compilation, TypeScript, page-data collection, 110/110 static pages and final optimization completed. This supersedes the pending-build status above. Deployment and the full live smoke checklist are not separately confirmed.
+
+## v0.19.15 released
+
+User confirmed production deployment of `9157e06`, following successful manual build. The planned Admin workspace UI rollout is released. No next version is designated. Earlier candidate/pending statements above are historical; documented follow-up limits remain separate work.
