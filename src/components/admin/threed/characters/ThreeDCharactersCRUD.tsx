@@ -288,8 +288,8 @@ function CharacterRuntimeReadiness({ model, isMovable }: { model?: Model; isMova
 
       <p className="text-[11px] text-muted-foreground">
         {isMovable
-          ? 'Movable routes to EcctrlCharacter for Take Control and WASD.'
-          : 'Not movable routes to GardenCharacter and its configured autonomous movement.'}
+          ? 'User control enabled: select this Character in the Scene, then choose Take Control to move with WASD.'
+          : 'Automatic behavior: this Character follows its configured movement without Take Control. Stationary keeps it in place.'}
       </p>
     </div>
   );
@@ -401,7 +401,10 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
   const filteredCharacters = characters;
 
   // Pre-queried model files for the currently selected model (threed_model_files).
-  const selectedModel = models.find((m) => String(m.id) === formData.modelId);
+  const modelOptions = editingCharacter?.model && !models.some(model => model.id === editingCharacter.model!.id)
+    ? [editingCharacter.model, ...models]
+    : models;
+  const selectedModel = modelOptions.find((m) => String(m.id) === formData.modelId);
 
   const handleCreate = async () => {
     if (!formData.characterId) {
@@ -714,11 +717,11 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
               Add Character
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
             <DialogHeader>
               <DialogTitle>Create New Character</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4 pt-4">
+            <div className="grid min-w-0 grid-cols-1 items-start gap-3 pt-1 md:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
               {/* Basic Info */}
               <div>
                 <Label htmlFor="characterId">Character ID *</Label>
@@ -756,14 +759,14 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <Label htmlFor="type">Type</Label>
                   <Select
                     value={formData.type}
                     onValueChange={(value) => setFormData({ ...formData, type: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -781,7 +784,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
                     value={formData.status}
                     onValueChange={(value) => setFormData({ ...formData, status: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -796,19 +799,20 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
               </div>
 
               {/* Model */}
-              <div className="space-y-2">
+              <div className="space-y-2 rounded-md border p-3 md:col-span-2">
                 <div>
                   <Label htmlFor="modelId">Model</Label>
                   <Select
-                    value={formData.modelId}
+                    value={formData.modelId || 'none'}
                     onValueChange={(value) => setFormData({ ...formData, modelId: value === 'none' ? '' : value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select a model (optional)" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">None</SelectItem>
-                      {models.map((model) => (
+                    {formData.modelId && !selectedModel && <SelectItem value={formData.modelId}>Assigned Model #{formData.modelId} — unavailable</SelectItem>}
+                      {modelOptions.map((model) => (
                         <SelectItem key={model.id} value={String(model.id)}>
                           {model.modelName} ({model.modelType})
                         </SelectItem>
@@ -816,17 +820,20 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
                     </SelectContent>
                   </Select>
                 </div>
-                {selectedModel && (
+                {selectedModel?.files && (
                   <ModelFileList
                     files={selectedModel.files ?? []}
                     emptyText="No files attached to this model (add them in Models)"
                   />
                 )}
-                <CharacterRuntimeReadiness model={selectedModel} isMovable={formData.isMovable} />
+                {formData.modelId && <p className="text-xs text-muted-foreground">
+                  Assigned Model #{formData.modelId}{selectedModel ? ` — ${selectedModel.modelName}` : ' — unavailable; the saved relationship is retained until you choose a replacement or None.'}
+                </p>}
+                {(!formData.modelId || selectedModel) && <CharacterRuntimeReadiness model={selectedModel} isMovable={formData.isMovable} />}
               </div>
 
               {/* Animation */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Animation</Label>
                 <div className="space-y-2 mt-2">
                   <div>
@@ -846,11 +853,12 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
                         value={formData.defaultAnimation}
                         onValueChange={(value) => setFormData({ ...formData, defaultAnimation: value === 'none' ? '' : value })}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="w-full min-w-0">
                           <SelectValue placeholder="Select animation" />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="none">None</SelectItem>
+                    {formData.modelId && !selectedModel && <SelectItem value={formData.modelId}>Assigned Model #{formData.modelId} — unavailable</SelectItem>}
                           {ANIMATION_OPTIONS.map((anim) => (
                             <SelectItem key={anim.value} value={anim.value}>
                               {anim.label}
@@ -876,7 +884,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
               </div>
 
               {/* Movement */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Movement</Label>
                 <div className="space-y-2 mt-2">
                   <div className="flex items-center gap-2">
@@ -886,15 +894,20 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
                       onCheckedChange={(checked) => setFormData({ ...formData, isMovable: checked })}
                       disabled={isSubmitting}
                     />
-                    <Label htmlFor="isMovable">Movable</Label>
+                    <Label htmlFor="isMovable">Allow Take Control (WASD)</Label>
                   </div>
+                  <p className="text-xs text-muted-foreground">
+                    {formData.isMovable
+                      ? 'On: use Take Control in the Scene to move with WASD. The automatic movement settings below do not drive this control mode.'
+                      : 'Off: the Character uses the automatic movement settings below. Choose Stationary to keep it in place; Wander allows it to move on its own.'}
+                  </p>
                   <div>
                     <Label htmlFor="movementType" className="text-xs">Movement Type</Label>
                     <Select
                       value={formData.movementType}
                       onValueChange={(value) => setFormData({ ...formData, movementType: value })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full min-w-0">
                         <SelectValue placeholder="Select movement" />
                       </SelectTrigger>
                       <SelectContent>
@@ -947,7 +960,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
               </div>
 
               {/* Interaction */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Interaction</Label>
                 <div className="space-y-2 mt-2">
                   <div className="flex items-center gap-2">
@@ -976,7 +989,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
                         value={formData.defaultEmote}
                         onValueChange={(value) => setFormData({ ...formData, defaultEmote: value })}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="w-full min-w-0">
                           <SelectValue placeholder="Select emote" />
                         </SelectTrigger>
                         <SelectContent>
@@ -994,7 +1007,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
                         value={formData.emoteOnInteract}
                         onValueChange={(value) => setFormData({ ...formData, emoteOnInteract: value })}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="w-full min-w-0">
                           <SelectValue placeholder="Select emote" />
                         </SelectTrigger>
                         <SelectContent>
@@ -1021,7 +1034,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
               </div>
 
               {/* 3D Position */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">3D Position</Label>
                 <p className="text-xs text-muted-foreground mb-2">Position in 3D space</p>
                 <div className="grid grid-cols-3 gap-2">
@@ -1092,7 +1105,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
               </div>
 
               {/* Appearance */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Appearance</Label>
                 <div className="space-y-2 mt-2">
                   <div className="grid grid-cols-2 gap-2">
@@ -1144,7 +1157,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
               </div>
 
               {/* Schedule & Weather */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <Label className="text-sm font-medium">Schedule & Weather</Label>
                 <div className="grid grid-cols-2 gap-2 mt-2">
                   <div>
@@ -1180,7 +1193,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
                     value={formData.weatherSensitivity}
                     onValueChange={(value) => setFormData({ ...formData, weatherSensitivity: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select sensitivity" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1206,7 +1219,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
               </div>
 
               {/* Active Status */}
-              <div className="border-t pt-4">
+              <div className="rounded-md border p-3">
                 <div className="flex items-center gap-2">
                   <Switch
                     id="isActive"
@@ -1218,7 +1231,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
                 </div>
               </div>
 
-              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
+              <Button onClick={handleCreate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -1309,11 +1322,11 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
 
       {/* Edit Dialog */}
       <Dialog open={!!editingCharacter} onOpenChange={(open) => !open && setEditingCharacter(null)}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
           <DialogHeader>
-            <DialogTitle>Edit Character</DialogTitle>
+            <DialogTitle>Edit Character — {editingCharacter?.name}</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4 pt-4">
+          <div className="grid min-w-0 grid-cols-1 items-start gap-3 pt-1 md:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
             <div>
               <Label htmlFor="edit-characterId">Character ID *</Label>
               <Input
@@ -1345,14 +1358,14 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label htmlFor="edit-type">Type</Label>
                 <Select
                   value={formData.type}
                   onValueChange={(value) => setFormData({ ...formData, type: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1370,7 +1383,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
                   value={formData.status}
                   onValueChange={(value) => setFormData({ ...formData, status: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1385,19 +1398,20 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
             </div>
 
             {/* Model */}
-            <div className="space-y-2">
+            <div className="space-y-2 rounded-md border p-3 md:col-span-2">
               <div>
                 <Label htmlFor="edit-modelId">Model</Label>
                 <Select
-                  value={formData.modelId}
+                  value={formData.modelId || 'none'}
                   onValueChange={(value) => setFormData({ ...formData, modelId: value === 'none' ? '' : value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select a model (optional)" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">None</SelectItem>
-                    {models.map((model) => (
+                    {formData.modelId && !selectedModel && <SelectItem value={formData.modelId}>Assigned Model #{formData.modelId} — unavailable</SelectItem>}
+                    {modelOptions.map((model) => (
                       <SelectItem key={model.id} value={String(model.id)}>
                         {model.modelName} ({model.modelType})
                       </SelectItem>
@@ -1405,17 +1419,20 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
                   </SelectContent>
                 </Select>
               </div>
-              {selectedModel && (
+              {selectedModel?.files && (
                 <ModelFileList
                   files={selectedModel.files ?? []}
                   emptyText="No files attached to this model (add them in Models)"
                 />
               )}
-              <CharacterRuntimeReadiness model={selectedModel} isMovable={formData.isMovable} />
+              {formData.modelId && <p className="text-xs text-muted-foreground">
+                  Assigned Model #{formData.modelId}{selectedModel ? ` — ${selectedModel.modelName}` : ' — unavailable; the saved relationship is retained until you choose a replacement or None.'}
+                </p>}
+                {(!formData.modelId || selectedModel) && <CharacterRuntimeReadiness model={selectedModel} isMovable={formData.isMovable} />}
             </div>
 
             {/* Animation */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Animation</Label>
               <div className="space-y-2 mt-2">
                 <div>
@@ -1434,11 +1451,12 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
                       value={formData.defaultAnimation}
                       onValueChange={(value) => setFormData({ ...formData, defaultAnimation: value === 'none' ? '' : value })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full min-w-0">
                         <SelectValue placeholder="Select animation" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">None</SelectItem>
+                    {formData.modelId && !selectedModel && <SelectItem value={formData.modelId}>Assigned Model #{formData.modelId} — unavailable</SelectItem>}
                         {ANIMATION_OPTIONS.map((anim) => (
                           <SelectItem key={anim.value} value={anim.value}>
                             {anim.label}
@@ -1464,7 +1482,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
             </div>
 
             {/* Movement */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Movement</Label>
               <div className="space-y-2 mt-2">
                 <div className="flex items-center gap-2">
@@ -1474,15 +1492,20 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
                     onCheckedChange={(checked) => setFormData({ ...formData, isMovable: checked })}
                     disabled={isSubmitting}
                   />
-                  <Label htmlFor="edit-isMovable">Movable</Label>
+                  <Label htmlFor="edit-isMovable">Allow Take Control (WASD)</Label>
                 </div>
+                <p className="text-xs text-muted-foreground">
+                    {formData.isMovable
+                      ? 'On: use Take Control in the Scene to move with WASD. The automatic movement settings below do not drive this control mode.'
+                      : 'Off: the Character uses the automatic movement settings below. Choose Stationary to keep it in place; Wander allows it to move on its own.'}
+                  </p>
                 <div>
                   <Label htmlFor="edit-movementType" className="text-xs">Movement Type</Label>
                   <Select
                     value={formData.movementType}
                     onValueChange={(value) => setFormData({ ...formData, movementType: value })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="w-full min-w-0">
                       <SelectValue placeholder="Select movement" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1533,7 +1556,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
             </div>
 
             {/* Interaction */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Interaction</Label>
               <div className="space-y-2 mt-2">
                 <div className="flex items-center gap-2">
@@ -1561,7 +1584,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
                       value={formData.defaultEmote}
                       onValueChange={(value) => setFormData({ ...formData, defaultEmote: value })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full min-w-0">
                         <SelectValue placeholder="Select emote" />
                       </SelectTrigger>
                       <SelectContent>
@@ -1579,7 +1602,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
                       value={formData.emoteOnInteract}
                       onValueChange={(value) => setFormData({ ...formData, emoteOnInteract: value })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="w-full min-w-0">
                         <SelectValue placeholder="Select emote" />
                       </SelectTrigger>
                       <SelectContent>
@@ -1605,7 +1628,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
             </div>
 
             {/* 3D Position */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">3D Position</Label>
               <div className="grid grid-cols-3 gap-2 mt-2">
                 <div>
@@ -1670,7 +1693,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
             </div>
 
             {/* Appearance */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Appearance</Label>
               <div className="space-y-2 mt-2">
                 <div className="grid grid-cols-2 gap-2">
@@ -1721,7 +1744,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
             </div>
 
             {/* Schedule & Weather */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <Label className="text-sm font-medium">Schedule & Weather</Label>
               <div className="grid grid-cols-2 gap-2 mt-2">
                 <div>
@@ -1755,7 +1778,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
                   value={formData.weatherSensitivity}
                   onValueChange={(value) => setFormData({ ...formData, weatherSensitivity: value })}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full min-w-0">
                     <SelectValue placeholder="Select sensitivity" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1780,7 +1803,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
             </div>
 
             {/* Active Status */}
-            <div className="border-t pt-4">
+            <div className="rounded-md border p-3">
               <div className="flex items-center gap-2">
                 <Switch
                   id="edit-isActive"
@@ -1792,7 +1815,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
               </div>
             </div>
 
-            <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>
+            <Button onClick={handleUpdate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
