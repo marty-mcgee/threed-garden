@@ -960,12 +960,10 @@ function UnifiedMapPageInner() {
   // Filters do not affect raw project assets, so hiding a target never clears it.
   useEffect(() => {
     if (!actionTarget || loading) return;
-    const targetCollection = data.threed.raw?.[actionTarget.type] ?? [];
-
-    const targetStillExists = targetCollection.some((asset: any) =>
-      isMatchingThreeDActionTarget(actionTarget, {
-        markerType: actionTarget.type,
-        assetId: Number(asset.id),
+    const targetStillExists = buildThreeDRuntimeMarkerResult(data.threed.raw).markers.some((marker) =>
+      marker.id === actionTarget.markerId && isMatchingThreeDActionTarget(actionTarget, {
+        markerType: marker.type,
+        assetId: Number(marker.data?.id),
       }));
 
     if (!targetStillExists) {

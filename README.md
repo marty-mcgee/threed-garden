@@ -7,9 +7,9 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production release:** `v0.19.18 — ThreeD Animation Presets + Character Navigation`, package `0.19.18`, commit `95c3a93`, deployment User-confirmed. Includes reusable action-mapping presets, Animation Categories, Walk to Target and collider-aware Teleport near Target. Kate/Joey navigation and production table availability are User-confirmed. See the [release record](docs/releases/v0.19.18.md) for validation and retained test limitations.
+> **Current production release:** `v0.19.19 — Character Collisions + Interactions`, package `0.19.19`, commit `0fa1ebe`, deployment User-confirmed. See the [release record](docs/releases/v0.19.19.md).
 
-> **Current development:** `v0.19.19 — Character Collisions + Interactions`, package `0.19.19`, preparing collision and target-interaction improvements. Initial development removes highlight rings from walking arrival bounds; see the [staged plan](docs/plans/v0.19.19.md). Production remains v0.19.18; its documentation release `d6e4068` is also User-confirmed.
+> **Current follow-up:** Character save/reload overlap validation and placed Model Action Target identity corrections. Tractor targeting is User-verified; save/refresh review and follow-up deployment remain pending.
 
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 

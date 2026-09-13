@@ -1592,6 +1592,18 @@ assert.deepEqual(
 assert.equal(nearbyEcctrlResult.issues[0].markerId, 'characters-21');
 assert.match(nearbyEcctrlResult.issues[0].reasons.join(' '), /overlaps the Ecctrl spawn/);
 validationStep('Nearby movable Character capsules cannot share an Ecctrl spawn area');
+const savedCharacter = (id: number, x: number, y = 0) => ({
+  ...validSavedSnapshot[0], markerId: `characters-${id}`, moduleType: 'characters', assetId: id,
+  position: { x, y, z: 0 }, data: { isMovable: true },
+});
+assert.throws(() => parseProjectThreeDMarkerSnapshot([savedCharacter(20, 0), savedCharacter(21, 0.4)]),
+  (error: unknown) => error instanceof ProjectMarkerSnapshotError && error.code === 'overlapping_characters');
+assert.equal(parseProjectThreeDMarkerSnapshot([savedCharacter(20, 0), savedCharacter(21, 0.5)]).length, 2);
+assert.equal(parseProjectThreeDMarkerSnapshot([savedCharacter(20, 0), savedCharacter(21, 0, 3)]).length, 2);
+assert.throws(() => parseProjectThreeDMarkerSnapshot([savedCharacter(20, 0.00049), savedCharacter(21, 0.49949)]),
+  (error: unknown) => error instanceof ProjectMarkerSnapshotError && error.code === 'overlapping_characters');
+validationStep('Project saves reject overlapping Character spawns at persisted precision before reload');
+
 
 const projectPlanPosition = { x: 12.5, y: 3, z: -8.25 };
 const mapCenter = { lat: 39.514719, lng: -123.760382 };

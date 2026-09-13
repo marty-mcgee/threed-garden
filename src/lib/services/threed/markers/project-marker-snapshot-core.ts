@@ -1,3 +1,5 @@
+// @ts-expect-error Native TypeScript validators require explicit extensions.
+import { characterSpawnsOverlap } from './character-spawn-overlap.ts';
 import {
   normalizeThreeDRuntimeMarkerModuleType,
   type ThreeDPosition,
@@ -28,6 +30,7 @@ export interface ProjectThreeDMarkerSnapshotInput {
 }
 
 export type ProjectMarkerSnapshotErrorCode =
+  | 'overlapping_characters'
   | 'invalid_snapshot'
   | 'too_many_markers'
   | 'duplicate_marker'
@@ -128,7 +131,7 @@ export function parseProjectThreeDMarkerSnapshot(
 
   const markerIds = new Set<string>();
   const nonModelSourceIdentities = new Set<string>();
-  return value.map((candidate) => {
+  const parsed = value.map((candidate): ProjectThreeDMarkerSnapshotInput => {
     if (!isRecord(candidate)) {
       throw new ProjectMarkerSnapshotError('invalid_snapshot');
     }
@@ -176,4 +179,11 @@ export function parseProjectThreeDMarkerSnapshot(
       metadata: requireSafeJsonRecord(candidate.metadata ?? {}),
     };
   });
+  const characters = parsed.filter(marker => marker.moduleType === 'characters' && marker.data.isMovable === true);
+  for (let i = 0; i < characters.length; i++) {
+    if (characters.slice(0, i).some(other => characterSpawnsOverlap(characters[i].position, other.position))) {
+      throw new ProjectMarkerSnapshotError('overlapping_characters');
+    }
+  }
+  return parsed;
 }

@@ -495,7 +495,9 @@ async function saveSnapshot(request: NextRequest) {
           success: false,
           error: error instanceof ProjectViewStateError
             ? 'Invalid ThreeD Project view state'
-            : 'Invalid ThreeD Project marker snapshot',
+            : error instanceof ProjectMarkerSnapshotError && error.code === 'overlapping_characters'
+              ? 'Characters are too close to reload safely. Move them apart, then save again.'
+              : 'Invalid ThreeD Project marker snapshot',
         },
         {
           status: error instanceof ProjectMarkerSnapshotError && error.code === 'too_many_markers'
@@ -931,9 +933,9 @@ export async function POST(request: NextRequest) {
               eq(projectThreedMarkers.userId, userId),
               eq(projectThreedMarkers.markerType, 'characters'),
               eq(projectThreedMarkers.isActive, true),
-              eq(projectThreedMarkers.positionX, positionX),
-              eq(projectThreedMarkers.positionY, positionY),
-              eq(projectThreedMarkers.positionZ, positionZ),
+              sql`${projectThreedMarkers.data}->>'isMovable' = 'true'`,
+              sql`power(${projectThreedMarkers.positionX} - ${positionX}::numeric, 2) + power(${projectThreedMarkers.positionZ} - ${positionZ}::numeric, 2) < 0.25`,
+              sql`abs(${projectThreedMarkers.positionY} - ${positionY}::numeric) < 3`,
             ))
             .limit(1);
           if (occupiedSpawn) {
@@ -1193,12 +1195,12 @@ async function updateProjectMarker(request: NextRequest, id: number) {
           eq(projectThreedMarkers.userId, ownerId),
           eq(projectThreedMarkers.markerType, 'characters'),
           eq(projectThreedMarkers.isActive, true),
-          eq(projectThreedMarkers.positionX, positionX),
-          eq(projectThreedMarkers.positionY, positionY),
-          eq(projectThreedMarkers.positionZ, positionZ),
+          sql`${projectThreedMarkers.data}->>'isMovable' = 'true'`,
+          sql`power(${projectThreedMarkers.positionX} - ${positionX}::numeric, 2) + power(${projectThreedMarkers.positionZ} - ${positionZ}::numeric, 2) < 0.25`,
+          sql`abs(${projectThreedMarkers.positionY} - ${positionY}::numeric) < 3`,
         ));
         const occupiedSpawn = occupiedSpawns.find((candidate) => candidate.id !== id);
-        if (occupiedSpawn) {
+        if (currentData.isMovable === true && occupiedSpawn) {
           throw new ProjectCharacterPlacementInputError(
             `Character spawn is already occupied by ${occupiedSpawn.markerId}`,
           );

@@ -1,3 +1,5 @@
+// @ts-expect-error Native TypeScript validators require explicit extensions.
+import { characterSpawnsOverlap } from './character-spawn-overlap.ts';
 import type {
   RuntimeMarker,
   ProjectThreeDMarkerRecord,
@@ -331,14 +333,8 @@ function rejectOverlappingEcctrlSpawns(
   const rejectedMarkerIds = new Set<string>();
   const retainedCharacters: RuntimeMarker[] = [];
   for (const marker of movableCharacters) {
-    const retainedMarker = retainedCharacters.find((candidate) => {
-      const horizontalDistance = Math.hypot(
-        marker.position.x - candidate.position.x,
-        marker.position.z - candidate.position.z,
-      );
-      const verticalDistance = Math.abs(marker.position.y - candidate.position.y);
-      return horizontalDistance < 0.5 && verticalDistance < 3;
-    });
+    const retainedMarker = retainedCharacters.find((candidate) =>
+      characterSpawnsOverlap(marker.position, candidate.position));
     if (!retainedMarker) {
       retainedCharacters.push(marker);
       continue;
