@@ -19,8 +19,8 @@
 
 | Item | Status |
 |---|---|
-| Current stable version | **v0.19.18 — ThreeD Animation Presets + Character Navigation**, package `0.19.18`, commit `95c3a93`; production deployment User-confirmed. Production table availability and Kate/Joey navigation are User-confirmed. Separate manual local build result not reported; see [release record](docs/releases/v0.19.18.md) for validation and missing FBX fixture coverage. |
-| Current development version | No next version designated. Preserve released presets/categories, collider-aware teleport, controlled walking, explicit live Character identity, separate Garden/Ecctrl paths, persistent Canvas/physics and explicit position-save authority. Broader Garden behavior and world-action UX remain deferred. |
+| Current stable version | **v0.19.18 — ThreeD Animation Presets + Character Navigation**, package `0.19.18`, commit `95c3a93`; production and documentation release `d6e4068` User-confirmed. Production table availability and Kate/Joey navigation are User-confirmed. Separate manual local build result not reported; see [release record](docs/releases/v0.19.18.md) for validation and missing FBX fixture coverage. |
+| Current development version | **v0.19.19 — Character Collisions + Interactions**, package `0.19.19`, planning/development preparation. User-selected focus: collisions and target interactions; see [staged plan](docs/plans/v0.19.19.md). No new runtime implementation yet. Preserve released navigation, presets/categories, separate Garden/Ecctrl paths, persistent Canvas/physics and explicit saves. No schema or world-persistence expansion. |
 | Centaur release verification | User-confirmed production deployment. TypeScript, 125 native groups, browser loaders and mocked bulk UI checks passed. See [completed handoff](docs/plans/v0.19.10c-release.md); individual live regression cases were not separately reported. |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |

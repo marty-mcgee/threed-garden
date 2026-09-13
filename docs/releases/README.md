@@ -2,7 +2,7 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Current production: **v0.19.18**, commit `95c3a93`, User-confirmed.
+Current production: **v0.19.18**, feature commit `95c3a93` and documentation commit `d6e4068`, User-confirmed. Development preparation for [v0.19.19](../plans/v0.19.19.md) is separate from released checkpoints.
 
 - [v0.19.18 — ThreeD Animation Presets + Character Navigation](v0.19.18.md) — production User-confirmed
 - [v0.19.17 — ThreeD UI Refinement + Scene Overlays](v0.19.17.md) — production User-confirmed

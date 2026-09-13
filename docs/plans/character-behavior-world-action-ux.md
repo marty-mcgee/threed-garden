@@ -1,8 +1,8 @@
 # Character behavior and world-action UX — continuation after v0.19.16
 
-**Paused for the User-designated [v0.19.17 HTML/CSS-only milestone](v0.19.17.md).** Retain completed, accepted Character form work; remaining behavioral/world-action stages resume separately.
+**Continuation planning resumes in [v0.19.19](v0.19.19.md).** The v0.19.17 UI milestone and v0.19.18 presets/navigation milestone are released. Retain accepted Character forms and navigation.
 
-Production baseline: v0.19.16 Assignment + Preview, User-confirmed. These are separate, approved follow-up topics; no next release number is designated. No schema, persistence expansion or physical-device behavior is included.
+Production baseline is v0.19.18, with feature and documentation deployment User-confirmed. The remaining stages below are historical proposals to re-audit against current code, not unimplemented-feature assumptions. No schema, persistence expansion or physical-device behavior is included.
 
 ## Stage 1 — explain Character control in Admin
 
