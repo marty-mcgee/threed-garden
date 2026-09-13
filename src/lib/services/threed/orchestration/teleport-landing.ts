@@ -12,10 +12,13 @@ export function findCharacterLanding({ world, rapier, body, bounds, targetCollid
   if (bounds.isEmpty() || ![...Object.values(origin), bounds.min.x, bounds.min.y, bounds.min.z,
     bounds.max.x, bounds.max.y, bounds.max.z, radius, halfHeight, floatHeight].every(Number.isFinite)
     || radius <= 0 || halfHeight <= 0 || floatHeight < 0) return null;
+  // Layer toggles precede physics stepping; query caches may still contain disabled bodies.
+  const enabledCollider = (collider: RapierCollider) =>
+    collider.isEnabled() && (collider.parent()?.isEnabled() ?? true);
   const surfaces: { point: Position; dx: number; dz: number }[] = [];
   // Bound work for compound targets. Visual bounds only put probes outside the
   // object; the actual collider projection determines the landing edge.
-  const colliders = targetColliders.filter(collider => collider.isEnabled() && !collider.isSensor())
+  const colliders = targetColliders.filter(collider => enabledCollider(collider) && !collider.isSensor())
     .map(collider => ({ collider, center: collider.translation() }))
     .sort((a, b) => Math.hypot(a.center.x - origin.x, a.center.z - origin.z) - Math.hypot(b.center.x - origin.x, b.center.z - origin.z))
     .slice(0, 16);
@@ -47,7 +50,7 @@ export function findCharacterLanding({ world, rapier, body, bounds, targetCollid
     const heights: number[] = [];
     for (const [dx, dz] of [[0, 0], [radius, 0], [-radius, 0], [0, radius], [0, -radius]]) {
       const ray = new rapier.Ray({ x: candidate.x + dx, y: bounds.min.y + 1.5, z: candidate.z + dz }, { x: 0, y: -1, z: 0 });
-      const hit = world.castRayAndGetNormal(ray, 5, false, groundFlags, undefined, undefined, body);
+      const hit = world.castRayAndGetNormal(ray, 5, false, groundFlags, undefined, undefined, body, enabledCollider);
       if (!hit) break;
       // InteractiveGround's rotated Plane becomes a zero-depth cuboid. Its two
       // faces coincide, so Rapier may return the downward normal from above.
@@ -66,9 +69,9 @@ export function findCharacterLanding({ world, rapier, body, bounds, targetCollid
     // Also reject deep containment: Rapier's capsule overlap can miss certain
     // fully enclosed configurations near symmetric box corners.
     let enclosed = false;
-    world.intersectionsWithPoint(landing, () => { enclosed = true; return false; }, flags.EXCLUDE_SENSORS, undefined, undefined, body);
+    world.intersectionsWithPoint(landing, () => { enclosed = true; return false; }, flags.EXCLUDE_SENSORS, undefined, undefined, body, enabledCollider);
     if (enclosed) continue;
-    if (!world.intersectionWithShape(landing, rotation, capsule, flags.EXCLUDE_SENSORS, undefined, undefined, body)) return landing;
+    if (!world.intersectionWithShape(landing, rotation, capsule, flags.EXCLUDE_SENSORS, undefined, undefined, body, enabledCollider)) return landing;
   }
   return null;
 }

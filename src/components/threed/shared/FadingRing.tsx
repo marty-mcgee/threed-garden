@@ -67,6 +67,7 @@ export function FadingRing({
 
   return (
     <mesh
+      userData={{ navigationDecoration: true }}
       position={position}
       rotation={[-Math.PI / 2, 0, 0]}
       renderOrder={alwaysVisible ? 1000 : 0}

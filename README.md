@@ -9,7 +9,7 @@ This is a **Dual-Surface Platform**:
 
 > **Current production release:** `v0.19.18 — ThreeD Animation Presets + Character Navigation`, package `0.19.18`, commit `95c3a93`, deployment User-confirmed. Includes reusable action-mapping presets, Animation Categories, Walk to Target and collider-aware Teleport near Target. Kate/Joey navigation and production table availability are User-confirmed. See the [release record](docs/releases/v0.19.18.md) for validation and retained test limitations.
 
-> **Current development:** `v0.19.19 — Character Collisions + Interactions`, package `0.19.19`, preparing collision and target-interaction improvements. Feature implementation has not started; see the [staged plan](docs/plans/v0.19.19.md). Production remains v0.19.18; its documentation release `d6e4068` is also User-confirmed.
+> **Current development:** `v0.19.19 — Character Collisions + Interactions`, package `0.19.19`, preparing collision and target-interaction improvements. Initial development removes highlight rings from walking arrival bounds; see the [staged plan](docs/plans/v0.19.19.md). Production remains v0.19.18; its documentation release `d6e4068` is also User-confirmed.
 
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 

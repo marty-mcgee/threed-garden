@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
+    "validate:threed-hidden-collision-mount": "node src/lib/scripts/validate-threed-hidden-collision-mount.cjs",
     "typecheck": "tsc --noEmit --pretty false",
     "validate:assets": "node src/lib/scripts/validate-static-assets.mjs",
     "validate:threed-runtime-markers": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-runtime-markers.mts",

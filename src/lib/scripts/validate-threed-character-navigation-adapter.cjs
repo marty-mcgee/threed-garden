@@ -34,6 +34,18 @@ const step = useCharacterNavigation({ markerId: 'actor', targetMarkerId: 'target
 const cleanup = effects[0]();
 const request = (command = 'walk', actorMarkerId = 'actor', targetMarkerId = 'target') => window.dispatchEvent(new CustomEvent(NAVIGATION_REQUEST, { detail: { requestId: 'test', command, actorMarkerId, targetMarkerId } }));
 const phase = () => messages.filter(m => m.type === NAVIGATION_STATUS).at(-1)?.detail.phase;
+const highlight = new THREE.Mesh(new THREE.RingGeometry(5, 7, 32));
+highlight.rotation.x = -Math.PI / 2; highlight.userData.navigationDecoration = true;
+target.add(highlight); request();
+assert.ok(step({ x: 5, y: 1, z: 0 }, false), 'Highlight must not cause premature arrival outside the target');
+highlight.scale.setScalar(2);
+assert.ok(step({ x: 5, y: 1, z: 0 }, false), 'Pulsing highlight must not change arrival');
+target.remove(highlight); request('stop');
+for (const file of ['PulseRing', 'FadingRing']) assert.match(fs.readFileSync(`src/components/threed/shared/${file}.tsx`, 'utf8'), /navigationDecoration:\s*true/, 'Production highlights declare navigation-only exclusion');
+const { navigationVisualBounds } = load('src/lib/services/threed/orchestration/navigation-visual-bounds.ts');
+const realRing = new THREE.Mesh(new THREE.RingGeometry(1, 2, 16));
+const transformed = new THREE.Group(); transformed.position.set(3, 2, 1); transformed.rotation.y = 0.7; transformed.scale.setScalar(2); transformed.add(realRing);
+assert.deepEqual(navigationVisualBounds(transformed, new THREE.Box3(), new THREE.Box3()), new THREE.Box3().setFromObject(transformed), 'Real untagged geometry retains normal world-space bounds');
 request('walk', 'other'); assert.equal(step({ x: 0, y: 1, z: 0 }, false), null);
 request(); assert.equal(phase(), 'walking');
 assert.equal(step({ x: 0, y: 1, z: 0 }, false).x, 1);

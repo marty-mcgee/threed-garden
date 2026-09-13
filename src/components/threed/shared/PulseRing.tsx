@@ -25,7 +25,7 @@ export function PulseRing({
   });
 
   return (
-    <mesh ref={ringRef} position={position} rotation={[-Math.PI / 2, 0, 0]}>
+    <mesh ref={ringRef} position={position} rotation={[-Math.PI / 2, 0, 0]} userData={{ navigationDecoration: true }}>
       <ringGeometry args={[size * 1.2, size * 1.6, 32]} />
       <meshBasicMaterial
         color={color}

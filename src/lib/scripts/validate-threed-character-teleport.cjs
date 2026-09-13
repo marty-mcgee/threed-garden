@@ -41,7 +41,7 @@ function load(file) {
     targetCollider = world.createCollider(rapier.ColliderDesc.cuboid(1, 1, 1).setTranslation(0, 1, 0));
     if (ground) world.createCollider(rapier.ColliderDesc.cuboid(30, 0.1, 30).setTranslation(0, -0.1, 0));
   };
-  const find = (visualBounds = bounds, targetColliders = [targetCollider]) => { world.step(); return findCharacterLanding({ world, rapier, body, bounds: visualBounds, targetColliders, radius: 0.3, halfHeight: 0.6, floatHeight: 0.3 }); };
+  const find = (visualBounds = bounds, targetColliders = [targetCollider], step = true) => { if (step) world.step(); return findCharacterLanding({ world, rapier, body, bounds: visualBounds, targetColliders, radius: 0.3, halfHeight: 0.6, floatHeight: 0.3 }); };
   setup(); let landing = find(); assert(landing); assert(Math.abs(landing.y - 1.25) < 1e-5);
   assert(landing.x < -1, 'Prefer the actor-facing side');
   assert(Math.abs(landing.x + 1.4) < 1e-5, 'Closest capsule clearance wins over the outer ring nearest the actor');
@@ -82,6 +82,23 @@ function load(file) {
   assert.equal(find(), null, 'A tiny unsupported ledge must not accept a capsule');
   setup(false); world.createCollider(rapier.ColliderDesc.cuboid(30, 0.1, 30).setRotation({ x: 0, y: 0, z: Math.sin(Math.PI / 6), w: Math.cos(Math.PI / 6) }));
   assert.equal(find(), null, 'Steep surfaces must not accept landing');
+  // Disabled fixed bodies can remain in Rapier query results after Layer toggles.
+  setup();
+  const hiddenRoof = world.createRigidBody(rapier.RigidBodyDesc.fixed());
+  world.createCollider(rapier.ColliderDesc.cuboid(10, 0.1, 10).setTranslation(0, 1.8, 0), hiddenRoof);
+  assert.equal(find(), null, 'Visible roof blocks clearance');
+  hiddenRoof.setEnabled(false);
+  assert(find(bounds, [targetCollider], false), 'Hidden roof must not block landing');
+  hiddenRoof.setEnabled(true);
+  assert.equal(find(), null, 'Shown roof blocks clearance again');
+  setup(false);
+  const hiddenGround = world.createRigidBody(rapier.RigidBodyDesc.fixed());
+  world.createCollider(rapier.ColliderDesc.cuboid(30, 0.1, 30).setTranslation(0, -0.1, 0), hiddenGround);
+  assert(find(), 'Visible ground supports landing');
+  hiddenGround.setEnabled(false);
+  assert.equal(find(bounds, [targetCollider], false), null, 'Hidden ground must not support landing');
+  hiddenGround.setEnabled(true);
+  assert(find(), 'Shown ground supports landing again');
   setup(); landing = find();
   const obstacle = world.createRigidBody(rapier.RigidBodyDesc.dynamic().setTranslation(landing.x, landing.y, landing.z));
   world.createCollider(rapier.ColliderDesc.capsule(0.6, 0.3), obstacle);

@@ -568,7 +568,8 @@ function SceneMarkerRigidBody({
   ...props
 }: RigidBodyProps & { sceneEnabled: boolean }) {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
-  const previousSceneEnabledRef = useRef(sceneEnabled);
+  // Match Rapier's initial enabled state so initially hidden Layers synchronize.
+  const previousSceneEnabledRef = useRef(true);
   const positionTuple = position as [number, number, number] | undefined;
   const rotationTuple = rotation as [number, number, number] | undefined;
   const positionKey = positionTuple?.join(':') ?? '';

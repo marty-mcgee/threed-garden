@@ -1030,7 +1030,8 @@ export function EcctrlCharacter({
     );
 
   const previousLayerEnabledRef =
-    useRef(layerEnabled);
+    // Rapier bodies start enabled, even when the controller starts paused.
+    useRef(true);
   const runtimePositionKey = `${runtimePosition[0]}:${runtimePosition[1]}:${runtimePosition[2]}`;
   const appliedRuntimePositionKeyRef = useRef(runtimePositionKey);
   const pendingRuntimePositionRef = useRef<{

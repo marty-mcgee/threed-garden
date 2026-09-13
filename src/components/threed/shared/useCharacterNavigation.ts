@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useThree } from '@react-three/fiber';
 import { Box3, Vector3 } from 'three';
+import { navigationVisualBounds } from '@/lib/services/threed/orchestration/navigation-visual-bounds';
 import { createCharacterNavigation, stepCharacterNavigation, type CharacterNavigationState } from '@/lib/services/threed/orchestration/navigation-core';
 import { NAVIGATION_REQUEST, NAVIGATION_STATUS, type NavigationRequest } from '@/lib/services/threed/orchestration/navigation-events';
 
@@ -13,6 +14,7 @@ export function useCharacterNavigation({ markerId, targetMarkerId, controlled, e
   const { scene } = useThree();
   const state = useRef<CharacterNavigationState | null>(null);
   const box = useRef(new Box3()), position = useRef(new Vector3()), destination = useRef(new Vector3());
+  const scratch = useRef(new Box3());
   const publish = useCallback((value: CharacterNavigationState) => {
     window.dispatchEvent(new CustomEvent(NAVIGATION_STATUS, { detail: { actorMarkerId: markerId, requestId: value.requestId, phase: value.phase, reason: value.reason } }));
   }, [markerId]);
@@ -51,7 +53,7 @@ export function useCharacterNavigation({ markerId, targetMarkerId, controlled, e
     position.current.set(currentPosition.x, currentPosition.y, currentPosition.z);
     if (target && available) {
       // World-space visible bounds give conservative clearance without changing any collider.
-      box.current.setFromObject(target);
+      navigationVisualBounds(target, box.current, scratch.current);
       available = !box.current.isEmpty();
       box.current.clampPoint(position.current, destination.current);
     }
