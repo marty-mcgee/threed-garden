@@ -201,3 +201,12 @@ Metadata is owner-scoped. Clip tracks are checked against the Character; incompa
 Preview loops a clip at normal speed; it is not Ecctrl simulation, a world-action completion test, retargeting, or a Project-specific replacement Model preview. Generic Model playback is deferred. Character behavior/control UX and Water/Pick Fruit targeting/effect/completion UX are major separate follow-ups, explicitly outside this accepted interface release.
 
 Run `npm run validate:threed-character-preview-switch` with assignment, Library, assigned-character and restart checks for preview changes. See [release scope and validation](../plans/v0.19.16-release.md). Production deployment of `e8cccf3` is User-confirmed; a separate local manual build result was not reported.
+
+
+## v0.19.18 development — Mapping Presets and Categories
+
+Character **Animations & Preview** and Model animation defaults now include **Animation Mapping Presets**. Save Mappings as Preset captures saved explicit/inherited library mappings, including disabled actions, without copying source files. Fill unmapped preserves all existing explicit and inherited rows; Replace matching changes only preset keys. Review Apply Preset shows the proposed changes; Apply reviewed mappings rejects stale review snapshots and writes the set transactionally. Applied assignments are independent of later preset edits/deletion. Draft action edits must be saved or discarded first.
+
+The autonomous Animations Library offers **Manage Categories**, a per-animation **Categories** cell and category filtering. Categories are many-to-many labels; they imply neither a semantic action nor skeleton compatibility. The assignment picker can filter its choices by category. The currently selected animation remains visible even outside the filter.
+
+Four additive tables must be applied separately before using this development revision: `threed_animation_presets`, `threed_animation_preset_entries`, `threed_animation_categories`, and `threed_animation_category_assignments`. No live schema update was run. See the [implementation and exact manual test steps](../plans/v0.19.18.md).

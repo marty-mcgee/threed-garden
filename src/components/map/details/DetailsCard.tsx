@@ -21,6 +21,7 @@ import {
   THREED_GENERIC_TARGET_ACTIONS,
 } from '@/lib/services/threed/orchestration/action-target-core';
 import { BedInstanceEditor } from './BedInstanceEditor';
+import { CharacterNavigationControls } from './CharacterNavigationControls';
 import { CharacterInstancePositionEditor } from './CharacterInstancePositionEditor';
 import { ModelInstancePlacementEditor } from './ModelInstancePlacementEditor';
 import { PlantingInstanceEditor } from './PlantingInstanceEditor';
@@ -639,22 +640,11 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
                 <div>🎯 Target: <span className="text-emerald-300">{actionTarget.name}</span> <span className="text-white/30">({actionTarget.type} #{actionTarget.id})</span></div>
                 {actionTarget.type === 'farmbots' && (
                   <div className="mt-1 text-amber-200/70">
-                    FarmBot interactions are animation-only. Physical commands remain disabled.
+                    FarmBot actions are animation-only.
                   </div>
                 )}
-                {isEcctrlCharacter && (
-                  <div className={`mt-1 ${targetInteractionReady ? 'text-emerald-300/80' : 'text-amber-200/80'}`}>
-                    {!isSelectedCharacterControlled
-                      ? 'Take Control to calculate interaction range'
-                      : !hasLiveControlledPosition
-                        ? 'Waiting for live character position'
-                        : targetApproachPlan
-                      ? targetInteractionReady
-                        ? `In interaction range (${targetApproachPlan.distanceToTarget.toFixed(1)} units)`
-                        : `Move closer with WASD (${targetApproachPlan.distanceToTarget.toFixed(1)} units away)`
-                      : 'Unable to calculate interaction range'}
-                  </div>
-                )}
+                {isEcctrlCharacter && <CharacterNavigationControls actorMarkerId={String(selected.id)} targetMarkerId={actionTarget.markerId} controlled={isSelectedCharacterControlled} ready={hasLiveControlledPosition && !isOrchestrationRunning} />}
+                {!isEcctrlCharacter && <p className="mt-1 text-white/40">Target walking is currently available for Characters with Take Control.</p>}
                 {isCurrentOrchestration && (
                   <div className={`mt-1 ${
                     orchestrationStatus.phase === 'completed'

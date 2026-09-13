@@ -9,6 +9,8 @@ This is a **Dual-Surface Platform**:
 
 > **Current production release:** `v0.19.17 — ThreeD UI Refinement + Scene Overlays` (commit `e16e2e4`), deployment User-confirmed. Package `0.19.17`; documentation and version correction deployed in `edefa4d`, User-confirmed. Compact ThreeD forms and stable-Canvas activity overlays are accepted. See the [release record](docs/releases/v0.19.17.md).
 
+> **Prepared release:** `v0.19.18 — ThreeD Animation Presets + Character Navigation`, package `0.19.18`. Reusable action-mapping presets, Animation Categories, Walk to Target and collider-aware Teleport near Target. Kate/Joey navigation is user-tested. Production table availability is User-confirmed; the user-owned build/deployment gates remain pending; one older FBX fixture check is blocked by a pre-existing deleted file. See the [release notes and handoff](docs/releases/v0.19.18.md).
+
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 
 The released **v0.19.10c** adds OBJ importing with MTL material libraries and their texture images, inline/window previews, and saved single-Model material rendering. See the [implementation and validation](docs/plans/v0.19.10c.md) and [completed production handoff](docs/plans/v0.19.10c-release.md).

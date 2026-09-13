@@ -34,6 +34,8 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
+import { useCharacterNavigation } from './useCharacterNavigation';
+import { useCharacterTeleport } from './useCharacterTeleport';
 import { FadingRing } from './FadingRing';
 import { PulseRing } from './PulseRing';
 
@@ -176,6 +178,7 @@ interface EcctrlCharacterProps {
     z: number;
   };
 
+  navigationTargetMarkerId?: string;
   isActionTarget?: boolean;
 
   /** Reports that the complete visual runtime or its safe fallback is ready. */
@@ -1015,6 +1018,7 @@ export function EcctrlCharacter({
   markerId,
 
   movementTargetPosition,
+  navigationTargetMarkerId,
 
   isActionTarget = false,
 
@@ -1162,6 +1166,9 @@ export function EcctrlCharacter({
    */
   const taskLockedRef =
     useRef(false);
+
+  const stepNavigation = useCharacterNavigation({ markerId, targetMarkerId: navigationTargetMarkerId, controlled: isControlled, enabled: layerEnabled && characterVisualReady, taskLocked: taskLockedRef, clearance: CAPSULE_RADIUS + 0.5 });
+  useCharacterTeleport({ markerId, targetMarkerId: navigationTargetMarkerId, controlled: isControlled, enabled: layerEnabled && characterVisualReady, taskLocked: taskLockedRef, controller: ecctrlRef, radius: CAPSULE_RADIUS, halfHeight: CAPSULE_HALF_HEIGHT, floatHeight: FLOAT_HEIGHT });
 
   const activeTaskRef =
     useRef<string | null>(null);
@@ -1949,7 +1956,12 @@ export function EcctrlCharacter({
       return;
     }
 
-    if (isControlled && movementTargetPosition) {
+    const navigationKeys = keys.current;
+    const navigationDirection = stepNavigation(ec.currPos, navigationKeys.w || navigationKeys.a || navigationKeys.s || navigationKeys.d || navigationKeys.space || navigationKeys.shift);
+    if (navigationDirection) {
+      ec.setForwardDir(targetForwardDirectionRef.current.set(navigationDirection.x, 0, navigationDirection.z));
+    }
+    if (!navigationDirection && isControlled && movementTargetPosition) {
       const position = ec.currPos;
       const navigation = planThreeDTargetRelativeNavigation({
         characterPosition: position,
@@ -2090,14 +2102,14 @@ export function EcctrlCharacter({
 
     ec.setMovement({
       joystick: {
-        x: joystickX,
-        y: joystickY,
+        x: navigationDirection ? 0 : joystickX,
+        y: navigationDirection ? 1 : joystickY,
       },
 
       run:
-        k.shift,
+        navigationDirection ? false : k.shift,
 
-      jump,
+      jump: navigationDirection ? false : jump,
     });
 
     /**

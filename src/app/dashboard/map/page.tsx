@@ -853,28 +853,23 @@ function UnifiedMapPageInner() {
   }, [actionTarget]);
 
   // v0.16.0-delta: Sync RuntimeMarker position when ecctrl character moves
-  const handleControlChange = useCallback((_markerId: string, pos: { x: number; y: number; z: number }) => {
+  const handleControlChange = useCallback((_markerId: string, pos: { x: number; y: number; z: number }, sourceCharacterId?: number) => {
+    // Project marker IDs identify instances, not reusable Character records.
+    if (typeof sourceCharacterId !== 'number' || !Number.isSafeInteger(sourceCharacterId) || sourceCharacterId <= 0 || sourceCharacterId !== controlledCharacterId
+      || ![pos.x, pos.y, pos.z].every(Number.isFinite)) return;
     setSelectedMarker((prev: any) => {
       if (!prev) return prev;
-      const previousCharacterId = Number(prev.data?.id ?? prev.metadata?.data?.id);
       const isControlledCharacterSelection = (
         prev.type === 'characters' || prev.type === 'character'
       ) && controlledCharacterId != null
-        && previousCharacterId === controlledCharacterId
         && prev.id === _markerId;
       if (!isControlledCharacterSelection) return prev;
       return { ...prev, position: { ...prev.position, x: pos.x, y: pos.y, z: pos.z } };
     });
-    const markerCharacterId = Number(_markerId.match(/(\d+)$/)?.[1]);
-    if (
-      controlledCharacterId != null
-      && markerCharacterId === controlledCharacterId
-    ) {
-      setLiveControlledCharacterPosition({
-        characterId: controlledCharacterId,
-        position: { x: pos.x, y: pos.y, z: pos.z },
-      });
-    }
+    setLiveControlledCharacterPosition({
+      characterId: sourceCharacterId,
+      position: { x: pos.x, y: pos.y, z: pos.z },
+    });
   }, [controlledCharacterId]);
 
   // ✅ Advanced Filtering Panel State

@@ -156,8 +156,9 @@ const body = { target: 'model', targetId: 5, actionKey: 'idle', mode: 'assigned'
     assert.equal(queries.some(query => query.operation === 'delete'), false);
     assert.deepEqual(queries[0].for, ['update']);
   }
-  assert.equal((await request('animations', 'DELETE', 'id=7', null, [[{ id: 7 }], [], [], []])).status, 200);
-  owned(queries[0]); owned(queries[3]);
+  assert.equal((await request('animations', 'DELETE', 'id=7', null, [[{ id: 7 }], [], [], [], []])).status, 200);
+  owned(queries[0]); owned(queries[4]);
+  assert.equal((await request('animations', 'DELETE', 'id=7', null, [[{ id: 7 }], [], [], [{ id: 3 }]])).status, 409);
   assert.equal((await request('animation-files', 'DELETE', 'id=2', null, [[{ id: 2 }], [{ id: 7 }]])).status, 409);
   assert.equal((await request('animation-files', 'DELETE', 'id=2', null, [[]])).status, 404);
   const deleted = await request('animation-files', 'DELETE', 'id=2', null, [[{ id: 2 }], [], []]);
@@ -175,6 +176,12 @@ const body = { target: 'model', targetId: 5, actionKey: 'idle', mode: 'assigned'
     assert.match(response.body.error, /database setup is incomplete/);
     assert.ok(!JSON.stringify(response).includes('secret'));
   }
+  await request('animations', 'GET', 'categoryId=3', null, [[{ total: 0 }], []]);
+  for (const query of queries) {
+    assert.match(JSON.stringify(query.where), /category_id/);
+    assert.match(JSON.stringify(query.where), /threedAnimationCategoryAssignments/);
+  }
+  assert.equal((await request('animations', 'GET', 'categoryId=-1')).status, 400);
   // Inspect real Drizzle schema constraints without loading the DB client.
   const pg = require('drizzle-orm/pg-core');
   const realSchema = load('src/lib/schema/threed/index.ts', {
@@ -198,5 +205,15 @@ const body = { target: 'model', targetId: 5, actionKey: 'idle', mode: 'assigned'
       assert.ok(config.foreignKeys.some(fk => fk.onDelete === 'cascade' && fk.reference().columns.some(c => c.name === 'model_id' || c.name === 'character_id')));
     }
   }
+  for (const key of ['threedAnimationPresets', 'threedAnimationPresetEntries', 'threedAnimationCategories', 'threedAnimationCategoryAssignments']) {
+    const config = pg.getTableConfig(realSchema[key]);
+    assert.ok(config.columns.find(c => c.name === 'user_id').notNull);
+    assert.ok(config.indexes.some(i => i.config.unique));
+    if (key.endsWith('Entries') || key.endsWith('Assignments')) {
+      assert.ok(config.foreignKeys.filter(fk => fk.reference().columns.length === 2).length === 2);
+    }
+  }
+  const presetConfig = pg.getTableConfig(realSchema.threedAnimationPresetEntries);
+  assert.equal(presetConfig.foreignKeys.find(fk => fk.reference().columns[0].name === 'animation_id').onDelete, 'no action');
   console.log('PASS: Animations Library auth, owner filters, bounded/batched reads, input validation, precedence, assignment upserts/removal, protected deletion, safe errors and real schema constraints (offline)');
 })().catch(error => { console.error(error); process.exitCode = 1; });

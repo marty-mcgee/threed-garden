@@ -493,3 +493,18 @@ Run `npm run validate:threed-farmbot-list` and TypeScript for FarmBots paginatio
 Run `npm run validate:threed-watering-list` and TypeScript for schedule/history browsing changes. Offline actual-handler tests mock DB responses and cover query bounds, owner/search/count parity, module scope and pagination. Confirm Schedules/History navigation and units locally; tests do not establish live PostgreSQL execution or historical Project attribution. No watering or device operation is needed to test browsing.
 
 Harvest workspace list changes: run `npm run validate:threed-harvest-list`. Offline GET and bulk-handler fixtures cover query validation/auth, owner-scoped search, Project/count parity, stable sorts, Plant enrichment/provenance, and partial/page-local/cancelled deletion. Manual acceptance covers server paging/search/sorting, scope changes, selection reset and last-page recovery; use disposable records for deletion tests.
+
+
+### Animation Mapping Presets and Categories
+
+Run `npm run validate:threed-animation-presets`, `npm run validate:threed-animation-categories`, the existing Library/assignment/bulk checks and TypeScript. These fixtures are offline and do not prove live transactional locking, actual DB rollback or browser appearance. Use `docs/plans/v0.19.18.md` for the separate additive-schema gate and local Farmer Kate → Farmer Joey test. Preserve the preview iframe lifecycle and shared source references.
+
+### Character navigation policy foundation
+
+`npm run validate:threed-character-navigation` exercises pure steering/arrival, independent elevation tolerance, terminal state, interruption and stalled/time-bounded navigation. Run the existing orchestration checks and TypeScript alongside it. The pure policy fixture does not validate physics or obstacle routing; adapter and teleport checks are described below. See the navigation audit in `docs/plans/v0.19.18.md`.
+
+The navigation check now also exercises the actual Ecctrl adapter with real Three.js bounds and mocked events, plus the actual movement-frame callback with a mocked controller. It verifies actor isolation, bounds-based arrival, hidden/removed target and actor cancellation, Stop/teardown, blocked progress, walk-only steering and manual-control recovery. Run Character animation restart and orchestration checks alongside it. Live collision, animation appearance and save-after-navigation acceptance remain manual in `docs/plans/v0.19.18.md`.
+
+For Character teleport changes, run `npm run validate:threed-character-teleport` plus `npm run validate:threed-character-navigation`. The teleport fixture uses the actual Rapier version installed for `@react-three/rapier` (not the older root dependency), a local physics world, and the real intent adapter with mocked React scheduling. It checks ground/occupancy and cancellation, plus single-commit translation, facing preservation and velocity reset. It does not load production assets, contact APIs or prove browser camera/animation appearance. Follow the Project #8 Kate/Joey local checklist in `docs/plans/v0.19.18.md` for that acceptance. The user owns the build gate.
+
+Release preparation for v0.19.18 passed TypeScript, production assets and the animation/navigation checks listed in `docs/releases/v0.19.18.md`. The older `validate:threed-fbx-material-targets` fixture fails with ENOENT because the user-owned deletion of `public/assets/animations/farming/SK_Chr_Farmer_Male_01.fbx` is retained. Do not confuse that missing regression fixture with a failed production-asset manifest check, or report the entire suite as passing.

@@ -4,7 +4,7 @@ import {
   threedAnimationFiles as files, threedAnimations as clips,
   threedModelAnimationAssignments as modelAssignments,
   threedCharacterAnimationAssignments as characterAssignments,
-  threedModels, threedCharacters,
+  threedModels, threedCharacters, threedAnimationPresetEntries as presetEntries, threedAnimationCategoryAssignments as categoryAssignments,
 } from '@/lib/schema/threed';
 import {
   AnimationLibraryError, type AnimationTarget, parseList, parseAssignment,
@@ -15,6 +15,7 @@ const clipSelection = { ...getTableColumns(clips), fileName: files.fileName, fil
 const fileJoin = and(eq(files.id, clips.animationFileId), eq(files.userId, clips.userId));
 const modelUsage = sql<number>`(select count(*)::integer from ${modelAssignments} a where a.animation_id = ${clips.id} and a.user_id = ${clips.userId})`;
 const characterUsage = sql<number>`(select count(*)::integer from ${characterAssignments} a where a.animation_id = ${clips.id} and a.user_id = ${clips.userId})`;
+const presetUsage = sql<number>`(select count(*)::integer from ${presetEntries} a where a.animation_id = ${clips.id} and a.user_id = ${clips.userId})`;
 export async function getAnimation(userId: string, id: number) {
   const [data] = await db.select(clipSelection).from(clips).innerJoin(files, fileJoin)
     .where(and(eq(clips.userId, userId), eq(clips.id, id))).limit(1);
@@ -22,12 +23,12 @@ export async function getAnimation(userId: string, id: number) {
   return { data };
 }
 export async function listAnimations(userId: string, query: ReturnType<typeof parseList>) {
-  const { limit, offset, search, sort, direction } = query;
-  const where = and(eq(clips.userId, userId), search ? sql`(${clips.name} ilike ${`%${search}%`} or ${files.fileName} ilike ${`%${search}%`} or ${clips.clipName} ilike ${`%${search}%`})` : undefined);
-  const fields = { name: sql`lower(${clips.name})`, created: clips.createdAt, size: files.fileSize, duration: clips.duration, active: clips.isActive, fileName: sql`lower(${files.fileName})`, type: files.format, references: sql`${modelUsage} + ${characterUsage}` };
+  const { limit, offset, search, sort, direction, categoryId } = query;
+  const where = and(eq(clips.userId, userId), categoryId ? sql`exists (select 1 from ${categoryAssignments} ac where ac.animation_id = ${clips.id} and ac.user_id = ${userId} and ac.category_id = ${categoryId})` : undefined, search ? sql`(${clips.name} ilike ${`%${search}%`} or ${files.fileName} ilike ${`%${search}%`} or ${clips.clipName} ilike ${`%${search}%`})` : undefined);
+  const fields = { name: sql`lower(${clips.name})`, created: clips.createdAt, size: files.fileSize, duration: clips.duration, active: clips.isActive, fileName: sql`lower(${files.fileName})`, type: files.format, references: sql`${modelUsage} + ${characterUsage} + ${presetUsage}` };
   const field = fields[sort as keyof typeof fields];
   const [count] = await db.select({ total: sql<number>`count(*)::integer` }).from(clips).innerJoin(files, fileJoin).where(where);
-  const data = await db.select({ ...clipSelection, modelUsage, characterUsage }).from(clips).innerJoin(files, fileJoin)
+  const data = await db.select({ ...clipSelection, modelUsage, characterUsage, presetUsage, categoryIds: sql<number[]>`ARRAY(select ac.category_id from ${categoryAssignments} ac where ac.animation_id = ${clips.id} and ac.user_id = ${clips.userId} order by ac.category_id)` }).from(clips).innerJoin(files, fileJoin)
     .where(where).orderBy(direction === 'asc' ? asc(field) : desc(field), asc(clips.id)).limit(limit).offset(offset);
   return { data, pagination: { limit, offset, total: Number(count?.total ?? 0) } };
 }
@@ -54,6 +55,8 @@ export async function deleteAnimation(userId: string, id: number) {
     const model = await tx.select({ id: modelAssignments.id }).from(modelAssignments).where(eq(modelAssignments.animationId, id)).limit(1);
     const character = await tx.select({ id: characterAssignments.id }).from(characterAssignments).where(eq(characterAssignments.animationId, id)).limit(1);
     if (model.length || character.length) throw new AnimationLibraryError(409, 'Animation is assigned to a Model or Character');
+    const preset = await tx.select({ id: presetEntries.id }).from(presetEntries).where(and(eq(presetEntries.animationId, id), eq(presetEntries.userId, userId))).limit(1);
+    if (preset.length) throw new AnimationLibraryError(409, 'Animation is referenced by an Animation Mapping Preset');
     await tx.delete(clips).where(and(eq(clips.id, id), eq(clips.userId, userId)));
     return { data: { id } };
   });
@@ -69,20 +72,21 @@ export async function deleteAnimationFile(userId: string, id: number) {
     return { data: { id, storageDeleted: false } };
   });
 }
-async function ownedTarget(tx: Transaction, userId: string, input: AnimationTarget) {
+// Serialize all assignment writers on the target (and inherited Model) for reviewed preset application.
+export async function ownedTarget(tx: Transaction, userId: string, input: AnimationTarget) {
   if (input.target === 'model') {
     const [row] = await tx.select({ id: threedModels.id }).from(threedModels)
-      .where(and(eq(threedModels.id, input.targetId), eq(threedModels.userId, userId))).for('share');
+      .where(and(eq(threedModels.id, input.targetId), eq(threedModels.userId, userId))).for('update');
     if (!row) throw new AnimationLibraryError(404, 'Model not found');
     return row.id;
   }
   const [row] = await tx.select({ id: threedCharacters.id, modelId: threedCharacters.modelId }).from(threedCharacters)
-    .where(and(eq(threedCharacters.id, input.targetId), eq(threedCharacters.userId, userId))).for('share');
+    .where(and(eq(threedCharacters.id, input.targetId), eq(threedCharacters.userId, userId))).for('update');
   if (!row) throw new AnimationLibraryError(404, 'Character not found');
   if (row.modelId === null) return null;
   // A Character's linked Model is not necessarily owned by the same User.
   const [model] = await tx.select({ id: threedModels.id }).from(threedModels)
-    .where(and(eq(threedModels.id, row.modelId), eq(threedModels.userId, userId))).for('share');
+    .where(and(eq(threedModels.id, row.modelId), eq(threedModels.userId, userId))).for('update');
   return model?.id ?? null;
 }
 export async function getAssignments(userId: string, input: AnimationTarget) {

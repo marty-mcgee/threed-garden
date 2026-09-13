@@ -20,6 +20,7 @@ vm.runInNewContext(ts.transpileModule(fs.readFileSync('src/components/admin/thre
     return { ok: true, json: async () => ({ success: true, clipCount: 2 }) };
   },
   require(name) {
+    if (name === './AnimationCategories') return { useAnimationCategories: () => ({ categories: [], error: '' }) };
     if (name === 'react') return {
       useEffect() {}, useRef: () => ({ current: null }),
       useState(value) { const index = states.length; states.push(value); return [value, next => { states[index] = typeof next === 'function' ? next(states[index]) : next; }]; },

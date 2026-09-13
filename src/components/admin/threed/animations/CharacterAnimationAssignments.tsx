@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { AnimationPresets } from './AnimationPresets';
+import { useAnimationCategories } from './AnimationCategories';
 import { LIBRARY_ACTIONS, type Assignment } from '@/lib/services/threed/animations/contracts';
 
 type Clip = { id: number; name: string; fileName: string; clipIndex: number; isActive: boolean };
@@ -29,6 +31,8 @@ export function CharacterAnimationAssignments(props: AssignmentTargetProps) {
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [clips, setClips] = useState<Clip[]>([]);
   const [total, setTotal] = useState(0);
+  const [category, setCategory] = useState('');
+  const { categories, error: categoryError } = useAnimationCategories();
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(0);
   const [reload, setReload] = useState(0);
@@ -61,13 +65,13 @@ export function CharacterAnimationAssignments(props: AssignmentTargetProps) {
   useEffect(() => {
     const controller = new AbortController(); setLoading(true); setLibraryError('');
     const timer = setTimeout(() => {
-      request(`/api/threed/animations?limit=200&offset=${page * 200}&search=${encodeURIComponent(search)}&sort=name&direction=asc`, { signal: controller.signal })
+      request(`/api/threed/animations?limit=200&offset=${page * 200}&search=${encodeURIComponent(search)}&sort=name&direction=asc${category ? `&categoryId=${category}` : ''}`, { signal: controller.signal })
         .then(result => { if (!controller.signal.aborted) { setClips(result.data); setTotal(result.pagination.total); } })
         .catch(err => { if (!controller.signal.aborted) setLibraryError(err.message); })
         .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     }, 200);
     return () => { clearTimeout(timer); controller.abort(); };
-  }, [page, search, reload]);
+  }, [page, search, reload, category]);
   async function save(actionKey: string, value: string) {
     if (busy) return;
     setBusy(true); setNotice('');
@@ -94,13 +98,16 @@ export function CharacterAnimationAssignments(props: AssignmentTargetProps) {
         {mapping.modelId ? <> <Link className="underline" href={`/admin/threed/model-files?modelId=${mapping.modelId}`}>View linked Model #{mapping.modelId}</Link></> : ' No linked Model defaults.'}
       </p>}
     </div>
+    {mapping && <AnimationPresets key={`${target}-${targetId}`} target={target} targetId={targetId} assignments={mapping.assignments} inherited={mapping.inherited} dirty={Object.entries(drafts).some(([key, value]) => value !== choice(mapping.assignments.find(row => row.actionKey === key)))} disabled={busy} onBusyChange={setBusy} onApplied={async () => { const result = await request(endpoint); setMapping(result.data); setDrafts({}); }} />}
     <div className="flex shrink-0 flex-wrap items-center gap-2">
       <Input aria-label="Search animation choices" placeholder="Search animation files or names…" value={search} disabled={busy} onChange={event => { setSearch(event.target.value); setPage(0); }} className="h-8 min-w-0 basis-48 flex-1 text-xs" />
+      <select aria-label="Filter animation choices by category" className="h-8 min-w-40 rounded border bg-background px-2 text-xs" value={category} disabled={busy || !!categoryError} onChange={e => { setCategory(e.target.value); setPage(0); }}><option value="">All categories</option>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
       <Button asChild variant="outline" size="sm"><Link href="/admin/threed/animations">Animations Library</Link></Button>
       <Button variant="outline" size="sm" disabled={busy} onClick={() => setReload(value => value + 1)}>Refresh assignments</Button>
     </div>
     <div className="flex shrink-0 flex-wrap items-center gap-2 text-xs"><span>{loading ? 'Loading choices…' : `${total} matching clips · page ${page + 1}`}</span><Button size="sm" variant="ghost" disabled={busy || loading || page === 0} onClick={() => setPage(value => value - 1)}>Previous choices</Button><Button size="sm" variant="ghost" disabled={busy || loading || (page + 1) * 200 >= total} onClick={() => setPage(value => value + 1)}>Next choices</Button></div>
     {notice && <p role="status" className="text-sm">{notice}</p>}
+    {categoryError && <p role="alert" className="text-xs text-orange-500">{categoryError}</p>}
     {(error || libraryError) && <p role="alert" className="text-sm text-destructive">{error || libraryError}</p>}
     <div className={target === 'character' ? 'grid min-h-0 min-w-0 flex-1 grid-cols-1 gap-3 overflow-y-auto lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:overflow-hidden' : ''}>
     {!mapping ? <p>{error ? 'Assignments unavailable. Use Refresh assignments to retry.' : 'Loading assignments…'}</p> : <div className="min-h-0 min-w-0 space-y-2 lg:overflow-y-auto lg:pr-2" aria-label="Animation action assignments">
@@ -115,7 +122,7 @@ export function CharacterAnimationAssignments(props: AssignmentTargetProps) {
           : value === 'disabled' ? null : Number(value);
         const previewClip = previewId === null ? undefined : available.get(previewId);
         const canPreview = !!previewClip?.isActive;
-        const options = [...available.values()].filter(clip => clip.isActive || String(clip.id) === value);
+        const options = [...available.values()].filter(clip => String(clip.id) === value || (clip.isActive && clips.some(candidate => candidate.id === clip.id)));
         return <div key={actionKey} className="rounded border p-2">
           <label className="text-sm font-medium" htmlFor={`animation-${target}-${targetId}-${actionKey}`}>{label(actionKey)}</label>
           <div className="mt-1 flex flex-wrap items-center gap-2">

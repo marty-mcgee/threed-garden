@@ -21,7 +21,8 @@ vm.runInNewContext(ts.transpileModule(fs.readFileSync('src/components/admin/thre
     return { ok: true, json: async () => ({ success: true, ...(url.startsWith('/api/threed/animations?') ? { data: [clip], pagination: { total: 1 } } : { data: { assignments: assignment ? [assignment] : [], inherited: [], animations: [clip], effective: [{ actionKey: 'pickFruit', source: assignment ? 'character' : 'legacy', state: assignment?.mode ?? 'legacy', animationId: assignment?.animationId ?? null }] } }) }) };
   },
   require(name) {
-    if (name === 'react') return { useRef() { return { current: null }; }, useEffect(callback) { if (states.length < 14) effects.push(callback); }, useState(initial) { const index = cursor++; if (!(index in states)) states[index] = initial; return [states[index], next => { states[index] = typeof next === 'function' ? next(states[index]) : next; }]; } };
+    if (name === './AnimationCategories') return { useAnimationCategories: () => ({ categories: [], error: '' }) };
+    if (name === 'react') return { useRef() { return { current: null }; }, useEffect(callback) { if (states.length < 15) effects.push(callback); }, useState(initial) { const index = cursor++; if (!(index in states)) states[index] = initial; return [states[index], next => { states[index] = typeof next === 'function' ? next(states[index]) : next; }]; } };
     if (name === 'react/jsx-runtime') return { jsx: element, jsxs: element };
     if (name.endsWith('/contracts')) return { LIBRARY_ACTIONS: ['pickFruit'] };
     return new Proxy({}, { get: (_, key) => key });
@@ -41,7 +42,7 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
   await flush();
   for (const value of ['46', 'disabled', 'inherit']) {
     let tree = render();
-    find(tree, node => node.type === 'select').props.onChange({ target: { value } });
+    find(tree, node => node.type === 'select' && node.props.id?.startsWith('animation-')).props.onChange({ target: { value } });
     tree = render();
     const button = find(tree, node => node.type === 'Button' && node.props.children === 'Save');
     assert.equal(button.props.disabled, false);
@@ -50,24 +51,24 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
     if (value === 'inherit') { assert.equal(mutation.method, 'DELETE'); assert.match(mutation.url, /target=character&targetId=11&actionKey=pickFruit/); }
     else { assert.deepEqual(JSON.parse(mutation.body), { target: 'character', targetId: 11, actionKey: 'pickFruit', mode: value === 'disabled' ? 'disabled' : 'assigned', animationId: value === 'disabled' ? null : 46 }); }
   }
-  find(render(), node => node.type === 'select').props.onChange({ target: { value: '46' } });
+  find(render(), node => node.type === 'select' && node.props.id?.startsWith('animation-')).props.onChange({ target: { value: '46' } });
   find(render(), node => node.type === 'Button' && node.props.children === 'Preview animation').props.onClick();
   assert.equal(find(render(), node => node.type === 'iframe').props.src, '/threed/character-animation-preview?characterId=11');
   find(render(), node => node.type === 'Button' && node.props.children === 'T-Pose').props.onClick();
   assert.equal(find(render(), node => node.type === 'iframe').props.src, '/threed/character-animation-preview?characterId=11', 'T-Pose retains the loaded frame');
   find(render(), node => node.type === 'Button' && node.props.children === 'Preview animation').props.onClick();
-  find(render(), node => node.type === 'select').props.onChange({ target: { value: 'inherit' } });
+  find(render(), node => node.type === 'select' && node.props.id?.startsWith('animation-')).props.onChange({ target: { value: 'inherit' } });
   const retainedFrame = find(render(), node => node.type === 'iframe');
   assert.equal(retainedFrame.props.src, '/threed/character-animation-preview?characterId=11', 'Changing a draft retains the loaded preview');
-  find(render(), node => node.type === 'select').props.onChange({ target: { value: '47' } });
+  find(render(), node => node.type === 'select' && node.props.id?.startsWith('animation-')).props.onChange({ target: { value: '47' } });
   find(render(), node => node.type === 'Button' && node.props.children === 'Preview animation').props.onClick();
   assert.equal(find(render(), node => node.type === 'iframe').props.src, retainedFrame.props.src, 'Switching preview must not navigate the frame');
   fail = true;
-  find(render(), node => node.type === 'select').props.onChange({ target: { value: '46' } });
+  find(render(), node => node.type === 'select' && node.props.id?.startsWith('animation-')).props.onChange({ target: { value: '46' } });
   find(render(), node => node.type === 'Button' && node.props.children === 'Save').props.onClick(); await flush();
   assert.equal(assignment, null);
   assert.ok(states.some(value => typeof value === 'string' && value.includes('Test failure')));
-  assert.equal(find(render(), node => node.type === 'select').props.value, '46', 'Failed save retains draft');
+  assert.equal(find(render(), node => node.type === 'select' && node.props.id?.startsWith('animation-')).props.value, '46', 'Failed save retains draft');
   const visibleText = node => Array.isArray(node) ? node.map(visibleText).join(' ') : node && typeof node === 'object' ? visibleText(node.props?.children) : String(node ?? '');
   assert.match(visibleText(render()), /Unsaved change/);
   states[0] = { modelId: 22, assignments: [], inherited: [{ actionKey: 'pickFruit', mode: 'assigned', animationId: 46 }], animations: [clip], effective: [{ actionKey: 'pickFruit', source: 'model', state: 'assigned', animationId: 46 }] };
@@ -77,7 +78,7 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
   const inheritedButton = find(tree, node => node.type === 'Button' && node.props.children === 'Preview animation');
   assert.equal(inheritedButton.props.disabled, false);
   inheritedButton.props.onClick();
-  assert.equal(states[12].animationId, 46);
+  assert.equal(states[13].animationId, 46);
   assert.equal(calls.filter(call => call.method).length, writesBeforePreview, 'Inherited preview must not save an override');
   assert.match(visibleText(tree), /Preview Model default: Pick Fruit/);
   states[0].inherited[0].mode = 'disabled';
@@ -96,7 +97,7 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
   assert.match(visibleText(render()), /Static Models require no assignments/);
   assert.match(visibleText(render()), /generic Scene Model playback is not implemented yet/);
   for (const value of ['46', 'disabled', 'inherit']) {
-    find(render(), node => node.type === 'select').props.onChange({ target: { value } });
+    find(render(), node => node.type === 'select' && node.props.id?.startsWith('animation-')).props.onChange({ target: { value } });
     find(render(), node => node.type === 'Button' && node.props.children === 'Save').props.onClick(); await flush();
     const mutation = calls.filter(call => call.method).at(-1);
     if (value === 'inherit') {
@@ -105,9 +106,9 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
     } else assert.deepEqual(JSON.parse(mutation.body), { target: 'model', targetId: 935, actionKey: 'pickFruit', mode: value === 'disabled' ? 'disabled' : 'assigned', animationId: value === 'disabled' ? null : 46 });
   }
   fail = true;
-  find(render(), node => node.type === 'select').props.onChange({ target: { value: '46' } });
+  find(render(), node => node.type === 'select' && node.props.id?.startsWith('animation-')).props.onChange({ target: { value: '46' } });
   find(render(), node => node.type === 'Button' && node.props.children === 'Save').props.onClick(); await flush();
-  assert.equal(find(render(), node => node.type === 'select').props.value, '46');
+  assert.equal(find(render(), node => node.type === 'select' && node.props.id?.startsWith('animation-')).props.value, '46');
   const modelsUI = fs.readFileSync('src/components/admin/threed/models/ThreeDModelsCRUD.tsx', 'utf8');
   assert.match(modelsUI, /onClick=\{\(\) => setAnimationModel\(model\)\}/);
   assert.match(modelsUI, /<ModelAnimationAssignments key=\{animationModel.id\} modelId=\{animationModel.id\}/);

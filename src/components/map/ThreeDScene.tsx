@@ -105,7 +105,7 @@ interface ThreeDSceneProps {
   /** ID of the ecctrl character currently being controlled by keyboard */
   controlledCharacterId?: number | null;
   /** Called when an ecctrl character's control state changes, with its current world position */
-  onControlChange?: (markerId: string, pos: { x: number; y: number; z: number }) => void;
+  onControlChange?: (markerId: string, pos: { x: number; y: number; z: number }, characterId?: number) => void;
   /** Sends explicit source identity and live physics position to the Runtime Marker mirror. */
   onRuntimeMarkerPositionChange?: (
     moduleType: string,
@@ -991,6 +991,7 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
         cameraFollowRef={cameraFollowRef}
         livePositionsRef={livePositionsRef}
         markerId={marker.id}
+        navigationTargetMarkerId={actionTarget?.markerId}
         movementTargetPosition={
           isControlled && actionTarget != null
             ? actionTarget.position
@@ -2209,7 +2210,7 @@ export function ThreeDScene({
   ) => {
     livePositionsRef.current.set(markerId, pos);
     onRuntimeMarkerPositionChange?.(moduleType, assetId, pos);
-    onControlChange?.(markerId, pos);
+    onControlChange?.(markerId, pos, normalizeSceneLayerType(moduleType) === 'characters' ? assetId : undefined);
   }, [onControlChange, onRuntimeMarkerPositionChange]);
 
   const markerWithCurrentPosition = useCallback((marker: any) => {
@@ -2896,7 +2897,8 @@ export function ThreeDScene({
             return (
               <group
                 key={`threed-marker-${marker.id ?? `${marker.type}-${idx}`}`}
-                visible={markerMatchesPresentationFilter}
+                name={`threed-marker-${marker.id}`}
+                visible={markerMatchesPresentationFilter && activeLayers.has(normalizeSceneLayerType(marker.type))}
               >
                 <ThreeDMarkerComponent
                   marker={marker}

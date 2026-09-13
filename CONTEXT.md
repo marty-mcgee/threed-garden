@@ -20,7 +20,7 @@
 | Item | Status |
 |---|---|
 | Current stable version | **v0.19.17 — ThreeD UI Refinement + Scene Overlays**, commit `e16e2e4`; production User-confirmed. Package `0.19.17`; documentation and version correction deployed in `edefa4d`, User-confirmed. Separate local build result not reported. See [release record](docs/releases/v0.19.17.md). |
-| Current development version | No next version designated. Preserve anchored Project menu and activity overlays that do not resize the Canvas. ThreeD-only presentation checkpoint completed; Character/world-action functional work remains deferred. |
+| Current development version | **v0.19.18 — ThreeD Animation Presets + Character Navigation**, package `0.19.18`, release candidate prepared. User accepted Kate/Joey walking and corrected teleport proximity. The four preset/category tables are User-confirmed present on the production main branch; manual build and deployment remain pending. See [release notes](docs/releases/v0.19.18.md) for checks and the pre-existing missing FBX test fixture. Preserve anchored menus, persistent Canvas/physics, separate Garden/Ecctrl paths and explicit position-save authority. No new world-action persistence or physical commands. |
 | Centaur release verification | User-confirmed production deployment. TypeScript, 125 native groups, browser loaders and mocked bulk UI checks passed. See [completed handoff](docs/plans/v0.19.10c-release.md); individual live regression cases were not separately reported. |
 | Previous release-ready checkpoint | **v0.19.3d — ThreeD Model Runtime Inspection API** |
 | Character FBX model loading | ✅ Working |

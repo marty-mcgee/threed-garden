@@ -1987,3 +1987,60 @@ export const threedCharacterAnimationAssignments = pgTable('threed_character_ani
   foreignKey({ name: 'character_animation_clip_owner_fk', columns: [t.animationId, t.userId], foreignColumns: [threedAnimations.id, threedAnimations.userId] }),
   check('character_animation_mode', sql`(${t.mode} = 'assigned' AND ${t.animationId} IS NOT NULL) OR (${t.mode} = 'disabled' AND ${t.animationId} IS NULL)`),
 ]);
+
+// Reusable mappings reference shared library clips; applying creates independent assignments.
+export const threedAnimationPresets = pgTable('threed_animation_presets', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  name: varchar('name', { length: 120 }).notNull(),
+  description: text('description'),
+  revision: integer('revision').notNull().default(1),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (t) => [
+  unique('uq_animation_presets_id_owner').on(t.id, t.userId),
+  uniqueIndex('idx_animation_presets_owner_name').on(t.userId, t.name),
+  check('animation_presets_valid_name', sql`length(trim(${t.name})) > 0 AND ${t.name} = trim(${t.name})`),
+  check('animation_presets_positive_revision', sql`${t.revision} > 0`),
+]);
+
+export const threedAnimationPresetEntries = pgTable('threed_animation_preset_entries', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  presetId: integer('preset_id').notNull(),
+  actionKey: varchar('action_key', { length: 64 }).notNull(),
+  mode: varchar('mode', { length: 10 }).notNull(),
+  animationId: integer('animation_id'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (t) => [
+  uniqueIndex('idx_animation_preset_action').on(t.presetId, t.actionKey),
+  index('idx_animation_preset_clip').on(t.animationId),
+  foreignKey({ name: 'animation_preset_entry_owner_fk', columns: [t.presetId, t.userId], foreignColumns: [threedAnimationPresets.id, threedAnimationPresets.userId] }).onDelete('cascade'),
+  foreignKey({ name: 'animation_preset_clip_owner_fk', columns: [t.animationId, t.userId], foreignColumns: [threedAnimations.id, threedAnimations.userId] }),
+  check('animation_preset_entry_mode', sql`(${t.mode} = 'assigned' AND ${t.animationId} IS NOT NULL) OR (${t.mode} = 'disabled' AND ${t.animationId} IS NULL)`),
+]);
+
+// Optional many-to-many taxonomy; categories never imply rig compatibility or action assignment.
+export const threedAnimationCategories = pgTable('threed_animation_categories', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  name: varchar('name', { length: 120 }).notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, t => [
+  unique('uq_animation_categories_id_owner').on(t.id, t.userId),
+  uniqueIndex('idx_animation_categories_owner_name').on(t.userId, t.name),
+  check('animation_categories_name', sql`length(trim(${t.name})) > 0 AND ${t.name} = trim(${t.name})`),
+]);
+export const threedAnimationCategoryAssignments = pgTable('threed_animation_category_assignments', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  categoryId: integer('category_id').notNull(),
+  animationId: integer('animation_id').notNull(),
+}, t => [
+  uniqueIndex('idx_animation_category_pair').on(t.animationId, t.categoryId),
+  index('idx_animation_category_filter').on(t.categoryId),
+  foreignKey({ name: 'animation_category_owner_fk', columns: [t.categoryId, t.userId], foreignColumns: [threedAnimationCategories.id, threedAnimationCategories.userId] }).onDelete('cascade'),
+  foreignKey({ name: 'animation_category_clip_owner_fk', columns: [t.animationId, t.userId], foreignColumns: [threedAnimations.id, threedAnimations.userId] }).onDelete('cascade'),
+]);

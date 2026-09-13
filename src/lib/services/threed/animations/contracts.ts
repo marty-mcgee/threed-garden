@@ -57,7 +57,7 @@ export function parseList(params: URLSearchParams) {
   const direction = params.get('direction') ?? 'asc';
   const search = (params.get('search') ?? '').trim();
   if (!['name', 'created', 'size', 'duration', 'active', 'fileName', 'type', 'references'].includes(sort) || !['asc', 'desc'].includes(direction) || search.length > 200) throw new AnimationLibraryError(400, 'Invalid list query');
-  return { limit: number('limit', 25, 200, 1), offset: number('offset', 0, 2147483647), search, sort, direction };
+  return { categoryId: params.has('categoryId') ? positiveId(params.get('categoryId')) : null, limit: number('limit', 25, 200, 1), offset: number('offset', 0, 2147483647), search, sort, direction };
 }
 export function parseClipUpdate(value: unknown) {
   const body = objectInput(value, ['id', 'name', 'isActive']);

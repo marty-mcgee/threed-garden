@@ -74,7 +74,7 @@ interface UnifiedMapViewProps {
   /** ID of the ecctrl character currently being controlled */
   controlledCharacterId?: number | null;
   /** Called when an ecctrl character's control state changes */
-  onControlChange?: (markerId: string, pos: { x: number; y: number; z: number }) => void;
+  onControlChange?: (markerId: string, pos: { x: number; y: number; z: number }, characterId?: number) => void;
   /** Camera mode override (selected by user in DetailsCard) */
   cameraMode?: string;
   /** Reports a user-driven ThreeD camera mode change. */

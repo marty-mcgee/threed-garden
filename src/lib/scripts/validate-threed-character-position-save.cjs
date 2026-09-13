@@ -71,3 +71,35 @@ const savePosition = (ok) => callback('src/app/dashboard/map/page.tsx', 'handleU
   assert.equal(registry.resolve('characters', 11).liveRotation, null, 'Deleted instances must not retain facing');
   console.log('PASS: actual Character PATCH callback preserves failure state and updates live authority; Project PUT captures latest live position and facing automatically');
 })().catch((error) => { console.error(error); process.exitCode = 1; });
+
+
+// Project marker suffixes are instance IDs and need not equal source Character IDs.
+let selectedCharacter = { id: 'project-character-204', type: 'characters', data: { id: 11 }, position: { x: 0, y: 0, z: 0 } };
+let liveCharacter = null;
+const handleLivePosition = callback('src/app/dashboard/map/page.tsx', 'handleControlChange', {
+  controlledCharacterId: 11,
+  setSelectedMarker: update => { selectedCharacter = update(selectedCharacter); },
+  setLiveControlledCharacterPosition: value => { liveCharacter = value; },
+});
+const forwardLivePosition = callback('src/components/map/ThreeDScene.tsx', 'storeLivePosition', {
+  livePositionsRef: { current: new Map() },
+  onRuntimeMarkerPositionChange() {},
+  normalizeSceneLayerType: type => type,
+  onControlChange: handleLivePosition,
+});
+forwardLivePosition('project-character-204', 'characters', 11, { x: 12, y: 1, z: 3 });
+assert.equal(liveCharacter.characterId, 11);
+assert.equal(liveCharacter.position.x, 12);
+assert.equal(selectedCharacter.position.x, 12);
+liveCharacter = null;
+handleLivePosition('project-character-11', { x: 99, y: 1, z: 3 }, 22);
+assert.equal(liveCharacter, null, 'Matching suffix must not admit another Character');
+handleLivePosition('project-character-11', { x: 99, y: 1, z: 3 });
+assert.equal(liveCharacter, null, 'No source identity means no live control proof');
+handleLivePosition('project-character-204', { x: NaN, y: 1, z: 3 }, 11);
+assert.equal(liveCharacter, null, 'Invalid coordinates must not enable movement');
+selectedCharacter = { id: 'target-bed', type: 'beds', data: { id: 11 }, position: { x: 5, y: 0, z: 0 } };
+handleLivePosition('project-character-204', { x: 13, y: 1, z: 3 }, 11);
+assert.equal(liveCharacter.position.x, 13, 'Position remains current while inspecting another target');
+assert.equal(selectedCharacter.position.x, 5, 'Do not move the selected target');
+console.log('PASS: actual Scene-to-page live reporting uses explicit Character identity, rejects stale/nonfinite reports and preserves other selections.');
