@@ -7,9 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production release:** `v0.19.17 — ThreeD UI Refinement + Scene Overlays` (commit `e16e2e4`), deployment User-confirmed. Package `0.19.17`; documentation and version correction deployed in `edefa4d`, User-confirmed. Compact ThreeD forms and stable-Canvas activity overlays are accepted. See the [release record](docs/releases/v0.19.17.md).
-
-> **Prepared release:** `v0.19.18 — ThreeD Animation Presets + Character Navigation`, package `0.19.18`. Reusable action-mapping presets, Animation Categories, Walk to Target and collider-aware Teleport near Target. Kate/Joey navigation is user-tested. Production table availability is User-confirmed; the user-owned build/deployment gates remain pending; one older FBX fixture check is blocked by a pre-existing deleted file. See the [release notes and handoff](docs/releases/v0.19.18.md).
+> **Current production release:** `v0.19.18 — ThreeD Animation Presets + Character Navigation`, package `0.19.18`, commit `95c3a93`, deployment User-confirmed. Includes reusable action-mapping presets, Animation Categories, Walk to Target and collider-aware Teleport near Target. Kate/Joey navigation and production table availability are User-confirmed. See the [release record](docs/releases/v0.19.18.md) for validation and retained test limitations.
 
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 
