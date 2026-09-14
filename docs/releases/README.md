@@ -4,6 +4,7 @@ This directory records confirmed production checkpoints, not every development i
 
 Current production: **v0.19.21 — ThreeD Model Import + File Workspace Refinements**, deployment User-confirmed.
 
+- [v0.19.22 — ThreeD Model Files: Guided Setup + Default Shapes](v0.19.22.md) — prepared candidate
 - [v0.19.21 — ThreeD Model Import + File Workspace Refinements](v0.19.21.md) — production User-confirmed
 - [v0.19.19 — Character Collisions + Interactions](v0.19.19.md) — production User-confirmed
 

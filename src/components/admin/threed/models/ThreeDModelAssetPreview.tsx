@@ -27,8 +27,10 @@ interface ThreeDModelAssetPreviewProps {
   headerActions?: ReactNode;
   canvasClassName?: string;
   showMaterialInspector?: boolean;
+  materialInspectorNotice?: string;
   splitMaterialInspector?: boolean;
   requiredFiles?: ReactNode;
+  primaryFileControls?: ReactNode;
   savedFilesStatus?: { ready: boolean; message: string };
   textureLibrary?: ThreeDModelTextureLibraryItem[];
   onSaveMaterialAssignment?: (assignment: { targetKeys: string[]; textureFileId?: number; textureId?: number }) => Promise<void>;
@@ -131,8 +133,10 @@ export function ThreeDModelAssetPreview({
   headerActions,
   canvasClassName = 'h-[320px]',
   showMaterialInspector = false,
+  materialInspectorNotice,
   splitMaterialInspector = false,
   requiredFiles,
+  primaryFileControls,
   savedFilesStatus,
   textureLibrary = [],
   onSaveMaterialAssignment,
@@ -301,11 +305,11 @@ export function ThreeDModelAssetPreview({
       </div>
     </section>
       <div className={splitMaterialInspector ? 'min-w-0 space-y-3 lg:col-start-2 lg:row-start-1' : undefined}>
-      {showMaterialInspector && model && (
+      {((showMaterialInspector && model) || splitMaterialInspector) && (
         <section className={`${splitMaterialInspector ? 'rounded-lg border bg-muted/20' : 'border-t bg-background/35'} p-3`} aria-labelledby="model-texture-assignment-title">
           <div className="flex flex-wrap items-center gap-2">
             <Palette className="h-4 w-4 text-cyan-400" />
-            <h3 id="model-texture-assignment-title" className="text-xs font-semibold">1. Global appearance</h3>
+            <h3 id="model-texture-assignment-title" className="text-xs font-semibold">1. Model file + global appearance</h3>
             {materialInventory && (
               <span className="text-[10px] text-muted-foreground">
                 {materialInventory.materialSlotCount} material slots
@@ -319,7 +323,8 @@ export function ThreeDModelAssetPreview({
               onChange={handleTemporaryTexture}
             />
           </div>
-          {materialInventory && materialInventory.slots.length > 0 && (
+          {primaryFileControls}
+          {showMaterialInspector && model && materialInventory && materialInventory.slots.length > 0 && (
             <div className="mt-2 space-y-2">
               <div className="flex flex-wrap items-center gap-2">
                 <label htmlFor="model-appearance-texture" className="w-full text-xs">Base Color Texture</label>
@@ -382,19 +387,22 @@ export function ThreeDModelAssetPreview({
                   </Button>
                 )}
               </div>
-              <p className="text-[11px] text-muted-foreground">Selection previews one material. Save applies Base Color to all materials; resolve missing files in Required files.</p>
+
             </div>
           )}
+          {(!showMaterialInspector || !model) && <p className="mt-2 text-xs text-muted-foreground">{materialInspectorNotice || 'Select a Model to configure its appearance.'}</p>}
+          {showMaterialInspector && model && !materialInventory && <p className="mt-2 text-xs text-muted-foreground">Loading material settings…</p>}
           {materialAssignmentError && <p className="mt-2 text-[10px] text-destructive">{materialAssignmentError}</p>}
         </section>
       )}
       {requiredFiles}
-      {showMaterialInspector && model && (
+      {((showMaterialInspector && model) || splitMaterialInspector) && (
         <section className="rounded-lg border bg-muted/20 p-3">
           <details>
             <summary className="cursor-pointer text-[10px] font-medium text-muted-foreground">
               3. Individual materials (advanced)
             </summary>
+            {(!showMaterialInspector || !model) ? <p className="mt-2 text-xs text-muted-foreground">{materialInspectorNotice || 'Select a Model to inspect its materials.'}</p> : <>
             <div className="mt-2 flex justify-end">
               <Button
                 type="button"
@@ -541,6 +549,7 @@ export function ThreeDModelAssetPreview({
               )}
             </>
           )}
+          </>}
           </details>
         </section>
       )}

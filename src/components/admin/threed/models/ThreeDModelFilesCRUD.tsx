@@ -9,6 +9,7 @@
 //   - summary stats, skeleton/empty/error states
 'use client';
 
+import { MODEL_FALLBACK_SHAPES, readModelFallbackShape, setModelFallbackShape, type ModelFallbackShape } from '@/lib/services/threed/models/model-fallback-core';
 import { createPortal } from 'react-dom';
 import {
   useState,
@@ -146,7 +147,7 @@ function extensionOf(name: string): string {
 }
 
 function isImageRow(file: ModelFileRow): boolean {
-  return IMAGE_EXTENSIONS.has(extensionOf(file.fileName));
+  return typeof file.filePath === 'string' && file.filePath.trim().length > 0 && IMAGE_EXTENSIONS.has(extensionOf(file.fileName));
 }
 
 function formatSize(bytes: number | null): string {
@@ -228,6 +229,10 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
   const [error, setError] = useState<string | null>(null);
 
   const [category, setCategory] = useState<string>('auto');
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [shapeChoice, setShapeChoice] = useState<{ modelId: string; shape: ModelFallbackShape } | null>(null);
+  const [savingShape, setSavingShape] = useState(false);
+  const [primaryChoice, setPrimaryChoice] = useState<{ modelId: string; fileId: string } | null>(null);
   const [attachmentDirectory, setAttachmentDirectory] = useState<string>('');
   const [filter, setFilter] = useState<string>('');
   const [sort, setSort] = useState<SortMode>('name');
@@ -486,7 +491,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
   // UPLOAD
   // ============================================
   const uploadOne = useCallback(
-    async (fileList: File[], index: number, directory: string): Promise<boolean> => {
+    async (fileList: File[], index: number, directory: string, uploadCategory = category): Promise<boolean> => {
       const file = fileList[index];
       const relativePath = attachmentRelativePath(directory, file.name);
       const setStatus = (status: UploadItem['status'], errorText?: string) => {
@@ -498,7 +503,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
       try {
         const fd = new FormData();
         fd.append('modelId', modelId);
-        if (category && category !== 'auto') fd.append('category', category);
+        if (uploadCategory && uploadCategory !== 'auto') fd.append('category', uploadCategory);
         fd.append('files', file);
         fd.append('relativePaths', relativePath);
 
@@ -520,7 +525,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
   );
 
   const handleUpload = useCallback(
-    async (input: FileList | File[], uploadDirectory = attachmentDirectory) => {
+    async (input: FileList | File[], uploadDirectory = attachmentDirectory, uploadCategory = category) => {
       const filesToUpload = Array.from(input);
       if (!modelId || filesToUpload.length === 0) return;
       const problem = attachmentDirectoryProblem(uploadDirectory);
@@ -535,7 +540,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
       })));
 
       // Upload all files in parallel, tracking each independently.
-      const results = await Promise.all(filesToUpload.map((_, i) => uploadOne(filesToUpload, i, uploadDirectory)));
+      const results = await Promise.all(filesToUpload.map((_, i) => uploadOne(filesToUpload, i, uploadDirectory, uploadCategory)));
 
       // Refresh the file list + model counts.
       await loadFiles(Number(modelId));
@@ -551,7 +556,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
         showToast(`${results.length} file(s) attached`, 'success');
       }
     },
-    [modelId, uploadOne, loadFiles, loadModels, loadDependencies, showToast, attachmentDirectory],
+    [modelId, uploadOne, loadFiles, loadModels, loadDependencies, showToast, attachmentDirectory, category],
   );
 
   const onFileInputChange = useCallback(
@@ -833,7 +838,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
           aria-label="Select Model to manage files"
           className="h-7 w-72 max-w-full rounded-md border bg-background px-2 text-xs"
           value={modelId}
-          disabled={loadingModels || uploading || primaryFileId !== null || deletingId !== null || linkingTexture !== null}
+          disabled={savingShape || loadingModels || uploading || primaryFileId !== null || deletingId !== null || linkingTexture !== null}
           onChange={(event) => {
             const id = Number(event.target.value);
             if (id > 0) {
@@ -863,6 +868,8 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
               </div>
             ) : null}
             headerActions={selectedModel ? (
+              <>
+              <Button type="button" variant="ghost" size="sm" className="h-7 text-xs" onClick={() => setHelpOpen(true)}>Help</Button>
               <Button
                 type="button"
                 variant="ghost"
@@ -878,10 +885,72 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
               >
                 <RefreshCw className={`h-3.5 w-3.5 ${loadingFiles || loadingModels ? 'animate-spin' : ''}`} />
               </Button>
+              </>
             ) : null}
             canvasClassName="h-[min(48vh,480px)] min-h-[340px]"
-            showMaterialInspector={['fbx', 'obj'].includes(previewModel?.modelType.toLowerCase() ?? '')}
+            showMaterialInspector={mainModelFileId !== null && ['fbx', 'obj', 'glb', 'gltf'].includes(previewModel?.modelType.toLowerCase() ?? '')}
+            materialInspectorNotice={!modelId ? 'Select a Model to configure its appearance.' : mainModelFileId === null ? 'Choose and save a primary Model file above to enable appearance settings.' : 'Material editing is available for FBX, OBJ, GLB and GLTF Models.'}
             splitMaterialInspector
+            primaryFileControls={(
+              <div className="my-3 space-y-2 border-b pb-3">
+                <label htmlFor="default-model-shape" className="block text-xs">Default Shape / Mesh</label>
+                <div className="flex flex-wrap gap-2">
+                  <select id="default-model-shape" className="h-8 min-w-0 flex-1 rounded border bg-background px-2 text-xs"
+                    value={shapeChoice?.modelId === modelId ? shapeChoice.shape : readModelFallbackShape(modelDetail?.metadata)}
+                    disabled={!modelDetail || loadingFiles || savingShape}
+                    onChange={event => setShapeChoice({ modelId, shape: event.target.value as ModelFallbackShape })}>
+                    {MODEL_FALLBACK_SHAPES.map(shape => <option key={shape} value={shape}>{shape[0].toUpperCase() + shape.slice(1)}</option>)}
+                  </select>
+                  <Button type="button" size="sm" className="text-xs" disabled={!modelDetail || loadingFiles || savingShape || uploading || primaryFileId !== null || linkingTexture !== null || shapeChoice?.modelId !== modelId || shapeChoice.shape === readModelFallbackShape(modelDetail?.metadata)}
+                    onClick={async () => {
+                      if (!modelDetail || shapeChoice?.modelId !== modelId) return;
+                      setSavingShape(true);
+                      try {
+                        const metadata = JSON.parse(setModelFallbackShape(JSON.stringify(modelDetail.metadata ?? {}), shapeChoice.shape));
+                        const response = await fetch(`/api/threed/models?id=${modelId}`, {
+                          method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ metadata }),
+                        });
+                        const result = await response.json();
+                        if (!response.ok || !result.success) throw new Error(result.error || 'Failed to save default shape');
+                        await loadFiles(Number(modelId));
+                        await loadModels();
+                        showToast('Default shape saved', 'success');
+                      } catch (error) {
+                        showToast(error instanceof Error ? error.message : 'Failed to save default shape', 'error');
+                      } finally { setSavingShape(false); }
+                    }}>{savingShape ? 'Saving…' : 'Save shape'}</Button>
+                </div>
+                <label htmlFor="primary-model-file" className="block text-xs">Primary Model file</label>
+                <select id="primary-model-file" className="h-8 w-full min-w-0 rounded border bg-background px-2 text-xs"
+                  value={primaryChoice?.modelId === modelId ? primaryChoice.fileId : String(mainModelFileId ?? '')}
+                  disabled={!modelId || loadingFiles || uploading || primaryFileId !== null || deletingId !== null}
+                  onChange={event => setPrimaryChoice({ modelId, fileId: event.target.value })}>
+                  <option value="">Choose a Model file…</option>
+                  {files.filter(file => file.fileType === 'model').map(file => (
+                    <option key={file.id} value={file.id} disabled={!file.filePath?.trim()}>{file.fileName}{!file.filePath?.trim() ? ' — missing file URL' : file.id === mainModelFileId ? ' — primary' : ''}</option>
+                  ))}
+                </select>
+                <div className="flex flex-wrap gap-2">
+                  <Button type="button" size="sm" className="text-xs"
+                    disabled={!modelId || loadingFiles || uploading || primaryFileId !== null || deletingId !== null || primaryChoice?.modelId !== modelId || !primaryChoice.fileId || Number(primaryChoice.fileId) === mainModelFileId}
+                    onClick={() => {
+                      const file = files.find(item => item.id === Number(primaryChoice?.fileId) && item.fileType === 'model' && item.filePath?.trim());
+                      if (file) void handleSetPrimary(file);
+                    }}>{primaryFileId !== null ? 'Saving primary file…' : 'Save primary file'}</Button>
+                  <label className="relative inline-flex cursor-pointer items-center rounded-md border px-3 py-1 text-xs focus-within:ring-2 focus-within:ring-ring">
+                    Upload Model file
+                    <input aria-label="Upload primary Model file" type="file" accept=".fbx,.glb,.gltf,.obj,.usdz" className="absolute inset-0 w-full cursor-pointer opacity-0"
+                      disabled={!modelId || uploading || primaryFileId !== null || deletingId !== null}
+                      onChange={event => {
+                        const file = event.target.files?.[0];
+                        if (file && ['fbx', 'glb', 'gltf', 'obj', 'usdz'].includes(extensionOf(file.name))) void handleUpload([file], 'models', 'model');
+                        else if (file) showToast('Choose an FBX, GLB, GLTF, OBJ or USDZ Model file.', 'error');
+                        event.target.value = '';
+                      }} />
+                  </label>
+                </div>
+              </div>
+            )}
             requiredFiles={(
       <section className="rounded-lg border bg-muted/20 p-3" aria-labelledby="model-dependencies-title">
         <div className="flex flex-wrap items-center gap-2">
@@ -899,17 +968,15 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
             {sharedRequirementTextures.size} shared Texture(s) available. Link below to save.
           </p>
         )}
-        {selectedModel?.modelType.toLowerCase() === 'obj' && (
-          <p className="mt-2 text-[11px] text-muted-foreground">Attach each required .MTL material library first. Its referenced texture images will then appear below. Materials update in the preview when their files are attached.</p>
-        )}
+
         {dependencyError ? (
           <p className="mt-2 text-[11px] text-amber-400">{dependencyError}</p>
         ) : dependencyAudit?.status === 'missing_primary' ? (
-          <p className="mt-2 text-[11px] text-muted-foreground">Set a primary Model file before attaching its dependencies.</p>
+          <p className="mt-2 text-[11px] text-muted-foreground">Choose a primary Model file in Step 1 to check its required files.</p>
         ) : dependencyAudit?.status === 'not_supported' ? (
           <p className="mt-2 text-[11px] text-muted-foreground">Dependency inspection supports FBX, GLB, GLTF and OBJ primary files.</p>
         ) : dependencyAudit?.status === 'analyzed' && dependencyAudit.requirements.length === 0 ? (
-          <p className="mt-2 text-[11px] text-muted-foreground">{selectedModel?.modelType.toLowerCase() === 'fbx' ? 'This FBX does not expose texture filenames. Choose its texture images below and the preview will retry them by filename.' : 'No external files are referenced. Embedded resources, vertex colors or default materials remain in use.'}</p>
+          <p className="mt-2 text-[11px] text-muted-foreground">{selectedModel?.modelType.toLowerCase() === 'fbx' ? 'No external texture filenames detected.' : 'No external files required.'}</p>
         ) : dependencyAudit?.status === 'analyzed' ? (
           <div className="mt-2 grid gap-2">
             {dependencyAudit.requirements.map((requirement) => {
@@ -942,7 +1009,6 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
                           const texture = textureLibrary.find(item => item.id === Number(requirementTextureChoices[`${modelId}:${requirement.relativePath}`]));
                           if (texture) void saveSharedRequirement(requirement, texture);
                         }}>Link to requirement</Button>
-                      <p className="w-full text-[11px] text-muted-foreground">Reuses the saved Texture as {requirement.fileName}, without another upload.</p>
                     </div>
                   )}
                   {!requirement.satisfied && sharedTexture && (
@@ -967,7 +1033,6 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
       {/* Logical dependency directory; the server owns the physical storage key. */}
       <details id="model-texture-importer" className="mt-3 scroll-mt-4 border-t border-border/70 pt-3">
         <summary className="cursor-pointer text-xs font-semibold">Upload supporting files</summary>
-        <p className="mt-2 text-[11px] text-muted-foreground">Add local textures, material libraries or binary buffers when needed.</p>
 
         <details className="mt-2 rounded border bg-background/25 p-2 text-[11px]">
           <summary className="cursor-pointer select-none text-muted-foreground">
@@ -997,9 +1062,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
             <p id="model-files-directory-help" className={`mt-1.5 ${directoryHasInput && directoryProblem ? 'text-amber-400' : 'text-muted-foreground'}`}>
               {!directoryHasInput ? 'A relative directory is required.' : directoryProblem ?? 'Used to match texture, material and binary file references in this Model.'}
             </p>
-            <p className="mt-1.5 text-muted-foreground">
-              Use the directory referenced by the Model. Storage is managed automatically.
-            </p>
+
           </div>
         </details>
         {directoryProblem && <p role="alert" className="mt-2 text-xs text-amber-400">{directoryProblem} Open Attachment directory to correct it.</p>}
@@ -1027,7 +1090,6 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
           <Upload className="h-5 w-5 shrink-0 text-muted-foreground" />
           <div>
             <p className="text-xs font-medium">Drop Model files here</p>
-            <p className="text-[10px] text-muted-foreground">Files use the attachment directory above.</p>
           </div>
         </div>
       </div>
@@ -1051,12 +1113,13 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
       </section>
             )}
             savedFilesStatus={{
-              ready: Boolean(modelId && !loadingModels && !loadingFiles && !loadingDependencies && !uploading && linkingTexture === null && primaryFileId === null && deletingId === null && !error && !dependencyError && dependencyAudit?.status === 'analyzed' && missingRequirements.length === 0 && !uploadQueue.some(item => item.status === 'error')),
-              message: !modelId ? 'Select a Model above.'
+              ready: Boolean(!savingShape && !(shapeChoice?.modelId === modelId && shapeChoice.shape !== readModelFallbackShape(modelDetail?.metadata)) && modelId && !loadingModels && !loadingFiles && !loadingDependencies && !uploading && linkingTexture === null && primaryFileId === null && deletingId === null && !error && !dependencyError && dependencyAudit?.status === 'analyzed' && missingRequirements.length === 0 && !uploadQueue.some(item => item.status === 'error')),
+              message: savingShape ? 'Saving default shape…' : shapeChoice?.modelId === modelId && shapeChoice.shape !== readModelFallbackShape(modelDetail?.metadata) ? 'Save the Default Shape / Mesh in Step 1.' : !modelId ? 'Select a Model above.'
                 : uploading || linkingTexture !== null || primaryFileId !== null || deletingId !== null ? 'Saving file changes…'
                 : loadingModels || loadingFiles || loadingDependencies ? 'Checking saved files…'
                 : error || dependencyError ? 'Unable to verify saved files. Review the sections above.'
                 : uploadQueue.some(item => item.status === 'error') ? 'An upload failed. Review the upload results above.'
+                : mainModelFileId === null || dependencyAudit?.status === 'missing_primary' ? 'Choose a primary Model file in Step 1.'
                 : dependencyAudit?.status !== 'analyzed' ? 'Saved files could not be verified. Review Required files.'
                 : missingRequirements.length ? `${missingRequirements.length} required file(s) still need to be saved in step 2.`
                 : 'Required files are saved. Review the preview to confirm the appearance.',
@@ -1173,6 +1236,22 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
       )}
         </div>
       </details>
+
+      <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
+        <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-xl">
+          <DialogHeader>
+            <DialogTitle>Model Files — Help</DialogTitle>
+            <DialogDescription>How to prepare and customize a Model.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 text-sm">
+            <div><h3 className="font-semibold">1. Model file + global appearance</h3><p>Default Shape / Mesh is used when a Model file is unavailable. Save shape refreshes the preview; a loaded Model file keeps its own mesh. Upload a Model file if needed, then select it and click Save primary file. Selecting a Base Color Texture previews one material; Save Texture to all materials applies it across the Model.</p></div>
+            <div><h3 className="font-semibold">2. Required files</h3><p>Link a shared Texture or upload the requested file. Linking reuses the saved file without another upload. For OBJ, attach the required MTL libraries first to discover their textures.</p></div>
+            <div><h3 className="font-semibold">Supporting uploads</h3><p>Add local textures, material libraries or binary buffers. The attachment directory should match the Model’s references; storage is managed automatically. Files without URLs cannot be used as the primary Model.</p></div>
+            <div><h3 className="font-semibold">3. Individual materials</h3><p>Expand this section to test or assign a Texture to a specific material. Temporary previews are not saved automatically.</p></div>
+            <div><h3 className="font-semibold">Saved-file status</h3><p>Saved files ready confirms the saved dependency check. Review the preview for visual correctness; this status does not activate the Model. Appearance assignments and missing-file resolution are separate actions.</p></div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Delete confirmation dialog */}
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
