@@ -2,9 +2,9 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Current production: **v0.19.20**, User-confirmed as a version-number-only release. **v0.19.21** is prepared; manual build and production publication remain pending.
+Current production: **v0.19.21 — ThreeD Model Import + File Workspace Refinements**, deployment User-confirmed.
 
-- [v0.19.21 — ThreeD Model Import + File Workspace Refinements](v0.19.21.md) — prepared candidate
+- [v0.19.21 — ThreeD Model Import + File Workspace Refinements](v0.19.21.md) — production User-confirmed
 - [v0.19.19 — Character Collisions + Interactions](v0.19.19.md) — production User-confirmed
 
 - [v0.19.18 — ThreeD Animation Presets + Character Navigation](v0.19.18.md) — production User-confirmed
