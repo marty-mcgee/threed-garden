@@ -7,9 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production release:** `v0.19.21 — ThreeD Model Import + File Workspace Refinements`, package `0.19.21`, deployment User-confirmed. Includes numbered Bulk Import and Model Files workflows, shared Texture resolution, saved-file status, and Admin Tasks improvements. See the [release notes](docs/releases/v0.19.21.md).
-
-> **Prepared release:** `v0.19.22 — ThreeD Model Files: Guided Setup + Default Shapes`. Manual build and publication pending. See the [release notes](docs/releases/v0.19.22.md).
+> **Current production release:** `v0.19.22 — ThreeD Model Files: Guided Setup + Default Shapes`, package `0.19.22`, deployment User-confirmed. Includes guided primary-file setup, default shape presets, all-format step visibility, and on-demand Help. See the [release notes](docs/releases/v0.19.22.md).
 
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 
