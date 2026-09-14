@@ -401,7 +401,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
     <DialogContent className="flex h-[92dvh] max-h-[92dvh] flex-col gap-0 overflow-hidden p-0 sm:max-w-[min(96vw,1150px)]">
       <DialogHeader className="shrink-0 border-b px-4 py-4 pr-12 sm:pl-6">
         <DialogTitle>Bulk Import Models</DialogTitle>
-        <DialogDescription>Prepare FBX, GLB, GLTF and OBJ Models with their material libraries, textures and binary files, then import ready rows. Files upload only when you start importing.</DialogDescription>
+        <DialogDescription>Choose Models, resolve missing files, then import. Uploads start only when you click Import.</DialogDescription>
       </DialogHeader>
       <div data-slot="bulk-import-body" role="region" aria-label="Bulk import configuration" tabIndex={0} className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6">
       <input ref={primaryRef} aria-label="Select Model files" type="file" multiple accept=".fbx,.glb,.gltf,.obj" className="hidden" disabled={importing}
@@ -411,15 +411,15 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
       <input ref={previewRef} aria-label="Select preview image" type="file" accept=".png,.jpg,.jpeg,.webp" className="hidden" disabled={locked || checkingPreview}
         onChange={(event) => { if (selected) void choosePreview(event.target.files?.[0], selected.id); event.target.value = ''; }} />
       <div className="flex flex-wrap items-center gap-2">
-        <Button type="button" size="sm" disabled={importing || drafts.length >= MAX_BULK_MODELS} onClick={() => primaryRef.current?.click()}><Upload className="mr-1 h-3 w-3" />Choose Model files</Button>
-        <Button type="button" variant="outline" size="sm" disabled={importing} onClick={() => textureRef.current?.click()}>Add MTL / textures / .bin files</Button>
+        <Button type="button" size="sm" disabled={importing || drafts.length >= MAX_BULK_MODELS} onClick={() => primaryRef.current?.click()}><Upload className="mr-1 h-3 w-3" />1. Choose Model files</Button>
         <Badge variant="secondary">{drafts.length}/100 Models</Badge>
         <span className="text-xs text-muted-foreground">Up to 4 MiB per file for bulk uploads.</span>
       </div>
       {notice && <p role="alert" className="break-words rounded border border-amber-500/40 p-2 text-xs">{notice}</p>}
-      <section aria-label="Batch defaults" className="rounded border p-3">
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div><h3 className="text-sm font-medium">Batch defaults</h3><p className="text-xs text-muted-foreground">{preferencesSaved ? 'Your batch defaults are remembered in this browser.' : 'Default preferences for this batch.'}</p></div>
+      <details aria-label="Batch defaults" className="rounded border p-3">
+        <summary className="cursor-pointer text-sm font-medium">2. Batch settings <span className="text-xs font-normal text-muted-foreground">· Scale {defaults.scale} · {defaults.categoryIds.length} categories · {defaults.isActive ? 'Activate after import' : 'Keep inactive'}</span></summary>
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
+          <div><p className="text-xs text-muted-foreground">{preferencesSaved ? 'Your batch defaults are remembered in this browser.' : 'Default preferences for this batch.'}</p></div>
           <Button type="button" variant="outline" size="sm" disabled={importing} onClick={() => setDefaults(createBulkDefaults())}>Reset defaults</Button>
         </div>
         <fieldset disabled={importing} className="mt-3 min-w-0 space-y-3">
@@ -430,30 +430,34 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
           <p className="text-xs text-muted-foreground">100% = scale 1. Choose a shortcut or enter a custom scale, then preview the resulting size.</p>
           <div className="flex flex-wrap gap-3">{FLAGS.map(([key, label]) => <label key={key} className="flex items-center gap-1.5 text-xs"><input type="checkbox" checked={defaults[key]} onChange={(event) => setDefaults((current) => ({ ...current, [key]: event.target.checked }))} />{label}</label>)}</div>
           <CategoryChoices categories={activeCategories} value={defaults.categoryIds} onChange={(categoryIds) => setDefaults((current) => ({ ...current, categoryIds }))} />
-          <label className="block text-xs">Assign Existing Texture File
+          <p className="text-xs text-muted-foreground">Changes apply to inherited values. Models stay inactive unless activation is requested and their saved dependency audit succeeds.</p>
+        </fieldset>
+      </details>
+      <section aria-label="Shared Texture" className="space-y-2 rounded border p-3">
+        <fieldset disabled={importing} className="space-y-2">
+          <label className="block text-xs">3. Assign Existing Texture File
             <select aria-label="Batch existing Texture" className={selectClass} value={defaults.existingTextureId ?? ''}
               onChange={(event) => setDefaults((current) => ({ ...current, existingTextureId: event.target.value ? Number(event.target.value) : null }))}>
               <option value="">None — keep original materials and textures</option>
               <ExistingTextureOptions textures={activeTextures} selectedId={defaults.existingTextureId} />
             </select>
           </label>
-          <p className="text-xs text-muted-foreground">None keeps each Model's original materials and textures. Choosing a saved Texture replaces Base Color on every material slot in inheriting Models; other authored maps are kept.</p>
-          <p className="text-xs text-muted-foreground">Changes apply to inherited values. Models stay inactive unless activation is requested and their saved dependency audit succeeds.</p>
+          <p className="text-xs text-muted-foreground">Reuses one saved file for Base Color. Confirm any differently named requirements below.</p>
         </fieldset>
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+          <span className="text-muted-foreground" role="status">{texturesLoading ? 'Loading existing Textures…' : textureError || ''}</span>
+          <Button type="button" variant="ghost" size="sm" className="h-7 text-xs" aria-label="Refresh existing Textures" disabled={importing || texturesLoading} onClick={() => setTextureRefresh((value) => value + 1)}>Refresh Textures</Button>
+        </div>
       </section>
-      <div className="flex flex-wrap items-center gap-2 text-xs">
-        <span className="text-muted-foreground" role="status">{texturesLoading ? 'Loading existing Textures…' : textureError || `${activeTextures.length} active existing Textures available`}</span>
-        <Button type="button" variant="outline" size="sm" disabled={importing || texturesLoading} onClick={() => setTextureRefresh((value) => value + 1)}>Refresh existing Textures</Button>
-      </div>
-      <section aria-label="Shared material, texture and binary files" className="rounded border p-3">
-        <h3 className="text-sm font-medium">Shared material, texture and binary files ({pool.length}/500)</h3>
-        <p className="my-2 text-xs text-muted-foreground">Select .MTL material libraries, their texture images and .bin files to resolve Model dependencies. Use Assign Existing Texture File to reuse a saved Base Color Texture. For FBX, a matching saved filename also supplies its required image automatically; the original stored file is linked during import. Embedded GLB/GLTF resources need no extra attachment.</p>
-        {pool.length === 0 && <p className="text-xs text-muted-foreground">No shared files selected.</p>}
+      <details aria-label="Shared material, texture and binary files" className="rounded border p-3">
+        <summary className="cursor-pointer text-sm font-medium">Supporting files · add only if needed ({pool.length}/500)</summary>
+        <p className="my-2 text-xs text-muted-foreground">Add local files required by your Models: material libraries (.mtl), textures or binary buffers (.bin).</p>
+        <Button type="button" variant="outline" size="sm" disabled={importing} onClick={() => textureRef.current?.click()}>Add MTL / textures / .bin files</Button>
         <div className="space-y-1">{pool.map((source, index) => <div key={source.id} className="flex items-center justify-between gap-2 text-xs">
           <span className="break-all">#{index + 1} {source.sourcePath} · {sizeLabel(source.file.size)}</span>
           <Button type="button" variant="ghost" size="sm" disabled={importing} aria-label={`Remove companion ${index + 1}: ${source.file.name}`} onClick={() => setPool((current) => current.filter((entry) => entry.id !== source.id))}><Trash2 className="h-3 w-3" /></Button>
         </div>)}</div>
-      </section>
+      </details>
       {drafts.length > 0 && <div className="grid min-w-0 items-stretch gap-4 md:grid-cols-[minmax(220px,0.8fr)_minmax(0,1.5fr)]">
         <div className="flex min-h-0 min-w-0 flex-col gap-4 md:[contain:size]">
         <section className="flex min-h-0 min-w-0 flex-1 flex-col" aria-label="Queued Models">
@@ -526,6 +530,11 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
                     {match.requirement.kind === 'texture' && /\.fbx$/i.test(selected.source.file.name) && selectedPlan.settings.existingTextureId != null && <option value="selected-shared-texture">Use selected shared Texture for this requirement</option>}
                     {selectedPool.map((source, index) => ({ source, index })).filter(({ source }) => (match.requirement.kind === 'buffer' ? 'binary' : match.requirement.kind === 'material' ? 'other' : 'texture') === bulkCompanionType(source.file)).map(({ source, index }) => <option key={source.id} value={source.id}>#{index + 1} {source.sourcePath} ({sizeLabel(source.file.size)})</option>)}
                   </select>
+                  {match.requirement.kind === 'texture' && /\.fbx$/i.test(selected.source.file.name) && selectedPlan.settings.existingTextureId != null && selected.choices[requirementKey(match.requirement)]?.sourceId !== 'selected-shared-texture' && (
+                    <button type="button" className="mt-2 text-xs underline" onClick={() => updateDraft(selected.id, { choices: { ...selected.choices, [requirementKey(match.requirement)]: { sourceId: 'selected-shared-texture', relativePath: match.relativePath || defaultDestination(match.requirement.relativePath) } } })}>
+                      Use selected shared Texture for this requirement
+                    </button>
+                  )}
                   {selected.choices[requirementKey(match.requirement)]?.sourceId === 'selected-shared-texture' && <p className="text-xs">Using {selectedTextures.find((texture) => texture.id === selectedPlan.settings.existingTextureId)?.fileName ?? 'the selected shared Texture'} as {match.requirement.fileName}. The existing stored file is linked, not copied.</p>}
                   <Input aria-label={`Destination for ${match.requirement.relativePath}`} value={match.relativePath} onChange={(event) => updateDraft(selected.id, { choices: { ...selected.choices, [requirementKey(match.requirement)]: { sourceId: selected.choices[requirementKey(match.requirement)]?.sourceId ?? match.sourceId, relativePath: event.target.value } } })} />
                   <p className={`text-[11px] ${match.issue || !match.sourceId ? 'font-medium text-amber-800 dark:text-amber-300' : 'text-muted-foreground'}`}>{match.issue || (match.sourceId.startsWith('saved-texture:') ? 'Matching saved Texture — uses the shared file; no copy is uploaded.' : match.automatic ? 'Suggested match — change if needed' : match.sourceId ? 'Selected explicitly' : 'Missing or ambiguous') }</p>
@@ -537,8 +546,8 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
                   {selectedPlan.issues.map((issue, index) => <p key={`issue-${index}`} className="break-words font-medium text-red-800 dark:text-red-300">{issue}</p>)}
                   {selectedPlan.unresolved.map((issue, index) => <p key={`unresolved-${index}`} className="break-words font-medium text-amber-800 dark:text-amber-300">{issue}{selected.configureLater && !selectedPlan.matches.some((match) => match.requirement.relativePath === issue && match.requirement.kind !== 'texture') ? ' — configure after import' : ''}</p>)}
                 </div>}
-                <div className="space-y-2 border-t border-current/20 pt-3">
-                  <h4 className="text-xs font-medium">Additional file attachments</h4>
+                <details className="space-y-2 border-t border-current/20 pt-3">
+                  <summary className="cursor-pointer text-xs font-medium">Additional attachments ({selected.extras?.length ?? 0})</summary>
                   {(selected.extras ?? []).map((extra) => <div key={extra.id} className="flex items-center gap-1">
                     <span className="max-w-28 truncate text-xs">{selectedPool.find((source) => source.id === extra.sourceId)?.file.name ?? 'File removed'}</span>
                     <Input aria-label="Additional file destination" value={extra.relativePath} onChange={(event) => updateDraft(selected.id, { extras: selected.extras?.map((entry) => entry.id === extra.id ? { ...entry, relativePath: event.target.value } : entry) })} />
@@ -547,9 +556,10 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
                   <select aria-label="Add additional file attachment" className={selectClass} value="" onChange={(event) => { const source = pool.find((entry) => entry.id === event.target.value); if (source) updateDraft(selected.id, { extras: [...(selected.extras ?? []), { id: crypto.randomUUID(), sourceId: source.id, relativePath: defaultDestination(source.file.name) }] }); }}>
                     <option value="">Attach another selected file…</option>{selectedPool.map((source, index) => <option key={source.id} value={source.id}>#{index + 1} {source.sourcePath}</option>)}
                   </select>
-                </div>
+                </details>
               </section>
-              <h4 className="border-t pt-3 text-sm font-medium">Model configuration</h4>
+              <details key={selected.id} className="space-y-3 border-t pt-3">
+              <summary className="cursor-pointer text-sm font-medium">Model settings <span className="text-xs font-normal text-muted-foreground">· {selected.modelName} · Scale {selectedPlan.settings.scale}</span></summary>
               <label className="block text-xs">Model name<Input value={selected.modelName} onChange={(event) => updateDraft(selected.id, { modelName: event.target.value })} /></label>
               <div className="grid grid-cols-2 gap-2">
                 <label className="text-xs">Scale {selected.overrides.scale === undefined && '(batch)'}<Input type="number" min="0.01" step="0.01" value={selectedPlan.settings.scale} onChange={(event) => override('scale', event.target.value)} /></label>
@@ -579,6 +589,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
               <div className="flex flex-wrap items-center gap-2"><Button type="button" variant="outline" size="sm" onClick={() => previewRef.current?.click()}>Choose thumbnail image</Button>
                 {selected.previewFile && <><span className="text-xs">{selected.previewFile.name}</span><button type="button" className="text-xs underline" onClick={() => updateDraft(selected.id, { previewFile: undefined })}>Remove preview</button></>}
               </div>
+              </details>
             </fieldset>
         </div>}
       </div>}

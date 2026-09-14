@@ -10,7 +10,7 @@ import {
   threedWateringSchedules, // ✅ Add this
 } from '@/lib/schema/threed';
 import { projectAssets } from '@/lib/schema/project';
-import { eq, and, or, desc, sql, type SQL } from 'drizzle-orm';
+import { eq, and, or, desc, ilike, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 
 // ============================================
@@ -28,8 +28,9 @@ export async function GET(request: NextRequest) {
     const priority = searchParams.get('priority');
     const type = searchParams.get('type');
     const assignedTo = searchParams.get('assignedTo');
-    const limit = parseInt(searchParams.get('limit') || '50');
-    const offset = parseInt(searchParams.get('offset') || '0');
+    const limit = Math.min(100, Math.max(1, Math.floor(Number(searchParams.get('limit')) || 50)));
+    const rawOffset = Number(searchParams.get('offset'));
+    const offset = Number.isFinite(rawOffset) ? Math.max(0, Math.floor(rawOffset)) : 0;
     const accessCondition = userId
       ? or(
           eq(threedTasks.userId, userId),
@@ -69,6 +70,9 @@ export async function GET(request: NextRequest) {
     type TaskStatus = NonNullable<(typeof threedTasks.$inferSelect)['status']>;
     type TaskPriority = NonNullable<(typeof threedTasks.$inferSelect)['priority']>;
     const conditions: SQL[] = [accessCondition];
+
+    const search = searchParams.get('search')?.trim();
+    if (search) conditions.push(or(ilike(threedTasks.title, `%${search}%`), ilike(threedTasks.description, `%${search}%`))!);
 
     // ✅ Apply filters
     if (status) {
@@ -121,13 +125,25 @@ export async function GET(request: NextRequest) {
       .from(threedTasks)
       .where(where);
 
+    const sortColumns = {
+      title: threedTasks.title, type: threedTasks.type,
+      assignedTo: threedTasks.assignedTo, isActive: threedTasks.isActive,
+      priority: threedTasks.priority, status: threedTasks.status, dueDate: threedTasks.dueDate,
+    };
+    const sortKey = searchParams.get('sort');
+    const sortColumn = sortKey && Object.prototype.hasOwnProperty.call(sortColumns, sortKey)
+      ? sortColumns[sortKey as keyof typeof sortColumns] : null;
+    const direction = searchParams.get('direction') === 'desc' ? sql`desc` : sql`asc`;
+
     const tasks = await db
       .select()
       .from(threedTasks)
       .where(where)
       .orderBy(
-        sql`CASE WHEN ${threedTasks.status} = 'pending' THEN 0 WHEN ${threedTasks.status} = 'in_progress' THEN 1 WHEN ${threedTasks.status} = 'completed' THEN 2 ELSE 3 END`,
-        desc(threedTasks.createdAt)
+        ...(sortColumn ? [sql`${sortColumn} ${direction} nulls last`] : [
+          sql`CASE WHEN ${threedTasks.status} = 'pending' THEN 0 WHEN ${threedTasks.status} = 'in_progress' THEN 1 WHEN ${threedTasks.status} = 'completed' THEN 2 ELSE 3 END`,
+          desc(threedTasks.createdAt),
+        ]), desc(threedTasks.id)
       )
       .limit(limit)
       .offset(offset);

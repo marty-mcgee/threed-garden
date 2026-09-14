@@ -222,6 +222,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
   const [loadingDependencies, setLoadingDependencies] = useState(false);
   const [dependencyAudit, setDependencyAudit] = useState<ModelDependencyAudit | null>(null);
   const [dependencyError, setDependencyError] = useState<string | null>(null);
+  const [requirementTextureChoices, setRequirementTextureChoices] = useState<Record<string, string>>({});
   const [textureLibrary, setTextureLibrary] = useState<Array<ThreeDModelTextureLibraryItem & { isActive: boolean }>>([]);
   const [linkingTexture, setLinkingTexture] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -690,7 +691,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
   const saveSharedRequirement = async (requirement: ModelDependencyRequirement, texture: ThreeDModelTextureLibraryItem) => {
     if (!modelId || linkingTexture) return;
     const directory = requirement.relativePath.split('/').slice(0, -1).join('/') || 'textures';
-    const relativePath = attachmentRelativePath(attachmentDirectoryProblem(directory) ? 'textures' : directory, texture.fileName);
+    const relativePath = attachmentRelativePath(attachmentDirectoryProblem(directory) ? 'textures' : directory, requirement.fileName);
     setLinkingTexture(requirement.relativePath);
     try {
       const response = await fetch('/api/threed/models/files', {
@@ -846,13 +847,13 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
           {models.map((model) => <option key={model.id} value={model.id}>{model.modelName} · {model.modelType.toUpperCase()} · #{model.id}</option>)}
         </select>, selectorContainer)}
 
-      <div className="grid items-start gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(400px,0.85fr)]">
+      <div className="grid items-start gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(400px,0.85fr)] ">
           <ThreeDModelAssetPreview
             model={previewModel}
             attachedDependencyCount={dependencyAudit?.requirements.filter((item) => item.satisfied).length ?? 0}
             dependencyCount={dependencyAudit?.requirements.length ?? 0}
-            title="Model Importer Canvas"
-            description="Preview the primary Model with every texture and supportive file currently available."
+            title="Model preview"
+            description="Review this Model with its current textures."
             headerMeta={selectedModel ? (
               <div className="flex min-w-0 items-center gap-2 border-l pl-3">
                 <FileIcon type="model" />
@@ -881,15 +882,11 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
             canvasClassName="h-[min(48vh,480px)] min-h-[340px]"
             showMaterialInspector={['fbx', 'obj'].includes(previewModel?.modelType.toLowerCase() ?? '')}
             splitMaterialInspector
-            textureLibrary={textureLibrary}
-            onSaveMaterialAssignment={saveMaterialAssignment}
-          />
-
-      {/* Primary-file dependency requirements and attachment resolution. */}
-      <section className="order-2 rounded-lg border bg-muted/20 p-3 lg:col-start-2 lg:row-start-1" aria-labelledby="model-dependencies-title">
+            requiredFiles={(
+      <section className="rounded-lg border bg-muted/20 p-3" aria-labelledby="model-dependencies-title">
         <div className="flex flex-wrap items-center gap-2">
           <Link2 className="h-4 w-4 text-cyan-400" />
-          <h2 id="model-dependencies-title" className="text-xs font-semibold">Required Model dependencies</h2>
+          <h2 id="model-dependencies-title" className="text-xs font-semibold">2. Required files</h2>
           {loadingDependencies && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
           {dependencyAudit?.status === 'analyzed' && dependencyAudit.requirements.length > 0 && (
             <Badge variant={trulyMissingCount ? 'destructive' : 'secondary'} className="text-[10px]">
@@ -899,7 +896,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
         </div>
         {sharedRequirementTextures.size > 0 && (
           <p className="mt-2 text-[11px] text-cyan-400">
-            {sharedRequirementTextures.size} required texture(s) available from your shared library for preview. Save the reference below to complete the dependency. No new upload is needed.
+            {sharedRequirementTextures.size} shared Texture(s) available. Link below to save.
           </p>
         )}
         {selectedModel?.modelType.toLowerCase() === 'obj' && (
@@ -929,6 +926,25 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
                       {requirement.satisfied ? `Saved reference: ${requirement.matchedRelativePath}` : sharedTexture ? 'Shared Texture available — preview only until linked' : `Missing ${requirement.kind}`}
                     </p>
                   </div>
+                  {!requirement.satisfied && requirement.kind === 'texture' && selectedModel?.modelType.toLowerCase() === 'fbx' && (
+                    <div className="flex w-full flex-wrap items-center gap-2">
+                      <select aria-label={`Shared Texture for ${requirement.relativePath}`} className="min-w-0 flex-1 rounded border bg-background p-2 text-xs"
+                        disabled={linkingTexture !== null || uploading}
+                        value={requirementTextureChoices[`${modelId}:${requirement.relativePath}`] ?? ''}
+                        onChange={event => setRequirementTextureChoices(previous => ({ ...previous, [`${modelId}:${requirement.relativePath}`]: event.target.value }))}>
+                        <option value="">Choose a shared Texture to satisfy this requirement…</option>
+                        {textureLibrary.filter(texture => texture.isActive && texture.fileName.split('.').at(-1)?.toLowerCase() === requirement.fileName.split('.').at(-1)?.toLowerCase()).map(texture => (
+                          <option key={texture.id} value={texture.id}>{texture.fileName}</option>
+                        ))}
+                      </select>
+                      <Button type="button" variant="outline" size="sm" className="text-xs" disabled={linkingTexture !== null || uploading || !requirementTextureChoices[`${modelId}:${requirement.relativePath}`]}
+                        onClick={() => {
+                          const texture = textureLibrary.find(item => item.id === Number(requirementTextureChoices[`${modelId}:${requirement.relativePath}`]));
+                          if (texture) void saveSharedRequirement(requirement, texture);
+                        }}>Link to requirement</Button>
+                      <p className="w-full text-[11px] text-muted-foreground">Reuses the saved Texture as {requirement.fileName}, without another upload.</p>
+                    </div>
+                  )}
                   {!requirement.satisfied && sharedTexture && (
                     <Button type="button" variant="outline" size="sm" className="h-7 shrink-0 px-2 text-[10px]"
                       disabled={linkingTexture !== null || uploading}
@@ -949,16 +965,11 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
           </div>
         ) : null}
       {/* Logical dependency directory; the server owns the physical storage key. */}
-      <div id="model-texture-importer" className="mt-3 scroll-mt-4 border-t border-border/70 pt-3">
-        <div className="flex items-center gap-2">
-          <Image className="h-4 w-4 text-cyan-400" />
-          <div className="min-w-0 flex-1">
-            <h2 className="text-xs font-semibold">Provide Model textures</h2>
-            <p className="text-[11px] text-muted-foreground">Attach this Model's required textures, buffers, and supportive files.</p>
-          </div>
-        </div>
+      <details id="model-texture-importer" className="mt-3 scroll-mt-4 border-t border-border/70 pt-3">
+        <summary className="cursor-pointer text-xs font-semibold">Upload supporting files</summary>
+        <p className="mt-2 text-[11px] text-muted-foreground">Add local textures, material libraries or binary buffers when needed.</p>
 
-        <details open className="mt-2 rounded border bg-background/25 p-2 text-[11px]">
+        <details className="mt-2 rounded border bg-background/25 p-2 text-[11px]">
           <summary className="cursor-pointer select-none text-muted-foreground">
             Attachment directory: <span className="font-mono text-cyan-500/90">{normalizedAttachmentDirectory || '<directory>'}/</span>
           </summary>
@@ -987,11 +998,12 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
               {!directoryHasInput ? 'A relative directory is required.' : directoryProblem ?? 'Used to match texture, material and binary file references in this Model.'}
             </p>
             <p className="mt-1.5 text-muted-foreground">
-              Files are stored automatically under your ThreeD Model folder in threed/users/, with a unique folder for each upload. This directory controls dependency matching, not the full storage path.
+              Use the directory referenced by the Model. Storage is managed automatically.
             </p>
           </div>
         </details>
-      </div>
+        {directoryProblem && <p role="alert" className="mt-2 text-xs text-amber-400">{directoryProblem} Open Attachment directory to correct it.</p>}
+        <Button type="button" variant="outline" size="sm" className="my-2 text-xs" onClick={requestUpload} disabled={!modelId || uploading || !!directoryProblem}>Choose supporting files</Button>
 
       {/* Drag-and-drop upload zone */}
       <div
@@ -1020,6 +1032,8 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
         </div>
       </div>
 
+      </details>
+
       {/* Upload progress chips */}
       {uploadQueue.length > 0 && (
         <div className="space-y-1">
@@ -1035,12 +1049,29 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
         </div>
       )}
       </section>
+            )}
+            savedFilesStatus={{
+              ready: Boolean(modelId && !loadingModels && !loadingFiles && !loadingDependencies && !uploading && linkingTexture === null && primaryFileId === null && deletingId === null && !error && !dependencyError && dependencyAudit?.status === 'analyzed' && missingRequirements.length === 0 && !uploadQueue.some(item => item.status === 'error')),
+              message: !modelId ? 'Select a Model above.'
+                : uploading || linkingTexture !== null || primaryFileId !== null || deletingId !== null ? 'Saving file changes…'
+                : loadingModels || loadingFiles || loadingDependencies ? 'Checking saved files…'
+                : error || dependencyError ? 'Unable to verify saved files. Review the sections above.'
+                : uploadQueue.some(item => item.status === 'error') ? 'An upload failed. Review the upload results above.'
+                : dependencyAudit?.status !== 'analyzed' ? 'Saved files could not be verified. Review Required files.'
+                : missingRequirements.length ? `${missingRequirements.length} required file(s) still need to be saved in step 2.`
+                : 'Required files are saved. Review the preview to confirm the appearance.',
+            }}
+            textureLibrary={textureLibrary}
+            onSaveMaterialAssignment={saveMaterialAssignment}
+          />
+
+
       </div>
 
-      <section className="rounded-lg border bg-muted/10" aria-labelledby="model-file-management-title">
-        <div className="px-3 py-2 text-xs font-medium" id="model-file-management-title">
-          Model files and attachments <span className="text-muted-foreground">({stats.count})</span>
-        </div>
+      <details className="rounded-lg border bg-muted/10" aria-labelledby="model-file-management-title">
+        <summary className="cursor-pointer px-3 py-2 text-xs font-medium" id="model-file-management-title">
+          Model files and attachments <span className="text-muted-foreground">({stats.count}){loadingFiles ? ' · Loading…' : error ? ' · Unable to load files — expand to retry' : ''}</span>
+        </summary>
         <div className="space-y-3 border-t p-3">
       {/* Toolbar: search / sort / view */}
       <div className="flex flex-wrap items-center gap-2">
@@ -1141,7 +1172,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
         </div>
       )}
         </div>
-      </section>
+      </details>
 
       {/* Delete confirmation dialog */}
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>

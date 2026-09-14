@@ -1,7 +1,7 @@
 // components/admin/threed/tasks/ThreeDTasksCRUD.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Plus,
   Edit,
@@ -11,7 +11,6 @@ import {
   ListTodo,
   MoreHorizontal,
   Search,
-  Filter,
   Clock,
   X,
 } from 'lucide-react';
@@ -68,22 +67,22 @@ const formatDateForInput = (dateString: string | null): string => {
 // ✅ Status color mapping
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'pending': return 'bg-yellow-100 text-yellow-700';
-    case 'in_progress': return 'bg-blue-100 text-blue-700';
-    case 'completed': return 'bg-green-100 text-green-700';
-    case 'cancelled': return 'bg-gray-100 text-gray-700';
-    default: return 'bg-gray-100 text-gray-700';
+    case 'pending': return 'text-yellow-600 dark:text-yellow-400';
+    case 'in_progress': return 'text-blue-600 dark:text-blue-400';
+    case 'completed': return 'text-green-600 dark:text-green-400';
+    case 'cancelled': return 'text-muted-foreground';
+    default: return 'text-muted-foreground';
   }
 };
 
 // ✅ Priority color mapping
 const getPriorityColor = (priority: string) => {
   switch (priority) {
-    case 'urgent': return 'bg-red-100 text-red-700';
-    case 'high': return 'bg-orange-100 text-orange-700';
-    case 'medium': return 'bg-blue-100 text-blue-700';
-    case 'low': return 'bg-gray-100 text-gray-700';
-    default: return 'bg-gray-100 text-gray-700';
+    case 'urgent': return 'text-red-600 dark:text-red-400';
+    case 'high': return 'text-orange-600 dark:text-orange-400';
+    case 'medium': return 'text-blue-600 dark:text-blue-400';
+    case 'low': return 'text-muted-foreground';
+    default: return 'text-muted-foreground';
   }
 };
 
@@ -95,9 +94,15 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingTask, setEditingTask] = useState<ThreeDTask | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterStatus, setFilterStatus] = useState<string>('all');
-  const [filterPriority, setFilterPriority] = useState<string>('all');
-  const [filterType, setFilterType] = useState<string>('all');
+  const [sort, setSort] = useState('title');
+  const [direction, setDirection] = useState<'asc' | 'desc'>('asc');
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+  const [total, setTotal] = useState(0);
+  const [selected, setSelected] = useState<Set<number>>(new Set());
+  const [bulkBusy, setBulkBusy] = useState(false);
+  const requestSequence = useRef(0);
+
 
   // ✅ State for related entity options
   const [plants, setPlants] = useState<ThreeDRelatedEntity[]>([]);
@@ -128,34 +133,48 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
 
   // ✅ Fetch tasks and related entities
   useEffect(() => {
-    fetchTasks();
     fetchRelatedEntities();
   }, [threedId]);
 
+  useEffect(() => {
+    setSelected(new Set());
+    void fetchTasks();
+    return () => { requestSequence.current++; };
+  }, [threedId, page, pageSize, searchQuery, sort, direction]);
+
   const fetchTasks = async () => {
+    const request = ++requestSequence.current;
     setLoading(true);
     try {
       const params = new URLSearchParams();
-      if (filterStatus !== 'all') params.append('status', filterStatus);
-      if (filterPriority !== 'all') params.append('priority', filterPriority);
-      if (filterType !== 'all') params.append('type', filterType);
+      params.set('limit', String(pageSize));
+      params.set('offset', String((page - 1) * pageSize));
+      params.set('search', searchQuery);
+      params.set('sort', sort);
+      params.set('direction', direction);
       if (threedId) params.append('moduleId', String(threedId));
 
       const response = await fetch(`/api/threed/tasks?${params.toString()}`);
       const data = await response.json();
 
-      if (data.success) {
+      if (request !== requestSequence.current) return;
+      if (response.ok && data.success) {
+        const count = Number(data.pagination?.total ?? 0);
+        setSelected(new Set());
+        setTotal(count);
+        if (page > Math.max(1, Math.ceil(count / pageSize))) setPage(Math.max(1, Math.ceil(count / pageSize)));
         setTasks(Array.isArray(data.data) ? data.data : []);
       } else {
         showToast(data.error || 'Failed to fetch tasks', 'error');
         setTasks([]);
       }
     } catch (error) {
+      if (request !== requestSequence.current) return;
       console.error('Error fetching tasks:', error);
       showToast('Failed to fetch tasks', 'error');
       setTasks([]);
     } finally {
-      setLoading(false);
+      if (request === requestSequence.current) setLoading(false);
     }
   };
 
@@ -209,10 +228,29 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
     }
   };
 
-  const filteredTasks = tasks.filter((task) =>
-    task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (task.description?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
-  );
+  const filteredTasks = tasks;
+  const pages = Math.max(1, Math.ceil(total / pageSize));
+  const toggleTask = (id: number) => setSelected(previous => {
+    const next = new Set(previous); next.has(id) ? next.delete(id) : next.add(id); return next;
+  });
+  const deleteSelected = async () => {
+    const ids = tasks.filter(task => selected.has(task.id)).map(task => task.id);
+    if (!ids.length || !confirm(`Delete ${ids.length} selected tasks? This action cannot be undone.`)) return;
+    setBulkBusy(true);
+    let deleted = 0;
+    for (const id of ids) {
+      try {
+        const response = await fetch(`/api/threed/tasks?id=${id}`, { method: 'DELETE' });
+        const result = await response.json();
+        if (response.ok && result.success) deleted++;
+      } catch { /* Report partial failure after processing the selected page. */ }
+    }
+    setSelected(new Set());
+    await fetchTasks();
+    if (deleted) onModuleUpdate?.();
+    showToast(`${deleted} deleted; ${ids.length - deleted} failed`, deleted === ids.length ? 'success' : 'error');
+    setBulkBusy(false);
+  };
 
   const handleCreate = async () => {
     if (!formData.title) {
@@ -422,13 +460,6 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
     </div>
   );
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-4">
-        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
 
   return (
     <div className={scrollRecords ? "flex h-full min-h-0 flex-col gap-2" : "space-y-2"}>
@@ -436,13 +467,14 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
 
       {/* Header */}
       <AdminWorkspaceHeader icon={ListTodo} title="Tasks" description="Manage garden tasks and to-do items for your 3D garden" className="shrink-0">
-        <Badge variant="secondary" className="text-xs">{filteredTasks.length}</Badge>
+        <Badge variant="secondary" className="text-xs">{total}</Badge>
         <div className="relative min-w-0 w-full flex-auto sm:w-auto sm:min-w-48 sm:flex-1">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <Input
             placeholder="Search tasks..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            disabled={bulkBusy}
+            onChange={(e) => { setPage(1); setSearchQuery(e.target.value); }}
             className="pl-7 h-7 text-xs"
           />
         </div>
@@ -775,71 +807,28 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
         </Dialog>
       </AdminWorkspaceHeader>
 
-      {/* Filters */}
-      <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-        <Select value={filterStatus} onValueChange={setFilterStatus}>
-          <SelectTrigger className="w-full min-w-40 sm:w-auto h-7 text-[11px]">
-            <Filter className="w-3.5 h-3.5 mr-1" />
-            <SelectValue placeholder="Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
-            {TASK_STATUS_OPTIONS.map((status) => (
-              <SelectItem key={status.value} value={status.value}>
-                {status.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={filterPriority} onValueChange={setFilterPriority}>
-          <SelectTrigger className="w-full min-w-40 sm:w-auto h-7 text-[11px]">
-            <Filter className="w-3.5 h-3.5 mr-1" />
-            <SelectValue placeholder="Priority" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Priorities</SelectItem>
-            {TASK_PRIORITY_OPTIONS.map((priority) => (
-              <SelectItem key={priority.value} value={priority.value}>
-                {priority.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={filterType} onValueChange={setFilterType}>
-          <SelectTrigger className="w-full min-w-40 sm:w-auto h-7 text-[11px]">
-            <Filter className="w-3.5 h-3.5 mr-1" />
-            <SelectValue placeholder="Type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Types</SelectItem>
-            {TASK_TYPE_OPTIONS.map((type) => (
-              <SelectItem key={type.value} value={type.value}>
-                {type.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button
-          variant="outline"
-          size="sm"
-          className="h-7 text-[11px]"
-          onClick={() => {
-            setSearchQuery('');
-            setFilterStatus('all');
-            setFilterPriority('all');
-            setFilterType('all');
-            fetchTasks();
-          }}
-        >
-          Clear Filters
-        </Button>
+      <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">
+        <div className="flex flex-wrap items-center gap-2">
+          <span>{total ? (page - 1) * pageSize + 1 : 0}–{Math.min(page * pageSize, total)} of {total} Tasks</span>
+          <span aria-hidden="true">|</span><span>{selected.size} selected</span>
+          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={!selected.size || bulkBusy || loading} onClick={deleteSelected}><Trash2 className="mr-1 h-3 w-3" />Delete selected ({selected.size})</Button>
+          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={!selected.size || bulkBusy} onClick={() => setSelected(new Set())}>Clear selection</Button>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <label>Per page <select aria-label="Tasks per page" className="rounded border bg-background p-1 text-xs" value={pageSize} disabled={bulkBusy} onChange={e => { setPage(1); setPageSize(Number(e.target.value)); }}>{[25,50,100].map(size => <option key={size} value={size}>{size}</option>)}</select></label>
+          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={page === 1 || bulkBusy || loading} onClick={() => setPage(1)}>First</Button>
+          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={page === 1 || bulkBusy || loading} onClick={() => setPage(page - 1)}>Previous</Button>
+          <span>Page {page} of {pages}</span>
+          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={page >= pages || bulkBusy || loading} onClick={() => setPage(page + 1)}>Next</Button>
+          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={page >= pages || bulkBusy || loading} onClick={() => setPage(pages)}>Last</Button>
+        </div>
       </div>
-
+      {loading && <p role="status" className="text-xs text-muted-foreground">Loading Tasks…</p>}
       {/* Tasks Table */}
       {filteredTasks.length === 0 ? (
         <div className="min-h-0 flex-1 overflow-auto text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <ListTodo className="w-8 h-8 mx-auto mb-2 opacity-50" />
-          <p>No tasks found</p>
+          <p>{loading ? 'Loading Tasks…' : 'No tasks found'}</p>
           <Button
             variant="outline"
             size="sm"
@@ -856,17 +845,23 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
           <Table className="min-w-[700px]">
             <TableHeader className={scrollRecords ? "sticky top-0 z-10 bg-background" : undefined}>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="text-xs py-1">Title</TableHead>
-                <TableHead className="text-xs py-1">Type</TableHead>
-                <TableHead className="text-xs py-1">Priority</TableHead>
-                <TableHead className="text-center text-xs py-1">Status</TableHead>
+                <TableHead className="w-8"><input type="checkbox" aria-label="Select all Tasks on this page" disabled={bulkBusy || loading} checked={tasks.length > 0 && tasks.every(task => selected.has(task.id))} onChange={e => setSelected(e.target.checked ? new Set(tasks.map(task => task.id)) : new Set())} /></TableHead>
+                {([['title', 'Title'], ['dueDate', 'Due Date'], ['assignedTo', 'Assigned To'], ['type', 'Type'], ['priority', 'Priority'], ['status', 'Status'], ['isActive', 'Active']] as const).map(([key, label]) => (
+                  <TableHead key={key} className="text-xs py-1" aria-sort={sort === key ? direction === 'asc' ? 'ascending' : 'descending' : 'none'}>
+                    <button className="inline-flex items-center gap-1 py-1" disabled={bulkBusy} onClick={() => {
+                      setPage(1); setSelected(new Set());
+                      setDirection(sort === key && direction === 'asc' ? 'desc' : 'asc'); setSort(key);
+                    }}>{label}<span aria-hidden="true">{sort === key ? direction === 'asc' ? '↑' : '↓' : '↕'}</span></button>
+                  </TableHead>
+                ))}
                 <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredTasks.map((task) => (
                 <TableRow key={task.id} className="hover:bg-muted/50">
-                  <TableCell className="py-1 text-sm font-medium">
+                  <TableCell><input type="checkbox" aria-label={`Select ${task.title}`} checked={selected.has(task.id)} disabled={bulkBusy || loading} onChange={() => toggleTask(task.id)} /></TableCell>
+                <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
                       {task.status === 'completed' ? (
                         <CheckCircle className="w-3.5 h-3.5 text-green-500" />
@@ -876,13 +871,11 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
                         <ListTodo className="w-3.5 h-3.5 text-muted-foreground" />
                       )}
                       {task.title}
-                      {task.dueDate && (
-                        <span className="text-[10px] text-muted-foreground">
-                          Due: {new Date(task.dueDate).toLocaleDateString()}
-                        </span>
-                      )}
+
                     </div>
                   </TableCell>
+                  <TableCell className="py-1 text-xs whitespace-nowrap">{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '—'}</TableCell>
+                  <TableCell className="py-1 text-xs">{task.assignedTo || '—'}</TableCell>
                   <TableCell className="py-1 text-sm text-muted-foreground">
                     {task.type ? (
                       <Badge variant="outline" className="text-[10px]">
@@ -893,15 +886,16 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
                     )}
                   </TableCell>
                   <TableCell className="py-1 text-sm text-muted-foreground">
-                    <Badge className={`text-[10px] ${getPriorityColor(task.priority)}`}>
+                    <span className={`text-xs ${getPriorityColor(task.priority)}`}>
                       {getOptionLabel(TASK_PRIORITY_OPTIONS, task.priority)}
-                    </Badge>
+                    </span>
                   </TableCell>
-                  <TableCell className="text-center py-1">
-                    <Badge className={`text-[10px] ${getStatusColor(task.status)}`}>
+                  <TableCell className="py-1">
+                    <span className={`text-xs ${getStatusColor(task.status)}`}>
                       {getOptionLabel(TASK_STATUS_OPTIONS, task.status)}
-                    </Badge>
+                    </span>
                   </TableCell>
+                  <TableCell className="py-1"><span aria-label={task.isActive ? 'Active' : 'Inactive'} title={task.isActive ? 'Active' : 'Inactive'} className={task.isActive ? 'text-green-500' : 'text-muted-foreground'}>{task.isActive ? '✓' : '×'}</span></TableCell>
                   <TableCell className="py-1 text-right">{renderActions(task)}</TableCell>
                 </TableRow>
               ))}

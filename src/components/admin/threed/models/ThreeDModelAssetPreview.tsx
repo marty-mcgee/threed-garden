@@ -28,6 +28,8 @@ interface ThreeDModelAssetPreviewProps {
   canvasClassName?: string;
   showMaterialInspector?: boolean;
   splitMaterialInspector?: boolean;
+  requiredFiles?: ReactNode;
+  savedFilesStatus?: { ready: boolean; message: string };
   textureLibrary?: ThreeDModelTextureLibraryItem[];
   onSaveMaterialAssignment?: (assignment: { targetKeys: string[]; textureFileId?: number; textureId?: number }) => Promise<void>;
 }
@@ -130,6 +132,8 @@ export function ThreeDModelAssetPreview({
   canvasClassName = 'h-[320px]',
   showMaterialInspector = false,
   splitMaterialInspector = false,
+  requiredFiles,
+  savedFilesStatus,
   textureLibrary = [],
   onSaveMaterialAssignment,
 }: ThreeDModelAssetPreviewProps) {
@@ -159,6 +163,20 @@ export function ThreeDModelAssetPreview({
   const selectedLibraryTexture = materialPreviewOverride && !materialPreviewOverride.textureUrl.startsWith('blob:')
     ? textureLibrary.find((texture) => texture.filePath === materialPreviewOverride.textureUrl) ?? null
     : null;
+
+  const previewMatchesSavedSlot = (targetKey: string) => {
+    if (!materialPreviewOverride) return true;
+    const assignment = savedMaterialOverrides.assignments.find(item => item.targetKey === targetKey && item.channel === 'baseColor');
+    if (!assignment) return false;
+    const attachment = availableTextureAttachments.find(file =>
+      (file.relativePath || file.fileName).toLowerCase() === assignment.textureRelativePath.toLowerCase());
+    return (attachment?.filePath || assignment.textureRelativePath) === materialPreviewOverride.textureUrl;
+  };
+  const hasUnsavedPreview = Boolean(materialPreviewOverride && (
+    quickTextureId
+      ? !materialInventory?.slots.length || materialInventory.slots.some(slot => !previewMatchesSavedSlot(slot.id))
+      : !previewMatchesSavedSlot(materialPreviewOverride.targetKey)
+  ));
 
   useEffect(() => {
     setSelectedMaterialSlotId(null);
@@ -208,7 +226,7 @@ export function ThreeDModelAssetPreview({
 
   return (
     <div className={splitMaterialInspector ? 'contents' : undefined}>
-    <section className={`order-1 overflow-hidden rounded-lg border bg-muted/20 ${splitMaterialInspector ? 'lg:sticky lg:top-2 lg:col-start-1 lg:row-span-2 lg:row-start-1' : ''}`} aria-labelledby="model-preview-title">
+    <section className={`order-1 overflow-hidden rounded-lg border bg-muted/20 ${splitMaterialInspector ? 'lg:sticky lg:top-2 lg:col-start-1 lg:row-start-1' : ''}`} aria-labelledby="model-preview-title">
       <div className="flex min-h-10 items-center gap-2 border-b px-3 py-2">
         <Box className="h-4 w-4 text-blue-400" />
         <div className="min-w-0 flex-1">
@@ -282,14 +300,15 @@ export function ThreeDModelAssetPreview({
         )}
       </div>
     </section>
+      <div className={splitMaterialInspector ? 'min-w-0 space-y-3 lg:col-start-2 lg:row-start-1' : undefined}>
       {showMaterialInspector && model && (
-        <section className={`${splitMaterialInspector ? 'order-3 rounded-lg border bg-muted/20 lg:col-start-2 lg:row-start-2' : 'border-t bg-background/35'} p-3`} aria-labelledby="model-texture-assignment-title">
+        <section className={`${splitMaterialInspector ? 'rounded-lg border bg-muted/20' : 'border-t bg-background/35'} p-3`} aria-labelledby="model-texture-assignment-title">
           <div className="flex flex-wrap items-center gap-2">
             <Palette className="h-4 w-4 text-cyan-400" />
-            <h3 id="model-texture-assignment-title" className="text-xs font-semibold">Model Texture assignment</h3>
+            <h3 id="model-texture-assignment-title" className="text-xs font-semibold">1. Global appearance</h3>
             {materialInventory && (
               <span className="text-[10px] text-muted-foreground">
-                {materialInventory.materialSlotCount} Texture slots detected
+                {materialInventory.materialSlotCount} material slots
               </span>
             )}
             <input
@@ -301,19 +320,15 @@ export function ThreeDModelAssetPreview({
             />
           </div>
           {materialInventory && materialInventory.slots.length > 0 && (
-            <div className="mt-2 rounded-md border border-cyan-500/30 bg-cyan-500/10 p-3">
+            <div className="mt-2 space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <div className="min-w-[180px] flex-1">
-                  <h4 className="text-xs font-semibold text-cyan-200">Assign Existing Texture</h4>
-                  <p className="text-[10px] text-muted-foreground">
-                    Choose one master Model Texture and the App will assign it to every detected slot.
-                  </p>
-                </div>
+                <label htmlFor="model-appearance-texture" className="w-full text-xs">Base Color Texture</label>
                 {textureLibrary.length > 0 ? (
                   <>
                     <select
+                      id="model-appearance-texture"
                       aria-label="Select existing Model Texture"
-                      className="h-8 min-w-[220px] rounded border bg-background px-2 text-xs"
+                      className="h-8 w-full min-w-0 rounded border bg-background px-2 text-xs"
                       value={quickTextureId}
                       onChange={(event) => {
                         setQuickTextureId(event.target.value);
@@ -329,17 +344,17 @@ export function ThreeDModelAssetPreview({
                         }
                       }}
                     >
-                      <option value="">Select Existing Model Texture…</option>
+                      <option value="">Choose a saved Texture…</option>
                       {textureLibrary.filter((texture) => texture.id > 0).map((texture) => (
                         <option key={texture.id} value={texture.id}>
-                          {texture.textureName} · {texture.assignmentCount} uses
+                          {texture.textureName} — {texture.fileName}
                         </option>
                       ))}
                     </select>
                     <Button
                       type="button"
                       size="sm"
-                      className="h-8 shrink-0 bg-cyan-600 text-xs text-white hover:bg-cyan-500"
+                      className="h-8 shrink-0 text-xs"
                       disabled={!quickTextureId || savingMaterialAssignment || materialInventory.omittedSlotCount > 0 || !onSaveMaterialAssignment}
                       onClick={async () => {
                         if (!quickTextureId || !onSaveMaterialAssignment) return;
@@ -358,7 +373,7 @@ export function ThreeDModelAssetPreview({
                       }}
                     >
                       {savingMaterialAssignment ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Check className="mr-1 h-3.5 w-3.5" />}
-                      Assign to all {materialInventory.slots.length} slots
+                      {savingMaterialAssignment ? 'Saving…' : 'Save Texture to all materials'}
                     </Button>
                   </>
                 ) : (
@@ -367,12 +382,18 @@ export function ThreeDModelAssetPreview({
                   </Button>
                 )}
               </div>
+              <p className="text-[11px] text-muted-foreground">Selection previews one material. Save applies Base Color to all materials; resolve missing files in Required files.</p>
             </div>
           )}
           {materialAssignmentError && <p className="mt-2 text-[10px] text-destructive">{materialAssignmentError}</p>}
-          <details className="mt-2 rounded border border-border/60 bg-background/20 p-2">
+        </section>
+      )}
+      {requiredFiles}
+      {showMaterialInspector && model && (
+        <section className="rounded-lg border bg-muted/20 p-3">
+          <details>
             <summary className="cursor-pointer text-[10px] font-medium text-muted-foreground">
-              Advanced per-slot Texture assignments
+              3. Individual materials (advanced)
             </summary>
             <div className="mt-2 flex justify-end">
               <Button
@@ -523,6 +544,13 @@ export function ThreeDModelAssetPreview({
           </details>
         </section>
       )}
+      {savedFilesStatus && (
+        <div role="status" className={`rounded-lg border p-3 text-xs ${savedFilesStatus.ready && !loading && !savingMaterialAssignment && !materialAssignmentError && !hasUnsavedPreview ? 'border-emerald-500/40 bg-emerald-500/10' : 'border-amber-500/40 bg-amber-500/10'}`}>
+          <p className="font-semibold">{savingMaterialAssignment ? 'Saving appearance…' : materialAssignmentError ? 'Needs attention above' : hasUnsavedPreview ? 'Preview changes — review before saving' : loading ? 'Loading preview…' : savedFilesStatus.ready ? 'Saved files ready' : 'Needs attention above'}</p>
+          <p className="mt-1 text-muted-foreground">{materialAssignmentError || (hasUnsavedPreview ? 'The canvas includes a temporary Texture preview. Save the intended assignment above to keep it.' : savedFilesStatus.message)}</p>
+        </div>
+      )}
+      </div>
     </div>
   );
 }

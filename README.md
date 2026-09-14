@@ -7,9 +7,9 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production release:** `v0.19.19 — Character Collisions + Interactions`, package `0.19.19`, commit `0fa1ebe`, deployment User-confirmed. See the [release record](docs/releases/v0.19.19.md).
+> **Current production release:** `v0.19.20 — ThreeD Character Collision Safety + Reliable Targeting`, User-confirmed as a version-number-only release.
 
-> **Current follow-up:** Character save/reload overlap validation and placed Model Action Target identity corrections. Tractor targeting is User-verified; save/refresh review and follow-up deployment remain pending.
+> **Prepared release:** `v0.19.21 — ThreeD Model Import + File Workspace Refinements`. Numbered Bulk Import and Model Files workflows, explicit shared Texture resolution, saved-file status, and Admin Tasks table improvements. User accepted the UI checkpoint; manual build and publication remain pending. See the [release notes](docs/releases/v0.19.21.md).
 
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 

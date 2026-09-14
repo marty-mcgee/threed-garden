@@ -1014,6 +1014,7 @@ export enum TaskType {
 // ============================================
 
 export interface ThreeDTask {
+  isActive: boolean | null;
   id: number;
   userId: string;
   taskId: string;
