@@ -1,5 +1,6 @@
 'use client';
 
+import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -146,10 +147,7 @@ export default function AdminMusicDashboard() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Real-time music library statistics and analytics</p>
-      </div>
+      <AdminWorkspaceHeader icon={Music} title="Multimedia Overview" description="Music library statistics and analytics" />
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

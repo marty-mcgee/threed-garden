@@ -1,6 +1,9 @@
 // components/admin/music/tracks/MusicTracksCRUD.tsx
 'use client';
 
+import { useMusicRecords, MusicRecordsSearch, MusicRecordsTable, MusicStatus } from '@/components/admin/music/shared/MusicRecordsWorkspace';
+import { MusicWorkspaceHeader } from '@/components/admin/music/shared/MusicWorkspaceHeader';
+
 import { S3Upload } from '@/components/admin/music/shared/S3Upload';
 import { useState, useEffect } from 'react';
 import { 
@@ -45,10 +48,12 @@ interface Track {
 }
 
 interface MusicTracksCRUDProps {
+  pageHeader?: boolean;
   onModuleUpdate?: () => void;
 }
 
-export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
+export function MusicTracksCRUD({ onModuleUpdate, pageHeader = false }: MusicTracksCRUDProps) {
+  const workspace = useMusicRecords('tracks', pageHeader);
   const { showToast, ToastComponent } = useToast();
   const [previewingTrack, setPreviewingTrack] = useState<Track | null>(null);
   const [previewError, setPreviewError] = useState(false);
@@ -76,6 +81,7 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
   }, []);
 
   const fetchTracks = async () => {
+    if (pageHeader) { workspace.reload(); return; }
     setLoading(true);
     try {
       const response = await fetch('/api/music/tracks');
@@ -304,7 +310,7 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  if (loading) {
+  if (loading && !pageHeader) {
     return (
       <div className="flex items-center justify-center py-4">
         <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
@@ -313,7 +319,7 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
   }
 
   return (
-    <div className="space-y-2">
+    <div className={pageHeader ? "flex h-full min-h-0 flex-col gap-2" : "space-y-2"}>
       {ToastComponent}
       <Dialog open={!!previewingTrack} onOpenChange={open => { if (!open) setPreviewingTrack(null); }}>
         <DialogContent>
@@ -323,14 +329,8 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
         </DialogContent>
       </Dialog>
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Music2 className="w-4 h-4 text-indigo-500" />
-          <span className="text-sm font-medium">Tracks</span>
-          <Badge variant="secondary" className="text-xs">
-            {tracks.length}
-          </Badge>
-        </div>
+      <fieldset className="min-w-0 shrink-0" disabled={pageHeader && workspace.busy}>
+      <MusicWorkspaceHeader pageHeader={pageHeader} icon={Music2} title="Tracks" count={pageHeader ? workspace.total : tracks.length} search={pageHeader ? <MusicRecordsSearch workspace={workspace} /> : undefined}>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
             <Button size="sm" className="h-7 px-2 text-xs">
@@ -450,9 +450,10 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
             </div>
           </DialogContent>
         </Dialog>
-      </div>
+      </MusicWorkspaceHeader>
+      </fieldset>
 
-      {tracks.length === 0 ? (
+      {pageHeader ? <MusicRecordsTable label="Tracks" workspace={workspace} columns={[{ field: 'title', label: 'Title', render: row => <span className="inline-flex items-center gap-2"><Music2 className="h-4 w-4 shrink-0 text-blue-500" />{String(row.title)}</span> }, { field: 'id', label: 'ID' }, { field: 'albumId', label: 'Album' }, { field: 'duration', label: 'Duration', render: row => formatDuration(row.duration as number | null) }, { field: 'fileType', label: 'Type' }, { field: 'status', label: 'Status', render: row => <MusicStatus value={row.status} /> }]} actions={row => renderActions(row as unknown as (typeof tracks)[number])} /> : tracks.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <Music2 className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No tracks yet</p>

@@ -1,14 +1,14 @@
 // app/admin/music/albums/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useMusicRecords, MusicRecordsSearch, MusicRecordsTable, MusicStatus } from '@/components/admin/music/shared/MusicRecordsWorkspace';
+import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
@@ -39,12 +39,10 @@ interface Track {
 export default function AlbumsManagementPage() {
   const router = useRouter();
   const { showToast, ToastComponent } = useToast();
-  const [albums, setAlbums] = useState<Album[]>([]);
-  const [loading, setLoading] = useState(true);
+  const workspace = useMusicRecords('albums', true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingAlbum, setEditingAlbum] = useState<Album | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [failedCoverIds, setFailedCoverIds] = useState<Set<number>>(() => new Set());
   const [formData, setFormData] = useState({
     title: '',
     artist: '',
@@ -56,30 +54,7 @@ export default function AlbumsManagementPage() {
     sortOrder: '0',
   });
 
-  useEffect(() => {
-    fetchAlbums();
-  }, []);
-
-  const fetchAlbums = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch('/api/music/albums?includeTracks=true');
-      const data = await response.json();
-      if (data.success) {
-        setFailedCoverIds(new Set());
-        setAlbums(Array.isArray(data.data) ? data.data : []);
-      } else {
-        showToast(data.error || 'Failed to fetch albums', 'error');
-        setAlbums([]);
-      }
-    } catch (error) {
-      console.error('Error fetching albums:', error);
-      showToast('Failed to fetch albums', 'error');
-      setAlbums([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const fetchAlbums = async () => { workspace.reload(); };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -154,7 +129,7 @@ export default function AlbumsManagementPage() {
       description: '',
       status: 'draft',
       isPublic: false,
-      sortOrder: albums.length.toString(),
+      sortOrder: workspace.total.toString(),
     });
     setEditingAlbum(null);
   };
@@ -183,124 +158,35 @@ export default function AlbumsManagementPage() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
-  const sortedAlbums = [...albums].sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-
   return (
-    <div className="space-y-4">
+    <div className="flex h-full min-h-0 flex-col gap-2">
       {ToastComponent}
 
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold">Albums</h1>
-          <p className="text-sm text-muted-foreground">Manage your music albums</p>
-        </div>
-        <Button onClick={() => {
+      <fieldset className="min-w-0 shrink-0" disabled={workspace.busy}>
+      <AdminWorkspaceHeader icon={Music} title="Albums" description="Manage Multimedia albums">
+        <Badge variant="secondary" className="text-xs">{workspace.total}</Badge>
+        <MusicRecordsSearch workspace={workspace} />
+        <Button size="sm" className="ml-auto h-7 px-2 text-xs" onClick={() => {
           resetForm();
           setIsDialogOpen(true);
         }}>
           <Plus className="h-4 w-4 mr-2" />
           New Album
         </Button>
-      </div>
+      </AdminWorkspaceHeader>
+      </fieldset>
 
-      {/* Album Grid */}
-      {sortedAlbums.length === 0 ? (
-        <div className="text-center py-12 border rounded-lg">
-          <Music className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-50" />
-          <p className="text-muted-foreground">No albums yet</p>
-          <Button 
-            variant="outline" 
-            className="mt-4"
-            onClick={() => {
-              resetForm();
-              setIsDialogOpen(true);
-            }}
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Create your first album
-          </Button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {sortedAlbums.map((album) => (
-            <Card key={album.id} className="group overflow-hidden">
-              <CardContent className="p-0">
-                <div className="relative">
-                  {album.coverArt?.trim() && !failedCoverIds.has(album.id) ? (
-                    <Image
-                      src={album.coverArt}
-                      alt={album.title}
-                      width={300}
-                      height={300}
-                      className="w-full h-48 object-cover"
-                      onError={() => {
-                        setFailedCoverIds((current) => {
-                          const next = new Set(current);
-                          next.add(album.id);
-                          return next;
-                        });
-                      }}
-                    />
-                  ) : (
-                    <div className="flex h-48 w-full flex-col items-center justify-center gap-2 bg-muted text-muted-foreground">
-                      <Music className="h-10 w-10 opacity-50" />
-                      <span className="text-sm">No cover art</span>
-                    </div>
-                  )}
-                  <Badge className={`absolute top-2 right-2 ${getStatusVariant(album.status)}`}>
-                    {album.status}
-                  </Badge>
-                  {album.isPublic && (
-                    <Badge variant="outline" className="absolute top-2 left-2 bg-background/80 backdrop-blur-sm">
-                      Public
-                    </Badge>
-                  )}
-                </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-lg truncate">{album.title}</h3>
-                  <p className="text-sm text-muted-foreground">{album.artist}</p>
-                  {album.releaseYear && (
-                    <p className="text-xs text-muted-foreground mt-1">{album.releaseYear}</p>
-                  )}
-                  {album.description && (
-                    <p className="text-sm mt-2 line-clamp-2">{album.description}</p>
-                  )}
-                  <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground">
-                    <Music className="h-3 w-3" />
-                    <span>{album.tracks?.length || 0} tracks</span>
-                  </div>
-                  <div className="flex gap-2 mt-4">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="flex-1"
-                      onClick={() => router.push(`/admin/music/albums/${album.id}`)}
-                    >
-                      <Eye className="h-4 w-4 mr-2" />
-                      View Tracks
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => openEdit(album)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleDelete(album.id, album.title)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+      <MusicRecordsTable workspace={workspace} label="Albums" columns={[
+        { field: 'title', label: 'Title', render: row => <span className="inline-flex items-center gap-2"><Music className="h-4 w-4 text-blue-500" />{String(row.title)}</span> },
+        { field: 'id', label: 'ID' }, { field: 'artist', label: 'Artist' }, { field: 'releaseYear', label: 'Year' },
+        { field: 'status', label: 'Status', render: row => <MusicStatus value={row.status} /> },
+        { field: 'isPublic', label: 'Public', render: row => <MusicStatus value={row.isPublic} /> },
+      ]} actions={row => <div className="flex justify-end gap-1">
+        <Button size="sm" variant="ghost" className="h-7 px-2" aria-label={`View Album ${row.title}`} onClick={() => router.push(`/admin/music/albums/${row.id}`)}><Eye className="h-4 w-4" /></Button>
+        <Button size="sm" variant="ghost" className="h-7 px-2" aria-label={`Edit Album ${row.title}`} onClick={() => openEdit(row as unknown as Album)}><Edit className="h-4 w-4" /></Button>
+        <Button size="sm" variant="ghost" className="h-7 px-2 text-red-500" aria-label={`Delete Album ${row.title}`} onClick={() => handleDelete(row.id, String(row.title))}><Trash2 className="h-4 w-4" /></Button>
+      </div>} />
 
       {/* Album Form Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

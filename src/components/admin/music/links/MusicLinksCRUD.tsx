@@ -1,6 +1,9 @@
 // components/admin/music/links/MusicLinksCRUD.tsx
 'use client';
 
+import { useMusicRecords, MusicRecordsSearch, MusicRecordsTable, MusicStatus } from '@/components/admin/music/shared/MusicRecordsWorkspace';
+import { MusicWorkspaceHeader } from '@/components/admin/music/shared/MusicWorkspaceHeader';
+
 import { useState, useEffect } from 'react';
 import { 
   Plus, 
@@ -31,11 +34,13 @@ import { useToast } from '@/components/ui/toast';
 import { MusicLink } from '@/lib/types/music';
 
 interface MusicLinksCRUDProps {
+  pageHeader?: boolean;
   onModuleUpdate?: () => void;
 }
 
 // ✅ Export named - matches import in page.tsx
-export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
+export function MusicLinksCRUD({ onModuleUpdate, pageHeader = false }: MusicLinksCRUDProps) {
+  const workspace = useMusicRecords('links', pageHeader);
   const { showToast, ToastComponent } = useToast();
   const [links, setLinks] = useState<MusicLink[]>([]);
   const [albums, setAlbums] = useState<{ id: number; title: string }[]>([]);
@@ -87,6 +92,7 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
   }, []);
 
   const fetchLinks = async () => {
+    if (pageHeader) { workspace.reload(); return; }
     setLoading(true);
     try {
       const response = await fetch('/api/music/links');
@@ -327,7 +333,7 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
     </div>
   );
 
-  if (loading) {
+  if (loading && !pageHeader) {
     return (
       <div className="flex items-center justify-center py-4">
         <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
@@ -338,18 +344,12 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
   const linkList = Array.isArray(links) ? links : [];
 
   return (
-    <div className="space-y-2">
+    <div className={pageHeader ? "flex h-full min-h-0 flex-col gap-2" : "space-y-2"}>
       {ToastComponent}
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Link2 className="w-4 h-4 text-blue-500" />
-          <span className="text-sm font-medium">Links</span>
-          <Badge variant="secondary" className="text-xs">
-            {linkList.length}
-          </Badge>
-        </div>
+      <fieldset className="min-w-0 shrink-0" disabled={pageHeader && workspace.busy}>
+      <MusicWorkspaceHeader pageHeader={pageHeader} icon={Link2} title="Links" count={pageHeader ? workspace.total : linkList.length} search={pageHeader ? <MusicRecordsSearch workspace={workspace} /> : undefined}>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
             <Button size="sm" className="h-7 px-2 text-xs">
@@ -509,10 +509,11 @@ export function MusicLinksCRUD({ onModuleUpdate }: MusicLinksCRUDProps) {
             </div>
           </DialogContent>
         </Dialog>
-      </div>
+      </MusicWorkspaceHeader>
+      </fieldset>
 
       {/* Links Table */}
-      {linkList.length === 0 ? (
+      {pageHeader ? <MusicRecordsTable label="Links" workspace={workspace} columns={[{ field: 'title', label: 'Title', render: row => <span className="inline-flex items-center gap-2"><Link2 className="h-4 w-4 shrink-0 text-blue-500" />{String(row.title)}</span> }, { field: 'id', label: 'ID' }, { field: 'type', label: 'Type' }, { field: 'albumId', label: 'Album' }, { field: 'status', label: 'Status', render: row => <MusicStatus value={row.status} /> }]} actions={row => renderActions(row as unknown as (typeof linkList)[number])} /> : linkList.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <Link2 className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No links yet</p>

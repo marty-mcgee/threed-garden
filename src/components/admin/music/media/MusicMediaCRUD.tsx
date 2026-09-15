@@ -1,6 +1,9 @@
 // components/admin/music/media/MusicMediaCRUD.tsx
 'use client';
 
+import { useMusicRecords, MusicRecordsSearch, MusicRecordsTable, MusicStatus } from '@/components/admin/music/shared/MusicRecordsWorkspace';
+import { MusicWorkspaceHeader } from '@/components/admin/music/shared/MusicWorkspaceHeader';
+
 import { S3Upload } from '@/components/admin/music/shared/S3Upload';
 import { useState, useEffect } from 'react';
 import { 
@@ -40,11 +43,13 @@ interface Media {
 }
 
 interface MusicMediaCRUDProps {
+  pageHeader?: boolean;
   onModuleUpdate?: () => void;
 }
 
 // ✅ Named export - matches the import in page.tsx
-export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
+export function MusicMediaCRUD({ onModuleUpdate, pageHeader = false }: MusicMediaCRUDProps) {
+  const workspace = useMusicRecords('media', pageHeader);
   const { showToast, ToastComponent } = useToast();
   const [media, setMedia] = useState<Media[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,6 +73,7 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
   }, []);
 
   const fetchMedia = async () => {
+    if (pageHeader) { workspace.reload(); return; }
     setLoading(true);
     try {
       const response = await fetch('/api/music/media');
@@ -273,7 +279,7 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
   const mediaList = Array.isArray(media) ? media : [];
   const albumList = Array.isArray(albums) ? albums : [];
 
-  if (loading) {
+  if (loading && !pageHeader) {
     return (
       <div className="flex items-center justify-center py-4">
         <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
@@ -282,17 +288,11 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
   }
 
   return (
-    <div className="space-y-2">
+    <div className={pageHeader ? "flex h-full min-h-0 flex-col gap-2" : "space-y-2"}>
       {ToastComponent}
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Image className="w-4 h-4 text-pink-500" />
-          <span className="text-sm font-medium">Media</span>
-          <Badge variant="secondary" className="text-xs">
-            {mediaList.length}
-          </Badge>
-        </div>
+      <fieldset className="min-w-0 shrink-0" disabled={pageHeader && workspace.busy}>
+      <MusicWorkspaceHeader pageHeader={pageHeader} icon={Image} title="Media" count={pageHeader ? workspace.total : mediaList.length} search={pageHeader ? <MusicRecordsSearch workspace={workspace} /> : undefined}>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
             <Button size="sm" className="h-7 px-2 text-xs">
@@ -399,9 +399,10 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
             </div>
           </DialogContent>
         </Dialog>
-      </div>
+      </MusicWorkspaceHeader>
+      </fieldset>
 
-      {mediaList.length === 0 ? (
+      {pageHeader ? <MusicRecordsTable label="Media" workspace={workspace} columns={[{ field: 'fileName', label: 'File Name', render: row => <span className="inline-flex items-center gap-2"><Image className="h-4 w-4 shrink-0 text-blue-500" />{String(row.fileName)}</span> }, { field: 'id', label: 'ID' }, { field: 'albumId', label: 'Album' }, { field: 'fileType', label: 'Type' }, { field: 'fileSize', label: 'Size', render: row => formatFileSize(row.fileSize as number | null) }, { field: 'isPrimary', label: 'Primary', render: row => <MusicStatus value={row.isPrimary} /> }]} actions={row => renderActions(row as unknown as (typeof mediaList)[number])} /> : mediaList.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <Image className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No media files yet</p>
