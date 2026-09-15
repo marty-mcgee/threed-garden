@@ -65,6 +65,7 @@ interface NavItem {
   exact?: boolean; // ✅ If true, only match exact path (not children)
   relatedPaths?: string[];
   children?: Array<{
+    exact?: boolean;
     title: string;
     href: string;
     icon: LucideIcon;
@@ -151,7 +152,10 @@ const navSections: NavSection[] = [
       { title: 'Overview', href: '/admin/music', icon: Music, exact: true },
       { title: 'Albums', href: '/admin/music/albums', icon: DiscAlbum, exact: false },
       { title: 'Tracks', href: '/admin/music/tracks', icon: Music2, exact: false },
-      { title: 'Speech', href: '/admin/music/audio', icon: MicVocal, exact: false },
+      { title: 'Speech', href: '/admin/multimedia/speech', icon: MicVocal, exact: false, children: [
+        { title: 'All Speeches', href: '/admin/multimedia/speech', icon: MicVocal, exact: true },
+        { title: 'New Speech', href: '/admin/multimedia/speech/new', icon: MicVocal, exact: true },
+      ] },
       { title: 'Media', href: '/admin/music/media', icon: Image, exact: false },
       { title: 'Links', href: '/admin/music/links', icon: Link2, exact: false },
     ],
@@ -391,7 +395,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
                             <ul className="ml-5 mt-0.5 space-y-0.5 border-l border-white/10 pl-2">
                               {item.children.map((child) => {
                                 const ChildIcon = child.icon;
-                                const childActive = pathname === child.href || pathname.startsWith(`${child.href}/`);
+                                const childActive = pathname === child.href || (!child.exact && pathname.startsWith(`${child.href}/`));
                                 return (
                                   <li key={child.href}>
                                     <Button

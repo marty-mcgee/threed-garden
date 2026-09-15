@@ -11,3 +11,5 @@ export * from './project';
 export * from './threed';
 export * from './traffic';
 export * from './music';
+
+export * from './multimedia';

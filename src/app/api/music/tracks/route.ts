@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
 import { musicTracks, musicAlbums, musicMedia } from '@/lib/schema/music';
+import { multimediaSpeechVersions } from '@/lib/schema/multimedia';
 import { eq, ne, and, desc, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
@@ -431,12 +432,13 @@ export async function DELETE(request: NextRequest) {
       if (!ownsMediaKey(userId, key)) {
         return NextResponse.json({ success: false, error: 'File ownership could not be verified. Track was not deleted.' }, { status: 409 });
       }
-      const [otherTracks, media, covers] = await Promise.all([
+      const [otherTracks, media, covers, speechHistory] = await Promise.all([
         db.select({ id: musicTracks.id }).from(musicTracks).where(and(eq(musicTracks.fileUrl, track.fileUrl), ne(musicTracks.id, trackId))).limit(1),
         db.select({ id: musicMedia.id }).from(musicMedia).where(eq(musicMedia.fileUrl, track.fileUrl)).limit(1),
         db.select({ id: musicAlbums.id }).from(musicAlbums).where(eq(musicAlbums.coverArt, track.fileUrl)).limit(1),
+        db.select({ id: multimediaSpeechVersions.id }).from(multimediaSpeechVersions).where(eq(multimediaSpeechVersions.storageKey, key)).limit(1),
       ]);
-      if (otherTracks.length || media.length || covers.length) {
+      if (otherTracks.length || media.length || covers.length || speechHistory.length) {
         fileCleanup = 'shared';
       } else {
         try {

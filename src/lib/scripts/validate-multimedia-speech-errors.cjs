@@ -1,0 +1,15 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const ts = require('typescript');
+const exportsObject = {};
+vm.runInNewContext(ts.transpileModule(fs.readFileSync('src/lib/services/multimedia/speech-errors.ts', 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, { exports: exportsObject });
+const classify = exportsObject.speechReadError;
+assert.equal(classify({code:'42P01'}).code,'SPEECH_SCHEMA_MISSING');
+assert.equal(classify({cause:{code:'42703'}}).code,'SPEECH_SCHEMA_OUTDATED');
+for (const error of [null, 'missing table', {code:'08006'}, {code:'42501'}, {message:'relation does not exist'}]) assert.equal(classify(error).code,'SPEECH_READ_UNAVAILABLE');
+const cycle={};cycle.cause=cycle;
+assert.equal(classify(cycle).code,'SPEECH_READ_UNAVAILABLE');
+const privateError={message:'private SQL and credentials',cause:{code:'42P01',query:'private query',parameters:['private data']}};
+assert.ok(!JSON.stringify(classify(privateError)).includes('private'));
+console.log('PASS: PostgreSQL schema/connection classification, wrapped errors, cycles and sanitized output (offline).');
