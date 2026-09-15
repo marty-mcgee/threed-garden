@@ -7,9 +7,9 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production release:** `v0.19.23 — ThreeD Multimedia: S3 Uploads + Fish Audio Speech`, deployment User-confirmed.
+> **Current production release:** `v0.19.24 — Multimedia Speech Records + Version History`, deployment User-confirmed. See the [release notes](docs/releases/v0.19.24.md).
 
-> **Release candidate:** `v0.19.24 — Multimedia Speech Records + Version History`, package `0.19.24`. User accepted the local checkpoint; manual build and deployment remain pending. See the [release notes](docs/releases/v0.19.24.md).
+> **Release candidate:** `v0.19.25 — Multimedia Speech: Saved Version Track Publishing`, package `0.19.25`. Local checkpoint User-accepted; manual build and deployment pending. See the [release notes](docs/releases/v0.19.25.md).
 
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 

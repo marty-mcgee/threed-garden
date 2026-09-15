@@ -24,7 +24,7 @@ function failure(error: unknown) {
   return NextResponse.json({ error: error instanceof RequestError ? error.message : 'Speech history is unavailable. Refresh to check its saved state.' }, { status: error instanceof RequestError ? error.status : 503, headers });
 }
 const summary = {
-  id: versions.id, versionNumber: versions.versionNumber, draftRevision: versions.draftRevision,
+  trackId: versions.trackId, id: versions.id, versionNumber: versions.versionNumber, draftRevision: versions.draftRevision,
   status: versions.status, fileName: versions.fileName, storageKey: versions.storageKey,
   createdAt: versions.createdAt, completedAt: versions.completedAt, errorCode: versions.errorCode,
   providerStatus: versions.providerStatus,

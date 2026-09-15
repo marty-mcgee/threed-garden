@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Music2 } from 'lucide-react';
 import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { SpeechHistory } from '../SpeechHistory';
+import { VersionTrack } from '../VersionTrack';
 import { Button } from '@/components/ui/button';
 
 export default function NewSpeechPage() {
@@ -18,7 +19,7 @@ export default function NewSpeechPage() {
   const [configured, setConfigured] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const [audio, setAudio] = useState<{ url: string; text: string; voiceId: string; versionNumber: number } | null>(null);
+  const [audio, setAudio] = useState<{ url: string; title: string; text: string; voiceId: string; versionNumber: number } | null>(null);
   const requestRef = useRef<AbortController | null>(null);
   const savedRef = useRef<{ id: number; revision: number } | null>(null);
 
@@ -63,7 +64,7 @@ export default function NewSpeechPage() {
         const result = await response.json();
         if (!response.ok) throw Error(result.error || 'Generation did not complete. Check version history.');
         if (result.data.status !== 'ready' || !result.data.storageKey) throw Error('Generation is not ready. Check version history.');
-        setAudio({ url: `/api/music/files?key=${encodeURIComponent(result.data.storageKey)}`, text, voiceId: voiceId.trim(), versionNumber: result.data.versionNumber });
+        setAudio({ url: `/api/music/files?key=${encodeURIComponent(result.data.storageKey)}`, title, text, voiceId: voiceId.trim(), versionNumber: result.data.versionNumber });
         setNotice(`Version ${result.data.versionNumber} saved. Preview it, then Accept in version history.`);
       }
     } catch (reason) {
@@ -124,6 +125,7 @@ export default function NewSpeechPage() {
         {audio ? <>
           <audio key={audio.url} controls src={audio.url} className="w-full" aria-label="Generated speech preview" />
           <p className="text-xs text-muted-foreground">{audio.text !== text || audio.voiceId !== voiceId.trim() ? 'Preview uses your previous text and voice.' : `Version ${audio.versionNumber} saved.`}</p>
+          {saved && <VersionTrack key={`${saved.id}:${audio.versionNumber}`} speechId={saved.id} versionNumber={audio.versionNumber} defaultTitle={audio.title} trackId={null} disabled={busy || uncertain} onSaved={() => setNotice(`Version ${audio.versionNumber} saved as a Track.`)} />}
 
         </> : <p className="text-sm text-muted-foreground">Your generated speech will appear here.</p>}
       </section>

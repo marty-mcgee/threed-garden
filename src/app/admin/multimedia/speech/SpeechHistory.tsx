@@ -1,10 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { VersionTrack } from './VersionTrack';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
-type Version = { id: number; versionNumber: number; draftRevision: number; status: string; storageKey: string | null; errorCode: string | null; providerStatus: number | null; createdAt: string };
+type Version = { trackId: number | null; id: number; versionNumber: number; draftRevision: number; status: string; storageKey: string | null; errorCode: string | null; providerStatus: number | null; createdAt: string };
 type RecordState = { title: string; revision: number; archivedAt: string | null; acceptedVersionNumber: number | null };
 
 export function SpeechHistory({ id, onClose, onChange }: { id: number; onClose: () => void; onChange: () => void }) {
@@ -58,6 +59,7 @@ export function SpeechHistory({ id, onClose, onChange }: { id: number; onClose: 
     {versions.map(version => <div key={version.id} className="space-y-2 rounded border p-3 text-sm">
       <div className="flex flex-wrap items-center justify-between gap-2"><span>Version {version.versionNumber} · {version.status}{record?.acceptedVersionNumber === version.versionNumber ? ' · Accepted' : ''}</span><span className="text-xs text-muted-foreground">{new Date(version.createdAt).toLocaleString()}</span></div>
       {version.status === 'ready' && version.storageKey && <><audio controls preload="none" className="w-full" src={`/api/music/files?key=${encodeURIComponent(version.storageKey)}`} /><Button size="sm" variant="outline" disabled={busy || loading || uncertain || !!record?.archivedAt || record?.acceptedVersionNumber === version.versionNumber} onClick={() => action(version.versionNumber)}>Accept version {version.versionNumber}</Button></>}
+      {version.status === 'ready' && <VersionTrack speechId={id} versionNumber={version.versionNumber} defaultTitle={record?.title ?? 'Speech'} trackId={version.trackId} disabled={busy || loading || !!record?.archivedAt} onSaved={() => { void load(); onChange(); }} />}
       {version.errorCode && <p className="text-xs text-red-500">{version.errorCode.replaceAll('_', ' ')}{version.providerStatus ? ` · Fish Audio HTTP ${version.providerStatus}` : ''}</p>}
       {(version.status === 'generating' || version.status === 'pending') && <p className="text-xs text-muted-foreground">Refresh to check completion. Interrupted attempts can be superseded by a new generation after 10 minutes.</p>}
     </div>)}
