@@ -1,6 +1,7 @@
 // components/admin/music/media/MediaForm.tsx
 'use client';
 
+import { S3Upload } from '@/components/admin/music/shared/S3Upload';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -53,6 +54,7 @@ export function MediaForm({
 }: MediaFormProps) {
   const { showToast, ToastComponent } = useToast();
   const [isOpen, setIsOpen] = useState(false);
+  const [uploadBusy, setUploadBusy] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -182,20 +184,21 @@ export function MediaForm({
                 placeholder="cover-art.jpg"
                 value={formData.fileName}
                 onChange={(e) => setFormData({ ...formData, fileName: e.target.value })}
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploadBusy}
                 required
               />
             </div>
 
             <div>
-              <Label htmlFor="fileUrl">File URL *</Label>
+              <S3Upload onBusyChange={setUploadBusy} kind="media" disabled={isSubmitting || uploadBusy} onUploaded={file => setFormData(current => ({ ...current, fileUrl: file.fileUrl, fileName: file.fileName, fileType: file.fileType, fileSize: file.fileSize }))} />
+                <Label htmlFor="fileUrl">File URL *</Label>
               <Input
                 id="fileUrl"
                 type="url"
                 placeholder="https://example.com/image.jpg"
                 value={formData.fileUrl}
                 onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploadBusy}
                 required
               />
             </div>
@@ -227,7 +230,7 @@ export function MediaForm({
                 placeholder="1024"
                 value={formData.fileSize || ''}
                 onChange={(e) => setFormData({ ...formData, fileSize: parseInt(e.target.value) || 0 })}
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploadBusy}
               />
             </div>
 
@@ -236,7 +239,7 @@ export function MediaForm({
                 id="isPrimary"
                 checked={formData.isPrimary}
                 onCheckedChange={(checked) => setFormData({ ...formData, isPrimary: checked })}
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploadBusy}
               />
               <Label htmlFor="isPrimary">Set as primary media</Label>
             </div>
@@ -248,7 +251,7 @@ export function MediaForm({
             )}
 
             <div className="flex gap-2 pt-2">
-              <Button type="submit" className="flex-1" disabled={isSubmitting}>
+              <Button type="submit" className="flex-1" disabled={isSubmitting || uploadBusy}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />

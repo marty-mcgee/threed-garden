@@ -1,6 +1,7 @@
 // components/admin/music/albums/MusicAlbumCRUD.tsx
 'use client';
 
+import { S3Upload } from '@/components/admin/music/shared/S3Upload';
 import { useState, useEffect } from 'react';
 import { 
   Plus, 
@@ -36,6 +37,7 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
   const { showToast, ToastComponent } = useToast();
   const [albums, setAlbums] = useState<MusicAlbum[]>([]);
   const [loading, setLoading] = useState(true);
+  const [uploadBusy, setUploadBusy] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingAlbum, setEditingAlbum] = useState<MusicAlbum | null>(null);
@@ -226,7 +228,7 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
                   placeholder="Album title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || uploadBusy}
                 />
               </div>
               <div>
@@ -236,17 +238,18 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
                   placeholder="Artist name"
                   value={formData.artist}
                   onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || uploadBusy}
                 />
               </div>
               <div>
+                <S3Upload onBusyChange={setUploadBusy} kind="image" disabled={isSubmitting || uploadBusy} onUploaded={file => setFormData(current => ({ ...current, coverArt: file.fileUrl }))} />
                 <Label htmlFor="coverArt">Cover Art URL</Label>
                 <Input
                   id="coverArt"
                   placeholder="https://example.com/cover.jpg"
                   value={formData.coverArt}
                   onChange={(e) => setFormData({ ...formData, coverArt: e.target.value })}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || uploadBusy}
                 />
               </div>
               <div>
@@ -257,7 +260,7 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
                   placeholder="2024"
                   value={formData.releaseYear}
                   onChange={(e) => setFormData({ ...formData, releaseYear: parseInt(e.target.value) || new Date().getFullYear() })}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || uploadBusy}
                 />
               </div>
               <div>
@@ -268,7 +271,7 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   rows={3}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || uploadBusy}
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -276,11 +279,11 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
                   id="isPublic"
                   checked={formData.isPublic}
                   onCheckedChange={(checked) => setFormData({ ...formData, isPublic: checked })}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || uploadBusy}
                 />
                 <Label htmlFor="isPublic">Make public</Label>
               </div>
-              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
+              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting || uploadBusy}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -554,7 +557,7 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
               <Input
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploadBusy}
               />
             </div>
             <div>
@@ -562,15 +565,16 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
               <Input
                 value={formData.artist}
                 onChange={(e) => setFormData({ ...formData, artist: e.target.value })}
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploadBusy}
               />
             </div>
             <div>
+              <S3Upload onBusyChange={setUploadBusy} kind="image" disabled={isSubmitting || uploadBusy} onUploaded={file => setFormData(current => ({ ...current, coverArt: file.fileUrl }))} />
               <Label>Cover Art URL</Label>
               <Input
                 value={formData.coverArt}
                 onChange={(e) => setFormData({ ...formData, coverArt: e.target.value })}
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploadBusy}
               />
             </div>
             <div>
@@ -579,7 +583,7 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
                 type="number"
                 value={formData.releaseYear}
                 onChange={(e) => setFormData({ ...formData, releaseYear: parseInt(e.target.value) || new Date().getFullYear() })}
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploadBusy}
               />
             </div>
             <div>
@@ -588,18 +592,18 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={3}
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploadBusy}
               />
             </div>
             <div className="flex items-center gap-2">
               <Switch
                 checked={formData.isPublic}
                 onCheckedChange={(checked) => setFormData({ ...formData, isPublic: checked })}
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploadBusy}
               />
               <Label>Make public</Label>
             </div>
-            <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>
+            <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting || uploadBusy}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />

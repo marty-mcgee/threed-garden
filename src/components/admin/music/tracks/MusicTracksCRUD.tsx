@@ -1,6 +1,7 @@
 // components/admin/music/tracks/MusicTracksCRUD.tsx
 'use client';
 
+import { S3Upload } from '@/components/admin/music/shared/S3Upload';
 import { useState, useEffect } from 'react';
 import { 
   Plus, 
@@ -49,8 +50,12 @@ interface MusicTracksCRUDProps {
 
 export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
   const { showToast, ToastComponent } = useToast();
+  const [previewingTrack, setPreviewingTrack] = useState<Track | null>(null);
+  const [previewError, setPreviewError] = useState(false);
   const [tracks, setTracks] = useState<Track[]>([]);
+  const [uploaded, setUploaded] = useState<{ fileUrl: string; fileType: string; fileSize: number } | null>(null);
   const [loading, setLoading] = useState(true);
+  const [uploadBusy, setUploadBusy] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingTrack, setEditingTrack] = useState<Track | null>(null);
@@ -111,7 +116,8 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
       const payload: any = {
         title: formData.title,
         fileUrl: formData.fileUrl,
-        fileType: 'audio/mpeg',
+        fileType: uploaded?.fileUrl === formData.fileUrl ? uploaded.fileType : 'audio/mpeg',
+        fileSize: uploaded?.fileUrl === formData.fileUrl ? uploaded.fileSize : undefined,
         status: formData.status,
       };
 
@@ -167,6 +173,7 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
       const payload: any = {
         title: formData.title,
         fileUrl: formData.fileUrl,
+        fileType: uploaded?.fileUrl === formData.fileUrl ? uploaded.fileType : editingTrack.fileType,
         status: formData.status,
       };
 
@@ -207,7 +214,7 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
   };
 
   const handleDelete = async (id: number, title: string) => {
-    if (!confirm(`Delete track "${title}"? This action cannot be undone.`)) return;
+    if (!confirm(`Delete track "${title}"? Its uploaded file will also be deleted unless another record uses it. This action cannot be undone.`)) return;
 
     try {
       const response = await fetch(`/api/music/tracks?id=${id}`, {
@@ -216,7 +223,7 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
 
       const data = await response.json();
       if (data.success) {
-        showToast('Track deleted successfully', 'success');
+        showToast(data.message || 'Track deleted successfully', 'success');
         await fetchTracks();
         if (onModuleUpdate) onModuleUpdate();
       } else {
@@ -269,13 +276,15 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
 
   const previewTrack = (track: Track) => {
     if (track.fileUrl) {
-      window.open(track.fileUrl, '_blank');
+      setPreviewError(false);
+      setPreviewingTrack(track);
     } else {
       showToast('No audio URL available', 'error');
     }
   };
 
   const openEditDialog = (track: Track) => {
+    setUploaded(null);
     setEditingTrack(track);
     setFormData({
       title: track.title,
@@ -306,6 +315,13 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
   return (
     <div className="space-y-2">
       {ToastComponent}
+      <Dialog open={!!previewingTrack} onOpenChange={open => { if (!open) setPreviewingTrack(null); }}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>{previewingTrack?.title || 'Audio preview'}</DialogTitle></DialogHeader>
+          {previewingTrack && <audio key={`${previewingTrack.id}:${previewingTrack.fileUrl}`} controls preload="metadata" src={previewingTrack.fileUrl} className="w-full" onError={() => setPreviewError(true)} aria-label="Track playback" />}
+          {previewError && <p role="alert" className="text-sm text-red-500">This file could not be played. Check file access and whether your browser supports its audio encoding.</p>}
+        </DialogContent>
+      </Dialog>
 
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -334,7 +350,7 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
                   placeholder="Track title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || uploadBusy}
                 />
               </div>
               <div>
@@ -365,7 +381,7 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
                     placeholder="180"
                     value={formData.duration}
                     onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) || 0 })}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || uploadBusy}
                   />
                 </div>
                 <div>
@@ -376,18 +392,19 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
                     placeholder="1"
                     value={formData.trackNumber}
                     onChange={(e) => setFormData({ ...formData, trackNumber: parseInt(e.target.value) || 1 })}
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || uploadBusy}
                   />
                 </div>
               </div>
               <div>
+                <S3Upload onBusyChange={setUploadBusy} kind="audio" disabled={isSubmitting || uploadBusy} onUploaded={file => { setUploaded(file); setFormData(current => ({ ...current, fileUrl: file.fileUrl, title: current.title || file.fileName.replace(/\.[^.]+$/, ''), duration: 0 })); }} />
                 <Label htmlFor="fileUrl">Audio URL *</Label>
                 <Input
                   id="fileUrl"
                   placeholder="https://example.com/track.mp3"
                   value={formData.fileUrl}
                   onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || uploadBusy}
                 />
                 <p className="text-xs text-muted-foreground mt-1">
                   S3 URL or any publicly accessible audio file URL
@@ -417,10 +434,10 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
                   value={formData.lyrics}
                   onChange={(e) => setFormData({ ...formData, lyrics: e.target.value })}
                   rows={4}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || uploadBusy}
                 />
               </div>
-              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
+              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting || uploadBusy}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -512,7 +529,7 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
                 id="edit-title"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploadBusy}
               />
             </div>
             <div>
@@ -542,7 +559,7 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
                   type="number"
                   value={formData.duration}
                   onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) || 0 })}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || uploadBusy}
                 />
               </div>
               <div>
@@ -552,17 +569,18 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
                   type="number"
                   value={formData.trackNumber}
                   onChange={(e) => setFormData({ ...formData, trackNumber: parseInt(e.target.value) || 1 })}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || uploadBusy}
                 />
               </div>
             </div>
             <div>
-              <Label htmlFor="edit-fileUrl">Audio URL *</Label>
+              <S3Upload onBusyChange={setUploadBusy} kind="audio" disabled={isSubmitting || uploadBusy} onUploaded={file => { setUploaded(file); setFormData(current => ({ ...current, fileUrl: file.fileUrl, title: current.title || file.fileName.replace(/\.[^.]+$/, ''), duration: 0 })); }} />
+                <Label htmlFor="edit-fileUrl">Audio URL *</Label>
               <Input
                 id="edit-fileUrl"
                 value={formData.fileUrl}
                 onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploadBusy}
               />
             </div>
             <div>
@@ -588,10 +606,10 @@ export function MusicTracksCRUD({ onModuleUpdate }: MusicTracksCRUDProps) {
                 value={formData.lyrics}
                 onChange={(e) => setFormData({ ...formData, lyrics: e.target.value })}
                 rows={4}
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploadBusy}
               />
             </div>
-            <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>
+            <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting || uploadBusy}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />

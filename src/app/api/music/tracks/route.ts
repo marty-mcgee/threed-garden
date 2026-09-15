@@ -2,9 +2,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { musicTracks, musicAlbums } from '@/lib/schema/music';
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { musicTracks, musicAlbums, musicMedia } from '@/lib/schema/music';
+import { eq, ne, and, desc, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/lib/db/sequence';
+import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { ownsMediaKey } from '@/lib/services/music/upload-policy';
 
 // ============================================
 // GET /api/music/tracks - List owner or public tracks
@@ -409,7 +411,7 @@ export async function DELETE(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
 
-    if (!id) {
+    if (!id || !/^[1-9]\d*$/.test(id) || !Number.isSafeInteger(Number(id))) {
       return NextResponse.json(
         { success: false, error: 'Missing id parameter' },
         { status: 400 }
@@ -417,6 +419,35 @@ export async function DELETE(request: NextRequest) {
     }
 
     const userId = session.user.id;
+
+    const trackId = Number(id);
+    const [track] = await db.select().from(musicTracks)
+      .where(and(eq(musicTracks.id, trackId), eq(musicTracks.userId, userId))).limit(1);
+    if (!track) return NextResponse.json({ success: false, error: 'Track not found' }, { status: 404 });
+
+    let fileCleanup = 'unmanaged';
+    if (track.fileUrl.startsWith('/api/music/files?key=')) {
+      const key = new URL(track.fileUrl, 'https://local.invalid').searchParams.get('key') || '';
+      if (!ownsMediaKey(userId, key)) {
+        return NextResponse.json({ success: false, error: 'File ownership could not be verified. Track was not deleted.' }, { status: 409 });
+      }
+      const [otherTracks, media, covers] = await Promise.all([
+        db.select({ id: musicTracks.id }).from(musicTracks).where(and(eq(musicTracks.fileUrl, track.fileUrl), ne(musicTracks.id, trackId))).limit(1),
+        db.select({ id: musicMedia.id }).from(musicMedia).where(eq(musicMedia.fileUrl, track.fileUrl)).limit(1),
+        db.select({ id: musicAlbums.id }).from(musicAlbums).where(eq(musicAlbums.coverArt, track.fileUrl)).limit(1),
+      ]);
+      if (otherTracks.length || media.length || covers.length) {
+        fileCleanup = 'shared';
+      } else {
+        try {
+          if (!process.env.AWS_REGION || !process.env.S3_BUCKET_NAME) throw Error('Storage unavailable');
+          await new S3Client({ region: process.env.AWS_REGION }).send(new DeleteObjectCommand({ Bucket: process.env.S3_BUCKET_NAME, Key: key }));
+          fileCleanup = 'deleted';
+        } catch {
+          return NextResponse.json({ success: false, error: 'S3 file deletion failed. Track was kept so you can retry. Check DeleteObject permission.' }, { status: 502 });
+        }
+      }
+    }
 
     const [deleted] = await db
       .delete(musicTracks)
@@ -438,7 +469,8 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: deleted,
-      message: 'Track deleted successfully',
+      fileCleanup,
+      message: fileCleanup === 'deleted' ? 'Track and S3 file deleted' : fileCleanup === 'shared' ? 'Track deleted; shared file retained' : 'Track deleted successfully',
     });
   } catch (error) {
     console.error('Error deleting track:', error);

@@ -50,6 +50,13 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    // New private Multimedia files resolve through their authenticated owner endpoint.
+    if (track.fileUrl.startsWith('/api/music/files?key=')) {
+      return NextResponse.redirect(new URL(track.fileUrl, request.url), {
+        headers: { 'Cache-Control': 'private, no-store' },
+      });
+    }
+
     // Increment play count
     await db.update(musicTracks)
       .set({ playCount: (track.playCount || 0) + 1 })

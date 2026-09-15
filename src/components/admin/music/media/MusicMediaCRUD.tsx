@@ -1,6 +1,7 @@
 // components/admin/music/media/MusicMediaCRUD.tsx
 'use client';
 
+import { S3Upload } from '@/components/admin/music/shared/S3Upload';
 import { useState, useEffect } from 'react';
 import { 
   Plus, 
@@ -47,6 +48,7 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
   const { showToast, ToastComponent } = useToast();
   const [media, setMedia] = useState<Media[]>([]);
   const [loading, setLoading] = useState(true);
+  const [uploadBusy, setUploadBusy] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingMedia, setEditingMedia] = useState<Media | null>(null);
@@ -310,17 +312,18 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
                   placeholder="cover-art.jpg"
                   value={formData.fileName}
                   onChange={(e) => setFormData({ ...formData, fileName: e.target.value })}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || uploadBusy}
                 />
               </div>
               <div>
+                <S3Upload onBusyChange={setUploadBusy} kind="media" disabled={isSubmitting || uploadBusy} onUploaded={file => setFormData(current => ({ ...current, fileUrl: file.fileUrl, fileName: file.fileName, fileType: file.fileType, fileSize: file.fileSize }))} />
                 <Label htmlFor="fileUrl">File URL *</Label>
                 <Input
                   id="fileUrl"
                   placeholder="https://example.com/image.jpg"
                   value={formData.fileUrl}
                   onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || uploadBusy}
                 />
               </div>
               <div>
@@ -371,7 +374,7 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
                   placeholder="1024"
                   value={formData.fileSize}
                   onChange={(e) => setFormData({ ...formData, fileSize: parseInt(e.target.value) || 0 })}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || uploadBusy}
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -379,11 +382,11 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
                   id="isPrimary"
                   checked={formData.isPrimary}
                   onCheckedChange={(checked) => setFormData({ ...formData, isPrimary: checked })}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || uploadBusy}
                 />
                 <Label htmlFor="isPrimary">Primary Media</Label>
               </div>
-              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
+              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting || uploadBusy}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -470,16 +473,17 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
                 id="edit-fileName"
                 value={formData.fileName}
                 onChange={(e) => setFormData({ ...formData, fileName: e.target.value })}
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploadBusy}
               />
             </div>
             <div>
-              <Label htmlFor="edit-fileUrl">File URL *</Label>
+              <S3Upload onBusyChange={setUploadBusy} kind="media" disabled={isSubmitting || uploadBusy} onUploaded={file => setFormData(current => ({ ...current, fileUrl: file.fileUrl, fileName: file.fileName, fileType: file.fileType, fileSize: file.fileSize }))} />
+                <Label htmlFor="edit-fileUrl">File URL *</Label>
               <Input
                 id="edit-fileUrl"
                 value={formData.fileUrl}
                 onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploadBusy}
               />
             </div>
             <div>
@@ -529,7 +533,7 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
                 type="number"
                 value={formData.fileSize}
                 onChange={(e) => setFormData({ ...formData, fileSize: parseInt(e.target.value) || 0 })}
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploadBusy}
               />
             </div>
             <div className="flex items-center gap-2">
@@ -537,11 +541,11 @@ export function MusicMediaCRUD({ onModuleUpdate }: MusicMediaCRUDProps) {
                 id="edit-isPrimary"
                 checked={formData.isPrimary}
                 onCheckedChange={(checked) => setFormData({ ...formData, isPrimary: checked })}
-                disabled={isSubmitting}
+                disabled={isSubmitting || uploadBusy}
               />
               <Label htmlFor="edit-isPrimary">Primary Media</Label>
             </div>
-            <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting}>
+            <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting || uploadBusy}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
