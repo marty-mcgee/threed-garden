@@ -111,11 +111,10 @@ export function AdminMusicManager() {
     e.preventDefault();
     if (!editingAlbum) return;
 
-    const response = await fetch('/api/music/albums', {
+    const response = await fetch(`/api/music/albums?id=${editingAlbum.id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        id: editingAlbum.id,
         ...albumForm,
         releaseYear: albumForm.releaseYear ? parseInt(albumForm.releaseYear) : null,
       }),

@@ -91,10 +91,9 @@ export default function AlbumsManagementPage() {
 
     setIsSubmitting(true);
     try {
-      const url = '/api/music/albums';
+      const url = editingAlbum ? `/api/music/albums?id=${editingAlbum.id}` : '/api/music/albums';
       const method = editingAlbum ? 'PUT' : 'POST';
       const payload = {
-        ...(editingAlbum && { id: editingAlbum.id }),
         title: formData.title,
         artist: formData.artist,
         coverArt: formData.coverArt,
