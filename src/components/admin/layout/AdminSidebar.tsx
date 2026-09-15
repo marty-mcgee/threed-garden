@@ -27,6 +27,7 @@ import {
   Flame,
   Radio,
   Music2,
+  Clapperboard,
   Image,
   Link2,
   Plus,
@@ -116,7 +117,7 @@ const navSections: NavSection[] = [
           { title: 'Files', href: '/admin/threed/model-files', icon: FolderOpen },
           { title: 'Categories', href: '/admin/threed/model-categories', icon: FolderTree },
           { title: 'Textures', href: '/admin/threed/model-textures', icon: Image },
-          { title: 'Animations', href: '/admin/threed/animations', icon: Music2 },
+          { title: 'Animations', href: '/admin/threed/animations', icon: Clapperboard },
         ],
       },
       { title: 'Characters', href: '/admin/threed/characters', icon: User, exact: false },
@@ -224,6 +225,11 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
     }
     return { 'Dashboard': true };
   });
+
+  const [submenuState, setSubmenuState] = useState<{
+    pathname: string;
+    expanded: Record<string, boolean>;
+  }>({ pathname, expanded: {} });
 
   // ✅ Update expanded sections when pathname changes
   useEffect(() => {
@@ -366,10 +372,13 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
                 </Button>
 
                 {isExpanded && (
-                  <ul className="mt-1 space-y-0.5 pl-2">
+                  <ul className="ml-5 mt-1 space-y-0.5 border-l border-white/10 pl-2">
                     {section.items.map((item) => {
                       const Icon = item.icon;
                       const active = isItemActive(item);
+                      const submenuExpanded = (submenuState.pathname === pathname
+                        ? submenuState.expanded[item.href]
+                        : undefined) ?? active;
                       return (
                         <li key={item.href}>
                           <Button
@@ -380,18 +389,35 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
                                 ? "bg-primary text-primary-foreground shadow-md" 
                                 : "hover:bg-accent/50"
                             )}
-                            onClick={() => router.push(item.href)}
+                            aria-expanded={item.children ? submenuExpanded : undefined}
+                            onClick={() => {
+                              if (item.children) {
+                                setSubmenuState((previous) => ({
+                                  pathname,
+                                  expanded: {
+                                    ...(previous.pathname === pathname ? previous.expanded : {}),
+                                    [item.href]: !submenuExpanded,
+                                  },
+                                }));
+                              } else {
+                                router.push(item.href);
+                              }
+                            }}
                           >
                             <Icon className={cn(
                               "h-4 w-4 shrink-0",
                               active && "text-primary-foreground"
                             )} />
                             <span>{item.title}</span>
-                            {active && (
-                              <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary-foreground/60" />
+                            {item.children ? (
+                              submenuExpanded
+                                ? <ChevronDown className="ml-auto h-4 w-4 shrink-0" />
+                                : <ChevronRight className="ml-auto h-4 w-4 shrink-0" />
+                            ) : active && (
+                              <ChevronRight aria-hidden="true" className="ml-auto h-4 w-4 shrink-0 text-primary-foreground/60" />
                             )}
                           </Button>
-                          {item.children && (
+                          {item.children && submenuExpanded && (
                             <ul className="ml-5 mt-0.5 space-y-0.5 border-l border-white/10 pl-2">
                               {item.children.map((child) => {
                                 const ChildIcon = child.icon;
@@ -401,16 +427,16 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
                                     <Button
                                       variant="ghost"
                                       className={cn(
-                                        "h-7 w-full justify-start gap-2 px-2 text-xs",
+                                        "h-7 w-full justify-start gap-3 px-3 text-xs",
                                         childActive
                                           ? "bg-primary/20 text-primary"
                                           : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
                                       )}
                                       onClick={() => router.push(child.href)}
                                     >
-                                      <ChildIcon className="h-3.5 w-3.5 shrink-0" />
+                                      <ChildIcon className="h-4 w-4 shrink-0" />
                                       <span>{child.title}</span>
-                                      {childActive && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />}
+                                      {childActive && <ChevronRight aria-hidden="true" className="ml-auto h-4 w-4 shrink-0 text-primary" />}
                                     </Button>
                                   </li>
                                 );

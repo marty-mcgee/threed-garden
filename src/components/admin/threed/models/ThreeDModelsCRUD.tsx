@@ -720,7 +720,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                             <span className="sr-only">Manage files</span>
                           </Link>
                         </Button>
-                        <Button variant="ghost" size="sm" disabled={deleting || loading} onClick={() => setAnimationModel(model)} title={`Animation defaults for ${model.modelName}`} aria-label={`Animation defaults for ${model.modelName}`}>
+                        <Button variant="ghost" size="sm" disabled={deleting || loading} onClick={() => setAnimationModel(model)} title={`Animations & Preview for ${model.modelName}`} aria-label={`Animations & Preview for ${model.modelName}`}>
                           <Clapperboard className="w-4 h-4" />
                         </Button>
                         <Button variant="ghost" size="sm" disabled={deleting || loading} onClick={() => openEditDialog(model)} title="Edit">
@@ -762,8 +762,8 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
       )}
 
       <Dialog open={!!animationModel} onOpenChange={open => !open && setAnimationModel(null)}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader><DialogTitle>Animation defaults — {animationModel?.modelName}</DialogTitle></DialogHeader>
+        <DialogContent className="flex h-[90dvh] w-[calc(100%-2rem)] min-w-0 flex-col overflow-hidden sm:max-w-7xl">
+          <DialogHeader className="shrink-0 pr-8"><DialogTitle>Animations & Preview — {animationModel?.modelName}</DialogTitle></DialogHeader>
           {animationModel && <ModelAnimationAssignments key={animationModel.id} modelId={animationModel.id} />}
         </DialogContent>
       </Dialog>

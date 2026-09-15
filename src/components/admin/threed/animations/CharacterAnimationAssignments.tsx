@@ -86,7 +86,7 @@ export function CharacterAnimationAssignments(props: AssignmentTargetProps) {
     finally { setBusy(false); }
   }
   const available = new Map([...clips, ...(mapping?.animations ?? [])].map(clip => [clip.id, clip]));
-  return <div className={target === 'character' ? 'flex min-h-0 min-w-0 flex-1 flex-col gap-3' : 'space-y-3'}>
+  return <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-3">
     <div className="shrink-0 space-y-2 text-xs text-muted-foreground">
       <p>{target === 'character'
         ? 'Choose an animation for an action → Preview animation → Save that action. Reload the Scene to use saved changes.'
@@ -109,7 +109,7 @@ export function CharacterAnimationAssignments(props: AssignmentTargetProps) {
     {notice && <p role="status" className="text-sm">{notice}</p>}
     {categoryError && <p role="alert" className="text-xs text-orange-500">{categoryError}</p>}
     {(error || libraryError) && <p role="alert" className="text-sm text-destructive">{error || libraryError}</p>}
-    <div className={target === 'character' ? 'grid min-h-0 min-w-0 flex-1 grid-cols-1 gap-3 overflow-y-auto lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:overflow-hidden' : ''}>
+    <div className="grid min-h-0 min-w-0 flex-1 grid-cols-1 gap-3 overflow-y-auto lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:overflow-hidden">
     {!mapping ? <p>{error ? 'Assignments unavailable. Use Refresh assignments to retry.' : 'Loading assignments…'}</p> : <div className="min-h-0 min-w-0 space-y-2 lg:overflow-y-auto lg:pr-2" aria-label="Animation action assignments">
       {LIBRARY_ACTIONS.map(actionKey => {
         const assigned = mapping.assignments.find(row => row.actionKey === actionKey);
@@ -131,15 +131,15 @@ export function CharacterAnimationAssignments(props: AssignmentTargetProps) {
               {!['inherit', 'disabled'].includes(value) && !options.some(clip => String(clip.id) === value) && <option value={value} disabled>Selected clip #{value} — not in current choices</option>}
               {options.map(clip => <option key={clip.id} value={clip.id} disabled={!clip.isActive}>{clip.name} · {clip.fileName} · Clip {clip.clipIndex + 1}{!clip.isActive ? ' (inactive)' : ''}</option>)}
             </select>
-            {target === 'character' && <Button size="sm" variant="outline" className="h-8 text-xs" disabled={busy || loading || !!libraryError || !canPreview} onClick={() => { if (canPreview && previewId !== null) setPreview({ actionKey, animationId: previewId }); }}>Preview animation</Button>}
+            <Button size="sm" variant="outline" className="h-8 text-xs" disabled={busy || loading || !!libraryError || !canPreview} onClick={() => { if (canPreview && previewId !== null) setPreview({ actionKey, animationId: previewId }); }}>Preview animation</Button>
             <Button size="sm" className="h-8 text-xs" disabled={busy || value === saved || loading || !!libraryError} onClick={() => void save(actionKey, value)}>Save</Button>
           </div>
-          {target === 'character' && <p className="mt-1 break-words text-xs text-muted-foreground">
+          <p className="mt-1 break-words text-xs text-muted-foreground">
             {canPreview ? `Preview ${value === 'inherit' ? 'Model default' : 'selection'}: ${previewClip.name} · ${previewClip.fileName}`
               : value === 'disabled' || (value === 'inherit' && inherited?.mode === 'disabled') ? 'This action is disabled. Select an animation to preview it.'
               : value === 'inherit' && !inherited ? 'Uses existing Scene behavior. Select a library animation to preview a replacement.'
               : 'Animation unavailable. Choose an active library animation or refresh assignments.'}
-          </p>}
+          </p>
           <dl className="mt-2 flex flex-wrap gap-x-2 gap-y-1 text-xs">
             <dt className="text-muted-foreground">Saved source</dt>
             <dd>{!effective ? 'Unknown' : effective.source === 'legacy' ? 'Existing animation behavior' : effective.source === 'model' ? (target === 'model' ? 'Model default' : 'Inherited Model default') : 'Character override'}</dd>
@@ -154,14 +154,14 @@ export function CharacterAnimationAssignments(props: AssignmentTargetProps) {
         </div>;
       })}
     </div>}
-    {target === 'character' && <aside className="order-first flex min-h-[300px] min-w-0 flex-col rounded border bg-background/50 lg:order-last lg:min-h-0" aria-label="Character animation preview">
+    <aside className="order-first flex min-h-[300px] min-w-0 flex-col rounded border bg-background/50 lg:order-last lg:min-h-0" aria-label={`${target} animation preview`}>
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b p-3">
-        <h3 className="text-sm font-medium">{preview ? `Preview: ${label(preview.actionKey)}` : 'Character Preview'}</h3>
+        <h3 className="text-sm font-medium">{preview ? `Preview: ${label(preview.actionKey)}` : target === 'model' ? 'Model Preview' : 'Character Preview'}</h3>
         {preview && <Button size="sm" variant="outline" className="text-xs" onClick={() => setPreview(null)}>T-Pose</Button>}
       </div>
       <p className="break-words px-3 pt-2 text-xs text-muted-foreground">{preview ? available.get(preview.animationId)?.name : 'T-Pose · Choose an animation to preview.'}</p>
-      <iframe ref={previewFrame} key={targetId} onLoad={() => previewFrame.current?.contentWindow?.postMessage({ type: 'threed-preview-animation', animationId: preview?.animationId ?? null }, window.location.origin)} title="Character animation preview" className="min-h-[360px] w-full flex-1 border-0 lg:min-h-0" src={`/threed/character-animation-preview?characterId=${targetId}`} />
-    </aside>}
+      <iframe ref={previewFrame} key={targetId} onLoad={() => previewFrame.current?.contentWindow?.postMessage({ type: 'threed-preview-animation', animationId: preview?.animationId ?? null }, window.location.origin)} title={`${target === 'model' ? 'Model' : 'Character'} animation preview`} className="min-h-[360px] w-full flex-1 border-0 lg:min-h-0" src={`/threed/character-animation-preview?${target}Id=${targetId}`} />
+    </aside>
     </div>
   </div>;
 }

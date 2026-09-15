@@ -11,15 +11,15 @@ import { positiveId } from '@/lib/services/threed/animations/contracts';
 
 type Character = ComponentProps<typeof GardenCharacter>['character'];
 type Clip = AssignedAnimationClip & { name: string };
-type Preview = { character: Character };
+type Preview = { character: Character; target: 'model' | 'character' };
 class PreviewBoundary extends Component<{ children: ReactNode }, { failed: boolean }> {
   state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
   render() { return this.state.failed ? <p role="alert">Preview could not render. Close and retry with WebGL enabled.</p> : this.props.children; }
 }
 type CameraTools = { preset: (front: boolean) => void; save: () => void; reset: () => void };
-function PreviewCamera({ ready, characterId, tools, report }: {
-  ready: boolean; characterId: number; tools: RefObject<CameraTools | null>; report: (message: string) => void;
+function PreviewCamera({ ready, characterId, target, tools, report }: {
+  ready: boolean; characterId: number; target: 'model' | 'character'; tools: RefObject<CameraTools | null>; report: (message: string) => void;
 }) {
   const bounds = useBounds();
   const { camera, invalidate } = useThree();
@@ -27,7 +27,7 @@ function PreviewCamera({ ready, characterId, tools, report }: {
   useEffect(() => {
     if (!ready || !controls.current) return;
     const orbit = controls.current;
-    const key = `threed:character-preview-camera:v1:${characterId}`;
+    const key = `threed:${target}-preview-camera:v1:${characterId}`;
     bounds.refresh().clip();
     const { center, distance } = bounds.getSize();
     const apply = (position: number[], target: number[]) => {
@@ -45,7 +45,7 @@ function PreviewCamera({ ready, characterId, tools, report }: {
       orbit.update();
       try {
         localStorage.setItem(key, JSON.stringify({ position: camera.position.toArray(), target: orbit.target.toArray(), quaternion: camera.quaternion.toArray() }));
-        report('View saved for this Character in this browser.');
+        report(`View saved for this ${target === 'model' ? 'Model' : 'Character'} in this browser.`);
       } catch { report('This browser could not save the view.'); }
     };
     const reset = () => {
@@ -62,7 +62,7 @@ function PreviewCamera({ ready, characterId, tools, report }: {
       }
     } catch { /* Keep the front view if storage is unavailable or invalid. */ }
     return () => { tools.current = null; };
-  }, [ready, characterId, bounds, camera, invalidate, tools, report]);
+  }, [ready, characterId, target, bounds, camera, invalidate, tools, report]);
   return <OrbitControls ref={controls} makeDefault enableDamping={false} />;
 }
 export function CharacterAnimationPreview() {
@@ -72,7 +72,7 @@ export function CharacterAnimationPreview() {
   const [selection, setSelection] = useState<Clip | null | undefined>(null);
   const [request, setRequest] = useState<{ animationId: number | null }>({ animationId: null });
   const playingName = useRef('T-Pose');
-  const [playbackStatus, setPlaybackStatus] = useState('Loading Character…');
+  const [playbackStatus, setPlaybackStatus] = useState('Loading Model…');
   const [switching, setSwitching] = useState(false);
   const [ready, setReady] = useState(false);
   const [error, setError] = useState('');
@@ -85,7 +85,8 @@ export function CharacterAnimationPreview() {
     async function load() {
       try {
         const params = new URLSearchParams(window.location.search);
-        const characterId = positiveId(params.get('characterId'));
+        const target = params.has('modelId') ? 'model' : 'character';
+        const targetId = positiveId(params.get(`${target}Id`));
 
         const get = async (url: string) => {
           const response = await fetch(url, { signal: controller.signal, cache: 'no-store' });
@@ -93,9 +94,18 @@ export function CharacterAnimationPreview() {
           if (!response.ok || !result.success) throw new Error(result.error || 'Preview data unavailable');
           return result.data;
         };
-        const character = await get(`/api/threed/characters?id=${characterId}`);
-        if (!character.model?.filePath) throw new Error('This Character has no accessible primary Model file.');
-        if (!controller.signal.aborted) setPreview({ character: { ...character, positionX: 0, positionY: 0, positionZ: 0,
+        const source = await get(`/api/threed/${target === 'model' ? 'models' : 'characters'}?id=${targetId}`);
+        const character: Character = target === 'character' ? source : {
+          id: source.id, characterId: `model-preview-${source.id}`, name: source.modelName,
+          type: 'model', status: 'active', modelId: source.id, model: source,
+          defaultAnimation: '', animationSpeed: 1, movementType: 'stationary',
+          movementRadius: 0, movementSpeed: 0, patrolWaypoints: [], followTarget: '', followDistance: 0,
+          teleportPositions: [], teleportInterval: 0, interactable: false, interactionMessage: '',
+          defaultEmote: '', positionX: 0, positionY: 0, positionZ: 0, rotation: 0, scale: 1,
+          visible: true, activeStartHour: null, activeEndHour: null,
+        };
+        if (!character.model?.filePath) throw new Error('No accessible primary Model file is available for preview.');
+        if (!controller.signal.aborted) setPreview({ target, character: { ...character, positionX: 0, positionY: 0, positionZ: 0,
           rotation: 0, scale: 1, animationSpeed: 1, status: 'active', visible: true, movementType: 'stationary',
           movementSpeed: 0, movementRadius: 0, interactable: false, activeStartHour: null, activeEndHour: null } });
       } catch (cause) { clearTimeout(timeout); if (!controller.signal.aborted) setError(cause instanceof Error ? cause.message : 'Preview failed'); }
@@ -131,7 +141,7 @@ export function CharacterAnimationPreview() {
   }, [request, preview]);
   // Removing the frame tears down the entire preview world, caches and renderer.
   return <div className="flex h-dvh flex-col gap-2 bg-background p-3 text-foreground">
-    <p className="text-sm">{preview ? preview.character.name : 'Character animation preview'}</p>
+    <p className="text-sm">{preview ? preview.character.name : 'Animation preview'}</p>
     <p role="status" className="text-xs text-green-500">{playbackStatus}</p>
     <p className="text-xs text-muted-foreground">Drag to orbit · Scroll to zoom · Preview does not save changes.</p>
     <div className="flex flex-wrap gap-1 text-xs">
@@ -151,7 +161,7 @@ export function CharacterAnimationPreview() {
             <ambientLight intensity={1.5} /><directionalLight position={[3, 6, 4]} intensity={2} />
             <Suspense fallback={null}><Bounds margin={1.3}>
               <GardenCharacter character={preview.character} previewMode previewSelection={selection} onPreviewState={settled} />
-              <PreviewCamera ready={ready} characterId={preview.character.id} tools={cameraTools} report={setCameraNotice} />
+              <PreviewCamera ready={ready} characterId={preview.character.id} target={preview.target} tools={cameraTools} report={setCameraNotice} />
             </Bounds></Suspense>
           </Canvas>
         </div></PreviewBoundary>}

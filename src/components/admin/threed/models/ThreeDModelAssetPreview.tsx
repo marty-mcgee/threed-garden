@@ -235,9 +235,9 @@ export function ThreeDModelAssetPreview({
         <Box className="h-4 w-4 text-blue-400" />
         <div className="min-w-0 flex-1">
           <h2 id="model-preview-title" className="truncate text-xs font-semibold">{title}</h2>
-          <p className="text-[10px] text-muted-foreground">
+          {/* <p className="text-[10px] text-muted-foreground">
             {description}
-          </p>
+          </p> */}
         </div>
         {headerMeta}
         {dependencyCount > 0 && (
