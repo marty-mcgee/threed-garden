@@ -1,6 +1,7 @@
 // src/components/threed/markers/ModelMarker3D.tsx — v0.16.1-alpha "ThreeD Models"
 'use client';
 
+import { indexEnvironmentRegions, type EnvironmentRegionIndex } from '@/lib/services/threed/models/environment-region-index';
 import { buildEnvironmentSurfaceCollider, type EnvironmentSurfaceCollider } from '@/lib/services/threed/models/environment-surface-collider';
 import { measureModelLocalBounds } from '@/lib/services/threed/models/model-local-bounds';
 import { reportModelLoadFailure } from '@/lib/services/threed/models/model-load-failures';
@@ -82,7 +83,10 @@ export interface ModelCollisionBounds {
 }
 
 export interface ModelGeometryAudit extends ThreeDEnvironmentGeometryAuditAssessment {
+  regionIndex?: EnvironmentRegionIndex;
+  regionPreparation?: { phase: 'preparing' | 'ready' | 'rejected'; reason?: string; batches?: number };
   surfaceCollider?: EnvironmentSurfaceCollider | null;
+  surfaceDiagnostic?: import('@/lib/services/threed/models/environment-surface-collider').EnvironmentSurfaceDiagnostic;
   meshCount: number;
   triangleCount: number;
   skinnedMeshCount: number;
@@ -450,7 +454,9 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
     };
   }, [loadedModel, materialPreviewOverride]);
 
+  const regionJobRef = useRef<{ generator: ReturnType<typeof indexEnvironmentRegions>; audit: ModelGeometryAudit; batches: number; lastReport: number } | null>(null);
   useEffect(() => {
+    regionJobRef.current = null;
     collisionMeasurementRef.current = {
       model: loadedModel,
       scale,
@@ -461,6 +467,7 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
     onGeometryAuditChange?.(null);
     onEnvironmentCollisionPreviewChange?.(null);
     return () => {
+      regionJobRef.current = null;
       onCollisionBoundsChange?.(null);
       onGeometryAuditChange?.(null);
       onEnvironmentCollisionPreviewChange?.(null);
@@ -468,6 +475,31 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
   }, [loadedModel, onCollisionBoundsChange, onEnvironmentCollisionPreviewChange, onGeometryAuditChange, scale]);
 
   useFrame(() => {
+    const job = regionJobRef.current;
+    if (job) {
+      try {
+        const started = performance.now();
+        do {
+          const result = job.generator.next();
+          job.batches++;
+          if (result.done) {
+            regionJobRef.current = null;
+            onGeometryAuditChange?.({ ...job.audit, regionIndex: result.value,
+              regionPreparation: { phase: 'ready', batches: job.batches } });
+            break;
+          }
+        } while (performance.now() - started < 4);
+        if (regionJobRef.current && performance.now() - job.lastReport > 1000) {
+          job.lastReport = performance.now();
+          onGeometryAuditChange?.({ ...job.audit, regionPreparation: { phase: 'preparing', batches: job.batches } });
+        }
+      } catch (error) {
+        regionJobRef.current = null;
+        const reason = error instanceof Error ? error.message : 'Invalid geometry';
+        onGeometryAuditChange?.({ ...job.audit, regionPreparation: { phase: 'rejected', reason, batches: job.batches } });
+        console.warn('[ThreeD Environment Regions] Index rejected', reason);
+      }
+    }
     const measurement = collisionMeasurementRef.current;
     if (
       !loadedModel
@@ -561,12 +593,22 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
       invalidMeshCount,
       hasFiniteBounds: values.every(Number.isFinite),
     };
-    onGeometryAuditChange?.({
-      surfaceCollider: onEnvironmentCollisionPreviewChange ? buildEnvironmentSurfaceCollider(loadedModel, visualGroup.parent) : null,
+    let surfaceDiagnostic: ModelGeometryAudit['surfaceDiagnostic'];
+    const surfaceCollider = onEnvironmentCollisionPreviewChange
+      ? buildEnvironmentSurfaceCollider(loadedModel, visualGroup.parent, diagnostic => { surfaceDiagnostic = diagnostic; })
+      : null;
+    const audit: ModelGeometryAudit = {
+      surfaceCollider,
+      surfaceDiagnostic,
       ...auditInput,
       ...assessThreeDEnvironmentGeometry(auditInput),
       meshInventory: createThreeDEnvironmentMeshInventory(meshInventoryCandidates),
-    });
+    };
+    onGeometryAuditChange?.(audit);
+    if (onEnvironmentCollisionPreviewChange && !surfaceCollider && ['triangle-budget', 'vertex-budget'].includes(surfaceDiagnostic?.reason ?? '')) {
+      regionJobRef.current = { generator: indexEnvironmentRegions(loadedModel, visualGroup.parent), audit, batches: 0, lastReport: performance.now() };
+      onGeometryAuditChange?.({ ...audit, regionPreparation: { phase: 'preparing', batches: 0 } });
+    }
     if (onEnvironmentCollisionPreviewChange) {
       onEnvironmentCollisionPreviewChange(
         planThreeDEnvironmentCollisionPreview(collisionPreviewCandidates),

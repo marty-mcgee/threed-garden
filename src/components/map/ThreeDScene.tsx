@@ -1,6 +1,7 @@
 // components/map/ThreeDScene.tsx
 'use client';
 
+import { EnvironmentRegionColliders } from '@/components/threed/shared/EnvironmentRegionColliders';
 import { resolveBallPhysics } from '@/lib/services/threed/models/ball-physics';
 
 
@@ -779,6 +780,7 @@ function ProjectModelMarkerBody({
   const isEnvironment = isProjectModelEnvironment(marker.metadata);
   const isMovableBall = !isEnvironment && marker.metadata?.physicsMode === 'ball';
   const [collisionBounds, setCollisionBounds] = useState<ModelCollisionBounds | null>(null);
+  const [regionsReady, setRegionsReady] = useState(false);
   const [geometryAudit, setGeometryAudit] = useState<ModelGeometryAudit | null>(null);
   const [collisionPreview, setCollisionPreview] = useState<ThreeDEnvironmentCollisionPreviewPlan | null>(null);
   const handleCollisionBoundsChange = useCallback((bounds: ModelCollisionBounds | null) => {
@@ -793,7 +795,7 @@ function ProjectModelMarkerBody({
         scale,
         bounds: collisionBounds,
         ...(isEnvironment ? { geometryAudit: geometryAudit ? {
-          ...geometryAudit, surfaceCollider: undefined,
+          ...geometryAudit, surfaceCollider: undefined, regionIndex: undefined,
           surfaceTriangleCount: (geometryAudit.surfaceCollider?.indices.length ?? 0) / 3,
         } : null } : {}),
         ...(isEnvironment && collisionPreview ? {
@@ -814,6 +816,8 @@ function ProjectModelMarkerBody({
 
   const ballPhysics = resolveBallPhysics(marker.metadata?.ballPhysics);
   const surfaceCollider = isEnvironment ? geometryAudit?.surfaceCollider : null;
+  const regionIndex = isEnvironment ? geometryAudit?.regionIndex : undefined;
+  useEffect(() => { setRegionsReady(false); }, [regionIndex]);
   const colliderKey = collisionBounds
     ? [...collisionBounds.center, ...collisionBounds.halfExtents]
         .map((value) => value.toFixed(4))
@@ -849,7 +853,8 @@ function ProjectModelMarkerBody({
     if (!physicsDebug || !isEnvironment || !environmentColliderPlan) return;
     console.debug('[ThreeD Environment Colliders]', {
       markerId: marker.id,
-      collisionMode: surfaceCollider ? 'triangle-surface' : 'box-fallback',
+      collisionMode: regionsReady ? 'triangle-regions' : surfaceCollider ? 'triangle-surface' : 'box-fallback',
+      surfaceDiagnostic: geometryAudit?.surfaceDiagnostic,
       surfaceTriangleCount: (surfaceCollider?.indices.length ?? 0) / 3,
       plannedBoxCount: environmentColliderPlan.plannedBoxCount,
       activeColliderCount: surfaceCollider ? 1 : environmentColliderPlan.activeColliderCount,
@@ -861,7 +866,20 @@ function ProjectModelMarkerBody({
       prioritySelectedCount: environmentColliderPlan.prioritySelectedCount,
       coverageSelectedCount: environmentColliderPlan.coverageSelectedCount,
     });
-  }, [environmentColliderPlan, isEnvironment, marker.id, physicsDebug, surfaceCollider]);
+  }, [environmentColliderPlan, geometryAudit, isEnvironment, marker.id, physicsDebug, surfaceCollider, regionIndex, regionsReady]);
+
+  useEffect(() => {
+    if (!physicsDebug || !isEnvironment) return;
+    console.debug('[ThreeD Environment Regions]', {
+      markerId: marker.id,
+      phase: geometryAudit?.regionPreparation?.phase ?? (surfaceCollider ? 'full-surface' : 'waiting-for-audit'),
+      reason: geometryAudit?.regionPreparation?.reason,
+      batches: geometryAudit?.regionPreparation?.batches,
+      totalRegions: regionIndex?.regions.length ?? 0,
+      referenceBytes: regionIndex?.referenceBytes ?? 0,
+      fallbackActive: !surfaceCollider && !regionsReady,
+    });
+  }, [physicsDebug, isEnvironment, marker.id, geometryAudit, regionIndex, regionsReady, surfaceCollider]);
 
   return (
     <SceneMarkerRigidBody
@@ -887,11 +905,12 @@ function ProjectModelMarkerBody({
         <BallCollider key={colliderKey} args={[Math.max(...collisionBounds.halfExtents)]}
           position={collisionBounds.center} mass={ballPhysics.mass} friction={ballPhysics.friction} restitution={ballPhysics.restitution} />
       )}
+      {regionIndex && <EnvironmentRegionColliders index={regionIndex} enabled={isLayerEnabled} physicsDebug={physicsDebug} markerId={String(marker.id)} position={position} rotation={rotation} onReady={setRegionsReady} />}
       {surfaceCollider && <TrimeshCollider args={[surfaceCollider.vertices, surfaceCollider.indices]} />}
-      {isEnvironment && !surfaceCollider && collisionPreview?.groundBoxes?.map((box, index) => (
+      {isEnvironment && !surfaceCollider && !regionsReady && collisionPreview?.groundBoxes?.map((box, index) => (
         <CuboidCollider key={`environment-ground-${index}`} args={box.halfExtents} position={box.center} />
       ))}
-      {isEnvironment && !surfaceCollider && environmentColliderPlan?.boxes.map((box, index) => (
+      {isEnvironment && !surfaceCollider && !regionsReady && environmentColliderPlan?.boxes.map((box, index) => (
         <CuboidCollider
           key={`environment-collider-${index}`}
           args={box.halfExtents}
@@ -932,7 +951,7 @@ function ProjectModelMarkerBody({
           onEnvironmentCollisionPreviewChange={isEnvironment ? setCollisionPreview : undefined}
           onRuntimeSettled={() => onModelRuntimeSettled?.(String(marker.id))}
         />
-        {isEnvironment && !surfaceCollider && physicsDebug && environmentColliderPlan && (
+        {isEnvironment && !surfaceCollider && !regionsReady && physicsDebug && environmentColliderPlan && (
           <EnvironmentCollisionPreview boxes={environmentColliderPlan.boxes} />
         )}
         {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.9} outerRadius={1.2} />}
