@@ -2,7 +2,9 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Current production: **v0.19.30 — Movable Balls + Placement Refinements**, deployment User-confirmed.
+Current production: **v0.19.31 — ThreeD Dashboard: Character Animation Groups + Transparent Panels**, deployment User-confirmed.
+
+- [v0.19.31 — ThreeD Dashboard: Character Animation Groups + Transparent Panels](v0.19.31.md) — production User-confirmed
 
 - [v0.19.30 — Movable Balls + Placement Refinements](v0.19.30.md) — production User-confirmed
 
