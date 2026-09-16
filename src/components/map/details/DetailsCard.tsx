@@ -1,5 +1,6 @@
 'use client';
 
+import { getCharacterAnimationAvailability, subscribeCharacterAnimationAvailability } from '@/lib/services/threed/animations/runtime-availability';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useSession } from 'next-auth/react';
 import { hasModelLoadFailure, subscribeModelLoadFailures } from '@/lib/services/threed/models/model-load-failures';
@@ -267,6 +268,9 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
   onDeleteCharacterInstance?: (markerId: number, name: string) => void;
   deletingCharacterMarkerId?: number | null;
 }) {
+  const animationAvailability = useSyncExternalStore(subscribeCharacterAnimationAvailability,
+    () => getCharacterAnimationAvailability(Number(selected?.data?.id), String(selected?.data?.model?.filePath ?? '')),
+    () => null);
   if (!selected) return null;
   const d = selected.data || selected.metadata?.data || selected.metadata || {};
   const isIncident = selected.latitude != null || selected.severity || (selected.title && selected.location);
@@ -458,16 +462,15 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
 
   return (
     <div
-      className="fixed top-12 z-[1000] max-h-[calc(100vh-4rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-y-auto rounded-lg border border-white/15 p-2 text-white shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]"
+      className="threed-workspace-panel threed-details-surface fixed top-12 z-[1000] max-h-[calc(100vh-4rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-y-auto rounded-lg border border-white/15 p-2 text-white shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]"
       style={{
-        backgroundColor: 'rgba(0, 0, 0, 0.9)',
         left: `${leftOffsetRem}rem`,
       }}
     >
       {/* Header */}
       <div
         className="sticky top-0 z-10 -mx-2 -mt-2 flex items-start justify-between gap-2 rounded-t-lg px-2 pb-2 pt-0.5"
-        style={{ backgroundColor: 'rgba(0, 0, 0, 0.9)' }}
+        style={{ backgroundColor: 'var(--threed-panel-background)' }}
       >
         <div className="min-w-0 pb-1 pt-0.5">
           <div className="truncate text-sm font-semibold text-white">
@@ -632,7 +635,9 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
 
       {/* Character Actions — shared semantic animation controls */}
       {!isIncident && (type === 'characters' || type === 'character') && (
-        <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-1.5">
+        <details key={String(selected.id)} className="mt-2 space-y-1.5 rounded border border-cyan-300/15 bg-white/[0.035] p-1.5">
+          <summary className="cursor-pointer text-xs font-medium text-cyan-100">Animations</summary>
+          {!animationAvailability && <p className="text-[10px] text-slate-400" role="status">Waiting for animation availability…</p>}
           {/* <div className="text-[10px] font-medium text-white/60">Character Actions</div> */}
 
           <div className="rounded bg-white/5 px-2 py-1.5 text-[10px] text-white/55">
@@ -738,18 +743,22 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
                 : group.actions,
             }))
             .filter((group) => group.actions.length > 0)
+            .flatMap(group => animationAvailability ? [
+              { ...group, title: `${group.title} · Active`, inactive: false, actions: group.actions.filter(({action}) => animationAvailability.has(action.toLowerCase())) },
+              { ...group, title: `${group.title} · Inactive`, inactive: true, actions: group.actions.filter(({action}) => !animationAvailability.has(action.toLowerCase())) },
+            ].filter(section => section.actions.length > 0) : [{ ...group, inactive: true }])
             .map((group) => (
-            <div key={group.title} className="space-y-0.5">
-              <div className="text-[9px] uppercase tracking-wide text-white/35">
-                {group.title}
-              </div>
+            <details key={group.title} className="space-y-1 rounded bg-white/[0.035] p-1.5">
+              <summary title={group.inactive ? 'Unavailable in the loaded Character runtime' : 'Available in the loaded Character runtime'} className={`cursor-pointer text-[11px] font-medium ${group.inactive ? 'text-slate-400' : 'text-cyan-100'}`}>
+                {group.title} <span className="text-slate-400">({group.actions.length})</span>
+              </summary>
 
               <div className="grid grid-cols-3 gap-1">
                 {group.actions.map(({ action, label }) => (
                   <button
                     key={action}
                     disabled={
-                      Boolean(isOrchestrationRunning)
+                      group.inactive || Boolean(isOrchestrationRunning)
                       || (
                         actionTarget != null
                         && THREED_GENERIC_TARGET_ACTIONS.includes(action as any)
@@ -798,9 +807,9 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
                   </button>
                 ))}
               </div>
-            </div>
+            </details>
           ))}
-        </div>
+        </details>
       )}
 
       {isProjectModelInstance && onUpdateModelInstance && onDeleteModelInstance && onMoveModelToggle && (

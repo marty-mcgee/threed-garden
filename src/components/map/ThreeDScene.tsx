@@ -2491,7 +2491,7 @@ export function ThreeDScene({
         </button>
 
         {showControls && (
-          <div className="w-48 space-y-0.5 overflow-y-auto rounded-lg border border-white/10 bg-black/75 p-1.5 pb-2.5 shadow-xl backdrop-blur-sm [scrollbar-width:thin]">
+          <div className="threed-workspace-panel w-48 space-y-0.5 overflow-y-auto rounded-lg border border-white/10 p-1.5 pb-2.5 shadow-xl backdrop-blur-sm [scrollbar-width:thin]">
             <button onClick={onAutoRotateToggle} aria-pressed={autoRotate} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${autoRotate ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
               <RotateCw className={`h-3.5 w-3.5 ${autoRotate ? 'animate-spin [animation-duration:4s]' : ''}`} />
               {autoRotate ? 'Pause Rotation' : 'Auto-Rotate'}
@@ -2668,7 +2668,7 @@ export function ThreeDScene({
       {/* ✅ Save View Dialog */}
       {showPresetDialog && (
         <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-black/90 border border-white/10 rounded-lg p-4 max-w-sm w-full mx-4 shadow-2xl">
+          <div className="threed-workspace-panel border border-white/10 rounded-lg p-4 max-w-sm w-full mx-4 shadow-2xl">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-medium text-white">Save Current View</h3>
               <button

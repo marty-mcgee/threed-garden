@@ -102,7 +102,7 @@ export function ProjectHeaderMenu({
       </Button>
 
       {selectedProjectId && isOpen && (
-        <div className="absolute left-0 top-full z-[2000] mt-1 max-h-[70dvh] w-72 max-w-[calc(100vw-2rem)] space-y-2 overflow-y-auto overscroll-contain rounded-lg border bg-background p-2 shadow-xl">
+        <div className="threed-workspace-panel absolute left-0 top-full z-[2000] mt-1 max-h-[70dvh] w-72 max-w-[calc(100vw-2rem)] space-y-2 overflow-y-auto overscroll-contain rounded-lg border p-2 shadow-xl">
           <div className="space-y-1.5 px-1">
             <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
               <FolderOpen className="h-3 w-3" />

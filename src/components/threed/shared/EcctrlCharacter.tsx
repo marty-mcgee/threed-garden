@@ -3,6 +3,7 @@
 
 'use client';
 
+import { reportCharacterAnimationAvailability, DETAILS_ANIMATION_ACTIONS } from '@/lib/services/threed/animations/runtime-availability';
 import { resolveCharacterPhysics } from '@/lib/services/threed/characters/character-physics';
 import {
   useRef,
@@ -428,6 +429,7 @@ function useCharacterModel(
     }
 
     let cancelled = false;
+    let releaseAvailability: (() => void) | undefined;
 
     const loadModel =
       async () => {
@@ -701,6 +703,7 @@ function useCharacterModel(
               overrides
             );
           animMapRef.current = assignedAnimationMap(animMapRef.current, externalLibrary.blocked, externalLibrary.assigned);
+          if (!cancelled) releaseAvailability = reportCharacterAnimationAvailability(character.id, character.model!.filePath, DETAILS_ANIMATION_ACTIONS.filter(action => actionsRef.current.has(action.toLowerCase())));
 
           // ==================================================
           // DEBUG INFO
@@ -773,6 +776,7 @@ function useCharacterModel(
     return () => {
       cancelled =
         true;
+      releaseAvailability?.();
 
       mixerRef
         .current

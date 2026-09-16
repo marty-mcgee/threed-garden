@@ -2,7 +2,9 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Current production: **v0.19.29 — Proximity-Based Environment Collision**, deployment User-confirmed.
+Current production: **v0.19.30 — Movable Balls + Placement Refinements**, deployment User-confirmed.
+
+- [v0.19.30 — Movable Balls + Placement Refinements](v0.19.30.md) — production User-confirmed
 
 - [v0.19.29 — Proximity-Based Environment Collision](v0.19.29.md) — production User-confirmed
 

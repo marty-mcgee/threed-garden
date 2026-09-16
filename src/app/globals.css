@@ -241,3 +241,38 @@
   animation: spin-slow 3s linear infinite;
 }
 
+
+/* Shared Dashboard Scene surfaces; scoped to explicitly opted-in panels. */
+.threed-workspace-panel {
+  --threed-panel-background: rgba(15, 23, 42, 0.96);
+  background-color: var(--threed-panel-background);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #f1f5f9;
+}
+.threed-workspace-panel summary:focus-visible {
+  outline: 2px solid #67e8f9;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.threed-workspace-panel.threed-details-surface {
+  --threed-panel-background: transparent;
+  transition: background-color 150ms ease, left 150ms ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+.threed-details-surface:hover,
+.threed-details-surface:focus-within {
+  --threed-panel-background: rgba(15, 23, 42, 0.82);
+}
+.threed-details-surface input,
+.threed-details-surface select {
+  background-color: rgba(15, 23, 42, 0.78);
+}
+@media (hover: none) {
+  .threed-workspace-panel.threed-details-surface {
+    --threed-panel-background: rgba(15, 23, 42, 0.82);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .threed-workspace-panel.threed-details-surface { transition: none; }
+}

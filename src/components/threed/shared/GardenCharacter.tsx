@@ -1,6 +1,7 @@
 // src/components/threed/shared/GardenCharacter.tsx
 'use client';
 
+import { reportCharacterAnimationAvailability, DETAILS_ANIMATION_ACTIONS } from '@/lib/services/threed/animations/runtime-availability';
 import {
   useRef,
   useEffect,
@@ -566,6 +567,7 @@ export function GardenCharacter({
 
     let cancelled =
       false;
+    let releaseAvailability: (() => void) | undefined;
 
     const loadModel =
       async () => {
@@ -892,6 +894,7 @@ export function GardenCharacter({
               overrides,
             );
           animMapRef.current = assignedAnimationMap(animMapRef.current, externalLibrary.blocked, externalLibrary.assigned);
+          if (!cancelled && !previewMode && !previewClip) releaseAvailability = reportCharacterAnimationAvailability(character.id, character.model!.filePath, DETAILS_ANIMATION_ACTIONS.filter(action => Boolean(findClip(animMapRef.current, animations, action))));
 
           // ================================================
           // INITIAL ACTION
@@ -1057,6 +1060,7 @@ export function GardenCharacter({
     return () => {
       cancelled =
         true;
+      releaseAvailability?.();
 
       if (
         mixerRef.current &&
