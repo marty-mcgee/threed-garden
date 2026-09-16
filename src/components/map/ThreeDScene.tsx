@@ -607,6 +607,11 @@ function SceneMarkerRigidBody({
     const body = rigidBodyRef.current;
     if (!pending || !body) return;
     pendingTransformRef.current = null;
+    // An explicit placement starts at rest, independent of prior simulation.
+    if (body.isDynamic()) {
+      body.setLinvel({ x: 0, y: 0, z: 0 }, true);
+      body.setAngvel({ x: 0, y: 0, z: 0 }, true);
+    }
     if (pending.position) {
       body.setTranslation({
         x: pending.position[0],

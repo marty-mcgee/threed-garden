@@ -805,7 +805,7 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
 
       {isProjectModelInstance && onUpdateModelInstance && onDeleteModelInstance && onMoveModelToggle && (
         <ModelInstancePlacementEditor
-          key={modelInstanceId}
+          key={`${modelInstanceId}:${String(d.placementRevision ?? '')}`}
           instanceId={modelInstanceId}
           initialMovableBall={selected.metadata?.physicsMode === 'ball'}
           initialBallPhysics={selected.metadata?.ballPhysics}

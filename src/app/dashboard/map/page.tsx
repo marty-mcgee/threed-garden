@@ -127,6 +127,8 @@ function reconcileSelectedProjectMarker(
       ...(selected.data ?? {}),
       ...(record.data ?? {}),
       projectMarkerId: recordId,
+      // Successful CRUD responses reset only this instance's placement form.
+      placementRevision: Number(selected.data?.placementRevision ?? 0) + 1,
       ...(hasPosition ? {
         positionX: position.x,
         positionY: position.y,

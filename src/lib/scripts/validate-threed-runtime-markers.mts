@@ -1414,6 +1414,38 @@ assert.equal(restoredProjectMarkers[1].id, 'models-placement-8');
 assert.deepEqual(restoredProjectMarkers[1].position, { x: 2, y: 0, z: 6 });
 validationStep('Saved state overrides matches without hiding new or restoring unavailable markers');
 
+const ballSnapshots = parseProjectThreeDMarkerSnapshot([51,53].map((assetId, index) => ({
+  ...validSavedSnapshot[0], moduleType: 'models', assetId,
+  markerId: `models-ball-${assetId}`, name: `Ball ${assetId}`,
+  position: {x: index * 10, y: 0.3, z: -4},
+  data: {id: assetId, modelName: `Ball ${assetId}`, filePath: `/ball-${assetId}.glb`,
+    scaleMultiplier: index + 1, rotationYInstance: index * Math.PI / 4},
+  metadata: {physicsMode: 'ball',
+    ballPhysics: {mass: index + 1, gravityScale: 1, friction: 0.8, restitution: 0.2, damping: index + 1.5}},
+})));
+// JSON serialization models the persisted data boundary; real DB I/O is separate.
+const persistedBalls = JSON.parse(JSON.stringify(ballSnapshots)) as typeof ballSnapshots;
+const recoveredBalls = buildThreeDRuntimeMarkers({
+  plants: [], plantings: [], beds: [], characters: [], farmbots: [], layers: [],
+  tasks: [], harvests: [], weatherLogs: [],
+  models: persistedBalls.map(ball => ball.data),
+  projectThreedMarkers: persistedBalls.map((ball, index) => ({
+    ...ball, id: index + 100, markerType: ball.moduleType, sourceAssetId: ball.assetId,
+    positionX: ball.position.x, positionY: ball.position.y, positionZ: ball.position.z,
+  })),
+}, generatedAt);
+assert.equal(recoveredBalls.length, 2);
+for (const ball of persistedBalls) {
+  const recovered = recoveredBalls.find(marker => marker.id === ball.markerId);
+  assert(recovered);
+  assert.deepEqual(recovered.position, ball.position);
+  assert.equal(recovered.metadata.physicsMode, 'ball');
+  assert.deepEqual(recovered.metadata.ballPhysics, ball.metadata.ballPhysics);
+  assert.equal(recovered.data.scaleMultiplier, ball.data.scaleMultiplier);
+  assert.equal(recovered.data.rotationYInstance, ball.data.rotationYInstance);
+}
+validationStep('Two distinct movable-ball snapshots restore independent transforms and physics');
+
 const projectModelInstanceMarkers = buildThreeDRuntimeMarkers({
   plants: [],
   plantings: [],
