@@ -225,6 +225,7 @@ function UnifiedMapPageInner() {
   const [placementCharacter, setPlacementCharacter] = useState<ThreeDCharacterLibraryItem | null>(null);
   const [placementFarmBot, setPlacementFarmBot] = useState<ThreeDFarmBotLibraryItem | null>(null);
   const [placementThreedId, setPlacementThreedId] = useState<number | null>(null);
+  const [modelPlacementDraft, setModelPlacementDraft] = useState({ x: '0', y: '0', z: '0', rotationY: '0' });
   const [placementScaleMultiplier, setPlacementScaleMultiplier] = useState('1');
   const [placementModelRole, setPlacementModelRole] = useState<'object' | 'environment'>('object');
   const [placingModel, setPlacingModel] = useState(false);
@@ -554,14 +555,30 @@ function UnifiedMapPageInner() {
 
     setLoadingLibraryModels(true);
     try {
-      const response = await fetch('/api/threed/models?scope=library&limit=100', {
-        cache: 'no-store',
-      });
-      const result = await response.json().catch(() => null);
-      if (!response.ok || !result?.success) {
-        throw new Error(result?.error || `Model Library failed (${response.status})`);
+      const models: ThreeDModelLibraryItem[] = [];
+      let offset = 0;
+      let total = Infinity;
+      while (offset < total) {
+        const response = await fetch(`/api/threed/models?scope=library&limit=100&offset=${offset}`, {
+          cache: 'no-store',
+        });
+        const result = await response.json().catch(() => null);
+        if (!response.ok || !result?.success || !Array.isArray(result.data)) {
+          throw new Error(result?.error || `Model Library failed (${response.status})`);
+        }
+        const pageTotal = result.pagination?.total;
+        if (!Number.isSafeInteger(pageTotal) || pageTotal < 0) {
+          throw new Error('Model Library pagination is unavailable. Please retry.');
+        }
+        total = pageTotal;
+        if (result.data.length === 0) {
+          if (offset < total) throw new Error('Model Library changed while loading. Please reopen it.');
+          break;
+        }
+        models.push(...result.data);
+        offset += result.data.length;
       }
-      setLibraryModels(Array.isArray(result.data) ? result.data : []);
+      setLibraryModels(Array.from(new Map(models.map(model => [model.id, model])).values()));
     } catch (error) {
       console.error('Failed to load ThreeD Model Library', {
         errorName: error instanceof Error ? error.name : 'UnknownError',
@@ -1209,7 +1226,13 @@ function UnifiedMapPageInner() {
 
   const handleModelPlacement = useCallback(async (
     position: ThreeDScenePlacementPosition,
+    selectedModel = placementModel,
   ) => {
+    const placementModel = selectedModel;
+    if (![position.x, position.y, position.z, Number(modelPlacementDraft.rotationY)].every(Number.isFinite) || !modelPlacementDraft.rotationY.trim()) {
+      showToastRef.current('Enter valid position and rotation values.', 'error');
+      return;
+    }
     const scaleMultiplier = Number(placementScaleMultiplier);
     if (
       !selectedProjectId
@@ -1242,6 +1265,7 @@ function UnifiedMapPageInner() {
           position,
           scaleMultiplier,
           placementRole: placementModelRole,
+          rotationY: Number(modelPlacementDraft.rotationY) * Math.PI / 180,
         })),
       });
       const result = await response.json().catch(() => null);
@@ -1282,6 +1306,7 @@ function UnifiedMapPageInner() {
       setPlacingModel(false);
     }
   }, [
+    modelPlacementDraft.rotationY,
     placementModel,
     placementScaleMultiplier,
     placementModelRole,
@@ -1671,7 +1696,7 @@ function UnifiedMapPageInner() {
 
   const handleUpdateCharacterPosition = useCallback(async (
     markerId: number,
-    position: { positionX: number; positionY: number; positionZ: number },
+    position: { positionX: number; positionY: number; positionZ: number; characterPhysics?: import("@/lib/services/threed/characters/character-physics").CharacterPhysics },
   ) => {
     if (updatingCharacterMarkerId != null || controlledCharacterId != null) return;
     const sourceId = data.threed.raw?.projectThreedMarkers?.find((marker) => marker.id === markerId)?.sourceAssetId;
@@ -2171,7 +2196,7 @@ function UnifiedMapPageInner() {
     setIsProjectAssetsOpen(true);
   }, []);
 
-  const openProjectSetup = useCallback(() => {
+  const openProjectSetup = useCallback((tour = false) => {
     setIsProjectAssetsOpen(false);
     setIsModelLibraryOpen(false);
     setPlacementModel(null);
@@ -2185,8 +2210,15 @@ function UnifiedMapPageInner() {
     setPlantingPlacementActive(false);
     setIsSceneAddMenuOpen(false);
     setIsProjectSummaryOpen(false);
-    setIsProjectSetupOpen(true);
-  }, []);
+    if (!tour && projectEnvironmentMarkers.length > 0) {
+      setIsProjectSetupOpen(false);
+      setProjectSetupSessionProjectId(null);
+      setDismissedProjectSetupProjectId(selectedProjectId);
+      openEnvironmentDetails();
+    } else {
+      setIsProjectSetupOpen(true);
+    }
+  }, [projectEnvironmentMarkers, openEnvironmentDetails, selectedProjectId]);
 
   const closeProjectAssets = useCallback((restoreTriggerFocus = false) => {
     setIsProjectAssetsOpen(false);
@@ -2292,6 +2324,7 @@ function UnifiedMapPageInner() {
             const marker = projectEnvironmentMarkers.find((item) => item.id === markerId);
             if (marker) openEnvironmentDetails(marker);
           }}
+          onOpenProjectTour={() => openProjectSetup(true)}
           onOpenProjectSettings={() => window.open(
             `/admin/projects/${selectedProjectId}`,
             '_blank',
@@ -2306,12 +2339,8 @@ function UnifiedMapPageInner() {
             if (mode === '2d') setIsSceneAddMenuOpen(false);
             setViewMode(mode);
           }}
-          projectSetupOpen={isProjectSetupOpen}
           presentationComplete={isThreeDPresentationComplete}
-          onToggleProjectSetup={() => {
-            if (isProjectSetupOpen) setIsProjectSetupOpen(false);
-            else openProjectSetup();
-          }}
+
           sceneAddMenuOpen={isSceneAddMenuOpen}
           hasThreeDModule={projectThreeDModules.length > 0}
           onToggleSceneAddMenu={() => {
@@ -2333,7 +2362,10 @@ function UnifiedMapPageInner() {
             else openProjectAssets();
           }}
           hasEnvironment={projectEnvironmentMarkers.length > 0}
-          onOpenEnvironment={() => openEnvironmentDetails()}
+          onOpenEnvironment={() => {
+            if (projectEnvironmentMarkers.length > 0) openProjectSetup();
+            else void openModelLibrary('environment');
+          }}
           savingProject={savingProjectMarkers}
           onSaveProject={handleSaveThreeDProject}
           filterPanelOpen={showFilterPanel}
@@ -2426,6 +2458,12 @@ function UnifiedMapPageInner() {
         inspectedModelId={inspectedLibraryModelId}
         onInspectModel={inspectModelLibraryItem}
         placementModel={placementModel}
+        placementDraft={modelPlacementDraft}
+        onPlacementDraftChange={(field, value) => setModelPlacementDraft(current => ({ ...current, [field]: value }))}
+        onPlaceAtCoordinates={(model) => {
+          if (![modelPlacementDraft.x, modelPlacementDraft.y, modelPlacementDraft.z].every(value => value.trim() && Number.isFinite(Number(value)))) return;
+          void handleModelPlacement({ x: Number(modelPlacementDraft.x), y: Number(modelPlacementDraft.y), z: Number(modelPlacementDraft.z) }, model);
+        }}
         placementScaleMultiplier={placementScaleMultiplier}
         onPlacementScaleMultiplierChange={setPlacementScaleMultiplier}
         placementRole={placementModelRole}

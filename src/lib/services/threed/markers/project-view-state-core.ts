@@ -25,6 +25,8 @@ export interface ProjectThreeDViewState {
   showGrid: boolean;
   showLegend: boolean;
   showGizmo: boolean;
+  sunlight?: { azimuth: number; elevation: number };
+  ground?: { enabled: boolean; size: number; height: number };
 }
 
 export interface ProjectMapViewState {
@@ -147,6 +149,15 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
       showGrid: boolean(threeD.showGrid),
       showLegend: boolean(threeD.showLegend),
       showGizmo: boolean(threeD.showGizmo),
+      ...(threeD.sunlight === undefined ? {} : { sunlight: {
+        azimuth: finite(record(threeD.sunlight)?.azimuth, 0, 360),
+        elevation: finite(record(threeD.sunlight)?.elevation, 5, 90),
+      } }),
+      ...(threeD.ground === undefined ? {} : { ground: {
+        enabled: boolean(record(threeD.ground)?.enabled),
+        size: finite(record(threeD.ground)?.size, 10, 2000),
+        height: finite(record(threeD.ground)?.height, -1000, 1000),
+      } }),
     };
   }
 

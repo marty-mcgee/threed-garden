@@ -258,6 +258,7 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
   onDeletePlantingInstance?: (markerId: number, name: string) => void;
   deletingPlantingMarkerId?: number | null;
   onUpdateCharacterPosition?: (markerId: number, position: {
+    characterPhysics?: import("@/lib/services/threed/characters/character-physics").CharacterPhysics;
     positionX: number;
     positionY: number;
     positionZ: number;
@@ -806,6 +807,8 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
         <ModelInstancePlacementEditor
           key={modelInstanceId}
           instanceId={modelInstanceId}
+          initialMovableBall={selected.metadata?.physicsMode === 'ball'}
+          initialBallPhysics={selected.metadata?.ballPhysics}
           initialName={String(d.instanceName || selected.name || '')}
           initialScaleMultiplier={Number(d.scaleMultiplier ?? 1)}
           initialRotationY={Number(d.rotationYInstance ?? 0)}
@@ -900,6 +903,8 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
         <CharacterInstancePositionEditor
           key={characterMarkerId}
           markerId={characterMarkerId}
+          movable={d.isMovable === true}
+          initialPhysics={selected.metadata?.characterPhysics}
           initialPosition={{
             x: Number(selected.position?.x ?? d.positionX ?? 0),
             y: Number(selected.position?.y ?? d.positionY ?? 0),

@@ -3,6 +3,7 @@
 
 'use client';
 
+import { resolveCharacterPhysics } from '@/lib/services/threed/characters/character-physics';
 import {
   useRef,
   useState,
@@ -115,6 +116,7 @@ interface CharacterData {
 }
 
 interface EcctrlCharacterProps {
+  physicsSettings?: unknown;
   character: CharacterData;
 
   /**
@@ -202,7 +204,8 @@ interface EcctrlCharacterProps {
  */
 const CAPSULE_HALF_HEIGHT = 0.6;
 const CAPSULE_RADIUS = 0.3;
-const FLOAT_HEIGHT = 0.3;
+// Keep a small suspension clearance so low balls contact the capsule near the feet.
+const FLOAT_HEIGHT = 0.05;
 
 const GROUND_OFFSET =
   CAPSULE_HALF_HEIGHT +
@@ -994,6 +997,7 @@ function useWASD(
 // ========================================================
 
 export function EcctrlCharacter({
+  physicsSettings,
   character,
 
   runtimePosition,
@@ -1024,6 +1028,9 @@ export function EcctrlCharacter({
 
   onRuntimeSettled,
 }: EcctrlCharacterProps) {
+  const physics = resolveCharacterPhysics(physicsSettings);
+  const FLOAT_HEIGHT = physics.clearance;
+  const GROUND_OFFSET = CAPSULE_HALF_HEIGHT + CAPSULE_RADIUS + FLOAT_HEIGHT;
   const ecctrlRef =
     useRef<EcctrlHandle>(
       null
@@ -2379,9 +2386,9 @@ export function EcctrlCharacter({
           outerRadius={
             1.15
           }
-          persistent={
-            isControlled
-          }
+          key={isControlled ? 'controlled' : 'selected'}
+          fadeDelay={isControlled ? 2 : 4}
+          duration={0.3}
           alwaysVisible
         />
       )}
@@ -2447,6 +2454,8 @@ export function EcctrlCharacter({
 
     return (
       <Ecctrl
+      mass={physics.mass}
+      jumpVel={physics.jumpSpeed}
         ref={
           ecctrlRef
         }
@@ -2528,6 +2537,8 @@ export function EcctrlCharacter({
 
   return (
     <Ecctrl
+      mass={physics.mass}
+      jumpVel={physics.jumpSpeed}
       ref={
         ecctrlRef
       }
@@ -2539,10 +2550,10 @@ export function EcctrlCharacter({
         FLOAT_HEIGHT
       }
       maxWalkVel={
-        2
+        physics.walkSpeed
       }
       maxRunVel={
-        3.5
+        physics.runSpeed
       }
       decDeltaTime={
         0.5

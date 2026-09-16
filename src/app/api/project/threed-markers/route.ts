@@ -1,3 +1,4 @@
+import { resolveCharacterPhysics } from '@/lib/services/threed/characters/character-physics';
 import { refreshModelMarkerData, currentPlantingModelId } from '@/lib/services/threed/models/model-snapshot-assets';
 import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
 import { NextRequest, NextResponse } from 'next/server';
@@ -1235,6 +1236,10 @@ async function updateProjectMarker(request: NextRequest, id: number) {
           positionZ,
           ...geographic,
           positionSource: 'asset',
+          ...(updateBody.characterPhysics === undefined ? {} : { metadata: {
+            ...(marker.metadata as Record<string, unknown> ?? {}),
+            characterPhysics: resolveCharacterPhysics(updateBody.characterPhysics),
+          } }),
           data: {
             ...currentData,
             model: currentModel,

@@ -1,11 +1,14 @@
 'use client';
 
+import { CHARACTER_PHYSICS_FIELDS, resolveCharacterPhysics, type CharacterPhysics } from '@/lib/services/threed/characters/character-physics';
 import { useEffect, useState } from 'react';
 import { Loader2, Save, Trash2, User } from 'lucide-react';
 
 export function CharacterInstancePositionEditor({
   markerId,
   initialPosition,
+  initialPhysics,
+  movable = false,
   disabled,
   updating,
   deleting,
@@ -13,13 +16,17 @@ export function CharacterInstancePositionEditor({
   onDelete,
 }: {
   markerId: number;
+  initialPhysics?: unknown;
+  movable?: boolean;
   initialPosition: { x: number; y: number; z: number };
   disabled: boolean;
   updating: boolean;
   deleting: boolean;
-  onSave: (markerId: number, position: { positionX: number; positionY: number; positionZ: number }) => void;
+  onSave: (markerId: number, position: { positionX: number; positionY: number; positionZ: number; characterPhysics?: CharacterPhysics }) => void;
   onDelete: (markerId: number) => void;
 }) {
+  const [physics, setPhysics] = useState(() => Object.fromEntries(Object.entries(resolveCharacterPhysics(initialPhysics)).map(([key, value]) => [key, String(value)])));
+  const physicsValid = Object.entries(CHARACTER_PHYSICS_FIELDS).every(([key, field]) => physics[key].trim() !== '' && Number.isFinite(Number(physics[key])) && Number(physics[key]) >= field.min && Number(physics[key]) <= field.max);
   const [positionX, setPositionX] = useState(String(initialPosition.x));
   const [positionY, setPositionY] = useState(String(initialPosition.y));
   const [positionZ, setPositionZ] = useState(String(initialPosition.z));
@@ -40,10 +47,11 @@ export function CharacterInstancePositionEditor({
     positionY: Number(positionY),
     positionZ: Number(positionZ),
   };
-  const valid = Object.values(position).every(
+  const valid = physicsValid && Object.values(position).every(
     (value) => Number.isFinite(value) && Math.abs(value) <= 1_000_000,
   );
-  const dirty = position.positionX !== Number(initialPosition.x.toFixed(1))
+  const dirty = (movable && Object.entries(resolveCharacterPhysics(initialPhysics)).some(([key, value]) => Number(physics[key]) !== value))
+    || position.positionX !== Number(initialPosition.x.toFixed(1))
     || position.positionY !== Number(initialPosition.y.toFixed(1))
     || position.positionZ !== Number(initialPosition.z.toFixed(1));
   const editStatus = updating ? 'Saving…' : dirty ? (valid ? 'Unsaved changes' : 'Check fields') : 'Ready to save';
@@ -78,18 +86,27 @@ export function CharacterInstancePositionEditor({
           </label>
         ))}
       </div>
+      {movable && <details className="rounded bg-white/5 p-2 text-[11px] text-white/70">
+        <summary className="cursor-pointer">Character physics</summary>
+        <div className="grid grid-cols-2 gap-2 mt-2">
+          {Object.entries(CHARACTER_PHYSICS_FIELDS).map(([key, field]) => <label key={key}>{field.label}
+            <input className="w-full rounded bg-white/5 p-1" type="number" min={field.min} max={field.max} step={field.step} value={physics[key]} disabled={disabled || updating || deleting} onChange={e => setPhysics(v => ({...v, [key]: e.target.value}))} />
+          </label>)}
+        </div>
+        {!physicsValid && <p className="text-red-300">Check physics values.</p>}
+      </details>}
       <div className="grid grid-cols-2 gap-1.5">
         <button
           type="button"
           disabled={!valid || disabled || updating || deleting}
           onClick={(event) => {
             event.stopPropagation();
-            onSave(markerId, position);
+            onSave(markerId, { ...position, ...(movable ? { characterPhysics: Object.fromEntries(Object.entries(physics).map(([key,value]) => [key, Number(value)])) as CharacterPhysics } : {}) });
           }}
           className="flex w-full items-center justify-center gap-1.5 rounded bg-violet-600/35 px-2 py-1.5 text-[11px] font-medium text-violet-100 transition-colors hover:bg-violet-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
         >
           {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-          Save Position
+          Save Character
         </button>
         <button
           type="button"

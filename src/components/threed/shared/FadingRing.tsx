@@ -67,6 +67,7 @@ export function FadingRing({
 
   return (
     <mesh
+      raycast={() => null}
       userData={{ navigationDecoration: true }}
       position={position}
       rotation={[-Math.PI / 2, 0, 0]}

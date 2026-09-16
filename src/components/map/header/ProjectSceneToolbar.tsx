@@ -14,7 +14,6 @@ import {
   Save,
   ScanSearch,
   Settings,
-  Sparkles,
   Sprout,
   Touchpad,
   User,
@@ -28,9 +27,7 @@ interface ProjectSceneToolbarProps {
   selectedProjectId: string | null;
   viewMode: MapViewMode;
   onViewModeChange: (mode: MapViewMode) => void;
-  projectSetupOpen: boolean;
   presentationComplete: boolean;
-  onToggleProjectSetup: () => void;
   sceneAddMenuOpen: boolean;
   hasThreeDModule: boolean;
   onToggleSceneAddMenu: () => void;
@@ -60,9 +57,7 @@ export function ProjectSceneToolbar({
   selectedProjectId,
   viewMode,
   onViewModeChange,
-  projectSetupOpen,
   presentationComplete,
-  onToggleProjectSetup,
   sceneAddMenuOpen,
   hasThreeDModule,
   onToggleSceneAddMenu,
@@ -104,17 +99,15 @@ export function ProjectSceneToolbar({
       {selectedProjectId && (
         <Button
           type="button"
-          variant={projectSetupOpen ? 'secondary' : 'outline'}
+          variant="outline"
           size="sm"
           className="h-7 gap-1 px-2 text-xs"
-          disabled={!presentationComplete}
-          aria-expanded={projectSetupOpen}
-          aria-controls="project-setup-panel"
-          title={presentationComplete ? 'Open Project setup guidance' : 'Project setup guidance is available after the ThreeD Scene loads'}
-          onClick={onToggleProjectSetup}
+          disabled={!presentationComplete || !hasThreeDModule}
+          title={hasEnvironment ? 'Edit Project Environment' : 'Choose Project Environment'}
+          onClick={onOpenEnvironment}
         >
-          <Sparkles className="h-3.5 w-3.5" />
-          <span className="hidden lg:inline">Setup</span>
+          <ScanSearch className="h-3.5 w-3.5" />
+          <span>{hasEnvironment ? 'Environment' : 'Choose Environment'}</span>
         </Button>
       )}
 
@@ -166,11 +159,7 @@ export function ProjectSceneToolbar({
         </Button>
       )}
 
-      {selectedProjectId && hasEnvironment && (
-        <Button type="button" variant="outline" size="icon" className="h-7 w-7" aria-label="Open Project Environment Details" title="Open Project Environment Details" onClick={onOpenEnvironment}>
-          <ScanSearch className="h-3.5 w-3.5 text-muted-foreground" />
-        </Button>
-      )}
+
 
       {selectedProjectId && (
         <Button type="button" variant={savingProject ? 'secondary' : 'outline'} size="icon" className="h-7 w-7" disabled={savingProject} aria-label="Save ThreeD Project" title="Save ThreeD Project markers and current view" onClick={onSaveProject}>

@@ -1,6 +1,8 @@
 // src/components/threed/markers/ModelMarker3D.tsx — v0.16.1-alpha "ThreeD Models"
 'use client';
 
+import { buildEnvironmentSurfaceCollider, type EnvironmentSurfaceCollider } from '@/lib/services/threed/models/environment-surface-collider';
+import { measureModelLocalBounds } from '@/lib/services/threed/models/model-local-bounds';
 import { reportModelLoadFailure } from '@/lib/services/threed/models/model-load-failures';
 import { readModelFallbackShape, type ModelFallbackShape } from '@/lib/services/threed/models/model-fallback-core';
 import { withSavedFbxTextures } from '@/lib/services/threed/models/model-saved-texture-fallback';
@@ -80,6 +82,7 @@ export interface ModelCollisionBounds {
 }
 
 export interface ModelGeometryAudit extends ThreeDEnvironmentGeometryAuditAssessment {
+  surfaceCollider?: EnvironmentSurfaceCollider | null;
   meshCount: number;
   triangleCount: number;
   skinnedMeshCount: number;
@@ -356,6 +359,7 @@ function ModelFallback({ position, shape }: {
 // COMPONENT
 // ============================================
 export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange, onGeometryAuditChange, onMaterialInventoryChange, materialPreviewOverride, materialPreviewSelectionId, onEnvironmentCollisionPreviewChange, onRuntimeSettled, onRuntimeError }: ModelMarker3DProps) {
+  const [labelHovered, setLabelHovered] = useState(false);
   const { loadedModel, loading, error } = useModelLoad(model, fitBounds, applyStoredScale);
   const reusableModelId = model.modelId ?? model.id;
   useEffect(() => {
@@ -486,9 +490,8 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
       if (child instanceof THREE.SkinnedMesh) child.skeleton.update();
     });
     visualGroup.updateWorldMatrix(true, true);
-    const box = new THREE.Box3().setFromObject(visualGroup, true);
+    const box = measureModelLocalBounds(loadedModel, visualGroup.parent);
     const inverseBodyWorld = visualGroup.parent.matrixWorld.clone().invert();
-    box.applyMatrix4(inverseBodyWorld);
     const center = box.getCenter(new THREE.Vector3());
     const halfExtents = box.getSize(new THREE.Vector3()).multiplyScalar(0.5);
     const values = [
@@ -559,6 +562,7 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
       hasFiniteBounds: values.every(Number.isFinite),
     };
     onGeometryAuditChange?.({
+      surfaceCollider: onEnvironmentCollisionPreviewChange ? buildEnvironmentSurfaceCollider(loadedModel, visualGroup.parent) : null,
       ...auditInput,
       ...assessThreeDEnvironmentGeometry(auditInput),
       meshInventory: createThreeDEnvironmentMeshInventory(meshInventoryCandidates),
@@ -619,12 +623,12 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
   }
 
   return (
-    <group ref={visualGroupRef} position={position} scale={[scale, scale, scale]}>
+    <group ref={visualGroupRef} position={position} scale={[scale, scale, scale]} onPointerOver={() => setLabelHovered(true)} onPointerOut={() => setLabelHovered(false)}>
       {RuntimeAdapter
         ? <RuntimeAdapter object={loadedModel} model={model} />
         : <primitive object={loadedModel} />}
-      {name && (
-        <Html position={[0, 1.5, 0]} center transform occlude distanceFactor={1}>
+      {name && labelHovered && (
+        <Html position={[0, 1.5, 0]} center transform occlude distanceFactor={1} style={{ pointerEvents: 'none' }} zIndexRange={[10, 0]}>
           <div className="bg-black/60 text-white px-2 py-0.5 rounded text-[10px] whitespace-nowrap pointer-events-none select-none">
             {name}
           </div>

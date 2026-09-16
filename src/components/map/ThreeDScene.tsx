@@ -1,6 +1,9 @@
 // components/map/ThreeDScene.tsx
 'use client';
 
+import { resolveBallPhysics } from '@/lib/services/threed/models/ball-physics';
+
+
 import {
   useRef,
   useState,
@@ -17,6 +20,8 @@ import {
 } from '@react-three/drei';
 import {
   CuboidCollider,
+  BallCollider,
+  TrimeshCollider,
   Physics,
   RigidBody,
   type RapierRigidBody,
@@ -563,11 +568,17 @@ function IncidentMarker3D({ incident, onClick, isSelected }: any) {
 
 function SceneMarkerRigidBody({
   sceneEnabled,
+  onLivePosition,
   position,
   rotation,
   ...props
-}: RigidBodyProps & { sceneEnabled: boolean }) {
+}: RigidBodyProps & { sceneEnabled: boolean; onLivePosition?: (position: { x: number; y: number; z: number }) => void }) {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
+  useFrame(() => {
+    if (!sceneEnabled || !onLivePosition || !rigidBodyRef.current) return;
+    const current = rigidBodyRef.current.translation();
+    if ([current.x, current.y, current.z].every(Number.isFinite)) onLivePosition({ x: current.x, y: current.y, z: current.z });
+  });
   // Match Rapier's initial enabled state so initially hidden Layers synchronize.
   const previousSceneEnabledRef = useRef(true);
   const positionTuple = position as [number, number, number] | undefined;
@@ -734,6 +745,7 @@ function EnvironmentCollisionPreview({
 
 function ProjectModelMarkerBody({
   marker,
+  onLivePosition,
   position,
   rotation,
   scale,
@@ -749,6 +761,7 @@ function ProjectModelMarkerBody({
   characterSpawnPositions,
 }: {
   marker: any;
+  onLivePosition?: (position: { x: number; y: number; z: number }) => void;
   position: [number, number, number];
   rotation: [number, number, number];
   scale: number;
@@ -764,6 +777,7 @@ function ProjectModelMarkerBody({
   characterSpawnPositions: Array<{ x: number; y: number; z: number }>;
 }) {
   const isEnvironment = isProjectModelEnvironment(marker.metadata);
+  const isMovableBall = !isEnvironment && marker.metadata?.physicsMode === 'ball';
   const [collisionBounds, setCollisionBounds] = useState<ModelCollisionBounds | null>(null);
   const [geometryAudit, setGeometryAudit] = useState<ModelGeometryAudit | null>(null);
   const [collisionPreview, setCollisionPreview] = useState<ThreeDEnvironmentCollisionPreviewPlan | null>(null);
@@ -778,7 +792,10 @@ function ProjectModelMarkerBody({
         modelId: marker.data?.modelId,
         scale,
         bounds: collisionBounds,
-        ...(isEnvironment ? { geometryAudit } : {}),
+        ...(isEnvironment ? { geometryAudit: geometryAudit ? {
+          ...geometryAudit, surfaceCollider: undefined,
+          surfaceTriangleCount: (geometryAudit.surfaceCollider?.indices.length ?? 0) / 3,
+        } : null } : {}),
         ...(isEnvironment && collisionPreview ? {
           collisionPreview: {
             sourceBoxCount: collisionPreview.sourceBoxCount,
@@ -795,6 +812,8 @@ function ProjectModelMarkerBody({
     }
   }, [collisionBounds, collisionPreview, geometryAudit, isEnvironment, marker.data?.modelId, marker.id, physicsDebug, scale]);
 
+  const ballPhysics = resolveBallPhysics(marker.metadata?.ballPhysics);
+  const surfaceCollider = isEnvironment ? geometryAudit?.surfaceCollider : null;
   const colliderKey = collisionBounds
     ? [...collisionBounds.center, ...collisionBounds.halfExtents]
         .map((value) => value.toFixed(4))
@@ -830,34 +849,49 @@ function ProjectModelMarkerBody({
     if (!physicsDebug || !isEnvironment || !environmentColliderPlan) return;
     console.debug('[ThreeD Environment Colliders]', {
       markerId: marker.id,
+      collisionMode: surfaceCollider ? 'triangle-surface' : 'box-fallback',
+      surfaceTriangleCount: (surfaceCollider?.indices.length ?? 0) / 3,
       plannedBoxCount: environmentColliderPlan.plannedBoxCount,
-      activeColliderCount: environmentColliderPlan.activeColliderCount,
-      deferredColliderCount: environmentColliderPlan.deferredColliderCount,
-      spawnOverlapDeferredCount: environmentColliderPlan.spawnOverlapDeferredCount,
+      activeColliderCount: surfaceCollider ? 1 : environmentColliderPlan.activeColliderCount,
+      deferredColliderCount: surfaceCollider ? 0 : environmentColliderPlan.deferredColliderCount,
+      spawnOverlapDeferredCount: surfaceCollider ? 0 : environmentColliderPlan.spawnOverlapDeferredCount,
       oversizedDeferredCount: environmentColliderPlan.oversizedDeferredCount,
       capacityDeferredCount: environmentColliderPlan.capacityDeferredCount,
       priorityPointCount: environmentColliderPlan.priorityPointCount,
       prioritySelectedCount: environmentColliderPlan.prioritySelectedCount,
       coverageSelectedCount: environmentColliderPlan.coverageSelectedCount,
     });
-  }, [environmentColliderPlan, isEnvironment, marker.id, physicsDebug]);
+  }, [environmentColliderPlan, isEnvironment, marker.id, physicsDebug, surfaceCollider]);
 
   return (
     <SceneMarkerRigidBody
       sceneEnabled={isLayerEnabled}
-      type="fixed"
+      type={isMovableBall && collisionBounds ? 'dynamic' : 'fixed'}
+      onLivePosition={isMovableBall ? onLivePosition : undefined}
+      ccd={isMovableBall}
+      gravityScale={isMovableBall ? ballPhysics.gravityScale : 1}
+      linearDamping={isMovableBall ? ballPhysics.damping : 0}
+      angularDamping={isMovableBall ? ballPhysics.damping : 0}
       colliders={false}
       position={position}
       rotation={rotation}
     >
-      {!isEnvironment && collisionBounds && colliderKey && (
+      {!isEnvironment && !isMovableBall && collisionBounds && colliderKey && (
         <CuboidCollider
           key={colliderKey}
           args={collisionBounds.halfExtents}
           position={collisionBounds.center}
         />
       )}
-      {isEnvironment && environmentColliderPlan?.boxes.map((box, index) => (
+      {isMovableBall && collisionBounds && (
+        <BallCollider key={colliderKey} args={[Math.max(...collisionBounds.halfExtents)]}
+          position={collisionBounds.center} mass={ballPhysics.mass} friction={ballPhysics.friction} restitution={ballPhysics.restitution} />
+      )}
+      {surfaceCollider && <TrimeshCollider args={[surfaceCollider.vertices, surfaceCollider.indices]} />}
+      {isEnvironment && !surfaceCollider && collisionPreview?.groundBoxes?.map((box, index) => (
+        <CuboidCollider key={`environment-ground-${index}`} args={box.halfExtents} position={box.center} />
+      ))}
+      {isEnvironment && !surfaceCollider && environmentColliderPlan?.boxes.map((box, index) => (
         <CuboidCollider
           key={`environment-collider-${index}`}
           args={box.halfExtents}
@@ -872,7 +906,7 @@ function ProjectModelMarkerBody({
           onPlacementHover?.({ x: event.point.x, y: event.point.y, z: event.point.z });
         }}
         onClick={(event) => {
-          if (!isLayerEnabled) return;
+          if (!isLayerEnabled || (isEnvironment && !placementActive)) return;
           event.stopPropagation();
           if (placementActive) {
             onPlacementClick?.({ x: event.point.x, y: event.point.y, z: event.point.z });
@@ -898,7 +932,7 @@ function ProjectModelMarkerBody({
           onEnvironmentCollisionPreviewChange={isEnvironment ? setCollisionPreview : undefined}
           onRuntimeSettled={() => onModelRuntimeSettled?.(String(marker.id))}
         />
-        {isEnvironment && physicsDebug && environmentColliderPlan && (
+        {isEnvironment && !surfaceCollider && physicsDebug && environmentColliderPlan && (
           <EnvironmentCollisionPreview boxes={environmentColliderPlan.boxes} />
         )}
         {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.9} outerRadius={1.2} />}
@@ -912,6 +946,7 @@ function characterSceneSignature(marker: any): string {
   const data = marker?.data ?? {};
   const model = data.model ?? {};
   return JSON.stringify({
+    characterPhysics: marker.metadata?.characterPhysics ?? null,
     markerId: String(marker?.id ?? ''),
     sourceId: Number(data.id),
     characterId: String(data.characterId ?? ''),
@@ -982,6 +1017,7 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
   if (characterData?.isMovable === true) {
     return (
       <EcctrlCharacter
+        physicsSettings={marker.metadata?.characterPhysics}
         character={characterData}
         runtimePosition={position}
         isControlled={isControlled}
@@ -1187,6 +1223,7 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
     );
     return <ProjectModelMarkerBody
       marker={marker}
+      onLivePosition={(position) => onControlChange?.(String(marker.id), 'models', Number(marker.data?.id), position)}
       position={pos}
       rotation={instanceRotation}
       scale={instanceScale}
@@ -1453,7 +1490,7 @@ function ProceduralDaylightBackground() {
 }
 
 // Shadow light with proper target direction and massive frustum depth
-function ShadowLight({ centerX, centerZ }: { centerX: number; centerZ: number }) {
+function ShadowLight({ centerX, centerZ, azimuth, elevation }: { centerX: number; centerZ: number; azimuth: number; elevation: number }) {
   const lightRef = useRef<THREE.DirectionalLight>(null);
 
   useEffect(() => {
@@ -1476,7 +1513,7 @@ function ShadowLight({ centerX, centerZ }: { centerX: number; centerZ: number })
   return (
     <directionalLight
       ref={lightRef}
-      position={[centerX, 30, centerZ]}
+      position={[centerX + 30 * Math.cos(elevation * Math.PI / 180) * Math.sin(azimuth * Math.PI / 180), 30 * Math.sin(elevation * Math.PI / 180), centerZ + 30 * Math.cos(elevation * Math.PI / 180) * Math.cos(azimuth * Math.PI / 180)]}
       intensity={1.2}
       castShadow
       shadow-mapSize-width={4096}
@@ -1541,6 +1578,7 @@ function InteractiveGround({
         }}
         onPointerLeave={() => onPlacementLeave?.()}
         onClick={(e) => {
+          if (!placementActive && !onClick) return;
           e.stopPropagation();
           if (placementActive) {
             onPlacementClick?.({ x: e.point.x, y: 0, z: e.point.z });
@@ -1974,6 +2012,12 @@ export function ThreeDScene({
   const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
   const [envPreset, setEnvPreset] = useState<string>(DEFAULT_THREE_D_ENVIRONMENT_PRESET_KEY);
   const [showIncidents, setShowIncidents] = useState(false);
+  const [sunlight, setSunlight] = useState({ azimuth: 0, elevation: 90 });
+  const [extraGround, setExtraGround] = useState({ enabled: false, size: 200, height: -0.1 });
+  useEffect(() => {
+    setSunlight(initialViewState?.sunlight ?? { azimuth: 0, elevation: 90 });
+    setExtraGround(initialViewState?.ground ?? { enabled: false, size: 200, height: -0.1 });
+  }, [projectId, initialViewState?.sunlight, initialViewState?.ground]);
   const environmentPreset = resolveThreeDEnvironmentPreset(envPreset);
 
   useEffect(() => {
@@ -2112,6 +2156,8 @@ export function ThreeDScene({
         activeLayers: Array.from(activeLayers),
         availableLayers,
         environment: envPreset,
+        sunlight,
+        ground: extraGround,
         autoRotate: Boolean(autoRotate),
         showGrid,
         showLegend,
@@ -2119,7 +2165,7 @@ export function ThreeDScene({
       };
     });
     return () => onViewStateProviderChange(null);
-  }, [activeLayers, autoRotate, availableLayers, controlsReady, envPreset, onViewStateProviderChange, showGizmoCube, showGrid, showLegend]);
+  }, [sunlight, extraGround, activeLayers, autoRotate, availableLayers, controlsReady, envPreset, onViewStateProviderChange, showGizmoCube, showGrid, showLegend]);
 
   useEffect(() => {
     if (!controlsReady || !controlsRef.current || !initialViewState) return;
@@ -2475,6 +2521,21 @@ export function ThreeDScene({
                 </option>
               ))}
             </select>
+            <details className="px-2 py-1 text-xs text-white/70">
+              <summary className="cursor-pointer">Sunlight + ground</summary>
+              <label className="block mt-2">Sun direction: {sunlight.azimuth}°
+                <input className="w-full" type="range" min="0" max="360" value={sunlight.azimuth} onChange={e => setSunlight(v => ({...v, azimuth: Number(e.target.value)}))} />
+              </label>
+              <label className="block">Sun elevation: {sunlight.elevation}°
+                <input className="w-full" type="range" min="5" max="90" value={sunlight.elevation} onChange={e => setSunlight(v => ({...v, elevation: Number(e.target.value)}))} />
+              </label>
+              <label className="block"><input type="checkbox" checked={extraGround.enabled} onChange={e => setExtraGround(v => ({...v, enabled: e.target.checked}))} /> Larger ground plane</label>
+              {extraGround.enabled && <div className="space-y-1 mt-1">
+                <label className="block">Size<input aria-label="Ground size" className="w-full bg-black/40" type="number" min="10" max="2000" value={extraGround.size} onChange={e => { const n = Number(e.target.value); if (Number.isFinite(n) && n >= 10 && n <= 2000) setExtraGround(v => ({...v, size: n})); }} /></label>
+                <label className="block">Height<input aria-label="Ground height" className="w-full bg-black/40" type="number" step="0.1" min="-1000" max="1000" value={extraGround.height} onChange={e => { const n = Number(e.target.value); if (Number.isFinite(n) && Math.abs(n) <= 1000) setExtraGround(v => ({...v, height: n})); }} /></label>
+              </div>}
+              <p className="mt-1 text-[10px]">Use Project Save to keep these settings.</p>
+            </details>
             <button
               onClick={() => {
                 setSelectedDetails(null);
@@ -2719,15 +2780,14 @@ export function ThreeDScene({
         )}
 
         <ambientLight intensity={0.6} />
-        <ShadowLight centerX={centerX} centerZ={centerZ} />
+        <ShadowLight centerX={centerX} centerZ={centerZ} azimuth={sunlight.azimuth} elevation={sunlight.elevation} />
         <directionalLight position={[-5, 5, -5]} intensity={0.3} />
         <hemisphereLight args={['#87CEEB', '#2d5a27', 0.4]} />
 
         <OrbitControls
           ref={controlsRef}
           makeDefault
-          enableDamping
-          dampingFactor={0.08}
+          enableDamping={false}
           minDistance={2}
           maxDistance={200}
           maxPolarAngle={Math.PI / 2}
@@ -2773,7 +2833,21 @@ export function ThreeDScene({
             margin={[64, 64]}
           >
             <group scale={0.7}>
-              <GizmoViewcube />
+              <GizmoViewcube onClick={(event) => {
+                event.stopPropagation();
+                const controls = controlsRef.current;
+                if (!controls) return null;
+                const direction = event.object.position.lengthSq() > 0
+                  ? event.object.position.clone().normalize()
+                  : event.face?.normal.clone();
+                if (!direction) return null;
+                const distance = controls.object.position.distanceTo(controls.target);
+                controls.object.position.copy(controls.target).addScaledVector(direction, distance);
+                controls.object.up.set(0, 1, 0);
+                controls.object.lookAt(controls.target);
+                controls.update();
+                return null;
+              }} />
             </group>
             <group
               scale={1.4}
@@ -2811,8 +2885,23 @@ export function ThreeDScene({
           debug={false}
         >
           {physicsDebug && <EnabledColliderDebug />}
+          {extraGround.enabled && <RigidBody type="fixed" colliders={false} position={[centerX, extraGround.height, centerZ]}>
+            <CuboidCollider args={[extraGround.size / 2, 0.1, extraGround.size / 2]} position={[0, -0.1, 0]} />
+            <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow
+              onPointerMove={event => { if (placementLabel) setPlacementPreviewPosition({x: event.point.x, y: event.point.y, z: event.point.z}); }}
+              onPointerLeave={() => setPlacementPreviewPosition(null)}
+              onClick={event => {
+                if (!placementLabel) return;
+                event.stopPropagation();
+                const place = movingModelName ? onModelReposition : placementCharacterName ? onCharacterPlacement : placementFarmBotName ? onFarmBotPlacement : placementPlantingName ? onPlantingPlacement : placementBedName ? onBedPlacement : onModelPlacement;
+                place?.({x: event.point.x, y: event.point.y, z: event.point.z});
+              }}>
+              <planeGeometry args={[extraGround.size, extraGround.size]} />
+              <meshStandardMaterial color="#527b38" roughness={0.9} />
+            </mesh>
+          </RigidBody>}
           {/* v0.16.0-alpha: Interactive ground plane as fixed physics body */}
-          <RigidBody type="fixed" colliders="cuboid">
+          {!extraGround.enabled && <RigidBody type="fixed" colliders="cuboid">
             <InteractiveGround
               size={groundSize}
               centerX={groundCenterX}
@@ -2833,7 +2922,7 @@ export function ThreeDScene({
                     : onModelPlacement}
               showVisualGround={!hasVisibleEnvironmentModel}
             />
-          </RigidBody>
+          </RigidBody>}
 
           {placementLabel && placementPreviewPosition && (
             <group position={[

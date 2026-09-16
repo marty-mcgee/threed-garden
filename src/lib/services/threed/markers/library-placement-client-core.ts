@@ -26,6 +26,7 @@ export interface ProjectModelLibraryPlacementRequest {
   positionY: number;
   positionZ: number;
   scaleMultiplier: number;
+  rotationY?: number;
   placementRole: ProjectModelPlacementRole;
 }
 
@@ -35,6 +36,7 @@ export function createProjectModelLibraryPlacementRequest(input: {
   model: { id: number; modelName: string };
   position: ThreeDScenePlacementPosition;
   scaleMultiplier: number;
+  rotationY?: number;
   placementRole: ProjectModelPlacementRole;
 }): ProjectModelLibraryPlacementRequest {
   return {
@@ -46,6 +48,7 @@ export function createProjectModelLibraryPlacementRequest(input: {
     positionY: input.position.y,
     positionZ: input.position.z,
     scaleMultiplier: input.scaleMultiplier,
+    ...(input.rotationY !== undefined ? { rotationY: input.rotationY } : {}),
     placementRole: input.placementRole,
   };
 }

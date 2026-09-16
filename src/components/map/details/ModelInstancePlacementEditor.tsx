@@ -1,5 +1,6 @@
 'use client';
 
+import { BALL_PHYSICS_FIELDS, resolveBallPhysics, type BallPhysics } from '@/lib/services/threed/models/ball-physics';
 import { useState } from 'react';
 import { Box, Crosshair, Loader2, Save, Trash2 } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
@@ -11,6 +12,8 @@ export function ModelInstancePlacementEditor({
   initialRotationY,
   initialPosition,
   initialPlacementRole,
+  initialMovableBall = false,
+  initialBallPhysics,
   baseModelScale,
   updating,
   deleting,
@@ -25,11 +28,14 @@ export function ModelInstancePlacementEditor({
   initialRotationY: number;
   initialPosition: { x: number; y: number; z: number };
   initialPlacementRole: 'object' | 'environment';
+  initialMovableBall?: boolean;
+  initialBallPhysics?: unknown;
   baseModelScale: number;
   updating: boolean;
   deleting: boolean;
   moveActive: boolean;
   onSave: (input: {
+    metadata: { physicsMode: 'ball' | 'fixed'; ballPhysics: BallPhysics };
     instanceName: string;
     scaleMultiplier: number;
     rotationY: number;
@@ -50,10 +56,15 @@ export function ModelInstancePlacementEditor({
   const [positionY, setPositionY] = useState(String(initialPosition.y));
   const [positionZ, setPositionZ] = useState(String(initialPosition.z));
   const [placementRole, setPlacementRole] = useState<'object' | 'environment'>(initialPlacementRole);
+  const [movableBall, setMovableBall] = useState(initialMovableBall);
+  const initialPhysics = resolveBallPhysics(initialBallPhysics);
+  const [physics, setPhysics] = useState(() => Object.fromEntries(Object.entries(initialPhysics).map(([key, value]) => [key, String(value)])));
+  const physicsValid = Object.entries(BALL_PHYSICS_FIELDS).every(([key, field]) => physics[key].trim() !== '' && Number.isFinite(Number(physics[key])) && Number(physics[key]) >= field.min && Number(physics[key]) <= field.max);
+  const parsedPhysics = Object.fromEntries(Object.entries(physics).map(([key, value]) => [key, Number(value)])) as BallPhysics;
   const parsedScale = Number(scaleMultiplier);
   const parsedRotationDegrees = Number(rotationYDegrees);
   const parsedPosition = [Number(positionX), Number(positionY), Number(positionZ)];
-  const valid = instanceName.trim().length <= 120
+  const valid = physicsValid && instanceName.trim().length <= 120
     && Number.isFinite(parsedScale)
     && parsedScale >= 0.0001
     && parsedScale <= 10_000
@@ -66,7 +77,9 @@ export function ModelInstancePlacementEditor({
     || parsedPosition[0] !== initialPosition.x
     || parsedPosition[1] !== initialPosition.y
     || parsedPosition[2] !== initialPosition.z
-    || placementRole !== initialPlacementRole;
+    || placementRole !== initialPlacementRole
+    || movableBall !== initialMovableBall
+    || Object.keys(initialPhysics).some(key => parsedPhysics[key as keyof BallPhysics] !== initialPhysics[key as keyof BallPhysics]);
   const editStatus = updating ? 'Saving…' : dirty ? (valid ? 'Unsaved changes' : 'Check fields') : 'Saved';
 
   return (
@@ -146,6 +159,26 @@ export function ModelInstancePlacementEditor({
           onCheckedChange={(checked) => setPlacementRole(checked ? 'environment' : 'object')}
         />
       </label>
+      <label className="flex items-center justify-between gap-2 rounded bg-white/[0.035] px-2 py-1.5">
+        <span className="text-[10px] text-white/60">Movable ball (physics)</span>
+        <Switch checked={movableBall && placementRole !== 'environment'} disabled={busy || placementRole === 'environment'} onCheckedChange={setMovableBall} />
+      </label>
+      {movableBall && placementRole !== 'environment' && (
+        <details className="rounded bg-white/[0.035] p-2">
+          <summary className="cursor-pointer text-[11px] text-white/70">Ball physics</summary>
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            {Object.entries(BALL_PHYSICS_FIELDS).map(([key, field]) => (
+              <label key={key} className="block text-[10px] text-white/60">
+                {field.label}
+                <input type="number" min={field.min} max={field.max} step={field.step} value={physics[key]} disabled={busy}
+                  onChange={event => setPhysics(current => ({ ...current, [key]: event.target.value }))}
+                  className="mt-1 h-7 w-full rounded border border-white/10 bg-white/5 px-2 text-[11px] text-white" />
+              </label>
+            ))}
+          </div>
+          {!physicsValid && <p className="text-[10px] text-red-300">Enter values within the allowed ranges.</p>}
+        </details>
+      )}
       <div className="grid grid-cols-3 gap-1.5">
         <button
           type="button"
@@ -153,6 +186,7 @@ export function ModelInstancePlacementEditor({
           onClick={(event) => {
             event.stopPropagation();
             onSave({
+              metadata: { physicsMode: movableBall && placementRole !== 'environment' ? 'ball' : 'fixed', ballPhysics: parsedPhysics },
               instanceName: instanceName.trim(),
               scaleMultiplier: parsedScale,
               rotationY: parsedRotationDegrees * Math.PI / 180,

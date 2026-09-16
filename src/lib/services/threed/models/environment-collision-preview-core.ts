@@ -28,6 +28,7 @@ export interface ThreeDEnvironmentCollisionPreviewPlan {
   floorLikeBoxCount: number;
   mergedSourceBoxCount: number;
   omittedBoxCount: number;
+  groundBoxes?: ThreeDEnvironmentCollisionPreviewBox[];
   boxes: ThreeDEnvironmentCollisionPreviewBox[];
 }
 
@@ -205,24 +206,42 @@ export function planThreeDEnvironmentCollisionPreview(
   let tinyBoxCount = 0;
   let floorLikeBoxCount = 0;
   const eligible: Bounds[] = [];
+  const groundBoxes: ThreeDEnvironmentCollisionPreviewBox[] = [];
 
   for (const candidate of sourceCandidates) {
-    const bounds = toBounds(candidate);
+    // Horizontal source planes have zero thickness but still provide ground.
+    const flatGround = candidate.halfExtents[1] === 0
+      && candidate.halfExtents[0] >= ENVIRONMENT_COLLISION_PREVIEW_FLOOR_MIN_SPAN / 2
+      && candidate.halfExtents[2] >= ENVIRONMENT_COLLISION_PREVIEW_FLOOR_MIN_SPAN / 2;
+    const bounds = toBounds(flatGround ? {
+      ...candidate,
+      center: [candidate.center[0], candidate.center[1] - 0.0001, candidate.center[2]],
+      halfExtents: [candidate.halfExtents[0], 0.0001, candidate.halfExtents[2]],
+    } : candidate);
     if (!bounds) {
       invalidBoxCount += 1;
       continue;
     }
     const size = dimensions(bounds);
-    if (Math.max(...size) < ENVIRONMENT_COLLISION_PREVIEW_MIN_SIZE || volume(bounds) < ENVIRONMENT_COLLISION_PREVIEW_MIN_VOLUME) {
-      tinyBoxCount += 1;
-      continue;
-    }
     if (
       size[1] <= ENVIRONMENT_COLLISION_PREVIEW_FLOOR_MAX_HEIGHT
       && size[0] >= ENVIRONMENT_COLLISION_PREVIEW_FLOOR_MIN_SPAN
       && size[2] >= ENVIRONMENT_COLLISION_PREVIEW_FLOOR_MIN_SPAN
     ) {
       floorLikeBoxCount += 1;
+      if (groundBoxes.length < 64) {
+        const top = bounds.max[1];
+        const bottom = Math.min(bounds.min[1], top - 0.1);
+        groundBoxes.push({
+          center: [(bounds.min[0] + bounds.max[0]) / 2, (top + bottom) / 2, (bounds.min[2] + bounds.max[2]) / 2],
+          halfExtents: [size[0] / 2, (top - bottom) / 2, size[2] / 2],
+          sourceCount: 1,
+        });
+      }
+      continue;
+    }
+    if (Math.max(...size) < ENVIRONMENT_COLLISION_PREVIEW_MIN_SIZE || volume(bounds) < ENVIRONMENT_COLLISION_PREVIEW_MIN_VOLUME) {
+      tinyBoxCount += 1;
       continue;
     }
     eligible.push(bounds);
@@ -255,6 +274,7 @@ export function planThreeDEnvironmentCollisionPreview(
     floorLikeBoxCount,
     mergedSourceBoxCount,
     omittedBoxCount,
+    groundBoxes,
     boxes: planned.map(toPreviewBox),
   };
 }

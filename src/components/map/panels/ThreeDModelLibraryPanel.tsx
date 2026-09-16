@@ -60,6 +60,9 @@ interface ThreeDModelLibraryPanelProps {
   inspectedModelId: number | null;
   onInspectModel: (modelId: number | null) => void;
   placementModel: ThreeDModelLibraryItem | null;
+  placementDraft: { x: string; y: string; z: string; rotationY: string };
+  onPlacementDraftChange: (field: 'x' | 'y' | 'z' | 'rotationY', value: string) => void;
+  onPlaceAtCoordinates: (model: ThreeDModelLibraryItem) => void;
   placementScaleMultiplier: string;
   onPlacementScaleMultiplierChange: (value: string) => void;
   placementRole: 'object' | 'environment';
@@ -90,6 +93,9 @@ export function ThreeDModelLibraryPanel({
   inspectedModelId,
   onInspectModel,
   placementModel,
+  placementDraft,
+  onPlacementDraftChange,
+  onPlaceAtCoordinates,
   placementScaleMultiplier,
   onPlacementScaleMultiplierChange,
   placementRole,
@@ -274,6 +280,22 @@ export function ThreeDModelLibraryPanel({
               </a>
             </Button>
           )}
+          <div className="grid grid-cols-3 gap-2">
+            {(['x', 'y', 'z', 'rotationY'] as const).map(field => (
+              <label key={field} className="text-[10px]">
+                {field === 'rotationY' ? 'Y rotation (°)' : `Position ${field.toUpperCase()}`}
+                <Input type="number" step="any" className="h-7 px-2 text-xs" value={placementDraft[field]} disabled={placing}
+                  onChange={event => onPlacementDraftChange(field, event.target.value)} />
+              </label>
+            ))}
+          </div>
+          <label className="flex items-center justify-between gap-2 text-xs">
+            Environment / base map
+            <Switch checked={placementRole === 'environment'} disabled={placing} onCheckedChange={checked => onPlacementRoleChange(checked ? 'environment' : 'object')} />
+          </label>
+          <Button type="button" size="sm" className="h-7 w-full text-xs"
+            disabled={!selectedModuleId || placing || inspectedModel.libraryReadiness.status !== 'ready' || !placementScaleIsValid || !Object.values(placementDraft).every(value => value.trim() && Number.isFinite(Number(value)))}
+            onClick={() => onPlaceAtCoordinates(inspectedModel)}>Place at Coordinates</Button>
           <Button type="button" size="sm" className="mt-1 h-6 w-full text-[10px]" disabled={!selectedModuleId || placing || inspectedModel.libraryReadiness.status !== 'ready' || !placementScaleIsValid} onClick={() => onBeginPlacement(inspectedModel)}>
             Place Selected in {placementSurface}
           </Button>

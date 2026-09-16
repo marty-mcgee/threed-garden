@@ -9,6 +9,7 @@ import {
   Loader2,
   Plus,
   Save,
+  Sparkles,
   ScanSearch,
   ChevronDown,
   ChevronRight,
@@ -43,6 +44,7 @@ export function ProjectHeaderMenu({
   onSaveProject,
   onOpenProjectAssets,
   onOpenEnvironment,
+  onOpenProjectTour,
   onOpenProjectSettings,
 }: {
   selectedProjectId: string | null;
@@ -65,6 +67,7 @@ export function ProjectHeaderMenu({
   onSaveProject: () => void;
   onOpenProjectAssets: () => void;
   onOpenEnvironment: (id: string) => void;
+  onOpenProjectTour: () => void;
   onOpenProjectSettings: () => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -144,8 +147,11 @@ export function ProjectHeaderMenu({
               Project Assets
               <span className="ml-auto text-[10px] text-muted-foreground">{projectAssetCount}</span>
             </Button>
+            <Button type="button" variant="ghost" size="sm" className="h-auto min-h-7 w-full justify-start px-2 py-1 text-xs" onClick={onOpenProjectTour}>
+              <Sparkles className="h-3.5 w-3.5" /> Project Tour
+            </Button>
             {environments.map((environment) => (
-              <Button key={environment.id} type="button" variant="ghost" size="sm" className="h-auto min-h-7 w-full flex-wrap justify-start whitespace-normal px-2 py-1 text-left text-xs" onClick={() => onOpenEnvironment(environment.id)}>
+            <Button key={environment.id} type="button" variant="ghost" size="sm" className="h-auto min-h-7 w-full flex-wrap justify-start whitespace-normal px-2 py-1 text-left text-xs" onClick={() => onOpenEnvironment(environment.id)}>
                 <ScanSearch className="h-3.5 w-3.5" />
                 Environment Details
                 {environments.length > 1 && <span className="min-w-0 break-words text-muted-foreground [overflow-wrap:anywhere]">— {environment.name}</span>}
