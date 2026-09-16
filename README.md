@@ -7,9 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production release:** `v0.19.27 — Admin Navigation + Model Animation Previews`, package `0.19.27`, deployment User-confirmed. See the [release notes](docs/releases/v0.19.27.md).
-
-> **Release candidate:** `v0.19.28 — ThreeD Scene Physics + Project Settings`. See the [release notes and manual handoff](docs/releases/v0.19.28.md) and [development record](docs/plans/v0.19.28.md). Production build and deployment are pending.
+> **Current production release:** `v0.19.28 — ThreeD Scene Physics + Project Settings`, package `0.19.28`, deployment User-confirmed. See the [release notes](docs/releases/v0.19.28.md) and [development record](docs/plans/v0.19.28.md).
 
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 
