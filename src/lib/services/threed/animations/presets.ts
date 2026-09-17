@@ -1,3 +1,4 @@
+import { validateActionSlots } from './slots';
 import { createHash } from 'node:crypto';
 import { and, asc, eq, inArray } from 'drizzle-orm';
 import { db, type Transaction } from '@/lib/db/client';
@@ -33,6 +34,7 @@ export async function savePreset(userId: string, value: unknown, updating: boole
       const previous = await read(tx, userId, id);
       if (previous.revision !== revision) throw new AnimationLibraryError(409, 'Preset changed. Refresh before saving.');
     }
+    await validateActionSlots(tx, userId, input.entries.map(row => row.actionKey));
     const ids = [...new Set(input.entries.flatMap(row => row.animationId === null ? [] : [row.animationId]))];
     const found = await available(tx, userId, ids);
     if (ids.some(id => !found.some(clip => clip.id === id && clip.isActive && clip.filePath.trim()))) throw new AnimationLibraryError(400, 'Every assigned clip must be active and available in your Library');
@@ -65,8 +67,9 @@ export async function applyPreset(userId: string, value: unknown) {
     const ids = [...new Set([...preset.entries, ...own, ...inherited].flatMap(row => row.animationId === null ? [] : [row.animationId]))];
     const animations = await available(tx, userId, ids);
     const parsed = parsePreset({ name: preset.name, description: preset.description, entries: preset.entries.map(({ actionKey, mode, animationId }) => ({ actionKey, mode, animationId })) });
+    const slots = await validateActionSlots(tx, userId, parsed.entries.map(row => row.actionKey));
     const review = reviewPreset(parsed.entries, own, inherited, animations, strategy);
-    const reviewToken = createHash('sha256').update(JSON.stringify({ userId, target, strategy, preset, modelId, own, inherited, animations })).digest('hex');
+    const reviewToken = createHash('sha256').update(JSON.stringify({ userId, target, strategy, preset, modelId, own, inherited, animations, slots })).digest('hex');
     if (body.reviewToken !== undefined) {
       if (body.reviewToken !== reviewToken) throw new AnimationLibraryError(409, 'Mappings or preset changed. Review again before applying.');
       if (review.some(row => row.outcome === 'conflict')) throw new AnimationLibraryError(409, 'Resolve unavailable preset clips before applying');

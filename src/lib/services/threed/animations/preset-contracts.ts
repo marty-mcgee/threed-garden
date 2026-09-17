@@ -12,7 +12,7 @@ export function parsePreset(value: unknown) {
   if (body.description != null && (typeof body.description !== 'string' || body.description.length > 4000)) {
     throw new AnimationLibraryError(400, 'Invalid preset description');
   }
-  if (!Array.isArray(body.entries) || !body.entries.length || body.entries.length > LIBRARY_ACTIONS.length) {
+  if (!Array.isArray(body.entries) || !body.entries.length || body.entries.length > 500) {
     throw new AnimationLibraryError(400, 'Provide a bounded, nonempty list of preset actions');
   }
   const seen = new Set<string>();

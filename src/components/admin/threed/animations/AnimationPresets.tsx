@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import type { AnimationActionSlot } from '@/lib/services/threed/animations/action-slots';
 import type { Assignment } from '@/lib/services/threed/animations/contracts';
 
 type Preset = { id: number; name: string; description: string | null; revision: number };
@@ -12,8 +13,8 @@ async function request(url: string, method = 'GET', body?: unknown) {
   if (!response.ok || !result.success) throw new Error(result.error || 'Preset request failed');
   return result.data;
 }
-export function AnimationPresets({ target, targetId, assignments, inherited, dirty, disabled, onBusyChange, onApplied }: {
-  target: string; targetId: number; assignments: Assignment[]; inherited: Assignment[]; dirty: boolean; disabled: boolean; onBusyChange: (busy: boolean) => void; onApplied: () => Promise<void>;
+export function AnimationPresets({ target, targetId, assignments, inherited, dirty, disabled, onBusyChange, onApplied, slots = [] }: {
+  slots?: AnimationActionSlot[]; target: string; targetId: number; assignments: Assignment[]; inherited: Assignment[]; dirty: boolean; disabled: boolean; onBusyChange: (busy: boolean) => void; onApplied: () => Promise<void>;
 }) {
   const [open, setOpen] = useState(false), [busy, setBusy] = useState(false), [message, setMessage] = useState('');
   const [presets, setPresets] = useState<Preset[]>([]), [selected, setSelected] = useState('');
@@ -24,7 +25,7 @@ export function AnimationPresets({ target, targetId, assignments, inherited, dir
   async function refresh() { setPresets(await request('/api/threed/animation-presets')); setReview(null); }
   const rows = [...new Map([...inherited, ...assignments].map(row => [row.actionKey, { actionKey: row.actionKey, mode: row.mode, animationId: row.animationId }])).values()];
   const payload = { presetId: Number(selected), target, targetId, strategy };
-  return <section className="shrink-0 rounded border p-2 text-xs">
+  return <section className="min-w-0 shrink-0 text-xs">
     <Button size="sm" variant="outline" disabled={busy || disabled} onClick={() => { setOpen(!open); if (!open) void run(refresh); }}>Animation Mapping Presets</Button>
     {open && <div className="mt-2 space-y-2">
       <p>Save your saved mappings as a reusable preset. Inherited Model mappings are included; built-in fallback animations are omitted. Applied mappings remain independent of the preset.</p>
@@ -44,7 +45,7 @@ export function AnimationPresets({ target, targetId, assignments, inherited, dir
         {review && <div className="max-h-64 overflow-auto rounded border p-2">
           <table className="w-full text-left"><thead><tr><th>Action</th><th>Current mapping</th><th>Preset mapping</th><th>Result</th></tr></thead><tbody>{review.review.map(row => {
             const clipName = (id: number | null) => review.animations.find(c => c.id === id)?.name || `Unavailable clip #${id}`;
-            return <tr key={row.actionKey} className="border-t"><td className="py-1">{row.actionKey}</td><td>{row.source}: {row.current ? row.current.mode === 'disabled' ? 'Disabled' : clipName(row.current.animationId) : 'Use existing behavior'}</td><td>{row.mode === 'disabled' ? 'Disabled' : clipName(row.animationId)}</td><td>{row.outcome}</td></tr>;
+            return <tr key={row.actionKey} className="border-t"><td className="py-1">{slots.find(slot => slot.actionKey === row.actionKey)?.name ?? row.actionKey.replace(/([a-z])([A-Z])/g, '$1 $2')}</td><td>{row.source}: {row.current ? row.current.mode === 'disabled' ? 'Disabled' : clipName(row.current.animationId) : 'Use existing behavior'}</td><td>{row.mode === 'disabled' ? 'Disabled' : clipName(row.animationId)}</td><td>{row.outcome}</td></tr>;
           })}</tbody></table>
           <Button size="sm" className="mt-2" disabled={review.review.some(r => r.outcome === 'conflict') || !review.review.some(r => r.outcome === 'apply')} onClick={() => void run(async () => { await request('/api/threed/animation-presets/apply', 'POST', { ...payload, reviewToken: review.reviewToken }); setReview(null); await onApplied(); setMessage('Preset applied. Reload the Scene to use saved mappings.'); })}>Apply reviewed mappings</Button>
         </div>}

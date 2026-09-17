@@ -24,7 +24,7 @@ assert.equal(parsePreset(body).name, 'Farmer Actions');
 for (const invalid of [
   { ...body, name: '' }, { ...body, name: 'a'.repeat(121) },
   { ...body, entries: [] }, { ...body, entries: [entry, entry] },
-  { ...body, entries: [{ ...entry, actionKey: 'arbitrary' }] },
+  { ...body, entries: [{ ...entry, actionKey: 'invalid-key!' }] },
   { ...body, entries: [{ ...entry, mode: 'disabled' }] },
   { ...body, entries: [{ ...entry, animationId: -1 }] },
   { ...body, userId: 'other-owner' }, { ...body, description: 12 },
@@ -67,7 +67,7 @@ const service = load('src/lib/services/threed/animations/presets.ts', {
   'node:crypto': require('node:crypto'), 'drizzle-orm': orm, '@/lib/schema/threed': schema,
   '@/lib/db/client': { db: { ...tx, transaction: async work => { try { return await work(tx); } catch (e) { rolledBack = true; writes = []; throw e; } } } },
   './contracts': contracts, './preset-contracts': { parsePreset, parsePresetStrategy, reviewPreset },
-  './library': { ownedTarget: async () => null },
+  './slots': { validateActionSlots: async () => [] }, './library': { ownedTarget: async () => null },
 });
 async function exercise(results, operation) { queue = results; writes = []; rolledBack = false; return operation(); }
 (async () => {

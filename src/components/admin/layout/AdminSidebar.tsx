@@ -111,6 +111,7 @@ const navSections: NavSection[] = [
           '/admin/threed/model-files',
           '/admin/threed/model-textures',
           '/admin/threed/animations',
+          '/admin/threed/animation-slots',
         ],
         children: [
           { title: 'Models', href: '/admin/threed/models', icon: Package },
@@ -118,6 +119,7 @@ const navSections: NavSection[] = [
           { title: 'Categories', href: '/admin/threed/model-categories', icon: FolderTree },
           { title: 'Textures', href: '/admin/threed/model-textures', icon: Image },
           { title: 'Animations', href: '/admin/threed/animations', icon: Clapperboard },
+          { title: 'Animation Slots', href: '/admin/threed/animation-slots', icon: Clapperboard },
         ],
       },
       { title: 'Characters', href: '/admin/threed/characters', icon: User, exact: false },

@@ -35,7 +35,7 @@ export function parseTarget(target: unknown, targetId: unknown) {
 }
 export type AnimationTarget = ReturnType<typeof parseTarget>;
 export function parseAction(value: unknown): string {
-  if (typeof value !== 'string' || !LIBRARY_ACTIONS.includes(value)) throw new AnimationLibraryError(400, 'Unknown animation action');
+  if (typeof value !== 'string' || (!LIBRARY_ACTIONS.includes(value) && !/^[a-z][a-zA-Z0-9_]{0,63}$/.test(value))) throw new AnimationLibraryError(400, 'Unknown animation action');
   return value;
 }
 export function parseAssignment(value: unknown) {
@@ -79,7 +79,7 @@ export type AvailableClip = { id: number; isActive: boolean; filePath: string };
 // Absence requests the existing runtime behavior; an invalid explicit selection never falls through.
 export function resolveAssignments(model: Assignment[], character: Assignment[], clips: AvailableClip[]) {
   const byId = new Map(clips.map(clip => [clip.id, clip]));
-  return LIBRARY_ACTIONS.map(actionKey => {
+  return [...new Set([...LIBRARY_ACTIONS, ...model.map(row => row.actionKey), ...character.map(row => row.actionKey)])].map(actionKey => {
     const own = character.find(row => row.actionKey === actionKey);
     const inherited = model.find(row => row.actionKey === actionKey);
     const row = own ?? inherited;

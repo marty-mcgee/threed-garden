@@ -2044,3 +2044,22 @@ export const threedAnimationCategoryAssignments = pgTable('threed_animation_cate
   foreignKey({ name: 'animation_category_owner_fk', columns: [t.categoryId, t.userId], foreignColumns: [threedAnimationCategories.id, threedAnimationCategories.userId] }).onDelete('cascade'),
   foreignKey({ name: 'animation_category_clip_owner_fk', columns: [t.animationId, t.userId], foreignColumns: [threedAnimations.id, threedAnimations.userId] }).onDelete('cascade'),
 ]);
+
+// User-owned animation-only behaviors; existing assignment keys remain stable.
+export const threedAnimationActionSlots = pgTable('threed_animation_action_slots', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  actionKey: varchar('action_key', { length: 64 }).notNull(),
+  name: varchar('name', { length: 120 }).notNull(),
+  // Retained for non-destructive db:push compatibility; Categories own the UI.
+  groupName: varchar('group_name', { length: 120 }).notNull().default('Custom Actions'),
+  categoryId: integer('category_id'),
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, t => [
+  uniqueIndex('idx_animation_action_slots_owner_key').on(t.userId, t.actionKey),
+  index('idx_animation_action_slots_owner').on(t.userId),
+  foreignKey({ name: 'animation_action_slot_category_owner_fk', columns: [t.categoryId, t.userId], foreignColumns: [threedAnimationCategories.id, threedAnimationCategories.userId] }),
+  check('animation_action_slots_valid', sql`length(trim(${t.name})) > 0 AND length(trim(${t.groupName})) > 0`),
+]);

@@ -42,7 +42,7 @@ for (const operation of ['select', 'insert', 'update', 'delete']) {
 }
 db.transaction = async work => { transactions++; return work(db); };
 const library = load('src/lib/services/threed/animations/library.ts', {
-  'drizzle-orm': orm, '@/lib/db/client': { db }, '@/lib/schema/threed': schema, './contracts': contracts,
+  'drizzle-orm': orm, '@/lib/db/client': { db }, '@/lib/schema/threed': schema, './contracts': contracts, './slots': { validateActionSlots: async () => [], readActionSlots: async tx => tx.select().from(schema.threedAnimationActionSlots).where(orm.eq(schema.threedAnimationActionSlots.userId, 'owner')) },
 });
 const http = load('src/lib/services/threed/animations/http.ts', {
   'next/server': { NextResponse: { json: (body, init) => ({ body, status: init?.status ?? 200 }) } },
@@ -117,6 +117,15 @@ const body = { target: 'model', targetId: 5, actionKey: 'idle', mode: 'assigned'
   assert.equal((await request('animation-assignments', 'PUT', '', { ...body, target: 'character', mode: 'disabled', animationId: null }, [[{ id: 5, modelId: null }], [{ id: 8 }]])).status, 200);
   assert.equal(queries.length, 2, 'Disabled does not fetch an animation');
   assert.equal(queries[1].values[0].animationId, null);
+  for (const actionKey of ['custom_' + 'a'.repeat(32)]) {
+    for (const target of ['model', 'character']) {
+      const response = await request('animation-assignments', 'PUT', '', { ...body, target, actionKey }, [[{ id: 5, modelId: null }], [active], [{ id: 8 }]]);
+      assert.equal(response.status, 200);
+      assert.equal(queries[2].values[0].actionKey, actionKey);
+      assert.equal(queries[2].values[0].userId, 'owner');
+      assert.equal((await request('animation-assignments', 'DELETE', `target=${target}&targetId=5&actionKey=${actionKey}`, null, [[{ id: 5, modelId: null }], []])).status, 200);
+    }
+  }
   // Resolver: override, disabled blocks fallback, unavailable explicit assignment stays unavailable.
   const modelRows = [assignment('idle', 7), assignment('walk', 7), assignment('run', 7)];
   const characterRows = [assignment('idle', 8), assignment('walk', null, 'disabled')];
@@ -127,18 +136,18 @@ const body = { target: 'model', targetId: 5, actionKey: 'idle', mode: 'assigned'
   assert.equal(effective.find(row => row.actionKey === 'dance').state, 'legacy');
   assert.equal(contracts.resolveAssignments(modelRows, [], [{ ...active, isActive: false }])[0].state, 'unavailable');
   const resolved = await request('animation-assignments', 'GET', 'target=character&targetId=11', null,
-    [[{ id: 11, modelId: 5 }], [{ id: 5 }], modelRows, characterRows, [active]]);
-  assert.equal(resolved.status, 200); assert.equal(queries.length, 5); queries.forEach(owned);
+    [[{ id: 11, modelId: 5 }], [{ id: 5 }], modelRows, characterRows, [active], []]);
+  assert.equal(resolved.status, 200); assert.equal(queries.length, 6); queries.forEach(owned);
   assert.deepEqual(resolved.body.data.effective, plain(effective));
   assert.ok(JSON.stringify(queries[4].where).includes('[7,8]'), 'Clips fetched once as a batch');
-  const modelResult = await request('animation-assignments', 'GET', 'target=model&targetId=5', null, [[{ id: 5 }], modelRows, [active]]);
-  assert.equal(modelResult.status, 200); assert.equal(queries.length, 3);
+  const modelResult = await request('animation-assignments', 'GET', 'target=model&targetId=5', null, [[{ id: 5 }], modelRows, [active], []]);
+  assert.equal(modelResult.status, 200); assert.equal(queries.length, 4);
   assert.deepEqual(modelResult.body.data.inherited, []); queries.forEach(owned);
   assert.equal((await request('animation-assignments', 'GET', 'target=character&targetId=11', null, [[]])).status, 404);
   const foreignModel = await request('animation-assignments', 'GET', 'target=character&targetId=11', null,
-    [[{ id: 11, modelId: 999 }], [], []]);
+    [[{ id: 11, modelId: 999 }], [], [], []]);
   assert.deepEqual(foreignModel.body.data.inherited, [], 'No private assignments from another owner');
-  assert.equal(queries.length, 3);
+  assert.equal(queries.length, 4);
   const removed = await request('animation-assignments', 'DELETE', 'target=model&targetId=5&actionKey=idle', null, [[{ id: 5 }], []]);
   assert.equal(removed.body.data.mode, 'inherit'); owned(queries[1]);
   assert.equal(queries[1].input.name, 'threedModelAnimationAssignments');

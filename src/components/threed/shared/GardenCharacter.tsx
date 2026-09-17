@@ -894,7 +894,7 @@ export function GardenCharacter({
               overrides,
             );
           animMapRef.current = assignedAnimationMap(animMapRef.current, externalLibrary.blocked, externalLibrary.assigned);
-          if (!cancelled && !previewMode && !previewClip) releaseAvailability = reportCharacterAnimationAvailability(character.id, character.model!.filePath, DETAILS_ANIMATION_ACTIONS.filter(action => Boolean(findClip(animMapRef.current, animations, action))));
+          if (!cancelled && !previewMode && !previewClip) releaseAvailability = reportCharacterAnimationAvailability(character.id, character.model!.filePath, [...new Set([...DETAILS_ANIMATION_ACTIONS, ...animations.map(clip => clip.name)])].filter(action => Boolean(findClip(animMapRef.current, animations, action))));
 
           // ================================================
           // INITIAL ACTION

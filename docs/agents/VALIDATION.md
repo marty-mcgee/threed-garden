@@ -510,3 +510,10 @@ For Character teleport changes, run `npm run validate:threed-character-teleport`
 Release preparation for v0.19.18 passed TypeScript, production assets and the animation/navigation checks listed in `docs/releases/v0.19.18.md`. The older `validate:threed-fbx-material-targets` fixture fails with ENOENT because the user-owned deletion of `public/assets/animations/farming/SK_Chr_Farmer_Male_01.fbx` is retained. Do not confuse that missing regression fixture with a failed production-asset manifest check, or report the entire suite as passing.
 
 For initially hidden Scene collision changes, run `npm run validate:threed-hidden-collision-mount`. It executes the actual fixed/Character Layer synchronization effects against installed Rapier, verifying initial disable and later enabled-state transitions. It does not certify every post-disable ray-query behavior or browser collision/contact response; see the v0.19.19 audit.
+
+
+### User-owned Animation Action Slots
+
+Run `npm run validate:threed-animation-action-slots`, Library/assignment/Mapping Preset checks, assigned Character animation loading, Character restart, availability and orchestration checks, and TypeScript. The slot fixture executes the actual service and manager with mocked database/UI/network: identity is immutable, owner checks precede custom mapping writes, referenced deletion is blocked and disable retains mappings. Live SQL locking, browser presentation and imported rig compatibility remain manual checks in `docs/plans/v0.19.32.md`. Apply the approved additive schema before testing; the agent does not apply the live database or run the User-owned build gate.
+
+The Action Slot command also executes the actual dedicated Admin workspace with mocked UI/network, checking list paging/search/sort, protected page-local bulk selection, partial delete failures and create payloads. Reference-count SQL, browser layout and navigation acceptance remain manual. The list currently sorts/pages on the client over the owner-scoped response.

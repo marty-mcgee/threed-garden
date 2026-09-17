@@ -249,10 +249,24 @@
   border-color: rgba(148, 163, 184, 0.3);
   color: #f1f5f9;
 }
-.threed-workspace-panel summary:focus-visible {
+.threed-workspace-panel :is(summary, button, a, input, select, textarea, [tabindex]):focus-visible {
   outline: 2px solid #67e8f9;
   outline-offset: 3px;
   border-radius: 3px;
+}
+
+@media (any-pointer: coarse) {
+  .threed-workspace-panel :is(summary, button, a, input, select) {
+    min-height: 44px;
+    font-size: 12px;
+  }
+  .threed-workspace-panel :is(button, a, input, select) {
+    min-width: 44px;
+  }
+  .threed-workspace-panel .threed-animation-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
 }
 
 .threed-workspace-panel.threed-details-surface {
@@ -275,4 +289,15 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .threed-workspace-panel.threed-details-surface { transition: none; }
+}
+
+@media (forced-colors: active) {
+  .threed-workspace-panel.threed-details-surface,
+  .threed-workspace-panel {
+    --threed-panel-background: Canvas;
+    color: CanvasText;
+    text-shadow: none;
+    border: 1px solid CanvasText;
+  }
+  .threed-workspace-panel :focus-visible { outline-color: Highlight; }
 }

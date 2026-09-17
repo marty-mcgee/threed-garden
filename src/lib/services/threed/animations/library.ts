@@ -1,10 +1,11 @@
+import { validateActionSlots, readActionSlots } from './slots';
 import { and, asc, desc, eq, getTableColumns, inArray, sql } from 'drizzle-orm';
 import { db, type Transaction } from '@/lib/db/client';
 import {
   threedAnimationFiles as files, threedAnimations as clips,
   threedModelAnimationAssignments as modelAssignments,
   threedCharacterAnimationAssignments as characterAssignments,
-  threedModels, threedCharacters, threedAnimationPresetEntries as presetEntries, threedAnimationCategoryAssignments as categoryAssignments,
+  threedAnimationActionSlots as actionSlots, threedModels, threedCharacters, threedAnimationPresetEntries as presetEntries, threedAnimationCategoryAssignments as categoryAssignments,
 } from '@/lib/schema/threed';
 import {
   AnimationLibraryError, type AnimationTarget, parseList, parseAssignment,
@@ -99,14 +100,19 @@ export async function getAssignments(userId: string, input: AnimationTarget) {
     const ids = [...new Set([...model, ...character].flatMap(row => row.animationId === null ? [] : [row.animationId]))];
     const animations = ids.length ? await tx.select(clipSelection).from(clips).innerJoin(files, fileJoin)
       .where(and(eq(clips.userId, userId), inArray(clips.id, ids))) : [];
-    return { data: { ...input, modelId, assignments: input.target === 'model' ? model : character,
+    const slots = await readActionSlots(tx, userId);
+    const resolved = resolveAssignments(model, character, animations);
+    const missing = slots.filter(slot => !resolved.some(row => row.actionKey === slot.actionKey)).map(slot => ({ actionKey: slot.actionKey, source: 'legacy' as const, state: 'unavailable' as const, animationId: null }));
+    const effective = [...resolved, ...missing].map(row => slots.some(slot => slot.actionKey === row.actionKey && !slot.isActive) ? { ...row, state: 'disabled' as const, animationId: null } : row);
+    return { data: { ...input, modelId, slots, assignments: input.target === 'model' ? model : character,
       inherited: input.target === 'character' ? model : [], animations,
-      effective: resolveAssignments(model, character, animations) } };
+      effective } };
   });
 }
 export async function putAssignment(userId: string, input: ReturnType<typeof parseAssignment>) {
   return db.transaction(async tx => {
     await ownedTarget(tx, userId, input);
+    await validateActionSlots(tx, userId, [input.actionKey]);
     if (input.animationId !== null) {
       // The lock coordinates clip deactivation/deletion with assignment creation.
       const [clip] = await tx.select({ id: clips.id }).from(clips).innerJoin(files, fileJoin)

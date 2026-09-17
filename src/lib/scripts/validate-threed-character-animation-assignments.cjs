@@ -22,7 +22,7 @@ vm.runInNewContext(ts.transpileModule(fs.readFileSync('src/components/admin/thre
   },
   require(name) {
     if (name === './AnimationCategories') return { useAnimationCategories: () => ({ categories: [], error: '' }) };
-    if (name === 'react') return { useRef() { return { current: null }; }, useEffect(callback) { if (states.length < 15) effects.push(callback); }, useState(initial) { const index = cursor++; if (!(index in states)) states[index] = initial; return [states[index], next => { states[index] = typeof next === 'function' ? next(states[index]) : next; }]; } };
+    if (name === 'react') return { useRef() { return { current: null }; }, useEffect(callback) { if (states.length < 18) effects.push(callback); }, useState(initial) { const index = cursor++; if (!(index in states)) states[index] = initial; return [states[index], next => { states[index] = typeof next === 'function' ? next(states[index]) : next; }]; } };
     if (name === 'react/jsx-runtime') return { jsx: element, jsxs: element };
     if (name.endsWith('/contracts')) return { LIBRARY_ACTIONS: ['pickFruit'] };
     return new Proxy({}, { get: (_, key) => key });
@@ -40,6 +40,15 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
   render();
   while (effects.length) effects.shift()();
   await flush();
+  const independent = find(render(), node => node.type === 'select' && node.props.id?.startsWith('preview-animation-'));
+  assert.equal(independent.props.disabled, false);
+  const beforeIndependent = calls.filter(call => call.method).length;
+  independent.props.onChange({ target: { value: '46' } });
+  assert.equal(states[13].animationId, 46);
+  assert.equal(JSON.stringify(states[1]), '{}', 'Independent preview leaves Action drafts untouched');
+  assert.equal(calls.filter(call => call.method).length, beforeIndependent, 'Independent preview never writes assignments');
+  independent.props.onChange({ target: { value: '' } });
+  assert.equal(states[13], null);
   for (const value of ['46', 'disabled', 'inherit']) {
     let tree = render();
     find(tree, node => node.type === 'select' && node.props.id?.startsWith('animation-')).props.onChange({ target: { value } });
@@ -109,6 +118,19 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
   find(render(), node => node.type === 'select' && node.props.id?.startsWith('animation-')).props.onChange({ target: { value: '46' } });
   find(render(), node => node.type === 'Button' && node.props.children === 'Save').props.onClick(); await flush();
   assert.equal(find(render(), node => node.type === 'select' && node.props.id?.startsWith('animation-')).props.value, '46');
+  const customKey = 'custom_' + 'a'.repeat(32);
+  states[0].slots = [{ id: 1, actionKey: customKey, name: 'User Action', categoryId: 1, categoryName: 'User Category', isActive: true }];
+  assert.match(visibleText(render()), /User Action/);
+  find(render(), node => node.props?.['aria-label'] === 'Filter Action Slots by category').props.onChange({ target: { value: 'User Category' } });
+  assert.equal(find(render(), node => node.type === 'select' && node.props.id?.startsWith('animation-')).props.id, `animation-model-935-${customKey}`);
+  find(render(), node => node.props?.['aria-label'] === 'Search Action Slots').props.onChange({ target: { value: 'no match' } });
+  assert.match(visibleText(render()), /No Action Slots match/);
+  assert.equal(states[1].pickFruit, '46', 'Filtering retains the failed built-in draft');
+  find(render(), node => node.props?.['aria-label'] === 'Search Action Slots').props.onChange({ target: { value: '' } });
+  find(render(), node => node.type === 'select' && node.props.id?.startsWith('animation-')).props.onChange({ target: { value: '46' } });
+  find(render(), node => node.type === 'Button' && node.props.children === 'Preview animation').props.onClick();
+  assert.match(visibleText(render()), /Preview: User Action/);
+  assert.equal(states[1].pickFruit, '46');
   const modelsUI = fs.readFileSync('src/components/admin/threed/models/ThreeDModelsCRUD.tsx', 'utf8');
   assert.match(modelsUI, /onClick=\{\(\) => setAnimationModel\(model\)\}/);
   assert.match(modelsUI, /<ModelAnimationAssignments key=\{animationModel.id\} modelId=\{animationModel.id\}/);

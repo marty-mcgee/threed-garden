@@ -1,5 +1,6 @@
 'use client';
 
+import { useAnimationActionSlots } from '@/components/admin/threed/animations/AnimationActionSlots';
 import { getCharacterAnimationAvailability, subscribeCharacterAnimationAvailability } from '@/lib/services/threed/animations/runtime-availability';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useSession } from 'next-auth/react';
@@ -268,6 +269,9 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
   onDeleteCharacterInstance?: (markerId: number, name: string) => void;
   deletingCharacterMarkerId?: number | null;
 }) {
+  const { slots: customActionSlots, error: actionSlotError } = useAnimationActionSlots();
+  const customActions = customActionSlots.map(slot => slot.actionKey);
+  const customGroups = [...new Set(customActionSlots.map(slot => (slot.categoryName ?? 'Uncategorized')))].map(title => ({ title: `${title} · Animation only`, actions: customActionSlots.filter(slot => (slot.categoryName ?? 'Uncategorized') === title).map(slot => ({ action: slot.actionKey, label: slot.name })) }));
   const animationAvailability = useSyncExternalStore(subscribeCharacterAnimationAvailability,
     () => getCharacterAnimationAvailability(Number(selected?.data?.id), String(selected?.data?.model?.filePath ?? '')),
     () => null);
@@ -689,6 +693,7 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
             )}
           </div>
 
+          {actionSlotError && <p role="alert" className="text-xs text-red-400">{actionSlotError}</p>}
           {(actionTarget && actionTarget.type !== 'plantings' ? [
             {
               title: 'Interaction',
@@ -732,20 +737,21 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
                 { action: 'talk', label: '💬 Talk' },
               ],
             },
-          ])
+          ]).concat(customGroups)
             .map((group) => ({
               ...group,
               actions: actionTargetCapabilities
                 ? group.actions.filter(({ action }) => (
-                  actionTargetCapabilities.genericActions.includes(action as any)
+                  customActions.includes(action)
+                  || actionTargetCapabilities.genericActions.includes(action as any)
                   || actionTargetCapabilities.moduleActions.includes(action as any)
                 ))
                 : group.actions,
             }))
             .filter((group) => group.actions.length > 0)
             .flatMap(group => animationAvailability ? [
-              { ...group, title: `${group.title} · Active`, inactive: false, actions: group.actions.filter(({action}) => animationAvailability.has(action.toLowerCase())) },
-              { ...group, title: `${group.title} · Inactive`, inactive: true, actions: group.actions.filter(({action}) => !animationAvailability.has(action.toLowerCase())) },
+              { ...group, title: `${group.title} · Active`, inactive: false, actions: group.actions.filter(({action}) => (animationAvailability.has(action.toLowerCase()) && customActionSlots.find(slot => slot.actionKey === action)?.isActive !== false)) },
+              { ...group, title: `${group.title} · Inactive`, inactive: true, actions: group.actions.filter(({action}) => !(animationAvailability.has(action.toLowerCase()) && customActionSlots.find(slot => slot.actionKey === action)?.isActive !== false)) },
             ].filter(section => section.actions.length > 0) : [{ ...group, inactive: true }])
             .map((group) => (
             <details key={group.title} className="space-y-1 rounded bg-white/[0.035] p-1.5">
@@ -753,7 +759,7 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
                 {group.title} <span className="text-slate-400">({group.actions.length})</span>
               </summary>
 
-              <div className="grid grid-cols-3 gap-1">
+              <div className="threed-animation-actions grid grid-cols-3 gap-1">
                 {group.actions.map(({ action, label }) => (
                   <button
                     key={action}
@@ -795,7 +801,7 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
                         detail: {
                           characterId: charId,
                           action,
-                          target: actionTarget
+                          target: !customActions.includes(action) && actionTarget
                             ? { ...actionTarget, actionRequestId: crypto.randomUUID() }
                             : null,
                         },

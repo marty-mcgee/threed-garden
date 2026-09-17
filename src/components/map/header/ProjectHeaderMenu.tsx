@@ -71,6 +71,7 @@ export function ProjectHeaderMenu({
   onOpenProjectSettings: () => void;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -85,8 +86,15 @@ export function ProjectHeaderMenu({
   }, [isOpen, onDismiss]);
 
   return (
-    <div ref={containerRef} className="relative flex flex-col items-start">
+    <div ref={containerRef} className="relative flex flex-col items-start" onKeyDown={(event) => {
+      if (event.key !== 'Escape' || !isOpen) return;
+      event.preventDefault();
+      event.stopPropagation();
+      onDismiss();
+      triggerRef.current?.focus();
+    }}>
       <Button
+        ref={triggerRef}
         type="button"
         variant="ghost"
         size="sm"

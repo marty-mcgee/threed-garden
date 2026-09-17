@@ -2379,6 +2379,7 @@ function UnifiedMapPageInner() {
 
       </div>
 
+      <div hidden={isProjectSummaryOpen} inert={isProjectSummaryOpen}>
       <ProjectAssetsPanel
         selectedProjectId={selectedProjectId}
         isOpen={isProjectAssetsOpen}
@@ -2395,6 +2396,7 @@ function UnifiedMapPageInner() {
         onDismiss={dismissProjectAssets}
         focusProjectAsset={focusProjectAsset}
       />
+      </div>
       <div id="project-setup-panel">
         <ProjectSetupPanel
           isOpen={Boolean(selectedProjectId) && isThreeDPresentationComplete && isProjectSetupOpen}
@@ -2432,6 +2434,7 @@ function UnifiedMapPageInner() {
           }}
         />
       </div>
+      <div hidden={isProjectSummaryOpen} inert={isProjectSummaryOpen}>
       <ThreeDModelLibraryPanel
         isOpen={Boolean(selectedProjectId) && isModelLibraryOpen}
         viewMode={viewMode}
@@ -2485,7 +2488,9 @@ function UnifiedMapPageInner() {
           setIsModelLibraryOpen(false);
         }}
       />
+      </div>
 
+      <div hidden={isProjectSummaryOpen} inert={isProjectSummaryOpen}>
       <ThreeDCharacterLibraryPanel
         isOpen={Boolean(selectedProjectId) && isCharacterLibraryOpen}
         projectModules={projectThreeDModules}
@@ -2506,7 +2511,9 @@ function UnifiedMapPageInner() {
           setIsCharacterLibraryOpen(false);
         }}
       />
+      </div>
 
+      <div hidden={isProjectSummaryOpen} inert={isProjectSummaryOpen}>
       <ThreeDFarmBotLibraryPanel
         isOpen={Boolean(selectedProjectId) && isFarmBotLibraryOpen}
         projectModules={projectThreeDModules}
@@ -2531,6 +2538,7 @@ function UnifiedMapPageInner() {
           setIsFarmBotLibraryOpen(false);
         }}
       />
+      </div>
 
       <ThreeDBedPlacementPanel
         isOpen={Boolean(selectedProjectId) && isBedPlacementOpen}
@@ -2785,6 +2793,7 @@ function UnifiedMapPageInner() {
       </Card>
 
       {/* ✅ v0.15.2: Details Card — rendered outside map to avoid Leaflet interference */}
+      <div hidden={isProjectSummaryOpen} inert={isProjectSummaryOpen}>
       <DetailsCard
         selected={selectedMarker || selectedIncident}
         projectId={selectedProjectId}
@@ -2841,6 +2850,7 @@ function UnifiedMapPageInner() {
         onDeleteCharacterInstance={handleDeleteCharacterInstance}
         deletingCharacterMarkerId={deletingCharacterMarkerId}
       />
+      </div>
       
     </div>
   );

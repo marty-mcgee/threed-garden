@@ -703,7 +703,7 @@ function useCharacterModel(
               overrides
             );
           animMapRef.current = assignedAnimationMap(animMapRef.current, externalLibrary.blocked, externalLibrary.assigned);
-          if (!cancelled) releaseAvailability = reportCharacterAnimationAvailability(character.id, character.model!.filePath, DETAILS_ANIMATION_ACTIONS.filter(action => actionsRef.current.has(action.toLowerCase())));
+          if (!cancelled) releaseAvailability = reportCharacterAnimationAvailability(character.id, character.model!.filePath, [...new Set([...DETAILS_ANIMATION_ACTIONS, ...actionsRef.current.keys()])].filter(action => actionsRef.current.has(action.toLowerCase())));
 
           // ==================================================
           // DEBUG INFO

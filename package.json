@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.19.31",
+  "version": "0.19.32",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -45,6 +45,7 @@
     "validate:threed-character-animation-assignments": "node src/lib/scripts/validate-threed-character-animation-assignments.cjs",
     "validate:threed-animation-upload": "node src/lib/scripts/validate-threed-animation-upload.cjs",
     "validate:threed-assigned-character-animations": "node src/lib/scripts/validate-threed-assigned-character-animations.cjs",
+    "validate:threed-animation-action-slots": "node src/lib/scripts/validate-threed-animation-action-slots.cjs && node src/lib/scripts/validate-threed-animation-slots-workspace.cjs",
     "validate:threed-animation-presets": "node src/lib/scripts/validate-threed-animation-presets.cjs && node src/lib/scripts/validate-threed-animation-presets-ui.cjs",
     "validate:threed-animation-categories": "node src/lib/scripts/validate-threed-animation-categories.cjs",
     "validate:threed-animation-library": "node src/lib/scripts/validate-threed-animation-library.cjs",

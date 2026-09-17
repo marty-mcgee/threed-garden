@@ -129,6 +129,7 @@ export function ThreeDAnimationsWorkspace() {
       <span className="rounded bg-muted px-2 text-xs">{error ? '—' : total}</span>
       <Input aria-label="Search saved animations" placeholder="Search saved animations…" value={search} disabled={busy} onChange={event => { setSearch(event.target.value); setPage(0); }} className="h-7 min-w-48 flex-1 text-xs" />
       <select aria-label="Filter Animations by category" className="h-7 min-w-40 rounded border bg-background px-2 text-xs" disabled={busy || !!categoryError} value={category} onChange={e => { setCategory(e.target.value); setPage(0); }}><option value="">All categories</option>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
+      <AdminWorkspaceLink href="/admin/threed/animation-slots" icon={Clapperboard}>Animation Slots</AdminWorkspaceLink>
       <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setManageCategories(v => !v)}>Manage Categories</Button>
       <Button size="sm" className="h-7 text-xs" disabled={busy} onClick={() => uploadRef.current?.click()}><Upload className="mr-1 h-3 w-3" />Upload Animations</Button>
       <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading} onClick={() => setRefresh(value => value + 1)}>Refresh</Button>

@@ -6,7 +6,7 @@ import { getExternalAnimationSourcesForModel, loadExternalCharacterAnimations } 
 import type { AnimationMap } from './animation';
 
 export type AssignedAnimationClip = { id: number; isActive: boolean; filePath: string; format: string; clipIndex: number };
-type Mapping = { assignments: Assignment[]; inherited: Assignment[]; animations: AssignedAnimationClip[]; modelId: number | null };
+type Mapping = { assignments: Assignment[]; inherited: Assignment[]; animations: AssignedAnimationClip[]; modelId: number | null; slots?: { actionKey: string; isActive: boolean }[] };
 async function mapping(target: string, targetId: number): Promise<Mapping> {
   const response = await fetch(`/api/threed/animation-assignments?target=${target}&targetId=${targetId}`, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
   if (response.status === 404) return { assignments: [], inherited: [], animations: [], modelId: null };
@@ -66,12 +66,14 @@ export async function loadAssignedCharacterAnimations(characterId: number, model
   const animations = model ? [...own.animations, ...model.animations] : own.animations;
   const effective = resolveAssignments(model?.assignments ?? own.inherited, own.assignments, animations);
   const explicit = new Set(effective.filter(row => row.state !== 'legacy').map(row => row.actionKey.toLowerCase()));
+  const inactive = new Set((own.slots ?? []).filter(row => !row.isActive).map(row => row.actionKey));
   const blocked = new Set(effective.filter(row => row.state === 'disabled').map(row => row.actionKey.toLowerCase()));
+  inactive.forEach(key => blocked.add(key.toLowerCase()));
   const assigned = new Set<string>();
   const sources = new Map<string, Promise<THREE.AnimationClip[]>>();
   const clips: THREE.AnimationClip[] = [];
   for (const row of effective) {
-    if (row.state === 'legacy' || row.state === 'disabled') continue;
+    if (row.state === 'legacy' || row.state === 'disabled' || blocked.has(row.actionKey.toLowerCase())) continue;
     const owner = row.source === 'character' ? `Character #${characterId} override` : `Model #${modelId} default`;
     const location = row.source === 'character'
       ? 'Admin → ThreeD → Characters → Animations & Preview'

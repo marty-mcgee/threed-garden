@@ -51,6 +51,16 @@ const run = () => runtime.loadAssignedCharacterAnimations(11, 5, 'Character', '/
   reset(); own.inherited = [assignment('idle')]; own.assignments = [assignment('idle', null, 'disabled')]; result = await run(); assert.equal(sourceFetches, 0); assert.ok(result.blocked.has('idle'));
   reset(); own.modelId = 9; own.inherited = [assignment('run')]; model.assignments = [assignment('idle')]; result = await run();
   assert.ok(urls.some(url => url.includes('target=model&targetId=5'))); assert.ok(result.assigned.has('idle')); assert.ok(!result.assigned.has('run'));
+  for (const slot of ['custom_' + 'a'.repeat(32)]) {
+
+    contracts.parseAssignment({ target: 'character', targetId: 11, actionKey: slot, mode: 'assigned', animationId: 46 });
+    reset(); own.inherited = [assignment(slot)]; result = await run();
+    assert.ok(result.assigned.has(slot.toLowerCase()), 'User-defined Model defaults load for Characters');
+    assert.equal(result.clips.find(clip => clip.name === slot).tracks.length, root.animations[0].tracks.length);
+    reset(); own.inherited = [assignment(slot)]; own.assignments = [assignment(slot, null, 'disabled')]; result = await run();
+    assert.ok(result.blocked.has(slot.toLowerCase())); assert.equal(sourceFetches, 0);
+  }
+  reset(); own.inherited = [assignment('custom_' + 'a'.repeat(32))]; own.slots = [{ actionKey: 'custom_' + 'a'.repeat(32), isActive: false }]; result = await run(); assert.equal(sourceFetches, 0); assert.ok(result.blocked.has('custom_' + 'a'.repeat(32)));
   reset(); own.assignments = [assignment('idle')]; own.animations = [{ ...source, isActive: false }]; await assert.rejects(run(), /unavailable/);
   reset(); own.assignments = [assignment('idle')]; own.animations = [{ ...source, clipIndex: 999 }]; await assert.rejects(run(), /not found/);
   reset(); own.assignments = [assignment('idle')]; await assert.rejects(runtime.loadAssignedCharacterAnimations(11, 5, 'Wrong rig', '', new THREE.Group()), /does not match/);
