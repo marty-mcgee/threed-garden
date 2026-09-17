@@ -33,7 +33,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/toast';
-import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
+import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
 import type { ThreeDModelCategoryOption } from './ThreeDModelCategoriesManager';
 import {
   buildThreeDModelAdminPayload,
@@ -543,6 +543,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
         <div className="relative min-w-48 flex-1">
           <Search className="absolute left-2 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
           <Input
+            aria-label="Search Models"
             placeholder="Search by name or type..."
             value={searchQuery}
             onChange={(event) => { setPage(0); setSearchQuery(event.target.value); setSelectedIds(new Set()); }}
@@ -626,6 +627,8 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
             </Link>
           </Button>
         </div>
+        <AdminWorkspaceLink href="/admin/threed/animation-slots" icon={Clapperboard}>Animation Slots</AdminWorkspaceLink>
+        <AdminWorkspaceLink href="/admin/threed/animation-categories" icon={Clapperboard}>Animation Categories</AdminWorkspaceLink>
       </AdminWorkspaceHeader>
       </fieldset>
 

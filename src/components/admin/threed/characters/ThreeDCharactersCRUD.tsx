@@ -710,7 +710,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
       <AdminWorkspaceHeader icon={Users} title="Characters" description="Manage your 3D characters and creatures" className="shrink-0 [&>a]:text-[11px] [&>div:first-child>svg]:text-purple-500">
         <Badge variant="secondary" className="text-xs">{loading || loadError ? '—' : total}</Badge>
         <Input aria-label="Search Characters" placeholder="Search Characters by name, ID or description…" disabled={bulkBusy} value={searchQuery} onChange={event => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
-        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <Dialog open={showCreateDialog} onOpenChange={open => { if (!isSubmitting) setShowCreateDialog(open); }}>
           <DialogTrigger asChild>
             <Button size="sm" disabled={bulkBusy} className="h-7 px-2 text-[11px]">
               <Plus className="w-3 h-3 mr-1" />
@@ -1246,6 +1246,8 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false }: 
         </Dialog>
         <AdminWorkspaceLink href="/admin/threed/models" icon={Box}>Models</AdminWorkspaceLink>
         <AdminWorkspaceLink href="/admin/threed/animations" icon={Clapperboard}>Animations</AdminWorkspaceLink>
+        <AdminWorkspaceLink href="/admin/threed/animation-slots" icon={Clapperboard}>Animation Slots</AdminWorkspaceLink>
+        <AdminWorkspaceLink href="/admin/threed/animation-categories" icon={Clapperboard}>Animation Categories</AdminWorkspaceLink>
       </AdminWorkspaceHeader>
 
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">

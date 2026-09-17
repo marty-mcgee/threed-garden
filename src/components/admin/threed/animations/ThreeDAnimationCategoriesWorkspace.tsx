@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, ArrowUpDown, FolderTree, Clapperboard, Pencil, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, FolderTree, Clapperboard, Box, Users, Pencil, Plus, Trash2 } from 'lucide-react';
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -70,15 +70,17 @@ export function ThreeDAnimationCategoriesWorkspace() {
       <AdminWorkspaceLink href="/admin/threed/animation-slots" icon={Clapperboard}>Animation Slots</AdminWorkspaceLink>
       <AdminWorkspaceLink href="/admin/threed/animations" icon={Clapperboard}>Animations Library</AdminWorkspaceLink>
       <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading || !!draft} onClick={() => setRefresh(value => value + 1)}>Refresh</Button>
+      <AdminWorkspaceLink href="/admin/threed/models" icon={Box}>Models</AdminWorkspaceLink>
+      <AdminWorkspaceLink href="/admin/threed/characters" icon={Users}>Characters</AdminWorkspaceLink>
     </AdminWorkspaceHeader>
     {notice && <p role="status" className="text-sm text-green-500">{notice}</p>}{!draft && operationError && <p role="alert" className="text-sm text-destructive">{operationError}</p>}
     <Dialog open={!!draft} onOpenChange={open => { if (!open && !busy) { setDraft(null); } }}>
-      <DialogContent className="w-[calc(100%-2rem)] max-h-[90dvh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className="w-[calc(100%-2rem)] max-h-[90dvh] overflow-y-auto gap-3 p-4 sm:max-w-lg [@media(pointer:coarse)]:[&_button]:min-h-11 [@media(pointer:coarse)]:[&_input]:min-h-11 [@media(pointer:coarse)]:[&_select]:min-h-11">
         <DialogHeader><DialogTitle>{draft?.id ? 'Edit Animation Category' : 'Add Animation Category'}</DialogTitle></DialogHeader>
-        {draft && <form aria-label={draft.id ? 'Edit Animation Category' : 'New Animation Category'} onSubmit={event => { event.preventDefault(); void save(); }} className="space-y-4">
-      <fieldset disabled={busy} className="grid gap-4">
+        {draft && <form aria-label={draft.id ? 'Edit Animation Category' : 'New Animation Category'} onSubmit={event => { event.preventDefault(); void save(); }} className="space-y-3">
+      <fieldset disabled={busy} className="grid gap-3 [&_input]:h-8 [&_input]:text-xs">
         <label className="space-y-1 text-xs">Name<Input autoFocus required maxLength={120} value={draft.name} onChange={event => setDraft({ ...draft, name: event.target.value })} /></label>
-        <div className="flex justify-end gap-2"><Button type="submit" size="sm" disabled={!draft.name.trim()}>{draft.id ? 'Update Category' : 'Create Category'}</Button><Button type="button" size="sm" variant="outline" onClick={() => { setDraft(null); }}>Cancel</Button></div>
+        <div className="flex justify-end gap-2"><Button type="submit" size="sm" className="h-8 text-xs" disabled={!draft.name.trim()}>{draft.id ? 'Update Category' : 'Create Category'}</Button><Button type="button" size="sm" variant="outline" className="h-8 text-xs" onClick={() => { setDraft(null); }}>Cancel</Button></div>
       </fieldset><p className="mt-2 text-xs text-muted-foreground">Categories organize clips and Action Slots. Renaming keeps assignments. Reassign Action Slots before deleting a Category. Deleting removes clip Category labels, not clips or action mappings.</p>
       {operationError && <p role="alert" className="text-sm text-destructive">{operationError}</p>}
     </form>}

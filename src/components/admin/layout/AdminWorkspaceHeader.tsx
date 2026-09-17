@@ -40,7 +40,7 @@ export function AdminWorkspaceLink({ href, icon: Icon, children }: AdminWorkspac
   return (
     <Link
       href={href}
-      className="inline-flex h-7 items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-2 text-xs font-medium text-foreground no-underline transition-colors hover:bg-white/10"
+      className="inline-flex h-7 items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-2 text-xs font-medium text-foreground no-underline transition-colors hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background [@media(pointer:coarse)]:min-h-11"
     >
       <Icon aria-hidden="true" className="h-4 w-4" />
       {children}

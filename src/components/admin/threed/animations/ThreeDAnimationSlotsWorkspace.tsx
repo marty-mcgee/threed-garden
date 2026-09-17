@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, ArrowUpDown, Check, Clapperboard, Pencil, Plus, Trash2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Check, Clapperboard, Box, Users, Pencil, Plus, Trash2, X } from 'lucide-react';
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -81,19 +81,21 @@ export function ThreeDAnimationSlotsWorkspace() {
       <AdminWorkspaceLink href="/admin/threed/animation-categories" icon={Clapperboard}>Animation Categories</AdminWorkspaceLink>
       <AdminWorkspaceLink href="/admin/threed/animations" icon={Clapperboard}>Animations Library</AdminWorkspaceLink>
       <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading || !!draft} onClick={() => setRefresh(value => value + 1)}>Refresh</Button>
+      <AdminWorkspaceLink href="/admin/threed/models" icon={Box}>Models</AdminWorkspaceLink>
+      <AdminWorkspaceLink href="/admin/threed/characters" icon={Users}>Characters</AdminWorkspaceLink>
     </AdminWorkspaceHeader>
     {notice && <p role="status" className="text-sm text-green-500">{notice}</p>}{!draft && operationError && <p role="alert" className="text-sm text-destructive">{operationError}</p>}
     <Dialog open={!!draft} onOpenChange={open => { if (!open && !busy) { setDraft(null); setNewCategory(null); } }}>
-      <DialogContent className="w-[calc(100%-2rem)] max-h-[90dvh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className="w-[calc(100%-2rem)] max-h-[90dvh] overflow-y-auto gap-3 p-4 sm:max-w-lg [@media(pointer:coarse)]:[&_button]:min-h-11 [@media(pointer:coarse)]:[&_input]:min-h-11 [@media(pointer:coarse)]:[&_select]:min-h-11">
         <DialogHeader><DialogTitle>{draft?.id ? 'Edit Animation Slot' : 'Add Animation Slot'}</DialogTitle></DialogHeader>
-        {draft && <form aria-label={draft.id ? 'Edit Animation Slot' : 'New Animation Slot'} onSubmit={event => { event.preventDefault(); void save(); }} className="space-y-4">
-      <fieldset disabled={busy} className="grid gap-4">
+        {draft && <form aria-label={draft.id ? 'Edit Animation Slot' : 'New Animation Slot'} onSubmit={event => { event.preventDefault(); void save(); }} className="space-y-3">
+      <fieldset disabled={busy} className="grid gap-3 [&_input]:h-8 [&_input]:text-xs">
         <label className="space-y-1 text-xs">Name<Input autoFocus required maxLength={120} value={draft.name} onChange={event => setDraft({ ...draft, name: event.target.value })} /></label>
-        <label className="grid gap-1 text-xs">Category<select aria-label="Slot Category" className="h-9 rounded border bg-background px-2" disabled={!!categoryError} value={draft.categoryId ?? ''} onChange={event => setDraft({ ...draft, categoryId: event.target.value ? Number(event.target.value) : null })}><option value="">Uncategorized</option>{draft.categoryId && !categories.some(category => category.id === draft.categoryId) && <option value={draft.categoryId} disabled>Category #{draft.categoryId} — refresh Categories</option>}{categories.map(category => <option key={category.id} value={category.id}>{category.name}</option>)}</select></label>
+        <label className="grid gap-1 text-xs">Category<select aria-label="Slot Category" className="h-8 rounded border bg-background px-2" disabled={!!categoryError} value={draft.categoryId ?? ''} onChange={event => setDraft({ ...draft, categoryId: event.target.value ? Number(event.target.value) : null })}><option value="">Uncategorized</option>{draft.categoryId && !categories.some(category => category.id === draft.categoryId) && <option value={draft.categoryId} disabled>Category #{draft.categoryId} — refresh Categories</option>}{categories.map(category => <option key={category.id} value={category.id}>{category.name}</option>)}</select></label>
         {categoryError && <p role="alert" className="text-sm text-destructive">{categoryError}<Button type="button" variant="outline" size="sm" onClick={() => setCategoryRefresh(value => value + 1)}>Retry Categories</Button></p>}
         {newCategory === null ? <Button type="button" variant="outline" size="sm" className="justify-self-start" onClick={() => setNewCategory('')}>New Category</Button> : <div className="space-y-2 rounded border p-2"><label className="grid gap-1 text-xs">New Category name<Input value={newCategory} maxLength={120} onChange={event => setNewCategory(event.target.value)} /></label><div className="flex gap-2"><Button type="button" size="sm" disabled={!newCategory.trim()} onClick={() => void createCategory()}>Create Category</Button><Button type="button" size="sm" variant="outline" onClick={() => setNewCategory(null)}>Cancel Category</Button></div></div>}
         <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={draft.isActive} onChange={event => setDraft({ ...draft, isActive: event.target.checked })} />Enabled</label>
-        <div className="flex justify-end gap-2"><Button type="submit" size="sm" disabled={!draft.name.trim() || !!categoryError}>{draft.id ? 'Update Slot' : 'Create Slot'}</Button><Button type="button" size="sm" variant="outline" onClick={() => { setDraft(null); setNewCategory(null); }}>Cancel</Button></div>
+        <div className="flex justify-end gap-2"><Button type="submit" size="sm" className="h-8 text-xs" disabled={!draft.name.trim() || !!categoryError}>{draft.id ? 'Update Slot' : 'Create Slot'}</Button><Button type="button" size="sm" variant="outline" className="h-8 text-xs" onClick={() => { setDraft(null); setNewCategory(null); }}>Cancel</Button></div>
       </fieldset><p className="mt-2 text-xs text-muted-foreground">Assign clips in Character/Model Animations & Preview. Disabling retains mappings; renaming preserves slot identity.</p>
       {operationError && <p role="alert" className="text-sm text-destructive">{operationError}</p>}
     </form>}

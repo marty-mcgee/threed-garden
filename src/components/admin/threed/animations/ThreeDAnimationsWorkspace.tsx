@@ -6,6 +6,7 @@ import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/lay
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAnimationCategories, AnimationCategoryEditor } from './AnimationCategories';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '@/components/ui/table';
 
 type UploadResult = { name: string; status: 'Queued' | 'Uploading' | 'Imported' | 'Needs attention'; detail?: string };
@@ -54,27 +55,28 @@ export function ThreeDAnimationsWorkspace() {
     }, 200);
     return () => { clearTimeout(timer); controller.abort(); };
   }, [page, pageSize, sort, search, refresh, category]);
+  const [operationError, setOperationError] = useState('');
   async function save() {
     if (!editing || busy || !editing.name.trim()) return;
-    setBusy(true); setNotice('');
+    setBusy(true); setNotice(''); setOperationError('');
     try {
       await request('/api/threed/animations', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: editing.id, name: editing.name.trim() }) });
       setEditing(null); setRefresh(value => value + 1); setNotice('Animation updated.');
-    } catch (err) { setNotice(err instanceof Error ? err.message : 'Could not save'); }
+    } catch (err) { setOperationError(err instanceof Error ? err.message : 'Could not save'); }
     finally { setBusy(false); }
   }
   async function remove(row: Animation) {
     if (busy || !window.confirm(`Delete animation “${row.name}”? Its source file will be retained.`)) return;
-    setBusy(true); setNotice('');
+    setBusy(true); setNotice(''); setOperationError('');
     try { await request(`/api/threed/animations?id=${row.id}`, { method: 'DELETE' }); setRefresh(value => value + 1); setNotice('Animation removed; source file retained.'); }
-    catch (err) { setNotice(err instanceof Error ? err.message : 'Could not delete'); }
+    catch (err) { setOperationError(err instanceof Error ? err.message : 'Could not delete'); }
     finally { setBusy(false); }
   }
   async function upload(files: File[]) {
     if (!files.length || busy || uploadingRef.current) return;
-    if (files.length > 100) { setNotice('Select up to 100 animation files per batch.'); return; }
+    if (files.length > 100) { setOperationError('Select up to 100 animation files per batch.'); return; }
     uploadingRef.current = true;
-    setBusy(true); setNotice('Importing animation files…');
+    setBusy(true); setOperationError(''); setNotice('Importing animation files…');
     setUploadResults(files.map(file => ({ name: file.name, status: 'Queued' })));
     let imported = 0;
     let clipCount = 0;
@@ -107,7 +109,7 @@ export function ThreeDAnimationsWorkspace() {
     if (busy || !targets.length || !window.confirm(`Delete ${targets.length} animations? Source files are retained.`)) return;
     setBusy(true); let count = 0;
     try { for (const row of targets) { await request(`/api/threed/animations?id=${row.id}`, { method: 'DELETE' }); count++; } setNotice(`Deleted ${count} animations; source files retained.`); }
-    catch (err) { setNotice(`Deleted ${count} of ${targets.length}. ${err instanceof Error ? err.message : 'Deletion stopped'}`); }
+    catch (err) { setNotice(`Deleted ${count} of ${targets.length} animations.`); setOperationError(err instanceof Error ? err.message : 'Deletion stopped'); }
     finally { setBusy(false); setSelected(new Set()); setRefresh(value => value + 1); }
   }
   function heading(key: string, label: string) {
@@ -116,9 +118,9 @@ export function ThreeDAnimationsWorkspace() {
   }
   async function toggle(row: Animation) {
     if (busy) return;
-    setBusy(true); setNotice('');
+    setBusy(true); setNotice(''); setOperationError('');
     try { await request('/api/threed/animations', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: row.id, isActive: !row.isActive }) }); setRefresh(value => value + 1); }
-    catch (err) { setNotice(err instanceof Error ? err.message : 'Could not update animation'); }
+    catch (err) { setOperationError(err instanceof Error ? err.message : 'Could not update animation'); }
     finally { setBusy(false); }
   }
   const deletable = rows.filter(row => row.modelUsage + row.characterUsage + (row.presetUsage ?? 0) === 0);
@@ -135,9 +137,23 @@ export function ThreeDAnimationsWorkspace() {
       <AdminWorkspaceLink href="/admin/threed/models" icon={Box}>Models</AdminWorkspaceLink>
       <AdminWorkspaceLink href="/admin/threed/model-textures" icon={Images}>Model Textures</AdminWorkspaceLink>
     </AdminWorkspaceHeader>
+    <Dialog open={!!editing} onOpenChange={open => { if (!open && !busy) setEditing(null); }}>
+      <DialogContent className="w-[calc(100%-2rem)] max-h-[90dvh] overflow-y-auto gap-3 p-4 sm:max-w-lg [@media(pointer:coarse)]:[&_button]:min-h-11 [@media(pointer:coarse)]:[&_input]:min-h-11 [@media(pointer:coarse)]:[&_select]:min-h-11">
+        <DialogHeader><DialogTitle>Edit Animation</DialogTitle></DialogHeader>
+        {editing && <form className="space-y-3" onSubmit={event => { event.preventDefault(); void save(); }}>
+          <fieldset disabled={busy} className="space-y-3">
+            <label className="grid gap-1 text-xs">Name<Input aria-label="Animation name" autoFocus required maxLength={255} value={editing.name} onChange={event => setEditing({ ...editing, name: event.target.value })} className="h-8 text-xs" /></label>
+            <p className="text-xs text-muted-foreground">{editing.fileName} · Clip {editing.clipIndex + 1}. Renaming preserves saved assignments.</p>
+            <div className="flex justify-end gap-2"><Button type="button" size="sm" variant="outline" onClick={() => setEditing(null)}>Cancel</Button><Button type="submit" size="sm" disabled={!editing.name.trim()}>Update Animation</Button></div>
+          </fieldset>
+          {operationError && <p role="alert" className="text-xs text-destructive">{operationError}</p>}
+        </form>}
+      </DialogContent>
+    </Dialog>
+    {!editing && operationError && <p role="alert" className="text-xs text-destructive">{operationError}</p>}
     {categoryError && <p role="alert" className="text-xs text-destructive">{categoryError}</p>}
     {categoryEditing && <AnimationCategoryEditor key={categoryEditing.id} animation={categoryEditing} categories={categories} onClose={() => setCategoryEditing(null)} onSaved={() => { setCategoryEditing(null); setRefresh(v => v + 1); }} />}
-    {notice && <p role="status" className="shrink-0 text-xs">{notice}</p>}
+    {notice && <p role="status" className="shrink-0 text-xs text-green-500">{notice}</p>}
     {uploadResults.length > 0 && <section aria-label="Animation import results" className="shrink-0 rounded-lg border p-2 text-xs">
       <div className="mb-1 flex items-center justify-between"><span>Animation import results · {uploadResults.length} files</span><Button size="sm" variant="ghost" className="h-7 text-xs" disabled={busy} onClick={() => setUploadResults([])}>Clear results</Button></div>
       <div className="max-h-40 overflow-auto" tabIndex={0} aria-label="Files in this import">
@@ -161,8 +177,8 @@ export function ThreeDAnimationsWorkspace() {
         {heading('name', 'Name')}<TableHead className="text-xs">Categories</TableHead>{heading('fileName', 'Source / Clip')}{heading('type', 'Type')}{heading('duration', 'Duration')}{heading('active', 'Active')}{heading('references', 'References')}{heading('size', 'Size')}<TableHead className="text-right text-xs">Actions</TableHead></TableRow></TableHeader>
         <TableBody>{loading ? <TableRow><TableCell colSpan={10}>Loading Animations…</TableCell></TableRow> : error ? <TableRow><TableCell colSpan={10}><div role="alert" className="flex items-center gap-2 text-sm text-destructive">{error}<Button variant="outline" size="sm" className="h-7 text-xs" disabled={busy} onClick={() => setRefresh(value => value + 1)}>Retry</Button></div></TableCell></TableRow> : rows.length === 0 ? <TableRow><TableCell colSpan={10}>No Animations found. Use Upload Animations to add FBX or self-contained GLB sources (up to 100 files, 4 MiB each).</TableCell></TableRow> : rows.map(row => <TableRow key={row.id}>
           <TableCell className="py-1 text-xs"><input type="checkbox" aria-label={`Select ${row.name}`} disabled={busy || loading || row.modelUsage + row.characterUsage + (row.presetUsage ?? 0) > 0} checked={selected.has(row.id)} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(row.id); else next.delete(row.id); return next; })} /></TableCell>
-          <TableCell className="py-1 text-sm"><div className="flex items-center gap-2"><Clapperboard aria-hidden="true" className="h-4 w-4 shrink-0 text-blue-500" />{editing?.id === row.id ? <div className="flex items-center gap-1"><Input aria-label="Animation name" value={editing.name} maxLength={255} disabled={busy} onChange={event => setEditing({ ...editing, name: event.target.value })} className="h-8 text-xs" /><Button size="icon" className="h-8 w-8" aria-label="Save Animation name" disabled={busy || !editing.name.trim()} onClick={() => void save()}><Check className="h-4 w-4" /></Button><Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Cancel rename" disabled={busy} onClick={() => setEditing(null)}><X className="h-4 w-4" /></Button></div> : row.name}</div></TableCell><TableCell className="py-1 text-xs"><button className="text-left underline decoration-dotted" disabled={busy || !!categoryError} onClick={() => setCategoryEditing(row)} aria-label={`Edit categories for ${row.name}`}>{(row.categoryIds ?? []).map(id => categories.find(c => c.id === id)?.name).filter(Boolean).join(', ') || 'Assign'}</button></TableCell><TableCell className="py-1 text-xs">{row.fileName} · #{row.clipIndex + 1}</TableCell><TableCell className="py-1 text-xs uppercase">{row.format}</TableCell><TableCell className="py-1 text-xs">{row.duration.toFixed(2)}s</TableCell><TableCell className="py-1 text-xs">{row.isActive ? <Check aria-label="Active" className="h-4 w-4 text-green-500" /> : <X aria-label="Inactive" className="h-4 w-4 text-gray-500" />}</TableCell><TableCell className="py-1 text-xs">{row.modelUsage} Models · {row.characterUsage} Characters · {row.presetUsage ?? 0} Presets</TableCell><TableCell className="py-1 text-xs">{(row.fileSize / 1024).toFixed(1)} KiB</TableCell>
-          <TableCell className="py-1 text-xs"><div className="flex justify-end gap-1"><Button size="icon" variant="ghost" className="h-8 w-8" aria-label={`Edit ${row.name}`} title="Rename animation" disabled={busy || loading} onClick={() => { setNotice(''); setEditing({ ...row }); }}><Pencil className="h-4 w-4" /></Button><Button variant="ghost" size="icon" className="h-8 w-8" disabled={busy || loading} aria-label={`${row.isActive ? 'Deactivate' : 'Activate'} ${row.name}`} onClick={() => void toggle(row)}>{row.isActive ? <ToggleRight className="h-4 w-4" /> : <ToggleLeft className="h-4 w-4" />}</Button><Button size="icon" variant="ghost" className="h-8 w-8" title="Delete unreferenced animation" aria-label={`Delete ${row.name}`} disabled={busy || loading || row.modelUsage + row.characterUsage + (row.presetUsage ?? 0) > 0} onClick={() => void remove(row)}><Trash2 className="h-4 w-4" /></Button><Button asChild size="icon" variant="ghost" className="h-8 w-8"><a href={row.filePath} target="_blank" rel="noopener noreferrer" title="Open source file" aria-label={`Open source for ${row.name}`}><ExternalLink className="h-4 w-4" /></a></Button></div></TableCell>
+          <TableCell className="py-1 text-sm"><div className="flex items-center gap-2"><Clapperboard aria-hidden="true" className="h-4 w-4 shrink-0 text-blue-500" />{row.name}</div></TableCell><TableCell className="py-1 text-xs"><button className="text-left underline decoration-dotted" disabled={busy || !!categoryError} onClick={() => setCategoryEditing(row)} aria-label={`Edit categories for ${row.name}`}>{(row.categoryIds ?? []).map(id => categories.find(c => c.id === id)?.name).filter(Boolean).join(', ') || 'Assign'}</button></TableCell><TableCell className="py-1 text-xs">{row.fileName} · #{row.clipIndex + 1}</TableCell><TableCell className="py-1 text-xs uppercase">{row.format}</TableCell><TableCell className="py-1 text-xs">{row.duration.toFixed(2)}s</TableCell><TableCell className="py-1 text-xs">{row.isActive ? <Check aria-label="Active" className="h-4 w-4 text-green-500" /> : <X aria-label="Inactive" className="h-4 w-4 text-gray-500" />}</TableCell><TableCell className="py-1 text-xs">{row.modelUsage} Models · {row.characterUsage} Characters · {row.presetUsage ?? 0} Presets</TableCell><TableCell className="py-1 text-xs">{(row.fileSize / 1024).toFixed(1)} KiB</TableCell>
+          <TableCell className="py-1 text-xs"><div className="flex justify-end gap-1"><Button size="icon" variant="ghost" className="h-8 w-8" aria-label={`Edit ${row.name}`} title="Rename animation" disabled={busy || loading} onClick={() => { setNotice(''); setOperationError(''); setEditing({ ...row }); }}><Pencil className="h-4 w-4" /></Button><Button variant="ghost" size="icon" className="h-8 w-8" disabled={busy || loading} aria-label={`${row.isActive ? 'Deactivate' : 'Activate'} ${row.name}`} onClick={() => void toggle(row)}>{row.isActive ? <ToggleRight className="h-4 w-4" /> : <ToggleLeft className="h-4 w-4" />}</Button><Button size="icon" variant="ghost" className="h-8 w-8" title="Delete unreferenced animation" aria-label={`Delete ${row.name}`} disabled={busy || loading || row.modelUsage + row.characterUsage + (row.presetUsage ?? 0) > 0} onClick={() => void remove(row)}><Trash2 className="h-4 w-4" /></Button><Button asChild size="icon" variant="ghost" className="h-8 w-8"><a href={row.filePath} target="_blank" rel="noopener noreferrer" title="Open source file" aria-label={`Open source for ${row.name}`}><ExternalLink className="h-4 w-4" /></a></Button></div></TableCell>
         </TableRow>)}</TableBody></Table>
     </div>
   </div>;
