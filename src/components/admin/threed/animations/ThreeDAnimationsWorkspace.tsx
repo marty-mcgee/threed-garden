@@ -5,7 +5,7 @@ import { Clapperboard, Upload, ArrowUpDown, ArrowUp, ArrowDown, ToggleLeft, Togg
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useAnimationCategories, AnimationCategoryManager, AnimationCategoryEditor } from './AnimationCategories';
+import { useAnimationCategories, AnimationCategoryEditor } from './AnimationCategories';
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '@/components/ui/table';
 
 type UploadResult = { name: string; status: 'Queued' | 'Uploading' | 'Imported' | 'Needs attention'; detail?: string };
@@ -21,7 +21,6 @@ async function request(url: string, init?: RequestInit) {
 // The library owns this workspace. No Model/Character selection or target API is required.
 export function ThreeDAnimationsWorkspace() {
   const [category, setCategory] = useState('');
-  const [manageCategories, setManageCategories] = useState(false);
   const [categoryRefresh, setCategoryRefresh] = useState(0);
   const { categories, error: categoryError } = useAnimationCategories(categoryRefresh);
   const [categoryEditing, setCategoryEditing] = useState<Animation | null>(null);
@@ -130,14 +129,13 @@ export function ThreeDAnimationsWorkspace() {
       <Input aria-label="Search saved animations" placeholder="Search saved animations…" value={search} disabled={busy} onChange={event => { setSearch(event.target.value); setPage(0); }} className="h-7 min-w-48 flex-1 text-xs" />
       <select aria-label="Filter Animations by category" className="h-7 min-w-40 rounded border bg-background px-2 text-xs" disabled={busy || !!categoryError} value={category} onChange={e => { setCategory(e.target.value); setPage(0); }}><option value="">All categories</option>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
       <AdminWorkspaceLink href="/admin/threed/animation-slots" icon={Clapperboard}>Animation Slots</AdminWorkspaceLink>
-      <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setManageCategories(v => !v)}>Manage Categories</Button>
+      <AdminWorkspaceLink href="/admin/threed/animation-categories" icon={Clapperboard}>Animation Categories</AdminWorkspaceLink>
       <Button size="sm" className="h-7 text-xs" disabled={busy} onClick={() => uploadRef.current?.click()}><Upload className="mr-1 h-3 w-3" />Upload Animations</Button>
       <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading} onClick={() => setRefresh(value => value + 1)}>Refresh</Button>
       <AdminWorkspaceLink href="/admin/threed/models" icon={Box}>Models</AdminWorkspaceLink>
       <AdminWorkspaceLink href="/admin/threed/model-textures" icon={Images}>Model Textures</AdminWorkspaceLink>
     </AdminWorkspaceHeader>
-    {categoryError && <p role="alert" className="text-xs text-orange-500">{categoryError}</p>}
-    {manageCategories && <AnimationCategoryManager categories={categories} onChanged={() => { setCategoryRefresh(v => v + 1); setRefresh(v => v + 1); setCategory(''); setPage(0); }} />}
+    {categoryError && <p role="alert" className="text-xs text-destructive">{categoryError}</p>}
     {categoryEditing && <AnimationCategoryEditor key={categoryEditing.id} animation={categoryEditing} categories={categories} onClose={() => setCategoryEditing(null)} onSaved={() => { setCategoryEditing(null); setRefresh(v => v + 1); }} />}
     {notice && <p role="status" className="shrink-0 text-xs">{notice}</p>}
     {uploadResults.length > 0 && <section aria-label="Animation import results" className="shrink-0 rounded-lg border p-2 text-xs">

@@ -12,13 +12,16 @@ export async function animationResponse(operation: (userId: string) => Promise<u
     if (error instanceof AnimationLibraryError) return NextResponse.json({ success: false, error: error.message }, { status: error.status });
     let cause: unknown = error;
     for (let depth = 0; depth < 5 && cause && typeof cause === 'object'; depth++) {
-      const current = cause as { code?: string; cause?: unknown };
+      const current = cause as { code?: string; constraint?: string; cause?: unknown };
       if (current.code === '42P01' || current.code === '42703') {
         return NextResponse.json({
           success: false,
           code: 'ANIMATION_SCHEMA_NOT_READY',
           error: 'Animations Library database setup is incomplete. Apply the approved Animations schema to this environment, then refresh.',
         }, { status: 503 });
+      }
+      if (current.code === '23503' && current.constraint === 'animation_action_slot_category_owner_fk') {
+        return NextResponse.json({ success: false, error: 'Category is referenced by Action Slots. Reassign them to another Category or Uncategorized before deleting.' }, { status: 409 });
       }
       if (current.code === '23503' || current.code === '23505') {
         return NextResponse.json({ success: false, error: 'Animation reference conflict. Refresh and try again.' }, { status: 409 });

@@ -12,7 +12,7 @@ const exported = {};
 vm.runInNewContext(ts.transpileModule(fs.readFileSync('src/components/admin/threed/animations/CharacterAnimationAssignments.tsx', 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX },
 }).outputText, {
-  exports: exported, console, AbortController, setTimeout: callback => { effects.push(callback); return 1; }, clearTimeout() {},
+  exports: exported, console, confirm: () => false, AbortController, setTimeout: callback => { effects.push(callback); return 1; }, clearTimeout() {},
   fetch: async (url, init) => {
     calls.push({ url, ...init });
     if (init.method && fail) return { ok: false, json: async () => ({ error: 'Test failure' }) };
@@ -118,6 +118,15 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
   find(render(), node => node.type === 'select' && node.props.id?.startsWith('animation-')).props.onChange({ target: { value: '46' } });
   find(render(), node => node.type === 'Button' && node.props.children === 'Save').props.onClick(); await flush();
   assert.equal(find(render(), node => node.type === 'select' && node.props.id?.startsWith('animation-')).props.value, '46');
+  assert.match(visibleText(render()), /Saved:/);
+  const reloadBefore = states[9];
+  find(render(), node => node.type === 'Button' && node.props.children === 'Refresh assignments').props.onClick();
+  assert.equal(states[9],reloadBefore,'Cancelled refresh preserves state');
+  assert.equal(states[1].pickFruit,'46','Cancelled refresh preserves unsaved draft');
+  assert(find(render(),node => node.props?.role === 'alert' && visibleText(node).includes('Test failure')),'Save error is presented as an alert');
+  find(render(),node => node.type==='Button' && node.props.children==='Discard change').props.onClick();
+  assert.equal(states[1].pickFruit,undefined,'Discard restores saved choice');
+  find(render(), node => node.type === 'select' && node.props.id?.startsWith('animation-')).props.onChange({target:{value:'46'}});
   const customKey = 'custom_' + 'a'.repeat(32);
   states[0].slots = [{ id: 1, actionKey: customKey, name: 'User Action', categoryId: 1, categoryName: 'User Category', isActive: true }];
   assert.match(visibleText(render()), /User Action/);

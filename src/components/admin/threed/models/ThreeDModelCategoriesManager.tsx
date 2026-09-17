@@ -56,6 +56,7 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
   const [listError, setListError] = useState('');
   const [revision, setRevision] = useState(0);
   const mutationLock = useRef(false);
+  const [operationError, setOperationError] = useState('');
 
   useEffect(() => {
     const controller = new AbortController();
@@ -97,12 +98,14 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
   }, []);
 
   function beginCreate() {
+    setOperationError('');
     setOpen(true);
     setEditing(null);
     setForm(EMPTY_FORM);
   }
 
   function beginEdit(category: ThreeDModelCategoryOption) {
+    setOperationError('');
     setOpen(true);
     setEditing(category);
     setForm({
@@ -119,7 +122,7 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
     if (mutationLock.current) return;
     if (!form.name.trim()) return showToast('Category name is required', 'error');
     mutationLock.current = true;
-    setSaving(true);
+    setSaving(true); setOperationError('');
     try {
       const response = await fetch(`/api/threed/model-categories${editing ? `?id=${editing.id}` : ''}`, {
         method: editing ? 'PATCH' : 'POST',
@@ -143,7 +146,7 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
       setRevision((value) => value + 1);
       onChanged?.();
     } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Failed to save category', 'error');
+      setOperationError(error instanceof Error ? error.message : 'Failed to save category');
     } finally {
       mutationLock.current = false;
       setSaving(false);
@@ -154,7 +157,7 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
     if (mutationLock.current || !targets.length) return;
     if (!confirm(`Delete ${targets.length} categor${targets.length === 1 ? 'y' : 'ies'}?\n${targets.map((entry) => entry.name).join('\n')}\nModel records remain. Categories with children cannot be deleted.`)) return;
     mutationLock.current = true;
-    setDeleting(true);
+    setDeleting(true); setOperationError('');
     const errors: string[] = [];
     let deleted = 0;
     try {
@@ -166,7 +169,7 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
           deleted++;
         } catch (error) { errors.push(`${category.name}: ${error instanceof Error ? error.message : 'Deletion not confirmed'}`); }
       }
-      setReport(`${deleted} of ${targets.length} deleted. ${errors.join(' · ')}`);
+      setReport(`${deleted} of ${targets.length} deleted.`); setOperationError(errors.join(' · '));
       await loadCategories();
       setRevision((value) => value + 1);
       if (deleted) onChanged?.();
@@ -192,6 +195,7 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
           <Input aria-label="Search categories" placeholder="Search name, slug or description…" value={search} className="h-7 min-w-48 flex-1 text-xs" onChange={(event) => { setPage(0); setSelected(new Set()); setSearch(event.target.value); }} />
           <Button size="sm" className="h-7 text-xs" onClick={beginCreate}><Plus className="h-3 w-3" />Add Category</Button>
           <AdminWorkspaceLink href="/admin/threed/models" icon={ArrowLeft}>Models</AdminWorkspaceLink>
+          <AdminWorkspaceLink href="/admin/threed/animation-categories" icon={FolderTree}>Animation Categories</AdminWorkspaceLink>
           <AdminWorkspaceLink href="/admin/threed/animations" icon={Clapperboard}>Animations Library</AdminWorkspaceLink>
           <AdminWorkspaceLink href="/admin/threed/model-files" icon={FolderOpen}>Model Files</AdminWorkspaceLink>
           <AdminWorkspaceLink href="/admin/threed/model-textures" icon={Images}>Model Textures</AdminWorkspaceLink>
@@ -215,7 +219,8 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
           <Button variant="outline" size="sm" className="text-xs" disabled={loading || deleting || saving || (page + 1) * pageSize >= total} onClick={() => setPage(Math.max(0, Math.ceil(total / pageSize) - 1))}>Last</Button>
         </div>
       </nav>
-      {report && <p role="status" className="max-h-24 shrink-0 overflow-auto text-xs">{report}</p>}
+      {report && <p role="status" className="max-h-24 shrink-0 overflow-auto text-xs text-green-500">{report}</p>}
+      {!open && operationError && <p role="alert" className="max-h-24 overflow-auto text-xs text-destructive">{operationError}</p>}
       {listError && <p role="alert" className="text-sm text-destructive">{listError} <button className="underline" onClick={() => setRevision((value) => value + 1)}>Retry</button></p>}
       <div role="region" aria-label="Category records" tabIndex={0} className="min-h-0 flex-1 overflow-auto overscroll-contain rounded-lg border [&>[data-slot=table-container]]:overflow-visible">
         <Table className="min-w-[800px]">
@@ -260,6 +265,7 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{editing ? 'Update Category' : 'Create Category'}
               </Button>
           </div>
+          {operationError && <p role="alert" className="text-sm text-destructive">{operationError}</p>}
         </DialogContent>
       </Dialog>
     </div>

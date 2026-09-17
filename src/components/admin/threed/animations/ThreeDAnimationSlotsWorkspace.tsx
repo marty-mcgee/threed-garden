@@ -78,6 +78,7 @@ export function ThreeDAnimationSlotsWorkspace() {
       <span className="rounded bg-muted px-2 text-xs">{error ? '—' : filtered.length}</span>
       <Input aria-label="Search Animation Slots" placeholder="Search slots by name or Category…" value={search} disabled={busy} onChange={event => { setSearch(event.target.value); setPage(0); }} className="h-7 min-w-48 flex-1 text-xs" />
       <Button size="sm" className="h-7 text-xs" disabled={busy || loading || !!draft || !!error} onClick={() => { setOperationError(''); setNotice(''); setNewCategory(null); setDraft({ name: '', categoryId: null, isActive: true }); }}><Plus className="mr-1 h-3 w-3" />Add Slot</Button>
+      <AdminWorkspaceLink href="/admin/threed/animation-categories" icon={Clapperboard}>Animation Categories</AdminWorkspaceLink>
       <AdminWorkspaceLink href="/admin/threed/animations" icon={Clapperboard}>Animations Library</AdminWorkspaceLink>
       <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading || !!draft} onClick={() => setRefresh(value => value + 1)}>Refresh</Button>
     </AdminWorkspaceHeader>

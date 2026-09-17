@@ -1,6 +1,6 @@
-import { and, asc, eq, inArray } from 'drizzle-orm';
+import { and, asc, eq, inArray, sql } from 'drizzle-orm';
 import { db } from '@/lib/db/client';
-import { threedAnimationCategories as categories, threedAnimationCategoryAssignments as assignments, threedAnimations as clips } from '@/lib/schema/threed';
+import { threedAnimationActionSlots as slots, threedAnimationCategories as categories, threedAnimationCategoryAssignments as assignments, threedAnimations as clips } from '@/lib/schema/threed';
 import { AnimationLibraryError, objectInput, positiveId } from './contracts';
 export function parseCategory(value: unknown) {
   const body = objectInput(value, ['name', 'id']);
@@ -8,7 +8,7 @@ export function parseCategory(value: unknown) {
   return { name: body.name.trim(), id: body.id === undefined ? null : positiveId(body.id) };
 }
 export async function listCategories(userId: string) {
-  return { data: await db.select().from(categories).where(eq(categories.userId, userId)).orderBy(asc(categories.name)).limit(500) };
+  return { data: await db.select({ id: categories.id, name: categories.name, slotUsage: sql<number>`(select count(*)::integer from ${slots} s where s.category_id = ${categories.id} and s.user_id = ${categories.userId})`, clipUsage: sql<number>`(select count(*)::integer from ${assignments} a where a.category_id = ${categories.id} and a.user_id = ${categories.userId})` }).from(categories).where(eq(categories.userId, userId)).orderBy(asc(categories.name)).limit(500) };
 }
 export async function saveCategory(userId: string, value: unknown) {
   const input = parseCategory(value);

@@ -9,6 +9,8 @@ This is a **Dual-Surface Platform**:
 
 > **Current production release:** `v0.19.32 — ThreeD Animations: Custom Action Slots + Preview Workspace`, package `0.19.32`, commit `ee508b5`, deployment User-confirmed. User-provided console output confirms successful `bun db:generate`, `bun db:push` and `npm run build`. See the [release notes](docs/releases/v0.19.32.md) and [development record](docs/plans/v0.19.32.md).
 
+> **In development:** `v0.19.33 — ThreeD Animations: Slots, Categories + Assignment UX`. See the [development plan](docs/plans/v0.19.33.md) and [release outline](docs/releases/v0.19.33.md).
+
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 
 The released **v0.19.10c** adds OBJ importing with MTL material libraries and their texture images, inline/window previews, and saved single-Model material rendering. See the [implementation and validation](docs/plans/v0.19.10c.md) and [completed production handoff](docs/plans/v0.19.10c-release.md).

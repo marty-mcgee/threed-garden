@@ -99,7 +99,7 @@ export function CharacterAnimationAssignments(props: AssignmentTargetProps) {
   }, [page, search, reload, category]);
   async function save(actionKey: string, value: string) {
     if (busy) return;
-    setBusy(true); setNotice('');
+    setBusy(true); setNotice(''); setError('');
     try {
       if (value === 'inherit') await request(`${endpoint}&actionKey=${encodeURIComponent(actionKey)}`, { method: 'DELETE' });
       else await request('/api/threed/animation-assignments', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ target, targetId, actionKey, mode: value === 'disabled' ? 'disabled' : 'assigned', animationId: value === 'disabled' ? null : Number(value) }) });
@@ -107,20 +107,25 @@ export function CharacterAnimationAssignments(props: AssignmentTargetProps) {
       setMapping(result.data);
       setDrafts(previous => { const next = { ...previous }; delete next[actionKey]; return next; });
       setNotice(`${mapping?.slots?.find(slot => slot.actionKey === actionKey)?.name ?? label(actionKey)} assignment saved.`);
-    } catch (err) { setNotice(`${err instanceof Error ? err.message : 'Could not save'}. Refresh assignments to verify before retrying.`); }
+    } catch (err) { setError(`${err instanceof Error ? err.message : 'Could not save'}. Refresh assignments to verify before retrying.`); }
     finally { setBusy(false); }
   }
   const [slotSearch, setSlotSearch] = useState('');
-  const [slotGroup, setSlotGroup] = useState('');
+  const [slotCategory, setSlotCategory] = useState('');
   const slotName = (key: string) => mapping?.slots?.find(slot => slot.actionKey === key)?.name ?? label(key);
+  const dirtyCount = Object.entries(drafts).filter(([key, value]) => value !== choice(mapping?.assignments.find(row => row.actionKey === key))).length;
+  function refreshAssignments() {
+    if (dirtyCount && !confirm('Refresh assignments and discard unsaved changes?')) return;
+    setNotice(''); setReload(value => value + 1);
+  }
   const actionKeys = [...new Set([...(mapping?.slots ?? []).slice().sort((a, b) => (a.categoryName ?? 'Uncategorized').localeCompare(b.categoryName ?? 'Uncategorized') || a.name.localeCompare(b.name)).map(slot => slot.actionKey), ...LIBRARY_ACTIONS, ...(mapping?.assignments ?? []).map(row => row.actionKey), ...(mapping?.inherited ?? []).map(row => row.actionKey)])].filter(key => {
     const slot = mapping?.slots?.find(slot => slot.actionKey === key);
     const group = slot ? slot.categoryName ?? 'Uncategorized' : 'Built-in Actions';
-    return (!slotGroup || slotGroup === group) && `${slotName(key)} ${group}`.toLowerCase().includes(slotSearch.trim().toLowerCase());
+    return (!slotCategory || slotCategory === group) && `${slotName(key)} ${group}`.toLowerCase().includes(slotSearch.trim().toLowerCase());
   });
   const available = new Map([...previewClips, ...clips, ...(mapping?.animations ?? [])].map(clip => [clip.id, clip]));
   return <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-2">
-    <div className="flex shrink-0 flex-wrap items-start gap-3">
+    <div className="flex shrink-0 flex-wrap items-center gap-2">
     {mapping && <AnimationPresets key={`${target}-${targetId}`} target={target} targetId={targetId} slots={mapping.slots ?? []} assignments={mapping.assignments} inherited={mapping.inherited} dirty={Object.entries(drafts).some(([key, value]) => value !== choice(mapping.assignments.find(row => row.actionKey === key)))} disabled={busy} onBusyChange={setBusy} onApplied={async () => { const result = await request(endpoint); setMapping(result.data); setDrafts({}); }} />}
     <details className="shrink-0 text-xs text-muted-foreground">
       <summary className="cursor-pointer">Assignment help</summary>
@@ -137,17 +142,20 @@ export function CharacterAnimationAssignments(props: AssignmentTargetProps) {
       </p>}
     </div>
     </details>
+    <nav aria-label="Animation management" className="flex shrink-0 flex-wrap items-center gap-2 lg:ml-auto">
+      <Button asChild variant="outline" size="sm" className="h-8 text-xs"><Link href="/admin/threed/animation-slots">Manage Slots</Link></Button>
+      <Button asChild variant="outline" size="sm" className="h-8 text-xs"><Link href="/admin/threed/animation-categories">Animation Categories</Link></Button>
+    </nav>
     </div>
-    <Button asChild variant="outline" size="sm" className="self-start"><Link href="/admin/threed/animation-slots">Manage Slots</Link></Button>
     <div className="flex shrink-0 flex-wrap items-center gap-2">
       <Input aria-label="Search animation choices" placeholder="Search animation files or names…" value={search} disabled={busy} onChange={event => { setSearch(event.target.value); setPage(0); }} className="h-8 min-w-0 w-64 max-w-full text-xs" />
       <select aria-label="Filter animation choices by category" className="h-8 min-w-40 rounded border bg-background px-2 text-xs" value={category} disabled={busy || !!categoryError} onChange={e => { setCategory(e.target.value); setPage(0); }}><option value="">All categories</option>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
       <Button asChild variant="outline" size="sm"><Link href="/admin/threed/animations">Animations Library</Link></Button>
-      <Button variant="outline" size="sm" disabled={busy} onClick={() => setReload(value => value + 1)}>Refresh assignments</Button>
+      <Button variant="outline" size="sm" disabled={busy} onClick={refreshAssignments}>Refresh assignments</Button>
     </div>
     <div className="flex shrink-0 flex-wrap items-center gap-2 text-xs"><span>{loading ? 'Loading choices…' : `${total} matching clips · page ${page + 1}`}</span><Button size="sm" variant="ghost" disabled={busy || loading || page === 0} onClick={() => setPage(value => value - 1)}>Previous choices</Button><Button size="sm" variant="ghost" disabled={busy || loading || (page + 1) * 200 >= total} onClick={() => setPage(value => value + 1)}>Next choices</Button></div>
-    {notice && <p role="status" className="text-sm">{notice}</p>}
-    {categoryError && <p role="alert" className="text-xs text-orange-500">{categoryError}</p>}
+    {notice && <p role="status" className="text-sm text-green-500">{notice}</p>}
+    {categoryError && <p role="alert" className="text-xs text-destructive">{categoryError}</p>}
     {(error || libraryError) && <p role="alert" className="text-sm text-destructive">{error || libraryError}</p>}
     <div className="grid min-h-0 min-w-0 flex-1 grid-cols-1 gap-3 overflow-y-auto lg:grid-cols-2 lg:overflow-hidden">
     <aside className="flex min-h-[300px] min-w-0 flex-col rounded border bg-background/50 lg:min-h-0" aria-label={`${target} animation preview`}>
@@ -174,8 +182,8 @@ export function CharacterAnimationAssignments(props: AssignmentTargetProps) {
     {!mapping ? <p>{error ? 'Assignments unavailable. Use Refresh assignments to retry.' : 'Loading assignments…'}</p> : <div className="min-h-0 min-w-0 space-y-2 lg:overflow-y-auto lg:pr-2" aria-label="Animation action assignments">
       <div className="flex flex-wrap items-center gap-2 rounded border p-2">
         <Input aria-label="Search Action Slots" placeholder="Search action slots…" className="h-8 min-w-0 flex-1 text-xs" value={slotSearch} disabled={busy} onChange={event => setSlotSearch(event.target.value)} />
-        <select aria-label="Filter Action Slots by category" className="h-8 max-w-full rounded border bg-background px-2 text-xs" value={slotGroup} disabled={busy} onChange={event => setSlotGroup(event.target.value)}><option value="">All action categories</option>{[...new Set(['Built-in Actions', ...(mapping.slots ?? []).map(slot => (slot.categoryName ?? 'Uncategorized')), ...(slotGroup ? [slotGroup] : [])])].map(group => <option key={group}>{group}</option>)}</select>
-        <span className="text-xs text-muted-foreground">{actionKeys.length} slots</span>
+        <select aria-label="Filter Action Slots by category" className="h-8 max-w-full rounded border bg-background px-2 text-xs" value={slotCategory} disabled={busy} onChange={event => setSlotCategory(event.target.value)}><option value="">All action categories</option>{[...new Set(['Built-in Actions', ...(mapping.slots ?? []).map(slot => (slot.categoryName ?? 'Uncategorized')), ...(slotCategory ? [slotCategory] : [])])].map(group => <option key={group}>{group}</option>)}</select>
+        <span className="text-xs text-muted-foreground">{actionKeys.length} slots · {dirtyCount} unsaved</span>
       </div>
       {!actionKeys.length && <p className="p-2 text-sm text-muted-foreground">No Action Slots match these filters.</p>}
       {actionKeys.map(actionKey => {
@@ -203,6 +211,8 @@ export function CharacterAnimationAssignments(props: AssignmentTargetProps) {
             <Button size="sm" variant="outline" className="h-8 text-xs" disabled={busy || loading || !!libraryError || !canPreview} onClick={() => { if (canPreview && previewId !== null) setPreview({ actionKey, animationId: previewId }); }}>Preview animation</Button>
             <Button size="sm" className="h-8 text-xs" disabled={busy || value === saved || loading || !!libraryError} onClick={() => void save(actionKey, value)}>Save</Button>
           </div>
+          <p className="mt-1 text-xs text-muted-foreground">Saved: {effective?.source === 'character' ? 'Character override' : effective?.source === 'model' ? target === 'model' ? 'Model default' : 'Inherited Model default' : slot ? 'No assignment' : 'Existing behavior'} · {effective?.state ?? 'Unavailable'}{effective?.animationId ? ` · ${available.get(effective.animationId)?.name ?? `Clip #${effective.animationId}`}` : ''}</p>
+          {value !== saved && <Button size="sm" variant="ghost" className="h-7 text-xs" disabled={busy} onClick={() => setDrafts(previous => { const next = { ...previous }; delete next[actionKey]; return next; })}>Discard change</Button>}
           <details className="mt-1 text-xs text-muted-foreground"><summary className="cursor-pointer">Assignment details</summary>
           <p className="mt-1 break-words text-xs text-muted-foreground">
             {canPreview ? `Preview ${value === 'inherit' ? 'Model default' : 'selection'}: ${previewClip.name} · ${previewClip.fileName}`

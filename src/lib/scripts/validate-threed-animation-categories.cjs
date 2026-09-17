@@ -19,12 +19,15 @@ for (const operation of ['select', 'insert', 'update', 'delete']) db[operation] 
   chain.then = (resolve, reject) => { assert.ok(queue.length); queries.push(query); return Promise.resolve(queue.shift()).then(resolve, reject); };
   return chain;
 };
+orm.sql = (strings, ...args) => ({ strings: [...strings], args });
 db.transaction = work => work(db);
 const service = load('src/lib/services/threed/animations/categories.ts', { 'drizzle-orm': orm, '@/lib/db/client': { db }, '@/lib/schema/threed': schema, './contracts': contracts });
 for (const body of [{ name: '' }, { name: 'a'.repeat(121) }, { name: 'Farming', userId: 'other' }]) assert.throws(() => service.parseCategory(body));
 assert.equal(service.parseCategory({ name: ' Farming ' }).name, 'Farming');
 for (const categoryIds of [[1, 1], [-1], ['bad'], Array(101).fill(1)]) assert.throws(() => service.parseCategoryAssignment({ animationId: 1, categoryIds }));
 (async () => {
+  queue = [[{ id: 2, name: 'Shared', slotUsage: 1, clipUsage: 2 }]]; queries = [];
+  await service.listCategories('owner'); assert.match(JSON.stringify(queries[0].where), /owner/); assert.equal(queries[0].limit[0],500);
   queue = [[]]; await assert.rejects(service.assignCategories('owner', { animationId: 1, categoryIds: [2] }), e => e.status === 404);
   queue = [[{ id: 1 }], []]; await assert.rejects(service.assignCategories('owner', { animationId: 1, categoryIds: [2] }), e => e.status === 400);
   assert.ok(!queries.some(q => q.operation === 'delete'));
