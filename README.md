@@ -7,9 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production release:** `v0.19.31 — ThreeD Dashboard: Character Animation Groups + Transparent Panels`, package `0.19.31`, deployment User-confirmed. See the [release notes](docs/releases/v0.19.31.md) and [development record](docs/plans/v0.19.31.md).
-
-> **Release candidate:** `v0.19.32 — ThreeD Animations: Custom Action Slots + Preview Workspace`. See the [release notes and handoff](docs/releases/v0.19.32.md) and [development record](docs/plans/v0.19.32.md).
+> **Current production release:** `v0.19.32 — ThreeD Animations: Custom Action Slots + Preview Workspace`, package `0.19.32`, commit `ee508b5`, deployment User-confirmed. User-provided console output confirms successful `bun db:generate`, `bun db:push` and `npm run build`. See the [release notes](docs/releases/v0.19.32.md) and [development record](docs/plans/v0.19.32.md).
 
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 
