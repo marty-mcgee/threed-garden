@@ -2,9 +2,9 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Current production: **v0.19.36 — Dashboard Home: Project Discovery UI/UX**, deployment User-confirmed.
+Current production: **v0.19.37 — ThreeD Projects: Save + Restore State**, deployment User-confirmed.
 
-- [v0.19.37 — ThreeD Projects: Save + Restore State](v0.19.37.md) — prepared checkpoint, deployment pending
+- [v0.19.37 — ThreeD Projects: Save + Restore State](v0.19.37.md) — production User-confirmed
 
 - [v0.19.36 — Dashboard Home: Project Discovery UI/UX](v0.19.36.md) — production User-confirmed
 

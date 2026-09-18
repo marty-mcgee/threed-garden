@@ -7,9 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production release:** `v0.19.36 — Dashboard Home: Project Discovery UI/UX`, package `0.19.36`, deployment User-confirmed. See the [release notes](docs/releases/v0.19.36.md) and [development record](docs/plans/v0.19.36.md).
-
-> **Prepared release:** `v0.19.37 — ThreeD Projects: Save + Restore State`, package `0.19.37`. User accepted the checkpoint; deployment pending. See the [release notes](docs/releases/v0.19.37.md) and [state coverage](docs/plans/v0.19.37.md).
+> **Current production release:** `v0.19.37 — ThreeD Projects: Save + Restore State`, package `0.19.37`, deployment User-confirmed. See the [release notes](docs/releases/v0.19.37.md) and [development record](docs/plans/v0.19.37.md).
 
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 
