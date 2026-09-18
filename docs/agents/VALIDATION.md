@@ -521,3 +521,7 @@ The Action Slot command also executes the actual dedicated Admin workspace with 
 ### v0.19.33 Category and assignment UX
 
 `validate:threed-animation-categories` includes actual Category workspace handlers with mocked React/network for client paging/search/sort, Slot-reference exclusions, page-local partial deletion and create/edit/row-delete identity. The existing Category response remains bounded to 500 rows. Assignment fixtures check dirty Refresh cancellation and per-row discard; TypeScript and relevant existing Library/Slot/Preset/runtime regression checks remain required. Browser dialog focus, touch layout and live count execution remain manual gates in `docs/plans/v0.19.33.md`.
+
+### v0.19.38 Bed-relative Planting placement
+
+Run `npm run validate:threed-bed-planting-bounds`, Runtime Marker and Library-placement validations, TypeScript and diff checks. The bounds fixture executes shared geometry and the real runtime builder for rotation/scale, surface height, spacing overflow, active assignment identity, legacy recovery and review of layouts that cannot fit. Server transaction/auth behavior and browser select/focus remain manual checks in `docs/plans/v0.19.38.md`; offline geometry tests do not certify live database execution.

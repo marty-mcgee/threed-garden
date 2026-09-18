@@ -274,6 +274,8 @@ function UnifiedMapPageInner() {
   const [movingModelInstance, setMovingModelInstance] = useState<{
     id: number;
     name: string;
+    planting?: {bedId:number|null;modelScale:number};
+    module?: 'beds' | 'farmbots' | 'characters';
   } | null>(null);
   const [updatingBedMarkerId, setUpdatingBedMarkerId] = useState<number | null>(null);
   const [deletingBedMarkerId, setDeletingBedMarkerId] = useState<number | null>(null);
@@ -808,6 +810,9 @@ function UnifiedMapPageInner() {
         throw new Error(result?.error || `Project save failed (${response.status})`);
       }
 
+      setData(current => applyThreeDProjectClientTransaction(current, {
+        markers: {upsert: result.data.markers as ProjectThreeDMarkerRecord[]},
+      }));
       setLastUpdated(new Date());
       showToastRef.current(
         `ThreeD Project saved (${result.data.markerCount} markers)`,
@@ -1703,19 +1708,11 @@ function UnifiedMapPageInner() {
     setPlantingPlacementActive(false);
   }, []);
 
-  const handleThreeDModelReposition = useCallback(async (
-    position: { x: number; y: number; z: number },
-  ) => {
-    if (!movingModelInstance) return;
-    const moved = await handleMoveModelInstance(movingModelInstance.id, position);
-    if (moved) setMovingModelInstance(null);
-  }, [handleMoveModelInstance, movingModelInstance]);
-
   const handleUpdateCharacterPosition = useCallback(async (
     markerId: number,
     position: { positionX: number; positionY: number; positionZ: number; characterPhysics?: import("@/lib/services/threed/characters/character-physics").CharacterPhysics },
   ) => {
-    if (updatingCharacterMarkerId != null || controlledCharacterId != null) return;
+    if (updatingCharacterMarkerId != null || controlledCharacterId != null) return false;
     const sourceId = data.threed.raw?.projectThreedMarkers?.find((marker) => marker.id === markerId)?.sourceAssetId;
     const rotation = sourceId == null ? null
       : projectRuntimeMarkerRegistryRef.current?.resolve('characters', sourceId)?.liveRotation;
@@ -1747,6 +1744,7 @@ function UnifiedMapPageInner() {
         result.data as ProjectThreeDMarkerRecord,
       ));
       showToastRef.current('Character position updated', 'success');
+      return true;
     } catch (error) {
       console.error('Failed to update Project Character position', {
         errorName: error instanceof Error ? error.name : 'UnknownError',
@@ -1755,6 +1753,7 @@ function UnifiedMapPageInner() {
         error instanceof Error ? error.message : 'Failed to update Character position',
         'error',
       );
+      return false;
     } finally {
       setUpdatingCharacterMarkerId(null);
     }
@@ -1822,7 +1821,7 @@ function UnifiedMapPageInner() {
       rotation: number;
     },
   ) => {
-    if (updatingBedMarkerId != null || deletingBedMarkerId != null) return;
+    if (updatingBedMarkerId != null || deletingBedMarkerId != null) return false;
     setUpdatingBedMarkerId(markerId);
     try {
       const response = await fetch(`/api/project/threed-markers?id=${markerId}`, {
@@ -1836,7 +1835,7 @@ function UnifiedMapPageInner() {
       }
 
       setData((current) => applyThreeDProjectClientTransaction(current, {
-        markers: { upsert: [result.data as ProjectThreeDMarkerRecord] },
+        markers: { upsert: [result.data as ProjectThreeDMarkerRecord, ...(result.affectedMarkers ?? [])] },
       }));
       setSelectedMarker((current: any) => reconcileSelectedProjectMarker(
         current,
@@ -1844,6 +1843,7 @@ function UnifiedMapPageInner() {
         result.data as ProjectThreeDMarkerRecord,
       ));
       showToastRef.current('Project Bed instance updated', 'success');
+      return true;
     } catch (error) {
       console.error('Failed to update Project Bed instance', {
         errorName: error instanceof Error ? error.name : 'UnknownError',
@@ -1852,6 +1852,7 @@ function UnifiedMapPageInner() {
         error instanceof Error ? error.message : 'Failed to update Project Bed instance',
         'error',
       );
+      return false;
     } finally {
       setUpdatingBedMarkerId(null);
     }
@@ -1915,7 +1916,7 @@ function UnifiedMapPageInner() {
       rotation: number;
     },
   ) => {
-    if (updatingFarmBotMarkerId != null || deletingFarmBotMarkerId != null) return;
+    if (updatingFarmBotMarkerId != null || deletingFarmBotMarkerId != null) return false;
     setUpdatingFarmBotMarkerId(markerId);
     try {
       const response = await fetch(`/api/project/threed-markers?id=${markerId}`, {
@@ -1936,6 +1937,7 @@ function UnifiedMapPageInner() {
         result.data as ProjectThreeDMarkerRecord,
       ));
       showToastRef.current('Project FarmBot instance updated', 'success');
+      return true;
     } catch (error) {
       console.error('Failed to update Project FarmBot instance', {
         errorName: error instanceof Error ? error.name : 'UnknownError',
@@ -1944,6 +1946,7 @@ function UnifiedMapPageInner() {
         error instanceof Error ? error.message : 'Failed to update Project FarmBot instance',
         'error',
       );
+      return false;
     } finally {
       setUpdatingFarmBotMarkerId(null);
     }
@@ -1996,13 +1999,14 @@ function UnifiedMapPageInner() {
   const handleUpdatePlantingInstance = useCallback(async (
     markerId: number,
     input: {
+      bedId?: number | null;
       modelScale: number;
       positionX: number;
       positionY: number;
       positionZ: number;
     },
   ) => {
-    if (updatingPlantingMarkerId != null || deletingPlantingMarkerId != null) return;
+    if (updatingPlantingMarkerId != null || deletingPlantingMarkerId != null) return false;
     setUpdatingPlantingMarkerId(markerId);
     try {
       const response = await fetch(`/api/project/threed-markers?id=${markerId}`, {
@@ -2025,6 +2029,7 @@ function UnifiedMapPageInner() {
         result.data as ProjectThreeDMarkerRecord,
       ));
       showToastRef.current('Project Planting instance updated', 'success');
+      return true;
     } catch (error) {
       console.error('Failed to update Project Planting instance', {
         errorName: error instanceof Error ? error.name : 'UnknownError',
@@ -2033,10 +2038,52 @@ function UnifiedMapPageInner() {
         error instanceof Error ? error.message : 'Failed to update Project Planting instance',
         'error',
       );
+      return false;
     } finally {
       setUpdatingPlantingMarkerId(null);
     }
   }, [deletingPlantingMarkerId, updatingPlantingMarkerId]);
+
+  const handleMovePlantingToggle = useCallback((markerId:number, input:{bedId:number|null;modelScale:number}) => {
+    const marker = data.threed.raw?.projectThreedMarkers?.find(record=>record.id===markerId && record.markerType==='plantings');
+    if (!marker) return;
+    setMovingModelInstance(current=>current?.id===markerId && current.planting ? null : {id:markerId,name:marker.name || 'Planting',planting:input});
+    setViewMode('3d');
+    setPlacementModel(null); setPlacementCharacter(null); setPlacementFarmBot(null);
+    setBedPlacementActive(false); setPlantingPlacementActive(false);
+  }, [data.threed.raw]);
+
+  const handleMoveModuleToggle = useCallback((markerId:number) => {
+    const marker = data.threed.raw?.projectThreedMarkers?.find(record=>record.id===markerId);
+    if (!marker || !['beds','farmbots','characters'].includes(marker.markerType)) return;
+    if (marker.markerType === 'characters' && controlledCharacterId != null) return;
+    setMovingModelInstance(current=>current?.id===markerId && current.module ? null : {id:markerId,name:marker.name,module:marker.markerType as 'beds'|'farmbots'|'characters'});
+    setViewMode('3d'); setPlacementModel(null); setPlacementCharacter(null); setPlacementFarmBot(null);
+    setBedPlacementActive(false); setPlantingPlacementActive(false);
+  }, [data.threed.raw,controlledCharacterId]);
+
+  const handleThreeDModelReposition = useCallback(async (position:{x:number;y:number;z:number}) => {
+    if (!movingModelInstance) return;
+    const point = {positionX:position.x,positionY:position.y,positionZ:position.z};
+    let moved = false;
+    if (movingModelInstance.module) {
+      const marker = buildThreeDRuntimeMarkerResult(data.threed.raw).markers.find(marker=>Number(marker.data?.projectMarkerId)===movingModelInstance.id);
+      if (!marker) return;
+      if (movingModelInstance.module === 'characters') {
+        moved = await handleUpdateCharacterPosition(movingModelInstance.id,point);
+      } else {
+        const d = marker.data ?? {};
+        const farmbot = movingModelInstance.module === 'farmbots';
+        const input = {...point,widthFeet:Number(d.widthFeet ?? d.width ?? (farmbot?3:4)),lengthFeet:Number(d.lengthFeet ?? d.length ?? d.depth ?? (farmbot?6:8)),heightFeet:Number(d.heightFeet ?? (farmbot?3:1)),scale:Number(d.scale ?? 1),color:String(d.color ?? marker.color ?? (farmbot?'#4B5563':'#8B5E3C')),rotation:Number(d.rotation ?? 0)};
+        moved = farmbot ? await handleUpdateFarmBotInstance(movingModelInstance.id,input) : await handleUpdateBedInstance(movingModelInstance.id,input);
+      }
+    } else {
+      moved = movingModelInstance.planting
+        ? await handleUpdatePlantingInstance(movingModelInstance.id,{...movingModelInstance.planting,...point})
+        : await handleMoveModelInstance(movingModelInstance.id,position);
+    }
+    if (moved) setMovingModelInstance(null);
+  }, [movingModelInstance,data.threed.raw,handleUpdatePlantingInstance,handleMoveModelInstance,handleUpdateCharacterPosition,handleUpdateBedInstance,handleUpdateFarmBotInstance]);
 
   const handleDeletePlantingInstance = useCallback(async (
     markerId: number,
@@ -2826,6 +2873,8 @@ function UnifiedMapPageInner() {
       >
       <DetailsCard
         selected={selectedMarker || selectedIncident}
+        projectMarkers={projectRuntimeMarkers}
+        onSelectProjectMarker={focusProjectAsset}
         projectId={selectedProjectId}
         leftOffsetRem={isLeftSceneWorkspaceOpen ? 18.75 : 0.75}
         onClose={() => { setSelectedMarker(null); setSelectedIncident(null); }}
@@ -2861,7 +2910,7 @@ function UnifiedMapPageInner() {
         updatingModelInstanceId={updatingModelInstanceId}
         onDeleteModelInstance={handleDeleteModelInstance}
         deletingModelInstanceId={deletingModelInstanceId}
-        movingModelInstanceId={movingModelInstance?.id ?? null}
+        movingModelInstanceId={(movingModelInstance?.planting || movingModelInstance?.module) ? null : movingModelInstance?.id ?? null}
         onMoveModelToggle={handleMoveModelToggle}
         onUpdateBedInstance={handleUpdateBedInstance}
         updatingBedMarkerId={updatingBedMarkerId}
@@ -2871,6 +2920,10 @@ function UnifiedMapPageInner() {
         updatingFarmBotMarkerId={updatingFarmBotMarkerId}
         onDeleteFarmBotInstance={handleDeleteFarmBotInstance}
         deletingFarmBotMarkerId={deletingFarmBotMarkerId}
+        movingModuleMarkerId={movingModelInstance?.module ? movingModelInstance.id : null}
+        onMoveModuleToggle={handleMoveModuleToggle}
+        movingPlantingMarkerId={movingModelInstance?.planting ? movingModelInstance.id : null}
+        onMovePlantingToggle={handleMovePlantingToggle}
         onUpdatePlantingInstance={handleUpdatePlantingInstance}
         updatingPlantingMarkerId={updatingPlantingMarkerId}
         onDeletePlantingInstance={handleDeletePlantingInstance}

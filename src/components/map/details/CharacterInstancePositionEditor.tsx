@@ -2,10 +2,12 @@
 
 import { CHARACTER_PHYSICS_FIELDS, resolveCharacterPhysics, type CharacterPhysics } from '@/lib/services/threed/characters/character-physics';
 import { useEffect, useState } from 'react';
-import { Loader2, Save, Trash2, User } from 'lucide-react';
+import { Crosshair, Loader2, Save, Trash2, User } from 'lucide-react';
 
 export function CharacterInstancePositionEditor({
   markerId,
+  moveActive = false,
+  onMoveToggle,
   initialPosition,
   initialPhysics,
   movable = false,
@@ -15,6 +17,8 @@ export function CharacterInstancePositionEditor({
   onSave,
   onDelete,
 }: {
+  moveActive?: boolean;
+  onMoveToggle?: (markerId:number) => void;
   markerId: number;
   initialPhysics?: unknown;
   movable?: boolean;
@@ -95,7 +99,7 @@ export function CharacterInstancePositionEditor({
         </div>
         {!physicsValid && <p className="text-red-300">Check physics values.</p>}
       </details>}
-      <div className="grid grid-cols-2 gap-1.5">
+      <div className="grid grid-cols-3 gap-1.5">
         <button
           type="button"
           disabled={!valid || disabled || updating || deleting}
@@ -108,6 +112,11 @@ export function CharacterInstancePositionEditor({
           {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
           Save Character
         </button>
+      <button type="button" disabled={disabled || updating || deleting || (!moveActive && dirty) || !onMoveToggle} aria-pressed={moveActive}
+        onClick={event=>{event.stopPropagation();onMoveToggle?.(markerId);}}
+        className="flex items-center justify-center gap-1 rounded bg-amber-600/30 px-1.5 py-1.5 text-[10px] font-medium text-amber-100 hover:bg-amber-600/55 disabled:opacity-40">
+        <Crosshair className="h-3.5 w-3.5" />{moveActive ? 'Cancel Move' : <>Move Character</>}
+      </button>
         <button
           type="button"
           disabled={disabled || updating || deleting}

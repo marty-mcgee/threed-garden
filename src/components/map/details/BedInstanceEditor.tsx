@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Layers, Loader2, Save, Settings, Trash2 } from 'lucide-react';
+import { Layers, Crosshair, Loader2, Save, Settings, Trash2 } from 'lucide-react';
 
 export function BedInstanceEditor({
   markerId,
+  moveActive = false,
+  onMoveToggle,
   initialWidthFeet,
   initialLengthFeet,
   initialHeightFeet,
@@ -18,6 +20,8 @@ export function BedInstanceEditor({
   onDelete,
   entityLabel = 'Bed',
 }: {
+  moveActive?: boolean;
+  onMoveToggle?: (markerId:number) => void;
   markerId: number;
   initialWidthFeet: number;
   initialLengthFeet: number;
@@ -147,7 +151,7 @@ export function BedInstanceEditor({
             className="h-7 w-full cursor-pointer rounded border border-white/10 bg-white/5 p-0.5 disabled:opacity-50" />
         </label>
       </div>
-      <div className="grid grid-cols-2 gap-1.5">
+      <div className="grid grid-cols-3 gap-1.5">
       <button
         type="button"
         disabled={!valid || !dirty || busy}
@@ -169,6 +173,11 @@ export function BedInstanceEditor({
       >
         {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
         Save {entityLabel} Instance
+      </button>
+      <button type="button" disabled={busy || (!moveActive && dirty) || !onMoveToggle} aria-pressed={moveActive}
+        onClick={event=>{event.stopPropagation();onMoveToggle?.(markerId);}}
+        className="flex items-center justify-center gap-1 rounded bg-amber-600/30 px-1.5 py-1.5 text-[10px] font-medium text-amber-100 hover:bg-amber-600/55 disabled:opacity-40">
+        <Crosshair className="h-3.5 w-3.5" />{moveActive ? 'Cancel Move' : <>Move {entityLabel}</>}
       </button>
       <button
         type="button"

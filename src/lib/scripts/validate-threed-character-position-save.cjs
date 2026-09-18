@@ -53,11 +53,11 @@ const savePosition = (ok) => callback('src/app/dashboard/map/page.tsx', 'handleU
   registry.updateLiveRotation('characters', 11, 45);
   assert.equal(registry.updateLiveRotation('characters', 11, NaN), false);
   const projectSave = callback('src/app/dashboard/map/page.tsx', 'handleSaveThreeDProject', {
-    ...base, selectedProjectId: '5', savingProjectMarkers: false, setSavingProjectMarkers() {}, setLastUpdated() {},
+    ...base, saveRequestRef: {current:0}, selectedMarker:null, isProjectAssetsOpen:false, projectAssetSearch:'', projectAssetType:'all', selectedProjectId: '5', savingProjectMarkers: false, setSavingProjectMarkers() {}, setLastUpdated() {},
     projectMarkerSnapshotProviderRef: { current: snapshot }, projectThreeDViewStateProviderRef: {}, projectMapViewStateProviderRef: {},
     lastProjectThreeDViewStateRef: {}, lastProjectMapViewStateRef: {}, initialProjectViewState: null,
     PROJECT_VIEW_STATE_VERSION: 1, viewMode: '3d', panelHeight: 500, cameraMode: 'stationary',
-    fetch: async (url, options) => { requests.push({ url, ...options }); return { ok: true, json: async () => ({ success: true, data: { markerCount: 1 } }) }; },
+    fetch: async (url, options) => { requests.push({ url, ...options }); return { ok: true, json: async () => ({ success: true, data: { markerCount: 1, markers: [] } }) }; },
   });
   await projectSave();
   const payload = JSON.parse(requests.at(-1).body);

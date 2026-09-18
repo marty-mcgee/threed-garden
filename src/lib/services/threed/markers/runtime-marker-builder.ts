@@ -1,4 +1,6 @@
 // @ts-expect-error Native TypeScript validators require explicit extensions.
+import { assignedBedPlantings, bedPlantingGeometry, containBedPlantings } from '../beds/bed-planting-bounds.ts';
+// @ts-expect-error Native TypeScript validators require explicit extensions.
 import { characterSpawnsOverlap } from './character-spawn-overlap.ts';
 import type {
   RuntimeMarker,
@@ -35,7 +37,7 @@ const THREED_NON_PLANTING_MARKER_TYPES = [
 
 export interface ThreeDRuntimeMarkerIssue {
   source: 'project_threed_markers' | 'threed_sub_module';
-  outcome?: 'skipped' | 'recovered';
+  outcome?: 'skipped' | 'recovered' | 'review';
   recordId: number | null;
   markerId: string;
   markerType: string;
@@ -373,6 +375,33 @@ export function buildThreeDRuntimeMarkers(
  * Builds Scene-safe Runtime Markers and returns bounded, user-displayable
  * diagnostics for database rows that were rejected before reaching Rapier.
  */
+function recoverBedPlantings(markers: RuntimeMarker[], issues: ThreeDRuntimeMarkerIssue[]): RuntimeMarker[] {
+  const beds = new Map(markers.filter(marker => marker.type === 'beds').map(marker => [Number(marker.data?.id), marker]));
+  const replacements = new Map<string, RuntimeMarker>();
+  for (const [bedId, bed] of beds) {
+    const plantings = assignedBedPlantings(bedId, markers);
+    if (!plantings.length) continue;
+    const geometry = bedPlantingGeometry(bed.position, bed.data ?? {});
+    // Diagnostics may depend on the layout, but one root's position must never
+    // depend on whether another root is assigned/unassigned from this Bed.
+    try {
+      containBedPlantings(geometry, plantings.map(marker => marker.position));
+    } catch {
+      issues.push({source:'threed_sub_module', outcome:'review', recordId:Number(bed.data?.id), markerId:bed.id, markerType:'beds',
+        reasons:['Assigned Planting layout exceeds this Bed. Review corrected Planting positions before saving.']});
+    }
+    const positions = plantings.map(marker => containBedPlantings(geometry, [marker.position])[0]);
+    plantings.forEach((marker, index) => {
+      const position = positions[index];
+      if (Math.abs(position.x-marker.position.x)<0.0006 && Math.abs(position.y-marker.position.y)<0.0006 && Math.abs(position.z-marker.position.z)<0.0006) return;
+      issues.push({source:'threed_sub_module',outcome:'recovered',recordId:Number(marker.data?.id),markerId:marker.id,markerType:'plantings',
+        reasons:['Assigned Planting recovered at the Bed soil surface. Save Project to keep the corrected position.']});
+      replacements.set(marker.id, {...marker,position,data:{...marker.data,positionX:position.x,positionY:position.y,positionZ:position.z}});
+    });
+  }
+  return markers.map(marker => replacements.get(marker.id) ?? marker);
+}
+
 export function buildThreeDRuntimeMarkerResult(
   raw: ThreeDRawProjectData | null,
   generatedAt = new Date().toISOString(),
@@ -412,7 +441,7 @@ export function buildThreeDRuntimeMarkerResult(
   }
 
   if (!raw.projectThreedMarkers?.length) {
-    return { markers: rejectOverlappingEcctrlSpawns(markers, issues), issues };
+    return { markers: rejectOverlappingEcctrlSpawns(recoverBedPlantings(markers, issues), issues), issues };
   }
 
   const savedMarkers = new Map(
@@ -434,7 +463,7 @@ export function buildThreeDRuntimeMarkerResult(
     }
   }
   return {
-    markers: rejectOverlappingEcctrlSpawns(restoredMarkers, issues),
+    markers: rejectOverlappingEcctrlSpawns(recoverBedPlantings(restoredMarkers, issues), issues),
     issues,
   };
 }

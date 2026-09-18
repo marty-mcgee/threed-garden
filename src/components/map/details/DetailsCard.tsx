@@ -1,12 +1,15 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { assignedBedPlantings } from '@/lib/services/threed/beds/bed-planting-bounds';
+
 import { useAnimationActionSlots } from '@/components/admin/threed/animations/AnimationActionSlots';
 import { getCharacterAnimationAvailability, subscribeCharacterAnimationAvailability } from '@/lib/services/threed/animations/runtime-availability';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useSession } from 'next-auth/react';
 import { hasModelLoadFailure, subscribeModelLoadFailures } from '@/lib/services/threed/models/model-load-failures';
 import { Crosshair, ExternalLink, Gamepad2, Loader2, Pause, ScanSearch, X } from 'lucide-react';
-import type { ThreeDActionTarget } from '@/lib/types/map';
+import type { RuntimeMarker, ThreeDActionTarget } from '@/lib/types/map';
 import type { ThreeDRuntimeMarkerPositionResolver } from '@/components/map/UnifiedMapView';
 import {
   createThreeDCharacterOrchestrationRequest,
@@ -187,9 +190,11 @@ function FarmBotMqttStatusSummary({
 }
 
 
-export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, movingModelInstanceId, onMoveModelToggle, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdateFarmBotInstance, updatingFarmBotMarkerId, onDeleteFarmBotInstance, deletingFarmBotMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId, onUpdateCharacterPosition, updatingCharacterMarkerId, onDeleteCharacterInstance, deletingCharacterMarkerId }: {
+export function DetailsCard({ selected, projectId, projectMarkers, onSelectProjectMarker, leftOffsetRem = 0.75, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, movingModelInstanceId, onMoveModelToggle, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdateFarmBotInstance, updatingFarmBotMarkerId, onDeleteFarmBotInstance, deletingFarmBotMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId, movingPlantingMarkerId, onMovePlantingToggle, movingModuleMarkerId, onMoveModuleToggle, onUpdateCharacterPosition, updatingCharacterMarkerId, onDeleteCharacterInstance, deletingCharacterMarkerId }: {
   selected: any;
   projectId: string | null;
+  projectMarkers?: readonly RuntimeMarker[];
+  onSelectProjectMarker?: (marker: RuntimeMarker) => void;
   leftOffsetRem?: number;
   onClose: () => void;
   controlledCharacterId: number | null;
@@ -251,6 +256,7 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
   onDeleteFarmBotInstance?: (markerId: number, name: string) => void;
   deletingFarmBotMarkerId?: number | null;
   onUpdatePlantingInstance?: (markerId: number, input: {
+    bedId?: number | null;
     modelScale: number;
     positionX: number;
     positionY: number;
@@ -259,6 +265,10 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
   updatingPlantingMarkerId?: number | null;
   onDeletePlantingInstance?: (markerId: number, name: string) => void;
   deletingPlantingMarkerId?: number | null;
+  movingModuleMarkerId?: number | null;
+  onMoveModuleToggle?: (markerId:number) => void;
+  movingPlantingMarkerId?: number | null;
+  onMovePlantingToggle?: (markerId:number, input:{bedId:number|null;modelScale:number}) => void;
   onUpdateCharacterPosition?: (markerId: number, position: {
     characterPhysics?: import("@/lib/services/threed/characters/character-physics").CharacterPhysics;
     positionX: number;
@@ -411,6 +421,8 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
     if (d.health != null) metaRows.push({ label: 'Health', value: `${d.health}` });
     if (d.plantedDate) metaRows.push({ label: 'Planted', value: new Date(d.plantedDate).toLocaleDateString() });
   }
+  const assignedPlantings = (type === 'beds' || type === 'bed')
+    ? assignedBedPlantings(d.id, projectMarkers ?? []) : [];
   if (type === 'beds' || type === 'bed') {
     const w = d.widthFeet || d.width, l = d.lengthFeet || d.length || d.depth;
     if (w && l) metaRows.push({ label: 'Size', value: `${w}ft × ${l}ft` });
@@ -863,9 +875,25 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
         />
       )}
 
+      {(type === 'beds' || type === 'bed') && projectMarkers !== undefined && (
+        <details className="rounded-md border border-white/15 p-2">
+          <summary className="cursor-pointer text-xs font-medium">Plantings ({assignedPlantings.length})</summary>
+          <div className="mt-2 max-h-48 space-y-1 overflow-y-auto">
+            {assignedPlantings.length === 0 && <p className="text-xs text-muted-foreground">No assigned Plantings.</p>}
+            {assignedPlantings.map(planting => (
+              <Button key={planting.id} type="button" variant="ghost" size="sm" className="h-auto min-h-8 w-full justify-start whitespace-normal text-left text-xs"
+                disabled={!onSelectProjectMarker} aria-label={`Select and focus Planting: ${planting.name}`}
+                onClick={() => onSelectProjectMarker?.(planting)}>{planting.name}</Button>
+            ))}
+          </div>
+        </details>
+      )}
+
       {isProjectBedInstance && onUpdateBedInstance && onDeleteBedInstance && (
         <BedInstanceEditor
-          key={bedMarkerId}
+          key={`${bedMarkerId}:${String(d.placementRevision ?? '')}`}
+          moveActive={movingModuleMarkerId === bedMarkerId}
+          onMoveToggle={onMoveModuleToggle}
           markerId={bedMarkerId}
           initialWidthFeet={Number(d.widthFeet ?? d.width ?? 4)}
           initialLengthFeet={Number(d.lengthFeet ?? d.length ?? d.depth ?? 8)}
@@ -890,7 +918,9 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
 
       {isProjectFarmBotInstance && onUpdateFarmBotInstance && onDeleteFarmBotInstance && (
         <BedInstanceEditor
-          key={farmBotMarkerId}
+          key={`${farmBotMarkerId}:${String(d.placementRevision ?? '')}`}
+          moveActive={movingModuleMarkerId === farmBotMarkerId}
+          onMoveToggle={onMoveModuleToggle}
           markerId={farmBotMarkerId}
           entityLabel="FarmBot"
           initialWidthFeet={Number(d.widthFeet ?? 3)}
@@ -917,7 +947,11 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
       {isProjectPlantingInstance && onUpdatePlantingInstance && onDeletePlantingInstance && (
         <PlantingInstanceEditor
           key={plantingMarkerId}
+          moveActive={movingPlantingMarkerId === plantingMarkerId}
+          onMoveToggle={onMovePlantingToggle}
           markerId={plantingMarkerId}
+          initialBedId={d.bedId == null ? null : Number(d.bedId)}
+          beds={Array.from(new Map((projectMarkers ?? []).filter(marker=>marker.type==='beds' && marker.isActive !== false && Number(marker.data?.id)>0).map(marker=>[Number(marker.data?.id),{id:Number(marker.data?.id),name:String(marker.name || `Bed #${marker.data?.id}`)}])).values())}
           initialModelScale={Number(d.modelScale ?? 1)}
           initialPosition={{
             x: Number(selected.position?.x ?? d.positionX ?? 0),
@@ -936,7 +970,9 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
 
       {isProjectCharacterInstance && onUpdateCharacterPosition && onDeleteCharacterInstance && (
         <CharacterInstancePositionEditor
-          key={characterMarkerId}
+          key={`${characterMarkerId}:${String(d.placementRevision ?? '')}`}
+          moveActive={movingModuleMarkerId === characterMarkerId}
+          onMoveToggle={onMoveModuleToggle}
           markerId={characterMarkerId}
           movable={d.isMovable === true}
           initialPhysics={selected.metadata?.characterPhysics}

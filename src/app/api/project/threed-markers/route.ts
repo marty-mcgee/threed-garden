@@ -1,3 +1,4 @@
+import { bedPlantingGeometry, bedLocalPoint, bedWorldPoint, containBedPlantings, resolvePlantingBedId } from '@/lib/services/threed/beds/bed-planting-bounds';
 import { resolveCharacterPhysics } from '@/lib/services/threed/characters/character-physics';
 import { refreshModelMarkerData, currentPlantingModelId } from '@/lib/services/threed/models/model-snapshot-assets';
 import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
@@ -248,6 +249,29 @@ async function requireAssignedBed(
   return assigned ?? null;
 }
 
+function resolveProjectPlantingBedId(data: Record<string, unknown>, sourceBedId: unknown) {
+  try { return resolvePlantingBedId(data, sourceBedId); }
+  catch { throw new ProjectPlantingPlacementInputError('Invalid assigned Bed'); }
+}
+
+async function readAssignedBedGeometry(tx: MarkerTransaction, userId: string, projectId: number, threedId: number, bedId: number) {
+  const [source] = await tx.select().from(threedBeds).where(and(eq(threedBeds.id, bedId), eq(threedBeds.userId, userId), eq(threedBeds.isActive, true))).limit(1);
+  if (!source) throw new ProjectPlantingPlacementInputError('Assigned Bed not found');
+  const overrides = await tx.select().from(projectThreedMarkers).where(and(
+    eq(projectThreedMarkers.userId, userId), eq(projectThreedMarkers.projectId, projectId),
+    eq(projectThreedMarkers.threedId, threedId), eq(projectThreedMarkers.markerType, 'beds'),
+    eq(projectThreedMarkers.sourceAssetId, bedId), eq(projectThreedMarkers.isActive, true),
+  )).limit(2);
+  if (overrides.length > 1) throw new ProjectPlantingPlacementInputError('Assigned Bed has ambiguous Project instances');
+  const marker = overrides[0];
+  return bedPlantingGeometry({x:Number(marker?.positionX ?? source.positionX), y:Number(marker?.positionY ?? source.positionY), z:Number(marker?.positionZ ?? source.positionZ)},
+    {...source, ...(marker?.data as Record<string, unknown> ?? {})});
+}
+function constrainAssignedPlantings(bed: ReturnType<typeof bedPlantingGeometry>, points: {x:number;y:number;z:number}[]) {
+  try { return containBedPlantings(bed, points); }
+  catch (error) { throw new ProjectPlantingPlacementInputError(error instanceof Error ? error.message : 'Invalid Bed placement'); }
+}
+
 async function readOwnedModelMarker(userId: string, id: number) {
   const [marker] = await db
     .select()
@@ -429,6 +453,36 @@ async function saveSnapshot(request: NextRequest) {
       await tx.execute(
         sql`select pg_advisory_xact_lock(hashtext(${`project-threed-markers:${projectId}`}))`,
       );
+      const plantingRows = rows.filter(row => row.markerType === 'plantings');
+      const sources = plantingRows.length ? await tx.select({id:threedPlantings.id,bedId:threedPlantings.bedId}).from(threedPlantings)
+        .where(and(eq(threedPlantings.userId,userId),inArray(threedPlantings.id,plantingRows.map(row=>row.sourceAssetId)))) : [];
+      const groups = new Map<string, typeof plantingRows>();
+      for (const row of plantingRows) {
+        const bedId = resolveProjectPlantingBedId(row.data, sources.find(source=>source.id===row.sourceAssetId)?.bedId);
+        if (!bedId) continue;
+        const key = `${row.threedId}:${bedId}`;
+        groups.set(key,[...(groups.get(key) ?? []),row]);
+      }
+      for (const group of groups.values()) {
+        const bedId = resolveProjectPlantingBedId(group[0].data, sources.find(source=>source.id===group[0].sourceAssetId)?.bedId)!;
+        const threedId = group[0].threedId;
+        if (!await requireAssignedBed(userId,projectId,threedId,bedId)) throw new ProjectPlantingPlacementInputError('Assigned Project Bed not found');
+        const bedRows = rows.filter(row=>row.markerType==='beds' && row.sourceAssetId===bedId && row.threedId===threedId);
+        if (bedRows.length > 1) throw new ProjectPlantingPlacementInputError('Assigned Bed has ambiguous Project instances');
+        const bedRow = bedRows[0];
+        const bed = bedRow ? bedPlantingGeometry({x:Number(bedRow.positionX),y:Number(bedRow.positionY),z:Number(bedRow.positionZ)},bedRow.data)
+          : await readAssignedBedGeometry(tx,userId,projectId,threedId,bedId);
+        const roots = group.map(row=>({x:Number(row.positionX),y:Number(row.positionY),z:Number(row.positionZ)}));
+        // Retain overflow rejection while keeping unrelated roots stationary.
+        constrainAssignedPlantings(bed, roots);
+        const positions = roots.map(root=>constrainAssignedPlantings(bed,[root])[0]);
+        group.forEach((row,index)=>{
+          const position = positions[index];
+          row.positionX=position.x.toFixed(3); row.positionY=position.y.toFixed(3); row.positionZ=position.z.toFixed(3);
+          Object.assign(row,getMarkerGeographicValues(position,ownedProject));
+          row.data={...row.data,positionX:position.x,positionY:position.y,positionZ:position.z,bedId};
+        });
+      }
       let savedRows: (typeof projectThreedMarkers.$inferSelect)[] = [];
       if (rows.length === 0) {
         await tx.delete(projectThreedMarkers).where(and(
@@ -490,6 +544,7 @@ async function saveSnapshot(request: NextRequest) {
       },
     });
   } catch (error) {
+    if (error instanceof ProjectPlantingPlacementInputError) return NextResponse.json({success:false,error:error.message},{status:400});
     if (error instanceof ProjectMarkerSnapshotError || error instanceof ProjectViewStateError) {
       return NextResponse.json(
         {
@@ -787,15 +842,23 @@ export async function POST(request: NextRequest) {
         await tx.execute(
           sql`select pg_advisory_xact_lock(hashtext(${`project-threed-markers:${input.projectId}`}))`,
         );
+        if (input.bedId && input.quantity > 1 && input.spacingInches === 0) {
+          throw new ProjectPlantingPlacementInputError('Assigned Plantings need positive spacing.');
+        }
         const offsets = calculateProjectPlantingVisualPositions(
           input.quantity,
-          input.spacingInches,
+          input.bedId ? input.spacingInches ?? 12 : input.spacingInches,
         );
-        const positions = offsets.map((offset) => ({
+        let positions = offsets.map((offset) => ({
           x: input.positionX + offset.x,
           y: input.positionY,
           z: input.positionZ + offset.z,
         }));
+        if (input.bedId) {
+          const bed = await readAssignedBedGeometry(tx, userId, input.projectId, input.threedId, input.bedId);
+          const anchor = bedLocalPoint(bed, {x:input.positionX,y:input.positionY,z:input.positionZ});
+          positions = constrainAssignedPlantings(bed, offsets.map(offset=>bedWorldPoint(bed,{x:anchor.x+offset.x,z:anchor.z+offset.z})));
+        }
         const plantings = [];
         const markers = [];
         for (const position of positions) {
@@ -1267,61 +1330,98 @@ async function updateProjectMarker(request: NextRequest, id: number) {
         y: update.positionY,
         z: update.positionZ,
       }, ownedProject);
-      const [updated] = await db.update(projectThreedMarkers).set({
-        positionX: update.positionX.toFixed(3),
-        positionY: update.positionY.toFixed(3),
-        positionZ: update.positionZ.toFixed(3),
-        ...geographic,
-        positionSource: 'asset',
-        color: update.color,
-        data: {
-          ...currentData,
-          widthFeet: update.widthFeet,
-          lengthFeet: update.lengthFeet,
-          heightFeet: update.heightFeet,
+      const result = await db.transaction(async tx => {
+        await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`project-threed-markers:${marker.projectId}`}))`);
+        const oldBed = await readAssignedBedGeometry(tx,ownerId,marker.projectId,marker.threedId!,marker.sourceAssetId);
+        const newBed = bedPlantingGeometry({x:update.positionX,y:update.positionY,z:update.positionZ},{...update});
+        const sources = await tx.select({id:threedPlantings.id,bedId:threedPlantings.bedId}).from(threedPlantings)
+          .innerJoin(projectAssets,and(eq(projectAssets.assetId,threedPlantings.id),eq(projectAssets.assetType,'threed_plantings')))
+          .where(and(eq(threedPlantings.userId,ownerId),eq(threedPlantings.isActive,true),
+            eq(projectAssets.userId,ownerId),eq(projectAssets.projectId,marker.projectId),eq(projectAssets.moduleId,marker.threedId!),eq(projectAssets.isActive,true)));
+        const allChildren = sources.length ? await tx.select().from(projectThreedMarkers).where(and(
+          eq(projectThreedMarkers.userId,ownerId),eq(projectThreedMarkers.projectId,marker.projectId),eq(projectThreedMarkers.threedId,marker.threedId!),
+          eq(projectThreedMarkers.markerType,'plantings'),eq(projectThreedMarkers.isActive,true),inArray(projectThreedMarkers.sourceAssetId,sources.map(source=>source.id)))) : [];
+        const children = allChildren.filter(child => resolveProjectPlantingBedId(child.data as Record<string,unknown>, sources.find(source=>source.id===child.sourceAssetId)?.bedId) === marker.sourceAssetId);
+        const expectedSources = sources.filter(source => {
+          const child = allChildren.find(child=>child.sourceAssetId===source.id);
+          return resolveProjectPlantingBedId((child?.data ?? {}) as Record<string,unknown>,source.bedId) === marker.sourceAssetId;
+        });
+        if (new Set(children.map(child=>child.sourceAssetId)).size !== new Set(expectedSources.map(source=>source.id)).size) {
+          throw new ProjectPlantingPlacementInputError('Save Project before editing a Bed with unsaved Plantings.');
+        }
+        const desired = children.map(child=>bedWorldPoint(newBed,bedLocalPoint(oldBed,{x:Number(child.positionX),y:Number(child.positionY),z:Number(child.positionZ)})));
+        const positions = constrainAssignedPlantings(newBed,desired);
+        const affectedMarkers = [];
+        for (const [index,child] of children.entries()) {
+          const point=positions[index];
+          const [savedChild]=await tx.update(projectThreedMarkers).set({positionX:point.x.toFixed(3),positionY:point.y.toFixed(3),positionZ:point.z.toFixed(3),
+            ...getMarkerGeographicValues(point,ownedProject),positionSource:'asset',
+            data:{...(child.data as Record<string,unknown>),positionX:point.x,positionY:point.y,positionZ:point.z},updatedAt:new Date()})
+            .where(and(eq(projectThreedMarkers.id,child.id),eq(projectThreedMarkers.userId,ownerId))).returning();
+          affectedMarkers.push(savedChild);
+        }
+        const [updated] = await tx.update(projectThreedMarkers).set({
+          positionX: update.positionX.toFixed(3),
+          positionY: update.positionY.toFixed(3),
+          positionZ: update.positionZ.toFixed(3),
+          ...geographic,
+          positionSource: 'asset',
           color: update.color,
-          scale: update.scale,
-          positionX: update.positionX,
-          positionY: update.positionY,
-          positionZ: update.positionZ,
-          rotation: update.rotation,
-        },
-        updatedAt: new Date(),
-      }).where(and(
-        eq(projectThreedMarkers.id, id),
-        eq(projectThreedMarkers.userId, session.user.id),
-        eq(projectThreedMarkers.markerType, 'beds'),
-      )).returning();
-      return NextResponse.json({ success: true, data: updated });
+          data: {
+            ...currentData,
+            widthFeet: update.widthFeet,
+            lengthFeet: update.lengthFeet,
+            heightFeet: update.heightFeet,
+            color: update.color,
+            scale: update.scale,
+            positionX: update.positionX,
+            positionY: update.positionY,
+            positionZ: update.positionZ,
+            rotation: update.rotation,
+          },
+          updatedAt: new Date(),
+        }).where(and(
+          eq(projectThreedMarkers.id, id),
+          eq(projectThreedMarkers.userId, ownerId),
+          eq(projectThreedMarkers.markerType, 'beds'),
+        )).returning();
+        return {updated,affectedMarkers};
+      });
+      return NextResponse.json({ success: true, data: result.updated, affectedMarkers: result.affectedMarkers });
     }
 
     if (marker.markerType === 'plantings') {
       const update = parseUpdateProjectPlantingPlacement(body);
-      const geographic = getMarkerGeographicValues({
-        x: update.positionX,
-        y: update.positionY,
-        z: update.positionZ,
-      }, ownedProject);
       const updated = await db.transaction(async (tx) => {
+        await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`project-threed-markers:${marker.projectId}`}))`);
         const [source] = await tx.select({
           customModelId: threedPlantings.customModelId,
           plantModelId: threedPlants.modelId,
+          bedId: threedPlantings.bedId,
         }).from(threedPlantings)
           .leftJoin(threedPlants, eq(threedPlants.id, threedPlantings.plantId))
           .where(and(eq(threedPlantings.id, marker.sourceAssetId), eq(threedPlantings.userId, ownerId)))
           .limit(1);
+        const bedId = update.bedId !== undefined ? update.bedId : resolveProjectPlantingBedId(currentData, source?.bedId);
+        if (bedId) {
+          if (!await requireAssignedBed(ownerId, marker.projectId, marker.threedId!, bedId)) throw new ProjectPlantingPlacementInputError('Assigned Project Bed not found');
+          const bed = await readAssignedBedGeometry(tx, ownerId, marker.projectId, marker.threedId!, bedId);
+          const [position] = constrainAssignedPlantings(bed, [{x:update.positionX,y:update.positionY,z:update.positionZ}]);
+          update.positionX = position.x; update.positionY = position.y; update.positionZ = position.z;
+        }
         const currentModel = await readCurrentMarkerModel(tx, ownerId, currentPlantingModelId(source));
         const [saved] = await tx.update(projectThreedMarkers).set({
           positionX: update.positionX.toFixed(3),
           positionY: update.positionY.toFixed(3),
           positionZ: update.positionZ.toFixed(3),
-          ...geographic,
+          ...getMarkerGeographicValues({x:update.positionX,y:update.positionY,z:update.positionZ}, ownedProject),
           positionSource: 'asset',
           data: {
             ...currentData,
             model: currentModel ?? null,
             quantity: 1,
             modelScale: update.modelScale,
+            bedId,
             positionX: update.positionX,
             positionY: update.positionY,
             positionZ: update.positionZ,

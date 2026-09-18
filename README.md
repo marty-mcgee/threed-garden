@@ -9,6 +9,8 @@ This is a **Dual-Surface Platform**:
 
 > **Current production release:** `v0.19.37 — ThreeD Projects: Save + Restore State`, package `0.19.37`, deployment User-confirmed. See the [release notes](docs/releases/v0.19.37.md) and [development record](docs/plans/v0.19.37.md).
 
+> **Prepared release:** `v0.19.38 — ThreeD Objects: Moving + Placement`, package `0.19.38`, User-reviewed checkpoint; deployment pending. Quick Scene repositioning for Models, Plantings, Characters, Beds and FarmBots, plus Bed-relative Planting assignment and selection. See the [release notes](docs/releases/v0.19.38.md) and [development record](docs/plans/v0.19.38.md).
+
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 
 The released **v0.19.10c** adds OBJ importing with MTL material libraries and their texture images, inline/window previews, and saved single-Model material rendering. See the [implementation and validation](docs/plans/v0.19.10c.md) and [completed production handoff](docs/plans/v0.19.10c-release.md).

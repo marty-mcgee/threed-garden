@@ -1,23 +1,32 @@
 'use client';
 
-import { useState } from 'react';
-import { Loader2, Save, Sprout, Trash2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Crosshair, Loader2, Save, Sprout, Trash2 } from 'lucide-react';
 
 export function PlantingInstanceEditor({
   markerId,
   initialModelScale,
   initialPosition,
+  initialBedId,
+  beds,
   updating,
   deleting,
   onSave,
   onDelete,
+  moveActive = false,
+  onMoveToggle,
 }: {
+  moveActive?: boolean;
+  onMoveToggle?: (markerId: number, input: {bedId:number|null;modelScale:number}) => void;
   markerId: number;
   initialModelScale: number;
+  initialBedId: number | null;
+  beds: {id:number;name:string}[];
   initialPosition: { x: number; y: number; z: number };
   updating: boolean;
   deleting: boolean;
   onSave: (markerId: number, input: {
+    bedId?: number | null;
     modelScale: number;
     positionX: number;
     positionY: number;
@@ -29,7 +38,14 @@ export function PlantingInstanceEditor({
   const [positionX, setPositionX] = useState(String(initialPosition.x));
   const [positionY, setPositionY] = useState(String(initialPosition.y));
   const [positionZ, setPositionZ] = useState(String(initialPosition.z));
+  const [bedId, setBedId] = useState(initialBedId === null ? '' : String(initialBedId));
+  useEffect(() => {
+    setModelScale(String(initialModelScale));
+    setPositionX(String(initialPosition.x)); setPositionY(String(initialPosition.y)); setPositionZ(String(initialPosition.z));
+    setBedId(initialBedId === null ? '' : String(initialBedId));
+  }, [initialModelScale, initialPosition.x, initialPosition.y, initialPosition.z, initialBedId]);
   const parsed = {
+    bedId: bedId === '' ? null : Number(bedId),
     modelScale: Number(modelScale),
     positionX: Number(positionX),
     positionY: Number(positionY),
@@ -41,7 +57,7 @@ export function PlantingInstanceEditor({
     && [parsed.positionX, parsed.positionY, parsed.positionZ].every(
       (value) => Number.isFinite(value) && Math.abs(value) <= 1_000_000,
     );
-  const dirty = parsed.modelScale !== initialModelScale
+  const dirty = parsed.bedId !== initialBedId || parsed.modelScale !== initialModelScale
     || parsed.positionX !== initialPosition.x
     || parsed.positionY !== initialPosition.y
     || parsed.positionZ !== initialPosition.z;
@@ -58,6 +74,15 @@ export function PlantingInstanceEditor({
           {editStatus}
         </span>
       </div>
+      <label className="block space-y-1">
+        <span className="text-[9px] text-white/50">Assigned Bed</span>
+        <select value={bedId} onChange={event=>setBedId(event.target.value)} disabled={updating || deleting}
+          className="h-7 w-full rounded border border-white/10 bg-zinc-900 px-1.5 text-[11px] text-white focus:border-white/30 disabled:opacity-50">
+          <option value="">Unassigned</option>
+          {initialBedId !== null && !beds.some(bed=>bed.id===initialBedId) && <option value={initialBedId}>Unavailable Bed #{initialBedId}</option>}
+          {beds.map(bed=><option key={bed.id} value={bed.id}>{bed.name}</option>)}
+        </select>
+      </label>
       <label className="block space-y-1">
         <span className="text-[9px] text-white/50">Model scale</span>
         <input type="number" min="0.01" max="1000" step="0.01" value={modelScale}
@@ -78,12 +103,17 @@ export function PlantingInstanceEditor({
           </label>
         ))}
       </div>
-      <div className="grid grid-cols-2 gap-1.5">
+      <div className="grid grid-cols-3 gap-1.5">
         <button type="button" disabled={!valid || !dirty || updating || deleting}
           onClick={(event) => { event.stopPropagation(); onSave(markerId, parsed); }}
           className="flex w-full items-center justify-center gap-1.5 rounded bg-emerald-600/35 px-2 py-1.5 text-[11px] font-medium text-emerald-100 transition-colors hover:bg-emerald-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30">
           {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
           Save Planting
+        </button>
+        <button type="button" disabled={!valid || updating || deleting || !onMoveToggle} aria-pressed={moveActive}
+          onClick={event=>{event.stopPropagation(); onMoveToggle?.(markerId,{bedId:parsed.bedId,modelScale:parsed.modelScale});}}
+          className="flex items-center justify-center gap-1 rounded bg-amber-600/30 px-1.5 py-1.5 text-[10px] font-medium text-amber-100 hover:bg-amber-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30">
+          <Crosshair className="h-3.5 w-3.5" />{moveActive ? 'Cancel Move' : 'Move Planting'}
         </button>
         <button type="button" disabled={updating || deleting}
           onClick={(event) => {

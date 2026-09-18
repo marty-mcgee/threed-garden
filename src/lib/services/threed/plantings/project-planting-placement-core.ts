@@ -100,6 +100,7 @@ export interface CreateProjectPlantingPlacementInput {
 }
 
 export interface UpdateProjectPlantingPlacementInput {
+  bedId?: number | null;
   markerType: 'plantings';
   modelScale: number;
   positionX: number;
@@ -153,5 +154,5 @@ export function parseUpdateProjectPlantingPlacement(
   if (body.markerType !== 'plantings') {
     throw new ProjectPlantingPlacementInputError('Invalid markerType');
   }
-  return { markerType: 'plantings', ...sharedInstance(body) };
+  return { markerType: 'plantings', ...sharedInstance(body), ...(body.bedId !== undefined ? {bedId: optionalPositiveId(body.bedId, 'bedId')} : {}) };
 }

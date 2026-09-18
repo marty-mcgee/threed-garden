@@ -244,7 +244,8 @@ export function UnifiedMapView({
   const recoveredMarkerCount = markerBuildResult.issues.filter(
     (issue) => issue.outcome === 'recovered',
   ).length;
-  const skippedMarkerCount = markerBuildResult.issues.length - recoveredMarkerCount;
+  const reviewMarkerCount = markerBuildResult.issues.filter(issue => issue.outcome === 'review').length;
+  const skippedMarkerCount = markerBuildResult.issues.length - recoveredMarkerCount - reviewMarkerCount;
 
   const runtimeMarkers = useMemo(() => {
     if (markerProjectIdRef.current !== projectId) {
@@ -735,13 +736,17 @@ export function UnifiedMapView({
         <details className="absolute left-3 top-3 z-40 max-w-lg rounded border border-amber-400/40 bg-black/90 text-white shadow-xl">
           <summary className="flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-xs font-medium text-amber-200">
             <AlertTriangle className="h-4 w-4 shrink-0" />
-            {skippedMarkerCount === 0
+            {reviewMarkerCount > 0
+              ? `${reviewMarkerCount} Bed layout${reviewMarkerCount === 1 ? '' : 's'} need review`
+              : skippedMarkerCount === 0
               ? `${recoveredMarkerCount} ThreeD marker snapshot${recoveredMarkerCount === 1 ? '' : 's'} recovered safely`
               : `${skippedMarkerCount} ThreeD marker record${skippedMarkerCount === 1 ? '' : 's'} skipped for safety${recoveredMarkerCount > 0 ? `; ${recoveredMarkerCount} recovered` : ''}`}
           </summary>
           <div className="max-h-72 space-y-2 overflow-y-auto border-t border-white/10 px-3 py-2 text-[11px]">
             <p className="text-white/65">
-              {skippedMarkerCount === 0
+              {markerBuildResult.issues.some(issue => issue.markerType === 'plantings' || issue.outcome === 'review')
+                ? 'Assigned Planting positions are checked against their Beds. See the details below for corrections and layouts that need review before saving.'
+                : skippedMarkerCount === 0
                 ? 'Unsafe saved transforms were kept out of Rapier. The affected marker was loaded at its valid source position.'
                 : 'Skipped records were not sent to the ThreeD Scene or Rapier. Correct or delete the listed records in Admin.'}
             </p>
