@@ -7,9 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production release:** `v0.19.34 — ThreeD Blueprints for Admin ThreeD Models, Animations, Animation Categories, Animation Slots, + ThreeD Characters`, package `0.19.34`, commit `bb1c0d1`, deployment User-confirmed. See the [release notes](docs/releases/v0.19.34.md) and [development record](docs/plans/v0.19.34.md).
-
-> **Release candidate:** `v0.19.35 — ThreeD Scene: Character Interaction UI/UX`, package `0.19.35`, development User-reviewed and accepted. See the [release notes and handoff](docs/releases/v0.19.35.md) and [development record](docs/plans/v0.19.35.md). Build/deployment remain User-owned.
+> **Current production release:** `v0.19.35 — ThreeD Scene: Character Interaction UI/UX`, package `0.19.35`, commit `e24c65e`, deployment User-confirmed. See the [release notes](docs/releases/v0.19.35.md) and [development record](docs/plans/v0.19.35.md).
 
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 
