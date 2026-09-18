@@ -2,9 +2,9 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Current production: **v0.19.37 — ThreeD Projects: Save + Restore State**, deployment User-confirmed.
+Current production: **v0.19.38 — ThreeD Objects: Moving + Placement**, deployment User-confirmed.
 
-- [v0.19.38 — ThreeD Objects: Moving + Placement](v0.19.38.md) — prepared candidate; deployment pending
+- [v0.19.38 — ThreeD Objects: Moving + Placement](v0.19.38.md) — production User-confirmed
 
 - [v0.19.37 — ThreeD Projects: Save + Restore State](v0.19.37.md) — production User-confirmed
 
