@@ -1,6 +1,8 @@
 // src/components/threed/shared/GardenCharacter.tsx
 'use client';
 
+import { useSceneHoverTitle } from '@/components/threed/shared/SceneHoverTitleContext';
+
 import { reportCharacterAnimationAvailability, DETAILS_ANIMATION_ACTIONS } from '@/lib/services/threed/animations/runtime-availability';
 import {
   useRef,
@@ -468,6 +470,7 @@ export function GardenCharacter({
   // UI STATE
   // ======================================================
 
+  const sharedHoverTitle = useSceneHoverTitle();
   const [
     hovered,
     setHovered,
@@ -2207,7 +2210,7 @@ export function GardenCharacter({
           HOVER TOOLTIP
       ================================================= */}
 
-      {hovered && (
+      {hovered && !sharedHoverTitle && (
         <Html
           position={[
             0,
@@ -2215,22 +2218,11 @@ export function GardenCharacter({
             0,
           ]}
           center
-          distanceFactor={
-            10
-          }
+          style={{ pointerEvents: 'none' }}
+          zIndexRange={[10, 0]}
         >
           <div
-            className="
-              bg-black/80
-              text-white
-              px-2
-              py-1
-              rounded
-              text-xs
-              whitespace-nowrap
-              shadow-lg
-              pointer-events-none
-            "
+            className="threed-hover-title"
           >
             {character.name}
           </div>

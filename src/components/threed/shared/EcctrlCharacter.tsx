@@ -3,6 +3,8 @@
 
 'use client';
 
+import { useSceneHoverTitle } from '@/components/threed/shared/SceneHoverTitleContext';
+
 import { reportCharacterAnimationAvailability, DETAILS_ANIMATION_ACTIONS } from '@/lib/services/threed/animations/runtime-availability';
 import { resolveCharacterPhysics } from '@/lib/services/threed/characters/character-physics';
 import {
@@ -1106,23 +1108,25 @@ export function EcctrlCharacter({
         character.visible
     );
 
+  const modelLoadEnabled = character.status === 'active' && Boolean(character.visible);
+
   // Readiness belongs to the specific model object, never a previous load.
   const [posedModel, setPosedModel] = useState<THREE.Group | null>(null);
   const characterVisualReady = !loading && model !== null && posedModel === model;
 
   const runtimeSettlementReportedRef = useRef(false);
-  const runtimeSettlementKey = `${character.id}:${character.model?.filePath ?? 'fallback'}`;
+  const runtimeSettlementKey = `${character.id}:${character.model?.filePath ?? 'fallback'}:${modelLoadEnabled}`;
 
   useEffect(() => {
     runtimeSettlementReportedRef.current = false;
   }, [runtimeSettlementKey]);
 
   useEffect(() => {
-    const hasSafeFallback = !character.model?.filePath || error != null;
+    const hasSafeFallback = !modelLoadEnabled || !character.model?.filePath || error != null;
     if ((!characterVisualReady && !hasSafeFallback) || runtimeSettlementReportedRef.current) return;
     runtimeSettlementReportedRef.current = true;
     onRuntimeSettled?.();
-  }, [character.model?.filePath, error, characterVisualReady, onRuntimeSettled]);
+  }, [modelLoadEnabled, character.model?.filePath, error, characterVisualReady, onRuntimeSettled]);
 
   useEffect(() => {
     if (previousLayerEnabledRef.current === layerEnabled) return;
@@ -1141,6 +1145,7 @@ export function EcctrlCharacter({
     }
   }, [error, layerEnabled, loading, model]);
 
+  const sharedHoverTitle = useSceneHoverTitle();
   const [
     hovered,
     setHovered,
@@ -2344,6 +2349,7 @@ export function EcctrlCharacter({
       )}
 
       {hovered &&
+        !sharedHoverTitle &&
         !isControlled && (
           <Html
             position={[
@@ -2352,22 +2358,11 @@ export function EcctrlCharacter({
               0,
             ]}
             center
-            distanceFactor={
-              10
-            }
+            style={{ pointerEvents: 'none' }}
+            zIndexRange={[10, 0]}
           >
             <div
-              className="
-                bg-black/80
-                text-white
-                px-2
-                py-1
-                rounded
-                text-xs
-                whitespace-nowrap
-                shadow-lg
-                pointer-events-none
-              "
+              className="threed-hover-title"
             >
               {
                 character.name

@@ -364,6 +364,7 @@ function ModelFallback({ position, shape }: {
 // ============================================
 export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange, onGeometryAuditChange, onMaterialInventoryChange, materialPreviewOverride, materialPreviewSelectionId, onEnvironmentCollisionPreviewChange, onRuntimeSettled, onRuntimeError }: ModelMarker3DProps) {
   const [labelHovered, setLabelHovered] = useState(false);
+  const [labelPosition, setLabelPosition] = useState<[number, number, number]>([0, 1.5, 0]);
   const { loadedModel, loading, error } = useModelLoad(model, fitBounds, applyStoredScale);
   const reusableModelId = model.modelId ?? model.id;
   useEffect(() => {
@@ -536,6 +537,10 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
     ];
     if (box.isEmpty() || !values.every(Number.isFinite)) return;
 
+    const labelAnchor = new THREE.Vector3(center.x, box.max.y + 0.15, center.z)
+      .applyMatrix4(visualGroup.matrix.clone().invert());
+    setLabelPosition([labelAnchor.x, labelAnchor.y, labelAnchor.z]);
+
     measurement.reported = true;
     let meshCount = 0;
     let triangleCount = 0;
@@ -670,8 +675,8 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
         ? <RuntimeAdapter object={loadedModel} model={model} />
         : <primitive object={loadedModel} />}
       {name && labelHovered && (
-        <Html position={[0, 1.5, 0]} center transform occlude distanceFactor={1} style={{ pointerEvents: 'none' }} zIndexRange={[10, 0]}>
-          <div className="bg-black/60 text-white px-2 py-0.5 rounded text-[10px] whitespace-nowrap pointer-events-none select-none">
+        <Html position={labelPosition} center style={{ pointerEvents: 'none' }} zIndexRange={[10, 0]}>
+          <div className="threed-hover-title">
             {name}
           </div>
         </Html>

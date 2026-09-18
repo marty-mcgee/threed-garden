@@ -1,6 +1,8 @@
 // components/threed/markers/BedMarker3D.tsx — v0.15.3 "Simplified Static Marker"
 'use client';
 
+import { useSceneHoverTitle } from '@/components/threed/shared/SceneHoverTitleContext';
+
 import { useState } from 'react';
 import { Box, Html, Billboard, Text } from '@react-three/drei';
 
@@ -34,6 +36,7 @@ const SOIL_COLORS: Record<string, string> = {
 };
 
 export function BedMarker3D({ bed, position }: BedMarker3DProps) {
+  const sharedHoverTitle = useSceneHoverTitle();
   const [hovered, setHovered] = useState(false);
 
   const bedWidth = Number(bed.width || bed.widthFeet) || 4;
@@ -74,9 +77,9 @@ export function BedMarker3D({ bed, position }: BedMarker3DProps) {
       </Box>
 
       {/* Tooltip on hover */}
-      {hovered && (
-        <Html position={[0, bedHeight + 0.5, 0]} center distanceFactor={10}>
-          <div className="bg-black/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap pointer-events-none">
+      {hovered && !sharedHoverTitle && (
+        <Html position={[0, bedHeight + 0.5, 0]} center style={{ pointerEvents: 'none' }} zIndexRange={[10, 0]}>
+          <div className="threed-hover-title">
             {bed.name} — {bedWidth}ft × {bedDepth}ft{bed.soilType ? ` — ${bed.soilType}` : ''}
           </div>
         </Html>

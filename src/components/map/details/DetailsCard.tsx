@@ -585,11 +585,14 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
 
       {/* Character Controls — ecctrl runtime take-over (movable characters only) */}
       {!isIncident && (type === 'characters' || type === 'character') && (() => {
-        if (d.isMovable !== true) return null;
+        if (d.isMovable !== true) return <p className="mt-2 rounded bg-white/[0.035] p-2 text-[11px] text-slate-300">Selected Character · Scene-managed movement.</p>;
         const charId = d.id;
-        const isControlling = controlledCharacterId === charId;
+        const isControlling = isSelectedCharacterControlled;
         return (
-          <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
+          <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2" aria-label="Character control">
+            <p role="status" className={`text-[11px] font-medium ${isControlling ? 'text-cyan-200' : 'text-slate-300'}`}>
+              {isControlling ? 'Controlling this Character' : controlledCharacterId != null ? 'Selected · Another Character is controlled' : 'Selected · Control available'}
+            </p>
             {isControlling ? (
               <>
                 {/* <div className="text-[10px] text-blue-300 flex items-center gap-1.5">
@@ -609,6 +612,7 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
                   <div className="space-y-1">
                     {/* <div className="text-[10px] text-white/50">Camera:</div> */}
                     <select
+                      aria-label="Character camera mode"
                       value={cameraMode || 'stationary'}
                       onChange={(e) => { e.stopPropagation(); onCameraModeChange(e.target.value); }}
                       className="w-full bg-white/5 border border-white/10 rounded px-2 py-1 text-[11px] text-white/80 focus:outline-none focus:border-white/30 appearance-none"
@@ -629,7 +633,7 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
               >
                 <span className="flex items-center justify-center gap-1.5">
                   <Gamepad2 className="h-3.5 w-3.5" />
-                  Take Control
+                  {controlledCharacterId != null ? 'Switch Control to this Character' : 'Take Control'}
                 </span>
               </button>
             )}
@@ -637,10 +641,24 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
         );
       })()}
 
+      {!isIncident && (type === 'characters' || type === 'character') && (
+        <details key={`character-help-${selected.id}`} className="mt-2 rounded border border-white/10 bg-white/[0.035] p-1.5">
+          <summary className="cursor-pointer text-xs font-medium text-cyan-100">? Help</summary>
+          <div className="mt-2 space-y-2 text-[11px] text-slate-300">
+            <p>Select a Character to inspect it. Take Control enables movement; selecting another Character does not switch control until you choose Switch Control. Release Control returns movement to the Scene.</p>
+            {isEcctrlCharacter ? <p>WASD to move · Space to jump · Shift to run. Choose the camera mode while controlling this Character.</p> : <p>This Character uses Scene-managed movement. Its available animations can still be played.</p>}
+            <p>Expand Animations, then a Category. Inactive actions are disabled or unavailable in the loaded Character. Check assignments and rig compatibility in Admin. Custom Action Slots play animations only.</p>
+            {!animationAvailability && <p role="status">Waiting for this Character’s animations to load.</p>}
+            {actionTarget && isEcctrlCharacter && <p role="status">{!isSelectedCharacterControlled ? 'Take Control of this Character to interact with the target.' : !hasLiveControlledPosition ? 'Waiting for live Character position…' : targetInteractionReady ? 'Within interaction range.' : 'Move closer to the target to interact.'}</p>}
+            <p>Use Tab to navigate controls and Enter or Space to activate buttons and expand sections. Camera and action controls have accessible labels; hover action buttons for additional guidance.</p>
+          </div>
+        </details>
+      )}
+
       {/* Character Actions — shared semantic animation controls */}
       {!isIncident && (type === 'characters' || type === 'character') && (
         <details key={String(selected.id)} className="mt-2 space-y-1.5 rounded border border-cyan-300/15 bg-white/[0.035] p-1.5">
-          <summary className="cursor-pointer text-xs font-medium text-cyan-100">Animations</summary>
+          <summary className="cursor-pointer text-xs font-medium text-cyan-100">Animations <span className="font-normal text-slate-400">· {animationAvailability ? 'Loaded' : 'Loading'}</span></summary>
           {!animationAvailability && <p className="text-[10px] text-slate-400" role="status">Waiting for animation availability…</p>}
           {/* <div className="text-[10px] font-medium text-white/60">Character Actions</div> */}
 
@@ -763,6 +781,8 @@ export function DetailsCard({ selected, projectId, leftOffsetRem = 0.75, onClose
                 {group.actions.map(({ action, label }) => (
                   <button
                     key={action}
+                    aria-label={`${label}${customActionSlots.find(slot => slot.actionKey === action)?.isActive === false ? ' — Slot disabled' : group.inactive ? ' — Animation unavailable' : isOrchestrationRunning ? ' — Interaction in progress' : actionTarget && THREED_GENERIC_TARGET_ACTIONS.includes(action as any) && !targetInteractionReady ? ' — Take Control and move within interaction range' : ''}`}
+                    title={customActionSlots.find(slot => slot.actionKey === action)?.isActive === false ? 'Slot disabled in Admin' : group.inactive ? 'Animation unavailable in this Character' : isOrchestrationRunning ? 'Wait for the current interaction to finish' : actionTarget && THREED_GENERIC_TARGET_ACTIONS.includes(action as any) && !targetInteractionReady ? 'Take Control and move within interaction range' : customActions.includes(action) ? 'Play animation only' : label}
                     disabled={
                       group.inactive || Boolean(isOrchestrationRunning)
                       || (

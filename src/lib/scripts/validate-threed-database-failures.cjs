@@ -47,10 +47,13 @@ const db = { select() {
   };
   return chain;
 } };
+const readRetry = {};
+vm.runInNewContext(code('src/lib/db/read-retry.ts'), { exports: readRetry });
 const api = {};
 vm.runInNewContext(code('src/app/api/map/threed/route.ts'), {
   exports: api, URL, console: { error() {} },
   require(name) {
+    if (name === '@/lib/db/read-retry') return readRetry;
     if (name === '@/lib/db/connection-diagnostics') return { databaseConnectionDiagnostic: () => ({}) };
     if (name === 'next/server') return { NextResponse: { json: (body, options) => ({ body, status: options?.status ?? 200 }) } };
     if (name === '@/lib/auth') return { auth: async () => ({ user: { id: 'owner' } }) };
@@ -71,13 +74,28 @@ vm.runInNewContext(code('src/app/api/map/threed/route.ts'), {
   assert.equal(failed.body.success, false);
   assert.equal(failed.body.data, undefined);
   assert.equal(queue.length, 0);
+  const disconnect = () => new Error('Failed query', { cause: new Error('Connection terminated unexpectedly') });
+  queue = [...prefix(), disconnect(), [], []];
+  const recovered = await api.GET({ url: 'http://localhost/api/map/threed?projectId=5' });
+  assert.equal(recovered.status, 200);
+  assert.equal(recovered.body.success, true);
+  assert.equal(queue.length, 0);
+  queue = [...prefix(), disconnect(), disconnect()];
+  const persistent = await api.GET({ url: 'http://localhost/api/map/threed?projectId=5' });
+  assert.equal(persistent.status, 500);
+  assert.equal(persistent.body.data, undefined);
+  assert.equal(queue.length, 0);
+  queue = [...prefix(), Object.assign(new Error('Missing column'), { code: '42703' })];
+  const schemaFailure = await api.GET({ url: 'http://localhost/api/map/threed?projectId=5' });
+  assert.equal(schemaFailure.status, 500);
+  assert.equal(queue.length, 0);
   queue = [...prefix(), [], []];
   const empty = await api.GET({ url: 'http://localhost/api/map/threed?projectId=5' });
   assert.equal(empty.status, 200);
   assert.equal(empty.body.success, true);
   assert.equal(empty.body.data.plantings.length, 0);
   assert.equal(queue.length, 0);
-  console.log('PASS: development reloads reuse one attached pool; production creates its own; map read failure returns 500 while a valid empty result remains 200');
+  console.log('PASS: one disconnected asset-read retry recovers, repeated disconnect/schema failure remains 500; development reloads reuse one attached pool; production creates its own; map read failure returns 500 while a valid empty result remains 200');
 })().catch((error) => { console.error(error); process.exitCode = 1; });
 
 const diagnostics = {};

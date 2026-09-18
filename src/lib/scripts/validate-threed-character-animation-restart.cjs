@@ -80,3 +80,28 @@ initializePose();
 assert.equal(ready[0], fresh.mixer.getRoot());
 assert.equal(fresh.action.isRunning(), true);
 console.log('PASS: loading blocks visual readiness; idle first pose is evaluated before the current model becomes ready');
+
+// Execute the actual settlement effect: skipped loads settle; enabled loads wait for first pose.
+let settlement;
+(function find(node) {
+  if (ts.isCallExpression(node) && node.expression.getText(source) === 'useEffect'
+      && node.arguments[0]?.getText(source).includes('const hasSafeFallback')) settlement = node.arguments[0];
+  ts.forEachChild(node, find);
+})(source);
+assert.ok(settlement);
+let reports = 0;
+const settlementContext = {
+  modelLoadEnabled: false, character: { model: { filePath: 'fixture.fbx' } },
+  error: null, characterVisualReady: false, runtimeSettlementReportedRef: { current: false },
+  onRuntimeSettled: () => reports++,
+};
+const settle = vm.runInNewContext(ts.transpileModule(`const result = ${settlement.getText(source)}; result;`, {
+  compilerOptions: { target: ts.ScriptTarget.ES2022 },
+}).outputText, settlementContext);
+settle(); settle(); assert.equal(reports, 1, 'Skipped load reports once');
+settlementContext.modelLoadEnabled = true;
+settlementContext.runtimeSettlementReportedRef.current = false;
+settle(); assert.equal(reports, 1, 'Active load must wait for first pose');
+settlementContext.characterVisualReady = true;
+settle(); assert.equal(reports, 2, 'Ready active load settles');
+console.log('PASS: skipped model loads settle once; active loads retain first-pose gating');

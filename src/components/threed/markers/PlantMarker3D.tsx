@@ -1,6 +1,8 @@
 // components/threed/markers/PlantMarker3D.tsx — v0.15.3 "Simplified Static Marker"
 'use client';
 
+import { useSceneHoverTitle } from '@/components/threed/shared/SceneHoverTitleContext';
+
 import { useState } from 'react';
 import { Sphere, Cylinder, Html, Billboard, Text } from '@react-three/drei';
 
@@ -47,6 +49,7 @@ export function calculatePlantMarkerVisualBounds(growthStage?: string) {
 }
 
 export function PlantMarker3D({ plant, position }: PlantMarker3DProps) {
+  const sharedHoverTitle = useSceneHoverTitle();
   const [hovered, setHovered] = useState(false);
 
   const stage = (plant.growthStage?.toLowerCase()) || 'seedling';
@@ -74,9 +77,9 @@ export function PlantMarker3D({ plant, position }: PlantMarker3DProps) {
       </Sphere>
 
       {/* Tooltip on hover */}
-      {hovered && (
-        <Html position={[0, (shape.stemHeight || 0.25) + (shape.canopySize || 0.12) + 0.5, 0]} center distanceFactor={10}>
-          <div className="bg-black/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap pointer-events-none">
+      {hovered && !sharedHoverTitle && (
+        <Html position={[0, (shape.stemHeight || 0.25) + (shape.canopySize || 0.12) + 0.5, 0]} center style={{ pointerEvents: 'none' }} zIndexRange={[10, 0]}>
+          <div className="threed-hover-title">
             {plant.name}{species ? ` — ${species}` : ''} — {plant.growthStage || 'Unknown'}
           </div>
         </Html>

@@ -1,6 +1,9 @@
 // components/map/ThreeDScene.tsx
 'use client';
 
+import { placeHoverTitle } from '@/lib/services/threed/markers/hover-title-placement';
+import { SceneHoverTitleContext } from '@/components/threed/shared/SceneHoverTitleContext';
+
 import { EnvironmentRegionColliders } from '@/components/threed/shared/EnvironmentRegionColliders';
 import { resolveBallPhysics } from '@/lib/services/threed/models/ball-physics';
 
@@ -531,6 +534,49 @@ function CameraFocusAnimation({ target, controlsRef, onComplete }: any) {
   return null;
 }
 
+function SceneHoverTitlePosition({ markerId, point, labelRef }: {
+  markerId: string | undefined;
+  point: [number, number, number] | undefined;
+  labelRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  const { scene, camera, gl } = useThree();
+  const anchor = useRef<{ object: THREE.Object3D; local: THREE.Vector3 } | null>(null);
+  const obstacleCache = useRef<{ time: number; rectangles: Array<{ x: number; y: number; width: number; height: number }> }>({ time: -Infinity, rectangles: [] });
+  useEffect(() => { anchor.current = null; obstacleCache.current.time = -Infinity; }, [markerId, point]);
+  useFrame(({ clock }) => {
+    const label = labelRef.current;
+    if (!label || !markerId) return;
+    const viewport = gl.domElement.getBoundingClientRect();
+    if (!anchor.current) {
+      const object = scene.getObjectByName(`threed-marker-${markerId}`);
+      if (!object) return;
+      object.updateWorldMatrix(true, true);
+      const box = new THREE.Box3().setFromObject(object);
+      if (box.isEmpty()) return;
+      const center = box.getCenter(new THREE.Vector3());
+      const top = new THREE.Vector3(center.x, box.max.y, center.z);
+      const projectedTop = top.clone().project(camera);
+      const projectedBottom = new THREE.Vector3(center.x, box.min.y, center.z).project(camera);
+      // Large assets use the hovered surface rather than a distant geometry top.
+      const world = point && Math.abs(projectedTop.y - projectedBottom.y) * viewport.height / 2 > 200
+        ? new THREE.Vector3(...point) : top;
+      anchor.current = { object, local: object.worldToLocal(world) };
+    }
+    const projected = anchor.current.object.localToWorld(anchor.current.local.clone()).project(camera);
+    label.style.visibility = projected.z < -1 || projected.z > 1 ? 'hidden' : 'visible';
+    if (clock.elapsedTime - obstacleCache.current.time > 0.15) {
+      obstacleCache.current.time = clock.elapsedTime;
+      obstacleCache.current.rectangles = Array.from(document.querySelectorAll<HTMLElement>('.threed-workspace-panel, [data-scene-hover-obstacle], [class*="z-40"]'))
+        .filter(element => element !== label && element.getClientRects().length > 0)
+        .map(element => { const r = element.getBoundingClientRect(); return { x: r.left - viewport.left, y: r.top - viewport.top, width: r.width, height: r.height }; });
+    }
+    const position = placeHoverTitle({ x: (projected.x + 1) * viewport.width / 2, y: (1 - projected.y) * viewport.height / 2 }, viewport, { width: label.offsetWidth, height: label.offsetHeight }, obstacleCache.current.rectangles);
+    label.style.left = `${position.x}px`;
+    label.style.top = `${position.y}px`;
+  });
+  return null;
+}
+
 // ✅ Incident Marker
 function IncidentMarker3D({ incident, onClick, isSelected }: any) {
   const [hovered, setHovered] = useState(false);
@@ -947,7 +993,6 @@ function ProjectModelMarkerBody({
         <ModelMarker3D
           model={marker.data}
           position={[0, 0, 0]}
-          name={marker.name}
           scale={scale}
           applyStoredScale={false}
           animationSpeed={marker.data?.animationSpeed || 1}
@@ -1331,13 +1376,6 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
             <cylinderGeometry args={[0.08, 0.08, 0.04]} />
             <meshStandardMaterial color="#1f2937" roughness={0.8} />
           </mesh>
-          {hovered && (
-            <Html position={[0, 0.85, 0]} center distanceFactor={8}>
-              <div className="bg-black/80 text-white px-2 py-1 rounded text-xs whitespace-nowrap pointer-events-none">
-                {marker.name} — {fbStatus} — {Math.round(fbData.batteryLevel ?? fbData.battery ?? 50)}%
-              </div>
-            </Html>
-          )}
           {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.5} outerRadius={0.75} />}
           {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={0.72} />}
         </group>
@@ -1520,7 +1558,7 @@ function ShadowLight({ centerX, centerZ, azimuth, elevation }: { centerX: number
   useEffect(() => {
     const light = lightRef.current;
     if (!light) return;
-    // Point the light straight down at the scene center
+    // Aim sunlight at the scene center from the selected direction.
     light.target.position.set(centerX, 0, centerZ);
     light.target.updateMatrixWorld();
     // Set massive frustum
@@ -1532,7 +1570,7 @@ function ShadowLight({ centerX, centerZ, azimuth, elevation }: { centerX: number
     light.shadow.camera.far = 5000;
     light.shadow.camera.updateProjectionMatrix();
     light.shadow.needsUpdate = true;
-  }, [centerX, centerZ]);
+  }, [centerX, centerZ, azimuth, elevation]);
 
   return (
     <directionalLight
@@ -1756,6 +1794,8 @@ export function ThreeDScene({
   const [hasData, setHasData] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
   const [showLegend, setShowLegend] = useState(false);
+  const hoverTitleRef = useRef<HTMLDivElement>(null);
+  const [hoveredSceneMarkerIdentity, setHoveredSceneMarkerIdentity] = useState<{ projectId: typeof projectId; markerId: string; point: [number, number, number] } | null>(null);
   // Start with debug reads disabled even when an old bookmarked URL contains
   // `physicsDebug=1`. The user may enable diagnostics after the Rapier world
   // has mounted successfully through the Controls menu.
@@ -1910,6 +1950,19 @@ export function ThreeDScene({
   const allRequiredCharactersSettled = requiredCharacterMarkerIds.every(
     (markerId) => settledCharacterMarkerIds.has(markerId),
   );
+  useEffect(() => {
+    if (allRequiredCharactersSettled || !allRequiredModelsSettled) return;
+    const timer = setTimeout(() => {
+      console.warn('[ThreeD Character Preparation] Still pending', sceneMarkers
+        .filter(marker => requiredCharacterMarkerIds.includes(String(marker.id))
+          && !settledCharacterMarkerIds.has(String(marker.id)))
+        .map(marker => ({ markerId: String(marker.id), characterId: marker.data?.id,
+          status: marker.data?.status, visible: marker.data?.visible,
+          isMovable: marker.data?.isMovable })));
+    }, 15000);
+    return () => clearTimeout(timer);
+  }, [allRequiredCharactersSettled, allRequiredModelsSettled, characterSettlement, characterSettlementKey, sceneMarkers]);
+
   const characterEnvironmentReadyRef = useRef({
     projectId,
     ready: false,
@@ -2036,10 +2089,10 @@ export function ThreeDScene({
   const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
   const [envPreset, setEnvPreset] = useState<string>(DEFAULT_THREE_D_ENVIRONMENT_PRESET_KEY);
   const [showIncidents, setShowIncidents] = useState(false);
-  const [sunlight, setSunlight] = useState({ azimuth: 0, elevation: 90 });
+  const [sunlight, setSunlight] = useState({ azimuth: 0, elevation: 45 });
   const [extraGround, setExtraGround] = useState({ enabled: false, size: 200, height: -0.1 });
   useEffect(() => {
-    setSunlight(initialViewState?.sunlight ?? { azimuth: 0, elevation: 90 });
+    setSunlight(initialViewState?.sunlight ?? { azimuth: 0, elevation: 45 });
     setExtraGround(initialViewState?.ground ?? { enabled: false, size: 200, height: -0.1 });
   }, [projectId, initialViewState?.sunlight, initialViewState?.ground]);
   const environmentPreset = resolveThreeDEnvironmentPreset(envPreset);
@@ -2131,6 +2184,11 @@ export function ThreeDScene({
     if (type) acc[type] = (acc[type] || 0) + 1;
     return acc;
   }, {});
+
+  const hoveredSceneMarker = hoveredSceneMarkerIdentity && hoveredSceneMarkerIdentity.projectId === projectId
+    ? visibleMarkers.find((marker) => String(marker.id) === hoveredSceneMarkerIdentity.markerId
+      && !isProjectModelEnvironment(marker.metadata))
+    : undefined;
 
   const allAvailableLayersVisible = availableLayers.length > 0
     && availableLayers.every((layer) => activeLayers.has(layer));
@@ -2468,6 +2526,7 @@ export function ThreeDScene({
   };
 
   return (
+    <SceneHoverTitleContext.Provider value={true}>
     <div
       className={`relative w-full ${placementLabel ? 'cursor-crosshair' : ''}`}
       style={{ height, minHeight: '300px' }}
@@ -2480,7 +2539,7 @@ export function ThreeDScene({
         </div>
       )}
       {/* Controls Panel */}
-      <div className="absolute top-3 right-3 z-10 flex flex-col items-end gap-1">
+      <div data-scene-hover-obstacle className="absolute top-3 right-3 z-10 flex flex-col items-end gap-1">
         <button
           onClick={() => setShowControls(!showControls)}
           className="bg-black/60 hover:bg-black/80 text-white px-2 py-1 rounded text-xs backdrop-blur-sm transition-colors flex items-center gap-1.5 border border-white/10"
@@ -2492,6 +2551,35 @@ export function ThreeDScene({
 
         {showControls && (
           <div className="threed-workspace-panel w-48 space-y-0.5 overflow-y-auto rounded-lg border border-white/10 p-1.5 pb-2.5 shadow-xl backdrop-blur-sm [scrollbar-width:thin]">
+            <div className="text-[10px] text-white/60 px-2 py-0.5">Environment</div>
+            <select
+              value={envPreset}
+              onChange={(e) => setEnvPreset(e.target.value)}
+              className="w-full bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white/80 focus:outline-none focus:border-white/30 appearance-none"
+              style={{ scrollbarWidth: 'thin' }}
+            >
+              {THREE_D_ENVIRONMENT_PRESETS.map((preset) => (
+                <option key={preset.key} value={preset.key} className="bg-gray-800 text-white">
+                  {preset.label}
+                </option>
+              ))}
+            </select>
+            <details className="px-2 py-1 text-xs text-white/70">
+              <summary className="cursor-pointer">Sunlight + Ground</summary>
+              <label className="block mt-2">Sun Direction: {sunlight.azimuth}°
+                <input className="w-full" type="range" min="0" max="360" value={sunlight.azimuth} title="Adjust sun direction. An overhead sun lowers to 45° so direction is visible." onChange={e => setSunlight(v => ({...v, azimuth: Number(e.target.value), elevation: v.elevation === 90 ? 45 : v.elevation}))} />
+              </label>
+              <label className="block">Sun Elevation: {sunlight.elevation}°
+                <input className="w-full" type="range" min="5" max="90" value={sunlight.elevation} onChange={e => setSunlight(v => ({...v, elevation: Number(e.target.value)}))} />
+              </label>
+              <label className="block"><input type="checkbox" checked={extraGround.enabled} onChange={e => setExtraGround(v => ({...v, enabled: e.target.checked}))} /> Apply Ground Plane</label>
+              {extraGround.enabled && <div className="space-y-1 mt-1">
+                <label className="flex items-center gap-2"><span className="w-10 shrink-0">Size</span><input aria-label="Ground size" className="min-w-0 flex-1 bg-black/40" type="number" min="10" max="2000" value={extraGround.size} onChange={e => { const n = Number(e.target.value); if (Number.isFinite(n) && n >= 10 && n <= 2000) setExtraGround(v => ({...v, size: n})); }} /></label>
+                <label className="flex items-center gap-2"><span className="w-10 shrink-0">Height</span><input aria-label="Ground height" className="min-w-0 flex-1 bg-black/40" type="number" step="0.1" min="-1000" max="1000" value={extraGround.height} onChange={e => { const n = Number(e.target.value); if (Number.isFinite(n) && Math.abs(n) <= 1000) setExtraGround(v => ({...v, height: n})); }} /></label>
+              </div>}
+              <p className="mt-1 text-[10px]">Save Project to keep settings.</p>
+            </details>
+            <div className="border-t border-white/10 my-1" />
             <button onClick={onAutoRotateToggle} aria-pressed={autoRotate} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${autoRotate ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
               <RotateCw className={`h-3.5 w-3.5 ${autoRotate ? 'animate-spin [animation-duration:4s]' : ''}`} />
               {autoRotate ? 'Pause Rotation' : 'Auto-Rotate'}
@@ -2514,16 +2602,9 @@ export function ThreeDScene({
               <BrickWall className="h-3.5 w-3.5" />
               {physicsDebug ? 'Hide Physics Debug' : 'Show Physics Debug'}
             </button>
-            <button onClick={() => setShowGizmoCube(!showGizmoCube)} aria-pressed={showGizmoCube} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showGizmoCube ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
+            <button onClick={() => setShowGizmoCube(!showGizmoCube)} aria-pressed={showGizmoCube} className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-white/70 transition-colors hover:bg-white/10 hover:text-white">
               <Move3D className="h-3.5 w-3.5" />
               {showGizmoCube ? 'Hide Gizmo' : 'Show Gizmo'}
-            </button>
-            <button
-              onClick={showNorthUpView}
-              className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-white/70 transition-colors hover:bg-white/10 hover:text-white"
-            >
-              <Compass className="h-3.5 w-3.5" />
-              North-Up View
             </button>
             {incidents.length > 0 && (
               <button onClick={() => setShowIncidents(!showIncidents)} aria-pressed={showIncidents} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showIncidents ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
@@ -2532,34 +2613,13 @@ export function ThreeDScene({
               </button>
             )}
             <div className="border-t border-white/10 my-1" />
-            <div className="text-[10px] text-white/60 px-2 py-0.5">Environment</div>
-            <select
-              value={envPreset}
-              onChange={(e) => setEnvPreset(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white/80 focus:outline-none focus:border-white/30 appearance-none"
-              style={{ scrollbarWidth: 'thin' }}
+            <button
+              onClick={showNorthUpView}
+              className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-white/70 transition-colors hover:bg-white/10 hover:text-white"
             >
-              {THREE_D_ENVIRONMENT_PRESETS.map((preset) => (
-                <option key={preset.key} value={preset.key} className="bg-gray-800 text-white">
-                  {preset.label}
-                </option>
-              ))}
-            </select>
-            <details className="px-2 py-1 text-xs text-white/70">
-              <summary className="cursor-pointer">Sunlight + ground</summary>
-              <label className="block mt-2">Sun direction: {sunlight.azimuth}°
-                <input className="w-full" type="range" min="0" max="360" value={sunlight.azimuth} onChange={e => setSunlight(v => ({...v, azimuth: Number(e.target.value)}))} />
-              </label>
-              <label className="block">Sun elevation: {sunlight.elevation}°
-                <input className="w-full" type="range" min="5" max="90" value={sunlight.elevation} onChange={e => setSunlight(v => ({...v, elevation: Number(e.target.value)}))} />
-              </label>
-              <label className="block"><input type="checkbox" checked={extraGround.enabled} onChange={e => setExtraGround(v => ({...v, enabled: e.target.checked}))} /> Larger ground plane</label>
-              {extraGround.enabled && <div className="space-y-1 mt-1">
-                <label className="block">Size<input aria-label="Ground size" className="w-full bg-black/40" type="number" min="10" max="2000" value={extraGround.size} onChange={e => { const n = Number(e.target.value); if (Number.isFinite(n) && n >= 10 && n <= 2000) setExtraGround(v => ({...v, size: n})); }} /></label>
-                <label className="block">Height<input aria-label="Ground height" className="w-full bg-black/40" type="number" step="0.1" min="-1000" max="1000" value={extraGround.height} onChange={e => { const n = Number(e.target.value); if (Number.isFinite(n) && Math.abs(n) <= 1000) setExtraGround(v => ({...v, height: n})); }} /></label>
-              </div>}
-              <p className="mt-1 text-[10px]">Use Project Save to keep these settings.</p>
-            </details>
+              <Compass className="h-3.5 w-3.5" />
+              North-Up View
+            </button>
             <button
               onClick={() => {
                 setSelectedDetails(null);
@@ -2714,9 +2774,15 @@ export function ThreeDScene({
         </div>
       )}
 
+      {hoveredSceneMarker && (
+        <div ref={hoverTitleRef} style={{ visibility: 'hidden' }} className="pointer-events-none absolute z-50 max-w-[calc(100%_-_2rem)] rounded-md border border-white/15 bg-slate-950/45 px-3 py-1.5 text-sm font-medium text-white shadow-sm [text-shadow:0_1px_3px_rgba(0,0,0,0.9)]">
+          <span className="block truncate">{hoveredSceneMarker.name || hoveredSceneMarker.data?.name || hoveredSceneMarker.data?.modelName || 'Scene Asset'}</span>
+        </div>
+      )}
+
       {/* Legend */}
       {hasData && showLegend && Object.keys(typeCounts).length > 0 && (
-        <div className="absolute bottom-3 left-3 z-10 bg-black/70 backdrop-blur-sm text-white p-2 rounded border border-white/10 min-w-[90px]">
+        <div className="absolute bottom-3 left-3 z-50 bg-black/70 backdrop-blur-sm text-white p-2 rounded border border-white/10 min-w-[90px]">
           <div className="text-[10px] font-medium text-white/80 mb-1">Legend</div>
           {(Object.entries(typeCounts) as [string, number][]).map(([type, count]) => (
             <div key={type} className="flex items-center gap-1.5 text-[10px] text-white/70 py-0.5">
@@ -2728,7 +2794,7 @@ export function ThreeDScene({
       )}
 
       <div
-        className={`pointer-events-none absolute left-3 z-10 flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-black/70 text-white shadow-lg backdrop-blur-sm ${showLegend ? 'bottom-24' : 'bottom-3'}`}
+        className={`pointer-events-none absolute left-3 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-black/70 text-white shadow-lg backdrop-blur-sm ${showLegend ? 'bottom-24' : 'bottom-3'}`}
         aria-label="True north compass"
         title={`True north · Project heading ${geographicHeadingDegrees.toFixed(1)}°`}
       >
@@ -2787,6 +2853,7 @@ export function ThreeDScene({
         gl={{ antialias: true, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0 }}
         shadows={{ type: THREE.PCFShadowMap }}
       >
+        <SceneHoverTitlePosition markerId={hoveredSceneMarker ? String(hoveredSceneMarker.id) : undefined} point={hoveredSceneMarkerIdentity?.point} labelRef={hoverTitleRef} />
         <SceneFrameReadyNotifier
           key={presentationKey}
           onReady={() => setPaintedPresentationKey(presentationKey)}
@@ -3012,6 +3079,14 @@ export function ThreeDScene({
               <group
                 key={`threed-marker-${marker.id ?? `${marker.type}-${idx}`}`}
                 name={`threed-marker-${marker.id}`}
+                onPointerOver={(event) => {
+                  if (!markerMatchesPresentationFilter
+                    || !activeLayers.has(normalizeSceneLayerType(marker.type))
+                    || isProjectModelEnvironment(marker.metadata)) return;
+                  setHoveredSceneMarkerIdentity(current => current && current.projectId === projectId && current.markerId === String(marker.id) ? current : { projectId, markerId: String(marker.id), point: [event.point.x, event.point.y, event.point.z] });
+                }}
+                onPointerOut={() => setHoveredSceneMarkerIdentity((current) =>
+                  current?.markerId === String(marker.id) ? null : current)}
                 visible={markerMatchesPresentationFilter && activeLayers.has(normalizeSceneLayerType(marker.type))}
               >
                 <ThreeDMarkerComponent
@@ -3071,5 +3146,6 @@ export function ThreeDScene({
         />
       )}
     </div>
+    </SceneHoverTitleContext.Provider>
   );
 }

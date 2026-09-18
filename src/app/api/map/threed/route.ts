@@ -1,3 +1,4 @@
+import { retryDisconnectedRead } from '@/lib/db/read-retry';
 import { databaseConnectionDiagnostic } from '@/lib/db/connection-diagnostics';
 import { currentModelAssets } from '@/lib/services/threed/models/model-snapshot-assets';
 import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
@@ -173,18 +174,16 @@ export async function GET(request: NextRequest) {
 
       try {
         const assignedAssetCondition = inArray(table.id, ids);
-        const query = db
+        const rawItems = await retryDisconnectedRead(async () => db
           .select(tableName === 'threedModels' ? modelSelection() : getTableColumns(table))
           .from(table)
           .where(
             !includeInactive && table.isActive
               ? and(assignedAssetCondition, eq(table.isActive, true))
               : assignedAssetCondition
-          );
-
-        const rawItems = await query
+          )
           .orderBy(desc(orderField))
-          .limit(limit);
+          .limit(limit));
 
         // ✅ Pre-process: normalize position columns and add metadata fields
         return rawItems.map((item: any) => {
