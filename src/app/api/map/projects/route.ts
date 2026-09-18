@@ -3,11 +3,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
 import { db } from '@/lib/db/client';
-import { project, projectAssets, projectMusic, projectTraffic, projectThreed } from '@/lib/schema/project';
+import { project, projectAssets, projectThreedMarkers, projectMusic, projectTraffic, projectThreed } from '@/lib/schema/project';
 import { music } from '@/lib/schema/music';
 import { threed } from '@/lib/schema/threed';
 import { traffic } from '@/lib/schema/traffic';
-import { eq, and, desc, sql, count } from 'drizzle-orm';
+import { eq, and, desc, sql, count, getTableName } from 'drizzle-orm';
 
 // ============================================
 // GET /api/map/projects - Get projects with map data
@@ -41,6 +41,10 @@ export async function GET(request: NextRequest) {
         )`
     );
 
+    // Explicit identifiers survive Drizzle's single-table SELECT unqualification.
+    const outerProjectId = sql`${sql.identifier(getTableName(project))}.${sql.identifier('id')}`;
+    const outerProjectOwner = sql`${sql.identifier(getTableName(project))}.${sql.identifier('user_id')}`;
+
     // ✅ Build base query for projects
     const query = db
       .select({
@@ -51,12 +55,18 @@ export async function GET(request: NextRequest) {
         isActive: project.isActive,
         isPublic: project.isPublic,
         createdAt: project.createdAt,
+        sceneAssetCount: sql<number>`(
+          SELECT COUNT(*) FROM ${projectThreedMarkers}
+          WHERE ${projectThreedMarkers.projectId} = ${outerProjectId}
+          AND ${projectThreedMarkers.userId} = ${outerProjectOwner}
+          AND ${projectThreedMarkers.isActive} = true
+        )`.as('sceneAssetCount'),
         // ✅ Count assets for this project
         assetCount: sql<number>`(
           SELECT COUNT(*) 
           FROM ${projectAssets} 
-          WHERE ${projectAssets.projectId} = ${project.id}
-          AND ${projectAssets.userId} = ${project.userId}
+          WHERE ${projectAssets.projectId} = ${outerProjectId}
+          AND ${projectAssets.userId} = ${outerProjectOwner}
           AND ${projectAssets.isActive} = true
         )`.as('assetCount'),
       })
@@ -135,6 +145,7 @@ export async function GET(request: NextRequest) {
           hasMusic: moduleCounts.music > 0,
           moduleCounts,
           assetCount: proj.assetCount || 0,
+          sceneAssetCount: proj.sceneAssetCount || 0,
           isActive: proj.isActive,
           isPublic: proj.isPublic,
         };

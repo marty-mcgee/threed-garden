@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.19.35",
+  "version": "0.19.36",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -11,6 +11,7 @@
     "db:push": "drizzle-kit push --force",
     "db:studio": "drizzle-kit studio",
     "farmbot:mqtt-worker": "bun run src/lib/services/threed/mqtt/integrations/farmbot/index.ts",
+    "validate:dashboard-project-discovery": "node src/lib/scripts/validate-dashboard-project-discovery.cjs",
     "typecheck": "tsc --noEmit --pretty false",
     "music:import": "bun run src/lib/data/music/seed.ts",
     "threed:models:manifest:legacy": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/generate-legacy-threed-model-manifest.mts",
