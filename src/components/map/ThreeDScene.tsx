@@ -2111,23 +2111,10 @@ export function ThreeDScene({
     return () => clearTimeout(timeout);
   }, [controlsReady]);
 
-  // ✅ Load presets from localStorage
+  // Named views belong to this Project snapshot, rather than browser-wide storage.
   useEffect(() => {
-    const saved = localStorage.getItem('threed-view-presets');
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        setViewPresets(parsed);
-      } catch (e) {
-        console.error('Failed to load view presets:', e);
-      }
-    }
-  }, []);
-
-  // ✅ Save presets to localStorage
-  useEffect(() => {
-    localStorage.setItem('threed-view-presets', JSON.stringify(viewPresets));
-  }, [viewPresets]);
+    setViewPresets(initialViewState?.viewPresets ?? []);
+  }, [projectId, initialViewState?.viewPresets]);
 
   // Environment selection is Project-scoped. A Project without saved view
   // state must not inherit another Project's browser-wide environment choice.
@@ -2244,10 +2231,13 @@ export function ThreeDScene({
         showGrid,
         showLegend,
         showGizmo: showGizmoCube,
+        showControls,
+        physicsDebug,
+        viewPresets,
       };
     });
     return () => onViewStateProviderChange(null);
-  }, [sunlight, extraGround, activeLayers, autoRotate, availableLayers, controlsReady, envPreset, onViewStateProviderChange, showGizmoCube, showGrid, showLegend]);
+  }, [sunlight, extraGround, activeLayers, autoRotate, availableLayers, controlsReady, envPreset, onViewStateProviderChange, physicsDebug, showControls, showGizmoCube, showGrid, showLegend, viewPresets]);
 
   useEffect(() => {
     if (!controlsReady || !controlsRef.current || !initialViewState) return;
@@ -2282,6 +2272,8 @@ export function ThreeDScene({
     setShowGrid(initialViewState.showGrid);
     setShowLegend(initialViewState.showLegend);
     setShowGizmoCube(initialViewState.showGizmo);
+    setShowControls(initialViewState.showControls ?? false);
+    setPhysicsDebug(initialViewState.physicsDebug ?? false);
     if (Boolean(autoRotate) !== initialViewState.autoRotate) onAutoRotateToggle?.();
     updateGeographicCompass();
   }, [autoRotate, availableLayers, bounds, cameraDistance, centerX, centerZ, controlsReady, initialViewState, onAutoRotateToggle, updateGeographicCompass]);
@@ -2474,7 +2466,11 @@ export function ThreeDScene({
   // ✅ Save current view as preset
   const saveCurrentView = () => {
     if (!controlsRef.current) return;
-    if (!newPresetName.trim()) {
+    if (viewPresets.length >= 50) {
+      alert('A Project can keep up to 50 saved views.');
+      return;
+    }
+    if (!newPresetName.trim() || newPresetName.trim().length > 120) {
       alert('Please enter a name for this view');
       return;
     }

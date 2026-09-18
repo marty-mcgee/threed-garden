@@ -25,6 +25,12 @@ export interface ProjectThreeDViewState {
   showGrid: boolean;
   showLegend: boolean;
   showGizmo: boolean;
+  showControls?: boolean;
+  physicsDebug?: boolean;
+  viewPresets?: Array<{
+    id: string; name: string; position: ProjectVector3; target: ProjectVector3;
+    layers: string[]; createdAt: string;
+  }>;
   sunlight?: { azimuth: number; elevation: number };
   ground?: { enabled: boolean; size: number; height: number };
 }
@@ -42,6 +48,12 @@ export interface ThreeDProjectViewState {
   cameraMode: ProjectCameraMode;
   threeD?: ProjectThreeDViewState;
   map?: ProjectMapViewState;
+  workspace?: {
+    selectedMarkerId: string | null;
+    panel: 'none' | 'summary' | 'assets';
+    assetSearch: string;
+    assetType: string;
+  };
 }
 
 export class ProjectViewStateError extends Error {
@@ -108,6 +120,20 @@ export function resolveRestoredThreeDActiveLayers(
   return Array.from(active);
 }
 
+export function parseProjectViewPresets(value: unknown): NonNullable<ProjectThreeDViewState['viewPresets']> {
+  if (!Array.isArray(value) || value.length > 50) throw new ProjectViewStateError();
+  const ids = new Set<string>();
+  return value.map(candidate => {
+    const preset = record(candidate);
+    if (!preset || typeof preset.id !== 'string' || !preset.id || preset.id.length > 200
+      || ids.has(preset.id) || typeof preset.name !== 'string' || !preset.name.trim() || preset.name.length > 120
+      || typeof preset.createdAt !== 'string' || !Number.isFinite(Date.parse(preset.createdAt))) throw new ProjectViewStateError();
+    ids.add(preset.id);
+    return { id: preset.id, name: preset.name, position: vector(preset.position), target: vector(preset.target),
+      layers: sceneLayers(preset.layers), createdAt: preset.createdAt };
+  });
+}
+
 export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewState {
   const input = record(value);
   if (!input || input.version !== PROJECT_VIEW_STATE_VERSION) throw new ProjectViewStateError();
@@ -129,6 +155,21 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
     cameraMode: input.cameraMode as ProjectCameraMode,
   };
 
+  if (input.workspace !== undefined) {
+    const workspace = record(input.workspace);
+    if (!workspace || !['none', 'summary', 'assets'].includes(String(workspace.panel))) throw new ProjectViewStateError();
+    const text = (value: unknown, limit: number): string => {
+      if (typeof value !== 'string' || value.length > limit) throw new ProjectViewStateError();
+      return value;
+    };
+    result.workspace = {
+      selectedMarkerId: workspace.selectedMarkerId === null ? null : text(workspace.selectedMarkerId, 200),
+      panel: workspace.panel as 'none' | 'summary' | 'assets',
+      assetSearch: text(workspace.assetSearch, 200),
+      assetType: text(workspace.assetType, 80),
+    };
+  }
+
   if (input.threeD !== undefined) {
     const threeD = record(input.threeD);
     if (!threeD) throw new ProjectViewStateError();
@@ -149,6 +190,9 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
       showGrid: boolean(threeD.showGrid),
       showLegend: boolean(threeD.showLegend),
       showGizmo: boolean(threeD.showGizmo),
+      ...(threeD.showControls === undefined ? {} : { showControls: boolean(threeD.showControls) }),
+      ...(threeD.physicsDebug === undefined ? {} : { physicsDebug: boolean(threeD.physicsDebug) }),
+      ...(threeD.viewPresets === undefined ? {} : { viewPresets: parseProjectViewPresets(threeD.viewPresets) }),
       ...(threeD.sunlight === undefined ? {} : { sunlight: {
         azimuth: finite(record(threeD.sunlight)?.azimuth, 0, 360),
         elevation: finite(record(threeD.sunlight)?.elevation, 5, 90),

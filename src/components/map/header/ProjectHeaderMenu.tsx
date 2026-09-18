@@ -93,21 +93,29 @@ export function ProjectHeaderMenu({
       onDismiss();
       triggerRef.current?.focus();
     }}>
-      <Button
-        ref={triggerRef}
-        type="button"
-        variant="ghost"
-        size="sm"
-        className="h-7 gap-1 px-2 text-xs font-medium"
-        aria-expanded={selectedProjectId ? isOpen : undefined}
-        onClick={onTrigger}
-      >
-        <FolderOpen className="h-3.5 w-3.5" />
-        {selectedProjectId ? projectName || `Project #${selectedProjectId}` : 'Select Project'}
-        {isOpen && selectedProjectId
-          ? <ChevronDown className="h-3.5 w-3.5" />
-          : <ChevronRight className="h-3.5 w-3.5" />}
-      </Button>
+      <div className="flex items-center gap-2">
+        <Button
+          ref={triggerRef}
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-7 gap-1 px-2 text-xs font-medium"
+          aria-expanded={selectedProjectId ? isOpen : undefined}
+          onClick={onTrigger}
+        >
+          <FolderOpen className="h-3.5 w-3.5" />
+          {selectedProjectId ? projectName || `Project #${selectedProjectId}` : 'Select Project'}
+          {isOpen && selectedProjectId
+            ? <ChevronDown className="h-3.5 w-3.5" />
+            : <ChevronRight className="h-3.5 w-3.5" />}
+        </Button>
+        {selectedProjectId && (
+          <Button type="button" variant={savingProject ? 'secondary' : 'outline'} size="icon" className="h-7 w-7" disabled={savingProject} aria-label="Save ThreeD Project" title="Save ThreeD Project markers and current view" onClick={onSaveProject}>
+            {savingProject ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5 text-muted-foreground" />}
+          </Button>
+        )}
+
+      </div>
 
       {selectedProjectId && isOpen && (
         <div className="threed-workspace-panel absolute left-0 top-full z-[2000] mt-1 max-h-[70dvh] w-72 max-w-[calc(100vw-2rem)] space-y-2 overflow-y-auto overscroll-contain rounded-lg border p-2 shadow-xl">

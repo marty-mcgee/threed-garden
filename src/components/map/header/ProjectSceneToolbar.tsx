@@ -8,10 +8,8 @@ import {
   Filter,
   Layers,
   ListTree,
-  Loader2,
   Plus,
   RefreshCw,
-  Save,
   ScanSearch,
   Settings,
   Sprout,
@@ -44,8 +42,6 @@ interface ProjectSceneToolbarProps {
   onToggleProjectAssets: () => void;
   hasEnvironment: boolean;
   onOpenEnvironment: () => void;
-  savingProject: boolean;
-  onSaveProject: () => void;
   filterPanelOpen: boolean;
   hasAssetTypeFilter: boolean;
   onToggleFilterPanel: () => void;
@@ -74,8 +70,6 @@ export function ProjectSceneToolbar({
   onToggleProjectAssets,
   hasEnvironment,
   onOpenEnvironment,
-  savingProject,
-  onSaveProject,
   filterPanelOpen,
   hasAssetTypeFilter,
   onToggleFilterPanel,
@@ -161,11 +155,6 @@ export function ProjectSceneToolbar({
 
 
 
-      {selectedProjectId && (
-        <Button type="button" variant={savingProject ? 'secondary' : 'outline'} size="icon" className="h-7 w-7" disabled={savingProject} aria-label="Save ThreeD Project" title="Save ThreeD Project markers and current view" onClick={onSaveProject}>
-          {savingProject ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5 text-muted-foreground" />}
-        </Button>
-      )}
 
       <Button variant={filterPanelOpen ? 'secondary' : 'outline'} size="icon" className="relative h-7 w-7" onClick={onToggleFilterPanel} title="Toggle filter panel">
         <Filter className={`h-3.5 w-3.5 ${filterPanelOpen ? '' : 'text-muted-foreground'}`} />

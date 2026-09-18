@@ -4,6 +4,8 @@ This directory records confirmed production checkpoints, not every development i
 
 Current production: **v0.19.36 — Dashboard Home: Project Discovery UI/UX**, deployment User-confirmed.
 
+- [v0.19.37 — ThreeD Projects: Save + Restore State](v0.19.37.md) — prepared checkpoint, deployment pending
+
 - [v0.19.36 — Dashboard Home: Project Discovery UI/UX](v0.19.36.md) — production User-confirmed
 
 - [v0.19.31 — ThreeD Dashboard: Character Animation Groups + Transparent Panels](v0.19.31.md) — production User-confirmed

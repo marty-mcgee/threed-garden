@@ -188,6 +188,11 @@ function UnifiedMapPageInner() {
   const [data, setData] = useState<UnifiedMapData>(getDefaultMapData());
   const [isDefaultView, setIsDefaultView] = useState(!projectIdParam);
   const [savingProjectMarkers, setSavingProjectMarkers] = useState(false);
+  const saveRequestRef = useRef(0);
+  useEffect(() => {
+    saveRequestRef.current += 1;
+    setSavingProjectMarkers(false);
+  }, [selectedProjectId]);
   const [projectInfo, setProjectInfo] = useState<{ name: string; hasData: boolean } | null>(null);
   const [projectThreeDModules, setProjectThreeDModules] = useState<Array<{
     id: number;
@@ -760,6 +765,7 @@ function UnifiedMapPageInner() {
       return;
     }
 
+    const requestId = ++saveRequestRef.current;
     setSavingProjectMarkers(true);
     try {
       const markers = provider();
@@ -779,6 +785,13 @@ function UnifiedMapPageInner() {
         cameraMode: cameraMode as ThreeDProjectViewState['cameraMode'],
         ...(currentThreeDView ? { threeD: currentThreeDView } : {}),
         ...(currentMapView ? { map: currentMapView } : {}),
+        workspace: {
+          selectedMarkerId: selectedMarker?.id ?? null,
+          // The Project dropdown temporarily hides panels; it is not the saved workspace.
+          panel: isProjectAssetsOpen ? 'assets' : 'none',
+          assetSearch: projectAssetSearch,
+          assetType: projectAssetType,
+        },
       };
       const response = await fetch('/api/project/threed-markers', {
         method: 'PUT',
@@ -790,6 +803,7 @@ function UnifiedMapPageInner() {
         }),
       });
       const result = await response.json().catch(() => null);
+      if (saveRequestRef.current !== requestId) return;
       if (!response.ok || !result?.success) {
         throw new Error(result?.error || `Project save failed (${response.status})`);
       }
@@ -800,6 +814,7 @@ function UnifiedMapPageInner() {
         'success',
       );
     } catch (error) {
+      if (saveRequestRef.current !== requestId) return;
       console.error('Failed to save ThreeD Project marker snapshot', {
         errorName: error instanceof Error ? error.name : 'UnknownError',
       });
@@ -808,9 +823,9 @@ function UnifiedMapPageInner() {
         'error',
       );
     } finally {
-      setSavingProjectMarkers(false);
+      if (saveRequestRef.current === requestId) setSavingProjectMarkers(false);
     }
-  }, [cameraMode, initialProjectViewState, panelHeight, savingProjectMarkers, selectedProjectId, viewMode]);
+  }, [cameraMode, initialProjectViewState, panelHeight, savingProjectMarkers, selectedProjectId, viewMode, selectedMarker, isProjectAssetsOpen, projectAssetSearch, projectAssetType]);
 
   // Phase 5A compatibility bridge: establish the orchestration request
   // lifecycle while preserving immediate animation until proximity is gated.
@@ -2124,6 +2139,20 @@ function UnifiedMapPageInner() {
     () => buildThreeDRuntimeMarkerResult(data.threed.raw).markers,
     [data.threed.raw],
   );
+  const restoredWorkspaceRef = useRef<ThreeDProjectViewState | null>(null);
+  useEffect(() => {
+    if ((viewMode !== '2d' && !isThreeDPresentationComplete) || !initialProjectViewState || restoredWorkspaceRef.current === initialProjectViewState) return;
+    restoredWorkspaceRef.current = initialProjectViewState;
+    const workspace = initialProjectViewState.workspace;
+    setSelectedMarker(workspace?.selectedMarkerId
+      ? projectRuntimeMarkers.find(marker => marker.id === workspace.selectedMarkerId) ?? null
+      : null);
+    setIsProjectSummaryOpen(workspace?.panel === 'summary');
+    setIsProjectAssetsOpen(workspace?.panel === 'assets');
+    setProjectAssetSearch(workspace?.assetSearch ?? '');
+    setProjectAssetType(workspace?.assetType && projectRuntimeMarkers.some(marker => marker.type === workspace.assetType)
+      ? workspace.assetType : 'all');
+  }, [initialProjectViewState, isThreeDPresentationComplete, projectRuntimeMarkers, viewMode]);
   useEffect(() => {
     if (!selectedProjectId || !isThreeDPresentationComplete) {
       setIsProjectSetupOpen(false);
@@ -2368,8 +2397,6 @@ function UnifiedMapPageInner() {
             if (projectEnvironmentMarkers.length > 0) openProjectSetup();
             else void openModelLibrary('environment');
           }}
-          savingProject={savingProjectMarkers}
-          onSaveProject={handleSaveThreeDProject}
           filterPanelOpen={showFilterPanel}
           hasAssetTypeFilter={Boolean(filterAssetType)}
           onToggleFilterPanel={() => setShowFilterPanel((open) => !open)}
@@ -2793,7 +2820,10 @@ function UnifiedMapPageInner() {
       </Card>
 
       {/* ✅ v0.15.2: Details Card — rendered outside map to avoid Leaflet interference */}
-      <div hidden={isProjectSummaryOpen} inert={isProjectSummaryOpen}>
+      <div
+        hidden={isProjectSummaryOpen || (viewMode !== '2d' && !isThreeDPresentationComplete)}
+        inert={isProjectSummaryOpen || (viewMode !== '2d' && !isThreeDPresentationComplete)}
+      >
       <DetailsCard
         selected={selectedMarker || selectedIncident}
         projectId={selectedProjectId}
