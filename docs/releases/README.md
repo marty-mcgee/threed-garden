@@ -2,7 +2,9 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Current production: **v0.19.38 — ThreeD Objects: Moving + Placement**, deployment User-confirmed.
+Current production: **v0.19.39 — ThreeD Characters: Models, Meshes + DetailsCard**, deployment User-confirmed.
+
+- [v0.19.39 — ThreeD Characters: Models, Meshes + DetailsCard](v0.19.39.md) — production User-confirmed
 
 - [v0.19.38 — ThreeD Objects: Moving + Placement](v0.19.38.md) — production User-confirmed
 

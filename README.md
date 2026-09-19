@@ -7,9 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production release:** `v0.19.38 — ThreeD Objects: Moving + Placement`, package `0.19.38`, deployment User-confirmed. Quick Scene repositioning for Models, Plantings, Characters, Beds and FarmBots, plus Bed-relative Planting assignment and selection. See the [release notes](docs/releases/v0.19.38.md) and [development record](docs/plans/v0.19.38.md).
-
-> **In development:** `v0.19.39 — ThreeD Characters: Models, Meshes + DetailsCard`. See the [approved development plan](docs/plans/v0.19.39.md).
+> **Current production release:** `v0.19.39 — ThreeD Characters: Models, Meshes + DetailsCard`, package `0.19.39`, deployment User-confirmed. Character Model fallbacks and readiness now settle reliably, while compact DetailsCards prioritize common actions and organize Model, mesh, defaults, position, physics and animation information. See the [release notes](docs/releases/v0.19.39.md) and [development record](docs/plans/v0.19.39.md).
 
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 
