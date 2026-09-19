@@ -53,3 +53,7 @@ Validation: TypeScript and `node src/lib/scripts/validate-threed-task-bulk.cjs` 
 Tasks refinement: Due Date now has its own column. Title, Type, Priority, Status and Due Date headers toggle server ordering before pagination; requests use an allowlist, fixed direction fragments, NULLS LAST and an ID tie-breaker. Existing callers without a sort retain the previous ordering. Selection resets when sorting changes. Priority and Status render colored text without capsule backgrounds. Selection and Actions are controls, not sortable data. TypeScript, the bulk handler fixture and diff checks passed; live SQL/date ordering and browser appearance remain manual review.
 
 Tasks column order now follows the User request: Title, Due Date, Assigned To, Type, Priority, Status, Active, Actions (with page-selection checkbox first). Assigned To and Active use existing schema fields and server sorting; Active uses a green check/gray cross with accessible text. The Task interface now includes the existing nullable isActive field; no schema change. TypeScript and diff checks passed.
+
+## Scene DetailsCard primary actions
+
+Place the available Save / Move / Delete (or Remove) row immediately after the title and shared shortcuts, before Character Take/Release Control, instance fields, and module-specific features. Keep existing disabled states and module-owned edit/save behavior. This Scene DetailsCard rule applies to Models, Characters, Beds, FarmBots and Plantings.

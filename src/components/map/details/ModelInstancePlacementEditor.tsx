@@ -83,7 +83,59 @@ export function ModelInstancePlacementEditor({
   const editStatus = updating ? 'Saving…' : dirty ? (valid ? 'Unsaved changes' : 'Check fields') : 'Saved';
 
   return (
-    <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
+    <div className="contents">
+      <div className="order-[-10] mt-2 grid grid-cols-3 gap-1.5">
+        <button
+          type="button"
+          disabled={!valid || !dirty || busy}
+          onClick={(event) => {
+            event.stopPropagation();
+            onSave({
+              metadata: { physicsMode: movableBall && placementRole !== 'environment' ? 'ball' : 'fixed', ballPhysics: parsedPhysics },
+              instanceName: instanceName.trim(),
+              scaleMultiplier: parsedScale,
+              rotationY: parsedRotationDegrees * Math.PI / 180,
+              positionX: parsedPosition[0],
+              positionY: parsedPosition[1],
+              positionZ: parsedPosition[2],
+              placementRole,
+            });
+          }}
+          className="flex items-center justify-center gap-1.5 rounded bg-cyan-600/35 px-2 py-1.5 text-[11px] font-medium text-cyan-100 transition-colors hover:bg-cyan-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+        >
+          {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+          Save Placement
+        </button>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={(event) => {
+            event.stopPropagation();
+            onMoveToggle(instanceId, instanceName.trim() || `Model instance #${instanceId}`);
+          }}
+          className="flex items-center justify-center gap-1 rounded bg-amber-600/30 px-1.5 py-1.5 text-[10px] font-medium text-amber-100 transition-colors hover:bg-amber-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+        >
+          <Crosshair className="h-3.5 w-3.5" />
+          {moveActive ? 'Cancel Move' : 'Move Model'}
+        </button>
+        <button
+          type="button"
+          disabled={busy}
+          onClick={(event) => {
+            event.stopPropagation();
+            const name = instanceName.trim() || `Model instance #${instanceId}`;
+            if (!window.confirm(`Delete "${name}" from this ThreeD Project?`)) return;
+            onDelete(instanceId, name);
+          }}
+          className="flex items-center justify-center gap-1.5 rounded bg-red-600/30 px-2 py-1.5 text-[11px] font-medium text-red-100 transition-colors hover:bg-red-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+        >
+          {deleting
+            ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            : <Trash2 className="h-3.5 w-3.5" />}
+          Delete Model
+        </button>
+      </div>
+      <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-cyan-100/75">
           <Box className="h-3.5 w-3.5" />
@@ -179,56 +231,6 @@ export function ModelInstancePlacementEditor({
           {!physicsValid && <p className="text-[10px] text-red-300">Enter values within the allowed ranges.</p>}
         </details>
       )}
-      <div className="grid grid-cols-3 gap-1.5">
-        <button
-          type="button"
-          disabled={!valid || !dirty || busy}
-          onClick={(event) => {
-            event.stopPropagation();
-            onSave({
-              metadata: { physicsMode: movableBall && placementRole !== 'environment' ? 'ball' : 'fixed', ballPhysics: parsedPhysics },
-              instanceName: instanceName.trim(),
-              scaleMultiplier: parsedScale,
-              rotationY: parsedRotationDegrees * Math.PI / 180,
-              positionX: parsedPosition[0],
-              positionY: parsedPosition[1],
-              positionZ: parsedPosition[2],
-              placementRole,
-            });
-          }}
-          className="flex items-center justify-center gap-1.5 rounded bg-cyan-600/35 px-2 py-1.5 text-[11px] font-medium text-cyan-100 transition-colors hover:bg-cyan-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
-        >
-          {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-          Save Placement
-        </button>
-        <button
-          type="button"
-          disabled={busy}
-          onClick={(event) => {
-            event.stopPropagation();
-            onMoveToggle(instanceId, instanceName.trim() || `Model instance #${instanceId}`);
-          }}
-          className="flex items-center justify-center gap-1 rounded bg-amber-600/30 px-1.5 py-1.5 text-[10px] font-medium text-amber-100 transition-colors hover:bg-amber-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
-        >
-          <Crosshair className="h-3.5 w-3.5" />
-          {moveActive ? 'Cancel Move' : 'Move Model'}
-        </button>
-        <button
-          type="button"
-          disabled={busy}
-          onClick={(event) => {
-            event.stopPropagation();
-            const name = instanceName.trim() || `Model instance #${instanceId}`;
-            if (!window.confirm(`Delete "${name}" from this ThreeD Project?`)) return;
-            onDelete(instanceId, name);
-          }}
-          className="flex items-center justify-center gap-1.5 rounded bg-red-600/30 px-2 py-1.5 text-[11px] font-medium text-red-100 transition-colors hover:bg-red-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
-        >
-          {deleting
-            ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            : <Trash2 className="h-3.5 w-3.5" />}
-          Delete Model
-        </button>
       </div>
     </div>
   );

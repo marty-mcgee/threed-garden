@@ -427,6 +427,7 @@ function useCharacterModel(
       !isActive ||
       !character.model?.filePath
     ) {
+      setLoading(false);
       return;
     }
 
@@ -1107,6 +1108,11 @@ export function EcctrlCharacter({
         'active' &&
         character.visible
     );
+
+  useEffect(() => {
+    if (character.status === 'active' && character.visible && character.model?.filePath && error == null) return;
+    return reportCharacterAnimationAvailability(character.id, character.model?.filePath ?? '', []);
+  }, [character.id, character.model?.filePath, character.status, character.visible, error]);
 
   const modelLoadEnabled = character.status === 'active' && Boolean(character.visible);
 
@@ -2629,6 +2635,13 @@ export function EcctrlCharacter({
       {/* --------------------------------------------------
           CHARACTER VISUAL
       -------------------------------------------------- */}
+
+      {layerEnabled && (!character.model?.filePath || error != null) && (
+        <mesh position={[0, -GROUND_OFFSET + (CAPSULE_HALF_HEIGHT + CAPSULE_RADIUS), 0]} castShadow>
+          <cylinderGeometry args={[CAPSULE_RADIUS, CAPSULE_RADIUS, 2 * (CAPSULE_HALF_HEIGHT + CAPSULE_RADIUS), 16]} />
+          <meshStandardMaterial color={({animal:'#D2691E',bird:'#87CEEB',insect:'#32CD32',mythical:'#9370DB',human:'#FFB6C1',robot:'#A9A9A9',decoration:'#FFD700'} as Record<string,string>)[character.type] ?? '#FF69B4'} roughness={0.8} />
+        </mesh>
+      )}
 
       {model && (
         <group

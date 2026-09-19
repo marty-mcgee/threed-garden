@@ -1021,7 +1021,7 @@ function characterSceneSignature(marker: any): string {
     characterId: String(data.characterId ?? ''),
     name: String(data.name ?? marker?.name ?? ''),
     type: String(data.type ?? ''),
-    status: String(data.status ?? ''),
+    status: String(data.status ?? 'active'),
     visible: data.visible !== false,
     isMovable: data.isMovable === true,
     movementType: String(data.movementType ?? ''),
@@ -1061,7 +1061,7 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
     characterSignatureRef.current = signature;
     characterDataRef.current = marker.data;
   }
-  const characterData = characterDataRef.current;
+  const characterData = useMemo(() => ({...characterDataRef.current, status: characterDataRef.current?.status ?? 'active', visible: characterDataRef.current?.visible !== false}), [signature]);
   const position: [number, number, number] = [
     Number(marker.position?.x) || 0,
     Number(marker.position?.y) || 0,

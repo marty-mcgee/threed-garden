@@ -105,3 +105,25 @@ settle(); assert.equal(reports, 1, 'Active load must wait for first pose');
 settlementContext.characterVisualReady = true;
 settle(); assert.equal(reports, 2, 'Ready active load settles');
 console.log('PASS: skipped model loads settle once; active loads retain first-pose gating');
+
+// Execute fallback availability effects from both runtime owners.
+for (const runtime of ['EcctrlCharacter','GardenCharacter']) {
+  const runtimeFile = path.resolve(__dirname, `../../components/threed/shared/${runtime}.tsx`);
+  const tree = ts.createSourceFile(runtimeFile, fs.readFileSync(runtimeFile,'utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
+  let effect;
+  function find(node) {
+    if (ts.isCallExpression(node) && node.expression.getText(tree)==='useEffect' && node.arguments[0]?.getText(tree).includes("character.model?.filePath ?? '', []")) effect=node.arguments[0];
+    ts.forEachChild(node,find);
+  }
+  find(tree); assert.ok(effect);
+  let emptyReports=0,cleanups=0;
+  const context={character:{id:9,model:null,status:'active',visible:true},error:null,modelError:null,previewMode:false,previewClip:null,
+    reportCharacterAnimationAvailability(id,url,actions){assert.equal(id,9);assert.equal(actions.length,0);emptyReports++;return()=>cleanups++;}};
+  const run=vm.runInNewContext(ts.transpileModule(`const result=${effect.getText(tree)};result;`,{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText,context);
+  run()(); assert.equal(emptyReports,1);assert.equal(cleanups,1);
+  context.character.model={filePath:'/active.fbx'};
+  assert.equal(run(),undefined,'Loading/successful Model must retain its own availability reporting');
+  context.error='Failed';context.modelError='Failed';run()();assert.equal(emptyReports,2);
+  if (runtime==='GardenCharacter'){context.previewMode=true;assert.equal(run(),undefined);}
+}
+console.log('PASS: missing/failed Scene Models settle empty animation availability and clean up; successful loading and previews remain isolated');

@@ -64,7 +64,32 @@ export function PlantingInstanceEditor({
   const editStatus = updating ? 'Saving…' : dirty ? (valid ? 'Unsaved changes' : 'Check fields') : 'Saved';
 
   return (
-    <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
+    <div className="contents">
+      <div className="order-[-10] mt-2 grid grid-cols-3 gap-1.5">
+        <button type="button" disabled={!valid || !dirty || updating || deleting}
+          onClick={(event) => { event.stopPropagation(); onSave(markerId, parsed); }}
+          className="flex w-full items-center justify-center gap-1.5 rounded bg-emerald-600/35 px-2 py-1.5 text-[11px] font-medium text-emerald-100 transition-colors hover:bg-emerald-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30">
+          {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+          Save Planting
+        </button>
+        <button type="button" disabled={!valid || updating || deleting || !onMoveToggle} aria-pressed={moveActive}
+          onClick={event=>{event.stopPropagation(); onMoveToggle?.(markerId,{bedId:parsed.bedId,modelScale:parsed.modelScale});}}
+          className="flex items-center justify-center gap-1 rounded bg-amber-600/30 px-1.5 py-1.5 text-[10px] font-medium text-amber-100 hover:bg-amber-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30">
+          <Crosshair className="h-3.5 w-3.5" />{moveActive ? 'Cancel Move' : 'Move Planting'}
+        </button>
+        <button type="button" disabled={updating || deleting}
+          onClick={(event) => {
+            event.stopPropagation();
+            const name = 'this Planting';
+            if (!window.confirm(`Delete ${name} from this ThreeD Project?`)) return;
+            onDelete(markerId, name);
+          }}
+          className="flex w-full items-center justify-center gap-1.5 rounded bg-red-600/30 px-2 py-1.5 text-[11px] font-medium text-red-100 transition-colors hover:bg-red-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30">
+          {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+          Delete Planting
+        </button>
+      </div>
+      <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-100/75">
           <Sprout className="h-3.5 w-3.5" />
@@ -103,29 +128,6 @@ export function PlantingInstanceEditor({
           </label>
         ))}
       </div>
-      <div className="grid grid-cols-3 gap-1.5">
-        <button type="button" disabled={!valid || !dirty || updating || deleting}
-          onClick={(event) => { event.stopPropagation(); onSave(markerId, parsed); }}
-          className="flex w-full items-center justify-center gap-1.5 rounded bg-emerald-600/35 px-2 py-1.5 text-[11px] font-medium text-emerald-100 transition-colors hover:bg-emerald-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30">
-          {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-          Save Planting
-        </button>
-        <button type="button" disabled={!valid || updating || deleting || !onMoveToggle} aria-pressed={moveActive}
-          onClick={event=>{event.stopPropagation(); onMoveToggle?.(markerId,{bedId:parsed.bedId,modelScale:parsed.modelScale});}}
-          className="flex items-center justify-center gap-1 rounded bg-amber-600/30 px-1.5 py-1.5 text-[10px] font-medium text-amber-100 hover:bg-amber-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30">
-          <Crosshair className="h-3.5 w-3.5" />{moveActive ? 'Cancel Move' : 'Move Planting'}
-        </button>
-        <button type="button" disabled={updating || deleting}
-          onClick={(event) => {
-            event.stopPropagation();
-            const name = 'this Planting';
-            if (!window.confirm(`Delete ${name} from this ThreeD Project?`)) return;
-            onDelete(markerId, name);
-          }}
-          className="flex w-full items-center justify-center gap-1.5 rounded bg-red-600/30 px-2 py-1.5 text-[11px] font-medium text-red-100 transition-colors hover:bg-red-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30">
-          {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
-          Delete Planting
-        </button>
       </div>
     </div>
   );

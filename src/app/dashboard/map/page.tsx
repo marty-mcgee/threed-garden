@@ -2440,10 +2440,7 @@ function UnifiedMapPageInner() {
             else openProjectAssets();
           }}
           hasEnvironment={projectEnvironmentMarkers.length > 0}
-          onOpenEnvironment={() => {
-            if (projectEnvironmentMarkers.length > 0) openProjectSetup();
-            else void openModelLibrary('environment');
-          }}
+          onOpenEnvironment={() => openProjectSetup()}
           filterPanelOpen={showFilterPanel}
           hasAssetTypeFilter={Boolean(filterAssetType)}
           onToggleFilterPanel={() => setShowFilterPanel((open) => !open)}

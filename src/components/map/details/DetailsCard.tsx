@@ -439,13 +439,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
     if (d.brokerDeviceId) metaRows.push({ label: 'Broker identity', value: d.brokerDeviceId });
     if (d.lastSeen) metaRows.push({ label: 'Last Seen', value: new Date(d.lastSeen).toLocaleString() });
   }
-  if (type === 'characters' || type === 'character') {
-    if (d.type || d.characterType) metaRows.push({ label: 'Type', value: d.type || d.characterType });
-    if (d.movementType) metaRows.push({ label: 'Movement', value: d.movementType });
-    if (d.movementSpeed != null) metaRows.push({ label: 'Speed', value: `${d.movementSpeed}` });
-    if (d.defaultEmote && d.defaultEmote !== 'none') metaRows.push({ label: 'Emote', value: d.defaultEmote });
-  }
-  if (d.notes || d.description) metaRows.push({ label: 'Notes', value: (d.notes || d.description).slice(0, 80) });
+  if (!isCharacterMarker && (d.notes || d.description)) metaRows.push({ label: 'Notes', value: (d.notes || d.description).slice(0, 80) });
 
   const selectedMarkerId = String(selected.id || '');
   const selectedMarkerIdSuffix = selectedMarkerId.match(/(\d+)$/)?.[1];
@@ -478,15 +472,15 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
 
   return (
     <div
-      className="threed-workspace-panel threed-details-surface fixed top-12 z-[1000] max-h-[calc(100vh-4rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-y-auto rounded-lg border border-white/15 p-2 text-white shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]"
+      className={`flex flex-col threed-workspace-panel threed-details-surface fixed top-12 z-[1000] max-h-[calc(100vh-4rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-y-auto rounded-lg border border-white/15 p-2 text-white shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]`}
       style={{
         left: `${leftOffsetRem}rem`,
+        backgroundColor: 'var(--threed-details-background, rgba(15, 23, 42, 0.5))',
       }}
     >
       {/* Header */}
       <div
-        className="sticky top-0 z-10 -mx-2 -mt-2 flex items-start justify-between gap-2 rounded-t-lg px-2 pb-2 pt-0.5"
-        style={{ backgroundColor: 'var(--threed-panel-background)' }}
+        className="order-[-30] sticky top-0 z-10 -mx-2 -mt-2 flex items-start justify-between gap-2 rounded-t-lg px-2 pb-2 pt-0.5"
       >
         <div className="min-w-0 pb-1 pt-0.5">
           <div className="truncate text-sm font-semibold text-white">
@@ -506,7 +500,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
 
       {!isIncident && <ModelFileNotice type={normalizedType} data={d} />}
 
-      <div className="mt-1.5 flex items-center gap-1">
+      <div className="order-[-20] mt-1.5 flex items-center gap-1">
         {!isIncident && selectedTargetCapabilities && onSetActionTarget && (
           <button
             type="button"
@@ -575,10 +569,44 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
       )}
 
       {/* Metadata grid */}
-      {metaRows.length > 0 && (
+      {metaRows.length > 0 && !(isProjectCharacterInstance && onUpdateCharacterPosition && onDeleteCharacterInstance) && (isCharacterMarker ? (
+        <details className="order-1 mt-2 rounded border border-white/10 bg-white/[0.035] p-2">
+          <summary className="cursor-pointer text-xs font-medium text-cyan-100">Module / Position</summary>
+          <div className="mt-2 space-y-0.5">{metaRows.map((r, i) => <KvRow key={i} label={r.label} value={r.value} />)}</div>
+        </details>
+      ) : (
         <div className="mt-2 space-y-0.5 rounded bg-white/[0.035] p-2">
           {metaRows.map((r, i) => <KvRow key={i} label={r.label} value={r.value} />)}
         </div>
+      ))}
+
+      {isCharacterMarker && (
+        <>
+          <details className="order-5 mt-2 rounded border border-white/10 bg-white/[0.035] p-2">
+            <summary className="cursor-pointer text-xs font-medium text-cyan-100">Model + Mesh</summary>
+            <div className="mt-2 space-y-1">
+              <KvRow label="Assigned Model" value={String(d.model?.modelName || ((d.model?.id ?? d.modelId) ? `Model #${d.model?.id ?? d.modelId}` : 'Basic shape'))} />
+              {d.model?.modelType && <KvRow label="Format" value={String(d.model.modelType).toUpperCase()} />}
+              <KvRow label="Model source" value={d.model?.filePath ? 'File configured' : 'No Model file configured'} />
+              <p className="text-[10px] text-slate-300">A basic shape represents Characters without a usable Model. The visible mesh and physics capsule are separate.</p>
+              {Number(d.model?.id ?? d.modelId) > 0 && (
+                <a className="inline-flex min-h-8 items-center text-xs text-cyan-200 underline underline-offset-2" href={`/admin/threed/models?id=${Number(d.model?.id ?? d.modelId)}`} target="_blank" rel="noopener noreferrer">View Model in Admin</a>
+              )}
+            </div>
+          </details>
+          <details className="order-6 mt-2 rounded border border-white/10 bg-white/[0.035] p-2">
+            <summary className="cursor-pointer text-xs font-medium text-cyan-100">Character Defaults</summary>
+            <div className="mt-2 space-y-1">
+              <KvRow label="Type" value={String(d.type ?? d.characterType ?? 'Unspecified')} />
+              <KvRow label="Control" value={d.isMovable === true ? 'User controllable' : 'Autonomous'} />
+              <KvRow label="Movement" value={String(d.movementType ?? 'stationary')} />
+              {d.movementSpeed != null && <KvRow label="Movement speed" value={String(d.movementSpeed)} />}
+              <KvRow label="Default emote" value={String(d.defaultEmote ?? 'none')} />
+              {(d.notes || d.description) && <p className="text-[10px] text-slate-300">{String(d.notes || d.description)}</p>}
+              <p className="text-[10px] text-slate-400">Manage reusable defaults in Character Admin. Save placement and physics below for this Project instance.</p>
+            </div>
+          </details>
+        </>
       )}
 
       {isFarmBotMarker && (
@@ -597,11 +625,11 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
 
       {/* Character Controls — ecctrl runtime take-over (movable characters only) */}
       {!isIncident && (type === 'characters' || type === 'character') && (() => {
-        if (d.isMovable !== true) return <p className="mt-2 rounded bg-white/[0.035] p-2 text-[11px] text-slate-300">Selected Character · Scene-managed movement.</p>;
+        if (d.isMovable !== true) return <p className="order-2 mt-2 rounded bg-white/[0.035] p-2 text-[11px] text-slate-300">Selected Character · Scene-managed movement.</p>;
         const charId = d.id;
         const isControlling = isSelectedCharacterControlled;
         return (
-          <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2" aria-label="Character control">
+          <div className="order-2 mt-2 space-y-1.5 rounded bg-white/[0.035] p-2" aria-label="Character control">
             <p role="status" className={`text-[11px] font-medium ${isControlling ? 'text-cyan-200' : 'text-slate-300'}`}>
               {isControlling ? 'Controlling this Character' : controlledCharacterId != null ? 'Selected · Another Character is controlled' : 'Selected · Control available'}
             </p>
@@ -653,24 +681,10 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
         );
       })()}
 
-      {!isIncident && (type === 'characters' || type === 'character') && (
-        <details key={`character-help-${selected.id}`} className="mt-2 rounded border border-white/10 bg-white/[0.035] p-1.5">
-          <summary className="cursor-pointer text-xs font-medium text-cyan-100">? Help</summary>
-          <div className="mt-2 space-y-2 text-[11px] text-slate-300">
-            <p>Select a Character to inspect it. Take Control enables movement; selecting another Character does not switch control until you choose Switch Control. Release Control returns movement to the Scene.</p>
-            {isEcctrlCharacter ? <p>WASD to move · Space to jump · Shift to run. Choose the camera mode while controlling this Character.</p> : <p>This Character uses Scene-managed movement. Its available animations can still be played.</p>}
-            <p>Expand Animations, then a Category. Inactive actions are disabled or unavailable in the loaded Character. Check assignments and rig compatibility in Admin. Custom Action Slots play animations only.</p>
-            {!animationAvailability && <p role="status">Waiting for this Character’s animations to load.</p>}
-            {actionTarget && isEcctrlCharacter && <p role="status">{!isSelectedCharacterControlled ? 'Take Control of this Character to interact with the target.' : !hasLiveControlledPosition ? 'Waiting for live Character position…' : targetInteractionReady ? 'Within interaction range.' : 'Move closer to the target to interact.'}</p>}
-            <p>Use Tab to navigate controls and Enter or Space to activate buttons and expand sections. Camera and action controls have accessible labels; hover action buttons for additional guidance.</p>
-          </div>
-        </details>
-      )}
-
       {/* Character Actions — shared semantic animation controls */}
       {!isIncident && (type === 'characters' || type === 'character') && (
-        <details key={String(selected.id)} className="mt-2 space-y-1.5 rounded border border-cyan-300/15 bg-white/[0.035] p-1.5">
-          <summary className="cursor-pointer text-xs font-medium text-cyan-100">Animations <span className="font-normal text-slate-400">· {animationAvailability ? 'Loaded' : 'Loading'}</span></summary>
+        <details key={String(selected.id)} className="order-7 mt-2 space-y-1.5 rounded border border-cyan-300/15 bg-white/[0.035] p-1.5">
+          <summary className="cursor-pointer text-xs font-medium text-cyan-100">Animations <span className="font-normal text-slate-400">· {animationAvailability ? (animationAvailability.size ? 'Loaded' : 'No actions available') : 'Loading'}</span></summary>
           {!animationAvailability && <p className="text-[10px] text-slate-400" role="status">Waiting for animation availability…</p>}
           {/* <div className="text-[10px] font-medium text-white/60">Character Actions</div> */}
 
@@ -974,6 +988,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
           moveActive={movingModuleMarkerId === characterMarkerId}
           onMoveToggle={onMoveModuleToggle}
           markerId={characterMarkerId}
+          metadata={<>{metaRows.filter(row => row.label !== 'Position').map((row, i) => <KvRow key={i} label={row.label} value={row.value} />)}</>}
           movable={d.isMovable === true}
           initialPhysics={selected.metadata?.characterPhysics}
           initialPosition={{

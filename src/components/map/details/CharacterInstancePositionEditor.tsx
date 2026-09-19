@@ -1,11 +1,12 @@
 'use client';
 
 import { CHARACTER_PHYSICS_FIELDS, resolveCharacterPhysics, type CharacterPhysics } from '@/lib/services/threed/characters/character-physics';
-import { useEffect, useState } from 'react';
-import { Crosshair, Loader2, Save, Trash2, User } from 'lucide-react';
+import { useEffect, useState, type ReactNode } from 'react';
+import { Crosshair, Loader2, Save, Trash2 } from 'lucide-react';
 
 export function CharacterInstancePositionEditor({
   markerId,
+  metadata,
   moveActive = false,
   onMoveToggle,
   initialPosition,
@@ -17,6 +18,7 @@ export function CharacterInstancePositionEditor({
   onSave,
   onDelete,
 }: {
+  metadata?: ReactNode;
   moveActive?: boolean;
   onMoveToggle?: (markerId:number) => void;
   markerId: number;
@@ -61,45 +63,8 @@ export function CharacterInstancePositionEditor({
   const editStatus = updating ? 'Saving…' : dirty ? (valid ? 'Unsaved changes' : 'Check fields') : 'Ready to save';
 
   return (
-    <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-violet-100/75">
-          <User className="h-3.5 w-3.5" />
-          Project Character Instance
-        </div>
-        <span className={`text-[9px] ${dirty ? (valid ? 'text-amber-200' : 'text-red-300') : 'text-white/35'}`} aria-live="polite">
-          {disabled ? 'Release Control to edit' : editStatus}
-        </span>
-      </div>
-      <div className="grid grid-cols-3 gap-1.5">
-        {[
-          ['X', positionX, setPositionX],
-          ['Y', positionY, setPositionY],
-          ['Z', positionZ, setPositionZ],
-        ].map(([label, value, setter]) => (
-          <label key={label as string} className="block min-w-0 space-y-1">
-            <span className="text-[9px] text-white/50">Position {label as string}</span>
-            <input
-              type="number"
-              step="0.1"
-              value={value as string}
-              disabled={disabled || updating || deleting}
-              onChange={(event) => (setter as (next: string) => void)(event.target.value)}
-              className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
-            />
-          </label>
-        ))}
-      </div>
-      {movable && <details className="rounded bg-white/5 p-2 text-[11px] text-white/70">
-        <summary className="cursor-pointer">Character physics</summary>
-        <div className="grid grid-cols-2 gap-2 mt-2">
-          {Object.entries(CHARACTER_PHYSICS_FIELDS).map(([key, field]) => <label key={key}>{field.label}
-            <input className="w-full rounded bg-white/5 p-1" type="number" min={field.min} max={field.max} step={field.step} value={physics[key]} disabled={disabled || updating || deleting} onChange={e => setPhysics(v => ({...v, [key]: e.target.value}))} />
-          </label>)}
-        </div>
-        {!physicsValid && <p className="text-red-300">Check physics values.</p>}
-      </details>}
-      <div className="grid grid-cols-3 gap-1.5">
+    <div className="contents">
+      <div className="order-[-10] mt-2 grid grid-cols-3 gap-1.5">
         <button
           type="button"
           disabled={!valid || disabled || updating || deleting}
@@ -131,8 +96,47 @@ export function CharacterInstancePositionEditor({
           Delete Character
         </button>
       </div>
+      <details className="order-4 mt-2 rounded border border-white/10 bg-white/[0.035] p-2">
+        <summary className="cursor-pointer text-xs font-medium text-cyan-100">Module / Position</summary>
+        <div className="mt-2 space-y-1.5">
+        {metadata && <div className="space-y-0.5">{metadata}</div>}
+      <div className="flex items-center justify-between gap-2">
+        <span className={`text-[9px] ${dirty ? (valid ? 'text-amber-200' : 'text-red-300') : 'text-white/35'}`} aria-live="polite">
+          {disabled ? 'Release Control to edit' : editStatus}
+        </span>
+      </div>
+      <div className="grid grid-cols-3 gap-1.5">
+        {[
+          ['X', positionX, setPositionX],
+          ['Y', positionY, setPositionY],
+          ['Z', positionZ, setPositionZ],
+        ].map(([label, value, setter]) => (
+          <label key={label as string} className="block min-w-0 space-y-1">
+            <span className="text-[9px] text-white/50">Position {label as string}</span>
+            <input
+              type="number"
+              step="0.1"
+              value={value as string}
+              disabled={disabled || updating || deleting}
+              onChange={(event) => (setter as (next: string) => void)(event.target.value)}
+              className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+            />
+          </label>
+        ))}
+      </div>
+        </div>
+      </details>
+      {movable && <details className="order-8 mt-2 rounded bg-white/5 p-2 text-[11px] text-white/70">
+        <summary className="cursor-pointer">Character Physics</summary>
+        <div className="grid grid-cols-2 gap-2 mt-2">
+          {Object.entries(CHARACTER_PHYSICS_FIELDS).map(([key, field]) => <label key={key}>{field.label}
+            <input className="w-full rounded bg-white/5 p-1" type="number" min={field.min} max={field.max} step={field.step} value={physics[key]} disabled={disabled || updating || deleting} onChange={e => setPhysics(v => ({...v, [key]: e.target.value}))} />
+          </label>)}
+        </div>
+        {!physicsValid && <p className="text-red-300">Check physics values.</p>}
+      </details>}
       {disabled && (
-        <p className="text-[9px] text-amber-200/75">Release Control before changing the Character position.</p>
+        <p className="order-4 text-[9px] text-amber-200/75">Release Control before changing the Character position.</p>
       )}
     </div>
   );

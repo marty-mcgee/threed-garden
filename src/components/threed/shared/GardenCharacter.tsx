@@ -453,6 +453,11 @@ export function GardenCharacter({
     useState(false);
 
   const runtimeSettlementReportedRef = useRef(false);
+  useEffect(() => {
+    if (previewMode || previewClip || (character.model?.filePath && !modelError)) return;
+    return reportCharacterAnimationAvailability(character.id, character.model?.filePath ?? '', []);
+  }, [character.id, character.model?.filePath, modelError, previewMode, previewClip]);
+
   const runtimeSettlementKey = `${character.id}:${character.model?.filePath ?? 'fallback'}`;
 
   useEffect(() => {

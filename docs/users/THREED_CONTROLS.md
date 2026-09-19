@@ -20,6 +20,20 @@ The Scene **Controls** menu remains responsible for camera presentation, Layers,
 - While controlling a character, use `WASD` to move. The configured controller also supports running and jumping.
 - Idle, walk, run, and task animations use the configured semantic Animation Action Mapping and external FBX clips.
 
+### When Character actions are active
+
+The Details Card reports **Animations · Loaded** when the Character runtime has finished loading animation data. This does not mean that every displayed Action Slot is available. An action becomes active only when all of these conditions are satisfied:
+
+- The Action Slot is active in **Admin → ThreeD → Animation Slots**.
+- The Character has a Character-level animation assignment, or its assigned Model provides an inherited animation default. A Character assignment takes precedence over its Model default.
+- The assigned animation and clip are active and their source file loads successfully.
+- The animation's authored track targets exist on the Character's skeleton. The App validates this binding; it does not automatically retarget an incompatible animation.
+- The loaded runtime exposes the clip under the Action Slot's action key.
+
+Importing an animation into the Library does not assign it to a Character. Use **Admin → ThreeD → Characters → Animations & Preview** to preview a clip against the Character, then assign it to an active Action Slot. **Take Control** enables Ecctrl movement; it does not activate animation assignments. Targeted world actions can additionally require Character control, a valid target, interaction range, and no interaction already running.
+
+If the Details Card says **Loaded** but lists every category as **Inactive**, the runtime completed but none of the displayed Action Slots matched an available loaded action. Check the Character override, its Model defaults, the slot's active state, the animation record/file, and skeleton compatibility. Legacy bundled action fallbacks are limited to Models that have been explicitly verified; the current verified Farmer Female fallback is not automatically assumed compatible with Farmer Male or other rigs.
+
 ## Targeted world actions
 
 Select a valid planting target and choose a supported action from the character's Details Card. Water and Pick Fruit run as one-shot animations. Persistence occurs only after animation completion; a success toast confirms the saved result.
