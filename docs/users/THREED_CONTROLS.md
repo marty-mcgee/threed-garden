@@ -11,7 +11,7 @@ Open `/dashboard/map`, choose a project, and select a ThreeD marker to open its 
 - In 3D or Combined mode, select **Add to Scene** to open the existing Model, Character, FarmBot, Bed, or Planting placement workflow.
 - In 2D-only mode, **Add Model** retains the Map-supported Model placement workflow.
 - While a marker is awaiting placement or a Model is awaiting repositioning, the header shows the active operation. Select its X button to cancel that complete Scene operation.
-- Use the far-right Save icon for quick access to the same **Save ThreeD Project** transaction available in the Project menu. Filter and Refresh remain separate header actions.
+- Use the far-right Save icon for quick access to the same **Save ThreeD Project** transaction available in the Project menu. Project Assets and individual Libraries provide their own scoped search and filtering, while Scene Layers control module visibility.
 
 The toolbar separates Project guidance from live Scene presentation: **Project Tour** owns setup/Help and **Environment** owns Scene presentation. The Details Card remains responsible for the selected marker's actions and editing. See [ThreeD Ground Maps](THREED_GROUND_MAPS.md) for image-ground setup and alignment.
 

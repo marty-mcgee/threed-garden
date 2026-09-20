@@ -4,6 +4,8 @@ This directory is the canonical entry point for project documentation. Choose th
 
 Current production is **v0.19.42 — ThreeD Ground Maps: Image Import + Scene Alignment**, package `0.19.42`, deployment User-confirmed. See the [release record](releases/v0.19.42.md), [production handoff](plans/v0.19.42-release.md), and [Ground Maps guide](users/THREED_GROUND_MAPS.md). The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
+Current release candidate is **v0.19.43 — ThreeD App Legacy Code Cleanup: Project Toolbar**; see the [development record](plans/v0.19.43.md) and [production handoff](plans/v0.19.43-release.md).
+
 Completed release: [v0.19.12 release handoff](plans/v0.19.12-release.md). Future page work follows the [Admin ThreeD workspace blueprint](plans/admin-threed-workspace-blueprint.md).
 
 Read the [App overview analysis at v0.19.11](plans/app-overview-v0.19.11.md) for current functionality, verified issues, validation results and prioritized next work. The older checkpoint paragraphs below are historical summaries.

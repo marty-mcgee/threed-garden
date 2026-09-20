@@ -271,11 +271,11 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
     return (
       <aside 
         className={cn(
-          "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-border dark:border-white/10 bg-background/90 dark:bg-[#020618]/90 backdrop-blur-xl transition-all duration-300",
+          "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-border dark:border-white/10 bg-background/90 dark:bg-[#111A28]/95 backdrop-blur-xl transition-all duration-300",
           isCollapsed ? "w-16" : "w-64"
         )}
       >
-        <div className="flex h-14 items-center justify-between border-b px-3">
+        <div className="flex h-12 items-center justify-between border-b px-3">
           {!isCollapsed && <span className="text-lg font-bold">ThreeD Garden</span>}
           <Button variant="ghost" size="icon" className="ml-auto">
             {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
@@ -304,12 +304,12 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
   return (
     <aside 
       className={cn(
-        "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-border dark:border-white/10 bg-background/90 dark:bg-[#020618]/90 backdrop-blur-xl transition-all duration-300",
+        "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-border dark:border-white/10 bg-background/90 dark:bg-[#111A28]/95 backdrop-blur-xl transition-all duration-300",
         isCollapsed ? "w-16" : "w-64"
       )}
     >
       {/* Logo / Brand */}
-      <div className="flex h-14 shrink-0 items-center justify-between border-b px-3">
+      <div className="flex h-12 shrink-0 items-center justify-between border-b px-3">
         {!isCollapsed && (
           <span className="text-lg font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
             ThreeD Garden

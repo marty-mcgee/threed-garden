@@ -18,7 +18,6 @@ export function useThreeDProjectSessionLoader() {
   const loadSequenceRef = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
 
   const beginProjectTransition = useCallback(() => {
     setLoading(true);
@@ -27,7 +26,6 @@ export function useThreeDProjectSessionLoader() {
   const loadProjectSession = useCallback(async (
     projectId: string | null,
     onOutcome: (outcome: ThreeDProjectSessionLoadOutcome) => void | Promise<void>,
-    options?: { refresh?: boolean },
   ): Promise<void> => {
     const loadSequence = loadSequenceRef.current + 1;
     loadSequenceRef.current = loadSequence;
@@ -35,7 +33,6 @@ export function useThreeDProjectSessionLoader() {
     const abortController = new AbortController();
     abortRef.current = abortController;
     setLoading(true);
-    if (options?.refresh) setRefreshing(true);
 
     try {
       let outcome: ThreeDProjectSessionLoadOutcome = { status: 'default' };
@@ -58,7 +55,6 @@ export function useThreeDProjectSessionLoader() {
       if (loadSequenceRef.current === loadSequence) {
         abortRef.current = null;
         setLoading(false);
-        setRefreshing(false);
       }
     }
   }, []);
@@ -71,7 +67,6 @@ export function useThreeDProjectSessionLoader() {
 
   return {
     loading,
-    refreshing,
     beginProjectTransition,
     loadProjectSession,
   };

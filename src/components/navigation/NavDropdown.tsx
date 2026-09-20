@@ -49,7 +49,7 @@ export default function NavDropdown() {
           </svg>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
+      <DropdownMenuContent align="end" className="threed-app-menu-surface w-56">
         <DropdownMenuItem asChild><Link href="/dashboard">Projects</Link></DropdownMenuItem>
         <DropdownMenuItem asChild><Link href="/admin/settings">Settings</Link></DropdownMenuItem>
         {sections.length > 0 && <DropdownMenuSeparator />}

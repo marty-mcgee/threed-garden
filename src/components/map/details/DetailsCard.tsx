@@ -478,7 +478,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
       className={`flex flex-col threed-workspace-panel threed-details-surface fixed top-12 z-[1000] max-h-[calc(100vh-4rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-y-auto rounded-lg border border-white/15 p-2 text-white shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]`}
       style={{
         left: `${leftOffsetRem}rem`,
-        backgroundColor: 'var(--threed-details-background, rgba(18, 27, 42, 0.5))',
+        backgroundColor: 'var(--threed-details-background, rgba(17, 26, 40, 0.5))',
       }}
     >
       {/* Header */}

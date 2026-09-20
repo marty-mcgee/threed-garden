@@ -68,9 +68,6 @@ interface UnifiedMapViewProps {
   /** Project-owned WGS84 anchor used by both the ThreeD Scene and Leaflet. */
   geographicOrigin?: ThreeDGeographicOrigin | null;
   visibleAssetTypes?: Set<string>;
-  filterText?: string;
-  filterActiveOnly?: boolean;
-  filterAssetType?: string | null;
   /** ID of the ecctrl character currently being controlled */
   controlledCharacterId?: number | null;
   /** Called when an ecctrl character's control state changes */
@@ -188,9 +185,6 @@ export function UnifiedMapView({
   gpsCenter = { lat: 39.514719, lng: -123.760382 },
   geographicOrigin = null,
   visibleAssetTypes,
-  filterText = '',
-  filterActiveOnly = false,
-  filterAssetType = null,
   controlledCharacterId,
   onControlChange,
   cameraMode,
@@ -413,43 +407,16 @@ export function UnifiedMapView({
     return () => onRuntimeMarkerPositionResolverChange(null);
   }, [onRuntimeMarkerPositionResolverChange, resolveRuntimeMarkerPosition]);
 
-  // ✅ v0.13.0-beta: Apply text, active-only, and asset-type filters
+  // Apply current Layer and module-visibility presentation rules.
   const filteredMarkers = useMemo(() => {
     return runtimeMarkers.filter((marker) => {
       const layerConfig = layers.threed[marker.type as keyof typeof layers.threed];
       if (!layerConfig?.enabled || !layerConfig?.visible) return false;
       if (visibleAssetTypes && visibleAssetTypes.size > 0 && !visibleAssetTypes.has(marker.type)) return false;
-
-      // Text filter: match marker name or type
-      if (filterText) {
-        const query = filterText.toLowerCase();
-        if (!marker.name.toLowerCase().includes(query) && !marker.type.toLowerCase().includes(query)) {
-          return false;
-        }
-      }
-
-      // Active-only filter
-      if (filterActiveOnly && !marker.isActive) return false;
-
-      // Asset type quick filter (from stat cards)
-      if (filterAssetType) {
-        const typeLower = filterAssetType.toLowerCase();
-        // Map display labels back to marker types
-        const typeMap: Record<string, string> = {
-          'plantings': 'planting',
-          'beds': 'bed',
-          'characters': 'character',
-          'farmbots': 'farmbot',
-        };
-        const targetType = typeMap[typeLower] || typeLower;
-        if (marker.type !== targetType) return false;
-      }
-
       return true;
     });
-  }, [runtimeMarkers, layers, visibleAssetTypes, filterText, filterActiveOnly, filterAssetType]);
+  }, [runtimeMarkers, layers, visibleAssetTypes]);
 
-  // ✅ v0.13.0-beta: Apply text filter to incidents too
   // ✅ v0.15.2: Normalize GPS column names and assign unique composite keys
   // Traffic tables use serial IDs that collide across collections (CHP CAD id=3 ≠ Caltrans id=3)
   const filteredIncidents = useMemo(() => {
@@ -463,40 +430,8 @@ export function UnifiedMapView({
       }))
     );
 
-    if (!filterText && !filterAssetType) return allIncidents;
-
-    return allIncidents.filter((incident: any) => {
-      // Text filter
-      if (filterText) {
-        const query = filterText.toLowerCase();
-        const title = (incident.title || '').toLowerCase();
-        const location = (incident.location || '').toLowerCase();
-        if (!title.includes(query) && !location.includes(query)) return false;
-      }
-
-      // Asset type filter for traffic
-      if (filterAssetType) {
-        const typeLower = filterAssetType.toLowerCase();
-        const sourceMap: Record<string, string> = {
-          'chp cad': 'chpCadIncidents',
-          'chp cases': 'chpCases',
-          'chp centers': 'chpCenters',
-          'caltrans closures': 'caltransLaneClosures',
-          'cctv': 'caltransCctvCameras',
-          'districts': 'caltransDistricts',
-          '511 events': 'bayArea511Events',
-          'calfire': 'calfireIncidents',
-        };
-        // This is approximate since incidents don't carry their source collection name clearly
-        // We'll match against the incident source field
-        const sourceLower = (incident.source || '').toLowerCase();
-        const matchedSource = sourceMap[typeLower];
-        if (!matchedSource || !sourceLower.includes(typeLower.split(' ')[0])) return false;
-      }
-
-      return true;
-    });
-  }, [data.traffic.raw, filterText, filterAssetType]);
+    return allIncidents;
+  }, [data.traffic.raw]);
 
   const handleIncidentClick = useCallback((incident: TrafficIncident) => {
     // Use composite key for uniqueness across traffic collections

@@ -244,7 +244,7 @@
 
 /* Shared Dashboard Scene surfaces; scoped to explicitly opted-in panels. */
 .threed-workspace-panel {
-  --threed-panel-background: rgba(15, 23, 42, 0.96);
+  --threed-panel-background: rgba(17, 26, 40, 0.96);
   background-color: var(--threed-panel-background);
   border-color: rgba(148, 163, 184, 0.3);
   color: #f1f5f9;
@@ -270,13 +270,13 @@
 }
 
 .threed-workspace-panel.threed-details-surface {
-  --threed-details-background: rgba(18, 27, 42, 0.5);
+  --threed-details-background: rgba(17, 26, 40, 0.5);
   transition: background-color 150ms ease, left 150ms ease;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 .threed-details-surface:hover,
 .threed-details-surface:focus-within {
-  --threed-details-background: rgba(18, 27, 42, 0.82);
+  --threed-details-background: rgba(17, 26, 40, 0.82);
 }
 .threed-details-surface input,
 .threed-details-surface select {
@@ -284,13 +284,33 @@
 }
 
 /* Project Toolbar dropdowns share the DetailsCard color and transparency. */
+.threed-app-header {
+  background: #111a28;
+  color: #f8fafc;
+  backdrop-filter: blur(16px);
+}
+.threed-project-toolbar {
+  background: #0b0b0b;
+  color: #f8fafc;
+}
+.threed-app-menu-surface {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(17, 26, 40, 0.96);
+  color: #f8fafc;
+  backdrop-filter: blur(16px);
+}
+.threed-app-menu-surface [data-slot="dropdown-menu-item"]:focus,
+.threed-app-menu-surface [data-slot="dropdown-menu-sub-trigger"]:focus {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
 .threed-workspace-panel.threed-toolbar-dropdown-surface {
-  --threed-panel-background: rgba(18, 27, 42, 0.5);
+  --threed-panel-background: rgba(17, 26, 40, 0.5);
   transition: background-color 150ms ease;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 .threed-workspace-panel.threed-scene-panel-surface {
-  --threed-panel-background: rgba(18, 27, 42, 0.5);
+  --threed-panel-background: rgba(17, 26, 40, 0.5);
   transition: background-color 150ms ease;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
@@ -298,7 +318,7 @@
 .threed-toolbar-dropdown-surface:focus-within,
 .threed-scene-panel-surface:hover,
 .threed-scene-panel-surface:focus-within {
-  --threed-panel-background: rgba(18, 27, 42, 0.82);
+  --threed-panel-background: rgba(17, 26, 40, 0.82);
 }
 .threed-toolbar-dropdown-surface input,
 .threed-toolbar-dropdown-surface select,
@@ -310,8 +330,8 @@
   .threed-workspace-panel.threed-details-surface,
   .threed-workspace-panel.threed-toolbar-dropdown-surface,
   .threed-workspace-panel.threed-scene-panel-surface {
-    --threed-details-background: rgba(18, 27, 42, 0.82);
-    --threed-panel-background: rgba(18, 27, 42, 0.82);
+    --threed-details-background: rgba(17, 26, 40, 0.82);
+    --threed-panel-background: rgba(17, 26, 40, 0.82);
   }
 }
 @media (prefers-reduced-motion: reduce) {

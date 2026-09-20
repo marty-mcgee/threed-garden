@@ -5,12 +5,10 @@ import {
   Box,
   ChevronDown,
   ChevronUp,
-  Filter,
   Layers,
   ListTree,
   Loader2,
   Plus,
-  RefreshCw,
   Save,
   ScanSearch,
   Settings,
@@ -44,11 +42,6 @@ interface ProjectSceneToolbarProps {
   onToggleProjectAssets: () => void;
   projectTourOpen: boolean;
   onOpenProjectTour: () => void;
-  filterPanelOpen: boolean;
-  hasAssetTypeFilter: boolean;
-  onToggleFilterPanel: () => void;
-  refreshing: boolean;
-  onRefresh: () => void;
   savingProject: boolean;
   onSaveProject: () => void;
 }
@@ -74,11 +67,6 @@ export function ProjectSceneToolbar({
   onToggleProjectAssets,
   projectTourOpen,
   onOpenProjectTour,
-  filterPanelOpen,
-  hasAssetTypeFilter,
-  onToggleFilterPanel,
-  refreshing,
-  onRefresh,
   savingProject,
   onSaveProject,
 }: ProjectSceneToolbarProps) {
@@ -168,15 +156,6 @@ export function ProjectSceneToolbar({
 
 
 
-
-      <Button variant={filterPanelOpen ? 'secondary' : 'outline'} size="icon" className="relative h-7 w-7" onClick={onToggleFilterPanel} title="Toggle filter panel">
-        <Filter className={`h-3.5 w-3.5 ${filterPanelOpen ? '' : 'text-muted-foreground'}`} />
-        {hasAssetTypeFilter && <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-primary" />}
-      </Button>
-
-      <Button variant={refreshing ? 'secondary' : 'outline'} size="icon" className="h-7 w-7" onClick={onRefresh} disabled={refreshing} title="Refresh data">
-        <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : 'text-muted-foreground'}`} />
-      </Button>
 
       {selectedProjectId && (
         <Button type="button" variant={savingProject ? 'secondary' : 'outline'} size="icon" className="h-7 w-7" disabled={savingProject} aria-label="Save ThreeD Project" title="Save ThreeD Project markers and current view" onClick={onSaveProject}>

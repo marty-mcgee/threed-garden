@@ -47,7 +47,6 @@ import {
   type ThreeDPlantingPlacementDraft,
 } from '@/components/map/panels/ThreeDPlantingPlacementPanel';
 import { ProjectSetupPanel } from '@/components/map/panels/ProjectSetupPanel';
-import { ThreeDSceneFilterPanel } from '@/components/map/panels/ThreeDSceneFilterPanel';
 import { ThreeDProjectLoadingPresentation } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
 import { getDefaultMapData, getDefaultLayers } from '@/lib/services/map/DefaultMapData';
 import {
@@ -177,7 +176,6 @@ function UnifiedMapPageInner() {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(projectIdParam);
   const {
     loading,
-    refreshing,
     beginProjectTransition,
     loadProjectSession,
   } = useThreeDProjectSessionLoader();
@@ -911,12 +909,6 @@ function UnifiedMapPageInner() {
     });
   }, [controlledCharacterId]);
 
-  // ✅ Advanced Filtering Panel State
-  const [showFilterPanel, setShowFilterPanel] = useState(false);
-  const [filterText, setFilterText] = useState('');
-  const [filterActiveOnly, setFilterActiveOnly] = useState(false);
-  const [filterAssetType, setFilterAssetType] = useState<string | null>(null); // Single type filter from stat card clicks
-
   // ✅ Asset type visibility state
   const [visibleAssetTypes] = useState<Set<string>>(
     new Set(['plantings', 'beds', 'characters', 'farmbots', 'models'])
@@ -941,7 +933,6 @@ function UnifiedMapPageInner() {
     setSelectedProjectId(projectId);
     setIsProjectSummaryOpen(false);
     setIsDefaultView(false);
-    setFilterAssetType(null); // Reset filter on project change
     setActionTarget(null); // Action targets are scoped to the current project.
     setOrchestrationStatus(null);
     setLiveControlledCharacterPosition(null);
@@ -979,24 +970,12 @@ function UnifiedMapPageInner() {
     setSelectedMarker(marker);
   }, []);
 
-  // ✅ Interactive stat card click handler
-  const handleStatCardClick = (typeLabel: string) => {
-    // Toggle: if already active, clear filter; otherwise set it
-    if (filterAssetType === typeLabel) {
-      setFilterAssetType(null);
-      showToast(`Showing all asset types`, 'info');
-    } else {
-      setFilterAssetType(typeLabel);
-      showToast(`Filtered to: ${typeLabel}`, 'info');
-    }
-  };
-
   // ✅ Stabilize showToast via ref to prevent re-render loops
   const showToastRef = useRef(showToast);
   showToastRef.current = showToast;
 
   // Keep the client-side action target aligned with refreshed project data.
-  // Filters do not affect raw project assets, so hiding a target never clears it.
+  // Keep action targeting aligned with the unfiltered Project asset authority.
   useEffect(() => {
     if (!actionTarget || loading) return;
     const targetStillExists = buildThreeDRuntimeMarkerResult(data.threed.raw).markers.some((marker) =>
@@ -1189,7 +1168,7 @@ function UnifiedMapPageInner() {
   }, [selectedProjectId]);
 
   // ✅ Load the active Project through the sequenced session boundary.
-  const loadData = useCallback(async (options?: { refresh?: boolean }) => {
+  const loadData = useCallback(async () => {
     await loadProjectSession(selectedProjectId, (outcome) => {
       try {
       if (outcome.status === 'default') {
@@ -1243,7 +1222,7 @@ function UnifiedMapPageInner() {
         setData(getDefaultMapData());
         showToastRef.current('Failed to load data', 'error');
       }
-    }, options);
+    });
   }, [loadProjectSession, selectedProjectId]);
 
   const handleModelPlacement = useCallback(async (
@@ -2179,12 +2158,6 @@ function UnifiedMapPageInner() {
     loadData();
   }, [loadData]);
 
-  const handleRefresh = async () => {
-    await loadData({ refresh: true });
-    setLastUpdated(new Date());
-    showToast('Data refreshed', 'success');
-  };
-
   const projectRuntimeMarkers = useMemo(
     () => buildThreeDRuntimeMarkerResult(data.threed.raw).markers,
     [data.threed.raw],
@@ -2356,7 +2329,7 @@ function UnifiedMapPageInner() {
       />
 
       {/* ✅ Header with Live Data Status Indicator */}
-      <div className="m-0 flex flex-wrap items-center justify-between gap-4 px-0.5 py-1">
+      <div className="threed-project-toolbar m-0 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-0.5 py-1">
         
         <ProjectHeaderMenu
           selectedProjectId={selectedProjectId}
@@ -2447,11 +2420,6 @@ function UnifiedMapPageInner() {
             setProjectSetupSessionProjectId(selectedProjectId);
             openProjectSetup();
           }}
-          filterPanelOpen={showFilterPanel}
-          hasAssetTypeFilter={Boolean(filterAssetType)}
-          onToggleFilterPanel={() => setShowFilterPanel((open) => !open)}
-          refreshing={refreshing}
-          onRefresh={handleRefresh}
           savingProject={savingProjectMarkers}
           onSaveProject={handleSaveThreeDProject}
         />
@@ -2665,23 +2633,6 @@ function UnifiedMapPageInner() {
           setIsPlantingPlacementOpen(false);
         }}
       />
-      <div>
-        <ThreeDSceneFilterPanel
-          isOpen={showFilterPanel}
-          text={filterText}
-          activeOnly={filterActiveOnly}
-          assetType={filterAssetType}
-          onTextChange={setFilterText}
-          onActiveOnlyChange={setFilterActiveOnly}
-          onAssetTypeChange={handleStatCardClick}
-          onClear={() => {
-            setFilterText('');
-            setFilterActiveOnly(false);
-            setFilterAssetType(null);
-          }}
-        />
-      </div>
-
       {/* ✅ Map Container */}
       <Card>
         <CardContent className="p-0 overflow-hidden">
@@ -2713,9 +2664,6 @@ function UnifiedMapPageInner() {
                       selectedMarker={selectedMarker}
                       height="100%"
                       visibleAssetTypes={visibleAssetTypes}
-                      filterText={filterText}
-                      filterActiveOnly={filterActiveOnly}
-                      filterAssetType={filterAssetType}
                       controlledCharacterId={controlledCharacterId}
                       onControlChange={handleControlChange}
                       cameraMode={cameraMode}
@@ -2775,9 +2723,6 @@ function UnifiedMapPageInner() {
                       selectedMarker={selectedMarker}
                       height="100%"
                       visibleAssetTypes={visibleAssetTypes}
-                      filterText={filterText}
-                      filterActiveOnly={filterActiveOnly}
-                      filterAssetType={filterAssetType}
                       controlledCharacterId={controlledCharacterId}
                       placementModel={placementModel}
                       onModelPlacement={handleModelPlacement}
@@ -2806,9 +2751,6 @@ function UnifiedMapPageInner() {
                 selectedMarker={selectedMarker}
                 height="100%"
                 visibleAssetTypes={visibleAssetTypes}
-                filterText={filterText}
-                filterActiveOnly={filterActiveOnly}
-                filterAssetType={filterAssetType}
                 controlledCharacterId={controlledCharacterId}
                 onControlChange={handleControlChange}
                 cameraMode={cameraMode}
@@ -2854,9 +2796,6 @@ function UnifiedMapPageInner() {
                 selectedMarker={selectedMarker}
                 height="100%"
                 visibleAssetTypes={visibleAssetTypes}
-                filterText={filterText}
-                filterActiveOnly={filterActiveOnly}
-                filterAssetType={filterAssetType}
                 controlledCharacterId={controlledCharacterId}
                 onControlChange={handleControlChange}
                 placementModel={placementModel}
