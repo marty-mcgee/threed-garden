@@ -2,9 +2,9 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Current production: **v0.19.39 — ThreeD Characters: Models, Meshes + DetailsCard**, deployment User-confirmed.
+Current production: **v0.19.40 — Admin Settings: Personal Workspace Preferences**, deployment User-confirmed.
 
-- [v0.19.40 — Admin Settings: Personal Workspace Preferences](v0.19.40.md) — release candidate; local checkpoint User-reviewed
+- [v0.19.40 — Admin Settings: Personal Workspace Preferences](v0.19.40.md) — production User-confirmed
 
 - [v0.19.39 — ThreeD Characters: Models, Meshes + DetailsCard](v0.19.39.md) — production User-confirmed
 

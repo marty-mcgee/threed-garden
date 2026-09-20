@@ -7,7 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production release:** `v0.19.39 — ThreeD Characters: Models, Meshes + DetailsCard`, package `0.19.39`, deployment User-confirmed. Character Model fallbacks and readiness now settle reliably, while compact DetailsCards prioritize common actions and organize Model, mesh, defaults, position, physics and animation information. See the [release notes](docs/releases/v0.19.39.md) and [development record](docs/plans/v0.19.39.md).
+> **Current production release:** `v0.19.40 — Admin Settings: Personal Workspace Preferences`, package `0.19.40`, deployment User-confirmed. Signed-in Users can persist working appearance and navigation preferences through authenticated, owner-scoped Settings while unsupported execution switches remain excluded. See the [release notes](docs/releases/v0.19.40.md), [development record](docs/plans/v0.19.40.md), and [Settings guide](docs/users/SETTINGS.md).
 
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 
