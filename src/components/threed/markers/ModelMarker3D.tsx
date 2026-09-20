@@ -108,6 +108,8 @@ interface ModelMarker3DProps {
   onCollisionBoundsChange?: (bounds: ModelCollisionBounds | null) => void;
   /** Reports bounded post-transform geometry diagnostics without creating physics. */
   onGeometryAuditChange?: (audit: ModelGeometryAudit | null) => void;
+  /** Builds a bounded static surface candidate for a caller-owned fixed collider. */
+  enableSurfaceCollider?: boolean;
   /** Reports loaded mesh/material slots for opt-in Admin inspection only. */
   onMaterialInventoryChange?: (inventory: ThreeDModelMaterialInventory | null) => void;
   /** Applies one temporary Admin-preview Base Color map without mutating persisted Model data. */
@@ -362,7 +364,7 @@ function ModelFallback({ position, shape }: {
 // ============================================
 // COMPONENT
 // ============================================
-export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange, onGeometryAuditChange, onMaterialInventoryChange, materialPreviewOverride, materialPreviewSelectionId, onEnvironmentCollisionPreviewChange, onRuntimeSettled, onRuntimeError }: ModelMarker3DProps) {
+export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange, onGeometryAuditChange, enableSurfaceCollider = false, onMaterialInventoryChange, materialPreviewOverride, materialPreviewSelectionId, onEnvironmentCollisionPreviewChange, onRuntimeSettled, onRuntimeError }: ModelMarker3DProps) {
   const [labelHovered, setLabelHovered] = useState(false);
   const [labelPosition, setLabelPosition] = useState<[number, number, number]>([0, 1.5, 0]);
   const { loadedModel, loading, error } = useModelLoad(model, fitBounds, applyStoredScale);
@@ -473,7 +475,7 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
       onGeometryAuditChange?.(null);
       onEnvironmentCollisionPreviewChange?.(null);
     };
-  }, [loadedModel, onCollisionBoundsChange, onEnvironmentCollisionPreviewChange, onGeometryAuditChange, scale]);
+  }, [enableSurfaceCollider, loadedModel, onCollisionBoundsChange, onEnvironmentCollisionPreviewChange, onGeometryAuditChange, scale]);
 
   useFrame(() => {
     const job = regionJobRef.current;
@@ -599,7 +601,7 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
       hasFiniteBounds: values.every(Number.isFinite),
     };
     let surfaceDiagnostic: ModelGeometryAudit['surfaceDiagnostic'];
-    const surfaceCollider = onEnvironmentCollisionPreviewChange
+    const surfaceCollider = enableSurfaceCollider
       ? buildEnvironmentSurfaceCollider(loadedModel, visualGroup.parent, diagnostic => { surfaceDiagnostic = diagnostic; })
       : null;
     const audit: ModelGeometryAudit = {

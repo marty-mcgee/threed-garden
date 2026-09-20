@@ -29,7 +29,9 @@ import { BedInstanceEditor } from './BedInstanceEditor';
 import { CharacterNavigationControls } from './CharacterNavigationControls';
 import { CharacterInstancePositionEditor } from './CharacterInstancePositionEditor';
 import { ModelInstancePlacementEditor } from './ModelInstancePlacementEditor';
+import { resolveProjectModelCollisionMode } from '@/lib/services/threed/models/project-model-instance-core';
 import { PlantingInstanceEditor } from './PlantingInstanceEditor';
+import { DetailsCardSection } from './DetailsCardSection';
 
 function ModelFileNotice({ type, data }: { type: string; data: Record<string, any> }) {
   const { data: session, status: sessionStatus } = useSession();
@@ -156,10 +158,9 @@ function FarmBotMqttStatusSummary({
     && runtime.positionZ !== null;
 
   return (
-    <div className="mt-2 rounded bg-white/[0.035] p-2">
-      <div className="mb-1.5 flex items-center justify-between gap-2">
-        <span className="text-[10px] font-medium text-white/60">MQTT Status</span>
-        {loading ? (
+    <DetailsCardSection
+      title="MQTT Status"
+      summaryAside={loading ? (
           <Loader2 className="h-3 w-3 animate-spin text-white/40" />
         ) : runtime ? (
           <div className="flex items-center gap-1">
@@ -170,7 +171,7 @@ function FarmBotMqttStatusSummary({
         ) : (
           <span className="text-[10px] text-white/35">No recorded status</span>
         )}
-      </div>
+    >
       {runtime && (
         <div className="space-y-0.5">
           <KvRow label="Changed" value={formatMqttDate(runtime.stateChangedAt)} />
@@ -185,7 +186,7 @@ function FarmBotMqttStatusSummary({
           <KvRow label="Token" value={`Expires ${formatMqttDate(runtime.tokenExpiresAt)}`} />
         </div>
       )}
-    </div>
+    </DetailsCardSection>
   );
 }
 
@@ -214,6 +215,8 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
   onFocusActionTarget?: () => void;
   resolveRuntimeMarkerPosition?: ThreeDRuntimeMarkerPositionResolver;
   onUpdateModelInstance?: (instanceId: number, input: {
+    metadata: Record<string, unknown>;
+    collisionMode: 'box' | 'triangle-surface';
     instanceName: string;
     scaleMultiplier: number;
     rotationY: number;
@@ -475,7 +478,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
       className={`flex flex-col threed-workspace-panel threed-details-surface fixed top-12 z-[1000] max-h-[calc(100vh-4rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-y-auto rounded-lg border border-white/15 p-2 text-white shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]`}
       style={{
         left: `${leftOffsetRem}rem`,
-        backgroundColor: 'var(--threed-details-background, rgba(15, 23, 42, 0.5))',
+        backgroundColor: 'var(--threed-details-background, rgba(18, 27, 42, 0.5))',
       }}
     >
       {/* Header */}
@@ -569,22 +572,15 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
       )}
 
       {/* Metadata grid */}
-      {metaRows.length > 0 && !(isProjectCharacterInstance && onUpdateCharacterPosition && onDeleteCharacterInstance) && (isCharacterMarker ? (
-        <details className="order-1 mt-2 rounded border border-white/10 bg-white/[0.035] p-2">
-          <summary className="cursor-pointer text-xs font-medium text-cyan-100">Module / Position</summary>
-          <div className="mt-2 space-y-0.5">{metaRows.map((r, i) => <KvRow key={i} label={r.label} value={r.value} />)}</div>
-        </details>
-      ) : (
-        <div className="mt-2 space-y-0.5 rounded bg-white/[0.035] p-2">
+      {metaRows.length > 0 && !(isProjectCharacterInstance && onUpdateCharacterPosition && onDeleteCharacterInstance) && (
+        <DetailsCardSection title="Module / Position" className="order-1">
           {metaRows.map((r, i) => <KvRow key={i} label={r.label} value={r.value} />)}
-        </div>
-      ))}
+        </DetailsCardSection>
+      )}
 
       {isCharacterMarker && (
         <>
-          <details className="order-5 mt-2 rounded border border-white/10 bg-white/[0.035] p-2">
-            <summary className="cursor-pointer text-xs font-medium text-cyan-100">Model + Mesh</summary>
-            <div className="mt-2 space-y-1">
+          <DetailsCardSection title="Model + Mesh" className="order-5">
               <KvRow label="Assigned Model" value={String(d.model?.modelName || ((d.model?.id ?? d.modelId) ? `Model #${d.model?.id ?? d.modelId}` : 'Basic shape'))} />
               {d.model?.modelType && <KvRow label="Format" value={String(d.model.modelType).toUpperCase()} />}
               <KvRow label="Model source" value={d.model?.filePath ? 'File configured' : 'No Model file configured'} />
@@ -592,11 +588,8 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
               {Number(d.model?.id ?? d.modelId) > 0 && (
                 <a className="inline-flex min-h-8 items-center text-xs text-cyan-200 underline underline-offset-2" href={`/admin/threed/models?id=${Number(d.model?.id ?? d.modelId)}`} target="_blank" rel="noopener noreferrer">View Model in Admin</a>
               )}
-            </div>
-          </details>
-          <details className="order-6 mt-2 rounded border border-white/10 bg-white/[0.035] p-2">
-            <summary className="cursor-pointer text-xs font-medium text-cyan-100">Character Defaults</summary>
-            <div className="mt-2 space-y-1">
+          </DetailsCardSection>
+          <DetailsCardSection title="Character Defaults" className="order-6">
               <KvRow label="Type" value={String(d.type ?? d.characterType ?? 'Unspecified')} />
               <KvRow label="Control" value={d.isMovable === true ? 'User controllable' : 'Autonomous'} />
               <KvRow label="Movement" value={String(d.movementType ?? 'stationary')} />
@@ -604,8 +597,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
               <KvRow label="Default emote" value={String(d.defaultEmote ?? 'none')} />
               {(d.notes || d.description) && <p className="text-[10px] text-slate-300">{String(d.notes || d.description)}</p>}
               <p className="text-[10px] text-slate-400">Manage reusable defaults in Character Admin. Save placement and physics below for this Project instance.</p>
-            </div>
-          </details>
+          </DetailsCardSection>
         </>
       )}
 
@@ -629,7 +621,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
         const charId = d.id;
         const isControlling = isSelectedCharacterControlled;
         return (
-          <div className="order-2 mt-2 space-y-1.5 rounded bg-white/[0.035] p-2" aria-label="Character control">
+          <DetailsCardSection title="Character Control" defaultOpen className="order-2" >
             <p role="status" className={`text-[11px] font-medium ${isControlling ? 'text-cyan-200' : 'text-slate-300'}`}>
               {isControlling ? 'Controlling this Character' : controlledCharacterId != null ? 'Selected · Another Character is controlled' : 'Selected · Control available'}
             </p>
@@ -677,7 +669,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
                 </span>
               </button>
             )}
-          </div>
+          </DetailsCardSection>
         );
       })()}
 
@@ -879,6 +871,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
             z: Number(selected.position?.z ?? d.positionZ ?? 0),
           }}
           initialPlacementRole={selected.metadata?.placementRole === 'environment' ? 'environment' : 'object'}
+          initialCollisionMode={resolveProjectModelCollisionMode(selected.metadata)}
           baseModelScale={Number(d.scale ?? 1)}
           updating={updatingModelInstanceId === modelInstanceId}
           deleting={deletingModelInstanceId === modelInstanceId}
@@ -890,8 +883,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
       )}
 
       {(type === 'beds' || type === 'bed') && projectMarkers !== undefined && (
-        <details className="rounded-md border border-white/15 p-2">
-          <summary className="cursor-pointer text-xs font-medium">Plantings ({assignedPlantings.length})</summary>
+        <DetailsCardSection title={`Plantings (${assignedPlantings.length})`}>
           <div className="mt-2 max-h-48 space-y-1 overflow-y-auto">
             {assignedPlantings.length === 0 && <p className="text-xs text-muted-foreground">No assigned Plantings.</p>}
             {assignedPlantings.map(planting => (
@@ -900,7 +892,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
                 onClick={() => onSelectProjectMarker?.(planting)}>{planting.name}</Button>
             ))}
           </div>
-        </details>
+        </DetailsCardSection>
       )}
 
       {isProjectBedInstance && onUpdateBedInstance && onDeleteBedInstance && (

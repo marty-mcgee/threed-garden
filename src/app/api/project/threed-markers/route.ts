@@ -1504,7 +1504,7 @@ async function updateProjectMarker(request: NextRequest, id: number) {
     }
     if (update.isVisible !== undefined) values.isVisible = update.isVisible;
     if (update.isActive !== undefined) values.isActive = update.isActive;
-    if (update.metadata !== undefined || update.placementRole !== undefined) {
+    if (update.metadata !== undefined || update.placementRole !== undefined || update.collisionMode !== undefined) {
       const currentMetadata = marker.metadata && typeof marker.metadata === 'object' && !Array.isArray(marker.metadata)
         ? marker.metadata as Record<string, unknown>
         : {};
@@ -1512,6 +1512,7 @@ async function updateProjectMarker(request: NextRequest, id: number) {
         ...currentMetadata,
         ...(update.metadata ?? {}),
         ...(update.placementRole !== undefined ? { placementRole: update.placementRole } : {}),
+        ...(update.collisionMode !== undefined ? { collisionMode: update.collisionMode } : {}),
         source: 'project-marker',
       };
     }
@@ -1707,7 +1708,13 @@ export async function DELETE(request: NextRequest) {
         eq(projectAssets.assetType, 'threed_plantings'),
         eq(projectAssets.assetId, sourceAssetId),
       ));
-      const [planting] = await tx.delete(threedPlantings).where(and(
+      // A Planting may remain referenced by immutable watering history. Remove
+      // it from this Project and archive its source record instead of issuing a
+      // hard delete that can fail on those historical foreign keys.
+      const [planting] = await tx.update(threedPlantings).set({
+        isActive: false,
+        updatedAt: new Date(),
+      }).where(and(
         eq(threedPlantings.id, sourceAssetId),
         eq(threedPlantings.userId, userId),
       )).returning({ id: threedPlantings.id });

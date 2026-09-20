@@ -30,6 +30,10 @@ import {
   parseUpdateProjectModelInstance,
   ProjectModelInstanceInputError,
   isProjectModelEnvironment,
+  isProjectModelMovableBall,
+  isProjectModelStationaryCollisionReady,
+  resolveProjectModelCollisionMode,
+  resolveProjectModelEffectiveCollisionMode,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/models/project-model-instance-core.ts';
 import {
@@ -648,11 +652,13 @@ assert.deepEqual(parseUpdateProjectModelInstance({
   scaleMultiplier: 0.75,
   isVisible: false,
   placementRole: 'environment',
+  collisionMode: 'triangle-surface',
 }), {
   rotationY: 1.57,
   scaleMultiplier: 0.75,
   isVisible: false,
   placementRole: 'environment',
+  collisionMode: 'triangle-surface',
 });
 assert.throws(
   () => parseCreateProjectModelInstance({ projectId: 2, threedId: 3, modelId: 4, positionX: Infinity }),
@@ -670,9 +676,64 @@ assert.throws(
   () => parseUpdateProjectModelInstance({ placementRole: 'terrain-ish' }),
   ProjectModelInstanceInputError,
 );
+assert.throws(
+  () => parseUpdateProjectModelInstance({ collisionMode: 'convex-hull' }),
+  ProjectModelInstanceInputError,
+);
+assert.throws(
+  () => parseUpdateProjectModelInstance({ metadata: { collisionMode: 'convex-hull' } }),
+  ProjectModelInstanceInputError,
+);
 assert.equal(isProjectModelEnvironment({ placementRole: 'environment' }), true);
 assert.equal(isProjectModelEnvironment({ placementRole: 'object' }), false);
-validationStep('Project Model marker inputs allow bounded transforms and explicit environment roles');
+assert.equal(isProjectModelMovableBall({ physicsMode: 'ball' }), true);
+assert.equal(isProjectModelMovableBall({ placementRole: 'environment', physicsMode: 'ball' }), false);
+assert.equal(resolveProjectModelCollisionMode({}), 'box');
+assert.equal(resolveProjectModelCollisionMode({ placementRole: 'environment' }), 'triangle-surface');
+assert.equal(resolveProjectModelCollisionMode({ placementRole: 'environment', collisionMode: 'box' }), 'box');
+assert.equal(resolveProjectModelCollisionMode({ collisionMode: 'triangle-surface' }), 'triangle-surface');
+assert.equal(resolveProjectModelEffectiveCollisionMode({
+  requestedMode: 'triangle-surface', isEnvironment: false, isMovableBall: true,
+  surfaceReady: true, regionsReady: false,
+}), 'ball');
+assert.equal(resolveProjectModelEffectiveCollisionMode({
+  requestedMode: 'triangle-surface', isEnvironment: false, isMovableBall: false,
+  surfaceReady: true, regionsReady: false,
+}), 'triangle-surface');
+assert.equal(resolveProjectModelEffectiveCollisionMode({
+  requestedMode: 'triangle-surface', isEnvironment: true, isMovableBall: false,
+  surfaceReady: false, regionsReady: true,
+}), 'triangle-regions');
+assert.equal(resolveProjectModelEffectiveCollisionMode({
+  requestedMode: 'triangle-surface', isEnvironment: false, isMovableBall: false,
+  surfaceReady: false, regionsReady: false,
+}), 'box-fallback');
+assert.equal(isProjectModelStationaryCollisionReady({
+  requestedMode: 'box', isEnvironment: false, hasModelFile: true, loadFailed: false,
+  visualSettled: true, hasBounds: false, hasGeometryAudit: false, hasSurface: false,
+  hasRegions: false, hasCollisionPreview: false,
+}), false);
+assert.equal(isProjectModelStationaryCollisionReady({
+  requestedMode: 'box', isEnvironment: false, hasModelFile: true, loadFailed: false,
+  visualSettled: true, hasBounds: true, hasGeometryAudit: false, hasSurface: false,
+  hasRegions: false, hasCollisionPreview: false,
+}), true);
+assert.equal(isProjectModelStationaryCollisionReady({
+  requestedMode: 'triangle-surface', isEnvironment: false, hasModelFile: true, loadFailed: false,
+  visualSettled: true, hasBounds: true, hasGeometryAudit: false, hasSurface: false,
+  hasRegions: false, hasCollisionPreview: false,
+}), false);
+assert.equal(isProjectModelStationaryCollisionReady({
+  requestedMode: 'triangle-surface', isEnvironment: false, hasModelFile: true, loadFailed: false,
+  visualSettled: true, hasBounds: true, hasGeometryAudit: true, hasSurface: true,
+  hasRegions: false, hasCollisionPreview: false,
+}), true);
+assert.equal(isProjectModelStationaryCollisionReady({
+  requestedMode: 'triangle-surface', isEnvironment: true, hasModelFile: true, loadFailed: false,
+  visualSettled: true, hasBounds: true, hasGeometryAudit: true, hasSurface: false,
+  hasRegions: false, hasCollisionPreview: true,
+}), true);
+validationStep('Project Model marker inputs preserve safe collision defaults and resolve one effective collider strategy');
 
 assert.deepEqual(assessThreeDEnvironmentGeometry({
   meshCount: 12,

@@ -4,12 +4,75 @@ const MAX_ROTATION = 10_000;
 const MIN_SCALE = 0.0001;
 const MAX_SCALE = 10_000;
 export type ProjectModelPlacementRole = 'object' | 'environment';
+export type ProjectModelCollisionMode = 'box' | 'triangle-surface';
+export type ProjectModelEffectiveCollisionMode =
+  | 'ball'
+  | 'box'
+  | 'box-fallback'
+  | 'triangle-regions'
+  | 'triangle-surface';
 
 export function isProjectModelEnvironment(metadata: unknown): boolean {
   return typeof metadata === 'object'
     && metadata !== null
     && !Array.isArray(metadata)
     && (metadata as Record<string, unknown>).placementRole === 'environment';
+}
+
+export function isProjectModelMovableBall(metadata: unknown): boolean {
+  return !isProjectModelEnvironment(metadata)
+    && typeof metadata === 'object'
+    && metadata !== null
+    && !Array.isArray(metadata)
+    && (metadata as Record<string, unknown>).physicsMode === 'ball';
+}
+
+export function resolveProjectModelCollisionMode(
+  metadata: unknown,
+  environment: boolean = isProjectModelEnvironment(metadata),
+): ProjectModelCollisionMode {
+  if (typeof metadata === 'object' && metadata !== null && !Array.isArray(metadata)) {
+    const value = (metadata as Record<string, unknown>).collisionMode;
+    if (value === 'box' || value === 'triangle-surface') return value;
+  }
+  // Preserve the released Environment surface/region policy while ordinary
+  // Model instances retain their historical box default.
+  return environment ? 'triangle-surface' : 'box';
+}
+
+export function resolveProjectModelEffectiveCollisionMode(input: {
+  requestedMode: ProjectModelCollisionMode;
+  isEnvironment: boolean;
+  isMovableBall: boolean;
+  surfaceReady: boolean;
+  regionsReady: boolean;
+}): ProjectModelEffectiveCollisionMode {
+  if (input.isMovableBall) return 'ball';
+  if (input.requestedMode === 'box') return 'box';
+  if (input.surfaceReady) return 'triangle-surface';
+  if (input.isEnvironment && input.regionsReady) return 'triangle-regions';
+  return 'box-fallback';
+}
+
+export function isProjectModelStationaryCollisionReady(input: {
+  requestedMode: ProjectModelCollisionMode;
+  isEnvironment: boolean;
+  hasModelFile: boolean;
+  loadFailed: boolean;
+  visualSettled: boolean;
+  hasBounds: boolean;
+  hasGeometryAudit: boolean;
+  hasSurface: boolean;
+  hasRegions: boolean;
+  hasCollisionPreview: boolean;
+}): boolean {
+  if (input.loadFailed || !input.hasModelFile) return true;
+  if (!input.visualSettled) return false;
+  if (input.requestedMode === 'box') return input.hasBounds;
+  if (input.isEnvironment) {
+    return input.hasSurface || input.hasRegions || input.hasCollisionPreview;
+  }
+  return input.hasGeometryAudit && input.hasBounds;
 }
 
 export class ProjectModelInstanceInputError extends Error {
@@ -83,6 +146,14 @@ function readOptionalPlacementRole(value: unknown): ProjectModelPlacementRole | 
   return value;
 }
 
+function readOptionalCollisionMode(value: unknown): ProjectModelCollisionMode | undefined {
+  if (value === undefined) return undefined;
+  if (value !== 'box' && value !== 'triangle-surface') {
+    throw new ProjectModelInstanceInputError('Invalid collisionMode');
+  }
+  return value;
+}
+
 export interface CreateProjectModelInstanceInput {
   projectId: number;
   threedId: number;
@@ -140,6 +211,7 @@ export interface UpdateProjectModelInstanceInput {
   isActive?: boolean;
   metadata?: Record<string, unknown>;
   placementRole?: ProjectModelPlacementRole;
+  collisionMode?: ProjectModelCollisionMode;
 }
 
 export function parseUpdateProjectModelInstance(value: unknown): UpdateProjectModelInstanceInput {
@@ -156,8 +228,14 @@ export function parseUpdateProjectModelInstance(value: unknown): UpdateProjectMo
   if ('scaleMultiplier' in body) update.scaleMultiplier = readBoundedNumber(body.scaleMultiplier, 'scaleMultiplier', MIN_SCALE, MAX_SCALE);
   if ('isVisible' in body) update.isVisible = readOptionalBoolean(body.isVisible, 'isVisible');
   if ('isActive' in body) update.isActive = readOptionalBoolean(body.isActive, 'isActive');
-  if ('metadata' in body) update.metadata = readOptionalMetadata(body.metadata);
+  if ('metadata' in body) {
+    update.metadata = readOptionalMetadata(body.metadata);
+    if (update.metadata && 'collisionMode' in update.metadata) {
+      update.collisionMode = readOptionalCollisionMode(update.metadata.collisionMode);
+    }
+  }
   if ('placementRole' in body) update.placementRole = readOptionalPlacementRole(body.placementRole);
+  if ('collisionMode' in body) update.collisionMode = readOptionalCollisionMode(body.collisionMode);
 
   if (Object.keys(update).length === 0) {
     throw new ProjectModelInstanceInputError('No supported fields to update');

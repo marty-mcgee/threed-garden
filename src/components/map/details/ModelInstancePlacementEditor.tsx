@@ -3,7 +3,10 @@
 import { BALL_PHYSICS_FIELDS, resolveBallPhysics, type BallPhysics } from '@/lib/services/threed/models/ball-physics';
 import { useState } from 'react';
 import { Box, Crosshair, Loader2, Save, Trash2 } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
+import type { ProjectModelCollisionMode } from '@/lib/services/threed/models/project-model-instance-core';
+import { DetailsCardSection } from './DetailsCardSection';
+
+type ProjectModelPhysicsMode = ProjectModelCollisionMode | 'ball';
 
 export function ModelInstancePlacementEditor({
   instanceId,
@@ -12,6 +15,7 @@ export function ModelInstancePlacementEditor({
   initialRotationY,
   initialPosition,
   initialPlacementRole,
+  initialCollisionMode,
   initialMovableBall = false,
   initialBallPhysics,
   baseModelScale,
@@ -28,6 +32,7 @@ export function ModelInstancePlacementEditor({
   initialRotationY: number;
   initialPosition: { x: number; y: number; z: number };
   initialPlacementRole: 'object' | 'environment';
+  initialCollisionMode: ProjectModelCollisionMode;
   initialMovableBall?: boolean;
   initialBallPhysics?: unknown;
   baseModelScale: number;
@@ -36,6 +41,7 @@ export function ModelInstancePlacementEditor({
   moveActive: boolean;
   onSave: (input: {
     metadata: { physicsMode: 'ball' | 'fixed'; ballPhysics: BallPhysics };
+    collisionMode: ProjectModelCollisionMode;
     instanceName: string;
     scaleMultiplier: number;
     rotationY: number;
@@ -56,7 +62,10 @@ export function ModelInstancePlacementEditor({
   const [positionY, setPositionY] = useState(String(initialPosition.y));
   const [positionZ, setPositionZ] = useState(String(initialPosition.z));
   const [placementRole, setPlacementRole] = useState<'object' | 'environment'>(initialPlacementRole);
-  const [movableBall, setMovableBall] = useState(initialMovableBall);
+  const initialPhysicsMode: ProjectModelPhysicsMode = initialMovableBall && initialPlacementRole !== 'environment'
+    ? 'ball'
+    : initialCollisionMode;
+  const [physicsMode, setPhysicsMode] = useState<ProjectModelPhysicsMode>(initialPhysicsMode);
   const initialPhysics = resolveBallPhysics(initialBallPhysics);
   const [physics, setPhysics] = useState(() => Object.fromEntries(Object.entries(initialPhysics).map(([key, value]) => [key, String(value)])));
   const physicsValid = Object.entries(BALL_PHYSICS_FIELDS).every(([key, field]) => physics[key].trim() !== '' && Number.isFinite(Number(physics[key])) && Number(physics[key]) >= field.min && Number(physics[key]) <= field.max);
@@ -78,7 +87,7 @@ export function ModelInstancePlacementEditor({
     || parsedPosition[1] !== initialPosition.y
     || parsedPosition[2] !== initialPosition.z
     || placementRole !== initialPlacementRole
-    || movableBall !== initialMovableBall
+    || physicsMode !== initialPhysicsMode
     || Object.keys(initialPhysics).some(key => parsedPhysics[key as keyof BallPhysics] !== initialPhysics[key as keyof BallPhysics]);
   const editStatus = updating ? 'Saving…' : dirty ? (valid ? 'Unsaved changes' : 'Check fields') : 'Saved';
 
@@ -91,7 +100,8 @@ export function ModelInstancePlacementEditor({
           onClick={(event) => {
             event.stopPropagation();
             onSave({
-              metadata: { physicsMode: movableBall && placementRole !== 'environment' ? 'ball' : 'fixed', ballPhysics: parsedPhysics },
+              metadata: { physicsMode: physicsMode === 'ball' && placementRole !== 'environment' ? 'ball' : 'fixed', ballPhysics: parsedPhysics },
+              collisionMode: physicsMode === 'triangle-surface' ? 'triangle-surface' : 'box',
               instanceName: instanceName.trim(),
               scaleMultiplier: parsedScale,
               rotationY: parsedRotationDegrees * Math.PI / 180,
@@ -104,7 +114,7 @@ export function ModelInstancePlacementEditor({
           className="flex items-center justify-center gap-1.5 rounded bg-cyan-600/35 px-2 py-1.5 text-[11px] font-medium text-cyan-100 transition-colors hover:bg-cyan-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
         >
           {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-          Save Placement
+          Save Model
         </button>
         <button
           type="button"
@@ -135,16 +145,15 @@ export function ModelInstancePlacementEditor({
           Delete Model
         </button>
       </div>
-      <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-cyan-100/75">
+      <DetailsCardSection
+        title={<span className="inline-flex items-center gap-1.5">
           <Box className="h-3.5 w-3.5" />
           Project Model Instance
-        </div>
-        <span className={`text-[9px] ${dirty ? (valid ? 'text-amber-200' : 'text-red-300') : 'text-white/35'}`} aria-live="polite">
+        </span>}
+        summaryAside={<span className={`text-[9px] ${dirty ? (valid ? 'text-amber-200' : 'text-red-300') : 'text-white/35'}`} aria-live="polite">
           {editStatus}
-        </span>
-      </div>
+        </span>}
+      >
       <label className="block space-y-1">
         <span className="text-[10px] text-white/50">Instance name</span>
         <input
@@ -203,21 +212,43 @@ export function ModelInstancePlacementEditor({
       <div className="text-[9px] text-white/35">
         Effective scale: {(baseModelScale * (Number.isFinite(parsedScale) ? parsedScale : 0)).toLocaleString()}
       </div>
-      <label className="flex items-center justify-between gap-2 rounded bg-white/[0.035] px-2 py-1.5">
-        <span className="text-[10px] text-white/60">Project environment / base map</span>
-        <Switch
-          checked={placementRole === 'environment'}
+      </DetailsCardSection>
+      <DetailsCardSection title="Scene Role">
+        <label className="block space-y-1">
+          <span className="text-[10px] text-white/60">Model role in this Project</span>
+          <select
+          value={placementRole}
           disabled={busy}
-          onCheckedChange={(checked) => setPlacementRole(checked ? 'environment' : 'object')}
-        />
+          onChange={(event) => {
+            const nextRole = event.target.value as 'object' | 'environment';
+            setPlacementRole(nextRole);
+            if (nextRole === 'environment' && physicsMode === 'ball') setPhysicsMode('box');
+          }}
+          className="h-7 w-full rounded border border-white/10 bg-black/45 px-2 text-[10px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+          >
+            <option value="object">Scene Object</option>
+            <option value="environment">Environment / Base Map</option>
+          </select>
+        </label>
+      </DetailsCardSection>
+      <DetailsCardSection title="Physics Mode">
+      <label className="block space-y-1">
+        <span className="text-[10px] text-white/60">Collision and movement profile</span>
+        <select
+          value={physicsMode}
+          disabled={busy}
+          aria-label="Model physics mode"
+          onChange={(event) => setPhysicsMode(event.target.value as ProjectModelPhysicsMode)}
+          className="h-7 w-full rounded border border-white/10 bg-black/45 px-2 text-[10px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+        >
+          <option value="box">Fixed Box</option>
+          <option value="triangle-surface">Fixed Triangle Surface</option>
+          <option value="ball" disabled={placementRole === 'environment'}>Movable Ball</option>
+        </select>
       </label>
-      <label className="flex items-center justify-between gap-2 rounded bg-white/[0.035] px-2 py-1.5">
-        <span className="text-[10px] text-white/60">Movable ball (physics)</span>
-        <Switch checked={movableBall && placementRole !== 'environment'} disabled={busy || placementRole === 'environment'} onCheckedChange={setMovableBall} />
-      </label>
-      {movableBall && placementRole !== 'environment' && (
-        <details className="rounded bg-white/[0.035] p-2">
-          <summary className="cursor-pointer text-[11px] text-white/70">Ball physics</summary>
+      </DetailsCardSection>
+      {physicsMode === 'ball' && placementRole !== 'environment' && (
+        <DetailsCardSection title="Ball Physics">
           <div className="mt-2 grid grid-cols-2 gap-2">
             {Object.entries(BALL_PHYSICS_FIELDS).map(([key, field]) => (
               <label key={key} className="block text-[10px] text-white/60">
@@ -229,10 +260,8 @@ export function ModelInstancePlacementEditor({
             ))}
           </div>
           {!physicsValid && <p className="text-[10px] text-red-300">Enter values within the allowed ranges.</p>}
-        </details>
+        </DetailsCardSection>
       )}
-      </div>
     </div>
   );
 }
-

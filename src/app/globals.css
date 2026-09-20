@@ -270,13 +270,13 @@
 }
 
 .threed-workspace-panel.threed-details-surface {
-  --threed-details-background: rgba(15, 23, 42, 0.5);
+  --threed-details-background: rgba(18, 27, 42, 0.5);
   transition: background-color 150ms ease, left 150ms ease;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
 }
 .threed-details-surface:hover,
 .threed-details-surface:focus-within {
-  --threed-details-background: rgba(15, 23, 42, 0.82);
+  --threed-details-background: rgba(18, 27, 42, 0.82);
 }
 .threed-details-surface input,
 .threed-details-surface select {
@@ -284,7 +284,7 @@
 }
 @media (hover: none) {
   .threed-workspace-panel.threed-details-surface {
-    --threed-details-background: rgba(15, 23, 42, 0.82);
+    --threed-details-background: rgba(18, 27, 42, 0.82);
   }
 }
 @media (prefers-reduced-motion: reduce) {

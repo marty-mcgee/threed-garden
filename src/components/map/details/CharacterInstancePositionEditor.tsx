@@ -3,6 +3,7 @@
 import { CHARACTER_PHYSICS_FIELDS, resolveCharacterPhysics, type CharacterPhysics } from '@/lib/services/threed/characters/character-physics';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Crosshair, Loader2, Save, Trash2 } from 'lucide-react';
+import { DetailsCardSection } from './DetailsCardSection';
 
 export function CharacterInstancePositionEditor({
   markerId,
@@ -96,9 +97,7 @@ export function CharacterInstancePositionEditor({
           Delete Character
         </button>
       </div>
-      <details className="order-4 mt-2 rounded border border-white/10 bg-white/[0.035] p-2">
-        <summary className="cursor-pointer text-xs font-medium text-cyan-100">Module / Position</summary>
-        <div className="mt-2 space-y-1.5">
+      <DetailsCardSection title="Module / Position" className="order-4">
         {metadata && <div className="space-y-0.5">{metadata}</div>}
       <div className="flex items-center justify-between gap-2">
         <span className={`text-[9px] ${dirty ? (valid ? 'text-amber-200' : 'text-red-300') : 'text-white/35'}`} aria-live="polite">
@@ -124,17 +123,15 @@ export function CharacterInstancePositionEditor({
           </label>
         ))}
       </div>
-        </div>
-      </details>
-      {movable && <details className="order-8 mt-2 rounded bg-white/5 p-2 text-[11px] text-white/70">
-        <summary className="cursor-pointer">Character Physics</summary>
+      </DetailsCardSection>
+      {movable && <DetailsCardSection title="Character Physics" className="order-8 text-[11px] text-white/70">
         <div className="grid grid-cols-2 gap-2 mt-2">
           {Object.entries(CHARACTER_PHYSICS_FIELDS).map(([key, field]) => <label key={key}>{field.label}
             <input className="w-full rounded bg-white/5 p-1" type="number" min={field.min} max={field.max} step={field.step} value={physics[key]} disabled={disabled || updating || deleting} onChange={e => setPhysics(v => ({...v, [key]: e.target.value}))} />
           </label>)}
         </div>
         {!physicsValid && <p className="text-red-300">Check physics values.</p>}
-      </details>}
+      </DetailsCardSection>}
       {disabled && (
         <p className="order-4 text-[9px] text-amber-200/75">Release Control before changing the Character position.</p>
       )}

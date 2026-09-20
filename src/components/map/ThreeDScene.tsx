@@ -80,7 +80,13 @@ import {
 import { planThreeDTargetRelativeNavigation } from '@/lib/services/threed/orchestration/interaction-core';
 import { isMatchingThreeDActionTarget } from '@/lib/services/threed/orchestration/action-target-core';
 import { calculateThreeDModelInstanceScale } from '@/lib/services/threed/markers/model-visual-fit-core';
-import { isProjectModelEnvironment } from '@/lib/services/threed/models/project-model-instance-core';
+import {
+  isProjectModelEnvironment,
+  isProjectModelMovableBall,
+  isProjectModelStationaryCollisionReady,
+  resolveProjectModelCollisionMode,
+  resolveProjectModelEffectiveCollisionMode,
+} from '@/lib/services/threed/models/project-model-instance-core';
 import type { ThreeDEnvironmentCollisionPreviewPlan } from '@/lib/services/threed/models/environment-collision-preview-core';
 import { createThreeDEnvironmentColliderActivationPlan } from '@/lib/services/threed/models/environment-collider-activation-core';
 import {
@@ -829,13 +835,22 @@ function ProjectModelMarkerBody({
   characterSpawnPositions: Array<{ x: number; y: number; z: number }>;
 }) {
   const isEnvironment = isProjectModelEnvironment(marker.metadata);
-  const isMovableBall = !isEnvironment && marker.metadata?.physicsMode === 'ball';
+  const isMovableBall = isProjectModelMovableBall(marker.metadata);
+  const hasModelFile = typeof marker.data?.filePath === 'string' && marker.data.filePath.trim().length > 0;
+  const requestedCollisionMode = resolveProjectModelCollisionMode(marker.metadata, isEnvironment);
+  const wantsSurfaceCollider = requestedCollisionMode === 'triangle-surface' && !isMovableBall;
   const [collisionBounds, setCollisionBounds] = useState<ModelCollisionBounds | null>(null);
   const [regionsReady, setRegionsReady] = useState(false);
   const [geometryAudit, setGeometryAudit] = useState<ModelGeometryAudit | null>(null);
   const [collisionPreview, setCollisionPreview] = useState<ThreeDEnvironmentCollisionPreviewPlan | null>(null);
+  const [modelVisualSettled, setModelVisualSettled] = useState(false);
+  const [modelLoadFailed, setModelLoadFailed] = useState(false);
   const handleCollisionBoundsChange = useCallback((bounds: ModelCollisionBounds | null) => {
     setCollisionBounds(bounds);
+  }, []);
+  const handleModelVisualSettled = useCallback(() => setModelVisualSettled(true), []);
+  const handleModelRuntimeError = useCallback((message: string | null) => {
+    setModelLoadFailed(Boolean(message));
   }, []);
 
   useEffect(() => {
@@ -866,9 +881,46 @@ function ProjectModelMarkerBody({
   }, [collisionBounds, collisionPreview, geometryAudit, isEnvironment, marker.data?.modelId, marker.id, physicsDebug, scale]);
 
   const ballPhysics = resolveBallPhysics(marker.metadata?.ballPhysics);
-  const surfaceCollider = isEnvironment ? geometryAudit?.surfaceCollider : null;
-  const regionIndex = isEnvironment ? geometryAudit?.regionIndex : undefined;
-  useEffect(() => { setRegionsReady(false); }, [regionIndex]);
+  const surfaceCollider = wantsSurfaceCollider ? geometryAudit?.surfaceCollider : null;
+  const regionIndex = isEnvironment && wantsSurfaceCollider ? geometryAudit?.regionIndex : undefined;
+  useEffect(() => { setRegionsReady(false); }, [regionIndex, wantsSurfaceCollider]);
+  const effectiveCollisionMode = resolveProjectModelEffectiveCollisionMode({
+    requestedMode: requestedCollisionMode,
+    isEnvironment,
+    isMovableBall,
+    surfaceReady: Boolean(surfaceCollider),
+    regionsReady,
+  });
+  const stationaryCollisionReady = isProjectModelStationaryCollisionReady({
+    requestedMode: requestedCollisionMode,
+    isEnvironment,
+    hasModelFile,
+    loadFailed: modelLoadFailed,
+    visualSettled: modelVisualSettled,
+    hasBounds: collisionBounds !== null,
+    hasGeometryAudit: geometryAudit !== null,
+    hasSurface: surfaceCollider !== null,
+    hasRegions: regionIndex !== undefined,
+    hasCollisionPreview: collisionPreview !== null,
+  });
+  useEffect(() => {
+    if (isMovableBall) {
+      if (modelVisualSettled || modelLoadFailed) onModelRuntimeSettled?.(String(marker.id));
+      return;
+    }
+    if (stationaryCollisionReady) onModelRuntimeSettled?.(String(marker.id));
+  }, [isMovableBall, marker.id, modelLoadFailed, modelVisualSettled, onModelRuntimeSettled, stationaryCollisionReady]);
+  useEffect(() => {
+    if (!physicsDebug) return;
+    console.debug('[ThreeD Model Collision]', {
+      markerId: marker.id,
+      requestedCollisionMode,
+      effectiveCollisionMode,
+      fallbackActive: effectiveCollisionMode === 'box-fallback',
+      surfaceTriangleCount: (surfaceCollider?.indices.length ?? 0) / 3,
+      fallbackReason: geometryAudit?.surfaceDiagnostic?.reason,
+    });
+  }, [effectiveCollisionMode, geometryAudit?.surfaceDiagnostic?.reason, marker.id, physicsDebug, requestedCollisionMode, surfaceCollider]);
   const colliderKey = collisionBounds
     ? [...collisionBounds.center, ...collisionBounds.halfExtents]
         .map((value) => value.toFixed(4))
@@ -904,7 +956,8 @@ function ProjectModelMarkerBody({
     if (!physicsDebug || !isEnvironment || !environmentColliderPlan) return;
     console.debug('[ThreeD Environment Colliders]', {
       markerId: marker.id,
-      collisionMode: regionsReady ? 'triangle-regions' : surfaceCollider ? 'triangle-surface' : 'box-fallback',
+      requestedCollisionMode,
+      effectiveCollisionMode,
       surfaceDiagnostic: geometryAudit?.surfaceDiagnostic,
       surfaceTriangleCount: (surfaceCollider?.indices.length ?? 0) / 3,
       plannedBoxCount: environmentColliderPlan.plannedBoxCount,
@@ -917,7 +970,7 @@ function ProjectModelMarkerBody({
       prioritySelectedCount: environmentColliderPlan.prioritySelectedCount,
       coverageSelectedCount: environmentColliderPlan.coverageSelectedCount,
     });
-  }, [environmentColliderPlan, geometryAudit, isEnvironment, marker.id, physicsDebug, surfaceCollider, regionIndex, regionsReady]);
+  }, [effectiveCollisionMode, environmentColliderPlan, geometryAudit, isEnvironment, marker.id, physicsDebug, requestedCollisionMode, surfaceCollider, regionIndex, regionsReady]);
 
   useEffect(() => {
     if (!physicsDebug || !isEnvironment) return;
@@ -945,7 +998,8 @@ function ProjectModelMarkerBody({
       position={position}
       rotation={rotation}
     >
-      {!isEnvironment && !isMovableBall && collisionBounds && colliderKey && (
+      {!isMovableBall && collisionBounds && colliderKey && (
+        (effectiveCollisionMode === 'box' || (!isEnvironment && effectiveCollisionMode === 'box-fallback')) &&
         <CuboidCollider
           key={colliderKey}
           args={collisionBounds.halfExtents}
@@ -958,10 +1012,10 @@ function ProjectModelMarkerBody({
       )}
       {regionIndex && <EnvironmentRegionColliders index={regionIndex} enabled={isLayerEnabled} physicsDebug={physicsDebug} markerId={String(marker.id)} position={position} rotation={rotation} onReady={setRegionsReady} />}
       {surfaceCollider && <TrimeshCollider args={[surfaceCollider.vertices, surfaceCollider.indices]} />}
-      {isEnvironment && !surfaceCollider && !regionsReady && collisionPreview?.groundBoxes?.map((box, index) => (
+      {isEnvironment && effectiveCollisionMode === 'box-fallback' && collisionPreview?.groundBoxes?.map((box, index) => (
         <CuboidCollider key={`environment-ground-${index}`} args={box.halfExtents} position={box.center} />
       ))}
-      {isEnvironment && !surfaceCollider && !regionsReady && environmentColliderPlan?.boxes.map((box, index) => (
+      {isEnvironment && effectiveCollisionMode === 'box-fallback' && environmentColliderPlan?.boxes.map((box, index) => (
         <CuboidCollider
           key={`environment-collider-${index}`}
           args={box.halfExtents}
@@ -997,11 +1051,13 @@ function ProjectModelMarkerBody({
           applyStoredScale={false}
           animationSpeed={marker.data?.animationSpeed || 1}
           onCollisionBoundsChange={handleCollisionBoundsChange}
-          onGeometryAuditChange={isEnvironment ? setGeometryAudit : undefined}
-          onEnvironmentCollisionPreviewChange={isEnvironment ? setCollisionPreview : undefined}
-          onRuntimeSettled={() => onModelRuntimeSettled?.(String(marker.id))}
+          enableSurfaceCollider={wantsSurfaceCollider}
+          onGeometryAuditChange={wantsSurfaceCollider ? setGeometryAudit : undefined}
+          onEnvironmentCollisionPreviewChange={isEnvironment && wantsSurfaceCollider ? setCollisionPreview : undefined}
+          onRuntimeSettled={handleModelVisualSettled}
+          onRuntimeError={handleModelRuntimeError}
         />
-        {isEnvironment && !surfaceCollider && !regionsReady && physicsDebug && environmentColliderPlan && (
+        {isEnvironment && effectiveCollisionMode === 'box-fallback' && physicsDebug && environmentColliderPlan && (
           <EnvironmentCollisionPreview boxes={environmentColliderPlan.boxes} />
         )}
         {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.9} outerRadius={1.2} />}
@@ -1897,7 +1953,8 @@ export function ThreeDScene({
     return filterCharacterRuntime(markers);
   }, [characterIsolation, characterMarkerIsolation, markers, physicsIsolation]);
   const requiredModelMarkerIds = useMemo(() => sceneMarkers
-    .filter((marker) => normalizeSceneLayerType(marker.type) === 'models')
+    .filter((marker) => normalizeSceneLayerType(marker.type) === 'models'
+      && !isProjectModelMovableBall(marker.metadata))
     .map((marker) => String(marker.id))
     .sort(), [sceneMarkers]);
   const requiredModelMarkerKey = requiredModelMarkerIds.join('|');
@@ -3067,9 +3124,12 @@ export function ThreeDScene({
             />
           ))}
 
-          {sceneMarkers.filter((marker) => (
-            sceneEnvironmentReady || normalizeSceneLayerType(marker.type) !== 'characters'
-          )).map((marker, idx) => {
+          {sceneMarkers.filter((marker) => {
+            if (sceneEnvironmentReady) return true;
+            const layerType = normalizeSceneLayerType(marker.type);
+            if (layerType === 'characters') return false;
+            return layerType !== 'models' || !isProjectModelMovableBall(marker.metadata);
+          }).map((marker, idx) => {
             const markerMatchesPresentationFilter = visibleMarkerIds?.has(String(marker.id)) ?? true;
             return (
               <group

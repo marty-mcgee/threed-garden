@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Layers, Crosshair, Loader2, Save, Settings, Trash2 } from 'lucide-react';
+import { DetailsCardSection } from './DetailsCardSection';
 
 export function BedInstanceEditor({
   markerId,
@@ -101,7 +102,7 @@ export function BedInstanceEditor({
         className="flex w-full items-center justify-center gap-1.5 rounded bg-amber-600/35 px-2 py-1.5 text-[11px] font-medium text-amber-100 transition-colors hover:bg-amber-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
       >
         {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
-        Save {entityLabel} Instance
+        Save {entityLabel}
       </button>
       <button type="button" disabled={busy || (!moveActive && dirty) || !onMoveToggle} aria-pressed={moveActive}
         onClick={event=>{event.stopPropagation();onMoveToggle?.(markerId);}}
@@ -122,18 +123,17 @@ export function BedInstanceEditor({
         Remove {entityLabel}
       </button>
       </div>
-      <div className="mt-2 space-y-1.5 rounded bg-white/[0.035] p-2">
-      <div className="flex items-center justify-between gap-2">
-        <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-amber-100/75">
+      <DetailsCardSection
+        title={<span className="inline-flex items-center gap-1.5">
           {entityLabel === 'FarmBot'
             ? <Settings className="h-3.5 w-3.5" />
             : <Layers className="h-3.5 w-3.5" />}
           Project {entityLabel} Instance
-        </div>
-        <span className={`text-[9px] ${dirty ? (valid ? 'text-amber-200' : 'text-red-300') : 'text-white/35'}`} aria-live="polite">
+        </span>}
+        summaryAside={<span className={`text-[9px] ${dirty ? (valid ? 'text-amber-200' : 'text-red-300') : 'text-white/35'}`} aria-live="polite">
           {editStatus}
-        </span>
-      </div>
+        </span>}
+      >
       <div className="grid grid-cols-3 gap-1.5">
         {[
           ['Width (ft)', widthFeet, setWidthFeet],
@@ -194,8 +194,7 @@ export function BedInstanceEditor({
             className="h-7 w-full cursor-pointer rounded border border-white/10 bg-white/5 p-0.5 disabled:opacity-50" />
         </label>
       </div>
-      </div>
+      </DetailsCardSection>
     </div>
   );
 }
-

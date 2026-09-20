@@ -1593,6 +1593,8 @@ function UnifiedMapPageInner() {
   const handleUpdateModelInstance = useCallback(async (
     instanceId: number,
     input: {
+      metadata: Record<string, unknown>;
+      collisionMode: 'box' | 'triangle-surface';
       instanceName: string;
       scaleMultiplier: number;
       rotationY: number;
@@ -2119,6 +2121,7 @@ function UnifiedMapPageInner() {
     } catch (error) {
       console.error('Failed to delete Project ThreeD Planting instance', {
         errorName: error instanceof Error ? error.name : 'UnknownError',
+        errorMessage: error instanceof Error ? error.message : 'Unknown deletion error',
       });
       showToastRef.current(
         error instanceof Error ? error.message : 'Failed to delete ThreeD Planting',
