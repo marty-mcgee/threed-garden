@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is **v0.19.41 — ThreeD Models: Collision Modes + DetailsCard Blueprint**, package `0.19.41`, deployment User-confirmed. See the [release record](releases/v0.19.41.md). **v0.19.42 — ThreeD Ground Maps: Image Import + Scene Alignment** is the prepared release candidate; see its [production release plan](plans/v0.19.42-release.md) and [Ground Maps guide](users/THREED_GROUND_MAPS.md). The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is **v0.19.42 — ThreeD Ground Maps: Image Import + Scene Alignment**, package `0.19.42`, deployment User-confirmed. See the [release record](releases/v0.19.42.md), [production handoff](plans/v0.19.42-release.md), and [Ground Maps guide](users/THREED_GROUND_MAPS.md). The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
 Completed release: [v0.19.12 release handoff](plans/v0.19.12-release.md). Future page work follows the [Admin ThreeD workspace blueprint](plans/admin-threed-workspace-blueprint.md).
 
