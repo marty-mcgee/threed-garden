@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.19.41",
+  "version": "0.19.42",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -19,6 +19,7 @@
     "threed:models:import:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-model-import.mts",
     "threed:models:import": "node --import tsx src/lib/scripts/import-threed-models.ts",
     "validate:threed-hidden-collision-mount": "node src/lib/scripts/validate-threed-hidden-collision-mount.cjs",
+    "validate:threed-ground-map": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-ground-map.mts",
     "validate:assets": "node src/lib/scripts/validate-static-assets.mjs",
     "validate:threed-bed-planting-bounds": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-bed-planting-bounds.mts",
     "validate:threed-runtime-markers": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/lib/scripts/validate-threed-runtime-markers.mts",

@@ -109,12 +109,6 @@ export function ProjectHeaderMenu({
             ? <ChevronDown className="h-3.5 w-3.5" />
             : <ChevronRight className="h-3.5 w-3.5" />}
         </Button>
-        {selectedProjectId && (
-          <Button type="button" variant={savingProject ? 'secondary' : 'outline'} size="icon" className="h-7 w-7" disabled={savingProject} aria-label="Save ThreeD Project" title="Save ThreeD Project markers and current view" onClick={onSaveProject}>
-            {savingProject ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5 text-muted-foreground" />}
-          </Button>
-        )}
-
       </div>
 
       {selectedProjectId && isOpen && (

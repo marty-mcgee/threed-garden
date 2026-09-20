@@ -2277,7 +2277,7 @@ function UnifiedMapPageInner() {
     setIsProjectAssetsOpen(true);
   }, []);
 
-  const openProjectSetup = useCallback((tour = false) => {
+  const openProjectSetup = useCallback(() => {
     setIsProjectAssetsOpen(false);
     setIsModelLibraryOpen(false);
     setPlacementModel(null);
@@ -2291,15 +2291,8 @@ function UnifiedMapPageInner() {
     setPlantingPlacementActive(false);
     setIsSceneAddMenuOpen(false);
     setIsProjectSummaryOpen(false);
-    if (!tour && projectEnvironmentMarkers.length > 0) {
-      setIsProjectSetupOpen(false);
-      setProjectSetupSessionProjectId(null);
-      setDismissedProjectSetupProjectId(selectedProjectId);
-      openEnvironmentDetails();
-    } else {
-      setIsProjectSetupOpen(true);
-    }
-  }, [projectEnvironmentMarkers, openEnvironmentDetails, selectedProjectId]);
+    setIsProjectSetupOpen(true);
+  }, []);
 
   const closeProjectAssets = useCallback((restoreTriggerFocus = false) => {
     setIsProjectAssetsOpen(false);
@@ -2405,7 +2398,7 @@ function UnifiedMapPageInner() {
             const marker = projectEnvironmentMarkers.find((item) => item.id === markerId);
             if (marker) openEnvironmentDetails(marker);
           }}
-          onOpenProjectTour={() => openProjectSetup(true)}
+          onOpenProjectTour={openProjectSetup}
           onOpenProjectSettings={() => window.open(
             `/admin/projects/${selectedProjectId}`,
             '_blank',
@@ -2442,13 +2435,25 @@ function UnifiedMapPageInner() {
             if (isProjectAssetsOpen) closeProjectAssets(false);
             else openProjectAssets();
           }}
-          hasEnvironment={projectEnvironmentMarkers.length > 0}
-          onOpenEnvironment={() => openProjectSetup()}
+          projectTourOpen={isProjectSetupOpen}
+          onOpenProjectTour={() => {
+            if (isProjectSetupOpen) {
+              setIsProjectSetupOpen(false);
+              setProjectSetupSessionProjectId(null);
+              setDismissedProjectSetupProjectId(selectedProjectId);
+              return;
+            }
+            setDismissedProjectSetupProjectId(null);
+            setProjectSetupSessionProjectId(selectedProjectId);
+            openProjectSetup();
+          }}
           filterPanelOpen={showFilterPanel}
           hasAssetTypeFilter={Boolean(filterAssetType)}
           onToggleFilterPanel={() => setShowFilterPanel((open) => !open)}
           refreshing={refreshing}
           onRefresh={handleRefresh}
+          savingProject={savingProjectMarkers}
+          onSaveProject={handleSaveThreeDProject}
         />
 
       </div>

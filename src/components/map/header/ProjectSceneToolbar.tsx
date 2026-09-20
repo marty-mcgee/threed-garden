@@ -8,8 +8,10 @@ import {
   Filter,
   Layers,
   ListTree,
+  Loader2,
   Plus,
   RefreshCw,
+  Save,
   ScanSearch,
   Settings,
   Sprout,
@@ -40,13 +42,15 @@ interface ProjectSceneToolbarProps {
   projectAssetsOpen: boolean;
   projectAssetCount: number;
   onToggleProjectAssets: () => void;
-  hasEnvironment: boolean;
-  onOpenEnvironment: () => void;
+  projectTourOpen: boolean;
+  onOpenProjectTour: () => void;
   filterPanelOpen: boolean;
   hasAssetTypeFilter: boolean;
   onToggleFilterPanel: () => void;
   refreshing: boolean;
   onRefresh: () => void;
+  savingProject: boolean;
+  onSaveProject: () => void;
 }
 
 export function ProjectSceneToolbar({
@@ -68,13 +72,15 @@ export function ProjectSceneToolbar({
   projectAssetsOpen,
   projectAssetCount,
   onToggleProjectAssets,
-  hasEnvironment,
-  onOpenEnvironment,
+  projectTourOpen,
+  onOpenProjectTour,
   filterPanelOpen,
   hasAssetTypeFilter,
   onToggleFilterPanel,
   refreshing,
   onRefresh,
+  savingProject,
+  onSaveProject,
 }: ProjectSceneToolbarProps) {
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -93,16 +99,23 @@ export function ProjectSceneToolbar({
       {selectedProjectId && (
         <Button
           type="button"
-          variant="outline"
+          variant={projectTourOpen ? 'secondary' : 'outline'}
           size="sm"
           className="h-7 gap-1 px-2 text-xs"
           disabled={!presentationComplete || !hasThreeDModule}
-          title={hasEnvironment ? 'Edit Project Environment' : 'Choose Project Environment'}
-          onClick={onOpenEnvironment}
+          aria-expanded={projectTourOpen}
+          aria-controls="project-setup-panel"
+          title="Open Project Tour, Help, and Setup"
+          onClick={onOpenProjectTour}
         >
           <ScanSearch className="h-3.5 w-3.5" />
-          <span>{hasEnvironment ? 'Environment' : 'Choose Environment'}</span>
+          <span>Project Tour</span>
+          {projectTourOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
         </Button>
+      )}
+
+      {selectedProjectId && viewMode !== '2d' && (
+        <div id="project-environment-controls-host" className="relative" />
       )}
 
       {selectedProjectId && viewMode !== '2d' && (
@@ -123,8 +136,8 @@ export function ProjectSceneToolbar({
           </Button>
 
           {sceneAddMenuOpen && (
-            <div className="absolute right-0 top-full z-[2000] mt-1 max-h-[min(24rem,70dvh)] w-64 max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain rounded-lg border bg-background p-1.5 shadow-xl">
-              <div className="px-2 pb-1 pt-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">ThreeD Marker Type</div>
+            <div className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[2000] mt-1 max-h-[min(24rem,70dvh)] w-56 max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain rounded-lg border p-1.5 shadow-xl backdrop-blur-sm">
+              <div className="px-2 pb-1 pt-0.5 text-[10px] font-semibold uppercase tracking-wide text-white/60">ThreeD Marker Type</div>
               <div className="grid grid-cols-1 gap-1">
                 <Button type="button" variant="ghost" size="sm" className="h-8 w-full justify-start text-xs" onClick={onOpenModelLibrary}><Box className="h-3.5 w-3.5" /> Models</Button>
                 <Button type="button" variant="ghost" size="sm" className="h-8 w-full justify-start text-xs" onClick={onOpenCharacterLibrary}><User className="h-3.5 w-3.5" /> Characters</Button>
@@ -164,6 +177,12 @@ export function ProjectSceneToolbar({
       <Button variant={refreshing ? 'secondary' : 'outline'} size="icon" className="h-7 w-7" onClick={onRefresh} disabled={refreshing} title="Refresh data">
         <RefreshCw className={`h-3.5 w-3.5 ${refreshing ? 'animate-spin' : 'text-muted-foreground'}`} />
       </Button>
+
+      {selectedProjectId && (
+        <Button type="button" variant={savingProject ? 'secondary' : 'outline'} size="icon" className="h-7 w-7" disabled={savingProject} aria-label="Save ThreeD Project" title="Save ThreeD Project markers and current view" onClick={onSaveProject}>
+          {savingProject ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5 text-muted-foreground" />}
+        </Button>
+      )}
     </div>
   );
 }

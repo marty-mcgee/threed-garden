@@ -1,7 +1,7 @@
 const MAX_IMAGE_PIXELS = 16 * 1024 * 1024;
 
 /** Read dimensions before asking the browser to allocate decoded image memory. */
-export function getBulkLocalImagePixelCount(bytes: Uint8Array, mimeType: string): number {
+export function getBulkLocalImageDimensions(bytes: Uint8Array, mimeType: string): { width: number; height: number } {
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   let width = 0;
   let height = 0;
@@ -54,6 +54,10 @@ export function getBulkLocalImagePixelCount(bytes: Uint8Array, mimeType: string)
   const pixels = width * height;
   if (!Number.isSafeInteger(pixels) || pixels <= 0) throw new Error('A texture image has invalid or unsupported dimensions.');
   if (pixels > MAX_IMAGE_PIXELS) throw new Error('Each texture image must contain at most 16 Mi pixels (16,777,216 pixels).');
-  return pixels;
+  return { width, height };
 }
 
+export function getBulkLocalImagePixelCount(bytes: Uint8Array, mimeType: string): number {
+  const { width, height } = getBulkLocalImageDimensions(bytes, mimeType);
+  return width * height;
+}

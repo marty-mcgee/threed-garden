@@ -390,6 +390,29 @@ export const threedModelTextures = pgTable('threed_model_textures', {
   ownerActiveIdx: index('idx_threed_model_textures_owner_active').on(table.userId, table.isActive),
 }));
 
+// Owner-scoped flat map image assigned to one Project. Alignment is stored in
+// the Project's versioned ThreeD view state so explicit Save Project remains authoritative.
+export const threedGroundMaps = pgTable('threed_ground_maps', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  projectId: integer('project_id').notNull().references(() => project.id, { onDelete: 'cascade' }),
+  name: varchar('name', { length: 255 }).notNull(),
+  fileName: varchar('file_name', { length: 255 }).notNull(),
+  filePath: varchar('file_path', { length: 500 }).notNull(),
+  fileSize: integer('file_size').notNull(),
+  mimeType: varchar('mime_type', { length: 100 }).notNull(),
+  width: integer('width').notNull(),
+  height: integer('height').notNull(),
+  sourceProvider: varchar('source_provider', { length: 120 }),
+  attribution: text('attribution'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, table => ({
+  projectIdx: uniqueIndex('idx_threed_ground_maps_project').on(table.projectId),
+  ownerIdx: index('idx_threed_ground_maps_owner').on(table.userId),
+  ownerPathIdx: uniqueIndex('idx_threed_ground_maps_owner_path').on(table.userId, table.filePath),
+}));
+
 // ============================================
 // 1e. threed_model_material_assignments - Model material/Texture junction
 // ============================================

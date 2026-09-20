@@ -45,7 +45,7 @@ export function ProjectSetupPanel({
 
   return (
     <section
-      className="absolute left-1/2 top-14 z-30 w-[min(28rem,calc(100%-2rem))] -translate-x-1/2 max-h-[calc(100%-4rem)] overflow-y-auto overscroll-contain rounded-xl border border-cyan-400/25 bg-background/95 shadow-2xl backdrop-blur-md"
+      className="threed-workspace-panel threed-toolbar-dropdown-surface absolute left-1/2 top-14 z-30 w-[min(28rem,calc(100%-2rem))] -translate-x-1/2 max-h-[calc(100%-4rem)] overflow-y-auto overscroll-contain rounded-xl border border-white/10 shadow-2xl backdrop-blur-md"
       aria-labelledby="project-setup-title"
     >
       <div className="h-1 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500" />

@@ -61,7 +61,7 @@ export function ThreeDBedPlacementPanel({
   const inputsDisabled = placementActive || placing;
 
   return (
-    <div className="absolute bottom-0 left-0 top-10 z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-y-auto overscroll-contain rounded-md border bg-background/90 p-3 shadow-xl backdrop-blur-md">
+    <div className="threed-workspace-panel threed-scene-panel-surface absolute bottom-0 left-0 top-9 z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-y-auto overscroll-contain rounded-md border p-3 shadow-xl backdrop-blur-md">
       <div className="mb-2 flex shrink-0 items-start justify-between gap-2">
         <div>
           <h2 className="text-sm font-semibold">Add ThreeD Bed</h2>

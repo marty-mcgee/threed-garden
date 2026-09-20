@@ -6,12 +6,14 @@ Open `/dashboard/map`, choose a project, and select a ThreeD marker to open its 
 
 - Select the Project name to view status, save the complete Project, change Projects, or open its Admin page.
 - Use the view buttons to switch between Combined, 2D, and 3D modes.
+- Use **Project Tour** for guided Project setup and Help. Its toolbar button opens and closes the Tour.
+- Use **Environment** for the environment preset, Ground Map, sunlight, ground plane, camera presentation, legend, grid, Physics Debug, gizmo, incidents, saved views, and Scene Layers.
 - In 3D or Combined mode, select **Add to Scene** to open the existing Model, Character, FarmBot, Bed, or Planting placement workflow.
 - In 2D-only mode, **Add Model** retains the Map-supported Model placement workflow.
 - While a marker is awaiting placement or a Model is awaiting repositioning, the header shows the active operation. Select its X button to cancel that complete Scene operation.
-- Use the Save icon for quick access to the same **Save ThreeD Project** transaction available in the Project menu. Filter and Refresh remain separate header actions.
+- Use the far-right Save icon for quick access to the same **Save ThreeD Project** transaction available in the Project menu. Filter and Refresh remain separate header actions.
 
-The Scene **Controls** menu remains responsible for camera presentation, Layers, environment, legend, grid, gizmo, and Physics Debug. The Details Card remains responsible for the selected marker's actions and editing.
+The toolbar separates Project guidance from live Scene presentation: **Project Tour** owns setup/Help and **Environment** owns Scene presentation. The Details Card remains responsible for the selected marker's actions and editing. See [ThreeD Ground Maps](THREED_GROUND_MAPS.md) for image-ground setup and alignment.
 
 ## Characters
 

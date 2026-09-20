@@ -247,7 +247,7 @@ The user manually verified Bed, Planting, FarmBot, and Model editing plus collid
 
 ## v0.18.9c visual hierarchy candidate
 
-The Dashboard separates controls by ownership: Project actions live in the top-left Project dropdown, Scene presentation and Layer controls live in the top-right Controls menu, and marker actions plus Project-instance forms live in the DetailsCard. The Project dropdown has the highest Dashboard overlay priority so it remains available above marker and Scene panels.
+The Dashboard separates controls by ownership: Project selection and broad Project actions live in the top-left Project dropdown; Project Tour, Environment, placement, Project Assets, filtering, refresh and quick Save live in the Project Toolbar; marker actions plus Project-instance forms live in the DetailsCard. The Environment toolbar menu owns Scene presentation, Ground Map, Layer, legend, grid, gizmo and Physics Debug controls. The Project dropdown retains the highest Dashboard overlay priority so it remains available above marker and Scene panels.
 
 DetailsCards share one compact visual shell across Characters, Beds, Plantings, Models, and FarmBots. The name and Close control remain in the header; module identity moves into metadata. Action Target, Zoom/Center, and Admin navigation use a small inline icon toolbar with accessible labels and hover titles. XYZ position rows and Width/Length/Height rows use equal thirds. Project-instance Save/Delete controls keep consistent locations, while Character animation controls use compact three-column rows to preserve Scene visibility.
 

@@ -2,6 +2,8 @@ import {
   THREE_D_ENVIRONMENT_PRESET_KEYS,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../environment-presets.ts';
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+import { parseProjectGroundMapTransform, type ProjectGroundMapTransform } from '../ground-maps/project-ground-map-core.ts';
 
 export const PROJECT_VIEW_STATE_VERSION = 1 as const;
 
@@ -33,6 +35,7 @@ export interface ProjectThreeDViewState {
   }>;
   sunlight?: { azimuth: number; elevation: number };
   ground?: { enabled: boolean; size: number; height: number };
+  groundMap?: ProjectGroundMapTransform;
 }
 
 export interface ProjectMapViewState {
@@ -202,6 +205,7 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
         size: finite(record(threeD.ground)?.size, 10, 2000),
         height: finite(record(threeD.ground)?.height, -1000, 1000),
       } }),
+      ...(threeD.groundMap === undefined ? {} : { groundMap: parseProjectGroundMapTransform(threeD.groundMap) }),
     };
   }
 

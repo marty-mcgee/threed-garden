@@ -3,6 +3,7 @@
 
 import { placeHoverTitle } from '@/lib/services/threed/markers/hover-title-placement';
 import { SceneHoverTitleContext } from '@/components/threed/shared/SceneHoverTitleContext';
+import { Button } from '@/components/ui/button';
 
 import { EnvironmentRegionColliders } from '@/components/threed/shared/EnvironmentRegionColliders';
 import { resolveBallPhysics } from '@/lib/services/threed/models/ball-physics';
@@ -15,7 +16,9 @@ import {
   useMemo,
   useCallback,
   memo,
+  Suspense,
 } from 'react';
+import { createPortal } from 'react-dom';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { 
   OrbitControls, Environment, Html, Plane, Grid, useTexture,
@@ -98,6 +101,29 @@ import {
   resolveRestoredThreeDActiveLayers,
   type ProjectThreeDViewState,
 } from '@/lib/services/threed/markers/project-view-state-core';
+import {
+  DEFAULT_PROJECT_GROUND_MAP_TRANSFORM,
+  type ProjectGroundMapTransform,
+} from '@/lib/services/threed/ground-maps/project-ground-map-core';
+
+interface ProjectGroundMapAsset {
+  id: number; name: string; fileName: string; filePath: string;
+  width: number; height: number; sourceProvider: string | null; attribution: string | null;
+}
+
+function GroundMapImagePlane({ asset, transform }: { asset: ProjectGroundMapAsset; transform: ProjectGroundMapTransform }) {
+  const texture = useTexture(asset.filePath);
+  const { gl } = useThree();
+  useEffect(() => {
+    texture.colorSpace = THREE.SRGBColorSpace;
+    texture.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
+    texture.needsUpdate = true;
+  }, [gl, texture]);
+  return <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+    <planeGeometry args={[transform.width, transform.length]} />
+    <meshStandardMaterial map={texture} transparent opacity={transform.opacity} roughness={0.95} metalness={0} />
+  </mesh>;
+}
 
 interface ThreeDSceneProps {
   incidents: any[];
@@ -1885,6 +1911,7 @@ export function ThreeDScene({
     return new URLSearchParams(window.location.search).get('characterMarkerId');
   });
   const [showControls, setShowControls] = useState(false);
+  const [environmentControlsHost, setEnvironmentControlsHost] = useState<HTMLElement | null>(null);
   const [showGizmoCube, setShowGizmoCube] = useState(true);
   const [controlsReady, setControlsReady] = useState(false);
   const [selectedDetails, setSelectedDetails] = useState<any>(null);
@@ -1893,6 +1920,11 @@ export function ThreeDScene({
     y: number;
     z: number;
   } | null>(null);
+
+  useEffect(() => {
+    setEnvironmentControlsHost(document.getElementById('project-environment-controls-host'));
+    return () => setEnvironmentControlsHost(null);
+  }, [projectId]);
 
   useEffect(() => {
     if (!placementLabel) setPlacementPreviewPosition(null);
@@ -2148,10 +2180,62 @@ export function ThreeDScene({
   const [showIncidents, setShowIncidents] = useState(false);
   const [sunlight, setSunlight] = useState({ azimuth: 0, elevation: 45 });
   const [extraGround, setExtraGround] = useState({ enabled: false, size: 200, height: -0.1 });
+  const [groundMap, setGroundMap] = useState<ProjectGroundMapTransform>(DEFAULT_PROJECT_GROUND_MAP_TRANSFORM);
+  const [groundMapAsset, setGroundMapAsset] = useState<ProjectGroundMapAsset | null>(null);
+  const [groundMapBusy, setGroundMapBusy] = useState(false);
+  const [groundMapSourceProvider, setGroundMapSourceProvider] = useState('');
+  const [groundMapAttribution, setGroundMapAttribution] = useState('');
+  const groundMapInputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
     setSunlight(initialViewState?.sunlight ?? { azimuth: 0, elevation: 45 });
     setExtraGround(initialViewState?.ground ?? { enabled: false, size: 200, height: -0.1 });
-  }, [projectId, initialViewState?.sunlight, initialViewState?.ground]);
+    setGroundMap(initialViewState?.groundMap ?? DEFAULT_PROJECT_GROUND_MAP_TRANSFORM);
+  }, [projectId, initialViewState?.sunlight, initialViewState?.ground, initialViewState?.groundMap]);
+  useEffect(() => {
+    const controller = new AbortController();
+    setGroundMapAsset(null);
+    if (!projectId) return () => controller.abort();
+    void fetch(`/api/threed/ground-maps?projectId=${projectId}`, { signal: controller.signal })
+      .then(async response => {
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || 'Failed to load Ground Map');
+        if (!controller.signal.aborted) {
+          setGroundMapAsset(payload.data ?? null);
+          setGroundMapSourceProvider(payload.data?.sourceProvider ?? '');
+          setGroundMapAttribution(payload.data?.attribution ?? '');
+        }
+      }).catch(error => { if (error?.name !== 'AbortError') console.error('Failed to load Project Ground Map', { errorName: error instanceof Error ? error.name : 'UnknownError' }); });
+    return () => controller.abort();
+  }, [projectId]);
+  const uploadGroundMap = useCallback(async (file: File) => {
+    if (!projectId) return;
+    setGroundMapBusy(true);
+    try {
+      const form = new FormData(); form.set('projectId', String(projectId)); form.set('file', file);
+      if (groundMapSourceProvider.trim()) form.set('sourceProvider', groundMapSourceProvider.trim());
+      if (groundMapAttribution.trim()) form.set('attribution', groundMapAttribution.trim());
+      const response = await fetch('/api/threed/ground-maps', { method: 'POST', body: form });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || 'Ground Map upload failed');
+      const asset = payload.data as ProjectGroundMapAsset;
+      setGroundMapAsset(asset);
+      const ratio = asset.height / asset.width;
+      setGroundMap(value => ({ ...value, visualMode: 'image', groundMapId: asset.id, width: 200, length: Math.max(1, 200 * ratio) }));
+    } catch (error) { window.alert(error instanceof Error ? error.message : 'Ground Map upload failed'); }
+    finally { setGroundMapBusy(false); }
+  }, [groundMapAttribution, groundMapSourceProvider, projectId]);
+  const deleteGroundMap = useCallback(async () => {
+    if (!projectId || !groundMapAsset || !window.confirm('Remove this Ground Map image from the Project?')) return;
+    setGroundMapBusy(true);
+    try {
+      const response = await fetch(`/api/threed/ground-maps?projectId=${projectId}`, { method: 'DELETE' });
+      const payload = await response.json();
+      if (!response.ok) throw new Error(payload.error || 'Ground Map removal failed');
+      setGroundMapAsset(null);
+      setGroundMap(value => ({ ...value, visualMode: 'procedural', groundMapId: null }));
+    } catch (error) { window.alert(error instanceof Error ? error.message : 'Ground Map removal failed'); }
+    finally { setGroundMapBusy(false); }
+  }, [groundMapAsset, projectId]);
   const environmentPreset = resolveThreeDEnvironmentPreset(envPreset);
 
   useEffect(() => {
@@ -2284,6 +2368,7 @@ export function ThreeDScene({
         environment: envPreset,
         sunlight,
         ground: extraGround,
+        groundMap,
         autoRotate: Boolean(autoRotate),
         showGrid,
         showLegend,
@@ -2294,7 +2379,7 @@ export function ThreeDScene({
       };
     });
     return () => onViewStateProviderChange(null);
-  }, [sunlight, extraGround, activeLayers, autoRotate, availableLayers, controlsReady, envPreset, onViewStateProviderChange, physicsDebug, showControls, showGizmoCube, showGrid, showLegend, viewPresets]);
+  }, [sunlight, extraGround, groundMap, activeLayers, autoRotate, availableLayers, controlsReady, envPreset, onViewStateProviderChange, physicsDebug, showControls, showGizmoCube, showGrid, showLegend, viewPresets]);
 
   useEffect(() => {
     if (!controlsReady || !controlsRef.current || !initialViewState) return;
@@ -2591,19 +2676,29 @@ export function ThreeDScene({
           Click the ground to {movingModelName ? 'move' : 'place'} <span className="font-medium">{placementLabel}</span>
         </div>
       )}
-      {/* Controls Panel */}
-      <div data-scene-hover-obstacle className="absolute top-3 right-3 z-10 flex flex-col items-end gap-1">
-        <button
+      {groundMap.visualMode === 'image' && groundMapAsset && (groundMapAsset.attribution || groundMapAsset.sourceProvider) && (
+        <div className="pointer-events-none absolute bottom-2 right-2 z-10 max-w-[50%] rounded bg-black/55 px-2 py-1 text-[9px] text-white/70 backdrop-blur-sm">
+          {groundMapAsset.attribution || groundMapAsset.sourceProvider}
+        </div>
+      )}
+      {/* Scene-owned controls are presented from the shared Project toolbar. */}
+      {environmentControlsHost && createPortal(<div data-scene-hover-obstacle className="relative">
+        <Button
+          type="button"
           onClick={() => setShowControls(!showControls)}
-          className="bg-black/60 hover:bg-black/80 text-white px-2 py-1 rounded text-xs backdrop-blur-sm transition-colors flex items-center gap-1.5 border border-white/10"
+          variant={showControls ? 'secondary' : 'outline'}
+          size="sm"
+          className="h-7 gap-1 px-2 text-xs"
+          aria-expanded={showControls}
+          title="Environment Controls"
         >
           <Settings className="w-3.5 h-3.5" />
-          <span>Controls</span>
+          <span>Environment</span>
           {showControls ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
-        </button>
+        </Button>
 
         {showControls && (
-          <div className="threed-workspace-panel w-48 space-y-0.5 overflow-y-auto rounded-lg border border-white/10 p-1.5 pb-2.5 shadow-xl backdrop-blur-sm [scrollbar-width:thin]">
+          <div className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[3000] mt-1 max-h-[min(44rem,calc(100dvh-8rem))] w-56 space-y-0.5 overflow-y-auto rounded-lg border border-white/10 p-1.5 pb-2.5 shadow-xl backdrop-blur-sm [scrollbar-width:thin]">
             <div className="text-[10px] text-white/60 px-2 py-0.5">Environment</div>
             <select
               value={envPreset}
@@ -2617,6 +2712,40 @@ export function ThreeDScene({
                 </option>
               ))}
             </select>
+            <details className="px-2 py-1 text-xs text-white/70">
+              <summary className="cursor-pointer">Ground Map</summary>
+              <div className="mt-2 space-y-1.5">
+                <label className="block">Ground Visual
+                  <select value={groundMap.visualMode} onChange={event => setGroundMap(value => ({ ...value, visualMode: event.target.value as ProjectGroundMapTransform['visualMode'] }))} className="mt-1 w-full rounded border border-white/10 bg-black/40 px-1 py-1">
+                    <option value="procedural">Procedural</option>
+                    <option value="image" disabled={!groundMapAsset}>Uploaded Image</option>
+                    <option value="hidden">Hidden</option>
+                  </select>
+                </label>
+                <input ref={groundMapInputRef} className="hidden" type="file" accept="image/png,image/jpeg,image/webp" onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; if (file) void uploadGroundMap(file); }} />
+                <input value={groundMapSourceProvider} maxLength={120} onChange={event => setGroundMapSourceProvider(event.target.value)} placeholder="Source (optional)" aria-label="Ground Map source" className="w-full rounded border border-white/10 bg-black/40 px-2 py-1 text-[10px]" />
+                <input value={groundMapAttribution} maxLength={1000} onChange={event => setGroundMapAttribution(event.target.value)} placeholder="Attribution (optional)" aria-label="Ground Map attribution" className="w-full rounded border border-white/10 bg-black/40 px-2 py-1 text-[10px]" />
+                <button type="button" disabled={groundMapBusy || !projectId} onClick={() => groundMapInputRef.current?.click()} className="w-full rounded border border-white/15 bg-white/5 px-2 py-1 text-left hover:bg-white/10 disabled:opacity-40">
+                  {groundMapBusy ? 'Uploading…' : groundMapAsset ? 'Replace Ground Map Image' : 'Upload Ground Map Image'}
+                </button>
+                {groundMapAsset && <button type="button" disabled={groundMapBusy} onClick={() => void deleteGroundMap()} className="w-full rounded border border-red-300/20 px-2 py-1 text-left text-red-200/80 hover:bg-red-500/10 disabled:opacity-40">Remove Ground Map Image</button>}
+                {groundMapAsset && <div className="text-[10px] text-white/50">{groundMapAsset.fileName} · {groundMapAsset.width} × {groundMapAsset.height}px</div>}
+                {groundMap.visualMode === 'image' && groundMapAsset && <div className="grid grid-cols-2 gap-1">
+                  {([
+                    ['Width', 'width', 1, 20000, 1], ['Length', 'length', 1, 20000, 1],
+                    ['Center X', 'centerX', -1000000, 1000000, 0.1], ['Center Z', 'centerZ', -1000000, 1000000, 0.1],
+                    ['Height', 'height', -1000, 1000, 0.05], ['Rotation', 'rotationY', -360, 360, 1],
+                  ] as const).map(([label, key, min, max, step]) => <label key={key} className="block text-[10px]">{label}
+                    <input className="mt-0.5 w-full rounded bg-black/40 px-1 py-1" type="number" min={min} max={max} step={step} value={groundMap[key]} onChange={event => { const next = Number(event.target.value); if (Number.isFinite(next) && next >= min && next <= max) setGroundMap(value => ({ ...value, [key]: next })); }} />
+                  </label>)}
+                  <label className="col-span-2 block text-[10px]">Opacity: {Math.round(groundMap.opacity * 100)}%
+                    <input className="w-full" type="range" min="0.05" max="1" step="0.05" value={groundMap.opacity} onChange={event => setGroundMap(value => ({ ...value, opacity: Number(event.target.value) }))} />
+                  </label>
+                  <button type="button" className="col-span-2 rounded border border-white/15 px-2 py-1 hover:bg-white/10" onClick={() => setGroundMap(value => ({ ...value, centerX, centerZ, rotationY: -geographicHeadingDegrees }))}>Align North-Up + Center</button>
+                </div>}
+                <p className="text-[10px]">Save Project to keep alignment settings.</p>
+              </div>
+            </details>
             <details className="px-2 py-1 text-xs text-white/70">
               <summary className="cursor-pointer">Sunlight + Ground</summary>
               <label className="block mt-2">Sun Direction: {sunlight.azimuth}°
@@ -2776,7 +2905,7 @@ export function ThreeDScene({
             )}
           </div>
         )}
-      </div>
+      </div>, environmentControlsHost)}
 
       {/* ✅ Save View Dialog */}
       {showPresetDialog && (
@@ -3029,7 +3158,26 @@ export function ThreeDScene({
           debug={false}
         >
           {physicsDebug && <EnabledColliderDebug />}
-          {extraGround.enabled && <RigidBody type="fixed" colliders={false} position={[centerX, extraGround.height, centerZ]}>
+          {groundMap.visualMode === 'image' && groundMapAsset && groundMap.groundMapId === groundMapAsset.id && <RigidBody
+            type="fixed" colliders={false}
+            position={[groundMap.centerX, groundMap.height, groundMap.centerZ]}
+            rotation={[0, groundMap.rotationY * Math.PI / 180, 0]}
+          >
+            <CuboidCollider args={[groundMap.width / 2, 0.1, groundMap.length / 2]} position={[0, -0.1, 0]} />
+            <group onPointerMove={event => { if (placementLabel) setPlacementPreviewPosition({ x: event.point.x, y: event.point.y, z: event.point.z }); }}
+              onPointerLeave={() => setPlacementPreviewPosition(null)}
+              onClick={event => {
+                if (!placementLabel) return;
+                event.stopPropagation();
+                const place = movingModelName ? onModelReposition : placementCharacterName ? onCharacterPlacement : placementFarmBotName ? onFarmBotPlacement : placementPlantingName ? onPlantingPlacement : placementBedName ? onBedPlacement : onModelPlacement;
+                place?.({ x: event.point.x, y: event.point.y, z: event.point.z });
+              }}>
+              <Suspense fallback={<mesh rotation={[-Math.PI / 2, 0, 0]}><planeGeometry args={[groundMap.width, groundMap.length]} /><meshStandardMaterial color="#334155" /></mesh>}>
+                <GroundMapImagePlane asset={groundMapAsset} transform={groundMap} />
+              </Suspense>
+            </group>
+          </RigidBody>}
+          {groundMap.visualMode !== 'image' && extraGround.enabled && <RigidBody type="fixed" colliders={false} position={[centerX, extraGround.height, centerZ]}>
             <CuboidCollider args={[extraGround.size / 2, 0.1, extraGround.size / 2]} position={[0, -0.1, 0]} />
             <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow
               onPointerMove={event => { if (placementLabel) setPlacementPreviewPosition({x: event.point.x, y: event.point.y, z: event.point.z}); }}
@@ -3041,11 +3189,11 @@ export function ThreeDScene({
                 place?.({x: event.point.x, y: event.point.y, z: event.point.z});
               }}>
               <planeGeometry args={[extraGround.size, extraGround.size]} />
-              <meshStandardMaterial color="#527b38" roughness={0.9} />
+              <meshStandardMaterial color="#527b38" roughness={0.9} visible={groundMap.visualMode === 'procedural'} />
             </mesh>
           </RigidBody>}
           {/* v0.16.0-alpha: Interactive ground plane as fixed physics body */}
-          {!extraGround.enabled && <RigidBody type="fixed" colliders="cuboid">
+          {groundMap.visualMode !== 'image' && !extraGround.enabled && <RigidBody type="fixed" colliders="cuboid">
             <InteractiveGround
               size={groundSize}
               centerX={groundCenterX}
@@ -3064,7 +3212,7 @@ export function ThreeDScene({
                   : placementBedName
                     ? onBedPlacement
                     : onModelPlacement}
-              showVisualGround={!hasVisibleEnvironmentModel}
+              showVisualGround={groundMap.visualMode === 'procedural' && !hasVisibleEnvironmentModel}
             />
           </RigidBody>}
 
