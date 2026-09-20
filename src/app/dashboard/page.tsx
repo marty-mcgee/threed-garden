@@ -3,6 +3,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useWorkspaceSettings } from '@/components/settings/WorkspaceSettingsProvider';
 import Link from 'next/link';
 import { 
   FolderOpen, Map, Music, Box, Car, Loader2, ChevronRight, Search,
@@ -16,6 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { readDashboardProjectPage, mergeDashboardProjects, filterDashboardProjects, type DashboardProject } from '@/lib/services/dashboard/project-discovery';
 
 export default function DashboardHomePage() {
+  const { preferences } = useWorkspaceSettings();
   const [projects, setProjects] = useState<DashboardProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -126,30 +128,30 @@ export default function DashboardHomePage() {
 
       {/* Quick Links Section */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <QuickLinkCard
+        {preferences.modules.threed && <QuickLinkCard
           icon={Map}
           title="ThreeD Scenes"
           description="View 2D maps and 3D scenes with runtime markers"
           href="/dashboard/map"
           color="text-emerald-500"
           bgColor="bg-emerald-500/10"
-        />
-        <QuickLinkCard
+        />}
+        {preferences.modules.music && <QuickLinkCard
           icon={Music}
           title="Multimedia Library"
           description="Browse albums and listen to tracks"
           href="/dashboard/music"
           color="text-violet-500"
           bgColor="bg-violet-500/10"
-        />
-        <QuickLinkCard
+        />}
+        {preferences.modules.traffic && <QuickLinkCard
           icon={Car}
           title="Traffic Monitor"
           description="Real-time traffic incidents and closures"
           href="/dashboard/traffic"
           color="text-orange-500"
           bgColor="bg-orange-500/10"
-        />
+        />}
       </div>
 
       {/* Project Grid */}

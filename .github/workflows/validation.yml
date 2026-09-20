@@ -42,6 +42,9 @@ jobs:
       - name: TypeScript type check
         run: bun run typecheck
 
+      - name: Validate personal workspace Settings
+        run: npm run validate:workspace-settings
+
       - name: Validate Texture list pagination inputs
         run: npm run validate:threed-texture-list
 

@@ -56,6 +56,8 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useWorkspaceSettings } from '@/components/settings/WorkspaceSettingsProvider';
+import type { WorkspaceModule } from '@/lib/config/workspace-settings';
 import { cn } from '@/lib/utils';
 import { SignOutButton } from '@/components/auth/SignOutButton';
 
@@ -75,6 +77,7 @@ interface NavItem {
 
 interface NavSection {
   title: string;
+  module?: WorkspaceModule;
   icon: LucideIcon;
   items: NavItem[];
 }
@@ -98,6 +101,7 @@ const navSections: NavSection[] = [
   },
   {
     title: 'ThreeD',
+    module: 'threed',
     icon: Box,
     items: [
       { title: 'Overview', href: '/admin/threed', icon: Carrot, exact: true },
@@ -137,6 +141,7 @@ const navSections: NavSection[] = [
   },
   {
     title: 'Traffic',
+    module: 'traffic',
     icon: Car,
     items: [
       { title: 'Overview', href: '/admin/traffic', icon: Car, exact: true },
@@ -152,6 +157,7 @@ const navSections: NavSection[] = [
   },
   {
     title: 'Multimedia',
+    module: 'music',
     icon: Music,
     items: [
       { title: 'Overview', href: '/admin/music', icon: Music, exact: true },
@@ -201,6 +207,8 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const activeItemHref = getActiveNavItemHref(pathname);
+  const { preferences } = useWorkspaceSettings();
+  const visibleSections = navSections.filter(section => !section.module || preferences.modules[section.module]);
 
   // ✅ Determine which section should be expanded based on current path
   const getExpandedSections = () => {
@@ -263,7 +271,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
     return (
       <aside 
         className={cn(
-          "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-white/10 bg-[#020618]/90 backdrop-blur-xl transition-all duration-300",
+          "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-border dark:border-white/10 bg-background/90 dark:bg-[#020618]/90 backdrop-blur-xl transition-all duration-300",
           isCollapsed ? "w-16" : "w-64"
         )}
       >
@@ -274,7 +282,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
           </Button>
         </div>
         <div className="flex-1 space-y-1 overflow-y-auto px-2 py-2">
-          {navSections.map((section) => (
+          {visibleSections.map((section) => (
             <div key={section.title}>
               <div className="h-8 w-full rounded-md bg-muted/20 animate-pulse mb-1" />
               <div className="space-y-1 pl-4">
@@ -296,7 +304,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
   return (
     <aside 
       className={cn(
-        "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-white/10 bg-[#020618]/90 backdrop-blur-xl transition-all duration-300",
+        "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-border dark:border-white/10 bg-background/90 dark:bg-[#020618]/90 backdrop-blur-xl transition-all duration-300",
         isCollapsed ? "w-16" : "w-64"
       )}
     >
@@ -320,7 +328,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted">
         <ul className="space-y-1 px-2">
-          {navSections.map((section) => {
+          {visibleSections.map((section) => {
             const isExpanded = expandedSections[section.title] || false;
             const SectionIcon = section.icon;
             const sectionHasActive = hasActiveChild(section);
@@ -376,7 +384,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
                 </Button>
 
                 {isExpanded && (
-                  <ul className="ml-5 mt-1 space-y-0.5 border-l border-white/10 pl-2">
+                  <ul className="ml-5 mt-1 space-y-0.5 border-l border-border dark:border-white/10 pl-2">
                     {section.items.map((item) => {
                       const Icon = item.icon;
                       const active = isItemActive(item);
@@ -422,7 +430,7 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
                             )}
                           </Button>
                           {item.children && submenuExpanded && (
-                            <ul className="ml-5 mt-0.5 space-y-0.5 border-l border-white/10 pl-2">
+                            <ul className="ml-5 mt-0.5 space-y-0.5 border-l border-border dark:border-white/10 pl-2">
                               {item.children.map((child) => {
                                 const ChildIcon = child.icon;
                                 const childActive = pathname === child.href || (!child.exact && pathname.startsWith(`${child.href}/`));

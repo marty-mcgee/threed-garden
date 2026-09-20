@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is **v0.19.12 — ThreeD Admin Model Workspace**, package `0.19.12`, commit `80c6a1d`, User-confirmed. See the [release record](releases/v0.19.12.md). The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is **v0.19.39 — ThreeD Characters: Models, Meshes + DetailsCard**, package `0.19.39`, User-confirmed. See the [release record](releases/v0.19.39.md). v0.19.40 is a prepared Settings release candidate. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
 Completed release: [v0.19.12 release handoff](plans/v0.19.12-release.md). Future page work follows the [Admin ThreeD workspace blueprint](plans/admin-threed-workspace-blueprint.md).
 

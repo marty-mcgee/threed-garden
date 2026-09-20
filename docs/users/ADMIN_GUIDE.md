@@ -2,6 +2,8 @@
 
 The Admin surface at `/admin` manages Projects, Settings, Music, ThreeD Garden, and Traffic data.
 
+Use [Personal workspace Settings](SETTINGS.md) for appearance and navigation preferences, Save/Discard behavior and their scope.
+
 ## Project setup
 
 1. Create or edit a project.

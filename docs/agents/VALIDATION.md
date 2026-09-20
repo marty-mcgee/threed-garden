@@ -22,6 +22,8 @@ This repository uses a narrow-first validation ladder. Agents should prove the r
 
 ## Commands
 
+For the personal Settings workspace, run `npm run validate:workspace-settings`, `npm run validate:dashboard-project-discovery`, `npm run validate:threed-project-session`, TypeScript and diff checks. Settings fixtures execute the real contract, service, API handlers, navigation builder, provider and form with mocked database/React/network adapters. They cover owner predicates, authentication/origin, strict validation, stale revisions, audit rollback, account transitions, appearance application, failed-save retention and Discard/Refresh. They do not establish live PostgreSQL locking, browser paint, native fieldset behavior or actual persistence. Follow the browser checklist in `docs/plans/v0.19.40.md`. No schema command or User-owned build is part of these checks.
+
 ```bash
 git diff --check
 npm run validate:assets

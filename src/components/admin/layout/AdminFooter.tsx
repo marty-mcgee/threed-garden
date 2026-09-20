@@ -8,7 +8,7 @@ export function AdminFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-white/10 bg-[#020618]/70 p-2 text-xs text-muted-foreground backdrop-blur-xl">
+    <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-border dark:border-white/10 bg-background/70 dark:bg-[#020618]/70 p-2 text-xs text-muted-foreground backdrop-blur-xl">
       <div className="flex items-center gap-2">
         <span>© {currentYear} Marty McGee Neon</span>
         <span className="hidden sm:inline">•</span>

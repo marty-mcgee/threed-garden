@@ -2,6 +2,7 @@
 'use client';
 
 import { SessionProvider } from 'next-auth/react';
+import { WorkspaceSettingsProvider } from '@/components/settings/WorkspaceSettingsProvider';
 import {
   ThemeProvider,
   type ThreeDResolvedTheme,
@@ -20,7 +21,7 @@ export function Providers({
   return (
     <ThemeProvider initialTheme={initialTheme} initialResolvedTheme={initialResolvedTheme}>
       <SessionProvider>
-        {children}
+        <WorkspaceSettingsProvider>{children}</WorkspaceSettingsProvider>
       </SessionProvider>
     </ThemeProvider>
   );

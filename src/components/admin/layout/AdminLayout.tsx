@@ -18,7 +18,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
-  const fixedWorkspace = ['/admin/music/albums', '/admin/music/tracks', '/admin/music/media', '/admin/music/links', '/admin/multimedia/speech'].includes(pathname) || pathname === '/admin/threed/models' || pathname === '/admin/threed/model-categories' || pathname === '/admin/threed/model-textures' || pathname === '/admin/threed/animations' || pathname === '/admin/threed/plants' || pathname === '/admin/threed/beds' || pathname === '/admin/threed/plantings' || pathname === '/admin/threed/characters' || pathname === '/admin/threed/layers' || pathname === '/admin/threed/farmbots' || pathname === '/admin/threed/watering-schedules' || pathname === '/admin/threed/harvests' || pathname === '/admin/threed/tasks';
+  const fixedWorkspace = ['/admin/settings', '/admin/music/albums', '/admin/music/tracks', '/admin/music/media', '/admin/music/links', '/admin/multimedia/speech'].includes(pathname) || pathname === '/admin/threed/models' || pathname === '/admin/threed/model-categories' || pathname === '/admin/threed/model-textures' || pathname === '/admin/threed/animations' || pathname === '/admin/threed/plants' || pathname === '/admin/threed/beds' || pathname === '/admin/threed/plantings' || pathname === '/admin/threed/characters' || pathname === '/admin/threed/layers' || pathname === '/admin/threed/farmbots' || pathname === '/admin/threed/watering-schedules' || pathname === '/admin/threed/harvests' || pathname === '/admin/threed/tasks';
 
   // ✅ Handle hydration
   useEffect(() => {
@@ -63,9 +63,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   // ✅ Don't render sidebar on server to avoid hydration mismatch
   if (!mounted) {
     return (
-      <div className={cn("flex bg-[#020618] [--card-gap:1rem] [--card-padding-x:1rem] [--card-padding-y:1rem]", fixedWorkspace ? "h-dvh overflow-hidden" : "min-h-screen")}>
+      <div className={cn("flex bg-background dark:bg-[#020618] [--card-gap:1rem] [--card-padding-x:1rem] [--card-padding-y:1rem]", fixedWorkspace ? "h-dvh overflow-hidden" : "min-h-screen")}>
         <div className="min-h-0 min-w-0 flex-1 flex flex-col">
-          <div className="h-14 border-b border-white/10 bg-[#020618]/85 backdrop-blur-xl" />
+          <div className="h-14 border-b border-border dark:border-white/10 bg-background/85 dark:bg-[#020618]/85 backdrop-blur-xl" />
           <main className={cn("flex-1 p-2", fixedWorkspace && "min-h-0 overflow-hidden")}>
             {children}
           </main>
@@ -76,7 +76,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className={cn("flex bg-[#020618] [--card-gap:1rem] [--card-padding-x:1rem] [--card-padding-y:1rem]", fixedWorkspace ? "h-dvh overflow-hidden" : "min-h-screen")}>
+    <div className={cn("flex bg-background dark:bg-[#020618] [--card-gap:1rem] [--card-padding-x:1rem] [--card-padding-y:1rem]", fixedWorkspace ? "h-dvh overflow-hidden" : "min-h-screen")}>
       {/* Sidebar */}
       <AdminSidebar 
         isCollapsed={isCollapsed} 

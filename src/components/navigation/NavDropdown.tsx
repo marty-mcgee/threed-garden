@@ -1,13 +1,12 @@
 // components/navigation/NavDropdown.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useWorkspaceSettings } from '@/components/settings/WorkspaceSettingsProvider';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { buildNavigationClient } from '@/lib/config/navigation.client';
-import type { NavSection } from '@/lib/config/navigation.client';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,16 +19,8 @@ import { Button } from '@/components/ui/button';
 
 export default function NavDropdown() {
   const pathname = usePathname();
-  const [sections, setSections] = useState<NavSection[]>([]);
-
-  useEffect(() => {
-    // Build navigation on the client
-    setSections(buildNavigationClient());
-  }, []);
-
-  if (sections.length === 0) {
-    return null;
-  }
+  const { preferences } = useWorkspaceSettings();
+  const sections = buildNavigationClient(preferences);
 
   const isActive = (path: string) => {
     if (path === '/dashboard') return pathname === '/dashboard';
@@ -59,6 +50,9 @@ export default function NavDropdown() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuItem asChild><Link href="/dashboard">Projects</Link></DropdownMenuItem>
+        <DropdownMenuItem asChild><Link href="/admin/settings">Settings</Link></DropdownMenuItem>
+        {sections.length > 0 && <DropdownMenuSeparator />}
         {sections.map((section, index) => (
           <div key={section.module}>
             {index > 0 && <DropdownMenuSeparator />}

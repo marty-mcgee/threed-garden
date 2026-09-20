@@ -6,8 +6,7 @@ import {
   ScanEye, Droplets, TrendingUp, Activity, Carrot,
   LayoutDashboard, Music, type LucideIcon
 } from 'lucide-react';
-import { getClientSettings, isServiceEnabledClient } from './settings.client';
-import type { ModuleName } from './settings';
+import { defaultWorkspaceSettings, workspaceLinkVisible, workspaceModules, type WorkspaceSettings } from './workspace-settings';
 
 export interface NavItem {
   path: string;
@@ -47,21 +46,20 @@ export const ALL_NAV_ITEMS: NavItem[] = [
 export const SECTION_CONFIG: Record<'traffic' | 'threed' | 'music', { title: string; icon: LucideIcon }> = {
   traffic: { title: 'Traffic Services', icon: Car },
   threed: { title: 'ThreeD Garden', icon: Carrot },
-  music: { title: 'Music Library', icon: Music },
+  music: { title: 'Multimedia Library', icon: Music },
 };
 
-export function buildNavigationClient(): NavSection[] {
-  const settings = getClientSettings();
+export function buildNavigationClient(settings: WorkspaceSettings = defaultWorkspaceSettings()): NavSection[] {
   const sections: NavSection[] = [];
 
-  (['traffic', 'threed', 'music'] as ModuleName[]).forEach((module) => {
-    const moduleEnabled = settings.modules[module].enabled;
+  workspaceModules.forEach((module) => {
+    const moduleEnabled = settings.modules[module];
     if (!moduleEnabled) return;
 
     const moduleItems = ALL_NAV_ITEMS.filter(item => item.module === module);
     const enabledItems = moduleItems.filter(item => {
       if (!item.service) return true;
-      return isServiceEnabledClient(module, item.service);
+      return workspaceLinkVisible(settings, module, item.service);
     });
 
     if (enabledItems.length === 0) return;
