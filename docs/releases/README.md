@@ -2,7 +2,9 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Current production: **v0.19.43 — ThreeD App Legacy Code Cleanup: Project Toolbar**, deployment User-confirmed.
+Current production: **v0.20.0 Alpha — App Structure, Multimedia + Scene**, deployment User-confirmed.
+
+- [v0.20.0 Alpha — App Structure, Multimedia + Scene](v0.20.0.md) — production User-confirmed
 
 - [v0.19.43 — ThreeD App Legacy Code Cleanup: Project Toolbar](v0.19.43.md) — production User-confirmed
 

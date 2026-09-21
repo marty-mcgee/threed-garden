@@ -2,9 +2,9 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is **v0.19.43 — ThreeD App Legacy Code Cleanup: Project Toolbar**, released package `0.19.43`, deployment User-confirmed. See the [release record](releases/v0.19.43.md) and [production handoff](plans/v0.19.43-release.md). The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is **v0.20.0 Alpha — App Structure, Multimedia + Scene**, released package `0.20.0`, deployment User-confirmed. See the [release record](releases/v0.20.0.md) and [production handoff](plans/v0.20.0-alpha-release.md). The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
-Current planning is **v0.20.0 — Top-Level App Structure**; see the [planning boundary](plans/v0.20.0.md). Development package `0.20.0`.
+The completed v0.20.0 infrastructure record is available in the [development plan](plans/v0.20.0.md).
 
 Completed release: [v0.19.12 release handoff](plans/v0.19.12-release.md). Future page work follows the [Admin ThreeD workspace blueprint](plans/admin-threed-workspace-blueprint.md).
 

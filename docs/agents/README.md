@@ -16,6 +16,6 @@ Read [ThreeD character runtimes](../developers/THREED_CHARACTERS.md) before chan
 
 Read [ThreeD Marker architecture](../developers/THREED_MARKERS.md) before changing Runtime Marker creation, marker identity, ThreeD Layers, marker visibility, Action Target resolution, or marker adapters.
 
-The current production checkpoint is [v0.19.43](../releases/v0.19.43.md), deployment User-confirmed. The current candidate is **v0.20.0 Alpha — Top-Level App Structure + Multimedia Namespace**; use its [development record](../plans/v0.20.0.md) and [alpha release handoff](../plans/v0.20.0-alpha-release.md). Preserve the `src/libraries` source boundary, canonical `/dashboard/scene` route, Multimedia module identity, Project ownership rules, persistent Canvas/physics, and separate Garden/Ecctrl runtimes.
+The current production checkpoint is [v0.20.0](../releases/v0.20.0.md), deployment User-confirmed September 21, 2026. Use its [development record](../plans/v0.20.0.md) and [alpha release handoff](../plans/v0.20.0-alpha-release.md). Preserve the `src/libraries` source boundary, canonical `/dashboard/scene` route, Multimedia module identity, Project ownership rules, persistent Canvas/physics, and separate Garden/Ecctrl runtimes.
 
 The autonomous [ThreeD Animations Library](../developers/THREED_ANIMATIONS_LIBRARY.md), uploads, Character assignment editor and Character playback integration shipped in v0.19.14. Dedicated Model assignment editing and compatibility/retargeting remain separate work.

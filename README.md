@@ -1,13 +1,13 @@
 # marty-mcgee-neon (threed-garden-neon)
 
-A **React + React Three Fiber** application for building and exploring interactive 3D gardens, live traffic data, and a music library — backed by **Neon Postgres** and **Drizzle ORM**.
+A **React + React Three Fiber** application for building and exploring interactive 3D gardens, live traffic data, and multimedia — backed by **Neon Postgres** and **Drizzle ORM**.
 
 This is a **Dual-Surface Platform**:
 
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production release:** `v0.19.40 — Admin Settings: Personal Workspace Preferences`, package `0.19.40`, deployment User-confirmed. Signed-in Users can persist working appearance and navigation preferences through authenticated, owner-scoped Settings while unsupported execution switches remain excluded. See the [release notes](docs/releases/v0.19.40.md), [development record](docs/plans/v0.19.40.md), and [Settings guide](docs/users/SETTINGS.md).
+> **Current production release:** `v0.20.0 Alpha — App Structure, Multimedia + Scene`, package `0.20.0`, deployment User-confirmed. The App now uses `src/libraries`, a unified Multimedia namespace, and `/dashboard/scene` as the canonical ThreeD Project route. See the [release notes](docs/releases/v0.20.0.md) and [development record](docs/plans/v0.20.0.md).
 
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 
@@ -45,7 +45,7 @@ Start with the [Documentation Hub](docs/README.md) for audience-specific guides:
 | Technology | Why this app uses it |
 |------------|----------------------|
 | **Neon: Postgres** | A serverless Postgres database that scales to zero and pairs perfectly with Vercel — the source of truth for all module data. |
-| **Drizzle ORM** | A lightweight, type-safe TypeScript ORM on top of `pg`. It makes the schema (plants, beds, characters, traffic, music, …) explicit and gives compile-time safety for queries. |
+| **Drizzle ORM** | A lightweight, type-safe TypeScript ORM on top of `pg`. It makes the schema (plants, beds, characters, traffic, multimedia, …) explicit and gives compile-time safety for queries. |
 | **React 19** | The component model that powers the entire platform — from admin CRUD forms to the 3D scene. |
 | **Next.js 16** | The full-stack React framework providing App Router pages, server components, and API routes. Next Auth.js plugs in here for authentication. |
 | **Three.js** | The underlying WebGL engine that renders the 3D garden scene. |
@@ -71,7 +71,7 @@ The heart of the app is the **ThreeD Garden**, built as a declarative React Thre
 | **Projects** | ✅ Full CRUD + Asset Manager | ✅ Homepage project cards |
 | **ThreeD Garden** | ✅ Plants, Beds, Plantings, Characters, Models, Layers | ✅ Interactive 3D scene with physics-based characters |
 | **Traffic** | ✅ 8 sub-modules, full CRUD | ✅ 2D map with emoji markers & popups |
-| **Music** | ✅ Albums, Tracks, Links, Media | ✅ Player, album grid, waveform visualizer |
+| **Multimedia** | ✅ Albums, Tracks, Links, Media, Speech | ✅ Player, album grid, waveform visualizer |
 | **Settings** | ✅ Admin UI | ❌ (by design) |
 
 ### ThreeD Garden highlights
