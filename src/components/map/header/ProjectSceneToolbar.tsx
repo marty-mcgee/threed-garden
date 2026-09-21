@@ -19,7 +19,7 @@ import {
 
 import { SceneOperationStatus, type SceneOperationStatusValue } from '@/components/map/panels/SceneOperationStatus';
 import { Button } from '@/components/ui/button';
-import type { MapViewMode } from '@/lib/types/map';
+import type { MapViewMode } from '@/libraries/types/map';
 
 interface ProjectSceneToolbarProps {
   selectedProjectId: string | null;

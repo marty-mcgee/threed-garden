@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useSession } from 'next-auth/react';
 import { useTheme } from '@/components/themes/provider';
-import { defaultWorkspaceSettings, workspaceSnapshotSchema, type WorkspaceSettings, type WorkspaceSnapshot } from '@/lib/config/workspace-settings';
+import { defaultWorkspaceSettings, workspaceSnapshotSchema, type WorkspaceSettings, type WorkspaceSnapshot } from '@/libraries/config/workspace-settings';
 
 interface WorkspaceContext {
   preferences: WorkspaceSettings;

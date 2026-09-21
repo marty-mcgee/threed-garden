@@ -1,6 +1,6 @@
 // src/app/api/threed/farmbots/poll/route.ts
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/libraries/auth';
 
 export const maxDuration = 300;
 export const dynamic = 'force-dynamic';

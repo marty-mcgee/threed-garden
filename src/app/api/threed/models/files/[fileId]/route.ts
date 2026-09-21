@@ -1,17 +1,17 @@
-import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
+import { modelSelection } from '@/libraries/services/threed/models/model-primary-file';
 // src/app/api/threed/models/files/[fileId]/route.ts — v0.16.4-alpha
 // Route is mounted at /api/threed/models/files/[fileId] (no [id] segment),
 // so the model id is derived from the file record itself.
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { threedModels, threedModelFiles, threedModelTextures } from '@/lib/schema';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { threedModels, threedModelFiles, threedModelTextures } from '@/libraries/schema';
 import { and, asc, eq } from 'drizzle-orm';
 import { del } from '@vercel/blob';
 import {
   isOwnedThreeDBlobUrl,
   runtimeModelTypeFromFileName,
-} from '@/lib/services/threed/models/model-file-integrity';
+} from '@/libraries/services/threed/models/model-file-integrity';
 
 // DELETE /api/threed/models/files/[fileId] - Delete a specific model file
 export async function DELETE(

@@ -3,9 +3,9 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { TrimeshCollider, useRapier } from '@react-three/rapier';
 import { Euler, Quaternion, Vector3 } from 'three';
-import { extractEnvironmentRegion, type EnvironmentRegionIndex } from '@/lib/services/threed/models/environment-region-index';
-import { selectEnvironmentCollisionRegions, type CollisionActor } from '@/lib/services/threed/models/environment-region-selection';
-import type { EnvironmentSurfaceCollider } from '@/lib/services/threed/models/environment-surface-collider';
+import { extractEnvironmentRegion, type EnvironmentRegionIndex } from '@/libraries/services/threed/models/environment-region-index';
+import { selectEnvironmentCollisionRegions, type CollisionActor } from '@/libraries/services/threed/models/environment-region-selection';
+import type { EnvironmentSurfaceCollider } from '@/libraries/services/threed/models/environment-surface-collider';
 
 /** Geometry belongs to the existing fixed Environment body; no additional bodies. */
 export function EnvironmentRegionColliders({ index, enabled, physicsDebug, markerId, position, rotation, onReady }: {

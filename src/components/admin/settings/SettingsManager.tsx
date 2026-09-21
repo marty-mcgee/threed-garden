@@ -6,7 +6,7 @@ import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHe
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { useWorkspaceSettings } from '@/components/settings/WorkspaceSettingsProvider';
-import { defaultWorkspaceSettings, workspaceModules, workspaceModuleLabels, workspaceLinks, type WorkspaceSettings } from '@/lib/config/workspace-settings';
+import { defaultWorkspaceSettings, workspaceModules, workspaceModuleLabels, workspaceLinks, type WorkspaceSettings } from '@/libraries/config/workspace-settings';
 
 export function SettingsManager() {
   const { snapshot, loading, saving, error, refresh, save } = useWorkspaceSettings();

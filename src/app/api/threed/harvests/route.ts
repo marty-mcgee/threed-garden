@@ -1,17 +1,17 @@
 // app/api/threed/harvests/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
 import { 
   threedHarvests, 
   threedPlantings, 
   threedPlants,
   threedBeds,
-} from '@/lib/schema/threed';
-import { project, projectAssets } from '@/lib/schema/project';
+} from '@/libraries/schema/threed';
+import { project, projectAssets } from '@/libraries/schema/project';
 import { eq, and, asc, desc, sql, inArray } from 'drizzle-orm';
-import { parseHarvestListQuery } from '@/lib/services/threed/harvests/harvest-list-query';
-import { ensureTableSequence } from '@/lib/db/sequence';
+import { parseHarvestListQuery } from '@/libraries/services/threed/harvests/harvest-list-query';
+import { ensureTableSequence } from '@/libraries/db/sequence';
 
 // ============================================
 // GET /api/threed/harvests

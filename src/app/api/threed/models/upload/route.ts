@@ -2,17 +2,17 @@
 // Standalone model-file upload for the create flow: uploads the primary GLB/GLTF/FBX/OBJ
 // file to Vercel Blob and returns its public URL + inferred metadata (no DB write yet).
 import { NextRequest, NextResponse } from 'next/server';
-import { createThreeDBlobPath, isOwnedStagedModelBlobUrl } from '@/lib/services/threed/models/model-blob-paths';
-import { auth } from '@/lib/auth';
+import { createThreeDBlobPath, isOwnedStagedModelBlobUrl } from '@/libraries/services/threed/models/model-blob-paths';
+import { auth } from '@/libraries/auth';
 import { del, put } from '@vercel/blob';
 import { and, eq } from 'drizzle-orm';
-import { db } from '@/lib/db/client';
-import { threedModelFiles, threedModels } from '@/lib/schema/threed';
+import { db } from '@/libraries/db/client';
+import { threedModelFiles, threedModels } from '@/libraries/schema/threed';
 import {
   inspectThreeDGltfStructure,
   parseThreeDGlbJsonChunk,
-} from '@/lib/services/threed/models/gltf-runtime-inspection-core';
-import { inspectThreeDFbxStructure } from '@/lib/services/threed/models/fbx-runtime-inspection-server';
+} from '@/libraries/services/threed/models/gltf-runtime-inspection-core';
+import { inspectThreeDFbxStructure } from '@/libraries/services/threed/models/fbx-runtime-inspection-server';
 
 export const runtime = 'nodejs';
 

@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { and, eq } from 'drizzle-orm';
 import { del, put } from '@vercel/blob';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { ensureTableSequence } from '@/lib/db/sequence';
-import { project } from '@/lib/schema/project';
-import { threedGroundMaps } from '@/lib/schema/threed';
-import { createThreeDBlobPath } from '@/lib/services/threed/models/model-blob-paths';
-import { getBulkLocalImageDimensions } from '@/lib/services/threed/models/model-image-limits-core';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { ensureTableSequence } from '@/libraries/db/sequence';
+import { project } from '@/libraries/schema/project';
+import { threedGroundMaps } from '@/libraries/schema/threed';
+import { createThreeDBlobPath } from '@/libraries/services/threed/models/model-blob-paths';
+import { getBulkLocalImageDimensions } from '@/libraries/services/threed/models/model-image-limits-core';
 
 export const runtime = 'nodejs';
 const MAX_BYTES = 16 * 1024 * 1024;

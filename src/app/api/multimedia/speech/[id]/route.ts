@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { multimediaSpeech as speech } from '@/lib/schema/multimedia';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { multimediaSpeech as speech } from '@/libraries/schema/multimedia';
 import { and, eq, sql } from 'drizzle-orm';
-import { parseSpeechDraft, positiveSpeechInteger } from '@/lib/services/multimedia/speech-draft';
+import { parseSpeechDraft, positiveSpeechInteger } from '@/libraries/services/multimedia/speech-draft';
 
 type Context = { params: Promise<{ id: string }> };
 async function identity(context: Context) {

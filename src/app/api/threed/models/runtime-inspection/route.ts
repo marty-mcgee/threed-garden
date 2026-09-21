@@ -1,15 +1,15 @@
-import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
+import { modelSelection } from '@/libraries/services/threed/models/model-primary-file';
 import { NextRequest, NextResponse } from 'next/server';
 import { and, eq, or } from 'drizzle-orm';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { threedModels } from '@/lib/schema/threed';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { threedModels } from '@/libraries/schema/threed';
 import {
   inspectThreeDGltfStructure,
   parseThreeDGlbJsonChunk,
-} from '@/lib/services/threed/models/gltf-runtime-inspection-core';
-import { readThreeDModelRuntimeAdapterKey } from '@/lib/services/threed/models/model-runtime-adapter-core';
-import { inspectThreeDFbxStructure } from '@/lib/services/threed/models/fbx-runtime-inspection-server';
+} from '@/libraries/services/threed/models/gltf-runtime-inspection-core';
+import { readThreeDModelRuntimeAdapterKey } from '@/libraries/services/threed/models/model-runtime-adapter-core';
+import { inspectThreeDFbxStructure } from '@/libraries/services/threed/models/fbx-runtime-inspection-server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

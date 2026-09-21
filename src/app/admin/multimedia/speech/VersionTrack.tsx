@@ -19,7 +19,7 @@ export function VersionTrack({ speechId, versionNumber, defaultTitle, trackId, d
   useEffect(() => {
     if (!open) return;
     const controller = new AbortController(); setLoading(true); setError('');
-    fetch(`/api/music/albums?scope=owner&limit=50&offset=${page * 50}`, { signal: controller.signal }).then(async response => {
+    fetch(`/api/multimedia/albums?scope=owner&limit=50&offset=${page * 50}`, { signal: controller.signal }).then(async response => {
       const result = await response.json(); if (!response.ok) throw Error('Could not load Albums.');
       if (!controller.signal.aborted) { setAlbums(result.data); setTotal(result.pagination.total); }
     }).catch(() => { if (!controller.signal.aborted) setError('Could not load Albums.'); }).finally(() => { if (!controller.signal.aborted) setLoading(false); });
@@ -35,7 +35,7 @@ export function VersionTrack({ speechId, versionNumber, defaultTitle, trackId, d
     } catch (reason) { setError(reason instanceof Error ? reason.message : 'Could not save Track. You can retry safely.'); }
     finally { lock.current = false; setBusy(false); }
   }
-  if (trackId || savedId) return <Link className="text-xs text-green-500 underline" href="/admin/music/tracks">Track #{trackId || savedId} saved · View Tracks</Link>;
+  if (trackId || savedId) return <Link className="text-xs text-green-500 underline" href="/admin/multimedia/tracks">Track #{trackId || savedId} saved · View Tracks</Link>;
   return <div className="space-y-2">
     {!open ? <Button size="sm" variant="outline" disabled={disabled} onClick={() => setOpen(true)}>Save as Track</Button> : <>
       <input aria-label="Track title" className="h-8 w-full rounded border bg-background px-2 text-sm" maxLength={255} value={title} disabled={busy || disabled} onChange={event => setTitle(event.target.value)} />

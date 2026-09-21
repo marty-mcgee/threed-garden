@@ -5,7 +5,7 @@
 import { useEffect, useState } from 'react';
 import { useWorkspaceSettings } from '@/components/settings/WorkspaceSettingsProvider';
 import Link from 'next/link';
-import { 
+import {
   FolderOpen, Map, Music, Box, Car, Loader2, ChevronRight, Search,
   BarChart3, Layers
 } from 'lucide-react';
@@ -14,7 +14,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 
-import { readDashboardProjectPage, mergeDashboardProjects, filterDashboardProjects, type DashboardProject } from '@/lib/services/dashboard/project-discovery';
+import { readDashboardProjectPage, mergeDashboardProjects, filterDashboardProjects, type DashboardProject } from '@/libraries/services/dashboard/project-discovery';
 
 export default function DashboardHomePage() {
   const { preferences } = useWorkspaceSettings();
@@ -100,7 +100,7 @@ export default function DashboardHomePage() {
             <FolderOpen className="w-16 h-16 mx-auto mb-4 text-muted-foreground/40" />
             <h2 className="text-lg font-semibold mb-2">No Projects Available</h2>
             <p className="text-sm text-muted-foreground mb-4 max-w-md mx-auto">
-              Projects group your Music, ThreeD Garden, and Traffic modules together. 
+              Projects group your Multimedia, ThreeD Garden, and Traffic modules together.
               Create a Project in Admin, or return here when a Project is available to you.
             </p>
             <Button asChild>
@@ -114,7 +114,7 @@ export default function DashboardHomePage() {
         <section aria-label="Find Projects" className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
             <select aria-label="Filter loaded Projects by module" value={module} onChange={event => setModule(event.target.value as typeof module)} className="h-8 rounded-md border bg-background px-2 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring [@media(pointer:coarse)]:min-h-11">
-              <option value="all">All Modules</option><option value="threed">ThreeD</option><option value="music">Music</option><option value="traffic">Traffic</option>
+              <option value="all">All Modules</option><option value="threed">ThreeD</option><option value="multimedia">Multimedia</option><option value="traffic">Traffic</option>
             </select>
             <div className="relative min-w-0 flex-1 basis-48">
               <Search aria-hidden="true" className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -132,15 +132,15 @@ export default function DashboardHomePage() {
           icon={Map}
           title="ThreeD Scenes"
           description="View 2D maps and 3D scenes with runtime markers"
-          href="/dashboard/map"
+          href="/dashboard/scene"
           color="text-emerald-500"
           bgColor="bg-emerald-500/10"
         />}
-        {preferences.modules.music && <QuickLinkCard
+        {preferences.modules.multimedia && <QuickLinkCard
           icon={Music}
           title="Multimedia Library"
           description="Browse albums and listen to tracks"
-          href="/dashboard/music"
+          href="/dashboard/multimedia"
           color="text-violet-500"
           bgColor="bg-violet-500/10"
         />}
@@ -158,8 +158,8 @@ export default function DashboardHomePage() {
       {matchingProjects.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {matchingProjects.map((project) => (
-            <Card 
-              key={project.id} 
+            <Card
+              key={project.id}
               className="group hover:shadow-md transition-shadow border-muted/60 hover:border-primary/30"
             >
               <CardContent className="flex h-full flex-col p-3">
@@ -182,10 +182,10 @@ export default function DashboardHomePage() {
 
                 {/* Module Pills */}
                 <div className="flex flex-wrap gap-1.5 mb-3">
-                  {project.modules.music > 0 && (
+                  {project.modules.multimedia > 0 && (
                     <Badge variant="outline" className="text-[10px] gap-1">
                       <Music className="w-3 h-3" />
-                      Music
+                      Multimedia
                     </Badge>
                   )}
                   {project.modules.threed > 0 && (
@@ -220,14 +220,14 @@ export default function DashboardHomePage() {
                 {/* Actions */}
                 <div className="mt-auto flex gap-2">
                   <Button asChild variant="outline" size="sm" className={`flex-1 bg-transparent text-foreground shadow-none dark:bg-transparent ${touchControl}`}>
-                    <Link href={`/dashboard/map?projectId=${project.id}`} aria-label={`Open Project: ${project.name}`}>
+                    <Link href={`/dashboard/scene?projectId=${project.id}`} aria-label={`Open Project: ${project.name}`}>
                       <Map className="w-3.5 h-3.5 mr-1" />
                       Open Project
                     </Link>
                   </Button>
-                  {project.modules.music > 0 && (
+                  {project.modules.multimedia > 0 && (
                     <Button asChild variant="outline" size="sm" className={touchControl}>
-                      <Link href="/dashboard/music" aria-label="Open Music Library" title="Music Library">
+                      <Link href="/dashboard/multimedia" aria-label="Open Multimedia Library" title="Multimedia Library">
                         <Music className="w-3.5 h-3.5" />
                       </Link>
                     </Button>
@@ -253,17 +253,17 @@ export default function DashboardHomePage() {
   );
 }
 
-function QuickLinkCard({ 
-  icon: Icon, 
-  title, 
-  description, 
-  href, 
-  color, 
-  bgColor 
-}: { 
-  icon: any; 
-  title: string; 
-  description: string; 
+function QuickLinkCard({
+  icon: Icon,
+  title,
+  description,
+  href,
+  color,
+  bgColor
+}: {
+  icon: any;
+  title: string;
+  description: string;
   href: string;
   color: string;
   bgColor: string;

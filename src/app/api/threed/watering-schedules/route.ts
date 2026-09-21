@@ -1,11 +1,11 @@
-import { parseWateringListQuery } from '@/lib/services/threed/waterings/watering-list-query';
+import { parseWateringListQuery } from '@/libraries/services/threed/waterings/watering-list-query';
 import { NextRequest, NextResponse } from 'next/server';
 import { and, desc, eq, inArray, sql, type SQL } from 'drizzle-orm';
 
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { projectAssets } from '@/lib/schema/project';
-import { threedWateringSchedules } from '@/lib/schema/threed';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { projectAssets } from '@/libraries/schema/project';
+import { threedWateringSchedules } from '@/libraries/schema/threed';
 
 // GET /api/threed/watering-schedules
 export async function GET(request: NextRequest) {

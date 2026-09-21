@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import { animationResponse } from '@/lib/services/threed/animations/http';
-import { parseList, positiveId, AnimationLibraryError } from '@/lib/services/threed/animations/contracts';
-import { listAnimationFiles, deleteAnimationFile } from '@/lib/services/threed/animations/library';
+import { animationResponse } from '@/libraries/services/threed/animations/http';
+import { parseList, positiveId, AnimationLibraryError } from '@/libraries/services/threed/animations/contracts';
+import { listAnimationFiles, deleteAnimationFile } from '@/libraries/services/threed/animations/library';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export function GET(request: NextRequest) {
@@ -13,7 +13,7 @@ export function DELETE(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   return animationResponse(async userId => {
-    const { uploadAnimationSource } = await import('@/lib/services/threed/animations/upload');
+    const { uploadAnimationSource } = await import('@/libraries/services/threed/animations/upload');
     const form = await request.formData().catch(() => null);
     if (!form) throw new AnimationLibraryError(400, 'Invalid animation upload');
     return uploadAnimationSource(userId, form);

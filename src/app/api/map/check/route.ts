@@ -1,8 +1,8 @@
 // app/api/map/check/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { project, projectAssets } from '@/lib/schema/project';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { project, projectAssets } from '@/libraries/schema/project';
 import { eq, and, sql } from 'drizzle-orm';
 
 // ============================================

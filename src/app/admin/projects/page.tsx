@@ -4,11 +4,11 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { 
-  Plus, 
-  Folder, 
-  Box, 
-  Car, 
+import {
+  Plus,
+  Folder,
+  Box,
+  Car,
   Music,
   ChevronRight,
   Trash2,
@@ -36,7 +36,7 @@ interface Project {
 interface ModuleCounts {
   threed: number;
   traffic: number;
-  music: number;
+  multimedia: number;
 }
 
 export default function AdminProjectsPage() {
@@ -71,7 +71,7 @@ export default function AdminProjectsPage() {
       }
       const data = await response.json();
       setProjects(data.data || []);
-      
+
       // ✅ Fetch module counts for each project using the project.id from the response
       for (const project of data.data || []) {
         console.log(`🔍 Fetching modules for project ${project.id}:`, project);
@@ -89,61 +89,61 @@ export default function AdminProjectsPage() {
   const fetchModuleCounts = async (projectId: number) => {
     try {
       const response = await fetch(`/api/project/modules?projectId=${projectId}`);
-      
+
       // ✅ If response is not OK (500, 401, etc.), handle gracefully
       if (!response.ok) {
         console.warn(`⚠️ Failed to fetch modules for project ${projectId}: ${response.status}`);
-        setModuleCounts(prev => ({ 
-          ...prev, 
-          [projectId]: { threed: 0, traffic: 0, music: 0 } 
+        setModuleCounts(prev => ({
+          ...prev,
+          [projectId]: { threed: 0, traffic: 0, multimedia: 0 }
         }));
         return;
       }
-      
+
       const data = await response.json();
-      
+
       // ✅ Handle case where data is empty or missing
       if (!data.success || !data.data) {
         console.log(`ℹ️ No module data for project ${projectId}`);
-        setModuleCounts(prev => ({ 
-          ...prev, 
-          [projectId]: { threed: 0, traffic: 0, music: 0 } 
+        setModuleCounts(prev => ({
+          ...prev,
+          [projectId]: { threed: 0, traffic: 0, multimedia: 0 }
         }));
         return;
       }
-      
+
       const counts = {
         threed: data.data.threed?.length || 0,
         traffic: data.data.traffic?.length || 0,
-        music: data.data.music?.length || 0,
+        multimedia: data.data.multimedia?.length || 0,
       };
-      
+
       setModuleCounts(prev => ({ ...prev, [projectId]: counts }));
     } catch (error) {
       // ✅ Network errors handled gracefully
       console.warn(`⚠️ Network error fetching modules for project ${projectId}:`, error);
-      setModuleCounts(prev => ({ 
-        ...prev, 
-        [projectId]: { threed: 0, traffic: 0, music: 0 } 
+      setModuleCounts(prev => ({
+        ...prev,
+        [projectId]: { threed: 0, traffic: 0, multimedia: 0 }
       }));
     }
   };
 
   const deleteProject = async (id: number) => {
     if (!confirm('Are you sure you want to delete this project? This will also delete all associated modules.')) return;
-    
+
     setDeleting(id);
     try {
       // ✅ DELETE /api/project?id=1 - Delete a project
       const response = await fetch(`/api/project?id=${id}`, {
         method: 'DELETE',
       });
-      
+
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.error || 'Failed to delete project');
       }
-      
+
       showToast('Project deleted successfully', 'success');
       await fetchProjects();
     } catch (error) {
@@ -270,8 +270,8 @@ export default function AdminProjectsPage() {
               <div>
                 <p className="text-sm text-muted-foreground">Total Modules</p>
                 <p className="text-2xl font-bold">
-                  {Object.values(moduleCounts).reduce((sum, counts) => 
-                    sum + counts.threed + counts.traffic + counts.music, 0
+                  {Object.values(moduleCounts).reduce((sum, counts) =>
+                    sum + counts.threed + counts.traffic + counts.multimedia, 0
                   )}
                 </p>
               </div>
@@ -286,11 +286,11 @@ export default function AdminProjectsPage() {
         <CardContent className="p-0">
           <div className="space-y-2 p-4">
             {projects.map((project) => {
-              const counts = moduleCounts[project.id] || { threed: 0, traffic: 0, music: 0 };
-              const totalModules = counts.threed + counts.traffic + counts.music;
-              
+              const counts = moduleCounts[project.id] || { threed: 0, traffic: 0, multimedia: 0 };
+              const totalModules = counts.threed + counts.traffic + counts.multimedia;
+
               return (
-                <div 
+                <div
                   key={project.id}
                   className={`flex items-center justify-between p-4 border rounded-lg transition-colors ${
                     project.isActive ? 'bg-muted/40 hover:bg-muted/70' : 'opacity-60 bg-muted/20'
@@ -325,7 +325,7 @@ export default function AdminProjectsPage() {
                       </Badge>
                       <Badge variant="outline" className="flex items-center gap-1">
                         <Music className="w-3 h-3" />
-                        {counts.music} Music
+                        {counts.multimedia} Music
                       </Badge>
                       <Badge variant="secondary">
                         {totalModules} total modules
@@ -333,16 +333,16 @@ export default function AdminProjectsPage() {
                     </div>
                   </div>
                   <div className="flex items-center gap-2 flex-shrink-0 ml-4">
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="sm"
                       onClick={() => router.push(`/admin/projects/${project.id}`)}
                     >
                       Manage
                       <ChevronRight className="w-4 h-4 ml-1" />
                     </Button>
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       size="icon"
                       onClick={() => deleteProject(project.id)}
                       disabled={deleting === project.id}

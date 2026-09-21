@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/libraries/auth';
 import {
   FARMBOT_MQTT_EVENT_SOURCES,
   FARMBOT_MQTT_EVENT_TYPES,
-} from '@/lib/services/threed/mqtt/integrations/farmbot/persistence-core';
+} from '@/libraries/services/threed/mqtt/integrations/farmbot/persistence-core';
 import {
   deleteOwnedFarmBotMqttEvents,
   FarmBotMqttPersistenceScopeError,
   listOwnedFarmBotMqttEvents,
-} from '@/lib/services/threed/mqtt/integrations/farmbot/persistence-repository';
+} from '@/libraries/services/threed/mqtt/integrations/farmbot/persistence-repository';
 
 export const dynamic = 'force-dynamic';
 type RouteContext = { params: Promise<{ id: string }> };

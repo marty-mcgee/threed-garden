@@ -8,9 +8,9 @@ import { Switch } from '@/components/ui/switch';
 import {
   createThreeDModelLibraryDragPayload,
   THREED_MODEL_LIBRARY_DRAG_MIME,
-} from '@/lib/services/threed/markers/model-library-drag-core';
-import type { MapViewMode } from '@/lib/types/map';
-import type { ThreeDModelLibraryItem } from '@/lib/types/threed';
+} from '@/libraries/services/threed/markers/model-library-drag-core';
+import type { MapViewMode } from '@/libraries/types/map';
+import type { ThreeDModelLibraryItem } from '@/libraries/types/threed';
 import type { ThreeDModelLibraryReadinessFilter } from '@/components/map/hooks/useThreeDModelLibraryCollection';
 import { ThreeDModelLibraryPreview } from '@/components/threed/models/ThreeDModelLibraryPreview';
 

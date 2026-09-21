@@ -1,15 +1,15 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { assignedBedPlantings } from '@/lib/services/threed/beds/bed-planting-bounds';
+import { assignedBedPlantings } from '@/libraries/services/threed/beds/bed-planting-bounds';
 
 import { useAnimationActionSlots } from '@/components/admin/threed/animations/AnimationActionSlots';
-import { getCharacterAnimationAvailability, subscribeCharacterAnimationAvailability } from '@/lib/services/threed/animations/runtime-availability';
+import { getCharacterAnimationAvailability, subscribeCharacterAnimationAvailability } from '@/libraries/services/threed/animations/runtime-availability';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import { useSession } from 'next-auth/react';
-import { hasModelLoadFailure, subscribeModelLoadFailures } from '@/lib/services/threed/models/model-load-failures';
+import { hasModelLoadFailure, subscribeModelLoadFailures } from '@/libraries/services/threed/models/model-load-failures';
 import { Crosshair, ExternalLink, Gamepad2, Loader2, Pause, ScanSearch, X } from 'lucide-react';
-import type { RuntimeMarker, ThreeDActionTarget } from '@/lib/types/map';
+import type { RuntimeMarker, ThreeDActionTarget } from '@/libraries/types/map';
 import type { ThreeDRuntimeMarkerPositionResolver } from '@/components/map/UnifiedMapView';
 import {
   createThreeDCharacterOrchestrationRequest,
@@ -18,18 +18,18 @@ import {
   THREED_CHARACTER_ORCHESTRATION_REQUEST_EVENT,
   transitionThreeDOrchestrationLifecycleState,
   type ThreeDOrchestrationLifecycleState,
-} from '@/lib/services/threed/orchestration/interaction-core';
+} from '@/libraries/services/threed/orchestration/interaction-core';
 import {
   createThreeDActionTarget,
   getThreeDActionTargetCapabilities,
   isMatchingThreeDActionTarget,
   THREED_GENERIC_TARGET_ACTIONS,
-} from '@/lib/services/threed/orchestration/action-target-core';
+} from '@/libraries/services/threed/orchestration/action-target-core';
 import { BedInstanceEditor } from './BedInstanceEditor';
 import { CharacterNavigationControls } from './CharacterNavigationControls';
 import { CharacterInstancePositionEditor } from './CharacterInstancePositionEditor';
 import { ModelInstancePlacementEditor } from './ModelInstancePlacementEditor';
-import { resolveProjectModelCollisionMode } from '@/lib/services/threed/models/project-model-instance-core';
+import { resolveProjectModelCollisionMode } from '@/libraries/services/threed/models/project-model-instance-core';
 import { PlantingInstanceEditor } from './PlantingInstanceEditor';
 import { DetailsCardSection } from './DetailsCardSection';
 
@@ -273,7 +273,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
   movingPlantingMarkerId?: number | null;
   onMovePlantingToggle?: (markerId:number, input:{bedId:number|null;modelScale:number}) => void;
   onUpdateCharacterPosition?: (markerId: number, position: {
-    characterPhysics?: import("@/lib/services/threed/characters/character-physics").CharacterPhysics;
+    characterPhysics?: import("@/libraries/services/threed/characters/character-physics").CharacterPhysics;
     positionX: number;
     positionY: number;
     positionZ: number;

@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/libraries/auth';
 import {
   FarmBotCredentialNotFoundError,
   getFarmBotBrokerMetadataStatus,
-} from '@/lib/services/threed/farmbot/credential-repository';
+} from '@/libraries/services/threed/farmbot/credential-repository';
 
 export const dynamic = 'force-dynamic';
 

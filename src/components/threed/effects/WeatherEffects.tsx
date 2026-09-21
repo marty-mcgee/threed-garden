@@ -4,7 +4,7 @@
 import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { Weather3D } from '@/lib/types/threed';
+import { Weather3D } from '@/libraries/types/threed';
 
 interface WeatherEffectsProps {
   weather: Weather3D;

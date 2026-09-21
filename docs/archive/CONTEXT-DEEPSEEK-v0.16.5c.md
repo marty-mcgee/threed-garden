@@ -701,7 +701,7 @@ When a Character's `model_id` points to a `threed_models` record, load that mode
 ### Changes Implemented
 | Change | Status | Description |
 |--------|--------|-------------|
-| **Reusable model upload helper** | ✅ Complete | `src/lib/utils/modelUpload.ts` with `uploadModelFile` / `uploadModelTexture` / `uploadModelMedia` built on the same `@vercel/blob` `put()` pattern used for Music media |
+| **Reusable model upload helper** | ✅ Complete | `src/libraries/utils/modelUpload.ts` with `uploadModelFile` / `uploadModelTexture` / `uploadModelMedia` built on the same `@vercel/blob` `put()` pattern used for Music media |
 | **Primary model file upload endpoint** | ✅ Complete | `POST /api/threed/models/upload` — uploads a GLB/GLTF/FBX/OBJ/USDZ file and returns its public URL + inferred `modelType`/`fileSize` |
 | **Per-model files endpoint (fixed + extended)** | ✅ Complete | `POST /api/threed/models/files` now reads `modelId` from multipart form data (was broken: expected an `[id]` segment), and auto-classifies model/texture/binary/media by extension + persists to `threed_model_files` and updates `mainModelFileId`/`textureCount`/`hasExternalFiles` |
 | **Model file delete route signature fixed** | ✅ Complete | `DELETE /api/threed/models/files/[fileId]` no longer expects a non-existent `[id]` param; derives the model id from the file record (with null guard) |
@@ -712,8 +712,8 @@ The app already has a working Vercel Blob upload pattern we will reuse for model
 
 | Component | Location | Purpose |
 |-----------|----------|---------|
-| `@vercel/blob` `put()` / `del()` | `src/lib/utils/upload.ts`, `src/app/api/threed/models/files/route.ts`, `src/app/api/threed/models/files/[fileId]/route.ts` | Upload/delete files to Vercel Blob |
-| `uploadImage()` helper | `src/lib/utils/upload.ts` | Music media upload via `put(filename, file, { access: 'public', addRandomSuffix: false })` |
+| `@vercel/blob` `put()` / `del()` | `src/libraries/utils/upload.ts`, `src/app/api/threed/models/files/route.ts`, `src/app/api/threed/models/files/[fileId]/route.ts` | Upload/delete files to Vercel Blob |
+| `uploadImage()` helper | `src/libraries/utils/upload.ts` | Music media upload via `put(filename, file, { access: 'public', addRandomSuffix: false })` |
 | Model file upload route | `src/app/api/threed/models/files/route.ts` | Already uploads model textures (`models/{id}/textures/...`) and binaries (`models/{id}/bin/...`) — the baseline to extend for the full model/texture/media workflow |
 | Env credentials | `.env.local` (`BLOB_STORE_ID`, `BLOB_READ_WRITE_TOKEN`) | Vercel Blob access keys (already configured) |
 
@@ -725,7 +725,7 @@ The app already has a working Vercel Blob upload pattern we will reuse for model
 ### Files Modified
 | File | Change |
 |------|--------|
-| `src/lib/utils/modelUpload.ts` | (new) Reusable Vercel Blob model/texture/media upload helpers |
+| `src/libraries/utils/modelUpload.ts` | (new) Reusable Vercel Blob model/texture/media upload helpers |
 | `src/app/api/threed/models/upload/route.ts` | (new) Standalone primary model file upload endpoint |
 | `src/app/api/threed/models/files/route.ts` | Fixed `modelId` read from form data; extended to auto-classify model/texture/binary/media |
 | `src/app/api/threed/models/files/[fileId]/route.ts` | Fixed DELETE signature + null-guard on derived `modelId` |
@@ -797,7 +797,7 @@ The app already has a working Vercel Blob upload pattern we will reuse for model
 | **Ecctrl animation resolver** | ✅ Complete | `createAnimationResolver` now uses ecctrl's canonical `wasOnGround` sequence (JUMP_START → JUMP_IDLE/JUMP_FALL → JUMP_LAND → IDLE/WALK/RUN) |
 | **Consistent crossfade** | ✅ Complete | `CROSSFADE_DURATION = 0.25` replaces the magic `0.2`/`0.3` in `EcctrlCharacter` and `GardenCharacter` |
 | **Garden (autonomous) clip matching** | ✅ Complete | Case-insensitive `findClip()` helper for model clip lookup (handles varying capitalization) in `GardenCharacter` (default, movement, and interaction animations) |
-| **Shared fuzzy clip matcher** | ✅ Complete | `src/lib/utils/animation.ts` `matchClipName()` — matches logical actions (idle/walk/run/jump/dance/…) to a file's embedded clip names (case-insensitive + substring fallback) |
+| **Shared fuzzy clip matcher** | ✅ Complete | `src/libraries/utils/animation.ts` `matchClipName()` — matches logical actions (idle/walk/run/jump/dance/…) to a file's embedded clip names (case-insensitive + substring fallback) |
 | **Primary animation mapping entry point (v0.16.5b)** | ✅ Complete | `animation.ts` is the single entry/return point for ThreeD Animation Mapping. `buildAnimationMap(clipNames)` takes the file's clip names (entry data) and exposes `resolve(action) → clipName` (exit data) for every consumer. |
 | **Canonical Action Catalog (v0.16.5b)** | ✅ Complete | `ACTION_CANDIDATES: Record<AnimationAction, string[]>` — the approved catalog covering the DB enum (`idle, walk, run, fly, dance, sway, float, spin, bounce`), ecctrl jump states (`jump_start, jump_idle, jump_fall, jump_land`), and interaction (`wave`); each action maps to ordered clip-name matchers (name-match first, positional fallback for generic `Anim_N`/`Take_N`/`Action.N`). `take 001`/`take_001` are `idle` candidates so single-clip Synty exports at least play. |
 | **Centralized action fallback chain (v0.16.5b)** | ✅ Complete | `ACTION_FALLBACK` — when an action's exact clip is absent, `resolve` walks a sensible fallback (`run→walk→idle`, `jump_*→…→idle`, all → `idle`). Single-clip models now always return a real clip instead of `null`, so characters keep animating while their physics body moves. |
@@ -821,7 +821,7 @@ The app already has a working Vercel Blob upload pattern we will reuse for model
 | `src/components/threed/shared/EcctrlCharacter.tsx` | Canonical `wasOnGround` resolver + `CROSSFADE_DURATION` constant |
 | `src/components/threed/shared/GardenCharacter.tsx` | Consistent crossfade + `findClip()` now resolves through `buildAnimationMap` |
 | `src/components/threed/shared/EcctrlCharacter.tsx` | `playAnimation` resolves states through `buildAnimationMap` (primary entry point) |
-| `src/lib/utils/animation.ts` | (new) `matchClipName` + `ACTION_CANDIDATES` (canonical catalog) + `ANIMATION_ORDER` + `ACTION_FALLBACK` + `buildAnimationMap(clipNames, overrides?)` (primary mapping entry/return point) |
+| `src/libraries/utils/animation.ts` | (new) `matchClipName` + `ACTION_CANDIDATES` (canonical catalog) + `ANIMATION_ORDER` + `ACTION_FALLBACK` + `buildAnimationMap(clipNames, overrides?)` (primary mapping entry/return point) |
 | `src/components/admin/threed/models/ThreeDModelAnimations.tsx` | (new) Model Animations admin UI (map model clips → App Actions) |
 | `src/app/admin/threed/model-animations/page.tsx` | (new) Admin page for Model Animations |
 | `src/app/admin/threed/models/page.tsx` | Added "Model Animations" link |
@@ -904,7 +904,7 @@ GLB/FBX clip names are unknowable in advance (e.g. 140 `Anim_N` clips), so hardc
 
 ## What changed
 
-**Runtime (`src/lib/utils/animation.ts`)**
+**Runtime (`src/libraries/utils/animation.ts`)**
 - `buildAnimationMap(clipNames, overrides?)` — per-model `overrides` (`action → clipName`) take priority over name/positional matching.
 
 **Character components**
@@ -927,7 +927,7 @@ Upload character GLB → **3D Models → Model Animations** → map `Anim_0/1/2/
 ## ✅ v0.16.5-beta "v0.16.5b: Character Animations + Actions => Animation Action Mapping" — Released
 
 ### Overview
-Character animations are driven by a **primary entry/return point** (`src/lib/utils/animation.ts`) and made **user-editable per model** because GLB/FBX clip names (e.g. `Anim_0`, `Anim_1`, `Take 001`, `mixamo.com|Armature|Walk`) cannot be known in advance.
+Character animations are driven by a **primary entry/return point** (`src/libraries/utils/animation.ts`) and made **user-editable per model** because GLB/FBX clip names (e.g. `Anim_0`, `Anim_1`, `Take 001`, `mixamo.com|Armature|Walk`) cannot be known in advance.
 
 ### Changes Implemented
 | Change | Status | Description |
@@ -941,7 +941,7 @@ Character animations are driven by a **primary entry/return point** (`src/lib/ut
 ### Files Modified
 | File | Change |
 |------|--------|
-| `src/lib/utils/animation.ts` | `matchClipName` + `ACTION_CANDIDATES` + `ANIMATION_ORDER` + `ACTION_FALLBACK` + `buildAnimationMap(clipNames, overrides?)` |
+| `src/libraries/utils/animation.ts` | `matchClipName` + `ACTION_CANDIDATES` + `ANIMATION_ORDER` + `ACTION_FALLBACK` + `buildAnimationMap(clipNames, overrides?)` |
 | `src/components/threed/shared/EcctrlCharacter.tsx` | Resolves states through `buildAnimationMap` + passes model overrides |
 | `src/components/threed/shared/GardenCharacter.tsx` | Resolves movement/interaction clips through `buildAnimationMap` + passes model overrides |
 | `src/components/admin/threed/models/ThreeDModelAnimations.tsx` | (new) Admin mapping UI |

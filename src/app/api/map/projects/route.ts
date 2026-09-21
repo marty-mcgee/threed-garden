@@ -1,12 +1,12 @@
 // app/api/map/projects/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { project, projectAssets, projectThreedMarkers, projectMusic, projectTraffic, projectThreed } from '@/lib/schema/project';
-import { music } from '@/lib/schema/music';
-import { threed } from '@/lib/schema/threed';
-import { traffic } from '@/lib/schema/traffic';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { project, projectAssets, projectThreedMarkers, projectMultimedia, projectTraffic, projectThreed } from '@/libraries/schema/project';
+import { multimedia } from '@/libraries/schema/multimedia';
+import { threed } from '@/libraries/schema/threed';
+import { traffic } from '@/libraries/schema/traffic';
 import { eq, and, desc, sql, count, getTableName } from 'drizzle-orm';
 
 // ============================================
@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
     // ✅ For each project, check if it has traffic or threed data
     const projectsWithTypes = await Promise.all(
       results.map(async (proj) => {
-        const [trafficModules, threedModules, musicModules] = await Promise.all([
+        const [trafficModules, threedModules, multimediaModules] = await Promise.all([
           db
             .select({ count: count() })
             .from(projectTraffic)
@@ -117,14 +117,14 @@ export async function GET(request: NextRequest) {
             ),
           db
             .select({ count: count() })
-            .from(projectMusic)
-            .innerJoin(music, eq(projectMusic.musicId, music.id))
+            .from(projectMultimedia)
+            .innerJoin(multimedia, eq(projectMultimedia.multimediaId, multimedia.id))
             .where(
               and(
-                eq(projectMusic.projectId, proj.id),
-                eq(projectMusic.isActive, true),
-                eq(music.isActive, true),
-                userId ? eq(projectMusic.userId, userId) : sql`1=1`
+                eq(projectMultimedia.projectId, proj.id),
+                eq(projectMultimedia.isActive, true),
+                eq(multimedia.isActive, true),
+                userId ? eq(projectMultimedia.userId, userId) : sql`1=1`
               )
             ),
         ]);
@@ -132,7 +132,7 @@ export async function GET(request: NextRequest) {
         const moduleCounts = {
           traffic: Number(trafficModules[0]?.count || 0),
           threed: Number(threedModules[0]?.count || 0),
-          music: Number(musicModules[0]?.count || 0),
+          multimedia: Number(multimediaModules[0]?.count || 0),
         };
 
         return {
@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
           slug: proj.slug,
           hasTraffic: moduleCounts.traffic > 0,
           hasThreeD: moduleCounts.threed > 0,
-          hasMusic: moduleCounts.music > 0,
+          hasMultimedia: moduleCounts.multimedia > 0,
           moduleCounts,
           assetCount: proj.assetCount || 0,
           sceneAssetCount: proj.sceneAssetCount || 0,

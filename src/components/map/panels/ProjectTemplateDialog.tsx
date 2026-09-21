@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import {
   PROJECT_TEMPLATES,
   type ProjectTemplateKey,
-} from '@/lib/services/project/project-templates';
+} from '@/libraries/services/project/project-templates';
 
 export function ProjectTemplateDialog({
   open,
@@ -108,7 +108,7 @@ export function ProjectTemplateDialog({
                       {template.modules.length === 0 && <span className="text-[10px]">No modules</span>}
                       {template.modules.includes('threed') && <Box className="h-3.5 w-3.5" aria-label="ThreeD" />}
                       {template.modules.includes('traffic') && <TrafficCone className="h-3.5 w-3.5" aria-label="Traffic" />}
-                      {template.modules.includes('music') && <Music className="h-3.5 w-3.5" aria-label="Music" />}
+                      {template.modules.includes('multimedia') && <Music className="h-3.5 w-3.5" aria-label="Music" />}
                     </div>
                   </button>
                 );

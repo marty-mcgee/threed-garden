@@ -3,7 +3,7 @@
 import { Loader2, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import type { ThreeDCharacterLibraryItem } from '@/lib/types/threed';
+import type { ThreeDCharacterLibraryItem } from '@/libraries/types/threed';
 
 interface ThreeDModuleOption {
   id: number;

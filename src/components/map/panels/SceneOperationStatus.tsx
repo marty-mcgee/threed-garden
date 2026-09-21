@@ -2,7 +2,7 @@
 
 import { Loader2, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import type { MapViewMode } from '@/lib/types/map';
+import type { MapViewMode } from '@/libraries/types/map';
 
 export interface SceneOperationStatusValue {
   phase: 'ready' | 'pending';

@@ -15,7 +15,7 @@ import { CharacterLayer } from './layers/CharacterLayer';
 import { Legend3D } from './controls/Legend3D';
 
 // Import types
-import { ThreeDData, LayerVisibility } from '@/lib/types/threed';
+import { ThreeDData, LayerVisibility } from '@/libraries/types/threed';
 
 interface ThreeDGardenProps {
   data: ThreeDData;

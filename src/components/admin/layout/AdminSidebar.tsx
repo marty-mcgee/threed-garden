@@ -57,8 +57,8 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useWorkspaceSettings } from '@/components/settings/WorkspaceSettingsProvider';
-import type { WorkspaceModule } from '@/lib/config/workspace-settings';
-import { cn } from '@/lib/utils';
+import type { WorkspaceModule } from '@/libraries/config/workspace-settings';
+import { cn } from '@/libraries/utils';
 import { SignOutButton } from '@/components/auth/SignOutButton';
 
 interface NavItem {
@@ -157,18 +157,18 @@ const navSections: NavSection[] = [
   },
   {
     title: 'Multimedia',
-    module: 'music',
+    module: 'multimedia',
     icon: Music,
     items: [
-      { title: 'Overview', href: '/admin/music', icon: Music, exact: true },
-      { title: 'Albums', href: '/admin/music/albums', icon: DiscAlbum, exact: false },
-      { title: 'Tracks', href: '/admin/music/tracks', icon: Music2, exact: false },
+      { title: 'Overview', href: '/admin/multimedia', icon: Music, exact: true },
+      { title: 'Albums', href: '/admin/multimedia/albums', icon: DiscAlbum, exact: false },
+      { title: 'Tracks', href: '/admin/multimedia/tracks', icon: Music2, exact: false },
       { title: 'Speech', href: '/admin/multimedia/speech', icon: MicVocal, exact: false, children: [
         { title: 'All Speeches', href: '/admin/multimedia/speech', icon: MicVocal, exact: true },
         { title: 'New Speech', href: '/admin/multimedia/speech/new', icon: MicVocal, exact: true },
       ] },
-      { title: 'Media', href: '/admin/music/media', icon: Image, exact: false },
-      { title: 'Links', href: '/admin/music/links', icon: Link2, exact: false },
+      { title: 'Media', href: '/admin/multimedia/media', icon: Image, exact: false },
+      { title: 'Links', href: '/admin/multimedia/links', icon: Link2, exact: false },
     ],
   },
   {

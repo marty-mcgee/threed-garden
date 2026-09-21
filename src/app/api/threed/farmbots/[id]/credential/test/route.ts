@@ -1,22 +1,22 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/libraries/auth';
 import {
   FarmBotCredentialConcurrentUpdateError,
   FarmBotCredentialNotConfiguredError,
   FarmBotCredentialNotFoundError,
   loadFarmBotCredential,
   recordFarmBotBrokerMetadataVerification,
-} from '@/lib/services/threed/farmbot/credential-repository';
-import { FarmBotCredentialKeyConfigurationError } from '@/lib/services/threed/farmbot/credential-keyring-core';
+} from '@/libraries/services/threed/farmbot/credential-repository';
+import { FarmBotCredentialKeyConfigurationError } from '@/libraries/services/threed/farmbot/credential-keyring-core';
 import {
   FarmBotConnectionUnavailableError,
   FarmBotCredentialRejectedError,
-} from '@/lib/services/threed/farmbot/connection-client-core';
-import { testFarmBotConnection } from '@/lib/services/threed/farmbot/connection-client';
+} from '@/libraries/services/threed/farmbot/connection-client-core';
+import { testFarmBotConnection } from '@/libraries/services/threed/farmbot/connection-client';
 import {
   FarmBotBrokerIdentityMismatchError,
   FarmBotBrokerMetadataError,
-} from '@/lib/services/threed/farmbot/broker-metadata-core';
+} from '@/libraries/services/threed/farmbot/broker-metadata-core';
 
 export const dynamic = 'force-dynamic';
 

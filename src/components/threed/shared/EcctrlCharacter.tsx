@@ -5,8 +5,8 @@
 
 import { useSceneHoverTitle } from '@/components/threed/shared/SceneHoverTitleContext';
 
-import { reportCharacterAnimationAvailability, DETAILS_ANIMATION_ACTIONS } from '@/lib/services/threed/animations/runtime-availability';
-import { resolveCharacterPhysics } from '@/lib/services/threed/characters/character-physics';
+import { reportCharacterAnimationAvailability, DETAILS_ANIMATION_ACTIONS } from '@/libraries/services/threed/animations/runtime-availability';
+import { resolveCharacterPhysics } from '@/libraries/services/threed/characters/character-physics';
 import {
   useRef,
   useState,
@@ -19,7 +19,7 @@ import { useFrame } from '@react-three/fiber';
 import { useBeforePhysicsStep } from '@react-three/rapier';
 
 import * as THREE from 'three';
-import { loadCharacterTextureManager } from '@/lib/services/threed/models/character-model-textures';
+import { loadCharacterTextureManager } from '@/libraries/services/threed/models/character-model-textures';
 
 import { Html } from '@react-three/drei';
 
@@ -46,15 +46,15 @@ import { PulseRing } from './PulseRing';
 import {
   buildAnimationMap,
   type AnimationMap,
-} from '@/lib/utils/animation';
+} from '@/libraries/utils/animation';
 
-import { loadAssignedCharacterAnimations, assignedAnimationMap } from '@/lib/utils/assignedCharacterAnimations';
+import { loadAssignedCharacterAnimations, assignedAnimationMap } from '@/libraries/utils/assignedCharacterAnimations';
 
 import {
   planThreeDInteractionApproach,
   planThreeDTargetRelativeNavigation,
   THREED_INTERACTION_FACING_TOLERANCE,
-} from '@/lib/services/threed/orchestration/interaction-core';
+} from '@/libraries/services/threed/orchestration/interaction-core';
 
 // ========================================================
 // TYPES

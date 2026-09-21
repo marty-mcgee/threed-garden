@@ -107,9 +107,9 @@ The harvest row and its project association are created transactionally. The ser
 
 | File | Responsibility |
 |---|---|
-| `src/lib/utils/animation.ts` | Core semantic animation mapping/fallback logic |
-| `src/lib/utils/externalCharacterAnimations.ts` | Static external FBX action manifest and animation loader |
-| `src/lib/scripts/validate-static-assets.mjs` | Validates that every configured production animation exists in a clean checkout |
+| `src/libraries/utils/animation.ts` | Core semantic animation mapping/fallback logic |
+| `src/libraries/utils/externalCharacterAnimations.ts` | Static external FBX action manifest and animation loader |
+| `src/libraries/scripts/validate-static-assets.mjs` | Validates that every configured production animation exists in a clean checkout |
 | `src/components/threed/shared/GardenCharacter.tsx` | Autonomous/non-controlled character locomotion and task actions |
 | `src/components/threed/shared/EcctrlCharacter.tsx` | Physics/WASD character locomotion and task actions |
 | `src/components/map/ThreeDScene.tsx` | 3D marker routing, physics scene, character request routing |
@@ -117,7 +117,7 @@ The harvest row and its project association are created transactionally. The ser
 | `src/app/dashboard/map/page.tsx` | Dashboard Scene Coordinator for Project-session state and cross-surface user intent |
 | `docs/developers/THREED_DASHBOARD_COORDINATOR.md` | Dashboard coordinator, workspace presentation, Scene bridge, and runtime ownership boundaries |
 | `src/app/api/threed/world-actions/route.ts` | Authenticated semantic world-action endpoint for targeted Water and Pick Fruit persistence |
-| `src/lib/schema/threed/*` | ThreeD Drizzle schema; inspect before any persistence change |
+| `src/libraries/schema/threed/*` | ThreeD Drizzle schema; inspect before any persistence change |
 
 ---
 
@@ -861,7 +861,7 @@ When a Character's `model_id` points to a `threed_models` record, load that mode
 ### Changes Implemented
 | Change | Status | Description |
 |--------|--------|-------------|
-| **Reusable model upload helper** | ✅ Complete | `src/lib/utils/modelUpload.ts` with `uploadModelFile` / `uploadModelTexture` / `uploadModelMedia` built on the same `@vercel/blob` `put()` pattern used for Music media |
+| **Reusable model upload helper** | ✅ Complete | `src/libraries/utils/modelUpload.ts` with `uploadModelFile` / `uploadModelTexture` / `uploadModelMedia` built on the same `@vercel/blob` `put()` pattern used for Music media |
 | **Primary model file upload endpoint** | ✅ Complete | `POST /api/threed/models/upload` — uploads a GLB/GLTF/FBX/OBJ/USDZ file and returns its public URL + inferred `modelType`/`fileSize` |
 | **Per-model files endpoint (fixed + extended)** | ✅ Complete | `POST /api/threed/models/files` now reads `modelId` from multipart form data (was broken: expected an `[id]` segment), and auto-classifies model/texture/binary/media by extension + persists to `threed_model_files` and updates `mainModelFileId`/`textureCount`/`hasExternalFiles` |
 | **Model file delete route signature fixed** | ✅ Complete | `DELETE /api/threed/models/files/[fileId]` no longer expects a non-existent `[id]` param; derives the model id from the file record (with null guard) |
@@ -872,8 +872,8 @@ The app already has a working Vercel Blob upload pattern we will reuse for model
 
 | Component | Location | Purpose |
 |-----------|----------|---------|
-| `@vercel/blob` `put()` / `del()` | `src/lib/utils/upload.ts`, `src/app/api/threed/models/files/route.ts`, `src/app/api/threed/models/files/[fileId]/route.ts` | Upload/delete files to Vercel Blob |
-| `uploadImage()` helper | `src/lib/utils/upload.ts` | Music media upload via `put(filename, file, { access: 'public', addRandomSuffix: false })` |
+| `@vercel/blob` `put()` / `del()` | `src/libraries/utils/upload.ts`, `src/app/api/threed/models/files/route.ts`, `src/app/api/threed/models/files/[fileId]/route.ts` | Upload/delete files to Vercel Blob |
+| `uploadImage()` helper | `src/libraries/utils/upload.ts` | Music media upload via `put(filename, file, { access: 'public', addRandomSuffix: false })` |
 | Model file upload route | `src/app/api/threed/models/files/route.ts` | Already uploads model textures (`models/{id}/textures/...`) and binaries (`models/{id}/bin/...`) — the baseline to extend for the full model/texture/media workflow |
 | Env credentials | `.env.local` (`BLOB_STORE_ID`, `BLOB_READ_WRITE_TOKEN`) | Vercel Blob access keys (already configured) |
 
@@ -885,7 +885,7 @@ The app already has a working Vercel Blob upload pattern we will reuse for model
 ### Files Modified
 | File | Change |
 |------|--------|
-| `src/lib/utils/modelUpload.ts` | (new) Reusable Vercel Blob model/texture/media upload helpers |
+| `src/libraries/utils/modelUpload.ts` | (new) Reusable Vercel Blob model/texture/media upload helpers |
 | `src/app/api/threed/models/upload/route.ts` | (new) Standalone primary model file upload endpoint |
 | `src/app/api/threed/models/files/route.ts` | Fixed `modelId` read from form data; extended to auto-classify model/texture/binary/media |
 | `src/app/api/threed/models/files/[fileId]/route.ts` | Fixed DELETE signature + null-guard on derived `modelId` |
@@ -957,7 +957,7 @@ The app already has a working Vercel Blob upload pattern we will reuse for model
 | **Ecctrl animation resolver** | ✅ Complete | `createAnimationResolver` now uses ecctrl's canonical `wasOnGround` sequence (JUMP_START → JUMP_IDLE/JUMP_FALL → JUMP_LAND → IDLE/WALK/RUN) |
 | **Consistent crossfade** | ✅ Complete | `CROSSFADE_DURATION = 0.25` replaces the magic `0.2`/`0.3` in `EcctrlCharacter` and `GardenCharacter` |
 | **Garden (autonomous) clip matching** | ✅ Complete | Case-insensitive `findClip()` helper for model clip lookup (handles varying capitalization) in `GardenCharacter` (default, movement, and interaction animations) |
-| **Shared fuzzy clip matcher** | ✅ Complete | `src/lib/utils/animation.ts` `matchClipName()` — matches logical actions (idle/walk/run/jump/dance/…) to a file's embedded clip names (case-insensitive + substring fallback) |
+| **Shared fuzzy clip matcher** | ✅ Complete | `src/libraries/utils/animation.ts` `matchClipName()` — matches logical actions (idle/walk/run/jump/dance/…) to a file's embedded clip names (case-insensitive + substring fallback) |
 | **Primary animation mapping entry point (v0.16.5b)** | ✅ Complete | `animation.ts` is the single entry/return point for ThreeD Animation Mapping. `buildAnimationMap(clipNames)` takes the file's clip names (entry data) and exposes `resolve(action) → clipName` (exit data) for every consumer. |
 | **Canonical Action Catalog (v0.16.5b)** | ✅ Complete | `ACTION_CANDIDATES: Record<AnimationAction, string[]>` — the approved catalog covering the DB enum (`idle, walk, run, fly, dance, sway, float, spin, bounce`), ecctrl jump states (`jump_start, jump_idle, jump_fall, jump_land`), and interaction (`wave`); each action maps to ordered clip-name matchers (name-match first, positional fallback for generic `Anim_N`/`Take_N`/`Action.N`). `take 001`/`take_001` are `idle` candidates so single-clip Synty exports at least play. |
 | **Centralized action fallback chain (v0.16.5b)** | ✅ Complete | `ACTION_FALLBACK` — when an action's exact clip is absent, `resolve` walks a sensible fallback (`run→walk→idle`, `jump_*→…→idle`, all → `idle`). Single-clip models now always return a real clip instead of `null`, so characters keep animating while their physics body moves. |
@@ -981,7 +981,7 @@ The app already has a working Vercel Blob upload pattern we will reuse for model
 | `src/components/threed/shared/EcctrlCharacter.tsx` | Canonical `wasOnGround` resolver + `CROSSFADE_DURATION` constant |
 | `src/components/threed/shared/GardenCharacter.tsx` | Consistent crossfade + `findClip()` now resolves through `buildAnimationMap` |
 | `src/components/threed/shared/EcctrlCharacter.tsx` | `playAnimation` resolves states through `buildAnimationMap` (primary entry point) |
-| `src/lib/utils/animation.ts` | (new) `matchClipName` + `ACTION_CANDIDATES` (canonical catalog) + `ANIMATION_ORDER` + `ACTION_FALLBACK` + `buildAnimationMap(clipNames, overrides?)` (primary mapping entry/return point) |
+| `src/libraries/utils/animation.ts` | (new) `matchClipName` + `ACTION_CANDIDATES` (canonical catalog) + `ANIMATION_ORDER` + `ACTION_FALLBACK` + `buildAnimationMap(clipNames, overrides?)` (primary mapping entry/return point) |
 | `src/components/admin/threed/models/ThreeDModelAnimations.tsx` | (new) Model Animations admin UI (map model clips → App Actions) |
 | `src/app/admin/threed/model-animations/page.tsx` | (new) Admin page for Model Animations |
 | `src/app/admin/threed/models/page.tsx` | Added "Model Animations" link |
@@ -994,7 +994,7 @@ The app already has a working Vercel Blob upload pattern we will reuse for model
 ## ✅ v0.16.5-beta "v0.16.5b: Character Animations + Actions => Animation Action Mapping" — Released
 
 ### Overview
-Character animations are driven by a **primary entry/return point** (`src/lib/utils/animation.ts`) and made **user-editable per model** because GLB/FBX clip names (e.g. `Anim_0`, `Anim_1`, `Take 001`, `mixamo.com|Armature|Walk`) cannot be known in advance.
+Character animations are driven by a **primary entry/return point** (`src/libraries/utils/animation.ts`) and made **user-editable per model** because GLB/FBX clip names (e.g. `Anim_0`, `Anim_1`, `Take 001`, `mixamo.com|Armature|Walk`) cannot be known in advance.
 
 ### Changes Implemented
 | Change | Status | Description |
@@ -1008,7 +1008,7 @@ Character animations are driven by a **primary entry/return point** (`src/lib/ut
 ### Files Modified
 | File | Change |
 |------|--------|
-| `src/lib/utils/animation.ts` | `matchClipName` + `ACTION_CANDIDATES` + `ANIMATION_ORDER` + `ACTION_FALLBACK` + `buildAnimationMap(clipNames, overrides?)` |
+| `src/libraries/utils/animation.ts` | `matchClipName` + `ACTION_CANDIDATES` + `ANIMATION_ORDER` + `ACTION_FALLBACK` + `buildAnimationMap(clipNames, overrides?)` |
 | `src/components/threed/shared/EcctrlCharacter.tsx` | Resolves states through `buildAnimationMap` + passes model overrides |
 | `src/components/threed/shared/GardenCharacter.tsx` | Resolves movement/interaction clips through `buildAnimationMap` + passes model overrides |
 | `src/components/admin/threed/models/ThreeDModelAnimations.tsx` | (new) Admin mapping UI |
@@ -1097,7 +1097,7 @@ v0.17.0 is the production boundary for the ThreeD character, animation, control,
 
 | File | Change |
 |---|---|
-| `src/lib/types/map.ts` | Shared planting action-target identity and position type |
+| `src/libraries/types/map.ts` | Shared planting action-target identity and position type |
 | `src/app/dashboard/map/page.tsx` | Target controls, focus request, project scoping, and refresh reconciliation |
 | `src/components/map/UnifiedMapView.tsx` | Target state bridge into the 3D scene |
 | `src/components/map/ThreeDScene.tsx` | Persistent target pulse and target camera focus |
@@ -1186,7 +1186,7 @@ Music Admin Album grids, Album details, and Track details render a neutral place
 The external character animation library is now reproducible from a clean Git checkout instead of depending on ignored local files:
 
 - Production FBX files are Git-tracked under `public/assets/animations`; only the separate `public/assets-archive` directory remains ignored.
-- `src/lib/utils/externalCharacterAnimations.ts` remains the single static manifest used by both character runtime paths.
+- `src/libraries/utils/externalCharacterAnimations.ts` remains the single static manifest used by both character runtime paths.
 - `npm run validate:assets` verifies that all 35 animation files referenced by the manifest exist under `public/`.
 - The tracked animation library currently contains 48 FBX files totaling approximately 25.86 MiB. Windows `Zone.Identifier` artifacts are excluded from the animation set.
 - `.github/workflows/validation.yml` runs on pull requests and pushes to `main`. Asset validation is blocking after `actions/checkout`, which also proves the required files are committed.
@@ -1324,7 +1324,7 @@ Phase 2A was a design-review checkpoint only and did not create a worker, extern
 
 ### v0.18.1a Phase 2B implementation record
 
-Phase 2A and Phase 2B were explicitly approved. ThreeD MQTT is a provider-neutral service boundary under `src/lib/services/threed/mqtt`: `core`, `transports`, and `worker` own shared MQTT behavior, while `integrations/farmbot` owns FarmBot grants, identities, topic rules, parsing, session policy, persistence mapping, and its executable entry point. Shared MQTT code does not import or name FarmBot. FarmBot REST/device configuration remains separately under `src/lib/services/threed/farmbot`. Offline validation covers signed request tampering and replay, short-lived identity-bound grants, one owner-bound session per App FarmBot, lifecycle and retry limits, exact read-only topics, bounded position extraction, redacted runtime status, shutdown, and a loopback-only internal HTTP boundary.
+Phase 2A and Phase 2B were explicitly approved. ThreeD MQTT is a provider-neutral service boundary under `src/libraries/services/threed/mqtt`: `core`, `transports`, and `worker` own shared MQTT behavior, while `integrations/farmbot` owns FarmBot grants, identities, topic rules, parsing, session policy, persistence mapping, and its executable entry point. Shared MQTT code does not import or name FarmBot. FarmBot REST/device configuration remains separately under `src/libraries/services/threed/farmbot`. Offline validation covers signed request tampering and replay, short-lived identity-bound grants, one owner-bound session per App FarmBot, lifecycle and retry limits, exact read-only topics, bounded position extraction, redacted runtime status, shutdown, and a loopback-only internal HTTP boundary.
 
 At the Phase 2B checkpoint, the executable used an intentionally unavailable transport and added no App route or durable runtime table. It still has no publish interface, MQTT library, deployed host, or live connection. The separately approved persistence step is recorded below; a subscribe-only adapter and any live read-only connection test remain gated.
 
@@ -1718,7 +1718,7 @@ Production creates this sink from the existing App URL and worker-to-App HMAC se
 
 ### ThreeD MQTT module authority
 
-ThreeD is the parent application module. `src/lib/services/threed/mqtt` and the generic `threed_mqtt_runtime`/`threed_mqtt_events` tables are provider-neutral. FarmBot depends on that service through its adapter; the MQTT service does not import FarmBot. A future OpenFarm service belongs beside FarmBot under ThreeD and must map external crop data into owned local ThreeD records without becoming an MQTT or FarmBot dependency. `npm run validate:threed-mqtt` now enforces the provider-import direction for the generic MQTT directory.
+ThreeD is the parent application module. `src/libraries/services/threed/mqtt` and the generic `threed_mqtt_runtime`/`threed_mqtt_events` tables are provider-neutral. FarmBot depends on that service through its adapter; the MQTT service does not import FarmBot. A future OpenFarm service belongs beside FarmBot under ThreeD and must map external crop data into owned local ThreeD records without becoming an MQTT or FarmBot dependency. `npm run validate:threed-mqtt` now enforces the provider-import direction for the generic MQTT directory.
 
 The first approved ThreeD MQTT control-layer increment adds the provider-neutral `MqttReadonlyIntegrationAdapter`. It defines integration identity, declared read-only capabilities, transport connection configuration, exact accepted-topic recognition, and normalized inbound messages. FarmBot implements that contract in its own service directory and its existing session registry delegates provider-specific connection/topic/parsing rules to it.
 
@@ -1730,7 +1730,7 @@ Feature development then paused for an approved structure-only milestone. The mi
 
 ### v0.18.1b production confirmation
 
-The user confirmed the GitHub-to-Vercel production release and successful validation of **v0.18.1b — ThreeD MQTT Control Layer** on August 20, 2026. The release places shared MQTT contracts, lifecycle, controller, transport, and worker boundaries under `src/lib/services/threed/mqtt`, with FarmBot as the first integration under `mqtt/integrations/farmbot`. The FarmBot registry uses the shared controller while preserving read-only topics, runtime/event persistence, Admin controls, Dashboard status, retries, cleanup, and credential safety. MQTT publishing and physical FarmBot commands remain disabled.
+The user confirmed the GitHub-to-Vercel production release and successful validation of **v0.18.1b — ThreeD MQTT Control Layer** on August 20, 2026. The release places shared MQTT contracts, lifecycle, controller, transport, and worker boundaries under `src/libraries/services/threed/mqtt`, with FarmBot as the first integration under `mqtt/integrations/farmbot`. The FarmBot registry uses the shared controller while preserving read-only topics, runtime/event persistence, Admin controls, Dashboard status, retries, cleanup, and credential safety. MQTT publishing and physical FarmBot commands remain disabled.
 
 ## ✅ v0.18.4a — Admin and Dashboard UI Improvements (released to production)
 
@@ -1758,7 +1758,7 @@ This step adds no target type, action, API behavior, persistence, MQTT operation
 
 ## Phase 5G — Provider-neutral Runtime Marker registry core
 
-ThreeD now owns a dormant in-memory registry core under `src/lib/services/threed/markers`. It normalizes the five supported marker-producing Sub-Modules, derives canonical source keys and scene marker IDs, separates database-backed and live positions, resolves the current position, preserves matching live overrides during an atomic asset refresh, and fails closed for invalid, unknown, or duplicate marker identities.
+ThreeD now owns a dormant in-memory registry core under `src/libraries/services/threed/markers`. It normalizes the five supported marker-producing Sub-Modules, derives canonical source keys and scene marker IDs, separates database-backed and live positions, resolves the current position, preserves matching live overrides during an atomic asset refresh, and fails closed for invalid, unknown, or duplicate marker identities.
 
 Database-driven, Project-assigned ThreeD data is the authority for the current Project session. Persisted marker-producing Sub-Module assets and Project assignments determine eligibility, persisted `threed_layers` records determine the available Layers, and an explicit Project save records the current marker snapshot in `project_threed_markers`. The Runtime Marker registry remains the in-memory bridge between saved Project state and visible Runtime Markers; it does not create ownership, Project assignments, or Layer records.
 
@@ -1766,7 +1766,7 @@ Action Target normalization now consumes ThreeD Marker normalization rather than
 
 ## Phase 5H — Provider-neutral Runtime Marker builder extraction
 
-The existing Project Sub-Module-to-Runtime Marker transformation now lives under `src/lib/services/threed/markers` instead of inside `UnifiedMapView`. The extracted builder preserves the established Planting, Bed, Character, FarmBot, and Model marker order and the current position, naming, color, icon, visibility, activity, raw-data, and metadata behavior. `UnifiedMapView` continues to memoize that output and retains all layer and UI filtering responsibilities.
+The existing Project Sub-Module-to-Runtime Marker transformation now lives under `src/libraries/services/threed/markers` instead of inside `UnifiedMapView`. The extracted builder preserves the established Planting, Bed, Character, FarmBot, and Model marker order and the current position, naming, color, icon, visibility, activity, raw-data, and metadata behavior. `UnifiedMapView` continues to memoize that output and retains all layer and UI filtering responsibilities.
 
 This extraction does not connect the Phase 5G registry, change Runtime Marker eligibility, modify a route or schema, or add persistence, MQTT, worker, animation, or physical behavior. Offline marker validation now covers both registry rules and builder compatibility.
 

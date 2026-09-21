@@ -1,12 +1,12 @@
-import { parseLayerListQuery } from '@/lib/services/threed/layers/layer-list-query';
+import { parseLayerListQuery } from '@/libraries/services/threed/layers/layer-list-query';
 // app/api/threed/layers/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { threedLayers } from '@/lib/schema/threed';
-import { projectAssets } from '@/lib/schema/project';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { threedLayers } from '@/libraries/schema/threed';
+import { projectAssets } from '@/libraries/schema/project';
 import { eq, and, asc, desc, sql, inArray } from 'drizzle-orm';
-import { ensureTableSequence } from '@/lib/db/sequence';
+import { ensureTableSequence } from '@/libraries/db/sequence';
 
 // ============================================
 // GET /api/threed/layers - List ThreeD Layers for a project

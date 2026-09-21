@@ -1,17 +1,17 @@
 // app/api/threed/world-actions/route.ts
 // v0.16.6b — World Actions v2: authenticated targeted watering persistence
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
 import {
   threedCharacters,
   threedHarvests,
   threedPlantings,
   threedWateringHistory,
-} from '@/lib/schema/threed';
-import { project, projectAssets } from '@/lib/schema/project';
+} from '@/libraries/schema/threed';
+import { project, projectAssets } from '@/libraries/schema/project';
 import { and, eq, sql } from 'drizzle-orm';
-import { ensureTableSequence } from '@/lib/db/sequence';
+import { ensureTableSequence } from '@/libraries/db/sequence';
 
 // ========================================================
 // TYPES

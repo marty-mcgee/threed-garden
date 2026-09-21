@@ -1,13 +1,13 @@
 import { randomUUID } from 'node:crypto';
 import { NextRequest, NextResponse } from 'next/server';
 
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { music } from '@/lib/schema/music';
-import { project, projectMusic, projectThreed, projectTraffic } from '@/lib/schema/project';
-import { threed } from '@/lib/schema/threed';
-import { traffic } from '@/lib/schema/traffic';
-import { getProjectTemplate } from '@/lib/services/project/project-templates';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { multimedia } from '@/libraries/schema/multimedia';
+import { project, projectMultimedia, projectThreed, projectTraffic } from '@/libraries/schema/project';
+import { threed } from '@/libraries/schema/threed';
+import { traffic } from '@/libraries/schema/traffic';
+import { getProjectTemplate } from '@/libraries/services/project/project-templates';
 
 const MAX_PROJECT_NAME_LENGTH = 120;
 const MAX_PROJECT_DESCRIPTION_LENGTH = 2_000;
@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
         metadata: { projectTemplateKey: template.key },
       }).returning();
 
-      const moduleIds: Partial<Record<'threed' | 'traffic' | 'music', number>> = {};
+      const moduleIds: Partial<Record<'threed' | 'traffic' | 'multimedia', number>> = {};
       const moduleDescription = `Created from the ${template.name} Project template.`;
 
       if (template.modules.includes('threed')) {
@@ -110,19 +110,19 @@ export async function POST(request: NextRequest) {
         await tx.insert(projectTraffic).values({ userId, projectId: createdProject.id, trafficId: createdModule.id });
       }
 
-      if (template.modules.includes('music')) {
-        const [createdModule] = await tx.insert(music).values({
+      if (template.modules.includes('multimedia')) {
+        const [createdModule] = await tx.insert(multimedia).values({
           userId,
           name: `${name} Music`,
           description: moduleDescription,
-          slug: createSlug(`${name}-music`),
+          slug: createSlug(`${name}-multimedia`),
           isActive: true,
           isPublic,
           config: {},
           metadata: { projectTemplateKey: template.key },
-        }).returning({ id: music.id });
-        moduleIds.music = createdModule.id;
-        await tx.insert(projectMusic).values({ userId, projectId: createdProject.id, musicId: createdModule.id });
+        }).returning({ id: multimedia.id });
+        moduleIds.multimedia = createdModule.id;
+        await tx.insert(projectMultimedia).values({ userId, projectId: createdProject.id, multimediaId: createdModule.id });
       }
 
       return { project: createdProject, templateKey: template.key, moduleIds };

@@ -6,8 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { AnimationPresets } from './AnimationPresets';
 import { useAnimationCategories } from './AnimationCategories';
-import type { AnimationActionSlot } from '@/lib/services/threed/animations/action-slots';
-import { LIBRARY_ACTIONS, type Assignment } from '@/lib/services/threed/animations/contracts';
+import type { AnimationActionSlot } from '@/libraries/services/threed/animations/action-slots';
+import { LIBRARY_ACTIONS, type Assignment } from '@/libraries/services/threed/animations/contracts';
 
 type Clip = { id: number; name: string; fileName: string; clipIndex: number; isActive: boolean };
 type Mapping = { slots?: AnimationActionSlot[]; modelId: number | null; assignments: Assignment[]; inherited: Assignment[]; animations: Clip[]; effective: { actionKey: string; source: string; state: string; animationId: number | null }[] };

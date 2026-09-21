@@ -1,9 +1,9 @@
 'use client';
 
-import { BALL_PHYSICS_FIELDS, resolveBallPhysics, type BallPhysics } from '@/lib/services/threed/models/ball-physics';
+import { BALL_PHYSICS_FIELDS, resolveBallPhysics, type BallPhysics } from '@/libraries/services/threed/models/ball-physics';
 import { useState } from 'react';
 import { Box, Crosshair, Loader2, Save, Trash2 } from 'lucide-react';
-import type { ProjectModelCollisionMode } from '@/lib/services/threed/models/project-model-instance-core';
+import type { ProjectModelCollisionMode } from '@/libraries/services/threed/models/project-model-instance-core';
 import { DetailsCardSection } from './DetailsCardSection';
 
 type ProjectModelPhysicsMode = ProjectModelCollisionMode | 'ball';

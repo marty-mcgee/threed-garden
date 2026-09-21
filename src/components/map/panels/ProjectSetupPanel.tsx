@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import {
   createProjectTourState,
   type ProjectTourStepKey,
-} from '@/lib/services/project/project-tour-core';
+} from '@/libraries/services/project/project-tour-core';
 
 export function ProjectSetupPanel({
   isOpen,

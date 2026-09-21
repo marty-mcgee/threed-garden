@@ -4,15 +4,15 @@ import {
   resolveThreeDModelAttachmentUrl,
   type ThreeDModelRuntimeAttachment,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
-} from '../../../../lib/services/threed/models/model-attachment-runtime-core.ts';
+} from '../../../../libraries/services/threed/models/model-attachment-runtime-core.ts';
 import {
   normalizeThreeDModelRelativePath,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
-} from '../../../../lib/services/threed/models/model-companion-core.ts';
+} from '../../../../libraries/services/threed/models/model-companion-core.ts';
 import {
   createThreeDModelMaterialInventory,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
-} from '../../../../lib/services/threed/models/model-material-inventory-core.ts';
+} from '../../../../libraries/services/threed/models/model-material-inventory-core.ts';
 import {
   getBulkLocalImagePixelCount, loadBulkGltfBundle,
   type BulkLocalModelLease,
@@ -239,7 +239,7 @@ export function loadBulkLocalModel(file: File, attachments: Companion[], allowMi
   if (/\.obj$/i.test(file.name)) {
     const selected = [file, ...attachments.map((entry) => entry.file)];
     if (selected.some((entry) => entry.size <= 0 || entry.size > MAX_FILE_BYTES) || selected.reduce((n, entry) => n + entry.size, 0) > MAX_BUNDLE_BYTES) return Promise.reject(new Error('OBJ selected files must fit the 4 MiB file and 32 MiB bundle limits.'));
-    return import('../../../../lib/services/threed/models/model-obj-loader').then(({ loadObjBundle }) => loadObjBundle(
+    return import('../../../../libraries/services/threed/models/model-obj-loader').then(({ loadObjBundle }) => loadObjBundle(
       { fileName: file.name, relativePath: file.name, read: async () => new Uint8Array(await file.arrayBuffer()) },
       attachments.map((entry) => ({ fileName: entry.file.name, relativePath: entry.relativePath, read: async () => new Uint8Array(await entry.file.arrayBuffer()) })), allowMissingTextures));
   }

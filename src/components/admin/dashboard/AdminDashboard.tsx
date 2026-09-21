@@ -40,13 +40,13 @@ interface DashboardData {
       total: number;
       threed: number;
       traffic: number;
-      music: number;
+      multimedia: number;
     };
     projectModules: {
       total: number;
       threed: number;
       traffic: number;
-      music: number;
+      multimedia: number;
     };
     assets: {
       total: number;
@@ -96,7 +96,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
         return <Box className="w-4 h-4" />;
       case 'traffic':
         return <Car className="w-4 h-4" />;
-      case 'music':
+      case 'multimedia':
         return <Music className="w-4 h-4" />;
       default:
         return <Layers className="w-4 h-4" />;
@@ -109,7 +109,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
         return 'text-green-500';
       case 'traffic':
         return 'text-blue-500';
-      case 'music':
+      case 'multimedia':
         return 'text-purple-500';
       default:
         return 'text-gray-500';
@@ -165,7 +165,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <span className="text-green-500">●</span> {data.stats.modules.threed} ThreeD
               <span className="text-blue-500 ml-2">●</span> {data.stats.modules.traffic} Traffic
-              <span className="text-purple-500 ml-2">●</span> {data.stats.modules.music} Music
+              <span className="text-purple-500 ml-2">●</span> {data.stats.modules.multimedia} Multimedia
             </div>
           </CardContent>
         </Card>
@@ -200,7 +200,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
               </div>
               <div className="flex items-center gap-1">
                 <div className="w-3 h-3 rounded-full bg-purple-500" />
-                <span className="text-sm font-medium">{data.stats.projectModules.music}</span>
+                <span className="text-sm font-medium">{data.stats.projectModules.multimedia}</span>
               </div>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -248,10 +248,10 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
               <Button
                 variant="outline"
                 className="justify-start"
-                onClick={() => router.push('/admin/music')}
+                onClick={() => router.push('/admin/multimedia')}
               >
                 <Music className="w-4 h-4 mr-2 text-purple-500" />
-                Music
+                Multimedia
               </Button>
             </div>
           </CardContent>
@@ -292,12 +292,12 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Music className="w-4 h-4 text-purple-500" />
-                  <span className="text-sm">Music Modules</span>
+                  <span className="text-sm">Multimedia Modules</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary">{data.stats.modules.music}</Badge>
+                  <Badge variant="secondary">{data.stats.modules.multimedia}</Badge>
                   <span className="text-xs text-muted-foreground">
-                    in {data.stats.projectModules.music} projects
+                    in {data.stats.projectModules.multimedia} projects
                   </span>
                 </div>
               </div>

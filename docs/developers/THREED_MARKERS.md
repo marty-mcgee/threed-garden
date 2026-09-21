@@ -298,7 +298,7 @@ The completed persistence path declares `project_threed_markers`, provides its a
 
 ## Manual verification
 
-1. Apply the generated schema and open an owned Project on `/dashboard/map`.
+1. Apply the generated schema and open an owned Project on `/dashboard/scene`.
 2. Confirm the Project renders normally before any snapshot exists.
 3. Move an EcctrlCharacter, then inspect `project_threed_markers` before saving; no movement-triggered write should appear.
 4. Open the Project dropdown and click **Save ThreeD Project**. Confirm the success toast reports the expected marker count.
@@ -397,7 +397,7 @@ Transient interaction state is deliberately excluded: selected markers, DetailsC
 2. Orbit and zoom the ThreeD camera, then pan and zoom Leaflet to a recognizable location.
 3. Select a non-default camera mode, Scene Layer visibility, environment, grid, legend, or gizmo setting.
 4. Click **Save ThreeD Project** and confirm the existing marker-count success toast.
-5. Refresh `/dashboard/map` and confirm the view mode, panel split, ThreeD camera position/target, Leaflet center/zoom, camera mode, and saved display settings return.
+5. Refresh `/dashboard/scene` and confirm the view mode, panel split, ThreeD camera position/target, Leaflet center/zoom, camera mode, and saved display settings return.
 6. Confirm no Character is automatically controlled, no marker or Action Target is selected, no DetailsCard or placement form opens, and Physics Debug remains off.
 7. Confirm marker positions, Ecctrl Take/Release Control, WASD, collisions, Layer authority, and Project marker CRUD remain unchanged.
 
@@ -578,7 +578,7 @@ The version-1 ThreeD Model import manifest is metadata-only. It contains relativ
 
 The dry-run boundary rejects unsupported versions and fields, duplicate or malformed import keys, absolute and escaping paths, unsupported Model/preview extensions, mismatched concrete Model types, invalid category slugs, unsafe transforms, oversized metadata, more than 500 Models, or more than 20 categories per Model. Write behavior remains deferred to separately approved v0.19.3c.
 
-Executable import, extraction, generation, and validation code belongs under the tracked App-owned `src/lib/scripts` and `src/lib/services/threed/models` boundaries. Ignored `reference/` directories are read-only source inputs and generated local output only; package commands must never execute scripts stored there. The tracked legacy pilot generator accepts explicit `--source` and `--output` paths, validates its generated manifest through the same contract core, and writes no database or storage data.
+Executable import, extraction, generation, and validation code belongs under the tracked App-owned `src/libraries/scripts` and `src/libraries/services/threed/models` boundaries. Ignored `reference/` directories are read-only source inputs and generated local output only; package commands must never execute scripts stored there. The tracked legacy pilot generator accepts explicit `--source` and `--output` paths, validates its generated manifest through the same contract core, and writes no database or storage data.
 
 ## v0.19.3c reviewed Model import boundary
 
@@ -595,7 +595,7 @@ npm run threed:models:import -- \
 
 Each approved entry uploads its primary Model, optional preview, and declared sidecars into one stable owner/import-key Blob bundle. The importer creates or updates the owner-scoped `threed_models` row by `metadata.importKey`, adds missing category assignments, and creates or updates importer-owned `threed_model_files` sidecar records. It processes entries sequentially, records created/updated/failed outcomes in bounded JSON, and never creates categories, Projects, Project assets, `project_threed_markers`, Scene objects, or runtime physics bodies. It also does not delete Models, assignments, file records, or Blob objects. A database failure after an upload may leave an unreferenced object at that entry's stable Blob path; rerunning the same reviewed manifest reuses that path and import identity.
 
-The ignored `reference/` tree remains non-authoritative test input. Generation, validation, containment checks, Blob path construction, ownership checks, and persistence orchestration all execute from tracked App source under `src/lib`. No import command executes code from a reference asset bundle.
+The ignored `reference/` tree remains non-authoritative test input. Generation, validation, containment checks, Blob path construction, ownership checks, and persistence orchestration all execute from tracked App source under `src/libraries`. No import command executes code from a reference asset bundle.
 
 The authenticated Admin Model workflow remains the existing `ThreeDModelsCRUD`; it is not manifest-driven. **Add Model** accepts one deliberate primary Model upload, an optional Library preview, taxonomy, transforms, usage flags, and metadata before creating one `threed_models` record. **Edit Model** supports a deliberate replacement primary upload and preview while retaining the same Model identity. After creation, **Model Files** attaches explicitly selected textures, buffers, or other supporting files through the existing `threed_model_files` relationship. The Admin UI does not unzip archives, scan directories, infer bundles, create multiple Models from one upload, or create Project markers. Manifest-based bulk import remains a separate Super Admin package-script boundary.
 

@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useTestStore } from '@/lib/stores/test-store';
+import { useTestStore } from '@/libraries/stores/test-store';
 import { Button } from '@/components/ui/button';
 
 export function TestLocalStorage() {

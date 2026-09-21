@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { NAVIGATION_REQUEST, NAVIGATION_STATUS, type NavigationRequest } from '@/lib/services/threed/orchestration/navigation-events';
+import { NAVIGATION_REQUEST, NAVIGATION_STATUS, type NavigationRequest } from '@/libraries/services/threed/orchestration/navigation-events';
 
 export function CharacterNavigationControls({ actorMarkerId, targetMarkerId, ready, controlled }: {
   actorMarkerId: string; targetMarkerId: string; ready: boolean; controlled: boolean;

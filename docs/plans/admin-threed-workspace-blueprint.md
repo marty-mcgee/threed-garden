@@ -8,7 +8,7 @@ Design checkpoint: **v0.19.12 — ThreeD Admin Model Workspace**. The User reque
 - `src/components/admin/layout/AdminWorkspaceHeader.tsx`: common title/action layout.
 - `src/components/admin/layout/AdminLayout.tsx`: viewport-constrained workspace enabled for individually reviewed standalone routes. Embedded Project components retain natural sizing.
 - `src/app/api/threed/models/route.ts`: owner-scoped pagination, shared count filters and server sorting.
-- `src/lib/services/threed/models/model-list-query.ts`: bounded query parsing.
+- `src/libraries/services/threed/models/model-list-query.ts`: bounded query parsing.
 
 ## Required presentation and behavior
 
@@ -48,7 +48,7 @@ The User explicitly requested Tasks header and bulk functionality, superseding i
 
 Bulk deletion uses the existing authenticated single-record DELETE route sequentially, confirms once, limits IDs to the selected page and reports partial failures. Selection resets on page/search/size changes and successful reload. Request sequencing ignores stale responses; empty final pages recover after deletion. Existing API access rules and Task form relationships are unchanged.
 
-Validation: TypeScript and `node src/lib/scripts/validate-threed-task-bulk.cjs` passed; the fixture exercises the actual bulk handler with mocked responses for cancellation, off-page exclusion and partial failures. No live SQL or browser validation performed. Review `/admin/threed/tasks`: search an older Task, change pages/page size, select/clear rows, and use disposable Tasks for confirmed deletion. Check short/narrow screens and embedded hosts. No build, commit or push performed; the User's package version edit is preserved.
+Validation: TypeScript and `node src/libraries/scripts/validate-threed-task-bulk.cjs` passed; the fixture exercises the actual bulk handler with mocked responses for cancellation, off-page exclusion and partial failures. No live SQL or browser validation performed. Review `/admin/threed/tasks`: search an older Task, change pages/page size, select/clear rows, and use disposable Tasks for confirmed deletion. Check short/narrow screens and embedded hosts. No build, commit or push performed; the User's package version edit is preserved.
 
 Tasks refinement: Due Date now has its own column. Title, Type, Priority, Status and Due Date headers toggle server ordering before pagination; requests use an allowlist, fixed direction fragments, NULLS LAST and an ID tie-breaker. Existing callers without a sort retain the previous ordering. Selection resets when sorting changes. Priority and Status render colored text without capsule backgrounds. Selection and Actions are controls, not sortable data. TypeScript, the bulk handler fixture and diff checks passed; live SQL/date ordering and browser appearance remain manual review.
 

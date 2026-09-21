@@ -1,28 +1,28 @@
-import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
+import { modelSelection } from '@/libraries/services/threed/models/model-primary-file';
 import { NextRequest, NextResponse } from 'next/server';
 import { and, asc, eq } from 'drizzle-orm';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
 import {
   threedModelFiles,
   threedModelMaterialAssignments,
   threedModels,
   threedModelTextures,
-} from '@/lib/schema/threed';
+} from '@/libraries/schema/threed';
 import {
   inspectThreeDModelMaterial,
   inspectThreeDModelPrimary,
   type ThreeDModelCompanionRequirement,
-} from '@/lib/services/threed/models/model-companion-core';
+} from '@/libraries/services/threed/models/model-companion-core';
 import {
   resolveThreeDModelAttachmentUrl,
   type ThreeDModelRuntimeAttachment,
-} from '@/lib/services/threed/models/model-attachment-runtime-core';
-import { isOwnedThreeDBlobUrl } from '@/lib/services/threed/models/model-file-integrity';
+} from '@/libraries/services/threed/models/model-attachment-runtime-core';
+import { isOwnedThreeDBlobUrl } from '@/libraries/services/threed/models/model-file-integrity';
 import {
   isThreeDModelMaterialTargetKey,
   writeThreeDModelMaterialOverride,
-} from '@/lib/services/threed/models/model-material-override-core';
+} from '@/libraries/services/threed/models/model-material-override-core';
 
 export const runtime = 'nodejs';
 

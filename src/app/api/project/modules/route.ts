@@ -1,11 +1,11 @@
 // app/api/project/modules/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { project, projectThreed, projectTraffic, projectMusic } from '@/lib/schema/project';
-import { threed } from '@/lib/schema/threed';
-import { traffic } from '@/lib/schema/traffic';
-import { music } from '@/lib/schema/music';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { project, projectThreed, projectTraffic, projectMultimedia } from '@/libraries/schema/project';
+import { threed } from '@/libraries/schema/threed';
+import { traffic } from '@/libraries/schema/traffic';
+import { multimedia } from '@/libraries/schema/multimedia';
 import { eq, and } from 'drizzle-orm';
 
 // ============================================
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
           modules: {
             threed: [],
             traffic: [],
-            music: [],
+            multimedia: [],
           },
         },
       });
@@ -96,14 +96,14 @@ export async function GET(request: NextRequest) {
       
       db
         .select()
-        .from(music)
-        .innerJoin(projectMusic, eq(projectMusic.musicId, music.id))
+        .from(multimedia)
+        .innerJoin(projectMultimedia, eq(projectMultimedia.multimediaId, multimedia.id))
         .where(
           and(
-            eq(projectMusic.projectId, parsedProjectId),
-            eq(projectMusic.userId, userId),
-            eq(projectMusic.isActive, true),
-            eq(music.isActive, true)
+            eq(projectMultimedia.projectId, parsedProjectId),
+            eq(projectMultimedia.userId, userId),
+            eq(projectMultimedia.isActive, true),
+            eq(multimedia.isActive, true)
           )
         ),
     ]);
@@ -113,7 +113,7 @@ export async function GET(request: NextRequest) {
       data: {
         threed: projectAssetsThreed.map(row => row.threed),
         traffic: projectAssetsTraffic.map(row => row.traffic),
-        music: projectAssetsMusic.map(row => row.music),
+        multimedia: projectAssetsMusic.map(row => row.multimedia),
       },
     });
   } catch (error) {
@@ -294,14 +294,14 @@ export async function POST(request: NextRequest) {
         break;
       }
 
-      case 'music': {
+      case 'multimedia': {
         const [module] = await db
           .select()
-          .from(music)
+          .from(multimedia)
           .where(
             and(
-              eq(music.id, parsedModuleId),
-              eq(music.userId, userId)
+              eq(multimedia.id, parsedModuleId),
+              eq(multimedia.userId, userId)
             )
           )
           .limit(1);
@@ -315,11 +315,11 @@ export async function POST(request: NextRequest) {
 
         const [existing] = await db
           .select()
-          .from(projectMusic)
+          .from(projectMultimedia)
           .where(
             and(
-              eq(projectMusic.projectId, parsedProjectId),
-              eq(projectMusic.musicId, parsedModuleId)
+              eq(projectMultimedia.projectId, parsedProjectId),
+              eq(projectMultimedia.multimediaId, parsedModuleId)
             )
           )
           .limit(1);
@@ -333,11 +333,11 @@ export async function POST(request: NextRequest) {
 
         // ✅ Insert with userId
         [result] = await db
-          .insert(projectMusic)
+          .insert(projectMultimedia)
           .values({
             userId: userId, // ✅ Set userId
             projectId: parsedProjectId,
-            musicId: parsedModuleId,
+            multimediaId: parsedModuleId,
           })
           .returning();
         break;
@@ -345,7 +345,7 @@ export async function POST(request: NextRequest) {
 
       default:
         return NextResponse.json(
-          { success: false, error: 'Invalid module type. Use threed, traffic, or music' },
+          { success: false, error: 'Invalid module type. Use threed, traffic, or multimedia' },
           { status: 400 }
         );
     }
@@ -455,14 +455,14 @@ export async function DELETE(request: NextRequest) {
           .returning();
         break;
 
-      case 'music':
+      case 'multimedia':
         [result] = await db
-          .delete(projectMusic)
+          .delete(projectMultimedia)
           .where(
             and(
-              eq(projectMusic.projectId, parsedProjectId),
-              eq(projectMusic.musicId, parsedModuleId),
-              eq(projectMusic.userId, userId) // ✅ Check userId
+              eq(projectMultimedia.projectId, parsedProjectId),
+              eq(projectMultimedia.multimediaId, parsedModuleId),
+              eq(projectMultimedia.userId, userId) // ✅ Check userId
             )
           )
           .returning();
@@ -470,7 +470,7 @@ export async function DELETE(request: NextRequest) {
 
       default:
         return NextResponse.json(
-          { success: false, error: 'Invalid module type. Use threed, traffic, or music' },
+          { success: false, error: 'Invalid module type. Use threed, traffic, or multimedia' },
           { status: 400 }
         );
     }

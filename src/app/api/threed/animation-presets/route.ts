@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import { animationResponse } from '@/lib/services/threed/animations/http';
-import { positiveId } from '@/lib/services/threed/animations/contracts';
-import { listPresets, getPreset, savePreset, deletePreset } from '@/lib/services/threed/animations/presets';
+import { animationResponse } from '@/libraries/services/threed/animations/http';
+import { positiveId } from '@/libraries/services/threed/animations/contracts';
+import { listPresets, getPreset, savePreset, deletePreset } from '@/libraries/services/threed/animations/presets';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export function GET(request: NextRequest) {

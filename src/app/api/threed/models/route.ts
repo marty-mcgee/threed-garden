@@ -1,10 +1,10 @@
-import { databaseConnectionDiagnostic } from '@/lib/db/connection-diagnostics';
-import { parseModelListQuery } from '@/lib/services/threed/models/model-list-query';
-import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
+import { databaseConnectionDiagnostic } from '@/libraries/db/connection-diagnostics';
+import { parseModelListQuery } from '@/libraries/services/threed/models/model-list-query';
+import { modelSelection } from '@/libraries/services/threed/models/model-primary-file';
 // app/api/threed/models/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
 import { 
   threedModels,
   threedModelFiles,
@@ -12,18 +12,18 @@ import {
   threedModelCategoryAssignments,
   threedModelMaterialAssignments,
   threedModelTextures,
-} from '@/lib/schema/threed';
+} from '@/libraries/schema/threed';
 import { eq, and, or, desc, sql, inArray, asc, type SQL } from 'drizzle-orm';
-import { ensureTableSequence } from '@/lib/db/sequence';
-import { normalizeThreeDModelRelativePath } from '@/lib/services/threed/models/model-companion-core';
+import { ensureTableSequence } from '@/libraries/db/sequence';
+import { normalizeThreeDModelRelativePath } from '@/libraries/services/threed/models/model-companion-core';
 import { del } from '@vercel/blob';
 import {
   isOwnedThreeDBlobUrl,
   runtimeModelTypeFromFileName,
-} from '@/lib/services/threed/models/model-file-integrity';
-import { createThreeDModelLibraryReadiness } from '@/lib/services/threed/models/model-library-readiness-core';
+} from '@/libraries/services/threed/models/model-file-integrity';
+import { createThreeDModelLibraryReadiness } from '@/libraries/services/threed/models/model-library-readiness-core';
 
-type ModelWithFiles = import('@/lib/services/threed/models/model-primary-file').ResolvedModel & {
+type ModelWithFiles = import('@/libraries/services/threed/models/model-primary-file').ResolvedModel & {
   files: Array<typeof threedModelFiles.$inferSelect>;
   categories: Array<Pick<typeof threedModelCategories.$inferSelect, 'id' | 'name' | 'slug' | 'parentId'>>;
   materialAssignments: ModelMaterialAssignment[];

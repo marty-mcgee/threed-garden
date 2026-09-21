@@ -1,12 +1,12 @@
 // components/map/ThreeDScene.tsx
 'use client';
 
-import { placeHoverTitle } from '@/lib/services/threed/markers/hover-title-placement';
+import { placeHoverTitle } from '@/libraries/services/threed/markers/hover-title-placement';
 import { SceneHoverTitleContext } from '@/components/threed/shared/SceneHoverTitleContext';
 import { Button } from '@/components/ui/button';
 
 import { EnvironmentRegionColliders } from '@/components/threed/shared/EnvironmentRegionColliders';
-import { resolveBallPhysics } from '@/lib/services/threed/models/ball-physics';
+import { resolveBallPhysics } from '@/libraries/services/threed/models/ball-physics';
 
 
 import {
@@ -74,37 +74,37 @@ import {
   type ModelGeometryAudit,
 } from '@/components/threed/markers/ModelMarker3D';
 import { WeatherEffects } from '@/components/threed/effects/WeatherEffects';
-import type { ThreeDActionTarget } from '@/lib/types/map';
-import type { ThreeDModelLibraryItem } from '@/lib/types/threed';
+import type { ThreeDActionTarget } from '@/libraries/types/map';
+import type { ThreeDModelLibraryItem } from '@/libraries/types/threed';
 import {
   isMatchingThreeDModelLibraryDragPayload,
   THREED_MODEL_LIBRARY_DRAG_MIME,
-} from '@/lib/services/threed/markers/model-library-drag-core';
-import { planThreeDTargetRelativeNavigation } from '@/lib/services/threed/orchestration/interaction-core';
-import { isMatchingThreeDActionTarget } from '@/lib/services/threed/orchestration/action-target-core';
-import { calculateThreeDModelInstanceScale } from '@/lib/services/threed/markers/model-visual-fit-core';
+} from '@/libraries/services/threed/markers/model-library-drag-core';
+import { planThreeDTargetRelativeNavigation } from '@/libraries/services/threed/orchestration/interaction-core';
+import { isMatchingThreeDActionTarget } from '@/libraries/services/threed/orchestration/action-target-core';
+import { calculateThreeDModelInstanceScale } from '@/libraries/services/threed/markers/model-visual-fit-core';
 import {
   isProjectModelEnvironment,
   isProjectModelMovableBall,
   isProjectModelStationaryCollisionReady,
   resolveProjectModelCollisionMode,
   resolveProjectModelEffectiveCollisionMode,
-} from '@/lib/services/threed/models/project-model-instance-core';
-import type { ThreeDEnvironmentCollisionPreviewPlan } from '@/lib/services/threed/models/environment-collision-preview-core';
-import { createThreeDEnvironmentColliderActivationPlan } from '@/lib/services/threed/models/environment-collider-activation-core';
+} from '@/libraries/services/threed/models/project-model-instance-core';
+import type { ThreeDEnvironmentCollisionPreviewPlan } from '@/libraries/services/threed/models/environment-collision-preview-core';
+import { createThreeDEnvironmentColliderActivationPlan } from '@/libraries/services/threed/models/environment-collider-activation-core';
 import {
   DEFAULT_THREE_D_ENVIRONMENT_PRESET_KEY,
   resolveThreeDEnvironmentPreset,
   THREE_D_ENVIRONMENT_PRESETS,
-} from '@/lib/services/threed/environment-presets';
+} from '@/libraries/services/threed/environment-presets';
 import {
   resolveRestoredThreeDActiveLayers,
   type ProjectThreeDViewState,
-} from '@/lib/services/threed/markers/project-view-state-core';
+} from '@/libraries/services/threed/markers/project-view-state-core';
 import {
   DEFAULT_PROJECT_GROUND_MAP_TRANSFORM,
   type ProjectGroundMapTransform,
-} from '@/lib/services/threed/ground-maps/project-ground-map-core';
+} from '@/libraries/services/threed/ground-maps/project-ground-map-core';
 
 interface ProjectGroundMapAsset {
   id: number; name: string; fileName: string; filePath: string;

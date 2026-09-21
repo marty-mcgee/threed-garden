@@ -1,11 +1,11 @@
-import { parseBedListQuery } from '@/lib/services/threed/beds/bed-list-query';
+import { parseBedListQuery } from '@/libraries/services/threed/beds/bed-list-query';
 // app/api/threed/beds/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { threedBeds, bedStatusEnum } from '@/lib/schema/threed';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { threedBeds, bedStatusEnum } from '@/libraries/schema/threed';
 import { eq, and, asc, desc, sql, type SQL } from 'drizzle-orm';
-import { ensureTableSequence } from '@/lib/db/sequence';
+import { ensureTableSequence } from '@/libraries/db/sequence';
 
 // ============================================
 // GET /api/threed/beds - List ThreeD Beds

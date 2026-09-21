@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import type { AnimationActionSlot } from '@/lib/services/threed/animations/action-slots';
+import type { AnimationActionSlot } from '@/libraries/services/threed/animations/action-slots';
 export function useAnimationActionSlots(refresh = 0) {
   const [slots, setSlots] = useState<AnimationActionSlot[]>([]);
   const [error, setError] = useState('');

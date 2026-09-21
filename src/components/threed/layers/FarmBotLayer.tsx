@@ -1,7 +1,7 @@
 // components/threed/layers/FarmBotLayer.tsx
 'use client';
 
-import { FarmBot3D } from '@/lib/types/threed';
+import { FarmBot3D } from '@/libraries/types/threed';
 import { FarmBotMarker3D } from '../markers/FarmBotMarker3D';
 
 interface FarmBotLayerProps {

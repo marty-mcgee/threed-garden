@@ -1,28 +1,28 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/libraries/auth';
 import {
   FarmBotCredentialKeyConfigurationError,
-} from '@/lib/services/threed/farmbot/credential-keyring-core';
+} from '@/libraries/services/threed/farmbot/credential-keyring-core';
 import {
   FarmBotCredentialNotFoundError,
   getFarmBotCredentialStatus,
   saveFarmBotCredential,
-} from '@/lib/services/threed/farmbot/credential-repository';
+} from '@/libraries/services/threed/farmbot/credential-repository';
 import {
   clearFarmBotLoginAttempts,
   consumeFarmBotLoginAttempt,
-} from '@/lib/services/threed/farmbot/login-rate-limit';
+} from '@/libraries/services/threed/farmbot/login-rate-limit';
 import {
   FarmBotLoginRejectedError,
   FarmBotTokenServiceUnavailableError,
   MAX_FARMBOT_EMAIL_LENGTH,
   MAX_FARMBOT_PASSWORD_LENGTH,
-} from '@/lib/services/threed/farmbot/token-client-core';
-import { requestFarmBotToken } from '@/lib/services/threed/farmbot/token-client';
+} from '@/libraries/services/threed/farmbot/token-client-core';
+import { requestFarmBotToken } from '@/libraries/services/threed/farmbot/token-client';
 import {
   FarmBotBrokerIdentityMismatchError,
   FarmBotBrokerMetadataError,
-} from '@/lib/services/threed/farmbot/broker-metadata-core';
+} from '@/libraries/services/threed/farmbot/broker-metadata-core';
 
 export const dynamic = 'force-dynamic';
 

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { multimediaSpeech as speech, multimediaSpeechVersions as versions } from '@/lib/schema/multimedia';
-import { musicAlbums, musicTracks } from '@/lib/schema/music';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { multimediaSpeech as speech, multimediaSpeechVersions as versions } from '@/libraries/schema/multimedia';
+import { multimediaAlbums, multimediaTracks } from '@/libraries/schema/multimedia';
 import { and, eq } from 'drizzle-orm';
-import { positiveSpeechInteger } from '@/lib/services/multimedia/speech-draft';
-import { ownsMediaKey } from '@/lib/services/music/upload-policy';
+import { positiveSpeechInteger } from '@/libraries/services/multimedia/speech-draft';
+import { ownsMediaKey } from '@/libraries/services/multimedia/upload-policy';
 
 class Failure extends Error { constructor(message: string, readonly status: number) { super(message); } }
 export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }) {
@@ -23,14 +23,14 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
       const [version] = await tx.select().from(versions).where(and(eq(versions.speechId, id), eq(versions.versionNumber, body.versionNumber))).for('update');
       if (!version || version.status !== 'ready' || !version.storageKey || !ownsMediaKey(userId, version.storageKey) || !version.fileSize || !version.mimeType) throw new Failure('Choose a ready Speech version.', 409);
       if (version.trackId) {
-        const [track] = await tx.select().from(musicTracks).where(and(eq(musicTracks.id, version.trackId), eq(musicTracks.userId, userId))).limit(1);
+        const [track] = await tx.select().from(multimediaTracks).where(and(eq(multimediaTracks.id, version.trackId), eq(multimediaTracks.userId, userId))).limit(1);
         if (!track) throw new Failure('Linked Track is unavailable. Refresh history.', 409);
         return { trackId: track.id, reused: true };
       }
       if (record.archivedAt) throw new Failure('Restore Speech before creating a Track.', 409);
-      const [album] = await tx.select().from(musicAlbums).where(and(eq(musicAlbums.id, body.albumId), eq(musicAlbums.userId, userId))).for('share');
+      const [album] = await tx.select().from(multimediaAlbums).where(and(eq(multimediaAlbums.id, body.albumId), eq(multimediaAlbums.userId, userId))).for('share');
       if (!album) throw new Failure('Album not found.', 404);
-      const [track] = await tx.insert(musicTracks).values({ userId, albumId: album.id, title: body.title.trim(), fileUrl: `/api/music/files?key=${encodeURIComponent(version.storageKey)}`, fileType: version.mimeType, fileSize: version.fileSize, status: 'active', lyrics: version.text, metadata: { source: 'fish-audio', speechId: id, speechVersionNumber: version.versionNumber, voiceId: version.voiceId, model: version.model } }).returning({ id: musicTracks.id });
+      const [track] = await tx.insert(multimediaTracks).values({ userId, albumId: album.id, title: body.title.trim(), fileUrl: `/api/multimedia/files?key=${encodeURIComponent(version.storageKey)}`, fileType: version.mimeType, fileSize: version.fileSize, status: 'active', lyrics: version.text, metadata: { source: 'fish-audio', speechId: id, speechVersionNumber: version.versionNumber, voiceId: version.voiceId, model: version.model } }).returning({ id: multimediaTracks.id });
       await tx.update(versions).set({ trackId: track.id }).where(eq(versions.id, version.id));
       return { trackId: track.id, reused: false };
     });

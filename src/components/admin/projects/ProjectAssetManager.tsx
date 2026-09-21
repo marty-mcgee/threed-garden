@@ -45,7 +45,7 @@ interface Asset {
 interface ProjectAssetManagerProps {
   projectId: number;
   userId: string;
-  moduleType: 'music' | 'threed' | 'traffic';
+  moduleType: 'multimedia' | 'threed' | 'traffic';
   moduleId: number;
   onUpdate?: () => void;
 }
@@ -56,57 +56,57 @@ const ASSET_TAB_STORAGE_KEY = 'project_asset_selected_tab';
 // ✅ Complete asset type configuration for all module children
 const ASSET_TYPES = {
   // ===== MUSIC MODULE =====
-  music: {
-    label: 'Music',
+  multimedia: {
+    label: 'Multimedia',
     icon: Music,
     color: 'text-purple-500',
-    moduleType: 'music',
+    moduleType: 'multimedia',
     types: [
-      { value: 'music_albums', label: 'Albums' },
-      { value: 'music_tracks', label: 'Tracks' },
-      { value: 'music_media', label: 'Media' },
-      { value: 'music_links', label: 'Links' },
+      { value: 'multimedia_albums', label: 'Albums' },
+      { value: 'multimedia_tracks', label: 'Tracks' },
+      { value: 'multimedia_media', label: 'Media' },
+      { value: 'multimedia_links', label: 'Links' },
     ],
     assetConfigs: [
       {
-        id: 'music_albums',
+        id: 'multimedia_albums',
         label: 'Albums',
         icon: Music,
-        assetType: 'music_albums',
-        fetchEndpoint: '/api/music/albums',
+        assetType: 'multimedia_albums',
+        fetchEndpoint: '/api/multimedia/albums',
         searchFields: ['title', 'artist'],
         displayFields: ['title', 'artist', 'year'],
         idField: 'id',
         nameField: 'title',
       },
       {
-        id: 'music_tracks',
+        id: 'multimedia_tracks',
         label: 'Tracks',
         icon: Music2,
-        assetType: 'music_tracks',
-        fetchEndpoint: '/api/music/tracks',
+        assetType: 'multimedia_tracks',
+        fetchEndpoint: '/api/multimedia/tracks',
         searchFields: ['title'],
         displayFields: ['title', 'duration'],
         idField: 'id',
         nameField: 'title',
       },
       {
-        id: 'music_media',
+        id: 'multimedia_media',
         label: 'Media',
         icon: Image,
-        assetType: 'music_media',
-        fetchEndpoint: '/api/music/media',
+        assetType: 'multimedia_media',
+        fetchEndpoint: '/api/multimedia/media',
         searchFields: ['fileName'],
         displayFields: ['fileName', 'fileType'],
         idField: 'id',
         nameField: 'fileName',
       },
       {
-        id: 'music_links',
+        id: 'multimedia_links',
         label: 'Links',
         icon: Link2,
-        assetType: 'music_links',
-        fetchEndpoint: '/api/music/links',
+        assetType: 'multimedia_links',
+        fetchEndpoint: '/api/multimedia/links',
         searchFields: ['title', 'url'],
         displayFields: ['title', 'url'],
         idField: 'id',

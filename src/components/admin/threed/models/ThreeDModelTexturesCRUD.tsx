@@ -5,7 +5,7 @@ import { ArrowLeft, ArrowUp, ArrowDown, ArrowUpDown, Check, X, Images, FolderTre
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import type { TextureSortField } from '@/lib/services/threed/models/texture-list-query';
+import type { TextureSortField } from '@/libraries/services/threed/models/texture-list-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/toast';

@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/libraries/auth';
 import {
   FarmBotCredentialNotFoundError,
   getFarmBotMqttReadiness,
-} from '@/lib/services/threed/farmbot/credential-repository';
-import { FarmBotCredentialKeyConfigurationError } from '@/lib/services/threed/farmbot/credential-keyring-core';
-import { FarmBotBrokerMetadataError } from '@/lib/services/threed/farmbot/broker-metadata-core';
+} from '@/libraries/services/threed/farmbot/credential-repository';
+import { FarmBotCredentialKeyConfigurationError } from '@/libraries/services/threed/farmbot/credential-keyring-core';
+import { FarmBotBrokerMetadataError } from '@/libraries/services/threed/farmbot/broker-metadata-core';
 
 export const dynamic = 'force-dynamic';
 

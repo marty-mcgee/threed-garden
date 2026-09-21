@@ -1,6 +1,6 @@
 // src/app/api/threed/weather/poll/route.ts
 import { NextResponse } from 'next/server';
-import { WeatherPoller } from '@/lib/services/threed/WeatherPoller';
+import { WeatherPoller } from '@/libraries/services/threed/WeatherPoller';
 
 export const maxDuration = 300;
 export const dynamic = 'force-dynamic';

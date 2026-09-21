@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo } from 'react';
-import type { RuntimeMarker } from '@/lib/types/map';
-import { getThreeDLabel } from '@/lib/utils/map-helpers';
+import type { RuntimeMarker } from '@/libraries/types/map';
+import { getThreeDLabel } from '@/libraries/utils/map-helpers';
 
 interface ProjectAssetCollection {
   assetTypes: string[];

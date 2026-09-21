@@ -1,21 +1,21 @@
-import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
+import { modelSelection } from '@/libraries/services/threed/models/model-primary-file';
 // src/app/api/threed/models/files/route.ts — v0.16.4-alpha
 // Adds model files, textures, binary buffers, and supportive media to an existing model.
 // Reads `modelId` and optional `category`/`textureType` from multipart form data and
 // persists each uploaded file to Vercel Blob (reusing the existing `@vercel/blob` pattern).
 import { NextRequest, NextResponse } from 'next/server';
-import { createThreeDAttachmentBlobPath } from '@/lib/services/threed/models/model-blob-paths';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { threedModels, threedModelFiles, threedModelTextures } from '@/lib/schema/threed';
+import { createThreeDAttachmentBlobPath } from '@/libraries/services/threed/models/model-blob-paths';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { threedModels, threedModelFiles, threedModelTextures } from '@/libraries/schema/threed';
 import { and, asc, eq } from 'drizzle-orm';
 import { BlobNotFoundError, head, put } from '@vercel/blob';
-import { ensureTableSequence } from '@/lib/db/sequence';
-import { normalizeThreeDModelRelativePath } from '@/lib/services/threed/models/model-companion-core';
+import { ensureTableSequence } from '@/libraries/db/sequence';
+import { normalizeThreeDModelRelativePath } from '@/libraries/services/threed/models/model-companion-core';
 import {
   isOwnedThreeDBlobUrl,
   runtimeModelTypeFromFileName,
-} from '@/lib/services/threed/models/model-file-integrity';
+} from '@/libraries/services/threed/models/model-file-integrity';
 
 const MODEL_EXTS = new Set(['glb', 'gltf', 'fbx', 'obj', 'usdz']);
 const TEXTURE_EXTS = new Set(['jpg', 'jpeg', 'png', 'webp', 'tga', 'bmp']);

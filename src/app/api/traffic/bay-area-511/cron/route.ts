@@ -1,6 +1,6 @@
 // src/app/api/traffic/bay-area-511/cron/route.ts
 import { NextResponse } from 'next/server';
-import { BayArea511Poller } from '@/lib/services/traffic/BayArea511Poller';
+import { BayArea511Poller } from '@/libraries/services/traffic/BayArea511Poller';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;

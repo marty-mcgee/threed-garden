@@ -1,6 +1,6 @@
 'use client';
 
-import { CHARACTER_PHYSICS_FIELDS, resolveCharacterPhysics, type CharacterPhysics } from '@/lib/services/threed/characters/character-physics';
+import { CHARACTER_PHYSICS_FIELDS, resolveCharacterPhysics, type CharacterPhysics } from '@/libraries/services/threed/characters/character-physics';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Crosshair, Loader2, Save, Trash2 } from 'lucide-react';
 import { DetailsCardSection } from './DetailsCardSection';

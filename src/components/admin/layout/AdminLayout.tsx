@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { AdminSidebar } from './AdminSidebar';
 import { AdminHeader } from './AdminHeader';
 import { AdminFooter } from './AdminFooter';
-import { cn } from '@/lib/utils';
+import { cn } from '@/libraries/utils';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -18,7 +18,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
-  const fixedWorkspace = ['/admin/settings', '/admin/music/albums', '/admin/music/tracks', '/admin/music/media', '/admin/music/links', '/admin/multimedia/speech'].includes(pathname) || pathname === '/admin/threed/models' || pathname === '/admin/threed/model-categories' || pathname === '/admin/threed/model-textures' || pathname === '/admin/threed/animations' || pathname === '/admin/threed/plants' || pathname === '/admin/threed/beds' || pathname === '/admin/threed/plantings' || pathname === '/admin/threed/characters' || pathname === '/admin/threed/layers' || pathname === '/admin/threed/farmbots' || pathname === '/admin/threed/watering-schedules' || pathname === '/admin/threed/harvests' || pathname === '/admin/threed/tasks';
+  const fixedWorkspace = ['/admin/settings', '/admin/multimedia/albums', '/admin/multimedia/tracks', '/admin/multimedia/media', '/admin/multimedia/links', '/admin/multimedia/speech'].includes(pathname) || pathname === '/admin/threed/models' || pathname === '/admin/threed/model-categories' || pathname === '/admin/threed/model-textures' || pathname === '/admin/threed/animations' || pathname === '/admin/threed/plants' || pathname === '/admin/threed/beds' || pathname === '/admin/threed/plantings' || pathname === '/admin/threed/characters' || pathname === '/admin/threed/layers' || pathname === '/admin/threed/farmbots' || pathname === '/admin/threed/watering-schedules' || pathname === '/admin/threed/harvests' || pathname === '/admin/threed/tasks';
 
   // ✅ Handle hydration
   useEffect(() => {

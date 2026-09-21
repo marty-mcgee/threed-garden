@@ -4,7 +4,7 @@ ThreeD Ground Maps let a Project owner use a PNG, JPG or WebP map screenshot as 
 
 ## Open Ground Map controls
 
-1. Open `/dashboard/map` and choose a Project with an active ThreeD module.
+1. Open `/dashboard/scene` and choose a Project with an active ThreeD module.
 2. In 3D or Combined view, select **Environment** in the Project Toolbar.
 3. Expand **Ground Map**.
 

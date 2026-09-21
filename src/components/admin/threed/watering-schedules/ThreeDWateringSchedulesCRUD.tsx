@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import type { ThreedWateringSchedule, ThreedWateringHistory } from '@/lib/schema/threed';
+import type { ThreedWateringSchedule, ThreedWateringHistory } from '@/libraries/schema/threed';
 
 type View = 'schedules' | 'history';
 type Row = ThreedWateringSchedule | ThreedWateringHistory;

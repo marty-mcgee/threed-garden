@@ -20,7 +20,7 @@ The v0.18.0 App already provides:
 
 ## Phase 2B implementation
 
-The repository separates shared ThreeD MQTT infrastructure from provider integrations under one MQTT parent. `src/lib/services/threed/mqtt/core`, `transports`, and `worker` own protocol-neutral session, transport, and signed worker behavior. `src/lib/services/threed/mqtt/integrations/farmbot` owns FarmBot grants, identities, topics, status/RPC parsing, session policy, persistence mapping, and the FarmBot worker entry point.
+The repository separates shared ThreeD MQTT infrastructure from provider integrations under one MQTT parent. `src/libraries/services/threed/mqtt/core`, `transports`, and `worker` own protocol-neutral session, transport, and signed worker behavior. `src/libraries/services/threed/mqtt/integrations/farmbot` owns FarmBot grants, identities, topics, status/RPC parsing, session policy, persistence mapping, and the FarmBot worker entry point.
 
 The dependency is one-way: FarmBot imports ThreeD MQTT services. ThreeD MQTT services never import or name FarmBot.
 
@@ -222,23 +222,23 @@ Phase 2B currently meets these offline acceptance criteria through `npm run vali
 
 The additive implementation includes:
 
-- `src/lib/services/threed/mqtt/integrations/farmbot/index.ts` — executable entry point.
-- `src/lib/services/threed/mqtt/integrations/farmbot/server.ts` — loopback-bound health and signed internal HTTP boundary.
-- `src/lib/services/threed/mqtt/integrations/farmbot/grant.ts` — strict connection-grant parsing and identity checks.
-- `src/lib/services/threed/mqtt/integrations/farmbot/session-registry.ts` — owner-bound lifecycle and allowlisted runtime status.
-- `src/lib/services/threed/mqtt/integrations/farmbot/status.ts` — exact topic and position parsing.
-- `src/lib/services/threed/mqtt/integrations/farmbot/adapter.ts` — FarmBot implementation of the shared read-only integration contract.
-- `src/lib/services/threed/mqtt/core/integration-adapter.ts` — provider-neutral integration identity, capabilities, connection, topic, and message contract.
-- `src/lib/services/threed/mqtt/core/session-lifecycle.ts` — provider-neutral read-only connection states, expiry checks, and reconnect decisions.
-- `src/lib/services/threed/mqtt/core/session-controller.ts` — provider-neutral single-session transport orchestration and observer hooks used by the FarmBot registry.
-- `src/lib/services/threed/mqtt/core/transport.ts` — subscribe-only interface and disabled executable transport.
-- `src/lib/services/threed/mqtt/transports/mqttjs.ts` — MQTT.js subscribe-only adapter selected only when `THREED_MQTT_TRANSPORT=mqttjs`.
-- `src/lib/services/threed/mqtt/validate.mts` — provider-neutral transport and worker-authentication validation.
-- `src/lib/services/threed/mqtt/worker/client.ts` — server-only signed App-to-worker client.
-- `src/lib/services/threed/mqtt/integrations/farmbot/worker-client.ts` — FarmBot route wrapper for the generic worker client.
+- `src/libraries/services/threed/mqtt/integrations/farmbot/index.ts` — executable entry point.
+- `src/libraries/services/threed/mqtt/integrations/farmbot/server.ts` — loopback-bound health and signed internal HTTP boundary.
+- `src/libraries/services/threed/mqtt/integrations/farmbot/grant.ts` — strict connection-grant parsing and identity checks.
+- `src/libraries/services/threed/mqtt/integrations/farmbot/session-registry.ts` — owner-bound lifecycle and allowlisted runtime status.
+- `src/libraries/services/threed/mqtt/integrations/farmbot/status.ts` — exact topic and position parsing.
+- `src/libraries/services/threed/mqtt/integrations/farmbot/adapter.ts` — FarmBot implementation of the shared read-only integration contract.
+- `src/libraries/services/threed/mqtt/core/integration-adapter.ts` — provider-neutral integration identity, capabilities, connection, topic, and message contract.
+- `src/libraries/services/threed/mqtt/core/session-lifecycle.ts` — provider-neutral read-only connection states, expiry checks, and reconnect decisions.
+- `src/libraries/services/threed/mqtt/core/session-controller.ts` — provider-neutral single-session transport orchestration and observer hooks used by the FarmBot registry.
+- `src/libraries/services/threed/mqtt/core/transport.ts` — subscribe-only interface and disabled executable transport.
+- `src/libraries/services/threed/mqtt/transports/mqttjs.ts` — MQTT.js subscribe-only adapter selected only when `THREED_MQTT_TRANSPORT=mqttjs`.
+- `src/libraries/services/threed/mqtt/validate.mts` — provider-neutral transport and worker-authentication validation.
+- `src/libraries/services/threed/mqtt/worker/client.ts` — server-only signed App-to-worker client.
+- `src/libraries/services/threed/mqtt/integrations/farmbot/worker-client.ts` — FarmBot route wrapper for the generic worker client.
 - `src/app/api/threed/farmbots/[id]/mqtt-session/route.ts` — authenticated owner/readiness-checked session controls.
-- `src/lib/services/threed/mqtt/integrations/farmbot/validate.mts` — offline focused validation.
-- `src/lib/services/threed/mqtt/worker/auth.ts` — shared signing, verification, and replay rules.
+- `src/libraries/services/threed/mqtt/integrations/farmbot/validate.mts` — offline focused validation.
+- `src/libraries/services/threed/mqtt/worker/auth.ts` — shared signing, verification, and replay rules.
 - `package.json` — worker start and validation scripts.
 
 The worker-to-App persistence client, signed ingestion route, owner-scoped read/cleanup routes, Admin activity dialog, App-to-worker session controls, and opt-in subscribe-only MQTT.js adapter are implemented. A deployed worker and every MQTT publish or physical-command capability remain separately gated. No ThreeD character file, World Action route, or environment file changed.

@@ -38,7 +38,7 @@ import {
   TASK_TYPE_OPTIONS,
   TASK_PRIORITY_OPTIONS,
   TASK_STATUS_OPTIONS,
-} from '@/lib/types/threed';
+} from '@/libraries/types/threed';
 
 interface ThreeDTasksCRUDProps {
   threedId?: number;

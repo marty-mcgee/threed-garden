@@ -1,17 +1,17 @@
 // app/api/threed/tasks/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
 import { 
   threedTasks, 
   threedPlantings,  // ✅ Add this
   threedPlants,     // ✅ Add this
   threedBeds,       // ✅ Add this
   threedWateringSchedules, // ✅ Add this
-} from '@/lib/schema/threed';
-import { projectAssets } from '@/lib/schema/project';
+} from '@/libraries/schema/threed';
+import { projectAssets } from '@/libraries/schema/project';
 import { eq, and, or, desc, ilike, sql, type SQL } from 'drizzle-orm';
-import { ensureTableSequence } from '@/lib/db/sequence';
+import { ensureTableSequence } from '@/libraries/db/sequence';
 
 // ============================================
 // GET /api/threed/tasks

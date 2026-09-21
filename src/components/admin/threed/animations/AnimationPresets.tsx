@@ -2,8 +2,8 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import type { AnimationActionSlot } from '@/lib/services/threed/animations/action-slots';
-import type { Assignment } from '@/lib/services/threed/animations/contracts';
+import type { AnimationActionSlot } from '@/libraries/services/threed/animations/action-slots';
+import type { Assignment } from '@/libraries/services/threed/animations/contracts';
 
 type Preset = { id: number; name: string; description: string | null; revision: number };
 type Review = { reviewToken: string; animations: { id: number; name: string }[]; review: (Assignment & { current: Assignment | null; source: string; outcome: string })[] };

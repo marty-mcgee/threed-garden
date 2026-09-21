@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { Providers } from "./providers";
 import "./globals.css";
 import { inter } from "./fonts";
-// import { NowPlayingBar } from '@/components/music/NowPlayingBar';
+// import { NowPlayingBar } from '@/components/multimedia/NowPlayingBar';
 
 export const metadata: Metadata = {
   title: "Marty McGee Dashboard",

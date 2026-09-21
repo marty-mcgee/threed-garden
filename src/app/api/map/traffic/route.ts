@@ -1,7 +1,7 @@
 // app/api/map/traffic/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
 import { 
   trafficChpCadIncidents,
   trafficChpCases,
@@ -11,8 +11,8 @@ import {
   trafficCaltransDistricts,
   trafficBayArea511Events,
   trafficCalfireIncidents,
-} from '@/lib/schema/traffic';
-import { project, projectAssets, projectTraffic } from '@/lib/schema/project';
+} from '@/libraries/schema/traffic';
+import { project, projectAssets, projectTraffic } from '@/libraries/schema/project';
 import { eq, and, desc, sql, inArray } from 'drizzle-orm';
 
 // ============================================

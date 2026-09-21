@@ -4,18 +4,18 @@ import {
   MqttWorkerAuthError,
   MqttWorkerNonceStore,
   verifyMqttWorkerRequest,
-} from '@/lib/services/threed/mqtt/worker/auth';
+} from '@/libraries/services/threed/mqtt/worker/auth';
 import {
   MAX_FARMBOT_EMERGENCY_ACKNOWLEDGEMENT_BYTES,
   FarmBotEmergencyWaterOffAcknowledgementInputError,
   parseFarmBotEmergencyWaterOffAcknowledgement,
-} from '@/lib/services/threed/mqtt/integrations/farmbot/emergency-water-off-acknowledgement-core';
+} from '@/libraries/services/threed/mqtt/integrations/farmbot/emergency-water-off-acknowledgement-core';
 import {
   FarmBotEmergencyActionRepositoryScopeError,
   FarmBotEmergencyActionTransitionConflictError,
   getOwnedFarmBotEmergencyAction,
   recordFarmBotEmergencyActionAcknowledgement,
-} from '@/lib/services/threed/farmbot/emergency-action-repository';
+} from '@/libraries/services/threed/farmbot/emergency-action-repository';
 
 export const dynamic = 'force-dynamic';
 const INTERNAL_PATH = '/api/internal/threed-mqtt/farmbot/emergencies/acknowledgements';

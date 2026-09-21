@@ -1,7 +1,7 @@
 {
   "folder-customization.folders": [
     {
-      "path": "marty-mcgee-neon/src/lib/",
+      "path": "marty-mcgee-neon/src/libraries/",
       "color": "foldercustomization.AnsiColor104"
     },
     {
@@ -13,7 +13,7 @@
       "color": "foldercustomization.AnsiColor107"
     },
     {
-      "path": "marty-mcgee-neon/src/lib/schema/",
+      "path": "marty-mcgee-neon/src/libraries/schema/",
       "color": "foldercustomization.AnsiColor140"
     },
     {

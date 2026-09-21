@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth';
+import { auth } from '@/libraries/auth';
 import { ThreeDModelImportPreview } from '@/components/admin/threed/models/ThreeDModelImportPreview';
 
 export const metadata = { title: 'ThreeD Model Import Preview' };

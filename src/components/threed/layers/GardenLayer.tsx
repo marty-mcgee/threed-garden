@@ -1,7 +1,7 @@
 // components/threed/layers/GardenLayer.tsx
 'use client';
 
-import { GardenBed3D, Plant3D } from '@/lib/types/threed';
+import { GardenBed3D, Plant3D } from '@/libraries/types/threed';
 import { PlantMarker3D } from '../markers/PlantMarker3D';
 import { BedMarker3D } from '../markers/BedMarker3D';
 

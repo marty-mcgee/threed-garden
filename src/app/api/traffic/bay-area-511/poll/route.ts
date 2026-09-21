@@ -1,8 +1,8 @@
 // src/app/api/traffic/bay-area-511/poll/route.ts
 import { NextResponse } from 'next/server';
-import { db } from '@/lib/db/client';
+import { db } from '@/libraries/db/client';
 import { sql } from 'drizzle-orm';
-import { BayArea511Poller } from '@/lib/services/traffic/BayArea511Poller';
+import { BayArea511Poller } from '@/libraries/services/traffic/BayArea511Poller';
 
 export const maxDuration = 300;
 export const dynamic = 'force-dynamic';

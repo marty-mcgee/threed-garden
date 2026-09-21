@@ -9,7 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
-import type { CategorySortField } from '@/lib/services/threed/models/category-list-query';
+import type { CategorySortField } from '@/libraries/services/threed/models/category-list-query';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
 

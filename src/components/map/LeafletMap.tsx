@@ -5,18 +5,18 @@
 import { useEffect, useRef, memo } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { TrafficIncident, RuntimeMarker as ThreeDMarker } from '@/lib/types/map';
-import type { ProjectMapViewState } from '@/lib/services/threed/markers/project-view-state-core';
+import { TrafficIncident, RuntimeMarker as ThreeDMarker } from '@/libraries/types/map';
+import type { ProjectMapViewState } from '@/libraries/services/threed/markers/project-view-state-core';
 import {
   isMatchingThreeDModelLibraryDragPayload,
   THREED_MODEL_LIBRARY_DRAG_MIME,
-} from '@/lib/services/threed/markers/model-library-drag-core';
+} from '@/libraries/services/threed/markers/model-library-drag-core';
 import { 
   getTrafficColor, 
   getTrafficLabel,
   getAdminUrl,
   getTypeLabel,
-} from '@/lib/utils/map-helpers';
+} from '@/libraries/utils/map-helpers';
 
 // Fix Leaflet icon issue with Next.js
 delete (L.Icon.Default.prototype as any)._getIconUrl;

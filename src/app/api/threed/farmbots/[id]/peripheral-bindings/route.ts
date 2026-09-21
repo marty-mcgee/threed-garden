@@ -1,23 +1,23 @@
 import { NextResponse } from 'next/server';
 import { and, eq } from 'drizzle-orm';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
 import {
   threedFarmbotPeripheralBindings,
   threedFarmbots,
-} from '@/lib/schema/threed';
+} from '@/libraries/schema/threed';
 import {
   FarmBotCredentialNotConfiguredError,
   FarmBotCredentialNotFoundError,
   loadFarmBotCredential,
-} from '@/lib/services/threed/farmbot/credential-repository';
-import { FarmBotCredentialKeyConfigurationError } from '@/lib/services/threed/farmbot/credential-keyring-core';
+} from '@/libraries/services/threed/farmbot/credential-repository';
+import { FarmBotCredentialKeyConfigurationError } from '@/libraries/services/threed/farmbot/credential-keyring-core';
 import {
   FarmBotConnectionUnavailableError,
   FarmBotCredentialRejectedError,
-} from '@/lib/services/threed/farmbot/connection-client-core';
-import { listFarmBotPeripherals } from '@/lib/services/threed/farmbot/peripheral-client';
-import { isFarmBotSemanticAction } from '@/lib/services/threed/farmbot/peripheral-binding-core';
+} from '@/libraries/services/threed/farmbot/connection-client-core';
+import { listFarmBotPeripherals } from '@/libraries/services/threed/farmbot/peripheral-client';
+import { isFarmBotSemanticAction } from '@/libraries/services/threed/farmbot/peripheral-binding-core';
 
 export const dynamic = 'force-dynamic';
 

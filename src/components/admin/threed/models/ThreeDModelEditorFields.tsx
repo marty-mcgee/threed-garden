@@ -1,6 +1,6 @@
 'use client';
 
-import { MODEL_FALLBACK_SHAPES, readModelFallbackShape, setModelFallbackShape, type ModelFallbackShape } from '@/lib/services/threed/models/model-fallback-core';
+import { MODEL_FALLBACK_SHAPES, readModelFallbackShape, setModelFallbackShape, type ModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
 import type { Dispatch, SetStateAction } from 'react';
 import { AlertCircle, Box, CheckCircle2, File, Image, Loader2, Upload, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';

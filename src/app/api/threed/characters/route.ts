@@ -1,18 +1,18 @@
-import { parseCharacterListQuery } from '@/lib/services/threed/characters/character-list-query';
-import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
+import { parseCharacterListQuery } from '@/libraries/services/threed/characters/character-list-query';
+import { modelSelection } from '@/libraries/services/threed/models/model-primary-file';
 // app/api/threed/characters/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
 import { 
   characterStatusEnum,
   characterTypeEnum,
   threedCharacters,
   threedModels,
-} from '@/lib/schema/threed';
+} from '@/libraries/schema/threed';
 import { eq, and, asc, desc, inArray, sql, type SQL } from 'drizzle-orm';
-import { ensureTableSequence } from '@/lib/db/sequence';
-import { resolveThreeDCharacterLibraryAccess } from '@/lib/services/threed/characters/character-library-access-core';
+import { ensureTableSequence } from '@/libraries/db/sequence';
+import { resolveThreeDCharacterLibraryAccess } from '@/libraries/services/threed/characters/character-library-access-core';
 
 // Normalize an incoming character body so empty-string/nullable optional fields
 // don't collide with enum/decimal/integer column types (e.g. '' for an enum fails).

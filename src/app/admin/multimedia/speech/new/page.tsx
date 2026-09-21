@@ -25,7 +25,7 @@ export default function NewSpeechPage() {
 
   useEffect(() => {
     const controller = new AbortController();
-    void fetch('/api/music/audio/generate', { signal: controller.signal, cache: 'no-store' })
+    void fetch('/api/multimedia/audio/generate', { signal: controller.signal, cache: 'no-store' })
       .then(async response => { if (!response.ok) throw Error('Unable to check Fish Audio configuration.'); return response.json(); })
       .then(result => setConfigured(result.configured))
       .catch(() => { if (!controller.signal.aborted) setError('Unable to check Fish Audio. Refresh to retry.'); });
@@ -64,7 +64,7 @@ export default function NewSpeechPage() {
         const result = await response.json();
         if (!response.ok) throw Error(result.error || 'Generation did not complete. Check version history.');
         if (result.data.status !== 'ready' || !result.data.storageKey) throw Error('Generation is not ready. Check version history.');
-        setAudio({ url: `/api/music/files?key=${encodeURIComponent(result.data.storageKey)}`, title, text, voiceId: voiceId.trim(), versionNumber: result.data.versionNumber });
+        setAudio({ url: `/api/multimedia/files?key=${encodeURIComponent(result.data.storageKey)}`, title, text, voiceId: voiceId.trim(), versionNumber: result.data.versionNumber });
         setNotice(`Version ${result.data.versionNumber} saved. Preview it, then Accept in version history.`);
       }
     } catch (reason) {

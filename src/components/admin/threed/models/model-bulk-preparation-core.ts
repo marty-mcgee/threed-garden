@@ -1,12 +1,12 @@
 // @ts-expect-error Native TypeScript validation requires explicit extensions.
-import { inspectObjMaterial } from '../../../../lib/services/threed/models/model-obj-core.ts';
+import { inspectObjMaterial } from '../../../../libraries/services/threed/models/model-obj-core.ts';
 import {
   normalizeThreeDModelRelativePath,
   type ThreeDModelCompanionRequirement,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
-} from '../../../../lib/services/threed/models/model-companion-core.ts';
+} from '../../../../libraries/services/threed/models/model-companion-core.ts';
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
-import { MAX_GLTF_BUNDLE_BYTES, type GltfBundleInspection } from '../../../../lib/services/threed/models/model-gltf-bundle-core.ts';
+import { MAX_GLTF_BUNDLE_BYTES, type GltfBundleInspection } from '../../../../libraries/services/threed/models/model-gltf-bundle-core.ts';
 
 export const MAX_BULK_MODELS = 100;
 // Leave multipart overhead below the deployed Function request-body limit.

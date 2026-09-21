@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import { 
+import {
   Plus, Box, Car, Music, Edit, Trash2, Save, X, Loader2,
   CheckCircle, XCircle, MoreHorizontal, ChevronDown, ChevronRight,
   FolderOpen, Layers, Sprout, Package, User, AlertTriangle, Music2,
@@ -25,10 +25,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 // ✅ Import all CRUD Components
-import { MusicAlbumCRUD } from '@/components/admin/music/albums/MusicAlbumCRUD';
-import { MusicTracksCRUD } from '@/components/admin/music/tracks/MusicTracksCRUD';
-import { MusicMediaCRUD } from '@/components/admin/music/media/MusicMediaCRUD';
-import { MusicLinksCRUD } from '@/components/admin/music/links/MusicLinksCRUD';
+import { MusicAlbumCRUD } from '@/components/admin/multimedia/albums/MusicAlbumCRUD';
+import { MusicTracksCRUD } from '@/components/admin/multimedia/tracks/MusicTracksCRUD';
+import { MusicMediaCRUD } from '@/components/admin/multimedia/media/MusicMediaCRUD';
+import { MusicLinksCRUD } from '@/components/admin/multimedia/links/MusicLinksCRUD';
 
 import { ThreeDPlantsCRUD } from '@/components/admin/threed/plants/ThreeDPlantsCRUD';
 import { ThreeDPlantingsCRUD } from '@/components/admin/threed/plantings/ThreeDPlantingsCRUD';
@@ -54,7 +54,7 @@ import { ProjectAssetManager } from '@/components/admin/projects/ProjectAssetMan
 import {
   calibrateThreeDGeographicOrigin,
   type ThreeDCoordinateCalibrationResult,
-} from '@/lib/services/threed/markers/map-coordinate-core';
+} from '@/libraries/services/threed/markers/map-coordinate-core';
 
 interface Project {
   id: number;
@@ -90,7 +90,7 @@ interface Module {
   createdAt: string;
 }
 
-type ModuleType = 'threed' | 'traffic' | 'music';
+type ModuleType = 'threed' | 'traffic' | 'multimedia';
 type CalibrationDiagnostics = ThreeDCoordinateCalibrationResult['diagnostics'];
 
 function getStoredCalibrationDiagnostics(projectData: Project): CalibrationDiagnostics | null {
@@ -135,10 +135,10 @@ function getStoredCalibrationDiagnostics(projectData: Project): CalibrationDiagn
 }
 
 // ✅ Module configuration with ALL CRUD components listed
-const moduleConfig: Record<ModuleType, { 
+const moduleConfig: Record<ModuleType, {
   icon: LucideIcon;
-  color: string; 
-  label: string; 
+  color: string;
+  label: string;
   borderColor: string;
   crudComponents: Array<{
     id: string;
@@ -147,9 +147,9 @@ const moduleConfig: Record<ModuleType, {
     icon: LucideIcon;
   }>;
 }> = {
-  threed: { 
-    icon: Box, 
-    color: 'text-green-600', 
+  threed: {
+    icon: Box,
+    color: 'text-green-600',
     label: 'ThreeD',
     borderColor: 'border-green-200',
     crudComponents: [
@@ -165,9 +165,9 @@ const moduleConfig: Record<ModuleType, {
       { id: 'farmbots', label: 'FarmBots', component: ThreeDFarmbotsCRUD, icon: User },
     ],
   },
-  traffic: { 
-    icon: Car, 
-    color: 'text-blue-600', 
+  traffic: {
+    icon: Car,
+    color: 'text-blue-600',
     label: 'Traffic',
     borderColor: 'border-blue-200',
     crudComponents: [
@@ -181,9 +181,9 @@ const moduleConfig: Record<ModuleType, {
       { id: 'calfire', label: 'CalFire Incidents', component: TrafficCalfireCRUD, icon: Flame },
     ],
   },
-  music: { 
-    icon: Music, 
-    color: 'text-purple-600', 
+  multimedia: {
+    icon: Music,
+    color: 'text-purple-600',
     label: 'Music',
     borderColor: 'border-purple-200',
     crudComponents: [
@@ -247,12 +247,12 @@ export default function ProjectDetailPage() {
   const { showToast, ToastComponent } = useToast();
   const { data: session, status } = useSession();
   const projectId = parseInt(params.id as string);
-  
+
   const [project, setProject] = useState<Project | null>(null);
   const [modules, setModules] = useState<Record<ModuleType, Module[]>>({
     threed: [],
     traffic: [],
-    music: [],
+    multimedia: [],
   });
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -280,7 +280,7 @@ export default function ProjectDetailPage() {
     pointBLongitude: '',
   });
   const [calibrationDiagnostics, setCalibrationDiagnostics] = useState<CalibrationDiagnostics | null>(null);
-  
+
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>(() => {
     return getStoredExpandedState();
   });
@@ -314,7 +314,7 @@ export default function ProjectDetailPage() {
     setLoading(true);
     try {
       const projectRes = await fetch(`/api/project?id=${projectId}`);
-      
+
       if (!projectRes.ok) {
         if (projectRes.status === 404) {
           showToast('Project not found or you do not have access to it', 'error');
@@ -327,9 +327,9 @@ export default function ProjectDetailPage() {
         }
         throw new Error('Failed to fetch project');
       }
-      
+
       const projectData = await projectRes.json();
-      
+
       if (!projectData.data) {
         showToast('Project not found', 'error');
         router.push('/admin');
@@ -366,18 +366,18 @@ export default function ProjectDetailPage() {
       });
 
       const modulesRes = await fetch(`/api/project/modules?projectId=${projectId}`);
-      
+
       if (modulesRes.status === 404) {
-        setModules({ threed: [], traffic: [], music: [] });
+        setModules({ threed: [], traffic: [], multimedia: [] });
       } else if (modulesRes.ok) {
         const modulesData = await modulesRes.json();
-        const newModules = modulesData.data || { threed: [], traffic: [], music: [] };
+        const newModules = modulesData.data || { threed: [], traffic: [], multimedia: [] };
         setModules(newModules);
-        
+
         setExpandedModules(prev => {
           const currentState = { ...prev };
           const storedState = getStoredExpandedState();
-          
+
           Object.entries(newModules).forEach(([type, moduleList]) => {
             (moduleList as Module[]).forEach((mod: Module) => {
               const uniqueKey = `${type}_module_${mod.id}`;
@@ -390,20 +390,20 @@ export default function ProjectDetailPage() {
               }
             });
           });
-          
+
           const validKeys = new Set<string>();
           Object.entries(newModules).forEach(([type, moduleList]) => {
             (moduleList as Module[]).forEach((mod: Module) => {
               validKeys.add(`${type}_module_${mod.id}`);
             });
           });
-          
+
           Object.keys(currentState).forEach(key => {
             if (!validKeys.has(key)) {
               delete currentState[key];
             }
           });
-          
+
           return currentState;
         });
 
@@ -414,7 +414,7 @@ export default function ProjectDetailPage() {
             const storedTab = getStoredCreateTab(uniqueKey);
             const config = moduleConfig[type as ModuleType];
             const defaultTab = config.crudComponents[0]?.id || '';
-            
+
             if (storedTab && config.crudComponents.some(c => c.id === storedTab)) {
               setActiveCreateTab(prev => ({ ...prev, [uniqueKey]: storedTab }));
             } else if (defaultTab) {
@@ -423,7 +423,7 @@ export default function ProjectDetailPage() {
           });
         });
       } else {
-        setModules({ threed: [], traffic: [], music: [] });
+        setModules({ threed: [], traffic: [], multimedia: [] });
       }
     } catch (error) {
       console.error('Error fetching project:', error);
@@ -447,7 +447,7 @@ export default function ProjectDetailPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-      
+
       if (!response.ok) {
         if (response.status === 401) {
           router.push('/auth/sign-in');
@@ -455,7 +455,7 @@ export default function ProjectDetailPage() {
         }
         throw new Error('Failed to update project');
       }
-      
+
       showToast('Project updated successfully', 'success');
       setIsEditing(false);
       await fetchProject();
@@ -526,7 +526,7 @@ export default function ProjectDetailPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isActive: !currentStatus }),
       });
-      
+
       if (!response.ok) {
         if (response.status === 401) {
           router.push('/auth/sign-in');
@@ -534,7 +534,7 @@ export default function ProjectDetailPage() {
         }
         throw new Error('Failed to update module status');
       }
-      
+
       showToast(`Module ${!currentStatus ? 'activated' : 'deactivated'} successfully`, 'success');
       await fetchProject();
     } catch (error) {
@@ -613,7 +613,7 @@ export default function ProjectDetailPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type, moduleId: id }),
       });
-      
+
       if (!response.ok) {
         if (response.status === 401) {
           router.push('/auth/sign-in');
@@ -621,7 +621,7 @@ export default function ProjectDetailPage() {
         }
         throw new Error('Failed to delete module');
       }
-      
+
       showToast('Module deleted successfully', 'success');
       await fetchProject();
     } catch (error) {
@@ -661,12 +661,12 @@ export default function ProjectDetailPage() {
     const uniqueKey = `${type}_module_${moduleId}`;
     const config = moduleConfig[type];
     const storedTab = activeCreateTab[uniqueKey];
-    
+
     // If stored tab exists and is valid, use it
     if (storedTab && config.crudComponents.some(c => c.id === storedTab)) {
       return storedTab;
     }
-    
+
     // Otherwise return the first available tab
     return config.crudComponents[0]?.id || '';
   };
@@ -681,7 +681,7 @@ export default function ProjectDetailPage() {
 
   const getAllModules = (): { type: ModuleType; module: Module; uniqueKey: string }[] => {
     const result: { type: ModuleType; module: Module; uniqueKey: string }[] = [];
-    (['threed', 'traffic', 'music'] as ModuleType[]).forEach(type => {
+    (['threed', 'traffic', 'multimedia'] as ModuleType[]).forEach(type => {
       (modules[type] || []).forEach(module => {
         const uniqueKey = `${type}_module_${module.id}`;
         result.push({ type, module, uniqueKey });
@@ -924,7 +924,7 @@ export default function ProjectDetailPage() {
                 >
                   <option value="threed">ThreeD</option>
                   <option value="traffic">Traffic</option>
-                  <option value="music">Music</option>
+                  <option value="multimedia">Music</option>
                 </select>
               </div>
               <div>
@@ -985,12 +985,12 @@ export default function ProjectDetailPage() {
             const activeTab = getModuleTab(type, module.id);
 
             return (
-              <Card 
+              <Card
                 key={uniqueKey}
                 className={`border-l-4 ${config.borderColor}`}
               >
                 {/* Module Header */}
-                <div 
+                <div
                   className="flex items-center justify-between p-3 cursor-pointer hover:bg-muted/30 transition-colors"
                   onClick={() => toggleModuleExpand(type, module.id)}
                 >
@@ -1047,8 +1047,8 @@ export default function ProjectDetailPage() {
                 {/* Module Content */}
                 {isExpanded && (
                   <CardContent className="p-3 pt-0">
-                    <Tabs 
-                      value={activeTab} 
+                    <Tabs
+                      value={activeTab}
                       onValueChange={(value) => setModuleTab(type, module.id, value as 'assets' | 'create')}
                       className="w-full"
                     >
@@ -1075,8 +1075,8 @@ export default function ProjectDetailPage() {
 
                       <TabsContent value="create" className="max-h-[70vh] overflow-y-auto pr-1 mt-0">
                         {/* ✅ CRUD Components with Tabs */}
-                        <Tabs 
-                          value={getCreateTab(type, module.id)} 
+                        <Tabs
+                          value={getCreateTab(type, module.id)}
                           onValueChange={(value) => setCreateTab(type, module.id, value)}
                           className="w-full"
                         >
@@ -1084,9 +1084,9 @@ export default function ProjectDetailPage() {
                             {config.crudComponents.map((crud) => {
                               const CrudIcon = crud.icon;
                               return (
-                                <TabsTrigger 
-                                  key={crud.id} 
-                                  value={crud.id} 
+                                <TabsTrigger
+                                  key={crud.id}
+                                  value={crud.id}
                                   className="px-2 py-1 text-xs"
                                 >
                                   <CrudIcon className="w-3 h-3 mr-1" />
@@ -1095,7 +1095,7 @@ export default function ProjectDetailPage() {
                               );
                             })}
                           </TabsList>
-                          
+
                           {config.crudComponents.map((crud) => {
                             const CrudComponent = crud.component;
                             return (

@@ -1,23 +1,23 @@
 // app/api/project/assets/route.ts - SIMPLIFIED VERSION
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
 import {
   assetTypeEnum,
   project,
   projectAssets,
-  projectMusic,
+  projectMultimedia,
   projectThreed,
   projectTraffic,
-} from '@/lib/schema/project';
-import { music, threed, traffic } from '@/lib/schema';
+} from '@/libraries/schema/project';
+import { multimedia, threed, traffic } from '@/libraries/schema';
 import { eq, and, desc, or, sql } from 'drizzle-orm';
-import { ensureTableSequence } from '@/lib/db/sequence';
+import { ensureTableSequence } from '@/libraries/db/sequence';
 import {
   ASSIGNABLE_ASSET_REGISTRY,
   type ProjectModuleType,
-} from '@/lib/project-assets/asset-registry';
+} from '@/libraries/project-assets/asset-registry';
 
 // ============================================
 // GET /api/project/assets
@@ -152,7 +152,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const supportedModuleTypes: ProjectModuleType[] = ['music', 'threed', 'traffic'];
+    const supportedModuleTypes: ProjectModuleType[] = ['multimedia', 'threed', 'traffic'];
     if (!supportedModuleTypes.includes(moduleType)) {
       return NextResponse.json(
         { success: false, error: 'Invalid module type' },
@@ -223,16 +223,16 @@ export async function POST(request: NextRequest) {
         .limit(1);
     } else {
       [activeModuleAssignment] = await db
-        .select({ id: projectMusic.id })
-        .from(projectMusic)
-        .innerJoin(music, eq(projectMusic.musicId, music.id))
+        .select({ id: projectMultimedia.id })
+        .from(projectMultimedia)
+        .innerJoin(multimedia, eq(projectMultimedia.multimediaId, multimedia.id))
         .where(
           and(
-            eq(projectMusic.projectId, parsedProjectId),
-            eq(projectMusic.musicId, parsedModuleId),
-            eq(projectMusic.userId, userId),
-            eq(projectMusic.isActive, true),
-            eq(music.isActive, true)
+            eq(projectMultimedia.projectId, parsedProjectId),
+            eq(projectMultimedia.multimediaId, parsedModuleId),
+            eq(projectMultimedia.userId, userId),
+            eq(projectMultimedia.isActive, true),
+            eq(multimedia.isActive, true)
           )
         )
         .limit(1);

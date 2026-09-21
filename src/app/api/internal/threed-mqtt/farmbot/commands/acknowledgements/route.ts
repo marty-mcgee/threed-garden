@@ -4,19 +4,19 @@ import {
   MqttWorkerAuthError,
   MqttWorkerNonceStore,
   verifyMqttWorkerRequest,
-} from '@/lib/services/threed/mqtt/worker/auth';
+} from '@/libraries/services/threed/mqtt/worker/auth';
 import {
   MAX_FARMBOT_COMMAND_ACKNOWLEDGEMENT_BYTES,
   FarmBotCommandAcknowledgementInputError,
   parseFarmBotCommandAcknowledgement,
-} from '@/lib/services/threed/mqtt/integrations/farmbot/command-acknowledgement-core';
+} from '@/libraries/services/threed/mqtt/integrations/farmbot/command-acknowledgement-core';
 import {
   FarmBotCommandRepositoryScopeError,
   FarmBotCommandTransitionConflictError,
   getOwnedFarmBotCommand,
-} from '@/lib/services/threed/farmbot/command-repository';
-import { persistFarmBotCommandAcknowledgement } from '@/lib/services/threed/mqtt/integrations/farmbot/command-completion';
-import { FarmBotCommandCompletionError } from '@/lib/services/threed/mqtt/integrations/farmbot/command-completion-core';
+} from '@/libraries/services/threed/farmbot/command-repository';
+import { persistFarmBotCommandAcknowledgement } from '@/libraries/services/threed/mqtt/integrations/farmbot/command-completion';
+import { FarmBotCommandCompletionError } from '@/libraries/services/threed/mqtt/integrations/farmbot/command-completion-core';
 
 export const dynamic = 'force-dynamic';
 const INTERNAL_PATH = '/api/internal/threed-mqtt/farmbot/commands/acknowledgements';

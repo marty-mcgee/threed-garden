@@ -10,7 +10,7 @@ import {
   ModelMarker3D,
   type ModelCollisionBounds,
 } from '@/components/threed/markers/ModelMarker3D';
-import type { ThreeDModelLibraryItem } from '@/lib/types/threed';
+import type { ThreeDModelLibraryItem } from '@/libraries/types/threed';
 
 function FittedLibraryModel({
   model,

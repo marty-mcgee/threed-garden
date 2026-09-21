@@ -3,7 +3,7 @@
 API routes live under `src/app/api`. The maintained domain families include:
 
 - `/api/project` for project, module, and asset management.
-- `/api/music` for owner-scoped Music CRUD and media behavior.
+- `/api/multimedia` for owner-scoped Multimedia CRUD, playback, uploads, and Speech behavior.
 - `/api/threed` for ThreeD CRUD and world actions.
 - `/api/traffic` for Traffic CRUD and integrations.
 - `/api/map` for project-scoped Dashboard loading.

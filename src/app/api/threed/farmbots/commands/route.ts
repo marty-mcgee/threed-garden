@@ -1,31 +1,31 @@
 // src/app/api/threed/farmbots/commands/route.ts
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { FarmBotCommandPolicyError } from '@/lib/services/threed/farmbot/command-policy-core';
-import { FARMBOT_COMMAND_REQUEST_TTL_MS } from '@/lib/services/threed/farmbot/command-validation-core';
-import { FarmBotCommandRepositoryInputError } from '@/lib/services/threed/farmbot/command-repository-core';
+import { auth } from '@/libraries/auth';
+import { FarmBotCommandPolicyError } from '@/libraries/services/threed/farmbot/command-policy-core';
+import { FARMBOT_COMMAND_REQUEST_TTL_MS } from '@/libraries/services/threed/farmbot/command-validation-core';
+import { FarmBotCommandRepositoryInputError } from '@/libraries/services/threed/farmbot/command-repository-core';
 import {
   FarmBotCommandIdempotencyConflictError,
   FarmBotCommandRepositoryScopeError,
   FarmBotCommandTransitionConflictError,
   createRequestedFarmBotCommand,
   validateRequestedFarmBotCommand,
-} from '@/lib/services/threed/farmbot/command-repository';
+} from '@/libraries/services/threed/farmbot/command-repository';
 import {
   FARMBOT_COMMAND_REQUEST_MAX_BYTES,
   FarmBotCommandRequestError,
   parseFarmBotCommandRequestEnvelope,
   toFarmBotCommandAuthorizationStatus,
-} from '@/lib/services/threed/farmbot/command-route-core';
+} from '@/libraries/services/threed/farmbot/command-route-core';
 import {
   FarmBotCredentialNotConfiguredError,
   FarmBotCredentialNotFoundError,
-} from '@/lib/services/threed/farmbot/credential-repository';
-import { FarmBotCredentialKeyConfigurationError } from '@/lib/services/threed/farmbot/credential-keyring-core';
+} from '@/libraries/services/threed/farmbot/credential-repository';
+import { FarmBotCredentialKeyConfigurationError } from '@/libraries/services/threed/farmbot/credential-keyring-core';
 import {
   FarmBotConnectionUnavailableError,
   FarmBotCredentialRejectedError,
-} from '@/lib/services/threed/farmbot/connection-client-core';
+} from '@/libraries/services/threed/farmbot/connection-client-core';
 
 export const dynamic = 'force-dynamic';
 

@@ -1,15 +1,15 @@
 // app/api/project/route.ts - Updated to filter by user
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { project, projectThreedMarkers } from '@/lib/schema/project';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { project, projectThreedMarkers } from '@/libraries/schema/project';
 import { eq, and, desc } from 'drizzle-orm';
 import {
   calibrateThreeDGeographicOrigin,
   projectLocalPositionToGeographicPosition,
   ThreeDMapCoordinateError,
-} from '@/lib/services/threed/markers/map-coordinate-core';
+} from '@/libraries/services/threed/markers/map-coordinate-core';
 
 function calibrationNumber(value: unknown, label: string): number {
   const parsed = Number(value);

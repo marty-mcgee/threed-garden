@@ -4,7 +4,7 @@ import {
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from './model-bulk-preparation-core.ts';
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
-import { normalizeThreeDModelRelativePath } from '../../../../lib/services/threed/models/model-companion-core.ts';
+import { normalizeThreeDModelRelativePath } from '../../../../libraries/services/threed/models/model-companion-core.ts';
 
 export const BULK_PREVIEW_MESSAGE = 'threed-model-import-preview';
 export const BULK_PREVIEW_PATH = '/threed/model-import-preview';

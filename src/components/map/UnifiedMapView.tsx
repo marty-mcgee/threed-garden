@@ -4,7 +4,7 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { AlertTriangle } from 'lucide-react';
-import { UnifiedMapData, MapViewMode, MapLayerConfig, TrafficIncident, RuntimeMarker, ThreeDActionTarget } from '@/lib/types/map';
+import { UnifiedMapData, MapViewMode, MapLayerConfig, TrafficIncident, RuntimeMarker, ThreeDActionTarget } from '@/libraries/types/map';
 import { LeafletMap } from '@/components/map/LeafletMap';
 import {
   geographicPositionToProjectLocalPosition,
@@ -12,19 +12,19 @@ import {
   projectLocalPositionToGeographicPosition,
   projectPlanPositionToMapPosition,
   type ThreeDGeographicOrigin,
-} from '@/lib/services/threed/markers/map-coordinate-core';
+} from '@/libraries/services/threed/markers/map-coordinate-core';
 import {
   buildThreeDRuntimeMarkerResult,
   createThreeDRuntimeMarkerRegistrations,
-} from '@/lib/services/threed/markers/runtime-marker-builder';
-import { ThreeDRuntimeMarkerRegistry } from '@/lib/services/threed/markers/runtime-marker-core';
-import type { ProjectThreeDMarkerSnapshotInput } from '@/lib/services/threed/markers/project-marker-snapshot-core';
-import type { ThreeDModelLibraryItem } from '@/lib/types/threed';
+} from '@/libraries/services/threed/markers/runtime-marker-builder';
+import { ThreeDRuntimeMarkerRegistry } from '@/libraries/services/threed/markers/runtime-marker-core';
+import type { ProjectThreeDMarkerSnapshotInput } from '@/libraries/services/threed/markers/project-marker-snapshot-core';
+import type { ThreeDModelLibraryItem } from '@/libraries/types/threed';
 import type {
   ProjectMapViewState,
   ProjectThreeDViewState,
   ThreeDProjectViewState,
-} from '@/lib/services/threed/markers/project-view-state-core';
+} from '@/libraries/services/threed/markers/project-view-state-core';
 import { ThreeDProjectLoadingPresentation } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
 
 export type ProjectThreeDMarkerSnapshotProvider = () => ProjectThreeDMarkerSnapshotInput[];

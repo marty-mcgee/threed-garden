@@ -1,18 +1,18 @@
-import { parsePlantingListQuery } from '@/lib/services/threed/plantings/planting-list-query';
-import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
+import { parsePlantingListQuery } from '@/libraries/services/threed/plantings/planting-list-query';
+import { modelSelection } from '@/libraries/services/threed/models/model-primary-file';
 // app/api/threed/plantings/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
 import { 
   plantingStatusEnum,
   threedPlantings,
   threedPlants,
   threedBeds,
   threedModels,
-} from '@/lib/schema/threed';
+} from '@/libraries/schema/threed';
 import { eq, and, asc, desc, getTableColumns, sql, type SQL } from 'drizzle-orm';
-import { ensureTableSequence } from '@/lib/db/sequence';
+import { ensureTableSequence } from '@/libraries/db/sequence';
 
 // ============================================
 // GET /api/threed/plantings - List ThreeD Plantings

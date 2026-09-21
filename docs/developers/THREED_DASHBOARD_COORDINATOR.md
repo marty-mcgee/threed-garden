@@ -2,7 +2,7 @@
 
 Production checkpoint: **v0.19.7b — ThreeD Dashboard Scene Coordinator Boundaries**.
 
-The `/dashboard/map` page is the **Dashboard Scene Coordinator**. It coordinates a Project session across Dashboard controls, supporting 2D views, ThreeD Scene presentation, Runtime Markers, and explicit user operations.
+The `/dashboard/scene` page is the **Dashboard Scene Coordinator**. It coordinates a Project session across Dashboard controls, supporting 2D views, ThreeD Scene presentation, Runtime Markers, and explicit user operations.
 
 This name is intentionally narrower than "orchestration layer." In this repository, **ThreeD orchestration** already describes Character approach, orientation, semantic actions, animation completion, and optional world-action sequencing. UI composition must not share that authority or terminology.
 
@@ -71,7 +71,7 @@ Project Assets, Models, Characters, FarmBots, Beds, and Plantings share one visu
 - `UnifiedMapView` adapts coordinator state and callbacks to the 2D/3D surfaces and Runtime Marker providers.
 - `ThreeDScene` owns the persistent Canvas/Rapier runtime and Sub-Module routing.
 - GardenCharacter and EcctrlCharacter remain separate paths selected through the established `isMovable` rule.
-- Domain orchestration remains isolated under `src/lib/services/threed/orchestration` and must not migrate into Dashboard panels.
+- Domain orchestration remains isolated under `src/libraries/services/threed/orchestration` and must not migrate into Dashboard panels.
 
 ## Project-session loading
 

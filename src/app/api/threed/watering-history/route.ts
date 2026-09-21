@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { and, desc, eq, sql, type SQL } from 'drizzle-orm';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { threedWateringHistory as history } from '@/lib/schema/threed';
-import { projectAssets } from '@/lib/schema/project';
-import { parseWateringListQuery } from '@/lib/services/threed/waterings/watering-list-query';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { threedWateringHistory as history } from '@/libraries/schema/threed';
+import { projectAssets } from '@/libraries/schema/project';
+import { parseWateringListQuery } from '@/libraries/services/threed/waterings/watering-list-query';
 
 export async function GET(request: NextRequest) {
   try {

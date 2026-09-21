@@ -15,15 +15,15 @@ The Dashboard is mostly read-oriented. Explicit world-action routes are the exce
 
 ## Runtime boundaries
 
-- Drizzle schemas under `src/lib/schema` are the database source of truth.
+- Drizzle schemas under `src/libraries/schema` are the database source of truth.
 - API routes enforce authentication, ownership, activation, and project assignment.
 - Dashboard loaders must not substitute global `isActive` queries for project-scoped junction queries.
 - ThreeD display markers are generated at runtime; the legacy `threed_markers` table is not part of the current data model.
 - `GardenCharacter` and `EcctrlCharacter` are separate runtime paths, selected by `isMovable`.
-- ThreeD character interaction orchestration begins with the provider-independent pure planner under `src/lib/services/threed/orchestration`. It calculates approach destination, arrival, and facing only; each character runtime remains responsible for its own movement implementation.
+- ThreeD character interaction orchestration begins with the provider-independent pure planner under `src/libraries/services/threed/orchestration`. It calculates approach destination, arrival, and facing only; each character runtime remains responsible for its own movement implementation.
 - FarmBot interaction buttons emit the versioned `threed-character-orchestration-request` browser event. For EcctrlCharacter, the DetailsCard uses its live physics position and the shared planner to keep those buttons disabled until it is within interaction range; movement remains manual through Take Control and WASD. The compatibility bridge then forwards an allowed request to the established animation event without changing either movement runtime. See [ThreeD character runtimes](THREED_CHARACTERS.md).
 - Character animation and world-state mutation remain separate responsibilities.
-- FarmBot REST authentication and configuration run through owner-scoped Vercel request handlers under `src/lib/services/threed/farmbot`. Read-only MQTT sessions run in a separate long-running worker under `src/lib/services/threed/mqtt/integrations/farmbot`; provider-neutral transport and worker authentication live under the same MQTT parent.
+- FarmBot REST authentication and configuration run through owner-scoped Vercel request handlers under `src/libraries/services/threed/farmbot`. Read-only MQTT sessions run in a separate long-running worker under `src/libraries/services/threed/mqtt/integrations/farmbot`; provider-neutral transport and worker authentication live under the same MQTT parent.
 - The worker sends bounded normalized runtime/events through a signed internal App route. It has exact read-only subscriptions and no publish interface.
 - v0.18.1b enables read-only MQTT status through the shared ThreeD MQTT control layer. Physical FarmBot commands remain disabled, and FarmBot-targeted character actions remain animation-only.
 
@@ -43,8 +43,8 @@ ThreeD
 └── openfarm/              future crop API adapter and ThreeD Plant mapping
 ```
 
-The dependency direction is `FarmBot/OpenFarm -> ThreeD services`. Code under `src/lib/services/threed/mqtt` cannot import provider adapters. FarmBot command policy and `threed_farmbot_commands` remain FarmBot-specific because device commands are not generic MQTT behavior. OpenFarm must remain independent of both MQTT and FarmBot and may only create or update owned local ThreeD records through an explicitly approved import workflow.
+The dependency direction is `FarmBot/OpenFarm -> ThreeD services`. Code under `src/libraries/services/threed/mqtt` cannot import provider adapters. FarmBot command policy and `threed_farmbot_commands` remain FarmBot-specific because device commands are not generic MQTT behavior. OpenFarm must remain independent of both MQTT and FarmBot and may only create or update owned local ThreeD records through an explicitly approved import workflow.
 
-The shared MQTT service defines `MqttReadonlyIntegrationAdapter`, which owns the provider-neutral integration identity, declared read capabilities, connection request, accepted-topic test, and normalized-message boundary. It also owns the pure read-only lifecycle policy for connection states, expiry, retry limits, and capped backoff. `MqttReadonlySessionController` composes those boundaries with transport callbacks and observer hooks. FarmBot supplies the first adapter under `src/lib/services/threed/mqtt/integrations/farmbot/adapter.ts`; its registry uses the shared controller while retaining provider-specific grant/session ownership, normalized event mapping, position throttling, persistence records, and credential cleanup.
+The shared MQTT service defines `MqttReadonlyIntegrationAdapter`, which owns the provider-neutral integration identity, declared read capabilities, connection request, accepted-topic test, and normalized-message boundary. It also owns the pure read-only lifecycle policy for connection states, expiry, retry limits, and capped backoff. `MqttReadonlySessionController` composes those boundaries with transport callbacks and observer hooks. FarmBot supplies the first adapter under `src/libraries/services/threed/mqtt/integrations/farmbot/adapter.ts`; its registry uses the shared controller while retaining provider-specific grant/session ownership, normalized event mapping, position throttling, persistence records, and credential cleanup.
 
 See [Data model](DATA_MODEL.md), [API guide](API_GUIDE.md), and the [ThreeD FarmBot Integration Plan](FARMBOT_INTEGRATION.md) for the corresponding persistence, request, and hardware boundaries.

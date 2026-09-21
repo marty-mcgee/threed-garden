@@ -2,8 +2,8 @@
 'use client';
 
 import { Html } from '@react-three/drei';
-import { LayerVisibility } from '@/lib/types/threed';
-import { SOURCE_COLORS } from '@/lib/config/constants';
+import { LayerVisibility } from '@/libraries/types/threed';
+import { SOURCE_COLORS } from '@/libraries/config/constants';
 
 interface Legend3DProps {
   layers: LayerVisibility;

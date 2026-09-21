@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { multimediaSpeech as speech, multimediaSpeechVersions as versions } from '@/lib/schema/multimedia';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { multimediaSpeech as speech, multimediaSpeechVersions as versions } from '@/libraries/schema/multimedia';
 import { and, eq, desc, inArray, sql } from 'drizzle-orm';
-import { positiveSpeechInteger } from '@/lib/services/multimedia/speech-draft';
-import { ownerPrefix } from '@/lib/services/music/upload-policy';
+import { positiveSpeechInteger } from '@/libraries/services/multimedia/speech-draft';
+import { ownerPrefix } from '@/libraries/services/multimedia/upload-policy';
 import { S3Client, PutObjectCommand, HeadObjectCommand } from '@aws-sdk/client-s3';
-import { POST as generatePreview } from '@/app/api/music/audio/generate/route';
+import { POST as generatePreview } from '@/app/api/multimedia/audio/generate/route';
 
 export const maxDuration = 60;
 const headers = { 'Cache-Control': 'private, no-store' };

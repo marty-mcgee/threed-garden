@@ -1,5 +1,5 @@
 // app/admin/settings/page.tsx
-import { auth } from '@/lib/auth';
+import { auth } from '@/libraries/auth';
 import { redirect } from 'next/navigation';
 import { SettingsManager } from '@/components/admin/settings/SettingsManager';
 

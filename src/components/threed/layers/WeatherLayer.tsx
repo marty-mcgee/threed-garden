@@ -1,7 +1,7 @@
 // components/threed/layers/WeatherLayer.tsx
 'use client';
 
-import { Weather3D } from '@/lib/types/threed';
+import { Weather3D } from '@/libraries/types/threed';
 import { WeatherEffects } from '../effects/WeatherEffects';
 
 interface WeatherLayerProps {

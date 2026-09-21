@@ -9,7 +9,7 @@
 //   - summary stats, skeleton/empty/error states
 'use client';
 
-import { MODEL_FALLBACK_SHAPES, readModelFallbackShape, setModelFallbackShape, type ModelFallbackShape } from '@/lib/services/threed/models/model-fallback-core';
+import { MODEL_FALLBACK_SHAPES, readModelFallbackShape, setModelFallbackShape, type ModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
 import { createPortal } from 'react-dom';
 import {
   useState,
@@ -52,7 +52,7 @@ import {
   ThreeDModelAssetPreview,
   type ThreeDModelTextureLibraryItem,
 } from './ThreeDModelAssetPreview';
-import { withSavedFbxTextures } from '@/lib/services/threed/models/model-saved-texture-fallback';
+import { withSavedFbxTextures } from '@/libraries/services/threed/models/model-saved-texture-fallback';
 import type { ModelData } from '@/components/threed/markers/ModelMarker3D';
 
 // ============================================

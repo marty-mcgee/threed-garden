@@ -1,18 +1,18 @@
 // app/api/admin/dashboard/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
 import { 
   project, 
   projectThreed, 
   projectTraffic, 
-  projectMusic,
+  projectMultimedia,
   projectAssets 
-} from '@/lib/schema/project';
-import { threed } from '@/lib/schema/threed';
-import { traffic } from '@/lib/schema/traffic';
-import { music } from '@/lib/schema/music';
-import { user } from '@/lib/schema/auth';
+} from '@/libraries/schema/project';
+import { threed } from '@/libraries/schema/threed';
+import { traffic } from '@/libraries/schema/traffic';
+import { multimedia } from '@/libraries/schema/multimedia';
+import { user } from '@/libraries/schema/auth';
 import { count, eq, desc } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {
@@ -43,10 +43,10 @@ export async function GET(request: NextRequest) {
       .from(traffic)
       .where(eq(traffic.userId, userId));
 
-    const [musicCount] = await db
+    const [multimediaCount] = await db
       .select({ count: count() })
-      .from(music)
-      .where(eq(music.userId, userId));
+      .from(multimedia)
+      .where(eq(multimedia.userId, userId));
 
     // ✅ Get project module counts
     const [projectThreedCount] = await db
@@ -59,10 +59,10 @@ export async function GET(request: NextRequest) {
       .from(projectTraffic)
       .where(eq(projectTraffic.userId, userId));
 
-    const [projectMusicCount] = await db
+    const [projectMultimediaCount] = await db
       .select({ count: count() })
-      .from(projectMusic)
-      .where(eq(projectMusic.userId, userId));
+      .from(projectMultimedia)
+      .where(eq(projectMultimedia.userId, userId));
 
     // ✅ Get total asset assignments
     const [assetCount] = await db
@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
     const moduleDistribution = {
       threed: projectThreedCount?.count || 0,
       traffic: projectTrafficCount?.count || 0,
-      music: projectMusicCount?.count || 0,
+      multimedia: projectMultimediaCount?.count || 0,
     };
 
     // ✅ Get asset distribution
@@ -118,8 +118,8 @@ export async function GET(request: NextRequest) {
       .limit(1);
 
     // ✅ Calculate totals
-    const totalModules = (threedCount?.count || 0) + (trafficCount?.count || 0) + (musicCount?.count || 0);
-    const totalProjectModules = moduleDistribution.threed + moduleDistribution.traffic + moduleDistribution.music;
+    const totalModules = (threedCount?.count || 0) + (trafficCount?.count || 0) + (multimediaCount?.count || 0);
+    const totalProjectModules = moduleDistribution.threed + moduleDistribution.traffic + moduleDistribution.multimedia;
 
     const assetDistributionData = assetDistribution.map((item) => ({
       moduleType: item.moduleType,
@@ -134,13 +134,13 @@ export async function GET(request: NextRequest) {
           total: totalModules,
           threed: threedCount?.count || 0,
           traffic: trafficCount?.count || 0,
-          music: musicCount?.count || 0,
+          multimedia: multimediaCount?.count || 0,
         },
         projectModules: {
           total: totalProjectModules,
           threed: moduleDistribution.threed,
           traffic: moduleDistribution.traffic,
-          music: moduleDistribution.music,
+          multimedia: moduleDistribution.multimedia,
         },
         assets: {
           total: assetCount?.count || 0,

@@ -3,7 +3,7 @@
 
 import { useSceneHoverTitle } from '@/components/threed/shared/SceneHoverTitleContext';
 
-import { reportCharacterAnimationAvailability, DETAILS_ANIMATION_ACTIONS } from '@/lib/services/threed/animations/runtime-availability';
+import { reportCharacterAnimationAvailability, DETAILS_ANIMATION_ACTIONS } from '@/libraries/services/threed/animations/runtime-availability';
 import {
   useRef,
   useEffect,
@@ -27,14 +27,14 @@ import {
 import { Html } from '@react-three/drei';
 
 import * as THREE from 'three';
-import { loadCharacterTextureManager } from '@/lib/services/threed/models/character-model-textures';
+import { loadCharacterTextureManager } from '@/libraries/services/threed/models/character-model-textures';
 
 import {
   buildAnimationMap,
   type AnimationMap,
-} from '@/lib/utils/animation';
+} from '@/libraries/utils/animation';
 
-import { loadAssignedCharacterAnimations, loadCharacterPreviewAnimation, type AssignedAnimationClip, assignedAnimationMap } from '@/lib/utils/assignedCharacterAnimations';
+import { loadAssignedCharacterAnimations, loadCharacterPreviewAnimation, type AssignedAnimationClip, assignedAnimationMap } from '@/libraries/utils/assignedCharacterAnimations';
 
 // ========================================================
 // TYPES

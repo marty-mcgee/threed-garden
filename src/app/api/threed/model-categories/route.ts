@@ -1,13 +1,13 @@
-import { parseCategoryListQuery } from '@/lib/services/threed/models/category-list-query';
+import { parseCategoryListQuery } from '@/libraries/services/threed/models/category-list-query';
 import { NextRequest, NextResponse } from 'next/server';
 import { and, asc, desc, eq, sql } from 'drizzle-orm';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
 import {
   threedModelCategories,
   threedModelCategoryAssignments,
-} from '@/lib/schema/threed';
-import { ensureTableSequence } from '@/lib/db/sequence';
+} from '@/libraries/schema/threed';
+import { ensureTableSequence } from '@/libraries/db/sequence';
 
 const CATEGORY_NAME_MAX = 120;
 

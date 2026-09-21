@@ -27,7 +27,7 @@ export async function GET() {
     };
     
     // Test 2: Check what your CHPPoller's fetchCollisionsWithoutDateFilter returns
-    const { CHPPoller } = await import('@/lib/services/traffic/CHPPoller');
+    const { CHPPoller } = await import('@/libraries/services/traffic/CHPPoller');
     const poller = new CHPPoller();
     
     // Try to access the private method via any hack - or we can add a public test method

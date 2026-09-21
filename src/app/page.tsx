@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { MusicPlayer } from '@/components/music/MusicPlayer';
+import { MusicPlayer } from '@/components/multimedia/MusicPlayer';
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false);
@@ -92,7 +92,7 @@ export default function HomePage() {
 
   const fetchFirstAlbum = async () => {
     try {
-      const response = await fetch('/api/music/albums?scope=public');
+      const response = await fetch('/api/multimedia/albums?scope=public');
       if (response.ok) {
         const data = await response.json();
         setAlbums(data);
@@ -110,7 +110,7 @@ export default function HomePage() {
 
   const fetchTracks = async (albumId: number) => {
     try {
-      const response = await fetch(`/api/music/tracks?scope=public&albumId=${albumId}`);
+      const response = await fetch(`/api/multimedia/tracks?scope=public&albumId=${albumId}`);
       if (response.ok) {
         const data = await response.json();
         setTracks(data);
@@ -159,7 +159,7 @@ export default function HomePage() {
       icon: "🌱",
       title: "ThreeD Garden",
       description: "Interactive 3D garden using real Physics, with FarmBot integration",
-      href: "/dashboard/map?projectId=8",
+      href: "/dashboard/scene?projectId=8",
       // href: "https://threed-garden-neon.vercel.app/", 
       color: "from-green-500 to-emerald-500",
       external: false
@@ -177,7 +177,7 @@ export default function HomePage() {
       icon: "🎵",
       title: "Music Streaming",
       description: "Full-featured music player with waveform mixing",
-      href: "/dashboard/music",
+      href: "/dashboard/multimedia",
       color: "from-purple-500 to-pink-500",
       external: false
     },
@@ -411,7 +411,7 @@ export default function HomePage() {
           <h2 className="text-xl font-bold mb-2">Ready to Explore More?</h2>
           <p className="text-sm mb-4 text-blue-100">Dive into my full music library, explore the 3D garden, or check out live traffic.</p>
           <div className="flex flex-wrap gap-3 justify-center">
-            <Link href="/dashboard/music" className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-white text-gray-900 hover:bg-gray-100 h-9 px-4 py-2 transition-colors"><span className="mr-2">🎵</span>Full Library</Link>
+            <Link href="/dashboard/multimedia" className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-white text-gray-900 hover:bg-gray-100 h-9 px-4 py-2 transition-colors"><span className="mr-2">🎵</span>Full Library</Link>
             <a href="https://github.com/marty-mcgee" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-white text-white hover:bg-white/20 h-9 px-4 py-2 transition-colors"><span className="mr-2">🐙</span>GitHub</a>
           </div>
         </div>
@@ -422,7 +422,7 @@ export default function HomePage() {
         <div className="w-full px-6 text-center text-xs text-muted-foreground">
           <p>© 2026 Marty McGee. Built with Next.js, Neon, and 💜.</p>
           <div className="flex justify-center gap-3 mt-1">
-            <Link href="/dashboard/music" className="hover:text-foreground transition-colors">Music</Link>
+            <Link href="/dashboard/multimedia" className="hover:text-foreground transition-colors">Music</Link>
             <Link href="/dashboard/threed" className="hover:text-foreground transition-colors">3D Garden</Link>
             <Link href="/dashboard" className="hover:text-foreground transition-colors">Traffic</Link>
             <a href="https://github.com/marty-mcgee" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">GitHub</a>

@@ -141,7 +141,7 @@ The app uses **Drizzle ORM** for type-safe database operations against **Neon Po
 
 - Every record has a `userId` for ownership and audit trails.
 - Child data is free-standing (no direct foreign keys to modules).
-- Relationships are handled via junction tables (`project_threed`, `project_traffic`, `project_music`, and a polymorphic `project_assets` table).
+- Relationships are handled via junction tables (`project_threed`, `project_traffic`, `project_multimedia`, and a polymorphic `project_assets` table).
 
 ### Schema scripts
 
@@ -151,7 +151,7 @@ The app uses **Drizzle ORM** for type-safe database operations against **Neon Po
 | `bun db:generate` | Generate migration files from the schema |
 | `bun db:studio` | Open Drizzle Studio (visual DB browser) |
 
-Schemas are co-located under `src/lib/schema/` (`auth`, `music`, `project`, `settings`, `threed`, `traffic`).
+Schemas are co-located under `src/libraries/schema/` (`auth`, `multimedia`, `project`, `settings`, `threed`, `traffic`).
 
 ---
 

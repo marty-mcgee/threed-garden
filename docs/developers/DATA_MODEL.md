@@ -1,6 +1,6 @@
 # Data Model
 
-Schemas are grouped by domain under `src/lib/schema`: auth, project, settings, music, ThreeD, and traffic.
+Schemas are grouped by domain under `src/libraries/schema`: auth, project, settings, multimedia, ThreeD, and traffic.
 
 ## Ownership and project scope
 
@@ -8,7 +8,7 @@ Domain records carry a `userId` for ownership. Modules and their child records r
 
 - `project_threed`
 - `project_traffic`
-- `project_music`
+- `project_multimedia`
 - polymorphic `project_assets`
 
 A record normally must be owned/accessible, active, and explicitly assigned before it is returned as a project asset. Do not infer assignment from `isActive` alone.

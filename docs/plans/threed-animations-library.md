@@ -5,9 +5,9 @@ Status: schema additions explicitly approved by the User; Stage 1 implemented an
 ## Evidence and acceptance
 
 - `src/components/admin/threed/models/ThreeDModelAnimations.tsx` currently writes action-to-clip names into `threed_models.metadata.animationMap`; it has no independent library records.
-- `src/lib/schema/threed/index.ts` contains Model files, reusable Model Textures and material assignments, but no reusable animation library or Model/Character animation assignments. Character animation enum fields are behavior selections, not asset references.
-- `src/lib/utils/externalCharacterAnimations.ts` contains a working static FBX library selected for a known Farmer model. It loads the first clip from each file and returns cloned clips. Preserve that released fallback and the tracked assets.
-- `src/lib/utils/animation.ts` maps locomotion actions; the external library also covers semantic actions such as watering and picking fruit. The new selector must cover both catalogs through explicit adapters, not rename runtime actions silently.
+- `src/libraries/schema/threed/index.ts` contains Model files, reusable Model Textures and material assignments, but no reusable animation library or Model/Character animation assignments. Character animation enum fields are behavior selections, not asset references.
+- `src/libraries/utils/externalCharacterAnimations.ts` contains a working static FBX library selected for a known Farmer model. It loads the first clip from each file and returns cloned clips. Preserve that released fallback and the tracked assets.
+- `src/libraries/utils/animation.ts` maps locomotion actions; the external library also covers semantic actions such as watering and picking fruit. The new selector must cover both catalogs through explicit adapters, not rename runtime actions silently.
 
 Acceptance: an animation exists independently of a Model or Character; multiple targets can reference the same clip/file without copying bytes. Users can preview compatibility, assign/remove/override animations, and see usage. Removing an assignment never deletes its animation. Character controls, animation crossfades, first-pose visibility, saved position/rotation, and completion-gated world actions must remain intact.
 

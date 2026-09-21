@@ -1,18 +1,18 @@
-import { bedPlantingGeometry, bedLocalPoint, bedWorldPoint, containBedPlantings, resolvePlantingBedId } from '@/lib/services/threed/beds/bed-planting-bounds';
-import { resolveCharacterPhysics } from '@/lib/services/threed/characters/character-physics';
-import { refreshModelMarkerData, currentPlantingModelId } from '@/lib/services/threed/models/model-snapshot-assets';
-import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
+import { bedPlantingGeometry, bedLocalPoint, bedWorldPoint, containBedPlantings, resolvePlantingBedId } from '@/libraries/services/threed/beds/bed-planting-bounds';
+import { resolveCharacterPhysics } from '@/libraries/services/threed/characters/character-physics';
+import { refreshModelMarkerData, currentPlantingModelId } from '@/libraries/services/threed/models/model-snapshot-assets';
+import { modelSelection } from '@/libraries/services/threed/models/model-primary-file';
 import { NextRequest, NextResponse } from 'next/server';
 import { and, eq, inArray, notInArray, or, sql } from 'drizzle-orm';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { ensureTableSequence } from '@/lib/db/sequence';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { ensureTableSequence } from '@/libraries/db/sequence';
 import {
   project,
   projectAssets,
   projectThreed,
   projectThreedMarkers,
-} from '@/lib/schema/project';
+} from '@/libraries/schema/project';
 import {
   threed,
   threedBeds,
@@ -22,50 +22,50 @@ import {
   threedModelFiles,
   threedPlantings,
   threedPlants,
-} from '@/lib/schema/threed';
+} from '@/libraries/schema/threed';
 import {
   parseCreateProjectBedPlacement,
   parseUpdateProjectBedPlacement,
   ProjectBedPlacementInputError,
-} from '@/lib/services/threed/beds/project-bed-placement-core';
+} from '@/libraries/services/threed/beds/project-bed-placement-core';
 import {
   parseCreateProjectCharacterPlacement,
   parseUpdateProjectCharacterPlacement,
   ProjectCharacterPlacementInputError,
-} from '@/lib/services/threed/characters/project-character-placement-core';
+} from '@/libraries/services/threed/characters/project-character-placement-core';
 import {
   resolveThreeDCharacterLibraryAccess,
-} from '@/lib/services/threed/characters/character-library-access-core';
+} from '@/libraries/services/threed/characters/character-library-access-core';
 import {
   parseCreateProjectFarmBotPlacement,
   parseUpdateProjectFarmBotPlacement,
   ProjectFarmBotPlacementInputError,
-} from '@/lib/services/threed/farmbot/project-farmbot-placement-core';
-import { sanitizeFarmBotRecord } from '@/lib/services/threed/farmbot/sanitize';
+} from '@/libraries/services/threed/farmbot/project-farmbot-placement-core';
+import { sanitizeFarmBotRecord } from '@/libraries/services/threed/farmbot/sanitize';
 import {
   calculateProjectPlantingVisualPositions,
   parseCreateProjectPlantingPlacement,
   parseUpdateProjectPlantingPlacement,
   ProjectPlantingPlacementInputError,
-} from '@/lib/services/threed/plantings/project-planting-placement-core';
+} from '@/libraries/services/threed/plantings/project-planting-placement-core';
 import {
   parseProjectThreeDMarkerSnapshot,
   ProjectMarkerSnapshotError,
-} from '@/lib/services/threed/markers/project-marker-snapshot-core';
+} from '@/libraries/services/threed/markers/project-marker-snapshot-core';
 import {
   parseThreeDProjectViewState,
   ProjectViewStateError,
-} from '@/lib/services/threed/markers/project-view-state-core';
+} from '@/libraries/services/threed/markers/project-view-state-core';
 import {
   projectLocalPositionToGeographicPosition,
   type ThreeDGeographicOrigin,
-} from '@/lib/services/threed/markers/map-coordinate-core';
+} from '@/libraries/services/threed/markers/map-coordinate-core';
 import {
   parseCreateProjectModelInstance,
   parseUpdateProjectModelInstance,
   ProjectModelInstanceInputError,
-} from '@/lib/services/threed/models/project-model-instance-core';
-import type { ThreeDRuntimeMarkerModuleType } from '@/lib/types/map';
+} from '@/libraries/services/threed/models/project-model-instance-core';
+import type { ThreeDRuntimeMarkerModuleType } from '@/libraries/types/map';
 
 const MAX_REQUEST_BYTES = 1_048_576;
 

@@ -1,6 +1,6 @@
 // src/app/api/traffic/calfire/cron/route.ts
 import { NextResponse } from 'next/server';
-import { CalFirePoller } from '@/lib/services/traffic/CalFirePoller';
+import { CalFirePoller } from '@/libraries/services/traffic/CalFirePoller';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;

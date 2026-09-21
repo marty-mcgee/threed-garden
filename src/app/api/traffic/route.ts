@@ -1,8 +1,8 @@
 // app/api/traffic/route.ts - Updated POST to match Music/ThreeD
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { traffic } from '@/lib/schema/traffic';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { traffic } from '@/libraries/schema/traffic';
 import { eq, and, desc, sql } from 'drizzle-orm';
 
 // ============================================

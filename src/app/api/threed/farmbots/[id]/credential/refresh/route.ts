@@ -1,20 +1,20 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/libraries/auth';
 import {
   FarmBotBrokerIdentityMismatchError,
   FarmBotBrokerMetadataError,
-} from '@/lib/services/threed/farmbot/broker-metadata-core';
+} from '@/libraries/services/threed/farmbot/broker-metadata-core';
 import {
   FarmBotCredentialConcurrentUpdateError,
   FarmBotCredentialNotConfiguredError,
   FarmBotCredentialNotFoundError,
   loadFarmBotCredential,
   refreshFarmBotCredential,
-} from '@/lib/services/threed/farmbot/credential-repository';
-import { FarmBotCredentialKeyConfigurationError } from '@/lib/services/threed/farmbot/credential-keyring-core';
-import { FarmBotCredentialRejectedError } from '@/lib/services/threed/farmbot/connection-client-core';
-import { refreshFarmBotToken } from '@/lib/services/threed/farmbot/token-client';
-import { FarmBotTokenServiceUnavailableError } from '@/lib/services/threed/farmbot/token-client-core';
+} from '@/libraries/services/threed/farmbot/credential-repository';
+import { FarmBotCredentialKeyConfigurationError } from '@/libraries/services/threed/farmbot/credential-keyring-core';
+import { FarmBotCredentialRejectedError } from '@/libraries/services/threed/farmbot/connection-client-core';
+import { refreshFarmBotToken } from '@/libraries/services/threed/farmbot/token-client';
+import { FarmBotTokenServiceUnavailableError } from '@/libraries/services/threed/farmbot/token-client-core';
 
 export const dynamic = 'force-dynamic';
 

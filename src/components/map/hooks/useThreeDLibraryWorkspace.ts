@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import {
   transitionThreeDLibraryWorkspace,
   type ThreeDLibraryWorkspace,
-} from '@/lib/services/threed/markers/library-workspace-core';
+} from '@/libraries/services/threed/markers/library-workspace-core';
 
 export function useThreeDLibraryWorkspace() {
   const [activeLibrary, setActiveLibrary] = useState<ThreeDLibraryWorkspace | null>(null);

@@ -1,22 +1,22 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { readFarmBotBrokerMetadata } from '@/lib/services/threed/farmbot/broker-metadata-core';
+import { auth } from '@/libraries/auth';
+import { readFarmBotBrokerMetadata } from '@/libraries/services/threed/farmbot/broker-metadata-core';
 import {
   FarmBotCredentialNotConfiguredError,
   FarmBotCredentialNotFoundError,
   getFarmBotMqttReadiness,
   loadFarmBotCredential,
-} from '@/lib/services/threed/farmbot/credential-repository';
-import { FarmBotCredentialKeyConfigurationError } from '@/lib/services/threed/farmbot/credential-keyring-core';
+} from '@/libraries/services/threed/farmbot/credential-repository';
+import { FarmBotCredentialKeyConfigurationError } from '@/libraries/services/threed/farmbot/credential-keyring-core';
 import {
   connectFarmBotWorkerSession,
   disconnectFarmBotWorkerSession,
   getFarmBotWorkerSession,
-} from '@/lib/services/threed/mqtt/integrations/farmbot/worker-client';
+} from '@/libraries/services/threed/mqtt/integrations/farmbot/worker-client';
 import {
   MqttWorkerConfigurationError,
   MqttWorkerUnavailableError,
-} from '@/lib/services/threed/mqtt/worker/client';
+} from '@/libraries/services/threed/mqtt/worker/client';
 
 export const dynamic = 'force-dynamic';
 type RouteContext = { params: Promise<{ id: string }> };

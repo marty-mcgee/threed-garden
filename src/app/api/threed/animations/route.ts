@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import { animationResponse } from '@/lib/services/threed/animations/http';
-import { parseList, parseClipUpdate, positiveId } from '@/lib/services/threed/animations/contracts';
-import { getAnimation, listAnimations, updateAnimation, deleteAnimation } from '@/lib/services/threed/animations/library';
+import { animationResponse } from '@/libraries/services/threed/animations/http';
+import { parseList, parseClipUpdate, positiveId } from '@/libraries/services/threed/animations/contracts';
+import { getAnimation, listAnimations, updateAnimation, deleteAnimation } from '@/libraries/services/threed/animations/library';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 export function GET(request: NextRequest) {

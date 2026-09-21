@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
-import { auth } from '@/lib/auth';
+import { auth } from '@/libraries/auth';
 import { CharacterAnimationPreview } from '@/components/admin/threed/animations/CharacterAnimationPreview';
 
 export const metadata = { title: 'Character Animation Preview' };

@@ -1,12 +1,12 @@
-import { parseTextureListQuery } from '@/lib/services/threed/models/texture-list-query';
+import { parseTextureListQuery } from '@/libraries/services/threed/models/texture-list-query';
 import { NextRequest, NextResponse } from 'next/server';
 import { and, asc, desc, eq, getTableColumns, sql } from 'drizzle-orm';
 import { del, put } from '@vercel/blob';
-import { createThreeDBlobPath } from '@/lib/services/threed/models/model-blob-paths';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { ensureTableSequence } from '@/lib/db/sequence';
-import { threedModelFiles, threedModelMaterialAssignments, threedModelTextures } from '@/lib/schema/threed';
+import { createThreeDBlobPath } from '@/libraries/services/threed/models/model-blob-paths';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { ensureTableSequence } from '@/libraries/db/sequence';
+import { threedModelFiles, threedModelMaterialAssignments, threedModelTextures } from '@/libraries/schema/threed';
 
 export const runtime = 'nodejs';
 

@@ -4,10 +4,10 @@ import { Component, Suspense, useCallback, useEffect, useRef, useState, type Com
 import { Canvas, useThree } from '@react-three/fiber';
 import { Bounds, OrbitControls, useBounds } from '@react-three/drei';
 import { GardenCharacter } from '@/components/threed/shared/GardenCharacter';
-import type { AssignedAnimationClip } from '@/lib/utils/assignedCharacterAnimations';
+import type { AssignedAnimationClip } from '@/libraries/utils/assignedCharacterAnimations';
 import { Vector3 } from 'three';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
-import { positiveId } from '@/lib/services/threed/animations/contracts';
+import { positiveId } from '@/libraries/services/threed/animations/contracts';
 
 type Character = ComponentProps<typeof GardenCharacter>['character'];
 type Clip = AssignedAnimationClip & { name: string };

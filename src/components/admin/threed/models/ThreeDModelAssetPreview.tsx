@@ -14,8 +14,8 @@ import type {
   ThreeDModelMaterialInventory,
   ThreeDModelMaterialPreviewOverride,
   ThreeDModelMaterialSlot,
-} from '@/lib/services/threed/models/model-material-inventory-core';
-import { readThreeDModelMaterialOverrides } from '@/lib/services/threed/models/model-material-override-core';
+} from '@/libraries/services/threed/models/model-material-inventory-core';
+import { readThreeDModelMaterialOverrides } from '@/libraries/services/threed/models/model-material-override-core';
 
 interface ThreeDModelAssetPreviewProps {
   model: ModelData | null;

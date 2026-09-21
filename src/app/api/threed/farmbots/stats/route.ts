@@ -1,8 +1,8 @@
 // src/app/api/threed/farmbots/stats/route.ts
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { threedFarmbots } from '@/lib/schema';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { threedFarmbots } from '@/libraries/schema';
 import { and, eq, sql } from 'drizzle-orm';
 
 export const dynamic = 'force-dynamic';

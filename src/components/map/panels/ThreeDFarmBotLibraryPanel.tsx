@@ -4,7 +4,7 @@ import { Loader2, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import type { FarmBotPlacementDraft } from '@/lib/services/threed/markers/library-placement-client-core';
+import type { FarmBotPlacementDraft } from '@/libraries/services/threed/markers/library-placement-client-core';
 
 export interface ThreeDFarmBotLibraryItem {
   id: number;

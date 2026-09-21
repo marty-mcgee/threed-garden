@@ -4,8 +4,8 @@ import { useThree } from '@react-three/fiber';
 import { useBeforePhysicsStep, useRapier } from '@react-three/rapier';
 import type { EcctrlHandle } from 'ecctrl';
 import { Box3, type Object3D } from 'three';
-import { findCharacterLanding } from '@/lib/services/threed/orchestration/teleport-landing';
-import { NAVIGATION_REQUEST, NAVIGATION_STATUS, type NavigationRequest } from '@/lib/services/threed/orchestration/navigation-events';
+import { findCharacterLanding } from '@/libraries/services/threed/orchestration/teleport-landing';
+import { NAVIGATION_REQUEST, NAVIGATION_STATUS, type NavigationRequest } from '@/libraries/services/threed/orchestration/navigation-events';
 
 export function useCharacterTeleport({ markerId, targetMarkerId, controlled, enabled, taskLocked, controller, radius, halfHeight, floatHeight }: {
   markerId?: string; targetMarkerId?: string; controlled: boolean; enabled: boolean;

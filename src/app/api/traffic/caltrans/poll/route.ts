@@ -1,6 +1,6 @@
 // src/app/api/traffic/caltrans/poll/route.ts
 import { NextResponse } from 'next/server';
-import { CaltransPoller } from '@/lib/services/traffic/CaltransPoller';
+import { CaltransPoller } from '@/libraries/services/traffic/CaltransPoller';
 
 export const maxDuration = 300;
 export const dynamic = 'force-dynamic';

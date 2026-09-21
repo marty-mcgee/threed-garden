@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { workspaceSnapshotSchema } from '@/lib/config/workspace-settings';
-import { readWorkspaceSettings, saveWorkspaceSettings, WorkspaceSettingsConflict } from '@/lib/services/settings/workspace';
+import { auth } from '@/libraries/auth';
+import { workspaceSnapshotSchema } from '@/libraries/config/workspace-settings';
+import { readWorkspaceSettings, saveWorkspaceSettings, WorkspaceSettingsConflict } from '@/libraries/services/settings/workspace';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';

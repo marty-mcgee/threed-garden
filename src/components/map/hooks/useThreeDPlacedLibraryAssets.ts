@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import type { UnifiedMapData } from '@/lib/types/map';
+import type { UnifiedMapData } from '@/libraries/types/map';
 
 interface ThreeDPlacedLibraryAssets {
   placedCharacterIds: ReadonlySet<number>;

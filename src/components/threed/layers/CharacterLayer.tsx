@@ -1,7 +1,7 @@
 // components/threed/layers/CharacterLayer.tsx
 'use client';
 
-import { CharacterData } from '@/lib/types/threed';
+import { CharacterData } from '@/libraries/types/threed';
 import { GardenCharacter } from '@/components/threed/shared/GardenCharacter';
 
 interface CharacterLayerProps {

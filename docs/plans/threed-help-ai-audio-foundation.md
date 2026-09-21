@@ -10,10 +10,10 @@ Status: staged development authorized by user after production v0.19.22. User de
 ## Evidence and design
 
 - Model Files had a local Help Dialog with inline text; Bulk Import had no corresponding Help entry point. Repeated explanation should move to discoverable, contextual Help.
-- `src/lib/services/project/project-tour-core.ts` already defines state-derived Environment → Model → Character setup guidance. Preserve this rather than replacing the Scene tour.
-- `src/lib/schema/music/index.ts`: musicTracks has owner, optional album, fileUrl/fileType/fileSize, status (active/inactive/processing), lyrics and metadata. These may support saved speech assets, but provider job lifecycle and replay-safe generation need a reviewed contract.
+- `src/libraries/services/project/project-tour-core.ts` already defines state-derived Environment → Model → Character setup guidance. Preserve this rather than replacing the Scene tour.
+- `src/libraries/schema/music/index.ts`: musicTracks has owner, optional album, fileUrl/fileType/fileSize, status (active/inactive/processing), lyrics and metadata. These may support saved speech assets, but provider job lifecycle and replay-safe generation need a reviewed contract.
 - `/api/music/tracks` distinguishes owner/public access; `/api/music/media` authenticates and scopes records by owner. Existing Music playback and album ownership must be preserved.
-- `src/lib/services/music/S3.ts` currently interprets fileUrl as an S3 key for signing. Generated-file URLs must not be assumed compatible without inspecting the stream endpoint and existing uploads. No new storage provider is selected.
+- `src/libraries/services/music/S3.ts` currently interprets fileUrl as an S3 key for signing. Generated-file URLs must not be assumed compatible without inspecting the stream endpoint and existing uploads. No new storage provider is selected.
 
 ## Stage 1 — contextual Help foundation (implemented)
 

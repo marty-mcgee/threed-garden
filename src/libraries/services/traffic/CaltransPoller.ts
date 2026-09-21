@@ -1,0 +1,238 @@
+// src/libraries/services/CaltransPoller.ts
+import { db } from '@/libraries/db/client';
+import { trafficCaltransDistricts, trafficCaltransLaneClosures } from '@/libraries/schema';
+import { and, eq, lt, sql } from 'drizzle-orm';
+
+export class CaltransPoller {
+  private baseUrl = 'https://cwwp2.dot.ca.gov/data';
+  
+  private pollingActive = false;
+  private lastPollTime: Date | null = null;
+  private lastPollStats: any = null;
+
+  // All Caltrans districts (1-12)
+  // private readonly ALL_DISTRICTS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+  private readonly ALL_DISTRICTS = [1];
+
+  private async fetchDistrictClosures(district: number): Promise<any[]> {
+    const url = `${this.baseUrl}/d${district}/lcs/lcsStatusD${district.toString().padStart(2, '0')}.json`;
+    
+    try {
+      const response = await fetch(url, {
+        headers: { 'User-Agent': 'MCNews-Caltrans-Poller/1.0' }
+      });
+      
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.log(`  District ${district}: No data available`);
+          return [];
+        }
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const data = await response.json();
+      const closures = data?.lcsClosures || [];
+      console.log(`  District ${district}: ${closures.length} closures`);
+      
+      return closures;
+    } catch (error) {
+      console.error(`  ✗ District ${district} failed:`, error);
+      return [];
+    }
+  }
+
+  private generateSourceId(district: number, closure: any): string {
+    return closure.id || `${district}_${closure.route}_${closure.startDate}_${closure.startTime}`;
+  }
+
+  private async upsertClosure(district: number, closure: any): Promise<'new' | 'updated' | 'skipped'> {
+    const sourceId = this.generateSourceId(district, closure);
+    
+    const startTimestamp = closure.startDate && closure.startTime
+      ? new Date(`${closure.startDate} ${closure.startTime}`)
+      : null;
+    const endTimestamp = closure.endDate && closure.endTime
+      ? new Date(`${closure.endDate} ${closure.endTime}`)
+      : null;
+
+    if (!startTimestamp || Number.isNaN(startTimestamp.getTime())) {
+      console.warn(`Skipping Caltrans closure ${sourceId}: invalid start date`);
+      return 'skipped';
+    }
+
+    const [districtRecord] = await db
+      .select({ id: trafficCaltransDistricts.id })
+      .from(trafficCaltransDistricts)
+      .where(eq(trafficCaltransDistricts.districtNumber, district))
+      .limit(1);
+
+    const normalizeCoordinate = (value: unknown) => {
+      const parsed = typeof value === 'number' ? value : parseFloat(String(value));
+      return Number.isFinite(parsed) ? String(parsed) : null;
+    };
+    const closureTypeValue = String(closure.closureType || '').toLowerCase();
+    const closureType = closureTypeValue.includes('full')
+      ? 'full' as const
+      : closureTypeValue.includes('partial')
+        ? 'partial' as const
+        : closureTypeValue.includes('shoulder')
+          ? 'shoulder' as const
+          : closureTypeValue.includes('ramp')
+            ? 'ramp' as const
+            : 'lane' as const;
+    const now = new Date().toISOString();
+    
+    const closureData = {
+      closureId: sourceId,
+      sourceId,
+      title: closure.description || `Caltrans closure on ${closure.route || 'unknown route'}`,
+      description: closure.description || null,
+      closureType,
+      route: closure.route || null,
+      direction: closure.direction || null,
+      county: closure.county || null,
+      city: closure.city || null,
+      latitude: normalizeCoordinate(closure.latitude),
+      longitude: normalizeCoordinate(closure.longitude),
+      startDate: startTimestamp.toISOString(),
+      endDate:
+        endTimestamp && !Number.isNaN(endTimestamp.getTime())
+          ? endTimestamp.toISOString()
+          : null,
+      lastUpdated: now,
+      districtId: districtRecord?.id || null,
+      caltransId: closure.id ? String(closure.id) : null,
+      rawData: closure,
+      isActive: true,
+      isPublic: true,
+    };
+    
+    try {
+      const existing = await db
+        .select()
+        .from(trafficCaltransLaneClosures)
+        .where(eq(trafficCaltransLaneClosures.sourceId, sourceId))
+        .limit(1);
+      
+      if (existing.length > 0) {
+        await db
+          .update(trafficCaltransLaneClosures)
+          .set(closureData)
+          .where(eq(trafficCaltransLaneClosures.sourceId, sourceId));
+        return 'updated';
+      } else {
+        await db.insert(trafficCaltransLaneClosures).values(closureData);
+        return 'new';
+      }
+    } catch (error) {
+      console.error(`Error upserting closure ${sourceId}:`, error);
+      return 'skipped';
+    }
+  }
+
+  async pollAll() {
+    if (this.pollingActive) {
+      return { success: false, error: 'Polling already in progress' };
+    }
+    
+    this.pollingActive = true;
+    const startTime = Date.now();
+    
+    try {
+      console.log(`\n🚦 Starting Caltrans poll at ${new Date().toISOString()}`);
+      console.log(`  Fetching all ${this.ALL_DISTRICTS.length} districts...`);
+      
+      let totalClosures = 0;
+      let newCount = 0;
+      let updatedCount = 0;
+      let skippedCount = 0;
+      
+      for (const district of this.ALL_DISTRICTS) {
+        const closures = await this.fetchDistrictClosures(district);
+        totalClosures += closures.length;
+        
+        for (const closure of closures) {
+          const result = await this.upsertClosure(district, closure);
+          if (result === 'new') newCount++;
+          else if (result === 'updated') updatedCount++;
+          else skippedCount++;
+        }
+        
+        // Small delay between districts to be respectful
+        await new Promise(resolve => setTimeout(resolve, 200));
+      }
+      
+      // Mark stale closures as completed (not seen in last 30 minutes)
+      const thirtyMinutesAgo = new Date(Date.now() - 30 * 60 * 1000);
+      const staleResult = await db
+        .update(trafficCaltransLaneClosures)
+        .set({ isActive: false })
+        .where(
+          and(
+            eq(trafficCaltransLaneClosures.isActive, true),
+            lt(trafficCaltransLaneClosures.lastUpdated, thirtyMinutesAgo.toISOString())
+          )
+        );
+      
+      const duration = Date.now() - startTime;
+      this.lastPollTime = new Date();
+      this.lastPollStats = { 
+        totalFetched: totalClosures, 
+        newCount, 
+        updatedCount, 
+        skippedCount,
+        staleCount: staleResult.rowCount || 0,
+        duration
+      };
+      
+      console.log(`✅ Caltrans Poll complete:`);
+      console.log(`  ${totalClosures} total closures, ${newCount} new, ${updatedCount} updated, ${skippedCount} skipped`);
+      console.log(`  ${this.lastPollStats.staleCount} closures marked as completed`);
+      
+      return {
+        success: true,
+        stats: this.lastPollStats,
+        timestamp: new Date().toISOString()
+      };
+      
+    } catch (error) {
+      console.error('Caltrans Polling error:', error);
+      return { success: false, error: String(error) };
+    } finally {
+      this.pollingActive = false;
+    }
+  }
+
+  async getStats() {
+    const total = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(trafficCaltransLaneClosures);
+    
+    const active = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(trafficCaltransLaneClosures)
+      .where(eq(trafficCaltransLaneClosures.isActive, true));
+    
+    const byDistrict = await db
+      .select({
+        district: trafficCaltransLaneClosures.districtId,
+        count: sql<number>`COUNT(*)`,
+      })
+      .from(trafficCaltransLaneClosures)
+      .where(eq(trafficCaltransLaneClosures.isActive, true))
+      .groupBy(trafficCaltransLaneClosures.districtId)
+      .orderBy(sql`count DESC`);
+    
+    return {
+      total: total[0]?.count || 0,
+      active: active[0]?.count || 0,
+      byDistrict,
+      lastPoll: this.lastPollTime,
+      lastPollStats: this.lastPollStats
+    };
+  }
+
+  isPollingActive(): boolean {
+    return this.pollingActive;
+  }
+}

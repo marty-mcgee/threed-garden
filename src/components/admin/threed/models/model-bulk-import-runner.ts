@@ -6,14 +6,14 @@ import {
 import {
   normalizeThreeDModelRelativePath,
 // @ts-expect-error Node's native TypeScript validator requires the explicit extension.
-} from '../../../../lib/services/threed/models/model-companion-core.ts';
+} from '../../../../libraries/services/threed/models/model-companion-core.ts';
 // @ts-expect-error Node's native TypeScript validator requires the explicit extension.
 import { MAX_BULK_FILE_BYTES, validateBulkPreview } from './model-bulk-preparation-core.ts';
 import {
   isThreeDModelMaterialTargetKey,
   THREED_MODEL_MATERIAL_OVERRIDE_LIMIT,
 // @ts-expect-error Node's native TypeScript validator requires the explicit extension.
-} from '../../../../lib/services/threed/models/model-material-override-core.ts';
+} from '../../../../libraries/services/threed/models/model-material-override-core.ts';
 
 export interface BulkImportInput {
   file: File;

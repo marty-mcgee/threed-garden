@@ -50,7 +50,7 @@ Files are stored under `threed/users/<owner>/animations/<readable-name>--<uuid>/
 
 Built-in sources remain read-only and are not automatically registered. Uploaded sources/clip assignments do not copy bytes per consumer. Removing a clip retains its source record/Blob; referenced clips cannot be deleted. Physical source-file cleanup and existing-Model-file source sharing remain separate lifecycle work.
 
-The tracked source of truth is `src/lib/schema/threed/index.ts`. Local Drizzle generation produced `drizzle/0017_threed_animations_library.sql` and its snapshot/journal entry; `/drizzle` is ignored by existing repository policy. Inspection confirmed only four new tables, their checks/indexes/FKs, and no changes to existing tables. Generation used CLI schema/dialect arguments and did not connect to a database or load environment files.
+The tracked source of truth is `src/libraries/schema/threed/index.ts`. Local Drizzle generation produced `drizzle/0017_threed_animations_library.sql` and its snapshot/journal entry; `/drizzle` is ignored by existing repository policy. Inspection confirmed only four new tables, their checks/indexes/FKs, and no changes to existing tables. Generation used CLI schema/dialect arguments and did not connect to a database or load environment files.
 
 Applying the schema remains a separate User-owned step. Existing data needs no backfill and existing routes do not depend on the new tables. New library APIs require those tables before use. A code rollback can leave the additive tables in place; dropping them would discard new library records and is not part of rollback by default. No special migration triggers or old-data conversion are required.
 
@@ -131,7 +131,7 @@ Validation: the upload validator passes real FBX filename naming and multi-clip 
 
 A compact scrollable results panel shows Queued, Uploading, green Imported with clip count, or orange Needs attention with the error. Invalid files and failed requests do not prevent later files from importing. At completion, the library refreshes on the first page with search cleared. Clear results removes only the displayed report. Results are tab-local; there is no automatic retry or persistent resume. Check the refreshed library before resubmitting an interrupted request because it may already have committed.
 
-Validation: `node src/lib/scripts/validate-threed-animation-bulk.cjs` exercises the actual workspace upload handler with mocked React/fetch, covering multiple selection, sequential execution, invalid-file isolation, continued uploads after a network failure, status totals and the 100-file limit. TypeScript and diff checks passed; no build or live upload ran.
+Validation: `node src/libraries/scripts/validate-threed-animation-bulk.cjs` exercises the actual workspace upload handler with mocked React/fetch, covering multiple selection, sequential execution, invalid-file isolation, continued uploads after a network failure, status totals and the 100-file limit. TypeScript and diff checks passed; no build or live upload ran.
 
 Manual acceptance: select two animated FBX files and a self-contained animated GLB together. Confirm per-file results, filename-based names, and all clips in the refreshed library. Include a static or malformed source in a second batch and confirm later valid files still import. Clear results and confirm saved records remain.
 
@@ -151,7 +151,7 @@ Manual test:
 4. Choose **Use defaults** for one action and Save; confirm its Character override is removed. Test **Disabled** separately; it remains an explicit saved setting.
 5. Search animation choices and confirm existing saved selections remain visible. Scene animation changes are not an acceptance criterion for this editor stage.
 
-Validation: `node src/lib/scripts/validate-threed-character-animation-assignments.cjs`, `npm run validate:threed-animation-library`, TypeScript and diff checks passed. The UI handler fixture mocks network and checks ID-only writes, explicit disabling, inheritance restoration and failed-draft retention. No build, live writes or browser acceptance is claimed for this step.
+Validation: `node src/libraries/scripts/validate-threed-character-animation-assignments.cjs`, `npm run validate:threed-animation-library`, TypeScript and diff checks passed. The UI handler fixture mocks network and checks ID-only writes, explicit disabling, inheritance restoration and failed-draft retention. No build, live writes or browser acceptance is claimed for this step.
 
 ## Character Scene playback — current integration
 

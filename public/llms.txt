@@ -27,6 +27,6 @@ Implementation source of truth:
 - /src/app/admin
 - /src/app/dashboard
 - /src/app/api
-- /src/lib/schema
+- /src/libraries/schema
 
 Read AGENTS.md before making repository changes. Current code and schemas take precedence when documentation is stale.

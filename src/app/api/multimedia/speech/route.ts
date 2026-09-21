@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { multimediaSpeech as speech } from '@/lib/schema/multimedia';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { multimediaSpeech as speech } from '@/libraries/schema/multimedia';
 import { and, eq, asc, desc, ilike, isNull, isNotNull, count } from 'drizzle-orm';
-import { speechReadError } from '@/lib/services/multimedia/speech-errors';
-import { parseSpeechDraft } from '@/lib/services/multimedia/speech-draft';
+import { speechReadError } from '@/libraries/services/multimedia/speech-errors';
+import { parseSpeechDraft } from '@/libraries/services/multimedia/speech-draft';
 
 export async function GET(request: NextRequest) {
   const session = await auth();

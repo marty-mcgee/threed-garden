@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo } from 'react';
-import type { ThreeDModelLibraryItem } from '@/lib/types/threed';
+import type { ThreeDModelLibraryItem } from '@/libraries/types/threed';
 
 type ThreeDModelLibraryCategory = ThreeDModelLibraryItem['categories'][number];
 export type ThreeDModelLibraryReadinessFilter = 'all' | ThreeDModelLibraryItem['libraryReadiness']['status'];

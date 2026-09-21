@@ -1,6 +1,6 @@
 // src/app/api/traffic/chp-historical/cron/route.ts
 import { NextResponse } from 'next/server';
-import { CHPPoller } from '@/lib/services/traffic/CHPPoller';
+import { CHPPoller } from '@/libraries/services/traffic/CHPPoller';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;

@@ -1,10 +1,10 @@
 // app/api/traffic/chp-centers/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { trafficChpCenters } from '@/lib/schema/traffic';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { trafficChpCenters } from '@/libraries/schema/traffic';
 import { eq, and, desc, or, sql } from 'drizzle-orm';
-import { ensureTableSequence } from '@/lib/db/sequence';
+import { ensureTableSequence } from '@/libraries/db/sequence';
 
 // ============================================
 // GET /api/traffic/chp-centers - List CHP Centers

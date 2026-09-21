@@ -1,6 +1,6 @@
 # ThreeD Controls
 
-Open `/dashboard/map`, choose a project, and select a ThreeD marker to open its Details Card.
+Open `/dashboard/scene`, choose a project, and select a ThreeD marker to open its Details Card.
 
 ## Dashboard workspace header
 

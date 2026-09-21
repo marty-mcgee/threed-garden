@@ -1,21 +1,21 @@
-import { parseFarmbotListQuery } from '@/lib/services/threed/farmbot/farmbot-list-query';
+import { parseFarmbotListQuery } from '@/libraries/services/threed/farmbot/farmbot-list-query';
 // app/api/threed/farmbots/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
 import { 
   farmbotStatusEnum,
   threedFarmbots,
   threedBeds,
   threedMqttEvents,
   threedMqttRuntime,
-} from '@/lib/schema/threed';
+} from '@/libraries/schema/threed';
 import { eq, and, asc, desc, inArray, sql, type SQL } from 'drizzle-orm';
-import { ensureTableSequence } from '@/lib/db/sequence';
+import { ensureTableSequence } from '@/libraries/db/sequence';
 import {
   containsFarmBotCredentialMaterial,
   sanitizeFarmBotRecord,
-} from '@/lib/services/threed/farmbot/sanitize';
+} from '@/libraries/services/threed/farmbot/sanitize';
 
 type FarmBotRecord = typeof threedFarmbots.$inferSelect;
 

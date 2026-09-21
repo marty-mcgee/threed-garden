@@ -7,9 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { inspectThreeDModelPrimary } from '@/lib/services/threed/models/model-companion-core';
-import { inspectObjGeometry } from '@/lib/services/threed/models/model-obj-core';
-import { inspectThreeDGltfBundle } from '@/lib/services/threed/models/model-gltf-bundle-core';
+import { inspectThreeDModelPrimary } from '@/libraries/services/threed/models/model-companion-core';
+import { inspectObjGeometry } from '@/libraries/services/threed/models/model-obj-core';
+import { inspectThreeDGltfBundle } from '@/libraries/services/threed/models/model-gltf-bundle-core';
 import type { ThreeDModelCategoryOption } from './ThreeDModelCategoriesManager';
 import {
   createBulkDefaults, createBulkDraft, defaultDestination, MAX_BULK_MODELS,

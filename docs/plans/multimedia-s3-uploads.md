@@ -38,7 +38,7 @@ Uploads and form registration are separate steps. An abandoned form, network fai
 
 ## Validation and manual review
 
-`node src/lib/scripts/validate-music-s3.cjs` passes offline route/policy fixtures: authentication, owner key isolation, extension/type/size policy, signed length, completion mismatch and private redirect. `npm run typecheck` and `git diff --check` passed after the stream compatibility adjustment. Fixtures mock AWS and do not prove IAM, CORS or file playback.
+`node src/libraries/scripts/validate-music-s3.cjs` passes offline route/policy fixtures: authentication, owner key isolation, extension/type/size policy, signed length, completion mismatch and private redirect. `npm run typecheck` and `git diff --check` passed after the stream compatibility adjustment. Fixtures mock AWS and do not prove IAM, CORS or file playback.
 
 - Tracks → Add Track: upload an MP3/WAV larger than 4 MiB, observe progress and verification, then save. Refresh and Play.
 - Media → Add Media: upload MP4/WebM, save in an Album, reopen its file URL.

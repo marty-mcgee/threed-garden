@@ -4,9 +4,9 @@ import { useEffect, useRef } from 'react';
 import { Crosshair, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import type { RuntimeMarker } from '@/lib/types/map';
+import type { RuntimeMarker } from '@/libraries/types/map';
 import type { ThreeDRuntimeMarkerPositionResolver } from '@/components/map/UnifiedMapView';
-import { getThreeDIcon, getThreeDLabel } from '@/lib/utils/map-helpers';
+import { getThreeDIcon, getThreeDLabel } from '@/libraries/utils/map-helpers';
 
 export function ProjectAssetsPanel({
   selectedProjectId,

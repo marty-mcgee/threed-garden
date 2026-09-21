@@ -1,14 +1,14 @@
-import { retryDisconnectedRead } from '@/lib/db/read-retry';
-import { databaseConnectionDiagnostic } from '@/lib/db/connection-diagnostics';
-import { currentModelAssets } from '@/lib/services/threed/models/model-snapshot-assets';
-import { modelSelection } from '@/lib/services/threed/models/model-primary-file';
+import { retryDisconnectedRead } from '@/libraries/db/read-retry';
+import { databaseConnectionDiagnostic } from '@/libraries/db/connection-diagnostics';
+import { currentModelAssets } from '@/libraries/services/threed/models/model-snapshot-assets';
+import { modelSelection } from '@/libraries/services/threed/models/model-primary-file';
 import { getTableColumns } from 'drizzle-orm';
 // app/api/map/threed/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { sanitizeFarmBotRecord } from '@/lib/services/threed/farmbot/sanitize';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { sanitizeFarmBotRecord } from '@/libraries/services/threed/farmbot/sanitize';
 import { 
   threed,
   threedPlants,
@@ -22,7 +22,7 @@ import {
   threedWeatherLogs,
   threedModels,
   threedModelFiles,
-} from '@/lib/schema/threed';
+} from '@/libraries/schema/threed';
 import { 
   trafficChpCadIncidents,
   trafficChpCases,
@@ -32,16 +32,16 @@ import {
   trafficCaltransDistricts,
   trafficBayArea511Events,
   trafficCalfireIncidents,
-} from '@/lib/schema/traffic';
+} from '@/libraries/schema/traffic';
 import {
   project,
   projectAssets,
   projectThreed,
   projectThreedMarkers,
   projectTraffic,
-} from '@/lib/schema/project';
+} from '@/libraries/schema/project';
 import { eq, and, desc, sql, inArray } from 'drizzle-orm';
-import { readThreeDProjectViewStateFromConfig } from '@/lib/services/threed/markers/project-view-state-core';
+import { readThreeDProjectViewStateFromConfig } from '@/libraries/services/threed/markers/project-view-state-core';
 
 const MARKER_ASSET_TYPE_BY_MODULE = {
   plantings: 'threed_plantings',

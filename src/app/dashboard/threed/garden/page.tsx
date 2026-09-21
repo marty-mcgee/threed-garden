@@ -8,8 +8,8 @@ import { useToast } from '@/components/ui/toast';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, Box, Sprout, Sun, Droplets, Thermometer, MapPin, AlertCircle, Loader2, FolderOpen, X } from 'lucide-react';
-import { getDefaultMapData, getDefaultLayers } from '@/lib/services/map/DefaultMapData';
-import { MapLayerConfig, MapViewMode, UnifiedMapData } from '@/lib/types/map';
+import { getDefaultMapData, getDefaultLayers } from '@/libraries/services/map/DefaultMapData';
+import { MapLayerConfig, MapViewMode, UnifiedMapData } from '@/libraries/types/map';
 
 // ✅ Dynamically import UnifiedMapView to avoid SSR issues with Three.js
 const UnifiedMapView = dynamic(
@@ -339,7 +339,7 @@ export default function Garden3DPage() {
           variant="ghost"
           size="sm"
           className="text-xs text-muted-foreground"
-          onClick={() => window.location.href = '/dashboard/map'}
+          onClick={() => window.location.href = '/dashboard/scene'}
         >
           <FolderOpen className="w-3.5 h-3.5 mr-1" />
           Go to Unified Map

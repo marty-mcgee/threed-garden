@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   fetchThreeDProjectSession,
   type ThreeDProjectSessionData,
-} from '@/lib/services/map/threed-project-session-core';
+} from '@/libraries/services/map/threed-project-session-core';
 
 export type ThreeDProjectSessionLoadOutcome =
   | { status: 'default' }

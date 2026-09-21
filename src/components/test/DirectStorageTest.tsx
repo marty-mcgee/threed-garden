@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useDirectTestStore, directStorage } from '@/lib/stores/direct-storage-test';
+import { useDirectTestStore, directStorage } from '@/libraries/stores/direct-storage-test';
 import { Button } from '@/components/ui/button';
 
 export function DirectStorageTest() {

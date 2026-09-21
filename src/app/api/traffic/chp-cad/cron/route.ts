@@ -1,6 +1,6 @@
 // src/app/api/traffic/chp-cad/cron/route.ts
 import { NextResponse } from 'next/server';
-import { CHPCADPoller } from '@/lib/services/traffic/CHPCADPoller';
+import { CHPCADPoller } from '@/libraries/services/traffic/CHPCADPoller';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300;

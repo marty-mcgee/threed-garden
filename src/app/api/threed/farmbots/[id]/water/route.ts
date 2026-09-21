@@ -1,6 +1,6 @@
 // src/app/api/threed/farmbots/[id]/water/route.ts
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/libraries/auth';
 
 export const dynamic = 'force-dynamic';
 

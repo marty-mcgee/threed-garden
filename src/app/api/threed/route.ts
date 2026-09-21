@@ -1,8 +1,8 @@
 // app/api/threed/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
-import { threed } from '@/lib/schema/threed';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { threed } from '@/libraries/schema/threed';
 import { eq, desc, and, sql, type SQL } from 'drizzle-orm';
 
 // ============================================

@@ -1,12 +1,12 @@
 // src/components/threed/markers/ModelMarker3D.tsx — v0.16.1-alpha "ThreeD Models"
 'use client';
 
-import { indexEnvironmentRegions, type EnvironmentRegionIndex } from '@/lib/services/threed/models/environment-region-index';
-import { buildEnvironmentSurfaceCollider, type EnvironmentSurfaceCollider } from '@/lib/services/threed/models/environment-surface-collider';
-import { measureModelLocalBounds } from '@/lib/services/threed/models/model-local-bounds';
-import { reportModelLoadFailure } from '@/lib/services/threed/models/model-load-failures';
-import { readModelFallbackShape, type ModelFallbackShape } from '@/lib/services/threed/models/model-fallback-core';
-import { withSavedFbxTextures } from '@/lib/services/threed/models/model-saved-texture-fallback';
+import { indexEnvironmentRegions, type EnvironmentRegionIndex } from '@/libraries/services/threed/models/environment-region-index';
+import { buildEnvironmentSurfaceCollider, type EnvironmentSurfaceCollider } from '@/libraries/services/threed/models/environment-surface-collider';
+import { measureModelLocalBounds } from '@/libraries/services/threed/models/model-local-bounds';
+import { reportModelLoadFailure } from '@/libraries/services/threed/models/model-load-failures';
+import { readModelFallbackShape, type ModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
+import { withSavedFbxTextures } from '@/libraries/services/threed/models/model-saved-texture-fallback';
 import { useRef, useState, useEffect, type ReactNode } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -14,36 +14,36 @@ import { Html } from '@react-three/drei';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
-import { loadStoredObjModel } from '@/lib/services/threed/models/model-obj-loader';
+import { loadStoredObjModel } from '@/libraries/services/threed/models/model-obj-loader';
 import {
   calculateThreeDModelGroundedY,
   calculateThreeDModelFitMultiplier,
   type ThreeDVisualBounds,
-} from '@/lib/services/threed/markers/model-visual-fit-core';
+} from '@/libraries/services/threed/markers/model-visual-fit-core';
 import {
   assessThreeDEnvironmentGeometry,
   createThreeDEnvironmentMeshInventory,
   type ThreeDEnvironmentGeometryAuditAssessment,
   type ThreeDEnvironmentMeshInventory,
-} from '@/lib/services/threed/models/environment-collision-core';
-import { readThreeDModelRuntimeAdapterKey } from '@/lib/services/threed/models/model-runtime-adapter-core';
+} from '@/libraries/services/threed/models/environment-collision-core';
+import { readThreeDModelRuntimeAdapterKey } from '@/libraries/services/threed/models/model-runtime-adapter-core';
 import {
   planThreeDEnvironmentCollisionPreview,
   type ThreeDEnvironmentCollisionPreviewPlan,
   type ThreeDEnvironmentCollisionBoxCandidate,
-} from '@/lib/services/threed/models/environment-collision-preview-core';
+} from '@/libraries/services/threed/models/environment-collision-preview-core';
 import { resolveThreeDModelRuntimeAdapter } from '@/components/threed/models/runtime-adapters/registry';
 import {
   resolveThreeDModelAttachmentUrl,
   type ThreeDModelRuntimeAttachment,
-} from '@/lib/services/threed/models/model-attachment-runtime-core';
+} from '@/libraries/services/threed/models/model-attachment-runtime-core';
 import {
   createThreeDModelMaterialInventory,
   resolveThreeDModelMaterialTarget,
   type ThreeDModelMaterialInventory,
   type ThreeDModelMaterialPreviewOverride,
-} from '@/lib/services/threed/models/model-material-inventory-core';
-import { readThreeDModelMaterialOverrides } from '@/lib/services/threed/models/model-material-override-core';
+} from '@/libraries/services/threed/models/model-material-inventory-core';
+import { readThreeDModelMaterialOverrides } from '@/libraries/services/threed/models/model-material-override-core';
 
 // ============================================
 // TYPES
@@ -86,7 +86,7 @@ export interface ModelGeometryAudit extends ThreeDEnvironmentGeometryAuditAssess
   regionIndex?: EnvironmentRegionIndex;
   regionPreparation?: { phase: 'preparing' | 'ready' | 'rejected'; reason?: string; batches?: number };
   surfaceCollider?: EnvironmentSurfaceCollider | null;
-  surfaceDiagnostic?: import('@/lib/services/threed/models/environment-surface-collider').EnvironmentSurfaceDiagnostic;
+  surfaceDiagnostic?: import('@/libraries/services/threed/models/environment-surface-collider').EnvironmentSurfaceDiagnostic;
   meshCount: number;
   triangleCount: number;
   skinnedMeshCount: number;

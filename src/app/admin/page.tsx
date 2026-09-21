@@ -20,13 +20,13 @@ interface DashboardData {
       total: number;
       threed: number;
       traffic: number;
-      music: number;
+      multimedia: number;
     };
     projectModules: {
       total: number;
       threed: number;
       traffic: number;
-      music: number;
+      multimedia: number;
     };
     assets: {
       total: number;

@@ -71,9 +71,9 @@ CHP CAD, Caltrans, CalFire and 511 cron routes invoke pollers without authorizat
 
 **Deferred by User: registration. Original priority: P1 before onboarding additional users. Evidence: confirmed source control flow.**
 
-`src/app/auth/sign-up/page.tsx:42` calls `signIn('credentials', { action: 'signup', ... })`. `src/lib/auth/index.ts:27` only looks up an existing User and credentials account and verifies its password; it never handles `action` or creates records. An unknown email therefore returns authentication failure. Repository search found no alternate registration handler used by this form.
+`src/app/auth/sign-up/page.tsx:42` calls `signIn('credentials', { action: 'signup', ... })`. `src/libraries/auth/index.ts:27` only looks up an existing User and credentials account and verifies its password; it never handles `action` or creates records. An unknown email therefore returns authentication failure. Repository search found no alternate registration handler used by this form.
 
-Additionally, Auth.js config points to `/sign-in` (`src/lib/auth/index.ts:100`), while the existing page is `/auth/sign-in`; no corresponding rewrite or `/sign-in` page was found.
+Additionally, Auth.js config points to `/sign-in` (`src/libraries/auth/index.ts:100`), while the existing page is `/auth/sign-in`; no corresponding rewrite or `/sign-in` page was found.
 
 **Next change:** implement an authorized/validated registration policy, or explicitly present invite-only onboarding if self-registration is not intended. Align configured routes. This requires a product choice about who can create an account, not a new Model feature.
 
@@ -83,7 +83,7 @@ Additionally, Auth.js config points to `/sign-in` (`src/lib/auth/index.ts:100`),
 
 **Deferred by User: Settings as a whole. Original priority: P1 for the save-action authorization; P2 for persistence redesign. Evidence: confirmed source behavior and filesystem inspection.**
 
-`src/app/admin/settings/page.tsx` exposes a server action calling `updateSettings` without an auth/authorization check. The surrounding Admin layout is a client session gate. `src/lib/config/settings.ts:138` writes to `<cwd>/lib/config/settings.json`, but the checked-in file is `<cwd>/src/lib/config/settings.json`; the target directory/file does not exist in this workspace. Consequently the current save path cannot update the loaded source file here.
+`src/app/admin/settings/page.tsx` exposes a server action calling `updateSettings` without an auth/authorization check. The surrounding Admin layout is a client session gate. `src/libraries/config/settings.ts:138` writes to `<cwd>/lib/config/settings.json`, but the checked-in file is `<cwd>/src/libraries/config/settings.json`; the target directory/file does not exist in this workspace. Consequently the current save path cannot update the loaded source file here.
 
 The client imports static JSON (`settings.client.ts`), while server helpers include cached JSON and separate database override support. Changing a process cache or local source file does not establish a durable shared setting or refresh the already bundled client configuration. Production filesystem behavior was not tested.
 

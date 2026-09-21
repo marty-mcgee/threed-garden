@@ -1,5 +1,5 @@
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
-import { getBulkLocalImagePixelCount } from '../../../../lib/services/threed/models/model-image-limits-core.ts';
+import { getBulkLocalImagePixelCount } from '../../../../libraries/services/threed/models/model-image-limits-core.ts';
 export { getBulkLocalImagePixelCount };
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -7,14 +7,14 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import {
   createThreeDModelMaterialInventory,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
-} from '../../../../lib/services/threed/models/model-material-inventory-core.ts';
+} from '../../../../libraries/services/threed/models/model-material-inventory-core.ts';
 import {
   inspectThreeDGltfBundle,
   resolveThreeDGltfBundleResource,
   validateThreeDGltfBundleResources,
   type GltfBundleResource,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
-} from '../../../../lib/services/threed/models/model-gltf-bundle-core.ts';
+} from '../../../../libraries/services/threed/models/model-gltf-bundle-core.ts';
 
 const MAX_FILE_BYTES = 4 * 1024 * 1024;
 const MAX_BUNDLE_BYTES = 32 * 1024 * 1024;

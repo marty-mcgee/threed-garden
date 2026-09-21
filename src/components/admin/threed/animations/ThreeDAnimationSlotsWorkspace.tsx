@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useAnimationCategories } from './AnimationCategories';
-import type { AnimationActionSlot } from '@/lib/services/threed/animations/action-slots';
+import type { AnimationActionSlot } from '@/libraries/services/threed/animations/action-slots';
 type Slot = AnimationActionSlot & { modelUsage: number; characterUsage: number; presetUsage: number };
 type Draft = { id?: number; name: string; categoryId: number | null; isActive: boolean };
 type SortKey = 'name' | 'categoryName' | 'isActive' | 'references';

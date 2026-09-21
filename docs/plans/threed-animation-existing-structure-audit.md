@@ -18,11 +18,11 @@ Save Mapping remains enabled with zero clips or after failure; a failed discover
 |---|---|---|
 | Embedded animation bytes | Model's primary FBX/GLB/GLTF, referenced through `threed_model_files` | Keyframe clips; tracks target bones, nodes or animated properties. |
 | Shared Character animation bytes | Git-tracked `public/assets/animations/*.fbx` | Standalone sources such as `Idle.fbx`, `Walking.fbx`, `Running.fbx`; not copies embedded into each Character Model. |
-| External source catalog | `src/lib/utils/externalCharacterAnimations.ts`, `FARMER_FEMALE_ANIMATION_SOURCES` | Explicit semantic action, source URL and loop flag. Model name/path matching enables it only for the known Farmer Female family. |
+| External source catalog | `src/libraries/utils/externalCharacterAnimations.ts`, `FARMER_FEMALE_ANIMATION_SOURCES` | Explicit semantic action, source URL and loop flag. Model name/path matching enables it only for the known Farmer Female family. |
 | Embedded action mapping | `threed_models.metadata.animationMap` | Action → clip-name mapping saved by the displayed editor; no animation bytes. |
 | Model animation configuration | `threed_models.animations`, `default_animation` | JSON configuration and default clip selection; not a normalized shared-source library. |
 | Character behavior configuration | `threed_characters.animations`, `default_animation`, `animation_speed` | Enum behavior choices and playback settings, distinct from clip references. |
-| Semantic action vocabulary | `src/lib/utils/animation.ts`; `src/lib/types/character-actions.ts`; external catalog | Locomotion/fallback keys and task-action vocabulary. These catalogs have different roles and are not interchangeable lists. |
+| Semantic action vocabulary | `src/libraries/utils/animation.ts`; `src/libraries/types/character-actions.ts`; external catalog | Locomotion/fallback keys and task-action vocabulary. These catalogs have different roles and are not interchangeable lists. |
 | New library persistence | Four approved local tables and `/api/threed/animations`, `/animation-files`, `/animation-assignments` | Source/clip identities and Model/Character relationships. Stage 1 APIs exist; source registration, UI and runtime consumption are still pending. No live table/data state is inferred. |
 
 ## How playback works today

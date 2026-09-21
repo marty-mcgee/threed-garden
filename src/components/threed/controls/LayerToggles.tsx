@@ -3,7 +3,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Car, Carrot, Cloud, Cpu, Smile } from 'lucide-react';
-import { LayerVisibility } from '@/lib/types/threed';
+import { LayerVisibility } from '@/libraries/types/threed';
 
 interface LayerTogglesProps {
   layers: LayerVisibility;

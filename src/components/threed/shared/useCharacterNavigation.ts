@@ -2,9 +2,9 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { useThree } from '@react-three/fiber';
 import { Box3, Vector3 } from 'three';
-import { navigationVisualBounds } from '@/lib/services/threed/orchestration/navigation-visual-bounds';
-import { createCharacterNavigation, stepCharacterNavigation, type CharacterNavigationState } from '@/lib/services/threed/orchestration/navigation-core';
-import { NAVIGATION_REQUEST, NAVIGATION_STATUS, type NavigationRequest } from '@/lib/services/threed/orchestration/navigation-events';
+import { navigationVisualBounds } from '@/libraries/services/threed/orchestration/navigation-visual-bounds';
+import { createCharacterNavigation, stepCharacterNavigation, type CharacterNavigationState } from '@/libraries/services/threed/orchestration/navigation-core';
+import { NAVIGATION_REQUEST, NAVIGATION_STATUS, type NavigationRequest } from '@/libraries/services/threed/orchestration/navigation-events';
 
 // This adapter emits steering only. Ecctrl retains body, locomotion and live-position ownership.
 export function useCharacterNavigation({ markerId, targetMarkerId, controlled, enabled, taskLocked, clearance }: {

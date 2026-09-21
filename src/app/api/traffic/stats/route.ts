@@ -1,13 +1,13 @@
 // app/api/traffic/stats/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
-import { db } from '@/lib/db/client';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
 import {
   trafficChpCadIncidents,
   trafficChpCases,
   trafficCaltransLaneClosures,
   trafficBayArea511Events,
-} from '@/lib/schema/traffic';
+} from '@/libraries/schema/traffic';
 import { and, eq, sql } from 'drizzle-orm';
 
 export async function GET(request: NextRequest) {

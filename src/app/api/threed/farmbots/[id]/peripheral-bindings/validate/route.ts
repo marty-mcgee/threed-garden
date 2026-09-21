@@ -1,21 +1,21 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@/lib/auth';
+import { auth } from '@/libraries/auth';
 import {
   FarmBotCredentialNotConfiguredError,
   FarmBotCredentialNotFoundError,
-} from '@/lib/services/threed/farmbot/credential-repository';
-import { FarmBotCredentialKeyConfigurationError } from '@/lib/services/threed/farmbot/credential-keyring-core';
+} from '@/libraries/services/threed/farmbot/credential-repository';
+import { FarmBotCredentialKeyConfigurationError } from '@/libraries/services/threed/farmbot/credential-keyring-core';
 import {
   FarmBotConnectionUnavailableError,
   FarmBotCredentialRejectedError,
-} from '@/lib/services/threed/farmbot/connection-client-core';
+} from '@/libraries/services/threed/farmbot/connection-client-core';
 import {
   isFarmBotSemanticAction,
-} from '@/lib/services/threed/farmbot/peripheral-binding-core';
+} from '@/libraries/services/threed/farmbot/peripheral-binding-core';
 import {
   FarmBotPeripheralBindingNotFoundError,
   validateFarmBotPeripheralBinding,
-} from '@/lib/services/threed/farmbot/peripheral-binding-validator';
+} from '@/libraries/services/threed/farmbot/peripheral-binding-validator';
 
 export const dynamic = 'force-dynamic';
 

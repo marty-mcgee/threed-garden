@@ -5,8 +5,8 @@ import { useWorkspaceSettings } from '@/components/settings/WorkspaceSettingsPro
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { buildNavigationClient } from '@/lib/config/navigation.client';
+import { cn } from '@/libraries/utils';
+import { buildNavigationClient } from '@/libraries/config/navigation.client';
 import {
   DropdownMenu,
   DropdownMenuContent,
