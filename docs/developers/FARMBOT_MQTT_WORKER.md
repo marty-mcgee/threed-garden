@@ -38,9 +38,9 @@ Implemented and validated:
 - an internal HTTP skeleton for health, session grant, disconnect, and status; and
 - an executable worker whose transport is intentionally `disabled` and returns a safe failure instead of opening MQTT.
 
-`npm run validate:farmbot-worker` exercises the pure modules and a loopback-only HTTP server. It uses fabricated JWT-shaped test data, no database, no stored credential, no FarmBot network request, and no hardware.
+`npm run validate -- farmbot-worker` exercises the pure modules and a loopback-only HTTP server. It uses fabricated JWT-shaped test data, no database, no stored credential, no FarmBot network request, and no hardware.
 
-The shared MQTT transport and worker authentication have their own provider-neutral `npm run validate:threed-mqtt` check. That test uses neutral integration topics and contains no FarmBot dependency.
+The shared MQTT transport and worker authentication have their own provider-neutral `npm run validate -- threed-mqtt` check. That test uses neutral integration topics and contains no FarmBot dependency.
 
 ## Normalized persistence and Admin activity
 
@@ -52,7 +52,7 @@ The owner-scoped Admin **MQTT Activity** dialog displays current runtime, stale/
 
 Credential replacement and removal delete the current runtime snapshot because it belongs to the previous worker session. Normalized history is retained until its retention cleanup or an owner explicitly clears it.
 
-`npm run validate:farmbot-mqtt-persistence` validates the allowlisted ingestion shape using fabricated data without a database or network connection. The user successfully applied the approved tables through the reviewed Drizzle workflow.
+`npm run validate -- farmbot-mqtt-persistence` validates the allowlisted ingestion shape using fabricated data without a database or network connection. The user successfully applied the approved tables through the reviewed Drizzle workflow.
 
 ## Accepted architectural direction
 
@@ -216,7 +216,7 @@ Before any live MQTT test, Phase 2B must prove locally that:
 
 A later read-only live test requires separate approval to configure a worker host and open the MQTT connection. Passing Phase 2B does not authorize Phase 3 commands.
 
-Phase 2B currently meets these offline acceptance criteria through `npm run validate:farmbot-worker` and the repository TypeScript check.
+Phase 2B currently meets these offline acceptance criteria through `npm run validate -- farmbot-worker` and the repository TypeScript check.
 
 ## Implemented Phase 2B files
 

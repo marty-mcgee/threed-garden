@@ -201,7 +201,7 @@ Encrypted per-device credential storage, key management, and the initial Admin c
 
 The server-only credential boundary uses a versioned AES-256-GCM envelope with a unique 96-bit IV. Authenticated additional data binds each ciphertext to its owner ID and database FarmBot ID, preventing a valid encrypted token from being moved to another record without detection.
 
-The primitive requires an exact 32-byte base64 key and a positive key version. `npm run validate:farmbot-crypto` verifies round-trip decryption, unique IV generation, plaintext exclusion, tamper detection, wrong-key rejection, cross-owner and cross-device rejection, and input validation.
+The primitive requires an exact 32-byte base64 key and a positive key version. `npm run validate -- farmbot-crypto` verifies round-trip decryption, unique IV generation, plaintext exclusion, tamper detection, wrong-key rejection, cross-owner and cross-device rejection, and input validation.
 
 The primitive is used only through the server-only credential repository and dedicated credential endpoint.
 
@@ -238,7 +238,7 @@ The internal server-only repository provides owner-scoped status, save/replace, 
 - Returned status contains only `configured`, key version, update time, and rotation outcome; it never contains ciphertext or plaintext.
 - Missing FarmBots, missing credentials, and concurrent updates have distinct internal errors.
 
-Envelope conversion and completeness checks run in `npm run validate:farmbot-crypto`. Repository functions have not contacted FarmBot hardware.
+Envelope conversion and completeness checks run in `npm run validate -- farmbot-crypto`. Repository functions have not contacted FarmBot hardware.
 
 ## Credential endpoint
 

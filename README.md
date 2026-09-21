@@ -234,8 +234,8 @@ src/
 │   ├── music/          # Music player & UI
 │   ├── traffic/        # Traffic dashboard & map
 │   └── ui/             # shadcn/ui components
-└── lib/
-    ├── schema/         # Drizzle ORM schemas (auth, music, project, settings, threed, traffic)
+└── libraries/
+    ├── schema/         # Drizzle ORM schemas (auth, multimedia, project, settings, threed, traffic)
     ├── db/             # Database client
     ├── services/       # Data-fetching & domain logic
     └── types/          # Shared TypeScript types
@@ -254,9 +254,12 @@ src/
 | `bun db:generate` | Generate migrations |
 | `bun db:studio` | Open Drizzle Studio |
 | `npm run farmbot:mqtt-worker` | Start the separately run read-only FarmBot MQTT worker |
-| `npm run validate:threed-mqtt` | Validate provider-neutral MQTT transport and worker authentication |
-| `npm run validate:farmbot-worker` | Validate FarmBot MQTT adapter and lifecycle behavior |
-| `npm run validate:farmbot-mqtt-persistence` | Validate normalized MQTT persistence rules |
+| `npm run validate -- --list` | List validation tasks and maintained groups |
+| `npm run validate -- <name...>` | Run one or more validation tasks or groups |
+| `npm run validate:all` | Run every registered validation task sequentially |
+| `npm run validate -- threed-mqtt` | Validate provider-neutral MQTT transport and worker authentication |
+| `npm run validate -- farmbot-worker` | Validate FarmBot MQTT adapter and lifecycle behavior |
+| `npm run validate -- farmbot-mqtt-persistence` | Validate normalized MQTT persistence rules |
 
 ---
 

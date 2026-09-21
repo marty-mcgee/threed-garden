@@ -142,6 +142,6 @@ Source paths are diagnostic evidence, not semantics. A substring such as `fence`
 3. Confirm an invalid Model ID returns `400`, an unauthorized request returns `401`, a missing Model returns `404`, and an unsupported format returns `422`.
 4. Confirm the requests do not alter Model metadata, Project Markers, Scene Layers, or Physics Debug state.
 5. Load the Project environment and verify Model rendering, Character placement/control, procedural-ground policy, and the persistent Canvas/Rapier world remain stable.
-6. Run `npm run validate:threed-runtime-markers`, `npm run typecheck`, `git diff --check`, and `npm run build`.
+6. Run `npm run validate -- threed-runtime-markers`, `npm run typecheck`, `git diff --check`, and `npm run build`.
 
 Only after deployment and production verification should a v0.19.3d entry be added to `docs/releases`.

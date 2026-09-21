@@ -9,7 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Plus, Edit, Trash2, Music, Link as LinkIcon } from 'lucide-react';
-import { toast } from 'sonner';
+import { useToast } from '@/components/ui/toast';
 
 interface Album {
   id: number;
@@ -33,6 +33,7 @@ interface Track {
 }
 
 export function AdminMusicManager() {
+  const { showToast, ToastComponent } = useToast();
   const [albums, setAlbums] = useState<Album[]>([]);
   const [tracks, setTracks] = useState<Track[]>([]);
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null);
@@ -98,12 +99,12 @@ export function AdminMusicManager() {
     });
 
     if (response.ok) {
-      toast.success('Album created successfully');
+      showToast('Album created successfully', 'success');
       setIsAlbumDialogOpen(false);
       fetchAlbums();
       resetAlbumForm();
     } else {
-      toast.error('Failed to create album');
+      showToast('Failed to create album', 'error');
     }
   };
 
@@ -121,12 +122,12 @@ export function AdminMusicManager() {
     });
 
     if (response.ok) {
-      toast.success('Album updated successfully');
+      showToast('Album updated successfully', 'success');
       setIsAlbumDialogOpen(false);
       fetchAlbums();
       resetAlbumForm();
     } else {
-      toast.error('Failed to update album');
+      showToast('Failed to update album', 'error');
     }
   };
 
@@ -135,14 +136,14 @@ export function AdminMusicManager() {
 
     const response = await fetch(`/api/multimedia/albums?id=${id}`, { method: 'DELETE' });
     if (response.ok) {
-      toast.success('Album deleted successfully');
+      showToast('Album deleted successfully', 'success');
       fetchAlbums();
       if (selectedAlbum?.id === id) {
         setSelectedAlbum(null);
         setTracks([]);
       }
     } else {
-      toast.error('Failed to delete album');
+      showToast('Failed to delete album', 'error');
     }
   };
 
@@ -164,12 +165,12 @@ export function AdminMusicManager() {
     });
 
     if (response.ok) {
-      toast.success('Track created successfully');
+      showToast('Track created successfully', 'success');
       setIsTrackDialogOpen(false);
       fetchTracks(selectedAlbum.id);
       resetTrackForm();
     } else {
-      toast.error('Failed to create track');
+      showToast('Failed to create track', 'error');
     }
   };
 
@@ -178,12 +179,12 @@ export function AdminMusicManager() {
 
     const response = await fetch(`/api/multimedia/tracks?id=${id}`, { method: 'DELETE' });
     if (response.ok) {
-      toast.success('Track deleted successfully');
+      showToast('Track deleted successfully', 'success');
       if (selectedAlbum) {
         fetchTracks(selectedAlbum.id);
       }
     } else {
-      toast.error('Failed to delete track');
+      showToast('Failed to delete track', 'error');
     }
   };
 
@@ -227,6 +228,7 @@ export function AdminMusicManager() {
 
   return (
     <div className="space-y-6">
+      {ToastComponent}
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Music Library Manager</h2>
         <Dialog open={isAlbumDialogOpen} onOpenChange={setIsAlbumDialogOpen}>

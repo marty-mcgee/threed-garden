@@ -5,16 +5,16 @@ This repository uses a narrow-first validation ladder. Agents should prove the r
 ## Validation order
 
 1. Inspect `git diff --check` for whitespace and patch errors.
-2. Run `npm run validate:assets` when character animation assets, their manifest, or the local Three.js DRACO decoder assets change.
-3. Run `npm run validate:farmbot-crypto` when FarmBot credential cryptography changes.
+2. Run `npm run validate -- assets` when character animation assets, their manifest, or the local Three.js DRACO decoder assets change.
+3. Run `npm run validate -- farmbot-crypto` when FarmBot credential cryptography changes.
 4. Run `npm run typecheck`; TypeScript errors are release-blocking.
-5. Run `npm run validate:threed-library-placement` when Dashboard Model, Character, or FarmBot Library placement request construction changes.
-6. Run `npm run validate:threed-runtime-markers` when ThreeD Marker identity, registry, position resolution, or marker adapters change.
-7. Run `npm run validate:threed-orchestration` when ThreeD character approach, arrival, orientation, or interaction orchestration changes.
-8. Run `npm run validate:threed-mqtt` when the provider-neutral MQTT transport or worker authentication changes.
-9. Run `npm run validate:farmbot-worker` when the FarmBot MQTT adapter, grants, status parsing, persistence mapping, or lifecycle changes.
-10. Run `npm run validate:farmbot-mqtt-persistence` when normalized worker events, persistence rules, or MQTT Admin activity changes.
-11. Run `npm run validate:farmbot-command-policy` when Phase 3 semantic intent, lifecycle states, idempotency rules, or command safety policy changes.
+5. Run `npm run validate -- threed-library-placement` when Dashboard Model, Character, or FarmBot Library placement request construction changes.
+6. Run `npm run validate -- threed-runtime-markers` when ThreeD Marker identity, registry, position resolution, or marker adapters change.
+7. Run `npm run validate -- threed-orchestration` when ThreeD character approach, arrival, orientation, or interaction orchestration changes.
+8. Run `npm run validate -- threed-mqtt` when the provider-neutral MQTT transport or worker authentication changes.
+9. Run `npm run validate -- farmbot-worker` when the FarmBot MQTT adapter, grants, status parsing, persistence mapping, or lifecycle changes.
+10. Run `npm run validate -- farmbot-mqtt-persistence` when normalized worker events, persistence rules, or MQTT Admin activity changes.
+11. Run `npm run validate -- farmbot-command-policy` when Phase 3 semantic intent, lifecycle states, idempotency rules, or command safety policy changes.
 12. Run a file-scoped lint command only when an ESLint executable/configuration is available.
 13. Run targeted tests when a matching test exists.
 14. Run `npm run build` only when the change affects bundling, routing, server/client boundaries, or release readiness.
@@ -22,30 +22,60 @@ This repository uses a narrow-first validation ladder. Agents should prove the r
 
 ## Commands
 
-For the personal Settings workspace, run `npm run validate:workspace-settings`, `npm run validate:dashboard-project-discovery`, `npm run validate:threed-project-session`, TypeScript and diff checks. Settings fixtures execute the real contract, service, API handlers, navigation builder, provider and form with mocked database/React/network adapters. They cover owner predicates, authentication/origin, strict validation, stale revisions, audit rollback, account transitions, appearance application, failed-save retention and Discard/Refresh. They do not establish live PostgreSQL locking, browser paint, native fieldset behavior or actual persistence. Follow the browser checklist in `docs/plans/v0.19.40.md`. No schema command or User-owned build is part of these checks.
+Package validation is exposed through one parameterized dispatcher:
+
+```bash
+# Show every task and group
+npm run validate -- --list
+
+# Run one task, several tasks, or a comma-separated selection
+npm run validate -- assets
+npm run validate -- workspace-settings dashboard-scene-route
+npm run validate -- assets,threed-runtime-markers
+
+# Run a maintained group
+npm run validate -- dashboard
+npm run validate -- multimedia
+npm run validate -- farmbot
+npm run validate -- threed
+npm run validate -- ci
+
+# Preview commands without executing them, or run every registered task
+npm run validate -- ci --dry-run
+npm run validate:all
+```
+
+Selections are explicit, deduplicated, and run sequentially. The dispatcher stops on the first failure and rejects unknown task or group names. `validate:all` is intentionally broad; use the smallest relevant task or group during development and reserve the complete runnable set for release work. The `ci` group is the source of truth for the GitHub validation workflow.
+
+The retained `threed-fbx-material-targets` task is excluded from `all` and `ci` because its historical Farmer Male FBX fixture is absent. It remains directly selectable and is listed in the `unavailable-fixtures` group so the missing coverage stays visible rather than being silently deleted. Restore or replace that fixture before adding the task back to the runnable groups.
+
+The `shadcn-ui-boundary` task enforces the repository-owned component layer. Product code must consume `@/components/ui/*`; only files inside `src/components/ui` may import the unified `radix-ui` primitive package. Direct `@radix-ui/*` imports and package dependencies are rejected. The check also preserves the UI and utility aliases and the `src/app/globals.css` Blueprint stylesheet configured in `components.json`.
+
+For the personal Settings workspace, run `npm run validate -- workspace-settings`, `npm run validate -- dashboard-project-discovery`, `npm run validate -- threed-project-session`, TypeScript and diff checks. Settings fixtures execute the real contract, service, API handlers, navigation builder, provider and form with mocked database/React/network adapters. They cover owner predicates, authentication/origin, strict validation, stale revisions, audit rollback, account transitions, appearance application, failed-save retention and Discard/Refresh. They do not establish live PostgreSQL locking, browser paint, native fieldset behavior or actual persistence. Follow the browser checklist in `docs/plans/v0.19.40.md`. No schema command or User-owned build is part of these checks.
 
 ```bash
 git diff --check
-npm run validate:assets
-npm run validate:threed-library-placement
-npm run validate:threed-project-session
-npm run validate:threed-model-import
-npm run validate:threed-model-blob-paths
-npm run validate:threed-model-bulk-preparation
-npm run validate:threed-model-bulk-runner
-npm run validate:threed-fbx-material-targets
-npm run validate:threed-gltf-bundle
-npm run validate:threed-gltf-material-targets
-npm run validate:threed-obj-bundle
-npm run validate:threed-model-bulk-preview
-npm run validate:threed-bulk-saved-texture
-npm run validate:threed-runtime-markers
-npm run validate:threed-orchestration
-npm run validate:farmbot-crypto
-npm run validate:threed-mqtt
-npm run validate:farmbot-worker
-npm run validate:farmbot-mqtt-persistence
-npm run validate:farmbot-command-policy
+npm run validate -- shadcn-ui-boundary
+npm run validate -- assets
+npm run validate -- threed-library-placement
+npm run validate -- threed-project-session
+npm run validate -- threed-model-import
+npm run validate -- threed-model-blob-paths
+npm run validate -- threed-model-bulk-preparation
+npm run validate -- threed-model-bulk-runner
+npm run validate -- threed-fbx-material-targets
+npm run validate -- threed-gltf-bundle
+npm run validate -- threed-gltf-material-targets
+npm run validate -- threed-obj-bundle
+npm run validate -- threed-model-bulk-preview
+npm run validate -- threed-bulk-saved-texture
+npm run validate -- threed-runtime-markers
+npm run validate -- threed-orchestration
+npm run validate -- farmbot-crypto
+npm run validate -- threed-mqtt
+npm run validate -- farmbot-worker
+npm run validate -- farmbot-mqtt-persistence
+npm run validate -- farmbot-command-policy
 npm run typecheck
 npm run build
 ```
@@ -98,7 +128,7 @@ For Phase 3D, confirm `command-validation-core` has no database, route, MQTT, wo
 
 For Phase 3E, `POST /api/threed/farmbots/commands` may create/reuse and validate only a strict semantic Water audit request for the authenticated owner. Confirm malformed, oversized, extra-field, unassigned, and idempotency-conflict requests fail closed. A successful response must say `deliveryEnabled: false` and must omit binding/peripheral identity, pins, fingerprints, credentials, broker data, and provider responses. Confirm the route has no MQTT/worker/publish/RPC/CeleryScript dependency and the direct Water and Move routes still return `503`.
 
-For Phase 3F-A, `npm run validate:farmbot-worker` checks the offline FarmBot Water delivery envelope and RPC acknowledgement mapping. Confirm it derives only `bot/device_<ID>/from_clients`, uses a server-derived RPC label, and produces exactly `write_pin(1) → wait(5000) → write_pin(0)` for the validated pin in digital mode. Invalid duration, identity, expiry, command state, fingerprint, or response label must fail. Also confirm the shared transport still exposes no publish method, worker health reports `commandsEnabled: false`, the worker server has no command route, and the App response remains `deliveryEnabled: false`.
+For Phase 3F-A, `npm run validate -- farmbot-worker` checks the offline FarmBot Water delivery envelope and RPC acknowledgement mapping. Confirm it derives only `bot/device_<ID>/from_clients`, uses a server-derived RPC label, and produces exactly `write_pin(1) → wait(5000) → write_pin(0)` for the validated pin in digital mode. Invalid duration, identity, expiry, command state, fingerprint, or response label must fail. Also confirm the shared transport still exposes no publish method, worker health reports `commandsEnabled: false`, the worker server has no command route, and the App response remains `deliveryEnabled: false`.
 
 Phase 3F-B coverage checks the 15-second acknowledgement deadline, no timeout evaluation outside `dispatched`, and the independent Water-off recovery envelope. Recovery must require a valid `dispatchedAt`, a post-dispatch/uncertain state, the validated pin snapshot, and a distinct server-derived RPC label. Its body must contain only digital `write_pin(0)`. Matching recovery success/failure responses are interpreted separately. Confirm there is still no scheduler, publish method, or worker caller; Phase 3F-C owns the later dormant database transitions.
 
@@ -108,7 +138,7 @@ For Phase 3F-D, inspect the generated Drizzle migration before applying it. It s
 
 Phase 3F-E policy coverage checks deterministic recovery-label derivation, proof of original dispatch, `required → dispatched → confirmed/failed`, timestamp order, and exact acknowledgement-label matching. Repository review must confirm owner scope, per-FarmBot locks, and conditional recovery-state updates. Recovery after original dispatch must remain recordable without an active Project assignment. Confirm no route, scheduler, worker, MQTT observer, transport, or browser caller imports the recovery writers and that MQTT publishing remains unavailable.
 
-For Phase 4A, `npm run validate:farmbot-worker` checks the strict signed-worker Water request parser. It must accept only an `accepted`, unexpired, server-resolved Water snapshot with the fixed five-second duration and exact server-derived RPC label. Extra fields, topics, CeleryScript, arbitrary durations, invalid pins, mismatched labels, and expired commands must fail. Confirm the parser has no server route, worker-client caller, registry dependency, transport publish method, or environment switch and worker health still reports `commandsEnabled: false`.
+For Phase 4A, `npm run validate -- farmbot-worker` checks the strict signed-worker Water request parser. It must accept only an `accepted`, unexpired, server-resolved Water snapshot with the fixed five-second duration and exact server-derived RPC label. Extra fields, topics, CeleryScript, arbitrary durations, invalid pins, mismatched labels, and expired commands must fail. Confirm the parser has no server route, worker-client caller, registry dependency, transport publish method, or environment switch and worker health still reports `commandsEnabled: false`.
 
 For Phase 4B, the same offline worker validator checks command-session scope and the fail-closed signed endpoint. A command session requires the same FarmBot, owner, and broker identity plus a connected, non-stale status. Missing, mismatched, disconnected, and stale sessions must fail. The default executor must throw commands-disabled, the signed endpoint must not return success, the App worker client must have no command caller, the transport must expose no publish method, and worker health must remain `commandsEnabled: false`.
 
@@ -188,7 +218,7 @@ For Phase 4L-A, verify the strict emergency Water-off request contains only vers
 
 For Phase 4L-B, inspect generated SQL before applying it. It must only create `threed_farmbot_emergency_actions` with its indexes, checks, and foreign keys. Confirm there is no drop, rename, truncation, rewrite, or alteration of an existing table. The table must have no Project dependency, normal command dependency, credential, MQTT topic/payload, CeleryScript, arbitrary JSON, or browser operation field. Verify binding deletion sets the reference to null without clearing immutable snapshots, lifecycle checks require fixed mode-0 Water resolution for execution states, and expiry is exactly 60 seconds. Do not run `db:push` until the generated proposal matches this declaration.
 
-For Phase 4L-C, run `npm run validate:farmbot-command-policy` and confirm six groups pass. The emergency lifecycle must derive its RPC label and exact 60-second expiry, require an active owner/FarmBot-matched Water binding in mode 0, prevent state skipping, allow rejection or expiry only before acceptance, and require exact RPC correlation for acknowledged/failed outcomes. Confirm the module has no database import, repository writer, route, worker client, MQTT publisher, UI caller, or hardware behavior.
+For Phase 4L-C, run `npm run validate -- farmbot-command-policy` and confirm six groups pass. The emergency lifecycle must derive its RPC label and exact 60-second expiry, require an active owner/FarmBot-matched Water binding in mode 0, prevent state skipping, allow rejection or expiry only before acceptance, and require exact RPC correlation for acknowledged/failed outcomes. Confirm the module has no database import, repository writer, route, worker client, MQTT publisher, UI caller, or hardware behavior.
 
 For Phase 4L-D, review `emergency-action-repository.ts` and confirm every lookup and mutation is owner-scoped, each mutation takes the shared `farmbot-command:<id>` advisory transaction lock, and writes require the exact prior lifecycle state. Creation must generate the UUID server-side and require an owned FarmBot. Validation must read only the owner's saved Water binding and persist immutable mode-0 snapshots or a bounded rejected/expired result. Confirm no file outside the repository imports it and that it has no Project dependency, route, worker client, MQTT publisher, UI caller, or physical behavior.
 
@@ -235,7 +265,7 @@ For the FarmBot parent-identity schema revision, inspect the `db:push` proposal 
 - Select a marker and open its DetailsCard, optionally Take Control or begin a cancellable placement/move operation, then change Projects. Confirm the outgoing DetailsCard, selection, Character control, live position, and operation panels disappear before the new Project loads.
 - Recheck Project changes for the R3F null event-target error and server logs for `window is not defined`.
 - Delete a disposable marker and confirm the pending operation notification remains visible below the Project toolbar without changing the toolbar or Scene height.
-- Run `npm run typecheck`, `npm run validate:threed-runtime-markers`, and `git diff --check`. The client-run production build remains the release gate.
+- Run `npm run typecheck`, `npm run validate -- threed-runtime-markers`, and `git diff --check`. The client-run production build remains the release gate.
 
 ## v0.19.5c ThreeD Project guidance and Environment presentation checks
 
@@ -249,7 +279,7 @@ For the FarmBot parent-identity schema revision, inspect the `db:push` proposal 
 - Select **Sunset Forest HD**, confirm the App-owned panoramic image is sharp and consistently framed, then switch between other existing Environment presets.
 - Save Project view state with each new Environment key and refresh. Confirm the PUT succeeds and the selected Environment restores; an unknown Environment key must still fail validation.
 - Change Projects with the Tour or another Project-scoped panel open. Confirm the outgoing presentation and interaction state do not carry into the incoming Project.
-- Run `npm run typecheck`, `npm run validate:assets`, `npm run validate:threed-runtime-markers`, `npm run validate:threed-orchestration`, and `git diff --check`. The client-run production build remains the release gate.
+- Run `npm run typecheck`, `npm run validate -- assets`, `npm run validate -- threed-runtime-markers`, `npm run validate -- threed-orchestration`, and `git diff --check`. The client-run production build remains the release gate.
 
 ## v0.19.6 ThreeD Dashboard Project template and onboarding checks
 
@@ -261,7 +291,7 @@ For the FarmBot parent-identity schema revision, inspect the `db:push` proposal 
 - Create a **Complete App** Project and confirm exactly one new ThreeD, Traffic, and Multimedia module foundation is linked to it. Templates must not copy assets, Runtime Markers, coordinates, or child records.
 - Force or simulate a module-creation failure in a disposable development environment and confirm the database transaction rolls back the Project and all template-created module/junction rows together.
 - Confirm a new Project without saved view state starts with **Default Daylight**, even if another Project previously used `sunset`. Confirm an existing Project with an explicitly saved Environment still restores that choice.
-- Run `npm run validate:project-templates`, `npm run typecheck`, `npm run validate:assets`, `npm run validate:threed-runtime-markers`, `npm run validate:threed-orchestration`, and `git diff --check`. The client-run production build remains the release gate.
+- Run `npm run validate -- project-templates`, `npm run typecheck`, `npm run validate -- assets`, `npm run validate -- threed-runtime-markers`, `npm run validate -- threed-orchestration`, and `git diff --check`. The client-run production build remains the release gate.
 
 ## v0.19.9 Guided ThreeD Project creation checks
 
@@ -272,12 +302,12 @@ For the FarmBot parent-identity schema revision, inspect the `db:push` proposal 
 - After all three foundations exist, confirm **Explore the Scene** dismisses the Tour and **Setup** can reopen it.
 - Change Projects while the Tour or a Library is open and confirm no progress, selection, placement, DetailsCard, or dismissed state carries into the incoming Project.
 - Confirm the Tour never creates an asset, automatically saves a Project, remounts the Canvas/Rapier world, or changes Character runtime routing.
-- Run `npm run validate:project-templates`, `npm run validate:threed-project-session`, `npm run validate:threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. The client-run production build remains the release gate.
+- Run `npm run validate -- project-templates`, `npm run validate -- threed-project-session`, `npm run validate -- threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. The client-run production build remains the release gate.
 
 ## v0.18.6b release-candidate checks
 
-- Run `npm run validate:threed-runtime-markers` and confirm all registry, builder, snapshot validation, and saved-position merge groups pass.
-- Run `npm run validate:threed-orchestration` and confirm all Action Target identity, capability, range, lifecycle, and direction groups pass.
+- Run `npm run validate -- threed-runtime-markers` and confirm all registry, builder, snapshot validation, and saved-position merge groups pass.
+- Run `npm run validate -- threed-orchestration` and confirm all Action Target identity, capability, range, lifecycle, and direction groups pass.
 - Run `npm run typecheck` and `git diff --check`.
 - Manually confirm movement does not write `project_threed_markers`; **Save ThreeD Project** writes the complete unfiltered snapshot; refresh restores saved Ecctrl coordinates; and removed or inactive Project assignments do not restore stale markers.
 - Manually recheck selection, layers, DetailsCard, Take/Release Control, camera modes, Action Target range and generic interactions, GardenCharacter wandering, targeted Water, Pick Fruit persistence, and task-to-locomotion crossfades.
@@ -286,7 +316,7 @@ For the FarmBot parent-identity schema revision, inspect the `db:push` proposal 
 
 ## v0.18.7a pre-release checks
 
-- Run `npm run validate:assets`, `npm run validate:threed-runtime-markers`, `npm run validate:threed-orchestration`, `npm run typecheck`, and `git diff --check`.
+- Run `npm run validate -- assets`, `npm run validate -- threed-runtime-markers`, `npm run validate -- threed-orchestration`, `npm run typecheck`, and `git diff --check`.
 - Upload or select an active, public, non-Character Library model and place it once in the 3D Scene. Confirm one `project_threed_markers` row is created and no write occurs during hover or render frames.
 - Select the placed Model and verify instance name, scale multiplier, and Y rotation update only that marker. Delete a disposable placement and confirm the reusable `threed_models` row and stored file remain.
 - Confirm Model create/update/delete does not visibly reload the Canvas or reset unrelated markers.
@@ -328,9 +358,9 @@ For Project Bed CRUD, select a saved Bed and update width, length, height, XYZ p
 - Recheck Planting Action Target behavior, targeted Water/Pick Fruit, layer visibility, Physics Debug, and Ecctrl Take/Release Control plus WASD after Planting creation and editing.
 - Select an Ecctrl Character after placement and confirm Take Control, WASD, the Character model, and its selection halo still move together.
 
-`npm run validate:assets` verifies that every file in the external character animation manifest and every required local Three.js DRACO decoder file exists under `public/`. It must pass in a clean Git checkout before deployment; in CI, successful validation after `actions/checkout` also proves the required assets are tracked by Git.
+`npm run validate -- assets` verifies that every file in the external character animation manifest and every required local Three.js DRACO decoder file exists under `public/`. It must pass in a clean Git checkout before deployment; in CI, successful validation after `actions/checkout` also proves the required assets are tracked by Git.
 
-`npm run validate:farmbot-crypto` exercises the server-side FarmBot credential envelope, persistence conversion, versioned key-provider policy, token-response validation, limited JWT metadata decoding, strict broker-metadata validation, allowlisted read-only device/peripheral parsing, and fail-closed peripheral-binding snapshot validation without using a real credential, database, network connection, or hardware device.
+`npm run validate -- farmbot-crypto` exercises the server-side FarmBot credential envelope, persistence conversion, versioned key-provider policy, token-response validation, limited JWT metadata decoding, strict broker-metadata validation, allowlisted read-only device/peripheral parsing, and fail-closed peripheral-binding snapshot validation without using a real credential, database, network connection, or hardware device.
 
 After applying the broker-metadata schema to an approved development database, run the REST connection test and verify that the Admin snapshot and database row show current MQTT/MQTT-WebSocket metadata with a new `restVerifiedAt`. Confirm that general FarmBot and map responses still omit this data.
 
@@ -420,7 +450,7 @@ Do not suppress new diagnostics or make TypeScript non-blocking to land unrelate
 - Edit one Bed or Planting instance. Confirm only its stable `marker_id` transaction changes and the Canvas, Physics world, Character, and unrelated markers are not remounted.
 - Select a movable Character, Take Control, use WASD, and confirm the Character model, Ecctrl body, and selection halo move together before and after another marker transaction.
 - Treat activation of the Canvas Rapier failure circuit as failed validation. Containing the error is not a passing physics result.
-- Run `npm run validate:threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. Run `npm run build` manually in the client environment before deployment.
+- Run `npm run validate -- threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. Run `npm run build` manually in the client environment before deployment.
 
 ## Reporting
 
@@ -433,13 +463,13 @@ Every completed change should report:
 
 ## OBJ/MTL candidate validation
 
-Run `npm run validate:threed-obj-bundle` when changing OBJ parsing, MTL discovery, shared material rendering or OBJ readiness. Six native groups use original synthetic fixtures and actual Three.js loaders without network access. The validator exports `runObjBundleChecks(true)` for a browser harness: nine groups additionally verify image decoding, UV transforms/clamping, missing/corrupt images, saved attachment URL resolution and the explicit staged geometry preview. See [centaur evidence and manual gates](../plans/v0.19.10c.md).
+Run `npm run validate -- threed-obj-bundle` when changing OBJ parsing, MTL discovery, shared material rendering or OBJ readiness. Six native groups use original synthetic fixtures and actual Three.js loaders without network access. The validator exports `runObjBundleChecks(true)` for a browser harness: nine groups additionally verify image decoding, UV transforms/clamping, missing/corrupt images, saved attachment URL resolution and the explicit staged geometry preview. See [centaur evidence and manual gates](../plans/v0.19.10c.md).
 
 Also run the importer preparation, runner and preview validators, plus GLTF/FBX material checks when touching their shared helpers. Browser checks use mocked API routes and must not create real records. The current User instruction prohibits `npm run build` in this chat; the build remains a manual gate.
 
-Run `npm run validate:threed-bulk-saved-texture` for matching saved FBX Texture attachment reuse. It verifies effective selection, local-file priority, format/filename exclusion, bounded download failures, shared-reference identity and preparation/preview attachment continuity with mocked fetch only. The runner validator also checks identifier-only shared Texture linking and exact stored-URL readback.
+Run `npm run validate -- threed-bulk-saved-texture` for matching saved FBX Texture attachment reuse. It verifies effective selection, local-file priority, format/filename exclusion, bounded download failures, shared-reference identity and preparation/preview attachment continuity with mocked fetch only. The runner validator also checks identifier-only shared Texture linking and exact stored-URL readback.
 
-Run `npm run validate:threed-model-blob-paths` when changing Model/Texture storage keys or ownership/cleanup recognition. Preserve legacy URL handling, shared Texture exclusion and original dependency filenames. See [storage layout](../plans/threed-model-blob-layout.md).
+Run `npm run validate -- threed-model-blob-paths` when changing Model/Texture storage keys or ownership/cleanup recognition. Preserve legacy URL handling, shared Texture exclusion and original dependency filenames. See [storage layout](../plans/threed-model-blob-layout.md).
 
 For Model primary-file relationship changes, run TypeScript, Library placement/readiness and relevant importer validators. Use ordinary Drizzle schema changes; the User explicitly waived old-data migration. Model deletion must clear the primary ID before deleting its Files with the immediate FK. No custom migration/trigger validation is required. See [primary-file authority](../plans/threed-model-primary-file-authority.md).
 
@@ -450,73 +480,73 @@ The [ThreeD Model Management handoff](../plans/v0.19.11-release.md) records the 
 
 ## v0.19.12 released checkpoint
 
-The [release handoff](../plans/v0.19.12-release.md) records 16 passing local checks. `npm run validate:threed-model-list` is included in CI and checks pagination bounds and sort allowlists. Live SQL/browser acceptance is separate from this fixture. The User owns the build gate; do not run `npm run build` in this chat. Production deployment of `80c6a1d` is User-confirmed; individual smoke checks are not inferred from deployment success.
+The [release handoff](../plans/v0.19.12-release.md) records 16 passing local checks. `npm run validate -- threed-model-list` is included in CI and checks pagination bounds and sort allowlists. Live SQL/browser acceptance is separate from this fixture. The User owns the build gate; do not run `npm run build` in this chat. Production deployment of `80c6a1d` is User-confirmed; individual smoke checks are not inferred from deployment success.
 
 ## Autonomous Animations Library
 
-Run `npm run validate:threed-animation-library` and `npm run typecheck` for library schema/API changes. The offline route/service fixtures cover auth, ownership, pagination, batched references, inheritance and deletion protection; real schema introspection checks the new constraints. They do not connect to Postgres or Blob and do not replace later concurrency/rig/playback checks. See [the Stage 1 API record](../developers/THREED_ANIMATIONS_LIBRARY.md).
+Run `npm run validate -- threed-animation-library` and `npm run typecheck` for library schema/API changes. The offline route/service fixtures cover auth, ownership, pagination, batched references, inheritance and deletion protection; real schema introspection checks the new constraints. They do not connect to Postgres or Blob and do not replace later concurrency/rig/playback checks. See [the Stage 1 API record](../developers/THREED_ANIMATIONS_LIBRARY.md).
 
 The interim Model-bound animation editor was reverted at the User’s request. Validate the standalone library with the API checks above and the [workspace checklist](../developers/THREED_ANIMATIONS_LIBRARY.md#standalone-library-workspace--corrected-ownership).
 
-Run `npm run validate:threed-animation-upload` for autonomous source ingestion changes, together with the library API and Blob-path validators. It parses real FBX/synthetic GLB with actual Three.js loaders and mocks persistence/storage; it does not upload files or connect to the database.
+Run `npm run validate -- threed-animation-upload` for autonomous source ingestion changes, together with the library API and Blob-path validators. It parses real FBX/synthetic GLB with actual Three.js loaders and mocks persistence/storage; it does not upload files or connect to the database.
 
 For bulk Animation workspace upload changes, run `node src/libraries/scripts/validate-threed-animation-bulk.cjs` and TypeScript. The handler fixture mocks network/storage and verifies sequential processing, isolated failures, result reporting and batch bounds. Browser selection and live upload acceptance remain manual.
 
 For the Character animation assignment editor, run `node src/libraries/scripts/validate-threed-character-animation-assignments.cjs`, the existing library API validator, and TypeScript. The editor fixture uses mocked requests; verify live assignment persistence separately. Saved library assignments are not yet consumed by Character Scene runtimes.
 
-Character runtimes now consume saved animation assignments on Scene load (superseding the editor-only note above). Run `npm run validate:threed-assigned-character-animations`, library API checks, Character restart checks, orchestration checks and TypeScript for this boundary. The new CI fixture exercises real FBX binding and mocked requests; it does not prove live animation appearance or world-action behavior. Use the manual Character playback checklist in `docs/developers/THREED_ANIMATIONS_LIBRARY.md`.
+Character runtimes now consume saved animation assignments on Scene load (superseding the editor-only note above). Run `npm run validate -- threed-assigned-character-animations`, library API checks, Character restart checks, orchestration checks and TypeScript for this boundary. The new CI fixture exercises real FBX binding and mocked requests; it does not prove live animation appearance or world-action behavior. Use the manual Character playback checklist in `docs/developers/THREED_ANIMATIONS_LIBRARY.md`.
 
 ## Plants workspace server list
 
-Run `npm run validate:threed-plant-list` and TypeScript for Plants list/pagination/bulk-selection changes. The fixture checks the actual GET handler with mocked DB responses and the bulk-delete handler with mocked fetch. It does not establish live SQL execution, browser layout, FK failure behavior or real deletion. Use the manual Plants checklist in `docs/plans/admin-threed-workspace-continuation.md`.
+Run `npm run validate -- threed-plant-list` and TypeScript for Plants list/pagination/bulk-selection changes. The fixture checks the actual GET handler with mocked DB responses and the bulk-delete handler with mocked fetch. It does not establish live SQL execution, browser layout, FK failure behavior or real deletion. Use the manual Plants checklist in `docs/plans/admin-threed-workspace-continuation.md`.
 
 ### Beds workspace list
 
-Run `npm run validate:threed-bed-list` and TypeScript for Beds list/pagination/bulk-selection changes. The offline fixture checks authenticated GET handling, bounded pagination, grouped owner-scoped search, count/query parity, sorting, and partial bulk deletion with page-local targets. Live SQL, browser layout and actual deletion remain manual checks in the continuation plan.
+Run `npm run validate -- threed-bed-list` and TypeScript for Beds list/pagination/bulk-selection changes. The offline fixture checks authenticated GET handling, bounded pagination, grouped owner-scoped search, count/query parity, sorting, and partial bulk deletion with page-local targets. Live SQL, browser layout and actual deletion remain manual checks in the continuation plan.
 
 ### Plantings workspace list
 
-Run `npm run validate:threed-planting-list` and TypeScript for Plantings list/pagination/selection changes. The offline fixture checks the actual GET with mocked joined query results and actual bulk handler with mocked requests: owner/search/join parity, bounded inputs, sorting, default behavior, constant query counts, cancellation and partial deletion. Live SQL/browser acceptance is recorded separately in the Admin continuation plan.
+Run `npm run validate -- threed-planting-list` and TypeScript for Plantings list/pagination/selection changes. The offline fixture checks the actual GET with mocked joined query results and actual bulk handler with mocked requests: owner/search/join parity, bounded inputs, sorting, default behavior, constant query counts, cancellation and partial deletion. Live SQL/browser acceptance is recorded separately in the Admin continuation plan.
 
 ### Characters workspace list
 
-Run `npm run validate:threed-character-list` and TypeScript for Characters pagination/search/selection changes. The offline fixture exercises actual list/bulk handlers and the existing Character Library eligibility helper with mocked queries/requests. It checks owner search/count parity, bounds, sorting, batched Model retrieval, private Model exclusion, runtime eligibility and partial bulk failures. Browser/live SQL acceptance remains separate in the continuation record.
+Run `npm run validate -- threed-character-list` and TypeScript for Characters pagination/search/selection changes. The offline fixture exercises actual list/bulk handlers and the existing Character Library eligibility helper with mocked queries/requests. It checks owner search/count parity, bounds, sorting, batched Model retrieval, private Model exclusion, runtime eligibility and partial bulk failures. Browser/live SQL acceptance remains separate in the continuation record.
 
 ### Layers workspace list
 
-Run `npm run validate:threed-layer-list` and TypeScript for Layers list/pagination/selection changes. Offline actual-handler tests mock database/request results and check owner/Project scope, query bounds, grouped search/count parity, sorting, empty Projects, cancellation and partial deletion. Live SQL and browser checks remain separate in the continuation record.
+Run `npm run validate -- threed-layer-list` and TypeScript for Layers list/pagination/selection changes. Offline actual-handler tests mock database/request results and check owner/Project scope, query bounds, grouped search/count parity, sorting, empty Projects, cancellation and partial deletion. Live SQL and browser checks remain separate in the continuation record.
 
 ### FarmBots workspace list
 
-Run `npm run validate:threed-farmbot-list` and TypeScript for FarmBots pagination/search/selection changes. The offline fixture exercises actual list and bulk handlers plus the response sanitizer with mocked queries and requests. It checks owner/search/count parity, bounds/sorting, batched Bed reads, credential field omission and cancellation/busy/partial-deletion handling. It performs no live device operation. Browser/live SQL checks are recorded separately in the continuation plan.
+Run `npm run validate -- threed-farmbot-list` and TypeScript for FarmBots pagination/search/selection changes. The offline fixture exercises actual list and bulk handlers plus the response sanitizer with mocked queries and requests. It checks owner/search/count parity, bounds/sorting, batched Bed reads, credential field omission and cancellation/busy/partial-deletion handling. It performs no live device operation. Browser/live SQL checks are recorded separately in the continuation plan.
 
 ### Waterings read-only workspace
 
-Run `npm run validate:threed-watering-list` and TypeScript for schedule/history browsing changes. Offline actual-handler tests mock DB responses and cover query bounds, owner/search/count parity, module scope and pagination. Confirm Schedules/History navigation and units locally; tests do not establish live PostgreSQL execution or historical Project attribution. No watering or device operation is needed to test browsing.
+Run `npm run validate -- threed-watering-list` and TypeScript for schedule/history browsing changes. Offline actual-handler tests mock DB responses and cover query bounds, owner/search/count parity, module scope and pagination. Confirm Schedules/History navigation and units locally; tests do not establish live PostgreSQL execution or historical Project attribution. No watering or device operation is needed to test browsing.
 
-Harvest workspace list changes: run `npm run validate:threed-harvest-list`. Offline GET and bulk-handler fixtures cover query validation/auth, owner-scoped search, Project/count parity, stable sorts, Plant enrichment/provenance, and partial/page-local/cancelled deletion. Manual acceptance covers server paging/search/sorting, scope changes, selection reset and last-page recovery; use disposable records for deletion tests.
+Harvest workspace list changes: run `npm run validate -- threed-harvest-list`. Offline GET and bulk-handler fixtures cover query validation/auth, owner-scoped search, Project/count parity, stable sorts, Plant enrichment/provenance, and partial/page-local/cancelled deletion. Manual acceptance covers server paging/search/sorting, scope changes, selection reset and last-page recovery; use disposable records for deletion tests.
 
 
 ### Animation Mapping Presets and Categories
 
-Run `npm run validate:threed-animation-presets`, `npm run validate:threed-animation-categories`, the existing Library/assignment/bulk checks and TypeScript. These fixtures are offline and do not prove live transactional locking, actual DB rollback or browser appearance. Use `docs/plans/v0.19.18.md` for the separate additive-schema gate and local Farmer Kate → Farmer Joey test. Preserve the preview iframe lifecycle and shared source references.
+Run `npm run validate -- threed-animation-presets`, `npm run validate -- threed-animation-categories`, the existing Library/assignment/bulk checks and TypeScript. These fixtures are offline and do not prove live transactional locking, actual DB rollback or browser appearance. Use `docs/plans/v0.19.18.md` for the separate additive-schema gate and local Farmer Kate → Farmer Joey test. Preserve the preview iframe lifecycle and shared source references.
 
 ### Character navigation policy foundation
 
-`npm run validate:threed-character-navigation` exercises pure steering/arrival, independent elevation tolerance, terminal state, interruption and stalled/time-bounded navigation. Run the existing orchestration checks and TypeScript alongside it. The pure policy fixture does not validate physics or obstacle routing; adapter and teleport checks are described below. See the navigation audit in `docs/plans/v0.19.18.md`.
+`npm run validate -- threed-character-navigation` exercises pure steering/arrival, independent elevation tolerance, terminal state, interruption and stalled/time-bounded navigation. Run the existing orchestration checks and TypeScript alongside it. The pure policy fixture does not validate physics or obstacle routing; adapter and teleport checks are described below. See the navigation audit in `docs/plans/v0.19.18.md`.
 
 The navigation check now also exercises the actual Ecctrl adapter with real Three.js bounds and mocked events, plus the actual movement-frame callback with a mocked controller. It verifies actor isolation, bounds-based arrival, hidden/removed target and actor cancellation, Stop/teardown, blocked progress, walk-only steering and manual-control recovery. Run Character animation restart and orchestration checks alongside it. Live collision, animation appearance and save-after-navigation acceptance remain manual in `docs/plans/v0.19.18.md`.
 
-For Character teleport changes, run `npm run validate:threed-character-teleport` plus `npm run validate:threed-character-navigation`. The teleport fixture uses the actual Rapier version installed for `@react-three/rapier` (not the older root dependency), a local physics world, and the real intent adapter with mocked React scheduling. It checks ground/occupancy and cancellation, plus single-commit translation, facing preservation and velocity reset. It does not load production assets, contact APIs or prove browser camera/animation appearance. Follow the Project #8 Kate/Joey local checklist in `docs/plans/v0.19.18.md` for that acceptance. The user owns the build gate.
+For Character teleport changes, run `npm run validate -- threed-character-teleport` plus `npm run validate -- threed-character-navigation`. The teleport fixture uses the actual Rapier version installed for `@react-three/rapier` (not the older root dependency), a local physics world, and the real intent adapter with mocked React scheduling. It checks ground/occupancy and cancellation, plus single-commit translation, facing preservation and velocity reset. It does not load production assets, contact APIs or prove browser camera/animation appearance. Follow the Project #8 Kate/Joey local checklist in `docs/plans/v0.19.18.md` for that acceptance. The user owns the build gate.
 
 Release preparation for v0.19.18 passed TypeScript, production assets and the animation/navigation checks listed in `docs/releases/v0.19.18.md`. The older `validate:threed-fbx-material-targets` fixture fails with ENOENT because the user-owned deletion of `public/assets/animations/farming/SK_Chr_Farmer_Male_01.fbx` is retained. Do not confuse that missing regression fixture with a failed production-asset manifest check, or report the entire suite as passing.
 
-For initially hidden Scene collision changes, run `npm run validate:threed-hidden-collision-mount`. It executes the actual fixed/Character Layer synchronization effects against installed Rapier, verifying initial disable and later enabled-state transitions. It does not certify every post-disable ray-query behavior or browser collision/contact response; see the v0.19.19 audit.
+For initially hidden Scene collision changes, run `npm run validate -- threed-hidden-collision-mount`. It executes the actual fixed/Character Layer synchronization effects against installed Rapier, verifying initial disable and later enabled-state transitions. It does not certify every post-disable ray-query behavior or browser collision/contact response; see the v0.19.19 audit.
 
 
 ### User-owned Animation Action Slots
 
-Run `npm run validate:threed-animation-action-slots`, Library/assignment/Mapping Preset checks, assigned Character animation loading, Character restart, availability and orchestration checks, and TypeScript. The slot fixture executes the actual service and manager with mocked database/UI/network: identity is immutable, owner checks precede custom mapping writes, referenced deletion is blocked and disable retains mappings. Live SQL locking, browser presentation and imported rig compatibility remain manual checks in `docs/plans/v0.19.32.md`. Apply the approved additive schema before testing; the agent does not apply the live database or run the User-owned build gate.
+Run `npm run validate -- threed-animation-action-slots`, Library/assignment/Mapping Preset checks, assigned Character animation loading, Character restart, availability and orchestration checks, and TypeScript. The slot fixture executes the actual service and manager with mocked database/UI/network: identity is immutable, owner checks precede custom mapping writes, referenced deletion is blocked and disable retains mappings. Live SQL locking, browser presentation and imported rig compatibility remain manual checks in `docs/plans/v0.19.32.md`. Apply the approved additive schema before testing; the agent does not apply the live database or run the User-owned build gate.
 
 The Action Slot command also executes the actual dedicated Admin workspace with mocked UI/network, checking list paging/search/sort, protected page-local bulk selection, partial delete failures and create payloads. Reference-count SQL, browser layout and navigation acceptance remain manual. The list currently sorts/pages on the client over the owner-scoped response.
 
@@ -526,4 +556,4 @@ The Action Slot command also executes the actual dedicated Admin workspace with 
 
 ### v0.19.38 Bed-relative Planting placement
 
-Run `npm run validate:threed-bed-planting-bounds`, Runtime Marker and Library-placement validations, TypeScript and diff checks. The bounds fixture executes shared geometry and the real runtime builder for rotation/scale, surface height, spacing overflow, active assignment identity, legacy recovery and review of layouts that cannot fit. Server transaction/auth behavior and browser select/focus remain manual checks in `docs/plans/v0.19.38.md`; offline geometry tests do not certify live database execution.
+Run `npm run validate -- threed-bed-planting-bounds`, Runtime Marker and Library-placement validations, TypeScript and diff checks. The bounds fixture executes shared geometry and the real runtime builder for rotation/scale, surface height, spacing overflow, active assignment identity, legacy recovery and review of layouts that cannot fit. Server transaction/auth behavior and browser select/focus remain manual checks in `docs/plans/v0.19.38.md`; offline geometry tests do not certify live database execution.

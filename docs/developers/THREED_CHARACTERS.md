@@ -125,7 +125,7 @@ This checkpoint was released successfully to production through GitHub and Verce
 7. Refresh the Project and confirm the Character restores at its saved position with the same runtime routing.
 8. Confirm the environment remains visible and the procedural ground remains hidden throughout the Character interaction.
 
-Automated release checks require `npm run validate:threed-orchestration`, `npm run validate:threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. The client-run `npm run build` remains the final production release gate.
+Automated release checks require `npm run validate -- threed-orchestration`, `npm run validate -- threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. The client-run `npm run build` remains the final production release gate.
 
 ## FBX Character texture references
 

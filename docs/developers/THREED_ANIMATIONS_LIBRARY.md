@@ -56,7 +56,7 @@ Applying the schema remains a separate User-owned step. Existing data needs no b
 
 ## Validation
 
-- `npm run validate:threed-animation-library`: passed offline against actual route/service functions with queued database results and real Drizzle schema introspection. Covers auth, owner filters, strict input, 0/1/50/200-row lists, Character/Model precedence, disabled/unavailable/inherit distinctions, mutation/reference guards and safe error responses. Included in CI.
+- `npm run validate -- threed-animation-library`: passed offline against actual route/service functions with queued database results and real Drizzle schema introspection. Covers auth, owner filters, strict input, 0/1/50/200-row lists, Character/Model precedence, disabled/unavailable/inherit distinctions, mutation/reference guards and safe error responses. Included in CI.
 - `npm run typecheck`: passed.
 - `git diff --check`: passed.
 
@@ -151,7 +151,7 @@ Manual test:
 4. Choose **Use defaults** for one action and Save; confirm its Character override is removed. Test **Disabled** separately; it remains an explicit saved setting.
 5. Search animation choices and confirm existing saved selections remain visible. Scene animation changes are not an acceptance criterion for this editor stage.
 
-Validation: `node src/libraries/scripts/validate-threed-character-animation-assignments.cjs`, `npm run validate:threed-animation-library`, TypeScript and diff checks passed. The UI handler fixture mocks network and checks ID-only writes, explicit disabling, inheritance restoration and failed-draft retention. No build, live writes or browser acceptance is claimed for this step.
+Validation: `node src/libraries/scripts/validate-threed-character-animation-assignments.cjs`, `npm run validate -- threed-animation-library`, TypeScript and diff checks passed. The UI handler fixture mocks network and checks ID-only writes, explicit disabling, inheritance restoration and failed-draft retention. No build, live writes or browser acceptance is claimed for this step.
 
 ## Character Scene playback — current integration
 
@@ -200,7 +200,7 @@ Metadata is owner-scoped. Clip tracks are checked against the Character; incompa
 
 Preview loops a clip at normal speed; it is not Ecctrl simulation, a world-action completion test, retargeting, or a Project-specific replacement Model preview. Generic Model playback is deferred. Character behavior/control UX and Water/Pick Fruit targeting/effect/completion UX are major separate follow-ups, explicitly outside this accepted interface release.
 
-Run `npm run validate:threed-character-preview-switch` with assignment, Library, assigned-character and restart checks for preview changes. See [release scope and validation](../plans/v0.19.16-release.md). Production deployment of `e8cccf3` is User-confirmed; a separate local manual build result was not reported.
+Run `npm run validate -- threed-character-preview-switch` with assignment, Library, assigned-character and restart checks for preview changes. See [release scope and validation](../plans/v0.19.16-release.md). Production deployment of `e8cccf3` is User-confirmed; a separate local manual build result was not reported.
 
 
 ## v0.19.18 development — Mapping Presets and Categories

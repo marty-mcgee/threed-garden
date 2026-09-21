@@ -17,7 +17,6 @@ import {
   Activity,
   ExternalLink
 } from 'lucide-react';
-import { toast } from 'sonner';
 
 interface AdminStats {
   albums: {

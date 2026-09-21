@@ -462,8 +462,8 @@ The candidate adds no schema, automatic persistence, Scene reload, secondary mar
 Release validation completed successfully:
 
 - `npm run typecheck`;
-- `npm run validate:threed-runtime-markers` — 37 groups;
-- `npm run validate:threed-orchestration` — 18 groups;
+- `npm run validate -- threed-runtime-markers` — 37 groups;
+- `npm run validate -- threed-orchestration` — 18 groups;
 - `git diff --check`;
 - manual Add/Edit/Delete/Move lifecycle verification;
 - manual `npm run build` in the client environment.
@@ -556,7 +556,7 @@ It adds no schema, replacement Model table, drag-supplied coordinates, secondary
 Release validation completed successfully:
 
 - `npm run typecheck`;
-- `npm run validate:threed-runtime-markers` — 38 groups;
+- `npm run validate -- threed-runtime-markers` — 38 groups;
 - `git diff --check`;
 - documented v0.19.2a–d manual verification.
 
@@ -574,7 +574,7 @@ Model create and update transactions validate every requested category against t
 
 The version-1 ThreeD Model import manifest is metadata-only. It contains relative references to existing local Model and preview files but never embeds binary data, database IDs, owner IDs, Project IDs, marker transforms, storage credentials, Blob destinations, or persistence instructions. A stable `importKey` is the future idempotency identity; it is not a `threed_models.id`.
 
-`npm run threed:models:import:check -- --file <manifest.json>` parses the strict contract, verifies bounded entries and supported relative file references, resolves real paths beneath the manifest directory, checks file existence and size, and prints a summary. OBJ material files, textures, GLTF buffers, and other required sidecars are declared explicitly in the bounded `supportingFiles` array so the eventual importer cannot mistake a primary OBJ or GLTF file for a complete renderable asset. It imports nothing, opens no database connection, and performs no upload. `npm run validate:threed-model-import` exercises the pure contract offline.
+`npm run threed:models:import:check -- --file <manifest.json>` parses the strict contract, verifies bounded entries and supported relative file references, resolves real paths beneath the manifest directory, checks file existence and size, and prints a summary. OBJ material files, textures, GLTF buffers, and other required sidecars are declared explicitly in the bounded `supportingFiles` array so the eventual importer cannot mistake a primary OBJ or GLTF file for a complete renderable asset. It imports nothing, opens no database connection, and performs no upload. `npm run validate -- threed-model-import` exercises the pure contract offline.
 
 The dry-run boundary rejects unsupported versions and fields, duplicate or malformed import keys, absolute and escaping paths, unsupported Model/preview extensions, mismatched concrete Model types, invalid category slugs, unsafe transforms, oversized metadata, more than 500 Models, or more than 20 categories per Model. Write behavior remains deferred to separately approved v0.19.3c.
 
@@ -637,7 +637,7 @@ This checkpoint was released successfully to production through GitHub and Verce
 6. Confirm ordinary Project Models retain their established whole-rendered-asset fixed colliders.
 7. Confirm Project refresh restores the saved environment role without a Scene or Project reload during the edit transaction.
 
-Automated release checks require `npm run validate:threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. The client-run `npm run build` and a final Character placement regression remain the production release gate.
+Automated release checks require `npm run validate -- threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. The client-run `npm run build` and a final Character placement regression remain the production release gate.
 
 ## Post-v0.19.3c environment collision audit
 
@@ -788,7 +788,7 @@ While an Ecctrl Character is controlled, the DetailsCard metadata remains a boun
 
 The cyan Environment collision boxes remain debug-only descriptions. No internal Environment box is an active Rapier collider in this checkpoint. The next stage must activate a small bounded subset through the persistent Environment marker owner and independently prove Character visibility, idle/walk/run animation, capsule/model alignment, smooth WASD stopping, Layer behavior, and an error-free Rapier frame loop before increasing coverage.
 
-Automated release checks require `npm run validate:threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. The client-run `npm run build` and final Environment-plus-Character interaction check remain the production release gate.
+Automated release checks require `npm run validate -- threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. The client-run `npm run build` and final Environment-plus-Character interaction check remain the production release gate.
 
 ## v0.19.4b Environment interaction UX boundary
 

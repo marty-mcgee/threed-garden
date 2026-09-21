@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   validate:
-    name: Assets and TypeScript
+    name: Application validation
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -28,9 +28,6 @@ jobs:
         with:
           node-version: '24'
 
-      - name: Validate production animation assets
-        run: npm run validate:assets
-
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
@@ -42,107 +39,5 @@ jobs:
       - name: TypeScript type check
         run: bun run typecheck
 
-      - name: Validate personal workspace Settings
-        run: npm run validate:workspace-settings
-
-      - name: Validate Texture list pagination inputs
-        run: npm run validate:threed-texture-list
-
-      - name: Validate Waterings views and pagination
-        run: npm run validate:threed-watering-list
-
-      - name: Validate Harvest workspace queries
-        run: npm run validate:threed-harvest-list
-
-      - name: Validate FarmBots workspace list and selection
-        run: npm run validate:threed-farmbot-list
-
-      - name: Validate Layers workspace list and selection
-        run: npm run validate:threed-layer-list
-
-      - name: Validate Characters workspace list and selection
-        run: npm run validate:threed-character-list
-
-      - name: Validate Plantings workspace list and selection
-        run: npm run validate:threed-planting-list
-
-      - name: Validate Beds workspace list and selection
-        run: npm run validate:threed-bed-list
-
-      - name: Validate Plants workspace list and selection
-        run: npm run validate:threed-plant-list
-
-      - name: Validate Category list pagination inputs
-        run: npm run validate:threed-category-list
-
-      - name: Validate Model list pagination inputs
-        run: npm run validate:threed-model-list
-
-      - name: Validate bulk animation uploads
-        run: npm run validate:threed-animation-bulk
-
-      - name: Validate Character animation assignment editor
-        run: npm run validate:threed-character-animation-assignments
-
-      - name: Validate animation source uploads
-        run: npm run validate:threed-animation-upload
-
-      - name: Validate Animations Library contracts and APIs
-        run: npm run validate:threed-animation-library
-
-      - name: Validate Model list query batching
-        run: npm run validate:threed-model-list-api
-
-      - name: Validate database pool and map failure handling
-        run: npm run validate:threed-database-failures
-
-      - name: Validate Character position saving
-        run: npm run validate:threed-character-position-save
-
-      - name: Validate assigned Character animation playback
-        run: npm run validate:threed-assigned-character-animations
-
-      - name: Validate Character animation restart
-        run: npm run validate:threed-character-animation-restart
-
-      - name: Validate Character preview switching
-        run: npm run validate:threed-character-preview-switch
-
-      - name: Validate Model import contracts
-        run: npm run validate:threed-model-import
-
-      - name: Validate Model bulk preparation
-        run: npm run validate:threed-model-bulk-preparation
-
-      - name: Validate Model bulk import sequencing
-        run: npm run validate:threed-model-bulk-runner
-
-      - name: Validate FBX material targets
-        run: npm run validate:threed-fbx-material-targets
-
-      - name: Validate GLB/GLTF bundles
-        run: npm run validate:threed-gltf-bundle
-
-      - name: Validate GLB/GLTF material targets
-        run: npm run validate:threed-gltf-material-targets
-
-      - name: Validate local Model preview snapshots
-        run: npm run validate:threed-model-bulk-preview
-
-      - name: Validate OBJ and MTL bundles
-        run: npm run validate:threed-obj-bundle
-
-      - name: Validate saved Texture attachment reuse
-        run: npm run validate:threed-bulk-saved-texture
-
-      - name: Validate Model Blob paths and legacy compatibility
-        run: npm run validate:threed-model-blob-paths
-
-      - name: Validate Model availability and Library placement
-        run: npm run validate:threed-library-placement
-
-      - name: Validate Project sessions
-        run: npm run validate:threed-project-session
-
-      - name: Validate Runtime Markers and position updates
-        run: npm run validate:threed-runtime-markers
+      - name: Run CI validation group
+        run: npm run validate -- ci
