@@ -7,7 +7,7 @@ This is a **Dual-Surface Platform**:
 - **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
 - **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
 
-> **Current production release:** `v0.20.0 Alpha — App Structure, Multimedia + Scene`, package `0.20.0`, deployment User-confirmed. The App now uses `src/libraries`, a unified Multimedia namespace, and `/dashboard/scene` as the canonical ThreeD Project route. See the [release notes](docs/releases/v0.20.0.md) and [development record](docs/plans/v0.20.0.md).
+> **Current production release:** `v0.20.0 — App Structure, Multimedia + Scene`, package `0.20.0`, deployment User-confirmed. The App uses `src/libraries`, a unified Multimedia namespace, `/dashboard/scene`, consolidated validation commands, and an application-owned shadcn/ui component boundary. See the [release notes](docs/releases/v0.20.0.md) and [final release handoff](docs/plans/v0.20.0-release.md).
 
 The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
 

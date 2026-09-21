@@ -38,7 +38,7 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.19.14 "ThreeD Animations Library" (package `0.19.14`, commit `a5491e9`). Production deployment is User-confirmed; separate local build results were not reported. See `docs/releases/v0.19.14.md` and `docs/plans/v0.19.14-release.md`. Preserve shared animation source references, Character assignments, runtime precedence and first-pose gating. Remaining Admin stages are in `docs/plans/admin-threed-workspace-continuation.md`; no next release number is designated.
+Current production version: v0.20.0 "App Structure, Multimedia + Scene" (package `0.20.0`). Production deployment, browser acceptance and build success are User-confirmed September 21, 2026. See `docs/releases/v0.20.0.md` and `docs/plans/v0.20.0-release.md`. Preserve the `src/libraries` source boundary, Multimedia module identity, canonical `/dashboard/scene` route, shadcn/ui component boundary, shared animation references, Character assignments, runtime precedence and first-pose gating.
 
 Preserve the released alpha scope: FBX bulk importing, shared local textures, existing reusable Texture assignments, primary registration, verified inactive creation and guarded recovery.
 
