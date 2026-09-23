@@ -38,7 +38,7 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.20.0 "App Structure, Multimedia + Scene" (package `0.20.0`). Production deployment, browser acceptance and build success are User-confirmed September 21, 2026. See `docs/releases/v0.20.0.md` and `docs/plans/v0.20.0-release.md`. Preserve the `src/libraries` source boundary, Multimedia module identity, canonical `/dashboard/scene` route, shadcn/ui component boundary, shared animation references, Character assignments, runtime precedence and first-pose gating.
+Current production version: v0.20.1 "ThreeD Physics" (package `0.20.1`). Production deployment, browser acceptance and build success are User-confirmed. See `docs/releases/v0.20.1.md` and `docs/plans/v0.20.1-release.md`. Preserve generic Physics Sensors, Project-owned Sensor Groups, sensor TransformControls, optional Sensors panel and read-only FarmBot presentation. Whole-Model TransformControls and further FarmBot expansion remain deferred. Preserve the `src/libraries` source boundary, Multimedia module identity, canonical `/dashboard/scene` route, shadcn/ui component boundary, shared animation references, Character assignments, runtime precedence and first-pose gating.
 
 Preserve the released alpha scope: FBX bulk importing, shared local textures, existing reusable Texture assignments, primary registration, verified inactive creation and guarded recovery.
 
