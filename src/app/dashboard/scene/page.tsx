@@ -84,6 +84,11 @@ import {
   isMatchingThreeDActionTarget,
 } from '@/libraries/services/threed/orchestration/action-target-core';
 import { applyThreeDProjectClientTransaction } from '@/libraries/services/threed/markers/project-marker-client-state-core';
+import { SensorGroupsWorkspace } from '@/components/threed/physics/SensorGroupsWorkspace';
+import { SceneTransformWorkspace, useSceneTransform } from '@/components/threed/transform/SceneTransformWorkspace';
+import { sceneOwnerPose, sceneLocalToWorld, sceneWorldToLocal } from '@/libraries/services/threed/transforms/scene-transform-core';
+import { validatePhysicsSensorCuboids, type PhysicsSensorCuboid } from '@/libraries/services/threed/physics/sensor-cuboid-core';
+import type { PhysicsSensorPlacementResult } from '@/components/map/details/PhysicsSensorCuboidsEditor';
 import {
   createProjectCharacterLibraryPlacementRequest,
   createProjectFarmBotLibraryPlacementRequest,
@@ -155,13 +160,14 @@ export default function UnifiedMapPage() {
         showProjectHeader
       />
     }>
-      <UnifiedMapPageInner />
+      <SensorGroupsWorkspace><SceneTransformWorkspace><UnifiedMapPageInner /></SceneTransformWorkspace></SensorGroupsWorkspace>
     </Suspense>
   );
 }
 
 function UnifiedMapPageInner() {
   const { showToast, ToastComponent } = useToast();
+  const transform = useSceneTransform();
   const searchParams = useSearchParams();
   const projectIdParam = searchParams.get('projectId');
   const projectRuntimeMarkerRegistryRef = useRef<ThreeDRuntimeMarkerRegistry | null>(null);
@@ -216,6 +222,7 @@ function UnifiedMapPageInner() {
   const [isBedPlacementOpen, setIsBedPlacementOpen] = useState(false);
   const [isPlantingPlacementOpen, setIsPlantingPlacementOpen] = useState(false);
   const [isSceneAddMenuOpen, setIsSceneAddMenuOpen] = useState(false);
+  const [environmentControlsCloseRequest, setEnvironmentControlsCloseRequest] = useState(0);
   const [libraryModels, setLibraryModels] = useState<ThreeDModelLibraryItem[]>([]);
   const [libraryCategorySlug, setLibraryCategorySlug] = useState('all');
   const [libraryModelSearch, setLibraryModelSearch] = useState('');
@@ -283,6 +290,56 @@ function UnifiedMapPageInner() {
   const [deletingPlantingMarkerId, setDeletingPlantingMarkerId] = useState<number | null>(null);
   const [updatingCharacterMarkerId, setUpdatingCharacterMarkerId] = useState<number | null>(null);
   const [deletingCharacterMarkerId, setDeletingCharacterMarkerId] = useState<number | null>(null);
+  const [updatingPhysicsSensorMarkerId, setUpdatingPhysicsSensorMarkerId] = useState<number | null>(null);
+  const [placingPhysicsSensor, setPlacingPhysicsSensor] = useState<{
+    marker: RuntimeMarker;
+    markerId: number;
+    sensor: PhysicsSensorCuboid;
+    operation: 'place' | 'move';
+  } | null>(null);
+  const [physicsSensorPlacementResult, setPhysicsSensorPlacementResult] = useState<PhysicsSensorPlacementResult | null>(null);
+  const [sensorFocusRequest, setSensorFocusRequest] = useState(0);
+  const [sensorFocusPosition, setSensorFocusPosition] = useState<{ x: number; y: number; z: number } | null>(null);
+  const placementPhysicsSensorPreview = useMemo(() => {
+    if (!placingPhysicsSensor) return null;
+    const owner = placingPhysicsSensor.marker;
+    const ownerRotationY = owner.type === 'models'
+      ? Number(owner.data?.rotationYInstance) || 0
+      : (Number(owner.data?.rotation) || 0) * Math.PI / 180;
+    return {
+      ...placingPhysicsSensor.sensor,
+      rotationY: placingPhysicsSensor.sensor.rotationY + ownerRotationY * 180 / Math.PI,
+    };
+  }, [placingPhysicsSensor]);
+  useEffect(() => {
+    if (!transform.session) return;
+    setPlacingPhysicsSensor(null);
+    setMovingModelInstance(null);
+    setPlacementModel(null);
+    setPlacementCharacter(null);
+    setPlacementFarmBot(null);
+    setBedPlacementActive(false);
+    setPlantingPlacementActive(false);
+    setEnvironmentControlsCloseRequest(value => value + 1);
+    setIsSceneAddMenuOpen(false);
+    setIsProjectSetupOpen(false);
+    setViewMode('3d');
+    // Only begin once; pointer updates must not reopen or reset the Scene.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transform.session?.objectKey]);
+
+  const transformOperationKeyRef = useRef<string | null>(null);
+  useEffect(() => {
+    const key = transform.session?.objectKey ?? null;
+    if (key !== transformOperationKeyRef.current) {
+      transformOperationKeyRef.current = key;
+      return; // The begin effect clears any previous placement operation.
+    }
+    if (key && (movingModelInstance || placementModel || placementCharacter || placementFarmBot
+      || bedPlacementActive || plantingPlacementActive || placingPhysicsSensor)) transform.cancel();
+  }, [transform.session?.objectKey, transform.cancel, movingModelInstance, placementModel,
+    placementCharacter, placementFarmBot, bedPlacementActive, plantingPlacementActive, placingPhysicsSensor]);
+
   const placingModelRef = useRef(false);
   const placingCharacterRef = useRef(false);
   const placingFarmBotRef = useRef(false);
@@ -302,6 +359,7 @@ function UnifiedMapPageInner() {
       updatingFarmBotMarkerId != null && 'Updating FarmBot',
       updatingBedMarkerId != null && 'Updating Bed',
       updatingPlantingMarkerId != null && 'Updating Planting',
+      updatingPhysicsSensorMarkerId != null && 'Updating Physics Sensors',
       placingModel && `Placing ${placementModel?.modelName ?? 'Model'}`,
       placingCharacter && `Placing ${placementCharacter?.name ?? 'Character'}`,
       placingFarmBot && `Placing ${placementFarmBot?.name ?? 'FarmBot'}`,
@@ -322,6 +380,8 @@ function UnifiedMapPageInner() {
 
     const readyOperation = movingModelInstance
       ? `Moving ${movingModelInstance.name}`
+      : placingPhysicsSensor
+        ? `${placingPhysicsSensor.operation === 'move' ? 'Moving' : 'Placing'} ${placingPhysicsSensor.sensor.name}`
       : placementModel
         ? `Placing ${placementModel.modelName}`
         : placementCharacter
@@ -340,7 +400,11 @@ function UnifiedMapPageInner() {
       ? {
           phase: 'ready' as const,
           label: readyOperation,
-          instruction: movingModelInstance || placementModel
+          instruction: placingPhysicsSensor
+            ? placingPhysicsSensor.operation === 'move'
+              ? 'Click a Scene surface to move this Sensor Cuboid. Its Y rotation stays visible in the guide.'
+              : 'Click a Scene surface to place the base of this vertical Sensor Cuboid. Its Y rotation stays visible in the guide.'
+            : movingModelInstance || placementModel
             ? 'Choose a destination in the active 3D Scene or 2D Map.'
             : 'Click the 3D Scene ground to choose its position.',
           cancellable: true,
@@ -355,6 +419,7 @@ function UnifiedMapPageInner() {
     deletingModelInstanceId,
     deletingPlantingMarkerId,
     movingModelInstance,
+    placingPhysicsSensor,
     placementCharacter,
     placementFarmBot,
     placementModel,
@@ -371,6 +436,7 @@ function UnifiedMapPageInner() {
     updatingFarmBotMarkerId,
     updatingModelInstanceId,
     updatingPlantingMarkerId,
+    updatingPhysicsSensorMarkerId,
   ]);
 
   const cancelActiveSceneOperation = useCallback(() => {
@@ -383,6 +449,7 @@ function UnifiedMapPageInner() {
     setPlacementFarmBot(null);
     setBedPlacementActive(false);
     setPlantingPlacementActive(false);
+    setPlacingPhysicsSensor(null);
   }, [activeSceneOperation]);
   
   // ✅ Live Data Status Indicator
@@ -1839,6 +1906,86 @@ function UnifiedMapPageInner() {
     }
   }, [deletingBedMarkerId, updatingBedMarkerId]);
 
+  const handleUpdatePhysicsSensors = useCallback(async (
+    markerId: number,
+    sensors: readonly PhysicsSensorCuboid[],
+  ) => {
+    if (updatingPhysicsSensorMarkerId !== null) return false;
+    const validation = validatePhysicsSensorCuboids(sensors);
+    if (!validation.success) {
+      showToastRef.current(validation.error, 'error');
+      return false;
+    }
+    setPhysicsSensorPlacementResult(null);
+    setUpdatingPhysicsSensorMarkerId(markerId);
+    try {
+      const response = await fetch(`/api/project/threed-markers?id=${markerId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          operation: 'update-physics-sensors',
+          physicsSensorCuboids: validation.sensors,
+        }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || `Physics Sensor update failed (${response.status})`);
+      }
+      setData((current) => applyThreeDProjectClientTransaction(current, {
+        markers: { upsert: [result.data as ProjectThreeDMarkerRecord] },
+      }));
+      setSelectedMarker((current: any) => reconcileSelectedProjectMarker(
+        current,
+        markerId,
+        result.data as ProjectThreeDMarkerRecord,
+      ));
+      setPlacingPhysicsSensor(null);
+      showToastRef.current('Physics Sensor Cuboids updated', 'success');
+      return true;
+    } catch (error) {
+      console.error('Failed to update Physics Sensor Cuboids', {
+        errorName: error instanceof Error ? error.name : 'UnknownError',
+      });
+      showToastRef.current(
+        error instanceof Error ? error.message : 'Failed to update Physics Sensor Cuboids',
+        'error',
+      );
+      return false;
+    } finally {
+      setUpdatingPhysicsSensorMarkerId(null);
+    }
+  }, [updatingPhysicsSensorMarkerId]);
+
+  const handleZoomToPhysicsSensor = useCallback((owner: RuntimeMarker, sensor: PhysicsSensorCuboid) => {
+    const ownerAssetId = Number(owner.data?.id);
+    const currentOwnerPosition = Number.isSafeInteger(ownerAssetId) && ownerAssetId > 0
+      ? resolveRuntimeMarkerPosition(owner.type, ownerAssetId) ?? owner.position
+      : owner.position;
+    setSensorFocusPosition(sceneLocalToWorld(sensor.position, sceneOwnerPose(owner, currentOwnerPosition)));
+    setSensorFocusRequest((request) => request + 1);
+  }, [resolveRuntimeMarkerPosition]);
+
+  const handlePhysicsSensorPlacement = useCallback((world: { x: number; y: number; z: number }) => {
+    if (!placingPhysicsSensor) return;
+    const owner = placingPhysicsSensor.marker;
+    const ownerAssetId = Number(owner.data?.id);
+    const currentOwnerPosition = Number.isSafeInteger(ownerAssetId) && ownerAssetId > 0
+      ? resolveRuntimeMarkerPosition(owner.type, ownerAssetId) ?? owner.position
+      : owner.position;
+    const local = sceneWorldToLocal(world, sceneOwnerPose(owner, currentOwnerPosition));
+    setPhysicsSensorPlacementResult((current) => ({
+      requestId: (current?.requestId ?? 0) + 1,
+      markerId: placingPhysicsSensor.markerId,
+      sensorId: placingPhysicsSensor.sensor.id,
+      position: {
+        x: Number(local.x.toFixed(3)),
+        y: Number((local.y + placingPhysicsSensor.sensor.height / 2).toFixed(3)),
+        z: Number(local.z.toFixed(3)),
+      },
+    }));
+    setPlacingPhysicsSensor(null);
+  }, [placingPhysicsSensor, resolveRuntimeMarkerPosition]);
+
   const handleDeleteBedInstance = useCallback(async (
     markerId: number,
     name: string,
@@ -1895,6 +2042,7 @@ function UnifiedMapPageInner() {
       positionY: number;
       positionZ: number;
       rotation: number;
+      farmbotLiveAlignment?: import('@/libraries/services/threed/farmbot/coordinate-alignment-core').FarmBotLiveAlignmentConfiguration;
     },
   ) => {
     if (updatingFarmBotMarkerId != null || deletingFarmBotMarkerId != null) return false;
@@ -2228,13 +2376,13 @@ function UnifiedMapPageInner() {
     if (!marker) return;
     setSelectedIncident(null);
     setSelectedMarker(marker);
-    setViewMode('3d');
     setIsProjectSummaryOpen(false);
     setIsSceneAddMenuOpen(false);
+    setIsProjectSetupOpen(false);
+    setIsProjectAssetsOpen(true);
   }, [projectEnvironmentMarkers]);
 
   const openProjectAssets = useCallback(() => {
-    setIsProjectSetupOpen(false);
     setIsModelLibraryOpen(false);
     setPlacementModel(null);
     setIsCharacterLibraryOpen(false);
@@ -2245,13 +2393,12 @@ function UnifiedMapPageInner() {
     setBedPlacementActive(false);
     setIsPlantingPlacementOpen(false);
     setPlantingPlacementActive(false);
-    setIsSceneAddMenuOpen(false);
     setIsProjectSummaryOpen(false);
     setIsProjectAssetsOpen(true);
   }, []);
 
   const openProjectSetup = useCallback(() => {
-    setIsProjectAssetsOpen(false);
+    setEnvironmentControlsCloseRequest((request) => request + 1);
     setIsModelLibraryOpen(false);
     setPlacementModel(null);
     setIsCharacterLibraryOpen(false);
@@ -2267,6 +2414,15 @@ function UnifiedMapPageInner() {
     setIsProjectSetupOpen(true);
   }, []);
 
+  const handleEnvironmentControlsOpenChange = useCallback((open: boolean) => {
+    if (!open) return;
+    setIsProjectSummaryOpen(false);
+    setIsSceneAddMenuOpen(false);
+    setIsProjectSetupOpen(false);
+    setProjectSetupSessionProjectId(null);
+    setDismissedProjectSetupProjectId(selectedProjectId);
+  }, [selectedProjectId]);
+
   const closeProjectAssets = useCallback((restoreTriggerFocus = false) => {
     setIsProjectAssetsOpen(false);
     if (restoreTriggerFocus) {
@@ -2275,15 +2431,13 @@ function UnifiedMapPageInner() {
   }, []);
   const dismissProjectAssets = useCallback(() => closeProjectAssets(true), [closeProjectAssets]);
 
-  const focusProjectAsset = useCallback((marker: RuntimeMarker) => {
+  const selectProjectAsset = useCallback((marker: RuntimeMarker) => {
     const sourceAssetId = Number(marker.data?.id);
     const currentPosition = Number.isSafeInteger(sourceAssetId) && sourceAssetId > 0
       ? resolveRuntimeMarkerPosition(marker.type, sourceAssetId)
       : null;
     setSelectedIncident(null);
     setSelectedMarker(currentPosition ? { ...marker, position: currentPosition } : marker);
-    setViewMode('3d');
-    window.requestAnimationFrame(() => setFocusRequest((request) => request + 1));
   }, [resolveRuntimeMarkerPosition]);
 
   // Keep Project data loading visually continuous with the ThreeD Scene
@@ -2349,6 +2503,7 @@ function UnifiedMapPageInner() {
             name: marker.name,
           }))}
           onTrigger={() => {
+            setEnvironmentControlsCloseRequest((request) => request + 1);
             setIsSceneAddMenuOpen(false);
             if (selectedProjectId) {
               setIsProjectSummaryOpen((open) => !open);
@@ -2383,6 +2538,7 @@ function UnifiedMapPageInner() {
           selectedProjectId={selectedProjectId}
           viewMode={viewMode}
           onViewModeChange={(mode) => {
+            transform.cancel();
             if (mode === '2d') setIsSceneAddMenuOpen(false);
             setViewMode(mode);
           }}
@@ -2392,7 +2548,14 @@ function UnifiedMapPageInner() {
           hasThreeDModule={projectThreeDModules.length > 0}
           onToggleSceneAddMenu={() => {
             setIsProjectSummaryOpen(false);
-            setIsSceneAddMenuOpen((open) => !open);
+            const nextOpen = !isSceneAddMenuOpen;
+            if (nextOpen) {
+              setEnvironmentControlsCloseRequest((request) => request + 1);
+              setIsProjectSetupOpen(false);
+              setProjectSetupSessionProjectId(null);
+              setDismissedProjectSetupProjectId(selectedProjectId);
+            }
+            setIsSceneAddMenuOpen(nextOpen);
           }}
           onOpenModelLibrary={() => void openModelLibrary()}
           onOpenCharacterLibrary={() => void openCharacterLibrary()}
@@ -2441,7 +2604,7 @@ function UnifiedMapPageInner() {
         selectedMarker={selectedMarker}
         resolveRuntimeMarkerPosition={resolveRuntimeMarkerPosition}
         onDismiss={dismissProjectAssets}
-        focusProjectAsset={focusProjectAsset}
+        onSelectAsset={selectProjectAsset}
       />
       </div>
       <div id="project-setup-panel">
@@ -2652,6 +2815,10 @@ function UnifiedMapPageInner() {
                     <UnifiedMapView
                       projectId={selectedProjectId ? Number(selectedProjectId) : null}
                       onThreeDPresentationComplete={handleThreeDPresentationComplete}
+                      environmentControlsCloseRequest={environmentControlsCloseRequest}
+                      onEnvironmentControlsOpenChange={handleEnvironmentControlsOpenChange}
+                      onOpenEnvironmentDetails={() => openEnvironmentDetails()}
+                      hasProjectEnvironment={projectEnvironmentMarkers.length > 0}
                       runtimeMarkerRegistry={projectRuntimeMarkerRegistryRef.current}
                       geographicOrigin={projectGeographicOrigin}
                       data={data}
@@ -2669,6 +2836,8 @@ function UnifiedMapPageInner() {
                       cameraMode={cameraMode}
                       onCameraModeChange={setCameraMode}
                       focusRequest={focusRequest}
+                      sensorFocusRequest={sensorFocusRequest}
+                      sensorFocusPosition={sensorFocusPosition}
                       actionTarget={actionTarget}
                       actionTargetFocusRequest={actionTargetFocusRequest}
                       placementModel={placementModel}
@@ -2685,6 +2854,8 @@ function UnifiedMapPageInner() {
                         ? plantingOptions.find((plant) => String(plant.id) === plantingPlacementDraft.plantId)?.commonName ?? 'Planting'
                         : null}
                       onPlantingPlacement={handlePlantingPlacement}
+                      placementPhysicsSensor={placementPhysicsSensorPreview}
+                      onPhysicsSensorPlacement={handlePhysicsSensorPlacement}
                       onProjectMarkerSnapshotProviderChange={handleProjectMarkerSnapshotProviderChange}
                       initialProjectViewState={initialProjectViewState}
                       onProjectThreeDViewStateProviderChange={handleProjectThreeDViewStateProviderChange}
@@ -2739,6 +2910,10 @@ function UnifiedMapPageInner() {
               <UnifiedMapView
                 projectId={selectedProjectId ? Number(selectedProjectId) : null}
                 onThreeDPresentationComplete={handleThreeDPresentationComplete}
+                environmentControlsCloseRequest={environmentControlsCloseRequest}
+                onEnvironmentControlsOpenChange={handleEnvironmentControlsOpenChange}
+                onOpenEnvironmentDetails={() => openEnvironmentDetails()}
+                hasProjectEnvironment={projectEnvironmentMarkers.length > 0}
                 runtimeMarkerRegistry={projectRuntimeMarkerRegistryRef.current}
                 geographicOrigin={projectGeographicOrigin}
                 data={data}
@@ -2756,6 +2931,8 @@ function UnifiedMapPageInner() {
                 cameraMode={cameraMode}
                 onCameraModeChange={setCameraMode}
                 focusRequest={focusRequest}
+                sensorFocusRequest={sensorFocusRequest}
+                sensorFocusPosition={sensorFocusPosition}
                 actionTarget={actionTarget}
                 actionTargetFocusRequest={actionTargetFocusRequest}
                 placementModel={placementModel}
@@ -2772,6 +2949,8 @@ function UnifiedMapPageInner() {
                   ? plantingOptions.find((plant) => String(plant.id) === plantingPlacementDraft.plantId)?.commonName ?? 'Planting'
                   : null}
                 onPlantingPlacement={handlePlantingPlacement}
+                placementPhysicsSensor={placementPhysicsSensorPreview}
+                onPhysicsSensorPlacement={handlePhysicsSensorPlacement}
                 onProjectMarkerSnapshotProviderChange={handleProjectMarkerSnapshotProviderChange}
                 initialProjectViewState={initialProjectViewState}
                 onProjectThreeDViewStateProviderChange={handleProjectThreeDViewStateProviderChange}
@@ -2818,7 +2997,7 @@ function UnifiedMapPageInner() {
       <DetailsCard
         selected={selectedMarker || selectedIncident}
         projectMarkers={projectRuntimeMarkers}
-        onSelectProjectMarker={focusProjectAsset}
+        onSelectProjectMarker={selectProjectAsset}
         projectId={selectedProjectId}
         leftOffsetRem={isLeftSceneWorkspaceOpen ? 18.75 : 0.75}
         onClose={() => { setSelectedMarker(null); setSelectedIncident(null); }}
@@ -2872,6 +3051,29 @@ function UnifiedMapPageInner() {
         updatingPlantingMarkerId={updatingPlantingMarkerId}
         onDeletePlantingInstance={handleDeletePlantingInstance}
         deletingPlantingMarkerId={deletingPlantingMarkerId}
+        onUpdatePhysicsSensors={handleUpdatePhysicsSensors}
+        updatingPhysicsSensorMarkerId={updatingPhysicsSensorMarkerId}
+        placingPhysicsSensor={placingPhysicsSensor ? {
+          markerId: placingPhysicsSensor.markerId,
+          sensorId: placingPhysicsSensor.sensor.id,
+        } : null}
+        physicsSensorPlacementResult={physicsSensorPlacementResult}
+        onBeginPhysicsSensorPlacement={(marker, markerId, sensor, operation) => {
+          setEnvironmentControlsCloseRequest((request) => request + 1);
+          setIsProjectSummaryOpen(false);
+          setIsSceneAddMenuOpen(false);
+          setIsProjectSetupOpen(false);
+          setMovingModelInstance(null);
+          setPlacementModel(null);
+          setPlacementCharacter(null);
+          setPlacementFarmBot(null);
+          setBedPlacementActive(false);
+          setPlantingPlacementActive(false);
+          setPlacingPhysicsSensor({ marker, markerId, sensor, operation });
+          setViewMode('3d');
+        }}
+        onCancelPhysicsSensorPlacement={() => setPlacingPhysicsSensor(null)}
+        onZoomToPhysicsSensor={handleZoomToPhysicsSensor}
         onUpdateCharacterPosition={handleUpdateCharacterPosition}
         updatingCharacterMarkerId={updatingCharacterMarkerId}
         onDeleteCharacterInstance={handleDeleteCharacterInstance}

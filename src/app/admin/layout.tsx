@@ -29,7 +29,7 @@ export default function AdminPageLayout({
   // Loading state with suppressHydrationWarning
   if (!mounted || status === 'loading') {
     return (
-      <div className="flex h-screen items-center justify-center bg-[#0B0B0B]">
+      <div className="flex h-screen items-center justify-center bg-[#0D1420]">
         <Loader2 
           className="w-8 h-8 animate-spin text-primary" 
           suppressHydrationWarning 

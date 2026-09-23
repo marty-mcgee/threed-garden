@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { RuntimeMarker } from '@/libraries/types/map';
 import type { ThreeDRuntimeMarkerPositionResolver } from '@/components/map/UnifiedMapView';
+import { readPhysicsSensorCuboids } from '@/libraries/services/threed/physics/sensor-cuboid-core';
 import { getThreeDIcon, getThreeDLabel } from '@/libraries/utils/map-helpers';
 
 export function ProjectAssetsPanel({
@@ -22,7 +23,7 @@ export function ProjectAssetsPanel({
   selectedMarker,
   resolveRuntimeMarkerPosition,
   onDismiss,
-  focusProjectAsset,
+  onSelectAsset,
 }: {
   selectedProjectId: string | null;
   isOpen: boolean;
@@ -37,7 +38,7 @@ export function ProjectAssetsPanel({
   selectedMarker: RuntimeMarker | null;
   resolveRuntimeMarkerPosition: ThreeDRuntimeMarkerPositionResolver;
   onDismiss: () => void;
-  focusProjectAsset: (marker: RuntimeMarker) => void;
+  onSelectAsset: (marker: RuntimeMarker) => void;
 }) {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const isVisible = Boolean(selectedProjectId) && isProjectAssetsOpen;
@@ -71,7 +72,7 @@ export function ProjectAssetsPanel({
             <div className="min-w-0">
               <h2 className="text-sm font-semibold">Project Assets</h2>
               <p className="text-[11px] text-muted-foreground">
-                Select an item to activate and focus its ThreeD Marker.
+                Select an asset or nested Scene object to open its DetailsCard.
               </p>
             </div>
             <Button
@@ -164,6 +165,7 @@ export function ProjectAssetsPanel({
               const currentPosition = Number.isSafeInteger(sourceAssetId) && sourceAssetId > 0
                 ? resolveRuntimeMarkerPosition(marker.type, sourceAssetId) ?? marker.position
                 : marker.position;
+              const physicsSensors = readPhysicsSensorCuboids(marker.metadata);
               return (
                 <div key={marker.id}>
                   {beginsTypeGroup && (
@@ -181,7 +183,7 @@ export function ProjectAssetsPanel({
                       isSelected ? 'border-cyan-500 bg-cyan-500/15 ring-1 ring-cyan-500/40' : 'bg-card'
                     }`}
                     aria-pressed={isSelected}
-                    onClick={() => focusProjectAsset(marker)}
+                    onClick={() => onSelectAsset(marker)}
                   >
                     <div className="flex items-center gap-2">
                       <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded bg-muted text-xs">
@@ -199,6 +201,33 @@ export function ProjectAssetsPanel({
                       <Crosshair className={`h-3.5 w-3.5 shrink-0 ${isSelected ? 'text-cyan-500' : 'text-muted-foreground'}`} />
                     </div>
                   </button>
+                  {physicsSensors.length > 0 && (
+                    <div className="ml-4 mt-1 space-y-1 border-l border-white/10 pl-2" aria-label={`${marker.name} Physics Sensors`}>
+                      <div className="px-1 text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">
+                        Physics Sensors {physicsSensors.length}
+                      </div>
+                      {physicsSensors.map((sensor) => (
+                        <button
+                          key={sensor.id}
+                          type="button"
+                          className="w-full rounded border border-white/10 bg-black/10 px-2 py-1 text-left transition-colors hover:border-cyan-500/50 hover:bg-cyan-500/5"
+                          title={`Open ${marker.name} to configure ${sensor.name}`}
+                          onClick={() => onSelectAsset(marker)}
+                        >
+                          <span className="flex items-center gap-2">
+                            <span className={`h-2 w-2 shrink-0 rounded-sm ${sensor.behavior === 'counter' ? 'bg-cyan-400' : 'bg-amber-400'}`} aria-hidden="true" />
+                            <span className="min-w-0 flex-1">
+                              <span className="block truncate text-[10px] font-medium">{sensor.name}</span>
+                              <span className="block text-[9px] capitalize text-muted-foreground">
+                                {sensor.behavior === 'counter' ? 'Entry counter' : 'Trigger'} · {sensor.width.toFixed(2)} × {sensor.height.toFixed(2)} × {sensor.depth.toFixed(2)}
+                              </span>
+                            </span>
+                            <Crosshair className="h-3 w-3 shrink-0 text-muted-foreground" />
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}

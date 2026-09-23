@@ -63,7 +63,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   // ✅ Don't render sidebar on server to avoid hydration mismatch
   if (!mounted) {
     return (
-      <div className={cn("flex bg-background dark:bg-[#0B0B0B] [--card-gap:1rem] [--card-padding-x:1rem] [--card-padding-y:1rem]", fixedWorkspace ? "h-dvh overflow-hidden" : "min-h-screen")}>
+      <div className={cn("flex bg-background dark:bg-[#0D1420] [--card-gap:1rem] [--card-padding-x:1rem] [--card-padding-y:1rem]", fixedWorkspace ? "h-dvh overflow-hidden" : "min-h-screen")}>
         <div className="min-h-0 min-w-0 flex-1 flex flex-col">
           <div className="h-12 border-b border-border dark:border-white/10 bg-background/85 dark:bg-[#111A28] backdrop-blur-xl" />
           <main className={cn("flex-1 p-2", fixedWorkspace && "min-h-0 overflow-hidden")}>
@@ -76,7 +76,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className={cn("flex bg-background dark:bg-[#0B0B0B] [--card-gap:1rem] [--card-padding-x:1rem] [--card-padding-y:1rem]", fixedWorkspace ? "h-dvh overflow-hidden" : "min-h-screen")}>
+    <div className={cn("flex bg-background dark:bg-[#0D1420] [--card-gap:1rem] [--card-padding-x:1rem] [--card-padding-y:1rem]", fixedWorkspace ? "h-dvh overflow-hidden" : "min-h-screen")}>
       {/* Sidebar */}
       <AdminSidebar 
         isCollapsed={isCollapsed} 

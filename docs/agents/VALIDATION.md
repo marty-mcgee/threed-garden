@@ -10,15 +10,19 @@ This repository uses a narrow-first validation ladder. Agents should prove the r
 4. Run `npm run typecheck`; TypeScript errors are release-blocking.
 5. Run `npm run validate -- threed-library-placement` when Dashboard Model, Character, or FarmBot Library placement request construction changes.
 6. Run `npm run validate -- threed-runtime-markers` when ThreeD Marker identity, registry, position resolution, or marker adapters change.
-7. Run `npm run validate -- threed-orchestration` when ThreeD character approach, arrival, orientation, or interaction orchestration changes.
-8. Run `npm run validate -- threed-mqtt` when the provider-neutral MQTT transport or worker authentication changes.
-9. Run `npm run validate -- farmbot-worker` when the FarmBot MQTT adapter, grants, status parsing, persistence mapping, or lifecycle changes.
-10. Run `npm run validate -- farmbot-mqtt-persistence` when normalized worker events, persistence rules, or MQTT Admin activity changes.
-11. Run `npm run validate -- farmbot-command-policy` when Phase 3 semantic intent, lifecycle states, idempotency rules, or command safety policy changes.
-12. Run a file-scoped lint command only when an ESLint executable/configuration is available.
-13. Run targeted tests when a matching test exists.
-14. Run `npm run build` only when the change affects bundling, routing, server/client boundaries, or release readiness.
-15. Perform the relevant manual regression checklist for interactive ThreeD behavior.
+7. Run `npm run validate -- threed-physics-events` when the provider-neutral Physics Event contract, Rapier observation adapter, event deduplication, rate limiting, or retention changes.
+8. Run `npm run validate -- threed-soccer-physics` when Soccer goal roles, sensor scoring, occupancy, or local score behavior changes.
+9. Run `npm run validate -- threed-farmbot-live-state` when Project-scoped FarmBot MQTT state, freshness, connection condition, or observed-position presentation changes.
+10. Run `npm run validate -- threed-farmbot-coordinate-alignment` when FarmBot physical axes, units, bounds, orientation, or Project-local position mapping changes.
+11. Run `npm run validate -- threed-orchestration` when ThreeD character approach, arrival, orientation, or interaction orchestration changes.
+12. Run `npm run validate -- threed-mqtt` when the provider-neutral MQTT transport or worker authentication changes.
+13. Run `npm run validate -- farmbot-worker` when the FarmBot MQTT adapter, grants, status parsing, persistence mapping, or lifecycle changes.
+14. Run `npm run validate -- farmbot-mqtt-persistence` when normalized worker events, persistence rules, or MQTT Admin activity changes.
+15. Run `npm run validate -- farmbot-command-policy` when Phase 3 semantic intent, lifecycle states, idempotency rules, or command safety policy changes.
+16. Run a file-scoped lint command only when an ESLint executable/configuration is available.
+17. Run targeted tests when a matching test exists.
+18. Run `npm run build` only when the change affects bundling, routing, server/client boundaries, or release readiness.
+19. Perform the relevant manual regression checklist for interactive ThreeD behavior.
 
 ## Commands
 
@@ -70,6 +74,10 @@ npm run validate -- threed-obj-bundle
 npm run validate -- threed-model-bulk-preview
 npm run validate -- threed-bulk-saved-texture
 npm run validate -- threed-runtime-markers
+npm run validate -- threed-physics-events
+npm run validate -- threed-soccer-physics
+npm run validate -- threed-farmbot-live-state
+npm run validate -- threed-farmbot-coordinate-alignment
 npm run validate -- threed-orchestration
 npm run validate -- farmbot-crypto
 npm run validate -- threed-mqtt
@@ -81,6 +89,14 @@ npm run build
 ```
 
 The ThreeD Runtime Marker validation is offline and provider-independent. It checks supported Sub-Module normalization, canonical identity keys, overlapping numeric IDs across modules, immutable snapshots, saved/asset and live position selection, refresh preservation, removal, atomic duplicate rejection, invalid input, and Project-scoped clearing. The registry is an in-memory mirror; database-driven Project assignments, source assets, Layers, and the explicit `project_threed_markers` saved snapshot remain the Project-session authority. The validator must not access React, Three.js, physics, APIs, persistence, MQTT, workers, FarmBot services, or physical devices.
+
+The ThreeD Physics Event validation is offline and provider-independent. It checks versioned immutable envelopes, stable Runtime Marker identities, deterministic event IDs, bounded values, rejection behavior, duplicate suppression, rate limiting, retained-event capacity, clearing, and the Rapier observation adapter. The core must not import React, Rapier, MQTT, FarmBot, database, browser, persistence, or physical-device services. A Physics Event describes Scene activity only and cannot dispatch a command or write external state.
+
+The ThreeD Soccer Physics validation is offline and provider-independent. It checks explicit Project Model goal roles, one score per ball-to-goal occupancy, exit and re-entry, ignored contacts and untagged sensors, stable identities, simultaneous occupancies, and immutable local score state. It must not access React, Rapier, APIs, persistence, MQTT, FarmBot, or physical-device services.
+
+The ThreeD FarmBot Live State validation is offline and provider-independent. It checks explicit unavailable, disconnected, stale, and live conditions; Project and FarmBot identity; bounded complete coordinates; normalized observation times; immutable output; and omission of broker, worker-session, credential, and raw-message fields. It must not access React, APIs, persistence, MQTT transports, workers, credentials, or physical-device services.
+
+The ThreeD FarmBot Coordinate Alignment validation is offline and provider-independent. It checks exact physical-millimeter fixtures through explicit Scene origin, unit scale, axis signs, clockwise yaw, and working bounds. Invalid calibration, partial/non-finite positions, and out-of-bounds observations must fail closed. It must not access React, Three.js, Rapier, APIs, persistence, MQTT, workers, or physical devices.
 
 The ThreeD Library placement validation is offline and verifies that Model, Character, and FarmBot client request builders preserve the established API envelope, identifiers, transforms, dimensions, scale, placement role, and numeric conversion. It also verifies that the Dashboard Library workspace permits only one active Library and that closing an inactive Library does not close the active one. It must not fetch, write Project state, access the database, initialize Three.js/Rapier, or expand FarmBot command capability.
 

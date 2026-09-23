@@ -1,4 +1,5 @@
 'use client';
+import { readModelVolumeSensor } from '@/libraries/services/threed/physics/sensor-legacy-compat';
 
 import { Button } from '@/components/ui/button';
 import { assignedBedPlantings } from '@/libraries/services/threed/beds/bed-planting-bounds';
@@ -32,6 +33,13 @@ import { ModelInstancePlacementEditor } from './ModelInstancePlacementEditor';
 import { resolveProjectModelCollisionMode } from '@/libraries/services/threed/models/project-model-instance-core';
 import { PlantingInstanceEditor } from './PlantingInstanceEditor';
 import { DetailsCardSection } from './DetailsCardSection';
+import { sceneOwnerPose } from '@/libraries/services/threed/transforms/scene-transform-core';
+import { useFarmBotLiveState } from '@/components/map/useFarmBotLiveState';
+import {
+  PhysicsSensorCuboidsEditor,
+  type PhysicsSensorPlacementResult,
+} from './PhysicsSensorCuboidsEditor';
+import type { PhysicsSensorCuboid } from '@/libraries/services/threed/physics/sensor-cuboid-core';
 
 function ModelFileNotice({ type, data }: { type: string; data: Record<string, any> }) {
   const { data: session, status: sessionStatus } = useSession();
@@ -97,18 +105,6 @@ function KvRow({ label, value }: { label: string; value: string }) {
   );
 }
 
-interface FarmBotProjectMqttRuntime {
-  connectionState: string;
-  stateChangedAt: string;
-  lastMessageAt: string | null;
-  lastStatusAt: string | null;
-  positionX: string | null;
-  positionY: string | null;
-  positionZ: string | null;
-  tokenExpiresAt: string;
-  isStale: boolean;
-}
-
 function formatMqttDate(value: string | null): string {
   return value ? new Date(value).toLocaleString() : 'Never';
 }
@@ -121,69 +117,37 @@ function FarmBotMqttStatusSummary({
   farmbotId: number;
   projectId: string | null;
 }) {
-  const [runtime, setRuntime] = useState<FarmBotProjectMqttRuntime | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!projectId || !Number.isSafeInteger(farmbotId) || farmbotId < 1) {
-      setRuntime(null);
-      return;
-    }
-
-    const controller = new AbortController();
-    setLoading(true);
-    void fetch(
-      `/api/threed/farmbots/${farmbotId}/mqtt-runtime?projectId=${encodeURIComponent(projectId)}`,
-      { cache: 'no-store', signal: controller.signal }
-    )
-      .then(async (response) => {
-        const result = await response.json();
-        if (!response.ok || !result.success) throw new Error(result.error);
-        setRuntime(result.data as FarmBotProjectMqttRuntime | null);
-      })
-      .catch((error) => {
-        if (error instanceof Error && error.name === 'AbortError') return;
-        setRuntime(null);
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
-      });
-
-    return () => controller.abort();
-  }, [farmbotId, projectId]);
-
-  const hasPosition = runtime
-    && runtime.positionX !== null
-    && runtime.positionY !== null
-    && runtime.positionZ !== null;
+  const { state: runtime, loading, error } = useFarmBotLiveState({
+    farmbotId,
+    projectId,
+  });
 
   return (
     <DetailsCardSection
-      title="MQTT Status"
+      title="Live FarmBot State"
       summaryAside={loading ? (
           <Loader2 className="h-3 w-3 animate-spin text-white/40" />
         ) : runtime ? (
           <div className="flex items-center gap-1">
-            <span className={`h-1.5 w-1.5 rounded-full ${runtime.connectionState === 'connected' && !runtime.isStale ? 'bg-emerald-400' : 'bg-amber-400'}`} />
-            <span className="text-[10px] capitalize text-white/70">{runtime.connectionState}</span>
-            {runtime.isStale && <span className="text-[10px] text-amber-300">· Stale</span>}
+            <span className={`h-1.5 w-1.5 rounded-full ${runtime.condition === 'live' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
+            <span className="text-[10px] capitalize text-white/70">{runtime.condition}</span>
           </div>
         ) : (
-          <span className="text-[10px] text-white/35">No recorded status</span>
+          <span className="text-[10px] text-white/35">{error ? 'Unavailable' : 'No recorded status'}</span>
         )}
     >
       {runtime && (
         <div className="space-y-0.5">
+          <KvRow label="State" value={runtime.connectionState ?? 'Unavailable'} />
+          <KvRow label="Source" value="FarmBot MQTT" />
           <KvRow label="Changed" value={formatMqttDate(runtime.stateChangedAt)} />
-          <KvRow label="Message" value={formatMqttDate(runtime.lastMessageAt)} />
-          <KvRow label="Status" value={formatMqttDate(runtime.lastStatusAt)} />
+          <KvRow label="Observed" value={formatMqttDate(runtime.observedAt)} />
           <KvRow
             label="Device"
-            value={hasPosition
-              ? `X:${Number(runtime.positionX).toFixed(1)} Y:${Number(runtime.positionY).toFixed(1)} Z:${Number(runtime.positionZ).toFixed(1)}`
+            value={runtime.position
+              ? `X:${runtime.position.x.toFixed(1)} Y:${runtime.position.y.toFixed(1)} Z:${runtime.position.z.toFixed(1)}`
               : 'Position not recorded'}
           />
-          <KvRow label="Token" value={`Expires ${formatMqttDate(runtime.tokenExpiresAt)}`} />
         </div>
       )}
     </DetailsCardSection>
@@ -191,7 +155,7 @@ function FarmBotMqttStatusSummary({
 }
 
 
-export function DetailsCard({ selected, projectId, projectMarkers, onSelectProjectMarker, leftOffsetRem = 0.75, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, movingModelInstanceId, onMoveModelToggle, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdateFarmBotInstance, updatingFarmBotMarkerId, onDeleteFarmBotInstance, deletingFarmBotMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId, movingPlantingMarkerId, onMovePlantingToggle, movingModuleMarkerId, onMoveModuleToggle, onUpdateCharacterPosition, updatingCharacterMarkerId, onDeleteCharacterInstance, deletingCharacterMarkerId }: {
+export function DetailsCard({ selected, projectId, projectMarkers, onSelectProjectMarker, leftOffsetRem = 0.75, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, movingModelInstanceId, onMoveModelToggle, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdateFarmBotInstance, updatingFarmBotMarkerId, onDeleteFarmBotInstance, deletingFarmBotMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId, movingPlantingMarkerId, onMovePlantingToggle, movingModuleMarkerId, onMoveModuleToggle, onUpdatePhysicsSensors, updatingPhysicsSensorMarkerId, placingPhysicsSensor, physicsSensorPlacementResult, onBeginPhysicsSensorPlacement, onCancelPhysicsSensorPlacement, onZoomToPhysicsSensor, onUpdateCharacterPosition, updatingCharacterMarkerId, onDeleteCharacterInstance, deletingCharacterMarkerId }: {
   selected: any;
   projectId: string | null;
   projectMarkers?: readonly RuntimeMarker[];
@@ -254,6 +218,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
     positionY: number;
     positionZ: number;
     rotation: number;
+    farmbotLiveAlignment?: import('@/libraries/services/threed/farmbot/coordinate-alignment-core').FarmBotLiveAlignmentConfiguration;
   }) => void;
   updatingFarmBotMarkerId?: number | null;
   onDeleteFarmBotInstance?: (markerId: number, name: string) => void;
@@ -272,6 +237,13 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
   onMoveModuleToggle?: (markerId:number) => void;
   movingPlantingMarkerId?: number | null;
   onMovePlantingToggle?: (markerId:number, input:{bedId:number|null;modelScale:number}) => void;
+  onUpdatePhysicsSensors?: (markerId: number, sensors: readonly PhysicsSensorCuboid[]) => Promise<boolean>;
+  updatingPhysicsSensorMarkerId?: number | null;
+  placingPhysicsSensor?: { markerId: number; sensorId: string } | null;
+  physicsSensorPlacementResult?: PhysicsSensorPlacementResult | null;
+  onBeginPhysicsSensorPlacement?: (marker: RuntimeMarker, markerId: number, sensor: PhysicsSensorCuboid, operation: 'place' | 'move') => void;
+  onCancelPhysicsSensorPlacement?: () => void;
+  onZoomToPhysicsSensor?: (marker: RuntimeMarker, sensor: PhysicsSensorCuboid) => void;
   onUpdateCharacterPosition?: (markerId: number, position: {
     characterPhysics?: import("@/libraries/services/threed/characters/character-physics").CharacterPhysics;
     positionX: number;
@@ -377,6 +349,15 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
     && (selected.metadata?.source === 'project-marker' || selected.metadata?.source === 'project-snapshot')
     && Number.isSafeInteger(farmBotMarkerId)
     && farmBotMarkerId > 0;
+  const physicsSensorMarkerId = isProjectModelInstance
+    ? modelInstanceId
+    : isProjectBedInstance
+      ? bedMarkerId
+      : isProjectPlantingInstance
+        ? plantingMarkerId
+        : isProjectFarmBotInstance
+          ? farmBotMarkerId
+          : null;
   const selectedTargetCapabilities = getThreeDActionTargetCapabilities(normalizedType);
   const actionTargetCapabilities = actionTarget
     ? getThreeDActionTargetCapabilities(actionTarget.type)
@@ -475,7 +456,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
 
   return (
     <div
-      className={`flex flex-col threed-workspace-panel threed-details-surface fixed top-12 z-[1000] max-h-[calc(100vh-4rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-y-auto rounded-lg border border-white/15 p-2 text-white shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]`}
+      className={`flex flex-col threed-workspace-panel threed-details-surface absolute top-9 z-40 max-h-[calc(100%-2.25rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-lg border border-white/15 text-white shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]`}
       style={{
         left: `${leftOffsetRem}rem`,
         backgroundColor: 'var(--threed-details-background, rgba(17, 26, 40, 0.5))',
@@ -483,7 +464,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
     >
       {/* Header */}
       <div
-        className="order-[-30] sticky top-0 z-10 -mx-2 -mt-2 flex items-start justify-between gap-2 rounded-t-lg px-2 pb-2 pt-0.5"
+        className="shrink-0 flex items-start justify-between gap-2 px-2 py-2"
       >
         <div className="min-w-0 pb-1 pt-0.5">
           <div className="truncate text-sm font-semibold text-white">
@@ -501,6 +482,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
         </button>
       </div>
 
+      <div className="flex min-h-0 flex-col overflow-y-auto overscroll-contain px-2 pb-2 [scrollbar-width:thin]">
       {!isIncident && <ModelFileNotice type={normalizedType} data={d} />}
 
       <div className="order-[-20] mt-1.5 flex items-center gap-1">
@@ -862,6 +844,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
           instanceId={modelInstanceId}
           initialMovableBall={selected.metadata?.physicsMode === 'ball'}
           initialBallPhysics={selected.metadata?.ballPhysics}
+          initialVolumeSensor={readModelVolumeSensor(selected.metadata)}
           initialName={String(d.instanceName || selected.name || '')}
           initialScaleMultiplier={Number(d.scaleMultiplier ?? 1)}
           initialRotationY={Number(d.rotationYInstance ?? 0)}
@@ -888,7 +871,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
             {assignedPlantings.length === 0 && <p className="text-xs text-muted-foreground">No assigned Plantings.</p>}
             {assignedPlantings.map(planting => (
               <Button key={planting.id} type="button" variant="ghost" size="sm" className="h-auto min-h-8 w-full justify-start whitespace-normal text-left text-xs"
-                disabled={!onSelectProjectMarker} aria-label={`Select and focus Planting: ${planting.name}`}
+                disabled={!onSelectProjectMarker} aria-label={`Select Planting: ${planting.name}`}
                 onClick={() => onSelectProjectMarker?.(planting)}>{planting.name}</Button>
             ))}
           </div>
@@ -940,6 +923,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
             z: Number(selected.position?.z ?? d.positionZ ?? 0),
           }}
           initialRotation={Number(d.rotation ?? 0)}
+          initialFarmBotLiveAlignment={selected.metadata?.farmbotLiveAlignment}
           updating={updatingFarmBotMarkerId === farmBotMarkerId}
           deleting={deletingFarmBotMarkerId === farmBotMarkerId}
           onSave={onUpdateFarmBotInstance}
@@ -974,6 +958,23 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
         />
       )}
 
+      {physicsSensorMarkerId !== null && onUpdatePhysicsSensors && onBeginPhysicsSensorPlacement && onCancelPhysicsSensorPlacement && (
+        <PhysicsSensorCuboidsEditor
+          key={`physics-sensors:${physicsSensorMarkerId}:${String(selected.metadata?.placementRevision ?? '')}`}
+          markerId={physicsSensorMarkerId}
+          ownerKey={`${projectId}:${selected.id}`}
+          ownerPose={sceneOwnerPose(selected, resolveRuntimeMarkerPosition?.(selected.type, Number(selected.data?.id)))}
+          initialMetadata={selected.metadata}
+          saving={updatingPhysicsSensorMarkerId === physicsSensorMarkerId}
+          placementSensorId={placingPhysicsSensor?.markerId === physicsSensorMarkerId ? placingPhysicsSensor.sensorId : null}
+          placementResult={physicsSensorPlacementResult ?? null}
+          onBeginPlacement={(sensor, operation) => onBeginPhysicsSensorPlacement(selected, physicsSensorMarkerId, sensor, operation)}
+          onCancelPlacement={onCancelPhysicsSensorPlacement}
+          onZoomToSensor={(sensor) => onZoomToPhysicsSensor?.(selected, sensor)}
+          onSave={onUpdatePhysicsSensors}
+        />
+      )}
+
       {isProjectCharacterInstance && onUpdateCharacterPosition && onDeleteCharacterInstance && (
         <CharacterInstancePositionEditor
           key={`${characterMarkerId}:${String(d.placementRevision ?? '')}`}
@@ -999,6 +1000,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
         />
       )}
 
+      </div>
     </div>
   );
 }

@@ -52,7 +52,12 @@ const tasks = {
   'threed-hidden-collision-mount': [node('validate-threed-hidden-collision-mount.cjs')],
   'threed-ground-map': [ts('validate-threed-ground-map.mts')],
   'threed-bed-planting-bounds': [ts('validate-threed-bed-planting-bounds.mts')],
-  'threed-runtime-markers': [ts('validate-threed-runtime-markers.mts')],
+  'threed-runtime-markers': [['node', '--import', 'tsx', `${scripts}/validate-threed-runtime-markers.mts`]],
+  'threed-sensors': [['node', '--import', 'tsx', `${scripts}/validate-threed-sensors.mts`], node('validate-threed-sensor-groups.cjs')],
+  'threed-physics-events': [['node', '--import', 'tsx', `${scripts}/validate-threed-physics-events.mts`]],
+  'threed-soccer-physics': [['node', '--import', 'tsx', `${scripts}/validate-threed-soccer-physics.mts`]],
+  'threed-farmbot-live-state': [['node', '--import', 'tsx', `${scripts}/validate-threed-farmbot-live-state.mts`]],
+  'threed-farmbot-coordinate-alignment': [['node', '--import', 'tsx', `${scripts}/validate-threed-farmbot-coordinate-alignment.mts`]],
   'threed-character-navigation': [
     ts('validate-threed-character-navigation.mts'),
     node('validate-threed-character-navigation-adapter.cjs'),
@@ -144,6 +149,11 @@ const ci = [
   'threed-library-placement',
   'threed-project-session',
   'threed-runtime-markers',
+  'threed-sensors',
+  'threed-physics-events',
+  'threed-soccer-physics',
+  'threed-farmbot-live-state',
+  'threed-farmbot-coordinate-alignment',
 ];
 
 const unavailableFixtures = ['threed-fbx-material-targets'];

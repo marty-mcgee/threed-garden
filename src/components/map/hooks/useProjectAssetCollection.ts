@@ -2,6 +2,7 @@
 
 import { useMemo } from 'react';
 import type { RuntimeMarker } from '@/libraries/types/map';
+import { readPhysicsSensorCuboids } from '@/libraries/services/threed/physics/sensor-cuboid-core';
 import { getThreeDLabel } from '@/libraries/utils/map-helpers';
 
 interface ProjectAssetCollection {
@@ -32,6 +33,11 @@ export function useProjectAssetCollection(
         normalizedSearch.length === 0
         || marker.name.toLowerCase().includes(normalizedSearch)
         || getThreeDLabel(marker.type).toLowerCase().includes(normalizedSearch)
+        || readPhysicsSensorCuboids(marker.metadata).some((sensor) => (
+          sensor.name.toLowerCase().includes(normalizedSearch)
+          || sensor.behavior.replaceAll('-', ' ').includes(normalizedSearch)
+          || 'physics sensor cuboid'.includes(normalizedSearch)
+        ))
       ))
       .sort((left, right) => (
         getThreeDLabel(left.type).localeCompare(getThreeDLabel(right.type))

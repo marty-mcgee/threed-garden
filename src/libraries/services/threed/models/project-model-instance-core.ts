@@ -1,3 +1,6 @@
+import { legacySensorArray, removeLegacyAttachedSensors, readModelVolumeSensor } from '../physics/sensor-legacy-compat';
+import { validatePhysicsSensorCuboids } from '../physics/sensor-cuboid-core';
+
 const MAX_INSTANCE_NAME_LENGTH = 120;
 const MAX_POSITION = 1_000_000;
 const MAX_ROTATION = 10_000;
@@ -135,7 +138,17 @@ function readOptionalMetadata(value: unknown): Record<string, unknown> | undefin
   if (typeof value !== 'object' || value === null || Array.isArray(value)) {
     throw new ProjectModelInstanceInputError('Invalid metadata');
   }
-  return value as Record<string, unknown>;
+  const metadata = value as Record<string, unknown>;
+  if (metadata.physicsVolumeSensor !== undefined && metadata.physicsVolumeSensor !== false && !readModelVolumeSensor(metadata)) {
+    throw new ProjectModelInstanceInputError('Invalid physicsVolumeSensor');
+  }
+  const configured = metadata.physicsSensorCuboids ?? legacySensorArray(metadata);
+  if (configured !== undefined) {
+    const parsed = validatePhysicsSensorCuboids(configured);
+    if (!parsed.success) throw new ProjectModelInstanceInputError(parsed.error);
+    return { ...removeLegacyAttachedSensors(metadata), physicsSensorCuboids: parsed.sensors };
+  }
+  return metadata;
 }
 
 function readOptionalPlacementRole(value: unknown): ProjectModelPlacementRole | undefined {

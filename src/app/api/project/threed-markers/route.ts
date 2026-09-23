@@ -66,6 +66,9 @@ import {
   ProjectModelInstanceInputError,
 } from '@/libraries/services/threed/models/project-model-instance-core';
 import type { ThreeDRuntimeMarkerModuleType } from '@/libraries/types/map';
+import { IMPORTED_SENSOR_GROUP, removeLegacyAttachedSensors } from '@/libraries/services/threed/physics/sensor-legacy-compat';
+import { readSensorGroups } from '@/libraries/services/threed/physics/sensor-group-core';
+import { validatePhysicsSensorCuboids } from '@/libraries/services/threed/physics/sensor-cuboid-core';
 
 const MAX_REQUEST_BYTES = 1_048_576;
 
@@ -104,6 +107,7 @@ async function requireOwnedProject(userId: string, projectId: number) {
       headingDegrees: project.headingDegrees,
       metersPerSceneUnit: project.metersPerSceneUnit,
       config: project.config,
+      metadata: project.metadata,
     })
     .from(project)
     .where(and(eq(project.id, projectId), eq(project.userId, userId)))
@@ -1228,6 +1232,52 @@ async function updateProjectMarker(request: NextRequest, id: number) {
     }
     const currentData: Record<string, unknown> = marker.data && typeof marker.data === 'object' && !Array.isArray(marker.data) ? marker.data as Record<string, unknown> : {};
 
+    if (
+      body
+      && typeof body === 'object'
+      && !Array.isArray(body)
+      && (body as Record<string, unknown>).operation === 'update-physics-sensors'
+    ) {
+      if (!['models', 'beds', 'plantings', 'farmbots'].includes(marker.markerType)) {
+        return NextResponse.json({ success: false, error: 'This marker type cannot own Physics Sensors' }, { status: 400 });
+      }
+      const rawSensors = (body as Record<string, unknown>).physicsSensorCuboids;
+      const validation = validatePhysicsSensorCuboids(rawSensors);
+      if (!validation.success) {
+        return NextResponse.json({ success: false, error: validation.error }, { status: 400 });
+      }
+      const sensors = validation.sensors;
+      return await db.transaction(async tx => {
+        const [lockedProject] = await tx.select({ metadata: project.metadata }).from(project)
+          .where(and(eq(project.id, marker.projectId), eq(project.userId, ownerId))).for('update');
+        if (!lockedProject) return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+        const groups = readSensorGroups((lockedProject.metadata as any)?.physicsSensorGroups ?? []);
+        const groupIds = new Set([IMPORTED_SENSOR_GROUP.id, ...groups.map(group => group.id)]);
+        if (sensors.some(sensor => sensor.groupId && !groupIds.has(sensor.groupId))) {
+          return NextResponse.json({ success: false, error: 'Sensor Group does not belong to this Project. Choose an available group.' }, { status: 400 });
+        }
+        const [lockedMarker] = await tx.select({ metadata: projectThreedMarkers.metadata }).from(projectThreedMarkers)
+          .where(and(eq(projectThreedMarkers.id, id), eq(projectThreedMarkers.userId, ownerId), eq(projectThreedMarkers.projectId, marker.projectId))).for('update');
+        if (!lockedMarker) return NextResponse.json({ success: false, error: 'Marker not found' }, { status: 404 });
+        const currentMetadata = lockedMarker.metadata && typeof lockedMarker.metadata === 'object' && !Array.isArray(lockedMarker.metadata)
+          ? lockedMarker.metadata as Record<string, unknown>
+          : {};
+        const retainedMetadata = removeLegacyAttachedSensors(currentMetadata);
+        const [updated] = await tx.update(projectThreedMarkers).set({
+          metadata: {
+            ...retainedMetadata,
+            physicsSensorCuboids: sensors,
+            source: 'project-marker',
+          },
+          updatedAt: new Date(),
+        }).where(and(
+          eq(projectThreedMarkers.id, id),
+          eq(projectThreedMarkers.userId, ownerId),
+        )).returning();
+        return NextResponse.json({ success: true, data: updated });
+      });
+    }
+
     if (marker.markerType === 'characters') {
       const updateBody = typeof body === 'object' && body !== null && !Array.isArray(body)
         ? body as Record<string, unknown>
@@ -1451,6 +1501,12 @@ async function updateProjectMarker(request: NextRequest, id: number) {
         ...geographic,
         positionSource: 'asset',
         color: update.color,
+        ...(update.farmbotLiveAlignment === undefined ? {} : {
+          metadata: {
+            ...(marker.metadata as Record<string, unknown> ?? {}),
+            farmbotLiveAlignment: update.farmbotLiveAlignment,
+          },
+        }),
         data: {
           ...currentData,
           widthFeet: update.widthFeet,

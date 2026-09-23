@@ -1,5 +1,6 @@
 'use client';
 
+import type { ModelVolumeSensor } from '@/libraries/services/threed/physics/sensor-legacy-compat';
 import { BALL_PHYSICS_FIELDS, resolveBallPhysics, type BallPhysics } from '@/libraries/services/threed/models/ball-physics';
 import { useState } from 'react';
 import { Box, Crosshair, Loader2, Save, Trash2 } from 'lucide-react';
@@ -18,6 +19,7 @@ export function ModelInstancePlacementEditor({
   initialCollisionMode,
   initialMovableBall = false,
   initialBallPhysics,
+  initialVolumeSensor,
   baseModelScale,
   updating,
   deleting,
@@ -35,12 +37,17 @@ export function ModelInstancePlacementEditor({
   initialCollisionMode: ProjectModelCollisionMode;
   initialMovableBall?: boolean;
   initialBallPhysics?: unknown;
+  initialVolumeSensor?: ModelVolumeSensor | null;
   baseModelScale: number;
   updating: boolean;
   deleting: boolean;
   moveActive: boolean;
   onSave: (input: {
-    metadata: { physicsMode: 'ball' | 'fixed'; ballPhysics: BallPhysics };
+    metadata: {
+      physicsMode: 'ball' | 'fixed';
+      ballPhysics: BallPhysics;
+      physicsVolumeSensor: ModelVolumeSensor | false;
+    };
     collisionMode: ProjectModelCollisionMode;
     instanceName: string;
     scaleMultiplier: number;
@@ -66,6 +73,7 @@ export function ModelInstancePlacementEditor({
     ? 'ball'
     : initialCollisionMode;
   const [physicsMode, setPhysicsMode] = useState<ProjectModelPhysicsMode>(initialPhysicsMode);
+  const [volumeSensor, setVolumeSensor] = useState(Boolean(initialVolumeSensor));
   const initialPhysics = resolveBallPhysics(initialBallPhysics);
   const [physics, setPhysics] = useState(() => Object.fromEntries(Object.entries(initialPhysics).map(([key, value]) => [key, String(value)])));
   const physicsValid = Object.entries(BALL_PHYSICS_FIELDS).every(([key, field]) => physics[key].trim() !== '' && Number.isFinite(Number(physics[key])) && Number(physics[key]) >= field.min && Number(physics[key]) <= field.max);
@@ -73,6 +81,9 @@ export function ModelInstancePlacementEditor({
   const parsedScale = Number(scaleMultiplier);
   const parsedRotationDegrees = Number(rotationYDegrees);
   const parsedPosition = [Number(positionX), Number(positionY), Number(positionZ)];
+  const effectiveVolumeSensor = physicsMode !== 'ball' && placementRole !== 'environment'
+    ? volumeSensor
+    : false;
   const valid = physicsValid && instanceName.trim().length <= 120
     && Number.isFinite(parsedScale)
     && parsedScale >= 0.0001
@@ -88,6 +99,7 @@ export function ModelInstancePlacementEditor({
     || parsedPosition[2] !== initialPosition.z
     || placementRole !== initialPlacementRole
     || physicsMode !== initialPhysicsMode
+    || effectiveVolumeSensor !== Boolean(initialVolumeSensor)
     || Object.keys(initialPhysics).some(key => parsedPhysics[key as keyof BallPhysics] !== initialPhysics[key as keyof BallPhysics]);
   const editStatus = updating ? 'Saving…' : dirty ? (valid ? 'Unsaved changes' : 'Check fields') : 'Saved';
 
@@ -100,7 +112,13 @@ export function ModelInstancePlacementEditor({
           onClick={(event) => {
             event.stopPropagation();
             onSave({
-              metadata: { physicsMode: physicsMode === 'ball' && placementRole !== 'environment' ? 'ball' : 'fixed', ballPhysics: parsedPhysics },
+              metadata: {
+                physicsMode: physicsMode === 'ball' && placementRole !== 'environment' ? 'ball' : 'fixed',
+                ballPhysics: parsedPhysics,
+                physicsVolumeSensor: effectiveVolumeSensor ? initialVolumeSensor ?? {
+                  id: 'model-volume', name: instanceName.trim() || 'Model volume', behavior: 'counter', detection: 'movable-ball', groupId: null,
+                } : false,
+              },
               collisionMode: physicsMode === 'triangle-surface' ? 'triangle-surface' : 'box',
               instanceName: instanceName.trim(),
               scaleMultiplier: parsedScale,
@@ -260,6 +278,15 @@ export function ModelInstancePlacementEditor({
             ))}
           </div>
           {!physicsValid && <p className="text-[10px] text-red-300">Enter values within the allowed ranges.</p>}
+        </DetailsCardSection>
+      )}
+      {physicsMode !== 'ball' && placementRole !== 'environment' && (
+        <DetailsCardSection title="Model Volume Sensor">
+          <label className="flex items-center gap-2 text-[10px]">
+            <input type="checkbox" checked={volumeSensor} disabled={busy} onChange={event => setVolumeSensor(event.target.checked)} />
+            Use the Model bounding box as an entry counter
+          </label>
+          <p className="mt-2 text-[10px] text-white/60">For named sensors and groups, add Physics Sensor Cuboids below.</p>
         </DetailsCardSection>
       )}
     </div>

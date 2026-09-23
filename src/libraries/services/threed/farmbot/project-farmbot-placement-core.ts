@@ -1,3 +1,8 @@
+import {
+  normalizeFarmBotCoordinateAlignment,
+  type FarmBotLiveAlignmentConfiguration,
+} from './coordinate-alignment-core';
+
 const MAX_POSITION = 1_000_000;
 const MAX_ROTATION = 10_000;
 const MIN_DIMENSION = 0.1;
@@ -76,7 +81,26 @@ export interface CreateProjectFarmBotPlacementInput {
 export type UpdateProjectFarmBotPlacementInput = Omit<
   CreateProjectFarmBotPlacementInput,
   'projectId' | 'threedId' | 'farmbotId'
->;
+> & { farmbotLiveAlignment?: Readonly<FarmBotLiveAlignmentConfiguration> | null };
+
+function liveAlignment(value: unknown): Readonly<FarmBotLiveAlignmentConfiguration> | null {
+  if (value === null) return null;
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new ProjectFarmBotPlacementInputError('Invalid FarmBot live alignment');
+  }
+  const candidate = value as Record<string, unknown>;
+  if (typeof candidate.enabled !== 'boolean') {
+    throw new ProjectFarmBotPlacementInputError('Invalid FarmBot live alignment');
+  }
+  try {
+    return Object.freeze({
+      enabled: candidate.enabled,
+      alignment: normalizeFarmBotCoordinateAlignment(candidate.alignment),
+    });
+  } catch {
+    throw new ProjectFarmBotPlacementInputError('Invalid FarmBot live alignment');
+  }
+}
 
 export function parseCreateProjectFarmBotPlacement(
   value: unknown,
@@ -101,5 +125,11 @@ export function parseUpdateProjectFarmBotPlacement(
   if (body.markerType !== 'farmbots') {
     throw new ProjectFarmBotPlacementInputError('Invalid markerType');
   }
-  return { markerType: 'farmbots', ...transform(body) };
+  return {
+    markerType: 'farmbots',
+    ...transform(body),
+    ...(Object.prototype.hasOwnProperty.call(body, 'farmbotLiveAlignment')
+      ? { farmbotLiveAlignment: liveAlignment(body.farmbotLiveAlignment) }
+      : {}),
+  };
 }

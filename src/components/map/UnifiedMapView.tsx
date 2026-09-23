@@ -78,6 +78,9 @@ interface UnifiedMapViewProps {
   onCameraModeChange?: (mode: string) => void;
   /** v0.16.2-beta: increments to request a manual "zoom + center" on the selected marker */
   focusRequest?: number;
+  /** Increments to focus an explicit Scene coordinate without changing marker selection. */
+  sensorFocusRequest?: number;
+  sensorFocusPosition?: { x: number; y: number; z: number } | null;
   /** Persistent client-side target for ThreeD character actions. */
   actionTarget?: ThreeDActionTarget | null;
   /** Increments to request camera focus on the current action target. */
@@ -126,12 +129,20 @@ interface UnifiedMapViewProps {
   placementPlantingName?: string | null;
   /** Receives the selected ThreeD ground coordinate for a new Planting. */
   onPlantingPlacement?: (position: { x: number; y: number; z: number }) => void;
+  /** Physics Sensor Cuboid currently awaiting a Scene surface click. */
+  placementPhysicsSensor?: { name: string; width: number; height: number; depth: number; rotationY: number } | null;
+  /** Receives the selected Scene coordinate for the Sensor Cuboid base. */
+  onPhysicsSensorPlacement?: (position: { x: number; y: number; z: number }) => void;
   /** Removes only a rejected saved Project marker row after user confirmation. */
   onRejectedProjectMarkerDelete?: (recordId: number) => Promise<void>;
   /** Restores a rejected Character snapshot to its source Character position. */
   onRejectedCharacterMarkerRepair?: (recordId: number) => Promise<void>;
   /** Reports that the ThreeD loader and Scene introduction have completed. */
   onThreeDPresentationComplete?: () => void;
+  environmentControlsCloseRequest?: number;
+  onEnvironmentControlsOpenChange?: (open: boolean) => void;
+  onOpenEnvironmentDetails?: () => void;
+  hasProjectEnvironment?: boolean;
 }
 
 function isTrafficIncident(m: RuntimeMarker | TrafficIncident): m is TrafficIncident {
@@ -190,6 +201,8 @@ export function UnifiedMapView({
   cameraMode,
   onCameraModeChange,
   focusRequest = 0,
+  sensorFocusRequest = 0,
+  sensorFocusPosition = null,
   actionTarget,
   actionTargetFocusRequest = 0,
   onProjectMarkerSnapshotProviderChange,
@@ -210,9 +223,15 @@ export function UnifiedMapView({
   onBedPlacement,
   placementPlantingName,
   onPlantingPlacement,
+  placementPhysicsSensor,
+  onPhysicsSensorPlacement,
   onRejectedProjectMarkerDelete,
   onRejectedCharacterMarkerRepair,
   onThreeDPresentationComplete,
+  environmentControlsCloseRequest,
+  onEnvironmentControlsOpenChange,
+  onOpenEnvironmentDetails,
+  hasProjectEnvironment,
 }: UnifiedMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const selectedMarkerRef = useRef<RuntimeMarker | null | undefined>(selectedMarker);
@@ -638,6 +657,8 @@ export function UnifiedMapView({
         cameraMode={cameraMode as any}
         onCameraModeChange={onCameraModeChange}
         focusRequest={focusRequest}
+        sensorFocusRequest={sensorFocusRequest}
+        sensorFocusPosition={sensorFocusPosition}
         actionTarget={actionTargetWithCurrentPosition}
         actionTargetFocusRequest={actionTargetFocusRequest}
         placementModel={placementModel}
@@ -652,7 +673,13 @@ export function UnifiedMapView({
         onBedPlacement={onBedPlacement}
         placementPlantingName={placementPlantingName}
         onPlantingPlacement={onPlantingPlacement}
+        placementPhysicsSensor={placementPhysicsSensor}
+        onPhysicsSensorPlacement={onPhysicsSensorPlacement}
         onPresentationComplete={onThreeDPresentationComplete}
+        environmentControlsCloseRequest={environmentControlsCloseRequest}
+        onEnvironmentControlsOpenChange={onEnvironmentControlsOpenChange}
+        onOpenEnvironmentDetails={onOpenEnvironmentDetails}
+        hasProjectEnvironment={hasProjectEnvironment}
       />
     );
   };

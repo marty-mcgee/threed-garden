@@ -3,6 +3,8 @@
 
 import { placeHoverTitle } from '@/libraries/services/threed/markers/hover-title-placement';
 import { SceneHoverTitleContext } from '@/components/threed/shared/SceneHoverTitleContext';
+import { useOptionalSceneTransform } from '@/components/threed/transform/SceneTransformWorkspace';
+import { SceneTransformGizmo } from '@/components/threed/transform/SceneTransformGizmo';
 import { Button } from '@/components/ui/button';
 
 import { EnvironmentRegionColliders } from '@/components/threed/shared/EnvironmentRegionColliders';
@@ -34,7 +36,6 @@ import {
   type RapierRigidBody,
   type RigidBodyProps,
   useBeforePhysicsStep,
-  useRapier,
 } from '@react-three/rapier';
 import * as THREE from 'three';
 import {
@@ -105,6 +106,22 @@ import {
   DEFAULT_PROJECT_GROUND_MAP_TRANSFORM,
   type ProjectGroundMapTransform,
 } from '@/libraries/services/threed/ground-maps/project-ground-map-core';
+import {
+  ThreeDPhysicsEventBuffer,
+  type ThreeDPhysicsEventV1,
+} from '@/libraries/services/threed/physics/physics-event-core';
+import { createThreeDRapierPhysicsEventAdapter, type ThreeDRapierPhysicsEventAdapter } from '@/libraries/services/threed/physics/rapier-physics-event-adapter';
+import { SensorContactTracker } from '@/libraries/services/threed/physics/sensor-contact-core';
+import { createSensorCounterState, reduceSensorCounterEvent, reconcileSensorCounters, resetSensorCounts, sensorMemberKey, type SensorMember } from '@/libraries/services/threed/physics/sensor-counter-core';
+import { readModelVolumeSensor } from '@/libraries/services/threed/physics/sensor-legacy-compat';
+import { readPhysicsSensorCuboids, type PhysicsSensorCuboid } from '@/libraries/services/threed/physics/sensor-cuboid-core';
+import { useSensorGroups } from '@/components/threed/physics/SensorGroupsWorkspace';
+import {
+  alignFarmBotPhysicalPosition,
+  readFarmBotLiveAlignmentConfiguration,
+} from '@/libraries/services/threed/farmbot/coordinate-alignment-core';
+import { useFarmBotLiveState } from './useFarmBotLiveState';
+import { createThreeDRuntimeMarkerKey, normalizeThreeDRuntimeMarkerModuleType, type ThreeDRuntimeMarkerIdentity } from '@/libraries/services/threed/markers/runtime-marker-core';
 
 interface ProjectGroundMapAsset {
   id: number; name: string; fileName: string; filePath: string;
@@ -164,6 +181,9 @@ interface ThreeDSceneProps {
   onCameraModeChange?: (mode: CameraViewMode) => void;
   /** v0.16.2-beta: increments to request a manual "zoom + center" on the selected marker */
   focusRequest?: number;
+  /** Increments to focus an explicit Sensor coordinate without changing marker selection. */
+  sensorFocusRequest?: number;
+  sensorFocusPosition?: { x: number; y: number; z: number } | null;
   /** Persistent client-side target for ThreeD character actions. */
   actionTarget?: ThreeDActionTarget | null;
   /** Increments to request camera focus on the current action target. */
@@ -192,8 +212,19 @@ interface ThreeDSceneProps {
   placementPlantingName?: string | null;
   /** Called with the ground point selected for a new Planting. */
   onPlantingPlacement?: (position: { x: number; y: number; z: number }) => void;
+  /** Physics Sensor Cuboid currently awaiting a Scene surface click. */
+  placementPhysicsSensor?: { name: string; width: number; height: number; depth: number; rotationY: number } | null;
+  /** Called with the selected Scene coordinate for the Sensor Cuboid base. */
+  onPhysicsSensorPlacement?: (position: { x: number; y: number; z: number }) => void;
   /** Reports that the loader and Scene introduction have both completed. */
   onPresentationComplete?: () => void;
+  /** Incremented by the Project toolbar when another mutually exclusive menu opens. */
+  environmentControlsCloseRequest?: number;
+  /** Reports user-driven Environment menu visibility to the Project toolbar owner. */
+  onEnvironmentControlsOpenChange?: (open: boolean) => void;
+  /** Opens the assigned Environment Model in its Project DetailsCard. */
+  onOpenEnvironmentDetails?: () => void;
+  hasProjectEnvironment?: boolean;
 }
 
 function isRapierFrameError(reason: unknown): boolean {
@@ -648,10 +679,15 @@ function IncidentMarker3D({ incident, onClick, isSelected }: any) {
 function SceneMarkerRigidBody({
   sceneEnabled,
   onLivePosition,
+  smoothPosition = false,
   position,
   rotation,
   ...props
-}: RigidBodyProps & { sceneEnabled: boolean; onLivePosition?: (position: { x: number; y: number; z: number }) => void }) {
+}: RigidBodyProps & {
+  sceneEnabled: boolean;
+  onLivePosition?: (position: { x: number; y: number; z: number }) => void;
+  smoothPosition?: boolean;
+}) {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
   useFrame(() => {
     if (!sceneEnabled || !onLivePosition || !rigidBodyRef.current) return;
@@ -669,6 +705,11 @@ function SceneMarkerRigidBody({
     position?: [number, number, number];
     rotation?: [number, number, number];
   } | null>(null);
+  const liveInterpolationRef = useRef<{
+    from: [number, number, number];
+    to: [number, number, number];
+    startedAt: number;
+  } | null>(null);
 
   useEffect(() => {
     const transformKey = `${positionKey}|${rotationKey}`;
@@ -683,27 +724,50 @@ function SceneMarkerRigidBody({
   useBeforePhysicsStep(() => {
     const pending = pendingTransformRef.current;
     const body = rigidBodyRef.current;
-    if (!pending || !body) return;
-    pendingTransformRef.current = null;
-    // An explicit placement starts at rest, independent of prior simulation.
-    if (body.isDynamic()) {
-      body.setLinvel({ x: 0, y: 0, z: 0 }, true);
-      body.setAngvel({ x: 0, y: 0, z: 0 }, true);
+    if (!body) return;
+    if (pending) {
+      pendingTransformRef.current = null;
+      // An explicit placement starts at rest, independent of prior simulation.
+      if (body.isDynamic()) {
+        body.setLinvel({ x: 0, y: 0, z: 0 }, true);
+        body.setAngvel({ x: 0, y: 0, z: 0 }, true);
+      }
+      if (pending.position) {
+        if (smoothPosition) {
+          const current = body.translation();
+          liveInterpolationRef.current = {
+            from: [current.x, current.y, current.z],
+            to: pending.position,
+            startedAt: Date.now(),
+          };
+        } else {
+          body.setTranslation({
+            x: pending.position[0],
+            y: pending.position[1],
+            z: pending.position[2],
+          }, true);
+        }
+      }
+      if (pending.rotation) {
+        const quaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(
+          pending.rotation[0],
+          pending.rotation[1],
+          pending.rotation[2],
+        ));
+        body.setRotation(quaternion, true);
+      }
     }
-    if (pending.position) {
-      body.setTranslation({
-        x: pending.position[0],
-        y: pending.position[1],
-        z: pending.position[2],
-      }, true);
-    }
-    if (pending.rotation) {
-      const quaternion = new THREE.Quaternion().setFromEuler(new THREE.Euler(
-        pending.rotation[0],
-        pending.rotation[1],
-        pending.rotation[2],
-      ));
-      body.setRotation(quaternion, true);
+    const interpolation = liveInterpolationRef.current;
+    if (smoothPosition && interpolation) {
+      const progress = Math.min((Date.now() - interpolation.startedAt) / 350, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const next = {
+        x: THREE.MathUtils.lerp(interpolation.from[0], interpolation.to[0], eased),
+        y: THREE.MathUtils.lerp(interpolation.from[1], interpolation.to[1], eased),
+        z: THREE.MathUtils.lerp(interpolation.from[2], interpolation.to[2], eased),
+      };
+      body.setNextKinematicTranslation(next);
+      if (progress >= 1) liveInterpolationRef.current = null;
     }
   });
 
@@ -722,61 +786,6 @@ function SceneMarkerRigidBody({
   }, [sceneEnabled]);
 
   return <RigidBody ref={rigidBodyRef} position={position} rotation={rotation} {...props} />;
-}
-
-function EnabledColliderDebug() {
-  const { world } = useRapier();
-  const geometryRef = useRef<THREE.BufferGeometry>(null);
-
-  useFrame(() => {
-    const geometry = geometryRef.current;
-    if (!geometry) return;
-
-    const { vertices, colors } = world.debugRender();
-    const visibleVertices: number[] = [];
-    const visibleColors: number[] = [];
-    const isDisabledColor = (offset: number) => {
-      const red = colors[offset];
-      const green = colors[offset + 1];
-      const blue = colors[offset + 2];
-      return Math.abs(red - green) < 0.000001 && Math.abs(green - blue) < 0.000001;
-    };
-
-    // Rapier keeps disabled colliders in its debug buffer and renders their
-    // line segments in grayscale. Filter those complete segments so layer
-    // visibility affects only that layer's diagnostic outline.
-    for (let vertexOffset = 0; vertexOffset < vertices.length; vertexOffset += 6) {
-      const firstColorOffset = (vertexOffset / 3) * 4;
-      const secondColorOffset = firstColorOffset + 4;
-      if (isDisabledColor(firstColorOffset) && isDisabledColor(secondColorOffset)) continue;
-
-      visibleVertices.push(...vertices.slice(vertexOffset, vertexOffset + 6));
-      visibleColors.push(
-        colors[firstColorOffset],
-        colors[firstColorOffset + 1],
-        colors[firstColorOffset + 2],
-        colors[secondColorOffset],
-        colors[secondColorOffset + 1],
-        colors[secondColorOffset + 2],
-      );
-    }
-
-    geometry.setAttribute(
-      'position',
-      new THREE.Float32BufferAttribute(visibleVertices, 3),
-    );
-    geometry.setAttribute(
-      'color',
-      new THREE.Float32BufferAttribute(visibleColors, 3),
-    );
-  });
-
-  return (
-    <lineSegments frustumCulled={false}>
-      <lineBasicMaterial vertexColors toneMapped={false} />
-      <bufferGeometry ref={geometryRef} />
-    </lineSegments>
-  );
 }
 
 function EnvironmentCollisionPreview({
@@ -827,6 +836,83 @@ function EnvironmentCollisionPreview({
   );
 }
 
+function PhysicsSensorCuboidChildren({
+  marker,
+  projectId,
+  enabled,
+  physicsDebug,
+  onPhysicsEvent,
+}: {
+  marker: any;
+  projectId?: number;
+  enabled: boolean;
+  physicsDebug: boolean;
+  onPhysicsEvent?: (event: Readonly<ThreeDPhysicsEventV1>) => void;
+}) {
+  const transform = useOptionalSceneTransform();
+  const sensors = useMemo(() => readPhysicsSensorCuboids(marker.metadata), [marker.metadata]);
+  const target = useMemo<ThreeDRuntimeMarkerIdentity | null>(() => {
+    const assetId = Number(marker.data?.id);
+    const moduleType = normalizeThreeDRuntimeMarkerModuleType(marker.type);
+    return moduleType && Number.isSafeInteger(assetId) && assetId > 0
+      ? { moduleType, assetId }
+      : null;
+  }, [marker.data?.id, marker.type]);
+  const adaptersRef = useRef(new Map<string, ThreeDRapierPhysicsEventAdapter>());
+  const contactsRef = useRef(new SensorContactTracker());
+  useEffect(() => { if (!enabled) contactsRef.current.clear(); }, [enabled]);
+
+  const emit = useCallback((kind: 'sensor-enter' | 'sensor-exit', payload: any, sensor: Pick<PhysicsSensorCuboid, 'id' | 'behavior' | 'detection'>) => {
+    if (!enabled || !projectId || !target) return;
+    if (payload?.other?.collider?.isSensor?.()) return;
+    const physicsIdentity = payload?.other?.rigidBodyObject?.userData?.threeDPhysics;
+    if (!physicsIdentity || (sensor.detection === 'movable-ball' && !physicsIdentity.isMovableBall)) return;
+    const source = physicsIdentity.identity as ThreeDRuntimeMarkerIdentity | undefined;
+    if (!source || source.moduleType !== 'models' || !Number.isSafeInteger(source.assetId) || source.assetId <= 0) return;
+    const sourceKey = createThreeDRuntimeMarkerKey(source);
+    if (!contactsRef.current.observe(kind, sensor.id, sourceKey, payload.other.collider?.handle ?? 0)) return;
+    let adapter = adaptersRef.current.get(sourceKey);
+    if (!adapter) {
+      adapter = createThreeDRapierPhysicsEventAdapter({ projectId, source });
+      adaptersRef.current.set(sourceKey, adapter);
+    }
+
+    onPhysicsEvent?.(adapter.observe({
+      kind,
+      occurredAt: new Date().toISOString(),
+      target,
+      sensor: { ownerMarkerId: Number(marker.data?.projectMarkerId ?? marker.data?.id), id: sensor.id },
+      tags: ['physics_sensor'],
+
+    }));
+  }, [enabled, onPhysicsEvent, projectId, target, marker.data?.projectMarkerId, marker.data?.id]);
+
+  return <>
+    <group name={`threed-transform-owner:${projectId}:${marker.id}`} />
+    {sensors.map((sensor) => <CuboidCollider
+      key={`physics-sensor-${sensor.id}`}
+      sensor
+      args={[sensor.width / 2, sensor.height / 2, sensor.depth / 2]}
+      position={[sensor.position.x, sensor.position.y, sensor.position.z]}
+      rotation={[0, sensor.rotationY * Math.PI / 180, 0]}
+      onIntersectionEnter={(payload) => emit('sensor-enter', payload, sensor)}
+      onIntersectionExit={(payload) => emit('sensor-exit', payload, sensor)}
+    />)}
+    {physicsDebug && sensors.filter(sensor => transform?.session?.objectKey !== `${projectId}:${marker.id}:${sensor.id}`).map((sensor) => <mesh
+      key={`physics-sensor-debug-${sensor.id}`}
+      position={[sensor.position.x, sensor.position.y, sensor.position.z]}
+      rotation={[0, sensor.rotationY * Math.PI / 180, 0]}
+      raycast={() => null}
+    >
+      <boxGeometry args={[sensor.width, sensor.height, sensor.depth]} />
+      <meshBasicMaterial
+        color={sensor.behavior === 'counter' ? '#22d3ee' : '#fbbf24'}
+        wireframe transparent opacity={0.9}
+      />
+    </mesh>)}
+  </>;
+}
+
 function ProjectModelMarkerBody({
   marker,
   onLivePosition,
@@ -843,6 +929,8 @@ function ProjectModelMarkerBody({
   onPlacementClick,
   onModelRuntimeSettled,
   characterSpawnPositions,
+  projectId,
+  onSensorPhysicsEvent,
 }: {
   marker: any;
   onLivePosition?: (position: { x: number; y: number; z: number }) => void;
@@ -859,6 +947,8 @@ function ProjectModelMarkerBody({
   onPlacementClick?: (position: { x: number; y: number; z: number }) => void;
   onModelRuntimeSettled?: (markerId: string) => void;
   characterSpawnPositions: Array<{ x: number; y: number; z: number }>;
+  projectId?: number;
+  onSensorPhysicsEvent?: (event: Readonly<ThreeDPhysicsEventV1>) => void;
 }) {
   const isEnvironment = isProjectModelEnvironment(marker.metadata);
   const isMovableBall = isProjectModelMovableBall(marker.metadata);
@@ -907,6 +997,41 @@ function ProjectModelMarkerBody({
   }, [collisionBounds, collisionPreview, geometryAudit, isEnvironment, marker.data?.modelId, marker.id, physicsDebug, scale]);
 
   const ballPhysics = resolveBallPhysics(marker.metadata?.ballPhysics);
+  const modelVolumeSensor = !isMovableBall && !isEnvironment
+    ? readModelVolumeSensor(marker.metadata)
+    : null;
+  const markerIdentity = useMemo<ThreeDRuntimeMarkerIdentity | null>(() => {
+    const assetId = Number(marker.data?.id);
+    return Number.isSafeInteger(assetId) && assetId > 0
+      ? { moduleType: 'models', assetId }
+      : null;
+  }, [marker.data?.id]);
+  const volumeAdaptersRef = useRef(new Map<string, ThreeDRapierPhysicsEventAdapter>());
+  const emitVolumeSensorEvent = useCallback((
+    kind: 'sensor-enter' | 'sensor-exit',
+    payload: any,
+
+  ) => {
+    if (!isLayerEnabled || !projectId || !markerIdentity) return;
+    if (payload?.other?.collider?.isSensor?.()) return;
+    const physicsIdentity = payload?.other?.rigidBodyObject?.userData?.threeDPhysics;
+    if (!physicsIdentity?.isMovableBall) return;
+    const source = physicsIdentity.identity as ThreeDRuntimeMarkerIdentity | undefined;
+    if (!source || source.moduleType !== 'models' || !Number.isSafeInteger(source.assetId) || source.assetId <= 0) return;
+    const sourceKey = createThreeDRuntimeMarkerKey(source);
+    let adapter = volumeAdaptersRef.current.get(sourceKey);
+    if (!adapter) {
+      adapter = createThreeDRapierPhysicsEventAdapter({ projectId, source });
+      volumeAdaptersRef.current.set(sourceKey, adapter);
+    }
+    onSensorPhysicsEvent?.(adapter.observe({
+      kind,
+      occurredAt: new Date().toISOString(),
+      target: markerIdentity,
+      sensor: { ownerMarkerId: Number(marker.data?.projectMarkerId ?? marker.data?.id), id: 'model-volume' },
+      tags: ['physics_sensor'],
+    }));
+  }, [isLayerEnabled, markerIdentity, onSensorPhysicsEvent, projectId, marker.data?.projectMarkerId, marker.data?.id]);
   const surfaceCollider = wantsSurfaceCollider ? geometryAudit?.surfaceCollider : null;
   const regionIndex = isEnvironment && wantsSurfaceCollider ? geometryAudit?.regionIndex : undefined;
   useEffect(() => { setRegionsReady(false); }, [regionIndex, wantsSurfaceCollider]);
@@ -1023,8 +1148,9 @@ function ProjectModelMarkerBody({
       colliders={false}
       position={position}
       rotation={rotation}
+      userData={markerIdentity ? { threeDPhysics: { identity: markerIdentity, isMovableBall } } : undefined}
     >
-      {!isMovableBall && collisionBounds && colliderKey && (
+      {!isMovableBall && !modelVolumeSensor && collisionBounds && colliderKey && (
         (effectiveCollisionMode === 'box' || (!isEnvironment && effectiveCollisionMode === 'box-fallback')) &&
         <CuboidCollider
           key={colliderKey}
@@ -1036,6 +1162,23 @@ function ProjectModelMarkerBody({
         <BallCollider key={colliderKey} args={[Math.max(...collisionBounds.halfExtents)]}
           position={collisionBounds.center} mass={ballPhysics.mass} friction={ballPhysics.friction} restitution={ballPhysics.restitution} />
       )}
+      {modelVolumeSensor && collisionBounds && (
+        <CuboidCollider
+          key={`model-volume-${colliderKey}`}
+          sensor
+          args={collisionBounds.halfExtents}
+          position={collisionBounds.center}
+          onIntersectionEnter={(payload) => emitVolumeSensorEvent('sensor-enter', payload)}
+          onIntersectionExit={(payload) => emitVolumeSensorEvent('sensor-exit', payload)}
+        />
+      )}
+      <PhysicsSensorCuboidChildren
+        marker={marker}
+        projectId={projectId}
+        enabled={isLayerEnabled}
+        physicsDebug={physicsDebug || isSelected}
+        onPhysicsEvent={onSensorPhysicsEvent}
+      />
       {regionIndex && <EnvironmentRegionColliders index={regionIndex} enabled={isLayerEnabled} physicsDebug={physicsDebug} markerId={String(marker.id)} position={position} rotation={rotation} onReady={setRegionsReady} />}
       {surfaceCollider && <TrimeshCollider args={[surfaceCollider.vertices, surfaceCollider.indices]} />}
       {isEnvironment && effectiveCollisionMode === 'box-fallback' && collisionPreview?.groundBoxes?.map((box, index) => (
@@ -1231,7 +1374,7 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
 ));
 
 // ✅ ThreeD Marker Component
-const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, placementActive, onPlacementHover, onPlacementClick, actionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug, onModelRuntimeSettled, onCharacterRuntimeSettled, characterSpawnPositions }: any) {
+const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, placementActive, onPlacementHover, onPlacementClick, actionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug, onModelRuntimeSettled, onCharacterRuntimeSettled, characterSpawnPositions, projectId, onSensorPhysicsEvent }: any) {
   const [hovered, setHovered] = useState(false);
   const color = marker.color || getMarkerColor(marker.type);
   const size = isSelected ? 1.0 : 0.6;
@@ -1239,6 +1382,45 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
 
   // ✅ v0.15.0/15.2: Render rich markers for types that have dedicated components
   const pos: [number, number, number] = [Number(marker.position.x) || 0, Number(marker.position.y) || 0, Number(marker.position.z) || 0];
+  const isFarmBotMarker = marker.type === 'farmbot' || marker.type === 'farmbots';
+  const farmbotId = isFarmBotMarker && Number.isSafeInteger(Number(marker.data?.id))
+    ? Number(marker.data.id)
+    : null;
+  const farmbotLiveAlignment = useMemo(
+    () => readFarmBotLiveAlignmentConfiguration(marker.metadata),
+    [marker.metadata],
+  );
+  const { state: farmbotLiveState } = useFarmBotLiveState({
+    projectId,
+    farmbotId,
+    enabled: isFarmBotMarker && farmbotLiveAlignment?.enabled === true,
+  });
+  const alignedFarmBotPosition = useMemo(() => {
+    if (
+      !farmbotLiveAlignment?.enabled
+      || !farmbotLiveState
+      || farmbotLiveState?.condition === 'unavailable'
+      || !farmbotLiveState.position
+    ) return null;
+    try {
+      return alignFarmBotPhysicalPosition({
+        alignment: farmbotLiveAlignment.alignment,
+        physicalPosition: farmbotLiveState.position,
+      });
+    } catch {
+      return null;
+    }
+  }, [farmbotLiveAlignment, farmbotLiveState]);
+  const lastConfirmedFarmBotPositionRef = useRef<Readonly<{ x: number; y: number; z: number }> | null>(null);
+  useEffect(() => {
+    lastConfirmedFarmBotPositionRef.current = null;
+  }, [marker.id, projectId, farmbotLiveAlignment]);
+  useEffect(() => {
+    if (alignedFarmBotPosition) lastConfirmedFarmBotPositionRef.current = alignedFarmBotPosition;
+  }, [alignedFarmBotPosition]);
+  const presentedFarmBotPosition = alignedFarmBotPosition
+    ?? lastConfirmedFarmBotPositionRef.current
+    ?? { x: pos[0], y: pos[1], z: pos[2] };
 
   if (marker.type === 'character' || marker.type === 'characters') {
     return (
@@ -1297,6 +1479,7 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
           ]}
           position={[0, bedColliderSize.height / 2, 0]}
         />
+        <PhysicsSensorCuboidChildren marker={marker} projectId={projectId} enabled={isLayerEnabled} physicsDebug={physicsDebug || isSelected} onPhysicsEvent={onSensorPhysicsEvent} />
         <group
           visible={isLayerEnabled}
           scale={[bedScale, bedScale, bedScale]}
@@ -1343,12 +1526,22 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
           ]}
           position={[0, plantingColliderHeight / 2, 0]}
         />
+        <PhysicsSensorCuboidChildren marker={marker} projectId={projectId} enabled={isLayerEnabled} physicsDebug={physicsDebug || isSelected} onPhysicsEvent={onSensorPhysicsEvent} />
         <group
           visible={isLayerEnabled}
           scale={[plantingModelScale, plantingModelScale, plantingModelScale]}
-          onClick={(event) => {
-            if (!isLayerEnabled || placementActive) return;
+          onPointerMove={(event) => {
+            if (!isLayerEnabled || !placementActive) return;
             event.stopPropagation();
+            onPlacementHover?.({ x: event.point.x, y: event.point.y, z: event.point.z });
+          }}
+          onClick={(event) => {
+            if (!isLayerEnabled) return;
+            event.stopPropagation();
+            if (placementActive) {
+              onPlacementClick?.({ x: event.point.x, y: event.point.y, z: event.point.z });
+              return;
+            }
             selectMarker();
           }}
         >
@@ -1388,6 +1581,8 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
       onPlacementClick={onPlacementClick}
       onModelRuntimeSettled={onModelRuntimeSettled}
       characterSpawnPositions={characterSpawnPositions}
+      projectId={projectId}
+      onSensorPhysicsEvent={onSensorPhysicsEvent}
     />;
   }
 
@@ -1409,9 +1604,10 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
     return (
       <SceneMarkerRigidBody
         sceneEnabled={isLayerEnabled}
-        type="fixed"
+        type={farmbotLiveAlignment?.enabled ? 'kinematicPosition' : 'fixed'}
+        smoothPosition={farmbotLiveAlignment?.enabled === true}
         colliders={false}
-        position={pos}
+        position={[presentedFarmBotPosition.x, presentedFarmBotPosition.y, presentedFarmBotPosition.z]}
         rotation={[0, farmBotRotation, 0]}
       >
         <CuboidCollider
@@ -1419,10 +1615,24 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
           args={[farmBotWidth / 2, farmBotHeight / 2, farmBotLength / 2]}
           position={[0, farmBotHeight / 2, 0]}
         />
+        <PhysicsSensorCuboidChildren marker={marker} projectId={projectId} enabled={isLayerEnabled} physicsDebug={physicsDebug || isSelected} onPhysicsEvent={onSensorPhysicsEvent} />
         <group
           visible={isLayerEnabled}
           scale={[farmBotWidth / 0.6, farmBotHeight / 0.58, farmBotLength / 0.4]}
-          onClick={(e) => { if (!isLayerEnabled) return; e.stopPropagation(); selectMarker(); }}
+          onPointerMove={(event) => {
+            if (!isLayerEnabled || !placementActive) return;
+            event.stopPropagation();
+            onPlacementHover?.({ x: event.point.x, y: event.point.y, z: event.point.z });
+          }}
+          onClick={(event) => {
+            if (!isLayerEnabled) return;
+            event.stopPropagation();
+            if (placementActive) {
+              onPlacementClick?.({ x: event.point.x, y: event.point.y, z: event.point.z });
+              return;
+            }
+            selectMarker();
+          }}
           onPointerEnter={() => { if (isLayerEnabled) setHovered(true); }}
           onPointerLeave={() => setHovered(false)}
         >
@@ -1842,6 +2052,8 @@ export function ThreeDScene({
   cameraMode,
   onCameraModeChange,
   focusRequest = 0,
+  sensorFocusRequest = 0,
+  sensorFocusPosition = null,
   actionTarget,
   actionTargetFocusRequest = 0,
   placementModel,
@@ -1856,9 +2068,18 @@ export function ThreeDScene({
   onBedPlacement,
   placementPlantingName,
   onPlantingPlacement,
+  placementPhysicsSensor,
+  onPhysicsSensorPlacement,
   onPresentationComplete,
+  environmentControlsCloseRequest = 0,
+  onEnvironmentControlsOpenChange,
+  onOpenEnvironmentDetails,
+  hasProjectEnvironment = false,
 }: ThreeDSceneProps) {
-  const placementLabel = movingModelName
+  const transform = useOptionalSceneTransform();
+  const transforming = Boolean(transform?.session);
+  const placementLabel = placementPhysicsSensor?.name
+    || movingModelName
     || placementCharacterName
     || placementFarmBotName
     || placementPlantingName
@@ -1876,6 +2097,8 @@ export function ThreeDScene({
   const [hasData, setHasData] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
   const [showLegend, setShowLegend] = useState(false);
+  const [showSensors, setShowSensors] = useState(false);
+  useEffect(() => { setShowSensors(false); }, [projectId]);
   const hoverTitleRef = useRef<HTMLDivElement>(null);
   const [hoveredSceneMarkerIdentity, setHoveredSceneMarkerIdentity] = useState<{ projectId: typeof projectId; markerId: string; point: [number, number, number] } | null>(null);
   // Start with debug reads disabled even when an old bookmarked URL contains
@@ -1911,6 +2134,9 @@ export function ThreeDScene({
     return new URLSearchParams(window.location.search).get('characterMarkerId');
   });
   const [showControls, setShowControls] = useState(false);
+  useEffect(() => {
+    setShowControls(false);
+  }, [environmentControlsCloseRequest]);
   const [environmentControlsHost, setEnvironmentControlsHost] = useState<HTMLElement | null>(null);
   const [showGizmoCube, setShowGizmoCube] = useState(true);
   const [controlsReady, setControlsReady] = useState(false);
@@ -1984,6 +2210,47 @@ export function ThreeDScene({
     }
     return filterCharacterRuntime(markers);
   }, [characterIsolation, characterMarkerIsolation, markers, physicsIsolation]);
+  const sensorGroups = useSensorGroups();
+  const sensorMembers = useMemo<SensorMember[]>(() => sceneMarkers.flatMap(marker => {
+    const ownerMarkerId = Number(marker.data?.projectMarkerId ?? marker.data?.id);
+    if (!Number.isSafeInteger(ownerMarkerId) || ownerMarkerId <= 0) return [];
+    const attached = readPhysicsSensorCuboids(marker.metadata).map(sensor => ({ ...sensor, ownerMarkerId }));
+    const volume = normalizeSceneLayerType(marker.type) === 'models' && !isProjectModelMovableBall(marker.metadata)
+      && marker.metadata?.placementRole !== 'environment' ? readModelVolumeSensor(marker.metadata) : null;
+    return volume ? [...attached, { ...volume, ownerMarkerId }] : attached;
+  }), [sceneMarkers]);
+  const [sensorCounterState, setSensorCounterState] = useState(createSensorCounterState);
+  const sensorEventBuffer = useRef(new ThreeDPhysicsEventBuffer({ capacity: 256, minimumIntervalMs: 0 }));
+
+  useEffect(() => { sensorEventBuffer.current.clear(); setSensorCounterState(createSensorCounterState()); }, [projectId]);
+  useEffect(() => {
+    const activeOwners = new Set(sceneMarkers.filter(marker => activeLayers.has(normalizeSceneLayerType(marker.type))
+      && (visibleMarkerIds?.has(String(marker.id)) ?? true)).map(marker => Number(marker.data?.projectMarkerId ?? marker.data?.id)));
+    const activeSources = new Set(sceneMarkers.filter(marker => activeLayers.has(normalizeSceneLayerType(marker.type))
+      && (visibleMarkerIds?.has(String(marker.id)) ?? true)).map(marker => `${normalizeSceneLayerType(marker.type)}:${marker.data?.id}`));
+    setSensorCounterState(current => {
+      const next = reconcileSensorCounters(current, sensorMembers);
+      return { ...next, occupied: next.occupied.filter(key => activeOwners.has(Number(key.split(':')[0])) && activeSources.has(key.split('|')[1])) };
+    });
+  }, [sensorMembers, sceneMarkers, activeLayers, visibleMarkerIds]);
+  const handleSensorPhysicsEvent = useCallback((event: Readonly<ThreeDPhysicsEventV1>) => {
+    if (event.projectId !== Number(projectId)) return;
+    const buffered = sensorEventBuffer.current.append(event);
+    if (buffered.status !== 'accepted') return;
+    setSensorCounterState(current => reduceSensorCounterEvent(current, buffered.event, Number(projectId), sensorMembers));
+  }, [projectId, sensorMembers]);
+  const resetSensorCounterState = useCallback(() => {
+    setSensorCounterState(current => resetSensorCounts(current));
+  }, []);
+  const counterGroups = useMemo(() => {
+    const groups = new Map<string, { name: string; members: SensorMember[] }>();
+    for (const member of sensorMembers.filter(member => member.behavior === 'counter')) {
+      const id = member.groupId ?? '';
+      const group = groups.get(id) ?? { name: sensorGroups?.groups.find(group => group.id === id)?.name ?? (id ? 'Unresolved group' : 'Ungrouped sensors'), members: [] };
+      group.members.push(member); groups.set(id, group);
+    }
+    return [...groups.entries()];
+  }, [sensorMembers, sensorGroups?.groups]);
   const requiredModelMarkerIds = useMemo(() => sceneMarkers
     .filter((marker) => normalizeSceneLayerType(marker.type) === 'models'
       && !isProjectModelMovableBall(marker.metadata))
@@ -2313,6 +2580,13 @@ export function ThreeDScene({
     return acc;
   }, {});
 
+  useEffect(() => {
+    const session = transform?.session;
+    if (session && !visibleMarkers.some(marker => session.ownerKey === `${projectId}:${marker.id}`)) {
+      transform?.releaseOwner(session.ownerKey);
+    }
+  }, [visibleMarkers, projectId, transform?.session?.ownerKey, transform?.releaseOwner]);
+
   const hoveredSceneMarker = hoveredSceneMarkerIdentity && hoveredSceneMarkerIdentity.projectId === projectId
     ? visibleMarkers.find((marker) => String(marker.id) === hoveredSceneMarkerIdentity.markerId
       && !isProjectModelEnvironment(marker.metadata))
@@ -2456,6 +2730,10 @@ export function ThreeDScene({
     setIsAnimating(true);
   };
 
+  useEffect(() => {
+    if (transforming) { setFocusTarget(null); setIsAnimating(false); }
+  }, [transforming]);
+
   // ✅ Handle focus complete
   const handleFocusComplete = () => {
     setIsAnimating(false);
@@ -2491,8 +2769,8 @@ export function ThreeDScene({
   const handleMarkerClick = useCallback((marker: any) => {
     const currentMarker = markerWithCurrentPosition(marker);
 
-    if (onMarkerClick) onMarkerClick(currentMarker);
-  }, [markerWithCurrentPosition, onMarkerClick]);
+    if (onMarkerClick && !transforming) onMarkerClick(currentMarker);
+  }, [markerWithCurrentPosition, onMarkerClick, transforming]);
 
   useEffect(() => {
     if (!selectedMarker) {
@@ -2543,6 +2821,7 @@ export function ThreeDScene({
   }, [markerWithCurrentPosition, selectedIncident, selectedMarker]);
 
   const handleIncidentClick = (incident: any) => {
+    if (transforming) return;
     const isAlreadySelected = (selectedIncident as any)?.key === incident.key;
     setSelectedDetails(isAlreadySelected ? null : {
       name: incident.title,
@@ -2564,6 +2843,20 @@ export function ThreeDScene({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusRequest]);
+
+  // Sensor focusing is an explicit editor action. It must not replace marker
+  // selection or change the camera mode that the user has chosen.
+  useEffect(() => {
+    if (
+      sensorFocusRequest > 0
+      && sensorFocusPosition
+      && [sensorFocusPosition.x, sensorFocusPosition.y, sensorFocusPosition.z].every(Number.isFinite)
+    ) {
+      focusOnMarker({ position: sensorFocusPosition });
+    }
+    // focusOnMarker is intentionally excluded because it is recreated per render.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sensorFocusPosition, sensorFocusRequest]);
 
   // Focus the persistent action target without changing marker selection.
   useEffect(() => {
@@ -2681,11 +2974,35 @@ export function ThreeDScene({
           {groundMapAsset.attribution || groundMapAsset.sourceProvider}
         </div>
       )}
+      {sceneProductionStarted && showSensors && (
+        <section data-scene-hover-obstacle aria-label="Physics Sensors" className="threed-workspace-panel threed-scene-panel-surface absolute right-3 top-3 z-30 flex max-h-[calc(100%-1.5rem)] w-72 max-w-[calc(100%-1.5rem)] flex-col overflow-hidden rounded-lg border border-white/15 text-xs text-white shadow-xl backdrop-blur-md">
+          <header className="flex shrink-0 items-center justify-between gap-2 px-3 py-2">
+            <h2 className="text-sm font-semibold">Physics Sensors</h2>
+            <button type="button" onClick={() => setShowSensors(false)} aria-label="Close Physics Sensors" className="rounded p-1 text-white/70 hover:bg-white/10"><X className="h-4 w-4" /></button>
+          </header>
+          <div className="min-h-0 space-y-2 overflow-y-auto overscroll-contain px-3 pb-3 [scrollbar-width:thin]">
+            <button type="button" disabled={!counterGroups.length} onClick={resetSensorCounterState} className="rounded border border-white/15 px-2 py-1 disabled:opacity-40">Reset Counts</button>
+            {!counterGroups.length && <p className="text-white/65">No entry counters configured. Add a Physics Sensor Cuboid in an asset’s DetailsCard and choose Count Entries.</p>}
+            {counterGroups.map(([id, group]) => <details key={id} open className="rounded border border-white/10 p-2">
+              <summary className="cursor-pointer text-white/80">{group.name}</summary>
+              <div className="mt-2 space-y-1">{group.members.map(member => <div key={sensorMemberKey(member)} className="flex items-start justify-between gap-3">
+                <span className="min-w-0 break-words">{member.name}</span>
+                <span className="shrink-0 tabular-nums">{sensorCounterState.counts[sensorMemberKey(member)] ?? 0}</span>
+              </div>)}</div>
+            </details>)}
+            <p className="text-[10px] text-white/55">Session counts continue while this panel is hidden.</p>
+          </div>
+        </section>
+      )}
       {/* Scene-owned controls are presented from the shared Project toolbar. */}
       {environmentControlsHost && createPortal(<div data-scene-hover-obstacle className="relative">
         <Button
           type="button"
-          onClick={() => setShowControls(!showControls)}
+          onClick={() => {
+            const nextOpen = !showControls;
+            setShowControls(nextOpen);
+            onEnvironmentControlsOpenChange?.(nextOpen);
+          }}
           variant={showControls ? 'secondary' : 'outline'}
           size="sm"
           className="h-7 gap-1 px-2 text-xs"
@@ -2700,6 +3017,23 @@ export function ThreeDScene({
         {showControls && (
           <div className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[3000] mt-1 max-h-[min(44rem,calc(100dvh-8rem))] w-56 space-y-0.5 overflow-y-auto rounded-lg border border-white/10 p-1.5 pb-2.5 shadow-xl backdrop-blur-sm [scrollbar-width:thin]">
             <div className="text-[10px] text-white/60 px-2 py-0.5">Environment</div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-8 w-full justify-start text-xs"
+              disabled={!hasProjectEnvironment}
+              title={hasProjectEnvironment ? 'Open the assigned Environment Model DetailsCard' : 'No Environment Model is assigned to this Project'}
+              onClick={() => {
+                setShowControls(false);
+                onEnvironmentControlsOpenChange?.(false);
+                onOpenEnvironmentDetails?.();
+              }}
+            >
+              <Settings className="h-3.5 w-3.5" />
+              Setup Environment Map
+            </Button>
+            <div className="my-1 border-t border-white/10" />
             <select
               value={envPreset}
               onChange={(e) => setEnvPreset(e.target.value)}
@@ -2776,6 +3110,10 @@ export function ThreeDScene({
                 {showLegend ? 'Hide Legend' : 'Show Legend'}
               </button>
             )}
+            <button onClick={() => { setShowSensors(value => !value); setShowControls(false); }} aria-pressed={showSensors} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showSensors ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
+              <Target className="h-3.5 w-3.5" />
+              {showSensors ? 'Hide Sensors' : 'Show Sensors'}
+            </button>
             <button
               onClick={() => setPhysicsDebug(!physicsDebug)}
               className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${physicsDebug ? 'bg-amber-500/20 text-amber-100' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}
@@ -3064,11 +3402,12 @@ export function ThreeDScene({
           minDistance={2}
           maxDistance={200}
           maxPolarAngle={Math.PI / 2}
-          autoRotate={autoRotate}
+          autoRotate={autoRotate && !transforming}
           autoRotateSpeed={0.8}
           target={[centerX, 0, centerZ]}
           onChange={updateGeographicCompass}
         />
+        {transforming && <SceneTransformGizmo key={transform!.session!.objectKey} />}
         <ControlsReadyNotifier
           controlsRef={controlsRef}
           onReady={() => {
@@ -3094,7 +3433,7 @@ export function ThreeDScene({
               controlsRef={controlsRef}
               cameraFollowRef={cameraFollowRef}
               mode={mode}
-              enabled={true}
+              enabled={!transforming}
             />
           );
         })()}
@@ -3137,10 +3476,10 @@ export function ThreeDScene({
 
         {/* ✅ v0.15.3: Keyboard shortcuts for camera navigation */}
         <SceneKeyboardControls
-          onEscape={() => { clearDetails(); setIsAnimating(false); setFocusTarget(null); }}
-          onResetView={() => zoomToPosition(centerX, centerZ)}
+          onEscape={() => { if (transforming) { transform?.cancel(); return; } clearDetails(); setIsAnimating(false); setFocusTarget(null); }}
+          onResetView={() => { if (!transforming) zoomToPosition(centerX, centerZ); }}
           onToggleGrid={() => setShowGrid(!showGrid)}
-          onFocusSelected={() => { if (selectedDetails?.position) focusOnMarker(selectedDetails); }}
+          onFocusSelected={() => { if (!transforming && selectedDetails?.position) focusOnMarker(selectedDetails); }}
           hasSelected={!!selectedDetails}
         />
 
@@ -3156,8 +3495,10 @@ export function ThreeDScene({
         <Physics
           gravity={[0, -9.81, 0]}
           debug={false}
+          paused={transforming}
         >
-          {physicsDebug && <EnabledColliderDebug />}
+          {/* Focused diagnostic guides are rendered by each owner. Rendering
+              Rapier's complete Environment mesh obscures Sensor placement. */}
           {groundMap.visualMode === 'image' && groundMapAsset && groundMap.groundMapId === groundMapAsset.id && <RigidBody
             type="fixed" colliders={false}
             position={[groundMap.centerX, groundMap.height, groundMap.centerZ]}
@@ -3169,7 +3510,7 @@ export function ThreeDScene({
               onClick={event => {
                 if (!placementLabel) return;
                 event.stopPropagation();
-                const place = movingModelName ? onModelReposition : placementCharacterName ? onCharacterPlacement : placementFarmBotName ? onFarmBotPlacement : placementPlantingName ? onPlantingPlacement : placementBedName ? onBedPlacement : onModelPlacement;
+                const place = placementPhysicsSensor ? onPhysicsSensorPlacement : movingModelName ? onModelReposition : placementCharacterName ? onCharacterPlacement : placementFarmBotName ? onFarmBotPlacement : placementPlantingName ? onPlantingPlacement : placementBedName ? onBedPlacement : onModelPlacement;
                 place?.({ x: event.point.x, y: event.point.y, z: event.point.z });
               }}>
               <Suspense fallback={<mesh rotation={[-Math.PI / 2, 0, 0]}><planeGeometry args={[groundMap.width, groundMap.length]} /><meshStandardMaterial color="#334155" /></mesh>}>
@@ -3185,7 +3526,7 @@ export function ThreeDScene({
               onClick={event => {
                 if (!placementLabel) return;
                 event.stopPropagation();
-                const place = movingModelName ? onModelReposition : placementCharacterName ? onCharacterPlacement : placementFarmBotName ? onFarmBotPlacement : placementPlantingName ? onPlantingPlacement : placementBedName ? onBedPlacement : onModelPlacement;
+                const place = placementPhysicsSensor ? onPhysicsSensorPlacement : movingModelName ? onModelReposition : placementCharacterName ? onCharacterPlacement : placementFarmBotName ? onFarmBotPlacement : placementPlantingName ? onPlantingPlacement : placementBedName ? onBedPlacement : onModelPlacement;
                 place?.({x: event.point.x, y: event.point.y, z: event.point.z});
               }}>
               <planeGeometry args={[extraGround.size, extraGround.size]} />
@@ -3201,7 +3542,9 @@ export function ThreeDScene({
               placementActive={Boolean(placementLabel)}
               onPlacementHover={setPlacementPreviewPosition}
               onPlacementLeave={() => setPlacementPreviewPosition(null)}
-              onPlacementClick={movingModelName
+              onPlacementClick={placementPhysicsSensor
+                ? onPhysicsSensorPlacement
+                : movingModelName
                 ? onModelReposition
                 : placementCharacterName
                 ? onCharacterPlacement
@@ -3219,17 +3562,32 @@ export function ThreeDScene({
           {placementLabel && placementPreviewPosition && (
             <group position={[
               placementPreviewPosition.x,
-              placementPreviewPosition.y + 0.25,
+              placementPreviewPosition.y + (placementPhysicsSensor?.height ?? 0.5) / 2,
               placementPreviewPosition.z,
-            ]}>
+            ]} rotation={[0, (placementPhysicsSensor?.rotationY ?? 0) * Math.PI / 180, 0]}>
               <mesh raycast={() => null}>
-                <boxGeometry args={[0.5, 0.5, 0.5]} />
-                <meshStandardMaterial color="#22d3ee" transparent opacity={0.45} />
+                <boxGeometry args={placementPhysicsSensor
+                  ? [placementPhysicsSensor.width, placementPhysicsSensor.height, placementPhysicsSensor.depth]
+                  : [0.5, 0.5, 0.5]} />
+                <meshBasicMaterial color="#22d3ee" wireframe transparent opacity={0.9} depthTest={false} />
               </mesh>
-              <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.24, 0]} raycast={() => null}>
+              <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -(placementPhysicsSensor?.height ?? 0.5) / 2 + 0.01, 0]} raycast={() => null}>
                 <ringGeometry args={[0.45, 0.6, 32]} />
                 <meshBasicMaterial color="#22d3ee" transparent opacity={0.8} side={THREE.DoubleSide} />
               </mesh>
+              {placementPhysicsSensor && <>
+                <group position={[0, 0, placementPhysicsSensor.depth / 2 + 0.28]} raycast={() => null}>
+                  <mesh rotation={[Math.PI / 2, 0, 0]}>
+                    <coneGeometry args={[0.14, 0.38, 8]} />
+                    <meshBasicMaterial color="#fbbf24" transparent opacity={0.95} depthTest={false} />
+                  </mesh>
+                </group>
+                <Html position={[0, placementPhysicsSensor.height / 2 + 0.32, 0]} center distanceFactor={12}>
+                  <div className="pointer-events-none whitespace-nowrap rounded border border-amber-300/40 bg-slate-950/90 px-2 py-1 text-[10px] font-medium text-amber-100 shadow">
+                    Y rotation {Math.round(placementPhysicsSensor.rotationY)}°
+                  </div>
+                </Html>
+              </>}
             </group>
           )}
 
@@ -3247,7 +3605,7 @@ export function ThreeDScene({
           )}
 
           {/* Camera focus animation */}
-          {focusTarget && (
+          {focusTarget && !transforming && (
             <CameraFocusAnimation 
               target={focusTarget}
               controlsRef={controlsRef}
@@ -3300,7 +3658,9 @@ export function ThreeDScene({
                   isLayerEnabled={activeLayers.has(normalizeSceneLayerType(marker.type))}
                   placementActive={Boolean(placementLabel)}
                   onPlacementHover={setPlacementPreviewPosition}
-                  onPlacementClick={movingModelName
+                  onPlacementClick={placementPhysicsSensor
+                    ? onPhysicsSensorPlacement
+                    : movingModelName
                     ? onModelReposition
                     : placementCharacterName
                     ? onCharacterPlacement
@@ -3332,6 +3692,8 @@ export function ThreeDScene({
                   onModelRuntimeSettled={handleModelRuntimeSettled}
                   onCharacterRuntimeSettled={handleCharacterRuntimeSettled}
                   characterSpawnPositions={characterSpawnPositions}
+                  projectId={projectId}
+                  onSensorPhysicsEvent={handleSensorPhysicsEvent}
                 />
               </group>
             );

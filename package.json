@@ -1,6 +1,6 @@
 {
   "name": "marty-mcgee-neon",
-  "version": "0.20.0",
+  "version": "0.20.1",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4444",
@@ -10,14 +10,14 @@
     "db:migrate": "echo 'Use db:push for development'",
     "db:push": "drizzle-kit push --strict",
     "db:studio": "drizzle-kit studio",
-    "farmbot:mqtt-worker": "bun run src/libraries/services/threed/mqtt/integrations/farmbot/index.ts",
     "typecheck": "tsc --noEmit --pretty false",
     "validate": "node src/libraries/scripts/validate.mjs",
     "validate:all": "node src/libraries/scripts/validate.mjs all",
-    "multimedia:import": "bun run src/libraries/data/multimedia/seed.ts",
-    "threed:models:manifest:legacy": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/libraries/scripts/generate-legacy-threed-model-manifest.mts",
+    "threed:models:import": "node --import tsx src/libraries/scripts/import-threed-models.ts",
     "threed:models:import:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/libraries/scripts/validate-threed-model-import.mts",
-    "threed:models:import": "node --import tsx src/libraries/scripts/import-threed-models.ts"
+    "threed:models:manifest:legacy": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/libraries/scripts/generate-legacy-threed-model-manifest.mts",
+    "multimedia:import": "bun run src/libraries/data/multimedia/seed.ts",
+    "farmbot:mqtt-worker": "bun run src/libraries/services/threed/mqtt/integrations/farmbot/index.ts"
   },
   "dependencies": {
     "@auth/core": "^0.34.3",

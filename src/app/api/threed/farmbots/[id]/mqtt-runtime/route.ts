@@ -5,6 +5,7 @@ import {
   getOwnedFarmBotMqttRuntime,
   getProjectAssignedFarmBotMqttRuntime,
 } from '@/libraries/services/threed/mqtt/integrations/farmbot/persistence-repository';
+import { createFarmBotLiveState } from '@/libraries/services/threed/farmbot/live-state-core';
 
 export const dynamic = 'force-dynamic';
 type RouteContext = { params: Promise<{ id: string }> };
@@ -38,20 +39,14 @@ export async function GET(request: Request, context: RouteContext) {
         })
       : await getOwnedFarmBotMqttRuntime(session.user.id, Number(id));
 
-    if (projectIdValue && runtime) {
+    if (projectIdValue) {
       return json({
         success: true,
-        data: {
-          connectionState: runtime.connectionState,
-          stateChangedAt: runtime.stateChangedAt,
-          lastMessageAt: runtime.lastMessageAt,
-          lastStatusAt: runtime.lastStatusAt,
-          positionX: runtime.positionX,
-          positionY: runtime.positionY,
-          positionZ: runtime.positionZ,
-          tokenExpiresAt: runtime.tokenExpiresAt,
-          isStale: runtime.isStale,
-        },
+        data: createFarmBotLiveState({
+          projectId: Number(projectIdValue),
+          farmbotId: Number(id),
+          runtime,
+        }),
       });
     }
     return json({ success: true, data: runtime });
