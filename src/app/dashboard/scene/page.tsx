@@ -1,5 +1,6 @@
 // dashboard/scene/page
 'use client';
+import { SensorGroupInspector } from '@/components/map/details/SensorGroupInspector';
 
 import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -478,6 +479,10 @@ function UnifiedMapPageInner() {
 
   const [selectedIncident, setSelectedIncident] = useState<any>(null);
   const [selectedMarker, setSelectedMarker] = useState<any>(null);
+  const [groupInspector, setGroupInspector] = useState<string | null>(null);
+  const [sensorInspector, setSensorInspector] = useState<{ ownerId: string; sensorId: string } | null>(null);
+  useEffect(() => { setSensorInspector(null); setGroupInspector(null); }, [selectedProjectId]);
+
   const [controlledCharacterId, setControlledCharacterId] = useState<number | null>(null);
   const [liveControlledCharacterPosition, setLiveControlledCharacterPosition] =
     useState<{
@@ -2374,6 +2379,8 @@ function UnifiedMapPageInner() {
   const { placedCharacterIds, placedFarmBotIds } = useThreeDPlacedLibraryAssets(data.threed.raw);
   const openEnvironmentDetails = useCallback((marker = projectEnvironmentMarkers[0]) => {
     if (!marker) return;
+    setSensorInspector(null);
+    setGroupInspector(null);
     setSelectedIncident(null);
     setSelectedMarker(marker);
     setIsProjectSummaryOpen(false);
@@ -2432,6 +2439,8 @@ function UnifiedMapPageInner() {
   const dismissProjectAssets = useCallback(() => closeProjectAssets(true), [closeProjectAssets]);
 
   const selectProjectAsset = useCallback((marker: RuntimeMarker) => {
+    setSensorInspector(null);
+    setGroupInspector(null);
     const sourceAssetId = Number(marker.data?.id);
     const currentPosition = Number.isSafeInteger(sourceAssetId) && sourceAssetId > 0
       ? resolveRuntimeMarkerPosition(marker.type, sourceAssetId)
@@ -2604,7 +2613,19 @@ function UnifiedMapPageInner() {
         selectedMarker={selectedMarker}
         resolveRuntimeMarkerPosition={resolveRuntimeMarkerPosition}
         onDismiss={dismissProjectAssets}
+        selectedGroupId={groupInspector}
+        onSelectGroup={groupId => {
+          if (transform.session) return;
+          setGroupInspector(groupId);
+          setSensorInspector(null);
+        }}
         onSelectAsset={selectProjectAsset}
+        selectedSensorId={sensorInspector?.ownerId === selectedMarker?.id ? sensorInspector?.sensorId : null}
+        onSelectSensor={(marker, sensorId) => {
+          if (transform.session) return;
+          selectProjectAsset(marker);
+          setSensorInspector({ ownerId: marker.id, sensorId });
+        }}
       />
       </div>
       <div id="project-setup-panel">
@@ -2825,7 +2846,7 @@ function UnifiedMapPageInner() {
                       layers={layers}
                       viewMode="3d"
                       onIncidentSelect={(incident) => setSelectedIncident(incident)}
-                      onMarkerSelect={(marker) => setSelectedMarker(marker)}
+                      onMarkerSelect={(marker) => { setSensorInspector(null); setGroupInspector(null); setSelectedMarker(marker); }}
                       onFocusMarker={handleFocusMarker}
                       selectedIncident={selectedIncident}
                       selectedMarker={selectedMarker}
@@ -2888,7 +2909,7 @@ function UnifiedMapPageInner() {
                       layers={layers}
                       viewMode="2d"
                       onIncidentSelect={(incident) => setSelectedIncident(incident)}
-                      onMarkerSelect={(marker) => setSelectedMarker(marker)}
+                      onMarkerSelect={(marker) => { setSensorInspector(null); setGroupInspector(null); setSelectedMarker(marker); }}
                       onFocusMarker={handleFocusMarker}
                       selectedIncident={selectedIncident}
                       selectedMarker={selectedMarker}
@@ -2920,7 +2941,7 @@ function UnifiedMapPageInner() {
                 layers={layers}
                 viewMode="3d"
                 onIncidentSelect={(incident) => setSelectedIncident(incident)}
-                onMarkerSelect={(marker) => setSelectedMarker(marker)}
+                onMarkerSelect={(marker) => { setSensorInspector(null); setGroupInspector(null); setSelectedMarker(marker); }}
                 onFocusMarker={handleFocusMarker}
                 selectedIncident={selectedIncident}
                 selectedMarker={selectedMarker}
@@ -2969,7 +2990,7 @@ function UnifiedMapPageInner() {
                 layers={layers}
                 viewMode="2d"
                 onIncidentSelect={(incident) => setSelectedIncident(incident)}
-                onMarkerSelect={(marker) => setSelectedMarker(marker)}
+                onMarkerSelect={(marker) => { setSensorInspector(null); setGroupInspector(null); setSelectedMarker(marker); }}
                 onFocusMarker={handleFocusMarker}
                 selectedIncident={selectedIncident}
                 selectedMarker={selectedMarker}
@@ -2994,10 +3015,21 @@ function UnifiedMapPageInner() {
         hidden={isProjectSummaryOpen || (viewMode !== '2d' && !isThreeDPresentationComplete)}
         inert={isProjectSummaryOpen || (viewMode !== '2d' && !isThreeDPresentationComplete)}
       >
+      {groupInspector !== null && <SensorGroupInspector
+        key={`${selectedProjectId}:${groupInspector}`}
+        groupId={groupInspector} markers={projectRuntimeMarkers}
+        leftOffsetRem={isLeftSceneWorkspaceOpen ? 18.75 : 0.75}
+        onClose={() => setGroupInspector(null)}
+        onSelectGroup={setGroupInspector}
+        onSelectSensor={(marker, sensorId) => { selectProjectAsset(marker); setSensorInspector({ ownerId: marker.id, sensorId }); }}
+      />}
+      <div hidden={groupInspector !== null}>
       <DetailsCard
         selected={selectedMarker || selectedIncident}
         projectMarkers={projectRuntimeMarkers}
         onSelectProjectMarker={selectProjectAsset}
+        selectedSensorId={sensorInspector?.ownerId === selectedMarker?.id ? sensorInspector?.sensorId : null}
+        onSelectSensor={(sensorId) => setSensorInspector(sensorId && selectedMarker ? { ownerId: selectedMarker.id, sensorId } : null)}
         projectId={selectedProjectId}
         leftOffsetRem={isLeftSceneWorkspaceOpen ? 18.75 : 0.75}
         onClose={() => { setSelectedMarker(null); setSelectedIncident(null); }}
@@ -3079,6 +3111,7 @@ function UnifiedMapPageInner() {
         onDeleteCharacterInstance={handleDeleteCharacterInstance}
         deletingCharacterMarkerId={deletingCharacterMarkerId}
       />
+      </div>
       </div>
       
     </div>

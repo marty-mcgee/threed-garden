@@ -49,24 +49,24 @@ export function SensorGroupsWorkspace({ children }: { children: ReactNode }) {
   const projectId = useSearchParams().get('projectId');
   return <ProjectGroups projectId={projectId}>{children}</ProjectGroups>;
 }
-export function SensorGroupEditor() {
+export function SensorGroupEditor({ initialGroupId = '', expanded = false, onSelectGroup }: { initialGroupId?: string; expanded?: boolean; onSelectGroup?: (id: string) => void }) {
   const workspace = useSensorGroups();
-  const [id, setId] = useState('');
-  const [name, setName] = useState('');
+  const [id, setId] = useState(initialGroupId);
+  const [name, setName] = useState(() => workspace?.groups.find(group => group.id === initialGroupId)?.name ?? '');
   if (!workspace) return null;
-  return <details className="rounded border border-white/10 p-2 text-[10px]">
+  return <details open={expanded || undefined} className="rounded border border-white/10 p-2 text-xs">
     <summary>Manage Sensor Groups</summary>
     <div className="mt-2 space-y-2">
-      <select aria-label="Group to edit" value={id} onChange={event => { setId(event.target.value); setName(workspace.groups.find(group => group.id === event.target.value)?.name ?? ''); }}>
+      <select className="w-full rounded border border-white/15 p-1.5" aria-label="Group to edit" value={id} onChange={event => { onSelectGroup?.(event.target.value); setId(event.target.value); setName(workspace.groups.find(group => group.id === event.target.value)?.name ?? ''); }}>
         <option value="">New group</option>
         {workspace.groups.map(group => <option key={group.id} value={group.id}>{group.name}</option>)}
       </select>
-      <input aria-label="Group name" placeholder="Group name" value={name} maxLength={80} onChange={event => setName(event.target.value)} />
+      <input className="w-full rounded border border-white/15 p-1.5" aria-label="Group name" placeholder="Group name" value={name} maxLength={80} onChange={event => setName(event.target.value)} />
       <button type="button" disabled={!name.trim() || workspace.saving || workspace.loading} onClick={async () => {
         const groupId = id || crypto.randomUUID();
-        if (await workspace.save({ id: groupId, name })) { setId(groupId); }
+        if (await workspace.save({ id: groupId, name })) { setId(groupId); onSelectGroup?.(groupId); }
       }} className="rounded border border-white/20 p-1">Save Group</button>
-      {id && <button type="button" disabled={workspace.saving || workspace.loading} onClick={async () => { if (await workspace.save({ id, name: name || 'Group' }, 'delete')) { setId(''); setName(''); } }} className="ml-2 rounded border border-red-300/30 p-1">Delete Empty Group</button>}
+      {id && <button type="button" disabled={workspace.saving || workspace.loading} onClick={async () => { if (await workspace.save({ id, name: name || 'Group' }, 'delete')) { setId(''); setName(''); onSelectGroup?.(''); } }} className="ml-2 rounded border border-red-300/30 p-1">Delete Empty Group</button>}
       {workspace.error && <p role="alert" className="text-red-200">{workspace.error}</p>}
       <p>Group names save immediately. Sensor membership saves with the sensor.</p>
     </div>

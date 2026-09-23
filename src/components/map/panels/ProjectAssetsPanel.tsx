@@ -7,6 +7,8 @@ import { Input } from '@/components/ui/input';
 import type { RuntimeMarker } from '@/libraries/types/map';
 import type { ThreeDRuntimeMarkerPositionResolver } from '@/components/map/UnifiedMapView';
 import { readPhysicsSensorCuboids } from '@/libraries/services/threed/physics/sensor-cuboid-core';
+import { useSceneTransform } from '@/components/threed/transform/SceneTransformWorkspace';
+import { useSensorGroups } from '@/components/threed/physics/SensorGroupsWorkspace';
 import { getThreeDIcon, getThreeDLabel } from '@/libraries/utils/map-helpers';
 
 export function ProjectAssetsPanel({
@@ -24,6 +26,10 @@ export function ProjectAssetsPanel({
   resolveRuntimeMarkerPosition,
   onDismiss,
   onSelectAsset,
+  selectedSensorId,
+  selectedGroupId,
+  onSelectGroup,
+  onSelectSensor,
 }: {
   selectedProjectId: string | null;
   isOpen: boolean;
@@ -39,7 +45,13 @@ export function ProjectAssetsPanel({
   resolveRuntimeMarkerPosition: ThreeDRuntimeMarkerPositionResolver;
   onDismiss: () => void;
   onSelectAsset: (marker: RuntimeMarker) => void;
+  selectedSensorId?: string | null;
+  selectedGroupId?: string | null;
+  onSelectGroup: (id: string) => void;
+  onSelectSensor: (marker: RuntimeMarker, sensorId: string) => void;
 }) {
+  const groups = useSensorGroups();
+  const transform = useSceneTransform();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const isVisible = Boolean(selectedProjectId) && isProjectAssetsOpen;
 
@@ -71,9 +83,7 @@ export function ProjectAssetsPanel({
           <div className="mb-2 flex shrink-0 items-start justify-between gap-2">
             <div className="min-w-0">
               <h2 className="text-sm font-semibold">Project Assets</h2>
-              <p className="text-[11px] text-muted-foreground">
-                Select an asset or nested Scene object to open its DetailsCard.
-              </p>
+
             </div>
             <Button
               type="button"
@@ -145,11 +155,6 @@ export function ProjectAssetsPanel({
             ))}
           </div>
 
-          <div className="mb-2 flex shrink-0 flex-wrap items-center justify-between gap-1 text-[10px] text-muted-foreground">
-            <span>{visibleProjectAssets.length} shown</span>
-            <span>{projectRuntimeMarkers.length} items · Esc closes</span>
-          </div>
-
           <div className="min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain pr-1">
             {visibleProjectAssets.length === 0 ? (
               <p className="py-8 text-center text-xs text-muted-foreground">
@@ -158,7 +163,7 @@ export function ProjectAssetsPanel({
                   : 'No Project assets match this search.'}
               </p>
             ) : visibleProjectAssets.map((marker, index) => {
-              const isSelected = selectedMarker?.id === marker.id;
+              const isSelected = selectedMarker?.id === marker.id && !selectedSensorId && selectedGroupId == null;
               const beginsTypeGroup = index === 0
                 || visibleProjectAssets[index - 1]?.type !== marker.type;
               const sourceAssetId = Number(marker.data?.id);
@@ -210,9 +215,11 @@ export function ProjectAssetsPanel({
                         <button
                           key={sensor.id}
                           type="button"
-                          className="w-full rounded border border-white/10 bg-black/10 px-2 py-1 text-left transition-colors hover:border-cyan-500/50 hover:bg-cyan-500/5"
-                          title={`Open ${marker.name} to configure ${sensor.name}`}
-                          onClick={() => onSelectAsset(marker)}
+                          aria-pressed={selectedMarker?.id === marker.id && selectedSensorId === sensor.id}
+                          className={`w-full rounded border px-2 py-1 text-left transition-colors hover:border-cyan-500/50 ${selectedMarker?.id === marker.id && selectedSensorId === sensor.id ? 'border-cyan-400 bg-cyan-500/15' : 'border-white/10 bg-black/10'}`}
+                          disabled={Boolean(transform.session)}
+                          title={`Edit ${sensor.name}`}
+                          onClick={() => onSelectSensor(marker, sensor.id)}
                         >
                           <span className="flex items-center gap-2">
                             <span className={`h-2 w-2 shrink-0 rounded-sm ${sensor.behavior === 'counter' ? 'bg-cyan-400' : 'bg-amber-400'}`} aria-hidden="true" />
@@ -231,6 +238,20 @@ export function ProjectAssetsPanel({
                 </div>
               );
             })}
+          </div>
+          <div className="shrink-0 space-y-2 border-t border-white/15 pt-2 mt-2 max-h-[35%] overflow-y-auto">
+            {selectedMarker && ['project-marker', 'project-snapshot'].includes(String(selectedMarker.metadata?.source)) && ['model', 'models', 'bed', 'beds', 'planting', 'plantings', 'farmbot', 'farmbots'].includes(selectedMarker.type.toLowerCase()) && (
+              <Button disabled={Boolean(transform.session) || readPhysicsSensorCuboids(selectedMarker.metadata).length >= 8} variant="outline" size="sm" className="w-full text-xs truncate" onClick={() => onSelectSensor(selectedMarker, '__new__')}>
+                + Add Sensor to {selectedMarker.name}
+              </Button>
+            )}
+            <details>
+              <summary className="cursor-pointer text-xs">Sensor Groups · {groups?.groups.length ?? 0}</summary>
+              <div className="mt-2 space-y-1">
+                {groups?.groups.map(group => <button key={group.id} type="button" disabled={Boolean(transform.session)} aria-pressed={selectedGroupId === group.id} onClick={() => onSelectGroup(group.id)} className="block w-full rounded border border-white/15 p-2 text-left text-xs hover:bg-white/10 aria-pressed:border-cyan-400">{group.name}</button>)}
+              </div>
+            </details>
+            <Button variant="outline" size="sm" className="w-full text-xs" disabled={Boolean(transform.session)} onClick={() => onSelectGroup('')}>+ New Sensor Group</Button>
           </div>
         </div>
       )}

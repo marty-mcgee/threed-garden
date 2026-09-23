@@ -53,6 +53,7 @@ const tasks = {
   'threed-ground-map': [ts('validate-threed-ground-map.mts')],
   'threed-bed-planting-bounds': [ts('validate-threed-bed-planting-bounds.mts')],
   'threed-runtime-markers': [['node', '--import', 'tsx', `${scripts}/validate-threed-runtime-markers.mts`]],
+  'threed-inspectors': [['node', '--import', 'tsx', `${scripts}/validate-threed-inspectors.mts`]],
   'threed-sensors': [['node', '--import', 'tsx', `${scripts}/validate-threed-sensors.mts`], node('validate-threed-sensor-groups.cjs')],
   'threed-physics-events': [['node', '--import', 'tsx', `${scripts}/validate-threed-physics-events.mts`]],
   'threed-soccer-physics': [['node', '--import', 'tsx', `${scripts}/validate-threed-soccer-physics.mts`]],

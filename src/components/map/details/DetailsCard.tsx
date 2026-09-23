@@ -1,4 +1,5 @@
 'use client';
+import { readPhysicsSensorCuboids } from '@/libraries/services/threed/physics/sensor-cuboid-core';
 import { readModelVolumeSensor } from '@/libraries/services/threed/physics/sensor-legacy-compat';
 
 import { Button } from '@/components/ui/button';
@@ -155,10 +156,12 @@ function FarmBotMqttStatusSummary({
 }
 
 
-export function DetailsCard({ selected, projectId, projectMarkers, onSelectProjectMarker, leftOffsetRem = 0.75, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, movingModelInstanceId, onMoveModelToggle, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdateFarmBotInstance, updatingFarmBotMarkerId, onDeleteFarmBotInstance, deletingFarmBotMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId, movingPlantingMarkerId, onMovePlantingToggle, movingModuleMarkerId, onMoveModuleToggle, onUpdatePhysicsSensors, updatingPhysicsSensorMarkerId, placingPhysicsSensor, physicsSensorPlacementResult, onBeginPhysicsSensorPlacement, onCancelPhysicsSensorPlacement, onZoomToPhysicsSensor, onUpdateCharacterPosition, updatingCharacterMarkerId, onDeleteCharacterInstance, deletingCharacterMarkerId }: {
+export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projectId, projectMarkers, onSelectProjectMarker, leftOffsetRem = 0.75, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, movingModelInstanceId, onMoveModelToggle, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdateFarmBotInstance, updatingFarmBotMarkerId, onDeleteFarmBotInstance, deletingFarmBotMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId, movingPlantingMarkerId, onMovePlantingToggle, movingModuleMarkerId, onMoveModuleToggle, onUpdatePhysicsSensors, updatingPhysicsSensorMarkerId, placingPhysicsSensor, physicsSensorPlacementResult, onBeginPhysicsSensorPlacement, onCancelPhysicsSensorPlacement, onZoomToPhysicsSensor, onUpdateCharacterPosition, updatingCharacterMarkerId, onDeleteCharacterInstance, deletingCharacterMarkerId }: {
   selected: any;
   projectId: string | null;
   projectMarkers?: readonly RuntimeMarker[];
+  selectedSensorId?: string | null;
+  onSelectSensor?: (sensorId: string | null) => void;
   onSelectProjectMarker?: (marker: RuntimeMarker) => void;
   leftOffsetRem?: number;
   onClose: () => void;
@@ -456,7 +459,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
 
   return (
     <div
-      className={`flex flex-col threed-workspace-panel threed-details-surface absolute top-9 z-40 max-h-[calc(100%-2.25rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-lg border border-white/15 text-white shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]`}
+      className={`flex flex-col threed-workspace-panel threed-details-surface threed-inspector absolute top-9 z-40 max-h-[calc(100%-2.25rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-lg border border-white/15 text-white shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]`}
       style={{
         left: `${leftOffsetRem}rem`,
         backgroundColor: 'var(--threed-details-background, rgba(17, 26, 40, 0.5))',
@@ -468,7 +471,7 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
       >
         <div className="min-w-0 pb-1 pt-0.5">
           <div className="truncate text-sm font-semibold text-white">
-            {selected.name || selected.title || selected.label || 'Unknown'}
+            {selectedSensorId ? (readPhysicsSensorCuboids(selected.metadata).find(sensor => sensor.id === selectedSensorId)?.name ?? 'New Physics Sensor') : selected.name || selected.title || selected.label || 'Unknown'}
           </div>
         </div>
         <button
@@ -483,6 +486,8 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
       </div>
 
       <div className="flex min-h-0 flex-col overflow-y-auto overscroll-contain px-2 pb-2 [scrollbar-width:thin]">
+      {selectedSensorId && <button type="button" onClick={() => onSelectSensor?.(null)} className="mb-2 text-left text-xs text-cyan-200">← {selected.name} · Parent asset</button>}
+      <div className={selectedSensorId ? 'hidden' : 'contents'}>
       {!isIncident && <ModelFileNotice type={normalizedType} data={d} />}
 
       <div className="order-[-20] mt-1.5 flex items-center gap-1">
@@ -958,9 +963,12 @@ export function DetailsCard({ selected, projectId, projectMarkers, onSelectProje
         />
       )}
 
+      </div>
       {physicsSensorMarkerId !== null && onUpdatePhysicsSensors && onBeginPhysicsSensorPlacement && onCancelPhysicsSensorPlacement && (
         <PhysicsSensorCuboidsEditor
           key={`physics-sensors:${physicsSensorMarkerId}:${String(selected.metadata?.placementRevision ?? '')}`}
+          selectedSensorId={selectedSensorId ?? null}
+          onSelectSensor={onSelectSensor}
           markerId={physicsSensorMarkerId}
           ownerKey={`${projectId}:${selected.id}`}
           ownerPose={sceneOwnerPose(selected, resolveRuntimeMarkerPosition?.(selected.type, Number(selected.data?.id)))}

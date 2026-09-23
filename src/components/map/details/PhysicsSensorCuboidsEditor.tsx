@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Crosshair, Loader2, Move, Plus, Save, ScanSearch, Trash2 } from 'lucide-react';
 import { SceneTransformActions, useSceneTransform } from '@/components/threed/transform/SceneTransformWorkspace';
 import type { SceneOwnerPose } from '@/libraries/services/threed/transforms/scene-transform-core';
-import { SensorGroupEditor, useSensorGroups } from '@/components/threed/physics/SensorGroupsWorkspace';
+import { useSensorGroups } from '@/components/threed/physics/SensorGroupsWorkspace';
 import { DetailsCardSection } from './DetailsCardSection';
 import {
   readPhysicsSensorCuboids,
@@ -21,6 +21,8 @@ export interface PhysicsSensorPlacementResult {
 }
 
 export function PhysicsSensorCuboidsEditor({
+  selectedSensorId,
+  onSelectSensor,
   markerId,
   ownerKey,
   ownerPose,
@@ -33,6 +35,8 @@ export function PhysicsSensorCuboidsEditor({
   onZoomToSensor,
   onSave,
 }: {
+  selectedSensorId: string | null;
+  onSelectSensor?: (id: string | null) => void;
   markerId: number;
   ownerKey: string;
   ownerPose: SceneOwnerPose;
@@ -74,20 +78,47 @@ export function PhysicsSensorCuboidsEditor({
     (sensor) => sensor.id === id ? { ...sensor, ...patch } : sensor,
   ));
 
+  const creating = useRef(false);
+  useEffect(() => {
+    if (selectedSensorId !== '__new__') { creating.current = false; return; }
+    if (creating.current || saving || editing || sensors.length >= 8) return;
+    creating.current = true;
+    const sensor: PhysicsSensorCuboid = {
+      id: `sensor_${crypto.randomUUID().replaceAll('-', '')}`,
+      name: `Sensor ${sensors.length + 1}`,
+      behavior: 'counter',
+      detection: 'movable-ball',
+      groupId: null,
+      position: { x: 0, y: 1, z: 0 },
+      width: 2,
+      height: 2,
+      depth: 0.35,
+      rotationY: 0,
+    };
+    setSensors((current) => [...current, sensor]);
+    onSelectSensor?.(sensor.id);
+  }, [selectedSensorId, saving, editing, sensors.length, onSelectSensor]);
+
   return (
     <DetailsCardSection
-      title="Physics Sensor Cuboids"
+      key={selectedSensorId ?? 'sensor-list'}
+      title={selectedSensorId ? 'Sensor Settings' : 'Physics Sensors'}
       defaultOpen
       summaryAside={<span className="text-[9px] text-white/40">{sensors.length}/8</span>}
     >
-      <p className="text-[9px] leading-relaxed text-white/45">
-        Use Place Sensor for a new cuboid or Move Sensor for an existing one, then click the Scene surface. Placement saves immediately; its facing follows Y rotation.
-      </p>
+
       {!collectionValidation.success && (
         <p role="alert" className="text-[10px] text-red-200">{collectionValidation.error} Correct that sensor before saving.</p>
       )}
+      <button type="button" disabled={saving || editing || !dirty || !collectionValidation.success}
+        onClick={() => onSave(markerId, sensors)}
+        className="flex w-full items-center justify-center gap-1 rounded bg-cyan-600/30 px-2 py-1.5 text-[10px] text-cyan-100 hover:bg-cyan-600/55 disabled:opacity-40">
+        {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />} {selectedSensorId ? 'Save Sensor' : 'Save Sensors'}
+      </button>
+      {selectedSensorId === '__new__' && sensors.length >= 8 && <p role="alert" className="text-xs text-amber-200">This asset already has eight sensors. Select an existing sensor to edit or delete it.</p>}
       <div className="space-y-2">
-        {sensors.map((sensor, index) => {
+        {sensors.filter(sensor => !selectedSensorId || sensor.id === selectedSensorId).map((sensor, index) => {
+          if (!selectedSensorId) return <button key={sensor.id} type="button" className="block w-full rounded border border-white/15 p-2 text-left text-xs hover:bg-white/10" onClick={() => onSelectSensor?.(sensor.id)}>{sensor.name} →</button>;
           const placing = placementSensorId === sensor.id;
           const transformDraft = transform.session?.objectKey === `${ownerKey}:${sensor.id}` ? transform.session.draft : null;
           const isNewSensor = !initialSensorIds.has(sensor.id);
@@ -95,7 +126,19 @@ export function PhysicsSensorCuboidsEditor({
             position: { ...sensor.position, [axis]: value },
           });
           return (
-            <div key={sensor.id} className="space-y-1.5 rounded border border-white/10 bg-black/15 p-2">
+            <div key={sensor.id} className="flex flex-col gap-1.5 rounded border border-white/10 bg-black/15 p-2">
+              <div className="order-[-30] flex justify-end">
+                <button type="button" disabled={saving || editing} aria-label={`Delete ${sensor.name}`}
+                  onClick={() => {
+                    if (placing) onCancelPlacement();
+                    const next = sensors.filter(item => item.id !== sensor.id);
+                    if (!initialSensorIds.has(sensor.id)) { setSensors(next); onSelectSensor?.(null); }
+                    else void onSave(markerId, next).then(success => { if (success) { setSensors(next); onSelectSensor?.(null); } });
+                  }}
+                  className="rounded border border-red-300/20 p-1.5 text-red-200 hover:bg-red-500/20">
+                  <Trash2 className="inline h-3 w-3" /> Delete Sensor
+                </button>
+              </div>
               <div className="flex items-center gap-1.5">
                 <input value={sensor.name} maxLength={80} disabled={saving || editing}
                   aria-label={`Physics Sensor ${index + 1} name`}
@@ -108,14 +151,7 @@ export function PhysicsSensorCuboidsEditor({
                   <option value="trigger">Trigger</option>
                   <option value="counter">Count Entries</option>
                 </select>
-                <button type="button" disabled={saving || editing} aria-label={`Delete ${sensor.name}`}
-                  onClick={() => {
-                    if (placing) onCancelPlacement();
-                    setSensors((current) => current.filter((item) => item.id !== sensor.id));
-                  }}
-                  className="rounded border border-red-300/20 p-1.5 text-red-200 hover:bg-red-500/20">
-                  <Trash2 className="h-3 w-3" />
-                </button>
+
               </div>
               <div className="grid grid-cols-2 gap-1 text-[10px]">
                 <label>Detect
@@ -132,7 +168,7 @@ export function PhysicsSensorCuboidsEditor({
                   </select>
                 </label>
               </div>
-              <div className="grid grid-cols-2 gap-1">
+              <div className="order-[-20] grid grid-cols-2 gap-1">
                 <button type="button" disabled={saving || editing}
                   onClick={() => placing ? onCancelPlacement() : onBeginPlacement(sensor, isNewSensor ? 'place' : 'move')}
                   className={`flex items-center justify-center gap-1 rounded border px-2 py-1 text-[10px] ${placing ? 'border-amber-300/30 bg-amber-500/20 text-amber-100' : 'border-cyan-300/20 text-cyan-100 hover:bg-cyan-500/10'}`}>
@@ -162,7 +198,7 @@ export function PhysicsSensorCuboidsEditor({
                     },
                   });
                 }}
-                className="w-full rounded border border-cyan-300/30 bg-cyan-600/20 px-2 py-1.5 text-[10px] text-cyan-100 disabled:opacity-40">
+                className="order-[-10] w-full rounded border border-cyan-300/30 bg-cyan-600/20 px-2 py-1.5 text-[10px] text-cyan-100 disabled:opacity-40">
                 Transform Sensor · Mouse Handles
               </button>
               {transform.session?.objectKey === `${ownerKey}:${sensor.id}` && <SceneTransformActions />}
@@ -190,32 +226,15 @@ export function PhysicsSensorCuboidsEditor({
           );
         })}
       </div>
-      <SensorGroupEditor />
-      <button type="button" disabled={saving || editing || sensors.length >= 8}
+
+      {!selectedSensorId && <button type="button" disabled={saving || editing || sensors.length >= 8}
         onClick={() => {
-          const sensor: PhysicsSensorCuboid = {
-            id: `sensor_${crypto.randomUUID().replaceAll('-', '')}`,
-            name: `Sensor ${sensors.length + 1}`,
-            behavior: 'counter',
-            detection: 'movable-ball',
-            groupId: null,
-            position: { x: 0, y: 1, z: 0 },
-            width: 2,
-            height: 2,
-            depth: 0.35,
-            rotationY: 0,
-          };
-          setSensors((current) => [...current, sensor]);
-          onBeginPlacement(sensor, 'place');
+          onSelectSensor?.('__new__');
         }}
         className="flex w-full items-center justify-center gap-1 rounded border border-white/10 px-2 py-1.5 text-[10px] text-white/70 hover:bg-white/10 disabled:opacity-40">
-        <Plus className="h-3 w-3" /> Draw Sensor Cuboid
-      </button>
-      <button type="button" disabled={saving || editing || !dirty}
-        onClick={() => onSave(markerId, sensors)}
-        className="flex w-full items-center justify-center gap-1 rounded bg-cyan-600/30 px-2 py-1.5 text-[10px] text-cyan-100 hover:bg-cyan-600/55 disabled:opacity-40">
-        {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />} Save Sensors
-      </button>
+        <Plus className="h-3 w-3" /> Add Sensor
+      </button>}
+
     </DetailsCardSection>
   );
 }

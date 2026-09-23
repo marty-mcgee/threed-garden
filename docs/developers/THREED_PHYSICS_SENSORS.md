@@ -4,15 +4,17 @@ A Physics Sensor Cuboid is an invisible detection volume attached to a Project M
 
 ## Configure sensors
 
-1. Select the owning asset in Project Assets and open **Physics Sensor Cuboids**.
-2. Create or select a sensor, then give it a useful name.
+1. Select the owning asset in Project Assets. Its **Physics Sensors** section lists attached sensors. Select a nested sensor row to open its focused inspector without moving the camera.
+2. Use **Add Sensor to [asset]** in the Project Assets footer (or **Add Sensor** in the parent card), then give the new sensor a useful name.
 3. Choose **Trigger** for observation without a displayed count, or **Count Entries** for a counter.
 4. Choose a detection filter:
    - **Movable balls** accepts the App's movable-ball Model bodies.
    - **Model bodies** accepts registered Model rigid bodies. This does not yet include Character bodies or external equipment readings.
-5. Open **Manage Sensor Groups**, enter a group name, and save it. Choose that group on each sensor to associate their counts. A group can include sensors attached to different owners in the same Project.
+5. Use **New Sensor Group** or the **Sensor Groups** list in the Project Assets footer. The group inspector provides naming and member navigation. Save the group, then choose it in each sensor’s settings. A group can include sensors attached to different owners in the same Project.
 6. Place or move the cuboid in the Scene, or use **Transform Sensor · Mouse Handles** for Move XYZ, Rotate Y and Resize.
-7. Use **Save Sensors** for form/membership changes or **Save Transform** for a transform draft. Group-name changes save separately and immediately.
+7. Use **Save Sensor** for form/membership changes or **Save Transform** for a transform draft. Group-name changes save separately and immediately.
+
+Use the parent link to return to asset settings. **Zoom to Sensor** is explicit; ordinary inspector selection does not focus the camera. On narrow screens, the inspector overlays Project Assets; closing it reveals the list.
 
 Numeric fields show at most three decimal places. Geometry keeps its existing precision until edited. Each dimension must be at least 0.05 Scene units.
 

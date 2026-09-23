@@ -370,3 +370,13 @@
   pointer-events: none;
   user-select: none;
 }
+
+/* A focused inspector overlays Assets on narrow viewports; the Scene stays mounted. */
+@media (max-width: 700px) {
+  .threed-inspector {
+    left: 0.5rem !important;
+    width: min(22rem, calc(100vw - 1rem));
+    max-width: calc(100vw - 1rem);
+    z-index: 45;
+  }
+}
