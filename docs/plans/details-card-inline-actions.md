@@ -1,6 +1,6 @@
 # v0.20.4 — ThreeD Scene: DetailsCard Action Toolbar
 
-Status: **User-approved release checkpoint; functionality User-confirmed**. Package `0.20.4`. Production deployment is not yet confirmed.
+Status: **released to production — User-confirmed**. Package `0.20.4`. Functionality and successful deployment are User-confirmed.
 
 ## Proof
 
@@ -16,7 +16,7 @@ TypeScript, the existing inspector rendering check, and `git diff --check` passe
 
 ## Resolution
 
-Implemented as the v0.20.4 candidate. The User retains the build gate. Scenarios are deferred to [v0.20.5](v0.20.5.md).
+Released as v0.20.4. See the [release notes](../releases/v0.20.4.md). Scenarios are deferred to [v0.20.5](v0.20.5.md).
 
 ## Production handoff
 
@@ -31,6 +31,6 @@ feat(threed): v0.20.4 DetailsCard Action Toolbar
 - Preserve editor validation, movement, and deletion confirmations
 ```
 
-TypeScript and inspector validation passed for the final implementation. Run the User-owned `npm run build`, then commit and deploy through the normal production workflow. Include the new `DetailsCardActions.tsx` component with the five edited inspector files and this record. No schema commands or dependency installation are required. Retain the checks above for production smoke testing; screenshots establish visual acceptance, not every action's functional result.
+TypeScript and inspector validation passed for the final implementation. The User confirmed functionality and successful production deployment. This records User confirmation, not an agent-run production inspection. No schema commands or dependency installation were required. Retain the checks above for future production regression testing.
 
 References: [v0.20.3 release](../releases/v0.20.3.md), [Physics Sensors](../developers/THREED_PHYSICS_SENSORS.md).
