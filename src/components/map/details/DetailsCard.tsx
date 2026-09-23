@@ -1,4 +1,5 @@
 'use client';
+import { DetailsCardActionsProvider, DetailsCardActionsSlot } from './DetailsCardActions';
 import { readPhysicsSensorCuboids } from '@/libraries/services/threed/physics/sensor-cuboid-core';
 import { readModelVolumeSensor } from '@/libraries/services/threed/physics/sensor-legacy-compat';
 
@@ -461,6 +462,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
   const adminRoute = adminRouteMap[adminType] || (isIncident ? '/admin/traffic' : '/admin/threed/plantings');
 
   return (
+    <DetailsCardActionsProvider>
     <div
       className={`flex flex-col threed-workspace-panel threed-details-surface threed-inspector ${selectedSensorId ? 'threed-sensor-inspector' : ''} absolute top-9 z-40 max-h-[calc(100%-2.25rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-lg border border-white/15 text-white shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]`}
       style={{
@@ -468,6 +470,9 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
         backgroundColor: 'var(--threed-details-background, rgba(17, 26, 40, 0.5))',
       }}
     >
+      <div className={selectedSensorId ? 'hidden' : 'contents'}>
+        <DetailsCardActionsSlot />
+      </div>
       {/* Header */}
       <div
         className="shrink-0 flex items-start justify-between gap-2 px-2 py-2"
@@ -1018,6 +1023,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
 
       </div>
     </div>
+    </DetailsCardActionsProvider>
   );
 }
 

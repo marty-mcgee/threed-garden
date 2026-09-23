@@ -1,4 +1,5 @@
 'use client';
+import { DetailsCardActions } from './DetailsCardActions';
 
 import { useState } from 'react';
 import { Layers, Crosshair, Loader2, Save, Settings, Trash2 } from 'lucide-react';
@@ -142,7 +143,7 @@ export function BedInstanceEditor({
 
   return (
     <div className="contents">
-      <div className="order-[-10] mt-2 grid grid-cols-3 gap-1.5">
+      <DetailsCardActions labels={[`Save ${entityLabel}`, moveActive ? 'Cancel Move' : `Move ${entityLabel}`, `Remove ${entityLabel}`]}>
       <button
         type="button"
         disabled={!valid || !dirty || busy}
@@ -196,7 +197,7 @@ export function BedInstanceEditor({
         {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
         Remove {entityLabel}
       </button>
-      </div>
+      </DetailsCardActions>
       <DetailsCardSection
         title={<span className="inline-flex items-center gap-1.5">
           {entityLabel === 'FarmBot'

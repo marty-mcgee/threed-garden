@@ -1,4 +1,5 @@
 'use client';
+import { DetailsCardActions } from './DetailsCardActions';
 
 import { useEffect, useState } from 'react';
 import { Crosshair, Loader2, Save, Sprout, Trash2 } from 'lucide-react';
@@ -66,7 +67,7 @@ export function PlantingInstanceEditor({
 
   return (
     <div className="contents">
-      <div className="order-[-10] mt-2 grid grid-cols-3 gap-1.5">
+      <DetailsCardActions labels={['Save Planting', moveActive ? 'Cancel Move' : 'Move Planting', 'Delete Planting']}>
         <button type="button" disabled={!valid || !dirty || updating || deleting}
           onClick={(event) => { event.stopPropagation(); onSave(markerId, parsed); }}
           className="flex w-full items-center justify-center gap-1.5 rounded bg-emerald-600/35 px-2 py-1.5 text-[11px] font-medium text-emerald-100 transition-colors hover:bg-emerald-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30">
@@ -89,7 +90,7 @@ export function PlantingInstanceEditor({
           {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
           Delete Planting
         </button>
-      </div>
+      </DetailsCardActions>
       <DetailsCardSection
         title={<span className="inline-flex items-center gap-1.5">
           <Sprout className="h-3.5 w-3.5" />

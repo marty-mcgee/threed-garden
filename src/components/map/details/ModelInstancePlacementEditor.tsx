@@ -1,4 +1,5 @@
 'use client';
+import { DetailsCardActions } from './DetailsCardActions';
 
 import type { ModelVolumeSensor } from '@/libraries/services/threed/physics/sensor-legacy-compat';
 import { BALL_PHYSICS_FIELDS, resolveBallPhysics, type BallPhysics } from '@/libraries/services/threed/models/ball-physics';
@@ -105,7 +106,7 @@ export function ModelInstancePlacementEditor({
 
   return (
     <div className="contents">
-      <div className="order-[-10] mt-2 grid grid-cols-3 gap-1.5">
+      <DetailsCardActions labels={['Save Model', moveActive ? 'Cancel Move' : 'Move Model', 'Delete Model']}>
         <button
           type="button"
           disabled={!valid || !dirty || busy}
@@ -162,7 +163,7 @@ export function ModelInstancePlacementEditor({
             : <Trash2 className="h-3.5 w-3.5" />}
           Delete Model
         </button>
-      </div>
+      </DetailsCardActions>
       <DetailsCardSection
         title={<span className="inline-flex items-center gap-1.5">
           <Box className="h-3.5 w-3.5" />

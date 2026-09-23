@@ -1,4 +1,5 @@
 'use client';
+import { DetailsCardActions } from './DetailsCardActions';
 
 import { CHARACTER_PHYSICS_FIELDS, resolveCharacterPhysics, type CharacterPhysics } from '@/libraries/services/threed/characters/character-physics';
 import { useEffect, useState, type ReactNode } from 'react';
@@ -65,7 +66,7 @@ export function CharacterInstancePositionEditor({
 
   return (
     <div className="contents">
-      <div className="order-[-10] mt-2 grid grid-cols-3 gap-1.5">
+      <DetailsCardActions labels={['Save Character', moveActive ? 'Cancel Move' : 'Move Character', 'Delete Character']}>
         <button
           type="button"
           disabled={!valid || disabled || updating || deleting}
@@ -96,7 +97,7 @@ export function CharacterInstancePositionEditor({
           {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
           Delete Character
         </button>
-      </div>
+      </DetailsCardActions>
       <DetailsCardSection title="Module / Position" className="order-4">
         {metadata && <div className="space-y-0.5">{metadata}</div>}
       <div className="flex items-center justify-between gap-2">
