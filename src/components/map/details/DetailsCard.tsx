@@ -429,6 +429,9 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
   if (!isCharacterMarker && (d.notes || d.description)) metaRows.push({ label: 'Notes', value: (d.notes || d.description).slice(0, 80) });
 
   const selectedMarkerId = String(selected.id || '');
+  const selectedSensorCount = selectedSensorId
+    ? readPhysicsSensorCuboids(selected.metadata).length
+    : 0;
   const selectedMarkerIdSuffix = selectedMarkerId.match(/(\d+)$/)?.[1];
   const quickTargetId = Number(d.id ?? selectedMarkerIdSuffix);
   const quickTargetType = selectedTargetCapabilities?.markerType;
@@ -459,7 +462,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
 
   return (
     <div
-      className={`flex flex-col threed-workspace-panel threed-details-surface threed-inspector absolute top-9 z-40 max-h-[calc(100%-2.25rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-lg border border-white/15 text-white shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]`}
+      className={`flex flex-col threed-workspace-panel threed-details-surface threed-inspector ${selectedSensorId ? 'threed-sensor-inspector' : ''} absolute top-9 z-40 max-h-[calc(100%-2.25rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-lg border border-white/15 text-white shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]`}
       style={{
         left: `${leftOffsetRem}rem`,
         backgroundColor: 'var(--threed-details-background, rgba(17, 26, 40, 0.5))',
@@ -473,6 +476,11 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
           <div className="truncate text-sm font-semibold text-white">
             {selectedSensorId ? (readPhysicsSensorCuboids(selected.metadata).find(sensor => sensor.id === selectedSensorId)?.name ?? 'New Physics Sensor') : selected.name || selected.title || selected.label || 'Unknown'}
           </div>
+          {selectedSensorId && (
+            <p className="mt-0.5 text-[10px] font-medium uppercase tracking-wide text-cyan-100/80">
+              Physics Sensor · {selectedSensorCount} on this asset
+            </p>
+          )}
         </div>
         <button
           type="button"

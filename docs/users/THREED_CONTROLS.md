@@ -8,10 +8,12 @@ Open `/dashboard/scene`, choose a project, and select a ThreeD marker to open it
 - Use the view buttons to switch between Combined, 2D, and 3D modes.
 - Use **Project Tour** for guided Project setup and Help. Its toolbar button opens and closes the Tour.
 - Use **Environment** for the environment preset, Ground Map, sunlight, ground plane, camera presentation, legend, grid, Physics Debug, gizmo, incidents, saved views, and Scene Layers.
-- In 3D or Combined mode, select **Add to Scene** to open the existing Model, Character, FarmBot, Bed, or Planting placement workflow.
+- In 3D or Combined mode, select **Add to Scene** to open the existing Model, Character, FarmBot, Bed, or Planting placement workflow. In the Model Library, use **All Models** or an assigned collection such as Soccer or Farming, then optionally narrow results by readiness or name. Collections describe reusable library Models; Project Assets lists Models that are already placed in the Project.
 - In 2D-only mode, **Add Model** retains the Map-supported Model placement workflow.
 - While a marker is awaiting placement or a Model is awaiting repositioning, the header shows the active operation. Select its X button to cancel that complete Scene operation.
 - Use the far-right Save icon for quick access to the same **Save ThreeD Project** transaction available in the Project menu. Project Assets and individual Libraries provide their own scoped search and filtering, while Scene Layers control module visibility.
+
+When a nested Physics Sensor is selected in Project Assets, its focused inspector presents the parent asset, **Place it in the Scene** controls, detection and group settings, then precise geometry fields. **Save Sensor** appears after a changed form value; **Remove sensor** is an optional action at the bottom. See [Physics Sensors and Sensor Groups](../developers/THREED_PHYSICS_SENSORS.md) for the full workflow.
 
 The toolbar separates Project guidance from live Scene presentation: **Project Tour** owns setup/Help and **Environment** owns Scene presentation. The Details Card remains responsible for the selected marker's actions and editing. See [ThreeD Ground Maps](THREED_GROUND_MAPS.md) for image-ground setup and alignment.
 

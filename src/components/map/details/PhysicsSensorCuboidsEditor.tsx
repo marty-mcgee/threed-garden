@@ -110,11 +110,15 @@ export function PhysicsSensorCuboidsEditor({
       {!collectionValidation.success && (
         <p role="alert" className="text-[10px] text-red-200">{collectionValidation.error} Correct that sensor before saving.</p>
       )}
-      <button type="button" disabled={saving || editing || !dirty || !collectionValidation.success}
-        onClick={() => onSave(markerId, sensors)}
-        className="flex w-full items-center justify-center gap-1 rounded bg-cyan-600/30 px-2 py-1.5 text-[10px] text-cyan-100 hover:bg-cyan-600/55 disabled:opacity-40">
-        {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />} {selectedSensorId ? 'Save Sensor' : 'Save Sensors'}
-      </button>
+      {dirty ? (
+        <button type="button" disabled={saving || editing || !collectionValidation.success}
+          onClick={() => onSave(markerId, sensors)}
+          className="flex w-full items-center justify-center gap-1 rounded bg-cyan-600/30 px-2 py-1.5 text-[10px] font-medium text-cyan-100 hover:bg-cyan-600/55 disabled:opacity-40">
+          {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />} {selectedSensorId ? 'Save Sensor' : 'Save Sensors'}
+        </button>
+      ) : (
+        <p role="status" className="rounded border border-white/10 bg-black/10 px-2 py-1.5 text-center text-[10px] text-white/55">Saved</p>
+      )}
       {selectedSensorId === '__new__' && sensors.length >= 8 && <p role="alert" className="text-xs text-amber-200">This asset already has eight sensors. Select an existing sensor to edit or delete it.</p>}
       <div className="space-y-2">
         {sensors.filter(sensor => !selectedSensorId || sensor.id === selectedSensorId).map((sensor, index) => {
@@ -126,19 +130,7 @@ export function PhysicsSensorCuboidsEditor({
             position: { ...sensor.position, [axis]: value },
           });
           return (
-            <div key={sensor.id} className="flex flex-col gap-1.5 rounded border border-white/10 bg-black/15 p-2">
-              <div className="order-[-30] flex justify-end">
-                <button type="button" disabled={saving || editing} aria-label={`Delete ${sensor.name}`}
-                  onClick={() => {
-                    if (placing) onCancelPlacement();
-                    const next = sensors.filter(item => item.id !== sensor.id);
-                    if (!initialSensorIds.has(sensor.id)) { setSensors(next); onSelectSensor?.(null); }
-                    else void onSave(markerId, next).then(success => { if (success) { setSensors(next); onSelectSensor?.(null); } });
-                  }}
-                  className="rounded border border-red-300/20 p-1.5 text-red-200 hover:bg-red-500/20">
-                  <Trash2 className="inline h-3 w-3" /> Delete Sensor
-                </button>
-              </div>
+            <div key={sensor.id} className="flex flex-col gap-2 rounded border border-cyan-200/15 bg-black/15 p-2">
               <div className="flex items-center gap-1.5">
                 <input value={sensor.name} maxLength={80} disabled={saving || editing}
                   aria-label={`Physics Sensor ${index + 1} name`}
@@ -168,60 +160,84 @@ export function PhysicsSensorCuboidsEditor({
                   </select>
                 </label>
               </div>
-              <div className="order-[-20] grid grid-cols-2 gap-1">
+              <section className="rounded border border-cyan-300/15 bg-cyan-950/15 p-1.5" aria-label="Sensor placement">
+                <div className="mb-1 flex items-center justify-between gap-2 text-[9px] font-semibold uppercase tracking-wide text-cyan-100/80">
+                  <span>Placement</span>
+                  {placing && <span className="text-amber-100">Scene click active</span>}
+                  {transformDraft && <span className="text-cyan-100">Mouse handles active</span>}
+                </div>
+                {placing && <p role="status" className="mb-1 text-[9px] leading-relaxed text-amber-100/85">Click a Scene surface to set this sensor’s position.</p>}
+                <div className="grid grid-cols-2 gap-1">
+                  <button type="button" disabled={saving || editing}
+                    onClick={() => placing ? onCancelPlacement() : onBeginPlacement(sensor, isNewSensor ? 'place' : 'move')}
+                    className={`flex items-center justify-center gap-1 rounded border px-2 py-1 text-[10px] ${placing ? 'border-amber-300/30 bg-amber-500/20 text-amber-100' : 'border-cyan-300/20 text-cyan-100 hover:bg-cyan-500/10'}`}>
+                    {placing ? <Crosshair className="h-3 w-3" /> : isNewSensor ? <Crosshair className="h-3 w-3" /> : <Move className="h-3 w-3" />} {placing ? 'Cancel Placement' : isNewSensor ? 'Place Sensor' : 'Move Sensor'}
+                  </button>
+                  <button type="button" disabled={saving || placing || editing}
+                    onClick={() => onZoomToSensor(sensor)}
+                    title="Zoom to Sensor"
+                    className="flex items-center justify-center gap-1 rounded border border-violet-300/20 px-2 py-1 text-[10px] text-violet-100 hover:bg-violet-500/10 disabled:opacity-40">
+                    <ScanSearch className="h-3 w-3" /> Zoom to Sensor
+                  </button>
+                </div>
                 <button type="button" disabled={saving || editing}
-                  onClick={() => placing ? onCancelPlacement() : onBeginPlacement(sensor, isNewSensor ? 'place' : 'move')}
-                  className={`flex items-center justify-center gap-1 rounded border px-2 py-1 text-[10px] ${placing ? 'border-amber-300/30 bg-amber-500/20 text-amber-100' : 'border-cyan-300/20 text-cyan-100 hover:bg-cyan-500/10'}`}>
-                  {placing ? <Crosshair className="h-3 w-3" /> : isNewSensor ? <Crosshair className="h-3 w-3" /> : <Move className="h-3 w-3" />} {placing ? 'Cancel Placement' : isNewSensor ? 'Place Sensor' : 'Move Sensor'}
+                  onClick={() => {
+                    onCancelPlacement();
+                    transform.begin({
+                      ownerKey, objectKey: `${ownerKey}:${sensor.id}`, name: sensor.name,
+                      owner: ownerPose, dimensions: [sensor.width, sensor.height, sensor.depth],
+                      draft: { position: { ...sensor.position }, rotationY: sensor.rotationY, width: sensor.width, height: sensor.height, depth: sensor.depth },
+                      commit: async draft => {
+                        const next = sensors.map(item => item.id === sensor.id ? { ...item, ...draft } : item);
+                        const validation = validatePhysicsSensorCuboids(next);
+                        if (!validation.success) throw new Error(validation.error);
+                        const success = await onSave(markerId, validation.sensors);
+                        if (success) setSensors([...validation.sensors]);
+                        return success;
+                      },
+                    });
+                  }}
+                  className="mt-1 w-full rounded border border-cyan-300/30 bg-cyan-600/20 px-2 py-1.5 text-[10px] text-cyan-100 disabled:opacity-40">
+                  Transform Sensor · Mouse Handles
                 </button>
-                <button type="button" disabled={saving || placing || editing}
-                  onClick={() => onZoomToSensor(sensor)}
-                  title="Zoom to Sensor"
-                  className="flex items-center justify-center gap-1 rounded border border-violet-300/20 px-2 py-1 text-[10px] text-violet-100 hover:bg-violet-500/10 disabled:opacity-40">
-                  <ScanSearch className="h-3 w-3" /> Zoom to Sensor
+                {transform.session?.objectKey === `${ownerKey}:${sensor.id}` && <SceneTransformActions />}
+              </section>
+              <section aria-label="Sensor dimensions and rotation">
+                <p className="mb-1 text-[9px] font-semibold uppercase tracking-wide text-white/55">Dimensions and rotation</p>
+                <div className="grid grid-cols-3 gap-1">
+                  {(['x', 'y', 'z'] as const).map((axis) => (
+                    <label key={axis} className="text-[8px] text-white/45">Local {axis.toUpperCase()}
+                      <input type="number" step="0.1" value={Number((transformDraft?.position ?? sensor.position)[axis].toFixed(3))} disabled={saving || editing}
+                        onChange={(event) => updatePosition(axis, Number(event.target.value))}
+                        className="mt-0.5 h-6 w-full rounded border border-white/10 bg-white/5 px-1 text-[9px] text-white" />
+                    </label>
+                  ))}
+                </div>
+                <div className="mt-1 grid grid-cols-4 gap-1">
+                  {(['width', 'height', 'depth', 'rotationY'] as const).map((field) => (
+                    <label key={field} className="text-[8px] text-white/45">
+                      {field === 'rotationY' ? 'Y rotation °' : field[0].toUpperCase() + field.slice(1)}
+                      <input type="number" min={field === 'rotationY' ? undefined : 0.05} step="0.05"
+                        value={Number((transformDraft?.[field] ?? sensor[field]).toFixed(3))} disabled={saving || editing}
+                        onChange={(event) => updateSensor(sensor.id, { [field]: Number(event.target.value) })}
+                        className="mt-0.5 h-6 w-full rounded border border-white/10 bg-white/5 px-1 text-[9px] text-white" />
+                    </label>
+                  ))}
+                </div>
+              </section>
+              <details className="border-t border-white/10 pt-1.5">
+                <summary className="cursor-pointer text-[9px] text-red-200/75">Remove sensor</summary>
+                <button type="button" disabled={saving || editing} aria-label={`Delete ${sensor.name}`}
+                  onClick={() => {
+                    if (placing) onCancelPlacement();
+                    const next = sensors.filter(item => item.id !== sensor.id);
+                    if (!initialSensorIds.has(sensor.id)) { setSensors(next); onSelectSensor?.(null); }
+                    else void onSave(markerId, next).then(success => { if (success) { setSensors(next); onSelectSensor?.(null); } });
+                  }}
+                  className="mt-1 flex w-full items-center justify-center gap-1 rounded border border-red-300/20 px-2 py-1.5 text-[10px] text-red-200 hover:bg-red-500/20">
+                  <Trash2 className="h-3 w-3" /> Delete Sensor
                 </button>
-              </div>
-              <button type="button" disabled={saving || editing}
-                onClick={() => {
-                  onCancelPlacement();
-                  transform.begin({
-                    ownerKey, objectKey: `${ownerKey}:${sensor.id}`, name: sensor.name,
-                    owner: ownerPose, dimensions: [sensor.width, sensor.height, sensor.depth],
-                    draft: { position: { ...sensor.position }, rotationY: sensor.rotationY, width: sensor.width, height: sensor.height, depth: sensor.depth },
-                    commit: async draft => {
-                      const next = sensors.map(item => item.id === sensor.id ? { ...item, ...draft } : item);
-                      const validation = validatePhysicsSensorCuboids(next);
-                      if (!validation.success) throw new Error(validation.error);
-                      const success = await onSave(markerId, validation.sensors);
-                      if (success) setSensors([...validation.sensors]);
-                      return success;
-                    },
-                  });
-                }}
-                className="order-[-10] w-full rounded border border-cyan-300/30 bg-cyan-600/20 px-2 py-1.5 text-[10px] text-cyan-100 disabled:opacity-40">
-                Transform Sensor · Mouse Handles
-              </button>
-              {transform.session?.objectKey === `${ownerKey}:${sensor.id}` && <SceneTransformActions />}
-              <div className="grid grid-cols-3 gap-1">
-                {(['x', 'y', 'z'] as const).map((axis) => (
-                  <label key={axis} className="text-[8px] text-white/45">Local {axis.toUpperCase()}
-                    <input type="number" step="0.1" value={Number((transformDraft?.position ?? sensor.position)[axis].toFixed(3))} disabled={saving || editing}
-                      onChange={(event) => updatePosition(axis, Number(event.target.value))}
-                      className="mt-0.5 h-6 w-full rounded border border-white/10 bg-white/5 px-1 text-[9px] text-white" />
-                  </label>
-                ))}
-              </div>
-              <div className="grid grid-cols-4 gap-1">
-                {(['width', 'height', 'depth', 'rotationY'] as const).map((field) => (
-                  <label key={field} className="text-[8px] text-white/45">
-                    {field === 'rotationY' ? 'Y rotation °' : field[0].toUpperCase() + field.slice(1)}
-                    <input type="number" min={field === 'rotationY' ? undefined : 0.05} step="0.05"
-                      value={Number((transformDraft?.[field] ?? sensor[field]).toFixed(3))} disabled={saving || editing}
-                      onChange={(event) => updateSensor(sensor.id, { [field]: Number(event.target.value) })}
-                      className="mt-0.5 h-6 w-full rounded border border-white/10 bg-white/5 px-1 text-[9px] text-white" />
-                  </label>
-                ))}
-              </div>
+              </details>
             </div>
           );
         })}

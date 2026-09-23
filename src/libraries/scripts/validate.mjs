@@ -66,6 +66,7 @@ const tasks = {
   'threed-character-teleport': [node('validate-threed-character-teleport.cjs')],
   'threed-orchestration': [ts('validate-threed-orchestration.mts')],
   'threed-library-placement': [ts('validate-threed-library-placement.mts')],
+  'threed-library-collections': [ts('validate-threed-library-collections.mts')],
   'threed-project-session': [ts('validate-threed-project-session.mts')],
   'threed-mqtt': [['node', '--import', 'tsx', 'src/libraries/services/threed/mqtt/validate.mts']],
   'threed-model-import': [ts('validate-threed-model-import-contract.mts')],

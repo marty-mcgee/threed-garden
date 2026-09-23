@@ -2366,7 +2366,7 @@ function UnifiedMapPageInner() {
     visibleAssets: visibleProjectAssets,
   } = useProjectAssetCollection(projectRuntimeMarkers, projectAssetSearch, projectAssetType);
   const {
-    categories: libraryCategories,
+    collections: libraryCollections,
     inspectedModel: inspectedLibraryModel,
     visibleModels: visibleLibraryModels,
   } = useThreeDModelLibraryCollection(
@@ -2672,7 +2672,7 @@ function UnifiedMapPageInner() {
         projectModules={projectThreeDModules}
         selectedModuleId={placementThreedId}
         onSelectedModuleChange={setPlacementThreedId}
-        categories={libraryCategories}
+        collections={libraryCollections}
         selectedCategorySlug={libraryCategorySlug}
         onSelectedCategoryChange={(slug) => {
           setLibraryCategorySlug(slug);

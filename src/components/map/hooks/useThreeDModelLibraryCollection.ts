@@ -2,12 +2,16 @@
 
 import { useMemo } from 'react';
 import type { ThreeDModelLibraryItem } from '@/libraries/types/threed';
+import {
+  buildThreeDModelLibraryCollections,
+  filterThreeDModelLibrary,
+  type ThreeDModelLibraryCollection as ModelLibraryCollection,
+} from '@/libraries/services/threed/models/model-library-collections-core';
 
-type ThreeDModelLibraryCategory = ThreeDModelLibraryItem['categories'][number];
 export type ThreeDModelLibraryReadinessFilter = 'all' | ThreeDModelLibraryItem['libraryReadiness']['status'];
 
 interface ThreeDModelLibraryCollection {
-  categories: ThreeDModelLibraryCategory[];
+  collections: ModelLibraryCollection[];
   inspectedModel: ThreeDModelLibraryItem | null;
   visibleModels: ThreeDModelLibraryItem[];
 }
@@ -20,23 +24,10 @@ export function useThreeDModelLibraryCollection(
   readiness: ThreeDModelLibraryReadinessFilter,
 ): ThreeDModelLibraryCollection {
   return useMemo(() => {
-    const normalizedSearch = search.trim().toLowerCase();
     const inspectedModel = models.find((model) => model.id === inspectedModelId) ?? null;
-    const categories = Array.from(
-      new Map(
-        models
-          .flatMap((model) => model.categories ?? [])
-          .map((category) => [category.slug, category]),
-      ).values(),
-    ).sort((left, right) => left.name.localeCompare(right.name));
-    const visibleModels = models.filter((model) => (
-      (categorySlug === 'all'
-        || model.categories?.some((category) => category.slug === categorySlug))
-      && (normalizedSearch.length === 0
-        || model.modelName.toLowerCase().includes(normalizedSearch))
-      && (readiness === 'all' || model.libraryReadiness.status === readiness)
-    ));
+    const collections = buildThreeDModelLibraryCollections(models);
+    const visibleModels = filterThreeDModelLibrary(models, categorySlug, search, readiness);
 
-    return { categories, inspectedModel, visibleModels };
+    return { collections, inspectedModel, visibleModels };
   }, [categorySlug, inspectedModelId, models, readiness, search]);
 }

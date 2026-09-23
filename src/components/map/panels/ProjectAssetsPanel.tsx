@@ -212,26 +212,32 @@ export function ProjectAssetsPanel({
                         Physics Sensors {physicsSensors.length}
                       </div>
                       {physicsSensors.map((sensor) => (
-                        <button
-                          key={sensor.id}
-                          type="button"
-                          aria-pressed={selectedMarker?.id === marker.id && selectedSensorId === sensor.id}
-                          className={`w-full rounded border px-2 py-1 text-left transition-colors hover:border-cyan-500/50 ${selectedMarker?.id === marker.id && selectedSensorId === sensor.id ? 'border-cyan-400 bg-cyan-500/15' : 'border-white/10 bg-black/10'}`}
-                          disabled={Boolean(transform.session)}
-                          title={`Edit ${sensor.name}`}
-                          onClick={() => onSelectSensor(marker, sensor.id)}
-                        >
-                          <span className="flex items-center gap-2">
-                            <span className={`h-2 w-2 shrink-0 rounded-sm ${sensor.behavior === 'counter' ? 'bg-cyan-400' : 'bg-amber-400'}`} aria-hidden="true" />
-                            <span className="min-w-0 flex-1">
-                              <span className="block truncate text-[10px] font-medium">{sensor.name}</span>
-                              <span className="block text-[9px] capitalize text-muted-foreground">
-                                {sensor.behavior === 'counter' ? 'Entry counter' : 'Trigger'} · {sensor.width.toFixed(2)} × {sensor.height.toFixed(2)} × {sensor.depth.toFixed(2)}
+                        (() => {
+                          const isSelectedSensor = selectedMarker?.id === marker.id && selectedSensorId === sensor.id;
+                          return <button
+                            key={sensor.id}
+                            type="button"
+                            aria-pressed={isSelectedSensor}
+                            className={`w-full rounded border px-2 py-1 text-left transition-colors hover:border-cyan-500/50 ${isSelectedSensor ? 'border-cyan-300 bg-cyan-500/20 ring-1 ring-cyan-400/40' : 'border-white/10 bg-black/10'}`}
+                            disabled={Boolean(transform.session)}
+                            title={`Edit ${sensor.name}`}
+                            onClick={() => onSelectSensor(marker, sensor.id)}
+                          >
+                            <span className="flex items-center gap-2">
+                              <span className={`h-2 w-2 shrink-0 rounded-sm ${sensor.behavior === 'counter' ? 'bg-cyan-400' : 'bg-amber-400'}`} aria-hidden="true" />
+                              <span className="min-w-0 flex-1">
+                                <span className="flex items-center gap-1">
+                                  <span className="block truncate text-[10px] font-medium">{sensor.name}</span>
+                                  {isSelectedSensor && <span className="shrink-0 text-[8px] font-semibold uppercase tracking-wide text-cyan-200">Editing</span>}
+                                </span>
+                                <span className="block text-[9px] capitalize text-muted-foreground">
+                                  {sensor.behavior === 'counter' ? 'Entry counter' : 'Trigger'} · {sensor.width.toFixed(2)} × {sensor.height.toFixed(2)} × {sensor.depth.toFixed(2)}
+                                </span>
                               </span>
+                              <Crosshair className={`h-3 w-3 shrink-0 ${isSelectedSensor ? 'text-cyan-200' : 'text-muted-foreground'}`} />
                             </span>
-                            <Crosshair className="h-3 w-3 shrink-0 text-muted-foreground" />
-                          </span>
-                        </button>
+                          </button>;
+                        })()
                       ))}
                     </div>
                   )}

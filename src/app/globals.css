@@ -278,6 +278,13 @@
 .threed-details-surface:focus-within {
   --threed-details-background: rgba(17, 26, 40, 0.82);
 }
+.threed-workspace-panel.threed-sensor-inspector {
+  --threed-details-background: rgba(17, 26, 40, 0.72);
+}
+.threed-sensor-inspector:hover,
+.threed-sensor-inspector:focus-within {
+  --threed-details-background: rgba(17, 26, 40, 0.9);
+}
 .threed-details-surface input,
 .threed-details-surface select {
   background-color: rgba(15, 23, 42, 0.78);
@@ -378,5 +385,10 @@
     width: min(22rem, calc(100vw - 1rem));
     max-width: calc(100vw - 1rem);
     z-index: 45;
+  }
+  .threed-model-library-panel {
+    left: 0.5rem;
+    width: min(22rem, calc(100vw - 1rem));
+    max-width: calc(100vw - 1rem);
   }
 }

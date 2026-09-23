@@ -13,6 +13,7 @@ import type { MapViewMode } from '@/libraries/types/map';
 import type { ThreeDModelLibraryItem } from '@/libraries/types/threed';
 import type { ThreeDModelLibraryReadinessFilter } from '@/components/map/hooks/useThreeDModelLibraryCollection';
 import { ThreeDModelLibraryPreview } from '@/components/threed/models/ThreeDModelLibraryPreview';
+import type { ThreeDModelLibraryCollection } from '@/libraries/services/threed/models/model-library-collections-core';
 
 type ModelCategory = ThreeDModelLibraryItem['categories'][number];
 
@@ -47,7 +48,7 @@ interface ThreeDModelLibraryPanelProps {
   projectModules: ThreeDModuleOption[];
   selectedModuleId: number | null;
   onSelectedModuleChange: (moduleId: number) => void;
-  categories: ModelCategory[];
+  collections: ThreeDModelLibraryCollection[];
   selectedCategorySlug: string;
   onSelectedCategoryChange: (slug: string) => void;
   search: string;
@@ -80,7 +81,7 @@ export function ThreeDModelLibraryPanel({
   projectModules,
   selectedModuleId,
   onSelectedModuleChange,
-  categories,
+  collections,
   selectedCategorySlug,
   onSelectedCategoryChange,
   search,
@@ -120,7 +121,7 @@ export function ThreeDModelLibraryPanel({
       : '3D Scene';
 
   return (
-    <div className="threed-workspace-panel threed-scene-panel-surface absolute bottom-0 left-0 top-9 z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md">
+    <div className="threed-workspace-panel threed-scene-panel-surface threed-model-library-panel absolute bottom-0 left-0 top-9 z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md">
       <div className="mb-2 flex items-center justify-between gap-2">
         <div>
           <h2 className="text-sm font-semibold">ThreeD Model Library</h2>
@@ -144,29 +145,25 @@ export function ThreeDModelLibraryPanel({
         </label>
       )}
 
-      <label className="mb-2 block text-xs">
-        <span className="mb-1 flex items-center justify-between gap-2 text-muted-foreground">
-          <span>Category</span>
-          <span>{categories.length > 0 ? `${categories.length} available` : 'None assigned'}</span>
-        </span>
-        <select
-          className="h-8 w-full min-w-0 max-w-full rounded-md border bg-background px-2 text-xs disabled:cursor-not-allowed disabled:opacity-60"
-          value={categories.length > 0 ? selectedCategorySlug : 'none'}
-          disabled={categories.length === 0}
-          onChange={(event) => onSelectedCategoryChange(event.target.value)}
-        >
-          {categories.length === 0 ? (
-            <option value="none">No categories assigned</option>
-          ) : (
-            <>
-              <option value="all">All Models</option>
-              {categories.map((category) => (
-                <option key={category.slug} value={category.slug}>{category.name}</option>
-              ))}
-            </>
-          )}
-        </select>
-      </label>
+      <section className="mb-2" aria-labelledby="model-library-collections">
+        <div className="mb-1 flex items-center justify-between gap-2 text-xs text-muted-foreground">
+          <h3 id="model-library-collections" className="font-medium text-foreground">Collections</h3>
+          <span>{collections.length > 0 ? `${collections.length} assigned` : 'No categories assigned'}</span>
+        </div>
+        <div className="flex max-h-24 flex-wrap gap-1 overflow-y-auto overscroll-contain pr-1 [scrollbar-width:thin]" role="group" aria-label="Model Library collections">
+          <Button type="button" size="sm" variant={selectedCategorySlug === 'all' ? 'secondary' : 'outline'}
+            className="h-7 px-2 text-[10px]" aria-pressed={selectedCategorySlug === 'all'}
+            onClick={() => onSelectedCategoryChange('all')}>All Models {allModelCount}</Button>
+          {collections.map((collection) => (
+            <Button key={collection.slug} type="button" size="sm"
+              variant={selectedCategorySlug === collection.slug ? 'secondary' : 'outline'}
+              className="h-7 max-w-full px-2 text-[10px]" aria-pressed={selectedCategorySlug === collection.slug}
+              onClick={() => onSelectedCategoryChange(collection.slug)}>
+              <span className="truncate">{collection.name}</span> {collection.modelCount}
+            </Button>
+          ))}
+        </div>
+      </section>
 
       <label className="mb-2 block text-xs">
         <span className="mb-1 block text-muted-foreground">Readiness</span>
@@ -386,8 +383,17 @@ export function ThreeDModelLibraryPanel({
                     <div className="text-[10px] uppercase text-muted-foreground">{model.modelType}</div>
                     <ModelReadinessBadge model={model} />
                   </div>
+                  <div className="mt-1 flex min-h-4 flex-wrap gap-1" aria-label={`${model.modelName} collections`}>
+                    {model.categories.length > 0 ? model.categories.map((category) => (
+                      <span key={category.id} className="max-w-full truncate rounded bg-muted px-1 py-0.5 text-[9px] text-muted-foreground">
+                        {category.name}
+                      </span>
+                    )) : (
+                      <span className="text-[9px] text-muted-foreground">Unassigned</span>
+                    )}
+                  </div>
                   <Button type="button" size="sm" variant={readyToPlace ? 'default' : 'outline'} className="mt-1.5 h-6 w-full text-[10px]" disabled={!selectedModuleId || placing || !readyToPlace} draggable={false} onClick={(event) => { event.stopPropagation(); onBeginPlacement(model); }}>
-                    {readyToPlace ? 'Place' : 'Inspect to configure'}
+                    {readyToPlace ? 'Place' : 'Inspect'}
                   </Button>
                 </div>
               </div>
