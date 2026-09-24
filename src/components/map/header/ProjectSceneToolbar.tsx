@@ -19,6 +19,7 @@ import {
 
 import { SceneOperationStatus, type SceneOperationStatusValue } from '@/components/map/panels/SceneOperationStatus';
 import { Button } from '@/components/ui/button';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import type { MapViewMode } from '@/libraries/types/map';
 
 interface ProjectSceneToolbarProps {
@@ -40,6 +41,10 @@ interface ProjectSceneToolbarProps {
   projectAssetsOpen: boolean;
   projectAssetCount: number;
   onToggleProjectAssets: () => void;
+  setupMenuOpen: boolean;
+  onSetupMenuOpenChange: (open: boolean) => void;
+  scenariosOpen: boolean;
+  onOpenScenarios: () => void;
   projectTourOpen: boolean;
   onOpenProjectTour: () => void;
   savingProject: boolean;
@@ -65,6 +70,10 @@ export function ProjectSceneToolbar({
   projectAssetsOpen,
   projectAssetCount,
   onToggleProjectAssets,
+  setupMenuOpen,
+  onSetupMenuOpenChange,
+  scenariosOpen,
+  onOpenScenarios,
   projectTourOpen,
   onOpenProjectTour,
   savingProject,
@@ -85,21 +94,19 @@ export function ProjectSceneToolbar({
       </div>
 
       {selectedProjectId && (
-        <Button
-          type="button"
-          variant={projectTourOpen ? 'secondary' : 'outline'}
-          size="sm"
-          className="h-7 gap-1 px-2 text-xs"
-          disabled={!presentationComplete || !hasThreeDModule}
-          aria-expanded={projectTourOpen}
-          aria-controls="project-setup-panel"
-          title="Open Project Tour, Help, and Setup"
-          onClick={onOpenProjectTour}
-        >
-          <ScanSearch className="h-3.5 w-3.5" />
-          <span>Project Tour</span>
-          {projectTourOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-        </Button>
+        <DropdownMenu open={setupMenuOpen} onOpenChange={onSetupMenuOpenChange} modal={false}>
+          <DropdownMenuTrigger asChild>
+            <Button type="button" variant={setupMenuOpen || projectTourOpen || scenariosOpen ? 'secondary' : 'outline'} size="sm"
+              className="h-7 gap-1 px-2 text-xs" disabled={!presentationComplete || !hasThreeDModule}>
+              <Settings className="h-3.5 w-3.5" /> Setup
+              {setupMenuOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="threed-workspace-panel threed-toolbar-dropdown-surface z-[2000] w-56 border-white/10 text-white backdrop-blur-md">
+            <DropdownMenuItem onSelect={onOpenProjectTour}><ScanSearch className="h-3.5 w-3.5" /> Project Tour</DropdownMenuItem>
+            <DropdownMenuItem onSelect={onOpenScenarios}><Layers className="h-3.5 w-3.5" /> Scenarios</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
 
       {selectedProjectId && viewMode !== '2d' && (
@@ -119,7 +126,7 @@ export function ProjectSceneToolbar({
             onClick={onToggleSceneAddMenu}
           >
             <Plus className="h-3.5 w-3.5" />
-            Add to Scene
+            Add
             {sceneAddMenuOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
           </Button>
 
@@ -149,7 +156,7 @@ export function ProjectSceneToolbar({
       {selectedProjectId && (
         <Button ref={projectAssetsTriggerRef} type="button" variant={projectAssetsOpen ? 'secondary' : 'outline'} size="sm" className="h-7 gap-1 px-2 text-xs" aria-expanded={projectAssetsOpen} aria-controls="project-assets-panel" aria-label="Project Assets" title="Browse and focus Project ThreeD Assets" onClick={onToggleProjectAssets}>
           <ListTree className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">Project Assets</span>
+          <span className="hidden sm:inline">Assets</span>
           <span className="text-[10px] text-muted-foreground">{projectAssetCount}</span>
         </Button>
       )}
