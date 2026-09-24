@@ -1,6 +1,6 @@
 # ThreeD Model — Library Preview Image Export
 
-Status: implemented; corrected PNG capture is User-confirmed working and the checkpoint is approved for release preparation. Included in [v0.20.7 — ThreeD Model: Preview Images + Library Browsing](v0.20.7-release.md). Package is `0.20.7`; final User build and production deployment are pending. Historical pending-browser notes below describe the individual development stages.
+Status: released to production successfully, as confirmed by the User; corrected PNG capture is also User-confirmed working. Included in [v0.20.7 — ThreeD Model: Preview Images + Library Browsing](v0.20.7-release.md). Package is `0.20.7`. Historical pending-browser notes below describe the individual development stages.
 
 ## Proof
 
@@ -137,3 +137,5 @@ This supersedes the earlier immediate-query-and-run flow and fixed 400 × 400 ou
 ## Release checkpoint acceptance
 
 The User confirmed the fitted-camera correction works, planned a further 3–10 Model batch, and approved production release preparation. No exact subsequent batch size or per-Model results were reported. Final TypeScript, preview batch/resolver, Workspace Settings, shadcn boundary and diff checks passed. See the [production handoff](v0.20.7-release.md) for the manual build and deployment steps.
+
+Production deployment of v0.20.7 is now User-confirmed. Earlier release-preparation and browser-pending notes remain as development history.
