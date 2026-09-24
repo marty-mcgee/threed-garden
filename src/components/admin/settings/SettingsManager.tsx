@@ -1,5 +1,6 @@
 'use client';
 
+import { PanelAppearanceSettings } from '@/components/settings/PanelAppearance';
 import { useEffect, useState } from 'react';
 import { Settings, Save, RotateCcw, RefreshCw } from 'lucide-react';
 import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
@@ -52,6 +53,7 @@ export function SettingsManager() {
       {(error || message) && <p role="alert" className="rounded-md border border-destructive/40 p-2 text-sm text-destructive">{error || message}</p>}
       {loading && !draft && <p role="status" className="p-2 text-sm text-muted-foreground">Loading your Settings…</p>}
       {draft && <div className="min-h-0 flex-1 overflow-y-auto space-y-3 pb-2">
+        <PanelAppearanceSettings />
         <fieldset disabled={unavailable} className="rounded-md border p-3">
           <legend className="px-1 text-sm font-medium">Appearance</legend>
           <div className="flex flex-wrap items-center gap-3">

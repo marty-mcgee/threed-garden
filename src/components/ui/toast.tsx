@@ -2,6 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { CheckCircle, AlertCircle, Info, X } from 'lucide-react';
 
 type ToastType = 'success' | 'error' | 'info';
@@ -14,6 +15,8 @@ interface ToastProps {
 }
 
 export function Toast({ message, type = 'success', duration = 3000, onClose }: ToastProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
   useEffect(() => {
     const timer = setTimeout(onClose, duration);
     return () => clearTimeout(timer);
@@ -31,14 +34,15 @@ export function Toast({ message, type = 'success', duration = 3000, onClose }: T
     info: 'bg-blue-600'
   };
 
-  return (
-    <div className={`fixed top-4 right-4 ${colors[type]} text-white px-4 py-3 rounded-lg shadow-lg z-50 flex items-center gap-3 animate-in slide-in-from-right duration-300`}>
+  if (!mounted) return null;
+  return createPortal(
+    <div role={type === 'error' ? 'alert' : 'status'} aria-atomic="true" className={`fixed top-4 right-4 ${colors[type]} text-white px-4 py-3 rounded-lg shadow-lg z-[2147483647] max-w-[calc(100vw-2rem)] break-words flex items-center gap-3 animate-in slide-in-from-right duration-300`}>
       {icons[type]}
       <span className="text-sm">{message}</span>
-      <button onClick={onClose} className="ml-2 hover:opacity-80">
+      <button type="button" aria-label="Dismiss notification" onClick={onClose} className="ml-2 hover:opacity-80">
         <X className="w-4 h-4" />
       </button>
-    </div>
+    </div>, document.body
   );
 }
 

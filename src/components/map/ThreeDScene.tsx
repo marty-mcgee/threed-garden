@@ -1,6 +1,7 @@
 // components/map/ThreeDScene.tsx
 'use client';
 
+import { useGroundMapInspector } from '@/components/map/details/GroundMapInspectorWorkspace';
 import { placeHoverTitle } from '@/libraries/services/threed/markers/hover-title-placement';
 import { SceneHoverTitleContext } from '@/components/threed/shared/SceneHoverTitleContext';
 import { useOptionalSceneTransform } from '@/components/threed/transform/SceneTransformWorkspace';
@@ -2093,6 +2094,9 @@ export function ThreeDScene({
   const livePositionsRef = useRef<Map<string, { x: number; y: number; z: number }>>(new Map());
   const controlsRef = useRef<any>(null);
   const restoredProjectViewKeyRef = useRef<string | null>(null);
+  const [showCompass, setShowCompass] = useState(true);
+  const compassXRef = useRef<HTMLDivElement | null>(null);
+  const compassZRef = useRef<HTMLDivElement | null>(null);
   const compassNeedleRef = useRef<HTMLDivElement | null>(null);
   const [hasData, setHasData] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
@@ -2133,6 +2137,7 @@ export function ThreeDScene({
     if (typeof window === 'undefined') return null;
     return new URLSearchParams(window.location.search).get('characterMarkerId');
   });
+  const groundMapInspector = useGroundMapInspector();
   const [showControls, setShowControls] = useState(false);
   useEffect(() => {
     setShowControls(false);
@@ -2612,15 +2617,30 @@ export function ThreeDScene({
     const controls = controlsRef.current;
     const needle = compassNeedleRef.current;
     if (!controls?.object || !controls?.target || !needle) return;
+    // Controls may have changed the initial pose before the first rendered frame.
+    controls.object.updateMatrixWorld(true);
     const heading = THREE.MathUtils.degToRad(geographicHeadingDegrees);
     const localNorth = new THREE.Vector3(-Math.sin(heading), 0, -Math.cos(heading));
     const targetOnScreen = controls.target.clone().project(controls.object);
-    const northOnScreen = controls.target.clone().add(localNorth).project(controls.object);
-    const screenX = northOnScreen.x - targetOnScreen.x;
-    const screenUp = northOnScreen.y - targetOnScreen.y;
-    if (Math.hypot(screenX, screenUp) < 1e-8) return;
-    needle.style.transform = `rotate(${Math.atan2(screenX, screenUp)}rad)`;
+    const projectArrow = (element: HTMLDivElement | null, direction: THREE.Vector3) => {
+      if (!element) return;
+      const point = controls.target.clone().add(direction).project(controls.object);
+      const x = point.x - targetOnScreen.x;
+      const up = point.y - targetOnScreen.y;
+      const visible = Number.isFinite(x) && Number.isFinite(up) && Math.hypot(x, up) >= 1e-8;
+      element.style.visibility = visible ? 'visible' : 'hidden';
+      if (visible) element.style.transform = `rotate(${Math.atan2(x, up)}rad)`;
+    };
+    projectArrow(needle, localNorth);
+    projectArrow(compassXRef.current, new THREE.Vector3(1, 0, 0));
+    projectArrow(compassZRef.current, new THREE.Vector3(0, 0, 1));
   }, [geographicHeadingDegrees]);
+
+  useEffect(() => {
+    if (!controlsReady) return;
+    const frame = requestAnimationFrame(updateGeographicCompass);
+    return () => cancelAnimationFrame(frame);
+  }, [controlsReady, geographicHeadingDegrees, updateGeographicCompass]);
 
   useEffect(() => {
     if (!onViewStateProviderChange || !controlsReady) return;
@@ -2956,6 +2976,40 @@ export function ThreeDScene({
     }
   };
 
+  const groundMapControls = (
+    <div className="mt-2 space-y-1.5">
+                <label className="block">Ground Visual
+                  <select value={groundMap.visualMode} onChange={event => setGroundMap(value => ({ ...value, visualMode: event.target.value as ProjectGroundMapTransform['visualMode'] }))} className="mt-1 w-full rounded border border-white/10 bg-black/40 px-1 py-1">
+                    <option value="procedural">Procedural</option>
+                    <option value="image" disabled={!groundMapAsset}>Uploaded Image</option>
+                    <option value="hidden">Hidden</option>
+                  </select>
+                </label>
+                <input ref={groundMapInputRef} className="hidden" type="file" accept="image/png,image/jpeg,image/webp" onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; if (file) void uploadGroundMap(file); }} />
+                <input value={groundMapSourceProvider} maxLength={120} onChange={event => setGroundMapSourceProvider(event.target.value)} placeholder="Source (optional)" aria-label="Ground Map source" className="w-full rounded border border-white/10 bg-black/40 px-2 py-1 text-[10px]" />
+                <input value={groundMapAttribution} maxLength={1000} onChange={event => setGroundMapAttribution(event.target.value)} placeholder="Attribution (optional)" aria-label="Ground Map attribution" className="w-full rounded border border-white/10 bg-black/40 px-2 py-1 text-[10px]" />
+                <button type="button" disabled={groundMapBusy || !projectId} onClick={() => groundMapInputRef.current?.click()} className="w-full rounded border border-white/15 bg-white/5 px-2 py-1 text-left hover:bg-white/10 disabled:opacity-40">
+                  {groundMapBusy ? 'Uploading…' : groundMapAsset ? 'Replace Ground Map Image' : 'Upload Ground Map Image'}
+                </button>
+                {groundMapAsset && <button type="button" disabled={groundMapBusy} onClick={() => void deleteGroundMap()} className="w-full rounded border border-red-300/20 px-2 py-1 text-left text-red-200/80 hover:bg-red-500/10 disabled:opacity-40">Remove Ground Map Image</button>}
+                {groundMapAsset && <div className="text-[10px] text-white/50">{groundMapAsset.fileName} · {groundMapAsset.width} × {groundMapAsset.height}px</div>}
+                {groundMap.visualMode === 'image' && groundMapAsset && <div className="grid grid-cols-2 gap-1">
+                  {([
+                    ['Width', 'width', 1, 20000, 1], ['Length', 'length', 1, 20000, 1],
+                    ['Center X', 'centerX', -1000000, 1000000, 0.1], ['Center Z', 'centerZ', -1000000, 1000000, 0.1],
+                    ['Height', 'height', -1000, 1000, 0.05], ['Rotation', 'rotationY', -360, 360, 1],
+                  ] as const).map(([label, key, min, max, step]) => <label key={key} className="block text-[10px]">{label}
+                    <input className="mt-0.5 w-full rounded bg-black/40 px-1 py-1" type="number" min={min} max={max} step={step} value={groundMap[key]} onChange={event => { const next = Number(event.target.value); if (Number.isFinite(next) && next >= min && next <= max) setGroundMap(value => ({ ...value, [key]: next })); }} />
+                  </label>)}
+                  <label className="col-span-2 block text-[10px]">Opacity: {Math.round(groundMap.opacity * 100)}%
+                    <input className="w-full" type="range" min="0.05" max="1" step="0.05" value={groundMap.opacity} onChange={event => setGroundMap(value => ({ ...value, opacity: Number(event.target.value) }))} />
+                  </label>
+                  <button type="button" className="col-span-2 rounded border border-white/15 px-2 py-1 hover:bg-white/10" onClick={() => setGroundMap(value => ({ ...value, centerX, centerZ, rotationY: -geographicHeadingDegrees }))}>Align North-Up + Center</button>
+                </div>}
+                <p className="text-[10px]">Save Project to keep alignment settings.</p>
+              </div>
+  );
+
   return (
     <SceneHoverTitleContext.Provider value={true}>
     <div
@@ -2995,6 +3049,7 @@ export function ThreeDScene({
         </section>
       )}
       {/* Scene-owned controls are presented from the shared Project toolbar. */}
+      {groundMapInspector?.host && createPortal(groundMapControls, groundMapInspector.host)}
       {environmentControlsHost && createPortal(<div data-scene-hover-obstacle className="relative">
         <Button
           type="button"
@@ -3014,7 +3069,7 @@ export function ThreeDScene({
           {showControls ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
         </Button>
 
-        {showControls && (
+        {showControls && scenePostProduction && (
           <div className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[3000] mt-1 max-h-[min(44rem,calc(100dvh-8rem))] w-56 space-y-0.5 overflow-y-auto rounded-lg border border-white/10 p-1.5 pb-2.5 shadow-xl backdrop-blur-sm [scrollbar-width:thin]">
             <div className="text-[10px] text-white/60 px-2 py-0.5">Environment</div>
             <Button
@@ -3046,40 +3101,11 @@ export function ThreeDScene({
                 </option>
               ))}
             </select>
-            <details className="px-2 py-1 text-xs text-white/70">
-              <summary className="cursor-pointer">Ground Map</summary>
-              <div className="mt-2 space-y-1.5">
-                <label className="block">Ground Visual
-                  <select value={groundMap.visualMode} onChange={event => setGroundMap(value => ({ ...value, visualMode: event.target.value as ProjectGroundMapTransform['visualMode'] }))} className="mt-1 w-full rounded border border-white/10 bg-black/40 px-1 py-1">
-                    <option value="procedural">Procedural</option>
-                    <option value="image" disabled={!groundMapAsset}>Uploaded Image</option>
-                    <option value="hidden">Hidden</option>
-                  </select>
-                </label>
-                <input ref={groundMapInputRef} className="hidden" type="file" accept="image/png,image/jpeg,image/webp" onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; if (file) void uploadGroundMap(file); }} />
-                <input value={groundMapSourceProvider} maxLength={120} onChange={event => setGroundMapSourceProvider(event.target.value)} placeholder="Source (optional)" aria-label="Ground Map source" className="w-full rounded border border-white/10 bg-black/40 px-2 py-1 text-[10px]" />
-                <input value={groundMapAttribution} maxLength={1000} onChange={event => setGroundMapAttribution(event.target.value)} placeholder="Attribution (optional)" aria-label="Ground Map attribution" className="w-full rounded border border-white/10 bg-black/40 px-2 py-1 text-[10px]" />
-                <button type="button" disabled={groundMapBusy || !projectId} onClick={() => groundMapInputRef.current?.click()} className="w-full rounded border border-white/15 bg-white/5 px-2 py-1 text-left hover:bg-white/10 disabled:opacity-40">
-                  {groundMapBusy ? 'Uploading…' : groundMapAsset ? 'Replace Ground Map Image' : 'Upload Ground Map Image'}
-                </button>
-                {groundMapAsset && <button type="button" disabled={groundMapBusy} onClick={() => void deleteGroundMap()} className="w-full rounded border border-red-300/20 px-2 py-1 text-left text-red-200/80 hover:bg-red-500/10 disabled:opacity-40">Remove Ground Map Image</button>}
-                {groundMapAsset && <div className="text-[10px] text-white/50">{groundMapAsset.fileName} · {groundMapAsset.width} × {groundMapAsset.height}px</div>}
-                {groundMap.visualMode === 'image' && groundMapAsset && <div className="grid grid-cols-2 gap-1">
-                  {([
-                    ['Width', 'width', 1, 20000, 1], ['Length', 'length', 1, 20000, 1],
-                    ['Center X', 'centerX', -1000000, 1000000, 0.1], ['Center Z', 'centerZ', -1000000, 1000000, 0.1],
-                    ['Height', 'height', -1000, 1000, 0.05], ['Rotation', 'rotationY', -360, 360, 1],
-                  ] as const).map(([label, key, min, max, step]) => <label key={key} className="block text-[10px]">{label}
-                    <input className="mt-0.5 w-full rounded bg-black/40 px-1 py-1" type="number" min={min} max={max} step={step} value={groundMap[key]} onChange={event => { const next = Number(event.target.value); if (Number.isFinite(next) && next >= min && next <= max) setGroundMap(value => ({ ...value, [key]: next })); }} />
-                  </label>)}
-                  <label className="col-span-2 block text-[10px]">Opacity: {Math.round(groundMap.opacity * 100)}%
-                    <input className="w-full" type="range" min="0.05" max="1" step="0.05" value={groundMap.opacity} onChange={event => setGroundMap(value => ({ ...value, opacity: Number(event.target.value) }))} />
-                  </label>
-                  <button type="button" className="col-span-2 rounded border border-white/15 px-2 py-1 hover:bg-white/10" onClick={() => setGroundMap(value => ({ ...value, centerX, centerZ, rotationY: -geographicHeadingDegrees }))}>Align North-Up + Center</button>
-                </div>}
-                <p className="text-[10px]">Save Project to keep alignment settings.</p>
-              </div>
-            </details>
+            {groundMapInspector ? <button type="button" className="w-full rounded px-2 py-2 text-left text-xs text-white/80 hover:bg-white/10" onClick={() => {
+              groundMapInspector?.setOpen(true);
+              setShowControls(false);
+              onEnvironmentControlsOpenChange?.(false);
+            }}>Ground Map · Edit settings</button> : <details className="px-2 py-1 text-xs"><summary>Ground Map</summary>{groundMapControls}</details>}
             <details className="px-2 py-1 text-xs text-white/70">
               <summary className="cursor-pointer">Sunlight + Ground</summary>
               <label className="block mt-2">Sun Direction: {sunlight.azimuth}°
@@ -3103,6 +3129,10 @@ export function ThreeDScene({
             <button onClick={() => setShowGrid(!showGrid)} aria-pressed={showGrid} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showGrid ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
               <Grid3X3 className="h-3.5 w-3.5" />
               {showGrid ? 'Hide Grid' : 'Show Grid'}
+            </button>
+            <button type="button" onClick={() => setShowCompass(value => !value)} aria-pressed={showCompass} className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-white/70 hover:bg-white/10 hover:text-white">
+              <Compass className="h-3.5 w-3.5" />
+              {showCompass ? 'Hide Compass' : 'Show Compass'}
             </button>
             {hasData && Object.keys(typeCounts).length > 0 && (
               <button onClick={() => setShowLegend(!showLegend)} aria-pressed={showLegend} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showLegend ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
@@ -3314,14 +3344,17 @@ export function ThreeDScene({
       )}
 
       <div
-        className={`pointer-events-none absolute left-3 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-black/70 text-white shadow-lg backdrop-blur-sm ${showLegend ? 'bottom-24' : 'bottom-3'}`}
-        aria-label="True north compass"
+        className={`pointer-events-none absolute right-3 z-50 flex h-20 w-20 items-center justify-center rounded-full border border-white/15 bg-black/70 text-white shadow-lg backdrop-blur-sm ${showGizmoCube ? 'bottom-24' : 'bottom-3'}`}
+        style={{ display: showCompass ? undefined : 'none' }}
+        aria-label="True north and Scene positive X and Z axes"
         title={`True north · Project heading ${geographicHeadingDegrees.toFixed(1)}°`}
       >
-        <div ref={compassNeedleRef} className="flex h-10 w-10 flex-col items-center justify-start transition-transform duration-75">
+        <div ref={compassNeedleRef} className="absolute flex h-16 w-16 flex-col items-center justify-start transition-transform duration-75">
           <span className="text-[9px] font-bold leading-none text-red-300">N</span>
           <span className="text-lg leading-4 text-red-300">↑</span>
         </div>
+        <div ref={compassXRef} className="absolute flex h-12 w-12 flex-col items-center justify-start text-rose-200 transition-transform duration-75"><span className="text-[9px] font-bold">+X</span><span className="text-sm leading-3">↑</span></div>
+        <div ref={compassZRef} className="absolute flex h-10 w-10 flex-col items-center justify-start text-sky-300 transition-transform duration-75"><span className="text-[9px] font-bold">+Z</span><span className="text-sm leading-3">↑</span></div>
         <span className="absolute bottom-0.5 text-[7px] text-white/45">TRUE</span>
       </div>
 
@@ -3704,11 +3737,11 @@ export function ThreeDScene({
       </div>
       )}
 
-      {!physicsFailed && !sceneProductionStarted && (
+      {!physicsFailed && !scenePostProduction && (
         <ThreeDProjectLoadingPresentation
           progress={sceneLoadingProgress}
           label={sceneLoadingLabel}
-          className="absolute inset-0 z-50"
+          className={`absolute inset-0 z-50 pointer-events-none transition-opacity duration-700 ease-out ${sceneProductionStarted ? 'opacity-0' : 'opacity-100'}`}
         />
       )}
     </div>

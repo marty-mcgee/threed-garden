@@ -1,5 +1,6 @@
 // dashboard/scene/page
 'use client';
+import { GroundMapInspectorWorkspace, GroundMapInspector, useGroundMapInspector } from '@/components/map/details/GroundMapInspectorWorkspace';
 import { SensorGroupInspector } from '@/components/map/details/SensorGroupInspector';
 
 import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from 'react';
@@ -49,7 +50,7 @@ import {
 } from '@/components/map/panels/ThreeDPlantingPlacementPanel';
 import { ProjectScenariosPanel } from '@/components/map/panels/ProjectScenariosPanel';
 import { ProjectSetupPanel } from '@/components/map/panels/ProjectSetupPanel';
-import { ThreeDProjectLoadingPresentation } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
+import { ThreeDProjectLoadingPresentation, ProjectToolbarLoadingSkeleton } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
 import { getDefaultMapData, getDefaultLayers } from '@/libraries/services/map/DefaultMapData';
 import {
   UnifiedMapView,
@@ -158,11 +159,11 @@ export default function UnifiedMapPage() {
       <ThreeDProjectLoadingPresentation
         progress={5}
         label="Starting Project workspace…"
-        className="h-[calc(100dvh-86px)]"
+        className="h-[calc(100dvh-83px)]"
         showProjectHeader
       />
     }>
-      <SensorGroupsWorkspace><SceneTransformWorkspace><UnifiedMapPageInner /></SceneTransformWorkspace></SensorGroupsWorkspace>
+      <SensorGroupsWorkspace><SceneTransformWorkspace><GroundMapInspectorWorkspace><UnifiedMapPageInner /></GroundMapInspectorWorkspace></SceneTransformWorkspace></SensorGroupsWorkspace>
     </Suspense>
   );
 }
@@ -170,6 +171,7 @@ export default function UnifiedMapPage() {
 function UnifiedMapPageInner() {
   const { showToast, ToastComponent } = useToast();
   const transform = useSceneTransform();
+  const groundMapInspector = useGroundMapInspector();
   const searchParams = useSearchParams();
   const projectIdParam = searchParams.get('projectId');
   const projectRuntimeMarkerRegistryRef = useRef<ThreeDRuntimeMarkerRegistry | null>(null);
@@ -486,7 +488,7 @@ function UnifiedMapPageInner() {
   const [selectedMarker, setSelectedMarker] = useState<any>(null);
   const [groupInspector, setGroupInspector] = useState<string | null>(null);
   const [sensorInspector, setSensorInspector] = useState<{ ownerId: string; sensorId: string } | null>(null);
-  useEffect(() => { setSensorInspector(null); setGroupInspector(null); }, [selectedProjectId]);
+  useEffect(() => { setSensorInspector(null); setGroupInspector(null); groundMapInspector?.setOpen(false); }, [selectedProjectId, groundMapInspector?.setOpen]);
 
   const [controlledCharacterId, setControlledCharacterId] = useState<number | null>(null);
   const [liveControlledCharacterPosition, setLiveControlledCharacterPosition] =
@@ -869,7 +871,7 @@ function UnifiedMapPageInner() {
         ...(currentMapView ? { map: currentMapView } : {}),
         workspace: {
           selectedMarkerId: selectedMarker?.id ?? null,
-          // The Project dropdown temporarily hides panels; it is not the saved workspace.
+          // Persist Assets visibility independently of transient toolbar dropdowns.
           panel: isProjectAssetsOpen ? 'assets' : 'none',
           assetSearch: projectAssetSearch,
           assetType: projectAssetType,
@@ -2405,13 +2407,14 @@ function UnifiedMapPageInner() {
     setGroupInspector(null);
     setSelectedIncident(null);
     setSelectedMarker(marker);
+    groundMapInspector?.setOpen(false);
     setIsProjectSummaryOpen(false);
     setIsSceneAddMenuOpen(false);
     setIsProjectSetupOpen(false);
     setIsScenariosOpen(false);
     setIsSetupMenuOpen(false);
     setIsProjectAssetsOpen(true);
-  }, [projectEnvironmentMarkers]);
+  }, [projectEnvironmentMarkers, groundMapInspector?.setOpen]);
 
   const openProjectAssets = useCallback(() => {
     setIsModelLibraryOpen(false);
@@ -2467,6 +2470,7 @@ function UnifiedMapPageInner() {
   const dismissProjectAssets = useCallback(() => closeProjectAssets(true), [closeProjectAssets]);
 
   const selectProjectAsset = useCallback((marker: RuntimeMarker) => {
+    groundMapInspector?.setOpen(false);
     setSensorInspector(null);
     setGroupInspector(null);
     const sourceAssetId = Number(marker.data?.id);
@@ -2475,7 +2479,7 @@ function UnifiedMapPageInner() {
       : null;
     setSelectedIncident(null);
     setSelectedMarker(currentPosition ? { ...marker, position: currentPosition } : marker);
-  }, [resolveRuntimeMarkerPosition]);
+  }, [resolveRuntimeMarkerPosition, groundMapInspector?.setOpen]);
 
   // Keep Project data loading visually continuous with the ThreeD Scene
   // presentation that follows it.
@@ -2484,7 +2488,7 @@ function UnifiedMapPageInner() {
       <ThreeDProjectLoadingPresentation
         progress={20}
         label="Loading Project data…"
-        className="h-[calc(100dvh-86px)]"
+        className="h-[calc(100dvh-83px)]"
         showProjectHeader
       />
     );
@@ -2520,7 +2524,11 @@ function UnifiedMapPageInner() {
       />
 
       {/* ✅ Header with Live Data Status Indicator */}
-      <div className="threed-project-toolbar m-0 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-0.5 py-1">
+      <div className="relative">
+      {viewMode !== '2d' && !isThreeDPresentationComplete && <div className="absolute inset-0 z-50"><ProjectToolbarLoadingSkeleton /></div>}
+      <div inert={viewMode !== '2d' && !isThreeDPresentationComplete}
+        style={viewMode !== '2d' && !isThreeDPresentationComplete ? { visibility: 'hidden', height: 37, overflow: 'hidden' } : undefined}
+        className="threed-project-toolbar m-0 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-0.5 py-1">
         
         <ProjectHeaderMenu
           selectedProjectId={selectedProjectId}
@@ -2578,6 +2586,7 @@ function UnifiedMapPageInner() {
           selectedProjectId={selectedProjectId}
           viewMode={viewMode}
           onViewModeChange={(mode) => {
+            groundMapInspector?.setOpen(false);
             transform.cancel();
             if (mode === '2d') setIsSceneAddMenuOpen(false);
             setViewMode(mode);
@@ -2654,6 +2663,8 @@ function UnifiedMapPageInner() {
 
       </div>
 
+      </div>
+
       {/* Project Assets is independent of toolbar menu visibility. */}
       <div>
       <ProjectAssetsPanel
@@ -2670,9 +2681,12 @@ function UnifiedMapPageInner() {
         selectedMarker={selectedMarker}
         resolveRuntimeMarkerPosition={resolveRuntimeMarkerPosition}
         onDismiss={dismissProjectAssets}
+        groundMapSelected={groundMapInspector?.open ?? false}
+        onOpenGroundMap={viewMode !== '2d' ? () => groundMapInspector?.setOpen(true) : undefined}
         selectedGroupId={groupInspector}
         onSelectGroup={groupId => {
           if (transform.session) return;
+          groundMapInspector?.setOpen(false);
           setGroupInspector(groupId);
           setSensorInspector(null);
         }}
@@ -2893,7 +2907,7 @@ function UnifiedMapPageInner() {
       {/* ✅ Map Container */}
       <Card>
         <CardContent className="p-0 overflow-hidden">
-          <div style={{ height: 'calc(100vh - 122px)' }}>
+          <div style={{ height: 'calc(100dvh - 122px)' }}>
             
             {/* Pass cameraMode to combined view's 3D UnifiedMapView */}
             {viewMode === 'combined' && (
@@ -2919,7 +2933,7 @@ function UnifiedMapPageInner() {
                       layers={layers}
                       viewMode="3d"
                       onIncidentSelect={(incident) => setSelectedIncident(incident)}
-                      onMarkerSelect={(marker) => { setSensorInspector(null); setGroupInspector(null); setSelectedMarker(marker); }}
+                      onMarkerSelect={(marker) => { groundMapInspector?.setOpen(false); setSensorInspector(null); setGroupInspector(null); setSelectedMarker(marker); }}
                       onFocusMarker={handleFocusMarker}
                       selectedIncident={selectedIncident}
                       selectedMarker={selectedMarker}
@@ -2982,7 +2996,7 @@ function UnifiedMapPageInner() {
                       layers={layers}
                       viewMode="2d"
                       onIncidentSelect={(incident) => setSelectedIncident(incident)}
-                      onMarkerSelect={(marker) => { setSensorInspector(null); setGroupInspector(null); setSelectedMarker(marker); }}
+                      onMarkerSelect={(marker) => { groundMapInspector?.setOpen(false); setSensorInspector(null); setGroupInspector(null); setSelectedMarker(marker); }}
                       onFocusMarker={handleFocusMarker}
                       selectedIncident={selectedIncident}
                       selectedMarker={selectedMarker}
@@ -3014,7 +3028,7 @@ function UnifiedMapPageInner() {
                 layers={layers}
                 viewMode="3d"
                 onIncidentSelect={(incident) => setSelectedIncident(incident)}
-                onMarkerSelect={(marker) => { setSensorInspector(null); setGroupInspector(null); setSelectedMarker(marker); }}
+                onMarkerSelect={(marker) => { groundMapInspector?.setOpen(false); setSensorInspector(null); setGroupInspector(null); setSelectedMarker(marker); }}
                 onFocusMarker={handleFocusMarker}
                 selectedIncident={selectedIncident}
                 selectedMarker={selectedMarker}
@@ -3063,7 +3077,7 @@ function UnifiedMapPageInner() {
                 layers={layers}
                 viewMode="2d"
                 onIncidentSelect={(incident) => setSelectedIncident(incident)}
-                onMarkerSelect={(marker) => { setSensorInspector(null); setGroupInspector(null); setSelectedMarker(marker); }}
+                onMarkerSelect={(marker) => { groundMapInspector?.setOpen(false); setSensorInspector(null); setGroupInspector(null); setSelectedMarker(marker); }}
                 onFocusMarker={handleFocusMarker}
                 selectedIncident={selectedIncident}
                 selectedMarker={selectedMarker}
@@ -3088,7 +3102,8 @@ function UnifiedMapPageInner() {
         hidden={viewMode !== '2d' && !isThreeDPresentationComplete}
         inert={viewMode !== '2d' && !isThreeDPresentationComplete}
       >
-      {groupInspector !== null && <SensorGroupInspector
+      <GroundMapInspector leftOffsetRem={isLeftSceneWorkspaceOpen ? 18.75 : 0.75} available={viewMode !== '2d' && isThreeDPresentationComplete} onSave={handleSaveThreeDProject} saving={savingProjectMarkers} />
+      {groupInspector !== null && !groundMapInspector?.open && <SensorGroupInspector
         key={`${selectedProjectId}:${groupInspector}`}
         groupId={groupInspector} markers={projectRuntimeMarkers}
         leftOffsetRem={isLeftSceneWorkspaceOpen ? 18.75 : 0.75}
@@ -3096,7 +3111,7 @@ function UnifiedMapPageInner() {
         onSelectGroup={setGroupInspector}
         onSelectSensor={(marker, sensorId) => { selectProjectAsset(marker); setSensorInspector({ ownerId: marker.id, sensorId }); }}
       />}
-      <div hidden={groupInspector !== null}>
+      <div hidden={groupInspector !== null || Boolean(groundMapInspector?.open && viewMode !== '2d')}>
       <DetailsCard
         selected={selectedMarker || selectedIncident}
         projectMarkers={projectRuntimeMarkers}

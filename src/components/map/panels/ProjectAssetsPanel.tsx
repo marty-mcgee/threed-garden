@@ -1,5 +1,6 @@
 'use client';
 
+import { DetailsSectionScope, PersistentDetails } from '@/components/map/details/PersistentDetails';
 import { useEffect, useRef } from 'react';
 import { Crosshair, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -30,7 +31,11 @@ export function ProjectAssetsPanel({
   selectedGroupId,
   onSelectGroup,
   onSelectSensor,
+  groundMapSelected = false,
+  onOpenGroundMap,
 }: {
+  groundMapSelected?: boolean;
+  onOpenGroundMap?: () => void;
   selectedProjectId: string | null;
   isOpen: boolean;
   search: string;
@@ -56,6 +61,10 @@ export function ProjectAssetsPanel({
   const isVisible = Boolean(selectedProjectId) && isProjectAssetsOpen;
 
   useEffect(() => {
+    if (projectAssetType !== 'all') setProjectAssetType('all');
+  }, [projectAssetType, setProjectAssetType]);
+
+  useEffect(() => {
     if (!isVisible) return;
     const focusFrame = window.requestAnimationFrame(() => searchInputRef.current?.focus());
     const dismissWithEscape = (event: KeyboardEvent) => {
@@ -72,7 +81,7 @@ export function ProjectAssetsPanel({
   }, [isVisible, onDismiss]);
 
   return (
-    <>
+    <DetailsSectionScope.Provider value={`assets:${selectedProjectId}`} >
       {isVisible && (
         <div
           id="project-assets-panel"
@@ -124,48 +133,22 @@ export function ProjectAssetsPanel({
             )}
           </div>
 
-          <div
-            className="mb-2 flex shrink-0 gap-1 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:thin]"
-            role="group"
-            aria-label="Filter Project Assets by type"
-          >
-            <Button
-              type="button"
-              size="sm"
-              variant={projectAssetType === 'all' ? 'secondary' : 'outline'}
-              className="h-7 shrink-0 px-2 text-[10px]"
-              aria-pressed={projectAssetType === 'all'}
-              onClick={() => setProjectAssetType('all')}
-            >
-              All {projectRuntimeMarkers.length}
-            </Button>
-            {projectAssetTypes.map((type) => (
-              <Button
-                key={type}
-                type="button"
-                size="sm"
-                variant={projectAssetType === type ? 'secondary' : 'outline'}
-                className="h-7 shrink-0 gap-1 px-2 text-[10px]"
-                aria-pressed={projectAssetType === type}
-                onClick={() => setProjectAssetType(type)}
-              >
-                <span aria-hidden="true">{getThreeDIcon(type)}</span>
-                {getThreeDLabel(type)} {projectAssetTypeCounts.get(type) ?? 0}
-              </Button>
-            ))}
-          </div>
-
-          <div className="min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain pr-1">
+          {onOpenGroundMap && <Button type="button" variant="outline" className="mb-2 h-8 shrink-0 justify-start text-xs" aria-pressed={groundMapSelected} onClick={onOpenGroundMap}>Ground Map · Settings</Button>}
+          <div className="min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pr-1">
             {visibleProjectAssets.length === 0 ? (
               <p className="py-8 text-center text-xs text-muted-foreground">
                 {projectRuntimeMarkers.length === 0
                   ? 'This Project has no ThreeD assets.'
                   : 'No Project assets match this search.'}
               </p>
-            ) : visibleProjectAssets.map((marker, index) => {
-              const isSelected = selectedMarker?.id === marker.id && !selectedSensorId && selectedGroupId == null;
-              const beginsTypeGroup = index === 0
-                || visibleProjectAssets[index - 1]?.type !== marker.type;
+            ) : [...new Set(visibleProjectAssets.map(marker => marker.type))].map(type => (
+              <PersistentDetails storageId={`type:${type}`} key={`${selectedProjectId}:${type}`} className="rounded-md border border-white/10 p-1">
+                <summary className="cursor-pointer px-1 py-2 text-xs font-semibold">
+                  {getThreeDIcon(type)} {getThreeDLabel(type)} · {visibleProjectAssets.filter(marker => marker.type === type).length}
+                </summary>
+                <div className="space-y-1">
+                {visibleProjectAssets.filter(marker => marker.type === type).map(marker => {
+              const isSelected = selectedMarker?.id === marker.id && !selectedSensorId && selectedGroupId == null && !groundMapSelected;
               const sourceAssetId = Number(marker.data?.id);
               const currentPosition = Number.isSafeInteger(sourceAssetId) && sourceAssetId > 0
                 ? resolveRuntimeMarkerPosition(marker.type, sourceAssetId) ?? marker.position
@@ -173,15 +156,6 @@ export function ProjectAssetsPanel({
               const physicsSensors = readPhysicsSensorCuboids(marker.metadata);
               return (
                 <div key={marker.id}>
-                  {beginsTypeGroup && (
-                    <div className="mb-1 mt-2 flex items-center gap-1.5 px-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground first:mt-0">
-                      <span aria-hidden="true">{getThreeDIcon(marker.type)}</span>
-                      <span>{getThreeDLabel(marker.type)}</span>
-                      <span className="ml-auto font-normal normal-case">
-                        {projectAssetTypeCounts.get(marker.type) ?? 0}
-                      </span>
-                    </div>
-                  )}
                   <button
                     type="button"
                     className={`w-full rounded-md border px-2 py-1.5 text-left transition-colors hover:border-cyan-500/60 hover:bg-cyan-500/5 ${
@@ -213,7 +187,7 @@ export function ProjectAssetsPanel({
                       </div>
                       {physicsSensors.map((sensor) => (
                         (() => {
-                          const isSelectedSensor = selectedMarker?.id === marker.id && selectedSensorId === sensor.id;
+                          const isSelectedSensor = selectedMarker?.id === marker.id && selectedSensorId === sensor.id && !groundMapSelected;
                           return <button
                             key={sensor.id}
                             type="button"
@@ -243,25 +217,29 @@ export function ProjectAssetsPanel({
                   )}
                 </div>
               );
-            })}
+                })}
+                </div>
+              </PersistentDetails>
+            ))}
           </div>
-          <div className="shrink-0 space-y-2 border-t border-white/15 pt-2 mt-2 max-h-[35%] overflow-y-auto">
-            {selectedMarker && ['project-marker', 'project-snapshot'].includes(String(selectedMarker.metadata?.source)) && ['model', 'models', 'bed', 'beds', 'planting', 'plantings', 'farmbot', 'farmbots'].includes(selectedMarker.type.toLowerCase()) && (
+          <div className="shrink-0 space-y-2 border-t border-white/15 pt-2 mt-2 mb-14 max-h-[30%] overflow-y-auto" aria-label="Sensor Tools">
+            <h3 className="text-xs font-semibold">Sensor Tools</h3>
+            {!groundMapSelected && selectedMarker && ['project-marker', 'project-snapshot'].includes(String(selectedMarker.metadata?.source)) && ['model', 'models', 'bed', 'beds', 'planting', 'plantings', 'farmbot', 'farmbots'].includes(selectedMarker.type.toLowerCase()) && (
               <Button disabled={Boolean(transform.session) || readPhysicsSensorCuboids(selectedMarker.metadata).length >= 8} variant="outline" size="sm" className="w-full text-xs truncate" onClick={() => onSelectSensor(selectedMarker, '__new__')}>
                 + Add Sensor to {selectedMarker.name}
               </Button>
             )}
-            <details>
+            <PersistentDetails storageId="sensor-groups">
               <summary className="cursor-pointer text-xs">Sensor Groups · {groups?.groups.length ?? 0}</summary>
               <div className="mt-2 space-y-1">
                 {groups?.groups.map(group => <button key={group.id} type="button" disabled={Boolean(transform.session)} aria-pressed={selectedGroupId === group.id} onClick={() => onSelectGroup(group.id)} className="block w-full rounded border border-white/15 p-2 text-left text-xs hover:bg-white/10 aria-pressed:border-cyan-400">{group.name}</button>)}
               </div>
-            </details>
+            </PersistentDetails>
             <Button variant="outline" size="sm" className="w-full text-xs" disabled={Boolean(transform.session)} onClick={() => onSelectGroup('')}>+ New Sensor Group</Button>
           </div>
         </div>
       )}
 
-    </>
+    </DetailsSectionScope.Provider>
   );
 }

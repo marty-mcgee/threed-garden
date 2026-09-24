@@ -24,7 +24,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <ThreeDProjectLoadingPresentation
               progress={5}
               label="Starting Project workspace…"
-              className="h-[calc(100dvh-86px)]"
+              className="h-[calc(100dvh-83px)]"
               showProjectHeader
             />
           )}

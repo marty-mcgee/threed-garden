@@ -1,5 +1,6 @@
 'use client';
 
+import { PersistentDetails } from './PersistentDetails';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Crosshair, Loader2, Move, Plus, Save, ScanSearch, Trash2 } from 'lucide-react';
 import { SceneTransformActions, useSceneTransform } from '@/components/threed/transform/SceneTransformWorkspace';
@@ -103,7 +104,7 @@ export function PhysicsSensorCuboidsEditor({
     <DetailsCardSection
       key={selectedSensorId ?? 'sensor-list'}
       title={selectedSensorId ? 'Sensor Settings' : 'Physics Sensors'}
-      defaultOpen
+      defaultOpen={Boolean(selectedSensorId)}
       summaryAside={<span className="text-[9px] text-white/40">{sensors.length}/8</span>}
     >
 
@@ -225,7 +226,7 @@ export function PhysicsSensorCuboidsEditor({
                   ))}
                 </div>
               </section>
-              <details className="border-t border-white/10 pt-1.5">
+              <PersistentDetails storageId="remove-sensor" className="border-t border-white/10 pt-1.5">
                 <summary className="cursor-pointer text-[9px] text-red-200/75">Remove sensor</summary>
                 <button type="button" disabled={saving || editing} aria-label={`Delete ${sensor.name}`}
                   onClick={() => {
@@ -237,7 +238,7 @@ export function PhysicsSensorCuboidsEditor({
                   className="mt-1 flex w-full items-center justify-center gap-1 rounded border border-red-300/20 px-2 py-1.5 text-[10px] text-red-200 hover:bg-red-500/20">
                   <Trash2 className="h-3 w-3" /> Delete Sensor
                 </button>
-              </details>
+              </PersistentDetails>
             </div>
           );
         })}

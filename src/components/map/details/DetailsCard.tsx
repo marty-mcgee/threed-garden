@@ -1,4 +1,5 @@
 'use client';
+import { DetailsSectionScope, PersistentDetails } from './PersistentDetails';
 import { DetailsCardActionsProvider, DetailsCardActionsSlot } from './DetailsCardActions';
 import { readPhysicsSensorCuboids } from '@/libraries/services/threed/physics/sensor-cuboid-core';
 import { readModelVolumeSensor } from '@/libraries/services/threed/physics/sensor-legacy-compat';
@@ -462,6 +463,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
   const adminRoute = adminRouteMap[adminType] || (isIncident ? '/admin/traffic' : '/admin/threed/plantings');
 
   return (
+    <DetailsSectionScope.Provider value={`${projectId}:${selected.type}:${selected.id}:${selectedSensorId ?? 'asset'}`}>
     <DetailsCardActionsProvider>
     <div
       className={`flex flex-col threed-workspace-panel threed-details-surface threed-inspector ${selectedSensorId ? 'threed-sensor-inspector' : ''} absolute top-9 z-40 max-h-[calc(100%-2.25rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-lg border border-white/15 text-white shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]`}
@@ -470,12 +472,9 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
         backgroundColor: 'var(--threed-details-background, rgba(17, 26, 40, 0.5))',
       }}
     >
-      <div className={selectedSensorId ? 'hidden' : 'contents'}>
-        <DetailsCardActionsSlot />
-      </div>
       {/* Header */}
       <div
-        className="shrink-0 flex items-start justify-between gap-2 px-2 py-2"
+        className="shrink-0 flex items-start justify-between gap-2 border-b border-white/10 px-3 py-3"
       >
         <div className="min-w-0 pb-1 pt-0.5">
           <div className="truncate text-sm font-semibold text-white">
@@ -503,7 +502,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
       <div className={selectedSensorId ? 'hidden' : 'contents'}>
       {!isIncident && <ModelFileNotice type={normalizedType} data={d} />}
 
-      <div className="order-[-20] mt-1.5 flex items-center gap-1">
+      <div className="order-[-20] mb-1 mt-2 flex items-center gap-2 border-b border-white/10 pb-2">
         {!isIncident && selectedTargetCapabilities && onSetActionTarget && (
           <button
             type="button"
@@ -562,6 +561,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
         >
           <ExternalLink className="h-3.5 w-3.5" />
         </a>
+        <DetailsCardActionsSlot />
       </div>
 
       {/* GPS coordinates (incidents) */}
@@ -675,7 +675,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
 
       {/* Character Actions — shared semantic animation controls */}
       {!isIncident && (type === 'characters' || type === 'character') && (
-        <details key={String(selected.id)} className="order-7 mt-2 space-y-1.5 rounded border border-cyan-300/15 bg-white/[0.035] p-1.5">
+        <PersistentDetails storageId="animations" key={String(selected.id)} className="order-7 mt-2 space-y-1.5 rounded border border-cyan-300/15 bg-white/[0.035] p-1.5">
           <summary className="cursor-pointer text-xs font-medium text-cyan-100">Animations <span className="font-normal text-slate-400">· {animationAvailability ? (animationAvailability.size ? 'Loaded' : 'No actions available') : 'Loading'}</span></summary>
           {!animationAvailability && <p className="text-[10px] text-slate-400" role="status">Waiting for animation availability…</p>}
           {/* <div className="text-[10px] font-medium text-white/60">Character Actions</div> */}
@@ -790,7 +790,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
               { ...group, title: `${group.title} · Inactive`, inactive: true, actions: group.actions.filter(({action}) => !(animationAvailability.has(action.toLowerCase()) && customActionSlots.find(slot => slot.actionKey === action)?.isActive !== false)) },
             ].filter(section => section.actions.length > 0) : [{ ...group, inactive: true }])
             .map((group) => (
-            <details key={group.title} className="space-y-1 rounded bg-white/[0.035] p-1.5">
+            <PersistentDetails storageId={`animation-group:${group.title}`} key={group.title} className="space-y-1 rounded bg-white/[0.035] p-1.5">
               <summary title={group.inactive ? 'Unavailable in the loaded Character runtime' : 'Available in the loaded Character runtime'} className={`cursor-pointer text-[11px] font-medium ${group.inactive ? 'text-slate-400' : 'text-cyan-100'}`}>
                 {group.title} <span className="text-slate-400">({group.actions.length})</span>
               </summary>
@@ -851,9 +851,9 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
                   </button>
                 ))}
               </div>
-            </details>
+            </PersistentDetails>
           ))}
-        </details>
+        </PersistentDetails>
       )}
 
       {isProjectModelInstance && onUpdateModelInstance && onDeleteModelInstance && onMoveModelToggle && (
@@ -1024,6 +1024,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
       </div>
     </div>
     </DetailsCardActionsProvider>
+    </DetailsSectionScope.Provider>
   );
 }
 

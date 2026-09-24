@@ -15,21 +15,21 @@ export function DetailsCardActionsProvider({ children }: { children: ReactNode }
 
 export function DetailsCardActionsSlot() {
   const context = useContext(ActionHost);
-  return <div ref={context?.setHost} className="flex shrink-0 items-center gap-1 px-2 pt-2 empty:hidden" />;
+  return <div ref={context?.setHost} className="ml-auto flex shrink-0 items-center gap-1 empty:hidden" />;
 }
 
 // Editors keep ownership of their drafts, validation, and action handlers.
 export function DetailsCardActions({ children, labels }: { children: ReactNode; labels: string[] }) {
   const context = useContext(ActionHost);
-  if (!context) return <div className="mt-2 flex gap-1">{children}</div>;
+  if (!context) return <div className="mt-2 flex gap-1">{Children.toArray(children).reverse()}</div>;
   if (!context.host) return null;
   return createPortal(Children.map(children, (child, index) => {
     const button = child as ReactElement<ButtonHTMLAttributes<HTMLButtonElement>>;
     return cloneElement(button, {
       title: labels[index],
       'aria-label': labels[index],
-      className: `${button.props.className ?? ''} !h-8 !w-auto min-w-0 flex-1 !gap-1 !px-2 !py-1 !text-[11px]`,
-      children: <>{Children.toArray(button.props.children)[0]}<span>{index === 0 ? 'Save' : index === 1 ? (labels[index] === 'Cancel Move' ? 'Cancel' : 'Move') : 'Delete'}</span></>,
+      className: `${(button.props.className ?? '').split(/\s+/).filter(token => !/^(bg-|text-(?:red|amber|cyan|emerald|white|slate|zinc))/.test(token)).join(' ')} bg-white/5 text-white/60 !h-7 !w-7 shrink-0 !gap-0 !p-0 !text-[11px]`,
+      children: <>{Children.toArray(button.props.children)[0]}</>,
     });
-  }), context.host);
+  })?.reverse(), context.host);
 }

@@ -55,6 +55,8 @@ export function getThreeDIcon(id: string): string {
 export function getThreeDLabel(id: string): string {
   const labels: Record<string, string> = {
     plants: 'Plants',
+    plantings: 'Plantings',
+    models: 'Models',
     beds: 'Beds',
     characters: 'Characters',
     markers: 'Markers',

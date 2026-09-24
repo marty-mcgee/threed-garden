@@ -82,10 +82,15 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
   let context = { snapshot: { preferences: contract.defaultWorkspaceSettings(), revision }, loading: false, saving: false, error: null,
     refresh: async () => { refreshCount++; }, save: async (...args) => { saveCalls.push(args); if (failSave) throw new Error('Mock save failure'); },
   };
+  const panelAppearance = load('src/components/settings/PanelAppearance.tsx', {
+    react: formHarness.react, 'react/jsx-runtime': { jsx: element, jsxs: element },
+    '@/components/ui/button': { Button: 'Button' },
+  });
   const form = load('src/components/admin/settings/SettingsManager.tsx', {
     react: formHarness.react, 'react/jsx-runtime': { jsx: element, jsxs: element },
     'lucide-react': new Proxy({}, { get: (_, key) => key }),
     '@/components/admin/layout/AdminWorkspaceHeader': { AdminWorkspaceHeader: 'Header' },
+    '@/components/settings/PanelAppearance': panelAppearance,
     '@/components/ui/button': { Button: 'Button' }, '@/components/ui/switch': { Switch: 'Switch' },
     '@/components/settings/WorkspaceSettingsProvider': { useWorkspaceSettings: () => context },
     '@/libraries/config/workspace-settings': contract,
