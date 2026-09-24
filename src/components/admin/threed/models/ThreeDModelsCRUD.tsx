@@ -13,27 +13,24 @@ import {
   ArrowUp,
   ArrowDown,
   Plus,
-  Edit,
+  SquarePen,
   Trash2,
   Loader2,
   Box,
-  MoreHorizontal,
+  EllipsisVertical,
   ExternalLink,
   Search,
-  File,
+  Files,
   Clapperboard,
-  FolderOpen,
-  FolderTree,
-  Images,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/toast';
-import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
+import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
 import type { ThreeDModelCategoryOption } from './ThreeDModelCategoriesManager';
 import {
   buildThreeDModelAdminPayload,
@@ -609,29 +606,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
               </div>
             </DialogContent>
           </Dialog>
-          <Button asChild variant="outline" size="sm" className="h-7 px-2 text-xs">
-            <Link href="/admin/threed/model-categories">
-              <FolderTree className="mr-1 h-3 w-3" /> Model Categories
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="sm" className="h-7 px-2 text-xs">
-            <Link href="/admin/threed/animations">
-              <Clapperboard className="mr-1 h-3 w-3" /> Animations Library
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="sm" className="h-7 px-2 text-xs">
-            <Link href="/admin/threed/model-files">
-              <FolderOpen className="mr-1 h-3 w-3" /> Model Files
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="sm" className="h-7 px-2 text-xs">
-            <Link href="/admin/threed/model-textures">
-              <Images className="mr-1 h-3 w-3" /> Model Textures
-            </Link>
-          </Button>
         </div>
-        <AdminWorkspaceLink href="/admin/threed/animation-slots" icon={Clapperboard}>Animation Slots</AdminWorkspaceLink>
-        <AdminWorkspaceLink href="/admin/threed/animation-categories" icon={Clapperboard}>Animation Categories</AdminWorkspaceLink>
       </AdminWorkspaceHeader>
       </fieldset>
 
@@ -683,17 +658,19 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                     onChange={(event) => { const checked = event.target.checked; setSelectedIds((current) => { const next = new Set(current); for (const model of filteredModels) { if (checked) next.add(model.id); else next.delete(model.id); } return next; }); }} /></label>
                 </TableHead>
                 {sortHeading('name', 'Name')}
+                {sortHeading('type', 'Type')}
+                {sortHeading('size', 'Size')}
                 {sortHeading('category', 'Category')}
                 {sortHeading('options', 'Options')}
-                {sortHeading('type', 'Type')}
+                <TableHead className="text-center text-xs py-1">Thumbnail</TableHead>
                 {sortHeading('status', 'Status')}
                 {sortHeading('active', 'Active')}
-                {sortHeading('size', 'Size')}
                 <TableHead className="text-right text-xs py-1">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredModels.map((model) => {
+                const hasThumbnail = Boolean(model.thumbnailUrl?.trim());
                 const mainFileUrl = model.filePath?.trim() ?? '';
                 const canOpenMainFile = /^https?:\/\//i.test(mainFileUrl);
                 return (
@@ -703,10 +680,17 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                     <TableCell className="py-1 text-sm font-medium">
                       <div className="flex items-center gap-2"><Box className="w-3.5 h-3.5 shrink-0 text-blue-500" />{model.modelName}</div>
                     </TableCell>
-                    <TableCell className="py-1"><div className="flex flex-wrap gap-1">{model.categories?.length ? model.categories.map((category) => <Badge key={category.id} variant="secondary" className="text-[10px]">{category.name}</Badge>) : '—'}</div></TableCell>
-                    <TableCell className="py-1"><div className="flex flex-wrap gap-1">{modelOptions(model).length ? modelOptions(model).map((label) => <Badge key={label} variant={label === 'Default' ? 'default' : 'outline'} className="text-[10px]">{label}</Badge>) : '—'}</div></TableCell>
                     <TableCell className="py-1">
                       <Badge variant="outline" className="text-[10px]">{getOptionLabel(MODEL_TYPE_OPTIONS, model.modelType)}</Badge>
+                    </TableCell>
+                    <TableCell className="py-1 text-sm text-muted-foreground">{formatFileSize(model.fileSize)}</TableCell>
+                    <TableCell className="py-1"><div className="flex flex-wrap gap-1">{model.categories?.length ? model.categories.map((category) => <Badge key={category.id} variant="secondary" className="text-[10px]">{category.name}</Badge>) : '—'}</div></TableCell>
+                    <TableCell className="py-1"><div className="flex flex-wrap gap-1">{modelOptions(model).length ? modelOptions(model).map((label) => <Badge key={label} variant={label === 'Default' ? 'secondary' : 'outline'} className="text-[10px]">{label}</Badge>) : '—'}</div></TableCell>
+                    <TableCell className="text-center py-1">
+                      <span className="inline-flex items-center" title={hasThumbnail ? 'Thumbnail assigned' : 'No thumbnail assigned'}>
+                        {hasThumbnail ? <Check aria-hidden="true" className="h-4 w-4 text-green-700 dark:text-green-400" /> : <X aria-hidden="true" className="h-4 w-4 text-gray-600 dark:text-gray-400" />}
+                        <span className="sr-only">{hasThumbnail ? 'Yes' : 'No'}</span>
+                      </span>
                     </TableCell>
                     <TableCell className="py-1">
                       <span className={`text-xs ${getStatusColor(model.status)}`}>{getOptionLabel(MODEL_STATUS_OPTIONS, model.status)}</span>
@@ -717,46 +701,51 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                         <span className="sr-only">{model.isActive ? 'Active' : 'Inactive'}</span>
                       </span>
                     </TableCell>
-                    <TableCell className="py-1 text-sm text-muted-foreground">{formatFileSize(model.fileSize)}</TableCell>
                     <TableCell className="py-1">
                       <div className="flex items-center justify-end gap-1">
-                        <Button asChild variant="ghost" size="sm">
-                          <Link href={`/admin/threed/model-files?modelId=${model.id}`} title={`Manage files for ${model.modelName}`}>
-                            <File className="w-4 h-4" />
-                            <span className="sr-only">Manage files</span>
+                        <Button type="button" variant="ghost" size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:bg-amber-500/10 hover:text-amber-700 focus-visible:bg-amber-500/10 focus-visible:text-amber-700 dark:hover:text-amber-400 dark:focus-visible:text-amber-400"
+                          disabled={deleting || loading} onClick={() => openEditDialog(model)}
+                          title={`Edit ${model.modelName}`} aria-label={`Edit ${model.modelName}`}>
+                          <SquarePen aria-hidden="true" className="h-4 w-4" />
+                        </Button>
+                        <Button asChild variant="ghost" size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:bg-blue-500/10 hover:text-blue-700 focus-visible:bg-blue-500/10 focus-visible:text-blue-700 dark:hover:text-blue-400 dark:focus-visible:text-blue-400">
+                          <Link href={`/admin/threed/model-files?modelId=${model.id}`} title={`Model Files for ${model.modelName}`} aria-label={`Model Files for ${model.modelName}`}>
+                            <Files aria-hidden="true" className="h-4 w-4" />
                           </Link>
                         </Button>
-                        <Button variant="ghost" size="sm" disabled={deleting || loading} onClick={() => setAnimationModel(model)} title={`Animations & Preview for ${model.modelName}`} aria-label={`Animations & Preview for ${model.modelName}`}>
-                          <Clapperboard className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" disabled={deleting || loading} onClick={() => openEditDialog(model)} title="Edit">
-                          <Edit className="w-4 h-4" />
+                        <Button type="button" variant="ghost" size="icon"
+                          className="h-8 w-8 text-muted-foreground hover:bg-violet-500/10 hover:text-violet-700 focus-visible:bg-violet-500/10 focus-visible:text-violet-700 dark:hover:text-violet-400 dark:focus-visible:text-violet-400"
+                          disabled={deleting || loading} onClick={() => setAnimationModel(model)} title={`Animations & Preview for ${model.modelName}`} aria-label={`Animations & Preview for ${model.modelName}`}>
+                          <Clapperboard aria-hidden="true" className="h-4 w-4" />
                         </Button>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal className="w-4 h-4" /></Button>
+                            <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground focus-visible:bg-accent focus-visible:text-foreground"
+                              title={`More actions for ${model.modelName}`} aria-label={`More actions for ${model.modelName}`}>
+                              <EllipsisVertical aria-hidden="true" className="h-4 w-4" />
+                            </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem className="text-red-600" disabled={deleting || loading} onClick={() => void handleDeleteModels([model])}>
-                              <Trash2 className="w-4 h-4 mr-2" /> Delete
+                            {canOpenMainFile ? (
+                              <DropdownMenuItem asChild>
+                                <a href={mainFileUrl} target="_blank" rel="noopener noreferrer">
+                                  <ExternalLink aria-hidden="true" className="mr-2 h-4 w-4" /> Open Original Model File
+                                  <span className="sr-only"> (new tab)</span>
+                                </a>
+                              </DropdownMenuItem>
+                            ) : (
+                              <DropdownMenuItem disabled>
+                                <ExternalLink aria-hidden="true" className="mr-2 h-4 w-4" /> Open Original Model File (unavailable)
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem className="text-red-600 focus:bg-red-500/10 focus:text-red-700 dark:text-red-400 dark:focus:text-red-400" disabled={deleting || loading} onClick={() => void handleDeleteModels([model])}>
+                              <Trash2 aria-hidden="true" className="mr-2 h-4 w-4" /> Delete Model
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
-                        {canOpenMainFile ? (
-                          <Button asChild variant="ghost" size="icon" className="h-8 w-8">
-                            <a href={mainFileUrl} target="_blank" rel="noopener noreferrer"
-                              title={`Open main file for ${model.modelName} (new tab)`}
-                              aria-label={`Open main file for ${model.modelName} (new tab)`}>
-                              <ExternalLink aria-hidden="true" className="h-4 w-4" />
-                            </a>
-                          </Button>
-                        ) : (
-                          <Button type="button" variant="ghost" size="icon" disabled
-                            className="h-8 w-8 text-muted-foreground disabled:opacity-30"
-                            title="No main file assigned" aria-label={`No main file assigned for ${model.modelName}`}>
-                            <ExternalLink aria-hidden="true" className="h-4 w-4" />
-                          </Button>
-                        )}
                       </div>
                     </TableCell>
                   </TableRow>

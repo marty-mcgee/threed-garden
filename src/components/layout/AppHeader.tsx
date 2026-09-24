@@ -78,7 +78,7 @@ export function AppHeader({ surface }: { surface: 'dashboard' | 'admin' }) {
           </Button>
         </nav>
 
-        <div className="flex items-center justify-self-end gap-0.5">
+        <div className={cn("flex items-center justify-self-end", surface === 'admin' ? 'gap-2 [&>button]:size-8 [&>button]:shrink-0' : 'gap-0.5')}>
           <NavDropdown />
           <Button
             variant="ghost"
@@ -94,7 +94,7 @@ export function AppHeader({ surface }: { surface: 'dashboard' | 'admin' }) {
           {surface === 'admin' && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon-xs" className="ml-0.5 rounded-full bg-white/10 text-xs text-white hover:bg-white/15" aria-label="Account menu">
+                <Button variant="ghost" size="icon-xs" className="rounded-full bg-white/10 text-xs text-white hover:bg-white/15" aria-label="Account menu">
                   {userInitials}
                 </Button>
               </DropdownMenuTrigger>
