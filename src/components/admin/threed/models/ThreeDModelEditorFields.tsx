@@ -64,6 +64,7 @@ export interface ThreeDModelUploadAnalysis {
 
 interface ThreeDModelEditorFieldsProps {
   mode: 'create' | 'edit';
+  previewImageAction?: React.ReactNode;
   form: ThreeDModelAdminFormData;
   setForm: Dispatch<SetStateAction<ThreeDModelAdminFormData>>;
   categories: ThreeDModelCategoryOption[];
@@ -103,6 +104,7 @@ export function ThreeDModelEditorFields({
   uploadAnalysis,
   onPrimaryFile,
   onThumbnail,
+  previewImageAction,
 }: ThreeDModelEditorFieldsProps) {
   let fallbackMetadata: unknown = {};
   let fallbackMetadataValid = true;
@@ -220,6 +222,7 @@ export function ThreeDModelEditorFields({
               {uploadingThumbnail ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />}
               {form.thumbnailUrl ? 'Replace Preview' : 'Upload Preview'}
             </Button>
+            {previewImageAction}
             {form.thumbnailUrl && <Button type="button" variant="ghost" size="sm" className="h-8 text-xs" onClick={() => update('thumbnailUrl', '')} disabled={uploadingThumbnail || disabled}><X className="mr-1 h-4 w-4" />Remove</Button>}
           </div>
           <p className="text-[10px] text-muted-foreground">JPG, PNG, or WebP up to 5 MB. A square top-view image is recommended.</p>

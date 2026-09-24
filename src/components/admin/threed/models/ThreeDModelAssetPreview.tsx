@@ -1,7 +1,9 @@
 'use client';
 
-import { Suspense, useCallback, useEffect, useRef, useState, type ChangeEvent, type ReactNode } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Suspense, useCallback, useEffect, useId, useRef, useState, type ChangeEvent, type ComponentRef, type ReactNode } from 'react';
+import { modelPreviewEvents } from './model-preview-events';
+import { Vector3 } from 'three';
+import { Canvas, useThree, type RootState } from '@react-three/fiber';
 import { Bounds, Grid, OrbitControls, useBounds } from '@react-three/drei';
 import { Box, Check, ImageOff, Loader2, Palette, RotateCcw, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -17,8 +19,21 @@ import type {
 } from '@/libraries/services/threed/models/model-material-inventory-core';
 import { readThreeDModelMaterialOverrides } from '@/libraries/services/threed/models/model-material-override-core';
 
+export interface PreviewPerspective { direction: [number, number, number]; distanceScale: number }
+
 interface ThreeDModelAssetPreviewProps {
   model: ModelData | null;
+  onCaptureImage?: (image: Blob) => void;
+  autoCapture?: boolean;
+  outputSize?: { width: number; height: number };
+  fixedCaptureCamera?: boolean;
+  hideCaptureControls?: boolean;
+  perspective?: PreviewPerspective;
+  onPerspectiveChange?: (view: PreviewPerspective) => void;
+  unresolvedTextureCount?: number;
+  onCaptureReady?: (ready: boolean) => void;
+  captureCamera?: [number, number, number];
+  onCaptureError?: (message: string) => void;
   attachedDependencyCount: number;
   dependencyCount: number;
   title?: string;
@@ -47,21 +62,48 @@ export interface ThreeDModelTextureLibraryItem {
 function PreviewModel({
   model,
   onSettled,
+  onError,
+  perspective,
+  onFitDistance,
+  onCameraReady,
   onMaterialInventoryChange,
   materialPreviewOverride,
   materialPreviewSelectionId,
 }: {
   model: ModelData;
   onSettled: () => void;
+  onError?: (message: string | null) => void;
+  perspective?: PreviewPerspective;
+  onFitDistance?: (distance: number) => void;
+  onCameraReady?: () => void;
   onMaterialInventoryChange?: (inventory: ThreeDModelMaterialInventory | null) => void;
   materialPreviewOverride?: ThreeDModelMaterialPreviewOverride | null;
   materialPreviewSelectionId?: string | null;
 }) {
   const bounds = useBounds();
+  const getState = useThree(state => state.get);
   const handleBounds = useCallback((value: ModelCollisionBounds | null) => {
     if (!value) return;
-    requestAnimationFrame(() => bounds.refresh().clip().fit());
-  }, [bounds]);
+    requestAnimationFrame(() => {
+      bounds.refresh().clip();
+      const { center, distance } = bounds.getSize();
+      onFitDistance?.(distance);
+      if (perspective) {
+        const position = new Vector3(...perspective.direction).normalize().multiplyScalar(distance * perspective.distanceScale).add(center);
+        // Apply the reviewed perspective synchronously. Bounds.moveTo animates
+        // across render frames even at maxDuration=0, which can race capture.
+        const { camera, controls, invalidate } = getState();
+        camera.position.copy(position);
+        camera.lookAt(center);
+        camera.updateMatrixWorld(true);
+        const orbit = controls as { target?: Vector3; update?: () => void } | null;
+        orbit?.target?.copy(center);
+        orbit?.update?.();
+        invalidate();
+        onCameraReady?.();
+      } else bounds.fit();
+    });
+  }, [bounds, perspective, onFitDistance, getState, onCameraReady]);
 
   return (
     <ModelMarker3D
@@ -69,6 +111,7 @@ function PreviewModel({
       position={[0, 0, 0]}
       onCollisionBoundsChange={handleBounds}
       onRuntimeSettled={onSettled}
+      onRuntimeError={onError}
       onMaterialInventoryChange={onMaterialInventoryChange}
       materialPreviewOverride={materialPreviewOverride}
       materialPreviewSelectionId={materialPreviewSelectionId}
@@ -125,6 +168,17 @@ function MaterialSlotRow({
 
 export function ThreeDModelAssetPreview({
   model,
+  onCaptureImage,
+  autoCapture = false,
+  outputSize = { width: 400, height: 400 },
+  fixedCaptureCamera = false,
+  hideCaptureControls = false,
+  onCaptureReady,
+  perspective,
+  onPerspectiveChange,
+  unresolvedTextureCount = 0,
+  captureCamera = [4, 3, 6],
+  onCaptureError,
   attachedDependencyCount,
   dependencyCount,
   title = 'Model preview',
@@ -141,6 +195,14 @@ export function ThreeDModelAssetPreview({
   textureLibrary = [],
   onSaveMaterialAssignment,
 }: ThreeDModelAssetPreviewProps) {
+  const previewTitleId = useId();
+  const orbitRef = useRef<ComponentRef<typeof OrbitControls>>(null);
+  const fitDistance = useRef(1);
+  const rememberFitDistance = useCallback((distance: number) => { fitDistance.current = distance; }, []);
+  const rendererRef = useRef<RootState | null>(null);
+  const [captureError, setCaptureError] = useState<string | null>(null);
+  const [runtimeError, setRuntimeError] = useState<string | null>(null);
+  const [capturing, setCapturing] = useState(false);
   const [settledKey, setSettledKey] = useState<string | null>(null);
   const [resetKey, setResetKey] = useState(0);
   const [materialInventory, setMaterialInventory] = useState<ThreeDModelMaterialInventory | null>(null);
@@ -153,6 +215,9 @@ export function ThreeDModelAssetPreview({
   const modelKey = model
     ? `${model.id}:${model.filePath}:${model.files?.map((file) => `${file.relativePath}:${file.filePath}`).join('|') ?? ''}`
     : null;
+  const cameraKey = `${modelKey}:${resetKey}:${JSON.stringify(perspective)}`;
+  const [fittedCameraKey, setFittedCameraKey] = useState<string | null>(null);
+  const handleCameraReady = useCallback(() => setFittedCameraKey(cameraKey), [cameraKey]);
   const loading = Boolean(modelKey && settledKey !== modelKey);
   const selectedMaterialSlot = materialInventory?.slots.find((slot) => slot.id === selectedMaterialSlotId) ?? null;
   const availableTextureAttachments = model?.files?.filter((file) => (
@@ -228,13 +293,67 @@ export function ThreeDModelAssetPreview({
     } : null);
   };
 
+  const captureImage = async () => {
+    const state = rendererRef.current;
+    if (!state || !onCaptureImage) return;
+    setCapturing(true);
+    setCaptureError(null);
+    try {
+      // Copy immediately after rendering; no persistent WebGL drawing buffer required.
+      state.gl.render(state.scene, state.camera);
+      const output = document.createElement('canvas');
+      output.width = outputSize.width;
+      output.height = outputSize.height;
+      const context = output.getContext('2d');
+      if (!context) throw new Error('Image capture is unavailable in this browser.');
+      context.drawImage(state.gl.domElement, 0, 0, output.width, output.height);
+      const blob = await new Promise<Blob>((resolve, reject) => output.toBlob(
+        value => value ? resolve(value) : reject(new Error('Could not encode the preview image.')), 'image/png',
+      ));
+      onCaptureImage(blob);
+    } catch {
+      const message = 'Could not capture this Model. Check that its textures loaded and allow image export.';
+      setCaptureError(message);
+      onCaptureError?.(message);
+    } finally { setCapturing(false); }
+  };
+  const assignedTargets = new Set([
+    ...(model?.materialAssignments ?? []).filter(item => item.channel === 'baseColor').map(item => item.targetKey),
+    ...savedMaterialOverrides.assignments.map(item => item.targetKey),
+  ]);
+  const assignedTextureCoverage = Boolean(materialInventory?.slots.length && !materialInventory.omittedSlotCount
+    && materialInventory.slots.every(slot => assignedTargets.has(slot.id) && slot.textures.some(texture => texture.property === 'map' && texture.ready)));
+  const missingFiles = Math.max(0, dependencyCount - attachedDependencyCount - (assignedTextureCoverage ? unresolvedTextureCount : 0));
+  const captureReady = (!perspective || fittedCameraKey === cameraKey) && !loading && !runtimeError && Boolean(model?.filePath && materialInventory?.slots.length)
+    && !materialInventory?.slots.some(slot => slot.textures.some(texture => !texture.ready))
+    && missingFiles === 0;
+
+  useEffect(() => { onCaptureReady?.(captureReady); }, [captureReady, onCaptureReady]);
+  const captureRef = useRef(captureImage);
+  captureRef.current = captureImage;
+  const automaticCaptureStarted = useRef(false);
+  useEffect(() => {
+    if (!autoCapture || !captureReady || automaticCaptureStarted.current) return;
+    let secondFrame = 0;
+    const firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => {
+        automaticCaptureStarted.current = true;
+        void captureRef.current();
+      });
+    });
+    return () => { cancelAnimationFrame(firstFrame); cancelAnimationFrame(secondFrame); };
+  }, [autoCapture, captureReady]);
+  useEffect(() => {
+    if (autoCapture && runtimeError) onCaptureError?.(runtimeError);
+  }, [autoCapture, runtimeError, onCaptureError]);
+
   return (
     <div className={splitMaterialInspector ? 'contents' : undefined}>
-    <section className={`order-1 overflow-hidden rounded-lg border bg-muted/20 ${splitMaterialInspector ? 'lg:sticky lg:top-2 lg:col-start-1 lg:row-start-1' : ''}`} aria-labelledby="model-preview-title">
+    <section className={`order-1 overflow-hidden rounded-lg border bg-muted/20 ${splitMaterialInspector ? 'lg:sticky lg:top-2 lg:col-start-1 lg:row-start-1' : ''}`} aria-labelledby={previewTitleId}>
       <div className="flex min-h-10 items-center gap-2 border-b px-3 py-2">
         <Box className="h-4 w-4 text-blue-400" />
         <div className="min-w-0 flex-1">
-          <h2 id="model-preview-title" className="truncate text-xs font-semibold">{title}</h2>
+          <h2 id={previewTitleId} className="truncate text-xs font-semibold">{title}</h2>
           {/* <p className="text-[10px] text-muted-foreground">
             {description}
           </p> */}
@@ -242,7 +361,7 @@ export function ThreeDModelAssetPreview({
         {headerMeta}
         {dependencyCount > 0 && (
           <span className="text-[10px] text-muted-foreground">
-            {attachedDependencyCount}/{dependencyCount} dependencies
+            {dependencyCount - missingFiles}/{dependencyCount} dependencies
           </span>
         )}
         {headerActions}
@@ -253,24 +372,24 @@ export function ThreeDModelAssetPreview({
           className="h-7 w-7"
           title="Reset preview camera"
           disabled={!model}
-          onClick={() => setResetKey((value) => value + 1)}
+          onClick={() => { setSettledKey(null); setResetKey((value) => value + 1); }}
         >
           <RotateCcw className="h-3.5 w-3.5" />
         </Button>
       </div>
 
-      <div className={`relative bg-gradient-to-b from-sky-950/40 to-slate-950 ${canvasClassName}`}>
+      <div style={onCaptureImage ? { aspectRatio: `${outputSize.width} / ${outputSize.height}` } : undefined} className={`relative bg-gradient-to-b from-sky-950/40 to-slate-950 ${canvasClassName}`}>
         {!model ? (
           <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
             Select a Model to preview its available assets.
           </div>
         ) : (
-          <Canvas key={`${modelKey}:${resetKey}`} camera={{ position: [4, 3, 6], fov: 45 }} dpr={[1, 1.5]}>
-            <color attach="background" args={['#071426']} />
+          <Canvas events={modelPreviewEvents} onCreated={state => { rendererRef.current = state; if (onCaptureImage) state.gl.setClearColor(0x000000, 0); }} gl={{ alpha: true }} key={`${modelKey}:${resetKey}`} camera={{ position: captureCamera, fov: 45 }} dpr={[1, 1.5]}>
+            {!onCaptureImage && <color attach="background" args={['#071426']} />}
             <ambientLight intensity={1.4} />
             <directionalLight position={[5, 8, 5]} intensity={2.4} />
             <directionalLight position={[-4, 3, -5]} intensity={1.1} color="#8ec5ff" />
-            <Grid
+            {!onCaptureImage && <Grid
               position={[0, -0.01, 0]}
               args={[20, 20]}
               cellSize={0.5}
@@ -281,19 +400,30 @@ export function ThreeDModelAssetPreview({
               sectionColor="#3b82a6"
               fadeDistance={18}
               infiniteGrid
-            />
+            />}
             <Suspense fallback={null}>
-              <Bounds fit clip margin={1.25}>
+              <Bounds fit={!perspective} clip margin={1.25} maxDuration={autoCapture || fixedCaptureCamera ? 0 : 1}>
                 <PreviewModel
                   model={model}
                   onSettled={() => setSettledKey(modelKey)}
-                  onMaterialInventoryChange={showMaterialInspector ? setMaterialInventory : undefined}
+                  onMaterialInventoryChange={showMaterialInspector || onCaptureImage ? setMaterialInventory : undefined}
+                  onError={setRuntimeError}
+                  perspective={perspective}
+                  onFitDistance={rememberFitDistance}
+                  onCameraReady={handleCameraReady}
                   materialPreviewOverride={showMaterialInspector ? materialPreviewOverride : null}
                   materialPreviewSelectionId={showMaterialInspector ? selectedMaterialSlotId : null}
                 />
               </Bounds>
             </Suspense>
-            <OrbitControls makeDefault enableDamping dampingFactor={0.08} />
+            <OrbitControls ref={orbitRef} makeDefault enabled={!autoCapture && !fixedCaptureCamera} enablePan={!onPerspectiveChange} enableDamping={!onPerspectiveChange} dampingFactor={0.08}
+              onEnd={() => {
+                const controls = orbitRef.current;
+                if (!onPerspectiveChange || !controls) return;
+                const offset = controls.object.position.clone().sub(controls.target);
+                onPerspectiveChange({ direction: offset.clone().normalize().toArray() as [number, number, number], distanceScale: offset.length() / fitDistance.current });
+              }}
+            />
           </Canvas>
         )}
         {loading && (
@@ -303,6 +433,22 @@ export function ThreeDModelAssetPreview({
           </div>
         )}
       </div>
+      {onCaptureImage && <div className="space-y-2 p-3">
+        {!hideCaptureControls && <>
+          <Button type="button" onClick={captureImage} disabled={autoCapture || !captureReady || capturing}>
+            {capturing ? 'Capturing…' : 'Capture PNG'}
+          </Button>
+          <p className="text-xs text-muted-foreground">Orbit and zoom to frame the Model. Export is {outputSize.width} × {outputSize.height} with transparency.</p>
+        </>}
+        <p role="status" className={`text-xs ${captureReady ? 'text-emerald-500' : 'text-amber-400'}`}>
+          {runtimeError ? 'Model failed to load.' : loading ? 'Loading Model assets…'
+            : missingFiles > 0 ? `${missingFiles} required file(s) missing. Open Model Files to resolve them.`
+            : !materialInventory?.slots.length ? 'Waiting for renderable Model materials…'
+            : materialInventory.slots.some(slot => slot.textures.some(texture => !texture.ready)) ? 'Model textures are not ready for capture.'
+            : 'Ready to capture.'}
+        </p>
+        {(captureError || runtimeError) && <p role="alert" className="text-xs text-red-400">{captureError || runtimeError}</p>}
+      </div>}
     </section>
       <div className={splitMaterialInspector ? 'min-w-0 space-y-3 lg:col-start-2 lg:row-start-1' : undefined}>
       {((showMaterialInspector && model) || splitMaterialInspector) && (

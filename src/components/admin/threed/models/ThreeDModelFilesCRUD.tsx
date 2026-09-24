@@ -52,6 +52,7 @@ import {
   ThreeDModelAssetPreview,
   type ThreeDModelTextureLibraryItem,
 } from './ThreeDModelAssetPreview';
+import { ModelPreviewImageExport } from './ModelPreviewImageExport';
 import { withSavedFbxTextures } from '@/libraries/services/threed/models/model-saved-texture-fallback';
 import type { ModelData } from '@/components/threed/markers/ModelMarker3D';
 
@@ -869,6 +870,12 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
             ) : null}
             headerActions={selectedModel ? (
               <>
+              {previewModel && !loadingFiles && <ModelPreviewImageExport
+                key={previewModel.id}
+                model={previewModel}
+                dependencyCount={dependencyAudit?.requirements.length ?? 0}
+                attachedDependencyCount={dependencyAudit?.requirements.filter(item => item.satisfied).length ?? 0}
+              />}
               <Button type="button" variant="ghost" size="sm" className="h-7 text-xs" onClick={() => setHelpOpen(true)}>Help</Button>
               <Button
                 type="button"

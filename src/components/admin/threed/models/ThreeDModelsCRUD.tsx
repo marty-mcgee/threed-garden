@@ -47,6 +47,8 @@ import {
   ThreeDModelEditorFields,
   type ThreeDModelUploadAnalysis,
 } from './ThreeDModelEditorFields';
+import { ModelPreviewBatchExport } from './ModelPreviewBatchExport';
+import { ModelPreviewImageExport } from './ModelPreviewImageExport';
 import { ThreeDModelAssetPreview } from './ThreeDModelAssetPreview';
 import { ThreeDModelsBulkImport } from './ThreeDModelsBulkImport';
 import type { ModelData } from '@/components/threed/markers/ModelMarker3D';
@@ -551,6 +553,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
           />
         </div>
         <div className="flex flex-wrap items-center justify-end gap-2">
+          <ModelPreviewBatchExport onComplete={() => { void fetchModels(false); }} />
           {!onModuleUpdate && <ThreeDModelsBulkImport categories={categories} onComplete={async () => {
             // Keep the bulk queue mounted while refreshing saved Model summaries.
             await fetchModels(false);
@@ -778,6 +781,14 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
           <div className="space-y-3 pt-1 [&>div]:grid [&>div]:grid-cols-1 [&>div]:items-start [&>div]:gap-3 [&>div]:space-y-0 md:[&>div]:grid-cols-2 [&_section]:min-w-0 [&_section]:rounded-md [&_section]:border [&_section]:p-3 [&_label]:text-xs [&_input:not([type=checkbox])]:h-8 [&_input:not([type=checkbox])]:min-w-0 [&_input:not([type=checkbox])]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:w-full [&_[data-slot=select-trigger]]:min-w-0 [&_[data-slot=select-trigger]]:text-xs">
             <ThreeDModelEditorFields
               mode="edit"
+              previewImageAction={editingModel && <ModelPreviewImageExport
+                key={editingModel.id}
+                model={editingModel}
+                dependencyCount={0}
+                attachedDependencyCount={0}
+                disabled={isSubmitting || uploadingPrimary || uploadingThumbnail}
+                onUseImageUrl={url => setFormData(current => ({ ...current, thumbnailUrl: url }))}
+              />}
               form={formData}
               setForm={setFormData}
               categories={categories}

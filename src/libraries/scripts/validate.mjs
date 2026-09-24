@@ -79,6 +79,7 @@ const tasks = {
   'threed-obj-bundle': [ts('validate-threed-obj-bundle.mts')],
   'threed-model-blob-paths': [ts('validate-threed-model-blob-paths.mts')],
   'threed-bulk-saved-texture': [ts('validate-threed-bulk-saved-texture.mts')],
+  'threed-model-preview-batch': [node('validate-model-preview-batch.cjs'), ['node', '--import', 'tsx', `${scripts}/validate-model-preview-requirements.mts`]],
   'threed-model-bulk-preview': [ts('validate-threed-model-bulk-preview.mts')],
   'threed-model-list': [ts('validate-threed-model-list.mts')],
   'threed-animation-bulk': [node('validate-threed-animation-bulk.cjs')],

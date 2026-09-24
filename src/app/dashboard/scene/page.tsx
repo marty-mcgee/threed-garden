@@ -232,7 +232,6 @@ function UnifiedMapPageInner() {
   const [libraryModels, setLibraryModels] = useState<ThreeDModelLibraryItem[]>([]);
   const [libraryCategorySlug, setLibraryCategorySlug] = useState('all');
   const [libraryModelSearch, setLibraryModelSearch] = useState('');
-  const [libraryReadinessFilter, setLibraryReadinessFilter] = useState<'all' | 'ready' | 'needs_configuration' | 'unavailable'>('all');
   const [inspectedLibraryModelId, setInspectedLibraryModelId] = useState<number | null>(null);
   const [libraryCharacters, setLibraryCharacters] = useState<ThreeDCharacterLibraryItem[]>([]);
   const [libraryFarmBots, setLibraryFarmBots] = useState<ThreeDFarmBotLibraryItem[]>([]);
@@ -2398,7 +2397,6 @@ function UnifiedMapPageInner() {
     libraryCategorySlug,
     inspectedLibraryModelId,
     libraryModelSearch,
-    libraryReadinessFilter,
   );
   const { placedCharacterIds, placedFarmBotIds } = useThreeDPlacedLibraryAssets(data.threed.raw);
   const openEnvironmentDetails = useCallback((marker = projectEnvironmentMarkers[0]) => {
@@ -2768,11 +2766,6 @@ function UnifiedMapPageInner() {
         search={libraryModelSearch}
         onSearchChange={(value) => {
           setLibraryModelSearch(value);
-          setInspectedLibraryModelId(null);
-        }}
-        readiness={libraryReadinessFilter}
-        onReadinessChange={(value) => {
-          setLibraryReadinessFilter(value);
           setInspectedLibraryModelId(null);
         }}
         allModelCount={libraryModels.length}

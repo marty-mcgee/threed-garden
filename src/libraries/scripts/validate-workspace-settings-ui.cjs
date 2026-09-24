@@ -90,6 +90,7 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
     react: formHarness.react, 'react/jsx-runtime': { jsx: element, jsxs: element },
     'lucide-react': new Proxy({}, { get: (_, key) => key }),
     '@/components/admin/layout/AdminWorkspaceHeader': { AdminWorkspaceHeader: 'Header' },
+    '@/components/settings/ModelPreviewSettings': load('src/components/settings/ModelPreviewSettings.tsx', { react: formHarness.react, 'react/jsx-runtime': { jsx: element, jsxs: element }, '@/components/ui/button': { Button: 'Button' } }),
     '@/components/settings/PanelAppearance': panelAppearance,
     '@/components/ui/button': { Button: 'Button' }, '@/components/ui/switch': { Switch: 'Switch' },
     '@/components/settings/WorkspaceSettingsProvider': { useWorkspaceSettings: () => context },
