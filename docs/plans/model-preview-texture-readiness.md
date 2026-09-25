@@ -1,6 +1,6 @@
 # Model preview texture readiness follow-up
 
-Included in the v0.20.11 release candidate, ThreeD Models: Bulk Import Tool; production deployment remains unconfirmed. The User reported a visibly textured Scarecrow FBX blocked by “Model textures are not ready for capture” in Edit Model → Export 2D Image.
+Released in v0.20.11 — ThreeD Models: Bulk Import Tool, repository release commit `635d82d`; production deployment User-confirmed on September 25, 2026. The User reported a visibly textured Scarecrow FBX blocked by “Model textures are not ready for capture” in Edit Model → Export 2D Image.
 
 ## Evidence and acceptance
 
@@ -21,4 +21,4 @@ No capture guard bypass, asset writes, schema changes, Character runtime changes
 
 Passed: TypeScript, diff check, `threed-model-preview-batch`, `threed-gltf-material-targets` and `threed-character-preview-switch`.
 
-The User confirmed successful Scarecrow Export 2D Image → Capture PNG on September 25, 2026. The reported browser issue is accepted as fixed. Additional browser checks for slow-loading/missing textures and Model switching were not separately confirmed. The User-owned build and production deployment of this follow-up remain unconfirmed.
+The User confirmed successful Scarecrow Export 2D Image → Capture PNG on September 25, 2026. The reported browser issue is accepted as fixed. Additional browser checks for slow-loading/missing textures and Model switching were not separately confirmed. Production deployment is User-confirmed as part of v0.20.11. The local manual build result was not separately reported.
