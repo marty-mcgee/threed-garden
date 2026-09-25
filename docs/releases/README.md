@@ -2,9 +2,9 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Current production: **v0.20.8 — ThreeD Admin: Model Workspace Cleanup**, deployment User-confirmed.
+Current production: **v0.20.9 — ThreeD Front-End: Scene UX + Model Reliability**, deployment User-confirmed.
 
-- [v0.20.9 — ThreeD Front-End: Scene UX + Model Reliability](v0.20.9.md) — accepted and prepared; deployment pending
+- [v0.20.9 — ThreeD Front-End: Scene UX + Model Reliability](v0.20.9.md) — production User-confirmed
 - [v0.20.8 — ThreeD Admin: Model Workspace Cleanup](v0.20.8.md) — production User-confirmed
 
 - [v0.20.0 — App Structure, Multimedia + Scene](v0.20.0.md) — production User-confirmed
