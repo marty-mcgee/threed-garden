@@ -65,12 +65,13 @@ export interface BulkImportResult {
   message: string;
   analysis?: unknown;
   stagedUrl?: string;
-  /** A fresh create is safe only after a definitive rejection and staged cleanup. */
+  /** A fresh create is safe before creation is attempted, or after definitive rejection and cleanup. */
   canRetry: boolean;
 }
 
 const MAX_RESPONSE_BYTES = 1024 * 1024;
-const REQUEST_TIMEOUT_MS = 120_000;
+// Bound each network operation; a Model import performs several operations.
+const REQUEST_TIMEOUT_MS = 15_000;
 const PRIMARY_ROUTE = '/api/threed/models/upload';
 const MODEL_ROUTE = '/api/threed/models';
 const FILES_ROUTE = '/api/threed/models/files';
@@ -327,7 +328,7 @@ export async function runBulkModel(
   primaryBody.append('file', sourceFile);
   let upload: Reply;
   try { upload = await send(request, PRIMARY_ROUTE, { method: 'POST', body: primaryBody }); }
-  catch { return result('unknown', 'The upload response was lost. Check the import result before uploading this file again.'); }
+  catch { return result('unknown', 'The upload response was lost before Model creation. Try Again to upload a fresh copy using these files and settings.', true); }
   if (!upload.ok && REJECTED_BEFORE_WRITE.has(upload.status)) {
     return result('failed', upload.status === 413
       ? 'The upload transport rejected this file size. Use a smaller file and retry.'
@@ -336,7 +337,7 @@ export async function runBulkModel(
   const uploaded = data(upload);
   if (httpsUrl(uploaded?.url)) stagedUrl = uploaded.url;
   if (!uploaded || !stagedUrl) {
-    return result('unknown', 'The upload outcome is unconfirmed. Check the import result before uploading this file again.');
+    return result('unknown', 'The upload could not be confirmed before Model creation. Try Again to upload a fresh copy using these files and settings.', true);
   }
   analysis = uploaded.analysis;
   if (uploaded.fileName !== sourceFile.name || uploaded.fileSize !== sourceFile.size || uploaded.modelType !== modelType) {

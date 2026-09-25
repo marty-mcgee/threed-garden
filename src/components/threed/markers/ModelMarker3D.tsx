@@ -38,7 +38,7 @@ import {
   type ThreeDModelRuntimeAttachment,
 } from '@/libraries/services/threed/models/model-attachment-runtime-core';
 import {
-  createThreeDModelMaterialInventory,
+  observeThreeDModelMaterialInventory,
   resolveThreeDModelMaterialTarget,
   type ThreeDModelMaterialInventory,
   type ThreeDModelMaterialPreviewOverride,
@@ -394,10 +394,16 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
   }, [error, onRuntimeError]);
 
   useEffect(() => {
-    onMaterialInventoryChange?.(
-      loadedModel ? createThreeDModelMaterialInventory(loadedModel) : null,
-    );
-    return () => onMaterialInventoryChange?.(null);
+    if (!onMaterialInventoryChange) return;
+    if (!loadedModel) {
+      onMaterialInventoryChange(null);
+      return;
+    }
+    const stopObserving = observeThreeDModelMaterialInventory(loadedModel, onMaterialInventoryChange);
+    return () => {
+      stopObserving();
+      onMaterialInventoryChange(null);
+    };
   }, [loadedModel, onMaterialInventoryChange]);
 
   useEffect(() => {

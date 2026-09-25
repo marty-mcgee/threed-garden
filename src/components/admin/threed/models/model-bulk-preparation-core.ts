@@ -140,6 +140,16 @@ export async function validateBulkPreview(file: File): Promise<string | null> {
   }
 }
 
+export function bulkModelTitle(modelName: string, prefix: string, titleCase = false): string {
+  const baseName = modelName.trim();
+  // Capitalize word starts without damaging existing acronyms or mixed-case names.
+  const name = titleCase
+    ? baseName.replace(/(^|[\s-])(\p{L})/gu, (_, separator: string, letter: string) => separator + letter.toUpperCase())
+    : baseName;
+  // A prefix cannot stand in for a missing per-Model name.
+  return name ? [prefix.trim(), name].filter(Boolean).join(' ') : '';
+}
+
 export function createBulkDefaults(): BulkDefaults {
   return { scale: '1.0', categoryIds: [], isLibraryItem: true, isPublic: false,
     usedByPlants: false, usedByCharacters: false, isActive: false, existingTextureId: null };
@@ -232,6 +242,7 @@ export function prepareBulkModel(draft: BulkDraft, defaults: BulkDefaults, pool:
     }
   }
   if (!draft.modelName.trim()) addIssue('Model name is required.');
+  if (draft.modelName.trim().length > 255) addIssue('Model name including its prefix must not exceed 255 characters.');
   for (const [label, value, minimum] of [
     ['Scale', settings.scale, 0.01], ['Y rotation', draft.rotationY],
     ['X offset', draft.offsetX], ['Y offset', draft.offsetY], ['Z offset', draft.offsetZ],

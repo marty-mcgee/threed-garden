@@ -2,7 +2,7 @@
 
 import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { ExternalLink, Files, Loader2, Trash2, Upload } from 'lucide-react';
+import { CircleHelp, ExternalLink, Files, Loader2, Trash2, Upload } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -12,7 +12,7 @@ import { inspectObjGeometry } from '@/libraries/services/threed/models/model-obj
 import { inspectThreeDGltfBundle } from '@/libraries/services/threed/models/model-gltf-bundle-core';
 import type { ThreeDModelCategoryOption } from './ThreeDModelCategoriesManager';
 import {
-  createBulkDefaults, createBulkDraft, defaultDestination, MAX_BULK_MODELS,
+  createBulkDefaults, createBulkDraft, bulkModelTitle, defaultDestination, MAX_BULK_MODELS,
   prepareBulkModel, requirementKey, summarizeBulkGltfResources, validateBulkPrimary, validateBulkPreview, validateBulkCompanion, bulkCompanionType,
   type BulkDefaults, type BulkDraft, type BulkSource, type BulkExistingTexture, type BulkPreparedModel,
 } from './model-bulk-preparation-core';
@@ -57,6 +57,8 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
   const draftsRef = useRef<BulkDraft[]>([]);
   const [pool, setPool] = useState<BulkSource[]>([]);
   const [defaults, setDefaults] = useState(createBulkDefaults);
+  const [titlePrefix, setTitlePrefix] = useState('');
+  const [titleCase, setTitleCase] = useState(false);
   const [existingTextures, setExistingTextures] = useState<SavedBulkTexture[]>([]);
   const [savedTextureFiles, setSavedTextureFiles] = useState<{ key: string; sources: Record<number, BulkSource>; errors: Record<number, string> }>({ key: '', sources: {}, errors: {} });
   const [texturesReady, setTexturesReady] = useState(false);
@@ -185,7 +187,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
   const prepared = useMemo(() => new Map(drafts.map((draft) => {
     const savedTexture = texturesReady ? matchingSavedBulkTexture(draft, defaults, pool, existingTextures) : undefined;
     const savedSource = savedTexture && savedTextureFiles.key === savedTextureKey ? savedTextureFiles.sources[savedTexture.id] : undefined;
-    const plan = prepareBulkModel(draft, defaults, savedSource ? [...pool, savedSource] : pool, texturesReady ? existingTextures : undefined);
+    const plan = prepareBulkModel({ ...draft, modelName: bulkModelTitle(draft.modelName, titlePrefix, titleCase) }, defaults, savedSource ? [...pool, savedSource] : pool, texturesReady ? existingTextures : undefined);
     if (savedTexture && !savedSource) {
       plan.ready = false;
       plan.issues.push(savedTextureFiles.key === savedTextureKey && savedTextureFiles.errors[savedTexture.id]
@@ -197,7 +199,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
       plan.issues.push('A selected category is unavailable. Remove it or choose an active category.');
     }
     return [draft.id, plan];
-  })), [drafts, defaults, pool, texturesReady, existingTextures, categories, savedTextureFiles, savedTextureKey]);
+  })), [drafts, defaults, titlePrefix, titleCase, pool, texturesReady, existingTextures, categories, savedTextureFiles, savedTextureKey]);
   const eligible = drafts.filter((draft) => !results[draft.id] && prepared.get(draft.id)?.ready);
   const selectedDraft = drafts.find((draft) => draft.id === selectedId) ?? drafts[0];
   const result = selectedDraft && results[selectedDraft.id];
@@ -308,22 +310,28 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
     }
   }
 
-  async function importReady() {
-    if (busyRef.current || checkingPreview || !eligible.length) return;
+  async function importReady(retryId?: string) {
+    const previous = retryId ? results[retryId] : undefined;
+    if (retryId && (!previous?.canRetry || previous.modelId)) return;
+    if (busyRef.current || checkingPreview || (!previous && !eligible.length)) return;
     busyRef.current = true;
     setImporting(true);
     setNotice('');
     // Freeze reviewed settings/associations. Rows still scanning are excluded from this run.
-    const run = eligible.map((draft) => {
+    const run = previous ? [{
+      draft: previous.submitted.draft,
+      plan: previous.submitted.plan,
+      submitted: previous.submitted,
+    }] : eligible.map((draft) => {
       const plan = prepared.get(draft.id)!;
       const submitted: BulkResultView['submitted'] = {
-        draft: { ...draft, overrides: { ...plan.settings, categoryIds: [...plan.settings.categoryIds] } },
+        draft: { ...draft, modelName: bulkModelTitle(draft.modelName, titlePrefix, titleCase), overrides: { ...plan.settings, categoryIds: [...plan.settings.categoryIds] } },
         plan,
         defaults: { ...defaults, categoryIds: [...defaults.categoryIds] },
         pool: [...new Map([...pool, ...plan.attachments.map((attachment) => attachment.source)].map((source) => [source.id, source])).values()], categories: activeCategories.map((category) => ({ ...category })),
         textures: activeTextures.map((texture) => ({ ...texture })),
       };
-      return { draft, plan, submitted };
+      return { draft: submitted.draft, plan, submitted };
     });
     let created = 0;
     let failed = 0;
@@ -361,6 +369,8 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
     changeDrafts(() => []);
     setPool([]);
     setSelectedId(null);
+    setTitlePrefix('');
+    setTitleCase(false);
     setResults({});
     setProgress({});
     setSavedTextureFiles({ key: '', sources: {}, errors: {} });
@@ -400,7 +410,29 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
     <DialogTrigger asChild><Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs"><Files className="mr-1 h-3 w-3" />Bulk Import Models</Button></DialogTrigger>
     <DialogContent className="flex h-[92dvh] max-h-[92dvh] flex-col gap-0 overflow-hidden p-0 sm:max-w-[min(96vw,1150px)]">
       <DialogHeader className="shrink-0 border-b px-4 py-4 pr-12 sm:pl-6">
-        <DialogTitle>Bulk Import Models</DialogTitle>
+        <div className="flex items-center gap-2">
+          <DialogTitle>Bulk Import Models</DialogTitle>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button type="button" variant="ghost" size="icon-sm" aria-label="Bulk import help"><CircleHelp className="h-4 w-4" /></Button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[80dvh] overflow-y-auto sm:max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Bulk import help</DialogTitle>
+                <DialogDescription>File limits, naming, batch settings and previews.</DialogDescription>
+              </DialogHeader>
+              <div className="space-y-3 text-sm text-muted-foreground">
+                <p><strong className="text-foreground">Files:</strong> Up to 100 Models, with a limit of 4 MiB per file for bulk uploads.</p>
+                <p><strong className="text-foreground">Names:</strong> Prefixes apply to unsubmitted Models, separated from the name by a space. Title Case capitalizes each word while preserving the prefix and existing capitalization. Example: FarmBot: Belt Clip.</p>
+                <p><strong className="text-foreground">Scale:</strong> 100% = scale 1. Choose a shortcut or enter a custom scale, then preview the resulting size.</p>
+                <p><strong className="text-foreground">Batch settings:</strong> Changes apply to inherited values. Models stay inactive unless activation is requested and their saved dependency audit succeeds.</p>
+                <p>{preferencesSaved ? 'Your batch defaults are remembered in this browser.' : 'Default preferences apply to this batch.'} Prefix and Title Case apply only to the current batch.</p>
+                <p><strong className="text-foreground">Textures:</strong> An existing Texture reuses one saved file for Base Color. Confirm any differently named requirements in the Model details.</p>
+                <p><strong className="text-foreground">Preview:</strong> Preview below Queued Models or open a separate window. No upload is needed.</p>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
         <DialogDescription>Choose Models, resolve missing files, then import. Uploads start only when you click Import.</DialogDescription>
       </DialogHeader>
       <div data-slot="bulk-import-body" role="region" aria-label="Bulk import configuration" tabIndex={0} className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6">
@@ -411,26 +443,27 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
       <input ref={previewRef} aria-label="Select preview image" type="file" accept=".png,.jpg,.jpeg,.webp" className="hidden" disabled={locked || checkingPreview}
         onChange={(event) => { if (selected) void choosePreview(event.target.files?.[0], selected.id); event.target.value = ''; }} />
       <div className="flex flex-wrap items-center gap-2">
-        <Button type="button" size="sm" disabled={importing || drafts.length >= MAX_BULK_MODELS} onClick={() => primaryRef.current?.click()}><Upload className="mr-1 h-3 w-3" />1. Choose Model files</Button>
+        <Button type="button" size="sm" className="bg-green-700 text-white hover:bg-green-800 focus-visible:ring-green-500/50 disabled:bg-muted disabled:text-muted-foreground" disabled={importing || drafts.length >= MAX_BULK_MODELS} onClick={() => primaryRef.current?.click()}><Upload className="mr-1 h-3 w-3" />1. Choose Model files</Button>
         <Badge variant="secondary">{drafts.length}/100 Models</Badge>
-        <span className="text-xs text-muted-foreground">Up to 4 MiB per file for bulk uploads.</span>
       </div>
       {notice && <p role="alert" className="break-words rounded border border-amber-500/40 p-2 text-xs">{notice}</p>}
-      <details aria-label="Batch defaults" className="rounded border p-3">
-        <summary className="cursor-pointer text-sm font-medium">2. Batch settings <span className="text-xs font-normal text-muted-foreground">· Scale {defaults.scale} · {defaults.categoryIds.length} categories · {defaults.isActive ? 'Activate after import' : 'Keep inactive'}</span></summary>
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-          <div><p className="text-xs text-muted-foreground">{preferencesSaved ? 'Your batch defaults are remembered in this browser.' : 'Default preferences for this batch.'}</p></div>
-          <Button type="button" variant="outline" size="sm" disabled={importing} onClick={() => setDefaults(createBulkDefaults())}>Reset defaults</Button>
-        </div>
+      <details open aria-label="Batch defaults" className="relative rounded border p-3">
+        <summary className="min-h-7 cursor-pointer pr-32 text-sm font-medium">2. Batch settings</summary>
+        <Button type="button" variant="outline" size="sm" className="absolute right-3 top-2 h-7 text-xs" disabled={importing} onClick={() => { setDefaults(createBulkDefaults()); setTitlePrefix(''); setTitleCase(false); }}>Reset defaults</Button>
         <fieldset disabled={importing} className="mt-3 min-w-0 space-y-3">
+          <label className="block max-w-md text-xs">Add Title Prefix:
+            <Input aria-label="Add Title Prefix" placeholder="Optional, e.g. FarmBot:" value={titlePrefix} maxLength={255} onChange={(event) => setTitlePrefix(event.target.value)} />
+          </label>
+          <label className="flex items-center gap-1.5 text-xs">
+            <input type="checkbox" checked={titleCase} onChange={(event) => setTitleCase(event.target.checked)} />
+            Convert to Title Case
+          </label>
           <div className="flex flex-wrap items-end gap-2">
             <label className="block max-w-40 text-xs">Scale<Input aria-label="Batch scale" type="number" min="0.01" step="0.01" value={defaults.scale} onChange={(event) => setDefaults((current) => ({ ...current, scale: event.target.value }))} /></label>
             {BULK_SCALE_PRESETS.map((preset) => <Button key={preset.value} type="button" variant="outline" size="sm" aria-label={`Set batch scale to ${preset.label}`} onClick={() => setDefaults((current) => ({ ...current, scale: preset.value }))}>{preset.label}</Button>)}
           </div>
-          <p className="text-xs text-muted-foreground">100% = scale 1. Choose a shortcut or enter a custom scale, then preview the resulting size.</p>
           <div className="flex flex-wrap gap-3">{FLAGS.map(([key, label]) => <label key={key} className="flex items-center gap-1.5 text-xs"><input type="checkbox" checked={defaults[key]} onChange={(event) => setDefaults((current) => ({ ...current, [key]: event.target.checked }))} />{label}</label>)}</div>
           <CategoryChoices categories={activeCategories} value={defaults.categoryIds} onChange={(categoryIds) => setDefaults((current) => ({ ...current, categoryIds }))} />
-          <p className="text-xs text-muted-foreground">Changes apply to inherited values. Models stay inactive unless activation is requested and their saved dependency audit succeeds.</p>
         </fieldset>
       </details>
       <section aria-label="Shared Texture" className="space-y-2 rounded border p-3">
@@ -442,7 +475,6 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
               <ExistingTextureOptions textures={activeTextures} selectedId={defaults.existingTextureId} />
             </select>
           </label>
-          <p className="text-xs text-muted-foreground">Reuses one saved file for Base Color. Confirm any differently named requirements below.</p>
         </fieldset>
         <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
           <span className="text-muted-foreground" role="status">{texturesLoading ? 'Loading existing Textures…' : textureError || ''}</span>
@@ -464,7 +496,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
         <h3 className="mb-2 shrink-0 text-sm font-medium">Queued Models</h3>
         <div role="region" aria-label="Queued Model files" tabIndex={0} className="min-h-0 max-h-80 flex-1 space-y-1 overflow-y-auto overscroll-contain pr-1 md:max-h-none">{drafts.map((draft, index) => <div key={draft.id} className={`flex items-center gap-1 rounded border ${selected?.id === draft.id ? 'border-primary bg-muted' : ''}`}>
           <button type="button" className="min-w-0 flex-1 p-2 text-left" aria-pressed={selected?.id === draft.id} onClick={() => setSelectedId(draft.id)}>
-            <span className="block truncate text-xs font-medium">{index + 1}. {draft.modelName || draft.source.file.name}</span>
+            <span className="block truncate text-xs font-medium">{index + 1}. {results[draft.id]?.submitted.draft.modelName || bulkModelTitle(draft.modelName, titlePrefix, titleCase) || draft.source.file.name}</span>
             <span className="block truncate text-[11px] text-muted-foreground">{draft.source.sourcePath} · {sizeLabel(draft.source.file.size)}</span>
             <span className={`block text-[11px] ${statusColor(draft)}`}>{status(draft)}</span>
             {drafts.some((other) => other.id !== draft.id && possibleRepeat(other.source.file, draft.source.file)) && <span className="block text-[11px] text-amber-800 dark:text-amber-300">Possible duplicate — review both files</span>}
@@ -487,13 +519,13 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
             <h3 className="min-w-0 break-words text-sm font-medium">{selected.source.file.name}</h3>
             <Button type="button" variant="outline" size="sm" disabled={importing || selected.inspecting || !!selected.inspectionError} onClick={() => previewSelectedModel(true)}><ExternalLink className="mr-2 h-4 w-4" />Open preview window</Button>
           </div>
-          <p className="text-xs text-muted-foreground">Preview below Queued Models, or open a separate window. No upload is needed.</p>
           {result && <div className="space-y-3" role="status">
             <p className={`text-sm ${statusColor(selected)}`}><span className="font-medium">{status(selected)}</span> — {result.message}</p>
             <p className="text-xs text-muted-foreground">Submitted files and settings are shown below.</p>
             {result.modelId ? <a className="text-sm underline" href={`/admin/threed/model-files?modelId=${result.modelId}`} target="_blank" rel="noreferrer">Review Model files (new tab)</a>
-              : result.status === 'unknown' && <a className="text-sm underline" href="/admin/threed/models" target="_blank" rel="noreferrer">Check Models (new tab)</a>}
-            {result.canRetry && !result.modelId && <Button type="button" variant="outline" size="sm" disabled={importing} onClick={() => setResults((current) => { const next = { ...current }; delete next[selected.id]; return next; })}>Correct and retry</Button>}
+              : result.status === 'unknown' && !result.canRetry && <a className="text-sm underline" href="/admin/threed/models" target="_blank" rel="noreferrer">Check Models (new tab)</a>}
+            {result.canRetry && !result.modelId && <Button type="button" size="sm" disabled={importing || checkingPreview} onClick={() => void importReady(selected.id)}>Try Again</Button>}
+            {result.canRetry && !result.modelId && <Button type="button" variant="outline" size="sm" disabled={importing} onClick={() => setResults((current) => { const next = { ...current }; delete next[selected.id]; return next; })}>Edit before retry</Button>}
           </div>}
             {selected.gltfResources?.textures && <div className="space-y-2 break-words rounded border bg-muted/40 p-3 text-xs" role="region" aria-label="Model texture summary">
               <h4 className="font-medium">Model textures</h4>
@@ -561,6 +593,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
               <details key={selected.id} className="space-y-3 border-t pt-3">
               <summary className="cursor-pointer text-sm font-medium">Model settings <span className="text-xs font-normal text-muted-foreground">· {selected.modelName} · Scale {selectedPlan.settings.scale}</span></summary>
               <label className="block text-xs">Model name<Input value={selected.modelName} onChange={(event) => updateDraft(selected.id, { modelName: event.target.value })} /></label>
+              {!result && <p className="text-xs text-muted-foreground">Import title: {bulkModelTitle(selected.modelName, titlePrefix, titleCase) || 'Enter a Model name'}</p>}
               <div className="grid grid-cols-2 gap-2">
                 <label className="text-xs">Scale {selected.overrides.scale === undefined && '(batch)'}<Input type="number" min="0.01" step="0.01" value={selectedPlan.settings.scale} onChange={(event) => override('scale', event.target.value)} /></label>
                 <label className="text-xs">Y rotation (degrees)<Input type="number" step="any" value={selected.rotationY} onChange={(event) => updateDraft(selected.id, { rotationY: event.target.value })} /></label>
@@ -596,13 +629,13 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
       </div>
       <div data-slot="bulk-import-footer" className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t bg-background px-4 py-3 sm:px-6">
         <div className="text-xs text-muted-foreground" aria-live="polite">
-          {eligible.length} ready · {eligible.filter((draft) => draft.configureLater).length} configure later · {drafts.filter((draft) => !results[draft.id] && !prepared.get(draft.id)?.ready).length} need attention
+          {eligible.length} ready · {eligible.filter((draft) => draft.configureLater).length} configure later · {drafts.filter((draft) => results[draft.id] ? results[draft.id].status !== 'imported' : !prepared.get(draft.id)?.ready).length} need attention
           <p>Clear selections to start a new batch. Clearing does not delete saved Models.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant="outline" size="sm" disabled={importing || (drafts.length === 0 && pool.length === 0)} onClick={clearAllSelectedFiles}>Clear All Selected Files</Button>
           <Button type="button" variant="ghost" size="sm" disabled={importing || !drafts.some((draft) => results[draft.id]?.status === 'imported')} onClick={() => changeDrafts((current) => current.filter((draft) => results[draft.id]?.status !== 'imported'))}>Clear imported rows</Button>
-          <Button type="button" size="sm" disabled={importing || checkingPreview || eligible.length === 0} onClick={() => void importReady()}>{importing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{importing ? 'Importing…' : `Import ${eligible.length} ready Models`}</Button>
+          <Button type="button" size="sm" className="bg-green-700 text-white hover:bg-green-800 focus-visible:ring-green-500/50 disabled:bg-muted disabled:text-muted-foreground" disabled={importing || checkingPreview || eligible.length === 0} onClick={() => void importReady()}>{importing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{importing ? 'Importing…' : `Import ${eligible.length} ready Models`}</Button>
         </div>
       </div>
     </DialogContent>

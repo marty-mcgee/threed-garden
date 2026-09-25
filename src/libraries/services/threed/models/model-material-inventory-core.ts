@@ -153,6 +153,38 @@ export function createThreeDModelMaterialInventory(root: THREE.Object3D): ThreeD
   };
 }
 
+/** FBX images may populate shared Texture sources after the Model has loaded. */
+export function observeThreeDModelMaterialInventory(
+  root: THREE.Object3D,
+  onChange: (inventory: ThreeDModelMaterialInventory) => void,
+): () => void {
+  let previous = '';
+  let timer: ReturnType<typeof setInterval> | undefined;
+  let disposed = false;
+  const refresh = () => {
+    if (disposed) return false;
+    const inventory = createThreeDModelMaterialInventory(root);
+    const signature = JSON.stringify(inventory);
+    if (signature !== previous) {
+      previous = signature;
+      onChange(inventory);
+    }
+    const pending = inventory.slots.some(slot => slot.textures.some(texture => !texture.ready));
+    if (!pending && timer !== undefined) {
+      clearInterval(timer);
+      timer = undefined;
+    }
+    return pending;
+  };
+  // Only inspector/export consumers subscribe. Stop once all images are ready;
+  // missing images remain blocked without repeated React state updates.
+  if (refresh()) timer = setInterval(refresh, 250);
+  return () => {
+    disposed = true;
+    if (timer !== undefined) clearInterval(timer);
+  };
+}
+
 export function resolveThreeDModelMaterialTarget(
   root: THREE.Object3D,
   targetKey: string,

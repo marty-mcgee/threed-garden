@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { mock as clockMock } from 'node:test';
 import {
   runBulkModel,
   type BulkImportInput,
@@ -254,7 +255,35 @@ await group('lost, server-error, malformed, and oversized create responses never
   }
 });
 
-await group('upload rejections are retryable while lost upload outcomes remain unconfirmed', async () => {
+await group('stalled primary upload aborts at 15 seconds without creating or automatically retrying', async () => {
+  clockMock.timers.enable({ apis: ['setTimeout'] });
+  try {
+    let aborted = false;
+    // Use the actual request signal to model fetch cancellation.
+    let calls = 0;
+    const request: typeof fetch = async (_url, init) => {
+      calls += 1;
+      return new Promise<Response>((_resolve, reject) => {
+        init!.signal!.addEventListener('abort', () => {
+          aborted = true;
+          reject(new DOMException('Aborted', 'AbortError'));
+        }, { once: true });
+      });
+    };
+    const pending = runBulkModel(input(), () => {}, request);
+    clockMock.timers.tick(14_999);
+    assert.equal(aborted, false);
+    clockMock.timers.tick(1);
+    const outcome = await pending;
+    assert.equal(aborted, true);
+    assert.equal(calls, 1);
+    assert.equal(outcome.status, 'unknown');
+    assert.equal(outcome.canRetry, true);
+    assert.equal(outcome.modelId, undefined);
+  } finally { clockMock.timers.reset(); }
+});
+
+await group('upload rejections are retryable and lost upload outcomes allow explicit retry before creation', async () => {
   for (const reply of [() => reject(422), () => new Response('Too large', { status: 413 })]) {
     const client = mock([uploadStep(reply)]);
     const outcome = await runBulkModel(input(), () => {}, client.request);
@@ -267,7 +296,24 @@ await group('upload rejections are retryable while lost upload outcomes remain u
     const outcome = await runBulkModel(input(), () => {}, client.request);
     client.done();
     assert.equal(outcome.status, 'unknown');
-    assert.equal(outcome.canRetry, false);
+    assert.equal(outcome.canRetry, true);
+    assert.equal(outcome.modelId, undefined);
+    assert.match(outcome.message, /Try Again/);
+  }
+});
+
+await group('explicit retry after a lost upload creates exactly one Model with the retained input', async () => {
+  const reviewed = input();
+  const client = mock([uploadStep(lost), uploadStep(), createStep(), savedStep(), auditStep()]);
+  const first = await runBulkModel(reviewed, () => {}, client.request);
+  assert.equal(first.canRetry, true);
+  assert.equal(client.calls.length, 1);
+  const retried = await runBulkModel(reviewed, () => {}, client.request);
+  client.done();
+  assert.equal(retried.status, 'imported');
+  assert.equal(client.calls.filter((call) => call.url === MODELS && call.init.method === 'POST').length, 1);
+  for (const call of client.calls.filter((call) => call.url === UPLOAD)) {
+    assert.equal((call.init.body as FormData).get('file'), reviewed.file);
   }
 });
 
