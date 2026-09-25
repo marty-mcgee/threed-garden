@@ -3,7 +3,7 @@ import {
   pgTable, text, timestamp, boolean, index, serial, varchar, 
   integer, decimal, numeric, jsonb, uniqueIndex, foreignKey,
   pgSchema, pgEnum, time, AnyPgColumn, real,
-  check, unique,
+  check, unique, doublePrecision, primaryKey,
 } from 'drizzle-orm/pg-core';
 import { relations, sql } from 'drizzle-orm';
 import { user } from '../auth';
@@ -2085,4 +2085,69 @@ export const threedAnimationActionSlots = pgTable('threed_animation_action_slots
   index('idx_animation_action_slots_owner').on(t.userId),
   foreignKey({ name: 'animation_action_slot_category_owner_fk', columns: [t.categoryId, t.userId], foreignColumns: [threedAnimationCategories.id, threedAnimationCategories.userId] }),
   check('animation_action_slots_valid', sql`length(trim(${t.name})) > 0 AND length(trim(${t.groupName})) > 0`),
+]);
+
+// ============================================
+// THREED ASSEMBLY — assignments and composition revisions
+// ============================================
+
+export const threedAssembly = pgTable('threed_assembly', {
+  id: text('id').primaryKey().default(sql`gen_random_uuid()::text`),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  name: varchar('name', { length: 255 }).notNull(),
+  demoKey: text('demo_key'),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, t => [
+  unique('threed_assembly_owner_demo_unique').on(t.userId, t.demoKey),
+  check('threed_assembly_name_check', sql`length(btrim(${t.name})) > 0`),
+]);
+
+export const threedAssemblyModelAssignments = pgTable('threed_assembly_model_assignments', {
+  assemblyId: text('assembly_id').notNull().references(() => threedAssembly.id, { onDelete: 'cascade' }),
+  modelId: integer('model_id').notNull().references(() => threedModels.id, { onDelete: 'restrict' }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, t => [
+  primaryKey({ columns: [t.assemblyId, t.modelId] }),
+  index('threed_assembly_assignments_model_idx').on(t.modelId),
+]);
+
+export const threedAssemblyRevisions = pgTable('threed_assembly_revisions', {
+  assemblyId: text('assembly_id').notNull().references(() => threedAssembly.id, { onDelete: 'cascade' }),
+  revision: integer('revision').notNull(),
+  formatVersion: integer('format_version').notNull().default(1),
+  name: varchar('name', { length: 255 }).notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+}, t => [
+  primaryKey({ columns: [t.assemblyId, t.revision] }),
+  check('threed_assembly_revision_positive', sql`${t.revision} > 0`),
+  check('threed_assembly_format_version', sql`${t.formatVersion} = 1`),
+  check('threed_assembly_revision_name_check', sql`length(btrim(${t.name})) > 0`),
+]);
+
+export const threedAssemblyComponents = pgTable('threed_assembly_components', {
+  assemblyId: text('assembly_id').notNull(),
+  revision: integer('revision').notNull(),
+  componentId: text('component_id').notNull(),
+  ordinal: integer('ordinal').notNull(),
+  modelId: integer('model_id').notNull(),
+  label: varchar('label', { length: 255 }).notNull(),
+  positionX: doublePrecision('position_x').notNull(),
+  positionY: doublePrecision('position_y').notNull(),
+  positionZ: doublePrecision('position_z').notNull(),
+  rotationX: doublePrecision('rotation_x').notNull(),
+  rotationY: doublePrecision('rotation_y').notNull(),
+  rotationZ: doublePrecision('rotation_z').notNull(),
+  scale: doublePrecision('scale').notNull(),
+}, t => [
+  primaryKey({ columns: [t.assemblyId, t.revision, t.componentId] }),
+  unique('threed_assembly_component_order_unique').on(t.assemblyId, t.revision, t.ordinal),
+  foreignKey({ name: 'threed_assembly_component_revision_fk', columns: [t.assemblyId, t.revision], foreignColumns: [threedAssemblyRevisions.assemblyId, threedAssemblyRevisions.revision] }).onDelete('cascade'),
+  foreignKey({ name: 'threed_assembly_component_assignment_fk', columns: [t.assemblyId, t.modelId], foreignColumns: [threedAssemblyModelAssignments.assemblyId, threedAssemblyModelAssignments.modelId] }).onDelete('no action'),
+  check('threed_assembly_component_id_check', sql`length(btrim(${t.componentId})) between 1 and 128`),
+  check('threed_assembly_component_order_check', sql`${t.ordinal} between 1 and 100`),
+  check('threed_assembly_component_label_check', sql`length(btrim(${t.label})) > 0`),
+  ...([['x', t.positionX], ['y', t.positionY], ['z', t.positionZ]] as const).map(([axis, column]) => check(`threed_assembly_position_${axis}_check`, sql`${column} between -1000000 and 1000000`)),
+  ...([['x', t.rotationX], ['y', t.rotationY], ['z', t.rotationZ]] as const).map(([axis, column]) => check(`threed_assembly_rotation_${axis}_check`, sql`${column} between -10000 and 10000`)),
+  check('threed_assembly_scale_check', sql`${t.scale} between 0.0001 and 10000`),
 ]);

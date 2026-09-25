@@ -17,7 +17,7 @@ export default defineConfig({
   dbCredentials: {
     url: process.env.DATABASE_URL,
   },
-  // Add these to skip prompts
+  // Print the proposed changes and require confirmation before applying them.
   verbose: true,
-  strict: false,
+  strict: true,
 });

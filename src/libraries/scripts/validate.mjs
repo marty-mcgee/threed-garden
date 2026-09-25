@@ -70,6 +70,8 @@ const tasks = {
   'threed-library-collections': [ts('validate-threed-library-collections.mts')],
   'threed-project-session': [ts('validate-threed-project-session.mts')],
   'threed-mqtt': [['node', '--import', 'tsx', 'src/libraries/services/threed/mqtt/validate.mts']],
+  'threed-assembly-persistence': [['node', '--conditions=react-server', '--import', 'tsx', `${scripts}/validate-assembly-persistence.mts`]],
+  'threed-assembly-group': [ts('validate-assembly-group.mts')],
   'threed-model-import': [ts('validate-threed-model-import-contract.mts')],
   'threed-model-bulk-preparation': [ts('validate-threed-model-bulk-preparation.mts')],
   'threed-model-bulk-runner': [ts('validate-threed-model-bulk-runner.mts')],

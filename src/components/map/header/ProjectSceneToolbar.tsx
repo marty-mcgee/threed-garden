@@ -3,6 +3,7 @@
 import type { RefObject } from 'react';
 import {
   Box,
+  Boxes,
   ChevronDown,
   ChevronUp,
   Layers,
@@ -105,6 +106,7 @@ export function ProjectSceneToolbar({
           <DropdownMenuContent align="end" className="threed-workspace-panel threed-toolbar-dropdown-surface z-[2000] w-56 border-white/10 text-white backdrop-blur-md">
             <DropdownMenuItem onSelect={onOpenProjectTour}><ScanSearch className="h-3.5 w-3.5" /> Project Tour</DropdownMenuItem>
             <DropdownMenuItem onSelect={onOpenScenarios}><Layers className="h-3.5 w-3.5" /> Scenarios</DropdownMenuItem>
+            <DropdownMenuItem asChild><a href="/dashboard/assembly-groups" target="_blank" rel="noopener noreferrer"><Boxes className="h-3.5 w-3.5" /> Assembly Groups (new tab)</a></DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )}

@@ -20,6 +20,7 @@ import {
   Home,
   Sprout,
   Package,
+  Boxes,
   User,
   AlertTriangle,
   FileText,
@@ -111,6 +112,7 @@ const navSections: NavSection[] = [
         icon: Package,
         exact: false,
         relatedPaths: [
+          '/admin/threed/assembly-groups',
           '/admin/threed/model-categories',
           '/admin/threed/model-files',
           '/admin/threed/model-textures',
@@ -126,6 +128,7 @@ const navSections: NavSection[] = [
           { title: 'Animations', href: '/admin/threed/animations', icon: Clapperboard },
           { title: 'Animation Categories', href: '/admin/threed/animation-categories', icon: FolderTree },
           { title: 'Animation Slots', href: '/admin/threed/animation-slots', icon: Clapperboard },
+          { title: 'Assembly Groups', href: '/admin/threed/assembly-groups', icon: Boxes },
         ],
       },
       { title: 'Characters', href: '/admin/threed/characters', icon: User, exact: false },
