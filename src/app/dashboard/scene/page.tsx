@@ -870,8 +870,8 @@ function UnifiedMapPageInner() {
         ...(currentMapView ? { map: currentMapView } : {}),
         workspace: {
           selectedMarkerId: selectedMarker?.id ?? null,
-          // Persist Assets visibility independently of transient toolbar dropdowns.
-          panel: isProjectAssetsOpen ? 'assets' : 'none',
+          // Persist the open workspace independently of transient toolbar dropdowns.
+          panel: isProjectAssetsOpen ? 'assets' : isModelLibraryOpen ? 'models' : 'none',
           assetSearch: projectAssetSearch,
           assetType: projectAssetType,
         },
@@ -911,7 +911,7 @@ function UnifiedMapPageInner() {
     } finally {
       if (saveRequestRef.current === requestId) setSavingProjectMarkers(false);
     }
-  }, [cameraMode, initialProjectViewState, panelHeight, savingProjectMarkers, selectedProjectId, viewMode, selectedMarker, isProjectAssetsOpen, projectAssetSearch, projectAssetType]);
+  }, [cameraMode, initialProjectViewState, panelHeight, savingProjectMarkers, selectedProjectId, viewMode, selectedMarker, isProjectAssetsOpen, isModelLibraryOpen, projectAssetSearch, projectAssetType]);
 
   // Phase 5A compatibility bridge: establish the orchestration request
   // lifecycle while preserving immediate animation until proximity is gated.
@@ -2342,10 +2342,11 @@ function UnifiedMapPageInner() {
       : null);
     setIsProjectSummaryOpen(workspace?.panel === 'summary');
     setIsProjectAssetsOpen(workspace?.panel === 'assets');
+    if (workspace?.panel === 'models') void openModelLibrary();
     setProjectAssetSearch(workspace?.assetSearch ?? '');
     setProjectAssetType(workspace?.assetType && projectRuntimeMarkers.some(marker => marker.type === workspace.assetType)
       ? workspace.assetType : 'all');
-  }, [initialProjectViewState, isThreeDPresentationComplete, projectRuntimeMarkers, viewMode]);
+  }, [initialProjectViewState, isThreeDPresentationComplete, openModelLibrary, projectRuntimeMarkers, viewMode]);
   useEffect(() => {
     if (!selectedProjectId || !isThreeDPresentationComplete) {
       setIsProjectSetupOpen(false);
@@ -2750,7 +2751,7 @@ function UnifiedMapPageInner() {
           }}
         />
       </div>
-      <div hidden={isProjectSummaryOpen} inert={isProjectSummaryOpen}>
+      <div>
       <ThreeDModelLibraryPanel
         isOpen={Boolean(selectedProjectId) && isModelLibraryOpen}
         viewMode={viewMode}
@@ -2801,7 +2802,7 @@ function UnifiedMapPageInner() {
       />
       </div>
 
-      <div hidden={isProjectSummaryOpen} inert={isProjectSummaryOpen}>
+      <div>
       <ThreeDCharacterLibraryPanel
         isOpen={Boolean(selectedProjectId) && isCharacterLibraryOpen}
         projectModules={projectThreeDModules}
@@ -2824,7 +2825,7 @@ function UnifiedMapPageInner() {
       />
       </div>
 
-      <div hidden={isProjectSummaryOpen} inert={isProjectSummaryOpen}>
+      <div>
       <ThreeDFarmBotLibraryPanel
         isOpen={Boolean(selectedProjectId) && isFarmBotLibraryOpen}
         projectModules={projectThreeDModules}

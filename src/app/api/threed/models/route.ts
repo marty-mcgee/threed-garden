@@ -1,3 +1,4 @@
+import { retryDisconnectedRead } from '@/libraries/db/read-retry';
 import { databaseConnectionDiagnostic } from '@/libraries/db/connection-diagnostics';
 import { parseModelListQuery } from '@/libraries/services/threed/models/model-list-query';
 import { modelSelection } from '@/libraries/services/threed/models/model-primary-file';
@@ -293,6 +294,9 @@ export async function GET(request: NextRequest) {
 
     const userId = session.user.id;
 
+    // Retry only Model reads; authentication and all mutations stay outside recovery.
+    return await retryDisconnectedRead(async () => {
+
     // Get a single model by ID
     if (id) {
       const [model] = await db
@@ -474,8 +478,9 @@ export async function GET(request: NextRequest) {
         total,
       },
     });
+    });
   } catch (error) {
-    console.error('Error fetching models:', error);
+    console.error('Error fetching models', { errorName: error instanceof Error ? error.name : 'UnknownError' });
     console.error('Database connection diagnostic:', JSON.stringify(databaseConnectionDiagnostic(error)));
     return NextResponse.json(
       { success: false, error: 'Failed to fetch models' },

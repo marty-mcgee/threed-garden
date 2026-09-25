@@ -21,7 +21,7 @@ import { cn } from '@/libraries/utils';
 
 export function AppHeader({ surface }: { surface: 'dashboard' | 'admin' }) {
   const pathname = usePathname();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -34,6 +34,26 @@ export function AppHeader({ surface }: { surface: 'dashboard' | 'admin' }) {
     : 'U';
   const userDisplayName = mounted ? session?.user?.name || session?.user?.email : 'Loading…';
   const userEmail = mounted ? session?.user?.email : '';
+  const loginStatus = !mounted || status === 'loading'
+    ? 'Checking login…'
+    : status === 'authenticated' ? 'Signed in' : 'Signed out';
+  const [gravatar, setGravatar] = useState<{ email: string; url: string } | null>(null);
+  const [failedAvatarUrl, setFailedAvatarUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!userEmail || status !== 'authenticated') return;
+    let cancelled = false;
+    const email = userEmail;
+    const loadGravatar = async () => {
+      const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(email.trim().toLowerCase()));
+      const hash = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
+      if (!cancelled) setGravatar({ email, url: `https://www.gravatar.com/avatar/${hash}?s=64&d=404` });
+    };
+    void loadGravatar().catch(() => { /* Initials remain available if hashing is unavailable. */ });
+    return () => { cancelled = true; };
+  }, [userEmail, status]);
+  const avatarUrl = mounted && status === 'authenticated' && gravatar?.email === userEmail
+    ? gravatar?.url : undefined;
 
   return (
     <header className="threed-app-header sticky top-0 z-40 h-12 border-b border-white/10">
@@ -91,27 +111,33 @@ export function AppHeader({ surface }: { surface: 'dashboard' | 'admin' }) {
             {resolvedTheme === 'dark' ? <Sun className="text-yellow-400" /> : <Moon />}
           </Button>
 
-          {surface === 'admin' && (
-            <DropdownMenu>
+          <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon-xs" className="rounded-full bg-white/10 text-xs text-white hover:bg-white/15" aria-label="Account menu">
-                  {userInitials}
+                <Button variant="ghost" size="icon-xs" className="relative shrink-0 rounded-full bg-white/10 text-xs text-white hover:bg-white/15" aria-label={`Account menu — ${loginStatus}`} title={loginStatus}>
+                  {avatarUrl && avatarUrl !== failedAvatarUrl
+                    ? <img src={avatarUrl} alt="" width={32} height={32} className="size-full rounded-full object-cover" referrerPolicy="no-referrer" onError={() => setFailedAvatarUrl(avatarUrl)} />
+                    : userInitials}
+                  <span aria-hidden="true" className={cn('absolute bottom-0 right-0 size-2 rounded-full border border-slate-900', mounted && status === 'authenticated' ? 'bg-green-400' : 'bg-slate-400')} />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="threed-app-menu-surface w-56">
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col gap-1">
-                    <p className="truncate text-sm font-medium leading-none">{userDisplayName}</p>
+                    <p className="truncate text-sm font-medium leading-none">{userDisplayName || 'Guest'}</p>
+                    <p className="text-xs text-slate-400" role="status">{loginStatus}</p>
                     {userEmail && <p className="truncate text-xs leading-none text-slate-400">{userEmail}</p>}
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="p-0" onSelect={event => event.preventDefault()}>
-                  <SignOutButton variant="ghost" className="w-full justify-start text-red-300 hover:bg-red-950/40 hover:text-red-200" />
-                </DropdownMenuItem>
+                {mounted && status === 'authenticated' ? (
+                  <DropdownMenuItem className="p-0" onSelect={event => event.preventDefault()}>
+                    <SignOutButton variant="ghost" className="w-full justify-start text-red-300 hover:bg-red-950/40 hover:text-red-200" />
+                  </DropdownMenuItem>
+                ) : status === 'unauthenticated' && (
+                  <DropdownMenuItem asChild><Link href="/auth/sign-in">Sign in</Link></DropdownMenuItem>
+                )}
               </DropdownMenuContent>
-            </DropdownMenu>
-          )}
+          </DropdownMenu>
         </div>
       </div>
     </header>

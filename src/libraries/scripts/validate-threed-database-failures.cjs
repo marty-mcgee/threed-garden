@@ -35,7 +35,7 @@ assert.notEqual(evaluatePool('production'), sharedGlobal.threeDDatabasePool);
 assert.equal(attached, 2);
 const schema = new Proxy({}, { get: (_, table) => new Proxy({}, { get: (_, column) => `${table}.${String(column)}` }) });
 const orm = { getTableColumns: () => ({}), sql: () => ({}) };
-for (const name of ['eq', 'and', 'desc', 'inArray']) orm[name] = (...args) => args;
+for (const name of ['eq', 'and', 'or', 'asc', 'desc', 'inArray']) orm[name] = (...args) => args;
 let queue = [];
 const db = { select() {
   const chain = {};
@@ -95,11 +95,46 @@ vm.runInNewContext(code('src/app/api/map/threed/route.ts'), {
   assert.equal(empty.body.success, true);
   assert.equal(empty.body.data.plantings.length, 0);
   assert.equal(queue.length, 0);
+  const modelsApi = {};
+  vm.runInNewContext(code('src/app/api/threed/models/route.ts'), {
+    exports: modelsApi, URL, console: { error() {} },
+    require(name) {
+      if (name === '@/libraries/db/read-retry') return readRetry;
+      if (name === '@/libraries/db/connection-diagnostics') return diagnostics;
+      if (name === 'next/server') return { NextResponse: { json: (body, options) => ({ body, status: options?.status ?? 200 }) } };
+      if (name === '@/libraries/auth') return { auth: async () => ({ user: { id: 'owner' } }) };
+      if (name === '@/libraries/db/client') return { db };
+      if (name.startsWith('@/libraries/schema/')) return schema;
+      if (name === 'drizzle-orm') return orm;
+      if (name.endsWith('/model-primary-file')) return { modelSelection: () => ({}) };
+      if (name.endsWith('/model-list-query')) return { parseModelListQuery: () => ({limit:50,offset:0}) };
+      // Mutation-only imports are not used by GET.
+      return {};
+    },
+  });
+  const model = {id:61,userId:'owner',modelType:'fbx',modelName:'SM Bld Barn 03'};
+  const modelRead = () => [[model], [], []]; // Model, files, categories
+  const request = {url:'http://localhost/api/threed/models?id=61'};
+  queue = [...modelRead(), disconnect(), ...modelRead(), [{modelId:61,targetKey:'barn',textureId:7}], []];
+  const recoveredModel = await modelsApi.GET(request);
+  assert.equal(recoveredModel.status,200);
+  assert.equal(recoveredModel.body.data.materialAssignments[0].textureId,7);
+  assert.equal(queue.length,0);
+  queue = [...modelRead(), disconnect(), ...modelRead(), disconnect()];
+  assert.equal((await modelsApi.GET(request)).status,500);
+  assert.equal(queue.length,0);
+  queue = [...modelRead(), Object.assign(new Error('Missing relation'), {code:'42P01'})];
+  assert.equal((await modelsApi.GET(request)).status,500);
+  assert.equal(queue.length,0);
+  queue = [[]];
+  assert.equal((await modelsApi.GET(request)).status,404);
+  assert.equal(queue.length,0);
+  console.log('PASS: Model material-assignment disconnect recovers once with textures intact; repeated disconnect, schema error and missing Model retain failure responses');
   console.log('PASS: one disconnected asset-read retry recovers, repeated disconnect/schema failure remains 500; development reloads reuse one attached pool; production creates its own; map read failure returns 500 while a valid empty result remains 200');
 })().catch((error) => { console.error(error); process.exitCode = 1; });
 
 const diagnostics = {};
-vm.runInNewContext(code('src/libraries/db/connection-diagnostics.ts'), { exports: diagnostics });
+vm.runInNewContext(code('src/libraries/db/connection-diagnostics.ts'), { exports: diagnostics, require: () => readRetry });
 const wrapped = { message: 'SECRET', query: 'SECRET', cause: { code: 'ETIMEDOUT', errors: [
   { code: 'ETIMEDOUT', syscall: 'connect', address: '192.0.2.1', message: 'SECRET' },
   { code: 'ENETUNREACH', syscall: 'connect', address: '2001:db8::1' },
@@ -109,3 +144,5 @@ assert.ok(summary.includes('IPv4') && summary.includes('IPv6') && summary.includ
 assert.ok(!summary.includes('SECRET') && !summary.includes('192.0.2.1') && !summary.includes('2001:db8'));
 const cycle = {}; cycle.cause = cycle;
 assert.doesNotThrow(() => JSON.stringify(diagnostics.databaseConnectionDiagnostic(cycle)));
+
+assert.equal(diagnostics.databaseConnectionDiagnostic({cause: new Error('Connection terminated unexpectedly')}).disconnected, true);

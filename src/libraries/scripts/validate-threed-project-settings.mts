@@ -41,13 +41,15 @@ function findWorkspace(node: import('typescript').Node) {
 }
 findWorkspace(pageSource);
 assert(captureExpression, 'Project Save workspace capture must exist');
-const capture = new Function('isProjectSummaryOpen', 'isProjectAssetsOpen', 'selectedMarker', 'projectAssetSearch', 'projectAssetType', `return (${captureExpression});`);
+const capture = new Function('isProjectSummaryOpen', 'isProjectAssetsOpen', 'selectedMarker', 'projectAssetSearch', 'projectAssetType', 'isModelLibraryOpen', `return (${captureExpression});`);
 for (const assetsOpen of [true,false]) {
-  const toolbar = capture(false,assetsOpen,{id:'models-example'},'ball','models');
-  const dropdown = capture(true,assetsOpen,{id:'models-example'},'ball','models');
-  assert.deepEqual(dropdown,toolbar,'Temporary dropdown visibility must not change saved workspace');
-  assert.equal(dropdown.panel,assetsOpen ? 'assets' : 'none');
-  assert.deepEqual(parseThreeDProjectViewState({...saved,workspace:dropdown}).workspace,toolbar);
+  for (const modelsOpen of [true,false]) {
+    const toolbar = capture(false,assetsOpen,{id:'models-example'},'ball','models',modelsOpen);
+    const dropdown = capture(true,assetsOpen,{id:'models-example'},'ball','models',modelsOpen);
+    assert.deepEqual(dropdown,toolbar,'Temporary dropdown visibility must not change saved workspace');
+    assert.equal(dropdown.panel,assetsOpen ? 'assets' : modelsOpen ? 'models' : 'none');
+    assert.deepEqual(parseThreeDProjectViewState({...saved,workspace:dropdown}).workspace,toolbar);
+  }
 }
 console.log('PASS: Actual dropdown/toolbar Save captures preserve identical underlying workspace');
 

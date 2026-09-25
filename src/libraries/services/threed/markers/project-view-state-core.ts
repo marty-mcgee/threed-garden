@@ -53,7 +53,7 @@ export interface ThreeDProjectViewState {
   map?: ProjectMapViewState;
   workspace?: {
     selectedMarkerId: string | null;
-    panel: 'none' | 'summary' | 'assets';
+    panel: 'none' | 'summary' | 'assets' | 'models';
     assetSearch: string;
     assetType: string;
   };
@@ -160,14 +160,14 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
 
   if (input.workspace !== undefined) {
     const workspace = record(input.workspace);
-    if (!workspace || !['none', 'summary', 'assets'].includes(String(workspace.panel))) throw new ProjectViewStateError();
+    if (!workspace || !['none', 'summary', 'assets', 'models'].includes(String(workspace.panel))) throw new ProjectViewStateError();
     const text = (value: unknown, limit: number): string => {
       if (typeof value !== 'string' || value.length > limit) throw new ProjectViewStateError();
       return value;
     };
     result.workspace = {
       selectedMarkerId: workspace.selectedMarkerId === null ? null : text(workspace.selectedMarkerId, 200),
-      panel: workspace.panel as 'none' | 'summary' | 'assets',
+      panel: workspace.panel as 'none' | 'summary' | 'assets' | 'models',
       assetSearch: text(workspace.assetSearch, 200),
       assetType: text(workspace.assetType, 80),
     };

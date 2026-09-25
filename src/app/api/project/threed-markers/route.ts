@@ -1,3 +1,5 @@
+import { retryDisconnectedRead } from '@/libraries/db/read-retry';
+import { databaseConnectionDiagnostic } from '@/libraries/db/connection-diagnostics';
 import { bedPlantingGeometry, bedLocalPoint, bedWorldPoint, containBedPlantings, resolvePlantingBedId } from '@/libraries/services/threed/beds/bed-planting-bounds';
 import { resolveCharacterPhysics } from '@/libraries/services/threed/characters/character-physics';
 import { refreshModelMarkerData, currentPlantingModelId } from '@/libraries/services/threed/models/model-snapshot-assets';
@@ -1088,11 +1090,11 @@ export async function POST(request: NextRequest) {
 
     const input = parseCreateProjectModelInstance(body);
     const userId = session.user.id;
-    const ownedProject = await requireOwnedProject(userId, input.projectId);
+    const ownedProject = await retryDisconnectedRead(() => requireOwnedProject(userId, input.projectId));
     if (!ownedProject) {
       return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
     }
-    const assignment = await requireActiveThreeDAssignment(userId, input.projectId, input.threedId);
+    const assignment = await retryDisconnectedRead(() => requireActiveThreeDAssignment(userId, input.projectId, input.threedId));
     if (!assignment) {
       return NextResponse.json(
         { success: false, error: 'Active ThreeD Project assignment not found' },
@@ -1104,7 +1106,7 @@ export async function POST(request: NextRequest) {
       y: input.positionY,
       z: input.positionZ,
     }, ownedProject);
-    const model = await readEligibleModel(userId, input.modelId);
+    const model = await retryDisconnectedRead(() => readEligibleModel(userId, input.modelId));
     if (!model) {
       return NextResponse.json(
         { success: false, error: 'Model is not eligible for direct Scene placement' },
@@ -1190,6 +1192,7 @@ export async function POST(request: NextRequest) {
     console.error('Failed to create Project ThreeD marker', {
       errorName: error instanceof Error ? error.name : 'UnknownError',
       ...getSafeDatabaseError(error),
+      connection: databaseConnectionDiagnostic(error),
     });
     return NextResponse.json(
       { success: false, error: 'Failed to create Project ThreeD marker' },

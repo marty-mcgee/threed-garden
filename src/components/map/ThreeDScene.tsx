@@ -2567,6 +2567,8 @@ export function ThreeDScene({
   const centerZ = isFinite(bounds.centerZ) ? bounds.centerZ : 0;
   const maxDimension = Math.min(Math.max(bounds.width, bounds.height), 500);
   const cameraDistance = Math.min(Math.max(maxDimension * 1.5, 20), 750);
+  // Include Ground Map extent without changing marker bounds or physics ownership.
+  const maxOrbitDistance = Math.max(5000, Math.hypot(groundMap.width, groundMap.length) * 4);
   const groundCenterX = centerX;
   const groundCenterZ = centerZ;
   const groundSize = hasVisibleEnvironmentModel
@@ -2683,7 +2685,7 @@ export function ThreeDScene({
     if (isSavedCameraCompatibleWithScene(
       initialViewState,
       bounds,
-      Math.max(cameraDistance * 4, 50),
+      maxOrbitDistance,
     )) {
       controlsRef.current.object.position.set(
         initialViewState.cameraPosition.x,
@@ -2712,7 +2714,7 @@ export function ThreeDScene({
     setPhysicsDebug(initialViewState.physicsDebug ?? false);
     if (Boolean(autoRotate) !== initialViewState.autoRotate) onAutoRotateToggle?.();
     updateGeographicCompass();
-  }, [autoRotate, availableLayers, bounds, cameraDistance, centerX, centerZ, controlsReady, initialViewState, onAutoRotateToggle, updateGeographicCompass]);
+  }, [autoRotate, availableLayers, bounds, maxOrbitDistance, centerX, centerZ, controlsReady, initialViewState, onAutoRotateToggle, updateGeographicCompass]);
 
   const showNorthUpView = useCallback(() => {
     const controls = controlsRef.current;
@@ -3402,6 +3404,7 @@ export function ThreeDScene({
             centerZ + cameraDistance * 0.82,
           ],
           fov: 45,
+          far: maxOrbitDistance * 4,
         }}
         gl={{ antialias: true, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0 }}
         shadows={{ type: THREE.PCFShadowMap }}
@@ -3433,7 +3436,7 @@ export function ThreeDScene({
           makeDefault
           enableDamping={false}
           minDistance={2}
-          maxDistance={200}
+          maxDistance={maxOrbitDistance}
           maxPolarAngle={Math.PI / 2}
           autoRotate={autoRotate && !transforming}
           autoRotateSpeed={0.8}
