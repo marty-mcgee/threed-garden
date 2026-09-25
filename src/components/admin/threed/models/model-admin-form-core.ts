@@ -106,14 +106,20 @@ function assertFiniteNumber(value: string, label: string, minimum?: number): voi
   }
 }
 
-export function buildThreeDModelAdminPayload(form: ThreeDModelAdminFormData) {
+export function buildThreeDModelAdminPayload(form: ThreeDModelAdminFormData, mode: 'create' | 'edit' = 'create') {
   const modelName = form.modelName.trim();
   const modelType = form.modelType.trim();
   const filePath = form.filePath.trim();
 
   if (!modelName) throw new ThreeDModelFormValidationError('Model name is required');
   if (!modelType) throw new ThreeDModelFormValidationError('Model type is required');
-  if (!filePath) throw new ThreeDModelFormValidationError('Model file path is required');
+  const mainModelFileId = parseOptionalInteger(form.mainModelFileId, 'Primary Model file ID');
+  if (mainModelFileId !== null && mainModelFileId <= 0) {
+    throw new ThreeDModelFormValidationError('Select a valid primary Model file');
+  }
+  if (!filePath && !(mode === 'edit' && mainModelFileId !== null)) {
+    throw new ThreeDModelFormValidationError('Upload or assign a primary Model file before saving');
+  }
 
   assertFiniteNumber(form.scale, 'Scale', 0.01);
   assertFiniteNumber(form.rotationY, 'Rotation Y');
@@ -130,6 +136,6 @@ export function buildThreeDModelAdminPayload(form: ThreeDModelAdminFormData) {
     animations: parseAnimations(form.animations),
     lodLevels: parseJsonObject(form.lodLevels, 'LOD levels'),
     metadata: parseJsonObject(form.metadata, 'Metadata'),
-    mainModelFileId: parseOptionalInteger(form.mainModelFileId, 'Primary Model file ID'),
+    mainModelFileId,
   };
 }

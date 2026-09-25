@@ -26,7 +26,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/toast';
@@ -169,6 +169,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
   const [uploadAnalysis, setUploadAnalysis] = useState<ThreeDModelUploadAnalysis | null>(null);
   const [pendingPrimaryFile, setPendingPrimaryFile] = useState<PendingPrimaryModelFile | null>(null);
 
+  const [formError, setFormError] = useState<string | null>(null);
   const [formData, setFormData] = useState<ThreeDModelAdminFormData>(createEmptyThreeDModelAdminForm);
   const importerPreviewModel = useMemo<ModelData | null>(() => {
     if (!formData.filePath.trim()) return null;
@@ -362,6 +363,8 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
   }
 
   async function handleCreate() {
+    if (isSubmitting || uploadingPrimary || uploadingThumbnail) return;
+    setFormError(null);
     setIsSubmitting(true);
     try {
       const payload = {
@@ -385,7 +388,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
         showToast(data.error || 'Failed to create model', 'error');
       }
     } catch (error) {
-      console.error('Error creating model:', error);
+      if (!(error instanceof ThreeDModelFormValidationError)) console.error('Error creating model:', error);
       showToast(
         error instanceof ThreeDModelFormValidationError ? error.message : 'Failed to create model',
         'error',
@@ -396,11 +399,12 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
   }
 
   async function handleUpdate() {
-    if (!editingModel) return;
+    if (!editingModel || isSubmitting || uploadingPrimary || uploadingThumbnail) return;
+    setFormError(null);
     setIsSubmitting(true);
     try {
       const payload = {
-        ...buildThreeDModelAdminPayload(formData),
+        ...buildThreeDModelAdminPayload(formData, 'edit'),
         primaryFile: pendingPrimaryFile,
       };
 
@@ -418,9 +422,14 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
         await fetchModels();
         onModuleUpdate?.();
       } else {
-        showToast(data.error || 'Failed to update model', 'error');
+        setFormError(data.error || 'Failed to update model');
       }
     } catch (error) {
+      if (error instanceof ThreeDModelFormValidationError) {
+        setFormError(error.message);
+        return;
+      }
+      setFormError('Failed to update model. Your changes are still here; please try again.');
       console.error('Error updating model:', error);
       showToast(
         error instanceof ThreeDModelFormValidationError ? error.message : 'Failed to update model',
@@ -467,12 +476,14 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
   }
 
   function resetForm() {
+    setFormError(null);
     setFormData(createEmptyThreeDModelAdminForm());
     setUploadAnalysis(null);
     setPendingPrimaryFile(null);
   }
 
   function openEditDialog(model: Model) {
+    setFormError(null);
     setUploadAnalysis(null);
     setPendingPrimaryFile(null);
     setEditingModel(model);
@@ -511,7 +522,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
       setShowCreateDialog(true);
       return;
     }
-    if (isSubmitting) return;
+    if (isSubmitting || uploadingPrimary || uploadingThumbnail) return;
     const stagedFile = pendingPrimaryFile;
     setShowCreateDialog(false);
     resetForm();
@@ -519,7 +530,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
   }
 
   function handleEditDialogChange(open: boolean) {
-    if (open || isSubmitting) return;
+    if (open || isSubmitting || uploadingPrimary || uploadingThumbnail) return;
     const stagedFile = pendingPrimaryFile;
     setEditingModel(null);
     setUploadAnalysis(null);
@@ -765,11 +776,12 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
 
       {/* Edit Dialog */}
       <Dialog open={!!editingModel} onOpenChange={handleEditDialogChange}>
-        <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
-          <DialogHeader><DialogTitle>Edit 3D Model</DialogTitle></DialogHeader>
-          <div className="space-y-3 pt-1 [&>div]:grid [&>div]:grid-cols-1 [&>div]:items-start [&>div]:gap-3 [&>div]:space-y-0 md:[&>div]:grid-cols-2 [&_section]:min-w-0 [&_section]:rounded-md [&_section]:border [&_section]:p-3 [&_label]:text-xs [&_input:not([type=checkbox])]:h-8 [&_input:not([type=checkbox])]:min-w-0 [&_input:not([type=checkbox])]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:w-full [&_[data-slot=select-trigger]]:min-w-0 [&_[data-slot=select-trigger]]:text-xs">
+        <DialogContent className="flex max-h-[90dvh] w-[calc(100%-2rem)] min-w-0 flex-col gap-3 overflow-hidden p-4 sm:max-w-6xl">
+          <DialogHeader className="shrink-0 pr-8"><DialogTitle>Edit Model — {editingModel?.modelName}</DialogTitle><DialogDescription>Update Model details, primary file and library settings. Save Changes to apply your edits.</DialogDescription></DialogHeader>
+          <div className="min-h-0 overflow-y-auto overscroll-contain pr-1 pt-1 [&>div]:space-y-3 md:[&>div]:columns-2 md:[&>div]:gap-3 [&_section]:break-inside-avoid [&_section]:min-w-0 [&_section]:rounded-md [&_section]:border [&_section]:p-3 [&_label]:text-xs [&_input:not([type=checkbox])]:h-8 [&_input:not([type=checkbox])]:min-w-0 [&_input:not([type=checkbox])]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:w-full [&_[data-slot=select-trigger]]:min-w-0 [&_[data-slot=select-trigger]]:text-xs">
             <ThreeDModelEditorFields
               mode="edit"
+              hasPendingPrimaryFile={Boolean(pendingPrimaryFile)}
               previewImageAction={editingModel && <ModelPreviewImageExport
                 key={editingModel.id}
                 model={editingModel}
@@ -790,9 +802,15 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
               onThumbnail={handleThumbnailUpload}
             />
 
-            <Button onClick={handleUpdate} className="h-8 w-full text-xs sm:ml-auto sm:flex sm:w-auto" disabled={isSubmitting}>
-              {isSubmitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving...</> : 'Save Changes'}
-            </Button>
+          </div>
+          <div className="shrink-0 space-y-3 border-t pt-3">
+            {formError && <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/10 p-2 text-sm text-destructive">{formError}</p>}
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="outline" onClick={() => handleEditDialogChange(false)} disabled={isSubmitting || uploadingPrimary || uploadingThumbnail}>Cancel</Button>
+              <Button type="button" onClick={handleUpdate} disabled={isSubmitting || uploadingPrimary || uploadingThumbnail}>
+                {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving…</> : uploadingPrimary || uploadingThumbnail ? 'Uploading…' : 'Save Changes'}
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

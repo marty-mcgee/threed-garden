@@ -46,6 +46,8 @@ export interface ThreeDModelEditorFile {
   id: number;
   fileName: string;
   fileType: string;
+  filePath: string;
+  fileSize: number | null;
 }
 
 export interface ThreeDModelUploadAnalysis {
@@ -64,6 +66,7 @@ export interface ThreeDModelUploadAnalysis {
 
 interface ThreeDModelEditorFieldsProps {
   mode: 'create' | 'edit';
+  hasPendingPrimaryFile?: boolean;
   previewImageAction?: React.ReactNode;
   form: ThreeDModelAdminFormData;
   setForm: Dispatch<SetStateAction<ThreeDModelAdminFormData>>;
@@ -80,7 +83,7 @@ interface ThreeDModelEditorFieldsProps {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="space-y-2 border-t pt-4">
-      <Label className="text-sm font-medium">{title}</Label>
+      <h3 className="text-sm font-medium">{title}</h3>
       {children}
     </section>
   );
@@ -94,6 +97,7 @@ function AttachmentIcon({ type }: { type: string }) {
 
 export function ThreeDModelEditorFields({
   mode,
+  hasPendingPrimaryFile = false,
   form,
   setForm,
   categories,
@@ -114,7 +118,7 @@ export function ThreeDModelEditorFields({
   } catch { fallbackMetadataValid = false; }
   const prefix = mode === 'edit' ? 'edit-' : 'create-';
   const id = (name: string) => `${prefix}${name}`;
-  const disabled = isSubmitting;
+  const disabled = isSubmitting || uploadingPrimary || uploadingThumbnail;
   const modelFiles = files.filter((file) => file.fileType === 'model');
   const textureCount = files.filter((file) => file.fileType === 'texture').length;
 
@@ -234,10 +238,14 @@ export function ThreeDModelEditorFields({
         <Section title="Attached Files">
           <div>
             <Label htmlFor={id('mainModelFileId')} className="text-xs">Primary Model File</Label>
-            <Select value={form.mainModelFileId || 'none'} onValueChange={(value) => update('mainModelFileId', value === 'none' ? '' : value)} disabled={disabled}>
+            <Select value={form.mainModelFileId || 'none'} onValueChange={(value) => {
+              const selected = modelFiles.find(file => String(file.id) === value);
+              if (!selected) return;
+              setForm(current => ({ ...current, mainModelFileId: value, filePath: selected.filePath, fileSize: selected.fileSize == null ? '' : String(selected.fileSize) }));
+            }} disabled={disabled || hasPendingPrimaryFile}>
               <SelectTrigger id={id('mainModelFileId')}><SelectValue placeholder="Select primary Model file" /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">None</SelectItem>
+                <SelectItem value="none" disabled>Choose an attached Model file</SelectItem>
                 {modelFiles.map((file) => <SelectItem key={file.id} value={String(file.id)}>{file.fileName}</SelectItem>)}
               </SelectContent>
             </Select>
@@ -246,7 +254,7 @@ export function ThreeDModelEditorFields({
             <span className="text-xs text-muted-foreground">Associated texture files</span>
             <Badge variant="outline" className="text-[10px]">{textureCount}</Badge>
           </div>
-          <div className="space-y-1">
+          <div className="max-h-40 space-y-1 overflow-y-auto">
             {files.map((file) => <div key={file.id} className="flex items-center gap-2 text-xs text-muted-foreground"><AttachmentIcon type={file.fileType} /><span className="min-w-0 flex-1 truncate">{file.fileName}</span><span className="text-[10px] capitalize">{file.fileType}</span></div>)}
           </div>
         </Section>

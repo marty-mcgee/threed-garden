@@ -175,7 +175,7 @@ const navSections: NavSection[] = [
     title: 'Settings',
     icon: Settings,
     items: [
-      { title: 'Admin Settings', href: '/admin/settings', icon: Settings, exact: true },
+      { title: 'App Settings', href: '/admin/settings', icon: Settings, exact: true },
     ],
   },
 ];

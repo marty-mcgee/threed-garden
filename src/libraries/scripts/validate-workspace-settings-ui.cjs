@@ -86,12 +86,19 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
     react: formHarness.react, 'react/jsx-runtime': { jsx: element, jsxs: element },
     '@/components/ui/button': { Button: 'Button' },
   });
+  let opacityWrites = 0, failOpacitySave = false;
+  const panelState = { value: {idle:80,hover:98}, ready:true, stored:true, update(value) {
+    opacityWrites++;
+    if (failOpacitySave) return false;
+    panelState.value = value;
+    return true;
+  } };
   const form = load('src/components/admin/settings/SettingsManager.tsx', {
     react: formHarness.react, 'react/jsx-runtime': { jsx: element, jsxs: element },
     'lucide-react': new Proxy({}, { get: (_, key) => key }),
     '@/components/admin/layout/AdminWorkspaceHeader': { AdminWorkspaceHeader: 'Header' },
     '@/components/settings/ModelPreviewSettings': load('src/components/settings/ModelPreviewSettings.tsx', { react: formHarness.react, 'react/jsx-runtime': { jsx: element, jsxs: element }, '@/components/ui/button': { Button: 'Button' } }),
-    '@/components/settings/PanelAppearance': panelAppearance,
+    '@/components/settings/PanelAppearance': { ...panelAppearance, usePanelAppearance: () => panelState },
     '@/components/ui/button': { Button: 'Button' }, '@/components/ui/switch': { Switch: 'Switch' },
     '@/components/settings/WorkspaceSettingsProvider': { useWorkspaceSettings: () => context },
     '@/libraries/config/workspace-settings': contract,
@@ -109,5 +116,91 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
   assert.equal(find(tree, node => node.props?.id === 'workspace-traffic').props.checked, false, 'Failure retains draft');
   button(tree, 'Discard').props.onClick(); tree = renderForm(); assert(button(tree, 'Save Changes').props.disabled);
   context = { ...context, loading: true }; tree = renderForm(); assert(button(tree, 'Save Changes').props.disabled); assert(button(tree, 'Refresh').props.disabled);
+  context = { ...context, loading: false };
+  tree = renderForm();
+  const opacityEditor = tree => find(tree, node => node.type === panelAppearance.PanelAppearanceSettings);
+  opacityEditor(tree).props.onChange({idle:0,hover:100});
+  tree = renderForm();
+  assert.equal(opacityWrites, 0, 'Editing opacity must not persist');
+  assert(!button(tree, 'Save Changes').props.disabled, 'Opacity alone enables Save');
+  button(tree, 'Discard').props.onClick(); tree = renderForm();
+  assert.equal(opacityEditor(tree).props.value.idle, 80);
+  assert(button(tree, 'Save Changes').props.disabled);
+  opacityEditor(tree).props.onChange({idle:0,hover:100}); tree = renderForm();
+  const previousAccountSaves = saveCalls.length;
+  failOpacitySave = true;
+  await button(tree, 'Save Changes').props.onClick(); tree = renderForm();
+  assert.equal(opacityEditor(tree).props.value.idle, 0, 'Storage failure retains opacity draft');
+  assert.equal(panelState.value.idle, 80, 'Storage failure does not apply unsaved opacity');
+  assert(!button(tree, 'Save Changes').props.disabled);
+  assert(text(find(tree, node => node.props?.role === 'alert')).includes('could not be saved'));
+  failOpacitySave = false;
+  await button(tree, 'Save Changes').props.onClick(); tree = renderForm();
+  assert.equal(panelState.value.idle, 0);
+  assert.equal(saveCalls.length, previousAccountSaves, 'Opacity-only save needs no account write');
+  assert(button(tree, 'Save Changes').props.disabled);
+  opacityEditor(tree).props.onChange({idle:50,hover:50}); tree = renderForm();
+  confirmResult = false; button(tree, 'Refresh').props.onClick(); tree = renderForm();
+  assert.equal(opacityEditor(tree).props.value.idle, 50);
+  confirmResult = true; button(tree, 'Refresh').props.onClick(); tree = renderForm();
+  assert.equal(opacityEditor(tree).props.value.idle, 0);
+  const resetWrites = opacityWrites;
+  const panelTree = panelAppearance.PanelAppearanceSettings(opacityEditor(tree).props);
+  assert.equal(text(find(panelTree, node => node.type === 'Button')), 'Reset Defaults');
+  find(panelTree, node => node.type === 'Button').props.onClick(); tree = renderForm();
+  assert.equal(opacityEditor(tree).props.value.idle, 80);
+  assert.equal(opacityEditor(tree).props.value.hover, 98);
+  assert.equal(opacityWrites, resetWrites, 'Reset Defaults only stages changes');
+  assert(!button(tree, 'Save Changes').props.disabled);
+  console.log('PASS Opacity Settings draft: explicit Save, Discard, Refresh confirmation, no write on edit and storage failure retention');
+
+  let savedOpacity = JSON.stringify({ idle: 80, hover: 98 });
+  const css = new Map();
+  function opacityHarness() {
+    const hooks = harness();
+    let panelContext;
+    const panel = load('src/components/settings/PanelAppearance.tsx', {
+      react: { ...hooks.react, useContext: () => panelContext },
+      'react/jsx-runtime': { jsx: element, jsxs: element },
+      'lucide-react': new Proxy({}, { get: (_, key) => key }),
+      '@/components/ui/button': { Button: 'Button' },
+    }, {
+      localStorage: { getItem: () => savedOpacity, setItem: (_, value) => { savedOpacity = value; } },
+      window: { addEventListener() {}, removeEventListener() {} },
+      document: { documentElement: { style: { setProperty: (key, value) => css.set(key, value) } } },
+    });
+    return () => {
+      panelContext = hooks.render(() => panel.PanelAppearanceProvider({children:null})).props.value;
+      return panel.PanelAppearanceSettings({value:panelContext.value, onChange:panelContext.update});
+    };
+  }
+  const renderOpacity = opacityHarness();
+  const slider = (tree, label) => find(find(tree, node => node.type === 'label' && text(node).includes(label)), node => node.props?.type === 'range');
+  let opacityTree = renderOpacity();
+  slider(opacityTree, 'Hover').props.onChange({target:{value:'30'}});
+  opacityTree = renderOpacity();
+  assert.equal(slider(opacityTree, 'Default').props.value, 80);
+  assert.equal(slider(opacityTree, 'Hover').props.value, 30);
+  slider(opacityTree, 'Default').props.onChange({target:{value:'100'}});
+  opacityTree = renderOpacity();
+  assert.equal(slider(opacityTree, 'Hover').props.value, 30);
+  for (const label of ['Default', 'Hover']) {
+    assert.equal(Number(slider(opacityTree, label).props.min), 0);
+    assert.equal(Number(slider(opacityTree, label).props.max), 100);
+  }
+  assert.equal(css.get('--threed-panel-idle-opacity'), '1');
+  assert.equal(css.get('--threed-panel-hover-opacity'), '0.3');
+  opacityTree = opacityHarness()();
+  assert.equal(slider(opacityTree, 'Default').props.value, 100);
+  assert.equal(slider(opacityTree, 'Hover').props.value, 30, 'Independent values survive reload');
+  savedOpacity = JSON.stringify({idle:0,hover:0});
+  opacityTree = opacityHarness()();
+  assert.equal(slider(opacityTree, 'Default').props.value, 0);
+  assert.equal(slider(opacityTree, 'Hover').props.value, 0);
+  assert.equal(css.get('--threed-panel-idle-opacity'), '0');
+  assert.equal(css.get('--threed-panel-hover-opacity'), '0');
+  find(opacityTree, node => node.type === 'Button').props.onClick();
+  assert.deepEqual(JSON.parse(savedOpacity), {idle:80,hover:98});
+  console.log('PASS Panel Appearance: independent sliders, fixed bounds, CSS values, saved restoration and reset');
   console.log('PASS Settings provider/form: signed-out defaults, stale-account responses, saved appearance, failed-save retention, dirty/discard/refresh and accessible labels (mock React/network).');
 })().catch(error => { console.error(error); process.exitCode = 1; });
