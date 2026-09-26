@@ -2,7 +2,9 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Current production: **v0.22.0 — ThreeD Garden: Repository Handoff**, deployment User-confirmed.
+Current production: **v0.22.1 — ThreeD Garden: Interactive Home Page**, deployment User-confirmed.
+
+- [v0.22.1 — ThreeD Garden: Interactive Home Page](v0.22.1.md) — production User-confirmed
 
 - [v0.22.0 — ThreeD Garden: Repository Handoff](v0.22.0.md) — production User-confirmed
 

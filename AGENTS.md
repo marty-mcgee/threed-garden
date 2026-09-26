@@ -38,7 +38,7 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Canonical repository: `marty-mcgee/threed-garden`. Current confirmed production: v0.22.0 "ThreeD Garden: Repository Handoff", commit `62dac6dd`, deployment User-confirmed; see `docs/releases/v0.22.0.md` and `docs/plans/v0.22.0.md`. Preserve both imported histories and the legacy archive references. New development belongs in this repository; `marty-mcgee-neon` remains historical source. The historical runtime boundaries below still apply.
+Canonical repository: `marty-mcgee/threed-garden`. Current confirmed production: v0.22.1 "ThreeD Garden: Interactive Home Page", commit `1835c438`, deployment User-confirmed; see `docs/releases/v0.22.1.md` and `docs/plans/v0.22.1.md`. Preserve both imported histories and the legacy archive references. New development belongs in this repository; `marty-mcgee-neon` remains historical source. The historical runtime boundaries below still apply.
 
 Historical physics checkpoint: v0.20.1 "ThreeD Physics" (package `0.20.1`). Production deployment, browser acceptance and build success are User-confirmed. See `docs/releases/v0.20.1.md` and `docs/plans/v0.20.1-release.md`. Preserve generic Physics Sensors, Project-owned Sensor Groups, sensor TransformControls, optional Sensors panel and read-only FarmBot presentation. Whole-Model TransformControls and further FarmBot expansion remain deferred. Preserve the `src/libraries` source boundary, Multimedia module identity, canonical `/dashboard/scene` route, shadcn/ui component boundary, shared animation references, Character assignments, runtime precedence and first-pose gating.
 
