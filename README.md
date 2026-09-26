@@ -1,12 +1,14 @@
 # ThreeD Garden
 
+[![Repository validation](https://github.com/marty-mcgee/marty-mcgee-neon/actions/workflows/validation.yml/badge.svg?branch=main)](https://github.com/marty-mcgee/marty-mcgee-neon/actions/workflows/validation.yml?query=branch%3Amain)
+
 ### Build your garden. Explore your world. Bring your models to life.
 
 **ThreeD Garden brings interactive 3D scenes, geographic maps, animated characters, and multimedia into one project workspace.** Arrange garden beds and plantings, place models from your library, take control of a character, and explore your project from the ground or above.
 
 Built with **Next.js 16, React 19, TypeScript, Three.js, and React Three Fiber**, with **Rapier physics**, **Neon Postgres**, and **Drizzle ORM** behind the experience. **Node.js 24 + npm 11** provide a consistent development and build workflow.
 
-**Current production release:** [v0.21.0 — ThreeD Tooling: Node.js + npm](docs/releases/v0.21.0.md)
+**Current production release:** [v0.21.1 — ThreeD Documentation + CI Reliability](docs/releases/v0.21.1.md)
 
 [Explore the features](#what-you-can-build) · [Meet the stack](#the-technology-behind-threed) · [Run locally](#developer-quick-start) · [Read the docs](docs/README.md)
 
