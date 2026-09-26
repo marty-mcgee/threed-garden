@@ -1,28 +1,24 @@
 {
-  "git.enableSmartCommit": true,
-  "files.exclude": {
-    "**/.git": true,
-    "**/.svn": true,
-    "**/.hg": true,
-    "**/CVS": true,
-    "**/.DS_Store": true,
-    "**/.cache": true,
-    "**/.vs/": true,
-    "**/*.cs": true,
-    "**/*.orig": true,
-    "**/bin/": true,
-    "**/build/": false,
-    "**/debug/": true,
-    "**/dist/": false,
-    "**/node_modules/": false,
-    "**/obj": false,
-    "yarn-error.log": true,
-    "**/yarn-error.log": true
-  },
-  "search.exclude": {
-    "**/package-lock.json": true,
-    "**/pnpm-lock.yaml": true,
-    "**/yarn-error.log": true,
-    "**/yarn.lock": true
-  }
+  "folder-customization.folders": [
+    {
+      "path": "marty-mcgee-neon/src/libraries/",
+      "color": "foldercustomization.AnsiColor104"
+    },
+    {
+      "path": "marty-mcgee-neon/src/components/",
+      "color": "foldercustomization.AnsiColor39"
+    },
+    {
+      "path": "marty-mcgee-neon/src/app/",
+      "color": "foldercustomization.AnsiColor107"
+    },
+    {
+      "path": "marty-mcgee-neon/src/libraries/schema/",
+      "color": "foldercustomization.AnsiColor140"
+    },
+    {
+      "path": "marty-mcgee-neon/src/app/api/",
+      "color": "foldercustomization.AnsiColor153"
+    }
+  ]
 }

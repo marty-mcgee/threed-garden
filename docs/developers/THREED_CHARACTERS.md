@@ -1,0 +1,168 @@
+# ThreeD Character Runtime Architecture
+
+ThreeD characters share records, models, semantic animations, action events, and completion reporting, but they do not share one movement runtime. The `isMovable` field selects the runtime:
+
+| Concern | GardenCharacter | EcctrlCharacter |
+|---|---|---|
+| Routing | `isMovable !== true` | `isMovable === true` |
+| Primary role | Autonomous or NPC character | User-controlled physics character |
+| Movement authority | Internal Three.js group behavior | Ecctrl and Rapier physics body |
+| Supported movement | Wander, patrol, circle, follow, teleport, stationary | WASD, running, jumping, collision movement |
+| Physics relationship | Rendered under an existing fixed parent body | Moving character controller owns the physical position |
+| User controls | No Take/Release Control | Take Control, Release Control, WASD |
+| Live position | Three.js world position registry | Physics position and live marker-position registry |
+
+Both runtimes preserve:
+
+- external FBX animation loading;
+- semantic Animation Action Mapping;
+- idle, walk, run, and one-shot task actions where available;
+- task locking while a one-shot animation runs;
+- task-to-locomotion crossfades;
+- the `garden-character-action-complete` event used by the page-level world-action layer.
+
+## v0.18.8a Ecctrl position authority
+
+The Runtime Marker layer resolves the Project-specific Character position before runtime routing. `ThreeDScene` passes that position explicitly to `EcctrlCharacter`, and Ecctrl uses it to initialize the Rapier body. Ecctrl does not independently fall back to the reusable Character row's XYZ fields, so the Character model, capsule, selection halo, camera tracking, and live-position reporting share one physical owner.
+
+Only one movable Character may mount an Ecctrl body at a given XYZ spawn. The stable first marker owns that spawn; later overlapping movable Characters are skipped and reported before Rapier mounting. This keeps one Character selectable for recovery and prevents overlapping Ecctrl bodies without moving, deleting, or rewriting saved data. GardenCharacter routing remains separate and unchanged.
+
+## v0.18.9a Character Library and snapshot recovery
+
+The Dashboard Character Library exposes only active Character records whose related models are eligible for Character use. Placement creates an owner-scoped Character Project Asset and `project_threed_markers` instance through the authenticated API. `isMovable` continues to choose Ecctrl or Garden runtime rules; a Character model is never routed through the generic Model placement runtime.
+
+Character position editing patches only the selected Project marker and synchronizes its existing runtime owner. Planting or Character CRUD updates the matching client records without reloading the Project, replacing the persistent Canvas, or remounting unrelated marker owners.
+
+Ecctrl publishes live position only while the Character is under **Take Control**. Mounting, selecting, or clicking an uncontrolled Character cannot promote Ecctrl's temporary initialization coordinate into Runtime Marker state. Every reported position must contain finite X/Y/Z values before it can update camera tracking, the Scene live-position map, or the Runtime Marker registry.
+
+Spawn safety uses the Ecctrl capsule area rather than exact XYZ string equality. A later movable Character within the protected horizontal and vertical spawn range is rejected before Rapier mounts it. The bounded warning identifies the saved Project marker and offers **Restore Source Position**, which patches only that snapshot to the reusable Character's stored XYZ position. It does not delete or rewrite the source Character.
+
+## Scene-owned Character instances
+
+`ThreeDScene` owns the complete runtime instance associated with each stable Character marker ID. That Scene boundary chooses exactly one runtime: movable Characters receive `EcctrlCharacter`, while non-movable Characters receive `GardenCharacter`. Selection, camera state, Layer visibility, or an unrelated Project marker update must not replace the Character data passed into an unchanged runtime instance.
+
+An Ecctrl instance owns its model, animation mixer, capsule, selection halo, camera tracking, and live-position reporting for the same lifetime. Animated Three.js model hierarchies are mutable and are not shared through a module-level model-object cache. Deleting a Character removes that complete Scene instance. Placing the same reusable Character again creates a new visual hierarchy at the new Project marker position; no bones, model transform, physics handle, or camera state may survive from the deleted instance.
+
+## Why the runtime files remain separate
+
+GardenCharacter and EcctrlCharacter have incompatible position authorities. Combining them into one large component would mix internal Three.js movement with Rapier/Ecctrl movement and increase regression risk for collisions, WASD, autonomous movement, camera tracking, and action recovery.
+
+The safe direction is a small router with separate runtime adapters and shared character systems:
+
+```text
+ThreeD character routing (`isMovable`)
+├── GardenCharacter
+│   └── autonomous movement authority
+├── EcctrlCharacter
+│   └── physics and user-control authority
+└── shared systems
+    ├── model and external animation loading
+    ├── semantic action resolution
+    ├── one-shot task lifecycle
+    ├── completion-event construction
+    └── provider-independent orchestration contracts
+```
+
+Shared behavior must be extracted incrementally without merging movement loops or directly manipulating an animation mixer outside the established character action path.
+
+## Phase 5 orchestration boundary
+
+The initial Phase 5 simulation must not automatically move GardenCharacter toward a target while it remains inside a fixed physics parent: doing so can move the visible model while leaving its collider at the original position.
+
+The safe initial FarmBot interaction is:
+
+1. Use a movable EcctrlCharacter.
+2. Take control and approach the FarmBot with WASD.
+3. Let the DetailsCard verify proximity from the current live physics position; interaction buttons remain disabled while out of range.
+4. Face the FarmBot through the Ecctrl physics body for the duration of the semantic task.
+5. Play the existing semantic one-shot animation.
+6. Keep completion, API authorization, MQTT delivery, and physical-device state as separate layers.
+
+GardenCharacter remains autonomous and animation-only for FarmBot interactions until it has an explicitly designed moving-physics representation. Automatic Ecctrl approach is also a separate future decision; it must not bypass Take/Release Control or normal physics ownership.
+
+FarmBot interaction controls fail closed until the selected EcctrlCharacter is under Take Control and has reported its first live physics position. Stored marker coordinates are not treated as sufficient range proof. The Dashboard retains that report in dedicated state scoped to the controlled character ID and uses it directly for range planning; the general selected-marker object is not the range authority. The same live report also refreshes the selected marker display at a limited update rate. This keeps the DetailsCard proximity state responsive without causing a React update on every rendered frame. The ThreeD scene keeps the callback stable so ordinary parent renders do not restart the control-state synchronization effect.
+
+Ecctrl normally interprets WASD relative to the active scene camera. While a controlled EcctrlCharacter has a FarmBot action target, the runtime instead supplies Ecctrl with a world-space forward vector from the live character position to that target. In this target-approach mode, `W` moves toward the FarmBot, `S` moves away, and `A`/`D` strafe relative to that path regardless of camera mode, orbit angle, perspective, or zoom. Clearing the FarmBot target restores ordinary camera-relative WASD. Focus Target also positions its stationary view behind the live character so the visual viewpoint agrees with the target-relative controls.
+
+An in-range FarmBot interaction uses the planner's facing angle immediately before the existing Ecctrl task action. A 22.5-degree tolerance treats a character as already facing the FarmBot, avoiding unnecessary turns and forced rotation for small heading differences. Outside that tolerance, the verified Farmer animation library selects exactly one Left Turn or Right Turn clip from the shortest signed angle. It plays that clip forward while smoothly rotating toward the FarmBot, runs the requested semantic task, then plays the same turn clip backward while restoring the original facing direction. The opposite turn clip does not participate in that sequence. The task lock keeps the body stationary throughout. After the return turn, ordinary Ecctrl locomotion regains authority and the established action-completion event is emitted. Invalid or out-of-range FarmBot targets do not start the task.
+
+The Dashboard correlates this animation-only simulation with the request UUID carried as `actionRequestId`. Its local status becomes `interacting` when the request enters the compatibility bridge and `completed` only when the matching animation-completion event returns. A 30-second missing-completion timeout changes it to `cancelled`, and duplicate FarmBot interaction buttons remain disabled while it is active. This status is client-only: it is not a command audit, device acknowledgement, persistence record, or proof of physical completion.
+
+Phase 5B centralizes those browser lifecycle rules in the provider-independent orchestration core. Only the matching request UUID may leave `interacting`; it may become either `completed` or `cancelled`. A terminal state cannot be replaced by a conflicting result, while receiving the same terminal result again is harmless. The Dashboard ignores late completion or timeout callbacks after a request is already terminal. These rules do not call an API, publish MQTT, operate a worker, or authorize a physical device action.
+
+Phase 5C centralizes planar target navigation in that same provider-independent core. The approach planner, Ecctrl target-relative movement, and Focus Target camera placement consume one normalized world-space forward direction and one distance result. Camera properties are not inputs to this plan. Coincident X/Z positions return no direction instead of inventing one, and invalid positions fail closed.
+
+## ThreeD Marker Action Target authority
+
+Action Target is a ThreeD Scene capability, not a FarmBot capability. Every project-assigned Sub-Module asset that produces a visible Runtime Marker must be eligible for ThreeD target identity, focus, highlighting, navigation, and generic semantic interaction. The current marker-producing types are Plantings, Beds, Characters, FarmBots, and Models.
+
+The provider-independent capability registry gives each of those marker types Point, Point Gesture, and Talk. Planting farming actions remain a separate module capability. Target eligibility alone never grants database persistence, MQTT publishing, worker access, or physical operation; those effects remain behind their existing action-specific authorization paths.
+
+The Dashboard uses the same plural marker type identity from Runtime Marker creation through target selection and refresh reconciliation. Every supported target receives the persistent green pulse and target-relative focus/navigation behavior. Targeted menus are filtered through the capability registry: Beds, Characters, FarmBots, and Models receive only generic interactions, while Plantings additionally receive their farming and harvesting actions. The untargeted character animation palette remains available without granting target-specific effects.
+
+Phase 5E adds one provider-independent constructor at the Runtime Marker-to-Action Target boundary. It normalizes the supported singular/plural marker aliases and requires a non-empty runtime marker identity, a positive safe asset ID, a non-empty display name, and finite ThreeD scene coordinates. The resulting target and position are immutable. Invalid or unsupported marker data fails before entering orchestration state; this adds no API call, persistence, MQTT behavior, or physical-device authority.
+
+Phase 5F uses one shared identity matcher in the DetailsCard, refreshed-project reconciliation, and ThreeD scene highlighting. It normalizes singular/plural marker aliases and requires the same supported marker module and positive asset ID. The derived runtime marker string is display and scene metadata rather than source identity. This prevents the UI, refresh lifecycle, and scene from applying different target rules. Unsupported modules and mismatched asset identities fail closed.
+
+## v0.19.3c Character environment release-candidate boundary
+
+A Project environment Model remains a Model Runtime Marker and does not become the Character's parent, movement authority, or physics owner. Character placement over that visible environment continues through the authenticated Character placement transaction: the Character record owns Garden-versus-Ecctrl routing, its linked Character Model supplies the visual, and the resulting `project_threed_markers` instance supplies the Project position.
+
+The environment Model forwards placement pointer coordinates into that existing transaction instead of swallowing the click. A successfully placed movable Character immediately mounts one Ecctrl unit containing its Character Model, Rapier capsule, camera/control behavior, live-position reporting, and selection/control halo. The environment milestone does not route a Character Model through generic Model rules or add terrain-mesh grounding.
+
+The Ecctrl halo uses the same capsule-relative ground reference as the action-target ring. It renders as interaction UI above environment geometry so a large environment mesh cannot depth-occlude it. Selection retains the established timed fade, while **Take Control** keeps the halo visible until control is released. The halo remains a child of the same Ecctrl owner and therefore follows WASD movement without creating another physics or position authority.
+
+This checkpoint was released successfully to production through GitHub and Vercel on August 31, 2026.
+
+### Release verification
+
+1. Open an owned Project containing a visible Model marked **Project environment / base map**.
+2. Open the Character Library and place one eligible movable Character at a unique environment position.
+3. Confirm the Character Model, Ecctrl capsule, interaction behavior, and Project position begin together.
+4. Select the Character and confirm the blue halo appears at its feet above the environment geometry.
+5. Choose **Take Control** and confirm the Character Model, capsule, halo, camera, and WASD movement remain one unit.
+6. Confirm the halo stays visible while controlled and normal selection behavior returns after **Release Control**.
+7. Refresh the Project and confirm the Character restores at its saved position with the same runtime routing.
+8. Confirm the environment remains visible and the procedural ground remains hidden throughout the Character interaction.
+
+Automated release checks require `npm run validate -- threed-orchestration`, `npm run validate -- threed-runtime-markers`, `npm run typecheck`, and `git diff --check`. The client-run `npm run build` remains the final production release gate.
+
+## FBX Character texture references
+
+GardenCharacter and EcctrlCharacter resolve FBX image requests through a Model-owned LoadingManager before loading the primary asset. `character-model-textures.ts` reads the current authenticated Model Files response with `no-store`, then applies the same attachment resolver and unique active saved-Texture fallback as Admin preview. Attached URLs take precedence. Images reuse their stored URLs; no upload, copy or assignment is performed. Library fallback candidates remain owner-only under the existing API policy. Failed reference reads report a loading error instead of proceeding with an unresolved primary-directory guess.
+
+GardenCharacter includes the resolved attachment signature in its model cache key. Movement routing, external animation loading, semantic actions and physics remain unchanged. TypeScript, saved Texture regression checks (including Character LoadingManager URL resolution and attachment precedence), and diff checks passed. Manual Scene verification remains required: reload the Project, check the textured FBX and network requests, then check Garden locomotion and Ecctrl Take/Release Control, WASD and task animations. The production build remains the User's manual gate.
+
+### Save Position and current Model files
+
+Character position PATCH previously returned the stored marker's nested Model snapshot unchanged, allowing an obsolete primary URL to replace the fresh Project-load URL. The handler now reads the owned Character's current Model relationship and owner-matched Files inside the existing position transaction. It replaces the snapshot's nested Model before saving and returning the marker. Missing or inaccessible Models become null; missing primary references remain empty through `modelSelection()`. Position, rotation, scale and spawn checks retain their existing behavior. No migration or bulk snapshot rewrite is required.
+
+Validation: TypeScript, Runtime Marker checks (49 existing groups plus repeated Character position-response coverage), saved Texture checks and diff review passed. The response-merge regression verifies current URLs survive repeated updates and missing URLs remain empty while unrelated source collections retain identity. Live database/Scene verification was not run: manually reload the Project, reposition and Save Position twice, then reload and confirm only the current FBX/shared Texture URLs are requested. No production build was run.
+
+## v0.19.13 local — Character facing persistence
+
+Controlled Ecctrl reports its body yaw in degrees with the existing throttled position report. The Runtime Marker registry retains that live rotation per Character, and the Project snapshot writes it to the existing marker `data.rotation`. Character Save Position includes that angle in its existing PATCH after Release Control. No schema or reusable Character record change is required.
+
+Ecctrl restores marker rotation on its body, while the loaded Model retains only its Model-specific rotation offset; this prevents double application of saved facing. GardenCharacter remains on its separate runtime path. Finite angles normalize to 0–360 degrees; instance removal clears the live orientation. The actual save callback regression fixture covers both persistence payloads, turning without translation, refresh retention and removal. Browser verification remains required for controller/body orientation after reload.
+
+After model/mixer replacement, locomotion startup must compare animation-action identity and running state, not just clip names. Crossfades must stay within the current mixer. The existing model-ready idle effect starts replacement assets through the established action path; saves/resets must never automatically dispatch world actions. The `validate:threed-character-animation-restart` gate reproduces the former same-name idle suppression with real Three.js actions.
+
+Ecctrl visual readiness is tied to the exact loaded model object. The loader must finish and the established idle startup must evaluate its first pose before the visual is exposed or runtime settlement is reported. `AnimationAction.play()` alone does not apply bone transforms; the initialization path evaluates `mixer.update(0)` and model matrices in a layout effect before marking that object ready. Keep physics ownership separate from this visual gate and retain explicit missing-file fallbacks.
+
+## v0.19.18 development — explicit Walk to Target
+
+Movable Characters now expose Walk to Target / Stop Walking in DetailsCard after Take Control and a live position report. The isolated navigation adapter sends forward steering to Ecctrl's existing movement API; the existing locomotion mapping owns Walk/Idle. It does not move Three.js groups directly, create/remount bodies, write Project data or emit world-action completion.
+
+Stable Scene marker group names identify the actor/target. The adapter checks current world-space bounds and visibility, cancels on manual input, task start, control/target changes or removal, and stops on arrival, stalled progress or timeout. Bounds are conservative visual bounds, not a pathfinding or exact collision-surface service. GardenCharacter remains separate and unsupported for this automatic navigation stage. Teleport uses the separate landing/occupancy adapter below. See the exact manual test in `docs/plans/v0.19.18.md`.
+
+### Teleport near Target (v0.19.18 development)
+
+Movable Characters expose **Teleport near Target** beside the target walking controls. `useCharacterTeleport` queues explicit intent and commits only inside a before-physics-step callback after rechecking runtime readiness, control, task ownership, current target and visibility. It cancels automatic walking, retains the Ecctrl body/Model and facing, resets velocities and lets existing live reports synchronize the Scene. Save Position/Save Project remain explicit persistence paths.
+
+`teleport-landing.ts` searches bounded candidates beside target-owned collider surfaces, validating fixed ground support, point containment and actual capsule occupancy with the R3F runtime's Rapier API. The adapter identifies colliders through R3F collider-object Scene ancestry. Surface projection respects collider transforms and prevents highlight rings from supplying the landing perimeter. It tries capsule clearance plus 0.1 scene units before 0.35 and 0.75, using actor distance only within each tier. It ignores sensors and the actor's body, but respects other Characters and obstacles. Missing target colliders or unavailable ground leave the actor in place. Five footprint samples, a 30-degree slope limit and bounded vertical search are conservative checks; this is not navigation-mesh placement. GardenCharacter and semantic/world actions are unchanged. Browser acceptance is tracked in `docs/plans/v0.19.18.md`.
+
+Scene ground is a rotated zero-depth cuboid derived from a Plane. Rapier may return either face normal on that surface, so the landing slope check treats only cuboids with exactly one zero half-extent as two-sided. Nondegenerate solids still require upward normals; occupancy checks apply to both.
+
+### v0.19.19 — walking highlight exclusion
+
+Walking uses `navigationVisualBounds` to omit subtrees explicitly tagged `navigationDecoration` (PulseRing/FadingRing). Ordinary geometry, including untagged ring-shaped Models, retains world-space bounds. This prevents animated selection highlights from causing early arrival without changing physics or Scene visibility. The bounds remain conservative visual clearance; teleport continues to use target-owned colliders.

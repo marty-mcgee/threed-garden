@@ -1,174 +1,201 @@
-# 🥕 ThreeD Garden
+# ThreeD Garden
 
-[🥕 ThreeD Garden: WebGL 3D Environment Interface for Next.JS React TypeScript Three.JS React-Three Physics, 2D Paper.JS; APIs: Apollo GraphQL, WordPress; CSS: Tailwind, Radix-UI; Libraries: FarmBot 3D; AI: OpenAI, DeepSeek](https://github.com/marty-mcgee/threed-garden/)
+[![Repository validation](https://github.com/marty-mcgee/threed-garden/actions/workflows/validation.yml/badge.svg?branch=main)](https://github.com/marty-mcgee/threed-garden/actions/workflows/validation.yml?query=branch%3Amain)
 
-## Live Demo (v0.17.4-x.n)
+### Build your garden. Explore your world. Bring your models to life.
 
-🌱 [Main: threedgarden.com](https://threedgarden.com)
+**ThreeD Garden brings interactive 3D scenes, geographic maps, animated characters, and multimedia into one project workspace.** Arrange garden beds and plantings, place models from your library, take control of a character, and explore your project from the ground or above.
 
-🏡 [Demo: Advanced 3D + 2D](https://threedgarden.com/home-design)
+Built with **Next.js 16, React 19, TypeScript, Three.js, and React Three Fiber**, with **Rapier physics**, **Neon Postgres**, and **Drizzle ORM** behind the experience. **Node.js 24 + npm 11** provide a consistent development and build workflow.
 
-🥕 [Demo: Basic 3D](https://threedgarden.com/participate)
+**Modern app baseline:** [v0.21.1 — ThreeD Documentation + CI Reliability](docs/releases/v0.21.1.md)
 
-🥕 [Demo: Legacy 3D + 2D](https://threedgarden.com/demo)
+**Looking for the original app?** The v0.17 code and its history are preserved on [`legacy-v0.17`](https://github.com/marty-mcgee/threed-garden/tree/legacy-v0.17). See the [repository migration record](docs/plans/threed-garden-repository-migration.md) for provenance and deployment status.
 
-## For Developers
+[Explore the features](#what-you-can-build) · [Meet the stack](#the-technology-behind-threed) · [Run locally](#developer-quick-start) · [Read the docs](docs/README.md)
 
-🤖 Source Code: [github](https://github.com/marty-mcgee/threed-garden)
+## What you can build
 
-### Install + Run Options
+### 🌱 An interactive garden, from map to model
 
-`git clone https://github.com/marty-mcgee/threed-garden.git`
+Create Projects with Beds, Plantings, Characters, FarmBots, and reusable Models. Move between a Leaflet 2D map and a ThreeD Scene, use ground maps to give your project geographic context, and adjust Project-instance positions, dimensions, and rotation through the Scene's controls.
 
-`yarn install threed-garden`
+Layers organize what you see and interact with. Project snapshots let you explicitly save and restore supported Scene state, while the guided Project Tour helps you establish your Environment, Models, and Characters.
 
-- note: you can use `yarn` or `npm` or `pnpm`
+### 🧩 A model library built around your assets
 
-1. install app: `yarn install`
-2. run in local env: `yarn dev`
-3. build for production: `yarn build`
-4. start in production env: `yarn start`
-4. deploy to preset location: `yarn deploy`
+Import **FBX, GLB, GLTF, and OBJ** models with their supported materials and dependencies. The Bulk Import Tool combines file inspection, previews, reusable texture assignments, batch naming prefixes, Title Case, and recovery controls in one workflow.
 
-====
+Manage primary model files, textures, categories, and animation assignments in Admin. Place eligible library models into Projects, adjust their instance transforms, and export **transparent PNG previews** for library presentation.
 
+### 🎮 Characters you can explore with
 
-The threed-garden package on npm is a JavaScript library designed to help developers create and manage 3D gardens or landscapes in web applications. It leverages WebGL or other 3D rendering technologies to render 3D plants, trees, and other garden elements in a browser environment. This library is particularly useful for creating interactive 3D visualizations, simulations, or games involving natural environments.
-Key Features:
+Take control of a movable character with **WASD**, run, jump, and navigate a world with physics and collisions. Switch between camera perspectives, select objects for details, and use supported character actions such as watering and picking fruit.
 
-    3D Plant Rendering:
+Autonomous garden characters and player-controlled characters have separate runtime paths. Shared animation assets and action mappings let models reuse animation behavior while supported world actions persist their results after the animation completes.
 
-        The library provides tools to render various types of plants, trees, and shrubs in 3D.
+### 🗺️ Maps, traffic, and multimedia in the same app
 
-        It may include customizable parameters for plant size, shape, color, and growth stages.
+Explore geographic data through traffic maps and source-specific views. Build a Multimedia collection with Albums, Tracks, Links, Media, and Speech tools, then listen through the Dashboard player and waveform visualizer.
 
-    Interactive Garden Design:
+Projects connect assets across modules, giving you a common workspace for spatial scenes, data, and media.
 
-        Users can interactively design and modify gardens by adding, removing, or rearranging plants.
+### 🛠️ Tools for both creators and administrators
 
-        It supports drag-and-drop functionality for placing plants in the 3D space.
+The **Dashboard** is where you explore and interact with Projects. The **Admin workspace** is where you organize reusable assets, edit records, assign project content, and configure the app. Shared UI components keep forms, dialogs, tables, and controls consistent across both.
 
-    Realistic Environment Simulation:
+### FarmBot models and Assembly foundations
 
-        The library has features to simulate environmental factors like sunlight, water, and soil conditions, affecting plant growth and appearance.
+FarmBot component files use the same ThreeD Model library as other assets. The Front-End Assembly workspace supports **local composition drafts** with model selection, relative transforms, repeated components, and JSON import/export.
 
-    Cross-Browser Compatibility:
+Database schema and ORM service foundations are present; database-backed save/load UI, live 3D assembly construction, and Project assembly placement remain future work. These model workflows do not require a FarmBot device connection.
 
-        Built using WebGL or similar technologies, it ensures compatibility across modern web browsers.
+Separately, the existing FarmBot integration provides owner-scoped configuration and **read-only device status** through ThreeD's MQTT services. Physical commands and MQTT publishing remain disabled. See the [Assembly checkpoint](docs/releases/v0.20.12.md) and [FarmBot integration guide](docs/developers/FARMBOT_INTEGRATION.md) for the current boundaries.
 
-    Customizable and Extendable:
+## The technology behind ThreeD
 
-        Developers can extend the library to add custom plants, textures, or environmental effects.
+| Technology | What it brings to the app |
+| --- | --- |
+| **Next.js 16 + React 19 + TypeScript** | App Router pages, API routes, reusable components, and typed application code. |
+| **Three.js + React Three Fiber + Drei** | Interactive 3D rendering, scene composition, cameras, environments, and visual controls. |
+| **Rapier + ecctrl** | Rigid-body physics, collisions, and controllable characters. |
+| **Leaflet + React Leaflet** | Geographic maps, markers, and project/map navigation alongside 3D views. |
+| **Neon Postgres + Drizzle ORM** | Persistent project and module data with TypeScript schema definitions and queries. |
+| **Auth.js** | Authentication and session handling for protected application workflows. |
+| **Tailwind CSS + shadcn/ui + Radix UI** | Shared styling and UI primitives across Admin and Dashboard. |
+| **Vercel Blob + AWS S3** | Storage integrations for uploaded model, image, and multimedia assets. |
+| **Node.js 24 + npm 11** | Dependency installation, development, production builds, scripts, and validation. |
 
-        It supports plugins or integrations with other 3D libraries like Three.js and FarmBot.
+## Developer quick start
 
-    Lightweight and Performant:
+Repository: `marty-mcgee/threed-garden`. Application package: `threed-garden`.
 
-        Optimized for performance to ensure smooth rendering even with complex garden designs.
+### 1. Install dependencies
 
-Use Cases:
+Use **Node.js 24.x** and **npm 11.x**. If you use nvm, `.nvmrc` selects the Node version:
 
-    Educational Tools: Teaching about botany, ecology, or sustainable gardening practices.
+```bash
+nvm use
+npm install
+```
 
-    Gaming: Creating immersive 3D environments for games.
+Without nvm, install the matching Node.js version and run `npm install` directly. Commit `package-lock.json` with dependency changes; it is the project's dependency lockfile. Bun is no longer required.
 
-    Architectural Visualization: Designing landscapes for architectural projects.
+### 2. Configure your local environment
 
-    E-commerce: Allowing customers to visualize how plants will look in their gardens.
+Create an untracked `.env.local` in the project root. Local environment files are not included in this repository migration.
 
-Installation:
+Configure your own development values. The core database and authentication settings are:
 
-You can install the library via npm:
+```dotenv
+DATABASE_URL=postgresql://USER:PASSWORD@HOST/DATABASE
+NEXTAUTH_URL=http://localhost:4444
+NEXTAUTH_SECRET=YOUR_GENERATED_SECRET
+```
 
-yarn install threed-garden
+Generate a local authentication secret with:
 
-Basic Usage Example:
+```bash
+openssl rand -base64 32
+```
 
-Here’s a simple example of how you might use threed-garden to create a basic 3D garden:
+Storage, weather, and device integrations need additional configuration only when you use those features. Keep credentials server-side and out of committed files. See [Local Development](docs/developers/LOCAL_DEVELOPMENT.md) for setup details and [the FarmBot worker guide](docs/developers/FARMBOT_MQTT_WORKER.md) for its separate configuration.
 
-import { ThreeDComponents, Garden, Plant } from 'threed-garden';
+### 3. Prepare your development database
 
-// Initialize a garden scene
-const garden = new Garden({ container: '#garden-container' });
+Drizzle schemas are the source of truth under [`src/libraries/schema/`](src/libraries/schema/). For a database you intend to initialize or update, review the proposed changes with:
 
-// Add a plant to the garden
-const rose = new Plant({ type: 'rose', position: { x: 0, y: 0, z: 0 } });
-garden.addPlant(rose);
+```bash
+npm run db:push
+```
 
-// Render the garden
-garden.render();
+This command uses strict confirmation. Check the target database and proposed statements before applying them. An existing configured database does not need a schema push simply to start the app.
 
-Documentation and Resources:
+### 4. Start ThreeD
 
-    The official documentation for threed-garden can typically be found on its npm page or GitHub repository.
+```bash
+npm start
+```
 
-    Look for examples, API references, and tutorials to get started.
+Open [localhost:4444](http://localhost:4444). `npm run dev` starts the same development server.
 
-Community and Support:
+For a production build and local production server:
 
-    Check the GitHub repository (if available) for issues, discussions, and contributions.
+```bash
+npm run build
+npm run next:start
+```
 
-    The npm page may also include links to community forums or support channels.
+`npm start` is intentionally the development shortcut in this repository; `npm run next:start` serves the production build.
 
-If you’re interested in using this library, I recommend exploring its documentation and examples to understand its full capabilities and how it can fit into your project. Let me know if you need further assistance!
+## Everyday commands
 
+| Command | Purpose |
+| --- | --- |
+| `npm install` | Install dependencies from the manifest and npm lockfile. |
+| `npm start` / `npm run dev` | Start development on port 4444. |
+| `npm run build` | Create a production build. |
+| `npm run next:start` | Serve the production build on port 4444. |
+| `npm run typecheck` | Check TypeScript without emitting application code. |
+| `npm run validate -- ci` | Run the maintained CI validation group. |
+| `npm run validate -- --list` | List validation tasks and groups. |
+| `npm run validate -- <name...>` | Run selected validation tasks or groups. |
+| `npm run validate:all` | Run every registered validation task. |
+| `npm run db:generate` | Generate migration files from the Drizzle schema. |
+| `npm run db:push` | Review and apply schema changes with strict confirmation. |
+| `npm run db:studio` | Open Drizzle Studio. |
 
-----
+CI uses `npm install`, checks that the committed lockfile remains unchanged, and runs TypeScript and the CI validation group. Follow the [validation guide](docs/agents/VALIDATION.md) for targeted checks and manual Scene regression coverage.
 
+Additional scripts support ThreeD model import, Multimedia import, and the separately hosted FarmBot worker. Consult their [Model Admin](docs/developers/THREED_MODEL_ADMIN.md), [Multimedia](docs/users/ADMIN_GUIDE.md), and [worker](docs/developers/FARMBOT_MQTT_WORKER.md) guides before running import or integration operations.
 
+## How the application fits together
 
-## FUNCTIONAL NOUNS : ACTIONS : GROUPS == NOUNS + ACTIONS + METADATA 🌱 🤖 🍅 🥕
+**Admin manages reusable content; Dashboard brings Project content into interactive views.** Both use authenticated API routes and shared services backed by Drizzle and Postgres. Dashboard interactions also write supported Project changes, including marker edits, explicit saves, and completed world actions.
 
-- Noun | as root JS Object | interface INoun | type TNoun | wp_type threed_noun
+The canonical Scene route is `/dashboard/scene`. Reusable Model assets and their Project placements have separate responsibilities: editing an instance's transform should not change the source Model. The Scene preserves stable marker identities and a persistent Canvas/physics world while individual assets change.
 
---- Nouns
+Character routing follows `isMovable`: movable characters use `EcctrlCharacter`, while garden characters retain the separate `GardenCharacter` path. Animation orchestration and world-state persistence remain separate concerns.
 
-- Project | interface IProject | type TProject | wp_type threed_project
-- Scene | extends THREE.Scene | interface IScene | type TScene | wp_type threed_scene
-- Plan | interface IPlan | type TPlan | wp_type threed_plan
-- ThreeD | as root JS Object | interface IThreeD | type TThreed | wp_type threed_threed
-- File | interface IFile | type TFile | wp_type threed_file
-- Participant | interface IParticipant | type TParticipant | wp_type threed_participant
-- Character | interface ICharacter | type TCharacter | wp_type threed_character
+```text
+src/
+├── app/
+│   ├── admin/                 # Asset management and configuration
+│   ├── dashboard/             # Projects, Scene, maps, and multimedia
+│   └── api/                   # Authenticated data and action endpoints
+├── components/
+│   ├── map/                   # Unified map and ThreeD Scene
+│   ├── threed/                # Models, markers, characters, and controls
+│   ├── multimedia/            # Player, albums, gallery, and visualizers
+│   ├── traffic/               # Traffic views
+│   └── ui/                    # Application-owned shadcn/ui components
+└── libraries/
+    ├── schema/                # Auth, Multimedia, Project, Settings, ThreeD, Traffic
+    ├── db/                    # Database client and helpers
+    ├── services/              # Domain logic and integrations
+    └── types/                 # Shared TypeScript types
+```
 
---- Actions
+The ThreeD schema lives in [`src/libraries/schema/threed/index.ts`](src/libraries/schema/threed/index.ts). Start with [Architecture](docs/developers/ARCHITECTURE.md), [Data Model](docs/developers/DATA_MODEL.md), and [API Guide](docs/developers/API_GUIDE.md) for deeper implementation details.
 
-- Simulation | interface ISimulation | type TSimulation | wp_type threed_simulation
-- Demo | extends Simulation | interface IDemo | type TDemo | wp_type threed_demo
-- Game | extends Simulation | interface IGame | type TGame | wp_type threed_game
+## Documentation and release history
 
---- Groups [of Nouns]
+| Start here | Find |
+| --- | --- |
+| [Documentation Hub](docs/README.md) | Guides organized by audience. |
+| [Getting Started](docs/users/GETTING_STARTED.md) | The user workflow through Admin and Dashboard. |
+| [ThreeD Controls](docs/users/THREED_CONTROLS.md) | Scene navigation and interaction. |
+| [Ground Maps](docs/users/THREED_GROUND_MAPS.md) | Geographic context for ThreeD Projects. |
+| [Model Management](docs/developers/THREED_MODEL_ADMIN.md) | Files, materials, previews, importing, and library behavior. |
+| [Character Runtimes](docs/developers/THREED_CHARACTERS.md) | Animation, movement, and interaction boundaries. |
+| [Local Development](docs/developers/LOCAL_DEVELOPMENT.md) | Environment setup and validation workflow. |
+| [Deployment](docs/developers/DEPLOYMENT.md) | Deployment notes and operational context. |
+| [Release History](docs/releases/README.md) | Production checkpoints and release details. |
+| [v0.21.0 Release Notes](docs/releases/v0.21.0.md) | The npm migration, verification, and known dependency findings. |
+| [Agent Guide](docs/agents/README.md) | Repository conventions and change boundaries for coding agents. |
 
-- World | interface IWorld | wp_type threed_world
-- Structure | extends THREE.Object3D | interface IStructure | wp_type threed_structure
-- Farm | extends THREE.Group | interface IFarm | wp_type threed_farm
-- Garden | extends THREE.Group | interface IGarden | wp_type threed_garden
-- Allotment | extends Structure | interface IAllotment | wp_type threed_allotment
-- Bed | extends Structure | interface IBed | wp_type threed_bed
-- Furniture | extends Structure | interface IFurniture | wp_type threed_furniture
-- Equipment | extends Structure | interface IEquipment | wp_type threed_equipment
-- Plant | extends Structure | interface IPlant | wp_type threed_plant
-- Soil | extends Structure | interface ISoil | wp_type threed_soil
-- SoilAddendum | extends Soil | interface ISoilAddendum | wp_type threed_soil_addendum
-- SoilPlan | Actions | Relationships | interface ISoilPlan | wp_type threed_soil_plan
-- PlantingPlan | Actions | Relationships | interface IPlantingPlan | wp_type threed_planting_plan
-- BuildingPlan | Actions | Relationships | interface IBuildingPlan | wp_type threed_building_plan
+Detailed release timelines and FarmBot phase plans live in the documentation so this README can stay focused on the product and getting started.
 
---- Helpers (Actions, Utilities)
+## License
 
-- Tool | extends ThreeD? | interface ITool | type TTool
-- PlaneTool | extends Tool | interface IPlane | type TPlane
-- Camera | extends Tool | extends THREE.Camera | interface ICamera | type TCamera
-- Light | extends Tool | extends THREE.Light.DirectionalLight | interface ILight | type Light
-- Raster | extends Tool | extends THREE.Raster.Rasterizer | interface IRaster | type TRaster
-- Shader | extends Tool | extends THREE.Shader.Shaderizer | interface IShader | type TShader
-- Animation | extends Tool | extends OBJ.animation | interface IAnimation | type TAnimation
-
---- Testing (Physics)
-
-- Collider | extends Physics? | interface ICollider | type TCollider
-- Energy | extends Physics? | interface IEnergy | type TEnergy
-
-====
-
-> a part of the 🌱 threed.ai code family
+[MIT](LICENSE). The legacy repository's copyright and license notice are retained.

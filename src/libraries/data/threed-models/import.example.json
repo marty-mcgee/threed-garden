@@ -1,0 +1,32 @@
+{
+  "version": 1,
+  "defaults": {
+    "isPublic": false,
+    "isLibraryItem": true,
+    "isActive": true,
+    "status": "active"
+  },
+  "models": [
+    {
+      "importKey": "garden/tomato-plant-v1",
+      "modelName": "Tomato Plant",
+      "modelType": "glb",
+      "sourceFile": "./models/tomato-plant.glb",
+      "thumbnailFile": "./previews/tomato-plant.webp",
+      "supportingFiles": [
+        "./models/tomato-plant.mtl",
+        "./models/tomato-leaf.png"
+      ],
+      "categories": ["agriculture", "plants", "vegetables"],
+      "scale": 1,
+      "rotationY": 0,
+      "offsetX": 0,
+      "offsetY": 0,
+      "offsetZ": 0,
+      "metadata": {
+        "author": "Example",
+        "license": "CC0"
+      }
+    }
+  ]
+}

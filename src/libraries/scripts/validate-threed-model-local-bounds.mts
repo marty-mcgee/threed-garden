@@ -1,0 +1,22 @@
+import assert from 'node:assert/strict';
+import { Group, Mesh, SphereGeometry, MeshBasicMaterial, Vector3 } from 'three';
+// @ts-ignore Node strip-types requires the explicit source extension.
+import { measureModelLocalBounds } from '../services/threed/models/model-local-bounds.ts';
+const body = new Group();
+const visual = new Group();
+visual.scale.setScalar(2);
+body.add(visual);
+const ball = new Mesh(new SphereGeometry(0.5, 32, 16), new MeshBasicMaterial());
+ball.position.y = 0.5;
+visual.add(ball);
+const original = measureModelLocalBounds(ball, body);
+body.rotation.set(0.3, 0.7, 0.4);
+body.position.set(10, 3, -6);
+const rotated = measureModelLocalBounds(ball, body);
+assert(original.min.distanceTo(rotated.min) < 1e-6);
+assert(original.max.distanceTo(rotated.max) < 1e-6);
+assert(Math.abs(rotated.getSize(new Vector3()).y - 2) < 1e-6);
+assert(Math.abs(rotated.min.y) < 1e-6);
+console.log('PASS: translated/rotated body does not inflate ball bounds; scale and bottom preserved');
+ball.geometry.dispose();
+(ball.material as MeshBasicMaterial).dispose();
