@@ -1,0 +1,1793 @@
+import { retryDisconnectedRead } from '@/libraries/db/read-retry';
+import { databaseConnectionDiagnostic } from '@/libraries/db/connection-diagnostics';
+import { bedPlantingGeometry, bedLocalPoint, bedWorldPoint, containBedPlantings, resolvePlantingBedId } from '@/libraries/services/threed/beds/bed-planting-bounds';
+import { resolveCharacterPhysics } from '@/libraries/services/threed/characters/character-physics';
+import { refreshModelMarkerData, currentPlantingModelId } from '@/libraries/services/threed/models/model-snapshot-assets';
+import { modelSelection } from '@/libraries/services/threed/models/model-primary-file';
+import { NextRequest, NextResponse } from 'next/server';
+import { and, eq, inArray, notInArray, or, sql } from 'drizzle-orm';
+import { auth } from '@/libraries/auth';
+import { db } from '@/libraries/db/client';
+import { ensureTableSequence } from '@/libraries/db/sequence';
+import {
+  project,
+  projectAssets,
+  projectThreed,
+  projectThreedMarkers,
+} from '@/libraries/schema/project';
+import {
+  threed,
+  threedBeds,
+  threedCharacters,
+  threedFarmbots,
+  threedModels,
+  threedModelFiles,
+  threedPlantings,
+  threedPlants,
+} from '@/libraries/schema/threed';
+import {
+  parseCreateProjectBedPlacement,
+  parseUpdateProjectBedPlacement,
+  ProjectBedPlacementInputError,
+} from '@/libraries/services/threed/beds/project-bed-placement-core';
+import {
+  parseCreateProjectCharacterPlacement,
+  parseUpdateProjectCharacterPlacement,
+  ProjectCharacterPlacementInputError,
+} from '@/libraries/services/threed/characters/project-character-placement-core';
+import {
+  resolveThreeDCharacterLibraryAccess,
+} from '@/libraries/services/threed/characters/character-library-access-core';
+import {
+  parseCreateProjectFarmBotPlacement,
+  parseUpdateProjectFarmBotPlacement,
+  ProjectFarmBotPlacementInputError,
+} from '@/libraries/services/threed/farmbot/project-farmbot-placement-core';
+import { sanitizeFarmBotRecord } from '@/libraries/services/threed/farmbot/sanitize';
+import {
+  calculateProjectPlantingVisualPositions,
+  parseCreateProjectPlantingPlacement,
+  parseUpdateProjectPlantingPlacement,
+  ProjectPlantingPlacementInputError,
+} from '@/libraries/services/threed/plantings/project-planting-placement-core';
+import {
+  parseProjectThreeDMarkerSnapshot,
+  ProjectMarkerSnapshotError,
+} from '@/libraries/services/threed/markers/project-marker-snapshot-core';
+import {
+  parseThreeDProjectViewState,
+  ProjectViewStateError,
+} from '@/libraries/services/threed/markers/project-view-state-core';
+import {
+  projectLocalPositionToGeographicPosition,
+  type ThreeDGeographicOrigin,
+} from '@/libraries/services/threed/markers/map-coordinate-core';
+import {
+  parseCreateProjectModelInstance,
+  parseUpdateProjectModelInstance,
+  ProjectModelInstanceInputError,
+} from '@/libraries/services/threed/models/project-model-instance-core';
+import type { ThreeDRuntimeMarkerModuleType } from '@/libraries/types/map';
+import { IMPORTED_SENSOR_GROUP, removeLegacyAttachedSensors } from '@/libraries/services/threed/physics/sensor-legacy-compat';
+import { readSensorGroups } from '@/libraries/services/threed/physics/sensor-group-core';
+import { validatePhysicsSensorCuboids } from '@/libraries/services/threed/physics/sensor-cuboid-core';
+
+const MAX_REQUEST_BYTES = 1_048_576;
+
+const PROJECT_ASSET_TYPE_BY_MARKER: Record<
+  ThreeDRuntimeMarkerModuleType,
+  typeof projectAssets.assetType.enumValues[number]
+> = {
+  plantings: 'threed_plantings',
+  beds: 'threed_beds',
+  characters: 'threed_characters',
+  farmbots: 'threed_farmbots',
+  models: 'threed_models',
+};
+
+function parsePositiveId(value: unknown): number | null {
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : null;
+}
+
+function getSafeDatabaseError(error: unknown) {
+  if (typeof error !== 'object' || error === null) return {};
+  const candidate = error as { code?: unknown; constraint?: unknown };
+  return {
+    errorCode: typeof candidate.code === 'string' ? candidate.code : undefined,
+    constraint: typeof candidate.constraint === 'string' ? candidate.constraint : undefined,
+  };
+}
+
+async function requireOwnedProject(userId: string, projectId: number) {
+  const [ownedProject] = await db
+    .select({
+      id: project.id,
+      originLatitude: project.originLatitude,
+      originLongitude: project.originLongitude,
+      originAltitude: project.originAltitude,
+      headingDegrees: project.headingDegrees,
+      metersPerSceneUnit: project.metersPerSceneUnit,
+      config: project.config,
+      metadata: project.metadata,
+    })
+    .from(project)
+    .where(and(eq(project.id, projectId), eq(project.userId, userId)))
+    .limit(1);
+  return ownedProject ?? null;
+}
+
+async function requireActiveThreeDAssignment(
+  userId: string,
+  projectId: number,
+  threedId: number,
+) {
+  const [assignment] = await db
+    .select({ id: projectThreed.id })
+    .from(projectThreed)
+    .innerJoin(threed, and(
+      eq(threed.id, projectThreed.threedId),
+      eq(threed.userId, userId),
+      eq(threed.isActive, true),
+    ))
+    .where(and(
+      eq(projectThreed.projectId, projectId),
+      eq(projectThreed.threedId, threedId),
+      eq(projectThreed.userId, userId),
+      eq(projectThreed.isActive, true),
+    ))
+    .limit(1);
+  return assignment ?? null;
+}
+
+type OwnedProject = NonNullable<Awaited<
+  ReturnType<typeof requireOwnedProject>
+>>;
+
+function getProjectOrigin(
+  ownedProject: OwnedProject,
+): ThreeDGeographicOrigin | null {
+  if (ownedProject.originLatitude === null || ownedProject.originLongitude === null) return null;
+  return {
+    latitude: Number(ownedProject.originLatitude),
+    longitude: Number(ownedProject.originLongitude),
+    altitude: Number(ownedProject.originAltitude),
+    headingDegrees: Number(ownedProject.headingDegrees),
+    metersPerSceneUnit: Number(ownedProject.metersPerSceneUnit),
+  };
+}
+
+function getMarkerGeographicValues(
+  position: { x: number; y: number; z: number },
+  ownedProject: OwnedProject | null,
+): {
+  latitude: string | null;
+  longitude: string | null;
+  altitude: string | null;
+} {
+  const origin = ownedProject ? getProjectOrigin(ownedProject) : null;
+  if (!origin) return { latitude: null, longitude: null, altitude: null };
+  const geographic = projectLocalPositionToGeographicPosition(position, origin);
+  return {
+    latitude: geographic.latitude.toFixed(7),
+    longitude: geographic.longitude.toFixed(7),
+    altitude: geographic.altitude.toFixed(3),
+  };
+}
+
+async function readEligibleModel(userId: string, modelId: number) {
+  const [model] = await db
+    .select(modelSelection())
+    .from(threedModels)
+    .where(and(
+      eq(threedModels.id, modelId),
+      eq(threedModels.isActive, true),
+      eq(threedModels.status, 'active'),
+      sql`${threedModels.usedByCharacters} IS NOT TRUE`,
+      or(
+        eq(threedModels.userId, userId),
+        and(eq(threedModels.isPublic, true), eq(threedModels.isLibraryItem, true)),
+      ),
+    ))
+    .limit(1);
+  return model?.filePath ? model : null;
+}
+
+async function readEligibleCharacter(userId: string, characterId: number) {
+  const [result] = await db
+    .select({ character: threedCharacters, model: modelSelection() })
+    .from(threedCharacters)
+    .innerJoin(threedModels, eq(threedModels.id, threedCharacters.modelId))
+    .where(and(
+      eq(threedCharacters.id, characterId),
+      eq(threedCharacters.userId, userId),
+      or(
+        eq(threedModels.userId, userId),
+        and(
+          eq(threedModels.isPublic, true),
+          eq(threedModels.isLibraryItem, true),
+        ),
+      ),
+    ))
+    .limit(1);
+  if (!result) return null;
+  const libraryAccess = resolveThreeDCharacterLibraryAccess(
+    result.character,
+    result.model,
+  );
+  return libraryAccess.eligible
+    ? { ...result, libraryAccess }
+    : null;
+}
+
+async function readOwnedActivePlant(userId: string, plantId: number) {
+  const [plant] = await db.select().from(threedPlants).where(and(
+    eq(threedPlants.id, plantId),
+    eq(threedPlants.userId, userId),
+    eq(threedPlants.isActive, true),
+    eq(threedPlants.status, 'active'),
+  )).limit(1);
+  return plant ?? null;
+}
+
+async function requireAssignedBed(
+  userId: string,
+  projectId: number,
+  threedId: number,
+  bedId: number,
+) {
+  const [assigned] = await db.select({ id: projectAssets.id })
+    .from(projectAssets)
+    .innerJoin(threedBeds, and(
+      eq(threedBeds.id, projectAssets.assetId),
+      eq(threedBeds.userId, userId),
+      eq(threedBeds.isActive, true),
+    ))
+    .where(and(
+      eq(projectAssets.userId, userId),
+      eq(projectAssets.projectId, projectId),
+      eq(projectAssets.moduleId, threedId),
+      eq(projectAssets.moduleType, 'threed'),
+      eq(projectAssets.assetType, 'threed_beds'),
+      eq(projectAssets.assetId, bedId),
+      eq(projectAssets.isActive, true),
+    )).limit(1);
+  return assigned ?? null;
+}
+
+function resolveProjectPlantingBedId(data: Record<string, unknown>, sourceBedId: unknown) {
+  try { return resolvePlantingBedId(data, sourceBedId); }
+  catch { throw new ProjectPlantingPlacementInputError('Invalid assigned Bed'); }
+}
+
+async function readAssignedBedGeometry(tx: MarkerTransaction, userId: string, projectId: number, threedId: number, bedId: number) {
+  const [source] = await tx.select().from(threedBeds).where(and(eq(threedBeds.id, bedId), eq(threedBeds.userId, userId), eq(threedBeds.isActive, true))).limit(1);
+  if (!source) throw new ProjectPlantingPlacementInputError('Assigned Bed not found');
+  const overrides = await tx.select().from(projectThreedMarkers).where(and(
+    eq(projectThreedMarkers.userId, userId), eq(projectThreedMarkers.projectId, projectId),
+    eq(projectThreedMarkers.threedId, threedId), eq(projectThreedMarkers.markerType, 'beds'),
+    eq(projectThreedMarkers.sourceAssetId, bedId), eq(projectThreedMarkers.isActive, true),
+  )).limit(2);
+  if (overrides.length > 1) throw new ProjectPlantingPlacementInputError('Assigned Bed has ambiguous Project instances');
+  const marker = overrides[0];
+  return bedPlantingGeometry({x:Number(marker?.positionX ?? source.positionX), y:Number(marker?.positionY ?? source.positionY), z:Number(marker?.positionZ ?? source.positionZ)},
+    {...source, ...(marker?.data as Record<string, unknown> ?? {})});
+}
+function constrainAssignedPlantings(bed: ReturnType<typeof bedPlantingGeometry>, points: {x:number;y:number;z:number}[]) {
+  try { return containBedPlantings(bed, points); }
+  catch (error) { throw new ProjectPlantingPlacementInputError(error instanceof Error ? error.message : 'Invalid Bed placement'); }
+}
+
+async function readOwnedModelMarker(userId: string, id: number) {
+  const [marker] = await db
+    .select()
+    .from(projectThreedMarkers)
+    .innerJoin(project, and(
+      eq(project.id, projectThreedMarkers.projectId),
+      eq(project.userId, userId),
+    ))
+    .where(and(
+      eq(projectThreedMarkers.id, id),
+      eq(projectThreedMarkers.userId, userId),
+      eq(projectThreedMarkers.markerType, 'models'),
+    ))
+    .limit(1);
+  return marker?.project_threed_markers ?? null;
+}
+
+async function readOwnedProjectMarker(userId: string, id: number) {
+  const [marker] = await db
+    .select()
+    .from(projectThreedMarkers)
+    .innerJoin(project, and(
+      eq(project.id, projectThreedMarkers.projectId),
+      eq(project.userId, userId),
+    ))
+    .where(and(
+      eq(projectThreedMarkers.id, id),
+      eq(projectThreedMarkers.userId, userId),
+    ))
+    .limit(1);
+  return marker?.project_threed_markers ?? null;
+}
+
+async function readJsonBody(request: NextRequest): Promise<unknown> {
+  const rawBody = await request.text();
+  if (Buffer.byteLength(rawBody, 'utf8') > MAX_REQUEST_BYTES) {
+    throw new ProjectModelInstanceInputError('Request body is too large');
+  }
+  try {
+    return JSON.parse(rawBody);
+  } catch {
+    throw new ProjectModelInstanceInputError('Invalid JSON');
+  }
+}
+
+export async function GET(request: NextRequest) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
+  const userId = session.user.id;
+
+  const projectId = parsePositiveId(new URL(request.url).searchParams.get('projectId'));
+  if (!projectId) {
+    return NextResponse.json({ success: false, error: 'Invalid project ID' }, { status: 400 });
+  }
+
+  if (!await requireOwnedProject(userId, projectId)) {
+    return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+  }
+
+  const markers = await db
+    .select()
+    .from(projectThreedMarkers)
+    .where(and(
+      eq(projectThreedMarkers.projectId, projectId),
+      eq(projectThreedMarkers.userId, userId),
+    ));
+
+  return NextResponse.json({ success: true, data: markers });
+}
+
+async function saveSnapshot(request: NextRequest) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
+  const userId = session.user.id;
+
+  try {
+    const rawBody = await request.text();
+    if (Buffer.byteLength(rawBody, 'utf8') > MAX_REQUEST_BYTES) {
+      return NextResponse.json({ success: false, error: 'Snapshot is too large' }, { status: 413 });
+    }
+
+    let body: unknown;
+    try {
+      body = JSON.parse(rawBody);
+    } catch {
+      return NextResponse.json({ success: false, error: 'Invalid JSON' }, { status: 400 });
+    }
+    if (typeof body !== 'object' || body === null || Array.isArray(body)) {
+      return NextResponse.json({ success: false, error: 'Invalid snapshot' }, { status: 400 });
+    }
+
+    const requestBody = body as Record<string, unknown>;
+    const projectId = parsePositiveId(requestBody.projectId);
+    if (!projectId) {
+      return NextResponse.json({ success: false, error: 'Invalid project ID' }, { status: 400 });
+    }
+    const markers = parseProjectThreeDMarkerSnapshot(requestBody.markers);
+    const viewState = parseThreeDProjectViewState(requestBody.viewState);
+
+    const ownedProject = await requireOwnedProject(userId, projectId);
+    if (!ownedProject) {
+      return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+    }
+
+    const assignmentRows = markers.length === 0
+      ? []
+      : await db
+          .select({
+            moduleId: projectAssets.moduleId,
+            assetType: projectAssets.assetType,
+            assetId: projectAssets.assetId,
+          })
+          .from(projectAssets)
+          .innerJoin(
+            projectThreed,
+            and(
+              eq(projectThreed.projectId, projectAssets.projectId),
+              eq(projectThreed.threedId, projectAssets.moduleId),
+              eq(projectThreed.userId, projectAssets.userId),
+              eq(projectThreed.isActive, true),
+            ),
+          )
+          .where(and(
+            eq(projectAssets.projectId, projectId),
+            eq(projectAssets.userId, userId),
+            eq(projectAssets.moduleType, 'threed'),
+            eq(projectAssets.isActive, true),
+            inArray(projectAssets.assetType, Object.values(PROJECT_ASSET_TYPE_BY_MARKER)),
+          ));
+
+    const moduleIdsByIdentity = new Map<string, Set<number>>();
+    for (const assignment of assignmentRows) {
+      const markerType = Object.entries(PROJECT_ASSET_TYPE_BY_MARKER)
+        .find(([, assetType]) => assetType === assignment.assetType)?.[0];
+      if (!markerType) continue;
+      const identity = `${markerType}:${assignment.assetId}`;
+      const moduleIds = moduleIdsByIdentity.get(identity) ?? new Set<number>();
+      moduleIds.add(assignment.moduleId);
+      moduleIdsByIdentity.set(identity, moduleIds);
+    }
+
+    const rows = markers.map((marker) => {
+      const moduleIds = moduleIdsByIdentity.get(`${marker.moduleType}:${marker.assetId}`);
+      if (!moduleIds || moduleIds.size !== 1) {
+        throw new ProjectMarkerSnapshotError('invalid_snapshot');
+      }
+      const [threedId] = moduleIds;
+      const geographic = getMarkerGeographicValues(marker.position, ownedProject);
+      return {
+        userId,
+        projectId,
+        threedId,
+        markerType: marker.moduleType,
+        sourceAssetId: marker.assetId,
+        markerId: marker.markerId,
+        name: marker.name,
+        positionX: marker.position.x.toFixed(3),
+        positionY: marker.position.y.toFixed(3),
+        positionZ: marker.position.z.toFixed(3),
+        ...geographic,
+        positionSource: marker.positionSource,
+        color: marker.color,
+        icon: marker.icon,
+        label: marker.label,
+        isVisible: marker.isVisible,
+        isActive: marker.isActive,
+        data: marker.data,
+        metadata: marker.metadata,
+        savedAt: new Date(),
+        updatedAt: new Date(),
+      };
+    });
+
+    const saved = await db.transaction(async (tx) => {
+      await tx.execute(
+        sql`select pg_advisory_xact_lock(hashtext(${`project-threed-markers:${projectId}`}))`,
+      );
+      const plantingRows = rows.filter(row => row.markerType === 'plantings');
+      const sources = plantingRows.length ? await tx.select({id:threedPlantings.id,bedId:threedPlantings.bedId}).from(threedPlantings)
+        .where(and(eq(threedPlantings.userId,userId),inArray(threedPlantings.id,plantingRows.map(row=>row.sourceAssetId)))) : [];
+      const groups = new Map<string, typeof plantingRows>();
+      for (const row of plantingRows) {
+        const bedId = resolveProjectPlantingBedId(row.data, sources.find(source=>source.id===row.sourceAssetId)?.bedId);
+        if (!bedId) continue;
+        const key = `${row.threedId}:${bedId}`;
+        groups.set(key,[...(groups.get(key) ?? []),row]);
+      }
+      for (const group of groups.values()) {
+        const bedId = resolveProjectPlantingBedId(group[0].data, sources.find(source=>source.id===group[0].sourceAssetId)?.bedId)!;
+        const threedId = group[0].threedId;
+        if (!await requireAssignedBed(userId,projectId,threedId,bedId)) throw new ProjectPlantingPlacementInputError('Assigned Project Bed not found');
+        const bedRows = rows.filter(row=>row.markerType==='beds' && row.sourceAssetId===bedId && row.threedId===threedId);
+        if (bedRows.length > 1) throw new ProjectPlantingPlacementInputError('Assigned Bed has ambiguous Project instances');
+        const bedRow = bedRows[0];
+        const bed = bedRow ? bedPlantingGeometry({x:Number(bedRow.positionX),y:Number(bedRow.positionY),z:Number(bedRow.positionZ)},bedRow.data)
+          : await readAssignedBedGeometry(tx,userId,projectId,threedId,bedId);
+        const roots = group.map(row=>({x:Number(row.positionX),y:Number(row.positionY),z:Number(row.positionZ)}));
+        // Retain overflow rejection while keeping unrelated roots stationary.
+        constrainAssignedPlantings(bed, roots);
+        const positions = roots.map(root=>constrainAssignedPlantings(bed,[root])[0]);
+        group.forEach((row,index)=>{
+          const position = positions[index];
+          row.positionX=position.x.toFixed(3); row.positionY=position.y.toFixed(3); row.positionZ=position.z.toFixed(3);
+          Object.assign(row,getMarkerGeographicValues(position,ownedProject));
+          row.data={...row.data,positionX:position.x,positionY:position.y,positionZ:position.z,bedId};
+        });
+      }
+      let savedRows: (typeof projectThreedMarkers.$inferSelect)[] = [];
+      if (rows.length === 0) {
+        await tx.delete(projectThreedMarkers).where(and(
+          eq(projectThreedMarkers.projectId, projectId),
+          eq(projectThreedMarkers.userId, userId),
+        ));
+      } else {
+        savedRows = await tx.insert(projectThreedMarkers)
+          .values(rows)
+          .onConflictDoUpdate({
+          target: [projectThreedMarkers.projectId, projectThreedMarkers.markerId],
+          set: {
+            userId: sql`excluded.user_id`,
+            threedId: sql`excluded.threed_id`,
+            markerType: sql`excluded.marker_type`,
+            sourceAssetId: sql`excluded.source_asset_id`,
+            name: sql`excluded.name`,
+            positionX: sql`excluded.position_x`,
+            positionY: sql`excluded.position_y`,
+            positionZ: sql`excluded.position_z`,
+            latitude: sql`excluded.latitude`,
+            longitude: sql`excluded.longitude`,
+            altitude: sql`excluded.altitude`,
+            positionSource: sql`excluded.position_source`,
+            color: sql`excluded.color`,
+            icon: sql`excluded.icon`,
+            label: sql`excluded.label`,
+            isVisible: sql`excluded.is_visible`,
+            isActive: sql`excluded.is_active`,
+            data: sql`excluded.data`,
+            metadata: sql`excluded.metadata`,
+            savedAt: sql`excluded.saved_at`,
+            updatedAt: sql`excluded.updated_at`,
+          },
+          })
+          .returning();
+
+        await tx.delete(projectThreedMarkers).where(and(
+          eq(projectThreedMarkers.projectId, projectId),
+          eq(projectThreedMarkers.userId, userId),
+          notInArray(projectThreedMarkers.markerId, rows.map((row) => row.markerId)),
+        ));
+      }
+
+      await tx.update(project).set({
+        config: sql`coalesce(${project.config}, '{}'::jsonb) || ${JSON.stringify({ threeDViewState: viewState })}::jsonb`,
+        updatedAt: new Date(),
+      }).where(and(eq(project.id, projectId), eq(project.userId, userId)));
+      return savedRows;
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        projectId,
+        markerCount: saved.length,
+        markers: saved,
+        savedAt: new Date().toISOString(),
+      },
+    });
+  } catch (error) {
+    if (error instanceof ProjectPlantingPlacementInputError) return NextResponse.json({success:false,error:error.message},{status:400});
+    if (error instanceof ProjectMarkerSnapshotError || error instanceof ProjectViewStateError) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: error instanceof ProjectViewStateError
+            ? 'Invalid ThreeD Project view state'
+            : error instanceof ProjectMarkerSnapshotError && error.code === 'overlapping_characters'
+              ? 'Characters are too close to reload safely. Move them apart, then save again.'
+              : 'Invalid ThreeD Project marker snapshot',
+        },
+        {
+          status: error instanceof ProjectMarkerSnapshotError && error.code === 'too_many_markers'
+            ? 413
+            : 400,
+        },
+      );
+    }
+    console.error('Failed to save ThreeD Project marker snapshot', {
+      errorName: error instanceof Error ? error.name : 'UnknownError',
+    });
+    return NextResponse.json(
+      { success: false, error: 'Failed to save ThreeD Project marker snapshot' },
+      { status: 500 },
+    );
+  }
+}
+
+export async function POST(request: NextRequest) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const body = await readJsonBody(request);
+    if (
+      typeof body === 'object'
+      && body !== null
+      && !Array.isArray(body)
+      && (body as Record<string, unknown>).markerType === 'beds'
+    ) {
+      const input = parseCreateProjectBedPlacement(body);
+      const userId = session.user.id;
+      const ownedProject = await requireOwnedProject(userId, input.projectId);
+      if (!ownedProject) {
+        return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+      }
+      const assignment = await requireActiveThreeDAssignment(userId, input.projectId, input.threedId);
+      if (!assignment) {
+        return NextResponse.json(
+          { success: false, error: 'Active ThreeD Project assignment not found' },
+          { status: 404 },
+        );
+      }
+      const geographic = getMarkerGeographicValues({
+        x: input.positionX,
+        y: input.positionY,
+        z: input.positionZ,
+      }, ownedProject);
+
+      await ensureTableSequence('threed_beds');
+      const created = await db.transaction(async (tx) => {
+        await tx.execute(
+          sql`select pg_advisory_xact_lock(hashtext(${`project-threed-markers:${input.projectId}`}))`,
+        );
+        const [bed] = await tx.insert(threedBeds).values({
+          userId,
+          bedId: `BED-${crypto.randomUUID()}`,
+          name: input.name,
+          shape: input.shape,
+          widthFeet: input.widthFeet.toFixed(2),
+          lengthFeet: input.lengthFeet.toFixed(2),
+          squareFeet: (input.widthFeet * input.lengthFeet).toFixed(2),
+          heightFeet: input.heightFeet.toFixed(2),
+          positionX: input.positionX.toFixed(2),
+          positionY: input.positionY.toFixed(2),
+          positionZ: input.positionZ.toFixed(2),
+          rotation: input.rotation.toFixed(2),
+          scale: input.scale.toFixed(2),
+          isActive: true,
+          status: 'active',
+          color: input.color,
+        }).returning();
+
+        await tx.insert(projectAssets).values({
+          userId,
+          projectId: input.projectId,
+          moduleId: input.threedId,
+          moduleType: 'threed',
+          assetType: 'threed_beds',
+          assetId: bed.id,
+          config: {},
+          isActive: true,
+        });
+
+        const [marker] = await tx.insert(projectThreedMarkers).values({
+          userId,
+          projectId: input.projectId,
+          threedId: input.threedId,
+          markerType: 'beds',
+          sourceAssetId: bed.id,
+          markerId: `beds-${bed.id}`,
+          name: bed.name,
+          positionX: input.positionX.toFixed(3),
+          positionY: input.positionY.toFixed(3),
+          positionZ: input.positionZ.toFixed(3),
+          ...geographic,
+          positionSource: 'asset',
+          color: input.color,
+          icon: '🧑‍🌾',
+          label: bed.name,
+          isVisible: true,
+          isActive: true,
+          data: bed,
+          metadata: {
+            source: 'project-marker',
+            placementKind: 'dashboard-created',
+          },
+        }).returning();
+
+        return { bed, marker };
+      });
+
+      return NextResponse.json({ success: true, data: created }, { status: 201 });
+    }
+
+    if (
+      typeof body === 'object'
+      && body !== null
+      && !Array.isArray(body)
+      && (body as Record<string, unknown>).markerType === 'farmbots'
+    ) {
+      const input = parseCreateProjectFarmBotPlacement(body);
+      const userId = session.user.id;
+      const ownedProject = await requireOwnedProject(userId, input.projectId);
+      if (!ownedProject) {
+        return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+      }
+      const assignment = await requireActiveThreeDAssignment(userId, input.projectId, input.threedId);
+      if (!assignment) {
+        return NextResponse.json(
+          { success: false, error: 'Active ThreeD Project assignment not found' },
+          { status: 404 },
+        );
+      }
+      const geographic = getMarkerGeographicValues({
+        x: input.positionX,
+        y: input.positionY,
+        z: input.positionZ,
+      }, ownedProject);
+      const [farmbot] = await db.select().from(threedFarmbots).where(and(
+        eq(threedFarmbots.id, input.farmbotId),
+        eq(threedFarmbots.userId, userId),
+        eq(threedFarmbots.isActive, true),
+      )).limit(1);
+      if (!farmbot) {
+        return NextResponse.json(
+          { success: false, error: 'FarmBot is not available for Project placement' },
+          { status: 404 },
+        );
+      }
+
+      const markerId = `farmbots-${farmbot.id}`;
+      const safeFarmBot = sanitizeFarmBotRecord(farmbot);
+      const created = await db.transaction(async (tx) => {
+        await tx.execute(
+          sql`select pg_advisory_xact_lock(hashtext(${`project-threed-farmbots:${input.projectId}`}))`,
+        );
+        const [existingMarker] = await tx.select({ id: projectThreedMarkers.id })
+          .from(projectThreedMarkers)
+          .where(and(
+            eq(projectThreedMarkers.projectId, input.projectId),
+            eq(projectThreedMarkers.userId, userId),
+            eq(projectThreedMarkers.markerId, markerId),
+          ))
+          .limit(1);
+        if (existingMarker) {
+          throw new ProjectFarmBotPlacementInputError(
+            'FarmBot is already placed in this ThreeD Project',
+          );
+        }
+
+        const [existingAssignment] = await tx.select({ id: projectAssets.id })
+          .from(projectAssets)
+          .where(and(
+            eq(projectAssets.projectId, input.projectId),
+            eq(projectAssets.moduleId, input.threedId),
+            eq(projectAssets.assetType, 'threed_farmbots'),
+            eq(projectAssets.assetId, farmbot.id),
+          ))
+          .limit(1);
+        if (existingAssignment) {
+          await tx.update(projectAssets).set({
+            userId,
+            moduleType: 'threed',
+            isActive: true,
+            updatedAt: new Date(),
+          }).where(eq(projectAssets.id, existingAssignment.id));
+        } else {
+          await tx.insert(projectAssets).values({
+            userId,
+            projectId: input.projectId,
+            moduleId: input.threedId,
+            moduleType: 'threed',
+            assetType: 'threed_farmbots',
+            assetId: farmbot.id,
+            config: {},
+            isActive: true,
+          });
+        }
+
+        const markerData = {
+          ...safeFarmBot,
+          widthFeet: input.widthFeet,
+          lengthFeet: input.lengthFeet,
+          heightFeet: input.heightFeet,
+          scale: input.scale,
+          color: input.color,
+          positionX: input.positionX,
+          positionY: input.positionY,
+          positionZ: input.positionZ,
+          rotation: input.rotation,
+        };
+        const [marker] = await tx.insert(projectThreedMarkers).values({
+          userId,
+          projectId: input.projectId,
+          threedId: input.threedId,
+          markerType: 'farmbots',
+          sourceAssetId: farmbot.id,
+          markerId,
+          name: farmbot.name,
+          positionX: input.positionX.toFixed(3),
+          positionY: input.positionY.toFixed(3),
+          positionZ: input.positionZ.toFixed(3),
+          ...geographic,
+          positionSource: 'asset',
+          color: input.color,
+          icon: '🤖',
+          label: farmbot.name,
+          isVisible: true,
+          isActive: true,
+          data: markerData,
+          metadata: {
+            source: 'project-marker',
+            placementKind: 'farmbot-library',
+          },
+        }).returning();
+        return { farmbot: safeFarmBot, marker };
+      });
+
+      return NextResponse.json({ success: true, data: created }, { status: 201 });
+    }
+
+    if (
+      typeof body === 'object'
+      && body !== null
+      && !Array.isArray(body)
+      && (body as Record<string, unknown>).markerType === 'plantings'
+    ) {
+      const input = parseCreateProjectPlantingPlacement(body);
+      const userId = session.user.id;
+      const ownedProject = await requireOwnedProject(userId, input.projectId);
+      if (!ownedProject) {
+        return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+      }
+      const assignment = await requireActiveThreeDAssignment(userId, input.projectId, input.threedId);
+      if (!assignment) {
+        return NextResponse.json(
+          { success: false, error: 'Active ThreeD Project assignment not found' },
+          { status: 404 },
+        );
+      }
+      const plant = await readOwnedActivePlant(userId, input.plantId);
+      if (!plant) {
+        return NextResponse.json({ success: false, error: 'Plant not found' }, { status: 404 });
+      }
+      const assignedBed = input.bedId
+        ? await requireAssignedBed(userId, input.projectId, input.threedId, input.bedId)
+        : null;
+      if (input.bedId && !assignedBed) {
+        return NextResponse.json(
+          { success: false, error: 'Assigned Project Bed not found' },
+          { status: 404 },
+        );
+      }
+
+      const model = plant.modelId
+        ? (await db.select(modelSelection()).from(threedModels)
+            .where(and(eq(threedModels.id, plant.modelId), eq(threedModels.isActive, true)))
+            .limit(1))[0] ?? null
+        : null;
+
+      await ensureTableSequence('threed_plantings');
+      const created = await db.transaction(async (tx) => {
+        await tx.execute(
+          sql`select pg_advisory_xact_lock(hashtext(${`project-threed-markers:${input.projectId}`}))`,
+        );
+        if (input.bedId && input.quantity > 1 && input.spacingInches === 0) {
+          throw new ProjectPlantingPlacementInputError('Assigned Plantings need positive spacing.');
+        }
+        const offsets = calculateProjectPlantingVisualPositions(
+          input.quantity,
+          input.bedId ? input.spacingInches ?? 12 : input.spacingInches,
+        );
+        let positions = offsets.map((offset) => ({
+          x: input.positionX + offset.x,
+          y: input.positionY,
+          z: input.positionZ + offset.z,
+        }));
+        if (input.bedId) {
+          const bed = await readAssignedBedGeometry(tx, userId, input.projectId, input.threedId, input.bedId);
+          const anchor = bedLocalPoint(bed, {x:input.positionX,y:input.positionY,z:input.positionZ});
+          positions = constrainAssignedPlantings(bed, offsets.map(offset=>bedWorldPoint(bed,{x:anchor.x+offset.x,z:anchor.z+offset.z})));
+        }
+        const plantings = [];
+        const markers = [];
+        for (const position of positions) {
+          const positionX = position.x;
+          const positionY = position.y;
+          const positionZ = position.z;
+          const geographic = getMarkerGeographicValues(position, ownedProject);
+          const [planting] = await tx.insert(threedPlantings).values({
+            userId,
+            plantingId: `PLANTING-${crypto.randomUUID()}`,
+            plantId: input.plantId,
+            bedId: input.bedId,
+            customModelId: null,
+            modelScale: input.modelScale.toFixed(2),
+            modelOffset: { x: 0, y: 0, z: 0 },
+            quantity: 1,
+            spacingInches: input.spacingInches,
+            positionX: positionX.toFixed(2),
+            positionY: positionY.toFixed(2),
+            positionZ: positionZ.toFixed(2),
+            plantedDate: new Date().toISOString(),
+            isActive: true,
+            status: 'planted',
+            growthStage: 'seed',
+            health: 'good',
+          }).returning();
+
+          await tx.insert(projectAssets).values({
+            userId,
+            projectId: input.projectId,
+            moduleId: input.threedId,
+            moduleType: 'threed',
+            assetType: 'threed_plantings',
+            assetId: planting.id,
+            config: {},
+            isActive: true,
+          });
+
+          const markerData = {
+            ...planting,
+            quantity: 1,
+            plantName: plant.commonName,
+            commonName: plant.commonName,
+            scientificName: plant.scientificName,
+            plant,
+            model,
+          };
+          const [marker] = await tx.insert(projectThreedMarkers).values({
+            userId,
+            projectId: input.projectId,
+            threedId: input.threedId,
+            markerType: 'plantings',
+            sourceAssetId: planting.id,
+            markerId: `plantings-${planting.id}`,
+            name: plant.commonName,
+            positionX: positionX.toFixed(3),
+            positionY: positionY.toFixed(3),
+            positionZ: positionZ.toFixed(3),
+            ...geographic,
+            positionSource: 'asset',
+            color: '#22c55e',
+            icon: '🌱',
+            label: plant.commonName,
+            isVisible: true,
+            isActive: true,
+            data: markerData,
+            metadata: { source: 'project-marker' },
+          }).returning();
+          plantings.push(planting);
+          markers.push(marker);
+        }
+        return { plantings, markers };
+      });
+
+      return NextResponse.json({ success: true, data: created }, { status: 201 });
+    }
+
+    if (
+      typeof body === 'object'
+      && body !== null
+      && !Array.isArray(body)
+      && (body as Record<string, unknown>).markerType === 'characters'
+    ) {
+      const input = parseCreateProjectCharacterPlacement(body);
+      const userId = session.user.id;
+      const ownedProject = await requireOwnedProject(userId, input.projectId);
+      if (!ownedProject) {
+        return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+      }
+      const assignment = await requireActiveThreeDAssignment(userId, input.projectId, input.threedId);
+      if (!assignment) {
+        return NextResponse.json(
+          { success: false, error: 'Active ThreeD Project assignment not found' },
+          { status: 404 },
+        );
+      }
+      const geographic = getMarkerGeographicValues({
+        x: input.positionX,
+        y: input.positionY,
+        z: input.positionZ,
+      }, ownedProject);
+      const eligible = await readEligibleCharacter(userId, input.characterId);
+      if (!eligible) {
+        return NextResponse.json(
+          { success: false, error: 'Character is not eligible for Character Library placement' },
+          { status: 404 },
+        );
+      }
+
+      const positionX = input.positionX.toFixed(3);
+      const positionY = input.positionY.toFixed(3);
+      const positionZ = input.positionZ.toFixed(3);
+      const markerId = `characters-${eligible.character.id}`;
+      const created = await db.transaction(async (tx) => {
+        await tx.execute(
+          sql`select pg_advisory_xact_lock(hashtext(${`project-threed-characters:${input.projectId}`}))`,
+        );
+        const [existingMarker] = await tx.select({ id: projectThreedMarkers.id })
+          .from(projectThreedMarkers)
+          .where(and(
+            eq(projectThreedMarkers.projectId, input.projectId),
+            eq(projectThreedMarkers.userId, userId),
+            eq(projectThreedMarkers.markerId, markerId),
+          ))
+          .limit(1);
+        if (existingMarker) {
+          throw new ProjectCharacterPlacementInputError(
+            'Character is already placed in this ThreeD Project',
+          );
+        }
+        if (eligible.libraryAccess.runtime === 'ecctrl') {
+          const [occupiedSpawn] = await tx.select({ markerId: projectThreedMarkers.markerId })
+            .from(projectThreedMarkers)
+            .where(and(
+              eq(projectThreedMarkers.projectId, input.projectId),
+              eq(projectThreedMarkers.userId, userId),
+              eq(projectThreedMarkers.markerType, 'characters'),
+              eq(projectThreedMarkers.isActive, true),
+              sql`${projectThreedMarkers.data}->>'isMovable' = 'true'`,
+              sql`power(${projectThreedMarkers.positionX} - ${positionX}::numeric, 2) + power(${projectThreedMarkers.positionZ} - ${positionZ}::numeric, 2) < 0.25`,
+              sql`abs(${projectThreedMarkers.positionY} - ${positionY}::numeric) < 3`,
+            ))
+            .limit(1);
+          if (occupiedSpawn) {
+            throw new ProjectCharacterPlacementInputError(
+              `Character spawn is already occupied by ${occupiedSpawn.markerId}`,
+            );
+          }
+        }
+
+        const [existingAssignment] = await tx.select({ id: projectAssets.id })
+          .from(projectAssets)
+          .where(and(
+            eq(projectAssets.projectId, input.projectId),
+            eq(projectAssets.moduleId, input.threedId),
+            eq(projectAssets.assetType, 'threed_characters'),
+            eq(projectAssets.assetId, eligible.character.id),
+          ))
+          .limit(1);
+        if (existingAssignment) {
+          await tx.update(projectAssets).set({
+            userId,
+            moduleType: 'threed',
+            isActive: true,
+            updatedAt: new Date(),
+          }).where(eq(projectAssets.id, existingAssignment.id));
+        } else {
+          await tx.insert(projectAssets).values({
+            userId,
+            projectId: input.projectId,
+            moduleId: input.threedId,
+            moduleType: 'threed',
+            assetType: 'threed_characters',
+            assetId: eligible.character.id,
+            config: {},
+            isActive: true,
+          });
+        }
+
+        const markerData = {
+          ...eligible.character,
+          model: eligible.model,
+          positionX: input.positionX,
+          positionY: input.positionY,
+          positionZ: input.positionZ,
+          rotation: input.rotation,
+          scaleMultiplier: input.scaleMultiplier,
+        };
+        const [marker] = await tx.insert(projectThreedMarkers).values({
+          userId,
+          projectId: input.projectId,
+          threedId: input.threedId,
+          markerType: 'characters',
+          sourceAssetId: eligible.character.id,
+          markerId,
+          name: eligible.character.name,
+          positionX,
+          positionY,
+          positionZ,
+          ...geographic,
+          positionSource: 'asset',
+          color: '#8b5cf6',
+          icon: '🧚',
+          label: eligible.character.name,
+          isVisible: true,
+          isActive: true,
+          data: markerData,
+          metadata: {
+            source: 'project-marker',
+            placementKind: 'character-library',
+            characterRuntime: eligible.libraryAccess.runtime,
+          },
+        }).returning();
+        return {
+          character: eligible.character,
+          marker,
+          libraryAccess: eligible.libraryAccess,
+        };
+      });
+
+      return NextResponse.json({ success: true, data: created }, { status: 201 });
+    }
+
+    const input = parseCreateProjectModelInstance(body);
+    const userId = session.user.id;
+    const ownedProject = await retryDisconnectedRead(() => requireOwnedProject(userId, input.projectId));
+    if (!ownedProject) {
+      return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+    }
+    const assignment = await retryDisconnectedRead(() => requireActiveThreeDAssignment(userId, input.projectId, input.threedId));
+    if (!assignment) {
+      return NextResponse.json(
+        { success: false, error: 'Active ThreeD Project assignment not found' },
+        { status: 404 },
+      );
+    }
+    const geographic = getMarkerGeographicValues({
+      x: input.positionX,
+      y: input.positionY,
+      z: input.positionZ,
+    }, ownedProject);
+    const model = await retryDisconnectedRead(() => readEligibleModel(userId, input.modelId));
+    if (!model) {
+      return NextResponse.json(
+        { success: false, error: 'Model is not eligible for direct Scene placement' },
+        { status: 404 },
+      );
+    }
+
+    const marker = await db.transaction(async (tx) => {
+      await tx.execute(
+        sql`select pg_advisory_xact_lock(hashtext(${`project-threed-markers:${input.projectId}`}))`,
+      );
+      await tx.insert(projectAssets).values({
+          userId,
+          projectId: input.projectId,
+          moduleId: input.threedId,
+          moduleType: 'threed',
+          assetType: 'threed_models',
+          assetId: input.modelId,
+          config: {},
+          isActive: true,
+        }).onConflictDoUpdate({
+          target: [
+            projectAssets.projectId,
+            projectAssets.moduleId,
+            projectAssets.assetType,
+            projectAssets.assetId,
+          ],
+          targetWhere: sql`"is_active" = true`,
+          set: {
+            userId,
+            moduleType: 'threed',
+            isActive: true,
+            updatedAt: new Date(),
+          },
+        });
+
+      const markerId = `models-${crypto.randomUUID()}`;
+      const [created] = await tx.insert(projectThreedMarkers).values({
+        userId,
+        projectId: input.projectId,
+        threedId: input.threedId,
+        markerType: 'models',
+        sourceAssetId: input.modelId,
+        markerId,
+        name: input.instanceName || model.modelName,
+        positionX: input.positionX.toFixed(3),
+        positionY: input.positionY.toFixed(3),
+        positionZ: input.positionZ.toFixed(3),
+        ...geographic,
+        positionSource: 'asset',
+        color: '#06b6d4',
+        icon: '🧊',
+        label: input.instanceName || model.modelName,
+        isVisible: input.isVisible,
+        isActive: input.isActive,
+        data: {
+          modelId: input.modelId,
+          rotationX: input.rotationX,
+          rotationYInstance: input.rotationY,
+          rotationZ: input.rotationZ,
+          scaleMultiplier: input.scaleMultiplier,
+        },
+        metadata: {
+          ...input.metadata,
+          source: 'project-marker',
+          placementRole: input.placementRole,
+        },
+      }).returning();
+      return created;
+    });
+
+    return NextResponse.json({ success: true, data: marker }, { status: 201 });
+  } catch (error) {
+    if (
+      error instanceof ProjectModelInstanceInputError
+      || error instanceof ProjectBedPlacementInputError
+      || error instanceof ProjectPlantingPlacementInputError
+      || error instanceof ProjectCharacterPlacementInputError
+      || error instanceof ProjectFarmBotPlacementInputError
+    ) {
+      return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+    }
+    console.error('Failed to create Project ThreeD marker', {
+      errorName: error instanceof Error ? error.name : 'UnknownError',
+      ...getSafeDatabaseError(error),
+      connection: databaseConnectionDiagnostic(error),
+    });
+    return NextResponse.json(
+      { success: false, error: 'Failed to create Project ThreeD marker' },
+      { status: 500 },
+    );
+  }
+}
+
+type MarkerTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+async function readCurrentMarkerModel(tx: MarkerTransaction, ownerId: string, modelId: number | null | undefined) {
+  if (!modelId) return undefined;
+  const [model] = await tx.select(modelSelection()).from(threedModels).where(and(
+    eq(threedModels.id, modelId),
+    or(eq(threedModels.userId, ownerId), and(eq(threedModels.isPublic, true), eq(threedModels.isLibraryItem, true))),
+  )).limit(1);
+  if (!model) return undefined;
+  const files = model.userId ? await tx.select().from(threedModelFiles).where(and(
+    eq(threedModelFiles.modelId, model.id), eq(threedModelFiles.userId, model.userId),
+  )) : [];
+  return { ...model, files: files.filter((file) => Boolean(file.filePath)) };
+}
+
+async function updateProjectMarker(request: NextRequest, id: number) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
+  const ownerId = session.user.id;
+
+  try {
+    const body = await readJsonBody(request);
+    const marker = await readOwnedProjectMarker(ownerId, id);
+    if (!marker) {
+      return NextResponse.json({ success: false, error: 'Project marker not found' }, { status: 404 });
+    }
+    const ownedProject = await requireOwnedProject(ownerId, marker.projectId);
+    if (!ownedProject) {
+      return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+    }
+    const currentData: Record<string, unknown> = marker.data && typeof marker.data === 'object' && !Array.isArray(marker.data) ? marker.data as Record<string, unknown> : {};
+
+    if (
+      body
+      && typeof body === 'object'
+      && !Array.isArray(body)
+      && (body as Record<string, unknown>).operation === 'update-physics-sensors'
+    ) {
+      if (!['models', 'beds', 'plantings', 'farmbots'].includes(marker.markerType)) {
+        return NextResponse.json({ success: false, error: 'This marker type cannot own Physics Sensors' }, { status: 400 });
+      }
+      const rawSensors = (body as Record<string, unknown>).physicsSensorCuboids;
+      const validation = validatePhysicsSensorCuboids(rawSensors);
+      if (!validation.success) {
+        return NextResponse.json({ success: false, error: validation.error }, { status: 400 });
+      }
+      const sensors = validation.sensors;
+      return await db.transaction(async tx => {
+        const [lockedProject] = await tx.select({ metadata: project.metadata }).from(project)
+          .where(and(eq(project.id, marker.projectId), eq(project.userId, ownerId))).for('update');
+        if (!lockedProject) return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+        const groups = readSensorGroups((lockedProject.metadata as any)?.physicsSensorGroups ?? []);
+        const groupIds = new Set([IMPORTED_SENSOR_GROUP.id, ...groups.map(group => group.id)]);
+        if (sensors.some(sensor => sensor.groupId && !groupIds.has(sensor.groupId))) {
+          return NextResponse.json({ success: false, error: 'Sensor Group does not belong to this Project. Choose an available group.' }, { status: 400 });
+        }
+        const [lockedMarker] = await tx.select({ metadata: projectThreedMarkers.metadata }).from(projectThreedMarkers)
+          .where(and(eq(projectThreedMarkers.id, id), eq(projectThreedMarkers.userId, ownerId), eq(projectThreedMarkers.projectId, marker.projectId))).for('update');
+        if (!lockedMarker) return NextResponse.json({ success: false, error: 'Marker not found' }, { status: 404 });
+        const currentMetadata = lockedMarker.metadata && typeof lockedMarker.metadata === 'object' && !Array.isArray(lockedMarker.metadata)
+          ? lockedMarker.metadata as Record<string, unknown>
+          : {};
+        const retainedMetadata = removeLegacyAttachedSensors(currentMetadata);
+        const [updated] = await tx.update(projectThreedMarkers).set({
+          metadata: {
+            ...retainedMetadata,
+            physicsSensorCuboids: sensors,
+            source: 'project-marker',
+          },
+          updatedAt: new Date(),
+        }).where(and(
+          eq(projectThreedMarkers.id, id),
+          eq(projectThreedMarkers.userId, ownerId),
+        )).returning();
+        return NextResponse.json({ success: true, data: updated });
+      });
+    }
+
+    if (marker.markerType === 'characters') {
+      const updateBody = typeof body === 'object' && body !== null && !Array.isArray(body)
+        ? body as Record<string, unknown>
+        : {};
+      const update = parseUpdateProjectCharacterPlacement({
+        ...updateBody,
+        rotation: updateBody.rotation ?? (currentData as Record<string, unknown>).rotation ?? 0,
+        scaleMultiplier: updateBody.scaleMultiplier
+          ?? (currentData as Record<string, unknown>).scaleMultiplier
+          ?? 1,
+      });
+      const positionX = update.positionX.toFixed(3);
+      const positionY = update.positionY.toFixed(3);
+      const positionZ = update.positionZ.toFixed(3);
+      const geographic = getMarkerGeographicValues({
+        x: update.positionX,
+        y: update.positionY,
+        z: update.positionZ,
+      }, ownedProject);
+      const updated = await db.transaction(async (tx) => {
+        await tx.execute(
+          sql`select pg_advisory_xact_lock(hashtext(${`project-threed-characters:${marker.projectId}`}))`,
+        );
+        const occupiedSpawns = await tx.select({
+          id: projectThreedMarkers.id,
+          markerId: projectThreedMarkers.markerId,
+        }).from(projectThreedMarkers).where(and(
+          eq(projectThreedMarkers.projectId, marker.projectId),
+          eq(projectThreedMarkers.userId, ownerId),
+          eq(projectThreedMarkers.markerType, 'characters'),
+          eq(projectThreedMarkers.isActive, true),
+          sql`${projectThreedMarkers.data}->>'isMovable' = 'true'`,
+          sql`power(${projectThreedMarkers.positionX} - ${positionX}::numeric, 2) + power(${projectThreedMarkers.positionZ} - ${positionZ}::numeric, 2) < 0.25`,
+          sql`abs(${projectThreedMarkers.positionY} - ${positionY}::numeric) < 3`,
+        ));
+        const occupiedSpawn = occupiedSpawns.find((candidate) => candidate.id !== id);
+        if (currentData.isMovable === true && occupiedSpawn) {
+          throw new ProjectCharacterPlacementInputError(
+            `Character spawn is already occupied by ${occupiedSpawn.markerId}`,
+          );
+        }
+        // Position edits must not restore asset URLs from the stored marker JSON.
+        // Read through the owned Character's current Model relationship instead.
+        const [source] = await tx.select({ model: modelSelection() })
+          .from(threedCharacters)
+          .leftJoin(threedModels, and(
+            eq(threedModels.id, threedCharacters.modelId),
+            or(
+              eq(threedModels.userId, ownerId),
+              and(eq(threedModels.isPublic, true), eq(threedModels.isLibraryItem, true)),
+            ),
+          ))
+          .where(and(
+            eq(threedCharacters.id, marker.sourceAssetId),
+            eq(threedCharacters.userId, ownerId),
+          )).limit(1);
+        const model = source?.model;
+        const files = model?.id && model.userId
+          ? await tx.select().from(threedModelFiles).where(and(
+            eq(threedModelFiles.modelId, model.id),
+            eq(threedModelFiles.userId, model.userId),
+          )) : [];
+        const currentModel = model?.id
+          ? { ...model, files: files.filter((file) => Boolean(file.filePath)) }
+          : null;
+        const [saved] = await tx.update(projectThreedMarkers).set({
+          positionX,
+          positionY,
+          positionZ,
+          ...geographic,
+          positionSource: 'asset',
+          ...(updateBody.characterPhysics === undefined ? {} : { metadata: {
+            ...(marker.metadata as Record<string, unknown> ?? {}),
+            characterPhysics: resolveCharacterPhysics(updateBody.characterPhysics),
+          } }),
+          data: {
+            ...currentData,
+            model: currentModel,
+            positionX: update.positionX,
+            positionY: update.positionY,
+            positionZ: update.positionZ,
+            rotation: update.rotation,
+            scaleMultiplier: update.scaleMultiplier,
+          },
+          updatedAt: new Date(),
+        }).where(and(
+          eq(projectThreedMarkers.id, id),
+          eq(projectThreedMarkers.userId, ownerId),
+          eq(projectThreedMarkers.markerType, 'characters'),
+        )).returning();
+        return saved;
+      });
+      return NextResponse.json({ success: true, data: updated });
+    }
+
+    if (marker.markerType === 'beds') {
+      const update = parseUpdateProjectBedPlacement(body);
+      const geographic = getMarkerGeographicValues({
+        x: update.positionX,
+        y: update.positionY,
+        z: update.positionZ,
+      }, ownedProject);
+      const result = await db.transaction(async tx => {
+        await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`project-threed-markers:${marker.projectId}`}))`);
+        const oldBed = await readAssignedBedGeometry(tx,ownerId,marker.projectId,marker.threedId!,marker.sourceAssetId);
+        const newBed = bedPlantingGeometry({x:update.positionX,y:update.positionY,z:update.positionZ},{...update});
+        const sources = await tx.select({id:threedPlantings.id,bedId:threedPlantings.bedId}).from(threedPlantings)
+          .innerJoin(projectAssets,and(eq(projectAssets.assetId,threedPlantings.id),eq(projectAssets.assetType,'threed_plantings')))
+          .where(and(eq(threedPlantings.userId,ownerId),eq(threedPlantings.isActive,true),
+            eq(projectAssets.userId,ownerId),eq(projectAssets.projectId,marker.projectId),eq(projectAssets.moduleId,marker.threedId!),eq(projectAssets.isActive,true)));
+        const allChildren = sources.length ? await tx.select().from(projectThreedMarkers).where(and(
+          eq(projectThreedMarkers.userId,ownerId),eq(projectThreedMarkers.projectId,marker.projectId),eq(projectThreedMarkers.threedId,marker.threedId!),
+          eq(projectThreedMarkers.markerType,'plantings'),eq(projectThreedMarkers.isActive,true),inArray(projectThreedMarkers.sourceAssetId,sources.map(source=>source.id)))) : [];
+        const children = allChildren.filter(child => resolveProjectPlantingBedId(child.data as Record<string,unknown>, sources.find(source=>source.id===child.sourceAssetId)?.bedId) === marker.sourceAssetId);
+        const expectedSources = sources.filter(source => {
+          const child = allChildren.find(child=>child.sourceAssetId===source.id);
+          return resolveProjectPlantingBedId((child?.data ?? {}) as Record<string,unknown>,source.bedId) === marker.sourceAssetId;
+        });
+        if (new Set(children.map(child=>child.sourceAssetId)).size !== new Set(expectedSources.map(source=>source.id)).size) {
+          throw new ProjectPlantingPlacementInputError('Save Project before editing a Bed with unsaved Plantings.');
+        }
+        const desired = children.map(child=>bedWorldPoint(newBed,bedLocalPoint(oldBed,{x:Number(child.positionX),y:Number(child.positionY),z:Number(child.positionZ)})));
+        const positions = constrainAssignedPlantings(newBed,desired);
+        const affectedMarkers = [];
+        for (const [index,child] of children.entries()) {
+          const point=positions[index];
+          const [savedChild]=await tx.update(projectThreedMarkers).set({positionX:point.x.toFixed(3),positionY:point.y.toFixed(3),positionZ:point.z.toFixed(3),
+            ...getMarkerGeographicValues(point,ownedProject),positionSource:'asset',
+            data:{...(child.data as Record<string,unknown>),positionX:point.x,positionY:point.y,positionZ:point.z},updatedAt:new Date()})
+            .where(and(eq(projectThreedMarkers.id,child.id),eq(projectThreedMarkers.userId,ownerId))).returning();
+          affectedMarkers.push(savedChild);
+        }
+        const [updated] = await tx.update(projectThreedMarkers).set({
+          positionX: update.positionX.toFixed(3),
+          positionY: update.positionY.toFixed(3),
+          positionZ: update.positionZ.toFixed(3),
+          ...geographic,
+          positionSource: 'asset',
+          color: update.color,
+          data: {
+            ...currentData,
+            widthFeet: update.widthFeet,
+            lengthFeet: update.lengthFeet,
+            heightFeet: update.heightFeet,
+            color: update.color,
+            scale: update.scale,
+            positionX: update.positionX,
+            positionY: update.positionY,
+            positionZ: update.positionZ,
+            rotation: update.rotation,
+          },
+          updatedAt: new Date(),
+        }).where(and(
+          eq(projectThreedMarkers.id, id),
+          eq(projectThreedMarkers.userId, ownerId),
+          eq(projectThreedMarkers.markerType, 'beds'),
+        )).returning();
+        return {updated,affectedMarkers};
+      });
+      return NextResponse.json({ success: true, data: result.updated, affectedMarkers: result.affectedMarkers });
+    }
+
+    if (marker.markerType === 'plantings') {
+      const update = parseUpdateProjectPlantingPlacement(body);
+      const updated = await db.transaction(async (tx) => {
+        await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`project-threed-markers:${marker.projectId}`}))`);
+        const [source] = await tx.select({
+          customModelId: threedPlantings.customModelId,
+          plantModelId: threedPlants.modelId,
+          bedId: threedPlantings.bedId,
+        }).from(threedPlantings)
+          .leftJoin(threedPlants, eq(threedPlants.id, threedPlantings.plantId))
+          .where(and(eq(threedPlantings.id, marker.sourceAssetId), eq(threedPlantings.userId, ownerId)))
+          .limit(1);
+        const bedId = update.bedId !== undefined ? update.bedId : resolveProjectPlantingBedId(currentData, source?.bedId);
+        if (bedId) {
+          if (!await requireAssignedBed(ownerId, marker.projectId, marker.threedId!, bedId)) throw new ProjectPlantingPlacementInputError('Assigned Project Bed not found');
+          const bed = await readAssignedBedGeometry(tx, ownerId, marker.projectId, marker.threedId!, bedId);
+          const [position] = constrainAssignedPlantings(bed, [{x:update.positionX,y:update.positionY,z:update.positionZ}]);
+          update.positionX = position.x; update.positionY = position.y; update.positionZ = position.z;
+        }
+        const currentModel = await readCurrentMarkerModel(tx, ownerId, currentPlantingModelId(source));
+        const [saved] = await tx.update(projectThreedMarkers).set({
+          positionX: update.positionX.toFixed(3),
+          positionY: update.positionY.toFixed(3),
+          positionZ: update.positionZ.toFixed(3),
+          ...getMarkerGeographicValues({x:update.positionX,y:update.positionY,z:update.positionZ}, ownedProject),
+          positionSource: 'asset',
+          data: {
+            ...currentData,
+            model: currentModel ?? null,
+            quantity: 1,
+            modelScale: update.modelScale,
+            bedId,
+            positionX: update.positionX,
+            positionY: update.positionY,
+            positionZ: update.positionZ,
+          },
+          updatedAt: new Date(),
+        }).where(and(
+          eq(projectThreedMarkers.id, id),
+          eq(projectThreedMarkers.userId, ownerId),
+          eq(projectThreedMarkers.markerType, 'plantings'),
+        )).returning();
+        return saved;
+      });
+      return NextResponse.json({ success: true, data: updated });
+    }
+
+    if (marker.markerType === 'farmbots') {
+      const update = parseUpdateProjectFarmBotPlacement(body);
+      const geographic = getMarkerGeographicValues({
+        x: update.positionX,
+        y: update.positionY,
+        z: update.positionZ,
+      }, ownedProject);
+      const [updated] = await db.update(projectThreedMarkers).set({
+        positionX: update.positionX.toFixed(3),
+        positionY: update.positionY.toFixed(3),
+        positionZ: update.positionZ.toFixed(3),
+        ...geographic,
+        positionSource: 'asset',
+        color: update.color,
+        ...(update.farmbotLiveAlignment === undefined ? {} : {
+          metadata: {
+            ...(marker.metadata as Record<string, unknown> ?? {}),
+            farmbotLiveAlignment: update.farmbotLiveAlignment,
+          },
+        }),
+        data: {
+          ...currentData,
+          widthFeet: update.widthFeet,
+          lengthFeet: update.lengthFeet,
+          heightFeet: update.heightFeet,
+          scale: update.scale,
+          color: update.color,
+          positionX: update.positionX,
+          positionY: update.positionY,
+          positionZ: update.positionZ,
+          rotation: update.rotation,
+        },
+        updatedAt: new Date(),
+      }).where(and(
+        eq(projectThreedMarkers.id, id),
+        eq(projectThreedMarkers.userId, ownerId),
+        eq(projectThreedMarkers.markerType, 'farmbots'),
+      )).returning();
+      return NextResponse.json({ success: true, data: updated });
+    }
+
+    if (marker.markerType !== 'models') {
+      return NextResponse.json(
+        { success: false, error: 'Marker type is not editable here' },
+        { status: 400 },
+      );
+    }
+
+    const update = parseUpdateProjectModelInstance(body);
+    const values: Partial<typeof projectThreedMarkers.$inferInsert> = { updatedAt: new Date() };
+    if (update.instanceName !== undefined) {
+      values.name = update.instanceName || marker.name;
+      values.label = update.instanceName || marker.label;
+    }
+    if (update.positionX !== undefined) values.positionX = update.positionX.toFixed(3);
+    if (update.positionY !== undefined) values.positionY = update.positionY.toFixed(3);
+    if (update.positionZ !== undefined) values.positionZ = update.positionZ.toFixed(3);
+    if (
+      update.positionX !== undefined
+      || update.positionY !== undefined
+      || update.positionZ !== undefined
+    ) {
+      const geographic = getMarkerGeographicValues({
+        x: update.positionX ?? Number(marker.positionX),
+        y: update.positionY ?? Number(marker.positionY),
+        z: update.positionZ ?? Number(marker.positionZ),
+      }, ownedProject);
+      values.latitude = geographic.latitude;
+      values.longitude = geographic.longitude;
+      values.altitude = geographic.altitude;
+    }
+    if (update.isVisible !== undefined) values.isVisible = update.isVisible;
+    if (update.isActive !== undefined) values.isActive = update.isActive;
+    if (update.metadata !== undefined || update.placementRole !== undefined || update.collisionMode !== undefined) {
+      const currentMetadata = marker.metadata && typeof marker.metadata === 'object' && !Array.isArray(marker.metadata)
+        ? marker.metadata as Record<string, unknown>
+        : {};
+      values.metadata = {
+        ...currentMetadata,
+        ...(update.metadata ?? {}),
+        ...(update.placementRole !== undefined ? { placementRole: update.placementRole } : {}),
+        ...(update.collisionMode !== undefined ? { collisionMode: update.collisionMode } : {}),
+        source: 'project-marker',
+      };
+    }
+    const updated = await db.transaction(async (tx) => {
+      const currentModel = await readCurrentMarkerModel(tx, ownerId, marker.sourceAssetId);
+      values.data = {
+        ...refreshModelMarkerData(currentData, marker.sourceAssetId, currentModel),
+        ...(update.rotationX !== undefined ? { rotationX: update.rotationX } : {}),
+        ...(update.rotationY !== undefined ? { rotationYInstance: update.rotationY } : {}),
+        ...(update.rotationZ !== undefined ? { rotationZ: update.rotationZ } : {}),
+        ...(update.scaleMultiplier !== undefined ? { scaleMultiplier: update.scaleMultiplier } : {}),
+      };
+
+      const [saved] = await tx.update(projectThreedMarkers).set(values).where(and(
+        eq(projectThreedMarkers.id, id),
+        eq(projectThreedMarkers.userId, ownerId),
+        eq(projectThreedMarkers.markerType, 'models'),
+      )).returning();
+      return saved;
+    });
+    return NextResponse.json({ success: true, data: updated });
+  } catch (error) {
+    if (
+      error instanceof ProjectModelInstanceInputError
+      || error instanceof ProjectBedPlacementInputError
+      || error instanceof ProjectPlantingPlacementInputError
+      || error instanceof ProjectCharacterPlacementInputError
+      || error instanceof ProjectFarmBotPlacementInputError
+    ) {
+      return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+    }
+    console.error('Failed to update Project ThreeD marker', {
+      errorName: error instanceof Error ? error.name : 'UnknownError',
+    });
+    return NextResponse.json(
+      { success: false, error: 'Failed to update Project ThreeD marker' },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  const id = parsePositiveId(new URL(request.url).searchParams.get('id'));
+  return id ? updateProjectMarker(request, id) : saveSnapshot(request);
+}
+
+export async function PATCH(request: NextRequest) {
+  const id = parsePositiveId(new URL(request.url).searchParams.get('id'));
+  if (!id) {
+    return NextResponse.json({ success: false, error: 'Invalid marker ID' }, { status: 400 });
+  }
+  return updateProjectMarker(request, id);
+}
+
+export async function DELETE(request: NextRequest) {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  }
+  const userId = session.user.id;
+  const id = parsePositiveId(new URL(request.url).searchParams.get('id'));
+  if (!id) {
+    return NextResponse.json({ success: false, error: 'Invalid marker ID' }, { status: 400 });
+  }
+  const marker = await readOwnedProjectMarker(userId, id);
+  const snapshotOnly = new URL(request.url).searchParams.get('snapshotOnly') === '1';
+  if (snapshotOnly) {
+    if (!marker) {
+      return NextResponse.json({ success: false, error: 'Project marker not found' }, { status: 404 });
+    }
+    const [deleted] = await db.delete(projectThreedMarkers).where(and(
+      eq(projectThreedMarkers.id, id),
+      eq(projectThreedMarkers.userId, userId),
+    )).returning({ id: projectThreedMarkers.id });
+    return NextResponse.json({ success: true, data: deleted });
+  }
+  if (!marker || !['models', 'plantings', 'beds', 'characters', 'farmbots'].includes(marker.markerType)) {
+    return NextResponse.json({ success: false, error: 'Project marker not found' }, { status: 404 });
+  }
+  if (marker.markerType === 'characters') {
+    const sourceAssetId = Number(marker.sourceAssetId);
+    if (!Number.isSafeInteger(sourceAssetId) || sourceAssetId <= 0) {
+      return NextResponse.json({ success: false, error: 'Character source not found' }, { status: 404 });
+    }
+    const deleted = await db.transaction(async (tx) => {
+      await tx.execute(
+        sql`select pg_advisory_xact_lock(hashtext(${`project-threed-characters:${marker.projectId}`}))`,
+      );
+      const [deletedMarker] = await tx.delete(projectThreedMarkers).where(and(
+        eq(projectThreedMarkers.id, id),
+        eq(projectThreedMarkers.userId, userId),
+        eq(projectThreedMarkers.markerType, 'characters'),
+      )).returning({ id: projectThreedMarkers.id });
+      await tx.delete(projectAssets).where(and(
+        eq(projectAssets.userId, userId),
+        eq(projectAssets.projectId, marker.projectId),
+        eq(projectAssets.moduleId, marker.threedId),
+        eq(projectAssets.assetType, 'threed_characters'),
+        eq(projectAssets.assetId, sourceAssetId),
+      ));
+      return { marker: deletedMarker, sourceAssetId, sourceDeleted: false };
+    });
+    return NextResponse.json({ success: true, data: deleted });
+  }
+  if (marker.markerType === 'farmbots') {
+    const sourceAssetId = Number(marker.sourceAssetId);
+    if (!Number.isSafeInteger(sourceAssetId) || sourceAssetId <= 0) {
+      return NextResponse.json({ success: false, error: 'FarmBot source not found' }, { status: 404 });
+    }
+    const deleted = await db.transaction(async (tx) => {
+      await tx.execute(
+        sql`select pg_advisory_xact_lock(hashtext(${`project-threed-farmbots:${marker.projectId}`}))`,
+      );
+      const [deletedMarker] = await tx.delete(projectThreedMarkers).where(and(
+        eq(projectThreedMarkers.id, id),
+        eq(projectThreedMarkers.userId, userId),
+        eq(projectThreedMarkers.markerType, 'farmbots'),
+      )).returning({ id: projectThreedMarkers.id });
+      await tx.delete(projectAssets).where(and(
+        eq(projectAssets.userId, userId),
+        eq(projectAssets.projectId, marker.projectId),
+        eq(projectAssets.moduleId, marker.threedId),
+        eq(projectAssets.assetType, 'threed_farmbots'),
+        eq(projectAssets.assetId, sourceAssetId),
+      ));
+      return { marker: deletedMarker, sourceAssetId, sourceDeleted: false };
+    });
+    return NextResponse.json({ success: true, data: deleted });
+  }
+  if (marker.markerType === 'beds') {
+    const metadata = marker.metadata && typeof marker.metadata === 'object' && !Array.isArray(marker.metadata)
+      ? marker.metadata as Record<string, unknown>
+      : {};
+    const isDashboardCreated = metadata.placementKind === 'dashboard-created';
+    const sourceAssetId = Number(marker.sourceAssetId);
+    if (!Number.isSafeInteger(sourceAssetId) || sourceAssetId <= 0) {
+      return NextResponse.json({ success: false, error: 'Bed source not found' }, { status: 404 });
+    }
+    const assignedPlantings = await db.select({ id: threedPlantings.id })
+      .from(threedPlantings)
+      .where(and(
+        eq(threedPlantings.userId, userId),
+        eq(threedPlantings.bedId, sourceAssetId),
+        eq(threedPlantings.isActive, true),
+      ))
+      .limit(1);
+    if (assignedPlantings.length > 0) {
+      return NextResponse.json({
+        success: false,
+        error: 'Move or delete the Plantings assigned to this Bed before deleting it',
+      }, { status: 409 });
+    }
+    const deleted = await db.transaction(async (tx) => {
+      const [deletedMarker] = await tx.delete(projectThreedMarkers).where(and(
+        eq(projectThreedMarkers.id, id),
+        eq(projectThreedMarkers.userId, userId),
+        eq(projectThreedMarkers.markerType, 'beds'),
+      )).returning({ id: projectThreedMarkers.id });
+
+      await tx.delete(projectAssets).where(and(
+        eq(projectAssets.userId, userId),
+        eq(projectAssets.projectId, marker.projectId),
+        eq(projectAssets.moduleId, marker.threedId),
+        eq(projectAssets.assetType, 'threed_beds'),
+        eq(projectAssets.assetId, sourceAssetId),
+      ));
+      if (!isDashboardCreated) {
+        return { marker: deletedMarker, sourceAssetId, sourceDeleted: false };
+      }
+      const [source] = await tx.delete(threedBeds).where(and(
+        eq(threedBeds.id, sourceAssetId),
+        eq(threedBeds.userId, userId),
+      )).returning({ id: threedBeds.id });
+      return { marker: deletedMarker, sourceAssetId, sourceDeleted: Boolean(source) };
+    });
+    return NextResponse.json({ success: true, data: deleted });
+  }
+  if (marker.markerType === 'plantings') {
+    const sourceAssetId = Number(marker.sourceAssetId);
+    if (!Number.isSafeInteger(sourceAssetId) || sourceAssetId <= 0) {
+      return NextResponse.json({ success: false, error: 'Planting source not found' }, { status: 404 });
+    }
+    const deleted = await db.transaction(async (tx) => {
+      await tx.delete(projectThreedMarkers).where(and(
+        eq(projectThreedMarkers.id, id),
+        eq(projectThreedMarkers.userId, userId),
+        eq(projectThreedMarkers.markerType, 'plantings'),
+      ));
+      await tx.delete(projectAssets).where(and(
+        eq(projectAssets.userId, userId),
+        eq(projectAssets.projectId, marker.projectId),
+        eq(projectAssets.moduleId, marker.threedId),
+        eq(projectAssets.assetType, 'threed_plantings'),
+        eq(projectAssets.assetId, sourceAssetId),
+      ));
+      // A Planting may remain referenced by immutable watering history. Remove
+      // it from this Project and archive its source record instead of issuing a
+      // hard delete that can fail on those historical foreign keys.
+      const [planting] = await tx.update(threedPlantings).set({
+        isActive: false,
+        updatedAt: new Date(),
+      }).where(and(
+        eq(threedPlantings.id, sourceAssetId),
+        eq(threedPlantings.userId, userId),
+      )).returning({ id: threedPlantings.id });
+      return planting;
+    });
+    return NextResponse.json({ success: true, data: deleted });
+  }
+  if (!await readOwnedModelMarker(userId, id)) {
+    return NextResponse.json({ success: false, error: 'Model marker not found' }, { status: 404 });
+  }
+  const [deleted] = await db.delete(projectThreedMarkers).where(and(
+    eq(projectThreedMarkers.id, id),
+    eq(projectThreedMarkers.userId, userId),
+    eq(projectThreedMarkers.markerType, 'models'),
+  )).returning({ id: projectThreedMarkers.id });
+  return NextResponse.json({ success: true, data: deleted });
+}

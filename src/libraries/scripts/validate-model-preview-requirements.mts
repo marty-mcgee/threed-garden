@@ -1,0 +1,10 @@
+import { strict as assert } from 'node:assert';
+import { resolvePreviewRequirements } from '../../components/admin/threed/models/model-preview-requirements';
+const model = { id: 11, modelName: 'Character', modelType: 'fbx', filePath: 'https://test/model.fbx', files: [], textureFallbacks: [{ fileName: 'PolygonFarm_Texture_01_A.png', filePath: 'https://test/texture.png', isActive: true }] };
+const requirements = [{ kind: 'texture', relativePath: 'Textures/PolygonFarm_Texture_01_A.png', satisfied: false }, { kind: 'buffer', relativePath: 'mesh.bin', satisfied: false }];
+const resolved = resolvePreviewRequirements(model, requirements);
+assert.equal(resolved[0].satisfied, true);
+assert.equal(resolved[1].satisfied, false);
+assert.equal(resolvePreviewRequirements({ ...model, textureFallbacks: [] }, requirements)[0].satisfied, false);
+assert.equal(resolvePreviewRequirements({ ...model, textureFallbacks: [...model.textureFallbacks, { ...model.textureFallbacks[0], filePath: 'https://test/other.png' }] }, requirements)[0].satisfied, false);
+console.log('PASS saved library texture resolution, structural requirement preservation and ambiguous/missing texture rejection');

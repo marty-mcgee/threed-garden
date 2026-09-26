@@ -1,106 +1,34 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    // "checkJs": false,
     "skipLibCheck": true,
-    "strict": false, // true | false
-    "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
-    "moduleResolution": "bundler", // "moduleResolution": "node",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
+    "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
-    "jsx": "preserve", // "preserve", // "react-jsx",
-    // "jsxImportSource": "@emotion/react",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
     "incremental": true,
-    // ** RULES
-    // "rules": {
-      // do this in next.config.js or eslint.config.mjs
-      // "react/no-unknown-property": ["error", { "ignore": ["args"] }], 
-      "allowSyntheticDefaultImports": true,
-      "noFallthroughCasesInSwitch": true,
-      "noImplicitAny": true,
-      "noImplicitThis": true,
-      "strictNullChecks": false,
-      // "downlevelIteration": true,
-      "allowUnreachableCode": true,
-    // },  
-    // ** PATHS + DIRECTORIES
-    // "rootDirs": [".", "../common/src"],
-    "baseUrl": ".",
-    "paths": {
-      // next-auth
-      "auth": [
-        "./src/lib/auth/auth"
-      ],
-      // global root
-      "~/*": [
-        "./*"
-      ],
-      // threed (next-14)
-      "#/*": [
-        "./src/*"
-      ],
-      // threed (next-14)
-      // "@/*": [
-      //   "./src/app/*"
-      // ],
-      // threed (ai next-15)
-      "@/*": [
-        "./src/*"
-      ],
-      // ** ai
-      "@/auth": [
-        "./src/lib/auth/auth"
-      ],
-      "@/app/*": [
-        "./src/app/ai/*"
-      ],
-      "@/components/*": [
-        "./src/lib/ai/*"
-      ],
-      "@/lib/*": [
-        "./src/lib/threed/threed.ai/*"
-      ]
-    },
-    // ** TYPES
-    "typeRoots": [
-      "node_modules/@types",
-      "src/lib/types"
-    ],
-    // ** PLUGINS
     "plugins": [
       {
         "name": "next"
       }
-    ]
+    ],
+    "paths": {
+      "@/*": ["./src/*"],
+    }
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    ".next/types/**/*.ts", 
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts",
   ],
-  "exclude": [
-    "node_modules",
-    "**/*.css",
-    "tailwind.config.js",
-    "src/lib/farmbot",
-    "src/lib/farmbot/*",
-    // "src/lib/farmbot/farmbot-3d-demo-react",
-    // "src/lib/farmbot/threed-farmbot",
-    // "src/lib/farmbot/frontend",
-    // "src/app/ai",
-    // "src/layout/ai",
-    "src/lib/ai",
-    "public"
-  ]
+  "exclude": ["node_modules"]
 }
