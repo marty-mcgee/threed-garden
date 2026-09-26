@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import GardenHero from '@/components/home/GardenHero';
 import { MusicPlayer } from '@/components/multimedia/MusicPlayer';
 
 export default function HomePage() {
@@ -178,7 +179,7 @@ export default function HomePage() {
       title: "Music Streaming",
       description: "Full-featured music player with waveform mixing",
       href: "/dashboard/multimedia",
-      color: "from-purple-500 to-pink-500",
+      color: "from-green-800 to-emerald-700",
       external: false
     },
     {
@@ -218,43 +219,32 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
 
-      {/* Hero Section with Blurred Background Image */}
-      <div className="relative overflow-hidden">
-        {/* Background Image with Blur */}
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-110 blur-md"
-          style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=1920&h=1080&fit=crop')`,
-          }}
-        />
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black/50" />
-
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/50 via-purple-600/50 to-pink-600/50" />
-
+      {/* Garden studio hero */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-green-950 via-[#123e2c] to-emerald-950">
         {/* Content */}
-        <div className="relative w-full px-6 py-16 lg:py-20">
-          <div className="max-w-4xl mx-auto text-center">
+        <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-6 py-12 lg:grid-cols-[.85fr_1.15fr] lg:py-20">
+          <div className="text-center lg:text-left">
             <div className="inline-flex items-center rounded-full border border-white/20 bg-white/20 px-3 py-1 text-sm backdrop-blur-sm mb-3">
               <a
-                key={`MM-LINK-MAIN-1`}
+                key={`THREED-GARDEN-MAIN`}
                 href={`/`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                🎵 Full-Stack Creation
+                🥕 Interactive 3D Gardens
               </a>
             </div>
             <h1 className="text-4xl lg:text-6xl font-bold mb-3 bg-gradient-to-r from-white via-gray-100 to-gray-200 bg-clip-text text-transparent">
-              Marty McGee
+              ThreeD Garden
             </h1>
             <p className="text-lg lg:text-xl mb-6 text-white/90">
-              Music • Web • 3D Business • Cooking • Gardening • Broadcasting
+              Build • Plant • Explore • Create
             </p>
 
+            <p className="mx-auto mb-8 max-w-md text-base leading-relaxed text-emerald-100/75 lg:mx-0">A living space for your ideas. Explore models, plan your garden, and see every angle before bringing it to life.</p>
+
             {/* Hero CTA Buttons - Horizontal layout */}
-            <div className="flex flex-wrap gap-3 justify-center">
+            <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
               {features.map((feature, index) => {
                 const ButtonContent = (
                   <>
@@ -289,11 +279,9 @@ export default function HomePage() {
               })}
             </div>
 
-
-
           </div>
+          <GardenHero />
         </div>
-
       </div>
 
       {/* Tech Stack */}
@@ -301,7 +289,7 @@ export default function HomePage() {
         <div className="w-full px-6">
           <div className="text-center mb-4">
             <h2 className="text-lg font-semibold mb-1">Tech Stack</h2>
-            <div className="w-8 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto" />
+            <div className="w-8 h-0.5 bg-gradient-to-r from-green-800 to-emerald-600 mx-auto" />
           </div>
           <div className="flex flex-wrap justify-center gap-3">
             {techStack.map((tech) => (
@@ -318,8 +306,8 @@ export default function HomePage() {
       <div className="py-8 bg-gray-50 dark:bg-gray-900/50">
         <div className="w-full px-6">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold mb-2">What I Build</h2>
-            <div className="w-12 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto" />
+            <h2 className="text-2xl font-bold mb-2">Explore ThreeD Garden</h2>
+            <div className="w-12 h-0.5 bg-gradient-to-r from-green-800 to-emerald-600 mx-auto" />
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
             {features.map((feature, index) => (
@@ -343,9 +331,9 @@ export default function HomePage() {
         <div className="w-full px-6">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="text-center md:text-left">
-              <h2 className="text-2xl font-bold mb-2">About Music</h2>
-              <div className="w-12 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto md:mx-0 mb-4" />
-              <p className="text-muted-foreground">Multi-Channel Creator, building pleasant digital experiences that blend Music, Technology, Nature.</p>
+              <h2 className="text-2xl font-bold mb-2">About ThreeD Garden</h2>
+              <div className="w-12 h-0.5 bg-gradient-to-r from-green-800 to-emerald-600 mx-auto md:mx-0 mb-4" />
+              <p className="text-muted-foreground">Create interactive gardens with 3D models, characters, physics, and maps. Bring your projects to life in a shared workspace for nature, technology, and creativity.</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               {stats.map((stat, index) => (
@@ -365,7 +353,7 @@ export default function HomePage() {
         <div className="py-8 bg-gradient-to-r from-gray-900 to-gray-800">
           <div className="w-full px-6">
             <div className="text-center mb-4">
-              <div className="inline-flex items-center rounded-full border border-purple-500/30 bg-purple-500/20 px-3 py-1 text-xs text-purple-300 mb-2">
+              <div className="inline-flex items-center rounded-full border border-green-500/30 bg-green-700/20 px-3 py-1 text-xs text-green-300 mb-2">
                 🎵 Featured Release
               </div>
               <h2 className="text-2xl font-bold text-white mb-1">{selectedAlbum.title}</h2>
@@ -406,13 +394,13 @@ export default function HomePage() {
       )}
 
       {/* Call to Action */}
-      <div className="py-10 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+      <div className="py-10 bg-gradient-to-r from-green-900 to-emerald-900 text-white">
         <div className="w-full px-6 text-center">
           <h2 className="text-xl font-bold mb-2">Ready to Explore More?</h2>
-          <p className="text-sm mb-4 text-blue-100">Dive into my full music library, explore the 3D garden, or check out live traffic.</p>
+          <p className="text-sm mb-4 text-green-100">Explore the 3D garden, discover the music library, or check out live traffic.</p>
           <div className="flex flex-wrap gap-3 justify-center">
             <Link href="/dashboard/multimedia" className="inline-flex items-center justify-center rounded-md text-sm font-medium bg-white text-gray-900 hover:bg-gray-100 h-9 px-4 py-2 transition-colors"><span className="mr-2">🎵</span>Full Library</Link>
-            <a href="https://github.com/marty-mcgee" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-white text-white hover:bg-white/20 h-9 px-4 py-2 transition-colors"><span className="mr-2">🐙</span>GitHub</a>
+            <a href="https://github.com/marty-mcgee/threed-garden" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center rounded-md text-sm font-medium border border-white text-white hover:bg-white/20 h-9 px-4 py-2 transition-colors"><span className="mr-2">🐙</span>GitHub</a>
           </div>
         </div>
       </div>
@@ -420,12 +408,12 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="py-4 border-t">
         <div className="w-full px-6 text-center text-xs text-muted-foreground">
-          <p>© 2026 Marty McGee. Built with Next.js, Neon, and 💜.</p>
+          <p>ThreeD Garden · © 2026 Marty McGee. Built with Next.js, Neon, and 💚.</p>
           <div className="flex justify-center gap-3 mt-1">
             <Link href="/dashboard/multimedia" className="hover:text-foreground transition-colors">Music</Link>
             <Link href="/dashboard/threed" className="hover:text-foreground transition-colors">3D Garden</Link>
             <Link href="/dashboard" className="hover:text-foreground transition-colors">Traffic</Link>
-            <a href="https://github.com/marty-mcgee" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">GitHub</a>
+            <a href="https://github.com/marty-mcgee/threed-garden" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">GitHub</a>
           </div>
         </div>
       </footer>

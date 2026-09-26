@@ -7,8 +7,8 @@ import { inter } from "./fonts";
 // import { NowPlayingBar } from '@/components/multimedia/NowPlayingBar';
 
 export const metadata: Metadata = {
-  title: "Marty McGee Dashboard",
-  description: "Track Dragon: Music Management • Real-time Traffic • ThreeD Integration",
+  title: "ThreeD Garden",
+  description: "Create and explore interactive 3D gardens with models, characters, physics, maps, and multimedia.",
 };
 
 export default async function RootLayout({
