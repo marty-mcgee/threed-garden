@@ -53,7 +53,7 @@ const savePosition = (ok) => callback('src/app/dashboard/scene/page.tsx', 'handl
   registry.updateLiveRotation('characters', 11, 45);
   assert.equal(registry.updateLiveRotation('characters', 11, NaN), false);
   const projectSave = callback('src/app/dashboard/scene/page.tsx', 'handleSaveThreeDProject', {
-    ...base, saveRequestRef: {current:0}, selectedMarker:null, isProjectAssetsOpen:false, projectAssetSearch:'', projectAssetType:'all', selectedProjectId: '5', savingProjectMarkers: false, setSavingProjectMarkers() {}, setLastUpdated() {},
+    ...base, saveRequestRef: {current:0}, selectedMarker:null, isProjectAssetsOpen:false, isModelLibraryOpen:false, projectAssetSearch:'', projectAssetType:'all', selectedProjectId: '5', savingProjectMarkers: false, setSavingProjectMarkers() {}, setLastUpdated() {},
     projectMarkerSnapshotProviderRef: { current: snapshot }, projectThreeDViewStateProviderRef: {}, projectMapViewStateProviderRef: {},
     lastProjectThreeDViewStateRef: {}, lastProjectMapViewStateRef: {}, initialProjectViewState: null,
     PROJECT_VIEW_STATE_VERSION: 1, viewMode: '3d', panelHeight: 500, cameraMode: 'stationary',

@@ -2,15 +2,19 @@
 
 ## Setup
 
+Use Node.js 24.x and npm 11.x. `.nvmrc` selects Node 24; `package-lock.json` is the dependency lockfile and must be committed with dependency changes. Use `npm install` locally and in CI. CI checks that installation leaves the committed lockfile unchanged.
+
 ```bash
-bun install
+npm install
 cp .env.example .env.local
-bun dev
+npm run dev
 ```
+
+`npm start` is a shortcut for the same development server. `npm run build` creates a production build and `npm run next:start` serves it.
 
 Open `http://localhost:4444`. Populate `.env.local` with your own development values and never commit it.
 
-Database schema commands such as `bun db:push` should be run only when a schema change is explicitly approved and the target database is understood.
+Database schema commands such as `npm run db:push` should be run only when a schema change is explicitly approved and the target database is understood.
 
 ## Validation
 

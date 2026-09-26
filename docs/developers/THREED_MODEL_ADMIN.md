@@ -464,7 +464,7 @@ The subsequent table presentation refinement passed TypeScript and diff checks; 
 
 ## Primary-file relationship cleanup (unreleased)
 
-Models select their primary File through `main_model_file_id`; Model Files owns URL and size. APIs derive these values for renderers. The User approved a schema-only change without preserving old file references. Use the normal `bun db:generate` / `bun db:push` workflow; no backfill or custom triggers are required. Existing Models without a valid assignment remain unresolved. The User confirmed successful `bun db:push` with terminal output showing the primary FK/index addition and redundant-column removal. See the [current scope and implementation](../plans/threed-model-primary-file-authority.md).
+Models select their primary File through `main_model_file_id`; Model Files owns URL and size. APIs derive these values for renderers. The User approved a schema-only change without preserving old file references. Use the normal `npm run db:generate` / `npm run db:push` workflow; no backfill or custom triggers are required. Existing Models without a valid assignment remain unresolved. The User confirmed successful `bun db:push` with terminal output showing the primary FK/index addition and redundant-column removal. See the [current scope and implementation](../plans/threed-model-primary-file-authority.md).
 
 The Models table includes a far-right External Link icon that opens the resolved primary File URL in a new tab. When the URL is absent or is not HTTP(S), the icon is dimmed and disabled. This reflects the assigned URL; it does not probe Blob existence. TypeScript and diff checks passed for this UI addition.
 

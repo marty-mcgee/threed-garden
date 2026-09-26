@@ -88,14 +88,16 @@ The heart of the app is the **ThreeD Garden**, built as a declarative React Thre
 
 ### Prerequisites
 
-- [Bun](https://bun.sh) (or npm/yarn/pnpm)
+- [Node.js](https://nodejs.org) 24.x and npm 11.x (see `.nvmrc`)
 - A [Neon Postgres](https://neon.tech) database
 
 ### 1. Install dependencies
 
 ```bash
-bun install
+npm install
 ```
+
+Commit `package-lock.json` with dependency changes. `npm start` is also available as a shortcut for the development server.
 
 ### 2. Configure environment variables
 
@@ -122,13 +124,13 @@ openssl rand -base64 32
 ### 3. Push the database schema
 
 ```bash
-bun db:push
+npm run db:push
 ```
 
 ### 4. Start the development server
 
 ```bash
-bun dev
+npm run dev
 ```
 
 Open [http://localhost:4444](http://localhost:4444) in your browser.
@@ -147,9 +149,9 @@ The app uses **Drizzle ORM** for type-safe database operations against **Neon Po
 
 | Command | Description |
 |---------|-------------|
-| `bun db:push` | Push the current schema to the database |
-| `bun db:generate` | Generate migration files from the schema |
-| `bun db:studio` | Open Drizzle Studio (visual DB browser) |
+| `npm run db:push` | Push the current schema to the database |
+| `npm run db:generate` | Generate migration files from the schema |
+| `npm run db:studio` | Open Drizzle Studio (visual DB browser) |
 
 Schemas are co-located under `src/libraries/schema/` (`auth`, `multimedia`, `project`, `settings`, `threed`, `traffic`).
 
@@ -247,12 +249,12 @@ src/
 
 | Command | Description |
 |---------|-------------|
-| `bun dev` | Start the dev server on port 4444 |
-| `bun build` | Production build |
-| `bun start` | Start production server |
-| `bun db:push` | Push schema to the database |
-| `bun db:generate` | Generate migrations |
-| `bun db:studio` | Open Drizzle Studio |
+| `npm run dev` | Start the dev server on port 4444 |
+| `npm run build` | Production build using Node.js |
+| `npm run next:start` | Start production server using Node.js |
+| `npm run db:push` | Push schema to the database |
+| `npm run db:generate` | Generate migrations |
+| `npm run db:studio` | Open Drizzle Studio |
 | `npm run farmbot:mqtt-worker` | Start the separately run read-only FarmBot MQTT worker |
 | `npm run validate -- --list` | List validation tasks and maintained groups |
 | `npm run validate -- <name...>` | Run one or more validation tasks or groups |

@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+  agentRules: false,
   reactCompiler: true,
   reactStrictMode: false,
   // Ensure you're using the App Router
@@ -16,11 +17,11 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'placeholder.co'
+        hostname: 'marty-mcgee.com'
       },
       {
         protocol: 'https',
-        hostname: 'marty-mcgee.com'
+        hostname: 'threedgarden.com'
       },
     ],
   },

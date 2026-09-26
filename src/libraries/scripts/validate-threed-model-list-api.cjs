@@ -31,6 +31,7 @@ const db = { select(selection) {
 const moduleExports = {};
 const mocks = {
   '@/libraries/db/connection-diagnostics': { databaseConnectionDiagnostic: () => ({}) },
+  '@/libraries/db/read-retry': { retryDisconnectedRead: (read) => read() },
   '@/libraries/services/threed/models/model-list-query': queryModule.exports,
   '@/libraries/services/threed/models/model-primary-file': { modelSelection: () => ({ id: 'id', fileSize: { sql: 'resolved_size' } }) },
   'next/server': { NextResponse: { json: (body, init) => ({ body, status: init?.status ?? 200 }) } },
