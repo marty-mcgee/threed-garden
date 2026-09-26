@@ -2,9 +2,9 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Current production: **v0.21.1 — ThreeD Documentation + CI Reliability**, deployment User-confirmed.
+Current production: **v0.22.0 — ThreeD Garden: Repository Handoff**, deployment User-confirmed.
 
-Prepared checkpoint: [v0.22.0 — ThreeD Garden: Repository Handoff](v0.22.0.md), deployment pending.
+- [v0.22.0 — ThreeD Garden: Repository Handoff](v0.22.0.md) — production User-confirmed
 
 - [v0.21.1 — ThreeD Documentation + CI Reliability](v0.21.1.md) — production User-confirmed
 

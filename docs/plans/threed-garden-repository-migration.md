@@ -2,7 +2,7 @@
 
 ## Status
 
-Completed through [PR #48](https://github.com/marty-mcgee/threed-garden/pull/48), merged to main as `4ec590e28b160851b54b88f8a5ce37b1375281ff`. Both histories and the legacy archive references remain preserved. The User reported the migration working successfully. The new clone now prepares [v0.22.0](v0.22.0.md) as its independent release checkpoint.
+Completed through [PR #48](https://github.com/marty-mcgee/threed-garden/pull/48), merged to main as `4ec590e28b160851b54b88f8a5ce37b1375281ff`. Both histories and the legacy archive references remain preserved. The User reported the migration working successfully. The new clone establishes [v0.22.0](v0.22.0.md) as its independent release checkpoint, with production deployment User-confirmed.
 
 The User approved the migration and confirmed that the new deployment should reuse the existing Marty McGee Neon database and uploaded assets. No database creation, data import, schema push, credential copying, or domain/deployment settings changes were performed.
 
