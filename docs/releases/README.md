@@ -2,7 +2,11 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Current production: **v0.20.10 — ThreeD Admin: Model Editor + App Settings**, deployment User-confirmed.
+Current production: **v0.21.0 — ThreeD Tooling: Node.js + npm**, deployment User-confirmed.
+
+Prepared checkpoint: [v0.21.1 — ThreeD Documentation + CI Reliability](v0.21.1.md), deployment pending.
+
+- [v0.21.0 — ThreeD Tooling: Node.js + npm](v0.21.0.md) — production User-confirmed
 
 - [v0.20.10 — ThreeD Admin: Model Editor + App Settings](v0.20.10.md) — production User-confirmed
 - [v0.20.9 — ThreeD Front-End: Scene UX + Model Reliability](v0.20.9.md) — production User-confirmed

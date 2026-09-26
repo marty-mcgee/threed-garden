@@ -1,318 +1,197 @@
-# marty-mcgee-neon (threed-garden-neon)
+# ThreeD Garden
 
-A **React + React Three Fiber** application for building and exploring interactive 3D gardens, live traffic data, and multimedia — backed by **Neon Postgres** and **Drizzle ORM**.
+### Build your garden. Explore your world. Bring your models to life.
 
-This is a **Dual-Surface Platform**:
+**ThreeD Garden brings interactive 3D scenes, geographic maps, animated characters, and multimedia into one project workspace.** Arrange garden beds and plantings, place models from your library, take control of a character, and explore your project from the ground or above.
 
-- **Admin Surface** (`/admin/*`) — create, edit, and manage your data.
-- **Dashboard Surface** (`/dashboard/*`) — explore, visualize, and interact with published data.
+Built with **Next.js 16, React 19, TypeScript, Three.js, and React Three Fiber**, with **Rapier physics**, **Neon Postgres**, and **Drizzle ORM** behind the experience. **Node.js 24 + npm 11** provide a consistent development and build workflow.
 
-> **Current production release:** `v0.21.0 — ThreeD Tooling: Node.js + npm`, package `0.21.0`, deployment User-confirmed. Node 24 and npm 11 power installation, development, builds and validation, with `package-lock.json` as the dependency lockfile. See the [release notes](docs/releases/v0.21.0.md) and [checkpoint record](docs/plans/v0.21.0.md).
+**Current production release:** [v0.21.0 — ThreeD Tooling: Node.js + npm](docs/releases/v0.21.0.md)
 
-The beta release supports mixed FBX/GLB/GLTF importing, embedded resources, external textures and binary buffers, and reusable Texture assignments. It adds expanded configuration, highlighted requirements, remembered defaults and on-demand Model preview beneath Queued Models, with an optional separate window. The User manually accepted the checkpoint and its local build gate; automated checks passed.
+[Explore the features](#what-you-can-build) · [Meet the stack](#the-technology-behind-threed) · [Run locally](#developer-quick-start) · [Read the docs](docs/README.md)
 
-The released **v0.19.10c** adds OBJ importing with MTL material libraries and their texture images, inline/window previews, and saved single-Model material rendering. See the [implementation and validation](docs/plans/v0.19.10c.md) and [completed production handoff](docs/plans/v0.19.10c-release.md).
+## What you can build
 
-The v0.19.9 production release turns the existing Project Tour into a focused, state-derived first-run sequence. It recommends Environment, Model, and Character foundations one step at a time while preserving direct access for advanced Users and reusing the established Library and placement transactions.
+### 🌱 An interactive garden, from map to model
 
-The v0.19.0d production release uses shared iterative WGS84 ellipsoidal distance, bearing, and forward/reverse coordinate calculations. Calibration diagnostics expose the measured spans, solved scale, and endpoint residual. Leaflet now uses each marker's exact calibrated projection without artificial local or GPS spreading, allowing north-up 2D and 3D layouts to closely match while local XYZ remains the R3F/Rapier authority.
+Create Projects with Beds, Plantings, Characters, FarmBots, and reusable Models. Move between a Leaflet 2D map and a ThreeD Scene, use ground maps to give your project geographic context, and adjust Project-instance positions, dimensions, and rotation through the Scene's controls.
 
-The v0.18.9d production release keeps a selected marker and its DetailsCard active while the user navigates the Scene, starts Ecctrl Take Control in Stationary camera mode, and changes Follow to Stationary when the user zooms. Its boundary is visual and navigational only: it does not change database schema, ThreeD CRUD contracts, Runtime Marker authority, Rapier ownership, or Ecctrl behavior.
+Layers organize what you see and interact with. Project snapshots let you explicitly save and restore supported Scene state, while the guided Project Tour helps you establish your Environment, Models, and Characters.
 
-The v0.18.9c production release introduces a uniform visual hierarchy for Project, Scene, and marker controls. It reorganizes the Project dropdown, standardizes Scene Control icons and states, and makes marker DetailsCards smaller, consistently positioned, easier to scan, and less obstructive to the ThreeD Scene.
+### 🧩 A model library built around your assets
 
-The v0.18.9b production release completes verified Project-marker placement and editing coverage across Beds, FarmBots, Models, Plantings, and Characters. Marker transactions remain local to the persistent Scene; edited visuals, fixed Rapier bodies, and Physics Debug outlines stay synchronized without remounting unrelated markers. FarmBot Project removal preserves the reusable device and all credential, broker, and MQTT records.
+Import **FBX, GLB, GLTF, and OBJ** models with their supported materials and dependencies. The Bulk Import Tool combines file inspection, previews, reusable texture assignments, batch naming prefixes, Title Case, and recovery controls in one workflow.
 
-The **v0.18.9a — ThreeD Character Library and Snapshot Recovery** production release adds owner-scoped Character Library placement and Project-instance position editing, keeps marker CRUD local to the persistent Scene, preserves Project marker row IDs during explicit saves, and prevents uncontrolled Ecctrl mount positions from entering saved snapshots. Overlapping Ecctrl capsule spawns are rejected before Rapier and can be restored to their source Character positions through the bounded Scene warning.
+Manage primary model files, textures, categories, and animation assignments in Admin. Place eligible library models into Projects, adjust their instance transforms, and export **transparent PNG previews** for library presentation.
 
-The **v0.18.8-beta — ThreeD Ecctrl Position Authority** production release passes each resolved Runtime Marker position directly into its Ecctrl runtime. One movable Character safely owns a shared Rapier spawn while later overlaps are skipped and reported, keeping a selectable Character available without changing database records.
+### 🎮 Characters you can explore with
 
-The v0.18.7b production release adds manually verified rectangular Bed creation and Project-instance editing. Bed width, length, height, X/Y/Z position, and degree-based Y rotation are saved in the authoritative Project marker and applied to its existing Scene/Rapier owner without reloading the Project.
+Take control of a movable character with **WASD**, run, jump, and navigate a world with physics and collisions. Switch between camera perspectives, select objects for details, and use supported character actions such as watering and picking fruit.
 
-## Documentation
+Autonomous garden characters and player-controlled characters have separate runtime paths. Shared animation assets and action mappings let models reuse animation behavior while supported world actions persist their results after the animation completes.
 
-Start with the [Documentation Hub](docs/README.md) for audience-specific guides:
+### 🗺️ Maps, traffic, and multimedia in the same app
 
-- [Human user guides](docs/users/GETTING_STARTED.md)
-- [Developer architecture and operations](docs/developers/ARCHITECTURE.md)
-- [Coding-agent workflow and safety](docs/agents/README.md)
-- [Confirmed production releases](docs/releases/README.md)
+Explore geographic data through traffic maps and source-specific views. Build a Multimedia collection with Albums, Tracks, Links, Media, and Speech tools, then listen through the Dashboard player and waveform visualizer.
 
----
+Projects connect assets across modules, giving you a common workspace for spatial scenes, data, and media.
 
-## Core technologies
+### 🛠️ Tools for both creators and administrators
 
-| Technology | Why this app uses it |
-|------------|----------------------|
-| **Neon: Postgres** | A serverless Postgres database that scales to zero and pairs perfectly with Vercel — the source of truth for all module data. |
-| **Drizzle ORM** | A lightweight, type-safe TypeScript ORM on top of `pg`. It makes the schema (plants, beds, characters, traffic, multimedia, …) explicit and gives compile-time safety for queries. |
-| **React 19** | The component model that powers the entire platform — from admin CRUD forms to the 3D scene. |
-| **Next.js 16** | The full-stack React framework providing App Router pages, server components, and API routes. Next Auth.js plugs in here for authentication. |
-| **Three.js** | The underlying WebGL engine that renders the 3D garden scene. |
-| **React Three Fiber (R3F)** | A declarative React renderer for Three.js — this app writes its 3D scene as regular React components. |
-| **@react-three/drei** | A collection of prebuilt R3F/Three.js helpers and components (camera controls, HTML overlays, environments, gizmos) that speed up scene development. |
-| **@react-three/rapier (Physics)** | A physics engine binding that exposes Rapier as R3F components — used for gravity, rigid bodies, and collision boundaries. |
-| **ecctrl (Character Interactions)** | A physics-based character controller built on Rapier — gives characters WASD movement, running, jumping, and collisions. |
-| **Leaflet / react-leaflet (2D Maps)** | Renders the 2D map views (traffic incidents, marker clusters, popups) alongside the 3D scene. |
-| **Tailwind CSS + shadcn/ui** | Styling and accessible UI primitives (buttons, cards, dialogs, tables, toasts) used across the Admin and Dashboard surfaces. |
+The **Dashboard** is where you explore and interact with Projects. The **Admin workspace** is where you organize reusable assets, edit records, assign project content, and configure the app. Shared UI components keep forms, dialogs, tables, and controls consistent across both.
 
-The heart of the app is the **ThreeD Garden**, built as a declarative React Three Fiber scene:
+### FarmBot models and Assembly foundations
 
-- Components like `BedMarker3D`, `PlantMarker3D`, `FarmBotMarker3D`, and `ModelMarker3D` render garden objects at runtime.
-- `EcctrlCharacter` and `GardenCharacter` render animated, interactive 3D characters.
-- Physics, shadows, and camera controls are all R3F/Three.js.
+FarmBot component files use the same ThreeD Model library as other assets. The Front-End Assembly workspace supports **local composition drafts** with model selection, relative transforms, repeated components, and JSON import/export.
 
----
+Database schema and ORM service foundations are present; database-backed save/load UI, live 3D assembly construction, and Project assembly placement remain future work. These model workflows do not require a FarmBot device connection.
 
-## What it does
+Separately, the existing FarmBot integration provides owner-scoped configuration and **read-only device status** through ThreeD's MQTT services. Physical commands and MQTT publishing remain disabled. See the [Assembly checkpoint](docs/releases/v0.20.12.md) and [FarmBot integration guide](docs/developers/FARMBOT_INTEGRATION.md) for the current boundaries.
 
-| Module | Admin (manage) | Dashboard (explore) |
-|--------|:---:|:---:|
-| **Projects** | ✅ Full CRUD + Asset Manager | ✅ Homepage project cards |
-| **ThreeD Garden** | ✅ Plants, Beds, Plantings, Characters, Models, Layers | ✅ Interactive 3D scene with physics-based characters |
-| **Traffic** | ✅ 8 sub-modules, full CRUD | ✅ 2D map with emoji markers & popups |
-| **Multimedia** | ✅ Albums, Tracks, Links, Media, Speech | ✅ Player, album grid, waveform visualizer |
-| **Settings** | ✅ Admin UI | ❌ (by design) |
+## The technology behind ThreeD
 
-### ThreeD Garden highlights
+| Technology | What it brings to the app |
+| --- | --- |
+| **Next.js 16 + React 19 + TypeScript** | App Router pages, API routes, reusable components, and typed application code. |
+| **Three.js + React Three Fiber + Drei** | Interactive 3D rendering, scene composition, cameras, environments, and visual controls. |
+| **Rapier + ecctrl** | Rigid-body physics, collisions, and controllable characters. |
+| **Leaflet + React Leaflet** | Geographic maps, markers, and project/map navigation alongside 3D views. |
+| **Neon Postgres + Drizzle ORM** | Persistent project and module data with TypeScript schema definitions and queries. |
+| **Auth.js** | Authentication and session handling for protected application workflows. |
+| **Tailwind CSS + shadcn/ui + Radix UI** | Shared styling and UI primitives across Admin and Dashboard. |
+| **Vercel Blob + AWS S3** | Storage integrations for uploaded model, image, and multimedia assets. |
+| **Node.js 24 + npm 11** | Dependency installation, development, production builds, scripts, and validation. |
 
-- **Runtime marker generation** — beds, plantings, characters, farmbots, and models are generated at runtime from source data (no stored "display" records).
-- **Physics-based characters** — powered by `@react-three/rapier` + `ecctrl`. Movable characters can be "taken control of" with `WASD`, run, jump, and collide with the world.
-- **Camera modes** — Follow, Top-Down, First-Person, Orbit, and Stationary.
-- **Real model files** — characters load GLB/GLTF/FBX/OBJ files (hosted on S3 or Vercel Blob) as their 3D bodies.
-- **ThreeD MQTT Module** — provider-neutral transport, worker authentication, normalized runtime/events, and integration identity. FarmBot is the first read-only adapter and adds encrypted credentials, peripheral configuration, Admin activity controls, and project-scoped Dashboard status. MQTT publishing and physical commands remain disabled.
+## Developer quick start
 
----
-
-## Getting started
-
-### Prerequisites
-
-- [Node.js](https://nodejs.org) 24.x and npm 11.x (see `.nvmrc`)
-- A [Neon Postgres](https://neon.tech) database
+Repository: `marty-mcgee/marty-mcgee-neon`. Application package: `marty-mcgee-neon`.
 
 ### 1. Install dependencies
 
+Use **Node.js 24.x** and **npm 11.x**. If you use nvm, `.nvmrc` selects the Node version:
+
 ```bash
+nvm use
 npm install
 ```
 
-Commit `package-lock.json` with dependency changes. `npm start` is also available as a shortcut for the development server.
+Without nvm, install the matching Node.js version and run `npm install` directly. Commit `package-lock.json` with dependency changes; it is the project's dependency lockfile. Bun is no longer required.
 
-### 2. Configure environment variables
+### 2. Configure your local environment
 
-Create a `.env` file in the project root:
+Copy the environment template to an untracked local file:
 
 ```bash
-cp .env.example .env   # if a template is present, otherwise create .env manually
+cp .env.example .env.local
 ```
 
-At minimum you need:
+Configure your own development values. The core database and authentication settings are:
 
 ```dotenv
-DATABASE_URL=postgres://user:password@host/db
+DATABASE_URL=postgresql://USER:PASSWORD@HOST/DATABASE
 NEXTAUTH_URL=http://localhost:4444
-NEXTAUTH_SECRET=<generated-secret>
+NEXTAUTH_SECRET=YOUR_GENERATED_SECRET
 ```
 
-Generate a secret with:
+Generate a local authentication secret with:
 
 ```bash
 openssl rand -base64 32
 ```
 
-### 3. Push the database schema
+Storage, weather, and device integrations need additional configuration only when you use those features. Keep credentials server-side and out of committed files. See [Local Development](docs/developers/LOCAL_DEVELOPMENT.md) for setup details and [the FarmBot worker guide](docs/developers/FARMBOT_MQTT_WORKER.md) for its separate configuration.
+
+### 3. Prepare your development database
+
+Drizzle schemas are the source of truth under [`src/libraries/schema/`](src/libraries/schema/). For a database you intend to initialize or update, review the proposed changes with:
 
 ```bash
 npm run db:push
 ```
 
-### 4. Start the development server
+This command uses strict confirmation. Check the target database and proposed statements before applying them. An existing configured database does not need a schema push simply to start the app.
+
+### 4. Start ThreeD
 
 ```bash
-npm run dev
+npm start
 ```
 
-Open [http://localhost:4444](http://localhost:4444) in your browser.
+Open [localhost:4444](http://localhost:4444). `npm run dev` starts the same development server.
 
----
+For a production build and local production server:
 
-## Drizzle ORM + Neon Postgres
-
-The app uses **Drizzle ORM** for type-safe database operations against **Neon Postgres**, with a **hybrid ownership model**:
-
-- Every record has a `userId` for ownership and audit trails.
-- Child data is free-standing (no direct foreign keys to modules).
-- Relationships are handled via junction tables (`project_threed`, `project_traffic`, `project_multimedia`, and a polymorphic `project_assets` table).
-
-### Schema scripts
-
-| Command | Description |
-|---------|-------------|
-| `npm run db:push` | Push the current schema to the database |
-| `npm run db:generate` | Generate migration files from the schema |
-| `npm run db:studio` | Open Drizzle Studio (visual DB browser) |
-
-Schemas are co-located under `src/libraries/schema/` (`auth`, `multimedia`, `project`, `settings`, `threed`, `traffic`).
-
----
-
-## Architecture
-
-Data flows in one direction:
-
-```
-Admin → Database → API → Dashboard
+```bash
+npm run build
+npm run next:start
 ```
 
-The Dashboard primarily visualizes published data at runtime. Authenticated ThreeD world actions are an intentional write path: supported results persist only after their one-shot animation completes.
+`npm start` is intentionally the development shortcut in this repository; `npm run next:start` serves the production build.
 
-```
-API (/api/map/threed)
-  → position normalization
-  → UnifiedMapView (runtime marker generation)
-  → ThreeDScene (React Three Fiber 3D rendering)
-        ├── BedMarker3D
-        ├── PlantMarker3D
-        ├── FarmBotMarker3D
-        ├── ModelMarker3D
-        └── EcctrlCharacter / GardenCharacter
-```
+## Everyday commands
 
----
+| Command | Purpose |
+| --- | --- |
+| `npm install` | Install dependencies from the manifest and npm lockfile. |
+| `npm start` / `npm run dev` | Start development on port 4444. |
+| `npm run build` | Create a production build. |
+| `npm run next:start` | Serve the production build on port 4444. |
+| `npm run typecheck` | Check TypeScript without emitting application code. |
+| `npm run validate -- ci` | Run the maintained CI validation group. |
+| `npm run validate -- --list` | List validation tasks and groups. |
+| `npm run validate -- <name...>` | Run selected validation tasks or groups. |
+| `npm run validate:all` | Run every registered validation task. |
+| `npm run db:generate` | Generate migration files from the Drizzle schema. |
+| `npm run db:push` | Review and apply schema changes with strict confirmation. |
+| `npm run db:studio` | Open Drizzle Studio. |
 
-## ThreeD characters
+CI uses `npm install`, checks that the committed lockfile remains unchanged, and runs TypeScript and the CI validation group. Follow the [validation guide](docs/agents/VALIDATION.md) for targeted checks and manual Scene regression coverage.
 
-Characters are driven by their database record:
+Additional scripts support ThreeD model import, Multimedia import, and the separately hosted FarmBot worker. Consult their [Model Admin](docs/developers/THREED_MODEL_ADMIN.md), [Multimedia](docs/users/ADMIN_GUIDE.md), and [worker](docs/developers/FARMBOT_MQTT_WORKER.md) guides before running import or integration operations.
 
-- `isMovable` — when `true`, the character uses the physics-based `EcctrlCharacter` (WASD control, collisions, camera follow).
-- `model_id` — points to a `threed_models` record whose `filePath` is a publicly-hosted **GLB/GLTF/FBX/OBJ** file rendered as the character's 3D body.
-- `movementType` / `movementPattern` / `movementRadius` — further shape character behavior.
+## How the application fits together
 
-**To add a test character:**
+**Admin manages reusable content; Dashboard brings Project content into interactive views.** Both use authenticated API routes and shared services backed by Drizzle and Postgres. Dashboard interactions also write supported Project changes, including marker edits, explicit saves, and completed world actions.
 
-1. Upload a GLB (or FBX/OBJ) model via `/admin/threed/models`.
-2. Create a character that references that model via its `model_id`.
-3. Mark it `isMovable = true` if you want physics + WASD control.
-4. Assign the character to your project via the `project_assets` junction.
+The canonical Scene route is `/dashboard/scene`. Reusable Model assets and their Project placements have separate responsibilities: editing an instance's transform should not change the source Model. The Scene preserves stable marker identities and a persistent Canvas/physics world while individual assets change.
 
----
+Character routing follows `isMovable`: movable characters use `EcctrlCharacter`, while garden characters retain the separate `GardenCharacter` path. Animation orchestration and world-state persistence remain separate concerns.
 
-## Environment variables
-
-| Variable | Used for |
-|----------|----------|
-| `DATABASE_URL` | Neon Postgres connection string |
-| `NEXTAUTH_URL` | Base URL for auth |
-| `NEXTAUTH_SECRET` | Auth session secret |
-| `AWS_ACCESS_KEY_ID` | AWS S3 (music streaming) |
-| `AWS_SECRET_ACCESS_KEY` | AWS S3 (music streaming) |
-| `AWS_REGION` | AWS S3 region |
-| `S3_BUCKET_NAME` | S3 bucket for audio |
-| `S3_PUBLIC_URL` | Public base URL for S3 objects |
-| `FARMBOT_CREDENTIAL_KEY_VERSION` | Current positive FarmBot credential-encryption key version |
-| `FARMBOT_CREDENTIAL_KEY_V<n>` | Retained 32-byte base64 encryption key for version `<n>`; server-only |
-| `THREED_MQTT_WORKER_HMAC_KEY` | App-to-worker signing key; server-only and distinct from the persistence key |
-| `THREED_MQTT_WORKER_BASE_URL` | Private base URL used by the App to reach the long-running worker |
-| `THREED_MQTT_TRANSPORT` | Worker transport selector; `mqttjs` explicitly enables read-only MQTT |
-| `THREED_MQTT_APP_BASE_URL` | App base URL used by the worker for normalized persistence batches |
-| `THREED_MQTT_WORKER_TO_APP_HMAC_KEY` | Worker-to-App persistence signing key; server-only |
-| `OPENWEATHER_API_KEY` | OpenWeatherMap weather data |
-| `BLOB_READ_WRITE_TOKEN` | Vercel Blob storage (images/models) |
-
----
-
-## Project structure
-
-```
+```text
 src/
 ├── app/
-│   ├── admin/          # Admin Surface (CRUD)
-│   ├── dashboard/      # Dashboard Surface (visualization)
-│   └── api/            # API routes (read + write)
+│   ├── admin/                 # Asset management and configuration
+│   ├── dashboard/             # Projects, Scene, maps, and multimedia
+│   └── api/                   # Authenticated data and action endpoints
 ├── components/
-│   ├── map/            # ThreeDScene (R3F) + UnifiedMapView
-│   ├── threed/         # 3D markers, effects, layers, shared characters
-│   ├── music/          # Music player & UI
-│   ├── traffic/        # Traffic dashboard & map
-│   └── ui/             # shadcn/ui components
+│   ├── map/                   # Unified map and ThreeD Scene
+│   ├── threed/                # Models, markers, characters, and controls
+│   ├── multimedia/            # Player, albums, gallery, and visualizers
+│   ├── traffic/               # Traffic views
+│   └── ui/                    # Application-owned shadcn/ui components
 └── libraries/
-    ├── schema/         # Drizzle ORM schemas (auth, multimedia, project, settings, threed, traffic)
-    ├── db/             # Database client
-    ├── services/       # Data-fetching & domain logic
-    └── types/          # Shared TypeScript types
+    ├── schema/                # Auth, Multimedia, Project, Settings, ThreeD, Traffic
+    ├── db/                    # Database client and helpers
+    ├── services/              # Domain logic and integrations
+    └── types/                 # Shared TypeScript types
 ```
 
----
+The ThreeD schema lives in [`src/libraries/schema/threed/index.ts`](src/libraries/schema/threed/index.ts). Start with [Architecture](docs/developers/ARCHITECTURE.md), [Data Model](docs/developers/DATA_MODEL.md), and [API Guide](docs/developers/API_GUIDE.md) for deeper implementation details.
 
-## Useful commands
+## Documentation and release history
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start the dev server on port 4444 |
-| `npm run build` | Production build using Node.js |
-| `npm run next:start` | Start production server using Node.js |
-| `npm run db:push` | Push schema to the database |
-| `npm run db:generate` | Generate migrations |
-| `npm run db:studio` | Open Drizzle Studio |
-| `npm run farmbot:mqtt-worker` | Start the separately run read-only FarmBot MQTT worker |
-| `npm run validate -- --list` | List validation tasks and maintained groups |
-| `npm run validate -- <name...>` | Run one or more validation tasks or groups |
-| `npm run validate:all` | Run every registered validation task sequentially |
-| `npm run validate -- threed-mqtt` | Validate provider-neutral MQTT transport and worker authentication |
-| `npm run validate -- farmbot-worker` | Validate FarmBot MQTT adapter and lifecycle behavior |
-| `npm run validate -- farmbot-mqtt-persistence` | Validate normalized MQTT persistence rules |
+| Start here | Find |
+| --- | --- |
+| [Documentation Hub](docs/README.md) | Guides organized by audience. |
+| [Getting Started](docs/users/GETTING_STARTED.md) | The user workflow through Admin and Dashboard. |
+| [ThreeD Controls](docs/users/THREED_CONTROLS.md) | Scene navigation and interaction. |
+| [Ground Maps](docs/users/THREED_GROUND_MAPS.md) | Geographic context for ThreeD Projects. |
+| [Model Management](docs/developers/THREED_MODEL_ADMIN.md) | Files, materials, previews, importing, and library behavior. |
+| [Character Runtimes](docs/developers/THREED_CHARACTERS.md) | Animation, movement, and interaction boundaries. |
+| [Local Development](docs/developers/LOCAL_DEVELOPMENT.md) | Environment setup and validation workflow. |
+| [Deployment](docs/developers/DEPLOYMENT.md) | Deployment notes and operational context. |
+| [Release History](docs/releases/README.md) | Production checkpoints and release details. |
+| [v0.21.0 Release Notes](docs/releases/v0.21.0.md) | The npm migration, verification, and known dependency findings. |
+| [Agent Guide](docs/agents/README.md) | Repository conventions and change boundaries for coding agents. |
 
----
-
-## Learn more
-
-- [React](https://react.dev)
-- [React Three Fiber](https://docs.pmnd.rs/react-three-fiber)
-- [Drei](https://github.com/pmndrs/drei)
-- [@react-three/rapier](https://github.com/pmndrs/react-three-rapier)
-- [ecctrl](https://github.com/pmndrs/ecctrl)
-- [Drizzle ORM](https://orm.drizzle.team)
-- [Neon Documentation](https://neon.tech/docs/introduction)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [shadcn/ui](https://ui.shadcn.com)
-
----
-
-## License
-
-Private project — see `package.json` and the repository settings for licensing details.
-
----
-
-## Current ThreeD FarmBot Integration Plan
-
-The approved **ThreeD FarmBot Integration Plan** continues from the v0.18.4b production checkpoint. The latest FarmBot/MQTT safety boundary remains v0.18.3b:
-
-| Version | Phase | Planned scope |
-|---------|-------|---------------|
-| v0.18.0 | Phase 1 — Secure App foundation | Released: encrypted owner-scoped credentials, verified FarmBot identities, peripheral discovery and Water binding validation, broker metadata/readiness, and animation-only ThreeD targeting. Physical commands remain disabled. |
-| v0.18.1a | Phase 2 — MQTT worker and read-only status | Released: signed App/worker boundaries, safe connection lifecycle, exact read-only subscriptions, normalized runtime/event persistence, Admin activity controls, and owner/project-scoped Dashboard status. No MQTT publishing or hardware commands. |
-| v0.18.1b | ThreeD MQTT control layer | Released: provider-neutral adapter, lifecycle, session-controller, transport, and worker boundaries under a protocol-first hierarchy, with FarmBot as the first read-only integration. |
-| v0.18.2b | Phase 3 — Command safety and audit | Released: semantic Water allowlist, scoped authorization, server-owned limits, idempotency, per-device concurrency protection, command and recovery audit lifecycles, acknowledgement/timeout preparation, and dormant delivery contracts. MQTT publishing and physical operation remain disabled. |
-| v0.18.3a | Phase 4 — Command delivery safety foundation | Released: signed App/worker contracts, dormant command and recovery handoffs, lifecycle receipts, acknowledgement/timeout reporting, restart reconciliation, shared worker arbitration, and the independent emergency Water-off audit foundation through Phase 4L-C. Executors and MQTT publishing remain disabled. |
-| v0.18.3b | Phase 4 — Emergency delivery safety boundary | Released: owner-scoped emergency audit persistence, strict disabled worker endpoint, shared arbitration, exact RPC correlation, authenticated acknowledgement ingestion, and queued acknowledgement reporting through Phase 4L-K. Executors and MQTT publishing remain disabled. |
-| v0.18.3c+ | Phase 4 — Single-device Water pilot | Test one bounded Water operation with one verified, project-assigned FarmBot, a current peripheral binding, a healthy worker, a server-set maximum duration, and recorded acknowledgement. This requires separate explicit physical-test approval. |
-| v0.18.4a | Admin and Dashboard UI improvements | Released: cleaner Admin navigation and headers, uniform Project asset tabs, inline FarmBot management sections, and a compact Dashboard Project selector. No MQTT or physical-command behavior changed. |
-| v0.18.4b | Dashboard Surface Cleanup | Released: ThreeD Dashboard CRUD routes move to the Admin surface, Music uses one Dashboard player page, and Traffic uses source-layer controls with a linked map and incident list. No schema, MQTT, or physical-command behavior changes. |
-| v0.18.5a | Phase 5A — ThreeD orchestration simulation | Released: live Ecctrl range gating, provider-independent planning, target-facing animation sequencing, and client-only lifecycle correlation. It adds no command delivery or physical behavior. |
-| v0.18.5b | Phase 5B — Target-relative character navigation | Released: tested client lifecycle transitions, camera-independent FarmBot approach controls, and aligned target focusing. It adds no command delivery or physical behavior. |
-| v0.18.6a | Phase 5C–5D — ThreeD Markers Action Target Module | Released: shared target-relative navigation planning and ThreeD-owned target identity, pulse, focus, lifecycle, and capability-filtered actions for Plantings, Beds, Characters, FarmBots, and Models. |
-| v0.18.6b | Phase 5E–5L — ThreeD Project Marker Snapshots | Released: explicit owner-scoped marker snapshots, manual save and eligible restore, Runtime Marker registry integration, Ecctrl live-position capture, and current-position Action Target resolution. |
-| v0.18.7a | ThreeD Model Library Project Placements | Released: public Library eligibility, Admin classification and replacement uploads, owner-scoped Project Model marker CRUD, one-shot Scene placement, local DRACO decoding, scale composition, grounding, whole-asset collision, DetailsCard editing/deletion, and marker-ID-local Scene updates. The persistent Canvas/Physics world preserves unrelated Character/Ecctrl state, while Scene Layers suspend only their own visuals, input, physics, and debug outlines. Character-classified models remain outside this placement path. |
-| v0.18.7b | ThreeD Bed Project Placement and Editing | Released: transactional Bed source/assignment/marker creation, one-shot Scene placement, authoritative Project-instance dimensions and transforms, live Rapier translation/rotation synchronization, and degree-based Y rotation. |
-| v0.18.7c | ThreeD Layers Scene Contracts | Released: persistent Scene transaction authority, stable marker identity, Sub-Module-owned physics, Layer-local visibility/input/collision control, and bounded Rapier frame-error containment. |
-| v0.18.7d | ThreeD Ecctrl Spawn Safety | Released: Project-scoped pre-render rejection of overlapping movable Character spawn positions, bounded marker diagnostics, and an Admin Character recovery link. |
-| v0.18.8a | ThreeD Ecctrl Position Authority | Release candidate: Runtime Marker position directly initializes Ecctrl, and one safe Character owns a shared Rapier spawn while later overlaps are reported. |
-| v0.18.8-beta | ThreeD Ecctrl Position Authority | Released: Runtime Marker position directly initializes Ecctrl, and one safe Character owns a shared Rapier spawn while later overlaps are reported. |
-| v0.18.9a | ThreeD Character Library and Snapshot Recovery | Released: Character Library placement and editing, stable snapshot upserts, local Planting/Character marker updates, controlled-only Ecctrl live-position reporting, capsule-overlap rejection, and authenticated source-position recovery. |
-| Later | Phase 6+ — Controlled expansion | Add one semantic FarmBot operation at a time, each with its own limits, prerequisites, command builder, audit behavior, timeout handling, and manual verification. |
-
-Phases 2A–2D, the ThreeD MQTT control layer, Phase 3, Phase 4 through v0.18.3b, and Phase 5A–5D are released and production-verified. Guarded delivery and acknowledgement foundations are present while every production executor and MQTT publishing remain disabled. No physical operation is enabled.
-
-Approval of this plan does not by itself authorize a new external resource, database schema change, MQTT connection, MQTT publish, or physical FarmBot command. Each phase remains a separate approval and validation gate.
+Detailed release timelines and FarmBot phase plans live in the documentation so this README can stay focused on the product and getting started.
