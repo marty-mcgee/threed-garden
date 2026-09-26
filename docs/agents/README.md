@@ -1,5 +1,7 @@
 # Agent Documentation
 
+Canonical development repository: `marty-mcgee/threed-garden`; local checkout: `/home/marty/threed-garden`. The prepared [v0.22.0 repository handoff](../plans/v0.22.0.md) starts the independent release line. `marty-mcgee-neon` is retained as historical source, not the target for new app changes.
+
 Coding agents must read the root [AGENTS.md](../../AGENTS.md) and [CONTEXT.md](../../CONTEXT.md) before architectural work.
 
 Source-of-truth order:

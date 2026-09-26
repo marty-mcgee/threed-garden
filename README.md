@@ -8,9 +8,11 @@
 
 Built with **Next.js 16, React 19, TypeScript, Three.js, and React Three Fiber**, with **Rapier physics**, **Neon Postgres**, and **Drizzle ORM** behind the experience. **Node.js 24 + npm 11** provide a consistent development and build workflow.
 
-**Modern app baseline:** [v0.21.1 — ThreeD Documentation + CI Reliability](docs/releases/v0.21.1.md)
+**Current production release:** [v0.21.1 — ThreeD Documentation + CI Reliability](docs/releases/v0.21.1.md)
 
 **Looking for the original app?** The v0.17 code and its history are preserved on [`legacy-v0.17`](https://github.com/marty-mcgee/threed-garden/tree/legacy-v0.17). See the [repository migration record](docs/plans/threed-garden-repository-migration.md) for provenance and deployment status.
+
+**Next release:** [v0.22.0 — ThreeD Garden: Repository Handoff](docs/releases/v0.22.0.md) — prepared for release from this repository.
 
 [Explore the features](#what-you-can-build) · [Meet the stack](#the-technology-behind-threed) · [Run locally](#developer-quick-start) · [Read the docs](docs/README.md)
 

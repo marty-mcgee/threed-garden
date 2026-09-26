@@ -2,7 +2,7 @@
 
 ## Status
 
-Prepared migration branch: `migration/threed-v0.21.1` in `marty-mcgee/threed-garden`. The legacy archive references have been created. The destination main branch has not been changed by this preparation, and final production cutover is pending review.
+Completed through [PR #48](https://github.com/marty-mcgee/threed-garden/pull/48), merged to main as `4ec590e28b160851b54b88f8a5ce37b1375281ff`. Both histories and the legacy archive references remain preserved. The User reported the migration working successfully. The new clone now prepares [v0.22.0](v0.22.0.md) as its independent release checkpoint.
 
 The User approved the migration and confirmed that the new deployment should reuse the existing Marty McGee Neon database and uploaded assets. No database creation, data import, schema push, credential copying, or domain/deployment settings changes were performed.
 
@@ -42,11 +42,11 @@ Completed in an isolated checkout without environment files:
 - Legacy license preservation is byte-for-byte.
 - Migration-specific diff and README local-link checks passed. The full legacy-to-modern diff includes pre-existing whitespace in imported files; those files were not reformatted.
 
-The production build remains User-owned. Hosted CI, preview configuration, signed-in browser acceptance and production cutover require verification after the draft PR is opened. Existing dependency audit findings and Three.js/postprocessing peer warnings are inherited, not resolved by this repository migration.
+The migration's [hosted main-branch CI](https://github.com/marty-mcgee/threed-garden/actions/runs/36263523874) and [Vercel production deployment](https://vercel.com/marty-mcgees-projects/threed-garden/Azocix5Dt2bo3M2QacT6iEQeqSiq) succeeded. The User subsequently reported that the migration worked successfully. Future release builds remain User-owned. Existing dependency audit findings and Three.js/postprocessing peer warnings are inherited, not resolved by this repository migration.
 
-## Deployment review before merge
+## Original deployment review checklist
 
-The destination currently has a Vercel project attached. Its legacy main commit reports a successful Vercel status. GitHub Pages is also configured from `main:/docs`; its last build failed. These settings have not been changed.
+At preparation time, Vercel was already attached and the separate GitHub Pages `main:/docs` build had failed. After the merge, both Vercel and GitHub Pages deployments succeeded. The checklist below records the original cutover review; the User is managing environment/settings alignment separately.
 
 1. Review the draft PR and its GitHub validation result.
 2. In the destination Vercel project, verify Next.js framework detection, Node 24, npm installation, `npm run build`, and the existing database/storage/auth configuration. Transfer or reference configuration through the hosting dashboard; never commit secrets.

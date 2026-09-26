@@ -38,7 +38,9 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Current production version: v0.20.1 "ThreeD Physics" (package `0.20.1`). Production deployment, browser acceptance and build success are User-confirmed. See `docs/releases/v0.20.1.md` and `docs/plans/v0.20.1-release.md`. Preserve generic Physics Sensors, Project-owned Sensor Groups, sensor TransformControls, optional Sensors panel and read-only FarmBot presentation. Whole-Model TransformControls and further FarmBot expansion remain deferred. Preserve the `src/libraries` source boundary, Multimedia module identity, canonical `/dashboard/scene` route, shadcn/ui component boundary, shared animation references, Character assignments, runtime precedence and first-pose gating.
+Canonical repository: `marty-mcgee/threed-garden`. Current confirmed production: v0.21.1, including the repository migration in PR #48. Prepared development checkpoint: v0.22.0 "ThreeD Garden: Repository Handoff"; see `docs/plans/v0.22.0.md`. Preserve both imported histories and the legacy archive references. New development belongs in this repository; `marty-mcgee-neon` remains historical source. The historical runtime boundaries below still apply.
+
+Historical physics checkpoint: v0.20.1 "ThreeD Physics" (package `0.20.1`). Production deployment, browser acceptance and build success are User-confirmed. See `docs/releases/v0.20.1.md` and `docs/plans/v0.20.1-release.md`. Preserve generic Physics Sensors, Project-owned Sensor Groups, sensor TransformControls, optional Sensors panel and read-only FarmBot presentation. Whole-Model TransformControls and further FarmBot expansion remain deferred. Preserve the `src/libraries` source boundary, Multimedia module identity, canonical `/dashboard/scene` route, shadcn/ui component boundary, shared animation references, Character assignments, runtime precedence and first-pose gating.
 
 Preserve the released alpha scope: FBX bulk importing, shared local textures, existing reusable Texture assignments, primary registration, verified inactive creation and guarded recovery.
 
@@ -80,7 +82,7 @@ as release-blocking.
 
 ## ThreeD FarmBot Integration Plan rules
 
-- Current App production checkpoint: v0.19.13 "ThreeD Admin Sub-Module Workspace UI/UX Updates". The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+- Historical App checkpoint: v0.19.13 "ThreeD Admin Sub-Module Workspace UI/UX Updates". The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 - ThreeD owns the provider-neutral MQTT service. FarmBot and future integrations such as OpenFarm may depend on ThreeD services; `src/libraries/services/threed/mqtt` must never import provider adapters.
 - Treat each documented FarmBot phase as a separate approval gate; approval of one phase does not authorize the next phase, new external resources, schema changes, MQTT connections, or physical commands.
 - FarmBot credentials are server-only and must never enter client state, API/map responses, logs, or public environment variables.
