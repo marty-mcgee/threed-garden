@@ -1,0 +1,394 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+    @apply bg-background text-foreground;
+  }
+}
+
+
+@layer components {
+  input[type="range"] {
+    @apply h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer;
+  }
+  
+  input[type="range"]::-webkit-slider-thumb {
+    @apply appearance-none w-3 h-3 bg-blue-600 rounded-full cursor-pointer;
+  }
+}
+
+
+/* Add CSS Animation for Speech Bubble */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+.animate-bounce {
+  animation: bounce 0.5s ease-out;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+
+
+
+
+
+
+
+/* Leaflet Map */
+/* app/globals.css */
+.incident-popup .leaflet-popup-content-wrapper {
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  padding: 0;
+  overflow: hidden;
+}
+
+.incident-popup .leaflet-popup-content {
+  margin: 0;
+  padding: 0;
+  min-width: 250px;
+}
+
+.incident-popup .leaflet-popup-tip {
+  background: white;
+}
+
+/* Dark mode support */
+.dark .incident-popup .leaflet-popup-content-wrapper {
+  background: #1a1a2e;
+  color: #e2e8f0;
+}
+
+.dark .incident-popup .leaflet-popup-tip {
+  background: #1a1a2e;
+}
+
+/* Custom marker hover effects */
+.custom-marker {
+  transition: transform 0.2s;
+}
+
+.custom-marker:hover {
+  transform: scale(1.2);
+  z-index: 1000 !important;
+}
+
+/* Cluster styles */
+.marker-cluster {
+  background-color: rgba(59, 130, 246, 0.6);
+}
+
+.marker-cluster div {
+  background-color: rgba(37, 99, 235, 0.8);
+  color: white;
+  font-weight: bold;
+}
+
+
+
+
+
+
+
+
+/* app/globals.css - Add this */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+
+/* Shared Dashboard Scene surfaces; scoped to explicitly opted-in panels. */
+.threed-workspace-panel {
+  --threed-panel-background: rgba(17, 26, 40, 0.96);
+  background-color: var(--threed-panel-background);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #f1f5f9;
+}
+.threed-workspace-panel :is(summary, button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid #67e8f9;
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+@media (any-pointer: coarse) {
+  .threed-workspace-panel :is(summary, button, a, input, select) {
+    min-height: 44px;
+    font-size: 12px;
+  }
+  .threed-workspace-panel :is(button, a, input, select) {
+    min-width: 44px;
+  }
+  .threed-workspace-panel .threed-animation-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+}
+
+.threed-workspace-panel.threed-details-surface {
+  --threed-details-background: rgba(17, 26, 40, var(--threed-panel-idle-opacity, 0.8));
+  transition: background-color 150ms ease, left 150ms ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+.threed-details-surface:hover,
+.threed-details-surface:focus-within {
+  --threed-details-background: rgba(17, 26, 40, var(--threed-panel-hover-opacity, 0.98));
+}
+.threed-workspace-panel.threed-sensor-inspector {
+  --threed-details-background: rgba(17, 26, 40, var(--threed-panel-idle-opacity, 0.8));
+}
+.threed-sensor-inspector:hover,
+.threed-sensor-inspector:focus-within {
+  --threed-details-background: rgba(17, 26, 40, var(--threed-panel-hover-opacity, 0.98));
+}
+.threed-details-surface input,
+.threed-details-surface select {
+  background-color: rgba(15, 23, 42, 0.78);
+}
+
+/* Project Toolbar dropdowns share the DetailsCard color and transparency. */
+.threed-app-header {
+  background: #111a28;
+  color: #f8fafc;
+  backdrop-filter: blur(16px);
+}
+.threed-project-toolbar {
+  background: #0D1420;
+  color: #f8fafc;
+}
+.threed-app-menu-surface {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(17, 26, 40, 0.96);
+  color: #f8fafc;
+  backdrop-filter: blur(16px);
+}
+.threed-app-menu-surface [data-slot="dropdown-menu-item"]:focus,
+.threed-app-menu-surface [data-slot="dropdown-menu-sub-trigger"]:focus {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+.threed-workspace-panel.threed-toolbar-dropdown-surface {
+  --threed-panel-background: rgba(17, 26, 40, var(--threed-panel-idle-opacity, 0.8));
+  transition: background-color 150ms ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+.threed-workspace-panel.threed-scene-panel-surface {
+  --threed-panel-background: rgba(17, 26, 40, var(--threed-panel-idle-opacity, 0.8));
+  transition: background-color 150ms ease;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+.threed-toolbar-dropdown-surface:hover,
+.threed-toolbar-dropdown-surface:focus-within,
+.threed-scene-panel-surface:hover,
+.threed-scene-panel-surface:focus-within {
+  --threed-panel-background: rgba(17, 26, 40, var(--threed-panel-hover-opacity, 0.98));
+}
+.threed-toolbar-dropdown-surface input,
+.threed-toolbar-dropdown-surface select,
+.threed-scene-panel-surface input,
+.threed-scene-panel-surface select {
+  background-color: rgba(15, 23, 42, 0.78);
+}
+@media (hover: none) {
+  .threed-workspace-panel.threed-details-surface,
+  .threed-workspace-panel.threed-toolbar-dropdown-surface,
+  .threed-workspace-panel.threed-scene-panel-surface {
+    --threed-details-background: rgba(17, 26, 40, var(--threed-panel-hover-opacity, 0.98));
+    --threed-panel-background: rgba(17, 26, 40, var(--threed-panel-hover-opacity, 0.98));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .threed-workspace-panel.threed-details-surface,
+  .threed-workspace-panel.threed-toolbar-dropdown-surface,
+  .threed-workspace-panel.threed-scene-panel-surface { transition: none; }
+}
+
+@media (forced-colors: active) {
+  .threed-workspace-panel.threed-details-surface,
+  .threed-workspace-panel.threed-toolbar-dropdown-surface,
+  .threed-workspace-panel.threed-scene-panel-surface,
+  .threed-workspace-panel {
+    --threed-panel-background: Canvas;
+    --threed-details-background: Canvas;
+    color: CanvasText;
+    text-shadow: none;
+    border: 1px solid CanvasText;
+  }
+  .threed-workspace-panel :focus-visible { outline-color: Highlight; }
+}
+
+/* Camera-facing asset hover titles keep a readable size at every zoom. */
+.threed-hover-title {
+  max-width: min(18rem, calc(100vw - 2rem));
+  padding: 0.375rem 0.625rem;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 0.375rem;
+  background: rgba(2, 6, 23, 0.94);
+  color: #fff;
+  font-size: 0.8125rem;
+  line-height: 1.25rem;
+  text-align: center;
+  overflow-wrap: anywhere;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* A focused inspector overlays Assets on narrow viewports; the Scene stays mounted. */
+@media (max-width: 700px) {
+  .threed-inspector {
+    left: 0.5rem !important;
+    width: min(22rem, calc(100vw - 1rem));
+    max-width: calc(100vw - 1rem);
+    z-index: 45;
+  }
+  .threed-model-library-panel {
+    left: 0.5rem;
+    width: min(22rem, calc(100vw - 1rem));
+    max-width: calc(100vw - 1rem);
+  }
+}

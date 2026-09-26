@@ -1,113 +1,48 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-# ================================================
 
 # dependencies
 /node_modules
-
-# private env
-# .env.*
-.env
-.env.local
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
 # testing
-/testing
+/coverage
+
+# next.js
+/.next/
+/out/
 
 # production
 /build
-/dist
-
-# vs code
-*.code-workspace
 
 # misc
-desktop.ini
 .DS_Store
 *.pem
-*.crt
-.npmrc
 
-# log files
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
 
-# lock files
-package-lock.json
-yarn.lock
-pnpm-lock.yaml
+# env files (can opt-in for committing if needed)
+.env*
 
-# next
-.next
-/.next/
-/out/
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
 next-env.d.ts
 
-# pwa service workers
-public/sw.js
-public/sw.js.map
-public/workbox-*
+# drizzle migrations
+/drizzle
 
-# __test scripts
-src/app/__*
-
-# ================================================
-# THREED .gitignore
-# ================================================
-
-# public assets
-
-public/assets/*
-!public/assets/animations
-!public/assets/characters
-!public/assets/environments
-!public/assets/examples
-!public/assets/farmbot
-# !public/assets/farmbot/3D
-public/assets/farmbot/3D-new
-public/assets/farmbot/3D-old
-!public/assets/images
-!public/assets/mercedes
-public/assets/mercedes/*.zip
-public/assets/mercedes/**/*.zip
-
-# ================================================
-
-### libraries
-
-# wordpress api plugin
-!src/lib/threed/plugins/README.md
-src/lib/threed/plugins/*/**
-src/lib/threed/plugins/threed-garden/assets
-
-# farmbot
-src/lib/farmbot/*.zip
-src/lib/farmbot/farmbot-3d-demo-react
-src/lib/farmbot/frontend
-# src/lib/farmbot/threed-farmbot
-# src/lib/wp-threed
-# src/lib/wp-threed/assets
-
-# ecctrl -- character controls
-src/app/participate/character-control
-# ecctrl-new
-src/lib/ecctrl-new
-src/lib/ecctrl/src-old
-
-# threed.ai
-# src/app/ai
-# src/layout/ai
-# src/lib/ai
-# src/lib/threed/threed.ai
-# src/lib/openai
-# src/app/api/chat
-# src/app/chat
-# src/lib/deepseek
-# src/app/deepseek
-
-# threed.home-design
-public/demo/*
-src/lib/threed/assets/demo/**
-src/lib/threed/assets/media/**
-src/lib/threed/assets/threeds/**
-
-# ================================================
+# custom public/other
+public/assets-archive
+reference/

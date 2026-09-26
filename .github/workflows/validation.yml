@@ -1,0 +1,48 @@
+name: Repository validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validation-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Application validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Use the repository npm version
+        run: |
+          npm install --global "$(node -p "require('./package.json').packageManager")"
+          node --version
+          npm --version
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Verify dependency lockfile is unchanged
+        run: git diff --exit-code -- package-lock.json
+
+      - name: TypeScript type check
+        run: npm run typecheck
+
+      - name: Run CI validation group
+        run: npm run validate -- ci

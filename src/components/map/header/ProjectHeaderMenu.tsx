@@ -1,0 +1,181 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
+import {
+  Clock,
+  ExternalLink,
+  FolderOpen,
+  ListTree,
+  Loader2,
+  Plus,
+  Save,
+  Sparkles,
+  ScanSearch,
+  ChevronDown,
+  ChevronRight,
+} from 'lucide-react';
+
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+
+export interface ProjectHeaderEnvironmentItem {
+  id: string;
+  name: string;
+}
+
+export function ProjectHeaderMenu({
+  selectedProjectId,
+  projectName,
+  isOpen,
+  trafficItemCount,
+  threeDItemCount,
+  hasRealData,
+  isStale,
+  dataAge,
+  lastUpdated,
+  savingProject,
+  projectAssetCount,
+  projectAssetsOpen,
+  environments,
+  onTrigger,
+  onDismiss,
+  onChooseProject,
+  onCreateProject,
+  onSaveProject,
+  onOpenProjectAssets,
+  onOpenEnvironment,
+  onOpenProjectTour,
+  onOpenProjectSettings,
+}: {
+  selectedProjectId: string | null;
+  projectName?: string | null;
+  isOpen: boolean;
+  trafficItemCount: number;
+  threeDItemCount: number;
+  hasRealData: boolean;
+  isStale: boolean;
+  dataAge: string;
+  lastUpdated: Date | null;
+  savingProject: boolean;
+  projectAssetCount: number;
+  projectAssetsOpen: boolean;
+  environments: ProjectHeaderEnvironmentItem[];
+  onTrigger: () => void;
+  onDismiss: () => void;
+  onChooseProject: () => void;
+  onCreateProject: () => void;
+  onSaveProject: () => void;
+  onOpenProjectAssets: () => void;
+  onOpenEnvironment: (id: string) => void;
+  onOpenProjectTour: () => void;
+  onOpenProjectSettings: () => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const dismissOutsideMenu = (event: PointerEvent) => {
+      const target = event.target;
+      if (target instanceof Node && containerRef.current?.contains(target)) return;
+      onDismiss();
+    };
+
+    document.addEventListener('pointerdown', dismissOutsideMenu);
+    return () => document.removeEventListener('pointerdown', dismissOutsideMenu);
+  }, [isOpen, onDismiss]);
+
+  return (
+    <div ref={containerRef} className="relative flex flex-col items-start" onKeyDown={(event) => {
+      if (event.key !== 'Escape' || !isOpen) return;
+      event.preventDefault();
+      event.stopPropagation();
+      onDismiss();
+      triggerRef.current?.focus();
+    }}>
+      <div className="flex items-center gap-2">
+        <Button
+          ref={triggerRef}
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="h-7 gap-1 px-2 text-xs font-medium"
+          aria-expanded={selectedProjectId ? isOpen : undefined}
+          onClick={onTrigger}
+        >
+          <FolderOpen className="h-3.5 w-3.5" />
+          {selectedProjectId ? projectName || `Project #${selectedProjectId}` : 'Select Project'}
+          {isOpen && selectedProjectId
+            ? <ChevronDown className="h-3.5 w-3.5" />
+            : <ChevronRight className="h-3.5 w-3.5" />}
+        </Button>
+      </div>
+
+      {selectedProjectId && isOpen && (
+        <div className="threed-workspace-panel absolute left-0 top-full z-[2000] mt-1 max-h-[70dvh] w-72 max-w-[calc(100vw-2rem)] space-y-2 overflow-y-auto overscroll-contain rounded-lg border p-2 shadow-xl">
+          <div className="space-y-1.5 px-1">
+            <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+              <FolderOpen className="h-3 w-3" />
+              Project Status
+            </div>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <Badge variant="outline" className="text-[10px]">{trafficItemCount} traffic items</Badge>
+              <Badge variant="outline" className="text-[10px]">{threeDItemCount} 3D items</Badge>
+              {!hasRealData && <Badge variant="secondary" className="text-[10px] text-muted-foreground">No Data</Badge>}
+            </div>
+            <div className="flex items-center gap-1.5 py-0.5">
+              <Clock className={`h-3 w-3 ${isStale ? 'text-amber-600' : dataAge !== '--' ? 'text-green-600' : 'text-muted-foreground'}`} />
+              <span
+                className={`text-xs ${isStale ? 'text-amber-600' : dataAge !== '--' ? 'text-green-600' : 'text-muted-foreground'}`}
+                title={lastUpdated?.toLocaleString() || 'Unknown'}
+              >
+                {dataAge !== '--' ? `Updated ${dataAge}` : 'Update time unavailable'}
+              </span>
+            </div>
+          </div>
+
+          <div className="border-t pt-2">
+            <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Project Navigation</div>
+            <div className="mt-1 grid grid-cols-1 gap-1">
+              <Button type="button" variant="secondary" size="sm" className="h-8 w-full justify-start px-2 text-xs" onClick={onChooseProject}>
+                <FolderOpen className="h-3.5 w-3.5" /> Choose Project
+              </Button>
+              <Button type="button" variant="secondary" size="sm" className="h-8 w-full justify-start px-2 text-xs" onClick={onCreateProject}>
+                <Plus className="h-3.5 w-3.5" /> New Project
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-0.5 border-t pt-2">
+            <div className="px-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Scene Workspace</div>
+            <Button type="button" variant="ghost" size="sm" className="h-auto min-h-7 w-full flex-wrap justify-start whitespace-normal px-2 py-1 text-left text-xs" disabled={savingProject} onClick={onSaveProject}>
+              {savingProject ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+              Save ThreeD Project
+            </Button>
+            <Button type="button" variant="ghost" size="sm" className="h-auto min-h-7 w-full flex-wrap justify-start whitespace-normal px-2 py-1 text-left text-xs" aria-controls="project-assets-panel" aria-expanded={projectAssetsOpen} onClick={onOpenProjectAssets}>
+              <ListTree className="h-3.5 w-3.5" />
+              Project Assets
+              <span className="ml-auto text-[10px] text-muted-foreground">{projectAssetCount}</span>
+            </Button>
+            <Button type="button" variant="ghost" size="sm" className="h-auto min-h-7 w-full justify-start px-2 py-1 text-xs" onClick={onOpenProjectTour}>
+              <Sparkles className="h-3.5 w-3.5" /> Project Tour
+            </Button>
+            {environments.map((environment) => (
+            <Button key={environment.id} type="button" variant="ghost" size="sm" className="h-auto min-h-7 w-full flex-wrap justify-start whitespace-normal px-2 py-1 text-left text-xs" onClick={() => onOpenEnvironment(environment.id)}>
+                <ScanSearch className="h-3.5 w-3.5" />
+                Environment Details
+                {environments.length > 1 && <span className="min-w-0 break-words text-muted-foreground [overflow-wrap:anywhere]">— {environment.name}</span>}
+              </Button>
+            ))}
+          </div>
+
+          <div className="border-t pt-2">
+            <Button type="button" variant="ghost" size="sm" className="h-auto min-h-7 w-full flex-wrap justify-start whitespace-normal px-2 py-1 text-left text-xs text-muted-foreground" onClick={onOpenProjectSettings}>
+              <ExternalLink className="h-3.5 w-3.5" /> Project Settings &amp; Admin
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

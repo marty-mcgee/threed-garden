@@ -1,0 +1,628 @@
+// components/admin/multimedia/tracks/MusicTracksCRUD.tsx
+'use client';
+
+import { useMusicRecords, MusicRecordsSearch, MusicRecordsTable, MusicStatus } from '@/components/admin/multimedia/shared/MusicRecordsWorkspace';
+import { MusicWorkspaceHeader } from '@/components/admin/multimedia/shared/MusicWorkspaceHeader';
+
+import { S3Upload } from '@/components/admin/multimedia/shared/S3Upload';
+import { useState, useEffect } from 'react';
+import { 
+  Plus, 
+  Edit, 
+  Trash2, 
+  Loader2,
+  CheckCircle,
+  XCircle,
+  Music2,
+  MoreHorizontal,
+  ExternalLink,
+  Play,
+  Clock
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/components/ui/toast';
+
+interface Track {
+  id: number;
+  title: string;
+  duration: number | null;
+  trackNumber: number | null;
+  fileUrl: string;
+  fileType: string;
+  status: string;
+  lyrics: string | null;
+  metadata: any;
+  playCount: number;
+  albumId: number | null;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface MusicTracksCRUDProps {
+  pageHeader?: boolean;
+  onModuleUpdate?: () => void;
+}
+
+export function MusicTracksCRUD({ onModuleUpdate, pageHeader = false }: MusicTracksCRUDProps) {
+  const workspace = useMusicRecords('tracks', pageHeader);
+  const { showToast, ToastComponent } = useToast();
+  const [previewingTrack, setPreviewingTrack] = useState<Track | null>(null);
+  const [previewError, setPreviewError] = useState(false);
+  const [tracks, setTracks] = useState<Track[]>([]);
+  const [uploaded, setUploaded] = useState<{ fileUrl: string; fileType: string; fileSize: number } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [uploadBusy, setUploadBusy] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showCreateDialog, setShowCreateDialog] = useState(false);
+  const [editingTrack, setEditingTrack] = useState<Track | null>(null);
+  const [albums, setAlbums] = useState<{ id: number; title: string }[]>([]);
+  const [formData, setFormData] = useState({
+    title: '',
+    duration: 180,
+    trackNumber: 1,
+    fileUrl: '',
+    status: 'active',
+    lyrics: '',
+    albumId: '',
+  });
+
+  useEffect(() => {
+    fetchTracks();
+    fetchAlbums();
+  }, []);
+
+  const fetchTracks = async () => {
+    if (pageHeader) { workspace.reload(); return; }
+    setLoading(true);
+    try {
+      const response = await fetch('/api/multimedia/tracks');
+      const data = await response.json();
+      if (data.success) {
+        setTracks(data.data || []);
+      } else {
+        showToast(data.error || 'Failed to fetch tracks', 'error');
+      }
+    } catch (error) {
+      console.error('Error fetching tracks:', error);
+      showToast('Failed to fetch tracks', 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAlbums = async () => {
+    try {
+      const response = await fetch('/api/multimedia/albums');
+      const data = await response.json();
+      if (data.success) {
+        setAlbums(data.data || []);
+      }
+    } catch (error) {
+      console.error('Error fetching albums:', error);
+    }
+  };
+
+  const handleCreate = async () => {
+    if (!formData.title || !formData.fileUrl || !formData.albumId) {
+      showToast('Title, album, and audio URL are required', 'error');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const payload: any = {
+        title: formData.title,
+        fileUrl: formData.fileUrl,
+        fileType: uploaded?.fileUrl === formData.fileUrl ? uploaded.fileType : 'audio/mpeg',
+        fileSize: uploaded?.fileUrl === formData.fileUrl ? uploaded.fileSize : undefined,
+        status: formData.status,
+      };
+
+      if (formData.duration && formData.duration > 0) {
+        payload.duration = formData.duration;
+      }
+      if (formData.trackNumber && formData.trackNumber > 0) {
+        payload.trackNumber = formData.trackNumber;
+      }
+      if (formData.lyrics && formData.lyrics.trim()) {
+        payload.lyrics = formData.lyrics;
+      }
+      if (formData.albumId && formData.albumId !== '') {
+        payload.albumId = parseInt(formData.albumId);
+      }
+
+      const response = await fetch('/api/multimedia/tracks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        showToast('Track created successfully', 'success');
+        setShowCreateDialog(false);
+        setFormData({
+          title: '',
+          duration: 180,
+          trackNumber: 1,
+          fileUrl: '',
+          status: 'active',
+          lyrics: '',
+          albumId: '',
+        });
+        await fetchTracks();
+        if (onModuleUpdate) onModuleUpdate();
+      } else {
+        showToast(data.error || 'Failed to create track', 'error');
+      }
+    } catch (error) {
+      console.error('Error creating track:', error);
+      showToast('Failed to create track', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleUpdate = async () => {
+    if (!editingTrack) return;
+    setIsSubmitting(true);
+    try {
+      const payload: any = {
+        title: formData.title,
+        fileUrl: formData.fileUrl,
+        fileType: uploaded?.fileUrl === formData.fileUrl ? uploaded.fileType : editingTrack.fileType,
+        status: formData.status,
+      };
+
+      if (formData.duration && formData.duration > 0) {
+        payload.duration = formData.duration;
+      }
+      if (formData.trackNumber && formData.trackNumber > 0) {
+        payload.trackNumber = formData.trackNumber;
+      }
+      if (formData.lyrics && formData.lyrics.trim()) {
+        payload.lyrics = formData.lyrics;
+      }
+      if (formData.albumId && formData.albumId !== '') {
+        payload.albumId = parseInt(formData.albumId);
+      }
+
+      const response = await fetch(`/api/multimedia/tracks?id=${editingTrack.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        showToast('Track updated successfully', 'success');
+        setEditingTrack(null);
+        await fetchTracks();
+        if (onModuleUpdate) onModuleUpdate();
+      } else {
+        showToast(data.error || 'Failed to update track', 'error');
+      }
+    } catch (error) {
+      console.error('Error updating track:', error);
+      showToast('Failed to update track', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (id: number, title: string) => {
+    if (!confirm(`Delete track "${title}"? Its uploaded file will also be deleted unless another record uses it. This action cannot be undone.`)) return;
+
+    try {
+      const response = await fetch(`/api/multimedia/tracks?id=${id}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        showToast(data.message || 'Track deleted successfully', 'success');
+        await fetchTracks();
+        if (onModuleUpdate) onModuleUpdate();
+      } else {
+        showToast(data.error || 'Failed to delete track', 'error');
+      }
+    } catch (error) {
+      console.error('Error deleting track:', error);
+      showToast('Failed to delete track', 'error');
+    }
+  };
+
+  const renderActions = (track: Track) => (
+    <div className="flex items-center justify-end gap-1">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => previewTrack(track)}
+      >
+        <Play className="w-4 h-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => openEditDialog(track)}
+      >
+        <Edit className="w-4 h-4" />
+      </Button>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="h-8 w-8">
+            <MoreHorizontal className="w-4 h-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => window.open(track.fileUrl, '_blank')}>
+            <ExternalLink className="w-4 h-4 mr-2" />
+            Play Audio
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="text-red-600"
+            onClick={() => handleDelete(track.id, track.title)}
+          >
+            <Trash2 className="w-4 h-4 mr-2" />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
+
+  const previewTrack = (track: Track) => {
+    if (track.fileUrl) {
+      setPreviewError(false);
+      setPreviewingTrack(track);
+    } else {
+      showToast('No audio URL available', 'error');
+    }
+  };
+
+  const openEditDialog = (track: Track) => {
+    setUploaded(null);
+    setEditingTrack(track);
+    setFormData({
+      title: track.title,
+      duration: track.duration || 180,
+      trackNumber: track.trackNumber || 1,
+      fileUrl: track.fileUrl || '',
+      status: track.status || 'active',
+      lyrics: track.lyrics || '',
+      albumId: track.albumId ? String(track.albumId) : '',
+    });
+  };
+
+  const formatDuration = (seconds: number | null) => {
+    if (!seconds) return '--:--';
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
+
+  if (loading && !pageHeader) {
+    return (
+      <div className="flex items-center justify-center py-4">
+        <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  return (
+    <div className={pageHeader ? "flex h-full min-h-0 flex-col gap-2" : "space-y-2"}>
+      {ToastComponent}
+      <Dialog open={!!previewingTrack} onOpenChange={open => { if (!open) setPreviewingTrack(null); }}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>{previewingTrack?.title || 'Audio preview'}</DialogTitle></DialogHeader>
+          {previewingTrack && <audio key={`${previewingTrack.id}:${previewingTrack.fileUrl}`} controls preload="metadata" src={previewingTrack.fileUrl} className="w-full" onError={() => setPreviewError(true)} aria-label="Track playback" />}
+          {previewError && <p role="alert" className="text-sm text-red-500">This file could not be played. Check file access and whether your browser supports its audio encoding.</p>}
+        </DialogContent>
+      </Dialog>
+
+      <fieldset className="min-w-0 shrink-0" disabled={pageHeader && workspace.busy}>
+      <MusicWorkspaceHeader pageHeader={pageHeader} icon={Music2} title="Tracks" count={pageHeader ? workspace.total : tracks.length} search={pageHeader ? <MusicRecordsSearch workspace={workspace} /> : undefined}>
+        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+          <DialogTrigger asChild>
+            <Button size="sm" className="h-7 px-2 text-xs">
+              <Plus className="w-3 h-3 mr-1" />
+              Add Track
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Create New Track</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 pt-4">
+              <div>
+                <Label htmlFor="title">Title *</Label>
+                <Input
+                  id="title"
+                  placeholder="Track title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  disabled={isSubmitting || uploadBusy}
+                />
+              </div>
+              <div>
+                <Label htmlFor="albumId">Album *</Label>
+                <Select
+                  value={formData.albumId || 'none'}
+                  onValueChange={(value) => setFormData({ ...formData, albumId: value === 'none' ? '' : value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select album" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    {albums.map((album) => (
+                      <SelectItem key={album.id} value={String(album.id)}>
+                        {album.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="duration">Duration (seconds)</Label>
+                  <Input
+                    id="duration"
+                    type="number"
+                    placeholder="180"
+                    value={formData.duration}
+                    onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) || 0 })}
+                    disabled={isSubmitting || uploadBusy}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="trackNumber">Track #</Label>
+                  <Input
+                    id="trackNumber"
+                    type="number"
+                    placeholder="1"
+                    value={formData.trackNumber}
+                    onChange={(e) => setFormData({ ...formData, trackNumber: parseInt(e.target.value) || 1 })}
+                    disabled={isSubmitting || uploadBusy}
+                  />
+                </div>
+              </div>
+              <div>
+                <S3Upload onBusyChange={setUploadBusy} kind="audio" disabled={isSubmitting || uploadBusy} onUploaded={file => { setUploaded(file); setFormData(current => ({ ...current, fileUrl: file.fileUrl, title: current.title || file.fileName.replace(/\.[^.]+$/, ''), duration: 0 })); }} />
+                <Label htmlFor="fileUrl">Audio URL *</Label>
+                <Input
+                  id="fileUrl"
+                  placeholder="https://example.com/track.mp3"
+                  value={formData.fileUrl}
+                  onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
+                  disabled={isSubmitting || uploadBusy}
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  S3 URL or any publicly accessible audio file URL
+                </p>
+              </div>
+              <div>
+                <Label htmlFor="status">Status</Label>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value) => setFormData({ ...formData, status: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                    <SelectItem value="processing">Processing</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="lyrics">Lyrics</Label>
+                <Textarea
+                  id="lyrics"
+                  placeholder="Track lyrics..."
+                  value={formData.lyrics}
+                  onChange={(e) => setFormData({ ...formData, lyrics: e.target.value })}
+                  rows={4}
+                  disabled={isSubmitting || uploadBusy}
+                />
+              </div>
+              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting || uploadBusy}>
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Creating...
+                  </>
+                ) : (
+                  'Create Track'
+                )}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </MusicWorkspaceHeader>
+      </fieldset>
+
+      {pageHeader ? <MusicRecordsTable label="Tracks" workspace={workspace} columns={[{ field: 'title', label: 'Title', render: row => <span className="inline-flex items-center gap-2"><Music2 className="h-4 w-4 shrink-0 text-blue-500" />{String(row.title)}</span> }, { field: 'id', label: 'ID' }, { field: 'albumId', label: 'Album' }, { field: 'duration', label: 'Duration', render: row => formatDuration(row.duration as number | null) }, { field: 'fileType', label: 'Type' }, { field: 'status', label: 'Status', render: row => <MusicStatus value={row.status} /> }]} actions={row => renderActions(row as unknown as (typeof tracks)[number])} /> : tracks.length === 0 ? (
+        <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
+          <Music2 className="w-8 h-8 mx-auto mb-2 opacity-50" />
+          <p>No tracks yet</p>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="mt-2 h-7 px-2 text-xs"
+            onClick={() => setShowCreateDialog(true)}
+          >
+            <Plus className="w-3 h-3 mr-1" />
+            Create your first track
+          </Button>
+        </div>
+      ) : (
+        <div className="border rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent">
+                <TableHead className="w-8 text-xs py-1">#</TableHead>
+                <TableHead className="text-xs py-1">Title</TableHead>
+                <TableHead className="hidden sm:table-cell text-xs py-1">Duration</TableHead>
+                <TableHead className="hidden md:table-cell text-xs py-1">Status</TableHead>
+                <TableHead className="text-center text-xs py-1">Plays</TableHead>
+                <TableHead className="text-right text-xs py-1">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {tracks.map((track) => (
+                <TableRow key={track.id} className="hover:bg-muted/50">
+                  <TableCell className="text-center text-muted-foreground py-1 text-sm">
+                    {track.trackNumber || '—'}
+                  </TableCell>
+                  <TableCell className="py-1 text-sm font-medium">
+                    {track.title}
+                    {track.albumId && (
+                      <Badge variant="outline" className="ml-2 text-[10px]">
+                        Album Track
+                      </Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell py-1 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {formatDuration(track.duration)}
+                    </div>
+                  </TableCell>
+                  <TableCell className="hidden md:table-cell py-1">
+                    <Badge variant={track.status === 'active' ? 'default' : 'secondary'} className="text-[10px]">
+                      {track.status || 'Unknown'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center text-muted-foreground py-1 text-sm">
+                    {track.playCount || 0}
+                  </TableCell>
+                  <TableCell className="py-1 text-right">
+                    {renderActions(track)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
+
+      <Dialog open={!!editingTrack} onOpenChange={(open) => !open && setEditingTrack(null)}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Track</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 pt-4">
+            <div>
+              <Label htmlFor="edit-title">Title *</Label>
+              <Input
+                id="edit-title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                disabled={isSubmitting || uploadBusy}
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-albumId">Album</Label>
+              <Select
+                value={formData.albumId || 'none'}
+                onValueChange={(value) => setFormData({ ...formData, albumId: value === 'none' ? '' : value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select album" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {albums.map((album) => (
+                    <SelectItem key={album.id} value={String(album.id)}>
+                      {album.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="edit-duration">Duration (seconds)</Label>
+                <Input
+                  id="edit-duration"
+                  type="number"
+                  value={formData.duration}
+                  onChange={(e) => setFormData({ ...formData, duration: parseInt(e.target.value) || 0 })}
+                  disabled={isSubmitting || uploadBusy}
+                />
+              </div>
+              <div>
+                <Label htmlFor="edit-trackNumber">Track #</Label>
+                <Input
+                  id="edit-trackNumber"
+                  type="number"
+                  value={formData.trackNumber}
+                  onChange={(e) => setFormData({ ...formData, trackNumber: parseInt(e.target.value) || 1 })}
+                  disabled={isSubmitting || uploadBusy}
+                />
+              </div>
+            </div>
+            <div>
+              <S3Upload onBusyChange={setUploadBusy} kind="audio" disabled={isSubmitting || uploadBusy} onUploaded={file => { setUploaded(file); setFormData(current => ({ ...current, fileUrl: file.fileUrl, title: current.title || file.fileName.replace(/\.[^.]+$/, ''), duration: 0 })); }} />
+                <Label htmlFor="edit-fileUrl">Audio URL *</Label>
+              <Input
+                id="edit-fileUrl"
+                value={formData.fileUrl}
+                onChange={(e) => setFormData({ ...formData, fileUrl: e.target.value })}
+                disabled={isSubmitting || uploadBusy}
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-status">Status</Label>
+              <Select
+                value={formData.status}
+                onValueChange={(value) => setFormData({ ...formData, status: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="processing">Processing</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label htmlFor="edit-lyrics">Lyrics</Label>
+              <Textarea
+                id="edit-lyrics"
+                value={formData.lyrics}
+                onChange={(e) => setFormData({ ...formData, lyrics: e.target.value })}
+                rows={4}
+                disabled={isSubmitting || uploadBusy}
+              />
+            </div>
+            <Button onClick={handleUpdate} className="w-full" disabled={isSubmitting || uploadBusy}>
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Save Changes'
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+}

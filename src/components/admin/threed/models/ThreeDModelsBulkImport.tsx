@@ -1,0 +1,662 @@
+'use client';
+
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { CircleHelp, ExternalLink, Files, Loader2, Trash2, Upload } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { inspectThreeDModelPrimary } from '@/libraries/services/threed/models/model-companion-core';
+import { inspectObjGeometry } from '@/libraries/services/threed/models/model-obj-core';
+import { inspectThreeDGltfBundle } from '@/libraries/services/threed/models/model-gltf-bundle-core';
+import type { ThreeDModelCategoryOption } from './ThreeDModelCategoriesManager';
+import {
+  createBulkDefaults, createBulkDraft, bulkModelTitle, defaultDestination, MAX_BULK_MODELS,
+  prepareBulkModel, requirementKey, summarizeBulkGltfResources, validateBulkPrimary, validateBulkPreview, validateBulkCompanion, bulkCompanionType,
+  type BulkDefaults, type BulkDraft, type BulkSource, type BulkExistingTexture, type BulkPreparedModel,
+} from './model-bulk-preparation-core';
+import { matchingSavedBulkTexture, readSavedBulkTexture, type SavedBulkTexture } from './model-bulk-saved-texture';
+import { runBulkModel, type BulkImportResult } from './model-bulk-import-runner';
+import { BULK_SCALE_PRESETS, createBulkPreferencesStorageKey, readBulkPreferences, serializeBulkPreferences } from './model-bulk-preferences-core';
+import { createBulkModelPreviewSnapshot, openBulkModelPreview, type BulkModelPreviewSnapshot } from './model-bulk-preview-window';
+
+const InlineModelPreview = lazy(() => import('./ThreeDModelImportPreview').then((module) => ({ default: module.ThreeDModelImportPreview })));
+
+const COMPANION_ACCEPT = '.mtl,.bin,.png,.jpg,.jpeg,.webp,.tga,.bmp';
+const FLAGS = [
+  ['isLibraryItem', 'Library Item'], ['isPublic', 'Public'], ['usedByPlants', 'Used by Plants'],
+  ['usedByCharacters', 'Used by Characters'], ['isActive', 'Active after import'],
+] as const;
+const selectClass = 'h-8 w-full rounded border bg-background px-2 text-xs';
+const sizeLabel = (bytes: number) => bytes < 1024 * 1024
+  ? `${(bytes / 1024).toFixed(1)} KiB` : `${(bytes / (1024 * 1024)).toFixed(2)} MiB`;
+const possibleRepeat = (a: File, b: File) => a.name === b.name && a.size === b.size && a.lastModified === b.lastModified;
+
+interface BulkResultView extends BulkImportResult {
+  submitted: {
+    draft: BulkDraft;
+    plan: BulkPreparedModel;
+    defaults: BulkDefaults;
+    pool: BulkSource[];
+    categories: ThreeDModelCategoryOption[];
+    textures: BulkExistingTexture[];
+  };
+}
+
+export function ThreeDModelsBulkImport({ categories, onComplete }: {
+  categories: ThreeDModelCategoryOption[];
+  onComplete: (summary: { created: number; failed: number }) => void | Promise<void>;
+}) {
+  const { data: session } = useSession();
+  const preferenceKey = createBulkPreferencesStorageKey(session?.user?.id);
+  const [preferencesLoaded, setPreferencesLoaded] = useState<string | null>(null);
+  const [preferencesSaved, setPreferencesSaved] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [drafts, setDrafts] = useState<BulkDraft[]>([]);
+  const draftsRef = useRef<BulkDraft[]>([]);
+  const [pool, setPool] = useState<BulkSource[]>([]);
+  const [defaults, setDefaults] = useState(createBulkDefaults);
+  const [titlePrefix, setTitlePrefix] = useState('');
+  const [titleCase, setTitleCase] = useState(false);
+  const [existingTextures, setExistingTextures] = useState<SavedBulkTexture[]>([]);
+  const [savedTextureFiles, setSavedTextureFiles] = useState<{ key: string; sources: Record<number, BulkSource>; errors: Record<number, string> }>({ key: '', sources: {}, errors: {} });
+  const [texturesReady, setTexturesReady] = useState(false);
+  const [texturesLoading, setTexturesLoading] = useState(false);
+  const [textureError, setTextureError] = useState('');
+  const [textureRefresh, setTextureRefresh] = useState(0);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [results, setResults] = useState<Record<string, BulkResultView>>({});
+  const [progress, setProgress] = useState<Record<string, string>>({});
+  const [notice, setNotice] = useState('');
+  const [importing, setImporting] = useState(false);
+  const busyRef = useRef(false);
+  const [checkingPreview, setCheckingPreview] = useState(false);
+  const previewCheckRef = useRef(0);
+  const mountedRef = useRef(true);
+  const scansRef = useRef<Promise<void>>(Promise.resolve());
+  const primaryRef = useRef<HTMLInputElement>(null);
+  const textureRef = useRef<HTMLInputElement>(null);
+  const previewRef = useRef<HTMLInputElement>(null);
+  const [inlinePreview, setInlinePreview] = useState<{ draftId: string; snapshot: BulkModelPreviewSnapshot; revision: number } | null>(null);
+  const previewRevisionRef = useRef(0);
+  const previewWindowCleanupRef = useRef<(() => void) | null>(null);
+  const activeCategories = categories.filter((category) => category.isActive);
+  const activeTextures = existingTextures.filter((texture) => texture.isActive);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; previewCheckRef.current += 1; previewWindowCleanupRef.current?.(); };
+  }, []);
+  useEffect(() => {
+    if (!preferenceKey) return;
+    let restored: BulkDefaults | null = null;
+    try { restored = readBulkPreferences(window.localStorage.getItem(preferenceKey)); } catch { /* Browser storage is optional. */ }
+    setDefaults(restored ?? createBulkDefaults());
+    setPreferencesLoaded(preferenceKey);
+  }, [preferenceKey]);
+  useEffect(() => {
+    if (!preferenceKey || preferencesLoaded !== preferenceKey) return;
+    const serialized = serializeBulkPreferences(defaults);
+    if (!serialized) return;
+    try { window.localStorage.setItem(preferenceKey, serialized); setPreferencesSaved(true); }
+    catch { setPreferencesSaved(false); }
+  }, [defaults, preferenceKey, preferencesLoaded]);
+  useEffect(() => {
+    const protectRun = (event: BeforeUnloadEvent) => { event.preventDefault(); event.returnValue = ''; };
+    if (importing) window.addEventListener('beforeunload', protectRun);
+    return () => window.removeEventListener('beforeunload', protectRun);
+  }, [importing]);
+  useEffect(() => {
+    if (!open) return;
+    let current = true;
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 30_000);
+    setTexturesLoading(true);
+    setTexturesReady(false);
+    setTextureError('');
+    void (async () => {
+      try {
+        const response = await fetch('/api/threed/model-textures', { signal: controller.signal, cache: 'no-store' });
+        const payload = await response.json();
+        if (!response.ok || payload?.success !== true || !Array.isArray(payload.data)) throw new Error('Unable to load');
+        const textures: SavedBulkTexture[] = payload.data.filter((texture: Partial<BulkExistingTexture> | null) =>
+          texture && Number.isSafeInteger(texture.id) && Number(texture.id) > 0
+          && typeof texture.textureName === 'string' && typeof texture.fileName === 'string'
+          && typeof texture.isActive === 'boolean');
+        if (current) { setExistingTextures(textures); setTexturesReady(true); }
+      } catch {
+        if (current) setTextureError('Unable to load existing Textures. Refresh to try again.');
+      } finally {
+        window.clearTimeout(timeout);
+        if (current) setTexturesLoading(false);
+      }
+    })();
+    return () => { current = false; controller.abort(); window.clearTimeout(timeout); };
+  }, [open, textureRefresh]);
+
+  const neededSavedTextures = texturesReady ? [...new Map(drafts.filter((draft) => !results[draft.id]).flatMap((draft) => {
+    const texture = matchingSavedBulkTexture(draft, defaults, pool, existingTextures);
+    return texture ? [[texture.id, texture] as const] : [];
+  })).values()].sort((a, b) => a.id - b.id) : [];
+  const savedTextureKey = JSON.stringify(neededSavedTextures.map(({ id, fileName, filePath }) => ({ id, fileName, filePath })));
+  useEffect(() => {
+    if (!open) return;
+    let current = true;
+    const controller = new AbortController();
+    const sources: Record<number, BulkSource> = {};
+    const errors: Record<number, string> = {};
+    const needed: SavedBulkTexture[] = JSON.parse(savedTextureKey);
+    setSavedTextureFiles({ key: savedTextureKey, sources: {}, errors: {} });
+    void (async () => {
+      let bytes = 0;
+      for (const texture of needed) {
+        if (!current) return;
+        const timeout = window.setTimeout(() => controller.abort(), 30_000);
+        try {
+          const source = await readSavedBulkTexture(texture, controller.signal);
+          bytes += source.file.size;
+          if (bytes > 32 * 1024 * 1024) throw new Error('Saved Texture preview data exceeds 32 MiB for this batch.');
+          sources[texture.id] = source;
+        } catch (error) {
+          errors[texture.id] = error instanceof Error ? error.message : 'Saved Texture could not be read.';
+        } finally { window.clearTimeout(timeout); }
+      }
+      if (current) setSavedTextureFiles({ key: savedTextureKey, sources, errors });
+    })();
+    return () => { current = false; controller.abort(); };
+  }, [open, savedTextureKey, textureRefresh]);
+
+  function changeDrafts(update: (current: BulkDraft[]) => BulkDraft[]) {
+    if (!mountedRef.current) return;
+    const next = update(draftsRef.current);
+    draftsRef.current = next;
+    setDrafts(next);
+    setResults((current) => {
+      const removed = Object.keys(current).filter((id) => !next.some((draft) => draft.id === id));
+      if (!removed.length) return current;
+      const remaining = { ...current };
+      for (const id of removed) delete remaining[id];
+      return remaining;
+    });
+  }
+  function updateDraft(id: string, update: Partial<BulkDraft>) {
+    if (busyRef.current) return;
+    changeDrafts((current) => current.map((draft) => draft.id === id ? { ...draft, ...update } : draft));
+  }
+  const prepared = useMemo(() => new Map(drafts.map((draft) => {
+    const savedTexture = texturesReady ? matchingSavedBulkTexture(draft, defaults, pool, existingTextures) : undefined;
+    const savedSource = savedTexture && savedTextureFiles.key === savedTextureKey ? savedTextureFiles.sources[savedTexture.id] : undefined;
+    const plan = prepareBulkModel({ ...draft, modelName: bulkModelTitle(draft.modelName, titlePrefix, titleCase) }, defaults, savedSource ? [...pool, savedSource] : pool, texturesReady ? existingTextures : undefined);
+    if (savedTexture && !savedSource) {
+      plan.ready = false;
+      plan.issues.push(savedTextureFiles.key === savedTextureKey && savedTextureFiles.errors[savedTexture.id]
+        ? `${savedTexture.fileName}: ${savedTextureFiles.errors[savedTexture.id]} Refresh existing Textures to retry, or select a local file.`
+        : `Loading matching saved Texture: ${savedTexture.fileName}…`);
+    }
+    if (plan.settings.categoryIds.some((id) => !categories.some((category) => category.id === id && category.isActive))) {
+      plan.ready = false;
+      plan.issues.push('A selected category is unavailable. Remove it or choose an active category.');
+    }
+    return [draft.id, plan];
+  })), [drafts, defaults, titlePrefix, titleCase, pool, texturesReady, existingTextures, categories, savedTextureFiles, savedTextureKey]);
+  const eligible = drafts.filter((draft) => !results[draft.id] && prepared.get(draft.id)?.ready);
+  const selectedDraft = drafts.find((draft) => draft.id === selectedId) ?? drafts[0];
+  const result = selectedDraft && results[selectedDraft.id];
+  const selected = result?.submitted.draft ?? selectedDraft;
+  const selectedPlan = result?.submitted.plan ?? (selected && prepared.get(selected.id));
+  const selectedDefaults = result?.submitted.defaults ?? defaults;
+  const selectedPool = result?.submitted.pool ?? [...new Map([...pool, ...(selectedPlan?.attachments.map((attachment) => attachment.source) ?? [])].map((source) => [source.id, source])).values()];
+  const selectedCategories = result?.submitted.categories ?? activeCategories;
+  const selectedTextures = result?.submitted.textures ?? activeTextures;
+  const locked = importing || !!result;
+
+  useEffect(() => { setInlinePreview(null); }, [selected?.id, open]);
+
+  function previewSelectedModel(separateWindow = false) {
+    if (!selected || !selectedPlan || selected.inspecting || selected.inspectionError) return;
+    try {
+      const snapshot = createBulkModelPreviewSnapshot(selected, selectedPlan);
+      if (separateWindow) {
+        previewWindowCleanupRef.current?.();
+        previewWindowCleanupRef.current = openBulkModelPreview(snapshot, (message) => { if (mountedRef.current) setNotice(message); });
+      } else {
+        setInlinePreview({ draftId: selected.id, snapshot, revision: ++previewRevisionRef.current });
+      }
+      setNotice('');
+    } catch (cause) { setNotice(cause instanceof Error ? cause.message : 'The preview could not be opened.'); }
+  }
+
+  function addPrimaries(files: FileList | null) {
+    if (!files || busyRef.current) return;
+    const additions: BulkDraft[] = [];
+    const skipped: string[] = [];
+    const selectionRoot = crypto.randomUUID();
+    for (const file of Array.from(files)) {
+      if (draftsRef.current.some((draft) => draft.source.file === file)) continue;
+      const error = validateBulkPrimary(file);
+      if (error || draftsRef.current.length + additions.length >= MAX_BULK_MODELS) {
+        skipped.push(`${file.name}: ${error ?? '100-Model queue limit reached'}`);
+        continue;
+      }
+      const source: BulkSource = { id: crypto.randomUUID(), file, sourcePath: file.webkitRelativePath || file.name, selectionRoot };
+      additions.push(createBulkDraft(source));
+    }
+    changeDrafts((current) => [...current, ...additions]);
+    if (additions[0]) setSelectedId(additions[0].id);
+    setNotice(skipped.join(' · '));
+    // Serialize reads across every selection, not just files from one chooser event.
+    scansRef.current = scansRef.current.then(async () => {
+      for (const draft of additions) {
+        if (!mountedRef.current || !draftsRef.current.some((entry) => entry.id === draft.id)) continue;
+        try {
+          const bytes = new Uint8Array(await draft.source.file.arrayBuffer());
+          const gltf = /\.(?:glb|gltf)$/i.test(draft.source.file.name) ? inspectThreeDGltfBundle(draft.source.file.name, bytes) : undefined;
+          const requirements = gltf?.requirements ?? (/\.obj$/i.test(draft.source.file.name) ? inspectObjGeometry(new TextDecoder('utf-8', { fatal: true }).decode(bytes), draft.source.file.name).requirements : inspectThreeDModelPrimary(draft.source.file.name, bytes));
+          if (requirements.length > 500) throw new Error('More than 500 file references detected. Review this file with Add Model.');
+          const gltfResources = gltf && summarizeBulkGltfResources(gltf);
+          changeDrafts((current) => current.map((entry) => entry.id === draft.id ? { ...entry, inspecting: false, requirements, gltfResources } : entry));
+        } catch (error) {
+          changeDrafts((current) => current.map((entry) => entry.id === draft.id ? {
+            ...entry, inspecting: false, inspectionError: error instanceof Error ? error.message.slice(0, 400) : 'Unable to inspect this Model within the bulk limits.',
+          } : entry));
+        }
+      }
+    });
+  }
+
+  function addTextures(files: FileList | null) {
+    if (!files || busyRef.current) return;
+    const selectionRoot = crypto.randomUUID();
+    const skipped: string[] = [];
+    const additions: BulkSource[] = [];
+    let materialBytes = pool.filter((source) => /\.mtl$/i.test(source.file.name)).reduce((total, source) => total + source.file.size, 0);
+    for (const file of Array.from(files)) {
+      if (pool.some((entry) => entry.file === file)) continue;
+      const material = /\.mtl$/i.test(file.name);
+      if (material) materialBytes += file.size;
+      const error = validateBulkCompanion(file) ?? (material && materialBytes > 32 * 1024 * 1024 ? 'Selected material libraries exceed 32 MiB.' : null);
+      if (error || pool.length + additions.length >= 500) {
+        skipped.push(`${file.name}: ${error ?? '500-file companion selection limit reached'}`);
+        continue;
+      }
+      additions.push({ id: crypto.randomUUID(), file, sourcePath: file.webkitRelativePath || file.name, selectionRoot });
+    }
+    setPool((current) => [...current, ...additions]);
+    scansRef.current = scansRef.current.then(async () => {
+      for (const source of additions.filter((entry) => /\.mtl$/i.test(entry.file.name))) {
+        let patch: Partial<BulkSource>;
+        try { patch = { materialText: new TextDecoder('utf-8', { fatal: true }).decode(await source.file.arrayBuffer()) }; }
+        catch { patch = { materialError: `Unable to read material library: ${source.file.name}.` }; }
+        if (mountedRef.current) setPool((current) => current.map((entry) => entry.id === source.id ? { ...entry, ...patch } : entry));
+      }
+    });
+    setNotice(skipped.join(' · '));
+  }
+
+  async function choosePreview(file: File | undefined, id: string) {
+    if (busyRef.current || !file) return;
+    const check = ++previewCheckRef.current;
+    setCheckingPreview(true);
+    try {
+      const error = await validateBulkPreview(file);
+      if (!mountedRef.current || check !== previewCheckRef.current) return;
+      if (error) setNotice(error);
+      else { updateDraft(id, { previewFile: file }); setNotice(''); }
+    } catch {
+      if (mountedRef.current && check === previewCheckRef.current) setNotice('Unable to read the preview image.');
+    } finally {
+      if (mountedRef.current && check === previewCheckRef.current) setCheckingPreview(false);
+    }
+  }
+
+  async function importReady(retryId?: string) {
+    const previous = retryId ? results[retryId] : undefined;
+    if (retryId && (!previous?.canRetry || previous.modelId)) return;
+    if (busyRef.current || checkingPreview || (!previous && !eligible.length)) return;
+    busyRef.current = true;
+    setImporting(true);
+    setNotice('');
+    // Freeze reviewed settings/associations. Rows still scanning are excluded from this run.
+    const run = previous ? [{
+      draft: previous.submitted.draft,
+      plan: previous.submitted.plan,
+      submitted: previous.submitted,
+    }] : eligible.map((draft) => {
+      const plan = prepared.get(draft.id)!;
+      const submitted: BulkResultView['submitted'] = {
+        draft: { ...draft, modelName: bulkModelTitle(draft.modelName, titlePrefix, titleCase), overrides: { ...plan.settings, categoryIds: [...plan.settings.categoryIds] } },
+        plan,
+        defaults: { ...defaults, categoryIds: [...defaults.categoryIds] },
+        pool: [...new Map([...pool, ...plan.attachments.map((attachment) => attachment.source)].map((source) => [source.id, source])).values()], categories: activeCategories.map((category) => ({ ...category })),
+        textures: activeTextures.map((texture) => ({ ...texture })),
+      };
+      return { draft: submitted.draft, plan, submitted };
+    });
+    let created = 0;
+    let failed = 0;
+    try {
+      for (const { draft, plan, submitted } of run) {
+        const outcome = await runBulkModel({
+          file: draft.source.file, modelName: draft.modelName, settings: plan.settings,
+          rotationY: draft.rotationY, offsetX: draft.offsetX, offsetY: draft.offsetY, offsetZ: draft.offsetZ,
+          configureLater: draft.configureLater, previewFile: draft.previewFile,
+          attachments: plan.attachments.map((attachment) => ({ file: attachment.source.file, relativePath: attachment.relativePath, fileType: attachment.fileType, sharedTexture: attachment.source.sharedTexture })),
+        }, (label) => { if (mountedRef.current) setProgress((current) => ({ ...current, [draft.id]: label })); });
+        if (outcome.modelId) created += 1;
+        if (outcome.status !== 'imported') failed += 1;
+        if (mountedRef.current) {
+          setResults((current) => ({ ...current, [draft.id]: { ...outcome, submitted } }));
+          setProgress((current) => { const next = { ...current }; delete next[draft.id]; return next; });
+        }
+      }
+      await onComplete({ created, failed });
+    } catch {
+      if (mountedRef.current) setNotice('The batch stopped unexpectedly. Check Models before starting another import.');
+    } finally {
+      busyRef.current = false;
+      if (mountedRef.current) setImporting(false);
+    }
+  }
+
+  function clearAllSelectedFiles() {
+    if (busyRef.current) return;
+    ++previewCheckRef.current;
+    setCheckingPreview(false);
+    previewWindowCleanupRef.current?.();
+    previewWindowCleanupRef.current = null;
+    setInlinePreview(null);
+    changeDrafts(() => []);
+    setPool([]);
+    setSelectedId(null);
+    setTitlePrefix('');
+    setTitleCase(false);
+    setResults({});
+    setProgress({});
+    setSavedTextureFiles({ key: '', sources: {}, errors: {} });
+    for (const ref of [primaryRef, textureRef, previewRef]) {
+      if (ref.current) ref.current.value = '';
+    }
+    setNotice('All selected files and local results cleared. Saved Models are unchanged.');
+  }
+
+  function resetOverride(key: keyof BulkDefaults) {
+    if (!selected) return;
+    const overrides = { ...selected.overrides };
+    delete overrides[key];
+    updateDraft(selected.id, { overrides });
+  }
+  function override<K extends keyof BulkDefaults>(key: K, value: BulkDefaults[K]) {
+    if (selected) updateDraft(selected.id, { overrides: { ...selected.overrides, [key]: value } });
+  }
+  function status(draft: BulkDraft) {
+    if (progress[draft.id]) return progress[draft.id];
+    const outcome = results[draft.id];
+    if (outcome) return outcome.status === 'imported' ? 'Imported' : outcome.status === 'unknown' ? 'Check Import Result' : 'Import failed';
+    if (draft.inspecting) return 'Scanning';
+    return prepared.get(draft.id)?.ready ? draft.configureLater ? 'Ready — configure later' : 'Ready' : 'Needs Attention';
+  }
+
+  function statusColor(draft: BulkDraft) {
+    if (progress[draft.id]) return '';
+    const outcome = results[draft.id];
+    if (outcome?.status === 'imported') return 'text-green-700 dark:text-green-400';
+    if (outcome?.status === 'unknown') return 'text-yellow-700 dark:text-yellow-300';
+    if (!outcome && !draft.inspecting && !prepared.get(draft.id)?.ready) return 'text-orange-700 dark:text-orange-400';
+    return outcome?.status === 'failed' ? 'text-red-700 dark:text-red-400' : '';
+  }
+
+  return <Dialog open={open} onOpenChange={(value) => { if (!busyRef.current) setOpen(value); }}>
+    <DialogTrigger asChild><Button type="button" variant="outline" size="sm" className="h-7 px-2 text-xs"><Files className="mr-1 h-3 w-3" />Bulk Import Models</Button></DialogTrigger>
+    <DialogContent className="flex h-[92dvh] max-h-[92dvh] flex-col gap-0 overflow-hidden p-0 sm:max-w-[min(96vw,1150px)]">
+      <DialogHeader className="shrink-0 border-b px-4 py-4 pr-12 sm:pl-6">
+        <div className="flex items-center gap-2">
+          <DialogTitle>Bulk Import Models</DialogTitle>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button type="button" variant="ghost" size="icon-sm" aria-label="Bulk import help"><CircleHelp className="h-4 w-4" /></Button>
+            </DialogTrigger>
+            <DialogContent className="max-h-[80dvh] overflow-y-auto sm:max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Bulk import help</DialogTitle>
+                <DialogDescription>File limits, naming, batch settings and previews.</DialogDescription>
+              </DialogHeader>
+              <div className="space-y-3 text-sm text-muted-foreground">
+                <p><strong className="text-foreground">Files:</strong> Up to 100 Models, with a limit of 4 MiB per file for bulk uploads.</p>
+                <p><strong className="text-foreground">Names:</strong> Prefixes apply to unsubmitted Models, separated from the name by a space. Title Case capitalizes each word while preserving the prefix and existing capitalization. Example: FarmBot: Belt Clip.</p>
+                <p><strong className="text-foreground">Scale:</strong> 100% = scale 1. Choose a shortcut or enter a custom scale, then preview the resulting size.</p>
+                <p><strong className="text-foreground">Batch settings:</strong> Changes apply to inherited values. Models stay inactive unless activation is requested and their saved dependency audit succeeds.</p>
+                <p>{preferencesSaved ? 'Your batch defaults are remembered in this browser.' : 'Default preferences apply to this batch.'} Prefix and Title Case apply only to the current batch.</p>
+                <p><strong className="text-foreground">Textures:</strong> An existing Texture reuses one saved file for Base Color. Confirm any differently named requirements in the Model details.</p>
+                <p><strong className="text-foreground">Preview:</strong> Preview below Queued Models or open a separate window. No upload is needed.</p>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+        <DialogDescription>Choose Models, resolve missing files, then import. Uploads start only when you click Import.</DialogDescription>
+      </DialogHeader>
+      <div data-slot="bulk-import-body" role="region" aria-label="Bulk import configuration" tabIndex={0} className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6">
+      <input ref={primaryRef} aria-label="Select Model files" type="file" multiple accept=".fbx,.glb,.gltf,.obj" className="hidden" disabled={importing}
+        onChange={(event) => { addPrimaries(event.target.files); event.target.value = ''; }} />
+      <input ref={textureRef} aria-label="Select shared texture and binary files" type="file" multiple accept={COMPANION_ACCEPT} className="hidden" disabled={importing}
+        onChange={(event) => { addTextures(event.target.files); event.target.value = ''; }} />
+      <input ref={previewRef} aria-label="Select preview image" type="file" accept=".png,.jpg,.jpeg,.webp" className="hidden" disabled={locked || checkingPreview}
+        onChange={(event) => { if (selected) void choosePreview(event.target.files?.[0], selected.id); event.target.value = ''; }} />
+      <div className="flex flex-wrap items-center gap-2">
+        <Button type="button" size="sm" className="bg-green-700 text-white hover:bg-green-800 focus-visible:ring-green-500/50 disabled:bg-muted disabled:text-muted-foreground" disabled={importing || drafts.length >= MAX_BULK_MODELS} onClick={() => primaryRef.current?.click()}><Upload className="mr-1 h-3 w-3" />1. Choose Model files</Button>
+        <Badge variant="secondary">{drafts.length}/100 Models</Badge>
+      </div>
+      {notice && <p role="alert" className="break-words rounded border border-amber-500/40 p-2 text-xs">{notice}</p>}
+      <details open aria-label="Batch defaults" className="relative rounded border p-3">
+        <summary className="min-h-7 cursor-pointer pr-32 text-sm font-medium">2. Batch settings</summary>
+        <Button type="button" variant="outline" size="sm" className="absolute right-3 top-2 h-7 text-xs" disabled={importing} onClick={() => { setDefaults(createBulkDefaults()); setTitlePrefix(''); setTitleCase(false); }}>Reset defaults</Button>
+        <fieldset disabled={importing} className="mt-3 min-w-0 space-y-3">
+          <label className="block max-w-md text-xs">Add Title Prefix:
+            <Input aria-label="Add Title Prefix" placeholder="Optional, e.g. FarmBot:" value={titlePrefix} maxLength={255} onChange={(event) => setTitlePrefix(event.target.value)} />
+          </label>
+          <label className="flex items-center gap-1.5 text-xs">
+            <input type="checkbox" checked={titleCase} onChange={(event) => setTitleCase(event.target.checked)} />
+            Convert to Title Case
+          </label>
+          <div className="flex flex-wrap items-end gap-2">
+            <label className="block max-w-40 text-xs">Scale<Input aria-label="Batch scale" type="number" min="0.01" step="0.01" value={defaults.scale} onChange={(event) => setDefaults((current) => ({ ...current, scale: event.target.value }))} /></label>
+            {BULK_SCALE_PRESETS.map((preset) => <Button key={preset.value} type="button" variant="outline" size="sm" aria-label={`Set batch scale to ${preset.label}`} onClick={() => setDefaults((current) => ({ ...current, scale: preset.value }))}>{preset.label}</Button>)}
+          </div>
+          <div className="flex flex-wrap gap-3">{FLAGS.map(([key, label]) => <label key={key} className="flex items-center gap-1.5 text-xs"><input type="checkbox" checked={defaults[key]} onChange={(event) => setDefaults((current) => ({ ...current, [key]: event.target.checked }))} />{label}</label>)}</div>
+          <CategoryChoices categories={activeCategories} value={defaults.categoryIds} onChange={(categoryIds) => setDefaults((current) => ({ ...current, categoryIds }))} />
+        </fieldset>
+      </details>
+      <section aria-label="Shared Texture" className="space-y-2 rounded border p-3">
+        <fieldset disabled={importing} className="space-y-2">
+          <label className="block text-xs">3. Assign Existing Texture File
+            <select aria-label="Batch existing Texture" className={selectClass} value={defaults.existingTextureId ?? ''}
+              onChange={(event) => setDefaults((current) => ({ ...current, existingTextureId: event.target.value ? Number(event.target.value) : null }))}>
+              <option value="">None — keep original materials and textures</option>
+              <ExistingTextureOptions textures={activeTextures} selectedId={defaults.existingTextureId} />
+            </select>
+          </label>
+        </fieldset>
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+          <span className="text-muted-foreground" role="status">{texturesLoading ? 'Loading existing Textures…' : textureError || ''}</span>
+          <Button type="button" variant="ghost" size="sm" className="h-7 text-xs" aria-label="Refresh existing Textures" disabled={importing || texturesLoading} onClick={() => setTextureRefresh((value) => value + 1)}>Refresh Textures</Button>
+        </div>
+      </section>
+      <details aria-label="Shared material, texture and binary files" className="rounded border p-3">
+        <summary className="cursor-pointer text-sm font-medium">Supporting files · add only if needed ({pool.length}/500)</summary>
+        <p className="my-2 text-xs text-muted-foreground">Add local files required by your Models: material libraries (.mtl), textures or binary buffers (.bin).</p>
+        <Button type="button" variant="outline" size="sm" disabled={importing} onClick={() => textureRef.current?.click()}>Add MTL / textures / .bin files</Button>
+        <div className="space-y-1">{pool.map((source, index) => <div key={source.id} className="flex items-center justify-between gap-2 text-xs">
+          <span className="break-all">#{index + 1} {source.sourcePath} · {sizeLabel(source.file.size)}</span>
+          <Button type="button" variant="ghost" size="sm" disabled={importing} aria-label={`Remove companion ${index + 1}: ${source.file.name}`} onClick={() => setPool((current) => current.filter((entry) => entry.id !== source.id))}><Trash2 className="h-3 w-3" /></Button>
+        </div>)}</div>
+      </details>
+      {drafts.length > 0 && <div className="grid min-w-0 items-stretch gap-4 md:grid-cols-[minmax(220px,0.8fr)_minmax(0,1.5fr)]">
+        <div className="flex min-h-0 min-w-0 flex-col gap-4 md:[contain:size]">
+        <section className="flex min-h-0 min-w-0 flex-1 flex-col" aria-label="Queued Models">
+        <h3 className="mb-2 shrink-0 text-sm font-medium">Queued Models</h3>
+        <div role="region" aria-label="Queued Model files" tabIndex={0} className="min-h-0 max-h-80 flex-1 space-y-1 overflow-y-auto overscroll-contain pr-1 md:max-h-none">{drafts.map((draft, index) => <div key={draft.id} className={`flex items-center gap-1 rounded border ${selected?.id === draft.id ? 'border-primary bg-muted' : ''}`}>
+          <button type="button" className="min-w-0 flex-1 p-2 text-left" aria-pressed={selected?.id === draft.id} onClick={() => setSelectedId(draft.id)}>
+            <span className="block truncate text-xs font-medium">{index + 1}. {results[draft.id]?.submitted.draft.modelName || bulkModelTitle(draft.modelName, titlePrefix, titleCase) || draft.source.file.name}</span>
+            <span className="block truncate text-[11px] text-muted-foreground">{draft.source.sourcePath} · {sizeLabel(draft.source.file.size)}</span>
+            <span className={`block text-[11px] ${statusColor(draft)}`}>{status(draft)}</span>
+            {drafts.some((other) => other.id !== draft.id && possibleRepeat(other.source.file, draft.source.file)) && <span className="block text-[11px] text-amber-800 dark:text-amber-300">Possible duplicate — review both files</span>}
+          </button>
+          {!results[draft.id] && <Button type="button" variant="ghost" size="sm" disabled={importing} aria-label={`Remove Model ${index + 1}`} onClick={() => changeDrafts((current) => current.filter((entry) => entry.id !== draft.id))}><Trash2 className="h-3 w-3" /></Button>}
+        </div>)}</div>
+        </section>
+        {selected && <section aria-label="Model preview" className="min-w-0 shrink-0 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="text-sm font-medium">Model preview</h3>
+            <Button type="button" variant="outline" size="sm" disabled={importing || selected.inspecting || !!selected.inspectionError} onClick={() => previewSelectedModel()}>{inlinePreview?.draftId === selected.id ? 'Refresh preview' : 'Preview Model'}</Button>
+          </div>
+          {open && inlinePreview?.draftId === selected.id
+            ? <Suspense fallback={<p role="status" className="p-3 text-sm">Loading preview…</p>}><InlineModelPreview key={inlinePreview.revision} localSnapshot={inlinePreview.snapshot} onClose={() => setInlinePreview(null)} /></Suspense>
+            : <p className="rounded border p-3 text-xs text-muted-foreground">Choose Preview Model to review {selected.modelName || selected.source.file.name} here with its current files and settings.</p>}
+        </section>}
+        </div>
+        {selected && selectedPlan && <div data-slot="bulk-import-selected-model" className="min-w-0 space-y-3 rounded border p-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <h3 className="min-w-0 break-words text-sm font-medium">{selected.source.file.name}</h3>
+            <Button type="button" variant="outline" size="sm" disabled={importing || selected.inspecting || !!selected.inspectionError} onClick={() => previewSelectedModel(true)}><ExternalLink className="mr-2 h-4 w-4" />Open preview window</Button>
+          </div>
+          {result && <div className="space-y-3" role="status">
+            <p className={`text-sm ${statusColor(selected)}`}><span className="font-medium">{status(selected)}</span> — {result.message}</p>
+            <p className="text-xs text-muted-foreground">Submitted files and settings are shown below.</p>
+            {result.modelId ? <a className="text-sm underline" href={`/admin/threed/model-files?modelId=${result.modelId}`} target="_blank" rel="noreferrer">Review Model files (new tab)</a>
+              : result.status === 'unknown' && !result.canRetry && <a className="text-sm underline" href="/admin/threed/models" target="_blank" rel="noreferrer">Check Models (new tab)</a>}
+            {result.canRetry && !result.modelId && <Button type="button" size="sm" disabled={importing || checkingPreview} onClick={() => void importReady(selected.id)}>Try Again</Button>}
+            {result.canRetry && !result.modelId && <Button type="button" variant="outline" size="sm" disabled={importing} onClick={() => setResults((current) => { const next = { ...current }; delete next[selected.id]; return next; })}>Edit before retry</Button>}
+          </div>}
+            {selected.gltfResources?.textures && <div className="space-y-2 break-words rounded border bg-muted/40 p-3 text-xs" role="region" aria-label="Model texture summary">
+              <h4 className="font-medium">Model textures</h4>
+              {selected.gltfResources.textures.embeddedImageCount > 0 && <p>{selected.gltfResources.textures.embeddedImageCount} embedded texture {selected.gltfResources.textures.embeddedImageCount === 1 ? 'image is' : 'images are'} included in this Model file.</p>}
+              {selected.gltfResources.textures.bufferImageCount > 0 && <p>{selected.gltfResources.textures.bufferImageCount} texture {selected.gltfResources.textures.bufferImageCount === 1 ? 'image is' : 'images are'} stored in required external .bin files.</p>}
+              {selected.gltfResources.textures.externalFileCount > 0 && <p>{selected.gltfResources.textures.externalFileCount} external texture {selected.gltfResources.textures.externalFileCount === 1 ? 'file' : 'files'} referenced.</p>}
+              {selected.gltfResources.textures.embeddedImageCount + selected.gltfResources.textures.bufferImageCount + selected.gltfResources.textures.externalFileCount === 0 && <p>No texture images declared. This Model may use material colors.</p>}
+              <p className="text-muted-foreground">{selected.requirements.length === 0
+                ? 'No additional texture or binary files are needed.'
+                : 'Review the external file requirements below.'}</p>
+              <p className="font-medium">{selectedPlan.settings.existingTextureId == null
+                ? 'Original materials and textures will be kept.'
+                : `${selectedTextures.find((texture) => texture.id === selectedPlan.settings.existingTextureId)?.textureName ?? 'The selected Texture'} will replace Base Color on all material slots.`}</p>
+            </div>}
+            <fieldset disabled={locked || checkingPreview} className="min-w-0 space-y-3">
+              <section data-slot="bulk-import-requirements" aria-label="File requirements" className={`space-y-3 rounded-lg border-2 p-3 ${selectedPlan.issues.length > 0 && !selected.inspecting
+                ? 'border-red-300 bg-red-50 text-red-950 dark:border-red-800 dark:bg-red-950/30 dark:text-red-100'
+                : selectedPlan.unresolved.length > 0
+                  ? 'border-amber-300 bg-amber-50 text-amber-950 dark:border-amber-700 dark:bg-amber-950/30 dark:text-amber-100'
+                  : 'border-sky-300 bg-sky-50 text-sky-950 dark:border-sky-800 dark:bg-sky-950/30 dark:text-sky-100'}`}>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h4 className="text-sm font-semibold">File requirements</h4>
+                  <span className="text-xs font-medium" role="status">{result ? 'Submitted file requirements' : selected.inspecting ? 'Scanning files…'
+                    : selectedPlan.issues.length > 0 ? 'Blocked — review below'
+                    : selectedPlan.unresolved.length > 0 ? selected.configureLater ? 'Ready — missing textures deferred' : 'Missing files'
+                    : 'Ready to import'}</span>
+                </div>
+                {!selected.inspecting && !selected.inspectionError && !selected.requirements.length && <p className="text-xs">{selected.gltfResources ? 'No external files required. Embedded resources stay in the Model file.' : /\.obj$/i.test(selected.source.file.name) ? 'No material library referenced. This OBJ uses vertex colors or default materials.' : 'No named textures detected — review after import. This scan does not verify FBX structure or appearance.'}</p>}
+                {selectedPlan.matches.map((match) => <div key={requirementKey(match.requirement)} className="space-y-1 rounded border border-current/20 bg-background p-2 text-foreground">
+                  <p className="break-all text-xs font-medium">{match.requirement.kind === 'buffer' ? 'Required binary buffer' : match.requirement.kind === 'material' ? 'Required material library' : 'Texture'}: {match.requirement.relativePath}</p>
+                  <select aria-label={`${match.requirement.kind === 'buffer' ? 'Buffer' : match.requirement.kind === 'material' ? 'Material library' : 'Texture'} for ${match.requirement.relativePath}`} className={selectClass} value={selected.choices[requirementKey(match.requirement)]?.sourceId === 'selected-shared-texture' ? 'selected-shared-texture' : selectedPool.some((entry) => entry.id === match.sourceId) ? match.sourceId : ''}
+                    onChange={(event) => updateDraft(selected.id, { choices: { ...selected.choices, [requirementKey(match.requirement)]: { sourceId: event.target.value, relativePath: match.relativePath || defaultDestination(match.requirement.relativePath) } } })}>
+                    <option value="">Choose file / leave unresolved</option>
+                    {match.requirement.kind === 'texture' && /\.fbx$/i.test(selected.source.file.name) && selectedPlan.settings.existingTextureId != null && <option value="selected-shared-texture">Use selected shared Texture for this requirement</option>}
+                    {selectedPool.map((source, index) => ({ source, index })).filter(({ source }) => (match.requirement.kind === 'buffer' ? 'binary' : match.requirement.kind === 'material' ? 'other' : 'texture') === bulkCompanionType(source.file)).map(({ source, index }) => <option key={source.id} value={source.id}>#{index + 1} {source.sourcePath} ({sizeLabel(source.file.size)})</option>)}
+                  </select>
+                  {match.requirement.kind === 'texture' && /\.fbx$/i.test(selected.source.file.name) && selectedPlan.settings.existingTextureId != null && selected.choices[requirementKey(match.requirement)]?.sourceId !== 'selected-shared-texture' && (
+                    <button type="button" className="mt-2 text-xs underline" onClick={() => updateDraft(selected.id, { choices: { ...selected.choices, [requirementKey(match.requirement)]: { sourceId: 'selected-shared-texture', relativePath: match.relativePath || defaultDestination(match.requirement.relativePath) } } })}>
+                      Use selected shared Texture for this requirement
+                    </button>
+                  )}
+                  {selected.choices[requirementKey(match.requirement)]?.sourceId === 'selected-shared-texture' && <p className="text-xs">Using {selectedTextures.find((texture) => texture.id === selectedPlan.settings.existingTextureId)?.fileName ?? 'the selected shared Texture'} as {match.requirement.fileName}. The existing stored file is linked, not copied.</p>}
+                  <Input aria-label={`Destination for ${match.requirement.relativePath}`} value={match.relativePath} onChange={(event) => updateDraft(selected.id, { choices: { ...selected.choices, [requirementKey(match.requirement)]: { sourceId: selected.choices[requirementKey(match.requirement)]?.sourceId ?? match.sourceId, relativePath: event.target.value } } })} />
+                  <p className={`text-[11px] ${match.issue || !match.sourceId ? 'font-medium text-amber-800 dark:text-amber-300' : 'text-muted-foreground'}`}>{match.issue || (match.sourceId.startsWith('saved-texture:') ? 'Matching saved Texture — uses the shared file; no copy is uploaded.' : match.automatic ? 'Suggested match — change if needed' : match.sourceId ? 'Selected explicitly' : 'Missing or ambiguous') }</p>
+                  {selected.choices[requirementKey(match.requirement)] && <button type="button" className="text-[11px] underline" onClick={() => { const choices = { ...selected.choices }; delete choices[requirementKey(match.requirement)]; updateDraft(selected.id, { choices }); }}>Use suggested match</button>}
+                </div>)}
+                <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={selected.configureLater} onChange={(event) => updateDraft(selected.id, { configureLater: event.target.checked })} />Resolve missing texture files later (keep inactive)</label>
+                {selected.requirements.some((entry) => entry.kind !== 'texture') && <p className="text-xs">Required .bin buffers and .mtl material libraries cannot be deferred. Add their referenced texture images separately.</p>}
+                {(selectedPlan.issues.length > 0 || selectedPlan.unresolved.length > 0) && <div className="space-y-1 text-xs" role="status">
+                  {selectedPlan.issues.map((issue, index) => <p key={`issue-${index}`} className="break-words font-medium text-red-800 dark:text-red-300">{issue}</p>)}
+                  {selectedPlan.unresolved.map((issue, index) => <p key={`unresolved-${index}`} className="break-words font-medium text-amber-800 dark:text-amber-300">{issue}{selected.configureLater && !selectedPlan.matches.some((match) => match.requirement.relativePath === issue && match.requirement.kind !== 'texture') ? ' — configure after import' : ''}</p>)}
+                </div>}
+                <details className="space-y-2 border-t border-current/20 pt-3">
+                  <summary className="cursor-pointer text-xs font-medium">Additional attachments ({selected.extras?.length ?? 0})</summary>
+                  {(selected.extras ?? []).map((extra) => <div key={extra.id} className="flex items-center gap-1">
+                    <span className="max-w-28 truncate text-xs">{selectedPool.find((source) => source.id === extra.sourceId)?.file.name ?? 'File removed'}</span>
+                    <Input aria-label="Additional file destination" value={extra.relativePath} onChange={(event) => updateDraft(selected.id, { extras: selected.extras?.map((entry) => entry.id === extra.id ? { ...entry, relativePath: event.target.value } : entry) })} />
+                    <button type="button" className="text-xs underline" onClick={() => updateDraft(selected.id, { extras: selected.extras?.filter((entry) => entry.id !== extra.id) })}>Remove</button>
+                  </div>)}
+                  <select aria-label="Add additional file attachment" className={selectClass} value="" onChange={(event) => { const source = pool.find((entry) => entry.id === event.target.value); if (source) updateDraft(selected.id, { extras: [...(selected.extras ?? []), { id: crypto.randomUUID(), sourceId: source.id, relativePath: defaultDestination(source.file.name) }] }); }}>
+                    <option value="">Attach another selected file…</option>{selectedPool.map((source, index) => <option key={source.id} value={source.id}>#{index + 1} {source.sourcePath}</option>)}
+                  </select>
+                </details>
+              </section>
+              <details key={selected.id} className="space-y-3 border-t pt-3">
+              <summary className="cursor-pointer text-sm font-medium">Model settings <span className="text-xs font-normal text-muted-foreground">· {selected.modelName} · Scale {selectedPlan.settings.scale}</span></summary>
+              <label className="block text-xs">Model name<Input value={selected.modelName} onChange={(event) => updateDraft(selected.id, { modelName: event.target.value })} /></label>
+              {!result && <p className="text-xs text-muted-foreground">Import title: {bulkModelTitle(selected.modelName, titlePrefix, titleCase) || 'Enter a Model name'}</p>}
+              <div className="grid grid-cols-2 gap-2">
+                <label className="text-xs">Scale {selected.overrides.scale === undefined && '(batch)'}<Input type="number" min="0.01" step="0.01" value={selectedPlan.settings.scale} onChange={(event) => override('scale', event.target.value)} /></label>
+                <label className="text-xs">Y rotation (degrees)<Input type="number" step="any" value={selected.rotationY} onChange={(event) => updateDraft(selected.id, { rotationY: event.target.value })} /></label>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                {BULK_SCALE_PRESETS.map((preset) => <Button key={preset.value} type="button" variant="outline" size="sm" aria-label={`Set Model scale to ${preset.label}`} onClick={() => override('scale', preset.value)}>{preset.label}</Button>)}
+                <button type="button" className="text-xs underline" disabled={selected.overrides.scale === undefined} onClick={() => resetOverride('scale')}>Use batch scale</button>
+              </div>
+              <div className="grid grid-cols-3 gap-2">{(['offsetX', 'offsetY', 'offsetZ'] as const).map((key) => <label key={key} className="text-xs">{key.replace('offset', '')} offset<Input type="number" step="any" value={selected[key]} onChange={(event) => updateDraft(selected.id, { [key]: event.target.value })} /></label>)}</div>
+              <div className="grid gap-2 sm:grid-cols-2">{FLAGS.map(([key, label]) => <label key={key} className="text-xs">{label}<select className={selectClass} value={selected.overrides[key] === undefined ? 'inherit' : String(selected.overrides[key])} disabled={key === 'isActive' && selected.configureLater} onChange={(event) => event.target.value === 'inherit' ? resetOverride(key) : override(key, event.target.value === 'true')}>
+                <option value="inherit">Batch ({selectedDefaults[key] ? 'On' : 'Off'})</option><option value="true">On</option><option value="false">Off</option>
+              </select></label>)}</div>
+              <CategoryChoices categories={selectedCategories} value={selectedPlan.settings.categoryIds} onChange={(categoryIds) => override('categoryIds', categoryIds)} />
+              <p className="text-xs text-muted-foreground">{selected.overrides.categoryIds === undefined ? 'Categories inherit batch defaults.' : <button type="button" className="underline" onClick={() => resetOverride('categoryIds')}>Use batch categories</button>}</p>
+              <label className="block text-xs">Assign Existing Texture File
+                <select aria-label="Model existing Texture" className={selectClass} value={selected.overrides.existingTextureId === undefined ? 'inherit' : selected.overrides.existingTextureId ?? ''}
+                  onChange={(event) => event.target.value === 'inherit' ? resetOverride('existingTextureId') : override('existingTextureId', event.target.value ? Number(event.target.value) : null)}>
+                  <option value="inherit">Batch ({selectedDefaults.existingTextureId == null ? 'None — keep originals' : selectedTextures.find((texture) => texture.id === selectedDefaults.existingTextureId)?.textureName ?? 'Unavailable Texture'})</option>
+                  <option value="">None — keep original materials and textures</option>
+                  <ExistingTextureOptions textures={selectedTextures} selectedId={selected.overrides.existingTextureId ?? null} />
+                </select>
+              </label>
+              <p className="text-xs text-muted-foreground">{selectedPlan.settings.existingTextureId == null
+                ? "None keeps this Model's original materials and textures, including any embedded textures."
+                : 'The selected Texture replaces Base Color on every material slot, including embedded Base Color textures. Other authored maps are kept.'}{selected.requirements.length > 0 && ' External file requirements are listed above.'}</p>
+              <div className="flex flex-wrap items-center gap-2"><Button type="button" variant="outline" size="sm" onClick={() => previewRef.current?.click()}>Choose thumbnail image</Button>
+                {selected.previewFile && <><span className="text-xs">{selected.previewFile.name}</span><button type="button" className="text-xs underline" onClick={() => updateDraft(selected.id, { previewFile: undefined })}>Remove preview</button></>}
+              </div>
+              </details>
+            </fieldset>
+        </div>}
+      </div>}
+      </div>
+      <div data-slot="bulk-import-footer" className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t bg-background px-4 py-3 sm:px-6">
+        <div className="text-xs text-muted-foreground" aria-live="polite">
+          {eligible.length} ready · {eligible.filter((draft) => draft.configureLater).length} configure later · {drafts.filter((draft) => results[draft.id] ? results[draft.id].status !== 'imported' : !prepared.get(draft.id)?.ready).length} need attention
+          <p>Clear selections to start a new batch. Clearing does not delete saved Models.</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button type="button" variant="outline" size="sm" disabled={importing || (drafts.length === 0 && pool.length === 0)} onClick={clearAllSelectedFiles}>Clear All Selected Files</Button>
+          <Button type="button" variant="ghost" size="sm" disabled={importing || !drafts.some((draft) => results[draft.id]?.status === 'imported')} onClick={() => changeDrafts((current) => current.filter((draft) => results[draft.id]?.status !== 'imported'))}>Clear imported rows</Button>
+          <Button type="button" size="sm" className="bg-green-700 text-white hover:bg-green-800 focus-visible:ring-green-500/50 disabled:bg-muted disabled:text-muted-foreground" disabled={importing || checkingPreview || eligible.length === 0} onClick={() => void importReady()}>{importing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{importing ? 'Importing…' : `Import ${eligible.length} ready Models`}</Button>
+        </div>
+      </div>
+    </DialogContent>
+  </Dialog>;
+}
+
+function ExistingTextureOptions({ textures, selectedId }: { textures: BulkExistingTexture[]; selectedId: number | null }) {
+  return <>
+    {selectedId != null && !textures.some((texture) => texture.id === selectedId) && <option value={selectedId} disabled>Unavailable Texture (choose another)</option>}
+    {textures.map((texture) => <option key={texture.id} value={texture.id}>{texture.textureName} — {texture.fileName}</option>)}
+  </>;
+}
+
+function CategoryChoices({ categories, value, onChange }: {
+  categories: ThreeDModelCategoryOption[];
+  value: number[];
+  onChange: (value: number[]) => void;
+}) {
+  return <div className="space-y-1"><p className="text-xs font-medium">Categories</p><div className="flex flex-wrap gap-2">{categories.map((category) => <label key={category.id} className="flex items-center gap-1 text-xs">
+    <input type="checkbox" checked={value.includes(category.id)} onChange={(event) => onChange(event.target.checked ? [...value, category.id] : value.filter((id) => id !== category.id))} />{category.name}
+  </label>)}{value.filter((id) => !categories.some((category) => category.id === id)).map((id) => <label key={id} className="flex items-center gap-1 text-xs text-amber-800 dark:text-amber-300">
+    <input type="checkbox" checked onChange={() => onChange(value.filter((selected) => selected !== id))} />Unavailable category #{id} (remove)
+  </label>)}{categories.length === 0 && <span className="text-xs text-muted-foreground">No active categories.</span>}</div></div>;
+}
