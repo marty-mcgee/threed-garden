@@ -133,4 +133,4 @@ Updated the user-highlighted loading screen and toolbar placeholders, Environmen
 
 ## v0.22.2 release preparation
 
-Approved title: **ThreeD Scene: Public Loading + Theme Reliability**. User confirmed the final visual checkpoint and successful `npm run build`. Package and lockfile root versions advanced to `0.22.2`, with dependency resolutions unchanged. Release notes: [v0.22.2](../releases/v0.22.2.md). Production deployment remains pending; README retains the last confirmed production release and links the prepared release separately. No schema or environment changes required.
+Approved title: **ThreeD Scene: Public Loading + Theme Reliability**. User confirmed the final visual checkpoint and successful `npm run build`. Package and lockfile root versions advanced to `0.22.2`, with dependency resolutions unchanged. Release notes: [v0.22.2](../releases/v0.22.2.md). Production deployment is now User-confirmed; README identifies v0.22.2 as the current production release. No schema or environment changes required.
