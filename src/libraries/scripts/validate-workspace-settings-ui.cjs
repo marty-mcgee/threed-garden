@@ -87,7 +87,7 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
     '@/components/ui/button': { Button: 'Button' },
   });
   let opacityWrites = 0, failOpacitySave = false;
-  const panelState = { value: {idle:80,hover:98}, ready:true, stored:true, update(value) {
+  const panelState = { value: {idle:80,hover:98,headerIdle:15,headerHover:90,lightSurface:'#f8fafc',darkSurface:'#111a28',lightControl:'#0f172a',darkControl:'#f8fafc',lightControlText:'#0f172a',darkControlText:'#f8fafc',controlIdle:0,controlHover:8,controlActive:12}, ready:true, stored:true, update(value) {
     opacityWrites++;
     if (failOpacitySave) return false;
     panelState.value = value;
@@ -119,14 +119,14 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
   context = { ...context, loading: false };
   tree = renderForm();
   const opacityEditor = tree => find(tree, node => node.type === panelAppearance.PanelAppearanceSettings);
-  opacityEditor(tree).props.onChange({idle:0,hover:100});
+  opacityEditor(tree).props.onChange({...opacityEditor(tree).props.value,idle:0,hover:100});
   tree = renderForm();
   assert.equal(opacityWrites, 0, 'Editing opacity must not persist');
   assert(!button(tree, 'Save Changes').props.disabled, 'Opacity alone enables Save');
   button(tree, 'Discard').props.onClick(); tree = renderForm();
   assert.equal(opacityEditor(tree).props.value.idle, 80);
   assert(button(tree, 'Save Changes').props.disabled);
-  opacityEditor(tree).props.onChange({idle:0,hover:100}); tree = renderForm();
+  opacityEditor(tree).props.onChange({...opacityEditor(tree).props.value,idle:0,hover:100}); tree = renderForm();
   const previousAccountSaves = saveCalls.length;
   failOpacitySave = true;
   await button(tree, 'Save Changes').props.onClick(); tree = renderForm();
@@ -139,7 +139,7 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
   assert.equal(panelState.value.idle, 0);
   assert.equal(saveCalls.length, previousAccountSaves, 'Opacity-only save needs no account write');
   assert(button(tree, 'Save Changes').props.disabled);
-  opacityEditor(tree).props.onChange({idle:50,hover:50}); tree = renderForm();
+  opacityEditor(tree).props.onChange({...opacityEditor(tree).props.value,idle:50,hover:50}); tree = renderForm();
   confirmResult = false; button(tree, 'Refresh').props.onClick(); tree = renderForm();
   assert.equal(opacityEditor(tree).props.value.idle, 50);
   confirmResult = true; button(tree, 'Refresh').props.onClick(); tree = renderForm();
@@ -152,6 +152,24 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
   assert.equal(opacityEditor(tree).props.value.hover, 98);
   assert.equal(opacityWrites, resetWrites, 'Reset Defaults only stages changes');
   assert(!button(tree, 'Save Changes').props.disabled);
+  button(tree, 'Discard').props.onClick(); tree = renderForm();
+  opacityEditor(tree).props.onChange({...panelState.value, headerIdle:25, headerHover:85}); tree = renderForm();
+  assert(!button(tree, 'Save Changes').props.disabled, 'Header-only changes enable Save');
+  await button(tree, 'Save Changes').props.onClick(); tree = renderForm();
+  assert.equal(panelState.value.headerIdle, 25);
+  assert.equal(panelState.value.headerHover, 85);
+  assert.equal(saveCalls.length, previousAccountSaves, 'Header save needs no account write');
+  opacityEditor(tree).props.onChange({...panelState.value, lightSurface:'#abcdef', controlActive:100, lightControlText:'#ffffff'}); tree = renderForm();
+  assert(!button(tree, 'Save Changes').props.disabled, 'Color and active tint changes enable Save');
+  await button(tree, 'Save Changes').props.onClick(); tree = renderForm();
+  assert.equal(panelState.value.lightSurface, '#abcdef');
+  assert.equal(panelState.value.controlActive, 100);
+  assert.equal(panelState.value.lightControlText, '#ffffff', 'Solid button backgrounds retain independent text color');
+  const draftWithDarkText = {...panelState.value, darkControlText:'#132435'};
+  const darkTextEditor = panelAppearance.PanelAppearanceSettings({value:draftWithDarkText, onChange: () => {}});
+  const buttonPreview = find(darkTextEditor, node => node.props?.className?.includes('threed-appearance-preview threed-project-toolbar') && node.props?.style?.['--threed-dark-control-text']);
+  assert.equal(buttonPreview.props.style['--threed-dark-control-text'], '#132435', 'Preview uses manually chosen text color before Save');
+  assert.equal(panelState.value.darkControlText, '#f8fafc', 'Preview does not save the draft');
   console.log('PASS Opacity Settings draft: explicit Save, Discard, Refresh confirmation, no write on edit and storage failure retention');
 
   let savedOpacity = JSON.stringify({ idle: 80, hover: 98 });
@@ -177,6 +195,21 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
   const renderOpacity = opacityHarness();
   const slider = (tree, label) => find(find(tree, node => node.type === 'label' && text(node).includes(label)), node => node.props?.type === 'range');
   let opacityTree = renderOpacity();
+  assert.equal(slider(opacityTree, 'Project Header default').props.value, 15);
+  assert.equal(slider(opacityTree, 'Project Header hover').props.value, 90);
+  assert.equal(css.get('--threed-header-idle-opacity'), '0.15');
+  assert.equal(css.get('--threed-header-hover-opacity'), '0.9');
+  assert.equal(css.get('--threed-light-surface'), '#f8fafc');
+  assert.equal(css.get('--threed-control-active-opacity'), '12%');
+  assert.equal(css.get('--threed-light-control-text'), '#0f172a');
+  const lightTextInput = find(opacityTree, node => node.props?.['aria-label'] === 'Light theme Button text color');
+  lightTextInput.props.onChange({target:{value:'#ffffff'}});
+  opacityTree = renderOpacity();
+  assert.equal(css.get('--threed-light-control-text'), '#ffffff');
+  slider(opacityTree, 'Project Header default').props.onChange({target:{value:'25'}});
+  opacityTree = renderOpacity();
+  slider(opacityTree, 'Project Header hover').props.onChange({target:{value:'85'}});
+  opacityTree = renderOpacity();
   slider(opacityTree, 'Hover').props.onChange({target:{value:'30'}});
   opacityTree = renderOpacity();
   assert.equal(slider(opacityTree, 'Default').props.value, 80);
@@ -193,6 +226,10 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
   opacityTree = opacityHarness()();
   assert.equal(slider(opacityTree, 'Default').props.value, 100);
   assert.equal(slider(opacityTree, 'Hover').props.value, 30, 'Independent values survive reload');
+  assert.equal(slider(opacityTree, 'Project Header default').props.value, 25);
+  assert.equal(slider(opacityTree, 'Project Header hover').props.value, 85);
+  assert.equal(css.get('--threed-header-idle-opacity'), '0.25');
+  assert.equal(css.get('--threed-header-hover-opacity'), '0.85');
   savedOpacity = JSON.stringify({idle:0,hover:0});
   opacityTree = opacityHarness()();
   assert.equal(slider(opacityTree, 'Default').props.value, 0);
@@ -200,7 +237,7 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
   assert.equal(css.get('--threed-panel-idle-opacity'), '0');
   assert.equal(css.get('--threed-panel-hover-opacity'), '0');
   find(opacityTree, node => node.type === 'Button').props.onClick();
-  assert.deepEqual(JSON.parse(savedOpacity), {idle:80,hover:98});
+  assert.deepEqual(JSON.parse(savedOpacity), {idle:80,hover:98,headerIdle:15,headerHover:90,lightSurface:'#f8fafc',darkSurface:'#111a28',lightControl:'#0f172a',darkControl:'#f8fafc',lightControlText:'#0f172a',darkControlText:'#f8fafc',controlIdle:0,controlHover:8,controlActive:12});
   console.log('PASS Panel Appearance: independent sliders, fixed bounds, CSS values, saved restoration and reset');
   console.log('PASS Settings provider/form: signed-out defaults, stale-account responses, saved appearance, failed-save retention, dirty/discard/refresh and accessible labels (mock React/network).');
 })().catch(error => { console.error(error); process.exitCode = 1; });

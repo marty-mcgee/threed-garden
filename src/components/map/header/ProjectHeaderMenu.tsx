@@ -97,7 +97,7 @@ export function ProjectHeaderMenu({
         <Button
           ref={triggerRef}
           type="button"
-          variant="ghost"
+          variant={isOpen ? 'secondary' : 'outline'}
           size="sm"
           className="h-7 gap-1 px-2 text-xs font-medium"
           aria-expanded={selectedProjectId ? isOpen : undefined}

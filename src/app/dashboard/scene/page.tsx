@@ -51,7 +51,7 @@ import {
 } from '@/components/map/panels/ThreeDPlantingPlacementPanel';
 import { ProjectScenariosPanel } from '@/components/map/panels/ProjectScenariosPanel';
 import { ProjectSetupPanel } from '@/components/map/panels/ProjectSetupPanel';
-import { ThreeDProjectLoadingPresentation, ProjectToolbarLoadingSkeleton } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
+import { ThreeDProjectLoadingPresentation } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
 import { getDefaultMapData, getDefaultLayers } from '@/libraries/services/map/DefaultMapData';
 import {
   UnifiedMapView,
@@ -160,8 +160,7 @@ export default function UnifiedMapPage() {
       <ThreeDProjectLoadingPresentation
         progress={5}
         label="Starting Project workspace…"
-        className="h-[calc(100dvh-83px)]"
-        showProjectHeader
+        className="h-[calc(100dvh-48px)]"
       />
     }>
       <SensorGroupsWorkspace><SceneTransformWorkspace><GroundMapInspectorWorkspace><UnifiedMapPageInner /></GroundMapInspectorWorkspace></SceneTransformWorkspace></SensorGroupsWorkspace>
@@ -2496,8 +2495,7 @@ function UnifiedMapPageInner() {
       <ThreeDProjectLoadingPresentation
         progress={20}
         label="Loading Project data…"
-        className="h-[calc(100dvh-83px)]"
-        showProjectHeader
+        className="h-[calc(100dvh-48px)]"
       />
     );
   }
@@ -2531,12 +2529,11 @@ function UnifiedMapPageInner() {
         }}
       />
 
-      {/* ✅ Header with Live Data Status Indicator */}
-      <div className="relative">
-      {viewMode !== '2d' && !isThreeDPresentationComplete && <div className="absolute inset-0 z-50"><ProjectToolbarLoadingSkeleton /></div>}
+      {/* Project controls overlay the persistent Scene canvas. */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-50">
       <div inert={viewMode !== '2d' && !isThreeDPresentationComplete}
-        style={viewMode !== '2d' && !isThreeDPresentationComplete ? { visibility: 'hidden', height: 37, overflow: 'hidden' } : undefined}
-        className="threed-project-toolbar m-0 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-0.5 py-1">
+        style={{ ...(viewMode !== '2d' && !isThreeDPresentationComplete ? { visibility: 'hidden' as const, height: 37, overflow: 'hidden' } : {}) }}
+        className="threed-project-toolbar pointer-events-auto m-0 flex flex-wrap items-center justify-between gap-2 px-2 py-1">
         
         {canEditProject ? <>
         <ProjectHeaderMenu
@@ -2911,9 +2908,9 @@ function UnifiedMapPageInner() {
         }}
       />
       {/* ✅ Map Container */}
-      <Card>
+      <Card className="gap-0 rounded-none border-0 py-0 shadow-none">
         <CardContent className="p-0 overflow-hidden">
-          <div style={{ height: 'calc(100dvh - 122px)' }}>
+          <div style={{ height: 'calc(100dvh - 48px)' }}>
             
             {/* Pass cameraMode to combined view's 3D UnifiedMapView */}
             {viewMode === 'combined' && (
