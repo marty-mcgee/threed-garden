@@ -8,7 +8,7 @@ For each development step, work in this order:
 
 1. **Prove** — inspect the current implementation and record the concrete problem, affected files, and acceptance criteria before editing.
 2. **Act** — make the smallest scoped change that satisfies those criteria. Preserve unrelated user changes in a dirty worktree.
-3. **Document** — run relevant validation, review the diff, update durable documentation only after the implementation is known, then stage and commit the verified work with a descriptive message. Committing is part of the authorized repository task, including release preparation; it does not need a separate approval.
+3. **Document** — run relevant validation, review the diff, and update durable documentation only after the implementation is known. Leave changes uncommitted for User review and provide a proposed commit message. Git staging and committing are manual gates; do not perform them unless the User explicitly requests that specific commit.
 
 Use the checkpoint version and title in commit messages:
 - Release: `v0.22.2 — ThreeD Scene: Public Loading + Theme Reliability`
