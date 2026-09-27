@@ -1,5 +1,6 @@
 // dashboard/scene/page
 'use client';
+import type { SceneResourceIssue } from '@/components/threed/shared/SceneResourceStatus';
 import { GroundMapInspectorWorkspace, GroundMapInspector, useGroundMapInspector } from '@/components/map/details/GroundMapInspectorWorkspace';
 import { SensorGroupInspector } from '@/components/map/details/SensorGroupInspector';
 
@@ -169,6 +170,7 @@ export default function UnifiedMapPage() {
 }
 
 function UnifiedMapPageInner() {
+  const [projectAccess, setProjectAccess] = useState<{ projectId: string; canEdit: boolean } | null>(null);
   const { showToast, ToastComponent } = useToast();
   const transform = useSceneTransform();
   const groundMapInspector = useGroundMapInspector();
@@ -184,6 +186,7 @@ function UnifiedMapPageInner() {
   
   // ✅ State
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(projectIdParam);
+  const canEditProject = projectAccess?.projectId === String(selectedProjectId) && projectAccess.canEdit;
   const {
     loading,
     beginProjectTransition,
@@ -215,6 +218,10 @@ function UnifiedMapPageInner() {
     setIsCharacterLibraryOpen,
     setIsFarmBotLibraryOpen,
   } = useThreeDLibraryWorkspace();
+  const [sceneResourceIssues, setSceneResourceIssues] = useState<{ projectId: string; issues: SceneResourceIssue[] } | null>(null);
+  const handleResourceIssuesChange = useCallback((projectId: number | undefined, issues: SceneResourceIssue[]) => {
+    setSceneResourceIssues({ projectId: String(projectId ?? ''), issues });
+  }, []);
   const [isProjectAssetsOpen, setIsProjectAssetsOpen] = useState(false);
   const [isProjectSetupOpen, setIsProjectSetupOpen] = useState(false);
   const [isScenariosOpen, setIsScenariosOpen] = useState(false);
@@ -1266,6 +1273,7 @@ function UnifiedMapPageInner() {
 
       if (outcome.status === 'loaded') {
         const { session } = outcome;
+        setProjectAccess({ projectId: String(selectedProjectId), canEdit: session.canEdit });
         setInitialProjectViewState(session.savedViewState);
         if (session.savedViewState) {
           setViewMode(session.savedViewState.viewMode);
@@ -2334,7 +2342,7 @@ function UnifiedMapPageInner() {
   );
   const restoredWorkspaceRef = useRef<ThreeDProjectViewState | null>(null);
   useEffect(() => {
-    if ((viewMode !== '2d' && !isThreeDPresentationComplete) || !initialProjectViewState || restoredWorkspaceRef.current === initialProjectViewState) return;
+    if (!canEditProject || (viewMode !== '2d' && !isThreeDPresentationComplete) || !initialProjectViewState || restoredWorkspaceRef.current === initialProjectViewState) return;
     restoredWorkspaceRef.current = initialProjectViewState;
     const workspace = initialProjectViewState.workspace;
     setSelectedMarker(workspace?.selectedMarkerId
@@ -2346,9 +2354,9 @@ function UnifiedMapPageInner() {
     setProjectAssetSearch(workspace?.assetSearch ?? '');
     setProjectAssetType(workspace?.assetType && projectRuntimeMarkers.some(marker => marker.type === workspace.assetType)
       ? workspace.assetType : 'all');
-  }, [initialProjectViewState, isThreeDPresentationComplete, openModelLibrary, projectRuntimeMarkers, viewMode]);
+  }, [canEditProject, initialProjectViewState, isThreeDPresentationComplete, openModelLibrary, projectRuntimeMarkers, viewMode]);
   useEffect(() => {
-    if (!selectedProjectId || !isThreeDPresentationComplete) {
+    if (!canEditProject || !selectedProjectId || !isThreeDPresentationComplete) {
       setIsProjectSetupOpen(false);
       setIsScenariosOpen(false);
       setIsSetupMenuOpen(false);
@@ -2368,6 +2376,7 @@ function UnifiedMapPageInner() {
       setIsProjectSetupOpen(true);
     }
   }, [
+    canEditProject,
     isThreeDPresentationComplete,
     dismissedProjectSetupProjectId,
     projectRuntimeMarkers.length,
@@ -2529,6 +2538,7 @@ function UnifiedMapPageInner() {
         style={viewMode !== '2d' && !isThreeDPresentationComplete ? { visibility: 'hidden', height: 37, overflow: 'hidden' } : undefined}
         className="threed-project-toolbar m-0 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 px-0.5 py-1">
         
+        {canEditProject ? <>
         <ProjectHeaderMenu
           selectedProjectId={selectedProjectId}
           projectName={projectInfo?.name}
@@ -2659,6 +2669,7 @@ function UnifiedMapPageInner() {
           savingProject={savingProjectMarkers}
           onSaveProject={handleSaveThreeDProject}
         />
+        </> : <div className="px-3 py-2 text-sm">{projectInfo?.name ?? 'Public Project'} <span className="ml-2 text-xs opacity-60">Read-only view</span></div>}
 
       </div>
 
@@ -2667,8 +2678,9 @@ function UnifiedMapPageInner() {
       {/* Project Assets is independent of toolbar menu visibility. */}
       <div>
       <ProjectAssetsPanel
+        resourceIssues={sceneResourceIssues?.projectId === selectedProjectId ? sceneResourceIssues.issues : []}
         selectedProjectId={selectedProjectId}
-        isOpen={isProjectAssetsOpen}
+        isOpen={canEditProject && isProjectAssetsOpen}
         search={projectAssetSearch}
         setSearch={setProjectAssetSearch}
         typeFilter={projectAssetType}
@@ -2699,14 +2711,14 @@ function UnifiedMapPageInner() {
       />
       </div>
       <ProjectScenariosPanel
-        isOpen={Boolean(selectedProjectId) && isThreeDPresentationComplete && isScenariosOpen}
+        isOpen={canEditProject && Boolean(selectedProjectId) && isThreeDPresentationComplete && isScenariosOpen}
         projectId={String(selectedProjectId ?? '')}
         markers={projectRuntimeMarkers}
         onClose={() => setIsScenariosOpen(false)}
       />
       <div id="project-setup-panel">
         <ProjectSetupPanel
-          isOpen={Boolean(selectedProjectId) && isThreeDPresentationComplete && isProjectSetupOpen}
+          isOpen={canEditProject && Boolean(selectedProjectId) && isThreeDPresentationComplete && isProjectSetupOpen}
           hasThreeDModule={projectThreeDModules.length > 0}
           hasEnvironment={projectEnvironmentMarkers.length > 0}
           hasCharacter={projectRuntimeMarkers.some((marker) => marker.type === 'characters')}
@@ -2753,7 +2765,7 @@ function UnifiedMapPageInner() {
       </div>
       <div>
       <ThreeDModelLibraryPanel
-        isOpen={Boolean(selectedProjectId) && isModelLibraryOpen}
+        isOpen={canEditProject && Boolean(selectedProjectId) && isModelLibraryOpen}
         viewMode={viewMode}
         projectModules={projectThreeDModules}
         selectedModuleId={placementThreedId}
@@ -2804,7 +2816,7 @@ function UnifiedMapPageInner() {
 
       <div>
       <ThreeDCharacterLibraryPanel
-        isOpen={Boolean(selectedProjectId) && isCharacterLibraryOpen}
+        isOpen={canEditProject && Boolean(selectedProjectId) && isCharacterLibraryOpen}
         projectModules={projectThreeDModules}
         selectedModuleId={placementThreedId}
         onSelectedModuleChange={setPlacementThreedId}
@@ -2827,7 +2839,7 @@ function UnifiedMapPageInner() {
 
       <div>
       <ThreeDFarmBotLibraryPanel
-        isOpen={Boolean(selectedProjectId) && isFarmBotLibraryOpen}
+        isOpen={canEditProject && Boolean(selectedProjectId) && isFarmBotLibraryOpen}
         projectModules={projectThreeDModules}
         selectedModuleId={placementThreedId}
         onSelectedModuleChange={setPlacementThreedId}
@@ -2853,7 +2865,7 @@ function UnifiedMapPageInner() {
       </div>
 
       <ThreeDBedPlacementPanel
-        isOpen={Boolean(selectedProjectId) && isBedPlacementOpen}
+        isOpen={canEditProject && Boolean(selectedProjectId) && isBedPlacementOpen}
         projectModules={projectThreeDModules}
         selectedModuleId={placementThreedId}
         draft={bedPlacementDraft}
@@ -2875,7 +2887,7 @@ function UnifiedMapPageInner() {
       />
 
       <ThreeDPlantingPlacementPanel
-        isOpen={Boolean(selectedProjectId) && isPlantingPlacementOpen}
+        isOpen={canEditProject && Boolean(selectedProjectId) && isPlantingPlacementOpen}
         projectModules={projectThreeDModules}
         selectedModuleId={placementThreedId}
         plants={plantingOptions}
@@ -2915,6 +2927,7 @@ function UnifiedMapPageInner() {
                 >
                   <div className="relative w-full h-full rounded-t-lg overflow-hidden border border-white/10 bg-black/5">
                     <UnifiedMapView
+                      onResourceIssuesChange={handleResourceIssuesChange}
                       projectId={selectedProjectId ? Number(selectedProjectId) : null}
                       onThreeDPresentationComplete={handleThreeDPresentationComplete}
                       environmentControlsCloseRequest={environmentControlsCloseRequest}
@@ -2983,6 +2996,7 @@ function UnifiedMapPageInner() {
                 >
                   <div className="relative w-full h-full rounded-b-lg overflow-hidden border border-white/10 bg-black/5">
                     <UnifiedMapView
+                      onResourceIssuesChange={handleResourceIssuesChange}
                       projectId={selectedProjectId ? Number(selectedProjectId) : null}
                       runtimeMarkerRegistry={projectRuntimeMarkerRegistryRef.current}
                       geographicOrigin={projectGeographicOrigin}
@@ -3010,6 +3024,7 @@ function UnifiedMapPageInner() {
 
             {viewMode === '3d' && (
               <UnifiedMapView
+                      onResourceIssuesChange={handleResourceIssuesChange}
                 projectId={selectedProjectId ? Number(selectedProjectId) : null}
                 onThreeDPresentationComplete={handleThreeDPresentationComplete}
                 environmentControlsCloseRequest={environmentControlsCloseRequest}
@@ -3064,6 +3079,7 @@ function UnifiedMapPageInner() {
 
             {viewMode === '2d' && (
               <UnifiedMapView
+                      onResourceIssuesChange={handleResourceIssuesChange}
                 projectId={selectedProjectId ? Number(selectedProjectId) : null}
                 runtimeMarkerRegistry={projectRuntimeMarkerRegistryRef.current}
                 geographicOrigin={projectGeographicOrigin}
@@ -3096,6 +3112,7 @@ function UnifiedMapPageInner() {
         hidden={viewMode !== '2d' && !isThreeDPresentationComplete}
         inert={viewMode !== '2d' && !isThreeDPresentationComplete}
       >
+      {canEditProject && <>
       <GroundMapInspector leftOffsetRem={isLeftSceneWorkspaceOpen ? 18.75 : 0.75} available={viewMode !== '2d' && isThreeDPresentationComplete} onSave={handleSaveThreeDProject} saving={savingProjectMarkers} />
       {groupInspector !== null && !groundMapInspector?.open && <SensorGroupInspector
         key={`${selectedProjectId}:${groupInspector}`}
@@ -3196,6 +3213,7 @@ function UnifiedMapPageInner() {
         deletingCharacterMarkerId={deletingCharacterMarkerId}
       />
       </div>
+      </>}
       </div>
       
     </div>

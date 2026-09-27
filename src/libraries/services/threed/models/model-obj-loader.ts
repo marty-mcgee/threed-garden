@@ -25,7 +25,7 @@ function imageType(bytes: Uint8Array) {
 }
 
 /** One material/rendering contract for local import previews and saved Model Files. */
-export async function loadObjBundle(primary: ObjSource, sources: readonly ObjSource[], allowMissingTextures: boolean) {
+export async function loadObjBundle(primary: ObjSource, sources: readonly ObjSource[], allowMissingTextures: boolean, onIssue?: (url: string, message: string) => void) {
   if (sources.length > 500) throw new Error('OBJ supports at most 500 selected companions.');
   for (const source of sources) if (resolveObjPath(source.relativePath) !== source.relativePath) throw new Error('Invalid OBJ companion destination.');
   const controller = new AbortController();
@@ -38,6 +38,7 @@ export async function loadObjBundle(primary: ObjSource, sources: readonly ObjSou
   const textures = new Set<THREE.Texture<HTMLImageElement>>();
   const urls = new Set<string>();
   const missing = new Set<string>();
+  const failedTextures = new Set<THREE.Texture>();
   const loadedBytes = new Map<ObjSource, Promise<Uint8Array>>();
   const check = () => { if (closed) throw new Error('OBJ loading was cancelled.'); };
   const read = (source: ObjSource) => {
@@ -90,7 +91,7 @@ export async function loadObjBundle(primary: ObjSource, sources: readonly ObjSou
         const operation = (async () => {
           const source = resolveObjSource(map.path, sources);
           if (!source && !allowMissingTextures) throw new Error(`Missing OBJ texture: ${map.path}.`);
-          if (!source) missing.add(map.path);
+          if (!source) { missing.add(map.path); onIssue?.(map.path, 'Missing texture'); }
           const bytes = source ? await read(source) : placeholder;
           check();
           const type = imageType(bytes);
@@ -104,7 +105,11 @@ export async function loadObjBundle(primary: ObjSource, sources: readonly ObjSou
           if (image.naturalWidth * image.naturalHeight !== count) throw new Error(`Invalid OBJ texture dimensions: ${map.path}.`);
           texture.needsUpdate = true;
           if (map.clamp) texture.wrapS = texture.wrapT = THREE.ClampToEdgeWrapping;
-        })();
+        })().catch(error => {
+          if (!onIssue) throw error;
+          missing.add(map.path); failedTextures.add(texture);
+          onIssue(map.path, 'Could not load texture');
+        });
         pending.push(operation); void operation.catch(() => undefined);
         return texture;
       };
@@ -127,6 +132,14 @@ export async function loadObjBundle(primary: ObjSource, sources: readonly ObjSou
       for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) if (material) materials.add(material);
     });
     await Promise.all(pending); check();
+    for (const material of materials) {
+      for (const [key, value] of Object.entries(material)) {
+        if (failedTextures.has(value)) {
+          (material as unknown as Record<string, unknown>)[key] = null;
+          material.needsUpdate = true;
+        }
+      }
+    }
     const buffers = new Set<ArrayBufferLike>();
     for (const geometry of geometries) {
       for (const attribute of [...Object.values(geometry.attributes), ...(geometry.index ? [geometry.index] : [])]) {
@@ -158,7 +171,7 @@ async function fetchObjBytes(url: string, signal: AbortSignal) {
   finally { await reader.cancel(); }
   const bytes = new Uint8Array(length); let offset = 0; for (const chunk of chunks) { bytes.set(chunk, offset); offset += chunk.length; } return bytes;
 }
-export async function loadStoredObjModel(url: string, files: readonly { fileName: string; relativePath: string; filePath: string; fileType: string }[], geometryOnly = false) {
+export async function loadStoredObjModel(url: string, files: readonly { fileName: string; relativePath: string; filePath: string; fileType: string }[], geometryOnly = false, onIssue?: (url: string, message: string) => void) {
   const source = (fileName: string, relativePath: string, filePath: string): ObjSource => ({ fileName, relativePath, read: (signal) => fetchObjBytes(filePath, signal) });
   const primary = source('model.obj', 'model.obj', url);
   if (geometryOnly) {
@@ -170,7 +183,7 @@ export async function loadStoredObjModel(url: string, files: readonly { fileName
       return new TextEncoder().encode(geometry.text.split('\n').filter((line) => !/^mtllib\s/i.test(line)).join('\n'));
     };
   }
-  const lease = await loadObjBundle(primary, files.filter((file) => file.fileType !== 'model' && /\.(?:mtl|png|jpe?g|webp|bmp)$/i.test(file.fileName)).map((file) => source(file.fileName, file.relativePath, file.filePath)), true);
+  const lease = await loadObjBundle(primary, files.filter((file) => file.fileType !== 'model' && /\.(?:mtl|png|jpe?g|webp|bmp)$/i.test(file.fileName)).map((file) => source(file.fileName, file.relativePath, file.filePath)), true, onIssue);
   // ModelMarker3D retains this scene in its existing reusable Model cache.
   return lease.scene;
 }

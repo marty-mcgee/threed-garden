@@ -1,6 +1,7 @@
 // components/map/UnifiedMapView.tsx
 'use client';
 
+import type { SceneResourceIssue } from '@/components/threed/shared/SceneResourceStatus';
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
 import { AlertTriangle } from 'lucide-react';
@@ -139,6 +140,7 @@ interface UnifiedMapViewProps {
   onRejectedCharacterMarkerRepair?: (recordId: number) => Promise<void>;
   /** Reports that the ThreeD loader and Scene introduction have completed. */
   onThreeDPresentationComplete?: () => void;
+  onResourceIssuesChange?: (projectId: number | undefined, issues: SceneResourceIssue[]) => void;
   environmentControlsCloseRequest?: number;
   onEnvironmentControlsOpenChange?: (open: boolean) => void;
   onOpenEnvironmentDetails?: () => void;
@@ -228,6 +230,7 @@ export function UnifiedMapView({
   onRejectedProjectMarkerDelete,
   onRejectedCharacterMarkerRepair,
   onThreeDPresentationComplete,
+  onResourceIssuesChange,
   environmentControlsCloseRequest,
   onEnvironmentControlsOpenChange,
   onOpenEnvironmentDetails,
@@ -676,6 +679,7 @@ export function UnifiedMapView({
         placementPhysicsSensor={placementPhysicsSensor}
         onPhysicsSensorPlacement={onPhysicsSensorPlacement}
         onPresentationComplete={onThreeDPresentationComplete}
+        onResourceIssuesChange={onResourceIssuesChange}
         environmentControlsCloseRequest={environmentControlsCloseRequest}
         onEnvironmentControlsOpenChange={onEnvironmentControlsOpenChange}
         onOpenEnvironmentDetails={onOpenEnvironmentDetails}

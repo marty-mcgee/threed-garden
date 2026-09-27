@@ -6,8 +6,8 @@ import { getExternalAnimationSourcesForModel, loadExternalCharacterAnimations } 
 import type { AnimationMap } from './animation';
 
 export type AssignedAnimationClip = { id: number; isActive: boolean; filePath: string; format: string; clipIndex: number };
-type Mapping = { assignments: Assignment[]; inherited: Assignment[]; animations: AssignedAnimationClip[]; modelId: number | null; slots?: { actionKey: string; isActive: boolean }[] };
-async function mapping(target: string, targetId: number): Promise<Mapping> {
+export type CharacterAnimationMapping = { assignments: Assignment[]; inherited: Assignment[]; animations: AssignedAnimationClip[]; modelId: number | null; slots?: { actionKey: string; isActive: boolean }[] };
+async function mapping(target: string, targetId: number): Promise<CharacterAnimationMapping> {
   const response = await fetch(`/api/threed/animation-assignments?target=${target}&targetId=${targetId}`, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
   if (response.status === 404) return { assignments: [], inherited: [], animations: [], modelId: null };
   const body = await response.json();
@@ -59,10 +59,10 @@ export function assignedAnimationMap(base: AnimationMap, blocked: Set<string>, a
   return { ...base, blockedActions: blocked, resolve: action => blocked.has(action.toLowerCase()) ? null : assigned.has(action.toLowerCase()) ? base.clipNames.find(name => name.toLowerCase() === action.toLowerCase()) ?? null : base.resolve(action) };
 }
 
-export async function loadAssignedCharacterAnimations(characterId: number, modelId: number, modelName: string, filePath: string, root: THREE.Object3D) {
-  const own = await mapping('character', characterId);
+export async function loadAssignedCharacterAnimations(characterId: number, modelId: number, modelName: string, filePath: string, root: THREE.Object3D, projectMapping?: CharacterAnimationMapping) {
+  const own = projectMapping ?? await mapping('character', characterId);
   // Project instances may use a different Model from the reusable Character's default.
-  const model = own.modelId === modelId ? null : await mapping('model', modelId);
+  const model = projectMapping || own.modelId === modelId ? null : await mapping('model', modelId);
   const animations = model ? [...own.animations, ...model.animations] : own.animations;
   const effective = resolveAssignments(model?.assignments ?? own.inherited, own.assignments, animations);
   const explicit = new Set(effective.filter(row => row.state !== 'legacy').map(row => row.actionKey.toLowerCase()));

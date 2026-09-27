@@ -25,9 +25,9 @@ export function DetailsCardSection({
     <PersistentDetails
       storageId={label}
       open={defaultOpen}
-      className={`mt-2 rounded border border-white/10 bg-white/[0.035] p-2 ${/^Project .+ Instance$/.test(label) ? 'order-[-10]' : ''} ${className}`}
+      className={`mt-2 rounded border border-foreground/10 bg-foreground/[0.035] p-2 ${/^Project .+ Instance$/.test(label) ? 'order-[-10]' : ''} ${className}`}
     >
-      <summary className="cursor-pointer text-xs font-medium text-cyan-100">
+      <summary className="cursor-pointer text-xs font-medium text-cyan-800 dark:text-cyan-100">
         <span className="inline-flex w-[calc(100%_-_0.75rem)] items-center justify-between gap-2 align-middle">
           <span>{title}</span>
           {summaryAside}

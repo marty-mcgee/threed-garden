@@ -30,7 +30,7 @@ export default function NavDropdown() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative">
+        <Button variant="ghost" size="icon-sm" className="relative">
           <span className="sr-only">Navigation Menu</span>
           <svg
             xmlns="http://www.w3.org/2000/svg"

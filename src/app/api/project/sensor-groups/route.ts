@@ -1,3 +1,4 @@
+import { readableProject } from '@/libraries/services/project/read-access';
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
@@ -42,5 +43,19 @@ async function handle(request: NextRequest, write: boolean) {
     return NextResponse.json({ success: false, error: error instanceof SensorGroupInputError ? error.message : 'Could not update Sensor Groups' }, { status: error instanceof SensorGroupInputError || error instanceof SyntaxError ? 400 : 500 });
   }
 }
-export const GET = (request: NextRequest) => handle(request, false);
+export async function GET(request: NextRequest) {
+  try {
+  const session = await auth();
+  const projectId = Number(request.nextUrl.searchParams.get('projectId'));
+  if (!Number.isSafeInteger(projectId) || projectId <= 0) return NextResponse.json({ success: false, error: 'Invalid Project' }, { status: 400 });
+  const record = await readableProject(projectId, session?.user?.id);
+  if (!record) return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+  const metadata = (record.metadata ?? {}) as Record<string, unknown>;
+  const groups = readSensorGroups(metadata.physicsSensorGroups ?? []);
+  if (!groups.some(group => group.id === IMPORTED_SENSOR_GROUP.id)) groups.unshift(IMPORTED_SENSOR_GROUP);
+  return NextResponse.json({ success: true, data: groups }, { headers: { 'Cache-Control': 'private, no-store' } });
+  } catch {
+    return NextResponse.json({ success: false, error: 'Could not load Sensor Groups' }, { status: 500 });
+  }
+}
 export const PATCH = (request: NextRequest) => handle(request, true);

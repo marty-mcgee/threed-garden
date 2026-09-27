@@ -4,6 +4,11 @@ export function currentModelAssets(model: Record<string, unknown> | undefined) {
     ? model.metadata as Record<string, unknown> : {};
   return {
     filePath: typeof model?.filePath === 'string' ? model.filePath : '',
+    renderingAssetsResolved: model?.renderingAssetsResolved === true,
+    ...(!model || Array.isArray(model.materialAssignments)
+      ? { materialAssignments: model?.materialAssignments ?? [] } : {}),
+    ...(!model || Array.isArray(model.textureFallbacks)
+      ? { textureFallbacks: model?.textureFallbacks ?? [] } : {}),
     fileSize: model?.fileSize ?? null,
     mainModelFileId: model?.mainModelFileId ?? null,
     modelType: model?.modelType,

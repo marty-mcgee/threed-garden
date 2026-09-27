@@ -105,25 +105,25 @@ export function PhysicsSensorCuboidsEditor({
       key={selectedSensorId ?? 'sensor-list'}
       title={selectedSensorId ? 'Sensor Settings' : 'Physics Sensors'}
       defaultOpen={Boolean(selectedSensorId)}
-      summaryAside={<span className="text-[9px] text-white/40">{sensors.length}/8</span>}
+      summaryAside={<span className="text-[9px] text-foreground/40">{sensors.length}/8</span>}
     >
 
       {!collectionValidation.success && (
-        <p role="alert" className="text-[10px] text-red-200">{collectionValidation.error} Correct that sensor before saving.</p>
+        <p role="alert" className="text-[10px] text-red-800 dark:text-red-200">{collectionValidation.error} Correct that sensor before saving.</p>
       )}
       {dirty ? (
         <button type="button" disabled={saving || editing || !collectionValidation.success}
           onClick={() => onSave(markerId, sensors)}
-          className="flex w-full items-center justify-center gap-1 rounded bg-cyan-600/30 px-2 py-1.5 text-[10px] font-medium text-cyan-100 hover:bg-cyan-600/55 disabled:opacity-40">
+          className="flex w-full items-center justify-center gap-1 rounded bg-cyan-600/30 px-2 py-1.5 text-[10px] font-medium text-cyan-800 dark:text-cyan-100 hover:bg-cyan-600/55 disabled:opacity-40">
           {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />} {selectedSensorId ? 'Save Sensor' : 'Save Sensors'}
         </button>
       ) : (
-        <p role="status" className="rounded border border-white/10 bg-black/10 px-2 py-1.5 text-center text-[10px] text-white/55">Saved</p>
+        <p role="status" className="rounded border border-foreground/10 bg-black/10 px-2 py-1.5 text-center text-[10px] text-foreground/55">Saved</p>
       )}
-      {selectedSensorId === '__new__' && sensors.length >= 8 && <p role="alert" className="text-xs text-amber-200">This asset already has eight sensors. Select an existing sensor to edit or delete it.</p>}
+      {selectedSensorId === '__new__' && sensors.length >= 8 && <p role="alert" className="text-xs text-amber-800 dark:text-amber-200">This asset already has eight sensors. Select an existing sensor to edit or delete it.</p>}
       <div className="space-y-2">
         {sensors.filter(sensor => !selectedSensorId || sensor.id === selectedSensorId).map((sensor, index) => {
-          if (!selectedSensorId) return <button key={sensor.id} type="button" className="block w-full rounded border border-white/15 p-2 text-left text-xs hover:bg-white/10" onClick={() => onSelectSensor?.(sensor.id)}>{sensor.name} →</button>;
+          if (!selectedSensorId) return <button key={sensor.id} type="button" className="block w-full rounded border border-foreground/15 p-2 text-left text-xs hover:bg-foreground/10" onClick={() => onSelectSensor?.(sensor.id)}>{sensor.name} →</button>;
           const placing = placementSensorId === sensor.id;
           const transformDraft = transform.session?.objectKey === `${ownerKey}:${sensor.id}` ? transform.session.draft : null;
           const isNewSensor = !initialSensorIds.has(sensor.id);
@@ -136,11 +136,11 @@ export function PhysicsSensorCuboidsEditor({
                 <input value={sensor.name} maxLength={80} disabled={saving || editing}
                   aria-label={`Physics Sensor ${index + 1} name`}
                   onChange={(event) => updateSensor(sensor.id, { name: event.target.value })}
-                  className="h-7 min-w-0 flex-1 rounded border border-white/10 bg-white/5 px-2 text-[10px] text-white" />
+                  className="h-7 min-w-0 flex-1 rounded border border-foreground/10 bg-foreground/5 px-2 text-[10px] text-foreground" />
                 <select value={sensor.behavior} disabled={saving || editing}
                   aria-label={`${sensor.name} behavior`}
                   onChange={(event) => updateSensor(sensor.id, { behavior: event.target.value as PhysicsSensorBehavior })}
-                  className="h-7 rounded border border-white/10 bg-slate-950/80 px-1 text-[10px] text-white">
+                  className="h-7 rounded border border-foreground/10 bg-background/80 px-1 text-[10px] text-foreground">
                   <option value="trigger">Trigger</option>
                   <option value="counter">Count Entries</option>
                 </select>
@@ -148,13 +148,13 @@ export function PhysicsSensorCuboidsEditor({
               </div>
               <div className="grid grid-cols-2 gap-1 text-[10px]">
                 <label>Detect
-                  <select aria-label={`${sensor.name} detection`} value={sensor.detection} disabled={saving || editing} onChange={event => updateSensor(sensor.id, { detection: event.target.value as PhysicsSensorCuboid['detection'] })} className="w-full rounded border border-white/10 p-1">
+                  <select aria-label={`${sensor.name} detection`} value={sensor.detection} disabled={saving || editing} onChange={event => updateSensor(sensor.id, { detection: event.target.value as PhysicsSensorCuboid['detection'] })} className="w-full rounded border border-foreground/10 p-1">
                     <option value="movable-ball">Movable balls</option>
                     <option value="model">Model bodies</option>
                   </select>
                 </label>
                 <label>Sensor Group
-                  <select aria-label={`${sensor.name} group`} value={sensor.groupId ?? ''} disabled={saving || editing || groups?.loading} onChange={event => updateSensor(sensor.id, { groupId: event.target.value || null })} className="w-full rounded border border-white/10 p-1">
+                  <select aria-label={`${sensor.name} group`} value={sensor.groupId ?? ''} disabled={saving || editing || groups?.loading} onChange={event => updateSensor(sensor.id, { groupId: event.target.value || null })} className="w-full rounded border border-foreground/10 p-1">
                     <option value="">Ungrouped</option>
                     {sensor.groupId && !groups?.groups.some(group => group.id === sensor.groupId) && <option value={sensor.groupId}>Unavailable group</option>}
                     {groups?.groups.map(group => <option key={group.id} value={group.id}>{group.name}</option>)}
@@ -162,16 +162,16 @@ export function PhysicsSensorCuboidsEditor({
                 </label>
               </div>
               <section className="rounded border border-cyan-300/15 bg-cyan-950/15 p-1.5" aria-label="Sensor placement">
-                <div className="mb-1 flex items-center justify-between gap-2 text-[9px] font-semibold uppercase tracking-wide text-cyan-100/80">
+                <div className="mb-1 flex items-center justify-between gap-2 text-[9px] font-semibold uppercase tracking-wide text-cyan-800/80 dark:text-cyan-100/80">
                   <span>Placement</span>
-                  {placing && <span className="text-amber-100">Scene click active</span>}
-                  {transformDraft && <span className="text-cyan-100">Mouse handles active</span>}
+                  {placing && <span className="text-amber-800 dark:text-amber-100">Scene click active</span>}
+                  {transformDraft && <span className="text-cyan-800 dark:text-cyan-100">Mouse handles active</span>}
                 </div>
-                {placing && <p role="status" className="mb-1 text-[9px] leading-relaxed text-amber-100/85">Click a Scene surface to set this sensor’s position.</p>}
+                {placing && <p role="status" className="mb-1 text-[9px] leading-relaxed text-amber-800/85 dark:text-amber-100/85">Click a Scene surface to set this sensor’s position.</p>}
                 <div className="grid grid-cols-2 gap-1">
                   <button type="button" disabled={saving || editing}
                     onClick={() => placing ? onCancelPlacement() : onBeginPlacement(sensor, isNewSensor ? 'place' : 'move')}
-                    className={`flex items-center justify-center gap-1 rounded border px-2 py-1 text-[10px] ${placing ? 'border-amber-300/30 bg-amber-500/20 text-amber-100' : 'border-cyan-300/20 text-cyan-100 hover:bg-cyan-500/10'}`}>
+                    className={`flex items-center justify-center gap-1 rounded border px-2 py-1 text-[10px] ${placing ? 'border-amber-300/30 bg-amber-500/20 text-amber-800 dark:text-amber-100' : 'border-cyan-300/20 text-cyan-800 dark:text-cyan-100 hover:bg-cyan-500/10'}`}>
                     {placing ? <Crosshair className="h-3 w-3" /> : isNewSensor ? <Crosshair className="h-3 w-3" /> : <Move className="h-3 w-3" />} {placing ? 'Cancel Placement' : isNewSensor ? 'Place Sensor' : 'Move Sensor'}
                   </button>
                   <button type="button" disabled={saving || placing || editing}
@@ -198,36 +198,36 @@ export function PhysicsSensorCuboidsEditor({
                       },
                     });
                   }}
-                  className="mt-1 w-full rounded border border-cyan-300/30 bg-cyan-600/20 px-2 py-1.5 text-[10px] text-cyan-100 disabled:opacity-40">
+                  className="mt-1 w-full rounded border border-cyan-300/30 bg-cyan-600/20 px-2 py-1.5 text-[10px] text-cyan-800 dark:text-cyan-100 disabled:opacity-40">
                   Transform Sensor · Mouse Handles
                 </button>
                 {transform.session?.objectKey === `${ownerKey}:${sensor.id}` && <SceneTransformActions />}
               </section>
               <section aria-label="Sensor dimensions and rotation">
-                <p className="mb-1 text-[9px] font-semibold uppercase tracking-wide text-white/55">Dimensions and rotation</p>
+                <p className="mb-1 text-[9px] font-semibold uppercase tracking-wide text-foreground/55">Dimensions and rotation</p>
                 <div className="grid grid-cols-3 gap-1">
                   {(['x', 'y', 'z'] as const).map((axis) => (
-                    <label key={axis} className="text-[8px] text-white/45">Local {axis.toUpperCase()}
+                    <label key={axis} className="text-[8px] text-foreground/45">Local {axis.toUpperCase()}
                       <input type="number" step="0.1" value={Number((transformDraft?.position ?? sensor.position)[axis].toFixed(3))} disabled={saving || editing}
                         onChange={(event) => updatePosition(axis, Number(event.target.value))}
-                        className="mt-0.5 h-6 w-full rounded border border-white/10 bg-white/5 px-1 text-[9px] text-white" />
+                        className="mt-0.5 h-6 w-full rounded border border-foreground/10 bg-foreground/5 px-1 text-[9px] text-foreground" />
                     </label>
                   ))}
                 </div>
                 <div className="mt-1 grid grid-cols-4 gap-1">
                   {(['width', 'height', 'depth', 'rotationY'] as const).map((field) => (
-                    <label key={field} className="text-[8px] text-white/45">
+                    <label key={field} className="text-[8px] text-foreground/45">
                       {field === 'rotationY' ? 'Y rotation °' : field[0].toUpperCase() + field.slice(1)}
                       <input type="number" min={field === 'rotationY' ? undefined : 0.05} step="0.05"
                         value={Number((transformDraft?.[field] ?? sensor[field]).toFixed(3))} disabled={saving || editing}
                         onChange={(event) => updateSensor(sensor.id, { [field]: Number(event.target.value) })}
-                        className="mt-0.5 h-6 w-full rounded border border-white/10 bg-white/5 px-1 text-[9px] text-white" />
+                        className="mt-0.5 h-6 w-full rounded border border-foreground/10 bg-foreground/5 px-1 text-[9px] text-foreground" />
                     </label>
                   ))}
                 </div>
               </section>
-              <PersistentDetails storageId="remove-sensor" className="border-t border-white/10 pt-1.5">
-                <summary className="cursor-pointer text-[9px] text-red-200/75">Remove sensor</summary>
+              <PersistentDetails storageId="remove-sensor" className="border-t border-foreground/10 pt-1.5">
+                <summary className="cursor-pointer text-[9px] text-red-800/75 dark:text-red-200/75">Remove sensor</summary>
                 <button type="button" disabled={saving || editing} aria-label={`Delete ${sensor.name}`}
                   onClick={() => {
                     if (placing) onCancelPlacement();
@@ -235,7 +235,7 @@ export function PhysicsSensorCuboidsEditor({
                     if (!initialSensorIds.has(sensor.id)) { setSensors(next); onSelectSensor?.(null); }
                     else void onSave(markerId, next).then(success => { if (success) { setSensors(next); onSelectSensor?.(null); } });
                   }}
-                  className="mt-1 flex w-full items-center justify-center gap-1 rounded border border-red-300/20 px-2 py-1.5 text-[10px] text-red-200 hover:bg-red-500/20">
+                  className="mt-1 flex w-full items-center justify-center gap-1 rounded border border-red-300/20 px-2 py-1.5 text-[10px] text-red-800 dark:text-red-200 hover:bg-red-500/20">
                   <Trash2 className="h-3 w-3" /> Delete Sensor
                 </button>
               </PersistentDetails>
@@ -248,7 +248,7 @@ export function PhysicsSensorCuboidsEditor({
         onClick={() => {
           onSelectSensor?.('__new__');
         }}
-        className="flex w-full items-center justify-center gap-1 rounded border border-white/10 px-2 py-1.5 text-[10px] text-white/70 hover:bg-white/10 disabled:opacity-40">
+        className="flex w-full items-center justify-center gap-1 rounded border border-foreground/10 px-2 py-1.5 text-[10px] text-foreground/70 hover:bg-foreground/10 disabled:opacity-40">
         <Plus className="h-3 w-3" /> Add Sensor
       </button>}
 

@@ -1,8 +1,9 @@
 'use client';
 
+import type { SceneResourceIssue } from '@/components/threed/shared/SceneResourceStatus';
 import { DetailsSectionScope, PersistentDetails } from '@/components/map/details/PersistentDetails';
 import { useEffect, useRef } from 'react';
-import { Crosshair, Search, X } from 'lucide-react';
+import { AlertTriangle, ExternalLink, Crosshair, Search, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { RuntimeMarker } from '@/libraries/types/map';
@@ -14,6 +15,7 @@ import { getThreeDIcon, getThreeDLabel } from '@/libraries/utils/map-helpers';
 
 export function ProjectAssetsPanel({
   selectedProjectId,
+  resourceIssues = [],
   isOpen: isProjectAssetsOpen,
   search: projectAssetSearch,
   setSearch: setProjectAssetSearch,
@@ -34,6 +36,7 @@ export function ProjectAssetsPanel({
   groundMapSelected = false,
   onOpenGroundMap,
 }: {
+  resourceIssues?: SceneResourceIssue[];
   groundMapSelected?: boolean;
   onOpenGroundMap?: () => void;
   selectedProjectId: string | null;
@@ -142,7 +145,7 @@ export function ProjectAssetsPanel({
                   : 'No Project assets match this search.'}
               </p>
             ) : [...new Set(visibleProjectAssets.map(marker => marker.type))].map(type => (
-              <PersistentDetails storageId={`type:${type}`} key={`${selectedProjectId}:${type}`} className="rounded-md border border-white/10 p-1">
+              <PersistentDetails storageId={`type:${type}`} key={`${selectedProjectId}:${type}`} className="rounded-md border border-foreground/10 p-1">
                 <summary className="cursor-pointer px-1 py-2 text-xs font-semibold">
                   {getThreeDIcon(type)} {getThreeDLabel(type)} · {visibleProjectAssets.filter(marker => marker.type === type).length}
                 </summary>
@@ -153,13 +156,15 @@ export function ProjectAssetsPanel({
               const currentPosition = Number.isSafeInteger(sourceAssetId) && sourceAssetId > 0
                 ? resolveRuntimeMarkerPosition(marker.type, sourceAssetId) ?? marker.position
                 : marker.position;
+              const modelId = Number(marker.data?.model?.id ?? marker.data?.modelId ?? (['model', 'models'].includes(marker.type) ? marker.data?.id : null));
+              const modelIssues = resourceIssues.filter(issue => issue.modelId === modelId);
               const physicsSensors = readPhysicsSensorCuboids(marker.metadata);
               return (
                 <div key={marker.id}>
                   <button
                     type="button"
                     className={`w-full rounded-md border px-2 py-1.5 text-left transition-colors hover:border-cyan-500/60 hover:bg-cyan-500/5 ${
-                      isSelected ? 'border-cyan-500 bg-cyan-500/15 ring-1 ring-cyan-500/40' : 'bg-card'
+                      isSelected ? 'border-cyan-500 bg-cyan-500/15 ring-1 ring-cyan-500/40' : modelIssues.length ? 'border-amber-400/60 bg-amber-500/10' : 'bg-card'
                     }`}
                     aria-pressed={isSelected}
                     onClick={() => onSelectAsset(marker)}
@@ -171,6 +176,7 @@ export function ProjectAssetsPanel({
                       <span className="min-w-0 flex-1">
                         <span className="flex flex-wrap items-center gap-x-1 gap-y-0.5 text-xs font-medium">
                           <span className="min-w-0 break-words [overflow-wrap:anywhere]">{marker.name}</span>
+                          {modelIssues.length > 0 && <span className="text-[9px] font-semibold text-amber-700 dark:text-amber-300">⚠ File warnings</span>}
                           {isSelected && <span className="shrink-0 text-[9px] font-semibold uppercase text-cyan-500">Selected</span>}
                         </span>
                         <span className="block break-words text-[10px] leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">
@@ -180,8 +186,12 @@ export function ProjectAssetsPanel({
                       <Crosshair className={`h-3.5 w-3.5 shrink-0 ${isSelected ? 'text-cyan-500' : 'text-muted-foreground'}`} />
                     </div>
                   </button>
+                  {modelIssues.length > 0 && <div className="px-2 py-1 text-[10px] text-amber-800 dark:text-amber-200">
+                    <ul>{modelIssues.map(issue => <li key={`${issue.fileName}:${issue.message}`} className="break-words">{issue.fileName} — {issue.message}</li>)}</ul>
+                    <a href={`/admin/threed/model-files?modelId=${modelId}`} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 underline">Fix in Admin · Model Files <ExternalLink className="h-3 w-3" /><span className="sr-only"> (opens in a new tab)</span></a>
+                  </div>}
                   {physicsSensors.length > 0 && (
-                    <div className="ml-4 mt-1 space-y-1 border-l border-white/10 pl-2" aria-label={`${marker.name} Physics Sensors`}>
+                    <div className="ml-4 mt-1 space-y-1 border-l border-foreground/10 pl-2" aria-label={`${marker.name} Physics Sensors`}>
                       <div className="px-1 text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">
                         Physics Sensors {physicsSensors.length}
                       </div>
@@ -192,7 +202,7 @@ export function ProjectAssetsPanel({
                             key={sensor.id}
                             type="button"
                             aria-pressed={isSelectedSensor}
-                            className={`w-full rounded border px-2 py-1 text-left transition-colors hover:border-cyan-500/50 ${isSelectedSensor ? 'border-cyan-300 bg-cyan-500/20 ring-1 ring-cyan-400/40' : 'border-white/10 bg-black/10'}`}
+                            className={`w-full rounded border px-2 py-1 text-left transition-colors hover:border-cyan-500/50 ${isSelectedSensor ? 'border-cyan-300 bg-cyan-500/20 ring-1 ring-cyan-400/40' : 'border-foreground/10 bg-black/10'}`}
                             disabled={Boolean(transform.session)}
                             title={`Edit ${sensor.name}`}
                             onClick={() => onSelectSensor(marker, sensor.id)}
@@ -221,8 +231,16 @@ export function ProjectAssetsPanel({
                 </div>
               </PersistentDetails>
             ))}
+            {resourceIssues.length > 0 && <PersistentDetails storageId="file-loading-warnings" aria-label="Project file loading warnings" className="rounded border border-amber-400/40 bg-amber-500/10 p-2 text-xs text-amber-800 dark:text-amber-200">
+              <summary className="cursor-pointer font-semibold"><AlertTriangle className="mr-1 inline h-3.5 w-3.5" />Some files could not be loaded · {resourceIssues.length}</summary>
+              <p className="mt-1">You can continue using this Project.</p>
+              <ul className="mt-2 space-y-2">{resourceIssues.map((issue, index) => <li key={`${issue.modelId}:${issue.fileName}:${index}`} className="break-words">
+                <span className="font-mono">{issue.fileName}</span> — {issue.message}
+                {issue.modelId && <a className="mt-1 flex items-center gap-1 underline" href={`/admin/threed/model-files?modelId=${issue.modelId}`} target="_blank" rel="noopener noreferrer">{issue.modelName || `Model #${issue.modelId}`} · Model Files <ExternalLink className="h-3 w-3 shrink-0" /><span className="sr-only"> (opens in a new tab)</span></a>}
+              </li>)}</ul>
+            </PersistentDetails>}
           </div>
-          <div className="shrink-0 space-y-2 border-t border-white/15 pt-2 mt-2 mb-14 max-h-[30%] overflow-y-auto" aria-label="Sensor Tools">
+          <div className="shrink-0 space-y-2 border-t border-foreground/15 pt-2 mt-2 mb-14 max-h-[30%] overflow-y-auto" aria-label="Sensor Tools">
             <h3 className="text-xs font-semibold">Sensor Tools</h3>
             {!groundMapSelected && selectedMarker && ['project-marker', 'project-snapshot'].includes(String(selectedMarker.metadata?.source)) && ['model', 'models', 'bed', 'beds', 'planting', 'plantings', 'farmbot', 'farmbots'].includes(selectedMarker.type.toLowerCase()) && (
               <Button disabled={Boolean(transform.session) || readPhysicsSensorCuboids(selectedMarker.metadata).length >= 8} variant="outline" size="sm" className="w-full text-xs truncate" onClick={() => onSelectSensor(selectedMarker, '__new__')}>
@@ -232,7 +250,7 @@ export function ProjectAssetsPanel({
             <PersistentDetails storageId="sensor-groups">
               <summary className="cursor-pointer text-xs">Sensor Groups · {groups?.groups.length ?? 0}</summary>
               <div className="mt-2 space-y-1">
-                {groups?.groups.map(group => <button key={group.id} type="button" disabled={Boolean(transform.session)} aria-pressed={selectedGroupId === group.id} onClick={() => onSelectGroup(group.id)} className="block w-full rounded border border-white/15 p-2 text-left text-xs hover:bg-white/10 aria-pressed:border-cyan-400">{group.name}</button>)}
+                {groups?.groups.map(group => <button key={group.id} type="button" disabled={Boolean(transform.session)} aria-pressed={selectedGroupId === group.id} onClick={() => onSelectGroup(group.id)} className="block w-full rounded border border-foreground/15 p-2 text-left text-xs hover:bg-foreground/10 aria-pressed:border-cyan-400">{group.name}</button>)}
               </div>
             </PersistentDetails>
             <Button variant="outline" size="sm" className="w-full text-xs" disabled={Boolean(transform.session)} onClick={() => onSelectGroup('')}>+ New Sensor Group</Button>

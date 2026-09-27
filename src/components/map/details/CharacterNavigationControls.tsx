@@ -28,7 +28,7 @@ export function CharacterNavigationControls({ actorMarkerId, targetMarkerId, rea
   return <div className="mt-2 space-y-1">
     <div className="grid grid-cols-2 gap-1.5">
       <button className="rounded bg-sky-600/25 px-2 py-1 text-sky-100 disabled:opacity-40" disabled={!ready || actorMarkerId === targetMarkerId || status === 'Walking to target…'} onClick={e => { e.stopPropagation(); send('walk'); }}>Walk to Target</button>
-      <button className="rounded bg-white/5 px-2 py-1 text-white/70 disabled:opacity-40" disabled={!ready} onClick={e => { e.stopPropagation(); send('stop'); }}>Stop Walking</button>
+      <button className="rounded bg-foreground/5 px-2 py-1 text-foreground/70 disabled:opacity-40" disabled={!ready} onClick={e => { e.stopPropagation(); send('stop'); }}>Stop Walking</button>
       <button className="col-span-2 rounded bg-sky-600/25 px-2 py-1 text-sky-100 disabled:opacity-40" disabled={!ready || actorMarkerId === targetMarkerId || status === 'Checking landing…'} onClick={e => { e.stopPropagation(); send('teleport'); }}>Teleport near Target</button>
     </div>
     <p role="status" className="text-sky-200">{!controlled ? 'Take Control to walk or teleport.' : !ready ? 'Waiting for Character readiness…' : status || 'Ready to move. WASD interrupts walking.'}</p>

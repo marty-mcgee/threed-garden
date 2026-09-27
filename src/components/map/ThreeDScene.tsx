@@ -1,6 +1,8 @@
 // components/map/ThreeDScene.tsx
 'use client';
 
+import { SceneResourceStatus, useSceneResourceStatus, SceneResourceIssues, useSceneResourceIssueReporter, type SceneResourceIssue, type SceneResourceState } from '@/components/threed/shared/SceneResourceStatus';
+
 import { useGroundMapInspector } from '@/components/map/details/GroundMapInspectorWorkspace';
 import { placeHoverTitle } from '@/libraries/services/threed/markers/hover-title-placement';
 import { SceneHoverTitleContext } from '@/components/threed/shared/SceneHoverTitleContext';
@@ -130,13 +132,34 @@ interface ProjectGroundMapAsset {
 }
 
 function GroundMapImagePlane({ asset, transform }: { asset: ProjectGroundMapAsset; transform: ProjectGroundMapTransform }) {
-  const texture = useTexture(asset.filePath);
+  const reportIssue = useSceneResourceIssueReporter(asset.filePath);
+  const [resource, setResource] = useState<{ path: string; texture: THREE.Texture | null; error: boolean } | null>(null);
+  const texture = resource?.path === asset.filePath ? resource.texture : null;
+  const failed = resource?.path === asset.filePath && resource.error;
+  useSceneResourceStatus(!texture && !failed, failed);
+  useEffect(() => {
+    let cancelled = false;
+    let loaded: THREE.Texture | null = null;
+    const timer = setTimeout(() => { if (!cancelled) { reportIssue?.(asset.filePath, 'Taking too long to load'); setResource({ path: asset.filePath, texture: null, error: true }); } }, 30000);
+    new THREE.TextureLoader().load(asset.filePath, value => {
+      clearTimeout(timer);
+      if (cancelled) { value.dispose(); return; }
+      loaded = value;
+      setResource({ path: asset.filePath, texture: value, error: false });
+    }, undefined, () => {
+      clearTimeout(timer);
+      if (!cancelled) { reportIssue?.(asset.filePath, 'Could not load Ground Map image'); setResource({ path: asset.filePath, texture: null, error: true }); }
+    });
+    return () => { cancelled = true; clearTimeout(timer); loaded?.dispose(); };
+  }, [asset.filePath, reportIssue]);
   const { gl } = useThree();
   useEffect(() => {
+    if (!texture) return;
     texture.colorSpace = THREE.SRGBColorSpace;
     texture.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
     texture.needsUpdate = true;
   }, [gl, texture]);
+  if (!texture) return null;
   return <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
     <planeGeometry args={[transform.width, transform.length]} />
     <meshStandardMaterial map={texture} transparent opacity={transform.opacity} roughness={0.95} metalness={0} />
@@ -219,6 +242,7 @@ interface ThreeDSceneProps {
   onPhysicsSensorPlacement?: (position: { x: number; y: number; z: number }) => void;
   /** Reports that the loader and Scene introduction have both completed. */
   onPresentationComplete?: () => void;
+  onResourceIssuesChange?: (projectId: number | undefined, issues: SceneResourceIssue[]) => void;
   /** Incremented by the Project toolbar when another mutually exclusive menu opens. */
   environmentControlsCloseRequest?: number;
   /** Reports user-driven Environment menu visibility to the Project toolbar owner. */
@@ -2072,6 +2096,7 @@ export function ThreeDScene({
   placementPhysicsSensor,
   onPhysicsSensorPlacement,
   onPresentationComplete,
+  onResourceIssuesChange,
   environmentControlsCloseRequest = 0,
   onEnvironmentControlsOpenChange,
   onOpenEnvironmentDetails,
@@ -2344,6 +2369,39 @@ export function ThreeDScene({
   const [paintedPresentationKey, setPaintedPresentationKey] = useState<string | null>(null);
   const [productionSceneKey, setProductionSceneKey] = useState<string | null>(null);
   const [postProductionSceneKey, setPostProductionSceneKey] = useState<string | null>(null);
+  const [resourceStates, setResourceStates] = useState<{ key: string; states: Record<string, SceneResourceState> }>({ key: presentationKey, states: {} });
+  const reportResourceStatus = useCallback((id: string, state: SceneResourceState | null) => {
+    setResourceStates(current => {
+      const states = current.key === presentationKey ? current.states : {};
+      if (states[id] === state || (!state && !(id in states))) return current;
+      const next = { ...states };
+      if (state) next[id] = state; else delete next[id];
+      return { key: presentationKey, states: next };
+    });
+  }, [presentationKey]);
+  const [resourceIssues, setResourceIssues] = useState<{ key: string; issues: Record<string, SceneResourceIssue> }>({ key: presentationKey, issues: {} });
+  const reportResourceIssue = useCallback((id: string, issue: SceneResourceIssue | null) => {
+    setResourceIssues(current => {
+      const issues = current.key === presentationKey ? current.issues : {};
+      if (!issue && !(id in issues)) return current;
+      if (issue && issues[id]?.fileName === issue.fileName && issues[id]?.message === issue.message && issues[id]?.modelId === issue.modelId && issues[id]?.modelName === issue.modelName) return current;
+      const next = { ...issues };
+      if (issue) next[id] = issue; else delete next[id];
+      return { key: presentationKey, issues: next };
+    });
+  }, [presentationKey]);
+  const visibleResourceIssues = resourceIssues.key === presentationKey
+    ? [...new Map(Object.values(resourceIssues.issues).map(issue => [`${issue.modelId ?? "resource"}:${issue.fileName}:${issue.message}`, issue])).values()]
+    : [];
+  const resourceIssueSignature = JSON.stringify(visibleResourceIssues);
+  useEffect(() => {
+    onResourceIssuesChange?.(projectId, JSON.parse(resourceIssueSignature) as SceneResourceIssue[]);
+  }, [projectId, resourceIssueSignature, onResourceIssuesChange]);
+  const [warningsDismissed, setWarningsDismissed] = useState(false);
+  useEffect(() => { setWarningsDismissed(false); }, [presentationKey]);
+  const resourceValues = resourceStates.key === presentationKey ? Object.values(resourceStates.states) : [];
+  const resourceFailed = resourceValues.includes('failed');
+  const resourcesPending = resourceValues.includes('loading');
   const sceneFrameReady = paintedPresentationKey === presentationKey;
   const scenePresentationReady = sceneFrameReady
     && controlsReady
@@ -2388,7 +2446,7 @@ export function ThreeDScene({
         ? `Preparing Project Characters… ${settledCharacterCount}/${requiredCharacterMarkerIds.length}`
         : !controlsReady
           ? 'Preparing Scene controls…'
-          : 'Presenting Project…';
+          : resourcesPending ? 'Loading Project resources…' : 'Presenting Project…';
 
   useEffect(() => {
     if (!scenePresentationReady) return;
@@ -2467,18 +2525,28 @@ export function ThreeDScene({
     const controller = new AbortController();
     setGroundMapAsset(null);
     if (!projectId) return () => controller.abort();
+    reportResourceStatus('ground-map-record', 'loading');
+    const timeout = setTimeout(() => { reportResourceStatus('ground-map-record', 'failed'); controller.abort(); }, 30000);
     void fetch(`/api/threed/ground-maps?projectId=${projectId}`, { signal: controller.signal })
       .then(async response => {
         const payload = await response.json();
         if (!response.ok) throw new Error(payload.error || 'Failed to load Ground Map');
         if (!controller.signal.aborted) {
+          clearTimeout(timeout);
+          reportResourceStatus('ground-map-record', 'ready');
           setGroundMapAsset(payload.data ?? null);
           setGroundMapSourceProvider(payload.data?.sourceProvider ?? '');
           setGroundMapAttribution(payload.data?.attribution ?? '');
         }
-      }).catch(error => { if (error?.name !== 'AbortError') console.error('Failed to load Project Ground Map', { errorName: error instanceof Error ? error.name : 'UnknownError' }); });
-    return () => controller.abort();
-  }, [projectId]);
+      }).catch(error => {
+        clearTimeout(timeout);
+        if (!controller.signal.aborted) {
+          reportResourceStatus('ground-map-record', 'failed');
+          console.error('Failed to load Project Ground Map', { errorName: error instanceof Error ? error.name : 'UnknownError' });
+        }
+      });
+    return () => { clearTimeout(timeout); controller.abort(); reportResourceStatus('ground-map-record', null); };
+  }, [projectId, reportResourceStatus]);
   const uploadGroundMap = useCallback(async (file: File) => {
     if (!projectId) return;
     setGroundMapBusy(true);
@@ -2994,7 +3062,7 @@ export function ThreeDScene({
                   {groundMapBusy ? 'Uploading…' : groundMapAsset ? 'Replace Ground Map Image' : 'Upload Ground Map Image'}
                 </button>
                 {groundMapAsset && <button type="button" disabled={groundMapBusy} onClick={() => void deleteGroundMap()} className="w-full rounded border border-red-300/20 px-2 py-1 text-left text-red-200/80 hover:bg-red-500/10 disabled:opacity-40">Remove Ground Map Image</button>}
-                {groundMapAsset && <div className="text-[10px] text-white/50">{groundMapAsset.fileName} · {groundMapAsset.width} × {groundMapAsset.height}px</div>}
+                {groundMapAsset && <div className="text-[10px] text-muted-foreground">{groundMapAsset.fileName} · {groundMapAsset.width} × {groundMapAsset.height}px</div>}
                 {groundMap.visualMode === 'image' && groundMapAsset && <div className="grid grid-cols-2 gap-1">
                   {([
                     ['Width', 'width', 1, 20000, 1], ['Length', 'length', 1, 20000, 1],
@@ -3013,6 +3081,8 @@ export function ThreeDScene({
   );
 
   return (
+    <SceneResourceIssues.Provider value={reportResourceIssue}>
+    <SceneResourceStatus.Provider value={reportResourceStatus}>
     <SceneHoverTitleContext.Provider value={true}>
     <div
       className={`relative w-full ${placementLabel ? 'cursor-crosshair' : ''}`}
@@ -3031,22 +3101,22 @@ export function ThreeDScene({
         </div>
       )}
       {sceneProductionStarted && showSensors && (
-        <section data-scene-hover-obstacle aria-label="Physics Sensors" className="threed-workspace-panel threed-scene-panel-surface absolute right-3 top-3 z-30 flex max-h-[calc(100%-1.5rem)] w-72 max-w-[calc(100%-1.5rem)] flex-col overflow-hidden rounded-lg border border-white/15 text-xs text-white shadow-xl backdrop-blur-md">
+        <section data-scene-hover-obstacle aria-label="Physics Sensors" className="threed-workspace-panel threed-scene-panel-surface absolute right-3 top-3 z-30 flex max-h-[calc(100%-1.5rem)] w-72 max-w-[calc(100%-1.5rem)] flex-col overflow-hidden rounded-lg border border-foreground/15 text-xs text-foreground shadow-xl backdrop-blur-md">
           <header className="flex shrink-0 items-center justify-between gap-2 px-3 py-2">
             <h2 className="text-sm font-semibold">Physics Sensors</h2>
-            <button type="button" onClick={() => setShowSensors(false)} aria-label="Close Physics Sensors" className="rounded p-1 text-white/70 hover:bg-white/10"><X className="h-4 w-4" /></button>
+            <button type="button" onClick={() => setShowSensors(false)} aria-label="Close Physics Sensors" className="rounded p-1 text-foreground/70 hover:bg-foreground/10"><X className="h-4 w-4" /></button>
           </header>
           <div className="min-h-0 space-y-2 overflow-y-auto overscroll-contain px-3 pb-3 [scrollbar-width:thin]">
-            <button type="button" disabled={!counterGroups.length} onClick={resetSensorCounterState} className="rounded border border-white/15 px-2 py-1 disabled:opacity-40">Reset Counts</button>
-            {!counterGroups.length && <p className="text-white/65">No entry counters configured. Add a Physics Sensor Cuboid in an asset’s DetailsCard and choose Count Entries.</p>}
-            {counterGroups.map(([id, group]) => <details key={id} open className="rounded border border-white/10 p-2">
-              <summary className="cursor-pointer text-white/80">{group.name}</summary>
+            <button type="button" disabled={!counterGroups.length} onClick={resetSensorCounterState} className="rounded border border-foreground/15 px-2 py-1 disabled:opacity-40">Reset Counts</button>
+            {!counterGroups.length && <p className="text-foreground/65">No entry counters configured. Add a Physics Sensor Cuboid in an asset’s DetailsCard and choose Count Entries.</p>}
+            {counterGroups.map(([id, group]) => <details key={id} open className="rounded border border-foreground/10 p-2">
+              <summary className="cursor-pointer text-foreground/80">{group.name}</summary>
               <div className="mt-2 space-y-1">{group.members.map(member => <div key={sensorMemberKey(member)} className="flex items-start justify-between gap-3">
                 <span className="min-w-0 break-words">{member.name}</span>
                 <span className="shrink-0 tabular-nums">{sensorCounterState.counts[sensorMemberKey(member)] ?? 0}</span>
               </div>)}</div>
             </details>)}
-            <p className="text-[10px] text-white/55">Session counts continue while this panel is hidden.</p>
+            <p className="text-[10px] text-foreground/55">Session counts continue while this panel is hidden.</p>
           </div>
         </section>
       )}
@@ -3072,8 +3142,8 @@ export function ThreeDScene({
         </Button>
 
         {showControls && scenePostProduction && (
-          <div className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[3000] mt-1 max-h-[min(44rem,calc(100dvh-8rem))] w-56 space-y-0.5 overflow-y-auto rounded-lg border border-white/10 p-1.5 pb-2.5 shadow-xl backdrop-blur-sm [scrollbar-width:thin]">
-            <div className="text-[10px] text-white/60 px-2 py-0.5">Environment</div>
+          <div className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[3000] mt-1 max-h-[min(44rem,calc(100dvh-8rem))] w-56 space-y-0.5 overflow-y-auto rounded-lg border border-foreground/10 p-1.5 pb-2.5 shadow-xl backdrop-blur-sm [scrollbar-width:thin]">
+            <div className="text-[10px] text-foreground/60 px-2 py-0.5">Environment</div>
             <Button
               type="button"
               variant="ghost"
@@ -3090,25 +3160,25 @@ export function ThreeDScene({
               <Settings className="h-3.5 w-3.5" />
               Setup Environment Map
             </Button>
-            <div className="my-1 border-t border-white/10" />
+            <div className="my-1 border-t border-foreground/10" />
             <select
               value={envPreset}
               onChange={(e) => setEnvPreset(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded px-2 py-1 text-xs text-white/80 focus:outline-none focus:border-white/30 appearance-none"
+              className="w-full bg-foreground/5 border border-foreground/10 rounded px-2 py-1 text-xs text-foreground/80 focus:outline-none focus:border-foreground/30 appearance-none"
               style={{ scrollbarWidth: 'thin' }}
             >
               {THREE_D_ENVIRONMENT_PRESETS.map((preset) => (
-                <option key={preset.key} value={preset.key} className="bg-gray-800 text-white">
+                <option key={preset.key} value={preset.key} className="bg-background text-foreground">
                   {preset.label}
                 </option>
               ))}
             </select>
-            {groundMapInspector ? <button type="button" className="w-full rounded px-2 py-2 text-left text-xs text-white/80 hover:bg-white/10" onClick={() => {
+            {groundMapInspector ? <button type="button" className="w-full rounded px-2 py-2 text-left text-xs text-foreground/80 hover:bg-foreground/10" onClick={() => {
               groundMapInspector?.setOpen(true);
               setShowControls(false);
               onEnvironmentControlsOpenChange?.(false);
             }}>Ground Map · Edit settings</button> : <details className="px-2 py-1 text-xs"><summary>Ground Map</summary>{groundMapControls}</details>}
-            <details className="px-2 py-1 text-xs text-white/70">
+            <details className="px-2 py-1 text-xs text-foreground/70">
               <summary className="cursor-pointer">Sunlight + Ground</summary>
               <label className="block mt-2">Sun Direction: {sunlight.azimuth}°
                 <input className="w-full" type="range" min="0" max="360" value={sunlight.azimuth} title="Adjust sun direction. An overhead sun lowers to 45° so direction is visible." onChange={e => setSunlight(v => ({...v, azimuth: Number(e.target.value), elevation: v.elevation === 90 ? 45 : v.elevation}))} />
@@ -3118,56 +3188,56 @@ export function ThreeDScene({
               </label>
               <label className="block"><input type="checkbox" checked={extraGround.enabled} onChange={e => setExtraGround(v => ({...v, enabled: e.target.checked}))} /> Apply Ground Plane</label>
               {extraGround.enabled && <div className="space-y-1 mt-1">
-                <label className="flex items-center gap-2"><span className="w-10 shrink-0">Size</span><input aria-label="Ground size" className="min-w-0 flex-1 bg-black/40" type="number" min="10" max="2000" value={extraGround.size} onChange={e => { const n = Number(e.target.value); if (Number.isFinite(n) && n >= 10 && n <= 2000) setExtraGround(v => ({...v, size: n})); }} /></label>
-                <label className="flex items-center gap-2"><span className="w-10 shrink-0">Height</span><input aria-label="Ground height" className="min-w-0 flex-1 bg-black/40" type="number" step="0.1" min="-1000" max="1000" value={extraGround.height} onChange={e => { const n = Number(e.target.value); if (Number.isFinite(n) && Math.abs(n) <= 1000) setExtraGround(v => ({...v, height: n})); }} /></label>
+                <label className="flex items-center gap-2"><span className="w-10 shrink-0">Size</span><input aria-label="Ground size" className="min-w-0 flex-1 bg-background/80" type="number" min="10" max="2000" value={extraGround.size} onChange={e => { const n = Number(e.target.value); if (Number.isFinite(n) && n >= 10 && n <= 2000) setExtraGround(v => ({...v, size: n})); }} /></label>
+                <label className="flex items-center gap-2"><span className="w-10 shrink-0">Height</span><input aria-label="Ground height" className="min-w-0 flex-1 bg-background/80" type="number" step="0.1" min="-1000" max="1000" value={extraGround.height} onChange={e => { const n = Number(e.target.value); if (Number.isFinite(n) && Math.abs(n) <= 1000) setExtraGround(v => ({...v, height: n})); }} /></label>
               </div>}
               <p className="mt-1 text-[10px]">Save Project to keep settings.</p>
             </details>
-            <div className="border-t border-white/10 my-1" />
-            <button onClick={onAutoRotateToggle} aria-pressed={autoRotate} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${autoRotate ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
+            <div className="border-t border-foreground/10 my-1" />
+            <button onClick={onAutoRotateToggle} aria-pressed={autoRotate} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${autoRotate ? 'bg-foreground/10 text-foreground' : 'text-foreground/70 hover:bg-foreground/10 hover:text-foreground'}`}>
               <RotateCw className={`h-3.5 w-3.5 ${autoRotate ? 'animate-spin [animation-duration:4s]' : ''}`} />
               {autoRotate ? 'Pause Rotation' : 'Auto-Rotate'}
             </button>
-            <button onClick={() => setShowGrid(!showGrid)} aria-pressed={showGrid} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showGrid ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
+            <button onClick={() => setShowGrid(!showGrid)} aria-pressed={showGrid} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showGrid ? 'bg-foreground/10 text-foreground' : 'text-foreground/70 hover:bg-foreground/10 hover:text-foreground'}`}>
               <Grid3X3 className="h-3.5 w-3.5" />
               {showGrid ? 'Hide Grid' : 'Show Grid'}
             </button>
-            <button type="button" onClick={() => setShowCompass(value => !value)} aria-pressed={showCompass} className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-white/70 hover:bg-white/10 hover:text-white">
+            <button type="button" onClick={() => setShowCompass(value => !value)} aria-pressed={showCompass} className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-foreground/70 hover:bg-foreground/10 hover:text-foreground">
               <Compass className="h-3.5 w-3.5" />
               {showCompass ? 'Hide Compass' : 'Show Compass'}
             </button>
             {hasData && Object.keys(typeCounts).length > 0 && (
-              <button onClick={() => setShowLegend(!showLegend)} aria-pressed={showLegend} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showLegend ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
+              <button onClick={() => setShowLegend(!showLegend)} aria-pressed={showLegend} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showLegend ? 'bg-foreground/10 text-foreground' : 'text-foreground/70 hover:bg-foreground/10 hover:text-foreground'}`}>
                 <List className="h-3.5 w-3.5" />
                 {showLegend ? 'Hide Legend' : 'Show Legend'}
               </button>
             )}
-            <button onClick={() => { setShowSensors(value => !value); setShowControls(false); }} aria-pressed={showSensors} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showSensors ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
+            <button onClick={() => { setShowSensors(value => !value); setShowControls(false); }} aria-pressed={showSensors} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showSensors ? 'bg-foreground/10 text-foreground' : 'text-foreground/70 hover:bg-foreground/10 hover:text-foreground'}`}>
               <Target className="h-3.5 w-3.5" />
               {showSensors ? 'Hide Sensors' : 'Show Sensors'}
             </button>
             <button
               onClick={() => setPhysicsDebug(!physicsDebug)}
-              className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${physicsDebug ? 'bg-amber-500/20 text-amber-100' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}
+              className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${physicsDebug ? 'bg-amber-500/20 text-amber-800 dark:text-amber-100' : 'text-foreground/70 hover:bg-foreground/10 hover:text-foreground'}`}
               aria-pressed={physicsDebug}
             >
               <BrickWall className="h-3.5 w-3.5" />
               {physicsDebug ? 'Hide Physics Debug' : 'Show Physics Debug'}
             </button>
-            <button onClick={() => setShowGizmoCube(!showGizmoCube)} aria-pressed={showGizmoCube} className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-white/70 transition-colors hover:bg-white/10 hover:text-white">
+            <button onClick={() => setShowGizmoCube(!showGizmoCube)} aria-pressed={showGizmoCube} className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-foreground/70 transition-colors hover:bg-foreground/10 hover:text-foreground">
               <Move3D className="h-3.5 w-3.5" />
               {showGizmoCube ? 'Hide Gizmo' : 'Show Gizmo'}
             </button>
             {incidents.length > 0 && (
-              <button onClick={() => setShowIncidents(!showIncidents)} aria-pressed={showIncidents} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showIncidents ? 'bg-white/10 text-white' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}>
+              <button onClick={() => setShowIncidents(!showIncidents)} aria-pressed={showIncidents} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showIncidents ? 'bg-foreground/10 text-foreground' : 'text-foreground/70 hover:bg-foreground/10 hover:text-foreground'}`}>
                 <Siren className="h-3.5 w-3.5" />
                 {showIncidents ? 'Hide Incidents' : 'Show Incidents'}
               </button>
             )}
-            <div className="border-t border-white/10 my-1" />
+            <div className="border-t border-foreground/10 my-1" />
             <button
               onClick={showNorthUpView}
-              className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+              className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-foreground/70 transition-colors hover:bg-foreground/10 hover:text-foreground"
             >
               <Compass className="h-3.5 w-3.5" />
               North-Up View
@@ -3177,7 +3247,7 @@ export function ThreeDScene({
                 setSelectedDetails(null);
                 if (controlsRef.current) zoomToPosition(centerX, centerZ);
               }}
-              className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+              className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-foreground/70 transition-colors hover:bg-foreground/10 hover:text-foreground"
             >
               <Crosshair className="h-3.5 w-3.5" />
               Center View
@@ -3186,7 +3256,7 @@ export function ThreeDScene({
             {/* ✅ Save View button */}
             <button
               onClick={() => setShowPresetDialog(true)}
-              className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-white/70 transition-colors hover:bg-white/10 hover:text-white"
+              className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-foreground/70 transition-colors hover:bg-foreground/10 hover:text-foreground"
             >
               <Save className="h-3.5 w-3.5" />
               Save Current View
@@ -3195,23 +3265,23 @@ export function ThreeDScene({
             {/* ✅ View presets list */}
             {viewPresets.length > 0 && (
               <>
-                <div className="border-t border-white/10 my-1"></div>
-                <div className="text-[10px] text-white/60 px-2 py-0.5">Saved Views</div>
+                <div className="border-t border-foreground/10 my-1"></div>
+                <div className="text-[10px] text-foreground/60 px-2 py-0.5">Saved Views</div>
                 {viewPresets.map((preset) => (
                   <div key={preset.id} className="flex items-center gap-1 group">
                     <button
                       onClick={() => loadViewPreset(preset)}
                       className={`flex-1 text-left px-2 py-0.5 rounded text-xs transition-colors ${
                         selectedPresetId === preset.id
-                          ? 'text-green-400 bg-green-500/20'
-                          : 'text-white/70 hover:text-white hover:bg-white/10'
+                          ? 'text-green-700 dark:text-green-400 bg-green-500/20'
+                          : 'text-foreground/70 hover:text-foreground hover:bg-foreground/10'
                       }`}
                     >
                       {preset.name}
                     </button>
                     <button
                       onClick={() => deleteViewPreset(preset.id)}
-                      className="opacity-0 group-hover:opacity-100 text-white/30 hover:text-red-400 transition-all text-xs px-1"
+                      className="opacity-0 group-hover:opacity-100 text-foreground/30 hover:text-red-400 transition-all text-xs px-1"
                     >
                       <Trash2 className="h-3 w-3" />
                     </button>
@@ -3223,8 +3293,8 @@ export function ThreeDScene({
             {/* Layer controls */}
             {availableLayers.length > 0 && (
               <>
-                <div className="border-t border-white/10 my-1"></div>
-                <div className="text-[10px] text-white/60 px-2 py-0.5 flex items-center gap-1">
+                <div className="border-t border-foreground/10 my-1"></div>
+                <div className="text-[10px] text-foreground/60 px-2 py-0.5 flex items-center gap-1">
                   <Layers className="w-3 h-3" />
                   <span>Scene Layers</span>
                   <button
@@ -3235,7 +3305,7 @@ export function ThreeDScene({
                         setActiveLayers(new Set(availableLayers));
                       }
                     }}
-                    className="ml-auto text-[10px] text-white/40 hover:text-white/80 transition-colors"
+                    className="ml-auto text-[10px] text-foreground/40 hover:text-foreground/80 transition-colors"
                   >
                     {allAvailableLayersVisible ? 'Hide All' : 'Show All'}
                   </button>
@@ -3254,8 +3324,8 @@ export function ThreeDScene({
                     }}
                     className={`w-full text-left px-2 py-0.5 rounded text-xs transition-colors flex items-center gap-1.5 ${
                       activeLayers.has(layer) 
-                        ? 'text-white hover:bg-white/10' 
-                        : 'text-white/40 hover:bg-white/5'
+                        ? 'text-foreground hover:bg-foreground/10'
+                        : 'text-foreground/40 hover:bg-foreground/5'
                     }`}
                   >
                     <span
@@ -3264,7 +3334,7 @@ export function ThreeDScene({
                     />
                     <span className="capitalize">{layer}</span>
                     <span className="ml-auto text-[10px] flex items-center gap-1">
-                      <span className="text-white/40">{availableTypeCounts[layer] ?? 0}</span>
+                      <span className="text-foreground/40">{availableTypeCounts[layer] ?? 0}</span>
                       {activeLayers.has(layer)
                         ? <Eye className="h-3 w-3" />
                         : <EyeOff className="h-3 w-3" />}
@@ -3280,18 +3350,18 @@ export function ThreeDScene({
       {/* ✅ Save View Dialog */}
       {showPresetDialog && (
         <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="threed-workspace-panel border border-white/10 rounded-lg p-4 max-w-sm w-full mx-4 shadow-2xl">
+          <div className="threed-workspace-panel border border-foreground/10 rounded-lg p-4 max-w-sm w-full mx-4 shadow-2xl">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-white">Save Current View</h3>
+              <h3 className="text-sm font-medium text-foreground">Save Current View</h3>
               <button
                 onClick={() => setShowPresetDialog(false)}
-                className="text-white/40 hover:text-white/80 transition-colors"
+                className="text-foreground/40 hover:text-foreground/80 transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
             
-            <p className="text-xs text-white/50 mb-3">
+            <p className="text-xs text-foreground/50 mb-3">
               Save the current camera position and active layers as a named view.
             </p>
             
@@ -3304,20 +3374,20 @@ export function ThreeDScene({
                 if (e.key === 'Enter') saveCurrentView();
                 if (e.key === 'Escape') setShowPresetDialog(false);
               }}
-              className="w-full bg-white/5 border border-white/10 rounded px-3 py-2 text-sm text-white placeholder-white/30 focus:outline-none focus:border-white/30 transition-colors"
+              className="w-full bg-foreground/5 border border-foreground/10 rounded px-3 py-2 text-sm text-foreground placeholder-foreground/30 focus:outline-none focus:border-foreground/30 transition-colors"
               autoFocus
             />
             
             <div className="flex gap-2 mt-3">
               <button
                 onClick={() => setShowPresetDialog(false)}
-                className="flex-1 px-3 py-1.5 text-xs text-white/60 hover:text-white/80 border border-white/10 rounded transition-colors"
+                className="flex-1 px-3 py-1.5 text-xs text-foreground/60 hover:text-foreground/80 border border-foreground/10 rounded transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={saveCurrentView}
-                className="flex-1 px-3 py-1.5 text-xs bg-primary text-white rounded hover:bg-primary/80 transition-colors"
+                className="flex-1 px-3 py-1.5 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/80 transition-colors"
               >
                 Save View
               </button>
@@ -3740,6 +3810,18 @@ export function ThreeDScene({
       </div>
       )}
 
+      {!physicsFailed && !warningsDismissed && (resourceFailed || visibleResourceIssues.length > 0) && (
+        <aside aria-label="Scene file loading warnings" className="absolute bottom-4 left-4 z-40 max-w-sm max-h-[35%] overflow-auto rounded-lg border border-amber-600/40 bg-amber-50/95 dark:border-amber-400/40 dark:bg-slate-950/90 p-3 text-xs text-amber-950 dark:text-amber-100 shadow-lg">
+          <div className="flex items-start justify-between gap-3">
+            <p role="status" className="font-semibold">Some files could not be loaded</p>
+            <button type="button" aria-label="Close file loading warnings" title="Close warnings" className="shrink-0 rounded p-1 hover:bg-amber-900/10 dark:hover:bg-white/10 focus-visible:outline focus-visible:outline-2" onClick={() => setWarningsDismissed(true)}><X className="h-3.5 w-3.5" /></button>
+          </div>
+          <p className="mt-1 text-amber-900 dark:text-amber-100/80">You can continue using this Project.</p>
+          {visibleResourceIssues.length > 0 ? <ul className="mt-2 space-y-1">
+            {visibleResourceIssues.map(issue => <li key={`${issue.modelId ?? "resource"}:${issue.fileName}:${issue.message}`} className="break-words"><span className="font-mono">{issue.fileName}</span> — {issue.message}</li>)}
+          </ul> : <p className="mt-2">A Model or Ground Map is unavailable.</p>}
+        </aside>
+      )}
       {!physicsFailed && !scenePostProduction && (
         <ThreeDProjectLoadingPresentation
           progress={sceneLoadingProgress}
@@ -3749,5 +3831,7 @@ export function ThreeDScene({
       )}
     </div>
     </SceneHoverTitleContext.Provider>
+    </SceneResourceStatus.Provider>
+    </SceneResourceIssues.Provider>
   );
 }

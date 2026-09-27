@@ -130,7 +130,7 @@ export function ModelInstancePlacementEditor({
               placementRole,
             });
           }}
-          className="flex items-center justify-center gap-1.5 rounded bg-cyan-600/35 px-2 py-1.5 text-[11px] font-medium text-cyan-100 transition-colors hover:bg-cyan-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+          className="flex items-center justify-center gap-1.5 rounded bg-cyan-600/35 px-2 py-1.5 text-[11px] font-medium text-cyan-800 dark:text-cyan-100 transition-colors hover:bg-cyan-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-foreground/5 disabled:text-foreground/30"
         >
           {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
           Save Model
@@ -142,7 +142,7 @@ export function ModelInstancePlacementEditor({
             event.stopPropagation();
             onMoveToggle(instanceId, instanceName.trim() || `Model instance #${instanceId}`);
           }}
-          className="flex items-center justify-center gap-1 rounded bg-amber-600/30 px-1.5 py-1.5 text-[10px] font-medium text-amber-100 transition-colors hover:bg-amber-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+          className="flex items-center justify-center gap-1 rounded bg-amber-600/30 px-1.5 py-1.5 text-[10px] font-medium text-amber-800 dark:text-amber-100 transition-colors hover:bg-amber-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-foreground/5 disabled:text-foreground/30"
         >
           <Crosshair className="h-3.5 w-3.5" />
           {moveActive ? 'Cancel Move' : 'Move Model'}
@@ -156,7 +156,7 @@ export function ModelInstancePlacementEditor({
             if (!window.confirm(`Delete "${name}" from this ThreeD Project?`)) return;
             onDelete(instanceId, name);
           }}
-          className="flex items-center justify-center gap-1.5 rounded bg-red-600/30 px-2 py-1.5 text-[11px] font-medium text-red-100 transition-colors hover:bg-red-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+          className="flex items-center justify-center gap-1.5 rounded bg-red-600/30 px-2 py-1.5 text-[11px] font-medium text-red-800 dark:text-red-100 transition-colors hover:bg-red-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-foreground/5 disabled:text-foreground/30"
         >
           {deleting
             ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -169,23 +169,23 @@ export function ModelInstancePlacementEditor({
           <Box className="h-3.5 w-3.5" />
           Project Model Instance
         </span>}
-        summaryAside={<span className={`text-[9px] ${dirty ? (valid ? 'text-amber-200' : 'text-red-300') : 'text-white/35'}`} aria-live="polite">
+        summaryAside={<span className={`text-[9px] ${dirty ? (valid ? 'text-amber-800 dark:text-amber-200' : 'text-red-800 dark:text-red-300') : 'text-foreground/35'}`} aria-live="polite">
           {editStatus}
         </span>}
       >
       <label className="block space-y-1">
-        <span className="text-[10px] text-white/50">Instance name</span>
+        <span className="text-[10px] text-foreground/50">Instance name</span>
         <input
           value={instanceName}
           maxLength={120}
           disabled={busy}
           onChange={(event) => setInstanceName(event.target.value)}
-          className="h-7 w-full rounded border border-white/10 bg-white/5 px-2 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+          className="h-7 w-full rounded border border-foreground/10 bg-foreground/5 px-2 text-[11px] text-foreground outline-none focus:border-foreground/30 disabled:opacity-50"
         />
       </label>
       <div className="grid grid-cols-2 gap-2">
         <label className="block space-y-1">
-          <span className="text-[10px] text-white/50">Instance scale</span>
+          <span className="text-[10px] text-foreground/50">Instance scale</span>
           <input
             type="number"
             min="0.0001"
@@ -194,18 +194,18 @@ export function ModelInstancePlacementEditor({
             value={scaleMultiplier}
             disabled={busy}
             onChange={(event) => setScaleMultiplier(event.target.value)}
-            className="h-7 w-full rounded border border-white/10 bg-white/5 px-2 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+            className="h-7 w-full rounded border border-foreground/10 bg-foreground/5 px-2 text-[11px] text-foreground outline-none focus:border-foreground/30 disabled:opacity-50"
           />
         </label>
         <label className="block space-y-1">
-          <span className="text-[10px] text-white/50">Y rotation (°)</span>
+          <span className="text-[10px] text-foreground/50">Y rotation (°)</span>
           <input
             type="number"
             step="1"
             value={rotationYDegrees}
             disabled={busy}
             onChange={(event) => setRotationYDegrees(event.target.value)}
-            className="h-7 w-full rounded border border-white/10 bg-white/5 px-2 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+            className="h-7 w-full rounded border border-foreground/10 bg-foreground/5 px-2 text-[11px] text-foreground outline-none focus:border-foreground/30 disabled:opacity-50"
           />
         </label>
       </div>
@@ -216,25 +216,25 @@ export function ModelInstancePlacementEditor({
           ['Position Z', positionZ, setPositionZ],
         ].map(([label, value, setter]) => (
           <label key={label as string} className="block min-w-0 space-y-1">
-            <span className="text-[9px] text-white/50">{label as string}</span>
+            <span className="text-[9px] text-foreground/50">{label as string}</span>
             <input
               type="number"
               step="0.1"
               value={value as string}
               disabled={busy}
               onChange={(event) => (setter as (value: string) => void)(event.target.value)}
-              className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+              className="h-7 w-full rounded border border-foreground/10 bg-foreground/5 px-1.5 text-[11px] text-foreground outline-none focus:border-foreground/30 disabled:opacity-50"
             />
           </label>
         ))}
       </div>
-      <div className="text-[9px] text-white/35">
+      <div className="text-[9px] text-foreground/35">
         Effective scale: {(baseModelScale * (Number.isFinite(parsedScale) ? parsedScale : 0)).toLocaleString()}
       </div>
       </DetailsCardSection>
       <DetailsCardSection title="Scene Role">
         <label className="block space-y-1">
-          <span className="text-[10px] text-white/60">Model role in this Project</span>
+          <span className="text-[10px] text-foreground/60">Model role in this Project</span>
           <select
           value={placementRole}
           disabled={busy}
@@ -243,7 +243,7 @@ export function ModelInstancePlacementEditor({
             setPlacementRole(nextRole);
             if (nextRole === 'environment' && physicsMode === 'ball') setPhysicsMode('box');
           }}
-          className="h-7 w-full rounded border border-white/10 bg-black/45 px-2 text-[10px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+          className="h-7 w-full rounded border border-foreground/10 bg-black/45 px-2 text-[10px] text-foreground outline-none focus:border-foreground/30 disabled:opacity-50"
           >
             <option value="object">Scene Object</option>
             <option value="environment">Environment / Base Map</option>
@@ -252,13 +252,13 @@ export function ModelInstancePlacementEditor({
       </DetailsCardSection>
       <DetailsCardSection title="Physics Mode">
       <label className="block space-y-1">
-        <span className="text-[10px] text-white/60">Collision and movement profile</span>
+        <span className="text-[10px] text-foreground/60">Collision and movement profile</span>
         <select
           value={physicsMode}
           disabled={busy}
           aria-label="Model physics mode"
           onChange={(event) => setPhysicsMode(event.target.value as ProjectModelPhysicsMode)}
-          className="h-7 w-full rounded border border-white/10 bg-black/45 px-2 text-[10px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+          className="h-7 w-full rounded border border-foreground/10 bg-black/45 px-2 text-[10px] text-foreground outline-none focus:border-foreground/30 disabled:opacity-50"
         >
           <option value="box">Fixed Box</option>
           <option value="triangle-surface">Fixed Triangle Surface</option>
@@ -270,15 +270,15 @@ export function ModelInstancePlacementEditor({
         <DetailsCardSection title="Ball Physics">
           <div className="mt-2 grid grid-cols-2 gap-2">
             {Object.entries(BALL_PHYSICS_FIELDS).map(([key, field]) => (
-              <label key={key} className="block text-[10px] text-white/60">
+              <label key={key} className="block text-[10px] text-foreground/60">
                 {field.label}
                 <input type="number" min={field.min} max={field.max} step={field.step} value={physics[key]} disabled={busy}
                   onChange={event => setPhysics(current => ({ ...current, [key]: event.target.value }))}
-                  className="mt-1 h-7 w-full rounded border border-white/10 bg-white/5 px-2 text-[11px] text-white" />
+                  className="mt-1 h-7 w-full rounded border border-foreground/10 bg-foreground/5 px-2 text-[11px] text-foreground" />
               </label>
             ))}
           </div>
-          {!physicsValid && <p className="text-[10px] text-red-300">Enter values within the allowed ranges.</p>}
+          {!physicsValid && <p className="text-[10px] text-red-800 dark:text-red-300">Enter values within the allowed ranges.</p>}
         </DetailsCardSection>
       )}
       {physicsMode !== 'ball' && placementRole !== 'environment' && (
@@ -287,7 +287,7 @@ export function ModelInstancePlacementEditor({
             <input type="checkbox" checked={volumeSensor} disabled={busy} onChange={event => setVolumeSensor(event.target.checked)} />
             Use the Model bounding box as an entry counter
           </label>
-          <p className="mt-2 text-[10px] text-white/60">For named sensors and groups, add Physics Sensor Cuboids below.</p>
+          <p className="mt-2 text-[10px] text-foreground/60">For named sensors and groups, add Physics Sensor Cuboids below.</p>
         </DetailsCardSection>
       )}
     </div>

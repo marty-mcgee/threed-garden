@@ -68,7 +68,7 @@ const tasks = {
   'threed-library-placement': [ts('validate-threed-library-placement.mts')],
   'threed-scenarios': [ts('validate-threed-scenarios.mts')],
   'threed-library-collections': [ts('validate-threed-library-collections.mts')],
-  'threed-project-session': [ts('validate-threed-project-session.mts')],
+  'threed-project-session': [ts('validate-threed-project-session.mts'), node('validate-public-scene-api.cjs'), node('validate-project-asset-warnings.cjs'), ['node', '--import', 'tsx', `${scripts}/validate-scene-loading-policy.mts`]],
   'threed-mqtt': [['node', '--import', 'tsx', 'src/libraries/services/threed/mqtt/validate.mts']],
   'threed-assembly-persistence': [['node', '--conditions=react-server', '--import', 'tsx', `${scripts}/validate-assembly-persistence.mts`]],
   'threed-assembly-group': [ts('validate-assembly-group.mts')],

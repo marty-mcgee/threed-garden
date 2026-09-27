@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import type { ModelData } from '@/components/threed/markers/ModelMarker3D';
 import { useModelPreviewSize } from '@/components/settings/ModelPreviewSettings';
-import { resolvePreviewRequirements } from './model-preview-requirements';
+import { modelForPreview, resolvePreviewRequirements } from './model-preview-requirements';
 import { ThreeDModelAssetPreview } from './ThreeDModelAssetPreview';
 
 export function ModelPreviewImageExport({ model, dependencyCount, attachedDependencyCount, onUseImageUrl, disabled = false }: {
@@ -41,7 +41,7 @@ export function ModelPreviewImageExport({ model, dependencyCount, attachedDepend
         const detailResponse = await fetch(`/api/threed/models?id=${model.id}`, { signal: controller.signal });
         const detail = await detailResponse.json();
         if (!detailResponse.ok || !detail.success) throw new Error();
-        if (!controller.signal.aborted) setCaptureModel(detail.data);
+        if (!controller.signal.aborted) setCaptureModel(modelForPreview(detail.data));
         const resolved = resolvePreviewRequirements(detail.data, result.data.requirements);
         if (!controller.signal.aborted) setRequirements({ total: resolved.length,
           attached: resolved.filter(item => item.satisfied).length,

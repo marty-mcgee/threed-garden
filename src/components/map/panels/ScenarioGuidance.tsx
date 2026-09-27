@@ -28,7 +28,7 @@ export function ScenarioGuidance({ markers, projectId }: { markers: RuntimeMarke
   const inputClass = 'mt-1 w-full rounded border border-white/15 p-1.5 text-xs';
   return <section className="mt-3 space-y-3 rounded-lg border border-white/15 p-3" aria-label="Scenario guidance">
     <h3 className="text-sm font-semibold">Scenario guidance</h3>
-    <p className="text-xs text-white/70">Review this Project’s setup. Choices here last until guidance closes; they do not save or alter Scene assets.</p>
+    <p className="text-xs text-foreground/70">Review this Project’s setup. Choices here last until guidance closes; they do not save or alter Scene assets.</p>
     <label className="block text-xs">Reference Scenario
       <select className={inputClass} value={kind} onChange={event => setKind(event.target.value as ScenarioKind)}>
         <option value="soccer">Soccer</option><option value="farming">Farming</option>
@@ -48,7 +48,7 @@ export function ScenarioGuidance({ markers, projectId }: { markers: RuntimeMarke
     </label>}
     <p className="text-xs font-medium">{checks.filter(check => check.complete).length} / {checks.length} setup checks met</p>
     <ul className="space-y-1 text-xs">{checks.map(check => <li key={check.id}><span className={check.complete ? 'text-emerald-300' : 'text-amber-200'}>{check.complete ? 'Ready' : 'Needed'}</span> · {check.label}</li>)}</ul>
-    {kind === 'soccer' ? <p className="text-xs text-white/70">Use Project Assets to edit sensors and their groups. Verify each sensor’s placement, then use Environment → Show Sensors to observe entries and reset counts. Counts are session-only. Setup checks do not prove ball entry or collision behavior.</p> : <>
+    {kind === 'soccer' ? <p className="text-xs text-foreground/70">Use Project Assets to edit sensors and their groups. Verify each sensor’s placement, then use Environment → Show Sensors to observe entries and reset counts. Counts are session-only. Setup checks do not prove ball entry or collision behavior.</p> : <>
       <label className="block text-xs">Read a FarmBot observation (optional)
         <select className={inputClass} value={farmbotId} onChange={event => setFarmbotId(event.target.value)}>
           <option value="">Choose an assigned FarmBot</option>
@@ -56,7 +56,7 @@ export function ScenarioGuidance({ markers, projectId }: { markers: RuntimeMarke
         </select>
       </label>
       {observed && <Observation key={observed.id} marker={observed} projectId={projectId} />}
-      <p className="text-xs text-white/70">Inspect saved asset positions in Project Assets. Equipment observations do not move assets or send device commands.</p>
+      <p className="text-xs text-foreground/70">Inspect saved asset positions in Project Assets. Equipment observations do not move assets or send device commands.</p>
     </>}
   </section>;
 }

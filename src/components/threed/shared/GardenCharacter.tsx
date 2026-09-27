@@ -1,6 +1,8 @@
 // src/components/threed/shared/GardenCharacter.tsx
 'use client';
 
+import { modelLoadCompletion } from '@/libraries/services/threed/models/model-load-completion';
+import { useSceneResourceStatus, useSceneResourceIssueReporter } from './SceneResourceStatus';
 import { useSceneHoverTitle } from '@/components/threed/shared/SceneHoverTitleContext';
 
 import { reportCharacterAnimationAvailability, DETAILS_ANIMATION_ACTIONS } from '@/libraries/services/threed/animations/runtime-availability';
@@ -50,8 +52,9 @@ interface CharacterData {
   status: string;
 
   modelId: number | null;
+  sceneAnimationMapping?: import('@/libraries/utils/assignedCharacterAnimations').CharacterAnimationMapping;
 
-  model?: {
+  model?: import('@/libraries/services/threed/models/character-model-textures').ProjectModelResources & {
     id: number;
 
     modelName: string;
@@ -452,7 +455,10 @@ export function GardenCharacter({
   ] =
     useState(false);
 
+  const reportResourceIssue = useSceneResourceIssueReporter(character.model?.filePath ?? '', character.model?.id, character.model?.modelName);
   const runtimeSettlementReportedRef = useRef(false);
+  useSceneResourceStatus(Boolean(character.model?.filePath && !model && !modelError), modelError);
+
   useEffect(() => {
     if (previewMode || previewClip || (character.model?.filePath && !modelError)) return;
     return reportCharacterAnimationAvailability(character.id, character.model?.filePath ?? '', []);
@@ -599,9 +605,11 @@ export function GardenCharacter({
             'glb';
 
           const textureResolution = modelType === 'fbx'
-            ? await loadCharacterTextureManager(character.model!.id)
+            ? await loadCharacterTextureManager(character.model!.id, character.model)
             : null;
           if (cancelled) return;
+          const resourceManager = textureResolution?.manager ?? new THREE.LoadingManager();
+          const waitForResources = modelLoadCompletion(resourceManager, reportResourceIssue);
 
           const cacheKey =
             `${modelPath}-${modelType}-${textureResolution?.signature ?? ''}`;
@@ -630,7 +638,7 @@ export function GardenCharacter({
             ) {
               case 'fbx': {
                 loadedModel =
-                  await new FBXLoader(textureResolution?.manager)
+                  await new FBXLoader(resourceManager)
                     .loadAsync(
                       modelPath,
                     ) as THREE.Group;
@@ -640,7 +648,7 @@ export function GardenCharacter({
 
               case 'obj': {
                 loadedModel =
-                  await new OBJLoader()
+                  await new OBJLoader(resourceManager)
                     .loadAsync(
                       modelPath,
                     ) as unknown as THREE.Group;
@@ -650,7 +658,7 @@ export function GardenCharacter({
 
               default: {
                 const gltf =
-                  await new GLTFLoader()
+                  await new GLTFLoader(resourceManager)
                     .loadAsync(
                       modelPath,
                     );
@@ -669,7 +677,8 @@ export function GardenCharacter({
               }
             }
 
-            modelCache.set(
+            const resourcesReady = await waitForResources();
+            if (resourcesReady) modelCache.set(
               cacheKey,
               loadedModel.clone(),
             );
@@ -784,7 +793,7 @@ export function GardenCharacter({
 
           const externalLibrary = previewMode ? { clips: [], blocked: new Set<string>(), assigned: new Set<string>() } : previewClip ? await loadCharacterPreviewAnimation(previewClip, loadedModel) : await loadAssignedCharacterAnimations(
             character.id, character.model!.id, character.model!.modelName,
-            character.model!.filePath, loadedModel,
+            character.model!.filePath, loadedModel, character.sceneAnimationMapping,
           );
 
           if (
@@ -1026,6 +1035,7 @@ export function GardenCharacter({
           if (
             !cancelled
           ) {
+            reportResourceIssue?.(character.model?.filePath ?? '', 'Could not load Character resources');
             if (isPreview) onPreviewState?.(null);
             setModel(
               loadedModel,
@@ -1113,7 +1123,7 @@ export function GardenCharacter({
       );
     };
   }, [
-    character, previewClip, previewMode, isPreview, onPreviewState,
+    character, previewClip, previewMode, isPreview, onPreviewState, reportResourceIssue,
   ]);
 
   // Preview-only switches retain the loaded Model, mixer and camera.

@@ -20,7 +20,7 @@ async function test(cancel = false, fail = false, limit = 10) {
     const jsx = (type, props) => { const n = { type, props }; nodes.push(n); return n; };
     const module = { exports: {} };
     const code = ts.transpileModule(fs.readFileSync('src/components/admin/threed/models/ModelPreviewBatchExport.tsx', 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX, target: ts.ScriptTarget.ES2022 } }).outputText;
-    vm.runInNewContext(code, { module, exports: module.exports, Blob, FormData, AbortSignal, setTimeout, clearTimeout, require: n => n === 'react' ? react : n === 'react/jsx-runtime' ? { jsx, jsxs: jsx } : n === './model-preview-requirements' ? { resolvePreviewRequirements: (_, requirements) => requirements } : n.endsWith('/ModelPreviewSettings') ? { useModelPreviewSize: () => ({ width: 400, height: 400 }), validPreviewSize: v => [v.width, v.height].every(n => Number.isInteger(n) && n >= 64 && n <= 2048) } : new Proxy({}, { get: (_, k) => k }), fetch: async (url, init = {}) => {
+    vm.runInNewContext(code, { module, exports: module.exports, Blob, FormData, AbortSignal, setTimeout, clearTimeout, require: n => n === 'react' ? react : n === 'react/jsx-runtime' ? { jsx, jsxs: jsx } : n === './model-preview-requirements' ? { modelForPreview: model => model, resolvePreviewRequirements: (_, requirements) => requirements } : n.endsWith('/ModelPreviewSettings') ? { useModelPreviewSize: () => ({ width: 400, height: 400 }), validPreviewSize: v => [v.width, v.height].every(n => Number.isInteger(n) && n >= 64 && n <= 2048) } : new Proxy({}, { get: (_, k) => k }), fetch: async (url, init = {}) => {
             let data;
             if (url.includes('limit=')) {
                 pages++;

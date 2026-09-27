@@ -1,6 +1,8 @@
 // src/components/threed/markers/ModelMarker3D.tsx — v0.16.1-alpha "ThreeD Models"
 'use client';
 
+import { assertModelTexturesReady, modelLoadCompletion } from '@/libraries/services/threed/models/model-load-completion';
+import { useSceneResourceStatus, useSceneResourceIssueReporter } from '@/components/threed/shared/SceneResourceStatus';
 import { indexEnvironmentRegions, type EnvironmentRegionIndex } from '@/libraries/services/threed/models/environment-region-index';
 import { buildEnvironmentSurfaceCollider, type EnvironmentSurfaceCollider } from '@/libraries/services/threed/models/environment-surface-collider';
 import { measureModelLocalBounds } from '@/libraries/services/threed/models/model-local-bounds';
@@ -67,6 +69,8 @@ export interface ModelData {
   /** Current reusable Model preference, refreshed independently of old Project JSON. */
   fallbackShape?: unknown;
   files?: ThreeDModelRuntimeAttachment[];
+  renderingAssetsResolved?: boolean;
+  textureFallbacks?: Array<{ fileName: string; filePath: string; isActive: boolean }>;
   materialAssignments?: Array<{
     targetKey: string;
     channel: string;
@@ -137,6 +141,7 @@ dracoLoader.setDecoderPath('/assets/draco/');
 dracoLoader.setWorkerLimit(2);
 
 async function loadModelAttachments(model: ModelData): Promise<ThreeDModelRuntimeAttachment[]> {
+  if (model.renderingAssetsResolved) return withSavedFbxTextures(model.modelType, model.files ?? [], model.textureFallbacks ?? []);
   const markerSnapshotAttachments = Array.isArray(model.files) ? model.files : [];
   const reusableModelId = Number.isSafeInteger(model.modelId) && Number(model.modelId) > 0
     ? Number(model.modelId)
@@ -175,6 +180,7 @@ function useModelLoad(
   fitBounds?: ThreeDVisualBounds,
   applyStoredScale = true,
 ) {
+  const reportResourceIssue = useSceneResourceIssueReporter(model.filePath, model.modelId ?? model.id, model.modelName);
   const [loadedModel, setLoadedModel] = useState<THREE.Group | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -204,7 +210,13 @@ function useModelLoad(
           .sort()
           .join('|');
         const cacheKey = `${model.filePath}-${modelType}-${attachmentSignature}${modelType === 'obj' && model.id === 0 ? '-staged-geometry' : ''}`;
+        let hadResourceIssue = false;
+        const onResourceIssue = reportResourceIssue ? (url: string, message: string) => {
+          if (message) hadResourceIssue = true;
+          reportResourceIssue(url, message);
+        } : undefined;
         const manager = new THREE.LoadingManager();
+        const waitForResources = modelLoadCompletion(manager, onResourceIssue);
         manager.setURLModifier((url) => resolveThreeDModelAttachmentUrl(url, attachments));
 
         let m: THREE.Group;
@@ -216,7 +228,7 @@ function useModelLoad(
             const loader = new FBXLoader(manager);
             m = await loader.loadAsync(model.filePath) as THREE.Group;
           } else if (modelType === 'obj') {
-            m = await loadStoredObjModel(model.filePath, attachments, model.id === 0);
+            m = await loadStoredObjModel(model.filePath, attachments, model.id === 0, onResourceIssue);
           } else {
             const loader = new GLTFLoader(manager);
             loader.setDRACOLoader(dracoLoader);
@@ -224,7 +236,7 @@ function useModelLoad(
             m = gltf.scene;
             m.animations = gltf.animations;
           }
-          modelCache.set(cacheKey, m.clone());
+          if (await waitForResources(30000, true) && !hadResourceIssue) modelCache.set(cacheKey, m.clone());
         }
 
         const savedMaterialOverrides = readThreeDModelMaterialOverrides(model.metadata);
@@ -254,7 +266,12 @@ function useModelLoad(
           const originalMaterial = originalMaterials[target.slotIndex];
           if (!(originalMaterial instanceof THREE.Material)) continue;
           const material = originalMaterial.clone() as THREE.Material & { color?: THREE.Color; map?: THREE.Texture | null };
-          const texture = await new THREE.TextureLoader(manager).loadAsync(resolvedTextureUrl);
+          const texture = await new THREE.TextureLoader(manager).loadAsync(resolvedTextureUrl).catch(error => {
+            if (!reportResourceIssue) throw error;
+            reportResourceIssue(resolvedTextureUrl, 'Could not load assigned texture');
+            return null;
+          });
+          if (!texture) { material.dispose(); continue; }
           texture.colorSpace = THREE.SRGBColorSpace;
           material.map = texture;
           material.color?.set('#ffffff');
@@ -314,11 +331,14 @@ function useModelLoad(
           }
         });
 
+        await waitForResources(30000, true);
+        if (!reportResourceIssue) assertModelTexturesReady(m);
         if (!cancelled) {
           setLoadedModel(m);
         }
       } catch (err) {
         if (!cancelled) {
+          reportResourceIssue?.(model.filePath, 'Could not load Model');
           console.error(`ModelMarker3D: failed to load "${model.modelName}":`, err);
           setError(String(err));
         }
@@ -333,7 +353,7 @@ function useModelLoad(
     return () => {
       cancelled = true;
     };
-  }, [applyStoredScale, fitDepth, fitHeight, fitWidth, model]);
+  }, [applyStoredScale, fitDepth, fitHeight, fitWidth, model, reportResourceIssue]);
 
   return { loadedModel, loading, error };
 }
@@ -368,6 +388,7 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
   const [labelHovered, setLabelHovered] = useState(false);
   const [labelPosition, setLabelPosition] = useState<[number, number, number]>([0, 1.5, 0]);
   const { loadedModel, loading, error } = useModelLoad(model, fitBounds, applyStoredScale);
+  useSceneResourceStatus(loading, error);
   const reusableModelId = model.modelId ?? model.id;
   useEffect(() => {
     if (!error || !model.filePath || reusableModelId <= 0) return;

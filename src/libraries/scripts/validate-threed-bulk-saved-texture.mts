@@ -97,5 +97,11 @@ try {
   assert.notEqual(preview.signature, persisted.signature);
   globalThis.fetch = async () => new Response('denied', { status: 403 });
   await assert.rejects(loadCharacterTextureManager(11), /texture references/);
+  globalThis.fetch = async () => { throw new Error('Public rendering must not fetch Model administration'); };
+  const publicModel = await loadCharacterTextureManager(11, { renderingAssetsResolved: true, modelType: 'fbx', files: [attached] });
+  assert.equal(publicModel.manager.resolveURL(request), attached.filePath);
+  const emptyPublicModel = await loadCharacterTextureManager(12, { renderingAssetsResolved: true, modelType: 'fbx', files: [] });
+  assert.equal(emptyPublicModel.signature, '');
+
 } finally { globalThis.fetch = originalFetch; }
 console.log('PASS: Character loader redirects primary-folder PNG requests to shared or attached URLs, refreshes cache identity, and rejects failed reference reads');

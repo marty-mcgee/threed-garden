@@ -49,10 +49,15 @@ const db = { select() {
 } };
 const readRetry = {};
 vm.runInNewContext(code('src/libraries/db/read-retry.ts'), { exports: readRetry });
+const scenePolicy = {};
+vm.runInNewContext(code('src/libraries/services/project/scene-read-policy.ts'), { exports: scenePolicy });
 const api = {};
 vm.runInNewContext(code('src/app/api/map/threed/route.ts'), {
   exports: api, URL, console: { error() {} },
   require(name) {
+    if (name === '@/libraries/services/project/scene-texture-resources') return { sceneTextureResources: async () => [] };
+    if (name === '@/libraries/services/project/scene-character-animations') return { sceneCharacterAnimations: async () => new Map() };
+    if (name === '@/libraries/services/project/scene-read-policy') return scenePolicy;
     if (name === '@/libraries/db/read-retry') return readRetry;
     if (name === '@/libraries/db/connection-diagnostics') return { databaseConnectionDiagnostic: () => ({}) };
     if (name === 'next/server') return { NextResponse: { json: (body, options) => ({ body, status: options?.status ?? 200 }) } };
@@ -67,7 +72,7 @@ vm.runInNewContext(code('src/app/api/map/threed/route.ts'), {
   },
 });
 (async () => {
-  const prefix = () => [[{ id: 5 }], [{ threedId: 1, name: 'Garden' }], [], [{ moduleId: 1, assetType: 'threed_plantings', assetId: 1 }]];
+  const prefix = () => [[{ id: 5, userId: 'owner' }], [{ threedId: 1, name: 'Garden' }], [], [{ moduleId: 1, assetType: 'threed_plantings', assetId: 1 }]];
   queue = [...prefix(), Object.assign(new Error('Connection timed out'), { code: 'ETIMEDOUT' })];
   const failed = await api.GET({ url: 'http://localhost/api/map/threed?projectId=5' });
   assert.equal(failed.status, 500);

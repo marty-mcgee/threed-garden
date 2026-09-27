@@ -69,5 +69,14 @@ const run = () => runtime.loadAssignedCharacterAnimations(11, 5, 'Character', '/
   await assert.rejects(run(), /idle — Character #11 override, animation #46: .*inaccessible.*Characters → Animations & Preview/);
   reset(); sourceFailure = true; own.modelId = 9; model.assignments = [assignment('walk')];
   await assert.rejects(run(), /walk — Model #5 default, animation #46: .*inaccessible.*Models → Animation defaults/);
+  reset(); own.inherited = [assignment('idle')]; own.assignments = [assignment('walk'), assignment('watering', null, 'disabled')];
+  result = await runtime.loadAssignedCharacterAnimations(11, 5, 'Character', '/primary.fbx', root, own);
+  assert.ok(urls.every(url => !url.startsWith('/api/')), 'Public Project mapping must not call authenticated assignment APIs');
+  assert.ok(result.assigned.has('idle')); assert.ok(result.assigned.has('walk')); assert.ok(result.blocked.has('watering'));
+  reset();
+  result = await runtime.loadAssignedCharacterAnimations(11, 5, 'Character', '/primary.fbx', root, { modelId: 5, assignments: [], inherited: [], animations: [] });
+  assert.equal(urls.length, 0, 'An intentionally empty Project mapping must not trigger an Admin API request');
+  assert.deepEqual(legacy, ['idle', 'walk', 'watering']);
+  console.log('PASS: public Character mappings retain inherited/override/disabled/legacy behavior without assignment API requests');
   console.log('PASS: real FBX rig binding, GLB clip selection, shared-source fetch, inheritance/override/disabled mapping, project Model selection and explicit invalid-clip rejection (mocked requests)');
 })().catch(error => { console.error(error); process.exitCode = 1; });

@@ -10,6 +10,7 @@ export interface ThreeDProjectModuleSummary {
 export interface ThreeDProjectSessionData {
   data: UnifiedMapData;
   projectName: string;
+  canEdit: boolean;
   hasData: boolean;
   threedModules: ThreeDProjectModuleSummary[];
   geographicOrigin: ThreeDGeographicOrigin | null;
@@ -136,6 +137,7 @@ export function buildThreeDProjectSession(
           layers: [],
         },
       },
+      canEdit: result.projectContext?.canEdit === true,
       projectName: result.projectContext?.projectName || `Project #${projectId}`,
       hasData: result.total > 0,
       threedModules,

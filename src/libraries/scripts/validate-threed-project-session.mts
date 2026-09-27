@@ -47,3 +47,24 @@ assert.deepEqual(buildThreeDProjectSession({ success: false, error: 'Unavailable
 console.log('✓ Project session response preserves bounded API failures');
 
 console.log('Validated 2 ThreeD Project session groups.');
+
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+const { canReadSceneProject, canRenderAssignedModel } = await import('../services/project/scene-read-policy.ts');
+for (const viewer of [undefined, 'other']) {
+  assert.equal(canReadSceneProject({ userId: 'owner', isPublic: true }, viewer), true);
+  assert.equal(canReadSceneProject({ userId: 'owner', isPublic: false }, viewer), false);
+}
+assert.equal(canReadSceneProject({ userId: 'owner', isPublic: false }, 'owner'), true);
+assert.equal(canReadSceneProject({ userId: null, isPublic: true }), false);
+const privateModel = { userId: 'owner', isPublic: false, isLibraryItem: false, isActive: true, status: 'active' };
+assert.equal(canRenderAssignedModel(privateModel, 'owner', false), true);
+assert.equal(canRenderAssignedModel(privateModel, 'another-owner', false), false);
+assert.equal(canRenderAssignedModel({ ...privateModel, isActive: false }, 'owner', false), false);
+assert.equal(canRenderAssignedModel({ ...privateModel, isActive: false }, 'owner', true), true);
+assert.equal(canRenderAssignedModel({ ...privateModel, isPublic: true, isLibraryItem: true }, 'another-owner', false), true);
+assert.equal(canRenderAssignedModel({ ...privateModel, status: 'inactive', isPublic: true, isLibraryItem: true }, 'another-owner', false), false);
+const guestSession = buildThreeDProjectSession({ success: true, data: {}, projectContext: {} }, '8');
+assert(guestSession.success); assert.equal(guestSession.session.canEdit, false);
+const ownerSession = buildThreeDProjectSession({ success: true, data: {}, projectContext: { canEdit: true } }, '8');
+assert(ownerSession.success); assert.equal(ownerSession.session.canEdit, true);
+console.log('PASS: public/private Project reads, assigned Model publication, cross-owner denial, active policy and edit capability');

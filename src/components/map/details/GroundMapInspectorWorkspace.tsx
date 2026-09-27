@@ -23,9 +23,9 @@ export function GroundMapInspector({ leftOffsetRem, available, onSave, saving }:
 }) {
   const workspace = useGroundMapInspector();
   return <section hidden={!workspace?.open || !available} aria-label="Ground Map inspector"
-    className="threed-workspace-panel threed-details-surface absolute top-9 z-40 flex max-h-[calc(100%-2.25rem)] w-[min(18rem,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-lg border border-white/15 text-white shadow-xl"
+    className="threed-workspace-panel threed-details-surface absolute top-9 z-40 flex max-h-[calc(100%-2.25rem)] w-[min(18rem,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-lg border border-foreground/15 text-foreground shadow-xl"
     style={{ display: !workspace?.open || !available ? 'none' : undefined, left: `${leftOffsetRem}rem`, backgroundColor: 'var(--threed-details-background)' }}>
-    <div className="shrink-0 border-b border-white/10 p-2">
+    <div className="shrink-0 border-b border-foreground/10 p-2">
       <Button className="h-8 w-full text-xs" variant="outline" disabled={saving} onClick={onSave}>{saving ? 'Saving…' : 'Save Project'}</Button>
       <div className="mt-2 flex items-center justify-between"><h2 className="text-sm font-semibold">Ground Map</h2>
         <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Close Ground Map" onClick={() => workspace?.setOpen(false)}><X className="h-4 w-4" /></Button>

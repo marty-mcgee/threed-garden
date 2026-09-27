@@ -1,3 +1,6 @@
+import { sceneTextureResources } from '@/libraries/services/project/scene-texture-resources';
+import { sceneCharacterAnimations } from '@/libraries/services/project/scene-character-animations';
+import { canRenderAssignedModel } from '@/libraries/services/project/scene-read-policy';
 import { retryDisconnectedRead } from '@/libraries/db/read-retry';
 import { databaseConnectionDiagnostic } from '@/libraries/db/connection-diagnostics';
 import { currentModelAssets } from '@/libraries/services/threed/models/model-snapshot-assets';
@@ -22,6 +25,8 @@ import {
   threedWeatherLogs,
   threedModels,
   threedModelFiles,
+  threedModelMaterialAssignments,
+  threedModelTextures,
 } from '@/libraries/schema/threed';
 import { 
   trafficChpCadIncidents,
@@ -40,7 +45,7 @@ import {
   projectThreedMarkers,
   projectTraffic,
 } from '@/libraries/schema/project';
-import { eq, and, desc, sql, inArray } from 'drizzle-orm';
+import { eq, and, or, desc, sql, inArray } from 'drizzle-orm';
 import { readThreeDProjectViewStateFromConfig } from '@/libraries/services/threed/markers/project-view-state-core';
 
 const MARKER_ASSET_TYPE_BY_MODULE = {
@@ -61,7 +66,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const projectId = searchParams.get('projectId');
-    const includeInactive = searchParams.get('includeInactive') === 'true';
+    let includeInactive = searchParams.get('includeInactive') === 'true';
     const limit = parseInt(searchParams.get('limit') || '100');
 
     if (!projectId) {
@@ -71,8 +76,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const parsedProjectId = parseInt(projectId);
-    if (isNaN(parsedProjectId)) {
+    const parsedProjectId = Number(projectId);
+    if (!Number.isSafeInteger(parsedProjectId) || parsedProjectId <= 0) {
       return NextResponse.json(
         { success: false, error: 'Invalid projectId' },
         { status: 400 }
@@ -86,18 +91,20 @@ export async function GET(request: NextRequest) {
       .where(
         and(
           eq(project.id, parsedProjectId),
-          userId ? eq(project.userId, userId) : eq(project.isPublic, true)
+          or(eq(project.isPublic, true), userId ? eq(project.userId, userId) : sql`false`)
         )
       )
       .limit(1);
 
-    if (!projectData) {
+    if (!projectData?.userId) {
       return NextResponse.json(
         { success: false, error: 'Project not found or access denied' },
         { status: 404 }
       );
     }
 
+    const canEdit = userId === projectData.userId;
+    includeInactive = canEdit && includeInactive;
     // ✅ Get ThreeD module IDs
     const projectThreeDModules = await db
       .select({
@@ -112,7 +119,7 @@ export async function GET(request: NextRequest) {
       .where(
         and(
           eq(projectThreed.projectId, parsedProjectId),
-          userId ? eq(projectThreed.userId, userId) : sql`1=1`,
+          eq(projectThreed.userId, projectData.userId!),
           eq(projectThreed.isActive, true)
         )
       );
@@ -128,7 +135,7 @@ export async function GET(request: NextRequest) {
       .where(
         and(
           eq(projectTraffic.projectId, parsedProjectId),
-          userId ? eq(projectTraffic.userId, userId) : sql`1=1`,
+          eq(projectTraffic.userId, projectData.userId!),
           eq(projectTraffic.isActive, true)
         )
       );
@@ -173,7 +180,11 @@ export async function GET(request: NextRequest) {
       }
 
       try {
-        const assignedAssetCondition = inArray(table.id, ids);
+        const assignedAssetCondition = and(inArray(table.id, ids), table.userId
+          ? (tableName === 'threedModels'
+            ? or(eq(table.userId, projectData.userId), and(eq(table.isPublic, true), eq(table.isLibraryItem, true), eq(table.isActive, true), eq(table.status, 'active')))
+            : canEdit ? sql`true` : eq(table.userId, projectData.userId))
+          : sql`true`);
         const rawItems = await retryDisconnectedRead(async () => db
           .select(tableName === 'threedModels' ? modelSelection() : getTableColumns(table))
           .from(table)
@@ -265,7 +276,7 @@ export async function GET(request: NextRequest) {
             eq(projectAssets.projectId, parsedProjectId),
             eq(projectAssets.moduleType, 'threed'),
             inArray(projectAssets.moduleId, threeDModuleIds),
-            userId ? eq(projectAssets.userId, userId) : sql`1=1`,
+            eq(projectAssets.userId, projectData.userId!),
             includeInactive ? sql`1=1` : eq(projectAssets.isActive, true),
             sql`${projectAssets.assetType}::text LIKE 'threed_%'`
           )
@@ -303,7 +314,7 @@ export async function GET(request: NextRequest) {
       // Hydrate assets from current relationships, never from saved Project JSON.
       const plantingPlantIds = [...new Set(threedData.plantings.map((item: any) => item.plantId).filter((id): id is number => Number.isSafeInteger(id) && id > 0))];
       const plantingPlants = plantingPlantIds.length
-        ? await db.select().from(threedPlants).where(inArray(threedPlants.id, plantingPlantIds)) : [];
+        ? await db.select().from(threedPlants).where(and(inArray(threedPlants.id, plantingPlantIds), eq(threedPlants.userId, projectData.userId!), eq(threedPlants.isActive, true))) : [];
       const plantingPlantById = new Map(plantingPlants.map((plant) => [plant.id, plant]));
       const referencedModelIds = [...new Set([
         ...threedData.models.map((item: any) => item.id),
@@ -311,18 +322,58 @@ export async function GET(request: NextRequest) {
         ...[...threedData.characters, ...threedData.plants, ...plantingPlants].map((item: any) => item.modelId),
       ].filter((id): id is number => Number.isSafeInteger(id) && id > 0))];
       const currentModels = referencedModelIds.length
-        ? await db.select(modelSelection()).from(threedModels).where(inArray(threedModels.id, referencedModelIds))
+        ? await db.select(modelSelection()).from(threedModels).where(and(inArray(threedModels.id, referencedModelIds), or(eq(threedModels.userId, projectData.userId!), and(eq(threedModels.isPublic, true), eq(threedModels.isLibraryItem, true), eq(threedModels.isActive, true), eq(threedModels.status, 'active'))), canEdit ? sql`true` : and(eq(threedModels.isActive, true), eq(threedModels.status, 'active'))))
         : [];
       const currentFiles = referencedModelIds.length
         ? await db.select().from(threedModelFiles).where(inArray(threedModelFiles.modelId, referencedModelIds))
         : [];
-      const currentModelById = new Map(currentModels.map((model) => [model.id, {
-        ...model,
-        files: currentFiles.filter((file) => file.modelId === model.id && file.userId === model.userId && Boolean(file.filePath)),
-      }]));
-      threedData.models = threedData.models.map((model: any) => ({ ...model, ...currentModelById.get(model.id) }));
+      const authorizedModelIds = currentModels.map(model => model.id);
+      const assignments = authorizedModelIds.length ? await db.select({
+        modelId: threedModelMaterialAssignments.modelId,
+        targetKey: threedModelMaterialAssignments.targetKey,
+        channel: threedModelMaterialAssignments.channel,
+        textureId: threedModelTextures.id,
+        textureName: threedModelTextures.textureName,
+        textureFileName: threedModelTextures.fileName,
+        textureUrl: threedModelTextures.filePath,
+        textureOwner: threedModelTextures.userId,
+      }).from(threedModelMaterialAssignments).innerJoin(threedModelTextures,
+        eq(threedModelTextures.id, threedModelMaterialAssignments.textureId))
+        .where(inArray(threedModelMaterialAssignments.modelId, authorizedModelIds)) : [];
+      // Project publication authorizes only dependencies of its authorized Models.
+      // Resolve the same referenced library textures for owners and visitors.
+      const textureOwners = [...new Set(currentModels.map(model => model.userId).filter((id): id is string => Boolean(id)))];
+      const libraryTextures = textureOwners.length ? await db.select({ userId: threedModelTextures.userId, fileName: threedModelTextures.fileName, filePath: threedModelTextures.filePath, isActive: threedModelTextures.isActive })
+        .from(threedModelTextures).where(and(inArray(threedModelTextures.userId, textureOwners), eq(threedModelTextures.isActive, true))) : [];
+      const referencedTextures = new Map<number, Awaited<ReturnType<typeof sceneTextureResources>>>();
+      // Keep dependency inspection concurrency bounded for large Projects.
+      for (let offset = 0; offset < currentModels.length; offset += 3) {
+        await Promise.all(currentModels.slice(offset, offset + 3).map(async model => {
+          referencedTextures.set(model.id, await sceneTextureResources(model, libraryTextures));
+        }));
+      }
+      const currentModelById = new Map(currentModels.filter(model => canRenderAssignedModel(model, projectData.userId!, canEdit)).map((model) => {
+        const materialAssignments = assignments.filter(item => item.modelId === model.id && item.textureOwner === model.userId)
+          .map(({ modelId: _model, textureOwner: _owner, ...item }) => item);
+        return [model.id, {
+          ...model,
+          renderingAssetsResolved: true,
+          materialAssignments,
+          textureFallbacks: [...materialAssignments.map(item => ({ fileName: item.textureFileName, filePath: item.textureUrl, isActive: true })), ...(referencedTextures.get(model.id) ?? []).filter(texture => !materialAssignments.some(item => item.textureFileName.toLowerCase() === texture.fileName.toLowerCase()))],
+          files: currentFiles.filter((file) => file.modelId === model.id && file.userId === model.userId && Boolean(file.filePath))
+            .map(({ id, fileName, relativePath, filePath, fileType }) => ({ id, fileName, relativePath, filePath, fileType })),
+        }];
+      }));
+      threedData.models = threedData.models.filter((model: any) => currentModelById.has(model.id))
+        .map((model: any) => ({ ...model, ...currentModelById.get(model.id) }));
       for (const key of ['characters', 'plants']) {
         threedData[key] = threedData[key].map((item: any) => ({ ...item, model: currentModelById.get(item.modelId) ?? null }));
+      }
+
+      if (!canEdit) {
+        const characterMappings = await sceneCharacterAnimations(projectData.userId!,
+          threedData.characters.map((character: any) => ({ id: character.id, modelId: character.model?.id ?? null })), currentModels);
+        threedData.characters = threedData.characters.map((character: any) => ({ ...character, sceneAnimationMapping: characterMappings.get(character.id) }));
       }
 
       threedData.plantings = threedData.plantings.map((item: any) => {
@@ -335,12 +386,13 @@ export async function GET(request: NextRequest) {
         .from(projectThreedMarkers)
         .where(and(
           eq(projectThreedMarkers.projectId, parsedProjectId),
+          eq(projectThreedMarkers.userId, projectData.userId!),
           inArray(projectThreedMarkers.threedId, threeDModuleIds),
         ));
 
       savedProjectMarkers = savedProjectMarkers.filter((marker) => {
         const assetType = MARKER_ASSET_TYPE_BY_MODULE[marker.markerType];
-        return activeThreeDMarkerAssignments.has(
+        return (marker.markerType !== 'models' || currentModelById.has(marker.sourceAssetId)) && activeThreeDMarkerAssignments.has(
           `${marker.threedId}:${assetType}:${marker.sourceAssetId}`,
         );
       });
@@ -355,7 +407,7 @@ export async function GET(request: NextRequest) {
         }
         if (marker.markerType === 'characters' || marker.markerType === 'plantings') {
           const source = threedData[marker.markerType].find((item: any) => item.id === marker.sourceAssetId);
-          return { ...marker, data: { ...savedData, model: source?.model ?? null } };
+          return { ...marker, data: { ...savedData, model: source?.model ?? null, sceneAnimationMapping: source?.sceneAnimationMapping } };
         }
         return marker;
       });
@@ -374,7 +426,7 @@ export async function GET(request: NextRequest) {
             eq(projectAssets.projectId, parsedProjectId),
             eq(projectAssets.moduleType, 'traffic'),
             inArray(projectAssets.moduleId, trafficModuleIds),
-            userId ? eq(projectAssets.userId, userId) : sql`1=1`,
+            eq(projectAssets.userId, projectData.userId!),
             includeInactive ? sql`1=1` : eq(projectAssets.isActive, true),
             sql`${projectAssets.assetType}::text LIKE 'traffic_%'`
           )
@@ -429,6 +481,7 @@ export async function GET(request: NextRequest) {
       data: allData,
       projectContext: {
         projectId: projectData.id,
+        canEdit,
         projectName: projectData.name,
         viewState: readThreeDProjectViewStateFromConfig(projectData.config),
         geographicOrigin: projectData.originLatitude !== null
@@ -448,7 +501,7 @@ export async function GET(request: NextRequest) {
       markerSnapshot: savedProjectMarkers,
       counts,
       total,
-    });
+    }, { headers: { 'Cache-Control': 'private, no-store' } });
   } catch (error) {
     console.error('❌ Error fetching ThreeD map data:', error);
     console.error('Database connection diagnostic:', JSON.stringify(databaseConnectionDiagnostic(error)));

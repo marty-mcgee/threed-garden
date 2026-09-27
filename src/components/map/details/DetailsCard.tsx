@@ -59,7 +59,7 @@ function ModelFileNotice({ type, data }: { type: string; data: Record<string, an
   const [access, setAccess] = useState<{ id: number; status: 'editable' | 'unavailable' | 'error' } | null>(null);
   useEffect(() => {
     setAccess(null);
-    if (!needsAttention || !Number.isSafeInteger(modelId) || modelId <= 0 || sessionStatus === 'loading') return;
+    if (!ownerId || !needsAttention || !Number.isSafeInteger(modelId) || modelId <= 0 || sessionStatus === 'loading') return;
     const controller = new AbortController();
     // Verify the current record and ownership without downloading its primary file.
     void fetch(`/api/threed/models?id=${modelId}`, {
@@ -78,7 +78,7 @@ function ModelFileNotice({ type, data }: { type: string; data: Record<string, an
   const status = access?.id === modelId ? access.status : null;
   const validId = Number.isSafeInteger(modelId) && modelId > 0;
   return (
-    <div role="status" className="my-2 rounded border border-amber-400/40 bg-amber-400/10 p-2 text-xs text-amber-200">
+    <div role="status" className="my-2 rounded border border-amber-400/40 bg-amber-400/10 p-2 text-xs text-amber-800 dark:text-amber-200">
       <p className="font-medium">{status === 'unavailable' || !validId ? 'Assigned Model is unavailable'
         : filePath ? 'Model file could not be loaded' : 'Main Model file is missing'}</p>
       <p className="mt-1">A fallback shape represents this asset until its Model file is available.</p>
@@ -102,8 +102,8 @@ function ModelFileNotice({ type, data }: { type: string; data: Record<string, an
 function KvRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex min-w-0 items-start gap-1.5">
-      <span className="text-[10px] text-white/40 shrink-0 w-[52px] text-right">{label}</span>
-      <span className="min-w-0 flex-1 break-words text-[11px] leading-relaxed text-white/80 [overflow-wrap:anywhere]">{value}</span>
+      <span className="text-[10px] text-foreground/40 shrink-0 w-[52px] text-right">{label}</span>
+      <span className="min-w-0 flex-1 break-words text-[11px] leading-relaxed text-foreground/80 [overflow-wrap:anywhere]">{value}</span>
     </div>
   );
 }
@@ -129,14 +129,14 @@ function FarmBotMqttStatusSummary({
     <DetailsCardSection
       title="Live FarmBot State"
       summaryAside={loading ? (
-          <Loader2 className="h-3 w-3 animate-spin text-white/40" />
+          <Loader2 className="h-3 w-3 animate-spin text-foreground/40" />
         ) : runtime ? (
           <div className="flex items-center gap-1">
             <span className={`h-1.5 w-1.5 rounded-full ${runtime.condition === 'live' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
-            <span className="text-[10px] capitalize text-white/70">{runtime.condition}</span>
+            <span className="text-[10px] capitalize text-foreground/70">{runtime.condition}</span>
           </div>
         ) : (
-          <span className="text-[10px] text-white/35">{error ? 'Unavailable' : 'No recorded status'}</span>
+          <span className="text-[10px] text-foreground/35">{error ? 'Unavailable' : 'No recorded status'}</span>
         )}
     >
       {runtime && (
@@ -466,7 +466,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
     <DetailsSectionScope.Provider value={`${projectId}:${selected.type}:${selected.id}:${selectedSensorId ?? 'asset'}`}>
     <DetailsCardActionsProvider>
     <div
-      className={`flex flex-col threed-workspace-panel threed-details-surface threed-inspector ${selectedSensorId ? 'threed-sensor-inspector' : ''} absolute top-9 z-40 max-h-[calc(100%-2.25rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-lg border border-white/15 text-white shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]`}
+      className={`flex flex-col threed-workspace-panel threed-details-surface threed-inspector ${selectedSensorId ? 'threed-sensor-inspector' : ''} absolute top-9 z-40 max-h-[calc(100%-2.25rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-lg border border-foreground/15 text-foreground shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]`}
       style={{
         left: `${leftOffsetRem}rem`,
         backgroundColor: 'var(--threed-details-background, rgba(17, 26, 40, 0.5))',
@@ -474,14 +474,14 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
     >
       {/* Header */}
       <div
-        className="shrink-0 flex items-start justify-between gap-2 border-b border-white/10 px-3 py-3"
+        className="shrink-0 flex items-start justify-between gap-2 border-b border-foreground/10 px-3 py-3"
       >
         <div className="min-w-0 pb-1 pt-0.5">
-          <div className="truncate text-sm font-semibold text-white">
+          <div className="truncate text-sm font-semibold text-foreground">
             {selectedSensorId ? (readPhysicsSensorCuboids(selected.metadata).find(sensor => sensor.id === selectedSensorId)?.name ?? 'New Physics Sensor') : selected.name || selected.title || selected.label || 'Unknown'}
           </div>
           {selectedSensorId && (
-            <p className="mt-0.5 text-[10px] font-medium uppercase tracking-wide text-cyan-100/80">
+            <p className="mt-0.5 text-[10px] font-medium uppercase tracking-wide text-cyan-800/80 dark:text-cyan-100/80">
               Physics Sensor · {selectedSensorCount} on this asset
             </p>
           )}
@@ -491,18 +491,18 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
           onClick={onClose}
           aria-label="Close marker details"
           title="Close marker details"
-          className="flex h-7 w-7 shrink-0 items-center justify-center rounded text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded text-foreground/50 transition-colors hover:bg-foreground/10 hover:text-foreground"
         >
           <X className="h-4 w-4" />
         </button>
       </div>
 
       <div className="flex min-h-0 flex-col overflow-y-auto overscroll-contain px-2 pb-2 [scrollbar-width:thin]">
-      {selectedSensorId && <button type="button" onClick={() => onSelectSensor?.(null)} className="mb-2 text-left text-xs text-cyan-200">← {selected.name} · Parent asset</button>}
+      {selectedSensorId && <button type="button" onClick={() => onSelectSensor?.(null)} className="mb-2 text-left text-xs text-cyan-800 dark:text-cyan-200">← {selected.name} · Parent asset</button>}
       <div className={selectedSensorId ? 'hidden' : 'contents'}>
       {!isIncident && <ModelFileNotice type={normalizedType} data={d} />}
 
-      <div className="order-[-20] mb-1 mt-2 flex items-center gap-2 border-b border-white/10 pb-2">
+      <div className="order-[-20] mb-1 mt-2 flex items-center gap-2 border-b border-foreground/10 pb-2">
         {!isIncident && selectedTargetCapabilities && onSetActionTarget && (
           <button
             type="button"
@@ -534,7 +534,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
             className={`flex h-7 w-7 items-center justify-center rounded transition-colors ${
               isQuickActionTarget
                 ? 'bg-emerald-600 text-white'
-                : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+                : 'bg-foreground/5 text-foreground/60 hover:bg-foreground/10 hover:text-foreground'
             }`}
           >
             <Crosshair className="h-3.5 w-3.5" />
@@ -546,7 +546,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
             aria-label="Zoom and center marker"
             title="Zoom + Center"
             onClick={(event) => { event.stopPropagation(); onZoomCenter(); }}
-            className="flex h-7 w-7 items-center justify-center rounded bg-white/5 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+            className="flex h-7 w-7 items-center justify-center rounded bg-foreground/5 text-foreground/60 transition-colors hover:bg-foreground/10 hover:text-foreground"
           >
             <ScanSearch className="h-3.5 w-3.5" />
           </button>
@@ -557,7 +557,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
           rel="noopener noreferrer"
           aria-label="Edit marker in Admin"
           title="Edit in Admin"
-          className="flex h-7 w-7 items-center justify-center rounded bg-white/5 text-white/60 no-underline transition-colors hover:bg-white/10 hover:text-white"
+          className="flex h-7 w-7 items-center justify-center rounded bg-foreground/5 text-foreground/60 no-underline transition-colors hover:bg-foreground/10 hover:text-foreground"
         >
           <ExternalLink className="h-3.5 w-3.5" />
         </a>
@@ -566,7 +566,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
 
       {/* GPS coordinates (incidents) */}
       {selected.lat != null && selected.lng != null && (
-        <div className="text-[10px] text-white/40 mt-1.5 font-mono">
+        <div className="text-[10px] text-foreground/40 mt-1.5 font-mono">
           📍 {Number(selected.lat).toFixed(4)}, {Number(selected.lng).toFixed(4)}
         </div>
       )}
@@ -584,9 +584,9 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
               <KvRow label="Assigned Model" value={String(d.model?.modelName || ((d.model?.id ?? d.modelId) ? `Model #${d.model?.id ?? d.modelId}` : 'Basic shape'))} />
               {d.model?.modelType && <KvRow label="Format" value={String(d.model.modelType).toUpperCase()} />}
               <KvRow label="Model source" value={d.model?.filePath ? 'File configured' : 'No Model file configured'} />
-              <p className="text-[10px] text-slate-300">A basic shape represents Characters without a usable Model. The visible mesh and physics capsule are separate.</p>
+              <p className="text-[10px] text-muted-foreground">A basic shape represents Characters without a usable Model. The visible mesh and physics capsule are separate.</p>
               {Number(d.model?.id ?? d.modelId) > 0 && (
-                <a className="inline-flex min-h-8 items-center text-xs text-cyan-200 underline underline-offset-2" href={`/admin/threed/models?id=${Number(d.model?.id ?? d.modelId)}`} target="_blank" rel="noopener noreferrer">View Model in Admin</a>
+                <a className="inline-flex min-h-8 items-center text-xs text-cyan-800 dark:text-cyan-200 underline underline-offset-2" href={`/admin/threed/models?id=${Number(d.model?.id ?? d.modelId)}`} target="_blank" rel="noopener noreferrer">View Model in Admin</a>
               )}
           </DetailsCardSection>
           <DetailsCardSection title="Character Defaults" className="order-6">
@@ -595,8 +595,8 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
               <KvRow label="Movement" value={String(d.movementType ?? 'stationary')} />
               {d.movementSpeed != null && <KvRow label="Movement speed" value={String(d.movementSpeed)} />}
               <KvRow label="Default emote" value={String(d.defaultEmote ?? 'none')} />
-              {(d.notes || d.description) && <p className="text-[10px] text-slate-300">{String(d.notes || d.description)}</p>}
-              <p className="text-[10px] text-slate-400">Manage reusable defaults in Character Admin. Save placement and physics below for this Project instance.</p>
+              {(d.notes || d.description) && <p className="text-[10px] text-muted-foreground">{String(d.notes || d.description)}</p>}
+              <p className="text-[10px] text-muted-foreground">Manage reusable defaults in Character Admin. Save placement and physics below for this Project instance.</p>
           </DetailsCardSection>
         </>
       )}
@@ -610,24 +610,24 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
 
       {/* Description (incidents) — only if no metaRows covered it */}
       {isIncident && selected.description && !metaRows.length && (
-        <div className="mt-2 text-[11px] text-white/50">
+        <div className="mt-2 text-[11px] text-foreground/50">
           {selected.description.slice(0, 100)}{selected.description.length > 100 ? '...' : ''}
         </div>
       )}
 
       {/* Character Controls — ecctrl runtime take-over (movable characters only) */}
       {!isIncident && (type === 'characters' || type === 'character') && (() => {
-        if (d.isMovable !== true) return <p className="order-2 mt-2 rounded bg-white/[0.035] p-2 text-[11px] text-slate-300">Selected Character · Scene-managed movement.</p>;
+        if (d.isMovable !== true) return <p className="order-2 mt-2 rounded bg-foreground/[0.035] p-2 text-[11px] text-muted-foreground">Selected Character · Scene-managed movement.</p>;
         const charId = d.id;
         const isControlling = isSelectedCharacterControlled;
         return (
           <DetailsCardSection title="Character Control" defaultOpen className="order-2" >
-            <p role="status" className={`text-[11px] font-medium ${isControlling ? 'text-cyan-200' : 'text-slate-300'}`}>
+            <p role="status" className={`text-[11px] font-medium ${isControlling ? 'text-cyan-800 dark:text-cyan-200' : 'text-muted-foreground'}`}>
               {isControlling ? 'Controlling this Character' : controlledCharacterId != null ? 'Selected · Another Character is controlled' : 'Selected · Control available'}
             </p>
             {isControlling ? (
               <>
-                {/* <div className="text-[10px] text-blue-300 flex items-center gap-1.5">
+                {/* <div className="text-[10px] text-blue-800 dark:text-blue-300 flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse shrink-0" />
                   <span>WASD / Space / Shift active</span>
                 </div> */}
@@ -642,18 +642,18 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
                 </button>
                 {onCameraModeChange && (
                   <div className="space-y-1">
-                    {/* <div className="text-[10px] text-white/50">Camera:</div> */}
+                    {/* <div className="text-[10px] text-foreground/50">Camera:</div> */}
                     <select
                       aria-label="Character camera mode"
                       value={cameraMode || 'stationary'}
                       onChange={(e) => { e.stopPropagation(); onCameraModeChange(e.target.value); }}
-                      className="w-full bg-white/5 border border-white/10 rounded px-2 py-1 text-[11px] text-white/80 focus:outline-none focus:border-white/30 appearance-none"
+                      className="w-full bg-foreground/5 border border-foreground/10 rounded px-2 py-1 text-[11px] text-foreground/80 focus:outline-none focus:border-foreground/30 appearance-none"
                     >
-                      <option value="follow" className="bg-gray-800 text-white">🎥 Follow</option>
-                      <option value="topdown" className="bg-gray-800 text-white">🔽 Top-Down</option>
-                      <option value="firstperson" className="bg-gray-800 text-white">👁️ First-Person</option>
-                      <option value="orbit" className="bg-gray-800 text-white">🛰️ Orbit</option>
-                      <option value="stationary" className="bg-gray-800 text-white">📷 Stationary</option>
+                      <option value="follow" className="bg-gray-800 text-foreground">🎥 Follow</option>
+                      <option value="topdown" className="bg-gray-800 text-foreground">🔽 Top-Down</option>
+                      <option value="firstperson" className="bg-gray-800 text-foreground">👁️ First-Person</option>
+                      <option value="orbit" className="bg-gray-800 text-foreground">🛰️ Orbit</option>
+                      <option value="stationary" className="bg-gray-800 text-foreground">📷 Stationary</option>
                     </select>
                   </div>
                 )}
@@ -675,28 +675,28 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
 
       {/* Character Actions — shared semantic animation controls */}
       {!isIncident && (type === 'characters' || type === 'character') && (
-        <PersistentDetails storageId="animations" key={String(selected.id)} className="order-7 mt-2 space-y-1.5 rounded border border-cyan-300/15 bg-white/[0.035] p-1.5">
-          <summary className="cursor-pointer text-xs font-medium text-cyan-100">Animations <span className="font-normal text-slate-400">· {animationAvailability ? (animationAvailability.size ? 'Loaded' : 'No actions available') : 'Loading'}</span></summary>
-          {!animationAvailability && <p className="text-[10px] text-slate-400" role="status">Waiting for animation availability…</p>}
-          {/* <div className="text-[10px] font-medium text-white/60">Character Actions</div> */}
+        <PersistentDetails storageId="animations" key={String(selected.id)} className="order-7 mt-2 space-y-1.5 rounded border border-cyan-300/15 bg-foreground/[0.035] p-1.5">
+          <summary className="cursor-pointer text-xs font-medium text-cyan-800 dark:text-cyan-100">Animations <span className="font-normal text-muted-foreground">· {animationAvailability ? (animationAvailability.size ? 'Loaded' : 'No actions available') : 'Loading'}</span></summary>
+          {!animationAvailability && <p className="text-[10px] text-muted-foreground" role="status">Waiting for animation availability…</p>}
+          {/* <div className="text-[10px] font-medium text-foreground/60">Character Actions</div> */}
 
-          <div className="rounded bg-white/5 px-2 py-1.5 text-[10px] text-white/55">
+          <div className="rounded bg-foreground/5 px-2 py-1.5 text-[10px] text-foreground/55">
             {actionTarget ? (
               <>
-                <div>🎯 Target: <span className="text-emerald-300">{actionTarget.name}</span> <span className="text-white/30">({actionTarget.type} #{actionTarget.id})</span></div>
+                <div>🎯 Target: <span className="text-emerald-800 dark:text-emerald-300">{actionTarget.name}</span> <span className="text-foreground/30">({actionTarget.type} #{actionTarget.id})</span></div>
                 {actionTarget.type === 'farmbots' && (
-                  <div className="mt-1 text-amber-200/70">
+                  <div className="mt-1 text-amber-800/70 dark:text-amber-200/70">
                     FarmBot actions are animation-only.
                   </div>
                 )}
                 {isEcctrlCharacter && <CharacterNavigationControls actorMarkerId={String(selected.id)} targetMarkerId={actionTarget.markerId} controlled={isSelectedCharacterControlled} ready={hasLiveControlledPosition && !isOrchestrationRunning} />}
-                {!isEcctrlCharacter && <p className="mt-1 text-white/40">Target walking is currently available for Characters with Take Control.</p>}
+                {!isEcctrlCharacter && <p className="mt-1 text-foreground/40">Target walking is currently available for Characters with Take Control.</p>}
                 {isCurrentOrchestration && (
                   <div className={`mt-1 ${
                     orchestrationStatus.phase === 'completed'
-                      ? 'text-emerald-300/80'
+                      ? 'text-emerald-800/80 dark:text-emerald-300/80'
                       : orchestrationStatus.phase === 'cancelled'
-                        ? 'text-amber-200/80'
+                        ? 'text-amber-800/80 dark:text-amber-200/80'
                         : 'text-sky-200/80'
                   }`}>
                     Simulation: {orchestrationStatus.phase}
@@ -706,7 +706,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
                   {onFocusActionTarget && (
                     <button
                       onClick={(e) => { e.stopPropagation(); onFocusActionTarget(); }}
-                      className="rounded bg-emerald-600/25 px-2 py-1 text-emerald-100 transition-colors hover:bg-emerald-600/45 hover:text-white"
+                      className="rounded bg-emerald-600/25 px-2 py-1 text-emerald-800 dark:text-emerald-100 transition-colors hover:bg-emerald-600/45 hover:text-foreground"
                     >
                       <span className="flex items-center justify-center gap-1.5">
                         <ScanSearch className="h-3.5 w-3.5" />
@@ -717,7 +717,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
                   {onClearActionTarget && (
                     <button
                       onClick={(e) => { e.stopPropagation(); onClearActionTarget(); }}
-                      className="rounded bg-white/5 px-2 py-1 text-white/55 transition-colors hover:bg-white/10 hover:text-white/80"
+                      className="rounded bg-foreground/5 px-2 py-1 text-foreground/55 transition-colors hover:bg-foreground/10 hover:text-foreground/80"
                     >
                       Clear Target
                     </button>
@@ -725,7 +725,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
                 </div>
               </>
             ) : (
-              <>🎯 Target: <span className="text-white/35">None — actions remain animation-only</span></>
+              <>🎯 Target: <span className="text-foreground/35">None — actions remain animation-only</span></>
             )}
           </div>
 
@@ -790,9 +790,9 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
               { ...group, title: `${group.title} · Inactive`, inactive: true, actions: group.actions.filter(({action}) => !(animationAvailability.has(action.toLowerCase()) && customActionSlots.find(slot => slot.actionKey === action)?.isActive !== false)) },
             ].filter(section => section.actions.length > 0) : [{ ...group, inactive: true }])
             .map((group) => (
-            <PersistentDetails storageId={`animation-group:${group.title}`} key={group.title} className="space-y-1 rounded bg-white/[0.035] p-1.5">
-              <summary title={group.inactive ? 'Unavailable in the loaded Character runtime' : 'Available in the loaded Character runtime'} className={`cursor-pointer text-[11px] font-medium ${group.inactive ? 'text-slate-400' : 'text-cyan-100'}`}>
-                {group.title} <span className="text-slate-400">({group.actions.length})</span>
+            <PersistentDetails storageId={`animation-group:${group.title}`} key={group.title} className="space-y-1 rounded bg-foreground/[0.035] p-1.5">
+              <summary title={group.inactive ? 'Unavailable in the loaded Character runtime' : 'Available in the loaded Character runtime'} className={`cursor-pointer text-[11px] font-medium ${group.inactive ? 'text-muted-foreground' : 'text-cyan-800 dark:text-cyan-100'}`}>
+                {group.title} <span className="text-muted-foreground">({group.actions.length})</span>
               </summary>
 
               <div className="threed-animation-actions grid grid-cols-3 gap-1">
@@ -845,7 +845,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
                         },
                       }));
                     }}
-                    className="min-h-6 w-full rounded bg-emerald-600/25 px-1 py-1 text-center text-[9px] font-medium leading-tight text-emerald-100 transition-colors hover:bg-emerald-600/45 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+                    className="min-h-6 w-full rounded bg-emerald-600/25 px-1 py-1 text-center text-[9px] font-medium leading-tight text-emerald-800 dark:text-emerald-100 transition-colors hover:bg-emerald-600/45 hover:text-foreground disabled:cursor-not-allowed disabled:bg-foreground/5 disabled:text-foreground/30"
                   >
                     {label}
                   </button>

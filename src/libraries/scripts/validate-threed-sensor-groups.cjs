@@ -12,19 +12,23 @@ const groups = load('src/libraries/services/threed/physics/sensor-group-core.ts'
 const compat = load('src/libraries/services/threed/physics/sensor-legacy-compat.ts', {});
 const sensors = load('src/libraries/services/threed/physics/sensor-cuboid-core.ts', { './sensor-legacy-compat': compat });
 const schema = Object.fromEntries(['project', 'projectThreedMarkers'].map(name => [name, new Proxy({}, { get: (_, key) => name + '.' + String(key) })]));
-const orm = Object.fromEntries(['eq', 'and'].map(name => [name, (...args) => ({ name, args })]));
+const orm = Object.fromEntries(['eq', 'and', 'or'].map(name => [name, (...args) => ({ name, args })]));
+orm.sql = (strings, ...values) => ({ strings, values });
 let signedIn = true, queue = [], reads = [], writes = [], failure = false;
 const db = {
   transaction: async callback => callback(db),
   select(selection) {
     const query = { selection }; const chain = {};
-    for (const method of ['from', 'where', 'for']) chain[method] = (...args) => { query[method] = args; return chain; };
+    for (const method of ['from', 'where', 'for', 'limit']) chain[method] = (...args) => { query[method] = args; return chain; };
     chain.then = (resolve, reject) => { reads.push(query); if (failure) return Promise.reject(new Error('private database detail')).then(resolve, reject); assert(queue.length); return Promise.resolve(queue.shift()).then(resolve, reject); };
     return chain;
   },
   update(table) { const write = { table }; return { set(values) { write.values = values; return { where(condition) { write.condition = condition; writes.push(write); return Promise.resolve(); } }; } }; },
 };
+const policy = load('src/libraries/services/project/scene-read-policy.ts', {});
+const access = load('src/libraries/services/project/read-access.ts', { './scene-read-policy': policy, '@/libraries/db/client': { db }, '@/libraries/schema/project': schema, 'drizzle-orm': orm });
 const api = load('src/app/api/project/sensor-groups/route.ts', {
+  '@/libraries/services/project/read-access': access,
   'next/server': { NextResponse: { json: (body, options) => ({ body, status: options?.status ?? 200 }) } },
   '@/libraries/auth': { auth: async () => signedIn ? { user: { id: 'owner' } } : null },
   '@/libraries/db/client': { db }, '@/libraries/schema/project': schema, 'drizzle-orm': orm,
@@ -39,16 +43,19 @@ async function run(method, body, responses = [], id = '15') {
   return result;
 }
 (async () => {
-  signedIn = false; assert.equal((await run('GET')).status, 401); assert.equal(reads.length, 0); signedIn = true;
+  signedIn = false; assert.equal((await run('GET', null, [[]])).status, 404);
+  assert.equal((await run('GET', null, [[{ userId: 'owner', isPublic: true, metadata: {} }]])).status, 200);
+  assert.equal(writes.length, 0);
+  assert.equal((await run('GET', null, [[{ userId: 'owner', isPublic: false, metadata: {} }]])).status, 404);
+  assert.equal((await run('PATCH', {})).status, 401); signedIn = true;
   assert.equal((await run('GET', null, [], 'bad')).status, 400);
   assert.equal((await run('GET', null, [[]])).status, 404);
-  let result = await run('GET', null, [[{ metadata: { unrelated: 'retained' } }]]);
+  let result = await run('GET', null, [[{ userId: 'owner', metadata: { unrelated: 'retained' } }]]);
   assert.equal(result.body.data[0].id, 'imported-sensors');
   assert.equal(writes.length, 0);
-  assert.equal(reads[0].where[0].args[1].args[0], 'project.userId');
-  assert.equal(reads[0].where[0].args[1].args[1], 'owner');
+  assert.equal(reads[0].for, undefined, 'Public read must not lock Project rows');
   const group = { id: 'g1', name: 'Named Group' };
-  result = await run('PATCH', { operation: 'upsert', group }, [[{ metadata: { unrelated: 'retained' } }]]);
+  result = await run('PATCH', { operation: 'upsert', group }, [[{ userId: 'owner', metadata: { unrelated: 'retained' } }]]);
   assert.equal(result.status, 200);
   assert.equal(writes[0].values.metadata.unrelated, 'retained');
   assert.equal(writes[0].values.metadata.physicsSensorGroups.at(-1).name, 'Named Group');

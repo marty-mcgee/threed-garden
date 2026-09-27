@@ -3,6 +3,8 @@
 
 'use client';
 
+import { modelLoadCompletion } from '@/libraries/services/threed/models/model-load-completion';
+import { useSceneResourceStatus, useSceneResourceIssueReporter } from './SceneResourceStatus';
 import { useSceneHoverTitle } from '@/components/threed/shared/SceneHoverTitleContext';
 
 import { reportCharacterAnimationAvailability, DETAILS_ANIMATION_ACTIONS } from '@/libraries/services/threed/animations/runtime-availability';
@@ -68,8 +70,9 @@ interface CharacterData {
   status: string;
 
   modelId: number | null;
+  sceneAnimationMapping?: import('@/libraries/utils/assignedCharacterAnimations').CharacterAnimationMapping;
 
-  model?: {
+  model?: import('@/libraries/services/threed/models/character-model-textures').ProjectModelResources & {
     id: number;
     modelName: string;
     modelType: string;
@@ -361,6 +364,7 @@ function useCharacterModel(
   character: CharacterData,
   isActive: boolean,
 ) {
+  const reportResourceIssue = useSceneResourceIssueReporter(character.model?.filePath ?? '', character.model?.id, character.model?.modelName);
   const [
     model,
     setModel,
@@ -451,9 +455,11 @@ function useCharacterModel(
             'glb';
 
           const textureResolution = modelType === 'fbx'
-            ? await loadCharacterTextureManager(character.model!.id)
+            ? await loadCharacterTextureManager(character.model!.id, character.model)
             : null;
           if (cancelled) return;
+          const resourceManager = textureResolution?.manager ?? new THREE.LoadingManager();
+          const waitForResources = modelLoadCompletion(resourceManager, reportResourceIssue);
 
           let loadedModel:
             THREE.Group;
@@ -472,7 +478,7 @@ function useCharacterModel(
             'fbx'
           ) {
             loadedModel =
-              await new FBXLoader(textureResolution?.manager)
+              await new FBXLoader(resourceManager)
                 .loadAsync(
                   modelPath
                 ) as THREE.Group;
@@ -481,7 +487,7 @@ function useCharacterModel(
             'obj'
           ) {
             loadedModel =
-              await new OBJLoader()
+              await new OBJLoader(resourceManager)
                 .loadAsync(
                   modelPath
                 ) as unknown as THREE.Group;
@@ -494,7 +500,7 @@ function useCharacterModel(
              * animation array onto the scene.
              */
             const gltf =
-              await new GLTFLoader()
+              await new GLTFLoader(resourceManager)
                 .loadAsync(
                   modelPath
                 );
@@ -506,6 +512,7 @@ function useCharacterModel(
               gltf.animations;
           }
 
+          await waitForResources();
           if (cancelled) {
             return;
           }
@@ -583,7 +590,7 @@ function useCharacterModel(
           // Resolve saved Character/Model mappings before loading legacy defaults.
           const externalLibrary = await loadAssignedCharacterAnimations(
             character.id, character.model!.id, character.model!.modelName,
-            character.model!.filePath, loadedModel,
+            character.model!.filePath, loadedModel, character.sceneAnimationMapping,
           );
 
           if (cancelled) {
@@ -752,6 +759,7 @@ function useCharacterModel(
           if (
             !cancelled
           ) {
+            reportResourceIssue?.(character.model?.filePath ?? '', 'Could not load Character resources');
             console.error(
               '[EcctrlCharacter] Failed to load character:',
               loadError
@@ -798,6 +806,7 @@ function useCharacterModel(
   }, [
     character,
     isActive,
+    reportResourceIssue,
   ]);
 
   return {
@@ -1109,6 +1118,7 @@ export function EcctrlCharacter({
         character.visible
     );
 
+
   useEffect(() => {
     if (character.status === 'active' && character.visible && character.model?.filePath && error == null) return;
     return reportCharacterAnimationAvailability(character.id, character.model?.filePath ?? '', []);
@@ -1119,6 +1129,8 @@ export function EcctrlCharacter({
   // Readiness belongs to the specific model object, never a previous load.
   const [posedModel, setPosedModel] = useState<THREE.Group | null>(null);
   const characterVisualReady = !loading && model !== null && posedModel === model;
+  useSceneResourceStatus(Boolean(modelLoadEnabled && character.model?.filePath && !characterVisualReady && !error), error);
+
 
   const runtimeSettlementReportedRef = useRef(false);
   const runtimeSettlementKey = `${character.id}:${character.model?.filePath ?? 'fallback'}:${modelLoadEnabled}`;

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogTrigger } from '@/components/ui/dialog';
 import type { ModelData } from '@/components/threed/markers/ModelMarker3D';
 import { useModelPreviewSize, validPreviewSize } from '@/components/settings/ModelPreviewSettings';
-import { resolvePreviewRequirements } from './model-preview-requirements';
+import { modelForPreview, resolvePreviewRequirements } from './model-preview-requirements';
 import { ThreeDModelAssetPreview, type PreviewPerspective } from './ThreeDModelAssetPreview';
 
 type Candidate = { id: number; modelName: string; thumbnailUrl?: string | null };
@@ -69,7 +69,7 @@ export function ModelPreviewBatchExport({ onComplete }: { onComplete: () => void
     ]).then(([model, audit]) => {
       if (!Array.isArray(audit.data?.requirements)) throw new Error('Required files could not be checked.');
       const requirements = resolvePreviewRequirements(model.data, audit.data.requirements);
-      if (active) setSample({ model: model.data, total: requirements.length,
+      if (active) setSample({ model: modelForPreview(model.data), total: requirements.length,
         attached: requirements.filter(item => item.satisfied).length,
         textures: requirements.filter(item => !item.satisfied && item.kind === 'texture').length,
         missing: requirements.filter(item => !item.satisfied).map(item => item.relativePath) });
@@ -148,7 +148,7 @@ export function ModelPreviewBatchExport({ onComplete }: { onComplete: () => void
                   resolve: value => { clearTimeout(timeout); resolve(value); },
                   reject: error => { clearTimeout(timeout); reject(error); },
                 };
-                setJob({ model: current.data, token, total: requirements.length, attached: requirements.filter(item => item.satisfied).length, textures: requirements.filter(item => !item.satisfied && item.kind === 'texture').length });
+                setJob({ model: modelForPreview(current.data), token, total: requirements.length, attached: requirements.filter(item => item.satisfied).length, textures: requirements.filter(item => !item.satisfied && item.kind === 'texture').length });
               });
               capture.current = null;
               setJob(null);

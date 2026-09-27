@@ -103,7 +103,7 @@ export function ProjectSceneToolbar({
               {setupMenuOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="threed-workspace-panel threed-toolbar-dropdown-surface z-[2000] w-56 border-white/10 text-white backdrop-blur-md">
+          <DropdownMenuContent align="end" className="threed-workspace-panel threed-toolbar-dropdown-surface z-[2000] w-56 border-foreground/10 text-foreground backdrop-blur-md">
             <DropdownMenuItem onSelect={onOpenProjectTour}><ScanSearch className="h-3.5 w-3.5" /> Project Tour</DropdownMenuItem>
             <DropdownMenuItem onSelect={onOpenScenarios}><Layers className="h-3.5 w-3.5" /> Scenarios</DropdownMenuItem>
             <DropdownMenuItem asChild><a href="/dashboard/assembly-groups" target="_blank" rel="noopener noreferrer"><Boxes className="h-3.5 w-3.5" /> Assembly Groups (new tab)</a></DropdownMenuItem>
@@ -134,7 +134,7 @@ export function ProjectSceneToolbar({
 
           {sceneAddMenuOpen && (
             <div className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[2000] mt-1 max-h-[min(24rem,70dvh)] w-56 max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain rounded-lg border p-1.5 shadow-xl backdrop-blur-sm">
-              <div className="px-2 pb-1 pt-0.5 text-[10px] font-semibold uppercase tracking-wide text-white/60">ThreeD Marker Type</div>
+              <div className="px-2 pb-1 pt-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground/60">ThreeD Marker Type</div>
               <div className="grid grid-cols-1 gap-1">
                 <Button type="button" variant="ghost" size="sm" className="h-8 w-full justify-start text-xs" onClick={onOpenModelLibrary}><Box className="h-3.5 w-3.5" /> Models</Button>
                 <Button type="button" variant="ghost" size="sm" className="h-8 w-full justify-start text-xs" onClick={onOpenCharacterLibrary}><User className="h-3.5 w-3.5" /> Characters</Button>

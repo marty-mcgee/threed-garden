@@ -28,7 +28,7 @@ export function DetailsCardActions({ children, labels }: { children: ReactNode; 
     return cloneElement(button, {
       title: labels[index],
       'aria-label': labels[index],
-      className: `${(button.props.className ?? '').split(/\s+/).filter(token => !/^(bg-|text-(?:red|amber|cyan|emerald|white|slate|zinc))/.test(token)).join(' ')} bg-white/5 text-white/60 !h-7 !w-7 shrink-0 !gap-0 !p-0 !text-[11px]`,
+      className: `${(button.props.className ?? '').split(/\s+/).filter(token => !/^(bg-|text-(?:red|amber|cyan|emerald|white|slate|zinc))/.test(token)).join(' ')} bg-foreground/5 text-foreground/60 !h-7 !w-7 shrink-0 !gap-0 !p-0 !text-[11px]`,
       children: <>{Children.toArray(button.props.children)[0]}</>,
     });
   })?.reverse(), context.host);

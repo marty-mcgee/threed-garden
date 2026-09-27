@@ -174,14 +174,14 @@ export function BedInstanceEditor({
             } : {}),
           });
         }}
-        className="flex w-full items-center justify-center gap-1.5 rounded bg-amber-600/35 px-2 py-1.5 text-[11px] font-medium text-amber-100 transition-colors hover:bg-amber-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+        className="flex w-full items-center justify-center gap-1.5 rounded bg-amber-600/35 px-2 py-1.5 text-[11px] font-medium text-amber-800 dark:text-amber-100 transition-colors hover:bg-amber-600/60 hover:text-white disabled:cursor-not-allowed disabled:bg-foreground/5 disabled:text-foreground/30"
       >
         {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
         Save {entityLabel}
       </button>
       <button type="button" disabled={busy || (!moveActive && dirty) || !onMoveToggle} aria-pressed={moveActive}
         onClick={event=>{event.stopPropagation();onMoveToggle?.(markerId);}}
-        className="flex items-center justify-center gap-1 rounded bg-amber-600/30 px-1.5 py-1.5 text-[10px] font-medium text-amber-100 hover:bg-amber-600/55 disabled:opacity-40">
+        className="flex items-center justify-center gap-1 rounded bg-amber-600/30 px-1.5 py-1.5 text-[10px] font-medium text-amber-800 dark:text-amber-100 hover:bg-amber-600/55 disabled:opacity-40">
         <Crosshair className="h-3.5 w-3.5" />{moveActive ? 'Cancel Move' : <>Move {entityLabel}</>}
       </button>
       <button
@@ -192,7 +192,7 @@ export function BedInstanceEditor({
           if (!window.confirm(`Remove this ${entityLabel} from this ThreeD Project?`)) return;
           onDelete(markerId, entityLabel);
         }}
-        className="flex w-full items-center justify-center gap-1.5 rounded bg-red-600/30 px-2 py-1.5 text-[11px] font-medium text-red-100 transition-colors hover:bg-red-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-white/5 disabled:text-white/30"
+        className="flex w-full items-center justify-center gap-1.5 rounded bg-red-600/30 px-2 py-1.5 text-[11px] font-medium text-red-800 dark:text-red-100 transition-colors hover:bg-red-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-foreground/5 disabled:text-foreground/30"
       >
         {deleting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
         Remove {entityLabel}
@@ -205,7 +205,7 @@ export function BedInstanceEditor({
             : <Layers className="h-3.5 w-3.5" />}
           Project {entityLabel} Instance
         </span>}
-        summaryAside={<span className={`text-[9px] ${dirty ? (valid ? 'text-amber-200' : 'text-red-300') : 'text-white/35'}`} aria-live="polite">
+        summaryAside={<span className={`text-[9px] ${dirty ? (valid ? 'text-amber-800 dark:text-amber-200' : 'text-red-800 dark:text-red-300') : 'text-foreground/35'}`} aria-live="polite">
           {editStatus}
         </span>}
       >
@@ -216,7 +216,7 @@ export function BedInstanceEditor({
           ['Height (ft)', heightFeet, setHeightFeet],
         ].map(([label, value, setter]) => (
           <label key={label as string} className="block min-w-0 space-y-1">
-            <span className="text-[9px] text-white/50">{label as string}</span>
+            <span className="text-[9px] text-foreground/50">{label as string}</span>
             <input
               type="number"
               min="0.1"
@@ -225,7 +225,7 @@ export function BedInstanceEditor({
               value={value as string}
               disabled={busy}
               onChange={(event) => (setter as (value: string) => void)(event.target.value)}
-              className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+              className="h-7 w-full rounded border border-foreground/10 bg-foreground/5 px-1.5 text-[11px] text-foreground outline-none focus:border-foreground/30 disabled:opacity-50"
             />
           </label>
         ))}
@@ -237,42 +237,42 @@ export function BedInstanceEditor({
           ['Position Z', positionZ, setPositionZ],
         ].map(([label, value, setter]) => (
           <label key={label as string} className="block min-w-0 space-y-1">
-            <span className="text-[9px] text-white/50">{label as string}</span>
+            <span className="text-[9px] text-foreground/50">{label as string}</span>
             <input
               type="number"
               step="0.1"
               value={value as string}
               disabled={busy}
               onChange={(event) => (setter as (value: string) => void)(event.target.value)}
-              className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50"
+              className="h-7 w-full rounded border border-foreground/10 bg-foreground/5 px-1.5 text-[11px] text-foreground outline-none focus:border-foreground/30 disabled:opacity-50"
             />
           </label>
         ))}
       </div>
       <div className="grid grid-cols-3 gap-1.5">
         <label className="block space-y-1">
-          <span className="text-[9px] text-white/50">Y rotation (°)</span>
+          <span className="text-[9px] text-foreground/50">Y rotation (°)</span>
           <input type="number" step="1" value={rotationDegrees} disabled={busy}
             onChange={(event) => setRotationDegrees(event.target.value)}
-            className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50" />
+            className="h-7 w-full rounded border border-foreground/10 bg-foreground/5 px-1.5 text-[11px] text-foreground outline-none focus:border-foreground/30 disabled:opacity-50" />
         </label>
         <label className="block space-y-1">
-          <span className="text-[9px] text-white/50">Scale</span>
+          <span className="text-[9px] text-foreground/50">Scale</span>
           <input type="number" min="0.01" max="1000" step="0.01" value={scale} disabled={busy}
             onChange={(event) => setScale(event.target.value)}
-            className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[11px] text-white outline-none focus:border-white/30 disabled:opacity-50" />
+            className="h-7 w-full rounded border border-foreground/10 bg-foreground/5 px-1.5 text-[11px] text-foreground outline-none focus:border-foreground/30 disabled:opacity-50" />
         </label>
         <label className="block space-y-1">
-          <span className="text-[9px] text-white/50">Color</span>
+          <span className="text-[9px] text-foreground/50">Color</span>
           <input type="color" value={color} disabled={busy}
             onChange={(event) => setColor(event.target.value)}
-            className="h-7 w-full cursor-pointer rounded border border-white/10 bg-white/5 p-0.5 disabled:opacity-50" />
+            className="h-7 w-full cursor-pointer rounded border border-foreground/10 bg-foreground/5 p-0.5 disabled:opacity-50" />
         </label>
       </div>
       </DetailsCardSection>
       {entityLabel === 'FarmBot' && (
         <DetailsCardSection title="Physics">
-          <label className="flex items-center gap-2 text-[10px] text-white/70">
+          <label className="flex items-center gap-2 text-[10px] text-foreground/70">
             <input
               type="checkbox"
               checked={liveEnabled}
@@ -281,27 +281,27 @@ export function BedInstanceEditor({
             />
             Present confirmed MQTT position in the Scene
           </label>
-          <p className="text-[9px] leading-relaxed text-white/40">
+          <p className="text-[9px] leading-relaxed text-foreground/40">
             The saved Project position is physical (0,0,0). Values outside these millimeter bounds are ignored.
           </p>
           <div className="grid grid-cols-2 gap-1.5">
-            <label className="space-y-1 text-[9px] text-white/50">Millimeters / Scene unit
+            <label className="space-y-1 text-[9px] text-foreground/50">Millimeters / Scene unit
               <input type="number" min="0.001" step="0.1" value={millimetersPerSceneUnit} disabled={busy}
                 onChange={(event) => setMillimetersPerSceneUnit(event.target.value)}
-                className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[10px] text-white" />
+                className="h-7 w-full rounded border border-foreground/10 bg-foreground/5 px-1.5 text-[10px] text-foreground" />
             </label>
-            <label className="space-y-1 text-[9px] text-white/50">Alignment yaw (°)
+            <label className="space-y-1 text-[9px] text-foreground/50">Alignment yaw (°)
               <input type="number" step="1" value={liveYawDegrees} disabled={busy}
                 onChange={(event) => setLiveYawDegrees(event.target.value)}
-                className="h-7 w-full rounded border border-white/10 bg-white/5 px-1.5 text-[10px] text-white" />
+                className="h-7 w-full rounded border border-foreground/10 bg-foreground/5 px-1.5 text-[10px] text-foreground" />
             </label>
           </div>
           <div className="grid grid-cols-3 gap-1.5">
             {(['x', 'y', 'z'] as const).map((axis) => (
-              <label key={axis} className="space-y-1 text-[9px] text-white/50">{axis.toUpperCase()} direction
+              <label key={axis} className="space-y-1 text-[9px] text-foreground/50">{axis.toUpperCase()} direction
                 <select value={axisSigns[axis]} disabled={busy}
                   onChange={(event) => setAxisSigns(current => ({ ...current, [axis]: Number(event.target.value) as 1 | -1 }))}
-                  className="h-7 w-full rounded border border-white/10 bg-slate-950/80 px-1 text-[10px] text-white">
+                  className="h-7 w-full rounded border border-foreground/10 bg-background/80 px-1 text-[10px] text-foreground">
                   <option value="1">Forward</option><option value="-1">Reverse</option>
                 </select>
               </label>
@@ -310,19 +310,19 @@ export function BedInstanceEditor({
           <div className="grid grid-cols-3 gap-1.5">
             {(['x', 'y', 'z'] as const).map((axis) => (
               <div key={axis} className="space-y-1">
-                <span className="text-[9px] text-white/50">{axis.toUpperCase()} bounds (mm)</span>
+                <span className="text-[9px] text-foreground/50">{axis.toUpperCase()} bounds (mm)</span>
                 <input type="number" aria-label={`${axis.toUpperCase()} minimum millimeters`}
                   value={physicalBounds[`${axis}Min` as keyof typeof physicalBounds]} disabled={busy}
                   onChange={(event) => setPhysicalBounds(current => ({ ...current, [`${axis}Min`]: event.target.value }))}
-                  className="h-7 w-full rounded border border-white/10 bg-white/5 px-1 text-[10px] text-white" />
+                  className="h-7 w-full rounded border border-foreground/10 bg-foreground/5 px-1 text-[10px] text-foreground" />
                 <input type="number" aria-label={`${axis.toUpperCase()} maximum millimeters`}
                   value={physicalBounds[`${axis}Max` as keyof typeof physicalBounds]} disabled={busy}
                   onChange={(event) => setPhysicalBounds(current => ({ ...current, [`${axis}Max`]: event.target.value }))}
-                  className="h-7 w-full rounded border border-white/10 bg-white/5 px-1 text-[10px] text-white" />
+                  className="h-7 w-full rounded border border-foreground/10 bg-foreground/5 px-1 text-[10px] text-foreground" />
               </div>
             ))}
           </div>
-          {!liveAlignmentValid && <p className="text-[10px] text-red-300">Enter valid units and ordered physical bounds.</p>}
+          {!liveAlignmentValid && <p className="text-[10px] text-red-800 dark:text-red-300">Enter valid units and ordered physical bounds.</p>}
         </DetailsCardSection>
       )}
     </div>

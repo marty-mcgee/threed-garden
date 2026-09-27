@@ -9,6 +9,8 @@
 //   - summary stats, skeleton/empty/error states
 'use client';
 
+import { modelForPreview } from './model-preview-requirements';
+
 import { MODEL_FALLBACK_SHAPES, readModelFallbackShape, setModelFallbackShape, type ModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
 import { createPortal } from 'react-dom';
 import {
@@ -231,6 +233,8 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
 
   const [category, setCategory] = useState<string>('auto');
   const [helpOpen, setHelpOpen] = useState(false);
+  const [troubleshootingModelId, setTroubleshootingModelId] = useState<string | null>(null);
+  const troubleshooting = troubleshootingModelId === modelId;
   const [shapeChoice, setShapeChoice] = useState<{ modelId: string; shape: ModelFallbackShape } | null>(null);
   const [savingShape, setSavingShape] = useState(false);
   const [primaryChoice, setPrimaryChoice] = useState<{ modelId: string; fileId: string } | null>(null);
@@ -259,7 +263,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
   const files = useMemo(() => modelDetail?.files ?? [], [modelDetail]);
   const previewModel = useMemo<ModelData | null>(() => {
     if (!modelDetail) return null;
-    return {
+    return modelForPreview({
       ...modelDetail,
       files: modelDetail.files?.map((file) => ({
         id: file.id,
@@ -268,8 +272,8 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
         filePath: file.filePath,
         fileType: file.fileType,
       })),
-    };
-  }, [modelDetail]);
+    }, troubleshooting);
+  }, [modelDetail, troubleshooting]);
   const mainModelFileId = modelDetail?.mainModelFileId ?? null;
   const missingRequirements = useMemo(
     () => dependencyAudit?.requirements.filter((item) => !item.satisfied) ?? [],
@@ -288,7 +292,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
     }
     return result;
   }, [modelDetail?.modelType, missingRequirements, textureLibrary, files]);
-  const trulyMissingCount = missingRequirements.filter((item) => !sharedRequirementTextures.has(item.relativePath)).length;
+  const trulyMissingCount = missingRequirements.length;
 
   const uploading = uploadQueue.some((u) => u.status === 'uploading');
   const normalizedAttachmentDirectory = normalizeAttachmentDirectory(attachmentDirectory);
@@ -858,8 +862,8 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
             model={previewModel}
             attachedDependencyCount={dependencyAudit?.requirements.filter((item) => item.satisfied).length ?? 0}
             dependencyCount={dependencyAudit?.requirements.length ?? 0}
-            title="Model preview"
-            description="Review this Model with its current textures."
+            title={troubleshooting ? "Owner Troubleshooting Preview" : "Saved Model Preview"}
+            description={troubleshooting ? "Owner library matches are temporary. Link required files below to save them." : "Uses saved files and material assignments. Public Project access is checked separately."}
             headerMeta={selectedModel ? (
               <div className="flex min-w-0 items-center gap-2 border-l pl-3">
                 <FileIcon type="model" />
@@ -870,6 +874,12 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
             ) : null}
             headerActions={selectedModel ? (
               <>
+              <select aria-label="Model preview mode" className="h-7 rounded border bg-background px-2 text-xs"
+                value={troubleshooting ? 'owner' : 'saved'}
+                onChange={event => setTroubleshootingModelId(event.target.value === 'owner' ? modelId : null)}>
+                <option value="saved">Saved Model Preview</option>
+                <option value="owner">Owner Troubleshooting Preview</option>
+              </select>
               {previewModel && !loadingFiles && <ModelPreviewImageExport
                 key={previewModel.id}
                 model={previewModel}
@@ -972,7 +982,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
         </div>
         {sharedRequirementTextures.size > 0 && (
           <p className="mt-2 text-[11px] text-cyan-400">
-            {sharedRequirementTextures.size} shared Texture(s) available. Link below to save.
+            {sharedRequirementTextures.size} Texture(s) found, but not assigned. Link below to save.
           </p>
         )}
 
@@ -997,7 +1007,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
                   <div className="min-w-[12rem] flex-1">
                     <p className="break-all font-mono text-[11px]" title={requirement.relativePath}>{requirement.relativePath}</p>
                     <p className="text-[10px] text-muted-foreground">
-                      {requirement.satisfied ? `Saved reference: ${requirement.matchedRelativePath}` : sharedTexture ? 'Shared Texture available — preview only until linked' : `Missing ${requirement.kind}`}
+                      {requirement.satisfied ? `Saved reference: ${requirement.matchedRelativePath}` : sharedTexture ? 'Found, but not assigned — link to save' : `Missing ${requirement.kind}`}
                     </p>
                   </div>
                   {!requirement.satisfied && requirement.kind === 'texture' && selectedModel?.modelType.toLowerCase() === 'fbx' && (

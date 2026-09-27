@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
 import { project, projectAssets } from '@/libraries/schema/project';
-import { eq, and, sql } from 'drizzle-orm';
+import { eq, and, or, sql } from 'drizzle-orm';
 
 // ============================================
 // GET /api/map/check - Check if a project has map data
@@ -41,12 +41,12 @@ export async function GET(request: NextRequest) {
       .where(
         and(
           eq(project.id, parsedProjectId),
-          userId ? eq(project.userId, userId) : eq(project.isPublic, true)
+          or(eq(project.isPublic, true), userId ? eq(project.userId, userId) : sql`false`)
         )
       )
       .limit(1);
 
-    if (!projectData) {
+    if (!projectData?.userId) {
       return NextResponse.json(
         { success: false, error: 'Project not found or access denied' },
         { status: 404 }
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       .where(
         and(
           eq(projectAssets.projectId, parsedProjectId),
-          userId ? eq(projectAssets.userId, userId) : sql`1=1`,
+          eq(projectAssets.userId, projectData.userId!),
           eq(projectAssets.isActive, true)
         )
       );
@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
       .where(
         and(
           eq(projectAssets.projectId, parsedProjectId),
-          userId ? eq(projectAssets.userId, userId) : sql`1=1`,
+          eq(projectAssets.userId, projectData.userId!),
           eq(projectAssets.moduleType, 'traffic'),
           eq(projectAssets.isActive, true)
         )
@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
       .where(
         and(
           eq(projectAssets.projectId, parsedProjectId),
-          userId ? eq(projectAssets.userId, userId) : sql`1=1`,
+          eq(projectAssets.userId, projectData.userId!),
           eq(projectAssets.moduleType, 'threed'),
           eq(projectAssets.isActive, true)
         )

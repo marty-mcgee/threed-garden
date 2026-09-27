@@ -74,6 +74,16 @@ export async function runObjBundleChecks(browserImages = false) {
     assert.equal(ready.matches[1].requirement.relativePath, 'images/paint atlas.png');
     assert.equal(prepareBulkModel(draft, createBulkDefaults(), [{ ...mtl, materialText: undefined }, image]).ready, false);
   });
+  await group('Scene OBJ keeps geometry and reports unavailable textures while strict validation rejects them', async () => {
+    const unavailable = { ...source('images/paint atlas.png', ''), read: async () => { throw new Error('HTTP 404'); } };
+    await assert.rejects(loadObjBundle(primary(), [material(objTexturedMaterial), unavailable], true), /HTTP 404/);
+    const warnings: string[] = [];
+    const lease = await loadObjBundle(primary(), [material(objTexturedMaterial), unavailable], true, (file) => warnings.push(file));
+    assert.ok(lease.scene.children.length > 0);
+    assert.deepEqual(warnings, ['images/paint atlas.png']);
+    assert.equal(((lease.scene.children[0] as THREE.Mesh).material as THREE.MeshPhongMaterial).map, null);
+    lease.dispose();
+  });
   if (browserImages) {
     await group('real image decoding preserves MTL maps, transforms and clamping with owned URL cleanup', async () => {
       const lease = await loadObjBundle(primary(), [material(objTexturedMaterial), source('images/paint atlas.png', objImage)], false);

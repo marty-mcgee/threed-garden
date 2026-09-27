@@ -1,3 +1,4 @@
+import { readableProject } from '@/libraries/services/project/read-access';
 import { NextRequest, NextResponse } from 'next/server';
 import { and, eq } from 'drizzle-orm';
 import { del, put } from '@vercel/blob';
@@ -27,14 +28,16 @@ async function ownedProject(userId: string, projectId: number) {
 
 export async function GET(request: NextRequest) {
   const session = await auth();
-  if (!session?.user?.id) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   const projectId = positiveId(new URL(request.url).searchParams.get('projectId'));
   if (!projectId) return NextResponse.json({ success: false, error: 'Invalid Project ID' }, { status: 400 });
-  if (!await ownedProject(session.user.id, projectId)) return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
+  const owner = await readableProject(projectId, session?.user?.id);
+  if (!owner?.userId) return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
   const [row] = await db.select().from(threedGroundMaps).where(and(
-    eq(threedGroundMaps.projectId, projectId), eq(threedGroundMaps.userId, session.user.id),
+    eq(threedGroundMaps.projectId, projectId), eq(threedGroundMaps.userId, owner.userId),
   )).limit(1);
-  return NextResponse.json({ success: true, data: row ?? null });
+  const data = row ? { id: row.id, name: row.name, filePath: row.filePath, fileName: row.fileName,
+    width: row.width, height: row.height, sourceProvider: row.sourceProvider, attribution: row.attribution } : null;
+  return NextResponse.json({ success: true, data }, { headers: { 'Cache-Control': 'private, no-store' } });
 }
 
 export async function POST(request: NextRequest) {
