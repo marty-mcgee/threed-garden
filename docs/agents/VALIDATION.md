@@ -21,7 +21,7 @@ This repository uses a narrow-first validation ladder. Agents should prove the r
 15. Run `npm run validate -- farmbot-command-policy` when Phase 3 semantic intent, lifecycle states, idempotency rules, or command safety policy changes.
 16. Run a file-scoped lint command only when an ESLint executable/configuration is available.
 17. Run targeted tests when a matching test exists.
-18. Run `npm run build` only when the change affects bundling, routing, server/client boundaries, or release readiness.
+18. Run `npm run build` for release readiness and when the change affects bundling, routing, or server/client boundaries. The agent owns this npm build gate; stop a local Next.js dev server first if it shares `.next`, then restore it afterward. Production deployment remains separate.
 19. Perform the relevant manual regression checklist for interactive ThreeD behavior.
 
 ## Commands
@@ -55,7 +55,7 @@ The retained `threed-fbx-material-targets` task is excluded from `all` and `ci` 
 
 The `shadcn-ui-boundary` task enforces the repository-owned component layer. Product code must consume `@/components/ui/*`; only files inside `src/components/ui` may import the unified `radix-ui` primitive package. Direct `@radix-ui/*` imports and package dependencies are rejected. The check also preserves the UI and utility aliases and the `src/app/globals.css` Blueprint stylesheet configured in `components.json`.
 
-For the personal Settings workspace, run `npm run validate -- workspace-settings`, `npm run validate -- dashboard-project-discovery`, `npm run validate -- threed-project-session`, TypeScript and diff checks. Settings fixtures execute the real contract, service, API handlers, navigation builder, provider and form with mocked database/React/network adapters. They cover owner predicates, authentication/origin, strict validation, stale revisions, audit rollback, account transitions, appearance application, failed-save retention and Discard/Refresh. They do not establish live PostgreSQL locking, browser paint, native fieldset behavior or actual persistence. Follow the browser checklist in `docs/plans/v0.19.40.md`. No schema command or User-owned build is part of these checks.
+For the personal Settings workspace, run `npm run validate -- workspace-settings`, `npm run validate -- dashboard-project-discovery`, `npm run validate -- threed-project-session`, TypeScript and diff checks. Settings fixtures execute the real contract, service, API handlers, navigation builder, provider and form with mocked database/React/network adapters. They cover owner predicates, authentication/origin, strict validation, stale revisions, audit rollback, account transitions, appearance application, failed-save retention and Discard/Refresh. They do not establish live PostgreSQL locking, browser paint, native fieldset behavior or actual persistence. Follow the browser checklist in `docs/plans/v0.19.40.md`. No schema command or build is part of these focused Settings checks; release preparation runs the npm build separately.
 
 ```bash
 git diff --check
@@ -496,7 +496,7 @@ The [ThreeD Model Management handoff](../plans/v0.19.11-release.md) records the 
 
 ## v0.19.12 released checkpoint
 
-The [release handoff](../plans/v0.19.12-release.md) records 16 passing local checks. `npm run validate -- threed-model-list` is included in CI and checks pagination bounds and sort allowlists. Live SQL/browser acceptance is separate from this fixture. The User owns the build gate; do not run `npm run build` in this chat. Production deployment of `80c6a1d` is User-confirmed; individual smoke checks are not inferred from deployment success.
+The [release handoff](../plans/v0.19.12-release.md) records 16 passing local checks. `npm run validate -- threed-model-list` is included in CI and checks pagination bounds and sort allowlists. Live SQL/browser acceptance is separate from this fixture. At that historical checkpoint, the User owned the build gate. Production deployment of `80c6a1d` is User-confirmed; individual smoke checks are not inferred from deployment success.
 
 ## Autonomous Animations Library
 
