@@ -18,5 +18,5 @@
 - Follow [Validation](VALIDATION.md), starting with the narrowest useful check.
 - Review the final diff for unrelated changes and whitespace errors.
 - Update durable documentation only after the implementation is proven.
-- Stage and commit the verified task changes with a descriptive message as part of the task.
+- Stage and commit the verified task changes as part of the task, using the release/docs/plans message format in `AGENTS.md`.
 - Report every changed file, command result, assumption, risk, and remaining manual check.

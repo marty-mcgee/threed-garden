@@ -10,6 +10,11 @@ For each development step, work in this order:
 2. **Act** — make the smallest scoped change that satisfies those criteria. Preserve unrelated user changes in a dirty worktree.
 3. **Document** — run relevant validation, review the diff, update durable documentation only after the implementation is known, then stage and commit the verified work with a descriptive message. Committing is part of the authorized repository task, including release preparation; it does not need a separate approval.
 
+Use the checkpoint version and title in commit messages:
+- Release: `v0.22.2 — ThreeD Scene: Public Loading + Theme Reliability`
+- Docs: `docs: v0.22.2 — ThreeD Scene: Public Loading + Theme Reliability`
+- Plans: `plans: docs: v0.22.2 — ThreeD Scene: Public Loading + Theme Reliability`
+
 Do not combine repository restructuring with feature behavior changes in the same step.
 
 ## General rules
