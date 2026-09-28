@@ -2,7 +2,13 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Current production: **v0.22.1 — ThreeD Garden: Interactive Home Page**, deployment User-confirmed.
+Current production: **v0.22.5 — ThreeD App Module: Multimedia**, deployment status verified through Vercel.
+
+- [v0.22.5 — ThreeD App Module: Multimedia](v0.22.5.md) — Vercel production deployment and GitHub validation verified
+
+- [v0.22.4 — ThreeD Scenarios Preparations](v0.22.4.md) — Vercel production deployment verified
+- [v0.22.3 — ThreeD Modules Overview Polish](v0.22.3.md) — production User-confirmed
+- [v0.22.2 — ThreeD Scene: Public Loading + Theme Reliability](v0.22.2.md) — production User-confirmed
 
 - [v0.22.1 — ThreeD Garden: Interactive Home Page](v0.22.1.md) — production User-confirmed
 

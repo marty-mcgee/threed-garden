@@ -3,9 +3,9 @@ import { config } from 'dotenv';
 import { Pool } from 'pg';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { and, eq } from 'drizzle-orm';
-import { project, projectThreed } from '../schema/project';
-import { threed, threedScenarios } from '../schema/threed';
-import { positiveId } from '../services/threed/scenarios/scenario-input';
+import { project, projectThreed } from '../../../schema/project';
+import { threed, threedScenarios } from '../../../schema/threed';
+import { positiveId } from '../../../services/threed/scenarios/scenario-input';
 
 config({ path: '.env.local', quiet: true });
 

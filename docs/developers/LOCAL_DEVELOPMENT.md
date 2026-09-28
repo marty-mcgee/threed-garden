@@ -26,6 +26,10 @@ Both use the installed Drizzle Kit CLI and `drizzle.config.ts`. That config load
 
 Before a push, verify the intended Neon project, branch and database behind `DATABASE_URL`, then review every proposed statement. The User confirmed that this checkout and Vercel Production use the same Neon `DATABASE_URL`; a local `db:push` therefore changes the live database. Verify the actual connection before accepting any proposal. The seed script's `--confirm-development` flag does not establish branch isolation. For v0.22.4, [the release handoff](../releases/v0.22.4.md) records the shared-database comparison. The Scenario table already exists; the broader Drizzle proposal remains unaccepted. Apply schema changes only when that specific change and target have been authorized.
 
+## Multimedia seed import
+
+`npm run multimedia:import -- --user-id=<existing-user-id> --file src/libraries/data/multimedia/seed-data.json` validates the JSON and previews album/track counts without opening a database connection. Add `--commit` only after confirming the target user and database; the standalone write path loads `.env.local` before opening the shared database client. The importer creates missing albums and tracks by owner-scoped natural keys and skips existing matches on rerun. This checkout's database is also used by Vercel Production, so a committed import writes live data.
+
 ## Validation
 
 Use the repository's narrow-first ladder:
