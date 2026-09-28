@@ -9,6 +9,6 @@ function visit(n){if(ts.isCallExpression(n)&&n.expression.getText(source)==='use
 (async()=>{await R.init();const world=new R.World({x:0,y:0,z:0});
 const ball=world.createRigidBody(R.RigidBodyDesc.dynamic());const other=world.createRigidBody(R.RigidBodyDesc.dynamic());
 ball.setLinvel({x:5,y:1,z:3},true);ball.setAngvel({x:2,y:3,z:1},true);other.setLinvel({x:7,y:0,z:0},true);
-const context={pendingTransformRef:{current:{position:[2,1,4]}},rigidBodyRef:{current:ball}};vm.createContext(context);vm.runInContext('var apply = '+callback,context);context.apply();
+const context={pendingTransformRef:{current:{position:[2,1,4]}},rigidBodyRef:{current:ball},smoothPosition:false,liveInterpolationRef:{current:null}};vm.createContext(context);vm.runInContext('var apply = '+callback,context);context.apply();
 assert.deepEqual({...ball.translation()},{x:2,y:1,z:4});assert.equal(ball.linvel().x,0);assert.equal(ball.angvel().y,0);assert.equal(other.linvel().x,7);
 ball.setLinvel({x:1,y:0,z:0},true);context.apply();assert.equal(ball.linvel().x,1,'No repeated initialization without a new placement');world.free();console.log('PASS: actual placement callback resets only selected ball velocity and applies once');})().catch(e=>{console.error(e);process.exitCode=1});

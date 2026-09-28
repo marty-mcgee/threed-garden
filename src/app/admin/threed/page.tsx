@@ -3,6 +3,7 @@ import {
   Apple,
   Bot,
   Box,
+  BookOpen,
   Clapperboard,
   ClipboardList,
   Droplets,
@@ -124,6 +125,14 @@ const sections = [
     description: 'Manage reusable master Texture files for Model material assignments.',
     href: '/admin/threed/model-textures',
     icon: Images,
+  },
+  {
+    title: 'Scenarios',
+    group: 'assets',
+    iconColor: iconColors.assets,
+    description: 'Create and manage Project-scoped ThreeD Scenario definitions.',
+    href: '/admin/threed/scenarios',
+    icon: BookOpen,
   },
   {
     title: 'Layers',

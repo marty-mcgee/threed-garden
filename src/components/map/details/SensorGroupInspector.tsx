@@ -24,13 +24,17 @@ export function SensorGroupInspector({ groupId, markers, leftOffsetRem, onClose,
       <button type="button" onClick={onClose} aria-label="Close Sensor Group details" className="rounded px-2 py-1 hover:bg-foreground/10">×</button>
     </header>
     <div className="min-h-0 space-y-3 overflow-y-auto overscroll-contain p-2">
-      <SensorGroupEditor key={groupId} initialGroupId={groupId} expanded onSelectGroup={onSelectGroup} />
-      <h3 className="text-xs">Members · {members.length}</h3>
-      {members.map(({ marker, sensor }) => <button key={`${marker.id}:${sensor.id}`} type="button" onClick={() => onSelectSensor(marker, sensor.id)} className="block w-full rounded border border-foreground/15 p-2 text-left text-xs hover:bg-foreground/10">
-        {sensor.name}<span className="block text-foreground/60">{marker.name}</span>
-      </button>)}
-      {!members.length && <p className="text-xs text-foreground/65">Assign a sensor to this group from its sensor settings.</p>}
-      <p className="text-xs text-foreground/65">Live entry counts are available under Environment → Show Sensors.</p>
+      <div>
+        <h3 className="mb-2 text-xs font-semibold">Sensors in this group · {members.length}</h3>
+        <div className="space-y-1">
+          {members.map(({ marker, sensor }) => <button key={`${marker.id}:${sensor.id}`} type="button" onClick={() => onSelectSensor(marker, sensor.id)} className="block w-full rounded border border-foreground/15 p-2 text-left text-xs hover:bg-foreground/10">
+            <span className="block font-medium">{sensor.name}</span><span className="block text-foreground/60">{marker.name} · Edit sensor →</span>
+          </button>)}
+        </div>
+        {!members.length && <p className="text-xs text-foreground/65">Assign a sensor to this group from its sensor settings.</p>}
+      </div>
+      <p className="rounded border border-foreground/10 bg-foreground/5 p-2 text-xs text-foreground/75">To watch entry counts, open <strong>Environment → Show Sensors</strong> in the top toolbar.</p>
+      <SensorGroupEditor key={groupId} initialGroupId={groupId} onSelectGroup={onSelectGroup} />
     </div>
   </section>;
 }

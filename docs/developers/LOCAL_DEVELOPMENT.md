@@ -13,7 +13,18 @@ npm run dev
 
 Open `http://localhost:4444`. Create an untracked `.env.local` in the project root and populate it with your own development values and never commit it.
 
-Database schema commands such as `npm run db:push` should be run only when a schema change is explicitly approved and the target database is understood.
+## Database schema commands
+
+The Node/npm equivalents of the historical Bun commands are already defined in `package.json`:
+
+```bash
+npm run db:generate
+npm run db:push
+```
+
+Both use the installed Drizzle Kit CLI and `drizzle.config.ts`. That config loads `.env.local` (then `.env` as a fallback) and uses `DATABASE_URL`; the commands target the database named by that URL, not a database selected by the Git branch. `db:generate` writes SQL and schema snapshots under the ignored `drizzle/` directory for review. It does not apply the SQL. `db:push` compares the **whole current Drizzle schema** with the connected database and applies its proposed changes after the script's `--strict` confirmation. It does not replay the file from `db:generate`.
+
+Before a push, verify the intended Neon project, branch and database behind `DATABASE_URL`, then review every proposed statement. The User confirmed that this checkout and Vercel Production use the same Neon `DATABASE_URL`; a local `db:push` therefore changes the live database. Verify the actual connection before accepting any proposal. The seed script's `--confirm-development` flag does not establish branch isolation. For v0.22.4, [the release handoff](../releases/v0.22.4.md) records the shared-database comparison. The Scenario table already exists; the broader Drizzle proposal remains unaccepted. Apply schema changes only when that specific change and target have been authorized.
 
 ## Validation
 

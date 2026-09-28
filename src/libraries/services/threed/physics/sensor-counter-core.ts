@@ -9,7 +9,9 @@ export function reduceSensorCounterEvent(state: SensorCounterState, event: Three
   if (event.projectId !== projectId || !event.sensor) return state;
   const memberKey = sensorMemberKey(event.sensor);
   if (!members.some(member => sensorMemberKey(member) === memberKey && member.behavior === 'counter')) return state;
-  const occupancy = `${memberKey}|${createThreeDRuntimeMarkerKey(event.source)}`;
+  const sourceKey = event.sourceMarkerId == null
+    ? createThreeDRuntimeMarkerKey(event.source) : `marker:${event.sourceMarkerId}`;
+  const occupancy = `${memberKey}|${sourceKey}`;
   if (event.kind === 'sensor-exit') return { ...state, occupied: state.occupied.filter(key => key !== occupancy) };
   if (event.kind !== 'sensor-enter' || state.occupied.includes(occupancy)) return state;
   return { counts: { ...state.counts, [memberKey]: (state.counts[memberKey] ?? 0) + 1 }, occupied: [...state.occupied, occupancy] };

@@ -60,6 +60,29 @@ assert(contacts.observe('sensor-enter', 'sensor', 'models:1', 5));
 assert(contacts.observe('sensor-enter', 'sensor', 'models:2', 8));
 contacts.clear();
 assert(contacts.observe('sensor-enter', 'sensor', 'models:1', 5));
+const goalMember: SensorMember = { id: 'home-goal', name: 'Home Goal', groupId: 'imported-sensors', behavior: 'counter', ownerMarkerId: 2949 };
+const sharedModel = { moduleType: 'models' as const, assetId: 53 };
+const goal = { moduleType: 'models' as const, assetId: 51 };
+const ballA = createThreeDRapierPhysicsEventAdapter({ projectId: 15, source: sharedModel, sourceMarkerId: 2953 });
+const ballB = createThreeDRapierPhysicsEventAdapter({ projectId: 15, source: sharedModel, sourceMarkerId: 2950 });
+const goalEvent = (adapter: typeof ballA, kind: 'sensor-enter' | 'sensor-exit') => adapter.observe({
+  kind, occurredAt: '2026-09-23T12:00:00Z', target: goal,
+  sensor: { ownerMarkerId: goalMember.ownerMarkerId, id: goalMember.id },
+});
+let goalState = createSensorCounterState();
+goalState = reduceSensorCounterEvent(goalState, goalEvent(ballA, 'sensor-enter'), 15, [goalMember]);
+goalState = reduceSensorCounterEvent(goalState, goalEvent(ballB, 'sensor-enter'), 15, [goalMember]);
+assert.equal(goalState.counts[sensorMemberKey(goalMember)], 2);
+assert.equal(goalState.occupied.length, 2);
+goalState = reduceSensorCounterEvent(goalState, goalEvent(ballA, 'sensor-exit'), 15, [goalMember]);
+assert.equal(goalState.occupied.length, 1);
+goalState = reduceSensorCounterEvent(goalState, goalEvent(ballB, 'sensor-enter'), 15, [goalMember]);
+assert.equal(goalState.counts[sensorMemberKey(goalMember)], 2);
+goalState = reduceSensorCounterEvent(goalState, goalEvent(ballA, 'sensor-enter'), 15, [goalMember]);
+assert.equal(goalState.counts[sensorMemberKey(goalMember)], 3);
+assert(contacts.observe('sensor-enter', 'home-goal', 'marker:2953', 7));
+assert(contacts.observe('sensor-enter', 'home-goal', 'marker:2950', 8));
+console.log('  ✓ Distinct Project balls sharing one Model count and exit independently');
 assert.deepEqual(readSensorGroups([{ id: 'group', name: ' My Group ' }]), [{ id: 'group', name: 'My Group' }]);
 assert.throws(() => readSensorGroups([{ id: 'a', name: 'A' }, { id: 'a', name: 'B' }]));
 assert.throws(() => readSensorGroups([{ id: 'a', name: '' }]));

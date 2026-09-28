@@ -51,6 +51,34 @@ export const threed = pgTable('threed', {
 }));
 
 // ============================================
+// THREED SCENARIOS - Project-scoped setup definitions
+// ============================================
+
+/** Scenario metadata is separate from live Scene state and Project marker positions. */
+export const threedScenarios = pgTable('threed_scenarios', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  projectId: integer('project_id').notNull().references(() => project.id, { onDelete: 'cascade' }),
+  threedId: integer('threed_id').notNull().references(() => threed.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  slug: text('slug').notNull(),
+  description: text('description'),
+  isActive: boolean('is_active').notNull().default(true),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, (table) => ({
+  projectSlugIdx: uniqueIndex('idx_threed_scenarios_project_threed_slug').on(table.projectId, table.threedId, table.slug),
+  ownerProjectIdx: index('idx_threed_scenarios_owner_project').on(table.userId, table.projectId),
+  threedIdIdx: index('idx_threed_scenarios_threed_id').on(table.threedId),
+}));
+
+export const threedScenariosRelations = relations(threedScenarios, ({ one }) => ({
+  user: one(user, { fields: [threedScenarios.userId], references: [user.id] }),
+  project: one(project, { fields: [threedScenarios.projectId], references: [project.id] }),
+  threed: one(threed, { fields: [threedScenarios.threedId], references: [threed.id] }),
+}));
+
+// ============================================
 // RELATIONSHIPS
 // ============================================
 
@@ -75,6 +103,7 @@ export const threedRelations = relations(threed, ({ one, many }) => ({
   wateringSchedules: many(threedWateringSchedules),
   harvests: many(threedHarvests),
   layers: many(threedLayers),
+  scenarios: many(threedScenarios),
 }));
 
 

@@ -50,6 +50,7 @@ import {
   type ThreeDPlantingPlacementDraft,
 } from '@/components/map/panels/ThreeDPlantingPlacementPanel';
 import { ProjectScenariosPanel } from '@/components/map/panels/ProjectScenariosPanel';
+import { ProjectScenarioSceneCard } from '@/components/map/panels/ProjectScenarioSceneCard';
 import { ProjectSetupPanel } from '@/components/map/panels/ProjectSetupPanel';
 import { ThreeDProjectLoadingPresentation } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
 import { getDefaultMapData, getDefaultLayers } from '@/libraries/services/map/DefaultMapData';
@@ -2707,6 +2708,7 @@ function UnifiedMapPageInner() {
         }}
       />
       </div>
+      {canEditProject && selectedProjectId && isThreeDPresentationComplete && !isScenariosOpen && !isProjectSetupOpen && <ProjectScenarioSceneCard key={selectedProjectId} projectId={selectedProjectId} />}
       <ProjectScenariosPanel
         isOpen={canEditProject && Boolean(selectedProjectId) && isThreeDPresentationComplete && isScenariosOpen}
         projectId={String(selectedProjectId ?? '')}

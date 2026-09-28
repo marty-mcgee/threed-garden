@@ -54,6 +54,7 @@ import {
   Camera,
   Layers,
   MapPin,
+  BookOpen,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -135,6 +136,7 @@ const navSections: NavSection[] = [
       { title: 'Plants', href: '/admin/threed/plants', icon: Sprout, exact: false },
       { title: 'Beds', href: '/admin/threed/beds', icon: Cuboid, exact: false },
       { title: 'Plantings', href: '/admin/threed/plantings', icon: Bean, exact: false },
+      { title: 'Scenarios', href: '/admin/threed/scenarios', icon: BookOpen, exact: false },
       { title: 'Layers', href: '/admin/threed/layers', icon: Layers, exact: false },
       { title: 'Tasks', href: '/admin/threed/tasks', icon: ListTodo, exact: false },
       { title: 'Waterings', href: '/admin/threed/watering-schedules', icon: Droplets, exact: false },

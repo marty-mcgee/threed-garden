@@ -67,6 +67,7 @@ const tasks = {
   'threed-orchestration': [ts('validate-threed-orchestration.mts')],
   'threed-library-placement': [ts('validate-threed-library-placement.mts')],
   'threed-scenarios': [ts('validate-threed-scenarios.mts')],
+  'threed-scenario-admin': [node('validate-threed-scenario-admin.cjs')],
   'threed-library-collections': [ts('validate-threed-library-collections.mts')],
   'threed-project-session': [ts('validate-threed-project-session.mts'), node('validate-public-scene-api.cjs'), node('validate-project-asset-warnings.cjs'), ['node', '--import', 'tsx', `${scripts}/validate-scene-loading-policy.mts`]],
   'threed-mqtt': [['node', '--import', 'tsx', 'src/libraries/services/threed/mqtt/validate.mts']],
@@ -158,6 +159,8 @@ const ci = [
   'threed-sensors',
   'threed-physics-events',
   'threed-soccer-physics',
+  'threed-scenario-admin',
+  'threed-scenarios',
   'threed-farmbot-live-state',
   'threed-farmbot-coordinate-alignment',
 ];

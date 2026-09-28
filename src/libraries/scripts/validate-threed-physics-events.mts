@@ -49,6 +49,7 @@ const invalidInputs: Array<[Partial<Parameters<typeof normalizeThreeDPhysicsEven
   [{ sceneEventId: 'contains spaces' }, 'invalid_scene_event_id'],
   [{ kind: 'goal' }, 'invalid_kind'],
   [{ source: { moduleType: 'incidents', assetId: 1 } }, 'invalid_identity'],
+  [{ sourceMarkerId: 0 }, 'invalid_identity'],
   [{ occurredAt: 'not-a-time' }, 'invalid_occurred_at'],
   [{ magnitude: -1 }, 'invalid_magnitude'],
   [{ point: { x: Number.NaN, y: 0, z: 0 } }, 'invalid_point'],
@@ -84,6 +85,18 @@ const observation = { kind: 'contact-start' as const, occurredAt, target: goal, 
 const firstAdapterEvent = adapterA.observe(observation);
 assert.deepEqual(firstAdapterEvent, adapterB.observe(observation));
 assert.notEqual(adapterA.observe(observation).sceneEventId, firstAdapterEvent.sceneEventId);
+const instanceA = createThreeDRapierPhysicsEventAdapter({ projectId: 5, source: ball, sourceMarkerId: 2953 });
+const instanceB = createThreeDRapierPhysicsEventAdapter({ projectId: 5, source: ball, sourceMarkerId: 2950 });
+const instanceAEvent = instanceA.observe(observation);
+const instanceBEvent = instanceB.observe(observation);
+assert.equal(instanceAEvent.sourceMarkerId, 2953);
+assert.equal(instanceBEvent.sourceMarkerId, 2950);
+assert.notEqual(instanceAEvent.sceneEventId, instanceBEvent.sceneEventId);
+const instanceBuffer = new ThreeDPhysicsEventBuffer({ minimumIntervalMs: 20 });
+assert.equal(instanceBuffer.append(instanceAEvent).status, 'accepted');
+assert.equal(instanceBuffer.append(instanceBEvent).status, 'accepted');
+assert.equal(instanceBuffer.list().length, 2);
+console.log('  ✓ Project instances sharing one Model retain distinct event IDs and buffer signatures');
 console.log('  ✓ Rapier adapter converts observations without importing Rapier or React');
 
 console.log('PASS: ThreeD Physics Event API — 4 validation groups completed');

@@ -16,6 +16,7 @@
     "validate": "node src/libraries/scripts/validate.mjs",
     "validate:all": "node src/libraries/scripts/validate.mjs all",
     "threed:models:import": "node --import tsx src/libraries/scripts/import-threed-models.ts",
+    "threed:scenarios:seed": "node --import tsx src/libraries/scripts/seed-threed-scenario.mts",
     "threed:models:import:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/libraries/scripts/validate-threed-model-import.mts",
     "threed:models:manifest:legacy": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/libraries/scripts/generate-legacy-threed-model-manifest.mts",
     "multimedia:import": "node --import tsx src/libraries/data/multimedia/seed.ts",

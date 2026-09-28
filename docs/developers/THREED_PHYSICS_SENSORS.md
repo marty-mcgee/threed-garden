@@ -24,7 +24,7 @@ Numeric fields show at most three decimal places. Geometry keeps its existing pr
 
 The Scene panel shows group names and each member's name/count. There is no two-member limit or special meaning assigned to names such as Home Goal and Away Goal.
 
-One eligible body counts once on entry. It must leave before it can count again. Multiple colliders on one body do not count as multiple entries. Other sensor colliders are excluded.
+One eligible body counts once on entry. It must leave before it can count again. Multiple colliders on one body do not count as multiple entries. Other sensor colliders are excluded. Two Project Model instances may share one reusable Model; their saved Project marker IDs keep their live sensor entries independent while the reusable Model ID remains available as source metadata.
 
 **Reset Counts** clears current counts while preserving occupancy: an object already inside must exit and re-enter. Counts are session-local and reset on refresh or Project change. Sensor geometry, names, group membership and group names persist.
 

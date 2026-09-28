@@ -25,6 +25,8 @@ export interface ThreeDPhysicsEventV1 {
   sceneEventId: string;
   kind: ThreeDPhysicsEventKind;
   source: ThreeDRuntimeMarkerIdentity;
+  /** Saved Project marker row for a specific source instance, when available. */
+  sourceMarkerId?: number;
   target?: ThreeDRuntimeMarkerIdentity;
   occurredAt: string;
   magnitude?: number;
@@ -38,6 +40,7 @@ export interface ThreeDPhysicsEventInput {
   sceneEventId: unknown;
   kind: unknown;
   source: unknown;
+  sourceMarkerId?: unknown;
   target?: unknown;
   occurredAt: unknown;
   magnitude?: unknown;
@@ -50,6 +53,8 @@ export interface ThreeDPhysicsEventIdInput {
   projectId: number;
   kind: ThreeDPhysicsEventKind;
   source: ThreeDRuntimeMarkerIdentity;
+  /** Saved Project marker row for a specific source instance, when available. */
+  sourceMarkerId?: number;
   target?: ThreeDRuntimeMarkerIdentity;
   occurredAt: string;
   sequence: number;
@@ -191,6 +196,8 @@ export function normalizeThreeDPhysicsEvent(
     throw new ThreeDPhysicsEventError('invalid_kind');
   }
   const source = normalizeIdentity(input.source);
+  const sourceMarkerId = input.sourceMarkerId === undefined
+    ? undefined : positiveSafeInteger(input.sourceMarkerId, 'invalid_identity');
   const target = input.target === undefined ? undefined : normalizeIdentity(input.target);
   const occurredAt = normalizeTime(input.occurredAt);
   let magnitude: number | undefined;
@@ -212,6 +219,7 @@ export function normalizeThreeDPhysicsEvent(
     sceneEventId: input.sceneEventId,
     kind: input.kind as ThreeDPhysicsEventKind,
     source,
+    ...(sourceMarkerId !== undefined ? { sourceMarkerId } : {}),
     ...(target ? { target } : {}),
     occurredAt,
     ...(magnitude !== undefined ? { magnitude } : {}),
@@ -227,6 +235,8 @@ export function createThreeDPhysicsEventId(input: ThreeDPhysicsEventIdInput): st
     throw new ThreeDPhysicsEventError('invalid_kind');
   }
   const source = normalizeIdentity(input.source);
+  const sourceMarkerId = input.sourceMarkerId === undefined
+    ? undefined : positiveSafeInteger(input.sourceMarkerId, 'invalid_identity');
   const target = input.target ? normalizeIdentity(input.target) : undefined;
   const occurredAt = normalizeTime(input.occurredAt);
   const sequence = positiveSafeInteger(input.sequence, 'invalid_scene_event_id');
@@ -236,6 +246,7 @@ export function createThreeDPhysicsEventId(input: ThreeDPhysicsEventIdInput): st
     projectId,
     input.kind,
     createThreeDRuntimeMarkerKey(source),
+    ...(sourceMarkerId !== undefined ? [`marker-${sourceMarkerId}`] : []),
     targetKey,
     Date.parse(occurredAt),
     sequence,
@@ -257,6 +268,7 @@ function eventSignature(event: ThreeDPhysicsEventV1): string {
     event.projectId,
     event.kind,
     createThreeDRuntimeMarkerKey(event.source),
+    event.sourceMarkerId ?? 'none',
     event.target ? createThreeDRuntimeMarkerKey(event.target) : 'none',
     event.sensor ? `${event.sensor.ownerMarkerId}:${event.sensor.id}` : '',
   ].join(':');

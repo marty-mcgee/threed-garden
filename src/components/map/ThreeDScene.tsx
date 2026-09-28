@@ -894,11 +894,15 @@ function PhysicsSensorCuboidChildren({
     if (!physicsIdentity || (sensor.detection === 'movable-ball' && !physicsIdentity.isMovableBall)) return;
     const source = physicsIdentity.identity as ThreeDRuntimeMarkerIdentity | undefined;
     if (!source || source.moduleType !== 'models' || !Number.isSafeInteger(source.assetId) || source.assetId <= 0) return;
-    const sourceKey = createThreeDRuntimeMarkerKey(source);
+    const sourceMarkerId = Number(physicsIdentity.projectMarkerId);
+    const instanceMarkerId = Number.isSafeInteger(sourceMarkerId) && sourceMarkerId > 0
+      ? sourceMarkerId : undefined;
+    const sourceKey = instanceMarkerId === undefined
+      ? createThreeDRuntimeMarkerKey(source) : `marker:${instanceMarkerId}`;
     if (!contactsRef.current.observe(kind, sensor.id, sourceKey, payload.other.collider?.handle ?? 0)) return;
     let adapter = adaptersRef.current.get(sourceKey);
     if (!adapter) {
-      adapter = createThreeDRapierPhysicsEventAdapter({ projectId, source });
+      adapter = createThreeDRapierPhysicsEventAdapter({ projectId, source, sourceMarkerId: instanceMarkerId });
       adaptersRef.current.set(sourceKey, adapter);
     }
 
@@ -1031,6 +1035,9 @@ function ProjectModelMarkerBody({
       ? { moduleType: 'models', assetId }
       : null;
   }, [marker.data?.id]);
+  const projectMarkerId = Number(marker.data?.projectMarkerId);
+  const instanceMarkerId = Number.isSafeInteger(projectMarkerId) && projectMarkerId > 0
+    ? projectMarkerId : undefined;
   const volumeAdaptersRef = useRef(new Map<string, ThreeDRapierPhysicsEventAdapter>());
   const emitVolumeSensorEvent = useCallback((
     kind: 'sensor-enter' | 'sensor-exit',
@@ -1043,10 +1050,14 @@ function ProjectModelMarkerBody({
     if (!physicsIdentity?.isMovableBall) return;
     const source = physicsIdentity.identity as ThreeDRuntimeMarkerIdentity | undefined;
     if (!source || source.moduleType !== 'models' || !Number.isSafeInteger(source.assetId) || source.assetId <= 0) return;
-    const sourceKey = createThreeDRuntimeMarkerKey(source);
+    const sourceMarkerId = Number(physicsIdentity.projectMarkerId);
+    const instanceMarkerId = Number.isSafeInteger(sourceMarkerId) && sourceMarkerId > 0
+      ? sourceMarkerId : undefined;
+    const sourceKey = instanceMarkerId === undefined
+      ? createThreeDRuntimeMarkerKey(source) : `marker:${instanceMarkerId}`;
     let adapter = volumeAdaptersRef.current.get(sourceKey);
     if (!adapter) {
-      adapter = createThreeDRapierPhysicsEventAdapter({ projectId, source });
+      adapter = createThreeDRapierPhysicsEventAdapter({ projectId, source, sourceMarkerId: instanceMarkerId });
       volumeAdaptersRef.current.set(sourceKey, adapter);
     }
     onSensorPhysicsEvent?.(adapter.observe({
@@ -1173,7 +1184,7 @@ function ProjectModelMarkerBody({
       colliders={false}
       position={position}
       rotation={rotation}
-      userData={markerIdentity ? { threeDPhysics: { identity: markerIdentity, isMovableBall } } : undefined}
+      userData={markerIdentity ? { threeDPhysics: { identity: markerIdentity, projectMarkerId: instanceMarkerId, isMovableBall } } : undefined}
     >
       {!isMovableBall && !modelVolumeSensor && collisionBounds && colliderKey && (
         (effectiveCollisionMode === 'box' || (!isEnvironment && effectiveCollisionMode === 'box-fallback')) &&

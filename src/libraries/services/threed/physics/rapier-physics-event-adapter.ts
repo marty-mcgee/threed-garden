@@ -23,6 +23,7 @@ export interface ThreeDRapierPhysicsEventAdapter {
 export function createThreeDRapierPhysicsEventAdapter(input: {
   projectId: number;
   source: ThreeDRuntimeMarkerIdentity;
+  sourceMarkerId?: number;
 }): ThreeDRapierPhysicsEventAdapter {
   let sequence = 0;
   return Object.freeze({
@@ -32,6 +33,7 @@ export function createThreeDRapierPhysicsEventAdapter(input: {
         projectId: input.projectId,
         kind: observation.kind,
         source: input.source,
+        sourceMarkerId: input.sourceMarkerId,
         target: observation.target,
         occurredAt: observation.occurredAt,
         sequence,
@@ -40,6 +42,7 @@ export function createThreeDRapierPhysicsEventAdapter(input: {
         ...observation,
         projectId: input.projectId,
         source: input.source,
+        sourceMarkerId: input.sourceMarkerId,
         sceneEventId: observation.sensor ? `${sceneEventId}:${observation.sensor.ownerMarkerId}:${observation.sensor.id}` : sceneEventId,
       });
     },

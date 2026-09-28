@@ -55,7 +55,7 @@ export function SensorGroupEditor({ initialGroupId = '', expanded = false, onSel
   const [name, setName] = useState(() => workspace?.groups.find(group => group.id === initialGroupId)?.name ?? '');
   if (!workspace) return null;
   return <details open={expanded || undefined} className="rounded border border-white/10 p-2 text-xs">
-    <summary>Manage Sensor Groups</summary>
+    <summary className="cursor-pointer">{id ? 'Rename or delete group' : 'Create group'}</summary>
     <div className="mt-2 space-y-2">
       <select className="w-full rounded border border-white/15 p-1.5" aria-label="Group to edit" value={id} onChange={event => { onSelectGroup?.(event.target.value); setId(event.target.value); setName(workspace.groups.find(group => group.id === event.target.value)?.name ?? ''); }}>
         <option value="">New group</option>
