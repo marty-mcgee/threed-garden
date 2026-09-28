@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.22.5",
+  "version": "0.22.6",
   "private": true,
   "packageManager": "npm@11.6.2",
   "scripts": {
@@ -20,6 +20,7 @@
     "threed:models:import:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/libraries/scripts/validate-threed-model-import.mts",
     "threed:models:manifest:legacy": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/libraries/scripts/generate-legacy-threed-model-manifest.mts",
     "multimedia:import": "node --import tsx src/libraries/data/multimedia/seed.ts",
+    "traffic:import": "node --import tsx src/libraries/data/traffic/seed.ts",
     "farmbot:mqtt-worker": "node --import tsx src/libraries/services/threed/mqtt/integrations/farmbot/index.ts"
   },
   "dependencies": {

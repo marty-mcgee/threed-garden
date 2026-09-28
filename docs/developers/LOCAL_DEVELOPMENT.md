@@ -30,6 +30,10 @@ Before a push, verify the intended Neon project, branch and database behind `DAT
 
 `npm run multimedia:import -- --user-id=<existing-user-id> --file src/libraries/data/multimedia/seed-data.json` validates the JSON and previews album/track counts without opening a database connection. Add `--commit` only after confirming the target user and database; the standalone write path loads `.env.local` before opening the shared database client. The importer creates missing albums and tracks by owner-scoped natural keys and skips existing matches on rerun. This checkout's database is also used by Vercel Production, so a committed import writes live data.
 
+## Traffic module import
+
+`npm run traffic:import -- --user-id=<existing-user-id>` validates `src/libraries/data/traffic/seed-data.json` and previews its module and Project-assignment counts without opening a database connection. An optional `--file <path>` selects another version-1 JSON file. Add `--commit` to create missing Traffic modules and their explicitly listed `projectIds` in one database transaction. Every requested Project must belong to the target user. Existing modules and assignments are preserved on rerun; an existing slug owned by another user causes the import to fail. The included seed creates the private, active `ThreeD Traffic` module with no Project assignments. The checkout's database is shared with Vercel Production, so `--commit` writes live data.
+
 ## Validation
 
 Use the repository's narrow-first ladder:

@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "modules": [
+    {
+      "name": "ThreeD Traffic",
+      "slug": "threed-traffic",
+      "description": "Traffic module foundation for ThreeD Projects.",
+      "isActive": true,
+      "isPublic": false,
+      "config": {},
+      "metadata": {},
+      "projectIds": []
+    }
+  ]
+}
