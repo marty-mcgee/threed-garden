@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { BookOpen, Check, Plus, Trash2, X } from 'lucide-react';
+import { BookOpen, Check, CircleDot, Pencil, Plus, Radar, Sprout, Trash2, X } from 'lucide-react';
 import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,17 +14,28 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 type Scenario = { id: number; projectId: number; threedId: number; projectName: string; threedName: string; name: string; slug: string; description: string | null; isActive: boolean; createdAt: string };
 type Project = { id: number; name: string };
 type Module = { id: number; name: string };
+type AssignedAsset = { assetType: string };
 type Form = { projectId: string; threedId: string; name: string; slug: string; description: string; isActive: boolean };
 const emptyForm: Form = { projectId: '', threedId: '', name: '', slug: '', description: '', isActive: true };
 const pageSizes = [25, 50, 100];
 const sortKeys = ['name', 'slug', 'project', 'active', 'createdAt'] as const;
 type SortKey = typeof sortKeys[number];
+const purposePrompts = [
+  { id: 'farm', icon: Sprout, color: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400', title: 'Explore a farm', outcome: 'Discover places and plants.', suggested: 'Beds + Plantings', name: 'Explore the Farm', description: 'Explore the farm and discover its places, plants, and people.' },
+  { id: 'soccer', icon: CircleDot, color: 'bg-amber-500/15 text-amber-600 dark:text-amber-400', title: 'Practice soccer', outcome: 'Play and observe the field.', suggested: 'Field + ball + Sensor Group', name: 'Soccer Practice', description: 'Practice on the field and explore how the Scene responds.' },
+  { id: 'monitor', icon: Radar, color: 'bg-sky-500/15 text-sky-600 dark:text-sky-400', title: 'Monitor activity', outcome: 'Watch what happens in the Scene.', suggested: 'Project Sensors', name: 'Project Activity', description: 'Observe activity in the Project Scene.' },
+] as const;
 
-export function ThreeDScenariosCRUD() {
+function slugFromName(name: string) {
+  return name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 100).replace(/-$/, '');
+}
+
+export function ThreeDScenariosCRUD({ projectId, compact = false }: { projectId?: string; compact?: boolean } = {}) {
   const [projects, setProjects] = useState<Project[]>([]);
   const [modules, setModules] = useState<Module[]>([]);
+  const [assetSnapshot, setAssetSnapshot] = useState<{ projectId: string; assets: AssignedAsset[] | null } | null>(null);
   const [projectError, setProjectError] = useState('');
-  const [projectFilter, setProjectFilter] = useState('');
+  const [projectFilter, setProjectFilter] = useState(compact ? projectId ?? '' : '');
   const [rows, setRows] = useState<Scenario[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(0);
@@ -40,6 +51,7 @@ export function ThreeDScenariosCRUD() {
   const [busy, setBusy] = useState(false);
   const [editing, setEditing] = useState<Scenario | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [choosingPurpose, setChoosingPurpose] = useState(false);
   const [form, setForm] = useState<Form>(emptyForm);
   const [formError, setFormError] = useState('');
 
@@ -51,21 +63,35 @@ export function ThreeDScenariosCRUD() {
       if (!controller.signal.aborted) {
         const ownedProjects: Project[] = Array.isArray(result.data) ? result.data : [];
         setProjects(ownedProjects);
-        const params = new URLSearchParams(window.location.search);
-        const requestedId = params.get('projectId');
+        setProjectError('');
+        const params = compact ? null : new URLSearchParams(window.location.search);
+        const requestedId = params?.get('projectId');
+        if (compact && projectId && !ownedProjects.some(project => String(project.id) === projectId)) {
+          setProjectError('This Project is unavailable.');
+        }
         if (requestedId && /^\d+$/.test(requestedId) && ownedProjects.some(project => String(project.id) === requestedId)) {
           setProjectFilter(requestedId);
-          if (params.get('create') === '1') {
+          if (params?.get('create') === '1') {
             setEditing(null);
             setForm({ ...emptyForm, projectId: requestedId });
             setFormError('');
+            setChoosingPurpose(true);
             setDialogOpen(true);
           }
         }
       }
     }).catch(error => { if (!controller.signal.aborted) setProjectError(error instanceof Error ? error.message : 'Could not load Projects.'); });
     return () => controller.abort();
-  }, []);
+  }, [compact, projectId]);
+
+  useEffect(() => {
+    if (!compact) return;
+    setProjectFilter(projectId ?? '');
+    setPage(0);
+    setDialogOpen(false);
+    setEditing(null);
+    setForm({ ...emptyForm, projectId: projectId ?? '' });
+  }, [compact, projectId]);
 
   useEffect(() => {
     if (!dialogOpen || editing || !form.projectId) { setModules([]); return; }
@@ -77,6 +103,29 @@ export function ThreeDScenariosCRUD() {
     }).catch(error => { if (!controller.signal.aborted) setFormError(error instanceof Error ? error.message : 'Could not load ThreeD modules.'); });
     return () => controller.abort();
   }, [dialogOpen, editing, form.projectId]);
+
+  useEffect(() => {
+    if (!dialogOpen || !choosingPurpose || !form.projectId) { setAssetSnapshot(null); return; }
+    const controller = new AbortController();
+    setAssetSnapshot(null);
+    fetch(`/api/project/assets?projectId=${encodeURIComponent(form.projectId)}&moduleType=threed`, { signal: controller.signal }).then(async response => {
+      const result = await response.json();
+      if (!response.ok || !result.success) throw new Error('Project assets unavailable');
+      if (!controller.signal.aborted) setAssetSnapshot({ projectId: form.projectId, assets: Array.isArray(result.data) ? result.data : null });
+    }).catch(() => { if (!controller.signal.aborted) setAssetSnapshot({ projectId: form.projectId, assets: null }); });
+    return () => controller.abort();
+  }, [dialogOpen, choosingPurpose, form.projectId]);
+
+  useEffect(() => {
+    if (!compact) return;
+    const refresh = () => { if (document.visibilityState === 'visible') setRevision(value => value + 1); };
+    window.addEventListener('focus', refresh);
+    document.addEventListener('visibilitychange', refresh);
+    return () => {
+      window.removeEventListener('focus', refresh);
+      document.removeEventListener('visibilitychange', refresh);
+    };
+  }, [compact]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -100,9 +149,14 @@ export function ThreeDScenariosCRUD() {
   }, [page, pageSize, search, sort, direction, projectFilter, revision]);
 
   function resetList() { setPage(0); setSelected(new Set()); }
-  function openCreate() { setEditing(null); setForm(emptyForm); setModules([]); setFormError(''); setDialogOpen(true); }
+  function openCreate() { if (compact && !projects.some(project => String(project.id) === projectFilter)) return; setEditing(null); setForm({ ...emptyForm, projectId: projectFilter }); setModules([]); setFormError(''); setChoosingPurpose(true); setDialogOpen(true); }
+  function choosePurpose(prompt?: typeof purposePrompts[number]) {
+    if (prompt) setForm(value => ({ ...value, name: prompt.name, slug: slugFromName(prompt.name), description: prompt.description }));
+    setChoosingPurpose(false);
+  }
   function openEdit(row: Scenario) {
     setEditing(row);
+    setChoosingPurpose(false);
     setForm({ projectId: String(row.projectId), threedId: String(row.threedId), name: row.name, slug: row.slug, description: row.description ?? '', isActive: row.isActive });
     setFormError(''); setDialogOpen(true);
   }
@@ -137,11 +191,39 @@ export function ThreeDScenariosCRUD() {
     setRevision(value => value + 1);
   }
 
+  const assignedAssets = assetSnapshot?.projectId === form.projectId ? assetSnapshot.assets : null;
+  const assignedCount = (type: string) => assignedAssets?.filter(asset => asset.assetType === type).length ?? 0;
+  const projectContext = (id: typeof purposePrompts[number]['id']) => {
+    if (!form.projectId || !assetSnapshot || assetSnapshot.projectId !== form.projectId || !assignedAssets) return '';
+    if (id === 'farm') return `In Project: ${assignedCount('threed_beds')} Beds · ${assignedCount('threed_plantings')} Plantings`;
+    if (id === 'soccer') return `In Project: ${assignedCount('threed_models')} Models`;
+    return `In Project: ${assignedAssets.length} ThreeD assets`;
+  };
   const pages = Math.max(1, Math.ceil(total / pageSize));
   const currentIds = rows.map(row => row.id);
   const allSelected = currentIds.length > 0 && currentIds.every(id => selected.has(id));
   const sortable = (label: string, key: SortKey) => <button type="button" onClick={() => changeSort(key)} aria-label={`Sort by ${label}`} className="font-semibold hover:underline">{label}{sort === key ? direction === 'asc' ? ' ↑' : ' ↓' : ''}</button>;
-  return <div className="flex min-h-0 flex-1 flex-col gap-3">
+  return <div className={compact ? 'mt-3 space-y-2.5 rounded-lg border border-foreground/15 bg-foreground/[0.03] p-3' : 'flex min-h-0 flex-1 flex-col gap-3'}>
+    {compact ? <section aria-label="Saved Scenario outlines" className="space-y-2">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <h3 className="flex items-center gap-2 text-xs font-semibold"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500/15 text-sky-700 dark:text-sky-300"><BookOpen aria-hidden="true" className="h-4 w-4" /></span> Saved outlines <span className="rounded-full bg-foreground/10 px-1.5 py-0.5 text-[10px] text-muted-foreground">{total}</span></h3>
+        <Button size="sm" variant="outline" className="h-8 gap-1 text-xs" disabled={!projects.some(project => String(project.id) === projectFilter)} onClick={openCreate}><Plus aria-hidden="true" className="h-3.5 w-3.5 text-emerald-400" /> New Scenario</Button>
+      </div>
+      <Input aria-label="Search saved Scenarios" placeholder="Search outlines" className="h-8 bg-background/50 text-xs" maxLength={120} value={search} onChange={event => { setSearch(event.target.value); resetList(); }} />
+      {projectError && <p role="alert" className="text-xs text-destructive">{projectError}</p>}
+      {notice && <p role="status" className="text-xs">{notice}</p>}
+      {loading ? <p className="text-xs text-muted-foreground">Loading saved outlines…</p> :
+        loadError ? <p role="alert" className="text-xs text-destructive">{loadError}</p> :
+        rows.length ? <ul className="space-y-2">{rows.map(row => <li key={row.id} className="rounded-lg border border-foreground/10 bg-background/30 p-2.5 transition-colors hover:bg-foreground/[0.06]">
+          <div className="flex items-start justify-between gap-2"><div className="min-w-0"><p className="text-xs font-semibold">{row.name}</p><p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground"><span>{row.threedName}</span><span aria-hidden="true">·</span><span className={row.isActive ? 'text-emerald-700 dark:text-emerald-300' : 'text-amber-700 dark:text-amber-300'}>{row.isActive ? 'Active' : 'Inactive'}</span></p></div>
+            <div className="flex shrink-0 gap-1"><Button variant="ghost" size="sm" className="h-7 px-2 text-xs" onClick={() => openEdit(row)} aria-label={`Edit ${row.name}`}><Pencil aria-hidden="true" className="h-3.5 w-3.5 text-sky-700 dark:text-sky-300" /> Edit</Button><Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" disabled={busy} onClick={() => void remove([row.id])} aria-label={`Delete ${row.name}`}><Trash2 className="h-3.5 w-3.5" /></Button></div>
+          </div>
+          {row.description && <p className="mt-1 line-clamp-2 text-[11px] text-muted-foreground">{row.description}</p>}
+        </li>)}</ul> :
+        <p className="text-xs text-muted-foreground">{search ? 'No saved Scenarios match this search.' : 'No saved outlines for this Project yet.'}</p>}
+      {total > pageSize && <nav aria-label="Saved Scenarios pages" className="flex items-center justify-between gap-2 text-xs"><span>Page {page + 1} of {pages}</span><div className="flex gap-1"><Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(page - 1)}>Previous</Button><Button variant="outline" size="sm" disabled={page + 1 >= pages} onClick={() => setPage(page + 1)}>Next</Button></div></nav>}
+      <p className="text-[11px] text-muted-foreground">Outlines do not configure Scene assets.</p>
+    </section> : <>
     <AdminWorkspaceHeader icon={BookOpen} title="ThreeD Scenarios" description="Manage Project-scoped ThreeD Scenario definitions.">
       <span className="rounded border px-2 py-0.5 text-xs">{total} total</span>
       <Input aria-label="Search Scenarios" placeholder="Search Scenarios" className="h-8 w-52 text-xs" maxLength={120} value={search} onChange={event => { setSearch(event.target.value); resetList(); }} />
@@ -161,7 +243,9 @@ export function ThreeDScenariosCRUD() {
         <TableBody>
           {loading && <TableRow><TableCell colSpan={8}>Loading Scenarios…</TableCell></TableRow>}
           {!loading && loadError && <TableRow><TableCell colSpan={8} role="alert">{loadError}</TableCell></TableRow>}
-          {!loading && !loadError && !rows.length && <TableRow><TableCell colSpan={8}>No Scenarios found.</TableCell></TableRow>}
+          {!loading && !loadError && !rows.length && <TableRow><TableCell colSpan={8}>
+            {search ? 'No Scenarios match this search.' : <div className="space-y-2 py-5 text-center"><p className="font-medium">Give {projectFilter ? 'this Project' : 'a Project'} a purpose.</p><p className="text-xs text-muted-foreground">Save a Scenario outline now. You can add to the Scene later.</p><Button size="sm" onClick={openCreate}>Create Scenario</Button></div>}
+          </TableCell></TableRow>}
           {!loading && !loadError && rows.map(row => <TableRow key={row.id}>
             <TableCell><input type="checkbox" aria-label={`Select ${row.name}`} checked={selected.has(row.id)} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(row.id); else next.delete(row.id); return next; })} /></TableCell>
             <TableCell className="font-medium">{row.name}</TableCell><TableCell>{row.slug}</TableCell><TableCell>{row.projectName}</TableCell><TableCell>{row.threedName}</TableCell>
@@ -176,19 +260,37 @@ export function ThreeDScenariosCRUD() {
       <div className="flex flex-wrap items-center gap-2"><span>{loading ? 'Loading…' : loadError ? 'Scenarios unavailable' : `${total ? page * pageSize + 1 : 0}–${Math.min((page + 1) * pageSize, total)} of ${total} Scenarios`}</span><span aria-hidden="true">|</span><span>{selected.size} selected</span><Button variant="outline" size="sm" disabled={!selected.size || busy} onClick={() => void remove([...selected])}>Delete selected</Button><Button variant="ghost" size="sm" disabled={!selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button></div>
       <div className="flex flex-wrap items-center gap-1"><select aria-label="Scenarios per page" className="h-8 rounded border bg-background px-2" value={pageSize} onChange={event => { setPageSize(Number(event.target.value)); resetList(); }}>{pageSizes.map(size => <option key={size} value={size}>{size} per page</option>)}</select><Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(0)}>First</Button><Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(page - 1)}>Previous</Button><span className="px-2">Page {page + 1} of {pages}</span><Button variant="outline" size="sm" disabled={page + 1 >= pages} onClick={() => setPage(page + 1)}>Next</Button><Button variant="outline" size="sm" disabled={page + 1 >= pages} onClick={() => setPage(pages - 1)}>Last</Button></div>
     </nav>
-    <Dialog open={dialogOpen} onOpenChange={open => { if (!busy) setDialogOpen(open); }}><DialogContent className="max-h-[90dvh] overflow-y-auto"><DialogHeader><DialogTitle>{editing ? 'Edit Scenario' : 'New Scenario'}</DialogTitle></DialogHeader>
-      <div className="space-y-3">
+    </>}
+    <Dialog open={dialogOpen} onOpenChange={open => { if (!busy) setDialogOpen(open); }}><DialogContent className="max-h-[90dvh] overflow-y-auto"><DialogHeader><DialogTitle>{editing ? 'Edit Scenario' : choosingPurpose ? 'Choose a Scenario' : 'New Scenario'}</DialogTitle></DialogHeader>
+      {!editing && choosingPurpose ? <div className="space-y-3">
+        <div className="grid gap-2 sm:grid-cols-2">{purposePrompts.map(prompt => {
+          const Icon = prompt.icon;
+          const context = projectContext(prompt.id);
+          return <button key={prompt.id} type="button" onClick={() => choosePurpose(prompt)} className="rounded-lg border p-3 text-left transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <span aria-hidden="true" className={`inline-flex h-9 w-9 items-center justify-center rounded-lg ${prompt.color}`}><Icon className="h-5 w-5" /></span>
+            <span className="mt-2 block text-sm font-semibold">{prompt.title}</span>
+            <span className="mt-1 block text-xs text-muted-foreground">{prompt.outcome}</span>
+            <span className="mt-2 block text-[11px] text-muted-foreground">Try: {prompt.suggested}</span>
+            {context && <span className="mt-1 block text-[11px] text-muted-foreground">{context}</span>}
+          </button>;
+        })}<button type="button" onClick={() => choosePurpose()} className="rounded-lg border p-3 text-left transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+          <span aria-hidden="true" className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-violet-500/15 text-violet-600 dark:text-violet-400"><Pencil className="h-5 w-5" /></span>
+          <span className="mt-2 block text-sm font-semibold">Start from scratch</span>
+          <span className="mt-1 block text-xs text-muted-foreground">Blank outline, your idea.</span>
+        </button></div>
+        <p className="text-xs text-muted-foreground">Ideas suggest text only; no Scene assets are added.</p>
+      </div> : <div className="space-y-3">
         <div><Label htmlFor="scenario-project">Project</Label><select id="scenario-project" className="mt-1 w-full rounded border bg-background p-2 text-sm" disabled={!!editing} value={form.projectId} onChange={event => { setForm(value => ({ ...value, projectId: event.target.value, threedId: '' })); setFormError(''); }}><option value="">Choose a Project</option>{projects.map(project => <option key={project.id} value={project.id}>{project.name}</option>)}</select></div>
         <div><Label htmlFor="scenario-threed">ThreeD module</Label>{editing ? <Input id="scenario-threed" disabled value={editing.threedName} /> : <select id="scenario-threed" className="mt-1 w-full rounded border bg-background p-2 text-sm" value={form.threedId} onChange={event => setForm(value => ({ ...value, threedId: event.target.value }))} disabled={!form.projectId}><option value="">Choose an assigned ThreeD module</option>{modules.map(module => <option key={module.id} value={module.id}>{module.name}</option>)}</select>}
-          {!editing && form.projectId && !modules.length && <p className="mt-1 text-xs text-muted-foreground">A Scenario needs a ThreeD module assigned to this Project. If none appears, add one in the <Link className="underline" href={`/admin/projects/${form.projectId}`}>Project Modules</Link> section first.</p>}
+          {!editing && form.projectId && !modules.length && <p className="mt-1 text-xs text-muted-foreground">Assign a ThreeD module in <Link className="underline" href={`/admin/projects/${form.projectId}`}>Project Modules</Link> to save.</p>}
         </div>
-        <div><Label htmlFor="scenario-name">Name</Label><Input id="scenario-name" maxLength={120} value={form.name} onChange={event => setForm(value => ({ ...value, name: event.target.value }))} /></div>
+        <div><Label htmlFor="scenario-name">Name</Label><Input id="scenario-name" maxLength={120} value={form.name} onChange={event => setForm(value => ({ ...value, name: event.target.value, slug: !editing && (!value.slug || value.slug === slugFromName(value.name)) ? slugFromName(event.target.value) : value.slug }))} /></div>
         <div><Label htmlFor="scenario-slug">Slug</Label><Input id="scenario-slug" maxLength={100} value={form.slug} onChange={event => setForm(value => ({ ...value, slug: event.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') }))} /></div>
-        <div><Label htmlFor="scenario-description">Description</Label><Textarea id="scenario-description" maxLength={2000} value={form.description} onChange={event => setForm(value => ({ ...value, description: event.target.value }))} /></div>
+        <div><Label htmlFor="scenario-description">Purpose (optional)</Label><Textarea id="scenario-description" maxLength={2000} value={form.description} onChange={event => setForm(value => ({ ...value, description: event.target.value }))} /></div>
         <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={form.isActive} onChange={event => setForm(value => ({ ...value, isActive: event.target.checked }))} /> Active</label>
         {formError && <p role="alert" className="text-sm text-destructive">{formError}</p>}
         <div className="flex justify-end gap-2"><Button variant="outline" disabled={busy} onClick={() => setDialogOpen(false)}>Cancel</Button><Button disabled={busy || !form.projectId || !form.threedId || !form.name.trim() || !form.slug.trim()} onClick={() => void save()}>{busy ? 'Saving…' : 'Save Scenario'}</Button></div>
-      </div>
+      </div>}
     </DialogContent></Dialog>
   </div>;
 }
