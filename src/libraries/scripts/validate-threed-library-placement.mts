@@ -176,6 +176,29 @@ assert.equal(currentModelAssets(undefined).fallbackShape, 'sphere');
 console.log('PASS: generic Model fallback choices preserve metadata, reject malformed JSON, and override stale Project preferences');
 
 // @ts-expect-error Native Node TypeScript imports use explicit extensions.
+const { readModelLightBoost, validModelLightBoost, setModelLightBoost } = await import('../services/threed/models/model-lighting-core.ts');
+const litMetadata = JSON.parse(setModelLightBoost(JSON.stringify({ fallbackShape: 'box' }), 0.45));
+assert.equal(litMetadata.fallbackShape, 'box');
+assert.equal(readModelLightBoost(litMetadata), 0.45);
+assert.equal(validModelLightBoost({ lightBoost: 1.1 }), false);
+assert.equal(readModelLightBoost({ lightBoost: 1.1 }), 0);
+assert.equal(refreshModelMarkerData({ modelLightBoost: 0.9 }, 11, { metadata: litMetadata }).modelLightBoost, 0.45);
+assert.equal(refreshModelMarkerData({ modelLightBoost: 0.9 }, 11, undefined).modelLightBoost, 0);
+// @ts-expect-error Native Node TypeScript imports use explicit extensions.
+const { applyModelLightBoost } = await import('../services/threed/models/model-lighting-material.ts');
+const THREE = await import('three');
+const sharedMaterial = new THREE.MeshStandardMaterial({ color: '#888888' });
+const sharedModel = new THREE.Group();
+sharedModel.add(new THREE.Mesh(new THREE.BoxGeometry(), sharedMaterial));
+const litInstance = sharedModel.clone();
+const untouchedInstance = sharedModel.clone();
+applyModelLightBoost(litInstance, 0.45);
+assert.notEqual((litInstance.children[0] as unknown as { material: unknown }).material, sharedMaterial);
+assert.equal((untouchedInstance.children[0] as unknown as { material: unknown }).material, sharedMaterial);
+assert.equal(sharedMaterial.emissive.getHex(), 0);
+console.log('PASS: reusable Model light boost stays bounded, overrides stale Project values, and clones shared materials');
+
+// @ts-expect-error Native Node TypeScript imports use explicit extensions.
 const { hasModelLoadFailure, reportModelLoadFailure, subscribeModelLoadFailures } = await import('../services/threed/models/model-load-failures.ts');
 let failureNotifications = 0;
 const unsubscribeFailures = subscribeModelLoadFailures(() => failureNotifications++);

@@ -1,3 +1,6 @@
+// @ts-expect-error Native Node TypeScript validation requires the explicit extension.
+import { readModelLightBoost } from './model-lighting-core.ts';
+
 /** Saved instance settings may survive; stored asset URLs must come from current records. */
 export function currentModelAssets(model: Record<string, unknown> | undefined) {
   const metadata = model?.metadata && typeof model.metadata === 'object' && !Array.isArray(model.metadata)
@@ -13,6 +16,7 @@ export function currentModelAssets(model: Record<string, unknown> | undefined) {
     mainModelFileId: model?.mainModelFileId ?? null,
     modelType: model?.modelType,
     fallbackShape: metadata.fallbackShape ?? 'sphere',
+    modelLightBoost: readModelLightBoost(metadata),
     files: Array.isArray(model?.files) ? model.files : [],
   };
 }

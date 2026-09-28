@@ -46,6 +46,8 @@ import {
   type ThreeDModelMaterialPreviewOverride,
 } from '@/libraries/services/threed/models/model-material-inventory-core';
 import { readThreeDModelMaterialOverrides } from '@/libraries/services/threed/models/model-material-override-core';
+import { readModelLightBoost } from '@/libraries/services/threed/models/model-lighting-core';
+import { applyModelLightBoost } from '@/libraries/services/threed/models/model-lighting-material';
 
 // ============================================
 // TYPES
@@ -66,6 +68,8 @@ export interface ModelData {
   defaultAnimation?: string | null;
   animationSpeed?: number; // from character wrapper
   metadata?: unknown;
+  /** Current reusable Model setting, refreshed independently of Project snapshots. */
+  modelLightBoost?: number;
   /** Current reusable Model preference, refreshed independently of old Project JSON. */
   fallbackShape?: unknown;
   files?: ThreeDModelRuntimeAttachment[];
@@ -279,6 +283,8 @@ function useModelLoad(
           originalMaterials[target.slotIndex] = material;
           target.mesh.material = Array.isArray(target.mesh.material) ? originalMaterials : material;
         }
+
+        applyModelLightBoost(m, model.modelLightBoost ?? readModelLightBoost(model.metadata));
 
         // Apply model config transforms
         const storedModelScale = Number(model.scale ?? 1);

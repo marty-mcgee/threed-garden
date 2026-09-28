@@ -36,7 +36,8 @@ const db = { select() {
   return chain;
 } };
 const policy = load('src/libraries/services/project/scene-read-policy.ts', {});
-const snapshot = load('src/libraries/services/threed/models/model-snapshot-assets.ts', {});
+const lighting = load('src/libraries/services/threed/models/model-lighting-core.ts', {});
+const snapshot = load('src/libraries/services/threed/models/model-snapshot-assets.ts', { './model-lighting-core.ts': lighting });
 const animationMappings = load('src/libraries/services/project/scene-character-animations.ts', {
   'drizzle-orm': orm, '@/libraries/db/client': { db }, '@/libraries/schema/threed': schema,
 });

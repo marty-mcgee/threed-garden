@@ -23,6 +23,7 @@ import {
   runtimeModelTypeFromFileName,
 } from '@/libraries/services/threed/models/model-file-integrity';
 import { createThreeDModelLibraryReadiness } from '@/libraries/services/threed/models/model-library-readiness-core';
+import { validModelLightBoost } from '@/libraries/services/threed/models/model-lighting-core';
 
 type ModelWithFiles = import('@/libraries/services/threed/models/model-primary-file').ResolvedModel & {
   files: Array<typeof threedModelFiles.$inferSelect>;
@@ -528,6 +529,10 @@ export async function POST(request: NextRequest) {
       primaryFile: requestedPrimaryFile,
     } = body;
 
+    if (metadata !== undefined && !validModelLightBoost(metadata)) {
+      return NextResponse.json({ success: false, error: 'Light boost must be between 0 and 1' }, { status: 400 });
+    }
+
     // ✅ Validate required fields
     if (!modelName) {
       return NextResponse.json(
@@ -822,6 +827,9 @@ export async function PATCH(request: NextRequest) {
       textureCount: _textureCount,
       ...updates
     } = body;
+    if (updates.metadata !== undefined && !validModelLightBoost(updates.metadata)) {
+      return NextResponse.json({ success: false, error: 'Light boost must be between 0 and 1' }, { status: 400 });
+    }
     const pendingPrimaryFile = normalizePendingPrimaryFile(
       requestedPrimaryFile,
       updates.filePath,

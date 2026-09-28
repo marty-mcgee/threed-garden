@@ -1,3 +1,6 @@
+// @ts-expect-error Native Node TypeScript validation requires the explicit extension.
+import { validModelLightBoost } from '../../../../libraries/services/threed/models/model-lighting-core.ts';
+
 export interface ThreeDModelAdminFormData {
   modelName: string;
   modelType: string;
@@ -127,6 +130,9 @@ export function buildThreeDModelAdminPayload(form: ThreeDModelAdminFormData, mod
   assertFiniteNumber(form.offsetY, 'Offset Y');
   assertFiniteNumber(form.offsetZ, 'Offset Z');
 
+  const metadata = parseJsonObject(form.metadata, 'Metadata');
+  if (!validModelLightBoost(metadata)) throw new ThreeDModelFormValidationError('Light boost must be between 0 and 1');
+
   return {
     ...form,
     modelName,
@@ -135,7 +141,7 @@ export function buildThreeDModelAdminPayload(form: ThreeDModelAdminFormData, mod
     fileSize: parseOptionalInteger(form.fileSize, 'File size'),
     animations: parseAnimations(form.animations),
     lodLevels: parseJsonObject(form.lodLevels, 'LOD levels'),
-    metadata: parseJsonObject(form.metadata, 'Metadata'),
+    metadata,
     mainModelFileId,
   };
 }

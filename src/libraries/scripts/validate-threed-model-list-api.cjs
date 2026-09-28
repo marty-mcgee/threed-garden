@@ -10,6 +10,8 @@ const transpile = (file) => ts.transpileModule(fs.readFileSync(path.join(root, f
 }).outputText;
 const queryModule = { exports: {} };
 vm.runInNewContext(transpile('src/libraries/services/threed/models/model-list-query.ts'), { exports: queryModule.exports });
+const lightingModule = { exports: {} };
+vm.runInNewContext(transpile('src/libraries/services/threed/models/model-lighting-core.ts'), { exports: lightingModule.exports });
 const schema = new Proxy({}, { get: (_, table) => new Proxy({ table }, { get: (value, column) => column === 'table' ? table : `${table}.${String(column)}` }) });
 const op = (kind) => (...args) => ({ kind, args });
 const orm = Object.fromEntries(['eq', 'and', 'or', 'desc', 'inArray', 'asc'].map((kind) => [kind, op(kind)]));
@@ -44,6 +46,7 @@ const mocks = {
   '@vercel/blob': {},
   '@/libraries/services/threed/models/model-file-integrity': {},
   '@/libraries/services/threed/models/model-library-readiness-core': {},
+  '@/libraries/services/threed/models/model-lighting-core': lightingModule.exports,
 };
 vm.runInNewContext(transpile('src/app/api/threed/models/route.ts'), {
   exports: moduleExports, URL, console,

@@ -8,6 +8,12 @@ The initial v0.19.8a workflow deliberately managed one reusable ThreeD Model at 
 
 The Admin route uses `#020618` as its presentation background. Its header, sidebar, and footer are translucent layers of that same color, scoped to `/admin` so Dashboard presentation remains independent. Shared Dialog, Modal (including confirmations), dropdown/submenu and Select popup surfaces use solid very dark gray (`zinc-900`) backgrounds in dark mode across their consumers, visually separating popups from the main App. Popup surfaces, text and controls are fully opaque; existing backdrop dimming and light-mode backgrounds remain unchanged. This presentation change passed TypeScript and diff checks.
 
+## Reusable Model light boost (v0.22.7)
+
+The Model Create/Edit form exposes **Model Lighting → Light boost** from 0% to 100%, stored as `metadata.lightBoost` on the reusable Model. At 0%, imported materials retain their original appearance. Higher values add a bounded emissive contribution to lit Model materials, including a base-color texture where available; they do not add a scene light or illuminate nearby objects. The runtime clones materials before adjustment so Models sharing one cached GLB cannot change one another. Project Model snapshots use the current reusable Model value, so one saved adjustment applies when any Project using that Model loads the Scene. No GLB re-export or database schema change is required. Character-specific rendering remains separate.
+
+To adjust the Soccer Field, edit Model 51, raise Light boost gradually, save, and reload its Project Scene to compare. This setting is not yet live-previewed inside the edit form; use the saved Model preview or Scene after saving. If the texture itself is dark, editing that source texture may still give a better result.
+
 ## Admin surfaces
 
 - `/admin/threed/models` owns Model discovery, creation, editing, taxonomy, publishing state, and deletion.

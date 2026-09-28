@@ -1,6 +1,7 @@
 'use client';
 
 import { MODEL_FALLBACK_SHAPES, readModelFallbackShape, setModelFallbackShape, type ModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
+import { readModelLightBoost, setModelLightBoost } from '@/libraries/services/threed/models/model-lighting-core';
 import type { Dispatch, SetStateAction } from 'react';
 import { AlertCircle, Box, CheckCircle2, File, Image, Loader2, Upload, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
@@ -271,6 +272,15 @@ export function ThreeDModelEditorFields({
             {(['offsetX', 'offsetY', 'offsetZ'] as const).map((key) => <Input key={key} aria-label={key} placeholder={key.slice(-1)} type="number" step="0.01" value={form[key]} onChange={(event) => update(key, event.target.value)} disabled={disabled} />)}
           </div>
         </div>
+      </Section>
+
+      <Section title="Model Lighting">
+        <Label htmlFor={id('lightBoost')} className="text-xs">Light boost: {Math.round(readModelLightBoost(fallbackMetadata) * 100)}%</Label>
+        <Input id={id('lightBoost')} type="range" min="0" max="1" step="0.05"
+          value={readModelLightBoost(fallbackMetadata)}
+          onChange={(event) => update('metadata', setModelLightBoost(form.metadata, Number(event.target.value)))}
+          disabled={disabled || !fallbackMetadataValid} />
+        <p className="text-xs text-muted-foreground">Adds brightness to this Model's lit materials in every Project that uses it. 0% keeps the GLB's original appearance; this does not illuminate nearby objects.</p>
       </Section>
 
       <Section title="Default Fallback Shape">
