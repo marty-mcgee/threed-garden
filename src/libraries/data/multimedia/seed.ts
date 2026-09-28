@@ -256,6 +256,10 @@ function albumKey(title: string, artist: string): string {
 }
 
 async function commitImport(plan: ImportPlan, userId: string) {
+  const { config } = await import('dotenv');
+  config({ path: '.env.local', quiet: true });
+  if (!process.env.DATABASE_URL) throw new Error('DATABASE_URL is unavailable.');
+
   const [{ db }, { multimediaAlbums, multimediaTracks, user }] = await Promise.all([
     import('@/libraries/db/client'),
     import('@/libraries/schema'),
