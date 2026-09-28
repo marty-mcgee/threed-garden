@@ -902,6 +902,10 @@ export default function ProjectDetailPage() {
             {allModules.length} module{allModules.length !== 1 ? 's' : ''} associated with this project
           </p>
         </div>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="outline" onClick={() => router.push(`/admin/threed/scenarios?projectId=${projectId}&create=1`)}>
+            Set up Scenario
+          </Button>
         <Dialog open={showNewModuleDialog} onOpenChange={setShowNewModuleDialog}>
           <DialogTrigger asChild>
             <Button size="sm">
@@ -959,6 +963,7 @@ export default function ProjectDetailPage() {
             </div>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       {/* Module Cards */}

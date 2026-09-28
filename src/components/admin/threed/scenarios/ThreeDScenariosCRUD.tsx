@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { BookOpen, Check, Plus, Trash2, X } from 'lucide-react';
 import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { Button } from '@/components/ui/button';
@@ -47,7 +48,21 @@ export function ThreeDScenariosCRUD() {
     fetch('/api/project', { signal: controller.signal }).then(async response => {
       const result = await response.json();
       if (!response.ok || !result.success) throw new Error(result.error || 'Could not load Projects.');
-      if (!controller.signal.aborted) setProjects(result.data);
+      if (!controller.signal.aborted) {
+        const ownedProjects: Project[] = Array.isArray(result.data) ? result.data : [];
+        setProjects(ownedProjects);
+        const params = new URLSearchParams(window.location.search);
+        const requestedId = params.get('projectId');
+        if (requestedId && /^\d+$/.test(requestedId) && ownedProjects.some(project => String(project.id) === requestedId)) {
+          setProjectFilter(requestedId);
+          if (params.get('create') === '1') {
+            setEditing(null);
+            setForm({ ...emptyForm, projectId: requestedId });
+            setFormError('');
+            setDialogOpen(true);
+          }
+        }
+      }
     }).catch(error => { if (!controller.signal.aborted) setProjectError(error instanceof Error ? error.message : 'Could not load Projects.'); });
     return () => controller.abort();
   }, []);
@@ -164,7 +179,9 @@ export function ThreeDScenariosCRUD() {
     <Dialog open={dialogOpen} onOpenChange={open => { if (!busy) setDialogOpen(open); }}><DialogContent className="max-h-[90dvh] overflow-y-auto"><DialogHeader><DialogTitle>{editing ? 'Edit Scenario' : 'New Scenario'}</DialogTitle></DialogHeader>
       <div className="space-y-3">
         <div><Label htmlFor="scenario-project">Project</Label><select id="scenario-project" className="mt-1 w-full rounded border bg-background p-2 text-sm" disabled={!!editing} value={form.projectId} onChange={event => { setForm(value => ({ ...value, projectId: event.target.value, threedId: '' })); setFormError(''); }}><option value="">Choose a Project</option>{projects.map(project => <option key={project.id} value={project.id}>{project.name}</option>)}</select></div>
-        <div><Label htmlFor="scenario-threed">ThreeD module</Label>{editing ? <Input id="scenario-threed" disabled value={editing.threedName} /> : <select id="scenario-threed" className="mt-1 w-full rounded border bg-background p-2 text-sm" value={form.threedId} onChange={event => setForm(value => ({ ...value, threedId: event.target.value }))} disabled={!form.projectId}><option value="">Choose an assigned ThreeD module</option>{modules.map(module => <option key={module.id} value={module.id}>{module.name}</option>)}</select>}</div>
+        <div><Label htmlFor="scenario-threed">ThreeD module</Label>{editing ? <Input id="scenario-threed" disabled value={editing.threedName} /> : <select id="scenario-threed" className="mt-1 w-full rounded border bg-background p-2 text-sm" value={form.threedId} onChange={event => setForm(value => ({ ...value, threedId: event.target.value }))} disabled={!form.projectId}><option value="">Choose an assigned ThreeD module</option>{modules.map(module => <option key={module.id} value={module.id}>{module.name}</option>)}</select>}
+          {!editing && form.projectId && !modules.length && <p className="mt-1 text-xs text-muted-foreground">A Scenario needs a ThreeD module assigned to this Project. If none appears, add one in the <Link className="underline" href={`/admin/projects/${form.projectId}`}>Project Modules</Link> section first.</p>}
+        </div>
         <div><Label htmlFor="scenario-name">Name</Label><Input id="scenario-name" maxLength={120} value={form.name} onChange={event => setForm(value => ({ ...value, name: event.target.value }))} /></div>
         <div><Label htmlFor="scenario-slug">Slug</Label><Input id="scenario-slug" maxLength={100} value={form.slug} onChange={event => setForm(value => ({ ...value, slug: event.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-') }))} /></div>
         <div><Label htmlFor="scenario-description">Description</Label><Textarea id="scenario-description" maxLength={2000} value={form.description} onChange={event => setForm(value => ({ ...value, description: event.target.value }))} /></div>
