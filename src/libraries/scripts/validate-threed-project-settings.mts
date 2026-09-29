@@ -60,3 +60,29 @@ for (const physicsDebug of [true, false]) {
 assert.equal(parseThreeDProjectViewState(saved).threeD?.physicsDebug ?? false,false);
 assert.throws(()=>parseThreeDProjectViewState({...saved,threeD:{...saved.threeD,physicsDebug:1}}));
 console.log('PASS: Physics Debug true/false persistence, legacy default and invalid value rejection');
+
+const scenario = {
+  panelOpen:true,
+  selected:{id:17,projectId:15,name:'Soccer Practice',threedName:'ThreeD Soccer',setup:{version:1,kind:'soccer',environmentMarkerId:'models-field-1',sensorGroupId:'goals'}},
+  guide:{kind:'soccer',environmentId:'models-field-1',groupId:'goals',farmbotId:''},
+};
+const scenarioRuntime = {projectId:15,active:{projectId:15,name:'Soccer Practice',kind:'soccer',environmentName:'Practice Pitch',groupId:'goals',groupName:'Imported sensors'},instructionVisible:true,sensorsVisible:true};
+const withScenario = {...saved,scenario,threeD:{...saved.threeD,scenarioRuntime}};
+const restoredScenario = parseThreeDProjectViewState(JSON.parse(JSON.stringify(withScenario)));
+assert.deepEqual(restoredScenario.scenario,scenario);
+assert.deepEqual(restoredScenario.threeD?.scenarioRuntime,scenarioRuntime);
+assert.equal(parseThreeDProjectViewState(saved).scenario,undefined);
+assert.equal(parseThreeDProjectViewState(saved).threeD?.scenarioRuntime,undefined);
+for (const bad of [
+  {...scenario,selected:{...scenario.selected,id:0}},
+  {...scenario,selected:{...scenario.selected,setup:{...scenario.selected.setup,kind:'unknown'}}},
+  {...scenario,guide:{...scenario.guide,environmentId:'x'.repeat(201)}},
+  {...scenario,panelOpen:'true'},
+]) assert.throws(()=>parseThreeDProjectViewState({...saved,scenario:bad}));
+for (const bad of [
+  {...scenarioRuntime,active:{...scenarioRuntime.active,projectId:0}},
+  {...scenarioRuntime,projectId:0},
+  {...scenarioRuntime,instructionVisible:'true'},
+  {...scenarioRuntime,active:null,instructionVisible:true},
+]) assert.throws(()=>parseThreeDProjectViewState({...saved,threeD:{...saved.threeD,scenarioRuntime:bad}}));
+console.log('PASS: Scenario selection, Guide choices, started status and overlays round-trip with legacy and invalid-state handling');

@@ -1,5 +1,24 @@
 export class ScenarioInputError extends Error {}
 
+export type ScenarioSetup = {
+  version: 1;
+  kind: 'soccer' | 'farming';
+  environmentMarkerId: string | null;
+  sensorGroupId: string | null;
+};
+
+export function parseScenarioSetup(value: unknown): ScenarioSetup | null {
+  if (value === null) return null;
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new ScenarioInputError('Invalid Scenario setup.');
+  const input = value as Record<string, unknown>;
+  if (Object.keys(input).sort().join(',') !== 'environmentMarkerId,kind,sensorGroupId,version'
+    || input.version !== 1 || (input.kind !== 'soccer' && input.kind !== 'farming')) throw new ScenarioInputError('Invalid Scenario setup.');
+  if (input.environmentMarkerId !== null && (typeof input.environmentMarkerId !== 'string' || !/^[a-zA-Z0-9_-]{1,128}$/.test(input.environmentMarkerId))) throw new ScenarioInputError('Invalid environment Model marker.');
+  if (input.sensorGroupId !== null && (typeof input.sensorGroupId !== 'string' || !/^[a-zA-Z0-9_-]{1,64}$/.test(input.sensorGroupId))) throw new ScenarioInputError('Invalid Sensor Group.');
+  if (input.kind === 'farming' && input.sensorGroupId !== null) throw new ScenarioInputError('Farming setup cannot select a Sensor Group.');
+  return input as ScenarioSetup;
+}
+
 export function positiveId(value: unknown, label: string): number {
   const number = typeof value === 'number' ? value : typeof value === 'string' && /^\d+$/.test(value) ? Number(value) : NaN;
   if (!Number.isSafeInteger(number) || number < 1) throw new ScenarioInputError(`${label} must be a positive integer.`);

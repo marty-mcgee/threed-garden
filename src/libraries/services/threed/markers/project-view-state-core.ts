@@ -16,6 +16,36 @@ export interface ProjectVector3 {
   z: number;
 }
 
+export type ProjectScenarioKind = 'soccer' | 'farming';
+export interface ProjectScenarioSelection {
+  id: number;
+  projectId: number;
+  name: string;
+  threedName: string;
+  setup: { version: 1; kind: ProjectScenarioKind; environmentMarkerId: string | null; sensorGroupId: string | null } | null;
+}
+export interface ProjectScenarioGuideState {
+  kind: ProjectScenarioKind;
+  environmentId: string;
+  groupId: string;
+  farmbotId: string;
+}
+export interface ProjectScenarioPanelState {
+  panelOpen: boolean;
+  selected: ProjectScenarioSelection | null;
+  guide: ProjectScenarioGuideState;
+}
+export function emptyProjectScenarioPanelState(): ProjectScenarioPanelState {
+  return { panelOpen: false, selected: null, guide: { kind: 'soccer', environmentId: '', groupId: '', farmbotId: '' } };
+}
+
+export interface ProjectScenarioRuntimeState {
+  projectId: number;
+  active: { projectId: number; name: string; kind: ProjectScenarioKind; environmentName: string; groupId: string; groupName: string } | null;
+  instructionVisible: boolean;
+  sensorsVisible: boolean;
+}
+
 export interface ProjectThreeDViewState {
   cameraPosition: ProjectVector3;
   cameraTarget: ProjectVector3;
@@ -29,6 +59,7 @@ export interface ProjectThreeDViewState {
   showGizmo: boolean;
   showControls?: boolean;
   physicsDebug?: boolean;
+  scenarioRuntime?: ProjectScenarioRuntimeState;
   viewPresets?: Array<{
     id: string; name: string; position: ProjectVector3; target: ProjectVector3;
     layers: string[]; createdAt: string;
@@ -51,6 +82,7 @@ export interface ThreeDProjectViewState {
   cameraMode: ProjectCameraMode;
   threeD?: ProjectThreeDViewState;
   map?: ProjectMapViewState;
+  scenario?: ProjectScenarioPanelState;
   workspace?: {
     selectedMarkerId: string | null;
     panel: 'none' | 'summary' | 'assets' | 'models';
@@ -137,6 +169,65 @@ export function parseProjectViewPresets(value: unknown): NonNullable<ProjectThre
   });
 }
 
+function boundedText(value: unknown, max: number): string {
+  if (typeof value !== 'string' || value.length > max) throw new ProjectViewStateError();
+  return value;
+}
+
+function scenarioKind(value: unknown): ProjectScenarioKind {
+  if (value !== 'soccer' && value !== 'farming') throw new ProjectViewStateError();
+  return value;
+}
+
+function scenarioPanel(value: unknown): ProjectScenarioPanelState {
+  const input = record(value);
+  const guide = record(input?.guide);
+  if (!input || !guide) throw new ProjectViewStateError();
+  let selected: ProjectScenarioSelection | null = null;
+  if (input.selected !== null) {
+    const source = record(input.selected);
+    if (!source || !Number.isSafeInteger(source.id) || Number(source.id) <= 0) throw new ProjectViewStateError();
+    let setup: ProjectScenarioSelection['setup'] = null;
+    if (source.setup !== null) {
+      const details = record(source.setup);
+      if (!details || details.version !== 1) throw new ProjectViewStateError();
+      setup = {
+        version: 1,
+        kind: scenarioKind(details.kind),
+        environmentMarkerId: details.environmentMarkerId === null ? null : boundedText(details.environmentMarkerId, 200),
+        sensorGroupId: details.sensorGroupId === null ? null : boundedText(details.sensorGroupId, 200),
+      };
+    }
+    if (!Number.isSafeInteger(source.projectId) || Number(source.projectId) <= 0) throw new ProjectViewStateError();
+    selected = { id: Number(source.id), projectId: Number(source.projectId), name: boundedText(source.name, 120),
+      threedName: boundedText(source.threedName, 120), setup };
+  }
+  return { panelOpen: boolean(input.panelOpen), selected, guide: {
+    kind: scenarioKind(guide.kind), environmentId: boundedText(guide.environmentId, 200),
+    groupId: boundedText(guide.groupId, 200), farmbotId: boundedText(guide.farmbotId, 200),
+  } };
+}
+
+function scenarioRuntime(value: unknown): ProjectScenarioRuntimeState {
+  const input = record(value);
+  if (!input) throw new ProjectViewStateError();
+  let active: ProjectScenarioRuntimeState['active'] = null;
+  if (input.active !== null) {
+    const source = record(input.active);
+    if (!source) throw new ProjectViewStateError();
+    if (!Number.isSafeInteger(source.projectId) || Number(source.projectId) <= 0) throw new ProjectViewStateError();
+    active = { projectId: Number(source.projectId), name: boundedText(source.name, 120), kind: scenarioKind(source.kind),
+      environmentName: boundedText(source.environmentName, 200), groupId: boundedText(source.groupId, 200),
+      groupName: boundedText(source.groupName, 120) };
+  }
+  if (!Number.isSafeInteger(input.projectId) || Number(input.projectId) <= 0) throw new ProjectViewStateError();
+  const projectId = Number(input.projectId);
+  const instructionVisible = boolean(input.instructionVisible);
+  const sensorsVisible = boolean(input.sensorsVisible);
+  if ((instructionVisible && !active) || (active && active.projectId !== projectId)) throw new ProjectViewStateError();
+  return { projectId, active, instructionVisible, sensorsVisible };
+}
+
 export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewState {
   const input = record(value);
   if (!input || input.version !== PROJECT_VIEW_STATE_VERSION) throw new ProjectViewStateError();
@@ -157,6 +248,8 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
     panelHeight: finite(input.panelHeight, 20, 80),
     cameraMode: input.cameraMode as ProjectCameraMode,
   };
+
+  if (input.scenario !== undefined) result.scenario = scenarioPanel(input.scenario);
 
   if (input.workspace !== undefined) {
     const workspace = record(input.workspace);
@@ -195,6 +288,7 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
       showGizmo: boolean(threeD.showGizmo),
       ...(threeD.showControls === undefined ? {} : { showControls: boolean(threeD.showControls) }),
       ...(threeD.physicsDebug === undefined ? {} : { physicsDebug: boolean(threeD.physicsDebug) }),
+      ...(threeD.scenarioRuntime === undefined ? {} : { scenarioRuntime: scenarioRuntime(threeD.scenarioRuntime) }),
       ...(threeD.viewPresets === undefined ? {} : { viewPresets: parseProjectViewPresets(threeD.viewPresets) }),
       ...(threeD.sunlight === undefined ? {} : { sunlight: {
         azimuth: finite(record(threeD.sunlight)?.azimuth, 0, 360),

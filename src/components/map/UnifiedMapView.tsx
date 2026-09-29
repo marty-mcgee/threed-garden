@@ -1,6 +1,7 @@
 // components/map/UnifiedMapView.tsx
 'use client';
 
+import type { ScenarioStartRequest } from '@/libraries/services/threed/scenario-core';
 import type { SceneResourceIssue } from '@/components/threed/shared/SceneResourceStatus';
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import dynamic from 'next/dynamic';
@@ -142,6 +143,10 @@ interface UnifiedMapViewProps {
   onThreeDPresentationComplete?: () => void;
   onResourceIssuesChange?: (projectId: number | undefined, issues: SceneResourceIssue[]) => void;
   environmentControlsCloseRequest?: number;
+  scenarioStartRequest?: ScenarioStartRequest | null;
+  scenarioOverlayLeftOffsetRem?: number;
+  scenarioOverlaysObscured?: boolean;
+  scenarioInstructionDimmed?: boolean;
   onEnvironmentControlsOpenChange?: (open: boolean) => void;
   onOpenEnvironmentDetails?: () => void;
   hasProjectEnvironment?: boolean;
@@ -232,6 +237,10 @@ export function UnifiedMapView({
   onThreeDPresentationComplete,
   onResourceIssuesChange,
   environmentControlsCloseRequest,
+  scenarioStartRequest,
+  scenarioOverlayLeftOffsetRem,
+  scenarioOverlaysObscured,
+  scenarioInstructionDimmed,
   onEnvironmentControlsOpenChange,
   onOpenEnvironmentDetails,
   hasProjectEnvironment,
@@ -681,6 +690,10 @@ export function UnifiedMapView({
         onPresentationComplete={onThreeDPresentationComplete}
         onResourceIssuesChange={onResourceIssuesChange}
         environmentControlsCloseRequest={environmentControlsCloseRequest}
+        scenarioStartRequest={scenarioStartRequest}
+        scenarioOverlayLeftOffsetRem={scenarioOverlayLeftOffsetRem}
+        scenarioOverlaysObscured={scenarioOverlaysObscured}
+        scenarioInstructionDimmed={scenarioInstructionDimmed}
         onEnvironmentControlsOpenChange={onEnvironmentControlsOpenChange}
         onOpenEnvironmentDetails={onOpenEnvironmentDetails}
         hasProjectEnvironment={hasProjectEnvironment}

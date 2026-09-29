@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 // @ts-expect-error Native Node TypeScript imports use explicit extensions.
 import { evaluateScenario, type ScenarioAsset } from '../services/threed/scenario-core.ts';
+// @ts-expect-error Native Node TypeScript imports use explicit extensions.
+import { summarizeScenarioInventory } from '../services/threed/scenarios/scenario-inventory.ts';
 const sensor = { id: 'sensor_1', behavior: 'counter', detection: 'movable-ball', groupId: 'group_1' };
 const assets: ScenarioAsset[] = [
   { id: 'models:1', type: 'models', active: true, ball: false, sensors: [sensor] },
@@ -21,3 +23,16 @@ assert.equal(farming.find(check => check.id === 'beds')?.complete, true);
 assert.equal(farming.find(check => check.id === 'farmbots')?.complete, false);
 assert.equal(farming.find(check => check.id === 'plantings')?.complete, false);
 console.log('PASS: Scenario eligibility, compound identity, missing/inactive assets, missing groups and immutable snapshots.');
+
+const emptyInventory = summarizeScenarioInventory([]);
+assert.equal(emptyInventory.total, 0);
+assert.equal(emptyInventory.nextAction, 'Add the first Project asset');
+const partialInventory = summarizeScenarioInventory([{ assetType: 'threed_beds' }, { assetType: 'threed_layers' }]);
+assert.equal(partialInventory.counts.garden, 1);
+assert.equal(partialInventory.counts.other, 1);
+assert.equal(partialInventory.nextAction, 'Add a Model to this Project');
+const populatedInventory = summarizeScenarioInventory([{ assetType: 'threed_models' }, { assetType: 'threed_characters' }, { assetType: 'threed_farmbots' }]);
+assert.equal(populatedInventory.total, 3);
+assert.equal(populatedInventory.counts.models, 1);
+assert.equal(populatedInventory.nextAction, 'Review Project assets');
+console.log('PASS: Scenario detail distinguishes empty, partial, and populated Project inventory without implying readiness.');

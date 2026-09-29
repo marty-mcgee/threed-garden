@@ -8,6 +8,7 @@ import {
 import { relations, sql } from 'drizzle-orm';
 import { user } from '../auth';
 import { project } from '../project';
+import type { ScenarioSetup } from '@/libraries/services/threed/scenarios/scenario-input';
 
 // ============================================
 // THREED MODULE - Main Table
@@ -63,6 +64,7 @@ export const threedScenarios = pgTable('threed_scenarios', {
   name: text('name').notNull(),
   slug: text('slug').notNull(),
   description: text('description'),
+  setup: jsonb('setup').$type<ScenarioSetup | null>(),
   isActive: boolean('is_active').notNull().default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),

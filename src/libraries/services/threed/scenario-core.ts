@@ -1,5 +1,7 @@
 /** Scenario guidance consumes snapshots; it never owns or changes Scene objects. */
 export type ScenarioKind = 'soccer' | 'farming';
+export type ScenarioStart = { projectId: number; name: string; kind: ScenarioKind; environmentName: string; groupId: string; groupName: string };
+export type ScenarioStartRequest = ScenarioStart & { sequence: number };
 export interface ScenarioAsset {
   id: string;
   type: string;

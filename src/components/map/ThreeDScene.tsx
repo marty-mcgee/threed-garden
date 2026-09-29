@@ -1,6 +1,7 @@
 // components/map/ThreeDScene.tsx
 'use client';
 
+import type { ScenarioStartRequest } from '@/libraries/services/threed/scenario-core';
 import { SceneResourceStatus, useSceneResourceStatus, SceneResourceIssues, useSceneResourceIssueReporter, type SceneResourceIssue, type SceneResourceState } from '@/components/threed/shared/SceneResourceStatus';
 
 import { useGroundMapInspector } from '@/components/map/details/GroundMapInspectorWorkspace';
@@ -245,6 +246,10 @@ interface ThreeDSceneProps {
   onResourceIssuesChange?: (projectId: number | undefined, issues: SceneResourceIssue[]) => void;
   /** Incremented by the Project toolbar when another mutually exclusive menu opens. */
   environmentControlsCloseRequest?: number;
+  scenarioStartRequest?: ScenarioStartRequest | null;
+  scenarioOverlayLeftOffsetRem?: number;
+  scenarioOverlaysObscured?: boolean;
+  scenarioInstructionDimmed?: boolean;
   /** Reports user-driven Environment menu visibility to the Project toolbar owner. */
   onEnvironmentControlsOpenChange?: (open: boolean) => void;
   /** Opens the assigned Environment Model in its Project DetailsCard. */
@@ -2109,6 +2114,10 @@ export function ThreeDScene({
   onPresentationComplete,
   onResourceIssuesChange,
   environmentControlsCloseRequest = 0,
+  scenarioStartRequest = null,
+  scenarioOverlayLeftOffsetRem = 0.75,
+  scenarioOverlaysObscured = false,
+  scenarioInstructionDimmed = false,
   onEnvironmentControlsOpenChange,
   onOpenEnvironmentDetails,
   hasProjectEnvironment = false,
@@ -2138,7 +2147,16 @@ export function ThreeDScene({
   const [showGrid, setShowGrid] = useState(false);
   const [showLegend, setShowLegend] = useState(false);
   const [showSensors, setShowSensors] = useState(false);
-  useEffect(() => { setShowSensors(false); }, [projectId]);
+  const [activeScenario, setActiveScenario] = useState<ScenarioStartRequest | null>(null);
+  const [scenarioInstructionVisible, setScenarioInstructionVisible] = useState(false);
+  const scenarioInstruction = activeScenario?.projectId === projectId && scenarioInstructionVisible ? activeScenario : null;
+  useEffect(() => { setShowSensors(false); setActiveScenario(null); setScenarioInstructionVisible(false); }, [projectId]);
+  useEffect(() => {
+    if (!scenarioStartRequest || scenarioStartRequest.projectId !== projectId) return;
+    setShowSensors(scenarioStartRequest.kind === 'soccer');
+    setActiveScenario(scenarioStartRequest);
+    setScenarioInstructionVisible(true);
+  }, [scenarioStartRequest, projectId]);
   const hoverTitleRef = useRef<HTMLDivElement>(null);
   const [hoveredSceneMarkerIdentity, setHoveredSceneMarkerIdentity] = useState<{ projectId: typeof projectId; markerId: string; point: [number, number, number] } | null>(null);
   // Start with debug reads disabled even when an old bookmarked URL contains
@@ -2292,6 +2310,9 @@ export function ThreeDScene({
     }
     return [...groups.entries()];
   }, [sensorMembers, sensorGroups?.groups]);
+  const visibleCounterGroups = activeScenario && activeScenario.projectId === projectId && activeScenario.kind === 'soccer'
+    ? counterGroups.filter(([id]) => id === activeScenario.groupId)
+    : counterGroups;
   const requiredModelMarkerIds = useMemo(() => sceneMarkers
     .filter((marker) => normalizeSceneLayerType(marker.type) === 'models'
       && !isProjectModelMovableBall(marker.metadata))
@@ -2750,15 +2771,26 @@ export function ThreeDScene({
         showGizmo: showGizmoCube,
         showControls,
         physicsDebug,
+        scenarioRuntime: {
+          projectId: projectId ?? 0,
+          active: activeScenario && activeScenario.projectId === projectId ? {
+            projectId: activeScenario.projectId,
+            name: activeScenario.name, kind: activeScenario.kind,
+            environmentName: activeScenario.environmentName,
+            groupId: activeScenario.groupId, groupName: activeScenario.groupName,
+          } : null,
+          instructionVisible: Boolean(activeScenario?.projectId === projectId && scenarioInstructionVisible),
+          sensorsVisible: showSensors,
+        },
         viewPresets,
       };
     });
     return () => onViewStateProviderChange(null);
-  }, [sunlight, extraGround, groundMap, activeLayers, autoRotate, availableLayers, controlsReady, envPreset, onViewStateProviderChange, physicsDebug, showControls, showGizmoCube, showGrid, showLegend, viewPresets]);
+  }, [sunlight, extraGround, groundMap, activeLayers, activeScenario, autoRotate, availableLayers, controlsReady, envPreset, onViewStateProviderChange, physicsDebug, projectId, scenarioInstructionVisible, showControls, showGizmoCube, showGrid, showLegend, showSensors, viewPresets]);
 
   useEffect(() => {
     if (!controlsReady || !controlsRef.current || !initialViewState) return;
-    const key = JSON.stringify(initialViewState);
+    const key = JSON.stringify([projectId, initialViewState]);
     if (restoredProjectViewKeyRef.current === key) return;
     restoredProjectViewKeyRef.current = key;
     if (isSavedCameraCompatibleWithScene(
@@ -2791,9 +2823,15 @@ export function ThreeDScene({
     setShowGizmoCube(initialViewState.showGizmo);
     setShowControls(initialViewState.showControls ?? false);
     setPhysicsDebug(initialViewState.physicsDebug ?? false);
+    const savedScenario = initialViewState.scenarioRuntime?.projectId === projectId
+      ? initialViewState.scenarioRuntime : null;
+    const restoredActive = savedScenario?.active ?? null;
+    setActiveScenario(restoredActive ? { ...restoredActive, sequence: 0 } : null);
+    setScenarioInstructionVisible(Boolean(restoredActive && savedScenario?.instructionVisible));
+    setShowSensors(savedScenario?.sensorsVisible ?? false);
     if (Boolean(autoRotate) !== initialViewState.autoRotate) onAutoRotateToggle?.();
     updateGeographicCompass();
-  }, [autoRotate, availableLayers, bounds, maxOrbitDistance, centerX, centerZ, controlsReady, initialViewState, onAutoRotateToggle, updateGeographicCompass]);
+  }, [autoRotate, availableLayers, bounds, maxOrbitDistance, centerX, centerZ, controlsReady, initialViewState, onAutoRotateToggle, projectId, updateGeographicCompass]);
 
   const showNorthUpView = useCallback(() => {
     const controls = controlsRef.current;
@@ -3111,16 +3149,27 @@ export function ThreeDScene({
           {groundMapAsset.attribution || groundMapAsset.sourceProvider}
         </div>
       )}
-      {sceneProductionStarted && showSensors && (
-        <section data-scene-hover-obstacle aria-label="Physics Sensors" className="threed-workspace-panel threed-scene-panel-surface absolute right-3 top-3 z-30 flex max-h-[calc(100%-1.5rem)] w-72 max-w-[calc(100%-1.5rem)] flex-col overflow-hidden rounded-lg border border-foreground/15 text-xs text-foreground shadow-xl backdrop-blur-md">
+      {sceneProductionStarted && (scenarioInstruction || showSensors) && (
+        <div className="pointer-events-none absolute bottom-3 right-3 top-12 z-30 flex flex-wrap content-start items-start justify-between gap-3 overflow-y-auto overscroll-contain"
+          style={{ left: `min(${scenarioOverlayLeftOffsetRem}rem, calc(100% - 12rem))` }}>
+          {scenarioInstruction && scenarioInstruction.projectId === projectId && (
+            <section data-scene-hover-obstacle aria-label="Scenario instructions" role="status" aria-hidden={scenarioOverlaysObscured || showControls || scenarioInstructionDimmed} inert={scenarioOverlaysObscured || showControls || scenarioInstructionDimmed} className={`threed-workspace-panel threed-scene-panel-surface w-[min(22rem,100%)] shrink-0 rounded-lg border border-foreground/15 px-3 py-2 text-xs text-foreground shadow-xl backdrop-blur-md transition-opacity duration-200 ${scenarioOverlaysObscured || showControls || scenarioInstructionDimmed ? 'pointer-events-none opacity-40' : 'pointer-events-auto opacity-100'}`}>
+          <div className="flex items-start justify-between gap-2"><h2 className="text-sm font-semibold">{scenarioInstruction.name}</h2><button type="button" onClick={() => setScenarioInstructionVisible(false)} aria-label="Dismiss Scenario instructions" className="rounded p-1 text-foreground/70 hover:bg-foreground/10"><X className="h-4 w-4" /></button></div>
+          {scenarioInstruction.kind === 'soccer'
+            ? <p className="mt-1 text-foreground/80">Try moving the ball into a goal on {scenarioInstruction.environmentName}. Watch entry counts for {scenarioInstruction.groupName} in Physics Sensors. Reset Counts to try again.</p>
+            : <p className="mt-1 text-foreground/80">Explore {scenarioInstruction.environmentName}, its Beds and Plantings. Select a FarmBot in the Setup Guide to review its observation.</p>}
+            </section>
+          )}
+          {showSensors && (
+            <section data-scene-hover-obstacle aria-label="Physics Sensors" aria-hidden={scenarioOverlaysObscured || showControls} inert={scenarioOverlaysObscured || showControls} className={`threed-workspace-panel threed-scene-panel-surface ml-auto flex max-h-[min(32rem,calc(100dvh-11rem))] w-72 max-w-full shrink-0 flex-col overflow-hidden rounded-lg border border-foreground/15 text-xs text-foreground shadow-xl backdrop-blur-md transition-opacity duration-200 ${scenarioOverlaysObscured || showControls ? 'pointer-events-none opacity-40' : 'pointer-events-auto opacity-100'}`}>
           <header className="flex shrink-0 items-center justify-between gap-2 px-3 py-2">
             <h2 className="text-sm font-semibold">Physics Sensors</h2>
             <button type="button" onClick={() => setShowSensors(false)} aria-label="Close Physics Sensors" className="rounded p-1 text-foreground/70 hover:bg-foreground/10"><X className="h-4 w-4" /></button>
           </header>
           <div className="min-h-0 space-y-2 overflow-y-auto overscroll-contain px-3 pb-3 [scrollbar-width:thin]">
-            <button type="button" disabled={!counterGroups.length} onClick={resetSensorCounterState} className="rounded border border-foreground/15 px-2 py-1 disabled:opacity-40">Reset Counts</button>
-            {!counterGroups.length && <p className="text-foreground/65">No entry counters configured. Add a Physics Sensor Cuboid in an asset’s DetailsCard and choose Count Entries.</p>}
-            {counterGroups.map(([id, group]) => <details key={id} open className="rounded border border-foreground/10 p-2">
+            <button type="button" disabled={!visibleCounterGroups.length} onClick={resetSensorCounterState} className="rounded border border-foreground/15 px-2 py-1 disabled:opacity-40">{activeScenario?.kind === 'soccer' ? 'Reset All Counts' : 'Reset Counts'}</button>
+            {!visibleCounterGroups.length && <p className="text-foreground/65">No entry counters configured. Add a Physics Sensor Cuboid in an asset’s DetailsCard and choose Count Entries.</p>}
+            {visibleCounterGroups.map(([id, group]) => <details key={id} open className="rounded border border-foreground/10 p-2">
               <summary className="cursor-pointer text-foreground/80">{group.name}</summary>
               <div className="mt-2 space-y-1">{group.members.map(member => <div key={sensorMemberKey(member)} className="flex items-start justify-between gap-3">
                 <span className="min-w-0 break-words">{member.name}</span>
@@ -3129,7 +3178,9 @@ export function ThreeDScene({
             </details>)}
             <p className="text-[10px] text-foreground/55">Session counts continue while this panel is hidden.</p>
           </div>
-        </section>
+            </section>
+          )}
+        </div>
       )}
       {/* Scene-owned controls are presented from the shared Project toolbar. */}
       {groundMapInspector?.host && createPortal(groundMapControls, groundMapInspector.host)}
@@ -3611,11 +3662,11 @@ export function ThreeDScene({
 
         <Physics
           gravity={[0, -9.81, 0]}
-          debug={false}
+          debug={physicsDebug}
           paused={transforming}
         >
-          {/* Focused diagnostic guides are rendered by each owner. Rendering
-              Rapier's complete Environment mesh obscures Sensor placement. */}
+          {/* Physics Debug renders the active Rapier colliders as well as
+              each owner's focused Sensor and Environment guides. */}
           {groundMap.visualMode === 'image' && groundMapAsset && groundMap.groundMapId === groundMapAsset.id && <RigidBody
             type="fixed" colliders={false}
             position={[groundMap.centerX, groundMap.height, groundMap.centerZ]}

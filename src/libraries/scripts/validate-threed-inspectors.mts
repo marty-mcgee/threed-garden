@@ -59,5 +59,7 @@ const tourSource = readFileSync('src/components/map/panels/ProjectSetupPanel.tsx
 assert(!tourSource.includes('ScenarioGuidance'), 'Scenarios is not nested inside Tour');
 assert(!page.includes('ProjectScenarioSceneCard'), 'saved Scenario definitions must not mount automatically over the Scene');
 const scenariosPanel = readFileSync('src/components/map/panels/ProjectScenariosPanel.tsx', 'utf8');
-assert(scenariosPanel.includes('<ThreeDScenariosCRUD compact projectId={projectId}'), 'the shared Scenario CRUD mounts in the opt-in Scenarios panel');
-console.log('PASS: Setup and Scenarios preserve Assets/inspector state; the shared Scenario tool only mounts in the opt-in Scenarios panel.');
+assert(scenariosPanel.includes('<ScenarioGuidance projectId={projectId}'), 'the Setup Guide mounts in the opt-in Scenarios panel');
+assert(scenariosPanel.includes('<ProjectScenarioLoadDialog open={loadOpen}'), 'the Load Scenario chooser mounts in the opt-in Scenarios panel');
+assert(!scenariosPanel.includes('<ThreeDScenariosCRUD'), 'the Scene panel does not duplicate the saved Scenario CRUD list');
+console.log('PASS: Setup and Scenarios preserve Assets/inspector state; the Setup Guide and Load Scenario chooser only mount in the opt-in Scenarios panel.');
