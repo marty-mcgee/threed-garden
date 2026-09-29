@@ -2,8 +2,9 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Current production: **v0.22.8 — Project Scenario Setup**, User-confirmed. [v0.22.9 — ThreeD Scenario Setup and Start](../plans/v0.22.9-scenario-release.md) is a prepared candidate.
+Current production: **v0.22.9 — ThreeD Scenario Setup and Start**, User-confirmed.
 
+- [v0.22.9 — ThreeD Scenario Setup and Start](v0.22.9.md) — production User-confirmed
 - [v0.22.8 — Project Scenario Setup](v0.22.8.md) — production User-confirmed
 - [v0.22.7 — Reusable Model Lighting](v0.22.7.md) — production User-confirmed
 - v0.22.6 — ThreeD Traffic Module Import — production User-confirmed; see [the Traffic plan](../plans/v0.22.6-traffic.md)
