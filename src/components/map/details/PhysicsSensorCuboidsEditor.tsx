@@ -89,6 +89,8 @@ export function PhysicsSensorCuboidsEditor({
       name: `Sensor ${sensors.length + 1}`,
       behavior: 'counter',
       detection: 'movable-ball',
+      direction: 'bidirectional',
+      entrySide: 'positive-z',
       groupId: null,
       position: { x: 0, y: 1, z: 0 },
       width: 2,
@@ -161,6 +163,35 @@ export function PhysicsSensorCuboidsEditor({
                   </select>
                 </label>
               </div>
+              <label className="text-[10px]">Direction
+                <select aria-label={`${sensor.name} direction`} value={sensor.direction ?? 'bidirectional'} disabled={saving || editing}
+                  onChange={event => updateSensor(sensor.id, { direction: event.target.value as PhysicsSensorCuboid['direction'] })}
+                  className="w-full rounded border border-foreground/10 p-1">
+                  <option value="bidirectional">Bi-directional · Either side</option>
+                  <option value="unidirectional">Uni-directional · One side</option>
+                </select>
+              </label>
+              {sensor.direction === 'unidirectional' && <>
+                <label className="text-[10px]">Direction axes
+                  <select aria-label={`${sensor.name} direction axes`} value={sensor.directionSpace ?? 'world'} disabled={saving || editing}
+                    onChange={event => updateSensor(sensor.id, { directionSpace: event.target.value as PhysicsSensorCuboid['directionSpace'] })}
+                    className="w-full rounded border border-foreground/10 p-1">
+                    <option value="world">Scene X/Z coordinates</option>
+                    <option value="local">Rotate direction with sensor</option>
+                  </select>
+                </label>
+                <label className="text-[10px]">Accepted travel direction
+                  <select aria-label={`${sensor.name} entry side`} value={sensor.entrySide ?? 'positive-z'} disabled={saving || editing}
+                    onChange={event => updateSensor(sensor.id, { entrySide: event.target.value as PhysicsSensorCuboid['entrySide'] })}
+                    className="w-full rounded border border-foreground/10 p-1">
+                    <option value="positive-z">+Z → −Z (Z decreases)</option>
+                    <option value="negative-z">−Z → +Z (Z increases)</option>
+                    <option value="positive-x">+X → −X (X decreases)</option>
+                    <option value="negative-x">−X → +X (X increases)</option>
+                  </select>
+                </label>
+                <p className="text-[9px] text-foreground/60">The arrow shows the accepted direction. Scene axes follow the displayed coordinates regardless of sensor rotation. Reverse the direction if the arrow points out of the goal. The body must leave the sensor before another entry counts.</p>
+              </>}
               <section className="rounded border border-cyan-300/15 bg-cyan-950/15 p-1.5" aria-label="Sensor placement">
                 <div className="mb-1 flex items-center justify-between gap-2 text-[9px] font-semibold uppercase tracking-wide text-cyan-800/80 dark:text-cyan-100/80">
                   <span>Placement</span>

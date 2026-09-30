@@ -72,10 +72,13 @@ function visit(node) {
 visit(source); assert.ok(callback);
 const writes = [], forward = [], reports = [];
 const context = {
-  ecctrlRef: { current: { body: {}, currPos: { x: 0, y: 1, z: 0 }, setMovement: value => writes.push(value), setForwardDir: value => forward.push(value.clone()) } },
+  planThreeDTargetRelativeNavigation: load('src/libraries/services/threed/orchestration/interaction-core.ts').planThreeDTargetRelativeNavigation,
+  ecctrlRef: { current: { body: {}, currQuat: new THREE.Quaternion(), setLockForward() {}, currPos: { x: 0, y: 1, z: 0 }, setMovement: value => writes.push(value), setForwardDir: value => forward.push(value.clone()) } },
   keys: { current: { w: false, a: false, s: false, d: false, space: false, shift: false } },
   stepNavigation: () => ({ x: 1, y: 0, z: 0 }),
   targetForwardDirectionRef: { current: new THREE.Vector3() },
+  restingForwardDirectionRef: { current: new THREE.Vector3(0, 0, 1) },
+  cameraRelativeTargetMovement: false, camera: { getWorldDirection: value => value.set(0, -0.5, -1) },
   isControlled: true, movementTargetPosition: undefined, taskLockedRef: { current: false }, cameraFollowRef: null, livePositionsRef: { current: new Map() }, markerId: 'actor', reportControlledPosition: value => reports.push(value),
 };
 vm.createContext(context);
@@ -89,3 +92,57 @@ assert.equal(writes.at(-1).run, true); assert.equal(writes.at(-1).joystick.y, 1)
 context.keys.current.w = false; context.keys.current.shift = false;
 context.frame(null, 0.016); assert.equal(writes.at(-1).joystick.y, 0);
 console.log('PASS: real Ecctrl frame feeds walk-only steering, retains manual run and returns zero movement after navigation.');
+
+context.cameraRelativeTargetMovement = true;
+context.movementTargetPosition = { x: 10, y: 1, z: 0 };
+context.keys.current.w = true;
+const forwardBeforeBall = forward.length;
+context.frame(null, 0.016);
+assert.equal(forward.length, forwardBeforeBall, 'Manual WASD with a selected ball must leave Ecctrl native camera forward in charge');
+context.movementTargetPosition = { x: -10, y: 1, z: 0 };
+context.frame(null, 0.016);
+assert.equal(forward.length, forwardBeforeBall, 'Repositioning the selected ball must not reintroduce custom forward');
+context.stepNavigation = () => ({ x: 1, y: 0, z: 0 });
+context.frame(null, 0.016);
+assert.equal(forward.at(-1).x, 1, 'Walk to Target still supplies navigation steering for a ball');
+context.stepNavigation = () => null;
+context.cameraRelativeTargetMovement = false;
+context.frame(null, 0.016);
+assert.equal(forward.at(-1).x, -1, 'Stationary target-relative interactions retain their existing direction');
+context.isControlled = false;
+context.restingForwardDirectionRef.current.set(1, 0, 0);
+let locked = false;
+context.ecctrlRef.current.setLockForward = value => { locked = value; };
+context.frame(null, 0.016);
+assert.equal(locked, true);
+assert.equal(forward.at(-1).x, 1, 'Explicit saved facing controls released Character heading');
+let modeExpression, statusEffect;
+function findControllerMode(node) {
+  if (ts.isJsxAttribute(node) && node.name.getText(source) === 'useCustomForward' && node.initializer && ts.isJsxExpression(node.initializer)) modeExpression = node.initializer.expression;
+  if (ts.isCallExpression(node) && node.expression.getText(source) === 'useEffect'
+    && node.arguments[0]?.getText(source).includes('setIsAutoWalking(detail.phase')) statusEffect = node.arguments[0];
+  ts.forEachChild(node, findControllerMode);
+}
+findControllerMode(source); assert(modeExpression && statusEffect);
+// Evaluate with a mutable context so an explicit walk and later cancellation change the actual JSX mode.
+const modeContext = { isControlled: true, movementTargetPosition: { x: 10, y: 1, z: 0 }, cameraRelativeTargetMovement: true, isAutoWalking: false };
+const evaluateMode = vm.runInNewContext(ts.transpileModule(`const mode = () => ${modeExpression.getText(source)}; mode;`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText, modeContext);
+assert.equal(evaluateMode(), false, 'Selected ball uses Ecctrl native camera steering');
+modeContext.isAutoWalking = true; assert.equal(evaluateMode(), true, 'Explicit walking uses world steering');
+modeContext.isAutoWalking = false; assert.equal(evaluateMode(), false, 'Stopping walking restores native camera steering');
+modeContext.cameraRelativeTargetMovement = false; assert.equal(evaluateMode(), true, 'Non-ball target retains target-relative steering');
+const walkingListeners = new Map();
+const walkingPhases = [];
+const effect = vm.runInNewContext(ts.transpileModule(`const effect = ${statusEffect.getText(source)}; effect;`, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText, {
+  markerId: 'actor', NAVIGATION_STATUS,
+  setIsAutoWalking: value => walkingPhases.push(value),
+  window: { addEventListener: (name, listener) => walkingListeners.set(name, listener), removeEventListener: name => walkingListeners.delete(name) },
+});
+const stopStatus = effect();
+walkingListeners.get(NAVIGATION_STATUS)({ detail: { actorMarkerId: 'other', phase: 'walking' } });
+assert.equal(walkingPhases.length, 0, 'Other actors cannot change this controller');
+walkingListeners.get(NAVIGATION_STATUS)({ detail: { actorMarkerId: 'actor', phase: 'walking' } });
+walkingListeners.get(NAVIGATION_STATUS)({ detail: { actorMarkerId: 'actor', phase: 'cancelled' } });
+assert.deepEqual(walkingPhases, [true, false]);
+stopStatus(); assert(!walkingListeners.has(NAVIGATION_STATUS));
+console.log('PASS: ball-target WASD uses native camera controls after kicks and placement; Walk to Target, other targets and released facing retain their intended modes.');

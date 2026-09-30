@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is **v0.20.0 Alpha — App Structure, Multimedia + Scene**, released package `0.20.0`, deployment User-confirmed. See the [release record](releases/v0.20.0.md) and [production handoff](plans/v0.20.0-alpha-release.md). The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is **v0.22.9 — ThreeD Scenario Setup and Start**, User-confirmed. See the [release record](releases/v0.22.9.md). The [v0.22.10 — ThreeD Playable Soccer candidate](releases/v0.22.10.md) is prepared for review and production handoff; it is not deployed. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
 The completed v0.20.0 infrastructure record is available in the [development plan](plans/v0.20.0.md).
 

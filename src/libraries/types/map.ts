@@ -108,6 +108,8 @@ export interface ThreeDActionTarget {
   position: { x: number; y: number; z: number };
   /** Per-button-press token carried through animation completion for idempotent persistence. */
   actionRequestId?: string;
+  /** Marks a Scene-owned Soccer effect; generic page world actions ignore it. */
+  soccerKickRequest?: true;
 }
 
 /** Runtime-only request for positioning a character before a semantic animation. */

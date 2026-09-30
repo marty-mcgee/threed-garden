@@ -10,9 +10,12 @@ import { SceneHoverTitleContext } from '@/components/threed/shared/SceneHoverTit
 import { useOptionalSceneTransform } from '@/components/threed/transform/SceneTransformWorkspace';
 import { SceneTransformGizmo } from '@/components/threed/transform/SceneTransformGizmo';
 import { Button } from '@/components/ui/button';
+import { SensorOccupancySync } from '@/components/threed/shared/SensorOccupancySync';
+import { acceptsSensorEntry, sensorEntryNormal } from '@/libraries/services/threed/physics/sensor-direction-core';
 
 import { EnvironmentRegionColliders } from '@/components/threed/shared/EnvironmentRegionColliders';
 import { resolveBallPhysics } from '@/libraries/services/threed/models/ball-physics';
+import { findSoccerKickParticipants, planSoccerKickImpulse, validSoccerKickRequest, THREED_SOCCER_KICK_APPLY_EVENT, THREED_SOCCER_KICK_REJECT_EVENT, THREED_SOCCER_KICK_REQUEST_EVENT, THREED_SOCCER_KICK_RESULT_EVENT, type SoccerKickApply, type SoccerKickRequest, type SoccerKickResult } from '@/libraries/services/threed/physics/soccer-kick-core';
 
 
 import {
@@ -116,7 +119,8 @@ import {
 } from '@/libraries/services/threed/physics/physics-event-core';
 import { createThreeDRapierPhysicsEventAdapter, type ThreeDRapierPhysicsEventAdapter } from '@/libraries/services/threed/physics/rapier-physics-event-adapter';
 import { SensorContactTracker } from '@/libraries/services/threed/physics/sensor-contact-core';
-import { createSensorCounterState, reduceSensorCounterEvent, reconcileSensorCounters, resetSensorCounts, sensorMemberKey, type SensorMember } from '@/libraries/services/threed/physics/sensor-counter-core';
+import { restoreProjectSensorState } from '@/libraries/services/threed/physics/sensor-snapshot-core';
+import { reduceSensorCounterEvent, reconcileSensorCounters, resetSensorCounts, sensorMemberKey, type SensorMember } from '@/libraries/services/threed/physics/sensor-counter-core';
 import { readModelVolumeSensor } from '@/libraries/services/threed/physics/sensor-legacy-compat';
 import { readPhysicsSensorCuboids, type PhysicsSensorCuboid } from '@/libraries/services/threed/physics/sensor-cuboid-core';
 import { useSensorGroups } from '@/components/threed/physics/SensorGroupsWorkspace';
@@ -710,15 +714,35 @@ function SceneMarkerRigidBody({
   sceneEnabled,
   onLivePosition,
   smoothPosition = false,
+  soccerKickTarget,
+  soccerKickActorPosition,
   position,
   rotation,
   ...props
 }: RigidBodyProps & {
   sceneEnabled: boolean;
+  soccerKickTarget?: { projectId: number; markerId: string };
+  soccerKickActorPosition?: (request: SoccerKickRequest) => { x: number; y: number; z: number } | null;
   onLivePosition?: (position: { x: number; y: number; z: number }) => void;
   smoothPosition?: boolean;
 }) {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
+  const pendingSoccerKickRef = useRef<SoccerKickApply | null>(null);
+  const consumedSoccerKickIdsRef = useRef<Set<string>>(new Set());
+  useEffect(() => {
+    if (!soccerKickTarget) return;
+    const acceptKick = (event: Event) => {
+      const request = (event as CustomEvent<SoccerKickApply>).detail;
+      if (!validSoccerKickRequest(request)
+        || request.projectId !== soccerKickTarget.projectId
+        || request.ballMarkerId !== soccerKickTarget.markerId
+        || consumedSoccerKickIdsRef.current.has(request.requestId)) return;
+      consumedSoccerKickIdsRef.current.add(request.requestId);
+      pendingSoccerKickRef.current = request;
+    };
+    window.addEventListener(THREED_SOCCER_KICK_APPLY_EVENT, acceptKick);
+    return () => window.removeEventListener(THREED_SOCCER_KICK_APPLY_EVENT, acceptKick);
+  }, [soccerKickTarget?.projectId, soccerKickTarget?.markerId]);
   useFrame(() => {
     if (!sceneEnabled || !onLivePosition || !rigidBodyRef.current) return;
     const current = rigidBodyRef.current.translation();
@@ -752,6 +776,27 @@ function SceneMarkerRigidBody({
   }, [positionKey, rotationKey]);
 
   useBeforePhysicsStep(() => {
+    const kick = pendingSoccerKickRef.current;
+    if (kick) {
+      pendingSoccerKickRef.current = null;
+      const body = rigidBodyRef.current;
+      const actorPosition = soccerKickActorPosition?.(kick);
+      const impulse = sceneEnabled && soccerKickTarget?.markerId === kick.ballMarkerId
+        && soccerKickTarget.projectId === kick.projectId
+        && body?.isDynamic() && body.isEnabled()
+        && !pendingTransformRef.current && actorPosition
+        ? planSoccerKickImpulse({
+          actor: actorPosition,
+          ball: body.translation(),
+          velocity: body.linvel(),
+          mass: body.mass(),
+        }) : null;
+      if (impulse && body) body.applyImpulse(impulse, true);
+      window.dispatchEvent(new CustomEvent<SoccerKickResult>(THREED_SOCCER_KICK_RESULT_EVENT, {
+        detail: { requestId: kick.requestId, projectId: kick.projectId,
+          ballMarkerId: kick.ballMarkerId, applied: Boolean(impulse) },
+      }));
+    }
     const pending = pendingTransformRef.current;
     const body = rigidBodyRef.current;
     if (!body) return;
@@ -866,6 +911,26 @@ function EnvironmentCollisionPreview({
   );
 }
 
+function SensorDirectionArrow({ sensor }: { sensor: PhysicsSensorCuboid }) {
+  const ref = useRef<THREE.Group>(null);
+  const worldRotation = useRef(new THREE.Quaternion());
+  useFrame(() => {
+    if (!ref.current) return;
+    if (sensor.directionSpace === 'local') {
+      ref.current.quaternion.setFromAxisAngle(new THREE.Vector3(0, 1, 0), sensor.rotationY * Math.PI / 180);
+    } else if (ref.current.parent) {
+      ref.current.parent.getWorldQuaternion(worldRotation.current);
+      ref.current.quaternion.copy(worldRotation.current).invert();
+    }
+  });
+  const normal = sensorEntryNormal(sensor.entrySide);
+  const outward = new THREE.Vector3(normal.x, normal.y, normal.z);
+  const span = normal.x ? sensor.width : sensor.depth;
+  return <group ref={ref} position={[sensor.position.x, sensor.position.y, sensor.position.z]}>
+    <arrowHelper args={[outward.clone().negate(), outward.multiplyScalar(span / 2 + 0.8), span + 1.6, 0x22d3ee, 0.4, 0.25]} />
+  </group>;
+}
+
 function PhysicsSensorCuboidChildren({
   marker,
   projectId,
@@ -892,7 +957,7 @@ function PhysicsSensorCuboidChildren({
   const contactsRef = useRef(new SensorContactTracker());
   useEffect(() => { if (!enabled) contactsRef.current.clear(); }, [enabled]);
 
-  const emit = useCallback((kind: 'sensor-enter' | 'sensor-exit', payload: any, sensor: Pick<PhysicsSensorCuboid, 'id' | 'behavior' | 'detection'>) => {
+  const emit = useCallback((kind: 'sensor-enter' | 'sensor-exit', payload: any, sensor: PhysicsSensorCuboid) => {
     if (!enabled || !projectId || !target) return;
     if (payload?.other?.collider?.isSensor?.()) return;
     const physicsIdentity = payload?.other?.rigidBodyObject?.userData?.threeDPhysics;
@@ -905,6 +970,15 @@ function PhysicsSensorCuboidChildren({
     const sourceKey = instanceMarkerId === undefined
       ? createThreeDRuntimeMarkerKey(source) : `marker:${instanceMarkerId}`;
     if (!contactsRef.current.observe(kind, sensor.id, sourceKey, payload.other.collider?.handle ?? 0)) return;
+    if (kind === 'sensor-enter' && sensor.direction === 'unidirectional') {
+      const collider = payload.target?.collider;
+      const sourceCollider = payload.other?.collider;
+      const body = payload.other?.rigidBody;
+      if (!collider || !sourceCollider || !body || !acceptsSensorEntry(sensor,
+        { position: collider.translation(), rotation: collider.rotation() },
+        { position: sourceCollider.translation(), velocity: body.linvel() },
+      )) return;
+    }
     let adapter = adaptersRef.current.get(sourceKey);
     if (!adapter) {
       adapter = createThreeDRapierPhysicsEventAdapter({ projectId, source, sourceMarkerId: instanceMarkerId });
@@ -925,6 +999,7 @@ function PhysicsSensorCuboidChildren({
     <group name={`threed-transform-owner:${projectId}:${marker.id}`} />
     {sensors.map((sensor) => <CuboidCollider
       key={`physics-sensor-${sensor.id}`}
+      name={`threed-sensor:${Number(marker.data?.projectMarkerId ?? marker.data?.id)}:${sensor.id}`}
       sensor
       args={[sensor.width / 2, sensor.height / 2, sensor.depth / 2]}
       position={[sensor.position.x, sensor.position.y, sensor.position.z]}
@@ -932,6 +1007,8 @@ function PhysicsSensorCuboidChildren({
       onIntersectionEnter={(payload) => emit('sensor-enter', payload, sensor)}
       onIntersectionExit={(payload) => emit('sensor-exit', payload, sensor)}
     />)}
+    {physicsDebug && sensors.filter(sensor => sensor.direction === 'unidirectional').map(sensor =>
+      <SensorDirectionArrow key={`sensor-direction-${sensor.id}`} sensor={sensor} />)}
     {physicsDebug && sensors.filter(sensor => transform?.session?.objectKey !== `${projectId}:${marker.id}:${sensor.id}`).map((sensor) => <mesh
       key={`physics-sensor-debug-${sensor.id}`}
       position={[sensor.position.x, sensor.position.y, sensor.position.z]}
@@ -947,9 +1024,26 @@ function PhysicsSensorCuboidChildren({
   </>;
 }
 
+function LevelBallMarkerRings({ isSelected, isActionTarget }: { isSelected: boolean; isActionTarget: boolean }) {
+  const groupRef = useRef<THREE.Group>(null);
+  const parentWorldRotation = useRef(new THREE.Quaternion());
+  useFrame(() => {
+    const group = groupRef.current;
+    if (!group?.parent) return;
+    group.parent.getWorldQuaternion(parentWorldRotation.current);
+    group.quaternion.copy(parentWorldRotation.current).invert();
+  });
+  return <group ref={groupRef}>
+    {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.9} outerRadius={1.2} />}
+    {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={1.05} />}
+  </group>;
+}
+
 function ProjectModelMarkerBody({
   marker,
   onLivePosition,
+  soccerKickActorPosition,
+  characterLayerEnabled,
   position,
   rotation,
   scale,
@@ -968,6 +1062,8 @@ function ProjectModelMarkerBody({
 }: {
   marker: any;
   onLivePosition?: (position: { x: number; y: number; z: number }) => void;
+  soccerKickActorPosition?: (request: SoccerKickRequest) => { x: number; y: number; z: number } | null;
+  characterLayerEnabled?: boolean;
   position: [number, number, number];
   rotation: [number, number, number];
   scale: number;
@@ -1182,6 +1278,9 @@ function ProjectModelMarkerBody({
       sceneEnabled={isLayerEnabled}
       type={isMovableBall && collisionBounds ? 'dynamic' : 'fixed'}
       onLivePosition={isMovableBall ? onLivePosition : undefined}
+      soccerKickTarget={isMovableBall && isActionTarget && characterLayerEnabled && projectId
+        ? { projectId, markerId: String(marker.id) } : undefined}
+      soccerKickActorPosition={soccerKickActorPosition}
       ccd={isMovableBall}
       gravityScale={isMovableBall ? ballPhysics.gravityScale : 1}
       linearDamping={isMovableBall ? ballPhysics.damping : 0}
@@ -1206,6 +1305,7 @@ function ProjectModelMarkerBody({
       {modelVolumeSensor && collisionBounds && (
         <CuboidCollider
           key={`model-volume-${colliderKey}`}
+          name={`threed-sensor:${Number(marker.data?.projectMarkerId ?? marker.data?.id)}:model-volume`}
           sensor
           args={collisionBounds.halfExtents}
           position={collisionBounds.center}
@@ -1270,8 +1370,12 @@ function ProjectModelMarkerBody({
         {isEnvironment && effectiveCollisionMode === 'box-fallback' && physicsDebug && environmentColliderPlan && (
           <EnvironmentCollisionPreview boxes={environmentColliderPlan.boxes} />
         )}
-        {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.9} outerRadius={1.2} />}
-        {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={1.05} />}
+        {isMovableBall
+          ? <LevelBallMarkerRings isSelected={isSelected} isActionTarget={isActionTarget} />
+          : <>
+            {isSelected && <FadingRing position={[0, 0.02, 0]} innerRadius={0.9} outerRadius={1.2} />}
+            {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={1.05} />}
+          </>}
       </group>
     </SceneMarkerRigidBody>
   );
@@ -1314,6 +1418,7 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
   placementActive,
   controlledCharacterId,
   actionTarget,
+  soccerBallTargeted,
   onClick,
   onControlChange,
   cameraFollowRef,
@@ -1363,6 +1468,7 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
         cameraFollowRef={cameraFollowRef}
         livePositionsRef={livePositionsRef}
         markerId={marker.id}
+        cameraRelativeTargetMovement={soccerBallTargeted}
         navigationTargetMarkerId={actionTarget?.markerId}
         movementTargetPosition={
           isControlled && actionTarget != null
@@ -1407,6 +1513,7 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
   && previous.placementActive === next.placementActive
   && previous.controlledCharacterId === next.controlledCharacterId
   && previous.actionTarget === next.actionTarget
+  && previous.soccerBallTargeted === next.soccerBallTargeted
   && previous.onClick === next.onClick
   && previous.onControlChange === next.onControlChange
   && previous.cameraFollowRef === next.cameraFollowRef
@@ -1415,7 +1522,7 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
 ));
 
 // ✅ ThreeD Marker Component
-const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, placementActive, onPlacementHover, onPlacementClick, actionTarget, controlledCharacterId, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug, onModelRuntimeSettled, onCharacterRuntimeSettled, characterSpawnPositions, projectId, onSensorPhysicsEvent }: any) {
+const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, placementActive, onPlacementHover, onPlacementClick, actionTarget, soccerBallTargeted, controlledCharacterId, characterLayerEnabled, soccerKickActorPosition, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug, onModelRuntimeSettled, onCharacterRuntimeSettled, characterSpawnPositions, projectId, onSensorPhysicsEvent }: any) {
   const [hovered, setHovered] = useState(false);
   const color = marker.color || getMarkerColor(marker.type);
   const size = isSelected ? 1.0 : 0.6;
@@ -1473,6 +1580,7 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
         placementActive={placementActive}
         controlledCharacterId={controlledCharacterId}
         actionTarget={actionTarget}
+        soccerBallTargeted={soccerBallTargeted}
         onClick={onClick}
         onControlChange={onControlChange}
         cameraFollowRef={cameraFollowRef}
@@ -1609,6 +1717,8 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
     return <ProjectModelMarkerBody
       marker={marker}
       onLivePosition={(position) => onControlChange?.(String(marker.id), 'models', Number(marker.data?.id), position)}
+      soccerKickActorPosition={soccerKickActorPosition}
+      characterLayerEnabled={characterLayerEnabled}
       position={pos}
       rotation={instanceRotation}
       scale={instanceScale}
@@ -2278,15 +2388,27 @@ export function ThreeDScene({
       && marker.metadata?.placementRole !== 'environment' ? readModelVolumeSensor(marker.metadata) : null;
     return volume ? [...attached, { ...volume, ownerMarkerId }] : attached;
   }), [sceneMarkers]);
-  const [sensorCounterState, setSensorCounterState] = useState(createSensorCounterState);
+  const [sensorCounterState, setSensorCounterState] = useState(() => restoreProjectSensorState(initialViewState?.sensorState, projectId));
+  const sensorSnapshotKey = JSON.stringify([projectId, initialViewState?.sensorState]);
+  const restoredSensorSnapshotRef = useRef(sensorSnapshotKey);
+  const sensorCounterStateRef = useRef(sensorCounterState);
+  sensorCounterStateRef.current = sensorCounterState;
   const sensorEventBuffer = useRef(new ThreeDPhysicsEventBuffer({ capacity: 256, minimumIntervalMs: 0 }));
 
-  useEffect(() => { sensorEventBuffer.current.clear(); setSensorCounterState(createSensorCounterState()); }, [projectId]);
+  useEffect(() => {
+    if (restoredSensorSnapshotRef.current === sensorSnapshotKey) return;
+    restoredSensorSnapshotRef.current = sensorSnapshotKey;
+    sensorEventBuffer.current.clear();
+    setSensorCounterState(restoreProjectSensorState(initialViewState?.sensorState, projectId));
+  }, [projectId, initialViewState?.sensorState, sensorSnapshotKey]);
   useEffect(() => {
     const activeOwners = new Set(sceneMarkers.filter(marker => activeLayers.has(normalizeSceneLayerType(marker.type))
       && (visibleMarkerIds?.has(String(marker.id)) ?? true)).map(marker => Number(marker.data?.projectMarkerId ?? marker.data?.id)));
     const activeSources = new Set(sceneMarkers.filter(marker => activeLayers.has(normalizeSceneLayerType(marker.type))
-      && (visibleMarkerIds?.has(String(marker.id)) ?? true)).map(marker => `${normalizeSceneLayerType(marker.type)}:${marker.data?.id}`));
+      && (visibleMarkerIds?.has(String(marker.id)) ?? true)).flatMap(marker => [
+        `${normalizeSceneLayerType(marker.type)}:${marker.data?.id}`,
+        `marker:${Number(marker.data?.projectMarkerId ?? marker.data?.id)}`,
+      ]));
     setSensorCounterState(current => {
       const next = reconcileSensorCounters(current, sensorMembers);
       return { ...next, occupied: next.occupied.filter(key => activeOwners.has(Number(key.split(':')[0])) && activeSources.has(key.split('|')[1])) };
@@ -2298,6 +2420,12 @@ export function ThreeDScene({
     if (buffered.status !== 'accepted') return;
     setSensorCounterState(current => reduceSensorCounterEvent(current, buffered.event, Number(projectId), sensorMembers));
   }, [projectId, sensorMembers]);
+  const clearSeparatedSensorOccupancy = useCallback((separated: ReadonlySet<string>) => {
+    setSensorCounterState(current => {
+      const occupied = current.occupied.filter(key => !separated.has(key));
+      return occupied.length === current.occupied.length ? current : { ...current, occupied };
+    });
+  }, []);
   const resetSensorCounterState = useCallback(() => {
     setSensorCounterState(current => resetSensorCounts(current));
   }, []);
@@ -2651,6 +2779,135 @@ export function ThreeDScene({
     return activeLayers.has(normalizeSceneLayerType(marker.type))
       && (visibleMarkerIds?.has(String(marker.id)) ?? true);
   });
+  const soccerBallTargeted = actionTarget?.type === 'models' && sceneMarkers.some(candidate =>
+    String(candidate.id) === actionTarget.markerId && isProjectModelMovableBall(candidate.metadata));
+  // A request belongs to one Scene session and one exact Project ball instance.
+  // The animation path stays with Ecctrl; only the ball body changes physics.
+  const soccerKickContextRef = useRef({ sceneMarkers, actionTarget, controlledCharacterId,
+    activeLayers, visibleMarkerIds, projectId });
+  soccerKickContextRef.current = { sceneMarkers, actionTarget, controlledCharacterId,
+    activeLayers, visibleMarkerIds, projectId };
+  const getSoccerKickActorPosition = useCallback((request: SoccerKickRequest) => {
+    const context = soccerKickContextRef.current;
+    if (context.projectId !== request.projectId
+      || context.controlledCharacterId !== request.characterId
+      || context.actionTarget?.markerId !== request.ballMarkerId
+      || !context.activeLayers.has('models') || !context.activeLayers.has('characters')
+      || (context.visibleMarkerIds && (!context.visibleMarkerIds.has(request.characterMarkerId)
+        || !context.visibleMarkerIds.has(request.ballMarkerId)))) return null;
+    const actor = context.sceneMarkers.find(marker => String(marker.id) === request.characterMarkerId
+      && normalizeSceneLayerType(marker.type) === 'characters'
+      && Number(marker.data?.id) === request.characterId
+      && marker.data?.isMovable === true
+      && marker.isActive !== false && marker.isVisible !== false);
+    return actor ? livePositionsRef.current.get(request.characterMarkerId) ?? null : null;
+  }, []);
+  const pendingSoccerKickRef = useRef<{
+    request: SoccerKickRequest;
+    phase: 'animating' | 'applying';
+    timer: ReturnType<typeof setTimeout>;
+  } | null>(null);
+  useEffect(() => {
+    const cancel = (report: boolean, reason: SoccerKickResult['reason'] = 'changed') => {
+      const pending = pendingSoccerKickRef.current;
+      if (!pending) return;
+      clearTimeout(pending.timer);
+      pendingSoccerKickRef.current = null;
+      if (report) window.dispatchEvent(new CustomEvent<SoccerKickResult>(
+        THREED_SOCCER_KICK_RESULT_EVENT, { detail: { requestId: pending.request.requestId,
+          projectId: pending.request.projectId, ballMarkerId: pending.request.ballMarkerId,
+          applied: false, reason } }));
+    };
+    const currentMarkers = (request: SoccerKickRequest) => {
+      const context = soccerKickContextRef.current;
+      return findSoccerKickParticipants({ request, projectId: context.projectId,
+        controlledCharacterId: context.controlledCharacterId, target: context.actionTarget,
+        markers: context.sceneMarkers, activeLayers: context.activeLayers,
+        visibleMarkerIds: context.visibleMarkerIds,
+        positionForMarker: markerId => livePositionsRef.current.get(markerId),
+      });
+    };
+    const onRequest = (event: Event) => {
+      const request = (event as CustomEvent<SoccerKickRequest>).detail;
+      if (!validSoccerKickRequest(request)) return;
+      const positions = currentMarkers(request);
+      if (pendingSoccerKickRef.current || !positions) {
+        window.dispatchEvent(new CustomEvent<SoccerKickResult>(THREED_SOCCER_KICK_RESULT_EVENT,
+          { detail: { requestId: request.requestId, projectId: request.projectId,
+            ballMarkerId: request.ballMarkerId, applied: false } }));
+        return;
+      }
+      const timer = setTimeout(() => cancel(true, 'timeout'), 30_000);
+      pendingSoccerKickRef.current = { request, phase: 'animating', timer };
+      window.dispatchEvent(new CustomEvent('garden-character-action', { detail: {
+        characterId: request.characterId, markerId: request.characterMarkerId, action: request.action,
+        target: { ...soccerKickContextRef.current.actionTarget,
+          markerId: request.ballMarkerId, position: positions.ballPosition,
+          actionRequestId: request.requestId, soccerKickRequest: true },
+      } }));
+    };
+    const onComplete = (event: Event) => {
+      const detail = (event as CustomEvent<{ characterId?: number; action?: string;
+        target?: ThreeDActionTarget | null }>).detail;
+      const pending = pendingSoccerKickRef.current;
+      if (!pending || pending.phase !== 'animating'
+        || detail?.characterId !== pending.request.characterId
+        || detail.action !== pending.request.action
+        || detail.target?.markerId !== pending.request.ballMarkerId
+        || detail.target?.actionRequestId !== pending.request.requestId) return;
+      const positions = currentMarkers(pending.request);
+      if (!positions) { cancel(true); return; }
+      clearTimeout(pending.timer);
+      pending.phase = 'applying';
+      pending.timer = setTimeout(() => cancel(true, 'timeout'), 2_000);
+      window.dispatchEvent(new CustomEvent<SoccerKickApply>(THREED_SOCCER_KICK_APPLY_EVENT,
+        { detail: { ...pending.request, actorPosition: { ...positions.actorPosition } } }));
+    };
+    const onReject = (event: Event) => {
+      const rejected = (event as CustomEvent<{ requestId?: string }>).detail;
+      if (pendingSoccerKickRef.current?.phase === 'animating'
+        && rejected?.requestId === pendingSoccerKickRef.current.request.requestId) cancel(true, 'animation-rejected');
+    };
+    const onResult = (event: Event) => {
+      const result = (event as CustomEvent<SoccerKickResult>).detail;
+      const pending = pendingSoccerKickRef.current;
+      if (pending && pending.phase === 'applying'
+        && result?.requestId === pending.request.requestId
+        && result.projectId === pending.request.projectId
+        && result.ballMarkerId === pending.request.ballMarkerId) cancel(false);
+    };
+    window.addEventListener(THREED_SOCCER_KICK_REQUEST_EVENT, onRequest);
+    window.addEventListener(THREED_SOCCER_KICK_REJECT_EVENT, onReject);
+    window.addEventListener('garden-character-action-complete', onComplete);
+    window.addEventListener(THREED_SOCCER_KICK_RESULT_EVENT, onResult);
+    return () => {
+      cancel(false);
+      window.removeEventListener(THREED_SOCCER_KICK_REQUEST_EVENT, onRequest);
+      window.removeEventListener(THREED_SOCCER_KICK_REJECT_EVENT, onReject);
+      window.removeEventListener('garden-character-action-complete', onComplete);
+      window.removeEventListener(THREED_SOCCER_KICK_RESULT_EVENT, onResult);
+    };
+  }, [projectId]);
+  useEffect(() => {
+    const pending = pendingSoccerKickRef.current;
+    if (!pending) return;
+    const context = soccerKickContextRef.current;
+    const request = pending.request;
+    const actorExists = context.sceneMarkers.some(marker => String(marker.id) === request.characterMarkerId);
+    const ballExists = context.sceneMarkers.some(marker => String(marker.id) === request.ballMarkerId);
+    if (context.controlledCharacterId !== request.characterId
+      || context.actionTarget?.markerId !== request.ballMarkerId
+      || !context.activeLayers.has('models') || !context.activeLayers.has('characters')
+      || !actorExists || !ballExists
+      || (context.visibleMarkerIds && (!context.visibleMarkerIds.has(request.characterMarkerId)
+        || !context.visibleMarkerIds.has(request.ballMarkerId)))) {
+      clearTimeout(pending.timer);
+      pendingSoccerKickRef.current = null;
+      window.dispatchEvent(new CustomEvent<SoccerKickResult>(THREED_SOCCER_KICK_RESULT_EVENT,
+        { detail: { requestId: request.requestId, projectId: request.projectId,
+          ballMarkerId: request.ballMarkerId, applied: false } }));
+    }
+  }, [controlledCharacterId, actionTarget?.markerId, activeLayers, sceneMarkers, visibleMarkerIds]);
   const hasVisibleEnvironmentModel = visibleMarkers.some((marker: any) =>
     normalizeSceneLayerType(marker.type) === 'models'
     && marker.isVisible !== false
@@ -2667,6 +2924,17 @@ export function ThreeDScene({
   const centerZ = isFinite(bounds.centerZ) ? bounds.centerZ : 0;
   const maxDimension = Math.min(Math.max(bounds.width, bounds.height), 500);
   const cameraDistance = Math.min(Math.max(maxDimension * 1.5, 20), 750);
+  // Bounds changes from marker edits must not overwrite the user's current view.
+  const initialCameraRef = useRef<{
+    projectId: number | undefined; position: [number, number, number]; target: [number, number, number];
+  } | null>(null);
+  if (!initialCameraRef.current || initialCameraRef.current.projectId !== projectId) {
+    initialCameraRef.current = { projectId,
+      position: [centerX + cameraDistance * 0.72, cameraDistance * 0.58, centerZ + cameraDistance * 0.82],
+      target: [centerX, 0, centerZ],
+    };
+  }
+  const initialCamera = initialCameraRef.current;
   // Include Ground Map extent without changing marker bounds or physics ownership.
   const maxOrbitDistance = Math.max(5000, Math.hypot(groundMap.width, groundMap.length) * 4);
   const groundCenterX = centerX;
@@ -2771,6 +3039,9 @@ export function ThreeDScene({
         showGizmo: showGizmoCube,
         showControls,
         physicsDebug,
+        ...(projectId ? { sensorState: { version: 1 as const, projectId,
+          counts: { ...sensorCounterStateRef.current.counts },
+          occupied: [...sensorCounterStateRef.current.occupied] } } : {}),
         scenarioRuntime: {
           projectId: projectId ?? 0,
           active: activeScenario && activeScenario.projectId === projectId ? {
@@ -3156,7 +3427,7 @@ export function ThreeDScene({
             <section data-scene-hover-obstacle aria-label="Scenario instructions" role="status" aria-hidden={scenarioOverlaysObscured || showControls || scenarioInstructionDimmed} inert={scenarioOverlaysObscured || showControls || scenarioInstructionDimmed} className={`threed-workspace-panel threed-scene-panel-surface w-[min(22rem,100%)] shrink-0 rounded-lg border border-foreground/15 px-3 py-2 text-xs text-foreground shadow-xl backdrop-blur-md transition-opacity duration-200 ${scenarioOverlaysObscured || showControls || scenarioInstructionDimmed ? 'pointer-events-none opacity-40' : 'pointer-events-auto opacity-100'}`}>
           <div className="flex items-start justify-between gap-2"><h2 className="text-sm font-semibold">{scenarioInstruction.name}</h2><button type="button" onClick={() => setScenarioInstructionVisible(false)} aria-label="Dismiss Scenario instructions" className="rounded p-1 text-foreground/70 hover:bg-foreground/10"><X className="h-4 w-4" /></button></div>
           {scenarioInstruction.kind === 'soccer'
-            ? <p className="mt-1 text-foreground/80">Try moving the ball into a goal on {scenarioInstruction.environmentName}. Watch entry counts for {scenarioInstruction.groupName} in Physics Sensors. Reset Counts to try again.</p>
+            ? <p className="mt-1 text-foreground/80">Take Control of a movable Character. Select a movable ball and choose Use as Action Target, then approach it and use Kick selected ball in Character Animations. Move the ball into a goal on {scenarioInstruction.environmentName}; watch entry counts for {scenarioInstruction.groupName} in Physics Sensors. Reset All Counts to try again.</p>
             : <p className="mt-1 text-foreground/80">Explore {scenarioInstruction.environmentName}, its Beds and Plantings. Select a FarmBot in the Setup Guide to review its observation.</p>}
             </section>
           )}
@@ -3176,7 +3447,7 @@ export function ThreeDScene({
                 <span className="shrink-0 tabular-nums">{sensorCounterState.counts[sensorMemberKey(member)] ?? 0}</span>
               </div>)}</div>
             </details>)}
-            <p className="text-[10px] text-foreground/55">Session counts continue while this panel is hidden.</p>
+            <p className="text-[10px] text-foreground/55">Counts continue while hidden. Save Project to keep them after reload.</p>
           </div>
             </section>
           )}
@@ -3530,11 +3801,7 @@ export function ThreeDScene({
           stopCanvasFrameLoopRef.current = () => state.setFrameloop('never');
         }}
         camera={{
-          position: [
-            centerX + cameraDistance * 0.72,
-            cameraDistance * 0.58,
-            centerZ + cameraDistance * 0.82,
-          ],
+          position: initialCamera.position,
           fov: 45,
           far: maxOrbitDistance * 4,
         }}
@@ -3572,7 +3839,7 @@ export function ThreeDScene({
           maxPolarAngle={Math.PI / 2}
           autoRotate={autoRotate && !transforming}
           autoRotateSpeed={0.8}
-          target={[centerX, 0, centerZ]}
+          target={initialCamera.target}
           onChange={updateGeographicCompass}
         />
         {transforming && <SceneTransformGizmo key={transform!.session!.objectKey} />}
@@ -3665,6 +3932,7 @@ export function ThreeDScene({
           debug={physicsDebug}
           paused={transforming}
         >
+          <SensorOccupancySync stateRef={sensorCounterStateRef} onSeparated={clearSeparatedSensorOccupancy} />
           {/* Physics Debug renders the active Rapier colliders as well as
               each owner's focused Sensor and Environment guides. */}
           {groundMap.visualMode === 'image' && groundMapAsset && groundMap.groundMapId === groundMapAsset.id && <RigidBody
@@ -3844,15 +4112,14 @@ export function ThreeDScene({
                     isMatchingThreeDActionTarget(actionTarget, {
                       markerType: String(marker.type ?? ''),
                       assetId: Number(marker.data?.id),
+                      markerId: String(marker.id),
                     })
                   }
                   actionTarget={actionTarget}
-                  controlledCharacterId={
-                    normalizeSceneLayerType(marker.type) === 'characters'
-                    && Number(marker.data?.id) === controlledCharacterId
-                      ? controlledCharacterId
-                      : null
-                  }
+                  soccerBallTargeted={soccerBallTargeted}
+                  controlledCharacterId={controlledCharacterId}
+                  characterLayerEnabled={activeLayers.has('characters')}
+                  soccerKickActorPosition={getSoccerKickActorPosition}
                   onControlChange={storeLivePosition}
                   cameraFollowRef={cameraFollowRef}
                   livePositionsRef={livePositionsRef}

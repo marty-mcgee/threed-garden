@@ -49,6 +49,9 @@ const savePosition = (ok) => callback('src/app/dashboard/scene/page.tsx', 'handl
   assert.equal(JSON.parse(requests.at(-1).body).rotation, 315);
   assert.equal(snapshot()[0].data.rotation, 315);
   assert.equal(snapshot()[0].position.x, 5, 'Successful edits must supersede old live coordinates');
+  await savePosition(true)(77, { positionX: 5, positionY: 1, positionZ: 7, rotation: 120 });
+  assert.equal(JSON.parse(requests.at(-1).body).rotation, 120, 'Explicit facing must override the prior live heading');
+  assert.equal(snapshot()[0].data.rotation, 120, 'Project Save must retain an explicit facing edit');
   registry.updateLivePosition('characters', 11, { x: 25, y: 3, z: 45 });
   registry.updateLiveRotation('characters', 11, 45);
   assert.equal(registry.updateLiveRotation('characters', 11, NaN), false);
@@ -57,11 +60,14 @@ const savePosition = (ok) => callback('src/app/dashboard/scene/page.tsx', 'handl
     projectMarkerSnapshotProviderRef: { current: snapshot }, projectThreeDViewStateProviderRef: {}, projectMapViewStateProviderRef: {},
     lastProjectThreeDViewStateRef: {}, lastProjectMapViewStateRef: {}, initialProjectViewState: null,
     PROJECT_VIEW_STATE_VERSION: 1, viewMode: '3d', panelHeight: 500, cameraMode: 'stationary',
+    scenarioPanelState: { selected: null, guide: { kind: 'soccer', environmentId: '', groupId: '', farmbotId: '' } },
+    isScenariosOpen: false,
     fetch: async (url, options) => { requests.push({ url, ...options }); return { ok: true, json: async () => ({ success: true, data: { markerCount: 1, markers: [] } }) }; },
   });
   await projectSave();
   const payload = JSON.parse(requests.at(-1).body);
   assert.deepEqual(payload.markers[0].position, { x: 25, y: 3, z: 45 });
+  assert.equal(payload.viewState.scenario.panelOpen, false);
   assert.equal(requests.at(-1).method, 'PUT');
   assert.equal(payload.markers[0].data.rotation, 45);
   registry.replaceAssetMarkers([{ moduleType: 'characters', assetId: 11, name: 'Farmer', assetPosition: { x: 5, y: 1, z: 7 } }]);
@@ -87,10 +93,11 @@ const forwardLivePosition = callback('src/components/map/ThreeDScene.tsx', 'stor
   normalizeSceneLayerType: type => type,
   onControlChange: handleLivePosition,
 });
-forwardLivePosition('project-character-204', 'characters', 11, { x: 12, y: 1, z: 3 });
+forwardLivePosition('project-character-204', 'characters', 11, { x: 12, y: 1, z: 3, rotation: 75 });
 assert.equal(liveCharacter.characterId, 11);
 assert.equal(liveCharacter.position.x, 12);
 assert.equal(selectedCharacter.position.x, 12);
+assert.equal(selectedCharacter.data.rotation, 75, 'DetailsCard must display the live Character heading');
 liveCharacter = null;
 handleLivePosition('project-character-11', { x: 99, y: 1, z: 3 }, 22);
 assert.equal(liveCharacter, null, 'Matching suffix must not admit another Character');

@@ -380,6 +380,9 @@ async function saveSnapshot(request: NextRequest) {
     }
     const markers = parseProjectThreeDMarkerSnapshot(requestBody.markers);
     const viewState = parseThreeDProjectViewState(requestBody.viewState);
+    if (viewState.threeD?.sensorState && viewState.threeD.sensorState.projectId !== projectId) {
+      return NextResponse.json({ success: false, error: 'Sensor state belongs to another Project' }, { status: 400 });
+    }
 
     const ownedProject = await requireOwnedProject(userId, projectId);
     if (!ownedProject) {

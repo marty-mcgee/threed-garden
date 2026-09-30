@@ -51,6 +51,7 @@ import {
 } from '@/components/map/panels/ThreeDPlantingPlacementPanel';
 import { ProjectScenariosPanel } from '@/components/map/panels/ProjectScenariosPanel';
 import type { ScenarioStartRequest } from '@/libraries/services/threed/scenario-core';
+import { THREED_SOCCER_KICK_RESULT_EVENT, type SoccerKickResult } from '@/libraries/services/threed/physics/soccer-kick-core';
 import { ProjectSetupPanel } from '@/components/map/panels/ProjectSetupPanel';
 import { ThreeDProjectLoadingPresentation } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
 import { getDefaultMapData, getDefaultLayers } from '@/libraries/services/map/DefaultMapData';
@@ -989,7 +990,7 @@ function UnifiedMapPageInner() {
   }, [actionTarget]);
 
   // v0.16.0-delta: Sync RuntimeMarker position when ecctrl character moves
-  const handleControlChange = useCallback((_markerId: string, pos: { x: number; y: number; z: number }, sourceCharacterId?: number) => {
+  const handleControlChange = useCallback((_markerId: string, pos: { x: number; y: number; z: number; rotation?: number }, sourceCharacterId?: number) => {
     // Project marker IDs identify instances, not reusable Character records.
     if (typeof sourceCharacterId !== 'number' || !Number.isSafeInteger(sourceCharacterId) || sourceCharacterId <= 0 || sourceCharacterId !== controlledCharacterId
       || ![pos.x, pos.y, pos.z].every(Number.isFinite)) return;
@@ -1000,7 +1001,9 @@ function UnifiedMapPageInner() {
       ) && controlledCharacterId != null
         && prev.id === _markerId;
       if (!isControlledCharacterSelection) return prev;
-      return { ...prev, position: { ...prev.position, x: pos.x, y: pos.y, z: pos.z } };
+      return { ...prev, position: { ...prev.position, x: pos.x, y: pos.y, z: pos.z },
+        data: pos.rotation != null && Number.isFinite(pos.rotation)
+          ? { ...prev.data, rotation: pos.rotation } : prev.data };
     });
     setLiveControlledCharacterPosition({
       characterId: sourceCharacterId,
@@ -1113,7 +1116,7 @@ function UnifiedMapPageInner() {
       }>;
 
       const detail = customEvent.detail;
-      if (!detail?.action) return;
+      if (!detail?.action || detail.target?.soccerKickRequest) return;
 
       if (
         detail.target != null &&
@@ -1266,6 +1269,23 @@ function UnifiedMapPageInner() {
 
     window.addEventListener('garden-character-action-complete', handleActionComplete);
     return () => window.removeEventListener('garden-character-action-complete', handleActionComplete);
+  }, [selectedProjectId]);
+
+  useEffect(() => {
+    const onSoccerKickResult = (event: Event) => {
+      const result = (event as CustomEvent<SoccerKickResult>).detail;
+      if (!result || result.projectId !== Number(selectedProjectId)) return;
+      showToastRef.current(result.applied
+        ? 'Kick applied to the selected ball. Watch the goal sensor for an entry count.'
+        : result.reason === 'animation-rejected'
+          ? 'Kick could not start. Wait for the current Character action to finish and check the mapped kick animation.'
+          : result.reason === 'timeout'
+            ? 'Kick timed out waiting for the Character animation or ball response.'
+            : 'Kick cancelled. Check Character control and the selected ball’s current range, then try again.',
+      result.applied ? 'success' : 'info');
+    };
+    window.addEventListener(THREED_SOCCER_KICK_RESULT_EVENT, onSoccerKickResult);
+    return () => window.removeEventListener(THREED_SOCCER_KICK_RESULT_EVENT, onSoccerKickResult);
   }, [selectedProjectId]);
 
   // ✅ Load the active Project through the sequenced session boundary.
@@ -1802,12 +1822,12 @@ function UnifiedMapPageInner() {
 
   const handleUpdateCharacterPosition = useCallback(async (
     markerId: number,
-    position: { positionX: number; positionY: number; positionZ: number; characterPhysics?: import("@/libraries/services/threed/characters/character-physics").CharacterPhysics },
+    position: { positionX: number; positionY: number; positionZ: number; rotation?: number; characterPhysics?: import("@/libraries/services/threed/characters/character-physics").CharacterPhysics },
   ) => {
     if (updatingCharacterMarkerId != null || controlledCharacterId != null) return false;
     const sourceId = data.threed.raw?.projectThreedMarkers?.find((marker) => marker.id === markerId)?.sourceAssetId;
-    const rotation = sourceId == null ? null
-      : projectRuntimeMarkerRegistryRef.current?.resolve('characters', sourceId)?.liveRotation;
+    const rotation = position.rotation ?? (sourceId == null ? null
+      : projectRuntimeMarkerRegistryRef.current?.resolve('characters', sourceId)?.liveRotation);
     setUpdatingCharacterMarkerId(markerId);
     try {
       const response = await fetch(`/api/project/threed-markers?id=${markerId}`, {
@@ -1822,6 +1842,9 @@ function UnifiedMapPageInner() {
       // A successful explicit edit supersedes any pre-edit WASD position.
       // Project Save reads this same registry, so it must see the saved values.
       const savedMarker = result.data as ProjectThreeDMarkerRecord;
+      const savedRotation = Number(savedMarker.data?.rotation ?? rotation);
+      if (Number.isFinite(savedRotation)) projectRuntimeMarkerRegistryRef.current?.updateLiveRotation(
+        'characters', savedMarker.sourceAssetId, savedRotation);
       projectRuntimeMarkerRegistryRef.current?.updateLivePosition('characters', savedMarker.sourceAssetId, {
         x: Number(savedMarker.positionX),
         y: Number(savedMarker.positionY),
@@ -3169,8 +3192,12 @@ function UnifiedMapPageInner() {
         projectId={selectedProjectId}
         leftOffsetRem={isLeftSceneWorkspaceOpen ? 18.75 : 0.75}
         onClose={() => { setSelectedMarker(null); setSelectedIncident(null); }}
+        sceneAvailable={viewMode !== '2d' && isThreeDPresentationComplete}
         controlledCharacterId={controlledCharacterId}
         liveControlledCharacterPosition={liveControlledCharacterPosition}
+        liveCharacterRotation={selectedMarker && ['characters', 'character'].includes(selectedMarker.type)
+          ? projectRuntimeMarkerRegistryRef.current?.resolve('characters', Number(selectedMarker.data?.id))?.liveRotation
+          : undefined}
         onTakeControl={(id) => {
           setLiveControlledCharacterPosition(null);
           setCameraMode('stationary');

@@ -64,6 +64,7 @@ export function ScenarioGuidance({ markers, projectId, loadedScenario, guide, on
       <div className="mb-2 flex items-center justify-between gap-2"><span className="flex items-center gap-1.5 text-xs font-semibold"><Goal aria-hidden="true" className="h-4 w-4 text-sky-700 dark:text-sky-300" /> Setup checks</span><span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[11px] font-medium text-sky-700 dark:text-sky-300">{completed} / {checks.length} ready</span></div>
       <ul className="space-y-1.5 text-xs">{checks.map(check => <li key={check.id} className="flex items-start gap-2"><span className="sr-only">{check.complete ? 'Ready: ' : 'Needed: '}</span>{check.complete ? <CheckCircle2 aria-hidden="true" className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400" /> : <Circle aria-hidden="true" className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-700 dark:text-amber-300" />}<span className={check.complete ? 'text-foreground/75' : 'text-foreground'}>{check.label}</span></li>)}</ul>
     </div>
+    {kind === 'soccer' && <p className="text-xs text-muted-foreground">After starting, take control of a movable Character, select a movable ball with Use as Action Target, and approach it. A mapped foot kick appears in Character Animations when available. Sensor counts change only when the ball enters a goal.</p>}
     <div className="flex items-center justify-end">
       <Button type="button" size="sm" className="gap-1.5" disabled={!loadedScenario || !loadedScenario.setup || completed !== checks.length}
         onClick={() => {

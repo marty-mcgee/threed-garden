@@ -57,6 +57,7 @@ const tasks = {
   'threed-sensors': [['node', '--import', 'tsx', `${scripts}/validate-threed-sensors.mts`], node('validate-threed-sensor-groups.cjs')],
   'threed-physics-events': [['node', '--import', 'tsx', `${scripts}/validate-threed-physics-events.mts`]],
   'threed-soccer-physics': [['node', '--import', 'tsx', `${scripts}/validate-threed-soccer-physics.mts`]],
+  'threed-soccer-kick': [['node', '--import', 'tsx', `${scripts}/validate-threed-soccer-kick.mts`]],
   'threed-farmbot-live-state': [['node', '--import', 'tsx', `${scripts}/validate-threed-farmbot-live-state.mts`]],
   'threed-farmbot-coordinate-alignment': [['node', '--import', 'tsx', `${scripts}/validate-threed-farmbot-coordinate-alignment.mts`]],
   'threed-character-navigation': [
@@ -159,6 +160,7 @@ const ci = [
   'threed-sensors',
   'threed-physics-events',
   'threed-soccer-physics',
+  'threed-soccer-kick',
   'threed-scenario-admin',
   'threed-scenarios',
   'threed-farmbot-live-state',

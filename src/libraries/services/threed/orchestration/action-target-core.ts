@@ -73,6 +73,7 @@ export interface CreateThreeDActionTargetInput {
 export interface ThreeDActionTargetIdentityCandidate {
   markerType: string;
   assetId: number;
+  markerId?: string;
 }
 
 export function isThreeDActionTargetMarkerType(
@@ -149,7 +150,8 @@ export function isMatchingThreeDActionTarget(
     return false;
   }
 
-  return candidate.assetId === target.id;
+  return candidate.assetId === target.id
+    && (candidate.markerId === undefined || candidate.markerId === target.markerId);
 }
 
 /**

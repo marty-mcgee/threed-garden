@@ -300,6 +300,12 @@ assert.equal(isMatchingThreeDActionTarget(identityTarget, {
   markerType: 'traffic',
   assetId: 3,
 }), false);
+assert.equal(isMatchingThreeDActionTarget(identityTarget, {
+  markerType: 'farmbots', assetId: 3, markerId: identityTarget.markerId,
+}), true);
+assert.equal(isMatchingThreeDActionTarget(identityTarget, {
+  markerType: 'farmbots', assetId: 3, markerId: 'another-project-instance',
+}), false);
 validationStep('Target identity matching normalizes marker aliases and fails closed');
 
 for (const markerType of THREED_ACTION_TARGET_MARKER_TYPES) {

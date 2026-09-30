@@ -24,3 +24,15 @@ export function reconcileSensorCounters(state: SensorCounterState, members: read
 }
 /** Reset counts without allowing an already occupying object to count again. */
 export function resetSensorCounts(state: SensorCounterState): SensorCounterState { return { ...state, counts: {} }; }
+
+/** Remove stale saved occupancy only when both colliders are loaded and physics proves separation. */
+export function reconcileSensorOccupancyWithPhysics(
+  state: SensorCounterState,
+  overlaps: (sensorKey: string, sourceKey: string) => boolean | undefined,
+): SensorCounterState {
+  const occupied = state.occupied.filter(key => {
+    const [sensorKey, sourceKey] = key.split('|');
+    return overlaps(sensorKey, sourceKey) !== false;
+  });
+  return occupied.length === state.occupied.length ? state : { ...state, occupied };
+}

@@ -9,7 +9,7 @@ import { assignedBedPlantings } from '@/libraries/services/threed/beds/bed-plant
 
 import { useAnimationActionSlots } from '@/components/admin/threed/animations/AnimationActionSlots';
 import { getCharacterAnimationAvailability, subscribeCharacterAnimationAvailability } from '@/libraries/services/threed/animations/runtime-availability';
-import { useEffect, useState, useSyncExternalStore } from 'react';
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useSession } from 'next-auth/react';
 import { hasModelLoadFailure, subscribeModelLoadFailures } from '@/libraries/services/threed/models/model-load-failures';
 import { Crosshair, ExternalLink, Gamepad2, Loader2, Pause, ScanSearch, X } from 'lucide-react';
@@ -33,7 +33,8 @@ import { BedInstanceEditor } from './BedInstanceEditor';
 import { CharacterNavigationControls } from './CharacterNavigationControls';
 import { CharacterInstancePositionEditor } from './CharacterInstancePositionEditor';
 import { ModelInstancePlacementEditor } from './ModelInstancePlacementEditor';
-import { resolveProjectModelCollisionMode } from '@/libraries/services/threed/models/project-model-instance-core';
+import { isProjectModelMovableBall, resolveProjectModelCollisionMode } from '@/libraries/services/threed/models/project-model-instance-core';
+import { isSoccerFootKickSlot, soccerKickInRange, THREED_SOCCER_KICK_REQUEST_EVENT, THREED_SOCCER_KICK_RESULT_EVENT, type SoccerKickResult } from '@/libraries/services/threed/physics/soccer-kick-core';
 import { PlantingInstanceEditor } from './PlantingInstanceEditor';
 import { DetailsCardSection } from './DetailsCardSection';
 import { sceneOwnerPose } from '@/libraries/services/threed/transforms/scene-transform-core';
@@ -158,7 +159,7 @@ function FarmBotMqttStatusSummary({
 }
 
 
-export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projectId, projectMarkers, onSelectProjectMarker, leftOffsetRem = 0.75, onClose, controlledCharacterId, liveControlledCharacterPosition, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, movingModelInstanceId, onMoveModelToggle, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdateFarmBotInstance, updatingFarmBotMarkerId, onDeleteFarmBotInstance, deletingFarmBotMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId, movingPlantingMarkerId, onMovePlantingToggle, movingModuleMarkerId, onMoveModuleToggle, onUpdatePhysicsSensors, updatingPhysicsSensorMarkerId, placingPhysicsSensor, physicsSensorPlacementResult, onBeginPhysicsSensorPlacement, onCancelPhysicsSensorPlacement, onZoomToPhysicsSensor, onUpdateCharacterPosition, updatingCharacterMarkerId, onDeleteCharacterInstance, deletingCharacterMarkerId }: {
+export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projectId, projectMarkers, onSelectProjectMarker, leftOffsetRem = 0.75, onClose, sceneAvailable, controlledCharacterId, liveControlledCharacterPosition, liveCharacterRotation, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, movingModelInstanceId, onMoveModelToggle, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdateFarmBotInstance, updatingFarmBotMarkerId, onDeleteFarmBotInstance, deletingFarmBotMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId, movingPlantingMarkerId, onMovePlantingToggle, movingModuleMarkerId, onMoveModuleToggle, onUpdatePhysicsSensors, updatingPhysicsSensorMarkerId, placingPhysicsSensor, physicsSensorPlacementResult, onBeginPhysicsSensorPlacement, onCancelPhysicsSensorPlacement, onZoomToPhysicsSensor, onUpdateCharacterPosition, updatingCharacterMarkerId, onDeleteCharacterInstance, deletingCharacterMarkerId }: {
   selected: any;
   projectId: string | null;
   projectMarkers?: readonly RuntimeMarker[];
@@ -167,7 +168,9 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
   onSelectProjectMarker?: (marker: RuntimeMarker) => void;
   leftOffsetRem?: number;
   onClose: () => void;
+  sceneAvailable: boolean;
   controlledCharacterId: number | null;
+  liveCharacterRotation?: number | null;
   liveControlledCharacterPosition: {
     characterId: number;
     position: { x: number; y: number; z: number };
@@ -250,6 +253,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
   onCancelPhysicsSensorPlacement?: () => void;
   onZoomToPhysicsSensor?: (marker: RuntimeMarker, sensor: PhysicsSensorCuboid) => void;
   onUpdateCharacterPosition?: (markerId: number, position: {
+    rotation?: number;
     characterPhysics?: import("@/libraries/services/threed/characters/character-physics").CharacterPhysics;
     positionX: number;
     positionY: number;
@@ -260,6 +264,22 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
   deletingCharacterMarkerId?: number | null;
 }) {
   const { slots: customActionSlots, error: actionSlotError } = useAnimationActionSlots();
+  const [pendingKickRequestId, setPendingKickRequestId] = useState<string | null>(null);
+  const pendingKickRequestIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    const onResult = (event: Event) => {
+      const result = (event as CustomEvent<SoccerKickResult>).detail;
+      if (result?.requestId !== pendingKickRequestIdRef.current) return;
+      pendingKickRequestIdRef.current = null;
+      setPendingKickRequestId(null);
+    };
+    window.addEventListener(THREED_SOCCER_KICK_RESULT_EVENT, onResult);
+    return () => window.removeEventListener(THREED_SOCCER_KICK_RESULT_EVENT, onResult);
+  }, []);
+  useEffect(() => {
+    pendingKickRequestIdRef.current = null;
+    setPendingKickRequestId(null);
+  }, [projectId, controlledCharacterId, actionTarget?.markerId]);
   const customActions = customActionSlots.map(slot => slot.actionKey);
   const customGroups = [...new Set(customActionSlots.map(slot => (slot.categoryName ?? 'Uncategorized')))].map(title => ({ title: `${title} · Animation only`, actions: customActionSlots.filter(slot => (slot.categoryName ?? 'Uncategorized') === title).map(slot => ({ action: slot.actionKey, label: slot.name })) }));
   const animationAvailability = useSyncExternalStore(subscribeCharacterAnimationAvailability,
@@ -399,6 +419,19 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
       hasLiveControlledPosition
       && targetApproachPlan?.arrived === true
     );
+  const targetedBall = actionTarget?.type === 'models'
+    ? projectMarkers?.find(marker => String(marker.id) === actionTarget.markerId
+      && Number(marker.data?.id) === actionTarget.id
+      && marker.isActive !== false && marker.isVisible !== false
+      && isProjectModelMovableBall(marker.metadata))
+    : null;
+  const kickSlot = customActionSlots.find(slot => slot.isActive !== false
+    && isSoccerFootKickSlot(slot.name)
+    && animationAvailability?.has(slot.actionKey.toLowerCase()));
+  const kickReady = Boolean(sceneAvailable && kickSlot && targetedBall && projectId && isSelectedCharacterControlled
+    && hasLiveControlledPosition && liveControlledCharacterPosition
+    && currentActionTargetPosition
+    && soccerKickInRange(liveControlledCharacterPosition.position, currentActionTargetPosition));
   const isCurrentOrchestration = orchestrationStatus
     && orchestrationStatus.characterId === characterId
     && orchestrationStatus.targetId === actionTarget?.id;
@@ -444,6 +477,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
     && isMatchingThreeDActionTarget(actionTarget, {
       markerType: quickTargetType,
       assetId: quickTargetId,
+      markerId: selectedMarkerId,
     });
   const adminType = selected.type || (isIncident ? (selected._collection || 'chpCad') : 'plantings');
   const adminId = isProjectModelInstance ? d.modelId : selected.metadata?.data?.id || selected.id;
@@ -580,7 +614,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
 
       {isCharacterMarker && (
         <>
-          <DetailsCardSection title="Model + Mesh" className="order-5">
+          <DetailsCardSection title="Model + Mesh" className="order-7">
               <KvRow label="Assigned Model" value={String(d.model?.modelName || ((d.model?.id ?? d.modelId) ? `Model #${d.model?.id ?? d.modelId}` : 'Basic shape'))} />
               {d.model?.modelType && <KvRow label="Format" value={String(d.model.modelType).toUpperCase()} />}
               <KvRow label="Model source" value={d.model?.filePath ? 'File configured' : 'No Model file configured'} />
@@ -589,7 +623,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
                 <a className="inline-flex min-h-8 items-center text-xs text-cyan-800 dark:text-cyan-200 underline underline-offset-2" href={`/admin/threed/models?id=${Number(d.model?.id ?? d.modelId)}`} target="_blank" rel="noopener noreferrer">View Model in Admin</a>
               )}
           </DetailsCardSection>
-          <DetailsCardSection title="Character Defaults" className="order-6">
+          <DetailsCardSection title="Character Defaults" className="order-8">
               <KvRow label="Type" value={String(d.type ?? d.characterType ?? 'Unspecified')} />
               <KvRow label="Control" value={d.isMovable === true ? 'User controllable' : 'Autonomous'} />
               <KvRow label="Movement" value={String(d.movementType ?? 'stationary')} />
@@ -675,7 +709,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
 
       {/* Character Actions — shared semantic animation controls */}
       {!isIncident && (type === 'characters' || type === 'character') && (
-        <PersistentDetails storageId="animations" key={String(selected.id)} className="order-7 mt-2 space-y-1.5 rounded border border-cyan-300/15 bg-foreground/[0.035] p-1.5">
+        <PersistentDetails storageId="animations" key={String(selected.id)} className="order-5 mt-2 space-y-1.5 rounded border border-cyan-300/15 bg-foreground/[0.035] p-1.5">
           <summary className="cursor-pointer text-xs font-medium text-cyan-800 dark:text-cyan-100">Animations <span className="font-normal text-muted-foreground">· {animationAvailability ? (animationAvailability.size ? 'Loaded' : 'No actions available') : 'Loading'}</span></summary>
           {!animationAvailability && <p className="text-[10px] text-muted-foreground" role="status">Waiting for animation availability…</p>}
           {/* <div className="text-[10px] font-medium text-foreground/60">Character Actions</div> */}
@@ -690,6 +724,28 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
                   </div>
                 )}
                 {isEcctrlCharacter && <CharacterNavigationControls actorMarkerId={String(selected.id)} targetMarkerId={actionTarget.markerId} controlled={isSelectedCharacterControlled} ready={hasLiveControlledPosition && !isOrchestrationRunning} />}
+                {targetedBall && (
+                  <div className="mt-1">
+                    <button type="button" disabled={!kickReady || Boolean(isOrchestrationRunning) || Boolean(pendingKickRequestId)}
+                      title={!sceneAvailable ? 'Open the loaded 3D Scene to kick' : !kickSlot ? 'Map and load a foot kick animation for this Character' : !isSelectedCharacterControlled ? 'Take Control to kick' : !kickReady ? 'Move within kicking range of the live ball' : 'Kick the selected ball after the animation completes'}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        if (!kickReady || !kickSlot || !actionTarget || !projectId) return;
+                        const requestId = crypto.randomUUID();
+                        pendingKickRequestIdRef.current = requestId;
+                        setPendingKickRequestId(requestId);
+                        window.dispatchEvent(new CustomEvent(THREED_SOCCER_KICK_REQUEST_EVENT, { detail: {
+                          version: 1, requestId, projectId: Number(projectId),
+                          characterId, characterMarkerId: String(selected.id),
+                          ballMarkerId: actionTarget.markerId, action: kickSlot.actionKey,
+                        } }));
+                      }}
+                      className="rounded bg-emerald-600/25 px-2 py-1 text-emerald-800 dark:text-emerald-100 disabled:cursor-not-allowed disabled:opacity-40">
+                      {pendingKickRequestId ? 'Kicking…' : 'Kick selected ball'}
+                    </button>
+                    {!kickReady && <p className="mt-1">{!sceneAvailable ? 'Open the loaded 3D Scene to kick.' : !kickSlot ? 'A mapped foot kick is unavailable.' : 'Take Control and move near the selected ball.'}</p>}
+                  </div>
+                )}
                 {!isEcctrlCharacter && <p className="mt-1 text-foreground/40">Target walking is currently available for Characters with Take Control.</p>}
                 {isCurrentOrchestration && (
                   <div className={`mt-1 ${
@@ -1004,6 +1060,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
           markerId={characterMarkerId}
           metadata={<>{metaRows.filter(row => row.label !== 'Position').map((row, i) => <KvRow key={i} label={row.label} value={row.value} />)}</>}
           movable={d.isMovable === true}
+          initialRotation={liveCharacterRotation ?? Number(d.rotation ?? 0)}
           initialPhysics={selected.metadata?.characterPhysics}
           initialPosition={{
             x: Number(selected.position?.x ?? d.positionX ?? 0),

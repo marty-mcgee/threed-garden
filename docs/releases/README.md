@@ -4,6 +4,7 @@ This directory records confirmed production checkpoints, not every development i
 
 Current production: **v0.22.9 — ThreeD Scenario Setup and Start**, User-confirmed.
 
+- [v0.22.10 — ThreeD Playable Soccer](v0.22.10.md) — prepared candidate, not deployed
 - [v0.22.9 — ThreeD Scenario Setup and Start](v0.22.9.md) — production User-confirmed
 - [v0.22.8 — Project Scenario Setup](v0.22.8.md) — production User-confirmed
 - [v0.22.7 — Reusable Model Lighting](v0.22.7.md) — production User-confirmed

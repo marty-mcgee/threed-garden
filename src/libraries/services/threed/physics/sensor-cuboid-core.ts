@@ -7,6 +7,9 @@ export interface PhysicsSensorCuboid {
   name: string;
   behavior: PhysicsSensorBehavior;
   detection: 'movable-ball' | 'model';
+  direction?: 'bidirectional' | 'unidirectional';
+  directionSpace?: 'world' | 'local';
+  entrySide?: 'positive-z' | 'negative-z' | 'positive-x' | 'negative-x';
   groupId: string | null;
   position: Readonly<{ x: number; y: number; z: number }>;
   width: number;
@@ -46,6 +49,9 @@ export function validatePhysicsSensorCuboids(sensors: unknown): PhysicsSensorVal
     const legacy = legacySensorDefaults(sensor);
     const behavior = legacy?.behavior ?? sensor.behavior ?? 'trigger';
     const detection = sensor.detection ?? legacy?.detection ?? 'movable-ball';
+    const direction = sensor.direction ?? 'bidirectional';
+    const directionSpace = sensor.directionSpace ?? 'world';
+    const entrySide = sensor.entrySide ?? 'positive-z';
     const groupId = sensor.groupId === undefined ? legacy?.groupId ?? null : sensor.groupId;
     const x = boundedNumber(sensor.position?.x, -MAX_SENSOR_VALUE);
     const y = boundedNumber(sensor.position?.y, -MAX_SENSOR_VALUE);
@@ -60,6 +66,9 @@ export function validatePhysicsSensorCuboids(sensors: unknown): PhysicsSensorVal
     if (!name || name.length > 80) return fail(`${label}: name must contain 1–80 characters.`);
     if (!PHYSICS_SENSOR_BEHAVIORS.includes(behavior)) return fail(`${label}: invalid sensor behavior.`);
     if (!['movable-ball', 'model'].includes(detection)) return fail(`${label}: invalid detection filter.`);
+    if (!['bidirectional', 'unidirectional'].includes(direction)) return fail(`${label}: invalid direction.`);
+    if (!['world', 'local'].includes(directionSpace)) return fail(`${label}: invalid direction axes.`);
+    if (!['positive-z', 'negative-z', 'positive-x', 'negative-x'].includes(entrySide)) return fail(`${label}: invalid entry side.`);
     if (groupId !== null && (typeof groupId !== 'string' || !/^[a-zA-Z0-9_-]{1,64}$/.test(groupId))) return fail(`${label}: invalid group ID.`);
     for (const [field, parsed] of Object.entries({ x, y, z, rotationY })) {
       if (parsed === null) return fail(`${label}: ${field} must be a finite number between −10,000 and 10,000.`);
@@ -73,6 +82,9 @@ export function validatePhysicsSensorCuboids(sensors: unknown): PhysicsSensorVal
       name,
       behavior: behavior as PhysicsSensorBehavior,
       detection,
+      direction,
+      directionSpace,
+      entrySide,
       groupId,
       position: Object.freeze({ x: x!, y: y!, z: z! }),
       width: width!,

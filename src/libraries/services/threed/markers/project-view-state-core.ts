@@ -1,3 +1,5 @@
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+import { parseProjectSensorSnapshot, type ProjectSensorSnapshot } from '../physics/sensor-snapshot-core.ts';
 import {
   THREE_D_ENVIRONMENT_PRESET_KEYS,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
@@ -60,6 +62,7 @@ export interface ProjectThreeDViewState {
   showControls?: boolean;
   physicsDebug?: boolean;
   scenarioRuntime?: ProjectScenarioRuntimeState;
+  sensorState?: ProjectSensorSnapshot;
   viewPresets?: Array<{
     id: string; name: string; position: ProjectVector3; target: ProjectVector3;
     layers: string[]; createdAt: string;
@@ -228,6 +231,10 @@ function scenarioRuntime(value: unknown): ProjectScenarioRuntimeState {
   return { projectId, active, instructionVisible, sensorsVisible };
 }
 
+function sensorSnapshot(value: unknown): ProjectSensorSnapshot {
+  try { return parseProjectSensorSnapshot(value); } catch { throw new ProjectViewStateError(); }
+}
+
 export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewState {
   const input = record(value);
   if (!input || input.version !== PROJECT_VIEW_STATE_VERSION) throw new ProjectViewStateError();
@@ -289,6 +296,7 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
       ...(threeD.showControls === undefined ? {} : { showControls: boolean(threeD.showControls) }),
       ...(threeD.physicsDebug === undefined ? {} : { physicsDebug: boolean(threeD.physicsDebug) }),
       ...(threeD.scenarioRuntime === undefined ? {} : { scenarioRuntime: scenarioRuntime(threeD.scenarioRuntime) }),
+      ...(threeD.sensorState === undefined ? {} : { sensorState: sensorSnapshot(threeD.sensorState) }),
       ...(threeD.viewPresets === undefined ? {} : { viewPresets: parseProjectViewPresets(threeD.viewPresets) }),
       ...(threeD.sunlight === undefined ? {} : { sunlight: {
         azimuth: finite(record(threeD.sunlight)?.azimuth, 0, 360),

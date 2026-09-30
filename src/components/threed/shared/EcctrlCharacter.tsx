@@ -41,6 +41,8 @@ import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
 import { useCharacterNavigation } from './useCharacterNavigation';
+import { NAVIGATION_STATUS } from '@/libraries/services/threed/orchestration/navigation-events';
+import { THREED_SOCCER_KICK_REJECT_EVENT } from '@/libraries/services/threed/physics/soccer-kick-core';
 import { useCharacterTeleport } from './useCharacterTeleport';
 import { FadingRing } from './FadingRing';
 import { PulseRing } from './PulseRing';
@@ -186,6 +188,7 @@ interface EcctrlCharacterProps {
     z: number;
   };
 
+  cameraRelativeTargetMovement?: boolean;
   navigationTargetMarkerId?: string;
   isActionTarget?: boolean;
 
@@ -1038,6 +1041,7 @@ export function EcctrlCharacter({
   markerId,
 
   movementTargetPosition,
+  cameraRelativeTargetMovement = false,
   navigationTargetMarkerId,
 
   isActionTarget = false,
@@ -1091,6 +1095,11 @@ export function EcctrlCharacter({
 
   const targetForwardDirectionRef =
     useRef(new THREE.Vector3(0, 0, 1));
+  const restingForwardDirectionRef = useRef(new THREE.Vector3(0, 0, 1));
+  useEffect(() => {
+    const yaw = (Number(character.rotation) || 0) * Math.PI / 180;
+    restingForwardDirectionRef.current.set(Math.sin(yaw), 0, Math.cos(yaw));
+  }, [character.rotation]);
 
   /**
    * Spawn above the resting body position and let gravity
@@ -1203,6 +1212,16 @@ export function EcctrlCharacter({
     useRef(false);
 
   const stepNavigation = useCharacterNavigation({ markerId, targetMarkerId: navigationTargetMarkerId, controlled: isControlled, enabled: layerEnabled && characterVisualReady, taskLocked: taskLockedRef, clearance: CAPSULE_RADIUS + 0.5 });
+  const [isAutoWalking, setIsAutoWalking] = useState(false);
+  useEffect(() => {
+    const onStatus = (event: Event) => {
+      const detail = (event as CustomEvent<{ actorMarkerId?: string; phase?: string }>).detail;
+      if (detail?.actorMarkerId === markerId) setIsAutoWalking(detail.phase === 'walking');
+    };
+    window.addEventListener(NAVIGATION_STATUS, onStatus);
+    return () => window.removeEventListener(NAVIGATION_STATUS, onStatus);
+  }, [markerId]);
+
   useCharacterTeleport({ markerId, targetMarkerId: navigationTargetMarkerId, controlled: isControlled, enabled: layerEnabled && characterVisualReady, taskLocked: taskLockedRef, controller: ecctrlRef, radius: CAPSULE_RADIUS, halfHeight: CAPSULE_HALF_HEIGHT, floatHeight: FLOAT_HEIGHT });
 
   const activeTaskRef =
@@ -1540,7 +1559,8 @@ export function EcctrlCharacter({
               },
             });
 
-            if (!approach.arrived) {
+            // Soccer range was checked by the Scene against this live ball position.
+            if (!approach.arrived && !('soccerKickRequest' in target && target.soccerKickRequest === true)) {
               return false;
             }
 
@@ -1875,6 +1895,7 @@ export function EcctrlCharacter({
         const customEvent =
           event as CustomEvent<{
             characterId?: number;
+            markerId?: string;
             action?: string;
             target?: unknown;
           }>;
@@ -1888,6 +1909,8 @@ export function EcctrlCharacter({
           return;
         }
 
+        if (customEvent.detail?.markerId && customEvent.detail.markerId !== markerId) return;
+
         const action =
           customEvent.detail
             ?.action;
@@ -1896,10 +1919,14 @@ export function EcctrlCharacter({
           return;
         }
 
-        playTaskAction(
-          action,
-          customEvent.detail?.target
-        );
+        const started = playTaskAction(action, customEvent.detail?.target);
+        const target = customEvent.detail?.target;
+        if (!started && target && typeof target === 'object'
+          && 'soccerKickRequest' in target && target.soccerKickRequest === true
+          && 'actionRequestId' in target && typeof target.actionRequestId === 'string') {
+          window.dispatchEvent(new CustomEvent(THREED_SOCCER_KICK_REJECT_EVENT,
+            { detail: { requestId: target.actionRequestId } }));
+        }
       };
 
     window.addEventListener(
@@ -1991,12 +2018,22 @@ export function EcctrlCharacter({
       return;
     }
 
+    // Ecctrl retains its previous input heading while idle. Keep released
+    // Characters at their live facing, and honor explicit saved-facing edits.
+    if (isControlled) {
+      restingForwardDirectionRef.current.set(0, 0, 1).applyQuaternion(ec.currQuat);
+      restingForwardDirectionRef.current.y = 0;
+      restingForwardDirectionRef.current.normalize();
+    }
+    ec.setLockForward(!isControlled && !taskLockedRef.current);
+    if (!isControlled && !taskLockedRef.current) ec.setForwardDir(restingForwardDirectionRef.current);
+
     const navigationKeys = keys.current;
     const navigationDirection = stepNavigation(ec.currPos, navigationKeys.w || navigationKeys.a || navigationKeys.s || navigationKeys.d || navigationKeys.space || navigationKeys.shift);
     if (navigationDirection) {
       ec.setForwardDir(targetForwardDirectionRef.current.set(navigationDirection.x, 0, navigationDirection.z));
     }
-    if (!navigationDirection && isControlled && movementTargetPosition) {
+    if (!navigationDirection && isControlled && movementTargetPosition && !cameraRelativeTargetMovement) {
       const position = ec.currPos;
       const navigation = planThreeDTargetRelativeNavigation({
         characterPosition: position,
@@ -2493,7 +2530,7 @@ export function EcctrlCharacter({
           1
         }
         useCustomForward={
-          isControlled && movementTargetPosition != null
+          !isControlled || (movementTargetPosition != null && !cameraRelativeTargetMovement) || isAutoWalking
         }
         enable={layerEnabled}
       >
@@ -2579,7 +2616,7 @@ export function EcctrlCharacter({
         1
       }
       useCustomForward={
-        isControlled && movementTargetPosition != null
+        !isControlled || (movementTargetPosition != null && !cameraRelativeTargetMovement) || isAutoWalking
       }
       enable={layerEnabled}
       capsuleHalfHeight={
