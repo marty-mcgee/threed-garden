@@ -11,9 +11,9 @@ For each development step, work in this order:
 3. **Document** — run relevant validation, review the diff, and update durable documentation only after the implementation is known. Leave changes uncommitted for User review and provide a proposed commit message. Git staging and committing are manual gates; do not perform them unless the User explicitly requests that specific commit.
 
 Use the checkpoint version and title in commit messages:
-- Release: `v0.22.9 — ThreeD Scenario Setup and Start`
-- Docs: `docs: v0.22.9 — ThreeD Scenario Setup and Start`
-- Plans: `plans: docs: v0.22.9 — ThreeD Scenario Setup and Start`
+- Release: `v0.22.10 — ThreeD Playable Soccer`
+- Docs: `docs: v0.22.10 — ThreeD Playable Soccer`
+- Plans: `plans: docs: v0.22.10 — ThreeD Playable Soccer`
 
 Do not combine repository restructuring with feature behavior changes in the same step.
 
@@ -43,7 +43,7 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Canonical repository: `marty-mcgee/threed-garden`. Current feature release: v0.22.9 — ThreeD Scenario Setup and Start, commit `fcbab81c`; production release is User-confirmed. See `docs/releases/v0.22.9.md` and `docs/plans/v0.22.9-scenario-release.md`. Preserve both imported histories and the legacy archive references. New development belongs in this repository; `marty-mcgee-neon` remains historical source. The historical runtime boundaries below still apply.
+Canonical repository: `marty-mcgee/threed-garden`. Current feature release: v0.22.10 — ThreeD Playable Soccer, commit `b952b885`; production release is User-confirmed. See `docs/releases/v0.22.10.md` and `docs/plans/v0.22.10-playable-soccer.md`. Preserve both imported histories and the legacy archive references. New development belongs in this repository; `marty-mcgee-neon` remains historical source. The historical runtime boundaries below still apply.
 
 Historical physics checkpoint: v0.20.1 "ThreeD Physics" (package `0.20.1`). Production deployment, browser acceptance and build success are User-confirmed. See `docs/releases/v0.20.1.md` and `docs/plans/v0.20.1-release.md`. Preserve generic Physics Sensors, Project-owned Sensor Groups, sensor TransformControls, optional Sensors panel and read-only FarmBot presentation. Whole-Model TransformControls and further FarmBot expansion remain deferred. Preserve the `src/libraries` source boundary, Multimedia module identity, canonical `/dashboard/scene` route, shadcn/ui component boundary, shared animation references, Character assignments, runtime precedence and first-pose gating.
 
