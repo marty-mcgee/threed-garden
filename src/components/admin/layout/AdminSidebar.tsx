@@ -141,7 +141,7 @@ const navSections: NavSection[] = [
       { title: 'Tasks', href: '/admin/threed/tasks', icon: ListTodo, exact: false },
       { title: 'Waterings', href: '/admin/threed/watering-schedules', icon: Droplets, exact: false },
       { title: 'Harvests', href: '/admin/threed/harvests', icon: Carrot, exact: false },
-      { title: 'Farmbots', href: '/admin/threed/farmbots', icon: Drone, exact: false },
+      { title: 'FarmBots', href: '/admin/threed/farmbots', icon: Drone, exact: false },
     ],
   },
   {

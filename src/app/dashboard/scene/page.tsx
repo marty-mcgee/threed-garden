@@ -27,6 +27,8 @@ import { ProjectSelectorDialog } from '@/components/map/panels/ProjectSelectorDi
 import { ProjectTemplateDialog } from '@/components/map/panels/ProjectTemplateDialog';
 import { ProjectHeaderMenu } from '@/components/map/header/ProjectHeaderMenu';
 import { ProjectSceneToolbar } from '@/components/map/header/ProjectSceneToolbar';
+import { AddShapeDialog } from '@/components/map/panels/AddShapeDialog';
+import type { ModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
 import { useThreeDLibraryWorkspace } from '@/components/map/hooks/useThreeDLibraryWorkspace';
 import { useCombinedMapPanelResize } from '@/components/map/hooks/useCombinedMapPanelResize';
 import { useDataFreshness } from '@/components/map/hooks/useDataFreshness';
@@ -90,6 +92,7 @@ import {
   isMatchingThreeDActionTarget,
 } from '@/libraries/services/threed/orchestration/action-target-core';
 import { applyThreeDProjectClientTransaction } from '@/libraries/services/threed/markers/project-marker-client-state-core';
+import { THREED_MODEL_PLACEMENT_EVENT, type ThreeDModelPlacement } from '@/libraries/services/threed/models/project-model-instance-core';
 import { SensorGroupsWorkspace } from '@/components/threed/physics/SensorGroupsWorkspace';
 import { SceneTransformWorkspace, useSceneTransform } from '@/components/threed/transform/SceneTransformWorkspace';
 import { sceneOwnerPose, sceneLocalToWorld, sceneWorldToLocal } from '@/libraries/services/threed/transforms/scene-transform-core';
@@ -153,6 +156,15 @@ function reconcileSelectedProjectMarker(
       ...(record.metadata ?? {}),
     },
   };
+}
+
+function notifyModelPlacement(record: ProjectThreeDMarkerRecord, projectId: number): void {
+  const position = { x: Number(record.positionX), y: Number(record.positionY), z: Number(record.positionZ) };
+  const markerId = String(record.markerId ?? '');
+  if (!Number.isSafeInteger(projectId) || projectId <= 0 || !markerId || !Object.values(position).every(Number.isFinite)) return;
+  window.dispatchEvent(new CustomEvent<ThreeDModelPlacement>(THREED_MODEL_PLACEMENT_EVENT, {
+    detail: { projectId, markerId, position },
+  }));
 }
 
 function clearSelectedProjectMarker(selected: any, recordId: number): any {
@@ -244,6 +256,7 @@ function UnifiedMapPageInner() {
   const [isBedPlacementOpen, setIsBedPlacementOpen] = useState(false);
   const [isPlantingPlacementOpen, setIsPlantingPlacementOpen] = useState(false);
   const [isSceneAddMenuOpen, setIsSceneAddMenuOpen] = useState(false);
+  const [isAddShapeOpen, setIsAddShapeOpen] = useState(false);
   const [environmentControlsCloseRequest, setEnvironmentControlsCloseRequest] = useState(0);
   const [libraryModels, setLibraryModels] = useState<ThreeDModelLibraryItem[]>([]);
   const [libraryCategorySlug, setLibraryCategorySlug] = useState('all');
@@ -636,6 +649,7 @@ function UnifiedMapPageInner() {
 
   const openModelLibrary = useCallback(async (
     initialRole: 'object' | 'environment' = 'object',
+    selectModelId?: number,
   ) => {
     setIsProjectAssetsOpen(false);
     setIsProjectSetupOpen(false);
@@ -653,7 +667,7 @@ function UnifiedMapPageInner() {
     setIsModelLibraryOpen(true);
     setPlacementModelRole(initialRole);
     setIsProjectSummaryOpen(false);
-    if (loadingLibraryModels) return;
+    if (loadingLibraryModels) return false;
 
     setLoadingLibraryModels(true);
     try {
@@ -680,7 +694,19 @@ function UnifiedMapPageInner() {
         models.push(...result.data);
         offset += result.data.length;
       }
-      setLibraryModels(Array.from(new Map(models.map(model => [model.id, model])).values()));
+      const uniqueModels = Array.from(new Map(models.map(model => [model.id, model])).values());
+      setLibraryModels(uniqueModels);
+      let selectedReady = selectModelId === undefined;
+      if (selectModelId !== undefined) {
+        const created = uniqueModels.find(model => model.id === selectModelId);
+        if (created && created.libraryReadiness.status === 'ready') {
+          setInspectedLibraryModelId(created.id);
+          setPlacementScaleMultiplier('1');
+          setPlacementModel(created);
+          selectedReady = true;
+        }
+      }
+      return selectedReady;
     } catch (error) {
       console.error('Failed to load ThreeD Model Library', {
         errorName: error instanceof Error ? error.name : 'UnknownError',
@@ -689,10 +715,39 @@ function UnifiedMapPageInner() {
         error instanceof Error ? error.message : 'Failed to load ThreeD Model Library',
         'error',
       );
+      return false;
     } finally {
       setLoadingLibraryModels(false);
     }
   }, [loadingLibraryModels]);
+
+  const createSceneShape = useCallback(async (name: string, shape: ModelFallbackShape) => {
+    if (!selectedProjectId || !placementThreedId) throw new Error('Choose a Project with a ThreeD module.');
+    const response = await fetch('/api/threed/models', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        modelName: name,
+        modelType: 'procedural',
+        filePath: '',
+        isActive: true,
+        status: 'active',
+        isLibraryItem: true,
+        isPublic: false,
+        isDefault: false,
+        scale: '1.0',
+        metadata: { fallbackShape: shape },
+      }),
+    });
+    const result = await response.json().catch(() => null);
+    if (!response.ok || !result?.success || !Number.isSafeInteger(result.data?.id)) {
+      throw new Error(result?.error || 'Could not save the Shape Model.');
+    }
+    const readyToPlace = await openModelLibrary('object', result.data.id);
+    showToastRef.current(readyToPlace
+      ? 'Shape Model saved. Click the Scene to place it.'
+      : 'Shape Model saved. Open Models to place it when the Library is ready.', 'success');
+  }, [openModelLibrary, placementThreedId, selectedProjectId]);
 
   const beginModelLibraryPlacement = useCallback((model: ThreeDModelLibraryItem) => {
     if (!placementThreedId || placingModel) return;
@@ -1715,6 +1770,9 @@ function UnifiedMapPageInner() {
     },
   ) => {
     if (updatingModelInstanceId != null || deletingModelInstanceId != null) return;
+    const saved = data.threed.raw?.projectThreedMarkers?.find((record) => record.id === instanceId);
+    const placementChanged = !saved || Number(saved.positionX) !== input.positionX
+      || Number(saved.positionY) !== input.positionY || Number(saved.positionZ) !== input.positionZ;
     setUpdatingModelInstanceId(instanceId);
     try {
       const response = await fetch(
@@ -1730,6 +1788,7 @@ function UnifiedMapPageInner() {
         throw new Error(result?.error || `Model placement update failed (${response.status})`);
       }
 
+      if (placementChanged) notifyModelPlacement(result.data as ProjectThreeDMarkerRecord, Number(selectedProjectId));
       setData((current) => applyThreeDProjectClientTransaction(current, {
         markers: { upsert: [result.data as ProjectThreeDMarkerRecord] },
       }));
@@ -1762,7 +1821,7 @@ function UnifiedMapPageInner() {
     } finally {
       setUpdatingModelInstanceId(null);
     }
-  }, [deletingModelInstanceId, updatingModelInstanceId]);
+  }, [data.threed.raw, deletingModelInstanceId, updatingModelInstanceId, selectedProjectId]);
 
   const handleMoveModelInstance = useCallback(async (
     instanceId: number,
@@ -1785,6 +1844,7 @@ function UnifiedMapPageInner() {
         throw new Error(result?.error || `Model position update failed (${response.status})`);
       }
 
+      notifyModelPlacement(result.data as ProjectThreeDMarkerRecord, Number(selectedProjectId));
       setData((current) => applyThreeDProjectClientTransaction(current, {
         markers: { upsert: [result.data as ProjectThreeDMarkerRecord] },
       }));
@@ -1807,7 +1867,7 @@ function UnifiedMapPageInner() {
     } finally {
       setUpdatingModelInstanceId(null);
     }
-  }, [deletingModelInstanceId, updatingModelInstanceId]);
+  }, [deletingModelInstanceId, updatingModelInstanceId, selectedProjectId]);
 
   const handleMoveModelToggle = useCallback((instanceId: number, name: string) => {
     setMovingModelInstance((current) => (
@@ -2562,6 +2622,7 @@ function UnifiedMapPageInner() {
         onSelect={handleProjectSelect}
         onCreateNew={() => setIsProjectTemplateDialogOpen(true)}
       />
+      <AddShapeDialog open={isAddShapeOpen} onOpenChange={setIsAddShapeOpen} onCreate={createSceneShape} />
       <ProjectTemplateDialog
         open={isProjectTemplateDialogOpen}
         onOpenChange={setIsProjectTemplateDialogOpen}
@@ -2576,7 +2637,7 @@ function UnifiedMapPageInner() {
       <div className="pointer-events-none absolute inset-x-0 top-0 z-50">
       <div inert={viewMode !== '2d' && !isThreeDPresentationComplete}
         style={{ ...(viewMode !== '2d' && !isThreeDPresentationComplete ? { visibility: 'hidden' as const, height: 37, overflow: 'hidden' } : {}) }}
-        className="threed-project-toolbar pointer-events-auto m-0 flex flex-wrap items-center justify-between gap-2 px-2 py-1">
+        className="threed-project-toolbar pointer-events-auto m-0 flex flex-wrap items-center justify-between gap-2 px-1 py-1">
         
         {canEditProject ? <>
         <ProjectHeaderMenu
@@ -2658,6 +2719,7 @@ function UnifiedMapPageInner() {
             setIsSceneAddMenuOpen(nextOpen);
           }}
           onOpenModelLibrary={() => void openModelLibrary()}
+          onOpenAddShape={() => { setIsSceneAddMenuOpen(false); setIsAddShapeOpen(true); }}
           onOpenCharacterLibrary={() => void openCharacterLibrary()}
           onOpenFarmBotLibrary={() => void openFarmBotLibrary()}
           onOpenBedPlacement={openBedPlacement}
@@ -3190,7 +3252,7 @@ function UnifiedMapPageInner() {
         selectedSensorId={sensorInspector?.ownerId === selectedMarker?.id ? sensorInspector?.sensorId : null}
         onSelectSensor={(sensorId) => setSensorInspector(sensorId && selectedMarker ? { ownerId: selectedMarker.id, sensorId } : null)}
         projectId={selectedProjectId}
-        leftOffsetRem={isLeftSceneWorkspaceOpen ? 18.75 : 0.75}
+        leftOffsetRem={isLeftSceneWorkspaceOpen ? 18.25 : 0.25}
         onClose={() => { setSelectedMarker(null); setSelectedIncident(null); }}
         sceneAvailable={viewMode !== '2d' && isThreeDPresentationComplete}
         controlledCharacterId={controlledCharacterId}

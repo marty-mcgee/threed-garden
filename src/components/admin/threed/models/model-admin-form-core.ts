@@ -120,7 +120,7 @@ export function buildThreeDModelAdminPayload(form: ThreeDModelAdminFormData, mod
   if (mainModelFileId !== null && mainModelFileId <= 0) {
     throw new ThreeDModelFormValidationError('Select a valid primary Model file');
   }
-  if (!filePath && !(mode === 'edit' && mainModelFileId !== null)) {
+  if (!filePath && modelType !== 'procedural' && !(mode === 'edit' && mainModelFileId !== null)) {
     throw new ThreeDModelFormValidationError('Upload or assign a primary Model file before saving');
   }
 

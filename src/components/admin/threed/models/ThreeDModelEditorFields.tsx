@@ -144,12 +144,15 @@ export function ThreeDModelEditorFields({
             <SelectTrigger id={id('modelType')}><SelectValue placeholder="Select model type" /></SelectTrigger>
             <SelectContent>{MODEL_TYPE_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
           </Select>
+          {form.modelType === 'procedural' && <p className="mt-1 text-xs text-muted-foreground">
+            Procedural Models use the Shape below and can be created without a file.
+          </p>}
         </div>
       </Section>
 
-      <Section title="Model File and Preview">
+      <Section title={form.modelType === 'procedural' && !form.filePath ? "Procedural Shape" : "Model File and Preview"}>
         <div>
-          <Label htmlFor={id('filePath')}>Primary Model File URL</Label>
+          <Label htmlFor={id('filePath')}>Primary Model File URL{form.modelType === 'procedural' ? " (optional)" : ""}</Label>
           <Input id={id('filePath')} value={form.filePath} readOnly disabled={disabled} placeholder="Upload or assign a Model File" />
         </div>
         <div className="flex items-center gap-2">
@@ -284,7 +287,7 @@ export function ThreeDModelEditorFields({
       </Section>
 
       <Section title="Default Fallback Shape">
-        <Label htmlFor={id('fallbackShape')} className="text-xs">When the Model file is unavailable</Label>
+        <Label htmlFor={id('fallbackShape')} className="text-xs">{form.modelType === 'procedural' && !form.filePath ? "Shape" : "When the Model file is unavailable"}</Label>
         <Select value={readModelFallbackShape(fallbackMetadata)} disabled={disabled || !fallbackMetadataValid}
           onValueChange={(value) => update('metadata', setModelFallbackShape(form.metadata, value as ModelFallbackShape))}>
           <SelectTrigger id={id('fallbackShape')}><SelectValue /></SelectTrigger>

@@ -24,6 +24,7 @@ import {
 } from '@/libraries/services/threed/models/model-file-integrity';
 import { createThreeDModelLibraryReadiness } from '@/libraries/services/threed/models/model-library-readiness-core';
 import { validModelLightBoost } from '@/libraries/services/threed/models/model-lighting-core';
+import { MODEL_FALLBACK_SHAPES } from '@/libraries/services/threed/models/model-fallback-core';
 
 type ModelWithFiles = import('@/libraries/services/threed/models/model-primary-file').ResolvedModel & {
   files: Array<typeof threedModelFiles.$inferSelect>;
@@ -548,7 +549,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!filePath) {
+    const fileFreeShape = modelType === 'procedural' && !filePath;
+    if (fileFreeShape && metadata?.fallbackShape !== undefined
+      && !MODEL_FALLBACK_SHAPES.includes(metadata.fallbackShape)) {
+      return NextResponse.json({ success: false, error: 'Invalid procedural Model shape' }, { status: 400 });
+    }
+
+    if (!filePath && !fileFreeShape) {
       return NextResponse.json(
         { success: false, error: 'Missing required field: filePath' },
         { status: 400 }
@@ -576,7 +583,7 @@ export async function POST(request: NextRequest) {
       modelType,
       fileSize,
     );
-    if (!primaryFile) {
+    if ((!primaryFile && !fileFreeShape) || (fileFreeShape && requestedPrimaryFile != null)) {
       return NextResponse.json(
         { success: false, error: 'Uploaded primary Model file does not match this Model configuration' },
         { status: 400 },
@@ -869,7 +876,8 @@ export async function PATCH(request: NextRequest) {
     )) {
       return NextResponse.json({ success: false, error: 'Upload or assign a primary Model File to change its URL, size or format' }, { status: 400 });
     }
-    if (updates.isActive === true && !pendingPrimaryFile && !updates.mainModelFileId && !existing.filePath) {
+    if (updates.isActive === true && !pendingPrimaryFile && !updates.mainModelFileId && !existing.filePath
+      && (updates.modelType ?? existing.modelType) !== 'procedural') {
       return NextResponse.json({ success: false, error: 'Assign a primary Model File before activation' }, { status: 400 });
     }
     const categoryIds = await validateOwnedCategoryIds(userId, requestedCategoryIds);

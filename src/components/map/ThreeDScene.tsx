@@ -15,6 +15,7 @@ import { acceptsSensorEntry, sensorEntryNormal } from '@/libraries/services/thre
 
 import { EnvironmentRegionColliders } from '@/components/threed/shared/EnvironmentRegionColliders';
 import { resolveBallPhysics } from '@/libraries/services/threed/models/ball-physics';
+import { THREED_MODEL_PLACEMENT_EVENT, type ThreeDModelPlacement } from '@/libraries/services/threed/models/project-model-instance-core';
 import { findSoccerKickParticipants, planSoccerKickImpulse, validSoccerKickRequest, THREED_SOCCER_KICK_APPLY_EVENT, THREED_SOCCER_KICK_REJECT_EVENT, THREED_SOCCER_KICK_REQUEST_EVENT, THREED_SOCCER_KICK_RESULT_EVENT, type SoccerKickApply, type SoccerKickRequest, type SoccerKickResult } from '@/libraries/services/threed/physics/soccer-kick-core';
 
 
@@ -716,6 +717,7 @@ function SceneMarkerRigidBody({
   smoothPosition = false,
   soccerKickTarget,
   soccerKickActorPosition,
+  modelPlacementTarget,
   position,
   rotation,
   ...props
@@ -723,11 +725,13 @@ function SceneMarkerRigidBody({
   sceneEnabled: boolean;
   soccerKickTarget?: { projectId: number; markerId: string };
   soccerKickActorPosition?: (request: SoccerKickRequest) => { x: number; y: number; z: number } | null;
+  modelPlacementTarget?: { projectId: number; markerId: string };
   onLivePosition?: (position: { x: number; y: number; z: number }) => void;
   smoothPosition?: boolean;
 }) {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
   const pendingSoccerKickRef = useRef<SoccerKickApply | null>(null);
+  const pendingModelPlacementRef = useRef<ThreeDModelPlacement | null>(null);
   const consumedSoccerKickIdsRef = useRef<Set<string>>(new Set());
   useEffect(() => {
     if (!soccerKickTarget) return;
@@ -743,6 +747,18 @@ function SceneMarkerRigidBody({
     window.addEventListener(THREED_SOCCER_KICK_APPLY_EVENT, acceptKick);
     return () => window.removeEventListener(THREED_SOCCER_KICK_APPLY_EVENT, acceptKick);
   }, [soccerKickTarget?.projectId, soccerKickTarget?.markerId]);
+  useEffect(() => {
+    if (!modelPlacementTarget) return;
+    const acceptPlacement = (event: Event) => {
+      const request = (event as CustomEvent<ThreeDModelPlacement>).detail;
+      if (request?.projectId !== modelPlacementTarget.projectId
+        || request.markerId !== modelPlacementTarget.markerId
+        || !request.position || !Object.values(request.position).every(Number.isFinite)) return;
+      pendingModelPlacementRef.current = request;
+    };
+    window.addEventListener(THREED_MODEL_PLACEMENT_EVENT, acceptPlacement);
+    return () => window.removeEventListener(THREED_MODEL_PLACEMENT_EVENT, acceptPlacement);
+  }, [modelPlacementTarget?.projectId, modelPlacementTarget?.markerId]);
   useFrame(() => {
     if (!sceneEnabled || !onLivePosition || !rigidBodyRef.current) return;
     const current = rigidBodyRef.current.translation();
@@ -776,6 +792,17 @@ function SceneMarkerRigidBody({
   }, [positionKey, rotationKey]);
 
   useBeforePhysicsStep(() => {
+    const placement = pendingModelPlacementRef.current;
+    if (placement && rigidBodyRef.current) {
+      pendingModelPlacementRef.current = null;
+      pendingTransformRef.current = null;
+      const body = rigidBodyRef.current;
+      if (body.isDynamic()) {
+        body.setLinvel({ x: 0, y: 0, z: 0 }, true);
+        body.setAngvel({ x: 0, y: 0, z: 0 }, true);
+      }
+      body.setTranslation(placement.position, true);
+    }
     const kick = pendingSoccerKickRef.current;
     if (kick) {
       pendingSoccerKickRef.current = null;
@@ -1281,6 +1308,7 @@ function ProjectModelMarkerBody({
       soccerKickTarget={isMovableBall && isActionTarget && characterLayerEnabled && projectId
         ? { projectId, markerId: String(marker.id) } : undefined}
       soccerKickActorPosition={soccerKickActorPosition}
+      modelPlacementTarget={projectId ? { projectId, markerId: String(marker.id) } : undefined}
       ccd={isMovableBall}
       gravityScale={isMovableBall ? ballPhysics.gravityScale : 1}
       linearDamping={isMovableBall ? ballPhysics.damping : 0}

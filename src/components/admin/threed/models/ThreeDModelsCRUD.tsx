@@ -172,12 +172,15 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
   const [formError, setFormError] = useState<string | null>(null);
   const [formData, setFormData] = useState<ThreeDModelAdminFormData>(createEmptyThreeDModelAdminForm);
   const importerPreviewModel = useMemo<ModelData | null>(() => {
-    if (!formData.filePath.trim()) return null;
+    if (!formData.filePath.trim() && formData.modelType !== 'procedural') return null;
+    let metadata: unknown;
+    try { metadata = JSON.parse(formData.metadata); } catch { metadata = {}; }
     return {
       id: 0,
       modelName: formData.modelName.trim() || pendingPrimaryFile?.fileName || 'New Model',
       modelType: formData.modelType,
       filePath: formData.filePath,
+      metadata,
       scale: formData.scale,
       rotationY: formData.rotationY,
       offsetX: formData.offsetX,
@@ -191,6 +194,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
     formData.filePath,
     formData.modelName,
     formData.modelType,
+    formData.metadata,
     formData.offsetX,
     formData.offsetY,
     formData.offsetZ,
@@ -574,7 +578,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
             </DialogTrigger>
             <DialogContent className="max-h-[92vh] overflow-hidden p-0 sm:max-w-[min(96vw,1200px)]">
               <DialogHeader className="border-b px-5 py-4">
-                <DialogTitle>Import New Model</DialogTitle>
+                <DialogTitle>Create ThreeD Model</DialogTitle>
               </DialogHeader>
               <div className="grid min-h-0 md:grid-cols-[minmax(0,1.35fr)_minmax(360px,0.65fr)]">
                 <div className="border-b bg-slate-950/40 p-4 md:border-b-0 md:border-r">
@@ -583,7 +587,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                     attachedDependencyCount={0}
                     dependencyCount={0}
                     title="Importer Canvas"
-                    description={formData.modelType === 'obj' ? 'OBJ geometry preview. Attach its MTL material library and referenced images in Model Files after creation to see the final materials.' : 'Upload a Model, then adjust its transform and inspect every change here before creation.'}
+                    description={formData.modelType === 'procedural' && !formData.filePath ? 'Preview the built-in shape before saving. A Model file can be assigned later.' : formData.modelType === 'obj' ? 'OBJ geometry preview. Attach its MTL material library and referenced images in Model Files after creation to see the final materials.' : 'Upload a Model, then adjust its transform and inspect every change here before creation.'}
                     canvasClassName="h-[min(68vh,680px)] min-h-[420px]"
                   />
                 </div>
@@ -608,7 +612,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                       onThumbnail={handleThumbnailUpload}
                     />
                     <div className="sticky bottom-0 border-t bg-background/95 pt-3 backdrop-blur">
-                      <Button onClick={handleCreate} className="w-full" disabled={isSubmitting || uploadingPrimary || !formData.filePath.trim()}>
+                      <Button onClick={handleCreate} className="w-full" disabled={isSubmitting || uploadingPrimary || (!formData.filePath.trim() && formData.modelType !== 'procedural')}>
                         {isSubmitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Creating...</> : 'Create Model'}
                       </Button>
                     </div>

@@ -32,6 +32,7 @@ interface ProjectSceneToolbarProps {
   hasThreeDModule: boolean;
   onToggleSceneAddMenu: () => void;
   onOpenModelLibrary: () => void;
+  onOpenAddShape: () => void;
   onOpenCharacterLibrary: () => void;
   onOpenFarmBotLibrary: () => void;
   onOpenBedPlacement: () => void;
@@ -61,6 +62,7 @@ export function ProjectSceneToolbar({
   hasThreeDModule,
   onToggleSceneAddMenu,
   onOpenModelLibrary,
+  onOpenAddShape,
   onOpenCharacterLibrary,
   onOpenFarmBotLibrary,
   onOpenBedPlacement,
@@ -81,7 +83,7 @@ export function ProjectSceneToolbar({
   onSaveProject,
 }: ProjectSceneToolbarProps) {
   return (
-    <div className="flex flex-wrap items-center gap-2">
+    <div className="flex flex-wrap items-center gap-1">
       <div role="group" aria-label="Scene view mode" className="threed-view-modes flex items-center gap-0 rounded-lg border p-0">
         <Button variant={viewMode === '3d' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" aria-pressed={viewMode === '3d'} onClick={() => onViewModeChange('3d')} title="3D View">
           <Box className="h-3.5 w-3.5" />
@@ -136,11 +138,12 @@ export function ProjectSceneToolbar({
             <div className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[2000] mt-1 max-h-[min(24rem,70dvh)] w-56 max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain rounded-lg border p-1.5 shadow-xl backdrop-blur-sm">
               <div className="px-2 pb-1 pt-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground/60">ThreeD Marker Type</div>
               <div className="grid grid-cols-1 gap-0.5">
+                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" onClick={onOpenAddShape}><Plus className="h-3.5 w-3.5" /> Shapes</Button>
                 <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" onClick={onOpenModelLibrary}><Box className="h-3.5 w-3.5" /> Models</Button>
                 <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" onClick={onOpenCharacterLibrary}><User className="h-3.5 w-3.5" /> Characters</Button>
                 <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" onClick={onOpenFarmBotLibrary}><Settings className="h-3.5 w-3.5" /> FarmBots</Button>
-                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" onClick={onOpenBedPlacement}><Plus className="h-3.5 w-3.5" /> Bed</Button>
-                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" onClick={onOpenPlantingPlacement}><Sprout className="h-3.5 w-3.5" /> Planting</Button>
+                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" onClick={onOpenBedPlacement}><Plus className="h-3.5 w-3.5" /> Beds</Button>
+                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" onClick={onOpenPlantingPlacement}><Sprout className="h-3.5 w-3.5" /> Plantings</Button>
               </div>
             </div>
           )}

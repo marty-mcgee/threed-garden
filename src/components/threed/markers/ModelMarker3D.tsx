@@ -7,7 +7,7 @@ import { indexEnvironmentRegions, type EnvironmentRegionIndex } from '@/librarie
 import { buildEnvironmentSurfaceCollider, type EnvironmentSurfaceCollider } from '@/libraries/services/threed/models/environment-surface-collider';
 import { measureModelLocalBounds } from '@/libraries/services/threed/models/model-local-bounds';
 import { reportModelLoadFailure } from '@/libraries/services/threed/models/model-load-failures';
-import { readModelFallbackShape, type ModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
+import { modelFallbackCollisionBounds, readModelFallbackShape, type ModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
 import { withSavedFbxTextures } from '@/libraries/services/threed/models/model-saved-texture-fallback';
 import { useRef, useState, useEffect, type ReactNode } from 'react';
 import { useFrame } from '@react-three/fiber';
@@ -367,12 +367,12 @@ function useModelLoad(
 // ============================================
 // FALLBACK SHAPE
 // ============================================
-function ModelFallback({ position, shape }: {
-  position: [number, number, number]; shape: ModelFallbackShape;
+function ModelFallback({ position, shape, scale = 1, solid = false }: {
+  position: [number, number, number]; shape: ModelFallbackShape; scale?: number; solid?: boolean;
 }) {
   return (
-    <group position={position}>
-      <mesh castShadow={shape !== 'sphere'} receiveShadow position={[0, 0.5, 0]}>
+    <group position={position} scale={[scale, scale, scale]}>
+      <mesh castShadow={solid || shape !== 'sphere'} receiveShadow position={[0, 0.5, 0]}>
         {shape === 'sphere' ? <sphereGeometry args={[0.5, 20, 12]} />
           : shape === 'cylinder' ? <cylinderGeometry args={[0.35, 0.35, 1, 20]} />
           : shape === 'rectangle' ? <boxGeometry args={[1.4, 1, 0.6]} />
@@ -380,7 +380,7 @@ function ModelFallback({ position, shape }: {
           : shape === 'torus' ? <torusGeometry args={[0.35, 0.15, 12, 24]} />
           : <boxGeometry args={[1, 1, 1]} />}
         <meshStandardMaterial color={shape === 'sphere' ? '#94a3b8' : '#6b7280'} roughness={0.5} metalness={0.3}
-          transparent={shape === 'sphere'} opacity={shape === 'sphere' ? 0.45 : 1} depthWrite={shape !== 'sphere'} />
+          transparent={shape === 'sphere' && !solid} opacity={shape === 'sphere' && !solid ? 0.45 : 1} depthWrite={solid || shape !== 'sphere'} />
       </mesh>
 
     </group>
@@ -394,6 +394,8 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
   const [labelHovered, setLabelHovered] = useState(false);
   const [labelPosition, setLabelPosition] = useState<[number, number, number]>([0, 1.5, 0]);
   const { loadedModel, loading, error } = useModelLoad(model, fitBounds, applyStoredScale);
+  const hasModelFile = Boolean(model.filePath?.trim());
+  const fallbackShape = readModelFallbackShape(model.fallbackShape === undefined ? model.metadata : { fallbackShape: model.fallbackShape });
   useSceneResourceStatus(loading, error);
   const reusableModelId = model.modelId ?? model.id;
   useEffect(() => {
@@ -499,7 +501,7 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
       frames: 0,
       reported: false,
     };
-    onCollisionBoundsChange?.(null);
+    onCollisionBoundsChange?.(hasModelFile || fallback ? null : modelFallbackCollisionBounds(fallbackShape, scale));
     onGeometryAuditChange?.(null);
     onEnvironmentCollisionPreviewChange?.(null);
     return () => {
@@ -508,7 +510,7 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
       onGeometryAuditChange?.(null);
       onEnvironmentCollisionPreviewChange?.(null);
     };
-  }, [enableSurfaceCollider, loadedModel, onCollisionBoundsChange, onEnvironmentCollisionPreviewChange, onGeometryAuditChange, scale]);
+  }, [enableSurfaceCollider, fallback, fallbackShape, hasModelFile, loadedModel, onCollisionBoundsChange, onEnvironmentCollisionPreviewChange, onGeometryAuditChange, scale]);
 
   useFrame(() => {
     const job = regionJobRef.current;
@@ -700,8 +702,8 @@ export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed
     if (fallback) return <group scale={[scale, scale, scale]}>{fallback}</group>;
     // Imported units are irrelevant to this one-unit placeholder: tiny FBX scales
     // must not hide the only visible representation of the Project asset.
-    return <ModelFallback position={position}
-      shape={readModelFallbackShape(model.fallbackShape === undefined ? model.metadata : { fallbackShape: model.fallbackShape })} />;
+    return <ModelFallback position={position} shape={fallbackShape}
+      scale={hasModelFile ? 1 : scale} solid={!hasModelFile} />;
   }
 
   return (

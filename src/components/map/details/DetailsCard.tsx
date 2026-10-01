@@ -56,7 +56,8 @@ function ModelFileNotice({ type, data }: { type: string; data: Record<string, an
     () => hasModelLoadFailure(modelId, filePath), () => false);
   const requiresModel = generic || ['character', 'characters'].includes(type)
     || (['plant', 'plants', 'planting', 'plantings'].includes(type) && modelId > 0);
-  const needsAttention = requiresModel && (!filePath || failed);
+  const isProceduralModel = generic && model?.modelType === 'procedural' && !filePath;
+  const needsAttention = requiresModel && !isProceduralModel && (!filePath || failed);
   const [access, setAccess] = useState<{ id: number; status: 'editable' | 'unavailable' | 'error' } | null>(null);
   useEffect(() => {
     setAccess(null);

@@ -190,7 +190,7 @@ async function readEligibleModel(userId: string, modelId: number) {
       ),
     ))
     .limit(1);
-  return model?.filePath ? model : null;
+  return model && (model.filePath || model.modelType === 'procedural') ? model : null;
 }
 
 async function readEligibleCharacter(userId: string, characterId: number) {

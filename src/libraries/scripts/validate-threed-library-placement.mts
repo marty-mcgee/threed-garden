@@ -15,6 +15,16 @@ import {
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/models/model-library-readiness-core.ts';
 
+// @ts-expect-error Native Node TypeScript imports use explicit extensions.
+const { createEmptyThreeDModelAdminForm, buildThreeDModelAdminPayload } = await import('../../components/admin/threed/models/model-admin-form-core.ts');
+const proceduralForm = { ...createEmptyThreeDModelAdminForm(),
+  modelName: 'Soccer Ball: ThreeD Sphere', modelType: 'procedural',
+  metadata: '{"fallbackShape":"sphere"}' };
+assert.equal(buildThreeDModelAdminPayload(proceduralForm).filePath, '');
+assert.equal(buildThreeDModelAdminPayload(proceduralForm).metadata.fallbackShape, 'sphere');
+assert.throws(() => buildThreeDModelAdminPayload({ ...proceduralForm, modelType: 'glb' }));
+console.log('✓ File-free procedural Models create while imported Models still require a file');
+
 const position = { x: 12.5, y: 3, z: -8.25 };
 
 assert.deepEqual(
@@ -148,6 +158,15 @@ assert.equal(createThreeDModelLibraryReadiness({
   files: [{ id: 99, fileType: 'model', filePath: 'https://assets.example.test/unassigned.fbx' }],
   materialAssignments: [],
 }).primaryFileAvailable, false, 'Neither legacy URL nor unassigned Model Files may satisfy primary readiness');
+assert.equal(createThreeDModelLibraryReadiness({
+  modelType: 'procedural', filePath: '', mainModelFileId: null,
+  files: [], materialAssignments: [],
+}).status, 'ready', 'File-free procedural shapes are placeable');
+assert.equal(createThreeDModelLibraryReadiness({
+  modelType: 'glb', filePath: '', mainModelFileId: null,
+  files: [], materialAssignments: [],
+}).status, 'unavailable', 'Imported Models still need their assigned primary file');
+
 
 // @ts-expect-error Native Node TypeScript imports use explicit extensions.
 const { currentModelAssets, refreshModelMarkerData, currentPlantingModelId } = await import('../services/threed/models/model-snapshot-assets.ts');
@@ -159,7 +178,7 @@ assert.equal(refreshed.scale, 2);
 assert.equal(currentModelAssets(undefined).filePath, '');
 
 // @ts-expect-error Native Node TypeScript imports use explicit extensions.
-const { MODEL_FALLBACK_SHAPES, readModelFallbackShape, setModelFallbackShape } = await import('../services/threed/models/model-fallback-core.ts');
+const { MODEL_FALLBACK_SHAPES, modelFallbackCollisionBounds, readModelFallbackShape, setModelFallbackShape } = await import('../services/threed/models/model-fallback-core.ts');
 for (const shape of MODEL_FALLBACK_SHAPES) {
   const metadata = JSON.parse(setModelFallbackShape(JSON.stringify({ runtimeAdapter: 'existing', animationMap: { idle: 'Idle' } }), shape));
   assert.equal(readModelFallbackShape(metadata), shape);
@@ -174,6 +193,16 @@ assert.throws(() => setModelFallbackShape('{broken', 'sphere'));
 assert.throws(() => setModelFallbackShape('[]', 'sphere'));
 assert.equal(currentModelAssets(undefined).fallbackShape, 'sphere');
 console.log('PASS: generic Model fallback choices preserve metadata, reject malformed JSON, and override stale Project preferences');
+assert.deepEqual(modelFallbackCollisionBounds('sphere', 1), {
+  center: [0, 0.5, 0], halfExtents: [0.5, 0.5, 0.5],
+});
+assert.deepEqual(modelFallbackCollisionBounds('sphere', 0.6), {
+  center: [0, 0.3, 0], halfExtents: [0.3, 0.3, 0.3],
+});
+assert.equal(modelFallbackCollisionBounds('sphere', 0), null);
+assert.equal(modelFallbackCollisionBounds('sphere', Number.NaN), null);
+console.log('PASS: file-free sphere bounds match its visible size and grounded center');
+
 
 // @ts-expect-error Native Node TypeScript imports use explicit extensions.
 const { readModelLightBoost, validModelLightBoost, setModelLightBoost } = await import('../services/threed/models/model-lighting-core.ts');

@@ -59,7 +59,8 @@ export function createThreeDModelLibraryReadiness(model: ReadinessModel): ThreeD
   ).size;
   const issues: ThreeDModelLibraryReadiness['issues'] = [];
 
-  if (!primaryFileAvailable) issues.push('missing_primary_file');
+  const fileFreeShape = model.modelType === 'procedural' && !model.filePath;
+  if (!primaryFileAvailable && !fileFreeShape) issues.push('missing_primary_file');
   if (
     primaryFileAvailable
     && ['fbx', 'obj'].includes(model.modelType.toLowerCase())
@@ -70,7 +71,7 @@ export function createThreeDModelLibraryReadiness(model: ReadinessModel): ThreeD
   }
 
   return {
-    status: !primaryFileAvailable
+    status: !primaryFileAvailable && !fileFreeShape
       ? 'unavailable'
       : issues.length > 0 ? 'needs_configuration' : 'ready',
     primaryFileAvailable,

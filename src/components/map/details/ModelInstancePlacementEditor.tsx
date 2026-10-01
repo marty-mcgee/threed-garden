@@ -264,6 +264,9 @@ export function ModelInstancePlacementEditor({
           <option value="triangle-surface">Fixed Triangle Surface</option>
           <option value="ball" disabled={placementRole === 'environment'}>Movable Ball</option>
         </select>
+        {physicsMode === 'box' && <p className="text-[10px] text-amber-700 dark:text-amber-300">
+          Fixed Box fills the Model bounds. For a walkable field, choose Fixed Triangle Surface.
+        </p>}
       </label>
       </DetailsCardSection>
       {physicsMode === 'ball' && placementRole !== 'environment' && (

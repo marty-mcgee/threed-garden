@@ -6,6 +6,14 @@ const MAX_POSITION = 1_000_000;
 const MAX_ROTATION = 10_000;
 const MIN_SCALE = 0.0001;
 const MAX_SCALE = 10_000;
+export const THREED_MODEL_PLACEMENT_EVENT = 'threed:model-placement';
+
+export interface ThreeDModelPlacement {
+  projectId: number;
+  markerId: string;
+  position: { x: number; y: number; z: number };
+}
+
 export type ProjectModelPlacementRole = 'object' | 'environment';
 export type ProjectModelCollisionMode = 'box' | 'triangle-surface';
 export type ProjectModelEffectiveCollisionMode =
