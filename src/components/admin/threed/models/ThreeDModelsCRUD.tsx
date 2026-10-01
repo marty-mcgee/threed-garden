@@ -141,7 +141,7 @@ const modelOptions = (model: Model) => [
 // ============================================
 // COMPONENT
 // ============================================
-export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { onModuleUpdate?: () => void; scrollRecords?: boolean }) {
+export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linkedModelId = null, onCloseLinkedModel }: { onModuleUpdate?: () => void; scrollRecords?: boolean; linkedModelId?: number | null; onCloseLinkedModel?: () => void }) {
   const { showToast, ToastComponent } = useToast();
   const [models, setModels] = useState<Model[]>([]);
   const [page, setPage] = useState(0);
@@ -154,6 +154,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [animationModel, setAnimationModel] = useState<Model | null>(null);
   const [editingModel, setEditingModel] = useState<Model | null>(null);
+  const [linkedModelError, setLinkedModelError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sort, setSort] = useState<{ field: ModelSortField; direction: 'asc' | 'desc' }>({ field: 'name', direction: 'asc' });
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
@@ -423,6 +424,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
         setPendingPrimaryFile(null);
         setUploadAnalysis(null);
         setEditingModel(null);
+        if (editingModel.id === linkedModelId) onCloseLinkedModel?.();
         await fetchModels();
         onModuleUpdate?.();
       } else {
@@ -537,11 +539,34 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
     if (open || isSubmitting || uploadingPrimary || uploadingThumbnail) return;
     const stagedFile = pendingPrimaryFile;
     setEditingModel(null);
+    if (editingModel?.id === linkedModelId) onCloseLinkedModel?.();
     setUploadAnalysis(null);
     setPendingPrimaryFile(null);
     if (stagedFile) void discardPendingPrimaryUpload(stagedFile);
   }
 
+  useEffect(() => {
+    setLinkedModelError(null);
+    if (!linkedModelId) return;
+    const controller = new AbortController();
+    void (async () => {
+      try {
+        const response = await fetch(`/api/threed/models?id=${linkedModelId}`, { cache: 'no-store', signal: controller.signal });
+        const data = await response.json();
+        if (controller.signal.aborted) return;
+        // The exact-ID API can also return a public library projection. Only its owner record has userId.
+        if (!response.ok || data.success !== true || data.data?.id !== linkedModelId || typeof data.data.userId !== 'string') {
+          throw new Error('This Model is unavailable in your Admin workspace.');
+        }
+        openEditDialog(data.data as Model);
+      } catch {
+        if (!controller.signal.aborted) setLinkedModelError(`Model #${linkedModelId} could not be opened in your Admin workspace.`);
+      }
+    })();
+    return () => controller.abort();
+    // Opening a linked Model is tied to URL identity, not list refreshes or form edits.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [linkedModelId]);
 
   return (
     <div className={scrollRecords ? "flex h-full min-h-0 flex-col gap-2" : "space-y-2"}>
@@ -625,6 +650,10 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
       </AdminWorkspaceHeader>
       </fieldset>
 
+      {linkedModelError && <div role="alert" className="flex shrink-0 flex-wrap items-center gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm">
+        <span>{linkedModelError}</span>
+        <Button type="button" variant="outline" size="sm" onClick={() => { setLinkedModelError(null); onCloseLinkedModel?.(); }}>Browse Models</Button>
+      </div>}
       {deleteReport && <p role="status" className="text-sm">{deleteReport}</p>}
       {deleteFailures.length > 0 && <ul className="list-inside list-disc text-sm text-destructive" aria-label="Model deletion results">{deleteFailures.map((failure) => <li key={failure}>{failure}</li>)}</ul>}
 
@@ -693,7 +722,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                     <TableCell className="w-8 px-2 py-1 text-center"><input type="checkbox" aria-label={`Bulk Edit ${model.modelName} (#${model.id})`} checked={selectedIds.has(model.id)} disabled={deleting || loading}
                       onChange={(event) => { const checked = event.target.checked; setSelectedIds((current) => { const next = new Set(current); if (checked) next.add(model.id); else next.delete(model.id); return next; }); }} /></TableCell>
                     <TableCell className="py-1 text-sm font-medium">
-                      <div className="flex items-center gap-2"><Box className="w-3.5 h-3.5 shrink-0 text-blue-500" />{model.modelName}</div>
+                      <div className="flex items-center gap-2"><Box className="w-3.5 h-3.5 shrink-0 text-blue-500" />{model.modelName}<Link href={`/admin/threed/models?id=${model.id}`} className="text-xs font-normal text-muted-foreground underline-offset-2 hover:text-foreground hover:underline" aria-label={`Open Model #${model.id} details`}>#{model.id}</Link></div>
                     </TableCell>
                     <TableCell className="py-1">
                       <Badge variant="outline" className="text-[10px]">{getOptionLabel(MODEL_TYPE_OPTIONS, model.modelType)}</Badge>
@@ -781,11 +810,23 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false }: { on
       {/* Edit Dialog */}
       <Dialog open={!!editingModel} onOpenChange={handleEditDialogChange}>
         <DialogContent className="flex max-h-[90dvh] w-[calc(100%-2rem)] min-w-0 flex-col gap-3 overflow-hidden p-4 sm:max-w-6xl">
-          <DialogHeader className="shrink-0 pr-8"><DialogTitle>Edit Model — {editingModel?.modelName}</DialogTitle><DialogDescription>Update Model details, primary file and library settings. Save Changes to apply your edits.</DialogDescription></DialogHeader>
+          <DialogHeader className="shrink-0 pr-8">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <DialogTitle>Edit Model — {editingModel?.modelName}</DialogTitle>
+                <DialogDescription className="mt-1">
+                  Model #{editingModel?.id} · {editingModel ? getOptionLabel(MODEL_TYPE_OPTIONS, editingModel.modelType) : ''} · Edit reusable Model details here; manage its attached files in Model Files.
+                </DialogDescription>
+              </div>
+              {editingModel && <Button asChild variant="outline" size="sm" className="h-8 shrink-0 text-xs">
+                <Link href={`/admin/threed/model-files?modelId=${editingModel.id}`}><Files aria-hidden="true" className="mr-1 h-4 w-4" /> Open Model Files</Link>
+              </Button>}
+            </div>
+          </DialogHeader>
           <div className="min-h-0 overflow-y-auto overscroll-contain pr-1 pt-1 [&>div]:space-y-3 md:[&>div]:columns-2 md:[&>div]:gap-3 [&_section]:break-inside-avoid [&_section]:min-w-0 [&_section]:rounded-md [&_section]:border [&_section]:p-3 [&_label]:text-xs [&_input:not([type=checkbox])]:h-8 [&_input:not([type=checkbox])]:min-w-0 [&_input:not([type=checkbox])]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:w-full [&_[data-slot=select-trigger]]:min-w-0 [&_[data-slot=select-trigger]]:text-xs">
             <ThreeDModelEditorFields
               mode="edit"
-              hasPendingPrimaryFile={Boolean(pendingPrimaryFile)}
+              modelId={editingModel?.id}
               previewImageAction={editingModel && <ModelPreviewImageExport
                 key={editingModel.id}
                 model={editingModel}

@@ -63,6 +63,8 @@ npm run validate -- shadcn-ui-boundary
 npm run validate -- assets
 npm run validate -- threed-library-placement
 npm run validate -- threed-project-session
+npm run validate -- threed-model-admin-form
+npm run validate -- threed-model-file-requirements
 npm run validate -- threed-model-import
 npm run validate -- threed-model-blob-paths
 npm run validate -- threed-model-bulk-preparation
@@ -103,6 +105,8 @@ The ThreeD FarmBot Live State validation is offline and provider-independent. It
 The ThreeD FarmBot Coordinate Alignment validation is offline and provider-independent. It checks exact physical-millimeter fixtures through explicit Scene origin, unit scale, axis signs, clockwise yaw, and working bounds. Invalid calibration, partial/non-finite positions, and out-of-bounds observations must fail closed. It must not access React, Three.js, Rapier, APIs, persistence, MQTT, workers, or physical devices.
 
 The ThreeD Library placement validation is offline and verifies that Model, Character, and FarmBot client request builders preserve the established API envelope, identifiers, transforms, dimensions, scale, placement role, and numeric conversion. It also verifies that the Dashboard Library workspace permits only one active Library and that closing an inactive Library does not close the active one. It must not fetch, write Project state, access the database, initialize Three.js/Rapier, or expand FarmBot command capability.
+
+The ThreeD Model File requirements validation runs the actual owner-scoped handler with mocked database/auth/fetch dependencies. It distinguishes valid file-free procedural Models from imported missing/invalid primaries and checks the imported dependency-inspection path. It does not prove live database rows, Blob contents, or browser presentation.
 
 The ThreeD Project session validation is offline and verifies that the map API response mapper preserves valid Project module summaries, geographic origin, numeric 2D/3D coordinates, saved marker snapshots, aggregate counts, and bounded API failures. It must not fetch the API, access React state, initialize the Scene, or bypass the coordinator's request sequence and AbortController guards.
 

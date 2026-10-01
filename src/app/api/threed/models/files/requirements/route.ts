@@ -60,6 +60,9 @@ export async function GET(request: NextRequest) {
   const primary = files.find((file) => file.id === model.mainModelFileId && file.fileType === 'model')
     ?? null;
   if (!primary) {
+    if (model.modelType === 'procedural' && model.mainModelFileId == null) {
+      return NextResponse.json({ success: true, data: { status: 'not_required', complete: true, requirements: [] } });
+    }
     return NextResponse.json({ success: true, data: { status: 'missing_primary', requirements: [] } });
   }
 

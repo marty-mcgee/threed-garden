@@ -12,11 +12,15 @@ const queryModule = { exports: {} };
 vm.runInNewContext(transpile('src/libraries/services/threed/models/model-list-query.ts'), { exports: queryModule.exports });
 const lightingModule = { exports: {} };
 vm.runInNewContext(transpile('src/libraries/services/threed/models/model-lighting-core.ts'), { exports: lightingModule.exports });
+const fallbackModule = { exports: {} };
+vm.runInNewContext(transpile('src/libraries/services/threed/models/model-fallback-core.ts'), { exports: fallbackModule.exports });
+const readinessModule = { exports: {} };
+vm.runInNewContext(transpile('src/libraries/services/threed/models/model-library-readiness-core.ts'), { exports: readinessModule.exports });
 const schema = new Proxy({}, { get: (_, table) => new Proxy({ table }, { get: (value, column) => column === 'table' ? table : `${table}.${String(column)}` }) });
 const op = (kind) => (...args) => ({ kind, args });
 const orm = Object.fromEntries(['eq', 'and', 'or', 'desc', 'inArray', 'asc'].map((kind) => [kind, op(kind)]));
 orm.sql = (strings, ...args) => ({ strings: [...strings], args, as() { return this; } });
-let queue = [], queries = [], signedIn = true;
+let queue = [], queries = [], signedIn = true, transactionCalls = 0, transactionUpdates = [];
 const db = { select(selection) {
   const query = { selection };
   const chain = {};
@@ -29,6 +33,14 @@ const db = { select(selection) {
     return Promise.resolve(queue.shift()).then(resolve, reject);
   };
   return chain;
+}, async transaction(callback) {
+  transactionCalls += 1;
+  return callback({ update() {
+    return { set(values) {
+      transactionUpdates.push(values);
+      return { where() { return { returning: async () => [{ id: 5 }] }; } };
+    } };
+  } });
 } };
 const moduleExports = {};
 const mocks = {
@@ -44,9 +56,10 @@ const mocks = {
   '@/libraries/db/sequence': {},
   '@/libraries/services/threed/models/model-companion-core': {},
   '@vercel/blob': {},
-  '@/libraries/services/threed/models/model-file-integrity': {},
-  '@/libraries/services/threed/models/model-library-readiness-core': {},
+  '@/libraries/services/threed/models/model-file-integrity': { runtimeModelTypeFromFileName: () => 'gltf' },
+  '@/libraries/services/threed/models/model-library-readiness-core': readinessModule.exports,
   '@/libraries/services/threed/models/model-lighting-core': lightingModule.exports,
+  '@/libraries/services/threed/models/model-fallback-core': fallbackModule.exports,
 };
 vm.runInNewContext(transpile('src/app/api/threed/models/route.ts'), {
   exports: moduleExports, URL, console,
@@ -57,6 +70,20 @@ async function run(query, responses) {
   queue = responses; queries = [];
   const result = await moduleExports.GET({ url: `http://localhost/api/threed/models?${query}` });
   assert.equal(queue.length, 0, 'Expected database queries were skipped');
+  return plain(result);
+}
+async function runPrimaryPatch(primaryFile, expectedStatus, { currentPrimaryFileId = null, updates = {} } = {}) {
+  queue = [
+    [{ id: 5, userId: 'owner', modelType: 'gltf', filePath: '', mainModelFileId: currentPrimaryFileId }],
+    [primaryFile],
+    ...(expectedStatus === 200 ? [[{ id: 5, mainModelFileId: primaryFile.id, ...updates }]] : []),
+  ];
+  queries = [];
+  const result = await moduleExports.PATCH({
+    url: 'http://localhost/api/threed/models?id=5',
+    json: async () => ({ mainModelFileId: primaryFile.id, ...updates }),
+  });
+  assert.equal(queue.length, 0, 'Expected primary-file queries were skipped');
   return plain(result);
 }
 (async () => {
@@ -89,6 +116,50 @@ async function run(query, responses) {
   assert.equal(detail.body.data.files[0].id, 9);
   assert.equal(detail.body.data.materialAssignments[0].textureUrl, 'shared-url');
   assert.equal('modelId' in detail.body.data.materialAssignments[0], false);
+  const shared = {
+    id: 1159, userId: 'another-owner', modelName: 'ThreeD Pyramid',
+    modelType: 'procedural', filePath: '', mainModelFileId: null,
+    isPublic: true, isLibraryItem: true, isActive: true, status: 'active', usedByCharacters: false,
+    metadata: { fallbackShape: 'pyramid', privateNotes: 'owner only' },
+  };
+  const library = await run('scope=library', [[{ count: 1 }], [shared], [], [], []]);
+  assert.equal(library.status, 200);
+  assert.deepEqual(library.body.data[0].metadata, { fallbackShape: 'pyramid' });
+  assert.equal(library.body.data[0].libraryReadiness.status, 'ready');
+  assert.equal(library.body.data[0].canManage, false);
+  const sharedDetail = await run('id=1159', [[shared], [], [], []]);
+  assert.deepEqual(sharedDetail.body.data.metadata, { fallbackShape: 'pyramid' });
+  const invalidShape = await run('scope=library', [
+    [{ count: 1 }], [{ ...shared, metadata: { fallbackShape: 'unknown', privateNotes: 'owner only' } }], [], [], [],
+  ]);
+  assert.deepEqual(invalidShape.body.data[0].metadata, { fallbackShape: 'sphere' });
+  const candidateFile = { id: 9, modelId: 5, userId: 'owner', fileType: 'model', fileName: 'shoe.gltf', filePath: 'https://assets.example.test/shoe.gltf', fileSize: 100 };
+  for (const brokenFile of [
+    { ...candidateFile, filePath: '' },
+    { ...candidateFile, filePath: '   ' },
+    { ...candidateFile, fileSize: null },
+    { ...candidateFile, fileSize: 0 },
+    { ...candidateFile, fileSize: -1 },
+    { ...candidateFile, fileSize: 1.5 },
+    { ...candidateFile, fileSize: Number.NaN },
+  ]) {
+    const result = await runPrimaryPatch(brokenFile, 400);
+    assert.equal(result.status, 400);
+    assert.match(result.body.error, /saved URL and a positive file size/);
+  }
+  assert.equal(transactionCalls, 0, 'Broken legacy files must not be assigned or mutated');
+  const validPrimary = await runPrimaryPatch(candidateFile, 200);
+  assert.equal(validPrimary.status, 200);
+  assert.equal(validPrimary.body.data.mainModelFileId, candidateFile.id);
+  assert.equal(transactionCalls, 1);
+  const metadata = { fallbackShape: 'pyramid' };
+  const unchangedBrokenPrimary = await runPrimaryPatch(
+    { ...candidateFile, filePath: '', fileSize: 0 }, 200,
+    { currentPrimaryFileId: candidateFile.id, updates: { metadata } },
+  );
+  assert.equal(unchangedBrokenPrimary.status, 200, 'Unrelated edits may retain a legacy broken primary file');
+  assert.deepEqual(plain(transactionUpdates.at(-1).metadata), metadata);
+  assert.equal(transactionCalls, 2);
   const choices = [{ id: 201, modelName: 'Beyond first page', modelType: 'fbx' }];
   const selector = await run('view=selector&limit=200&offset=200', [[{ count: 452 }], choices]);
   assert.equal(queries.length, 2);
@@ -103,5 +174,5 @@ async function run(query, responses) {
   signedIn = false;
   assert.equal((await run('view=selector', [])).status, 401);
   assert.equal(queries.length, 0);
-  console.log('PASS: actual Model GET handler uses five queries for 1/50/200 rows, preserves related data and owner scope, uses two selector queries, and handles empty/invalid/unauthenticated requests');
+  console.log('PASS: actual Model GET handler uses five queries for 1/50/200 rows, preserves related data and owner scope, uses two selector queries, and handles empty/invalid/unauthenticated requests; shared Library responses expose only a validated fallback shape, and new primary assignments reject blank URLs and invalid sizes while unchanged legacy assignments permit unrelated edits');
 })().catch((error) => { console.error(error); process.exitCode = 1; });

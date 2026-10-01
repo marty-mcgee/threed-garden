@@ -46,7 +46,7 @@ interface ThreeDModelAssetPreviewProps {
   splitMaterialInspector?: boolean;
   requiredFiles?: ReactNode;
   primaryFileControls?: ReactNode;
-  savedFilesStatus?: { ready: boolean; message: string };
+  savedFilesStatus?: { ready: boolean; message: string; readyLabel?: string };
   textureLibrary?: ThreeDModelTextureLibraryItem[];
   onSaveMaterialAssignment?: (assignment: { targetKeys: string[]; textureFileId?: number; textureId?: number }) => Promise<void>;
 }
@@ -701,7 +701,7 @@ export function ThreeDModelAssetPreview({
       )}
       {savedFilesStatus && (
         <div role="status" className={`rounded-lg border p-3 text-xs ${savedFilesStatus.ready && !loading && !savingMaterialAssignment && !materialAssignmentError && !hasUnsavedPreview ? 'border-emerald-500/40 bg-emerald-500/10' : 'border-amber-500/40 bg-amber-500/10'}`}>
-          <p className="font-semibold">{savingMaterialAssignment ? 'Saving appearance…' : materialAssignmentError ? 'Needs attention above' : hasUnsavedPreview ? 'Preview changes — review before saving' : loading ? 'Loading preview…' : savedFilesStatus.ready ? 'Saved files ready' : 'Needs attention above'}</p>
+          <p className="font-semibold">{savingMaterialAssignment ? 'Saving appearance…' : materialAssignmentError ? 'Needs attention above' : hasUnsavedPreview ? 'Preview changes — review before saving' : loading ? 'Loading preview…' : savedFilesStatus.ready ? savedFilesStatus.readyLabel ?? 'Saved files ready' : 'Needs attention above'}</p>
           <p className="mt-1 text-muted-foreground">{materialAssignmentError || (hasUnsavedPreview ? 'The canvas includes a temporary Texture preview. Save the intended assignment above to keep it.' : savedFilesStatus.message)}</p>
         </div>
       )}

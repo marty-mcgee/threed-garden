@@ -1,13 +1,5 @@
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
-const vm = require('node:vm');
-const ts = require('typescript');
-const file = path.resolve(__dirname, '../../components/admin/threed/models/model-admin-form-core.ts');
-const core = {};
-vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), {
-  compilerOptions: {module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022},
-}).outputText, {exports: core});
+const core = require('../../components/admin/threed/models/model-admin-form-core.ts');
 const {createEmptyThreeDModelAdminForm: empty, buildThreeDModelAdminPayload: payload, ThreeDModelFormValidationError: ValidationError} = core;
 const form = {...empty(), modelName:' Shoe ', modelType:'gltf', mainModelFileId:'41'};
 assert.equal(payload(form, 'edit').mainModelFileId, 41);

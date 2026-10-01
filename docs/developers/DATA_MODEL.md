@@ -15,7 +15,7 @@ A record normally must be owned/accessible, active, and explicitly assigned befo
 
 ## ThreeD runtime data
 
-Beds, plantings, characters, FarmBots, and models become runtime markers from project assets. There is no current persisted `threed_markers` table. `threed_weather_logs` is deferred and should not be expanded without a separate approved milestone.
+Beds, plantings, characters, FarmBots, and models become runtime markers from project assets and saved Project placements. There is no legacy `threed_markers` table; Project-scoped Scene placements and snapshots persist in `project_threed_markers`. `threed_weather_logs` is deferred and should not be expanded without a separate approved milestone.
 
 ### ThreeD Model Library visibility
 

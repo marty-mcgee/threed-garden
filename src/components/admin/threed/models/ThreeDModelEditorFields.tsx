@@ -3,7 +3,8 @@
 import { MODEL_FALLBACK_SHAPES, readModelFallbackShape, setModelFallbackShape, type ModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
 import { readModelLightBoost, setModelLightBoost } from '@/libraries/services/threed/models/model-lighting-core';
 import type { Dispatch, SetStateAction } from 'react';
-import { AlertCircle, Box, CheckCircle2, File, Image, Loader2, Upload, X } from 'lucide-react';
+import Link from 'next/link';
+import { AlertCircle, CheckCircle2, Loader2, Upload, X } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -67,7 +68,7 @@ export interface ThreeDModelUploadAnalysis {
 
 interface ThreeDModelEditorFieldsProps {
   mode: 'create' | 'edit';
-  hasPendingPrimaryFile?: boolean;
+  modelId?: number;
   previewImageAction?: React.ReactNode;
   form: ThreeDModelAdminFormData;
   setForm: Dispatch<SetStateAction<ThreeDModelAdminFormData>>;
@@ -90,15 +91,9 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function AttachmentIcon({ type }: { type: string }) {
-  if (type === 'model') return <Box className="h-4 w-4 text-blue-500" />;
-  if (type === 'texture') return <Image className="h-4 w-4 text-green-500" />;
-  return <File className="h-4 w-4 text-muted-foreground" />;
-}
-
 export function ThreeDModelEditorFields({
   mode,
-  hasPendingPrimaryFile = false,
+  modelId,
   form,
   setForm,
   categories,
@@ -122,6 +117,8 @@ export function ThreeDModelEditorFields({
   const disabled = isSubmitting || uploadingPrimary || uploadingThumbnail;
   const modelFiles = files.filter((file) => file.fileType === 'model');
   const textureCount = files.filter((file) => file.fileType === 'texture').length;
+  const primaryFile = modelFiles.find((file) => String(file.id) === form.mainModelFileId);
+  const fileFreeProcedural = form.modelType === 'procedural' && !form.filePath;
 
   function update<K extends keyof ThreeDModelAdminFormData>(key: K, value: ThreeDModelAdminFormData[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -130,6 +127,21 @@ export function ThreeDModelEditorFields({
   function chooseFile(inputId: string) {
     document.getElementById(inputId)?.click();
   }
+
+  const shapeFields = <>
+    <Label htmlFor={id('fallbackShape')} className="text-xs">{fileFreeProcedural ? 'Shape' : 'When the Model file is unavailable'}</Label>
+    <Select value={readModelFallbackShape(fallbackMetadata)} disabled={disabled || !fallbackMetadataValid}
+      onValueChange={(value) => update('metadata', setModelFallbackShape(form.metadata, value as ModelFallbackShape))}>
+      <SelectTrigger id={id('fallbackShape')}><SelectValue /></SelectTrigger>
+      <SelectContent>{MODEL_FALLBACK_SHAPES.map((shape) => (
+        <SelectItem key={shape} value={shape}>{shape === 'box' ? 'Box / Block' : shape[0].toUpperCase() + shape.slice(1)}</SelectItem>
+      ))}</SelectContent>
+    </Select>
+    <p className="text-xs text-muted-foreground">{fileFreeProcedural
+      ? 'This shape is used in the Model Library and Project Scene without a Model file.'
+      : 'Used by the generic Model viewer. Characters keep their existing Cylinder; other module-specific fallbacks are preserved.'}</p>
+    {!fallbackMetadataValid && <p className="text-xs text-amber-500">Correct the Metadata JSON below before choosing a shape.</p>}
+  </>;
 
   return (
     <div className="space-y-4">
@@ -150,10 +162,12 @@ export function ThreeDModelEditorFields({
         </div>
       </Section>
 
-      <Section title={form.modelType === 'procedural' && !form.filePath ? "Procedural Shape" : "Model File and Preview"}>
+      {fileFreeProcedural && <Section title="Procedural Shape">{shapeFields}</Section>}
+
+      {mode === 'create' && !fileFreeProcedural && <Section title="Primary Model File">
         <div>
-          <Label htmlFor={id('filePath')}>Primary Model File URL{form.modelType === 'procedural' ? " (optional)" : ""}</Label>
-          <Input id={id('filePath')} value={form.filePath} readOnly disabled={disabled} placeholder="Upload or assign a Model File" />
+          <Label htmlFor={id('filePath')}>Primary Model File URL</Label>
+          <Input id={id('filePath')} value={form.filePath} readOnly disabled={disabled} placeholder="Upload a Model File" />
         </div>
         <div className="flex items-center gap-2">
           <input
@@ -170,7 +184,7 @@ export function ThreeDModelEditorFields({
           />
           <Button type="button" variant="outline" size="sm" className="h-8 text-xs" onClick={() => chooseFile(id('model-file-upload'))} disabled={uploadingPrimary || disabled}>
             {uploadingPrimary ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />}
-            {mode === 'edit' ? 'Upload Replacement File' : 'Upload Model File'}
+            Upload Model File
           </Button>
           {form.filePath && <span className="truncate text-xs text-muted-foreground">✓ file selected</span>}
         </div>
@@ -202,11 +216,9 @@ export function ThreeDModelEditorFields({
             )}
           </div>
         )}
-        {mode === 'edit' && <p className="text-[10px] text-muted-foreground">Uploading updates this form. Save Changes to persist the replacement file URL.</p>}
-        <div>
-          <Label htmlFor={id('fileSize')} className="text-xs">File Size (bytes)</Label>
-          <Input id={id('fileSize')} type="number" min="0" value={form.fileSize} onChange={(event) => update('fileSize', event.target.value)} disabled={disabled} />
-        </div>
+      </Section>}
+
+      <Section title="Library Preview Image">
         <div className="space-y-2 rounded border p-2">
           <div>
             <Label htmlFor={id('thumbnailUrl')} className="text-xs">Library Preview Image</Label>
@@ -235,81 +247,7 @@ export function ThreeDModelEditorFields({
           </div>
           <p className="text-[10px] text-muted-foreground">JPG, PNG, or WebP up to 5 MB. A square top-view image is recommended.</p>
         </div>
-        {mode === 'create' && <p className="text-[10px] text-muted-foreground">Add textures and supportive media from Model Files after creating the Model.</p>}
-      </Section>
-
-      {mode === 'edit' && (
-        <Section title="Attached Files">
-          <div>
-            <Label htmlFor={id('mainModelFileId')} className="text-xs">Primary Model File</Label>
-            <Select value={form.mainModelFileId || 'none'} onValueChange={(value) => {
-              const selected = modelFiles.find(file => String(file.id) === value);
-              if (!selected) return;
-              setForm(current => ({ ...current, mainModelFileId: value, filePath: selected.filePath, fileSize: selected.fileSize == null ? '' : String(selected.fileSize) }));
-            }} disabled={disabled || hasPendingPrimaryFile}>
-              <SelectTrigger id={id('mainModelFileId')}><SelectValue placeholder="Select primary Model file" /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none" disabled>Choose an attached Model file</SelectItem>
-                {modelFiles.map((file) => <SelectItem key={file.id} value={String(file.id)}>{file.fileName}</SelectItem>)}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex items-center justify-between rounded border bg-muted/30 px-2 py-1.5">
-            <span className="text-xs text-muted-foreground">Associated texture files</span>
-            <Badge variant="outline" className="text-[10px]">{textureCount}</Badge>
-          </div>
-          <div className="max-h-40 space-y-1 overflow-y-auto">
-            {files.map((file) => <div key={file.id} className="flex items-center gap-2 text-xs text-muted-foreground"><AttachmentIcon type={file.fileType} /><span className="min-w-0 flex-1 truncate">{file.fileName}</span><span className="text-[10px] capitalize">{file.fileType}</span></div>)}
-          </div>
-        </Section>
-      )}
-
-      <Section title="Transform">
-        <div className="grid grid-cols-2 gap-2">
-          <div><Label htmlFor={id('scale')} className="text-xs">Scale</Label><Input id={id('scale')} type="number" step="0.01" min="0.01" value={form.scale} onChange={(event) => update('scale', event.target.value)} disabled={disabled} /></div>
-          <div><Label htmlFor={id('rotationY')} className="text-xs">Rotation Y</Label><Input id={id('rotationY')} type="number" step="1" value={form.rotationY} onChange={(event) => update('rotationY', event.target.value)} disabled={disabled} /></div>
-        </div>
-        <div>
-          <Label className="text-xs">Offset (X / Y / Z)</Label>
-          <div className="mt-1 grid grid-cols-3 gap-2">
-            {(['offsetX', 'offsetY', 'offsetZ'] as const).map((key) => <Input key={key} aria-label={key} placeholder={key.slice(-1)} type="number" step="0.01" value={form[key]} onChange={(event) => update(key, event.target.value)} disabled={disabled} />)}
-          </div>
-        </div>
-      </Section>
-
-      <Section title="Model Lighting">
-        <Label htmlFor={id('lightBoost')} className="text-xs">Light boost: {Math.round(readModelLightBoost(fallbackMetadata) * 100)}%</Label>
-        <Input id={id('lightBoost')} type="range" min="0" max="1" step="0.05"
-          value={readModelLightBoost(fallbackMetadata)}
-          onChange={(event) => update('metadata', setModelLightBoost(form.metadata, Number(event.target.value)))}
-          disabled={disabled || !fallbackMetadataValid} />
-        <p className="text-xs text-muted-foreground">Adds brightness to this Model's lit materials in every Project that uses it. 0% keeps the GLB's original appearance; this does not illuminate nearby objects.</p>
-      </Section>
-
-      <Section title="Default Fallback Shape">
-        <Label htmlFor={id('fallbackShape')} className="text-xs">{form.modelType === 'procedural' && !form.filePath ? "Shape" : "When the Model file is unavailable"}</Label>
-        <Select value={readModelFallbackShape(fallbackMetadata)} disabled={disabled || !fallbackMetadataValid}
-          onValueChange={(value) => update('metadata', setModelFallbackShape(form.metadata, value as ModelFallbackShape))}>
-          <SelectTrigger id={id('fallbackShape')}><SelectValue /></SelectTrigger>
-          <SelectContent>{MODEL_FALLBACK_SHAPES.map((shape) => (
-            <SelectItem key={shape} value={shape}>{shape === 'box' ? 'Box / Block' : shape[0].toUpperCase() + shape.slice(1)}</SelectItem>
-          ))}</SelectContent>
-        </Select>
-        <p className="text-xs text-muted-foreground">Used by the generic Model viewer. Characters keep their existing Cylinder; other module-specific fallbacks are preserved.</p>
-        {!fallbackMetadataValid && <p className="text-xs text-amber-500">Correct the Metadata JSON below before choosing a fallback shape.</p>}
-      </Section>
-
-      <Section title="LOD and Animation">
-        <div className="flex items-center gap-2"><Switch id={id('hasLOD')} checked={form.hasLOD} onCheckedChange={(value) => update('hasLOD', value)} disabled={disabled} /><Label htmlFor={id('hasLOD')}>Has LOD</Label></div>
-        <div><Label htmlFor={id('lodLevels')} className="text-xs">LOD Levels (JSON object)</Label><Input id={id('lodLevels')} value={form.lodLevels} onChange={(event) => update('lodLevels', event.target.value)} disabled={disabled} /></div>
-        <div><Label htmlFor={id('animations')} className="text-xs">Animations (JSON array)</Label><Input id={id('animations')} value={form.animations} onChange={(event) => update('animations', event.target.value)} disabled={disabled} /></div>
-        <div>
-          <Label htmlFor={id('defaultAnimation')} className="text-xs">Default Animation</Label>
-          <Select value={form.defaultAnimation} onValueChange={(value) => update('defaultAnimation', value)} disabled={disabled}>
-            <SelectTrigger id={id('defaultAnimation')}><SelectValue placeholder="Select default animation" /></SelectTrigger>
-            <SelectContent><SelectItem value="none">None</SelectItem>{ANIMATION_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
-          </Select>
-        </div>
+        {mode === 'create' && <p className="text-[10px] text-muted-foreground">Add textures and supporting media from Model Files after creating the Model.</p>}
       </Section>
 
       <Section title="Publishing and Classification">
@@ -351,6 +289,60 @@ export function ThreeDModelEditorFields({
           </div>
         )}
       </Section>
+      {mode === 'edit' && (
+        <Section title="Model Files">
+          <p className="text-xs text-muted-foreground">
+            {primaryFile
+              ? <>Primary: <span className="text-foreground">{primaryFile.fileName}</span>{!primaryFile.filePath?.trim() && ' · missing file URL'}</>
+              : fileFreeProcedural ? 'This procedural shape needs no Model file.' : 'No primary Model file is assigned.'}
+          </p>
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+            <Badge variant="outline" className="text-[10px]">{files.length} attached file{files.length === 1 ? '' : 's'}</Badge>
+            <Badge variant="outline" className="text-[10px]">{textureCount} texture{textureCount === 1 ? '' : 's'}</Badge>
+          </div>
+          {modelId && <Button asChild variant="outline" size="sm" className="h-8 text-xs">
+            <Link href={`/admin/threed/model-files?modelId=${modelId}`}>Manage Model Files</Link>
+          </Button>}
+        </Section>
+      )}
+
+      <Section title="Transform">
+        <div className="grid grid-cols-2 gap-2">
+          <div><Label htmlFor={id('scale')} className="text-xs">Scale</Label><Input id={id('scale')} type="number" step="0.01" min="0.01" value={form.scale} onChange={(event) => update('scale', event.target.value)} disabled={disabled} /></div>
+          <div><Label htmlFor={id('rotationY')} className="text-xs">Rotation Y</Label><Input id={id('rotationY')} type="number" step="1" value={form.rotationY} onChange={(event) => update('rotationY', event.target.value)} disabled={disabled} /></div>
+        </div>
+        <div>
+          <Label className="text-xs">Offset (X / Y / Z)</Label>
+          <div className="mt-1 grid grid-cols-3 gap-2">
+            {(['offsetX', 'offsetY', 'offsetZ'] as const).map((key) => <Input key={key} aria-label={key} placeholder={key.slice(-1)} type="number" step="0.01" value={form[key]} onChange={(event) => update(key, event.target.value)} disabled={disabled} />)}
+          </div>
+        </div>
+      </Section>
+
+      <Section title="Model Lighting">
+        <Label htmlFor={id('lightBoost')} className="text-xs">Light boost: {Math.round(readModelLightBoost(fallbackMetadata) * 100)}%</Label>
+        <Input id={id('lightBoost')} type="range" min="0" max="1" step="0.05"
+          value={readModelLightBoost(fallbackMetadata)}
+          onChange={(event) => update('metadata', setModelLightBoost(form.metadata, Number(event.target.value)))}
+          disabled={disabled || !fallbackMetadataValid} />
+        <p className="text-xs text-muted-foreground">Adds brightness to this Model's lit materials in every Project that uses it. 0% keeps the GLB's original appearance; this does not illuminate nearby objects.</p>
+      </Section>
+
+      {!fileFreeProcedural && <Section title="Default Fallback Shape">{shapeFields}</Section>}
+
+      <Section title="LOD and Animation">
+        <div className="flex items-center gap-2"><Switch id={id('hasLOD')} checked={form.hasLOD} onCheckedChange={(value) => update('hasLOD', value)} disabled={disabled} /><Label htmlFor={id('hasLOD')}>Has LOD</Label></div>
+        <div><Label htmlFor={id('lodLevels')} className="text-xs">LOD Levels (JSON object)</Label><Input id={id('lodLevels')} value={form.lodLevels} onChange={(event) => update('lodLevels', event.target.value)} disabled={disabled} /></div>
+        <div><Label htmlFor={id('animations')} className="text-xs">Animations (JSON array)</Label><Input id={id('animations')} value={form.animations} onChange={(event) => update('animations', event.target.value)} disabled={disabled} /></div>
+        <div>
+          <Label htmlFor={id('defaultAnimation')} className="text-xs">Default Animation</Label>
+          <Select value={form.defaultAnimation} onValueChange={(value) => update('defaultAnimation', value)} disabled={disabled}>
+            <SelectTrigger id={id('defaultAnimation')}><SelectValue placeholder="Select default animation" /></SelectTrigger>
+            <SelectContent><SelectItem value="none">None</SelectItem>{ANIMATION_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>
+      </Section>
+
     </div>
   );
 }

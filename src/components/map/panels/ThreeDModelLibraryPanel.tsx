@@ -193,7 +193,8 @@ export function ThreeDModelLibraryPanel({
               <X className="h-3 w-3" />
             </Button>
           </div>
-          {inspectedModel.libraryReadiness.primaryFileAvailable && (
+          {(inspectedModel.libraryReadiness.primaryFileAvailable
+            || (inspectedModel.modelType === 'procedural' && !inspectedModel.filePath)) && (
             <ThreeDModelLibraryPreview model={inspectedModel} />
           )}
           <div className="grid grid-cols-2 gap-x-2 text-muted-foreground">

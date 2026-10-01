@@ -24,7 +24,7 @@ import {
 } from '@/libraries/services/threed/models/model-file-integrity';
 import { createThreeDModelLibraryReadiness } from '@/libraries/services/threed/models/model-library-readiness-core';
 import { validModelLightBoost } from '@/libraries/services/threed/models/model-lighting-core';
-import { MODEL_FALLBACK_SHAPES } from '@/libraries/services/threed/models/model-fallback-core';
+import { MODEL_FALLBACK_SHAPES, readModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
 
 type ModelWithFiles = import('@/libraries/services/threed/models/model-primary-file').ResolvedModel & {
   files: Array<typeof threedModelFiles.$inferSelect>;
@@ -235,6 +235,7 @@ function serializeLibraryModel(model: ModelWithFiles, viewerUserId: string) {
     defaultAnimation: model.defaultAnimation,
     hasExternalFiles: model.hasExternalFiles,
     textureCount: model.textureCount,
+    metadata: { fallbackShape: readModelFallbackShape(model.metadata) },
     mainModelFileId: model.mainModelFileId,
     isActive: model.isActive,
     status: model.status,
@@ -863,6 +864,17 @@ export async function PATCH(request: NextRequest) {
       if (!primaryFile) {
         return NextResponse.json(
           { success: false, error: 'Primary file must be a Model attachment owned by this Model' },
+          { status: 400 },
+        );
+      }
+      if (primaryFileId !== existing.mainModelFileId && (
+        !primaryFile.filePath.trim()
+        || typeof primaryFile.fileSize !== 'number'
+        || !Number.isSafeInteger(primaryFile.fileSize)
+        || primaryFile.fileSize <= 0
+      )) {
+        return NextResponse.json(
+          { success: false, error: 'Primary Model file must have a saved URL and a positive file size' },
           { status: 400 },
         );
       }

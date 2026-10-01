@@ -12,6 +12,7 @@
 import { modelForPreview } from './model-preview-requirements';
 
 import { MODEL_FALLBACK_SHAPES, readModelFallbackShape, setModelFallbackShape, type ModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
+import Link from 'next/link';
 import { createPortal } from 'react-dom';
 import {
   useState,
@@ -114,7 +115,7 @@ interface ModelDependencyRequirement {
 }
 
 interface ModelDependencyAudit {
-  status: 'analyzed' | 'missing_primary' | 'not_supported';
+  status: 'analyzed' | 'missing_primary' | 'not_required' | 'not_supported';
   primaryFileName?: string;
   complete?: boolean;
   requirements: ModelDependencyRequirement[];
@@ -149,8 +150,18 @@ function extensionOf(name: string): string {
   return parts.length > 1 ? parts.pop()!.toLowerCase() : '';
 }
 
+function hasSavedFileUrl(file: ModelFileRow): boolean {
+  return typeof file.filePath === 'string' && file.filePath.trim().length > 0;
+}
+
+function primaryFileProblem(file: ModelFileRow): string | null {
+  if (!hasSavedFileUrl(file)) return 'missing file URL';
+  if (typeof file.fileSize !== 'number' || !Number.isSafeInteger(file.fileSize) || file.fileSize <= 0) return 'missing valid file size';
+  return null;
+}
+
 function isImageRow(file: ModelFileRow): boolean {
-  return typeof file.filePath === 'string' && file.filePath.trim().length > 0 && IMAGE_EXTENSIONS.has(extensionOf(file.fileName));
+  return hasSavedFileUrl(file) && IMAGE_EXTENSIONS.has(extensionOf(file.fileName));
 }
 
 function formatSize(bytes: number | null): string {
@@ -260,6 +271,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
     () => models.find((m) => String(m.id) === modelId) ?? null,
     [models, modelId],
   );
+  const activeModel = selectedModel ?? (modelDetail?.id === Number(modelId) ? modelDetail : null);
   const files = useMemo(() => modelDetail?.files ?? [], [modelDetail]);
   const previewModel = useMemo<ModelData | null>(() => {
     if (!modelDetail) return null;
@@ -275,6 +287,8 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
     }, troubleshooting);
   }, [modelDetail, troubleshooting]);
   const mainModelFileId = modelDetail?.mainModelFileId ?? null;
+  const chosenPrimaryFile = primaryChoice?.modelId === modelId
+    ? files.find((file) => file.id === Number(primaryChoice.fileId)) ?? null : null;
   const missingRequirements = useMemo(
     () => dependencyAudit?.requirements.filter((item) => !item.satisfied) ?? [],
     [dependencyAudit],
@@ -636,6 +650,10 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
   const handleSetPrimary = useCallback(
     async (file: ModelFileRow) => {
       if (file.fileType !== 'model') return;
+      if (primaryFileProblem(file)) {
+        showToast('A primary Model file needs a saved URL and a positive file size.', 'error');
+        return;
+      }
       setPrimaryFileId(file.id);
       try {
         const response = await fetch(`/api/threed/models?id=${modelId}`, {
@@ -664,6 +682,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
 
   const handleCopy = useCallback(
     async (file: ModelFileRow) => {
+      if (!hasSavedFileUrl(file)) return;
       try {
         await navigator.clipboard.writeText(file.filePath);
         setCopiedPath(file.filePath);
@@ -729,9 +748,9 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
           variant="ghost"
           size="icon"
           className="h-7 w-7"
-          title={file.id === mainModelFileId ? 'Primary model file' : 'Set as primary model file'}
+          title={file.id === mainModelFileId ? 'Primary model file' : primaryFileProblem(file) ? `Cannot set primary: ${primaryFileProblem(file)}` : 'Set as primary model file'}
           onClick={() => handleSetPrimary(file)}
-          disabled={primaryFileId === file.id || file.id === mainModelFileId}
+          disabled={primaryFileId === file.id || file.id === mainModelFileId || Boolean(primaryFileProblem(file))}
         >
           {file.id === mainModelFileId ? (
             <BadgeCheck className="w-4 h-4 text-blue-500" />
@@ -746,8 +765,9 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
         variant="ghost"
         size="icon"
         className="h-7 w-7"
-        title="Copy URL"
+        title={hasSavedFileUrl(file) ? 'Copy URL' : 'No saved URL to copy'}
         onClick={() => handleCopy(file)}
+        disabled={!hasSavedFileUrl(file)}
       >
         {copiedPath === file.filePath ? (
           <Check className="w-4 h-4 text-green-500" />
@@ -755,7 +775,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
           <Copy className="w-4 h-4 text-muted-foreground" />
         )}
       </Button>
-      <a
+      {hasSavedFileUrl(file) && <a
         href={file.filePath}
         target="_blank"
         rel="noopener noreferrer"
@@ -763,7 +783,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
         title="Open in new tab"
       >
         <ExternalLink className="w-4 h-4" />
-      </a>
+      </a>}
       <Button
         variant="ghost"
         size="icon"
@@ -857,6 +877,27 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
           {models.map((model) => <option key={model.id} value={model.id}>{model.modelName} · {model.modelType.toUpperCase()} · #{model.id}</option>)}
         </select>, selectorContainer)}
 
+      {activeModel && (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-muted/20 px-3 py-2 text-xs">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <span className="text-muted-foreground">Model record</span>
+            <span className="max-w-64 truncate font-semibold" title={activeModel.modelName}>{activeModel.modelName}</span>
+            <Badge variant="outline" className="text-[10px]">{activeModel.modelType}</Badge>
+            <span className="text-muted-foreground">#{activeModel.id}</span>
+            <span aria-hidden="true" className="text-muted-foreground">→</span>
+            <span className="font-medium">Files and appearance</span>
+          </div>
+          <Link
+            href={`/admin/threed/models?id=${activeModel.id}`}
+            aria-label={`Open Model record ${activeModel.modelName}`}
+            className="inline-flex min-h-7 items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-2 font-medium text-foreground no-underline hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@media(pointer:coarse)]:min-h-11"
+          >
+            <ExternalLink aria-hidden="true" className="h-3.5 w-3.5" />
+            Open Model record
+          </Link>
+        </div>
+      )}
+
       <div className="grid items-start gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(400px,0.85fr)] ">
           <ThreeDModelAssetPreview
             model={previewModel}
@@ -944,15 +985,14 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
                   onChange={event => setPrimaryChoice({ modelId, fileId: event.target.value })}>
                   <option value="">Choose a Model file…</option>
                   {files.filter(file => file.fileType === 'model').map(file => (
-                    <option key={file.id} value={file.id} disabled={!file.filePath?.trim()}>{file.fileName}{!file.filePath?.trim() ? ' — missing file URL' : file.id === mainModelFileId ? ' — primary' : ''}</option>
+                    <option key={file.id} value={file.id} disabled={Boolean(primaryFileProblem(file))}>{file.fileName}{primaryFileProblem(file) ? ` — ${primaryFileProblem(file)}` : file.id === mainModelFileId ? ' — primary' : ''}</option>
                   ))}
                 </select>
                 <div className="flex flex-wrap gap-2">
                   <Button type="button" size="sm" className="text-xs"
-                    disabled={!modelId || loadingFiles || uploading || primaryFileId !== null || deletingId !== null || primaryChoice?.modelId !== modelId || !primaryChoice.fileId || Number(primaryChoice.fileId) === mainModelFileId}
+                    disabled={!modelId || loadingFiles || uploading || primaryFileId !== null || deletingId !== null || !chosenPrimaryFile || chosenPrimaryFile.fileType !== 'model' || Boolean(primaryFileProblem(chosenPrimaryFile)) || chosenPrimaryFile.id === mainModelFileId}
                     onClick={() => {
-                      const file = files.find(item => item.id === Number(primaryChoice?.fileId) && item.fileType === 'model' && item.filePath?.trim());
-                      if (file) void handleSetPrimary(file);
+                      if (chosenPrimaryFile) void handleSetPrimary(chosenPrimaryFile);
                     }}>{primaryFileId !== null ? 'Saving primary file…' : 'Save primary file'}</Button>
                   <label className="relative inline-flex cursor-pointer items-center rounded-md border px-3 py-1 text-xs focus-within:ring-2 focus-within:ring-ring">
                     Upload Model file
@@ -988,6 +1028,8 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
 
         {dependencyError ? (
           <p className="mt-2 text-[11px] text-amber-400">{dependencyError}</p>
+        ) : dependencyAudit?.status === 'not_required' ? (
+          <p className="mt-2 text-[11px] text-muted-foreground">This procedural shape needs no Model file or supporting files.</p>
         ) : dependencyAudit?.status === 'missing_primary' ? (
           <p className="mt-2 text-[11px] text-muted-foreground">Choose a primary Model file in Step 1 to check its required files.</p>
         ) : dependencyAudit?.status === 'not_supported' ? (
@@ -1130,12 +1172,14 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
       </section>
             )}
             savedFilesStatus={{
-              ready: Boolean(!savingShape && !(shapeChoice?.modelId === modelId && shapeChoice.shape !== readModelFallbackShape(modelDetail?.metadata)) && modelId && !loadingModels && !loadingFiles && !loadingDependencies && !uploading && linkingTexture === null && primaryFileId === null && deletingId === null && !error && !dependencyError && dependencyAudit?.status === 'analyzed' && missingRequirements.length === 0 && !uploadQueue.some(item => item.status === 'error')),
+              ready: Boolean(!savingShape && !(shapeChoice?.modelId === modelId && shapeChoice.shape !== readModelFallbackShape(modelDetail?.metadata)) && modelId && !loadingModels && !loadingFiles && !loadingDependencies && !uploading && linkingTexture === null && primaryFileId === null && deletingId === null && !error && !dependencyError && (dependencyAudit?.status === 'analyzed' || dependencyAudit?.status === 'not_required') && missingRequirements.length === 0 && !uploadQueue.some(item => item.status === 'error')),
+              readyLabel: dependencyAudit?.status === 'not_required' ? 'Procedural Model ready' : undefined,
               message: savingShape ? 'Saving default shape…' : shapeChoice?.modelId === modelId && shapeChoice.shape !== readModelFallbackShape(modelDetail?.metadata) ? 'Save the Default Shape / Mesh in Step 1.' : !modelId ? 'Select a Model above.'
                 : uploading || linkingTexture !== null || primaryFileId !== null || deletingId !== null ? 'Saving file changes…'
                 : loadingModels || loadingFiles || loadingDependencies ? 'Checking saved files…'
                 : error || dependencyError ? 'Unable to verify saved files. Review the sections above.'
                 : uploadQueue.some(item => item.status === 'error') ? 'An upload failed. Review the upload results above.'
+                : dependencyAudit?.status === 'not_required' ? 'The saved shape is ready; no Model file or supporting files are required.'
                 : mainModelFileId === null || dependencyAudit?.status === 'missing_primary' ? 'Choose a primary Model file in Step 1.'
                 : dependencyAudit?.status !== 'analyzed' ? 'Saved files could not be verified. Review Required files.'
                 : missingRequirements.length ? `${missingRequirements.length} required file(s) still need to be saved in step 2.`
