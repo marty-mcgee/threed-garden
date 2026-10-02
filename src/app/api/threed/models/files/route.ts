@@ -292,8 +292,6 @@ export async function POST(request: NextRequest) {
         staleReplacement?.id ?? null,
       );
 
-      if (fileType === 'model' && firstModelFileId == null) firstModelFileId = record.id;
-
       uploaded.push(record);
     }
 
@@ -302,7 +300,8 @@ export async function POST(request: NextRequest) {
         eq(threedModels.id, modelId), eq(threedModels.userId, userId),
       )).limit(1).for('update');
       if (!currentModel) throw new Error('Model no longer exists');
-      const selectedPrimaryId = currentModel.mainModelFileId ?? firstModelFileId;
+      // Uploads attach resources; only an explicit Model save chooses geometry.
+      const selectedPrimaryId = currentModel.mainModelFileId;
       const completeFiles = await tx.select()
         .from(threedModelFiles)
         .where(and(

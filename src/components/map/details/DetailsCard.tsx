@@ -85,7 +85,7 @@ function ModelFileNotice({ type, data }: { type: string; data: Record<string, an
         : filePath ? 'Model file could not be loaded' : 'Main Model file is missing'}</p>
       <p className="mt-1">A fallback shape represents this asset until its Model file is available.</p>
       {status === 'editable' ? (
-        <a href={`/admin/threed/model-files?modelId=${modelId}`} target="_blank" rel="noopener noreferrer"
+        <a href={`/admin/threed/models/${modelId}/files`} target="_blank" rel="noopener noreferrer"
           className="mt-1 inline-block underline underline-offset-2">Manage Model Files ↗</a>
       ) : (
         <>
@@ -621,7 +621,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
               <KvRow label="Model source" value={d.model?.filePath ? 'File configured' : 'No Model file configured'} />
               <p className="text-[10px] text-muted-foreground">A basic shape represents Characters without a usable Model. The visible mesh and physics capsule are separate.</p>
               {Number(d.model?.id ?? d.modelId) > 0 && (
-                <a className="inline-flex min-h-8 items-center text-xs text-cyan-800 dark:text-cyan-200 underline underline-offset-2" href={`/admin/threed/models?id=${Number(d.model?.id ?? d.modelId)}`} target="_blank" rel="noopener noreferrer">View Model in Admin</a>
+                <a className="inline-flex min-h-8 items-center text-xs text-cyan-800 dark:text-cyan-200 underline underline-offset-2" href={`/admin/threed/models/${Number(d.model?.id ?? d.modelId)}`} target="_blank" rel="noopener noreferrer">View Model in Admin</a>
               )}
           </DetailsCardSection>
           <DetailsCardSection title="Character Defaults" className="order-8">

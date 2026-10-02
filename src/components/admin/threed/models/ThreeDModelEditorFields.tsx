@@ -119,6 +119,11 @@ export function ThreeDModelEditorFields({
   const textureCount = files.filter((file) => file.fileType === 'texture').length;
   const primaryFile = modelFiles.find((file) => String(file.id) === form.mainModelFileId);
   const fileFreeProcedural = form.modelType === 'procedural' && !form.filePath;
+  const geometrySource = form.modelType === 'procedural'
+    ? 'procedural'
+    : form.modelType || form.filePath || form.mainModelFileId
+      ? 'model-file'
+      : '';
 
   function update<K extends keyof ThreeDModelAdminFormData>(key: K, value: ThreeDModelAdminFormData[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -151,20 +156,52 @@ export function ThreeDModelEditorFields({
           <Input id={id('modelName')} value={form.modelName} onChange={(event) => update('modelName', event.target.value)} disabled={disabled} />
         </div>
         <div>
-          <Label htmlFor={id('modelType')}>Model Type *</Label>
-          <Select value={form.modelType} onValueChange={(value) => update('modelType', value)} disabled={disabled || Boolean(form.filePath)}>
-            <SelectTrigger id={id('modelType')}><SelectValue placeholder="Select model type" /></SelectTrigger>
-            <SelectContent>{MODEL_TYPE_OPTIONS.map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
+          <Label htmlFor={id('geometrySource')}>Geometry Source *</Label>
+          <Select
+            value={geometrySource}
+            onValueChange={(value) => setForm(current => ({ ...current, modelType: value === 'procedural' ? 'procedural' : 'glb', filePath: '', fileSize: '', mainModelFileId: '' }))}
+            disabled={disabled || (mode === 'create' && Boolean(form.filePath)) || form.usedByCharacters}
+          >
+            <SelectTrigger id={id('geometrySource')}><SelectValue placeholder="Choose a geometry source" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="procedural">Procedural shape</SelectItem>
+              <SelectItem value="model-file">Model file</SelectItem>
+            </SelectContent>
           </Select>
-          {form.modelType === 'procedural' && <p className="mt-1 text-xs text-muted-foreground">
-            Procedural Models use the Shape below and can be created without a file.
+          <p className="mt-1 text-xs text-muted-foreground">
+            {geometrySource === 'procedural'
+              ? 'Three.js creates this geometry from the Shape settings. No Model file is required.'
+              : geometrySource === 'model-file'
+                ? 'A GLB, GLTF, FBX, OBJ, or USDZ file supplies this Model’s geometry.'
+                : 'Choose whether Three.js creates the geometry or loads it from a Model file.'}
+          </p>
+          {mode === 'edit' && <p className="mt-1 text-[10px] text-muted-foreground">
+            Source changes apply on Save. Existing attachments are retained. Character runtime Models retain their existing source.
           </p>}
         </div>
+        {geometrySource === 'model-file' && <div>
+          <Label htmlFor={id('modelType')}>Model Format *</Label>
+          <Select value={form.modelType} onValueChange={(value) => update('modelType', value)} disabled={disabled || mode === 'edit' || Boolean(form.filePath)}>
+            <SelectTrigger id={id('modelType')}><SelectValue placeholder="Select the Model file format" /></SelectTrigger>
+            <SelectContent>{MODEL_TYPE_OPTIONS.filter((option) => ['glb', 'gltf', 'fbx', 'obj', 'usdz', form.modelType].includes(option.value) && option.value !== 'procedural').map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
+          </Select>
+        </div>}
       </Section>
 
       {fileFreeProcedural && <Section title="Procedural Shape">{shapeFields}</Section>}
+      {mode === 'edit' && geometrySource === 'model-file' && <Section title="Model File Geometry">
+        <Label htmlFor={id('primaryFile')}>Geometry file</Label>
+        <Select value={form.mainModelFileId} disabled={disabled} onValueChange={value => {
+          const file = modelFiles.find(item => String(item.id) === value);
+          if (file) setForm(current => ({ ...current, mainModelFileId: value, filePath: file.filePath, fileSize: String(file.fileSize ?? ''), modelType: file.fileName.split('.').at(-1)?.toLowerCase() ?? current.modelType }));
+        }}>
+          <SelectTrigger id={id('primaryFile')}><SelectValue placeholder="Choose an attached Model file" /></SelectTrigger>
+          <SelectContent>{modelFiles.map(file => <SelectItem key={file.id} value={String(file.id)} disabled={!file.filePath.trim() || !file.fileSize || file.fileSize <= 0}>{file.fileName}</SelectItem>)}</SelectContent>
+        </Select>
+        <p className="text-xs text-muted-foreground">Choose an existing attachment, or open Model Files to upload one. Uploading alone does not select the geometry source.</p>
+      </Section>}
 
-      {mode === 'create' && !fileFreeProcedural && <Section title="Primary Model File">
+      {mode === 'create' && geometrySource === 'model-file' && <Section title="Primary Model File">
         <div>
           <Label htmlFor={id('filePath')}>Primary Model File URL</Label>
           <Input id={id('filePath')} value={form.filePath} readOnly disabled={disabled} placeholder="Upload a Model File" />
@@ -271,8 +308,6 @@ export function ThreeDModelEditorFields({
             ? 'Character runtime Models are excluded from the Dashboard Model Library and use the separate Character Library.'
             : 'Leave Character runtime Model off for ordinary props, buildings, environments, and other placeable Models.'}
         </p>
-        <div><Label htmlFor={id('uploadedBy')} className="text-xs">Uploaded By</Label><Input id={id('uploadedBy')} value={form.uploadedBy} onChange={(event) => update('uploadedBy', event.target.value)} disabled={disabled} /></div>
-        <div><Label htmlFor={id('metadata')} className="text-xs">Metadata (JSON object)</Label><Input id={id('metadata')} value={form.metadata} onChange={(event) => update('metadata', event.target.value)} disabled={disabled} /></div>
       </Section>
 
       <Section title="Categories">
@@ -301,15 +336,22 @@ export function ThreeDModelEditorFields({
             <Badge variant="outline" className="text-[10px]">{textureCount} texture{textureCount === 1 ? '' : 's'}</Badge>
           </div>
           {modelId && <Button asChild variant="outline" size="sm" className="h-8 text-xs">
-            <Link href={`/admin/threed/model-files?modelId=${modelId}`}>Manage Model Files</Link>
+            <Link href={`/admin/threed/models/${modelId}/files`}>Manage Model Files</Link>
           </Button>}
         </Section>
       )}
 
+      <details className="rounded-md border p-3">
+        <summary className="cursor-pointer text-sm font-medium">Advanced settings</summary>
+        <div className="mt-3 space-y-4">
+      <Section title="Technical metadata">
+        <div><Label htmlFor={id('uploadedBy')} className="text-xs">Uploaded By</Label><Input id={id('uploadedBy')} value={form.uploadedBy} onChange={(event) => update('uploadedBy', event.target.value)} disabled={disabled} /></div>
+        <div><Label htmlFor={id('metadata')} className="text-xs">Metadata (JSON object)</Label><Input id={id('metadata')} value={form.metadata} onChange={(event) => update('metadata', event.target.value)} disabled={disabled} /></div>
+      </Section>
       <Section title="Transform">
         <div className="grid grid-cols-2 gap-2">
           <div><Label htmlFor={id('scale')} className="text-xs">Scale</Label><Input id={id('scale')} type="number" step="0.01" min="0.01" value={form.scale} onChange={(event) => update('scale', event.target.value)} disabled={disabled} /></div>
-          <div><Label htmlFor={id('rotationY')} className="text-xs">Rotation Y</Label><Input id={id('rotationY')} type="number" step="1" value={form.rotationY} onChange={(event) => update('rotationY', event.target.value)} disabled={disabled} /></div>
+          <div><Label htmlFor={id('rotationY')} className="text-xs">Rotation Y (degrees)</Label><Input id={id('rotationY')} type="number" step="1" value={form.rotationY} onChange={(event) => update('rotationY', event.target.value)} disabled={disabled} /></div>
         </div>
         <div>
           <Label className="text-xs">Offset (X / Y / Z)</Label>
@@ -324,11 +366,11 @@ export function ThreeDModelEditorFields({
         <Input id={id('lightBoost')} type="range" min="0" max="1" step="0.05"
           value={readModelLightBoost(fallbackMetadata)}
           onChange={(event) => update('metadata', setModelLightBoost(form.metadata, Number(event.target.value)))}
-          disabled={disabled || !fallbackMetadataValid} />
-        <p className="text-xs text-muted-foreground">Adds brightness to this Model's lit materials in every Project that uses it. 0% keeps the GLB's original appearance; this does not illuminate nearby objects.</p>
+          disabled={disabled || !fallbackMetadataValid || fileFreeProcedural} />
+        <p className="text-xs text-muted-foreground">For file-based Models, adds brightness to this Model's lit materials in every Project that uses it. 0% keeps the GLB's original appearance; this does not illuminate nearby objects.</p>
       </Section>
 
-      {!fileFreeProcedural && <Section title="Default Fallback Shape">{shapeFields}</Section>}
+      {!fileFreeProcedural && <Section title="File Recovery Shape">{shapeFields}</Section>}
 
       <Section title="LOD and Animation">
         <div className="flex items-center gap-2"><Switch id={id('hasLOD')} checked={form.hasLOD} onCheckedChange={(value) => update('hasLOD', value)} disabled={disabled} /><Label htmlFor={id('hasLOD')}>Has LOD</Label></div>
@@ -342,7 +384,8 @@ export function ThreeDModelEditorFields({
           </Select>
         </div>
       </Section>
-
+        </div>
+      </details>
     </div>
   );
 }

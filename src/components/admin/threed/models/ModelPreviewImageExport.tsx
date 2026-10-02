@@ -8,8 +8,9 @@ import { useModelPreviewSize } from '@/components/settings/ModelPreviewSettings'
 import { modelForPreview, resolvePreviewRequirements } from './model-preview-requirements';
 import { ThreeDModelAssetPreview } from './ThreeDModelAssetPreview';
 
-export function ModelPreviewImageExport({ model, dependencyCount, attachedDependencyCount, onUseImageUrl, disabled = false }: {
+export function ModelPreviewImageExport({ model, dependencyCount, attachedDependencyCount, onUseImageUrl, disabled = false, useDraftModel = false }: {
   model: ModelData;
+  useDraftModel?: boolean;
   onUseImageUrl?: (url: string) => void;
   disabled?: boolean;
   dependencyCount: number;
@@ -41,7 +42,7 @@ export function ModelPreviewImageExport({ model, dependencyCount, attachedDepend
         const detailResponse = await fetch(`/api/threed/models?id=${model.id}`, { signal: controller.signal });
         const detail = await detailResponse.json();
         if (!detailResponse.ok || !detail.success) throw new Error();
-        if (!controller.signal.aborted) setCaptureModel(modelForPreview(detail.data));
+        if (!controller.signal.aborted) setCaptureModel(useDraftModel ? model : modelForPreview(detail.data));
         const resolved = resolvePreviewRequirements(detail.data, result.data.requirements);
         if (!controller.signal.aborted) setRequirements({ total: resolved.length,
           attached: resolved.filter(item => item.satisfied).length,
@@ -51,7 +52,7 @@ export function ModelPreviewImageExport({ model, dependencyCount, attachedDepend
       }
     })();
     return () => controller.abort();
-  }, [open, inspectRequirements, model.id]);
+  }, [open, inspectRequirements, model, useDraftModel]);
 
   useEffect(() => {
     if (!image) { setImageUrl(''); return; }
@@ -114,7 +115,7 @@ export function ModelPreviewImageExport({ model, dependencyCount, attachedDepend
           <Button type="button" disabled={saving || saved} onClick={savePreview}>{saving ? 'Saving…' : saved ? (onUseImageUrl ? 'Added to Form' : 'Library Preview Saved') : 'Use as Library Preview'}</Button>
           <Button type="button" variant="ghost" disabled={saving} onClick={() => { setImage(null); setSaved(false); setError(''); }}>Reframe</Button>
         </div>
-        <p className="text-xs text-muted-foreground">{onUseImageUrl ? 'Uses saved Model files and materials. Use as Library Preview fills the form; Save Changes persists it.' : 'Use as Library Preview replaces this Model’s current preview image.'}</p>
+        <p className="text-xs text-muted-foreground">{onUseImageUrl ? (useDraftModel ? 'Captures the current Model draft. Use as Library Preview fills the form; Save Changes persists it.' : 'Uses saved Model files and materials. Use as Library Preview fills the form; Save Changes persists it.') : 'Use as Library Preview replaces this Model’s current preview image.'}</p>
         {saved && <p role="status" className="text-sm text-emerald-500">{onUseImageUrl ? 'Preview added to the form. Close this dialog and Save Changes.' : 'Library Preview Image saved.'}</p>}
       </>}
       {error && <p role="alert" className="text-sm text-red-400">{error}</p>}

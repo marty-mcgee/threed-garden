@@ -250,7 +250,7 @@ export function ThreeDModelLibraryPanel({
           )}
           {inspectedModel.canManage && inspectedModel.libraryReadiness.status !== 'ready' && (
             <Button asChild type="button" variant="outline" size="sm" className="mt-1 h-6 w-full text-[10px]">
-              <a href={`/admin/threed/model-files?modelId=${inspectedModel.id}`} target="_blank" rel="noreferrer">
+              <a href={`/admin/threed/models/${inspectedModel.id}/files`} target="_blank" rel="noreferrer">
                 Configure Model <ExternalLink className="ml-1 h-3 w-3" />
               </a>
             </Button>

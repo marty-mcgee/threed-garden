@@ -23,6 +23,7 @@ export interface PreviewPerspective { direction: [number, number, number]; dista
 
 interface ThreeDModelAssetPreviewProps {
   model: ModelData | null;
+  preserveCameraOnEdit?: boolean;
   onCaptureImage?: (image: Blob) => void;
   autoCapture?: boolean;
   outputSize?: { width: number; height: number };
@@ -62,6 +63,8 @@ export interface ThreeDModelTextureLibraryItem {
 function PreviewModel({
   model,
   onSettled,
+  preserveCameraOnEdit = false,
+  fitRevision = 0,
   onError,
   perspective,
   onFitDistance,
@@ -71,6 +74,8 @@ function PreviewModel({
   materialPreviewSelectionId,
 }: {
   model: ModelData;
+  preserveCameraOnEdit?: boolean;
+  fitRevision?: number;
   onSettled: () => void;
   onError?: (message: string | null) => void;
   perspective?: PreviewPerspective;
@@ -81,13 +86,16 @@ function PreviewModel({
   materialPreviewSelectionId?: string | null;
 }) {
   const bounds = useBounds();
+  const fittedRevision = useRef<number | null>(null);
   const getState = useThree(state => state.get);
   const handleBounds = useCallback((value: ModelCollisionBounds | null) => {
-    if (!value) return;
+    if (!value || (preserveCameraOnEdit && fittedRevision.current === fitRevision)) return;
     requestAnimationFrame(() => {
       bounds.refresh().clip();
       const { center, distance } = bounds.getSize();
       onFitDistance?.(distance);
+      if (preserveCameraOnEdit && fittedRevision.current === fitRevision) return;
+      fittedRevision.current = fitRevision;
       if (perspective) {
         const position = new Vector3(...perspective.direction).normalize().multiplyScalar(distance * perspective.distanceScale).add(center);
         // Apply the reviewed perspective synchronously. Bounds.moveTo animates
@@ -103,12 +111,27 @@ function PreviewModel({
         onCameraReady?.();
       } else bounds.fit();
     });
-  }, [bounds, perspective, onFitDistance, getState, onCameraReady]);
+  }, [bounds, perspective, onFitDistance, getState, onCameraReady, preserveCameraOnEdit, fitRevision]);
 
+  // Fit remains available for recovery geometry even when the loader has no bounds.
+  useEffect(() => {
+    if (!preserveCameraOnEdit || fitRevision === 0) return;
+    const frame = requestAnimationFrame(() => {
+      fittedRevision.current = fitRevision;
+      bounds.refresh().clip().fit();
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [bounds, fitRevision, preserveCameraOnEdit]);
+
+  const procedural = model.modelType === 'procedural' && !model.filePath;
+  const finite = (value: unknown, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
   return (
+    <group position={procedural ? [finite(model.offsetX), finite(model.offsetY), finite(model.offsetZ)] : [0, 0, 0]}
+      rotation={procedural ? [0, finite(model.rotationY) * Math.PI / 180, 0] : [0, 0, 0]}>
     <ModelMarker3D
       model={model}
       position={[0, 0, 0]}
+      scale={procedural ? Math.max(0.01, finite(model.scale, 1)) : 1}
       onCollisionBoundsChange={handleBounds}
       onRuntimeSettled={onSettled}
       onRuntimeError={onError}
@@ -116,6 +139,7 @@ function PreviewModel({
       materialPreviewOverride={materialPreviewOverride}
       materialPreviewSelectionId={materialPreviewSelectionId}
     />
+    </group>
   );
 }
 
@@ -168,6 +192,7 @@ function MaterialSlotRow({
 
 export function ThreeDModelAssetPreview({
   model,
+  preserveCameraOnEdit = false,
   onCaptureImage,
   autoCapture = false,
   outputSize = { width: 400, height: 400 },
@@ -205,6 +230,7 @@ export function ThreeDModelAssetPreview({
   const [capturing, setCapturing] = useState(false);
   const [settledKey, setSettledKey] = useState<string | null>(null);
   const [resetKey, setResetKey] = useState(0);
+  const [fitRevision, setFitRevision] = useState(0);
   const [materialInventory, setMaterialInventory] = useState<ThreeDModelMaterialInventory | null>(null);
   const [selectedMaterialSlotId, setSelectedMaterialSlotId] = useState<string | null>(null);
   const [materialPreviewOverride, setMaterialPreviewOverride] = useState<ThreeDModelMaterialPreviewOverride | null>(null);
@@ -324,7 +350,7 @@ export function ThreeDModelAssetPreview({
   const assignedTextureCoverage = Boolean(materialInventory?.slots.length && !materialInventory.omittedSlotCount
     && materialInventory.slots.every(slot => assignedTargets.has(slot.id) && slot.textures.some(texture => texture.property === 'map' && texture.ready)));
   const missingFiles = Math.max(0, dependencyCount - attachedDependencyCount - (assignedTextureCoverage ? unresolvedTextureCount : 0));
-  const captureReady = (!perspective || fittedCameraKey === cameraKey) && !loading && !runtimeError && Boolean(model?.filePath && materialInventory?.slots.length)
+  const captureReady = (!perspective || fittedCameraKey === cameraKey) && !loading && !runtimeError && Boolean(model?.modelType === 'procedural' && !model.filePath || model?.filePath && materialInventory?.slots.length)
     && !materialInventory?.slots.some(slot => slot.textures.some(texture => !texture.ready))
     && missingFiles === 0;
 
@@ -365,12 +391,15 @@ export function ThreeDModelAssetPreview({
           </span>
         )}
         {headerActions}
+        {preserveCameraOnEdit && <Button type="button" variant="ghost" size="sm" disabled={!model || loading}
+          onClick={() => setFitRevision(value => value + 1)}>Fit</Button>}
         <Button
           type="button"
           variant="ghost"
           size="icon"
           className="h-7 w-7"
-          title="Reset preview camera"
+          title="Reset View"
+          aria-label="Reset View"
           disabled={!model}
           onClick={() => { setSettledKey(null); setResetKey((value) => value + 1); }}
         >
@@ -402,9 +431,11 @@ export function ThreeDModelAssetPreview({
               infiniteGrid
             />}
             <Suspense fallback={null}>
-              <Bounds fit={!perspective} clip margin={1.25} maxDuration={autoCapture || fixedCaptureCamera ? 0 : 1}>
+              <Bounds fit={!perspective && !preserveCameraOnEdit} clip margin={1.25} maxDuration={autoCapture || fixedCaptureCamera ? 0 : 1}>
                 <PreviewModel
                   model={model}
+                  preserveCameraOnEdit={preserveCameraOnEdit}
+                  fitRevision={fitRevision}
                   onSettled={() => setSettledKey(modelKey)}
                   onMaterialInventoryChange={showMaterialInspector || onCaptureImage ? setMaterialInventory : undefined}
                   onError={setRuntimeError}
@@ -433,6 +464,7 @@ export function ThreeDModelAssetPreview({
           </div>
         )}
       </div>
+      {!onCaptureImage && runtimeError && <p role="alert" className="p-3 text-xs text-amber-500">{runtimeError} · Showing recovery geometry. Open Model Files to review resources.</p>}
       {onCaptureImage && <div className="space-y-2 p-3">
         {!hideCaptureControls && <>
           <Button type="button" onClick={captureImage} disabled={autoCapture || !captureReady || capturing}>

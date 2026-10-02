@@ -160,6 +160,68 @@ async function runPrimaryPatch(primaryFile, expectedStatus, { currentPrimaryFile
   assert.equal(unchangedBrokenPrimary.status, 200, 'Unrelated edits may retain a legacy broken primary file');
   assert.deepEqual(plain(transactionUpdates.at(-1).metadata), metadata);
   assert.equal(transactionCalls, 2);
+  async function convertToProcedural(updates, expectedStatus, existingOverrides = {}) {
+    queue = [[{ id: 5, userId: 'owner', modelType: 'gltf', mainModelFileId: 9, filePath: 'https://assets.example.test/model.gltf', ...existingOverrides }],
+      ...(expectedStatus === 200 ? [[{ id: 5, modelType: 'procedural', mainModelFileId: null, filePath: '' }]] : [])];
+    const result = await moduleExports.PATCH({ url: 'http://localhost/api/threed/models?id=5', json: async () => updates });
+    assert.equal(result.status, expectedStatus);
+    assert.equal(queue.length, 0);
+  }
+  const conversion = { modelType: 'procedural', mainModelFileId: null, filePath: '', fileSize: null, metadata: { fallbackShape: 'box', privateNotes: 'retained' } };
+  await convertToProcedural(conversion, 200);
+  assert.equal(transactionUpdates.at(-1).mainModelFileId, null);
+  assert.equal(transactionUpdates.at(-1).modelType, 'procedural');
+  assert.deepEqual(plain(transactionUpdates.at(-1).metadata), conversion.metadata);
+  assert.equal('filePath' in transactionUpdates.at(-1), false);
+  const conversionTransactions = transactionCalls;
+  await convertToProcedural({ ...conversion, metadata: { fallbackShape: 'invalid' } }, 400);
+  await convertToProcedural({ ...conversion, filePath: 'https://assets.example.test/model.gltf' }, 400);
+  await convertToProcedural(conversion, 400, { usedByCharacters: true });
+  await convertToProcedural({ ...conversion, mainModelFileId: undefined }, 400);
+  assert.equal(transactionCalls, conversionTransactions, 'Rejected source changes must not mutate the Model');
+  // Execute attachment POST with fake Blob/database adapters: uploading must not select geometry.
+  const uploadExports = {};
+  let uploadQueue = [], uploadUpdates = [];
+  const uploadQuery = () => {
+    const chain = {};
+    for (const method of ['from', 'where', 'limit', 'for', 'orderBy']) chain[method] = () => chain;
+    chain.then = (resolve, reject) => {
+      assert.ok(uploadQueue.length, 'Unexpected upload query');
+      return Promise.resolve(uploadQueue.shift()).then(resolve, reject);
+    };
+    return chain;
+  };
+  const uploadDb = {
+    select: uploadQuery,
+    insert: () => ({ values: value => ({ returning: async () => [{ id: 22, ...value }] }) }),
+    update: () => ({ set: value => { uploadUpdates.push(value); return { where: async () => {} }; } }),
+    transaction: async callback => callback(uploadDb),
+  };
+  const uploadMocks = { ...mocks,
+    '@/libraries/db/client': { db: uploadDb },
+    '@/libraries/db/sequence': { ensureTableSequence: async () => {} },
+    '@/libraries/services/threed/models/model-blob-paths': { createThreeDAttachmentBlobPath: () => 'fixture/model.glb' },
+    '@/libraries/services/threed/models/model-companion-core': { normalizeThreeDModelRelativePath: value => value },
+    '@vercel/blob': { put: async () => ({ url: 'https://fixture.test/model.glb' }) },
+  };
+  vm.runInNewContext(transpile('src/app/api/threed/models/files/route.ts'), {
+    exports: uploadExports, console, crypto: { randomUUID: () => 'fixture' },
+    require(name) { assert.ok(name in uploadMocks, `Unexpected upload import: ${name}`); return uploadMocks[name]; },
+  });
+  for (const [modelType, primaryId] of [['procedural', null], ['gltf', null], ['gltf', 22]]) {
+    const model = { id: 5, userId: 'owner', modelType, mainModelFileId: primaryId, filePath: '' };
+    uploadQueue = [[model], [], [model], [{ id: 22, fileType: 'model', fileName: 'model.glb' }]];
+    const uploaded = await uploadExports.POST({
+      headers: { get: () => 'multipart/form-data' },
+      formData: async () => ({ get: key => key === 'modelId' ? '5' : null,
+        getAll: key => key === 'files' ? [{ name: 'model.glb', size: 100 }] : key === 'relativePaths' ? ['geometry/model.glb'] : [] }),
+    });
+    assert.equal(uploaded.status, 200);
+    assert.equal(uploadQueue.length, 0);
+    assert.equal(uploadUpdates.at(-1).mainModelFileId, primaryId, 'Upload must retain primary selection');
+    if (primaryId === null) assert.equal('modelType' in uploadUpdates.at(-1), false, 'Upload must retain the chosen source');
+    assert.equal(uploadUpdates.at(-1).hasExternalFiles, true);
+  }
   const choices = [{ id: 201, modelName: 'Beyond first page', modelType: 'fbx' }];
   const selector = await run('view=selector&limit=200&offset=200', [[{ count: 452 }], choices]);
   assert.equal(queries.length, 2);
@@ -174,5 +236,5 @@ async function runPrimaryPatch(primaryFile, expectedStatus, { currentPrimaryFile
   signedIn = false;
   assert.equal((await run('view=selector', [])).status, 401);
   assert.equal(queries.length, 0);
-  console.log('PASS: actual Model GET handler uses five queries for 1/50/200 rows, preserves related data and owner scope, uses two selector queries, and handles empty/invalid/unauthenticated requests; shared Library responses expose only a validated fallback shape, and new primary assignments reject blank URLs and invalid sizes while unchanged legacy assignments permit unrelated edits');
+  console.log('PASS: explicit procedural conversion, rejected source changes, and attachment uploads preserving primary selection; actual Model GET handler uses five queries for 1/50/200 rows, preserves related data and owner scope, uses two selector queries, and handles empty/invalid/unauthenticated requests; shared Library responses expose only a validated fallback shape, and new primary assignments reject blank URLs and invalid sizes while unchanged legacy assignments permit unrelated edits');
 })().catch((error) => { console.error(error); process.exitCode = 1; });

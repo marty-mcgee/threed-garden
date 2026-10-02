@@ -4,6 +4,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ModelAnimationAssignments } from '@/components/admin/threed/animations/CharacterAnimationAssignments';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import {
@@ -26,7 +27,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/toast';
@@ -48,6 +49,7 @@ import { ModelPreviewBatchExport } from './ModelPreviewBatchExport';
 import { ModelPreviewImageExport } from './ModelPreviewImageExport';
 import { ThreeDModelAssetPreview } from './ThreeDModelAssetPreview';
 import { ThreeDModelsBulkImport } from './ThreeDModelsBulkImport';
+import { modelForPreview } from './model-preview-requirements';
 import type { ModelData } from '@/components/threed/markers/ModelMarker3D';
 
 // ============================================
@@ -67,6 +69,7 @@ interface ModelFile {
 }
 
 interface Model {
+  materialAssignments?: ModelData["materialAssignments"];
   id: number;
   modelName: string;
   modelType: string;
@@ -141,7 +144,8 @@ const modelOptions = (model: Model) => [
 // ============================================
 // COMPONENT
 // ============================================
-export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linkedModelId = null, onCloseLinkedModel }: { onModuleUpdate?: () => void; scrollRecords?: boolean; linkedModelId?: number | null; onCloseLinkedModel?: () => void }) {
+export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linkedModelId = null, view = "list" }: { onModuleUpdate?: () => void; scrollRecords?: boolean; linkedModelId?: number | null; view?: "list" | "create" | "edit" }) {
+  const router = useRouter();
   const { showToast, ToastComponent } = useToast();
   const [models, setModels] = useState<Model[]>([]);
   const [page, setPage] = useState(0);
@@ -151,7 +155,6 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
   const listAbort = useRef<AbortController | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [animationModel, setAnimationModel] = useState<Model | null>(null);
   const [editingModel, setEditingModel] = useState<Model | null>(null);
   const [linkedModelError, setLinkedModelError] = useState<string | null>(null);
@@ -173,11 +176,11 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
   const [formError, setFormError] = useState<string | null>(null);
   const [formData, setFormData] = useState<ThreeDModelAdminFormData>(createEmptyThreeDModelAdminForm);
   const importerPreviewModel = useMemo<ModelData | null>(() => {
-    if (!formData.filePath.trim() && formData.modelType !== 'procedural') return null;
+    if (!formData.modelType) return null;
     let metadata: unknown;
     try { metadata = JSON.parse(formData.metadata); } catch { metadata = {}; }
-    return {
-      id: 0,
+    return modelForPreview({
+      id: editingModel?.id ?? 0,
       modelName: formData.modelName.trim() || pendingPrimaryFile?.fileName || 'New Model',
       modelType: formData.modelType,
       filePath: formData.filePath,
@@ -188,8 +191,9 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
       offsetY: formData.offsetY,
       offsetZ: formData.offsetZ,
       defaultAnimation: formData.defaultAnimation || null,
-      files: [],
-    };
+      files: editingModel?.files ?? [],
+      materialAssignments: editingModel?.materialAssignments,
+    });
   }, [
     formData.defaultAnimation,
     formData.filePath,
@@ -202,6 +206,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
     formData.rotationY,
     formData.scale,
     pendingPrimaryFile?.fileName,
+    editingModel,
   ]);
 
   useEffect(() => {
@@ -210,11 +215,12 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
   }, []);
 
   useEffect(() => {
+    if (view !== "list") return;
     setSelectedIds(new Set());
     void fetchModels();
     return () => { ++listRequest.current; listAbort.current?.abort(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, pageSize, searchQuery, sort.field, sort.direction]);
+  }, [view, page, pageSize, searchQuery, sort.field, sort.direction]);
 
   async function fetchCategories() {
     try {
@@ -299,7 +305,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
 
   // Upload the primary model file (GLB/GLTF/FBX/OBJ/USDZ) to Vercel Blob.
   async function handlePrimaryFileUpload(file: File) {
-    if (!file) return;
+    if (!file || formData.modelType === 'procedural' || !formData.modelType) return;
     if (pendingPrimaryFile && !(await discardPendingPrimaryUpload(pendingPrimaryFile))) return;
     setUploadingPrimary(true);
     setUploadAnalysis(null);
@@ -385,10 +391,8 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
       const data = await response.json();
       if (data.success) {
         showToast('Model created successfully', 'success');
-        setShowCreateDialog(false);
-        resetForm();
-        await fetchModels();
-        onModuleUpdate?.();
+        setPendingPrimaryFile(null);
+        router.push(Number.isSafeInteger(data.data?.id) ? '/admin/threed/models/' + data.data.id : '/admin/threed/models');
       } else {
         showToast(data.error || 'Failed to create model', 'error');
       }
@@ -423,10 +427,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
         showToast('Model updated successfully', 'success');
         setPendingPrimaryFile(null);
         setUploadAnalysis(null);
-        setEditingModel(null);
-        if (editingModel.id === linkedModelId) onCloseLinkedModel?.();
-        await fetchModels();
-        onModuleUpdate?.();
+        loadModelForm({ ...editingModel, ...data.data, categories: [...categories, ...(editingModel.categories ?? [])].filter((category, index, all) => formData.categoryIds.includes(category.id) && all.findIndex(item => item.id === category.id) === index), files: editingModel.files, materialAssignments: editingModel.materialAssignments });
       } else {
         setFormError(data.error || 'Failed to update model');
       }
@@ -481,14 +482,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
     if (deleted.size) { await fetchModels(); onModuleUpdate?.(); }
   }
 
-  function resetForm() {
-    setFormError(null);
-    setFormData(createEmptyThreeDModelAdminForm());
-    setUploadAnalysis(null);
-    setPendingPrimaryFile(null);
-  }
-
-  function openEditDialog(model: Model) {
+  function loadModelForm(model: Model) {
     setFormError(null);
     setUploadAnalysis(null);
     setPendingPrimaryFile(null);
@@ -522,32 +516,15 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
     });
   }
 
-  function handleCreateDialogChange(open: boolean) {
-    if (open) {
-      resetForm();
-      setShowCreateDialog(true);
-      return;
-    }
+  async function leaveForm() {
     if (isSubmitting || uploadingPrimary || uploadingThumbnail) return;
-    const stagedFile = pendingPrimaryFile;
-    setShowCreateDialog(false);
-    resetForm();
-    if (stagedFile) void discardPendingPrimaryUpload(stagedFile);
-  }
-
-  function handleEditDialogChange(open: boolean) {
-    if (open || isSubmitting || uploadingPrimary || uploadingThumbnail) return;
-    const stagedFile = pendingPrimaryFile;
-    setEditingModel(null);
-    if (editingModel?.id === linkedModelId) onCloseLinkedModel?.();
-    setUploadAnalysis(null);
-    setPendingPrimaryFile(null);
-    if (stagedFile) void discardPendingPrimaryUpload(stagedFile);
+    if (pendingPrimaryFile && !(await discardPendingPrimaryUpload(pendingPrimaryFile))) return;
+    router.push('/admin/threed/models');
   }
 
   useEffect(() => {
     setLinkedModelError(null);
-    if (!linkedModelId) return;
+    if (view !== "edit" || !linkedModelId) return;
     const controller = new AbortController();
     void (async () => {
       try {
@@ -558,7 +535,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
         if (!response.ok || data.success !== true || data.data?.id !== linkedModelId || typeof data.data.userId !== 'string') {
           throw new Error('This Model is unavailable in your Admin workspace.');
         }
-        openEditDialog(data.data as Model);
+        loadModelForm(data.data as Model);
       } catch {
         if (!controller.signal.aborted) setLinkedModelError(`Model #${linkedModelId} could not be opened in your Admin workspace.`);
       }
@@ -566,7 +543,86 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
     return () => controller.abort();
     // Opening a linked Model is tied to URL identity, not list refreshes or form edits.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [linkedModelId]);
+  }, [view, linkedModelId]);
+
+  if (view !== "list") {
+    const busy = isSubmitting || uploadingPrimary || uploadingThumbnail;
+    return (
+      <div className="flex h-full min-h-0 flex-col gap-3">
+        {ToastComponent}
+        <AdminWorkspaceHeader icon={Box} title={view === "create" ? "Add Model" : editingModel ? "Edit Model — " + editingModel.modelName : "Edit Model"}
+          description={view === "create" ? "Create a reusable ThreeD Model" : "Model #" + linkedModelId + " · Reusable Model details"}>
+          <Button variant="outline" size="sm" disabled={busy} onClick={() => void leaveForm()}>Back to Models</Button>
+          {editingModel && <Button asChild variant="outline" size="sm" disabled={busy}><Link href={`/admin/threed/models/${editingModel.id}/files`}>Model Files</Link></Button>}
+        </AdminWorkspaceHeader>
+        {editingModel && <nav aria-label="Model workspace" className="flex min-w-0 flex-wrap items-center gap-3 text-sm">
+          <span aria-current="page" className="font-medium">Edit Model</span>
+          <Link href={`/admin/threed/models/${editingModel.id}/files`} className="text-muted-foreground hover:underline">Model Files</Link>
+          <span className="ml-auto max-w-full truncate text-xs text-muted-foreground">{formData.modelName || editingModel.modelName} · #{editingModel.id}</span>
+        </nav>}
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-lg border p-4">
+          {linkedModelError ? <p role="alert" className="text-destructive">{linkedModelError}</p>
+            : view === "edit" && !editingModel ? <p role="status">Loading Model…</p>
+            : (
+              <div className="grid min-h-0 gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
+                <div className="min-w-0 lg:sticky lg:top-0 lg:self-start">
+                  <ThreeDModelAssetPreview
+                    model={importerPreviewModel}
+                    attachedDependencyCount={0}
+                    dependencyCount={0}
+                    preserveCameraOnEdit
+                    title="Draft Model Canvas"
+                    headerMeta={<Badge variant="outline">{formData.modelType || 'Choose a type'}</Badge>}
+                    canvasClassName="h-[min(68vh,680px)] min-h-[320px]"
+                  />
+                  <p className="mt-2 text-xs text-muted-foreground">{formData.modelType && formData.modelType !== 'procedural' && !formData.filePath.trim()
+                    ? 'Recovery geometry only: choose a Model file to preview its geometry. Recovery settings are under Advanced.'
+                    : 'Previewing unsaved shape, transform, and file lighting changes. Save to apply them to the reusable Model.'}</p>
+                </div>
+                <div className="min-w-0 [&_section]:rounded-md [&_section]:border [&_section]:p-3">
+                  {view === 'create' && formData.modelType === 'obj' && (
+                    <p className="mb-4 rounded-md border p-3 text-sm">Attach MTL files and referenced images in Model Files after creation. Use Bulk Import Models to prepare a complete OBJ bundle before uploading.</p>
+                  )}
+                  <ThreeDModelEditorFields
+                    mode={view === 'create' ? 'create' : 'edit'}
+                    modelId={editingModel?.id}
+                    previewImageAction={editingModel && importerPreviewModel && <ModelPreviewImageExport
+                      key={editingModel.id}
+                      model={importerPreviewModel}
+                      useDraftModel
+                      dependencyCount={0}
+                      attachedDependencyCount={0}
+                      disabled={busy}
+                      onUseImageUrl={url => setFormData(current => ({ ...current, thumbnailUrl: url }))}
+                    />}
+                    form={formData}
+                    setForm={setFormData}
+                    categories={categories}
+                    files={editingModel?.files}
+                    isSubmitting={isSubmitting}
+                    uploadingPrimary={uploadingPrimary}
+                    uploadingThumbnail={uploadingThumbnail}
+                    uploadAnalysis={uploadAnalysis}
+                    onPrimaryFile={handlePrimaryFileUpload}
+                    onThumbnail={handleThumbnailUpload}
+                  />
+                </div>
+              </div>
+            )}
+        </div>
+        <div className="shrink-0 space-y-2 border-t bg-background py-3">
+          {formError && <p role="alert" className="text-sm text-destructive">{formError}</p>}
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" disabled={busy} onClick={() => void leaveForm()}>Cancel</Button>
+            <Button onClick={view === "create" ? handleCreate : handleUpdate}
+              disabled={busy || (view === "edit" && !editingModel) || (view === "create" && !formData.filePath.trim() && formData.modelType !== "procedural")}>
+              {busy ? "Saving…" : view === "create" ? "Create Model" : "Save Changes"}
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={scrollRecords ? "flex h-full min-h-0 flex-col gap-2" : "space-y-2"}>
@@ -595,65 +651,13 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
             // Keep the bulk queue mounted while refreshing saved Model summaries.
             await fetchModels(false);
           }} />}
-          <Dialog open={showCreateDialog} onOpenChange={handleCreateDialogChange}>
-            <DialogTrigger asChild>
-              <Button size="sm" className="h-7 px-2 text-xs">
-                <Plus className="w-3 h-3 mr-1" /> Add Model
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-h-[92vh] overflow-hidden p-0 sm:max-w-[min(96vw,1200px)]">
-              <DialogHeader className="border-b px-5 py-4">
-                <DialogTitle>Create ThreeD Model</DialogTitle>
-              </DialogHeader>
-              <div className="grid min-h-0 md:grid-cols-[minmax(0,1.35fr)_minmax(360px,0.65fr)]">
-                <div className="border-b bg-slate-950/40 p-4 md:border-b-0 md:border-r">
-                  <ThreeDModelAssetPreview
-                    model={importerPreviewModel}
-                    attachedDependencyCount={0}
-                    dependencyCount={0}
-                    title="Importer Canvas"
-                    description={formData.modelType === 'procedural' && !formData.filePath ? 'Preview the built-in shape before saving. A Model file can be assigned later.' : formData.modelType === 'obj' ? 'OBJ geometry preview. Attach its MTL material library and referenced images in Model Files after creation to see the final materials.' : 'Upload a Model, then adjust its transform and inspect every change here before creation.'}
-                    canvasClassName="h-[min(68vh,680px)] min-h-[420px]"
-                  />
-                </div>
-                <div className="max-h-[calc(92vh-73px)] overflow-y-auto">
-                  <div className="space-y-4 p-5">
-                    {formData.modelType === 'obj' && (
-                      <p className="rounded-md border border-cyan-500/40 bg-cyan-500/10 p-3 text-sm">
-                        Create this Model, then attach its .MTL files and referenced texture images in Model Files.
-                        To prepare and preview the complete bundle before uploading, use Bulk Import Models — it also accepts a single OBJ.
-                      </p>
-                    )}
-                    <ThreeDModelEditorFields
-                      mode="create"
-                      form={formData}
-                      setForm={setFormData}
-                      categories={categories}
-                      isSubmitting={isSubmitting}
-                      uploadingPrimary={uploadingPrimary}
-                      uploadingThumbnail={uploadingThumbnail}
-                      uploadAnalysis={uploadAnalysis}
-                      onPrimaryFile={handlePrimaryFileUpload}
-                      onThumbnail={handleThumbnailUpload}
-                    />
-                    <div className="sticky bottom-0 border-t bg-background/95 pt-3 backdrop-blur">
-                      <Button onClick={handleCreate} className="w-full" disabled={isSubmitting || uploadingPrimary || (!formData.filePath.trim() && formData.modelType !== 'procedural')}>
-                        {isSubmitting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Creating...</> : 'Create Model'}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <Button asChild size="sm" className="h-7 px-2 text-xs">
+            <Link href="/admin/threed/models/new"><Plus className="mr-1 h-3 w-3" /> Add Model</Link>
+          </Button>
         </div>
       </AdminWorkspaceHeader>
       </fieldset>
 
-      {linkedModelError && <div role="alert" className="flex shrink-0 flex-wrap items-center gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm">
-        <span>{linkedModelError}</span>
-        <Button type="button" variant="outline" size="sm" onClick={() => { setLinkedModelError(null); onCloseLinkedModel?.(); }}>Browse Models</Button>
-      </div>}
       {deleteReport && <p role="status" className="text-sm">{deleteReport}</p>}
       {deleteFailures.length > 0 && <ul className="list-inside list-disc text-sm text-destructive" aria-label="Model deletion results">{deleteFailures.map((failure) => <li key={failure}>{failure}</li>)}</ul>}
 
@@ -686,7 +690,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <Box className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No Models found</p>
-          <Button variant="outline" size="sm" className="mt-2 h-7 px-2 text-xs" onClick={() => handleCreateDialogChange(true)}>
+          <Button variant="outline" size="sm" className="mt-2 h-7 px-2 text-xs" onClick={() => router.push("/admin/threed/models/new")}>
             <Plus className="w-3 h-3 mr-1" /> Create your first model
           </Button>
         </div>
@@ -722,7 +726,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
                     <TableCell className="w-8 px-2 py-1 text-center"><input type="checkbox" aria-label={`Bulk Edit ${model.modelName} (#${model.id})`} checked={selectedIds.has(model.id)} disabled={deleting || loading}
                       onChange={(event) => { const checked = event.target.checked; setSelectedIds((current) => { const next = new Set(current); if (checked) next.add(model.id); else next.delete(model.id); return next; }); }} /></TableCell>
                     <TableCell className="py-1 text-sm font-medium">
-                      <div className="flex items-center gap-2"><Box className="w-3.5 h-3.5 shrink-0 text-blue-500" />{model.modelName}<Link href={`/admin/threed/models?id=${model.id}`} className="text-xs font-normal text-muted-foreground underline-offset-2 hover:text-foreground hover:underline" aria-label={`Open Model #${model.id} details`}>#{model.id}</Link></div>
+                      <div className="flex items-center gap-2"><Box className="w-3.5 h-3.5 shrink-0 text-blue-500" />{model.modelName}<Link href={`/admin/threed/models/${model.id}`} className="text-xs font-normal text-muted-foreground underline-offset-2 hover:text-foreground hover:underline" aria-label={`Open Model #${model.id} details`}>#{model.id}</Link></div>
                     </TableCell>
                     <TableCell className="py-1">
                       <Badge variant="outline" className="text-[10px]">{getOptionLabel(MODEL_TYPE_OPTIONS, model.modelType)}</Badge>
@@ -749,13 +753,13 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
                       <div className="flex items-center justify-end gap-1">
                         <Button type="button" variant="ghost" size="icon"
                           className="h-8 w-8 text-muted-foreground hover:bg-amber-500/10 hover:text-amber-700 focus-visible:bg-amber-500/10 focus-visible:text-amber-700 dark:hover:text-amber-400 dark:focus-visible:text-amber-400"
-                          disabled={deleting || loading} onClick={() => openEditDialog(model)}
+                          disabled={deleting || loading} onClick={() => router.push("/admin/threed/models/" + model.id)}
                           title={`Edit ${model.modelName}`} aria-label={`Edit ${model.modelName}`}>
                           <SquarePen aria-hidden="true" className="h-4 w-4" />
                         </Button>
                         <Button asChild variant="ghost" size="icon"
                           className="h-8 w-8 text-muted-foreground hover:bg-blue-500/10 hover:text-blue-700 focus-visible:bg-blue-500/10 focus-visible:text-blue-700 dark:hover:text-blue-400 dark:focus-visible:text-blue-400">
-                          <Link href={`/admin/threed/model-files?modelId=${model.id}`} title={`Model Files for ${model.modelName}`} aria-label={`Model Files for ${model.modelName}`}>
+                          <Link href={`/admin/threed/models/${model.id}/files`} title={`Model Files for ${model.modelName}`} aria-label={`Model Files for ${model.modelName}`}>
                             <Files aria-hidden="true" className="h-4 w-4" />
                           </Link>
                         </Button>
@@ -807,58 +811,6 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
         </DialogContent>
       </Dialog>
 
-      {/* Edit Dialog */}
-      <Dialog open={!!editingModel} onOpenChange={handleEditDialogChange}>
-        <DialogContent className="flex max-h-[90dvh] w-[calc(100%-2rem)] min-w-0 flex-col gap-3 overflow-hidden p-4 sm:max-w-6xl">
-          <DialogHeader className="shrink-0 pr-8">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0">
-                <DialogTitle>Edit Model — {editingModel?.modelName}</DialogTitle>
-                <DialogDescription className="mt-1">
-                  Model #{editingModel?.id} · {editingModel ? getOptionLabel(MODEL_TYPE_OPTIONS, editingModel.modelType) : ''} · Edit reusable Model details here; manage its attached files in Model Files.
-                </DialogDescription>
-              </div>
-              {editingModel && <Button asChild variant="outline" size="sm" className="h-8 shrink-0 text-xs">
-                <Link href={`/admin/threed/model-files?modelId=${editingModel.id}`}><Files aria-hidden="true" className="mr-1 h-4 w-4" /> Open Model Files</Link>
-              </Button>}
-            </div>
-          </DialogHeader>
-          <div className="min-h-0 overflow-y-auto overscroll-contain pr-1 pt-1 [&>div]:space-y-3 md:[&>div]:columns-2 md:[&>div]:gap-3 [&_section]:break-inside-avoid [&_section]:min-w-0 [&_section]:rounded-md [&_section]:border [&_section]:p-3 [&_label]:text-xs [&_input:not([type=checkbox])]:h-8 [&_input:not([type=checkbox])]:min-w-0 [&_input:not([type=checkbox])]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:w-full [&_[data-slot=select-trigger]]:min-w-0 [&_[data-slot=select-trigger]]:text-xs">
-            <ThreeDModelEditorFields
-              mode="edit"
-              modelId={editingModel?.id}
-              previewImageAction={editingModel && <ModelPreviewImageExport
-                key={editingModel.id}
-                model={editingModel}
-                dependencyCount={0}
-                attachedDependencyCount={0}
-                disabled={isSubmitting || uploadingPrimary || uploadingThumbnail}
-                onUseImageUrl={url => setFormData(current => ({ ...current, thumbnailUrl: url }))}
-              />}
-              form={formData}
-              setForm={setFormData}
-              categories={categories}
-              files={editingModel?.files}
-              isSubmitting={isSubmitting}
-              uploadingPrimary={uploadingPrimary}
-              uploadingThumbnail={uploadingThumbnail}
-              uploadAnalysis={uploadAnalysis}
-              onPrimaryFile={handlePrimaryFileUpload}
-              onThumbnail={handleThumbnailUpload}
-            />
-
-          </div>
-          <div className="shrink-0 space-y-3 border-t pt-3">
-            {formError && <p role="alert" className="rounded-md border border-destructive/30 bg-destructive/10 p-2 text-sm text-destructive">{formError}</p>}
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => handleEditDialogChange(false)} disabled={isSubmitting || uploadingPrimary || uploadingThumbnail}>Cancel</Button>
-              <Button type="button" onClick={handleUpdate} disabled={isSubmitting || uploadingPrimary || uploadingThumbnail}>
-                {isSubmitting ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Saving…</> : uploadingPrimary || uploadingThumbnail ? 'Uploading…' : 'Save Changes'}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
 
     </div>
   );

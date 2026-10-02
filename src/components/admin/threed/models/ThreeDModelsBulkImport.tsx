@@ -522,7 +522,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
           {result && <div className="space-y-3" role="status">
             <p className={`text-sm ${statusColor(selected)}`}><span className="font-medium">{status(selected)}</span> — {result.message}</p>
             <p className="text-xs text-muted-foreground">Submitted files and settings are shown below.</p>
-            {result.modelId ? <a className="text-sm underline" href={`/admin/threed/model-files?modelId=${result.modelId}`} target="_blank" rel="noreferrer">Review Model files (new tab)</a>
+            {result.modelId ? <a className="text-sm underline" href={`/admin/threed/models/${result.modelId}/files`} target="_blank" rel="noreferrer">Review Model files (new tab)</a>
               : result.status === 'unknown' && !result.canRetry && <a className="text-sm underline" href="/admin/threed/models" target="_blank" rel="noreferrer">Check Models (new tab)</a>}
             {result.canRetry && !result.modelId && <Button type="button" size="sm" disabled={importing || checkingPreview} onClick={() => void importReady(selected.id)}>Try Again</Button>}
             {result.canRetry && !result.modelId && <Button type="button" variant="outline" size="sm" disabled={importing} onClick={() => setResults((current) => { const next = { ...current }; delete next[selected.id]; return next; })}>Edit before retry</Button>}

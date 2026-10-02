@@ -850,6 +850,19 @@ export async function PATCH(request: NextRequest) {
         { status: 400 },
       );
     }
+    // Explicit source conversion detaches geometry without deleting any resources.
+    const proceduralSource = updates.modelType === 'procedural' && requestedPrimaryFileId === null && !pendingPrimaryFile;
+    if (proceduralSource) {
+      if ((existing.usedByCharacters || updates.usedByCharacters) && (existing.modelType !== 'procedural' || existing.mainModelFileId !== null)) {
+        return NextResponse.json({ success: false, error: 'Character runtime source conversion is not supported' }, { status: 400 });
+      }
+      const shape = (updates.metadata ?? existing.metadata)?.fallbackShape;
+      if ((shape !== undefined && !MODEL_FALLBACK_SHAPES.includes(shape))
+        || (updates.filePath !== undefined && updates.filePath !== '')) {
+        return NextResponse.json({ success: false, error: 'Procedural geometry requires a valid shape and no primary URL' }, { status: 400 });
+      }
+      updates.mainModelFileId = null;
+    }
     if (!pendingPrimaryFile && requestedPrimaryFileId !== undefined && requestedPrimaryFileId !== null && requestedPrimaryFileId !== '') {
       const primaryFileId = Number(requestedPrimaryFileId);
       if (!Number.isInteger(primaryFileId) || primaryFileId <= 0) {
@@ -881,7 +894,7 @@ export async function PATCH(request: NextRequest) {
       updates.mainModelFileId = primaryFile.id;
       updates.modelType = runtimeModelTypeFromFileName(primaryFile.fileName) ?? existing.modelType;
     }
-    if (!pendingPrimaryFile && requestedPrimaryFileId == null && (
+    if (!proceduralSource && !pendingPrimaryFile && requestedPrimaryFileId == null && (
       (updates.filePath !== undefined && updates.filePath !== existing.filePath)
       || (updates.fileSize !== undefined && Number(updates.fileSize) !== Number(existing.fileSize))
       || (updates.modelType !== undefined && updates.modelType !== existing.modelType)

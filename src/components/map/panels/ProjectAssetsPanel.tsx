@@ -188,7 +188,7 @@ export function ProjectAssetsPanel({
                   </button>
                   {modelIssues.length > 0 && <div className="px-2 py-1 text-[10px] text-amber-800 dark:text-amber-200">
                     <ul>{modelIssues.map(issue => <li key={`${issue.fileName}:${issue.message}`} className="break-words">{issue.fileName} — {issue.message}</li>)}</ul>
-                    <a href={`/admin/threed/model-files?modelId=${modelId}`} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 underline">Fix in Admin · Model Files <ExternalLink className="h-3 w-3" /><span className="sr-only"> (opens in a new tab)</span></a>
+                    <a href={`/admin/threed/models/${modelId}/files`} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 underline">Fix in Admin · Model Files <ExternalLink className="h-3 w-3" /><span className="sr-only"> (opens in a new tab)</span></a>
                   </div>}
                   {physicsSensors.length > 0 && (
                     <div className="ml-4 mt-1 space-y-1 border-l border-foreground/10 pl-2" aria-label={`${marker.name} Physics Sensors`}>
@@ -236,7 +236,7 @@ export function ProjectAssetsPanel({
               <p className="mt-1">You can continue using this Project.</p>
               <ul className="mt-2 space-y-2">{resourceIssues.map((issue, index) => <li key={`${issue.modelId}:${issue.fileName}:${index}`} className="break-words">
                 <span className="font-mono">{issue.fileName}</span> — {issue.message}
-                {issue.modelId && <a className="mt-1 flex items-center gap-1 underline" href={`/admin/threed/model-files?modelId=${issue.modelId}`} target="_blank" rel="noopener noreferrer">{issue.modelName || `Model #${issue.modelId}`} · Model Files <ExternalLink className="h-3 w-3 shrink-0" /><span className="sr-only"> (opens in a new tab)</span></a>}
+                {issue.modelId && <a className="mt-1 flex items-center gap-1 underline" href={`/admin/threed/models/${issue.modelId}/files`} target="_blank" rel="noopener noreferrer">{issue.modelName || `Model #${issue.modelId}`} · Model Files <ExternalLink className="h-3 w-3 shrink-0" /><span className="sr-only"> (opens in a new tab)</span></a>}
               </li>)}</ul>
             </PersistentDetails>}
           </div>
