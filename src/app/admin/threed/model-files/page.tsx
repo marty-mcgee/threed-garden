@@ -2,7 +2,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { ArrowLeft, Clapperboard, FolderOpen, FolderTree, Images, Loader2 } from 'lucide-react';
 import { ThreeDModelFilesCRUD } from '@/components/admin/threed/models/ThreeDModelFilesCRUD';
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
@@ -12,10 +12,14 @@ function ModelFilesPageInner() {
   const router = useRouter();
   const [selectorContainer, setSelectorContainer] = useState<HTMLDivElement | null>(null);
   const modelIdParam = searchParams.get('modelId');
-  const initialModelId = modelIdParam ? parseInt(modelIdParam) : null;
-  const modelQuery = Number.isInteger(initialModelId) && Number(initialModelId) > 0
-    ? `?modelId=${initialModelId}`
-    : '';
+  const parsedId = modelIdParam && /^[1-9]\d*$/.test(modelIdParam) ? Number(modelIdParam) : NaN;
+  const initialModelId = Number.isSafeInteger(parsedId) ? parsedId : null;
+  const fileIdParam = searchParams.get('fileId');
+  useEffect(() => {
+    if (!initialModelId) return;
+    const fileId = fileIdParam && /^[1-9]\d*$/.test(fileIdParam) && Number.isSafeInteger(Number(fileIdParam)) ? Number(fileIdParam) : null;
+    router.replace(`/admin/threed/models/${initialModelId}/files${fileId ? `/${fileId}` : ''}`);
+  }, [initialModelId, fileIdParam, router]);
 
   return (
     <div className="space-y-2">
@@ -32,9 +36,10 @@ function ModelFilesPageInner() {
           <AdminWorkspaceLink href="/admin/threed/model-textures" icon={Images}>Model Textures</AdminWorkspaceLink>
         </div>
       </AdminWorkspaceHeader>
-      <ThreeDModelFilesCRUD key={initialModelId ?? 'default'} initialModelId={initialModelId}
+      {modelIdParam && !initialModelId && <p role="alert">Invalid Model address. Choose a Model below.</p>}
+      {initialModelId ? <p role="status">Opening Model #{initialModelId}…</p> : <ThreeDModelFilesCRUD initialModelId={null}
         selectorContainer={selectorContainer}
-        onSelectModel={(id) => router.push(`/admin/threed/model-files?modelId=${id}`)} />
+        onSelectModel={(id) => router.push(`/admin/threed/models/${id}/files`)} />}
     </div>
   );
 }

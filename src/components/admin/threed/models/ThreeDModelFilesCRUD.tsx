@@ -13,6 +13,7 @@ import { modelForPreview } from './model-preview-requirements';
 
 import { MODEL_FALLBACK_SHAPES, readModelFallbackShape, setModelFallbackShape, type ModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
 import Link from 'next/link';
+import { ModelResourceInventory } from './ModelResourceInventory';
 import { createPortal } from 'react-dom';
 import {
   useState,
@@ -90,6 +91,8 @@ interface Model {
   offsetZ?: string | number | null;
   defaultAnimation?: string | null;
   metadata?: unknown;
+  userId?: string;
+  materialAssignments?: ModelData['materialAssignments'];
 }
 
 interface ThreeDModelFilesCRUDProps {
@@ -119,6 +122,7 @@ interface ModelDependencyAudit {
   primaryFileName?: string;
   complete?: boolean;
   requirements: ModelDependencyRequirement[];
+  embeddedResources?: { status: 'inspected' | 'not_inspected'; buffers: number; images: number };
 }
 
 type ViewMode = 'list' | 'grid';
@@ -336,9 +340,6 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
       }
       if (controller.signal.aborted) return;
       setModels(list);
-      if (!modelId && list.length > 0) {
-        setModelId(String(list[0].id));
-      }
     } catch (err) {
       if (controller.signal.aborted) return;
       const message = 'Failed to load models';
@@ -364,7 +365,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
       try {
         const response = await fetch(`/api/threed/models?id=${id}`);
         const data = await response.json();
-        if (data.success) {
+        if (response.ok && data.success && data.data?.id === id && typeof data.data.userId === 'string') {
           setModelDetail(data.data as Model);
         } else {
           const message = data.error || 'Failed to load files';
@@ -807,7 +808,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
         </div>
       )}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-medium truncate">{file.fileName}</p>
+        <Link href={`/admin/threed/models/${modelId}/files/${file.id}`} className="block truncate text-sm font-medium underline">{file.fileName}</Link>
         {file.relativePath && file.relativePath !== file.fileName && (
           <p className="text-[11px] font-mono text-cyan-500/90 truncate" title={file.relativePath}>
             {file.relativePath}
@@ -830,7 +831,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
     <div key={file.id} className="border rounded-lg overflow-hidden">
       <FileCardThumbnail file={file} className="w-full h-28 object-cover bg-muted/20" />
       <div className="p-2">
-        <p className="text-sm font-medium truncate" title={file.fileName}>{file.fileName}</p>
+        <Link href={`/admin/threed/models/${modelId}/files/${file.id}`} className="block truncate text-sm font-medium underline" title={file.fileName}>{file.fileName}</Link>
         {file.relativePath && file.relativePath !== file.fileName && (
           <p className="text-[10px] font-mono text-cyan-500/90 truncate" title={file.relativePath}>
             {file.relativePath}
@@ -897,6 +898,8 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
           </Link>
         </div>
       )}
+
+      {modelDetail && previewModel && <ModelResourceInventory model={{ ...previewModel, mainModelFileId }} audit={dependencyAudit} loading={loadingDependencies} error={dependencyError} textureLibrary={textureLibrary} />}
 
       <div className="grid items-start gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(400px,0.85fr)] ">
           <ThreeDModelAssetPreview

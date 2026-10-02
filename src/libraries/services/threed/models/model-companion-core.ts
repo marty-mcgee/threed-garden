@@ -83,7 +83,7 @@ function inspectFbx(bytes: Uint8Array, referencedBy: string) {
   return uniqueRequirements(requirements);
 }
 
-function inspectGlb(bytes: Uint8Array, referencedBy: string) {
+function readGlbJson(bytes: Uint8Array, referencedBy: string): unknown {
   if (bytes.byteLength < 20) throw new Error(`${referencedBy} is not a complete GLB file`);
   const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
   if (view.getUint32(0, true) !== 0x46546c67 || view.getUint32(4, true) !== 2) {
@@ -98,7 +98,7 @@ function inspectGlb(bytes: Uint8Array, referencedBy: string) {
     if (chunkEnd > bytes.byteLength) throw new Error(`${referencedBy} contains an invalid GLB chunk`);
     if (chunkType === 0x4e4f534a) {
       const json = new TextDecoder().decode(bytes.slice(chunkStart, chunkEnd)).replace(/\0+$/g, '').trim();
-      return inspectGltfJson(JSON.parse(json) as unknown, referencedBy);
+      return JSON.parse(json) as unknown;
     }
     offset = chunkEnd;
   }
@@ -112,9 +112,28 @@ export function inspectThreeDModelPrimary(
   const extension = fileName.split('.').pop()?.toLowerCase();
   if (extension === 'obj') return inspectObjLibraries(new TextDecoder().decode(bytes), fileName);
   if (extension === 'gltf') return inspectGltfJson(JSON.parse(new TextDecoder().decode(bytes)) as unknown, fileName);
-  if (extension === 'glb') return inspectGlb(bytes, fileName);
+  if (extension === 'glb') return inspectGltfJson(readGlbJson(bytes, fileName), fileName);
   if (extension === 'fbx') return inspectFbx(bytes, fileName);
   throw new Error(`Unsupported primary Model format: ${extension || 'unknown'}`);
+}
+
+/** Only glTF declarations establish embedded resources; FBX scanning cannot certify them. */
+export function inspectThreeDModelEmbeddedResources(fileName: string, bytes: Uint8Array) {
+  const extension = fileName.split('.').pop()?.toLowerCase();
+  if (extension !== 'gltf' && extension !== 'glb') return { status: 'not_inspected' as const, buffers: 0, images: 0 };
+  const value = extension === 'glb' ? readGlbJson(bytes, fileName) : JSON.parse(new TextDecoder().decode(bytes));
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid glTF JSON');
+  const buffers = Array.isArray(value.buffers) ? value.buffers : [];
+  const views = Array.isArray(value.bufferViews) ? value.bufferViews : [];
+  const images = Array.isArray(value.images) ? value.images : [];
+  const embeddedBuffer = (buffer: { uri?: unknown } | undefined) => Boolean(buffer && (
+    typeof buffer.uri === 'string' && /^data:/i.test(buffer.uri) || extension === 'glb' && buffer.uri === undefined));
+  const embeddedImages = images.filter((image: { uri?: unknown; bufferView?: number }) => {
+    if (typeof image?.uri === 'string') return /^data:/i.test(image.uri);
+    const view = Number.isInteger(image?.bufferView) ? views[image.bufferView!] : null;
+    return view && Number.isInteger(view.buffer) && embeddedBuffer(buffers[view.buffer]);
+  });
+  return { status: 'inspected' as const, buffers: buffers.filter(embeddedBuffer).length, images: embeddedImages.length };
 }
 
 export function inspectThreeDModelMaterial(

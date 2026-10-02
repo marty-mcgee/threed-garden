@@ -42,6 +42,7 @@ const mocks = {
   '@/libraries/schema/threed': tables,
   '@/libraries/services/threed/models/model-companion-core': {
     inspectThreeDModelPrimary: () => [],
+    inspectThreeDModelEmbeddedResources: () => ({ status: 'inspected', buffers: 1, images: 0 }),
     inspectThreeDModelMaterial: () => [],
   },
   '@/libraries/services/threed/models/model-attachment-runtime-core': { resolveThreeDModelAttachmentUrl: () => null },

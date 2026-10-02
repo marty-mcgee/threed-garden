@@ -8,6 +8,14 @@ This is the active `marty-mcgee/threed-garden` repository. Read [AGENTS.md](AGEN
 
 The released Soccer path uses the built-in Model Action Target to select an exact movable ball. A mapped Character foot-kick applies one bounded Rapier impulse after its one-shot animation completes. Generic Physics Sensors own goal counts, with per-Sensor uni-/bi-directional entry options and explicit Project Save persistence of counts and occupancy. Restored occupancy is reconciled against live Rapier overlap. Ball placement does not reset the camera; selected-ball WASD uses Ecctrl's native camera-relative controls outside explicit Walk to Target. Preserve the persistent Canvas/Rapier world and separate Garden/Ecctrl Character runtimes.
 
-The current [v0.22.12 Model surfaces plan](docs/plans/v0.22.12-threed-model-surfaces.md) covers reusable Model, Model File, Dashboard Library, and Project-instance relationships.
+## Current development checkpoint
+
+**v0.22.13 Stage 2 — Unify resource management** is implemented and User-verified as of October 2, 2026. Stage 1 is complete at `fe9940cb`. The [v0.22.13 plan](docs/plans/v0.22.13-model-editor-pages.md) is authoritative for the current Model workspace scope; the [v0.22.12 Model surfaces plan](docs/plans/v0.22.12-threed-model-surfaces.md) retains the reusable Model, Model File, Dashboard Library, and Project-instance relationships.
+
+Local validation: TypeScript, twelve focused validation tasks, diff checks, and the npm production build passed. Offline fixtures used mocked database/network dependencies; the build used an unreachable local `DATABASE_URL` override. No agent live database testing or writes occurred.
+
+Browser verification: the User confirmed all Stage 2 browser acceptance checks passed on October 2, 2026, covering exact Model/File navigation, resource inventory, supported previews, uploads/cancellation/save/reload, File settings and Dashboard/Character regressions. This is User-reported browser acceptance, recorded separately from agent local validation. Stage 2 changes remain uncommitted; production deployment is not claimed.
+
+Stage 3 remains deferred: replacement, missing-file cleanup, changed primary-deletion rules, and storage cleanup. Stage 2 acceptance does not authorize those operations or schema changes.
 
 Preserve Project-scoped ownership, stable Runtime Marker identity, one persistent Canvas/Rapier world, and separate GardenCharacter/EcctrlCharacter paths. Keep Scenario definition, Project view state, and live sensor counts distinct. Do not infer live physics success from readiness checks. New work belongs in this repository; use the [agent documentation index](docs/agents/README.md) and [validation ladder](docs/agents/VALIDATION.md).

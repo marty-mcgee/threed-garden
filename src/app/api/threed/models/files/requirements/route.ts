@@ -12,6 +12,7 @@ import {
 import {
   inspectThreeDModelMaterial,
   inspectThreeDModelPrimary,
+  inspectThreeDModelEmbeddedResources,
   type ThreeDModelCompanionRequirement,
 } from '@/libraries/services/threed/models/model-companion-core';
 import {
@@ -147,6 +148,7 @@ export async function GET(request: NextRequest) {
         primaryFileName: primary.fileName,
         complete: requirements.every((requirement) => requirement.satisfied),
         requirements,
+        embeddedResources: inspectThreeDModelEmbeddedResources(primary.fileName, bytes),
       },
     });
   } catch (error) {

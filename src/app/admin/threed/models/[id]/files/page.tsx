@@ -44,6 +44,7 @@ export default function ModelFilesPage() {
       {modelId && <nav aria-label="Model workspace" className="flex min-w-0 flex-wrap items-center gap-3 text-sm">
         <Link href={`/admin/threed/models/${modelId}`} className="text-muted-foreground hover:underline">Edit Model</Link>
         <span aria-current="page" className="font-medium">Model Files</span>
+        <Link href={`/admin/threed/models/${modelId}/files/new`} className="hover:underline">Add File</Link>
         <span className="ml-auto max-w-full truncate text-xs text-muted-foreground">{modelName ? `${modelName} · ` : ''}#{modelId}</span>
       </nav>}
       {modelId ? (
