@@ -46,3 +46,6 @@ next-env.d.ts
 # custom public/other
 public/assets-archive
 reference/
+
+# Windows download metadata
+*:Zone.Identifier
