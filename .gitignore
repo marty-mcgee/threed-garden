@@ -49,3 +49,5 @@ reference/
 
 # Windows download metadata
 *:Zone.Identifier
+# Windows misc
+desktop.ini
