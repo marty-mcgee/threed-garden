@@ -61,11 +61,12 @@ function text(value) {
 const inventory = load('src/components/admin/threed/models/ModelResourceInventory.tsx', { 'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'link' } });
 const companion = load('src/libraries/services/threed/models/model-companion-core.ts', { './model-obj-core.ts': {} });
 const encode = object => new TextEncoder().encode(JSON.stringify(object));
-let state = [], cursor = 0, requests = [], navigation = [], failUpload = false, failPatch = false;
+let state = [], cursor = 0, refs = [], refCursor = 0, requests = [], navigation = [], failUpload = false, failPatch = false;
 const parent = { id: 7, userId: 'owner', modelName: 'Tree', modelType: 'procedural', mainModelFileId: null, filePath: '', files: [] };
 const editorModule = load('src/components/admin/threed/models/ThreeDModelFileEditor.tsx', {
   react: {
     useState(initial) { const index = cursor++; if (!(index in state)) state[index] = initial; return [state[index], value => { state[index] = typeof value === 'function' ? value(state[index]) : value; }]; },
+    useRef(initial) { const index = refCursor++; if (!(index in refs)) refs[index] = { current: initial }; return refs[index]; },
     useEffect() {}, useMemo: calculate => calculate(),
   },
   'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'link' },
@@ -84,8 +85,8 @@ const editorModule = load('src/components/admin/threed/models/ThreeDModelFileEdi
   return { ok: !fails, json: async () => ({ success: !fails, error: 'Fixture save failure' }) };
 } });
 const renderEditor = (model = parent, fileId = null, reset = true) => {
-  if (reset) { state = [model, false, '', '', '', false, '0', '', [], 'textures', 0, { status: 'not_required', requirements: [] }, null, false, 0, [], '']; requests = []; navigation = []; }
-  cursor = 0;
+  if (reset) { state = [model, false, '', '', '', false, '0', '', [], 'textures', 0, { status: 'not_required', requirements: [] }, null, false, 0, [], '']; refs = []; requests = []; navigation = []; }
+  cursor = 0; refCursor = 0;
   return editorModule.ThreeDModelFileEditor({ modelId: 7, fileId });
 };
 const find = (tree, predicate) => nodes(tree).find(predicate);
@@ -96,7 +97,7 @@ const legacy = load('src/app/admin/threed/model-files/page.tsx', {
   'next/navigation': { useSearchParams: () => new URLSearchParams(legacyQuery), useRouter: () => ({ replace: value => redirects.push(value), push: value => redirects.push(value) }) },
   'lucide-react': new Proxy({}, { get: (_, key) => key }),
   '@/components/admin/layout/AdminWorkspaceHeader': { AdminWorkspaceHeader: 'header', AdminWorkspaceLink: 'link' },
-  '@/components/admin/threed/models/ThreeDModelFilesCRUD': { ThreeDModelFilesCRUD: 'picker' },
+  '@/components/admin/threed/models/ThreeDModelFilesTable': { ThreeDModelFilesTable: 'file-table' },
 });
 function verifyLegacyNavigation() {
   function render(query) {
@@ -104,12 +105,12 @@ function verifyLegacyNavigation() {
     const page = legacy.default(); const inner = page.props.children;
     return inner.type(inner.props);
   }
-  const tree = render(''); const picker = find(tree, node => node.type === 'picker');
-  assert(picker); assert.equal(picker.props.initialModelId, null); assert.equal(redirects.length, 0, 'Bare route requires a Model choice');
-  picker.props.onSelectModel(37); assert.equal(redirects.at(-1), '/admin/threed/models/37/files');
-  render('modelId=37'); assert.equal(redirects.at(-1), '/admin/threed/models/37/files');
+  const tree = render('');
+  assert(find(tree, node => node.type === 'file-table')); assert.equal(redirects.length, 0, 'Bare route lists saved Files without selecting a Model');
+  render('modelId=37'); assert.equal(redirects.at(-1), '/admin/threed/models/37?tab=files');
   render('modelId=37&fileId=92'); assert.equal(redirects.at(-1), '/admin/threed/models/37/files/92');
-  const invalid = render('modelId=37oops'); assert(find(invalid, node => node.type === 'picker')); assert.equal(redirects.length, 0);
+  const invalid = render('modelId=37oops'); assert(find(invalid, node => node.type === 'file-table')); assert.equal(redirects.length, 0);
+  render('parentModelId=37'); assert.equal(redirects.length, 0, 'Table Model filter must not trigger a legacy workspace redirect');
 }
 async function verifyEditor() {
   let tree = renderEditor();
@@ -119,10 +120,10 @@ async function verifyEditor() {
   assert.equal(requests.length, 0, 'Selection must not upload');
   tree = renderEditor(parent, null, false);
   find(tree, node => node.type === 'button' && text(node) === 'Cancel').props.onClick();
-  assert.equal(requests.length, 0, 'Cancel must not mutate or delete'); assert.equal(navigation.at(-1), '/admin/threed/models/7/files');
+  assert.equal(requests.length, 0, 'Cancel must not mutate or delete'); assert.equal(navigation.at(-1), '/admin/threed/models/7?tab=files');
   await find(tree, node => node.type === 'form').props.onSubmit({ preventDefault() {} });
   assert.equal(requests.length, 1); assert.equal(requests[0].options.body.get('modelId'), '7');
-  assert.equal(requests[0].options.body.get('relativePaths'), 'textures/leaf.png'); assert.equal(navigation.at(-1), '/admin/threed/models/7/files');
+  assert.equal(requests[0].options.body.get('relativePaths'), 'textures/leaf.png'); assert.equal(navigation.at(-1), '/admin/threed/models/7?tab=files');
   tree = renderEditor();
   find(tree, node => node.props?.id === 'new-model-files').props.onChange({ target: { files: [new File(['geometry'], 'candidate.obj'), new File(['material'], 'candidate.mtl')] } });
   tree = renderEditor(parent, null, false);
@@ -152,7 +153,7 @@ async function verifyEditor() {
   assert.equal(requests[0].url, '/api/threed/models/7/files/12'); assert.deepEqual(JSON.parse(requests[0].options.body), { loadOrder: 4, textureType: 'normalMap' });
   failPatch = false; tree = renderEditor(editedParent, 12, false);
   await find(tree, node => node.type === 'form').props.onSubmit({ preventDefault() {} });
-  assert(state[14] > 0, 'Successful edit reloads saved values'); assert.equal(navigation.length, 0, 'Successful edit retains the File URL');
+  assert.equal(navigation.at(-1), '/admin/threed/models/7?tab=files', 'Successful edit returns to its exact parent Files tab');
 }
 (async () => {
   signedIn = false;

@@ -99,6 +99,9 @@ interface ThreeDModelFilesCRUDProps {
   selectorContainer?: HTMLElement | null;
   onSelectModel?: (id: number) => void;
   initialModelId?: number | null;
+  embedded?: boolean;
+  active?: boolean;
+  onBusyChange?: (busy: boolean) => void;
 }
 
 interface UploadItem {
@@ -230,7 +233,7 @@ function FileCardThumbnail({ file, className }: { file: ModelFileRow; className:
 // ============================================
 // COMPONENT
 // ============================================
-export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer, onSelectModel }: ThreeDModelFilesCRUDProps) {
+export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer, onSelectModel, embedded = false, active = true, onBusyChange }: ThreeDModelFilesCRUDProps) {
   const { showToast, ToastComponent } = useToast();
 
   const [models, setModels] = useState<Array<Pick<Model, 'id' | 'modelName' | 'modelType'>>>([]);
@@ -275,7 +278,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
     () => models.find((m) => String(m.id) === modelId) ?? null,
     [models, modelId],
   );
-  const activeModel = selectedModel ?? (modelDetail?.id === Number(modelId) ? modelDetail : null);
+  const activeModel = (modelDetail?.id === Number(modelId) ? modelDetail : null) ?? selectedModel;
   const files = useMemo(() => modelDetail?.files ?? [], [modelDetail]);
   const previewModel = useMemo<ModelData | null>(() => {
     if (!modelDetail) return null;
@@ -312,7 +315,11 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
   }, [modelDetail?.modelType, missingRequirements, textureLibrary, files]);
   const trulyMissingCount = missingRequirements.length;
 
+  const [previewBusy, setPreviewBusy] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
   const uploading = uploadQueue.some((u) => u.status === 'uploading');
+  const operationBusy = uploading || savingShape || primaryFileId !== null || deletingId !== null || linkingTexture !== null || previewBusy || exportOpen || (active && loadingFiles);
+  useEffect(() => { onBusyChange?.(operationBusy); }, [onBusyChange, operationBusy]);
   const normalizedAttachmentDirectory = normalizeAttachmentDirectory(attachmentDirectory);
   const directoryProblem = attachmentDirectoryProblem(attachmentDirectory);
   const directoryHasInput = attachmentDirectory.trim().length > 0;
@@ -363,7 +370,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
       setLoadingFiles(true);
       setError(null);
       try {
-        const response = await fetch(`/api/threed/models?id=${id}`);
+        const response = await fetch(`/api/threed/models?id=${id}`, { cache: 'no-store' });
         const data = await response.json();
         if (response.ok && data.success && data.data?.id === id && typeof data.data.userId === 'string') {
           setModelDetail(data.data as Model);
@@ -451,16 +458,16 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
   }, [loadFiles, loadTextureLibrary, modelId, showToast]);
 
   useEffect(() => {
-    if (modelId) {
+    if (modelId && active) {
       setAttachmentDirectory((current) => current || 'textures');
       loadFiles(Number(modelId));
       loadDependencies(Number(modelId));
-    } else {
+    } else if (!modelId) {
       setModelDetail(null);
       setDependencyAudit(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [modelId, loadDependencies]);
+  }, [modelId, active, loadDependencies]);
 
   // ============================================
   // SELECTION-DERIVED DATA
@@ -857,7 +864,9 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
   // RENDER
   // ============================================
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" onClickCapture={event => {
+      if (operationBusy && event.target instanceof Element && event.target.closest('a')?.getAttribute('href')?.startsWith('/admin/')) event.preventDefault();
+    }}>
       {ToastComponent}
       {selectorContainer && createPortal(
         <select
@@ -878,7 +887,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
           {models.map((model) => <option key={model.id} value={model.id}>{model.modelName} · {model.modelType.toUpperCase()} · #{model.id}</option>)}
         </select>, selectorContainer)}
 
-      {activeModel && (
+      {!embedded && activeModel && (
         <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-muted/20 px-3 py-2 text-xs">
           <div className="flex min-w-0 flex-wrap items-center gap-2">
             <span className="text-muted-foreground">Model record</span>
@@ -903,17 +912,19 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
 
       <div className="grid items-start gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(400px,0.85fr)] ">
           <ThreeDModelAssetPreview
+            active={active && !exportOpen}
+            onBusyChange={setPreviewBusy}
             model={previewModel}
             attachedDependencyCount={dependencyAudit?.requirements.filter((item) => item.satisfied).length ?? 0}
             dependencyCount={dependencyAudit?.requirements.length ?? 0}
             title={troubleshooting ? "Owner Troubleshooting Preview" : "Saved Model Preview"}
             description={troubleshooting ? "Owner library matches are temporary. Link required files below to save them." : "Uses saved files and material assignments. Public Project access is checked separately."}
-            headerMeta={selectedModel ? (
+            headerMeta={activeModel ? (
               <div className="flex min-w-0 items-center gap-2 border-l pl-3">
                 <FileIcon type="model" />
-                <span className="max-w-48 truncate text-xs font-medium" title={selectedModel.modelName}>{selectedModel.modelName}</span>
-                <Badge variant="outline" className="text-[10px]">{selectedModel.modelType}</Badge>
-                <span className="whitespace-nowrap text-[10px] text-muted-foreground">Model #{selectedModel.id}</span>
+                <span className="max-w-48 truncate text-xs font-medium" title={activeModel.modelName}>{activeModel.modelName}</span>
+                <Badge variant="outline" className="text-[10px]">{activeModel.modelType}</Badge>
+                <span className="whitespace-nowrap text-[10px] text-muted-foreground">Model #{activeModel.id}</span>
               </div>
             ) : null}
             headerActions={selectedModel ? (
@@ -926,6 +937,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
               </select>
               {previewModel && !loadingFiles && <ModelPreviewImageExport
                 key={previewModel.id}
+                onOpenChange={setExportOpen}
                 model={previewModel}
                 dependencyCount={dependencyAudit?.requirements.length ?? 0}
                 attachedDependencyCount={dependencyAudit?.requirements.filter(item => item.satisfied).length ?? 0}

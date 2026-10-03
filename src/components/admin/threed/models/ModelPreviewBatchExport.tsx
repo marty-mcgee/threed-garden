@@ -240,7 +240,7 @@ export function ModelPreviewBatchExport({ onComplete }: { onComplete: () => void
           /> : <p className="p-8 text-sm text-muted-foreground">{sampleError || (sampleId ? 'Loading preview or waiting for valid dimensions…' : 'Find Models, then choose Preview beside a Model.')}</p>}
           {sample && !running && <div className="space-y-1 text-xs">
             {!previewReady && sample.missing?.length > 0 && <><p className="font-medium text-amber-400">Unresolved source references (checked against loaded assignments):</p><ul className="list-inside list-disc break-words">{sample.missing.map(path => <li key={path}>{path}</li>)}</ul></>}
-            <a className="text-cyan-400 underline" href={`/admin/threed/models/${sample.model.id}/files`} target="_blank" rel="noreferrer">Open Model Files ↗</a>
+            <a className="text-cyan-400 underline" href={`/admin/threed/models/${sample.model.id}?tab=files`} target="_blank" rel="noreferrer">Open Model Files ↗</a>
           </div>}
           <div className="flex flex-wrap items-center gap-2">
             <Button type="button" disabled={running || !draftView} onClick={() => { setCustomView(draftView); setDraftView(null); }}>Use this perspective</Button>

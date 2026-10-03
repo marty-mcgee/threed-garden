@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FolderOpen } from 'lucide-react';
@@ -12,6 +12,7 @@ import type { ModelData } from '@/components/threed/markers/ModelMarker3D';
 import { MODEL_FILE_TEXTURE_TYPES, MAX_MODEL_FILE_LOAD_ORDER, parseModelFileEdit } from '@/libraries/services/threed/models/model-file-edit-core';
 import { normalizeThreeDModelRelativePath } from '@/libraries/services/threed/models/model-companion-core';
 import { runtimeModelTypeFromFileName } from '@/libraries/services/threed/models/model-file-integrity';
+import type { EligibilityResult } from '@/libraries/services/threed/models/model-file-restoration-eligibility-core';
 import { ThreeDModelAssetPreview } from './ThreeDModelAssetPreview';
 import { ThreeDModelImportPreview } from './ThreeDModelImportPreview';
 import { modelForPreview } from './model-preview-requirements';
@@ -26,6 +27,27 @@ interface SavedFile {
 interface ParentModel extends ModelData { userId: string; mainModelFileId: number | null; files: SavedFile[] }
 interface PendingFile { file: File; relativePath: string; saved: boolean; error?: string }
 
+function isEligibilityResult(value: unknown, modelId: number, fileId: number): value is EligibilityResult {
+  if (!value || typeof value !== 'object') return false;
+  const result = value as Record<string, unknown>;
+  const findings = (items: unknown) => Array.isArray(items) && items.every(item => item && typeof item === 'object'
+    && typeof item.code === 'string' && typeof item.message === 'string');
+  const checks = result.checks && typeof result.checks === 'object' ? result.checks as Record<string, unknown> : null;
+  return result.modelId === modelId && result.fileId === fileId && result.restoreAllowed === false
+    && result.candidateValidation === 'not_performed'
+    && typeof result.state === 'string' && ['observed_candidate', 'blocked', 'unknown', 'stale'].includes(result.state)
+    && typeof result.availability === 'string' && ['missing', 'present', 'unknown'].includes(result.availability)
+    && typeof result.observedAt === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(result.observedAt)
+    && Number.isFinite(Date.parse(result.observedAt)) && (result.revision === null || typeof result.revision === 'string')
+    && !!checks && ['target', 'references', 'storage', 'dependencies'].every(key => typeof checks[key] === 'string'
+      && ['clear', 'blocked', 'unknown', 'not_checked'].includes(checks[key]))
+    && typeof checks.consistency === 'string' && ['unchanged', 'stale', 'unknown', 'not_checked'].includes(checks.consistency)
+    && findings(result.blockers) && findings(result.uncertainty);
+}
+
+const ELIGIBILITY_STATE_LABELS = { observed_candidate: 'Observed candidate', blocked: 'Blocked', unknown: 'Unknown', stale: 'Stale' } as const;
+const AVAILABILITY_LABELS = { missing: 'Missing (observed)', present: 'Present (observed)', unknown: 'Unknown' } as const;
+
 function useImageUrl(file: File | null) {
   const [url, setUrl] = useState<string | null>(null);
   useEffect(() => {
@@ -38,7 +60,7 @@ function useImageUrl(file: File | null) {
 
 export function ThreeDModelFileEditor({ modelId, fileId = null }: { modelId: number; fileId?: number | null }) {
   const router = useRouter();
-  const base = `/admin/threed/models/${modelId}/files`;
+  const base = `/admin/threed/models/${modelId}?tab=files`;
   const [model, setModel] = useState<ParentModel | null>(null);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
@@ -56,6 +78,25 @@ export function ThreeDModelFileEditor({ modelId, fileId = null }: { modelId: num
   const [revision, setRevision] = useState(0);
   const [textureLibrary, setTextureLibrary] = useState<Array<{ id: number; filePath: string; textureName: string }>>([]);
   const [textureLibraryError, setTextureLibraryError] = useState('');
+  const eligibilityContext = `${modelId}:${fileId ?? 'new'}:${revision}`;
+  const currentEligibilityContext = useRef(eligibilityContext);
+  currentEligibilityContext.current = eligibilityContext;
+  const eligibilityController = useRef<AbortController | null>(null);
+  const eligibilityRequest = useRef(0);
+  const [eligibility, setEligibility] = useState<{ context: string; result: EligibilityResult } | null>(null);
+  const [eligibilityError, setEligibilityError] = useState<{ context: string; message: string } | null>(null);
+  const [eligibilityChecking, setEligibilityChecking] = useState<string | null>(null);
+
+  const clearEligibility = () => {
+    eligibilityController.current?.abort(); eligibilityController.current = null; eligibilityRequest.current++;
+    setEligibility(null); setEligibilityError(null); setEligibilityChecking(null);
+  };
+
+  useEffect(() => {
+    eligibilityController.current?.abort(); eligibilityController.current = null; eligibilityRequest.current++;
+    setEligibility(null); setEligibilityError(null); setEligibilityChecking(null);
+    return () => { eligibilityController.current?.abort(); eligibilityController.current = null; eligibilityRequest.current++; };
+  }, [eligibilityContext]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -97,6 +138,42 @@ export function ThreeDModelFileEditor({ modelId, fileId = null }: { modelId: num
   }, [modelId, revision]);
 
   const selected = model?.files.find(file => file.id === fileId) ?? null;
+  const eligibilityResult = eligibility?.context === eligibilityContext ? eligibility.result : null;
+  const eligibilityFailure = eligibilityError?.context === eligibilityContext ? eligibilityError.message : null;
+  const checkingEligibility = eligibilityChecking === eligibilityContext;
+
+  const checkEligibility = async () => {
+    if (!selected || selected.id !== fileId || model?.id !== modelId || loading || saving) return;
+    clearEligibility();
+    const controller = new AbortController(); eligibilityController.current = controller;
+    const request = ++eligibilityRequest.current;
+    const context = eligibilityContext;
+    const isCurrent = () => !controller.signal.aborted && eligibilityRequest.current === request
+      && currentEligibilityContext.current === context;
+    setEligibilityChecking(context);
+    try {
+      const response = await fetch(`/api/threed/models/${modelId}/files/${selected.id}/restoration-eligibility`, {
+        method: 'GET', cache: 'no-store', signal: controller.signal,
+      });
+      const result = await response.json();
+      if (!isCurrent()) return;
+      if (!response.ok || !result.success) {
+        const message = response.status === 401 ? 'Sign in before checking this File.'
+          : response.status === 404 ? 'This File is unavailable in the selected owned Model.'
+          : 'Inspection could not be completed. Availability and eligibility remain unknown; check again manually.';
+        setEligibilityError({ context, message }); return;
+      }
+      if (result.restoreAllowed !== false || !isEligibilityResult(result.data, modelId, selected.id)) {
+        setEligibilityError({ context, message: 'Inspection returned an incomplete or mismatched observation. Availability and eligibility remain unknown; check again manually.' });
+        return;
+      }
+      setEligibility({ context, result: result.data });
+    } catch {
+      if (isCurrent()) setEligibilityError({ context, message: 'Inspection could not be completed. Availability and eligibility remain unknown; check again manually.' });
+    } finally {
+      if (isCurrent()) { eligibilityController.current = null; setEligibilityChecking(null); }
+    }
+  };
   const localFile = pending[candidateIndex]?.file ?? null;
   const imageUrl = useImageUrl(localFile);
   const savedPreview = useMemo(() => {
@@ -122,6 +199,7 @@ export function ThreeDModelFileEditor({ modelId, fileId = null }: { modelId: num
 
   const save = async (event: FormEvent) => {
     event.preventDefault(); if (!model || saving) return;
+    clearEligibility();
     setError(''); setMessage('');
     if (selected) {
       let updates: ReturnType<typeof parseModelFileEdit>;
@@ -133,7 +211,7 @@ export function ThreeDModelFileEditor({ modelId, fileId = null }: { modelId: num
         const response = await fetch(`/api/threed/models/${modelId}/files/${selected.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updates) });
         const result = await response.json();
         if (!response.ok || !result.success) throw new Error(result.error || 'File settings could not be saved');
-        setMessage('File settings saved.'); setRevision(value => value + 1);
+        router.push(base);
       } catch (cause) { setError(cause instanceof Error ? cause.message : 'File settings could not be saved'); }
       finally { setSaving(false); }
       return;
@@ -194,8 +272,23 @@ export function ThreeDModelFileEditor({ modelId, fileId = null }: { modelId: num
           </>}
           {(imageUrl || selected?.fileType === 'texture' && /\.(png|jpe?g|webp|gif|bmp|avif)$/i.test(selected.fileName) && selected.filePath) && <img className="max-h-64 max-w-full rounded border object-contain" src={imageUrl || selected!.filePath} alt={localFile?.name || selected?.fileName || 'Supporting image'} />}
           <ModelFileDependencyInspector file={localFile} savedFile={selected} audit={audit} />
+          {selected && <section aria-labelledby="restoration-eligibility-heading" className="space-y-3 rounded border p-3 text-sm">
+            <h3 id="restoration-eligibility-heading" className="font-medium">Restoration eligibility</h3>
+            <p className="text-muted-foreground">Read-only observations for this saved File. They cannot authorize restoration or guarantee safety. No replacement image or file has been checked.</p>
+            <Button type="button" variant="outline" disabled={saving || loading || checkingEligibility} onClick={() => void checkEligibility()}>Check restoration eligibility</Button>
+            {checkingEligibility && <p role="status">Checking saved File observations…</p>}
+            {(eligibilityResult || eligibilityFailure) && <div aria-live="polite" className="space-y-3">
+              <dl className="space-y-1"><div><dt className="font-medium">State</dt><dd>{eligibilityResult ? ELIGIBILITY_STATE_LABELS[eligibilityResult.state] : 'Unknown'}</dd></div><div><dt className="font-medium">Storage availability</dt><dd>{eligibilityResult ? AVAILABILITY_LABELS[eligibilityResult.availability] : 'Unknown'}</dd></div><div><dt className="font-medium">Observed at</dt><dd>{eligibilityResult ? <time dateTime={eligibilityResult.observedAt}>{eligibilityResult.observedAt}</time> : 'Unavailable'}</dd></div></dl>
+              {eligibilityFailure && <p role="alert">{eligibilityFailure}</p>}
+              {eligibilityResult && <>
+                <div><h4 className="font-medium">Blockers</h4>{eligibilityResult.blockers.length ? <ul className="list-disc space-y-1 pl-5">{eligibilityResult.blockers.map((finding, index) => <li key={`${finding.code}-${index}`}>{finding.message}</li>)}</ul> : <p>No blockers reported.</p>}</div>
+                <div><h4 className="font-medium">Uncertainty and limits</h4>{eligibilityResult.uncertainty.length ? <ul className="list-disc space-y-1 pl-5">{eligibilityResult.uncertainty.map((finding, index) => <li key={`${finding.code}-${index}`}>{finding.message}</li>)}</ul> : <p>No additional uncertainty reported.</p>}</div>
+                <p className="text-muted-foreground">Storage and references can change after this observation. Check again manually for a new observation. Restoration remains unavailable.</p>
+              </>}
+            </div>}
+          </section>}
           {error && <p role="alert" className="text-sm text-destructive">{error}</p>}{message && <p role="status">{message}</p>}
-          <div className="flex gap-2"><Button type="submit" disabled={saving || loading || !selected && !pending.some(item => !item.saved)}>{saving ? 'Saving…' : selected ? 'Save File settings' : 'Save attachments'}</Button><Button type="button" variant="outline" disabled={saving} onClick={() => router.push(base)}>Cancel</Button></div>
+          <div className="flex gap-2"><Button type="submit" disabled={saving || loading || !selected && !pending.some(item => !item.saved)}>{saving ? 'Saving…' : selected ? 'Save File settings' : 'Save attachments'}</Button><Button type="button" variant="outline" disabled={saving} onClick={() => { clearEligibility(); router.push(base); }}>Cancel</Button></div>
           {!selected && <p className="text-xs text-muted-foreground">Cancel discards local selections. Successfully saved attachments remain saved after partial upload failure.</p>}
         </form>
       </div>

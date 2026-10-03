@@ -336,7 +336,7 @@ export function ThreeDModelEditorFields({
             <Badge variant="outline" className="text-[10px]">{textureCount} texture{textureCount === 1 ? '' : 's'}</Badge>
           </div>
           {modelId && <Button asChild variant="outline" size="sm" className="h-8 text-xs">
-            <Link href={`/admin/threed/models/${modelId}/files`}>Manage Model Files</Link>
+            <Link href={`/admin/threed/models/${modelId}?tab=files`}>Manage Model Files</Link>
           </Button>}
         </Section>
       )}

@@ -6,7 +6,10 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ModelAnimationAssignments } from '@/components/admin/threed/animations/CharacterAnimationAssignments';
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { Suspense, useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ThreeDModelFilesCRUD } from './ThreeDModelFilesCRUD';
+import { useModelEditorTabs } from './use-model-editor-tabs';
 import {
   Check,
   X,
@@ -27,7 +30,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/toast';
@@ -144,7 +147,13 @@ const modelOptions = (model: Model) => [
 // ============================================
 // COMPONENT
 // ============================================
-export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linkedModelId = null, view = "list" }: { onModuleUpdate?: () => void; scrollRecords?: boolean; linkedModelId?: number | null; view?: "list" | "create" | "edit" }) {
+type ThreeDModelsCRUDProps = { onModuleUpdate?: () => void; scrollRecords?: boolean; linkedModelId?: number | null; view?: "list" | "create" | "edit" };
+
+export function ThreeDModelsCRUD(props: ThreeDModelsCRUDProps) {
+  return <Suspense fallback={<p role="status">Loading Models…</p>}><ThreeDModelsCRUDContent {...props} /></Suspense>;
+}
+
+function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linkedModelId = null, view = "list" }: ThreeDModelsCRUDProps) {
   const router = useRouter();
   const { showToast, ToastComponent } = useToast();
   const [models, setModels] = useState<Model[]>([]);
@@ -175,6 +184,29 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
 
   const [formError, setFormError] = useState<string | null>(null);
   const [formData, setFormData] = useState<ThreeDModelAdminFormData>(createEmptyThreeDModelAdminForm);
+  const [savedForm, setSavedForm] = useState('');
+  const [filesBusy, setFilesBusy] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
+  const [detailsReady, setDetailsReady] = useState(true);
+  const [refreshingDetails, setRefreshingDetails] = useState(false);
+  const [detailsRefreshError, setDetailsRefreshError] = useState('');
+  const refreshLock = useRef(false);
+  const dirty = view === 'edit' && Boolean(editingModel) && (JSON.stringify(formData) !== savedForm || Boolean(pendingPrimaryFile));
+  const tabs = useModelEditorTabs({
+    enabled: view === 'edit', dirty,
+    busy: isSubmitting || uploadingPrimary || uploadingThumbnail || filesBusy || exportOpen || refreshingDetails,
+    save: handleUpdate,
+    discard: async () => {
+      if (!editingModel) return false;
+      if (pendingPrimaryFile && !(await discardPendingPrimaryUpload(pendingPrimaryFile))) return false;
+      loadModelForm(editingModel);
+      return true;
+    },
+    refresh: refreshDetails,
+  });
+  useEffect(() => {
+    if (view === 'edit' && tabs.tab === 'files') setDetailsReady(false);
+  }, [view, tabs.tab]);
   const importerPreviewModel = useMemo<ModelData | null>(() => {
     if (!formData.modelType) return null;
     let metadata: unknown;
@@ -407,8 +439,8 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
     }
   }
 
-  async function handleUpdate() {
-    if (!editingModel || isSubmitting || uploadingPrimary || uploadingThumbnail) return;
+  async function handleUpdate(): Promise<boolean> {
+    if (!editingModel || tabs.tab !== 'details' || isSubmitting || uploadingPrimary || uploadingThumbnail || !detailsReady || refreshingDetails || filesBusy || exportOpen) return false;
     setFormError(null);
     setIsSubmitting(true);
     try {
@@ -423,18 +455,19 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
         body: JSON.stringify(payload),
       });
       const data = await response.json();
-      if (data.success) {
+      if (response.ok && data.success && data.data?.id === editingModel.id) {
         showToast('Model updated successfully', 'success');
         setPendingPrimaryFile(null);
         setUploadAnalysis(null);
-        loadModelForm({ ...editingModel, ...data.data, categories: [...categories, ...(editingModel.categories ?? [])].filter((category, index, all) => formData.categoryIds.includes(category.id) && all.findIndex(item => item.id === category.id) === index), files: editingModel.files, materialAssignments: editingModel.materialAssignments });
+        loadModelForm({ ...editingModel, ...data.data, categories: [...categories, ...(editingModel.categories ?? [])].filter((category, index, all) => formData.categoryIds.includes(category.id) && all.findIndex(item => item.id === category.id) === index), files: data.data.files ?? editingModel.files, materialAssignments: data.data.materialAssignments ?? editingModel.materialAssignments });
+        return true;
       } else {
         setFormError(data.error || 'Failed to update model');
       }
     } catch (error) {
       if (error instanceof ThreeDModelFormValidationError) {
         setFormError(error.message);
-        return;
+        return false;
       }
       setFormError('Failed to update model. Your changes are still here; please try again.');
       console.error('Error updating model:', error);
@@ -445,6 +478,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
     } finally {
       setIsSubmitting(false);
     }
+    return false;
   }
 
   async function handleDeleteModels(targets: Model[]) {
@@ -487,7 +521,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
     setUploadAnalysis(null);
     setPendingPrimaryFile(null);
     setEditingModel(model);
-    setFormData({
+    const nextForm: ThreeDModelAdminFormData = {
       modelName: model.modelName,
       modelType: model.modelType,
       filePath: model.filePath,
@@ -513,13 +547,35 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
       uploadedBy: model.uploadedBy || '',
       metadata: JSON.stringify(model.metadata || {}),
       categoryIds: (model.categories ?? []).map((category) => category.id),
-    });
+    };
+    setFormData(nextForm);
+    setSavedForm(JSON.stringify(nextForm));
   }
 
-  async function leaveForm() {
-    if (isSubmitting || uploadingPrimary || uploadingThumbnail) return;
+  async function refreshDetails(): Promise<boolean> {
+    if (!linkedModelId || refreshLock.current) return false;
+    refreshLock.current = true;
+    setDetailsReady(false);
+    setRefreshingDetails(true);
+    setDetailsRefreshError('');
+    try {
+      const response = await fetch('/api/threed/models?id=' + linkedModelId, { cache: 'no-store', signal: AbortSignal.timeout(30_000) });
+      const result = await response.json();
+      if (!response.ok || result.success !== true || result.data?.id !== linkedModelId || typeof result.data.userId !== 'string') throw new Error();
+      loadModelForm(result.data as Model);
+      setDetailsReady(true);
+      return true;
+    } catch {
+      setDetailsRefreshError('Could not reload the saved Model. Details editing and Save Changes are disabled. Retry before making changes.');
+      return false;
+    } finally { refreshLock.current = false; setRefreshingDetails(false); }
+  }
+
+  async function leaveForm(destination = "/admin/threed/models") {
+    if (isSubmitting || uploadingPrimary || uploadingThumbnail || filesBusy || exportOpen || refreshingDetails) return;
+    if (dirty && !confirm("Leave Edit Model and discard unsaved Details changes? Saved Files changes remain saved.")) return;
     if (pendingPrimaryFile && !(await discardPendingPrimaryUpload(pendingPrimaryFile))) return;
-    router.push('/admin/threed/models');
+    router.push(destination);
   }
 
   useEffect(() => {
@@ -545,81 +601,102 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view, linkedModelId]);
 
+  const reportFilesBusy = useCallback((value: boolean) => setFilesBusy(value), []);
+
   if (view !== "list") {
-    const busy = isSubmitting || uploadingPrimary || uploadingThumbnail;
+    const busy = isSubmitting || uploadingPrimary || uploadingThumbnail || filesBusy || exportOpen || refreshingDetails || tabs.transitioning;
     return (
       <div className="flex h-full min-h-0 flex-col gap-3">
         {ToastComponent}
         <AdminWorkspaceHeader icon={Box} title={view === "create" ? "Add Model" : editingModel ? "Edit Model — " + editingModel.modelName : "Edit Model"}
           description={view === "create" ? "Create a reusable ThreeD Model" : "Model #" + linkedModelId + " · Reusable Model details"}>
           <Button variant="outline" size="sm" disabled={busy} onClick={() => void leaveForm()}>Back to Models</Button>
-          {editingModel && <Button asChild variant="outline" size="sm" disabled={busy}><Link href={`/admin/threed/models/${editingModel.id}/files`}>Model Files</Link></Button>}
+          {editingModel && <Button variant="outline" size="sm" disabled={busy} onClick={() => void leaveForm("/admin/threed/model-files")}>All Model Files</Button>}
         </AdminWorkspaceHeader>
-        {editingModel && <nav aria-label="Model workspace" className="flex min-w-0 flex-wrap items-center gap-3 text-sm">
-          <span aria-current="page" className="font-medium">Edit Model</span>
-          <Link href={`/admin/threed/models/${editingModel.id}/files`} className="text-muted-foreground hover:underline">Model Files</Link>
-          <span className="ml-auto max-w-full truncate text-xs text-muted-foreground">{formData.modelName || editingModel.modelName} · #{editingModel.id}</span>
-        </nav>}
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-lg border p-4">
-          {linkedModelError ? <p role="alert" className="text-destructive">{linkedModelError}</p>
-            : view === "edit" && !editingModel ? <p role="status">Loading Model…</p>
-            : (
-              <div className="grid min-h-0 gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
-                <div className="min-w-0 lg:sticky lg:top-0 lg:self-start">
-                  <ThreeDModelAssetPreview
-                    model={importerPreviewModel}
-                    attachedDependencyCount={0}
-                    dependencyCount={0}
-                    preserveCameraOnEdit
-                    title="Draft Model Canvas"
-                    headerMeta={<Badge variant="outline">{formData.modelType || 'Choose a type'}</Badge>}
-                    canvasClassName="h-[min(68vh,680px)] min-h-[320px]"
-                  />
-                  <p className="mt-2 text-xs text-muted-foreground">{formData.modelType && formData.modelType !== 'procedural' && !formData.filePath.trim()
-                    ? 'Recovery geometry only: choose a Model file to preview its geometry. Recovery settings are under Advanced.'
-                    : 'Previewing unsaved shape, transform, and file lighting changes. Save to apply them to the reusable Model.'}</p>
-                </div>
-                <div className="min-w-0 [&_section]:rounded-md [&_section]:border [&_section]:p-3">
-                  {view === 'create' && formData.modelType === 'obj' && (
-                    <p className="mb-4 rounded-md border p-3 text-sm">Attach MTL files and referenced images in Model Files after creation. Use Bulk Import Models to prepare a complete OBJ bundle before uploading.</p>
-                  )}
-                  <ThreeDModelEditorFields
-                    mode={view === 'create' ? 'create' : 'edit'}
-                    modelId={editingModel?.id}
-                    previewImageAction={editingModel && importerPreviewModel && <ModelPreviewImageExport
-                      key={editingModel.id}
-                      model={importerPreviewModel}
-                      useDraftModel
-                      dependencyCount={0}
-                      attachedDependencyCount={0}
-                      disabled={busy}
-                      onUseImageUrl={url => setFormData(current => ({ ...current, thumbnailUrl: url }))}
-                    />}
-                    form={formData}
-                    setForm={setFormData}
-                    categories={categories}
-                    files={editingModel?.files}
-                    isSubmitting={isSubmitting}
-                    uploadingPrimary={uploadingPrimary}
-                    uploadingThumbnail={uploadingThumbnail}
-                    uploadAnalysis={uploadAnalysis}
-                    onPrimaryFile={handlePrimaryFileUpload}
-                    onThumbnail={handleThumbnailUpload}
-                  />
-                </div>
+        <Tabs value={view === 'edit' ? tabs.tab : 'details'} onValueChange={value => tabs.requestTab(value === 'files' ? 'files' : 'details')} activationMode="manual" className="min-h-0 flex-1">
+          {view === 'edit' && <div className="flex flex-wrap items-center justify-between gap-2">
+            <TabsList aria-label="Model workspace"><TabsTrigger value="details" disabled={busy || !editingModel}>Details</TabsTrigger><TabsTrigger value="files" disabled={busy || !editingModel}>Files</TabsTrigger></TabsList>
+            {editingModel && <span className="truncate text-xs text-muted-foreground">{editingModel.modelName} · #{editingModel.id}</span>}
+          </div>}
+          {tabs.notice && <p role="status" className="text-sm text-muted-foreground">{tabs.notice}</p>}
+          <TabsContent value="details" forceMount hidden={view === 'edit' && tabs.tab !== 'details'} className="min-h-0 flex flex-col data-[state=inactive]:hidden">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-lg border p-4">
+              {linkedModelError ? <p role="alert" className="text-destructive">{linkedModelError}</p>
+                : view === "edit" && !editingModel ? <p role="status">Loading Model…</p>
+                : (
+                  <div className="grid min-h-0 gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
+                    <div className="min-w-0 lg:sticky lg:top-0 lg:self-start">
+                      <ThreeDModelAssetPreview
+                        active={(view !== 'edit' || tabs.tab === 'details') && !exportOpen}
+                        model={importerPreviewModel}
+                        attachedDependencyCount={0}
+                        dependencyCount={0}
+                        preserveCameraOnEdit
+                        title="Draft Model Canvas"
+                        headerMeta={<Badge variant="outline">{formData.modelType || 'Choose a type'}</Badge>}
+                        canvasClassName="h-[min(68vh,680px)] min-h-[320px]"
+                      />
+                      <p className="mt-2 text-xs text-muted-foreground">{formData.modelType && formData.modelType !== 'procedural' && !formData.filePath.trim()
+                        ? 'Recovery geometry only: choose a Model file to preview its geometry. Recovery settings are under Advanced.'
+                        : 'Previewing unsaved shape, transform, and file lighting changes. Save to apply them to the reusable Model.'}</p>
+                    </div>
+                    <fieldset disabled={busy || !detailsReady} className="min-w-0 [&_section]:rounded-md [&_section]:border [&_section]:p-3">
+                      {view === 'create' && formData.modelType === 'obj' && (
+                        <p className="mb-4 rounded-md border p-3 text-sm">Attach MTL files and referenced images in Model Files after creation. Use Bulk Import Models to prepare a complete OBJ bundle before uploading.</p>
+                      )}
+                      <ThreeDModelEditorFields
+                        mode={view === 'create' ? 'create' : 'edit'}
+                        modelId={editingModel?.id}
+                        previewImageAction={editingModel && importerPreviewModel && <ModelPreviewImageExport
+                          key={editingModel.id}
+                          model={importerPreviewModel}
+                          useDraftModel
+                          onOpenChange={setExportOpen}
+                          dependencyCount={0}
+                          attachedDependencyCount={0}
+                          disabled={busy}
+                          onUseImageUrl={url => setFormData(current => ({ ...current, thumbnailUrl: url }))}
+                        />}
+                        form={formData}
+                        setForm={setFormData}
+                        categories={categories}
+                        files={editingModel?.files}
+                        isSubmitting={isSubmitting}
+                        uploadingPrimary={uploadingPrimary}
+                        uploadingThumbnail={uploadingThumbnail}
+                        uploadAnalysis={uploadAnalysis}
+                        onPrimaryFile={handlePrimaryFileUpload}
+                        onThumbnail={handleThumbnailUpload}
+                      />
+                    </fieldset>
+                  </div>
+                )}
+            </div>
+            <div className="shrink-0 space-y-2 border-t bg-background py-3">
+              {refreshingDetails && <p role="status" className="text-sm text-muted-foreground">Reloading saved Model…</p>}
+              {detailsRefreshError && <div className="space-y-2"><p role="alert" className="text-sm text-destructive">{detailsRefreshError}</p><Button variant="outline" disabled={busy} onClick={() => void refreshDetails()}>Retry Model refresh</Button></div>}
+              {formError && <p role="alert" className="text-sm text-destructive">{formError}</p>}
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" disabled={busy} onClick={() => void leaveForm()}>Cancel</Button>
+                <Button onClick={view === "create" ? handleCreate : handleUpdate}
+                  disabled={busy || !detailsReady || (view === "edit" && !editingModel) || (view === "create" && !formData.filePath.trim() && formData.modelType !== "procedural")}>
+                  {refreshingDetails ? "Reloading…" : busy ? "Saving…" : view === "create" ? "Create Model" : "Save Changes"}
+                </Button>
               </div>
-            )}
-        </div>
-        <div className="shrink-0 space-y-2 border-t bg-background py-3">
-          {formError && <p role="alert" className="text-sm text-destructive">{formError}</p>}
-          <div className="flex justify-end gap-2">
-            <Button variant="outline" disabled={busy} onClick={() => void leaveForm()}>Cancel</Button>
-            <Button onClick={view === "create" ? handleCreate : handleUpdate}
-              disabled={busy || (view === "edit" && !editingModel) || (view === "create" && !formData.filePath.trim() && formData.modelType !== "procedural")}>
-              {busy ? "Saving…" : view === "create" ? "Create Model" : "Save Changes"}
-            </Button>
-          </div>
-        </div>
+            </div>
+          </TabsContent>
+          {view === 'edit' && editingModel && <TabsContent value="files" forceMount hidden={tabs.tab !== 'files'} className="min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-lg border p-4 data-[state=inactive]:hidden">
+            <p className="mb-3 text-xs text-muted-foreground">Files and appearance changes save separately. Saved uploads remain saved when you leave Edit Model.</p>
+            <ThreeDModelFilesCRUD key={editingModel.id} initialModelId={editingModel.id} embedded active={tabs.tab === 'files'} onBusyChange={reportFilesBusy} />
+          </TabsContent>}
+        </Tabs>
+        <Dialog open={tabs.pending !== null} onOpenChange={open => { if (!open && !busy) void tabs.resolve('stay'); }}>
+          <DialogContent showCloseButton={!busy}>
+            <DialogHeader><DialogTitle>Unsaved Model changes</DialogTitle><DialogDescription>Save or discard your Details changes before opening Files. Saved uploads remain saved.</DialogDescription></DialogHeader>
+            {formError && <p role="alert" className="text-sm text-destructive">{formError}</p>}
+            <DialogFooter><Button variant="outline" disabled={busy} onClick={() => void tabs.resolve('stay')}>Stay</Button><Button variant="outline" disabled={busy} onClick={() => void tabs.resolve('discard')}>Discard Changes</Button><Button disabled={busy || !detailsReady} onClick={() => void tabs.resolve('save')}>{busy ? 'Saving…' : 'Save Changes'}</Button></DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
@@ -759,7 +836,7 @@ export function ThreeDModelsCRUD({ onModuleUpdate, scrollRecords = false, linked
                         </Button>
                         <Button asChild variant="ghost" size="icon"
                           className="h-8 w-8 text-muted-foreground hover:bg-blue-500/10 hover:text-blue-700 focus-visible:bg-blue-500/10 focus-visible:text-blue-700 dark:hover:text-blue-400 dark:focus-visible:text-blue-400">
-                          <Link href={`/admin/threed/models/${model.id}/files`} title={`Model Files for ${model.modelName}`} aria-label={`Model Files for ${model.modelName}`}>
+                          <Link href={`/admin/threed/models/${model.id}?tab=files`} title={`Model Files for ${model.modelName}`} aria-label={`Model Files for ${model.modelName}`}>
                             <Files aria-hidden="true" className="h-4 w-4" />
                           </Link>
                         </Button>

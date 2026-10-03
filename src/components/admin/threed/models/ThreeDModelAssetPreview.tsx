@@ -23,6 +23,8 @@ export interface PreviewPerspective { direction: [number, number, number]; dista
 
 interface ThreeDModelAssetPreviewProps {
   model: ModelData | null;
+  active?: boolean;
+  onBusyChange?: (busy: boolean) => void;
   preserveCameraOnEdit?: boolean;
   onCaptureImage?: (image: Blob) => void;
   autoCapture?: boolean;
@@ -192,6 +194,8 @@ function MaterialSlotRow({
 
 export function ThreeDModelAssetPreview({
   model,
+  active = true,
+  onBusyChange,
   preserveCameraOnEdit = false,
   onCaptureImage,
   autoCapture = false,
@@ -235,6 +239,8 @@ export function ThreeDModelAssetPreview({
   const [selectedMaterialSlotId, setSelectedMaterialSlotId] = useState<string | null>(null);
   const [materialPreviewOverride, setMaterialPreviewOverride] = useState<ThreeDModelMaterialPreviewOverride | null>(null);
   const [savingMaterialAssignment, setSavingMaterialAssignment] = useState(false);
+  useEffect(() => { onBusyChange?.(savingMaterialAssignment || capturing); }, [savingMaterialAssignment, capturing, onBusyChange]);
+  useEffect(() => { if (active) setSettledKey(null); }, [active]);
   const [materialAssignmentError, setMaterialAssignmentError] = useState<string | null>(null);
   const [quickTextureId, setQuickTextureId] = useState('');
   const materialTextureInputRef = useRef<HTMLInputElement>(null);
@@ -408,7 +414,7 @@ export function ThreeDModelAssetPreview({
       </div>
 
       <div style={onCaptureImage ? { aspectRatio: `${outputSize.width} / ${outputSize.height}` } : undefined} className={`relative bg-gradient-to-b from-sky-950/40 to-slate-950 ${canvasClassName}`}>
-        {!model ? (
+        {!active ? null : !model ? (
           <div className="flex h-full items-center justify-center text-xs text-muted-foreground">
             Select a Model to preview its available assets.
           </div>

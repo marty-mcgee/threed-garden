@@ -85,7 +85,7 @@ function ModelFileNotice({ type, data }: { type: string; data: Record<string, an
         : filePath ? 'Model file could not be loaded' : 'Main Model file is missing'}</p>
       <p className="mt-1">A fallback shape represents this asset until its Model file is available.</p>
       {status === 'editable' ? (
-        <a href={`/admin/threed/models/${modelId}/files`} target="_blank" rel="noopener noreferrer"
+        <a href={`/admin/threed/models/${modelId}?tab=files`} target="_blank" rel="noopener noreferrer"
           className="mt-1 inline-block underline underline-offset-2">Manage Model Files ↗</a>
       ) : (
         <>

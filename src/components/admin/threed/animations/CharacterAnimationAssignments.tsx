@@ -138,7 +138,7 @@ export function CharacterAnimationAssignments(props: AssignmentTargetProps) {
       <p>Use defaults keeps existing behavior. Disabled turns an action off. {target === 'character' && 'Preview requires an active uploaded animation and does not save changes.'}</p>
       {mapping && target === 'character' && <p>
         Character override → linked Model default → existing animation behavior.
-        {mapping.modelId ? <> <Link className="underline" href={`/admin/threed/models/${mapping.modelId}/files`}>View linked Model #{mapping.modelId}</Link></> : ' No linked Model defaults.'}
+        {mapping.modelId ? <> <Link className="underline" href={`/admin/threed/models/${mapping.modelId}?tab=files`}>View linked Model #{mapping.modelId}</Link></> : ' No linked Model defaults.'}
       </p>}
     </div>
     </details>

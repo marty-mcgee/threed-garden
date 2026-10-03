@@ -8,8 +8,9 @@ import { useModelPreviewSize } from '@/components/settings/ModelPreviewSettings'
 import { modelForPreview, resolvePreviewRequirements } from './model-preview-requirements';
 import { ThreeDModelAssetPreview } from './ThreeDModelAssetPreview';
 
-export function ModelPreviewImageExport({ model, dependencyCount, attachedDependencyCount, onUseImageUrl, disabled = false, useDraftModel = false }: {
+export function ModelPreviewImageExport({ model, dependencyCount, attachedDependencyCount, onUseImageUrl, disabled = false, useDraftModel = false, onOpenChange }: {
   model: ModelData;
+  onOpenChange?: (open: boolean) => void;
   useDraftModel?: boolean;
   onUseImageUrl?: (url: string) => void;
   disabled?: boolean;
@@ -94,7 +95,7 @@ export function ModelPreviewImageExport({ model, dependencyCount, attachedDepend
     } finally { busy.current = false; setSaving(false); }
   }
 
-  return <Dialog open={open} onOpenChange={value => { if (!busy.current) { if (value && !image) setOutputSize(defaults); setOpen(value); } }}>
+  return <Dialog open={open} onOpenChange={value => { if (!busy.current) { if (value && !image) setOutputSize(defaults); setOpen(value); onOpenChange?.(value); } }}>
     <DialogTrigger asChild><Button type="button" variant="outline" size="sm" className="h-7 text-xs" disabled={disabled}>Export 2D Image</Button></DialogTrigger>
     <DialogContent className="max-h-[90dvh] overflow-y-auto" showCloseButton={!saving}>
       <DialogTitle>Export Model Preview</DialogTitle>
