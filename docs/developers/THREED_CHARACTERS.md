@@ -21,6 +21,16 @@ Both runtimes preserve:
 - task-to-locomotion crossfades;
 - the `garden-character-action-complete` event used by the page-level world-action layer.
 
+## v0.22.17 action collision points
+
+The Developer approved a narrow contact-time exception for movable-ball kicks. In a loaded Scene with a controlled Ecctrl Character and an exact movable-ball Action Target, eligible foot-kick Action buttons request contact timing by default. Untargeted Actions remain animation previews; **Kick selected ball** retains its assisted, completion-timed impulse. GardenCharacter and all other world-action timing remain separate and unchanged.
+
+`action-collision-core.ts` defines a reusable observation linking request, Project, actor/target marker IDs, semantic Action, clip name, source node, point ID, world-space segment and radius. `action-collision-points.ts` supplies default foot/toe bindings for supported Farmer/Mixamo rigs. It observes the loaded Model's animated skeleton; it does not introduce foot rigid bodies, per-Project wiring, authoring UI, persisted mappings or a new mesh collision solver. Future point profiles and effect consumers can use the same contract, but an observation alone grants no world action.
+
+Ecctrl arms the sampler only during the requested task clip, after any preparatory turn, and clears it before return/locomotion and on runtime cancellation. The sampler verifies an animated bone/ancestor track, refreshes world transforms and produces bounded sweeps from successive active poses. Missing/ambiguous bindings, stationary/unrelated clips, stalled frames and teleport-sized movement fail closed. First-pose and final held-pose contacts are excluded; this is an active-animation strike probe, not a continuously physical foot. Contact tolerance follows the rig's foot size within bounds.
+
+Scene correlation verifies the exact request, Action/clip, actors and permitted point. The ball owner's next `useBeforePhysicsStep` tests those sweeps against its actual enabled, non-sensor sphere collider and applies at most one existing speed/mass-bounded kick impulse. Completion after a miss never substitutes an assisted impulse. Control, visibility, Project/target, live range, removal and placement are rechecked; explicit placement wins. Ordinary capsule pushing and saved mass/friction/bounce/damping are unchanged. See the [implementation and browser acceptance record](../plans/v0.22.17-action-collision-points.md).
+
 ## v0.18.8a Ecctrl position authority
 
 The Runtime Marker layer resolves the Project-specific Character position before runtime routing. `ThreeDScene` passes that position explicitly to `EcctrlCharacter`, and Ecctrl uses it to initialize the Rapier body. Ecctrl does not independently fall back to the reusable Character row's XYZ fields, so the Character model, capsule, selection halo, camera tracking, and live-position reporting share one physical owner.

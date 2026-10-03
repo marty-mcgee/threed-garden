@@ -1,4 +1,5 @@
 import { isProjectModelMovableBall } from '../models/project-model-instance-core';
+import { defaultKickCollisionPoints, type ThreeDActionCollisionPointId, type ThreeDActionCollisionSample } from './action-collision-core';
 
 /** Client-only, Project-instance interaction. No Scenario or score persistence. */
 export const THREED_SOCCER_KICK_REQUEST_EVENT = 'threed-soccer-kick-request';
@@ -19,19 +20,23 @@ export type SoccerKickRequest = Readonly<{
   characterMarkerId: string;
   ballMarkerId: string;
   action: string;
+  timing?: 'contact';
+  pointIds?: readonly ThreeDActionCollisionPointId[];
 }>;
-export type SoccerKickApply = SoccerKickRequest & Readonly<{ actorPosition: SoccerKickPosition }>;
+export type SoccerKickApply = SoccerKickRequest & Readonly<{
+  actorPosition: SoccerKickPosition;
+  collision?: ThreeDActionCollisionSample;
+}>;
 export type SoccerKickResult = Readonly<{
   requestId: string;
   projectId: number;
   ballMarkerId: string;
   applied: boolean;
-  reason?: 'animation-rejected' | 'timeout' | 'changed';
+  reason?: 'animation-rejected' | 'collision-unavailable' | 'miss' | 'timeout' | 'changed';
 }>;
 
 export function isSoccerFootKickSlot(name: string): boolean {
-  return /\b(?:left|right)\s+foot\b|\bkick\b.*\bsoccer(?:ball)?\b|\bsoccer(?:ball)?\b.*\bkick\b/i.test(name)
-    && !/\b(?:header|pass|penalty)\b/i.test(name);
+  return defaultKickCollisionPoints(name).length > 0;
 }
 
 export function validSoccerKickRequest(value: unknown): value is SoccerKickRequest {
@@ -43,7 +48,11 @@ export function validSoccerKickRequest(value: unknown): value is SoccerKickReque
     && Number.isSafeInteger(request.characterId) && Number(request.characterId) > 0
     && typeof request.characterMarkerId === 'string' && request.characterMarkerId.length > 0
     && typeof request.ballMarkerId === 'string' && request.ballMarkerId.length > 0
-    && typeof request.action === 'string' && request.action.length > 0 && request.action.length <= 120;
+    && typeof request.action === 'string' && request.action.length > 0 && request.action.length <= 120
+    && (request.timing === undefined || (request.timing === 'contact'
+      && Array.isArray(request.pointIds) && request.pointIds.length > 0 && request.pointIds.length <= 2
+      && new Set(request.pointIds).size === request.pointIds.length
+      && request.pointIds.every(id => id === 'left-foot' || id === 'right-foot')));
 }
 
 export function soccerKickInRange(actor: SoccerKickPosition, ball: SoccerKickPosition): boolean {

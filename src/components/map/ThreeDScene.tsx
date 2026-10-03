@@ -17,6 +17,7 @@ import { EnvironmentRegionColliders } from '@/components/threed/shared/Environme
 import { resolveBallPhysics } from '@/libraries/services/threed/models/ball-physics';
 import { THREED_MODEL_PLACEMENT_EVENT, type ThreeDModelPlacement } from '@/libraries/services/threed/models/project-model-instance-core';
 import { findSoccerKickParticipants, planSoccerKickImpulse, validSoccerKickRequest, THREED_SOCCER_KICK_APPLY_EVENT, THREED_SOCCER_KICK_REJECT_EVENT, THREED_SOCCER_KICK_REQUEST_EVENT, THREED_SOCCER_KICK_RESULT_EVENT, type SoccerKickApply, type SoccerKickRequest, type SoccerKickResult } from '@/libraries/services/threed/physics/soccer-kick-core';
+import { THREED_ACTION_COLLISION_SAMPLE_EVENT, validThreeDActionCollisionSample, sweptPointHitsSphere } from '@/libraries/services/threed/physics/action-collision-core';
 
 
 import {
@@ -44,6 +45,7 @@ import {
   type RapierRigidBody,
   type RigidBodyProps,
   useBeforePhysicsStep,
+  useRapier,
 } from '@react-three/rapier';
 import * as THREE from 'three';
 import {
@@ -730,7 +732,9 @@ function SceneMarkerRigidBody({
   smoothPosition?: boolean;
 }) {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
+  const { rapier } = useRapier();
   const pendingSoccerKickRef = useRef<SoccerKickApply | null>(null);
+  const pendingActionCollisionRef = useRef<SoccerKickApply[]>([]);
   const pendingModelPlacementRef = useRef<ThreeDModelPlacement | null>(null);
   const consumedSoccerKickIdsRef = useRef<Set<string>>(new Set());
   useEffect(() => {
@@ -741,6 +745,12 @@ function SceneMarkerRigidBody({
         || request.projectId !== soccerKickTarget.projectId
         || request.ballMarkerId !== soccerKickTarget.markerId
         || consumedSoccerKickIdsRef.current.has(request.requestId)) return;
+      if (request.timing === 'contact') {
+        if (!validThreeDActionCollisionSample(request.collision)) return;
+        // Bound render-to-physics work; retain both feet and swept crossings.
+        pendingActionCollisionRef.current = [...pendingActionCollisionRef.current.slice(-7), request];
+        return;
+      }
       consumedSoccerKickIdsRef.current.add(request.requestId);
       pendingSoccerKickRef.current = request;
     };
@@ -802,6 +812,30 @@ function SceneMarkerRigidBody({
         body.setAngvel({ x: 0, y: 0, z: 0 }, true);
       }
       body.setTranslation(placement.position, true);
+    }
+    const collisionSamples = pendingActionCollisionRef.current;
+    pendingActionCollisionRef.current = [];
+    for (const contact of collisionSamples) {
+      if (consumedSoccerKickIdsRef.current.has(contact.requestId)) continue;
+      const body = rigidBodyRef.current;
+      if (!body || !sceneEnabled || !body.isEnabled() || !body.isDynamic()
+        || !soccerKickActorPosition?.(contact)) continue;
+      let hit = false;
+      if (!placement && !pendingTransformRef.current && contact.collision) {
+        for (let i = 0; i < body.numColliders(); i++) {
+          const collider = body.collider(i);
+          if (collider.isEnabled() && !collider.isSensor() && collider.shapeType() === rapier.ShapeType.Ball
+            && sweptPointHitsSphere(contact.collision, collider.translation(), collider.radius())) {
+            hit = true;
+            break;
+          }
+        }
+      }
+      // A miss can keep sampling; an explicit placement cancels this action.
+      if (!hit && !placement && !pendingTransformRef.current) continue;
+      consumedSoccerKickIdsRef.current.add(contact.requestId);
+      pendingSoccerKickRef.current = contact;
+      break;
     }
     const kick = pendingSoccerKickRef.current;
     if (kick) {
@@ -2823,6 +2857,15 @@ export function ThreeDScene({
     activeLayers, visibleMarkerIds, projectId };
   const getSoccerKickActorPosition = useCallback((request: SoccerKickRequest) => {
     const context = soccerKickContextRef.current;
+    if (request.timing === 'contact') {
+      if (pendingSoccerKickRef.current?.request.requestId !== request.requestId) return null;
+      return findSoccerKickParticipants({ request, projectId: context.projectId,
+        controlledCharacterId: context.controlledCharacterId, target: context.actionTarget,
+        markers: context.sceneMarkers, activeLayers: context.activeLayers,
+        visibleMarkerIds: context.visibleMarkerIds,
+        positionForMarker: markerId => livePositionsRef.current.get(markerId),
+      })?.actorPosition ?? null;
+    }
     if (context.projectId !== request.projectId
       || context.controlledCharacterId !== request.characterId
       || context.actionTarget?.markerId !== request.ballMarkerId
@@ -2877,7 +2920,8 @@ export function ThreeDScene({
         characterId: request.characterId, markerId: request.characterMarkerId, action: request.action,
         target: { ...soccerKickContextRef.current.actionTarget,
           markerId: request.ballMarkerId, position: positions.ballPosition,
-          actionRequestId: request.requestId, soccerKickRequest: true },
+          actionRequestId: request.requestId, soccerKickRequest: true,
+          collisionRequest: request.timing === 'contact' ? request : undefined },
       } }));
     };
     const onComplete = (event: Event) => {
@@ -2889,6 +2933,7 @@ export function ThreeDScene({
         || detail.action !== pending.request.action
         || detail.target?.markerId !== pending.request.ballMarkerId
         || detail.target?.actionRequestId !== pending.request.requestId) return;
+      if (pending.request.timing === 'contact') { cancel(true, 'miss'); return; }
       const positions = currentMarkers(pending.request);
       if (!positions) { cancel(true); return; }
       clearTimeout(pending.timer);
@@ -2897,15 +2942,40 @@ export function ThreeDScene({
       window.dispatchEvent(new CustomEvent<SoccerKickApply>(THREED_SOCCER_KICK_APPLY_EVENT,
         { detail: { ...pending.request, actorPosition: { ...positions.actorPosition } } }));
     };
+    const onCollisionSample = (event: Event) => {
+      const sample = (event as CustomEvent).detail;
+      const pending = pendingSoccerKickRef.current;
+      if (!validThreeDActionCollisionSample(sample) || !pending || pending.phase !== 'animating'
+        || pending.request.timing !== 'contact'
+        || sample.requestId !== pending.request.requestId
+        || sample.projectId !== pending.request.projectId
+        || sample.actorMarkerId !== pending.request.characterMarkerId
+        || sample.targetMarkerId !== pending.request.ballMarkerId
+        || sample.action !== pending.request.action
+        || sample.clipName.toLowerCase() !== pending.request.action.toLowerCase()
+        || !pending.request.pointIds?.some(id => id === sample.pointId)) return;
+      const positions = currentMarkers(pending.request);
+      if (!positions) { cancel(true); return; }
+      window.dispatchEvent(new CustomEvent<SoccerKickApply>(THREED_SOCCER_KICK_APPLY_EVENT,
+        { detail: { ...pending.request, actorPosition: { ...positions.actorPosition }, collision: sample } }));
+    };
+    const onPlacement = (event: Event) => {
+      const placement = (event as CustomEvent<ThreeDModelPlacement>).detail;
+      const pending = pendingSoccerKickRef.current;
+      if (pending?.request.timing === 'contact' && placement?.projectId === pending.request.projectId
+        && placement.markerId === pending.request.ballMarkerId) cancel(true);
+    };
     const onReject = (event: Event) => {
-      const rejected = (event as CustomEvent<{ requestId?: string }>).detail;
+      const rejected = (event as CustomEvent<{ requestId?: string; reason?: string }>).detail;
       if (pendingSoccerKickRef.current?.phase === 'animating'
-        && rejected?.requestId === pendingSoccerKickRef.current.request.requestId) cancel(true, 'animation-rejected');
+        && rejected?.requestId === pendingSoccerKickRef.current.request.requestId) {
+        cancel(true, rejected.reason === 'collision-unavailable' ? 'collision-unavailable' : 'animation-rejected');
+      }
     };
     const onResult = (event: Event) => {
       const result = (event as CustomEvent<SoccerKickResult>).detail;
       const pending = pendingSoccerKickRef.current;
-      if (pending && pending.phase === 'applying'
+      if (pending && (pending.phase === 'applying' || pending.request.timing === 'contact')
         && result?.requestId === pending.request.requestId
         && result.projectId === pending.request.projectId
         && result.ballMarkerId === pending.request.ballMarkerId) cancel(false);
@@ -2914,12 +2984,16 @@ export function ThreeDScene({
     window.addEventListener(THREED_SOCCER_KICK_REJECT_EVENT, onReject);
     window.addEventListener('garden-character-action-complete', onComplete);
     window.addEventListener(THREED_SOCCER_KICK_RESULT_EVENT, onResult);
+    window.addEventListener(THREED_ACTION_COLLISION_SAMPLE_EVENT, onCollisionSample);
+    window.addEventListener(THREED_MODEL_PLACEMENT_EVENT, onPlacement);
     return () => {
       cancel(false);
       window.removeEventListener(THREED_SOCCER_KICK_REQUEST_EVENT, onRequest);
       window.removeEventListener(THREED_SOCCER_KICK_REJECT_EVENT, onReject);
       window.removeEventListener('garden-character-action-complete', onComplete);
       window.removeEventListener(THREED_SOCCER_KICK_RESULT_EVENT, onResult);
+      window.removeEventListener(THREED_ACTION_COLLISION_SAMPLE_EVENT, onCollisionSample);
+      window.removeEventListener(THREED_MODEL_PLACEMENT_EVENT, onPlacement);
     };
   }, [projectId]);
   useEffect(() => {

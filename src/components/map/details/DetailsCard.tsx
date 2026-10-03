@@ -35,6 +35,7 @@ import { CharacterInstancePositionEditor } from './CharacterInstancePositionEdit
 import { ModelInstancePlacementEditor } from './ModelInstancePlacementEditor';
 import { isProjectModelMovableBall, resolveProjectModelCollisionMode } from '@/libraries/services/threed/models/project-model-instance-core';
 import { isSoccerFootKickSlot, soccerKickInRange, THREED_SOCCER_KICK_REQUEST_EVENT, THREED_SOCCER_KICK_RESULT_EVENT, type SoccerKickResult } from '@/libraries/services/threed/physics/soccer-kick-core';
+import { defaultKickCollisionPoints } from '@/libraries/services/threed/physics/action-collision-core';
 import { PlantingInstanceEditor } from './PlantingInstanceEditor';
 import { DetailsCardSection } from './DetailsCardSection';
 import { sceneOwnerPose } from '@/libraries/services/threed/transforms/scene-transform-core';
@@ -266,6 +267,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
 }) {
   const { slots: customActionSlots, error: actionSlotError } = useAnimationActionSlots();
   const [pendingKickRequestId, setPendingKickRequestId] = useState<string | null>(null);
+  const [kickFeedback, setKickFeedback] = useState<string | null>(null);
   const pendingKickRequestIdRef = useRef<string | null>(null);
   useEffect(() => {
     const onResult = (event: Event) => {
@@ -273,6 +275,11 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
       if (result?.requestId !== pendingKickRequestIdRef.current) return;
       pendingKickRequestIdRef.current = null;
       setPendingKickRequestId(null);
+      setKickFeedback(result.applied ? 'Ball kicked.' : result.reason === 'miss'
+        ? 'The foot missed the ball. Move closer and try again.'
+        : result.reason === 'collision-unavailable'
+          ? 'Foot collision points are unavailable on this Model. Use Kick selected ball.'
+          : 'Kick cancelled or unavailable. Check control, target and range.');
     };
     window.addEventListener(THREED_SOCCER_KICK_RESULT_EVENT, onResult);
     return () => window.removeEventListener(THREED_SOCCER_KICK_RESULT_EVENT, onResult);
@@ -280,9 +287,10 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
   useEffect(() => {
     pendingKickRequestIdRef.current = null;
     setPendingKickRequestId(null);
+    setKickFeedback(null);
   }, [projectId, controlledCharacterId, actionTarget?.markerId]);
   const customActions = customActionSlots.map(slot => slot.actionKey);
-  const customGroups = [...new Set(customActionSlots.map(slot => (slot.categoryName ?? 'Uncategorized')))].map(title => ({ title: `${title} · Animation only`, actions: customActionSlots.filter(slot => (slot.categoryName ?? 'Uncategorized') === title).map(slot => ({ action: slot.actionKey, label: slot.name })) }));
+  const customGroups = [...new Set(customActionSlots.map(slot => (slot.categoryName ?? 'Uncategorized')))].map(title => ({ title, actions: customActionSlots.filter(slot => (slot.categoryName ?? 'Uncategorized') === title).map(slot => ({ action: slot.actionKey, label: slot.name })) }));
   const animationAvailability = useSyncExternalStore(subscribeCharacterAnimationAvailability,
     () => getCharacterAnimationAvailability(Number(selected?.data?.id), String(selected?.data?.model?.filePath ?? '')),
     () => null);
@@ -438,6 +446,21 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
     && orchestrationStatus.targetId === actionTarget?.id;
   const isOrchestrationRunning = isCurrentOrchestration
     && orchestrationStatus.phase === 'interacting';
+  const contactPointsForAction = (action: string) => isEcctrlCharacter ? defaultKickCollisionPoints(
+    customActionSlots.find(slot => slot.actionKey === action && slot.isActive !== false)?.name ?? '') : [];
+  const requestBallKick = (action: string, contact = false) => {
+    if (!kickReady || !actionTarget || !projectId || pendingKickRequestIdRef.current
+      || isOrchestrationRunning || !animationAvailability?.has(action.toLowerCase())) return;
+    const requestId = crypto.randomUUID();
+    pendingKickRequestIdRef.current = requestId;
+    setPendingKickRequestId(requestId);
+    setKickFeedback(null);
+    window.dispatchEvent(new CustomEvent(THREED_SOCCER_KICK_REQUEST_EVENT, { detail: {
+      version: 1, requestId, projectId: Number(projectId), characterId,
+      characterMarkerId: String(selected.id), ballMarkerId: actionTarget.markerId, action,
+      ...(contact ? { timing: 'contact', pointIds: contactPointsForAction(action) } : {}),
+    } }));
+  };
   if (isPlantingMarker) {
     if (d.plantName || d.commonName) metaRows.push({ label: 'Plant', value: d.plantName || d.commonName });
     if (d.growthStage) metaRows.push({ label: 'Stage', value: d.growthStage });
@@ -731,20 +754,14 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
                       title={!sceneAvailable ? 'Open the loaded 3D Scene to kick' : !kickSlot ? 'Map and load a foot kick animation for this Character' : !isSelectedCharacterControlled ? 'Take Control to kick' : !kickReady ? 'Move within kicking range of the live ball' : 'Kick the selected ball after the animation completes'}
                       onClick={(event) => {
                         event.stopPropagation();
-                        if (!kickReady || !kickSlot || !actionTarget || !projectId) return;
-                        const requestId = crypto.randomUUID();
-                        pendingKickRequestIdRef.current = requestId;
-                        setPendingKickRequestId(requestId);
-                        window.dispatchEvent(new CustomEvent(THREED_SOCCER_KICK_REQUEST_EVENT, { detail: {
-                          version: 1, requestId, projectId: Number(projectId),
-                          characterId, characterMarkerId: String(selected.id),
-                          ballMarkerId: actionTarget.markerId, action: kickSlot.actionKey,
-                        } }));
+                        if (kickSlot) requestBallKick(kickSlot.actionKey);
                       }}
                       className="rounded bg-emerald-600/25 px-2 py-1 text-emerald-800 dark:text-emerald-100 disabled:cursor-not-allowed disabled:opacity-40">
                       {pendingKickRequestId ? 'Kicking…' : 'Kick selected ball'}
                     </button>
                     {!kickReady && <p className="mt-1">{!sceneAvailable ? 'Open the loaded 3D Scene to kick.' : !kickSlot ? 'A mapped foot kick is unavailable.' : 'Take Control and move near the selected ball.'}</p>}
+                    <p className="mt-1">Foot-kick animations move this ball on contact. Kick selected ball applies an assisted kick after the animation.</p>
+                    {kickFeedback && <p className="mt-1" role="status">{kickFeedback}</p>}
                   </div>
                 )}
                 {!isEcctrlCharacter && <p className="mt-1 text-foreground/40">Target walking is currently available for Characters with Take Control.</p>}
@@ -857,9 +874,11 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
                   <button
                     key={action}
                     aria-label={`${label}${customActionSlots.find(slot => slot.actionKey === action)?.isActive === false ? ' — Slot disabled' : group.inactive ? ' — Animation unavailable' : isOrchestrationRunning ? ' — Interaction in progress' : actionTarget && THREED_GENERIC_TARGET_ACTIONS.includes(action as any) && !targetInteractionReady ? ' — Take Control and move within interaction range' : ''}`}
-                    title={customActionSlots.find(slot => slot.actionKey === action)?.isActive === false ? 'Slot disabled in Admin' : group.inactive ? 'Animation unavailable in this Character' : isOrchestrationRunning ? 'Wait for the current interaction to finish' : actionTarget && THREED_GENERIC_TARGET_ACTIONS.includes(action as any) && !targetInteractionReady ? 'Take Control and move within interaction range' : customActions.includes(action) ? 'Play animation only' : label}
+                    title={customActionSlots.find(slot => slot.actionKey === action)?.isActive === false ? 'Slot disabled in Admin' : group.inactive ? 'Animation unavailable in this Character' : isOrchestrationRunning ? 'Wait for the current interaction to finish' : targetedBall && contactPointsForAction(action).length > 0 ? pendingKickRequestId ? 'Wait for the current kick' : !kickReady ? 'Take Control and move near the selected ball' : 'Kick the targeted ball when the animated foot makes contact' : actionTarget && THREED_GENERIC_TARGET_ACTIONS.includes(action as any) && !targetInteractionReady ? 'Take Control and move within interaction range' : customActions.includes(action) ? 'Play animation only' : label}
                     disabled={
                       group.inactive || Boolean(isOrchestrationRunning)
+                      || Boolean(targetedBall && contactPointsForAction(action).length > 0
+                        && (!kickReady || pendingKickRequestId))
                       || (
                         actionTarget != null
                         && THREED_GENERIC_TARGET_ACTIONS.includes(action as any)
@@ -871,6 +890,11 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
 
                       const charId = Number(d.id);
                       if (!Number.isFinite(charId)) return;
+
+                      if (targetedBall && contactPointsForAction(action).length > 0) {
+                        requestBallKick(action, true);
+                        return;
+                      }
 
                       if (
                         actionTarget

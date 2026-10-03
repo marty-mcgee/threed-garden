@@ -42,7 +42,9 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
 import { useCharacterNavigation } from './useCharacterNavigation';
 import { NAVIGATION_STATUS } from '@/libraries/services/threed/orchestration/navigation-events';
-import { THREED_SOCCER_KICK_REJECT_EVENT } from '@/libraries/services/threed/physics/soccer-kick-core';
+import { THREED_SOCCER_KICK_REJECT_EVENT, validSoccerKickRequest } from '@/libraries/services/threed/physics/soccer-kick-core';
+import { THREED_ACTION_COLLISION_SAMPLE_EVENT } from '@/libraries/services/threed/physics/action-collision-core';
+import { createActionCollisionSampler, type ThreeDActionCollisionSampler } from '@/libraries/services/threed/physics/action-collision-points';
 import { useCharacterTeleport } from './useCharacterTeleport';
 import { FadingRing } from './FadingRing';
 import { PulseRing } from './PulseRing';
@@ -1138,6 +1140,12 @@ export function EcctrlCharacter({
   // Readiness belongs to the specific model object, never a previous load.
   const [posedModel, setPosedModel] = useState<THREE.Group | null>(null);
   const characterVisualReady = !loading && model !== null && posedModel === model;
+  const actionCollisionRef = useRef<ThreeDActionCollisionSampler | null>(null);
+  useEffect(() => {
+    // A released/hidden/replaced runtime cannot resume a previous contact action.
+    actionCollisionRef.current = null;
+    return () => { actionCollisionRef.current = null; };
+  }, [model, isControlled, layerEnabled, characterVisualReady]);
   useSceneResourceStatus(Boolean(modelLoadEnabled && character.model?.filePath && !characterVisualReady && !error), error);
 
 
@@ -1521,6 +1529,25 @@ export function EcctrlCharacter({
           return false;
         }
 
+        const collisionRequest = target && typeof target === 'object' && 'collisionRequest' in target
+          ? target.collisionRequest : undefined;
+        let collisionSampler: ThreeDActionCollisionSampler | null = null;
+        if (collisionRequest !== undefined) {
+          if (!validSoccerKickRequest(collisionRequest) || collisionRequest.timing !== 'contact'
+            || collisionRequest.characterId !== character.id || collisionRequest.characterMarkerId !== markerId
+            || !markerId || !isControlled || !layerEnabled || !characterVisualReady || !model) return false;
+          collisionSampler = createActionCollisionSampler({
+            model, clip: taskAction, pointIds: collisionRequest.pointIds!,
+            context: { requestId: collisionRequest.requestId, projectId: collisionRequest.projectId,
+              actorMarkerId: markerId, targetMarkerId: collisionRequest.ballMarkerId, action: taskName },
+          });
+          if (!collisionSampler) {
+            window.dispatchEvent(new CustomEvent(THREED_SOCCER_KICK_REJECT_EVENT,
+              { detail: { requestId: collisionRequest.requestId, reason: 'collision-unavailable' } }));
+            return false;
+          }
+        }
+
         taskFacingYawRef.current = null;
         taskOrientationTransitionRef.current = null;
 
@@ -1670,6 +1697,7 @@ export function EcctrlCharacter({
           };
 
           const finishSequence = () => {
+            actionCollisionRef.current = null;
             activeTaskRef.current = null;
             taskFacingYawRef.current = null;
             taskOrientationTransitionRef.current = null;
@@ -1696,6 +1724,7 @@ export function EcctrlCharacter({
           };
 
           const startReturnTurn = () => {
+            actionCollisionRef.current = null;
             taskFacingQuaternionRef.current.copy(originalQuaternion);
             taskOrientationTransitionRef.current = {
               from: targetQuaternion.clone(),
@@ -1715,6 +1744,7 @@ export function EcctrlCharacter({
             taskOrientationTransitionRef.current = null;
             taskFacingQuaternionRef.current.copy(targetQuaternion);
             crossFadeTo(taskAction, character.animationSpeed || 1);
+            actionCollisionRef.current = collisionSampler;
             listenFor(taskAction, startReturnTurn);
           };
 
@@ -1780,6 +1810,7 @@ export function EcctrlCharacter({
 
         currentActionRef.current =
           taskAction;
+        actionCollisionRef.current = collisionSampler;
 
         lastClipNameRef.current =
           taskAction.getClip().name;
@@ -1797,6 +1828,7 @@ export function EcctrlCharacter({
               'finished',
               handleFinished as any
             );
+            actionCollisionRef.current = null;
 
             if (
               finishedListenerRef.current ===
@@ -1882,6 +1914,11 @@ export function EcctrlCharacter({
         character.name,
         mixerRef,
         playAnimation,
+        markerId,
+        model,
+        isControlled,
+        layerEnabled,
+        characterVisualReady,
       ]
     );
 
@@ -1935,6 +1972,7 @@ export function EcctrlCharacter({
     );
 
     return () => {
+      actionCollisionRef.current = null;
       window.removeEventListener(
         'garden-character-action',
         handleCharacterAction
@@ -2231,6 +2269,14 @@ export function EcctrlCharacter({
         );
     }
     reportControlledPosition(position);
+  });
+
+  // Observe the posed rig after mixer/facing updates; the Model owner alone writes physics.
+  useFrame((_, delta) => {
+    if (!isControlled || !layerEnabled || !characterVisualReady || !taskLockedRef.current) return;
+    for (const sample of actionCollisionRef.current?.sample(delta) ?? []) {
+      window.dispatchEvent(new CustomEvent(THREED_ACTION_COLLISION_SAMPLE_EVENT, { detail: sample }));
+    }
   });
 
   // ======================================================

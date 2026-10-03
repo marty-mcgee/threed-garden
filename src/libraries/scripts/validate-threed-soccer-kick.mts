@@ -17,6 +17,16 @@ import {
   THREED_SOCCER_KICK_RESULT_EVENT,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/physics/soccer-kick-core.ts';
+import {
+  THREED_ACTION_COLLISION_SAMPLE_EVENT,
+  validThreeDActionCollisionSample,
+  defaultKickCollisionPoints,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/physics/action-collision-core.ts';
+import {
+  THREED_MODEL_PLACEMENT_EVENT,
+// @ts-expect-error Node's native TypeScript runner requires the explicit extension.
+} from '../services/threed/models/project-model-instance-core.ts';
 
 assert(isSoccerFootKickSlot('Left Foot Soccer'));
 assert(isSoccerFootKickSlot('Kick Soccerball Right'));
@@ -32,6 +42,13 @@ assert(validSoccerKickRequest(request));
 assert(!validSoccerKickRequest({ ...request, projectId: 0 }));
 assert(!validSoccerKickRequest({ ...request, ballMarkerId: '' }));
 assert(!validSoccerKickRequest({ ...request, requestId: 'bad' }));
+assert(validSoccerKickRequest({ ...request, timing: 'contact', pointIds: ['left-foot'] }));
+for (const invalid of [
+  { timing: 'contact' }, { timing: 'contact', pointIds: [] },
+  { timing: 'contact', pointIds: ['head'] },
+  { timing: 'contact', pointIds: ['left-foot', 'left-foot'] },
+  { timing: 'immediate', pointIds: ['left-foot'] },
+]) assert(!validSoccerKickRequest({ ...request, ...invalid }), 'Contact requests need a supported, unambiguous point mapping');
 
 const actor = { x: -2, y: 0.5, z: 0 };
 const ballPosition = { x: 0, y: 0.5, z: 0 };
@@ -139,7 +156,7 @@ const contextRef = { current: {
   activeLayers: eligibility.activeLayers,
   visibleMarkerIds: undefined,
 } };
-const pendingRef = { current: null };
+const pendingRef: { current: any } = { current: null };
 const effectCode = ts.transpileModule(`const effect = ${sceneEventEffect.getText(sceneSource)}; effect;`,
   { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
 const effect = vm.runInNewContext(effectCode, {
@@ -150,6 +167,8 @@ const effect = vm.runInNewContext(effectCode, {
   pendingSoccerKickRef: pendingRef,
   livePositionsRef: { current: positions },
   findSoccerKickParticipants, validSoccerKickRequest,
+  THREED_ACTION_COLLISION_SAMPLE_EVENT, validThreeDActionCollisionSample,
+  THREED_MODEL_PLACEMENT_EVENT,
   THREED_SOCCER_KICK_REJECT_EVENT,
   THREED_SOCCER_KICK_REQUEST_EVENT,
   THREED_SOCCER_KICK_APPLY_EVENT,
@@ -192,6 +211,92 @@ assert.equal(events.filter(event => event.type === THREED_SOCCER_KICK_APPLY_EVEN
   'Replacing the selected Model target cancels the pending kick');
 assert.equal(pendingRef.current, null);
 contextRef.current.actionTarget = { ...contextRef.current.actionTarget, ...eligibility.target };
+// A contact action forwards only samples from its exact animated point. Neither
+// an unrelated sample nor completion may substitute for a physical hit.
+const dispatch = (type: string, detail: any) => fakeWindow.dispatchEvent(new FakeCustomEvent(type, { detail }));
+const applyCount = () => events.filter(event => event.type === THREED_SOCCER_KICK_APPLY_EVENT).length;
+let contactRequestNumber = 0;
+const beginContact = () => {
+  const contactRequest = { ...request, requestId: `contact-request-${++contactRequestNumber}`,
+    timing: 'contact' as const, pointIds: ['left-foot'] };
+  dispatch(THREED_SOCCER_KICK_REQUEST_EVENT, contactRequest);
+  const target = events.filter(event => event.type === 'garden-character-action').at(-1)!.detail.target;
+  const sample = { version: 1 as const, requestId: contactRequest.requestId, projectId: 15,
+    actorMarkerId: request.characterMarkerId, targetMarkerId: request.ballMarkerId,
+    action: request.action, clipName: request.action, pointId: 'left-foot',
+    sourceNode: 'mixamorigLeftFoot', from: { x: -1, y: 0.5, z: 0 },
+    to: { x: 1, y: 0.5, z: 0 }, radius: 0.1 };
+  assert(validSoccerKickRequest(contactRequest));
+  assert(validThreeDActionCollisionSample(sample));
+  return { contactRequest, target, sample };
+};
+const contact = beginContact();
+assert.equal(contact.target.collisionRequest.requestId, contact.contactRequest.requestId,
+  'The Character receives the authorized contact request with the animation target');
+const beforeContact = applyCount();
+for (const changed of [
+  { requestId: 'unrelated-request' }, { projectId: 16 },
+  { actorMarkerId: 'characters-10' }, { targetMarkerId: otherBall.id },
+  { action: 'rightFootSoccer' }, { pointId: 'right-foot' }, { clipName: 'unrelatedAnimation' },
+  { to: { x: NaN, y: 0.5, z: 0 } },
+]) {
+  dispatch(THREED_ACTION_COLLISION_SAMPLE_EVENT, { ...contact.sample, ...changed });
+  assert.equal(applyCount(), beforeContact, 'Uncorrelated or invalid collision samples are ignored');
+}
+dispatch(THREED_ACTION_COLLISION_SAMPLE_EVENT, contact.sample);
+assert.equal(applyCount(), beforeContact + 1, 'Matching animated contact sample reaches the ball physics owner');
+assert.deepEqual(events.filter(event => event.type === THREED_SOCCER_KICK_APPLY_EVENT).at(-1)!.detail.collision,
+  contact.sample, 'The Scene preserves the sampled world-space sweep for the actual collider check');
+dispatch(THREED_SOCCER_KICK_RESULT_EVENT, { requestId: contact.contactRequest.requestId,
+  projectId: 15, ballMarkerId: request.ballMarkerId, applied: true });
+dispatch(THREED_ACTION_COLLISION_SAMPLE_EVENT, contact.sample);
+dispatch('garden-character-action-complete', { characterId: 9, action: request.action, target: contact.target });
+assert.equal(applyCount(), beforeContact + 1, 'A successful contact cannot apply again on later samples or completion');
+assert.equal(pendingRef.current, null);
+
+const missed = beginContact();
+const beforeMiss = applyCount();
+dispatch('garden-character-action-complete', { characterId: 9, action: request.action, target: missed.target });
+assert.equal(applyCount(), beforeMiss, 'A contact kick that misses has no completion-time fallback impulse');
+assert.equal(pendingRef.current, null);
+assert.equal(events.filter(event => event.type === THREED_SOCCER_KICK_RESULT_EVENT).at(-1)?.detail.reason, 'miss');
+
+const initialContext = { ...contextRef.current };
+for (const [label, change] of [
+  ['released control', { controlledCharacterId: null }],
+  ['hidden Model layer', { activeLayers: new Set(['characters']) }],
+  ['hidden Character layer', { activeLayers: new Set(['models']) }],
+  ['changed target', { actionTarget: { ...initialContext.actionTarget, markerId: otherBall.id, id: 2950 } }],
+  ['removed ball', { sceneMarkers: [actorMarker, otherBall] }],
+  ['removed Character', { sceneMarkers: [selectedBall, otherBall] }],
+  ['inactive ball', { sceneMarkers: [actorMarker, { ...selectedBall, isActive: false }, otherBall] }],
+  ['hidden ball', { visibleMarkerIds: new Set([actorMarker.id, otherBall.id]) }],
+  ['changed Project', { projectId: 16 }],
+] as const) {
+  const guarded = beginContact();
+  const before = applyCount();
+  Object.assign(contextRef.current, change);
+  dispatch(THREED_ACTION_COLLISION_SAMPLE_EVENT, guarded.sample);
+  assert.equal(applyCount(), before, `${label} cancels the contact before the physics handoff`);
+  assert.equal(pendingRef.current, null, `${label} releases the pending contact request`);
+  Object.assign(contextRef.current, initialContext);
+}
+const moved = beginContact();
+const beforeMoved = applyCount();
+positions.set(selectedBall.id, { x: 8, y: 0.5, z: 0 });
+dispatch(THREED_ACTION_COLLISION_SAMPLE_EVENT, moved.sample);
+assert.equal(applyCount(), beforeMoved, 'Live ball movement beyond range cancels the contact handoff');
+assert.equal(pendingRef.current, null);
+positions.set(selectedBall.id, ballPosition);
+assert.equal(timers.size, 0, 'Completed, missed and cancelled contact requests leave no pending timeout');
+const placed = beginContact();
+const beforePlacement = applyCount();
+dispatch(THREED_MODEL_PLACEMENT_EVENT, { projectId: 15, markerId: request.ballMarkerId,
+  position: ballPosition });
+dispatch(THREED_ACTION_COLLISION_SAMPLE_EVENT, placed.sample);
+assert.equal(applyCount(), beforePlacement, 'An explicit ball placement invalidates the contact request');
+assert.equal(pendingRef.current, null);
+
 const ecctrlSource = ts.createSourceFile('EcctrlCharacter.tsx', fs.readFileSync('src/components/threed/shared/EcctrlCharacter.tsx', 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 let rejectionHandler: ts.ArrowFunction | undefined;
 const findRejectionHandler = (node: ts.Node) => {
@@ -230,7 +335,9 @@ assert(actorResolverNode);
 const resolverCode = ts.transpileModule(`const resolver = ${actorResolverNode.getText(sceneSource)}; resolver;`,
   { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
 const resolveActorAtPhysicsStep = vm.runInNewContext(resolverCode, {
+  findSoccerKickParticipants,
   soccerKickContextRef: contextRef,
+  pendingSoccerKickRef: pendingRef,
   livePositionsRef: { current: positions },
   normalizeSceneLayerType: (type: string) => type,
 });
@@ -241,12 +348,28 @@ assert.equal(resolveActorAtPhysicsStep(request), null, 'Removed actor cannot kic
 contextRef.current.sceneMarkers = eligibility.markers;
 contextRef.current.controlledCharacterId = null;
 assert.equal(resolveActorAtPhysicsStep(request), null, 'Released control cancels the queued effect');
+contextRef.current.controlledCharacterId = 9;
+assert.equal(resolveActorAtPhysicsStep(contact.contactRequest), null,
+  'A cancelled or completed contact cannot survive in the physics queue');
+pendingRef.current = { request: contact.contactRequest, phase: 'animating' };
+assert.equal(resolveActorAtPhysicsStep(contact.contactRequest).x, actor.x);
+for (const updatedBall of [
+  { ...selectedBall, isActive: false }, { ...selectedBall, isVisible: false },
+  { ...selectedBall, metadata: { physicsMode: 'fixed' } },
+]) {
+  contextRef.current.sceneMarkers = [actorMarker, updatedBall, otherBall];
+  assert.equal(resolveActorAtPhysicsStep(contact.contactRequest), null,
+    'The ball eligibility must be rechecked after queuing and before a physics impulse');
+}
+contextRef.current.sceneMarkers = eligibility.markers;
+pendingRef.current = null;
 
-console.log('PASS: exact-instance eligibility, bounded Rapier impulse, Scene completion correlation, and final actor recheck');
+console.log('PASS: exact-instance eligibility, bounded Rapier impulse, assisted completion, contact correlation/miss/cancellation, and final actor recheck');
 
 // The actual Character adapter must accept the Scene-validated kick range,
 // while generic interactions retain their shorter approach requirement.
 const THREE = require('three');
+const { createActionCollisionSampler } = require('../services/threed/physics/action-collision-points.ts');
 const { planThreeDInteractionApproach, THREED_INTERACTION_FACING_TOLERANCE } = require('../services/threed/orchestration/interaction-core.ts');
 let taskCallback: ts.ArrowFunction | undefined;
 const findTaskCallback = (node: ts.Node) => {
@@ -258,20 +381,32 @@ const findTaskCallback = (node: ts.Node) => {
 findTaskCallback(ecctrlSource);
 const taskNode = taskCallback as ts.ArrowFunction | undefined;
 assert(taskNode);
-const mixer = new THREE.AnimationMixer(new THREE.Object3D());
-const kickAction = mixer.clipAction(new THREE.AnimationClip('kick', 1, []));
+const characterModel = new THREE.Object3D();
+const leftFoot = new THREE.Bone();
+leftFoot.name = 'mixamorigLeftFoot';
+characterModel.add(leftFoot);
+const mixer = new THREE.AnimationMixer(characterModel);
+const kickAction = mixer.clipAction(new THREE.AnimationClip('kick', 1, [
+  new THREE.VectorKeyframeTrack('mixamorigLeftFoot.position', [0, 1], [0, 0, 0, 0, 0, 0.8]),
+]));
 const taskLock = { current: false };
+const collisionSamplerRef = { current: null };
+const taskActions = new Map([['kick', kickAction]]);
 const startTask = vm.runInNewContext(ts.transpileModule(`const start = ${taskNode.getText(ecctrlSource)}; start;`,
   { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText, {
   THREE, console, window: fakeWindow, CustomEvent: FakeCustomEvent,
   setTimeout: () => 1, clearTimeout: () => {},
-  mixerRef: { current: mixer }, actionsRef: { current: new Map([['kick', kickAction]]) }, taskLockedRef: taskLock,
+  mixerRef: { current: mixer }, actionsRef: { current: taskActions }, taskLockedRef: taskLock,
   character: { id: 9, name: 'Test Character', animationSpeed: 1 },
   ecctrlRef: { current: { currPos: { x: 0, y: 1, z: 0 }, currQuat: new THREE.Quaternion() } },
   taskFacingYawRef: { current: null }, taskFacingQuaternionRef: { current: new THREE.Quaternion() },
   taskOrientationTransitionRef: { current: null }, taskCleanupTimerRef: { current: null },
   finishedListenerRef: { current: null }, currentActionRef: { current: null }, lastClipNameRef: { current: null },
   activeTaskRef: { current: null }, lastLocomotionStateRef: { current: 'IDLE' }, playAnimation: () => {},
+  actionCollisionRef: collisionSamplerRef,
+  model: characterModel, markerId: request.characterMarkerId,
+  isControlled: true, layerEnabled: true, characterVisualReady: true,
+  validSoccerKickRequest, createActionCollisionSampler, THREED_SOCCER_KICK_REJECT_EVENT,
   planThreeDInteractionApproach, THREED_INTERACTION_FACING_TOLERANCE, CROSSFADE_DURATION: 0.2,
 });
 const rangeTarget = { position: { x: 4, y: 1, z: 0 }, soccerKickRequest: true };
@@ -281,3 +416,140 @@ assert.equal(taskLock.current, true);
 mixer.update(2);
 assert.equal(taskLock.current, false, 'One-shot completion restores locomotion control');
 console.log('PASS: actual Character kick starts inside the Soccer range and releases its action lock on completion.');
+
+const collisionRequest = { ...request, action: 'kick', timing: 'contact', pointIds: ['left-foot'] };
+const straightTarget = { ...rangeTarget, position: { x: 0, y: 1, z: 2 }, collisionRequest };
+assert.equal(startTask('kick', straightTarget), true);
+assert(collisionSamplerRef.current, 'Direct contact action arms the actual rendered-rig sampler');
+mixer.update(2);
+assert.equal(collisionSamplerRef.current, null, 'Direct one-shot completion clears collision sampling');
+assert.equal(taskLock.current, false);
+assert.equal(startTask('kick', { ...straightTarget,
+  collisionRequest: { ...collisionRequest, pointIds: ['right-foot'] } }), false,
+  'An unavailable rig point cannot silently become an assisted kick');
+assert.equal(taskLock.current, false);
+assert.equal(events.filter(event => event.type === THREED_SOCCER_KICK_REJECT_EVENT).at(-1)?.detail.reason, 'collision-unavailable');
+
+const turnAction = mixer.clipAction(new THREE.AnimationClip('turn', 1, []));
+taskActions.set('turnright', turnAction);
+assert.equal(startTask('kick', { ...rangeTarget, collisionRequest }), true);
+assert.equal(collisionSamplerRef.current, null, 'Turning toward the ball must not sample a kicking foot');
+assert.equal(taskLock.current, true);
+mixer.dispatchEvent({ type: 'finished', action: turnAction });
+assert(collisionSamplerRef.current, 'The task portion of turn/task/return arms collision sampling');
+mixer.dispatchEvent({ type: 'finished', action: kickAction });
+assert.equal(collisionSamplerRef.current, null, 'Return-turn locomotion cannot trigger another foot hit');
+assert.equal(taskLock.current, true, 'The existing return turn keeps its lock until sequence completion');
+mixer.dispatchEvent({ type: 'finished', action: turnAction });
+assert.equal(taskLock.current, false);
+assert.equal(collisionSamplerRef.current, null);
+console.log('PASS: actual Character contact actions resolve rig points, reject missing points, and arm/clear only during the kick in direct and turn/task/return paths.');
+
+// Execute the actual Details action handler: mapped kick buttons choose contact
+// only for an eligible ball target; ordinary custom animation stays available.
+const detailsPath = 'src/components/map/details/DetailsCard.tsx';
+const detailsSource = ts.createSourceFile(detailsPath, fs.readFileSync(detailsPath, 'utf8'),
+  ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+const uiCallbacks = new Map<string, string>();
+let animationButtonHandler: string | undefined;
+let kickReadiness: string | undefined;
+const findDetailsCallbacks = (node: ts.Node) => {
+  if (ts.isVariableDeclaration(node) && node.name.getText(detailsSource) === 'kickReady' && node.initializer) {
+    kickReadiness = node.initializer.getText(detailsSource);
+  }
+  if (ts.isVariableDeclaration(node) && ['contactPointsForAction', 'requestBallKick'].includes(node.name.getText(detailsSource))
+    && node.initializer && ts.isArrowFunction(node.initializer)) {
+    uiCallbacks.set(node.name.getText(detailsSource), node.initializer.getText(detailsSource));
+  }
+  if (ts.isJsxAttribute(node) && node.name.getText(detailsSource) === 'onClick'
+    && node.initializer && ts.isJsxExpression(node.initializer)
+    && node.initializer.expression && ts.isArrowFunction(node.initializer.expression)
+    && node.initializer.expression.getText(detailsSource).includes('requestBallKick(action, true)')) {
+    animationButtonHandler = node.initializer.expression.getText(detailsSource);
+  }
+  ts.forEachChild(node, findDetailsCallbacks);
+};
+findDetailsCallbacks(detailsSource);
+assert(animationButtonHandler && kickReadiness && uiCallbacks.size === 2);
+const uiEvents: FakeCustomEvent[] = [];
+const uiContext: any = {
+  defaultKickCollisionPoints, THREED_SOCCER_KICK_REQUEST_EVENT, CustomEvent: FakeCustomEvent,
+  window: { dispatchEvent: (event: FakeCustomEvent) => uiEvents.push(event) },
+  crypto: { randomUUID: () => `ui-request-${uiEvents.length}` },
+  customActionSlots: [
+    { actionKey: 'leftFootSoccer', name: 'Kick Left Foot', isActive: true },
+    { actionKey: 'rightFootSoccer', name: 'Kick Right Foot', isActive: true },
+    { actionKey: 'headerSoccer', name: 'Header Soccer', isActive: true },
+    { actionKey: 'passSoccer', name: 'Pass Soccer', isActive: true },
+  ],
+  customActions: ['leftFootSoccer', 'rightFootSoccer', 'headerSoccer', 'passSoccer'], action: 'leftFootSoccer',
+  targetedBall: selectedBall, kickReady: true, actionTarget: eligibility.target,
+  projectId: 15, characterId: 9, selected: { id: request.characterMarkerId }, d: { id: 9 },
+  pendingKickRequestIdRef: { current: null }, isOrchestrationRunning: false,
+  setPendingKickRequestId: () => {}, setKickFeedback: () => {},
+  animationAvailability: new Set(['leftfootsoccer', 'rightfootsoccer']), actionTargetCapabilities: null,
+  soccerKickInRange, sceneAvailable: true, kickSlot: {}, isSelectedCharacterControlled: true, isEcctrlCharacter: true,
+  hasLiveControlledPosition: true, liveControlledCharacterPosition: { position: actor },
+  currentActionTargetPosition: ballPosition,
+};
+vm.createContext(uiContext);
+vm.runInContext(ts.transpileModule(
+  [...uiCallbacks].map(([name, code]) => `var ${name} = ${code};`).join('\n')
+    + `\nvar clickAnimation = ${animationButtonHandler}; var computeKickReady = () => (${kickReadiness});`,
+  { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText, uiContext);
+uiContext.clickAnimation({ stopPropagation() {} });
+assert.equal(uiEvents.length, 1);
+assert.equal(uiEvents[0].type, THREED_SOCCER_KICK_REQUEST_EVENT);
+assert.equal(uiEvents[0].detail.timing, 'contact');
+assert.deepEqual([...uiEvents[0].detail.pointIds], ['left-foot']);
+assert.equal(uiEvents[0].detail.ballMarkerId, request.ballMarkerId);
+uiContext.clickAnimation({ stopPropagation() {} });
+assert.equal(uiEvents.length, 1, 'Rapid repeated clicks cannot start overlapping contact actions');
+uiContext.pendingKickRequestIdRef.current = null;
+uiContext.requestBallKick('leftFootSoccer');
+assert.equal(uiEvents[1].detail.timing, undefined, 'The assisted Kick selected ball request retains completion timing');
+uiContext.pendingKickRequestIdRef.current = null;
+uiContext.targetedBall = null;
+uiContext.actionTarget = null;
+uiContext.clickAnimation({ stopPropagation() {} });
+assert.equal(uiEvents[2].type, 'garden-character-action');
+assert.equal(uiEvents[2].detail.target, null, 'A custom animation without a ball target remains animation-only');
+uiContext.targetedBall = selectedBall;
+uiContext.actionTarget = eligibility.target;
+uiContext.action = 'rightFootSoccer';
+uiContext.clickAnimation({ stopPropagation() {} });
+assert.equal(uiEvents.at(-1)!.type, THREED_SOCCER_KICK_REQUEST_EVENT);
+assert.equal(uiEvents.at(-1)!.detail.action, 'rightFootSoccer');
+assert.deepEqual([...uiEvents.at(-1)!.detail.pointIds], ['right-foot']);
+uiContext.pendingKickRequestIdRef.current = null;
+for (const action of ['headerSoccer', 'passSoccer']) {
+  uiContext.action = action;
+  uiContext.clickAnimation({ stopPropagation() {} });
+  assert.equal(uiEvents.at(-1)!.type, 'garden-character-action', 'Unmapped header/pass animations do not acquire a kick effect');
+  assert.equal(uiEvents.at(-1)!.detail.target, null);
+}
+assert.equal(uiContext.computeKickReady(), true);
+uiContext.action = 'leftFootSoccer';
+uiContext.isEcctrlCharacter = false;
+uiContext.clickAnimation({ stopPropagation() {} });
+assert.equal(uiEvents.at(-1)!.type, 'garden-character-action', 'Garden Character foot actions retain animation-only previews even with a ball target');
+assert.equal(uiEvents.at(-1)!.detail.target, null);
+uiContext.isEcctrlCharacter = true;
+uiContext.isSelectedCharacterControlled = false;
+uiContext.kickReady = uiContext.computeKickReady();
+assert.equal(uiContext.kickReady, false);
+let previousUiEvents = uiEvents.length;
+uiContext.requestBallKick('leftFootSoccer', true);
+assert.equal(uiEvents.length, previousUiEvents, 'Released control prevents requesting an animated kick');
+uiContext.isSelectedCharacterControlled = true;
+uiContext.currentActionTargetPosition = { x: 8, y: 0.5, z: 0 };
+uiContext.kickReady = uiContext.computeKickReady();
+assert.equal(uiContext.kickReady, false);
+uiContext.requestBallKick('leftFootSoccer', true);
+assert.equal(uiEvents.length, previousUiEvents, 'Out-of-range live target prevents requesting an animated kick');
+uiContext.currentActionTargetPosition = ballPosition;
+uiContext.kickReady = uiContext.computeKickReady();
+uiContext.isOrchestrationRunning = true;
+uiContext.requestBallKick('leftFootSoccer', true);
+assert.equal(uiEvents.length, previousUiEvents, 'An existing interaction prevents overlapping kick requests');
+console.log('PASS: actual Details kick buttons request contact once for the exact ball, preserve assisted timing, and retain untargeted animation playback.');

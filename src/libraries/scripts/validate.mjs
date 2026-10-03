@@ -60,6 +60,7 @@ const tasks = {
   'threed-soccer-kick': [['node', '--import', 'tsx', `${scripts}/validate-threed-soccer-kick.mts`]],
   'threed-model-placement-physics': [node('validate-threed-model-placement-physics.cjs')],
   'threed-character-ball-contact': [node('validate-threed-character-ball-contact.cjs')],
+  'threed-action-collision': [node('validate-threed-action-collision.cjs')],
   'threed-farmbot-live-state': [['node', '--import', 'tsx', `${scripts}/validate-threed-farmbot-live-state.mts`]],
   'threed-farmbot-coordinate-alignment': [['node', '--import', 'tsx', `${scripts}/validate-threed-farmbot-coordinate-alignment.mts`]],
   'threed-character-navigation': [
@@ -177,6 +178,7 @@ const ci = [
   'threed-soccer-kick',
   'threed-model-placement-physics',
   'threed-character-ball-contact',
+  'threed-action-collision',
   'threed-scenario-admin',
   'threed-scenarios',
   'threed-farmbot-live-state',
