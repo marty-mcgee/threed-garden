@@ -1318,7 +1318,11 @@ function ProjectModelMarkerBody({
       colliders={false}
       position={position}
       rotation={rotation}
-      userData={markerIdentity ? { threeDPhysics: { identity: markerIdentity, projectMarkerId: instanceMarkerId, isMovableBall } } : undefined}
+      userData={markerIdentity ? {
+        threeDPhysics: { identity: markerIdentity, projectMarkerId: instanceMarkerId, isMovableBall },
+        // Balls remain physical obstacles, not Character suspension platforms.
+        ...(isMovableBall ? { ecctrl: { excludeCharacterRay: true } } : {}),
+      } : undefined}
     >
       {!isMovableBall && !modelVolumeSensor && collisionBounds && colliderKey && (
         (effectiveCollisionMode === 'box' || (!isEnvironment && effectiveCollisionMode === 'box-fallback')) &&
