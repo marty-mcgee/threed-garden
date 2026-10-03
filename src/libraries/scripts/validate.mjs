@@ -58,6 +58,7 @@ const tasks = {
   'threed-physics-events': [['node', '--import', 'tsx', `${scripts}/validate-threed-physics-events.mts`]],
   'threed-soccer-physics': [['node', '--import', 'tsx', `${scripts}/validate-threed-soccer-physics.mts`]],
   'threed-soccer-kick': [['node', '--import', 'tsx', `${scripts}/validate-threed-soccer-kick.mts`]],
+  'threed-model-placement-physics': [node('validate-threed-model-placement-physics.cjs')],
   'threed-farmbot-live-state': [['node', '--import', 'tsx', `${scripts}/validate-threed-farmbot-live-state.mts`]],
   'threed-farmbot-coordinate-alignment': [['node', '--import', 'tsx', `${scripts}/validate-threed-farmbot-coordinate-alignment.mts`]],
   'threed-character-navigation': [
@@ -173,6 +174,7 @@ const ci = [
   'threed-physics-events',
   'threed-soccer-physics',
   'threed-soccer-kick',
+  'threed-model-placement-physics',
   'threed-scenario-admin',
   'threed-scenarios',
   'threed-farmbot-live-state',

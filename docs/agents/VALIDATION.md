@@ -4,6 +4,8 @@ This repository uses a narrow-first validation ladder. Agents should prove the r
 
 ## Validation order
 
+For Model placement versus queued Rapier impulses, run `npm run validate -- threed-model-placement-physics threed-soccer-kick threed-hidden-collision-mount threed-runtime-markers threed-physics-events threed-soccer-physics threed-library-placement threed-orchestration`, the existing `node src/libraries/scripts/validate-threed-movable-ball.cjs` contact check, TypeScript and diff checks; run the npm build for release preparation. The placement task executes the actual before-step callback with installed Rapier and mocked browser events, proving placement-at-rest priority over a same-step completed kick and preserving later kicks, existing guards and fixed placement. It is offline and does not establish browser timing or live persistence. See the [v0.22.15 plan](../plans/v0.22.15-model-placement-physics.md).
+
 1. Inspect `git diff --check` for whitespace and patch errors.
 2. Run `npm run validate -- assets` when character animation assets, their manifest, or the local Three.js DRACO decoder assets change.
 3. Run `npm run validate -- farmbot-crypto` when FarmBot credential cryptography changes.

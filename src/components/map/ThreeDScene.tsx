@@ -811,7 +811,9 @@ function SceneMarkerRigidBody({
       const impulse = sceneEnabled && soccerKickTarget?.markerId === kick.ballMarkerId
         && soccerKickTarget.projectId === kick.projectId
         && body?.isDynamic() && body.isEnabled()
-        && !pendingTransformRef.current && actorPosition
+        // Explicit placement takes precedence over an impulse queued for the
+        // previous position, including placement consumed earlier this step.
+        && !placement && !pendingTransformRef.current && actorPosition
         ? planSoccerKickImpulse({
           actor: actorPosition,
           ball: body.translation(),
