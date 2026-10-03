@@ -388,8 +388,10 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       conditions.push(
-        sql`${threedModels.modelName} ILIKE ${`%${search}%`} OR 
-            ${threedModels.modelType}::text ILIKE ${`%${search}%`}`
+        or(
+          sql`${threedModels.modelName} ILIKE ${`%${search}%`}`,
+          sql`${threedModels.modelType}::text ILIKE ${`%${search}%`}`,
+        )!
       );
     }
 

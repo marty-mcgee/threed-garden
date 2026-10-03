@@ -20,7 +20,7 @@ const schema = new Proxy({}, { get: (_, table) => new Proxy({ table }, { get: (v
 const op = (kind) => (...args) => ({ kind, args });
 const orm = Object.fromEntries(['eq', 'and', 'or', 'desc', 'inArray', 'asc'].map((kind) => [kind, op(kind)]));
 orm.sql = (strings, ...args) => ({ strings: [...strings], args, as() { return this; } });
-let queue = [], queries = [], signedIn = true, transactionCalls = 0, transactionUpdates = [];
+let queue = [], queries = [], signedIn = true, transactionCalls = 0, transactionUpdates = [], fixtureRows = null;
 const db = { select(selection) {
   const query = { selection };
   const chain = {};
@@ -29,6 +29,12 @@ const db = { select(selection) {
   }
   chain.then = (resolve, reject) => {
     queries.push(query);
+    if (fixtureRows && query.from[0].table === 'threedModels') {
+      const filtered = fixtureRows.filter(row => matches(query.where[0], row));
+      const result = Object.hasOwn(selection, 'count') ? [{ count: filtered.length }]
+        : filtered.slice(query.offset[0], query.offset[0] + query.limit[0]);
+      return Promise.resolve(result).then(resolve, reject);
+    }
     assert.ok(queue.length, 'Unexpected extra database query');
     return Promise.resolve(queue.shift()).then(resolve, reject);
   };
@@ -86,7 +92,111 @@ async function runPrimaryPatch(primaryFile, expectedStatus, { currentPrimaryFile
   assert.equal(queue.length, 0, 'Expected primary-file queries were skipped');
   return plain(result);
 }
+// Evaluate only the handler's filtering vocabulary; unsupported raw OR fragments
+// fail rather than accidentally treating them as grouped expressions.
+function matches(expression, row) {
+  if (typeof expression === 'string' && expression.startsWith('threedModels.')) return row[expression.split('.')[1]];
+  if (!expression || typeof expression !== 'object') return expression;
+  const args = expression.args;
+  if (expression.kind === 'eq') return matches(args[0], row) === matches(args[1], row);
+  if (expression.kind === 'and') return args.every(item => matches(item, row));
+  if (expression.kind === 'or') return args.some(item => matches(item, row));
+  const pattern = expression.strings.join('?').replace(/\s+/g, ' ').trim();
+  if (pattern === '? IS NOT TRUE') return matches(args[0], row) !== true;
+  if (pattern === '? ILIKE ?' || pattern === '?::text ILIKE ?') {
+    const regex = String(args[1]).split('').map(character => character === '%' ? '.*' : character === '_' ? '.' : character.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('');
+    return new RegExp(`^${regex}$`, 'is').test(matches(args[0], row) ?? '');
+  }
+  if (pattern.startsWith('exists (')) {
+    assert.equal(pattern, 'exists ( select 1 from ? inner join ? on ? = ? where ? = ? and ? = ? and ? = true )');
+    assert.equal(args[6], 'threedModelCategories.slug');
+    assert.equal(args[8], 'threedModelCategories.isActive');
+    return row.categories.some(category => category.slug === args[7] && category.isActive);
+  }
+  throw new Error(`Unsupported filtering SQL: ${pattern}`);
+}
+async function searchOwnershipChecks() {
+  const actualORM = require('drizzle-orm');
+  const { pgTable, text, boolean, integer, PgDialect } = require('drizzle-orm/pg-core');
+  const actualSchema = {
+    threedModels: pgTable('fixture_models', {
+      id: integer('id'), userId: text('user_id'), modelName: text('model_name'), modelType: text('model_type'),
+      isActive: boolean('is_active'), status: text('status'), usedByCharacters: boolean('used_by_characters'),
+      isPublic: boolean('is_public'), isLibraryItem: boolean('is_library_item'),
+    }),
+    threedModelCategoryAssignments: pgTable('fixture_assignments', { modelId: integer('model_id'), categoryId: integer('category_id') }),
+    threedModelCategories: pgTable('fixture_categories', { id: integer('id'), slug: text('slug'), isActive: boolean('is_active') }),
+  };
+  let captures = [];
+  const compilerDB = { select(selection) {
+    const query = { selection }, chain = {};
+    for (const method of ['from', 'where', 'orderBy', 'limit', 'offset']) {
+      chain[method] = (...args) => { query[method] = args; return chain; };
+    }
+    chain.then = (resolve, reject) => {
+      captures.push(query);
+      return Promise.resolve(Object.hasOwn(selection, 'count') ? [{ count: 0 }] : []).then(resolve, reject);
+    };
+    return chain;
+  } };
+  const compilerExports = {};
+  const compilerMocks = { ...mocks, 'drizzle-orm': actualORM, '@/libraries/schema/threed': actualSchema, '@/libraries/db/client': { db: compilerDB } };
+  vm.runInNewContext(transpile('src/app/api/threed/models/route.ts'), {
+    exports: compilerExports, URL, console,
+    require(name) { assert.ok(name in compilerMocks, `Unexpected compiler import: ${name}`); return compilerMocks[name]; },
+  });
+  const base = { userId: 'owner', isActive: true, status: 'active', usedByCharacters: false,
+    isPublic: false, isLibraryItem: false, categories: [{ slug: 'props', isActive: true }] };
+  for (const branch of ['name', 'type']) {
+    const fields = branch === 'name' ? { modelName: 'Needle Prop', modelType: 'obj' } : { modelName: 'Unrelated', modelType: 'fbx' };
+    const search = branch === 'name' ? 'nEeDlE' : 'FBX';
+    let nextId = 0;
+    const row = overrides => ({ id: ++nextId, ...base, ...fields, ...overrides });
+    const rows = [row({}), row({ userId: 'foreign' }), row({ userId: 'foreign', isPublic: true, isLibraryItem: true }),
+      row({ isActive: false }), row({ status: 'draft' }), row({ categories: [] }),
+      row({ categories: [{ slug: 'props', isActive: false }] }), row({ usedByCharacters: true }),
+      row({ userId: 'foreign', isPublic: true }), row({ userId: 'foreign', isLibraryItem: true }),
+      row({ userId: 'foreign', isPublic: true, isLibraryItem: true, isActive: false }),
+      row({ userId: 'foreign', isPublic: true, isLibraryItem: true, status: 'draft' }),
+      row({ userId: 'foreign', isPublic: true, isLibraryItem: true, usedByCharacters: true }),
+      row({ modelName: 'Unrelated', modelType: 'obj' })];
+    for (const scope of ['', 'scope=library&']) {
+      for (const selector of ['', '&view=selector']) {
+        for (const [filters, expectedAdmin] of [
+          ['&isActive=true&status=active&category=props', [0, 7]],
+          ['&category=props', [0, 3, 4, 7]],
+          ['&isActive=true&category=props', [0, 4, 7]],
+          ['&status=active&category=props', [0, 3, 7]],
+        ]) {
+          fixtureRows = rows;
+          const result = await run(`${scope}search=${search}${filters}${selector}`, selector ? [] : [[], [], []]);
+          fixtureRows = null;
+          const predicate = queries[0].where[0];
+          assert.equal(predicate, queries[1].where[0], 'Count and page must share the exact predicate');
+          const accepted = rows.map((value, index) => matches(predicate, value) ? index : -1).filter(index => index !== -1);
+          const expected = scope ? [0, 2] : expectedAdmin;
+          assert.deepEqual(accepted, expected, `${branch}: owner/library and every eligibility filter (${filters})`);
+          assert.equal(result.body.pagination.total, expected.length);
+          assert.deepEqual(result.body.data.map(row => row.id), expected.map(index => rows[index].id));
+          captures = [];
+          const actual = await compilerExports.GET({ url: `http://fixture.invalid/api/threed/models?${scope}search=${search}${filters}${selector}` });
+          assert.equal(actual.status, 200);
+          assert.equal(captures.length, 2);
+          assert.equal(captures[0].where[0], captures[1].where[0]);
+          const compiled = new PgDialect().sqlToQuery(captures[0].where[0]);
+          assert.match(compiled.sql, /and \("fixture_models"\."model_name" ILIKE \$\d+ or "fixture_models"\."model_type"::text ILIKE \$\d+\) and exists/);
+          assert.equal(compiled.params.filter(value => value === `%${search}%`).length, 2);
+        }
+      }
+    }
+  }
+  // Preserve wildcard matching and owned inactive records when no eligibility filter is requested.
+  await run('search=N_ed%&view=selector', [[{ count: 0 }], []]);
+  assert.equal(matches(queries[0].where[0], { ...base, modelName: 'Needle', modelType: 'obj', isActive: false }), true);
+  console.log('PASS: both Model search branches retain owner, active/status/category and public Library eligibility; count/list/selector share predicates; installed Drizzle compiles grouped OR; case and wildcard behavior preserved');
+}
 (async () => {
+  await searchOwnershipChecks();
   for (const size of [1, 50, 200]) {
     const models = Array.from({ length: size }, (_, index) => ({ id: index + 1, modelName: `Model ${index + 1}` }));
     const file = { id: 99, modelId: size, fileName: 'shared.png', filePath: 'shared-url', loadOrder: 0 };
