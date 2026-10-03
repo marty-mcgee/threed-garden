@@ -7,15 +7,25 @@ Read CONTEXT.md before architectural work.
 For each development step, work in this order:
 
 1. **Prove** — inspect the current implementation and record the concrete problem, affected files, and acceptance criteria before editing.
-2. **Act** — make the smallest scoped change that satisfies those criteria. Preserve unrelated user changes in a dirty worktree.
-3. **Document** — run relevant validation, review the diff, and update durable documentation only after the implementation is known. Leave changes uncommitted for User review and provide a proposed commit message. Git staging and committing are manual gates; do not perform them unless the User explicitly requests that specific commit.
+2. **Act** — make the smallest scoped change that satisfies those criteria. Preserve unrelated Developer changes in a dirty worktree.
+3. **Document** — run relevant validation, review the diff, and update durable documentation only after the implementation is known. Leave changes unstaged for Developer review and suggest a commit title only. Follow the Manual Release Gate below for every Git write operation and deployment.
 
-Use the checkpoint version and title in commit messages:
-- Release: `v0.22.10 — ThreeD Playable Soccer`
-- Docs: `docs: v0.22.10 — ThreeD Playable Soccer`
-- Plans: `plans: docs: v0.22.10 — ThreeD Playable Soccer`
+Use the checkpoint version and relevant scope title in suggested commit titles (these examples grant no Git or release authorization):
+- Release: `v0.22.13 — ThreeD Models: embed Files in Edit Model`
+- Docs: `docs: v0.22.13 — ThreeD Models: embed Files in Edit Model`
+- Plans: `plans: docs: v0.22.13 — ThreeD Models: embed Files in Edit Model`
 
 Do not combine repository restructuring with feature behavior changes in the same step.
+
+## Manual Release Gate
+
+- Codex may make approved file edits and run local checks.
+- Leave changes unstaged for Developer review.
+- Do not stage, commit, amend, reset, cherry-pick, merge, rebase, tag, push, or deploy without explicit Developer authorization for that specific action.
+- “Proceed,” “implement,” “checks passed,” and “ready for release” do not authorize those actions.
+- The Developer controls manual staging, commits, pushes, and production releases.
+- Suggest commit titles only; do not execute them.
+- Preserve unrelated work and do not repeat completed tasks.
 
 ## General rules
 
@@ -43,21 +53,21 @@ Do not combine repository restructuring with feature behavior changes in the sam
 
 ## Stable checkpoint
 
-Canonical repository: `marty-mcgee/threed-garden`. Current feature release: v0.22.10 — ThreeD Playable Soccer, commit `b952b885`; production release is User-confirmed. See `docs/releases/v0.22.10.md` and `docs/plans/v0.22.10-playable-soccer.md`. Preserve both imported histories and the legacy archive references. New development belongs in this repository; `marty-mcgee-neon` remains historical source. The historical runtime boundaries below still apply.
+Canonical repository: `marty-mcgee/threed-garden`. Current package version: `0.22.13`. Latest Developer-confirmed production checkpoint: v0.22.13 — ThreeD Models: unify Stage 2 resource management, commit `6d22e20e`, released October 2, 2026. The main Model Files Admin table is Developer-browser-verified; its verification date and environment were not specified in this chat. Embedded Edit Model Details/Files tabs passed Developer browser verification and a local production build October 3; their production release is unconfirmed in this chat. Implementation is included in `1e30316e`; `07d2ccca` contains separate manual repository changes and `b8f851f8` records Files embedding verification. Commits or pushes alone do not establish deployment. Stage 3A diagnostics remain partially verified and paused; actual restoration, replacement and cleanup remain deferred. The Models-search ownership concern remains a separate priority follow-up. See `CONTEXT.md` and `docs/plans/v0.22.13-model-editor-pages.md`. Historical Soccer production checkpoint: v0.22.10 — ThreeD Playable Soccer, commit `b952b885`, Developer-confirmed. See `docs/releases/v0.22.10.md` and `docs/plans/v0.22.10-playable-soccer.md`. Preserve both imported histories and the legacy archive references. New development belongs in this repository; `marty-mcgee-neon` remains historical source. The historical runtime boundaries below still apply.
 
-Historical physics checkpoint: v0.20.1 "ThreeD Physics" (package `0.20.1`). Production deployment, browser acceptance and build success are User-confirmed. See `docs/releases/v0.20.1.md` and `docs/plans/v0.20.1-release.md`. Preserve generic Physics Sensors, Project-owned Sensor Groups, sensor TransformControls, optional Sensors panel and read-only FarmBot presentation. Whole-Model TransformControls and further FarmBot expansion remain deferred. Preserve the `src/libraries` source boundary, Multimedia module identity, canonical `/dashboard/scene` route, shadcn/ui component boundary, shared animation references, Character assignments, runtime precedence and first-pose gating.
+Historical physics checkpoint: v0.20.1 "ThreeD Physics" (package `0.20.1`). Production deployment, browser acceptance and build success are Developer-confirmed. See `docs/releases/v0.20.1.md` and `docs/plans/v0.20.1-release.md`. Preserve generic Physics Sensors, Project-owned Sensor Groups, sensor TransformControls, optional Sensors panel and read-only FarmBot presentation. Whole-Model TransformControls and further FarmBot expansion remain deferred. Preserve the `src/libraries` source boundary, Multimedia module identity, canonical `/dashboard/scene` route, shadcn/ui component boundary, shared animation references, Character assignments, runtime precedence and first-pose gating.
 
 Preserve the released alpha scope: FBX bulk importing, shared local textures, existing reusable Texture assignments, primary registration, verified inactive creation and guarded recovery.
 
-Released beta: v0.19.10b (`0.19.10-beta`) implements mixed FBX/GLB/GLTF bulk importing, embedded resources, typed external dependencies and reusable Texture assignments. GLB/GLTF imports must pass bounded local GLTFLoader inspection before uploading; missing geometry cannot be deferred. See `docs/plans/v0.19.10b-implementation.md`. The User manually tested and accepted the local checkpoint and its build gate on September 9, 2026. See `docs/plans/v0.19.10b-release.md` for the completed deployment handoff and retained live regression checklist. Production deployment is User-confirmed. The prior acceptance applies to beta.
+Released beta: v0.19.10b (`0.19.10-beta`) implements mixed FBX/GLB/GLTF bulk importing, embedded resources, typed external dependencies and reusable Texture assignments. GLB/GLTF imports must pass bounded local GLTFLoader inspection before uploading; missing geometry cannot be deferred. See `docs/plans/v0.19.10b-implementation.md`. The Developer manually tested and accepted the local checkpoint and its build gate on September 9, 2026. See `docs/plans/v0.19.10b-release.md` for the completed deployment handoff and retained live regression checklist. Production deployment is Developer-confirmed. The prior acceptance applies to beta.
 
-Released centaur: v0.19.10c (`0.19.10-centaur`) adds OBJ bulk importing, required MTL libraries, referenced images and shared local/saved OBJ material rendering. Preserve mandatory MTL checks, inactive image deferral, MTL classification as `other` (never a thumbnail), and the staged single-Model geometry preview. Run `npm run validate -- threed-obj-bundle` with the existing importer checks. See `docs/plans/v0.19.10c.md`; production deployment of `a618a66` is User-confirmed. See the completed handoff in `docs/plans/v0.19.10c-release.md`. Released **v0.19.11 — ThreeD Model Management**, package `0.19.11`, commit `9cdc78e`, is User-confirmed in production. v0.19.12 (package `0.19.12`, commit `80c6a1d`) is User-confirmed in production; v0.19.13 "ThreeD Admin Sub-Module Workspace UI/UX Updates" is User-confirmed in production (package `0.19.13`, commit `c976c77`, release `docs/releases/v0.19.13.md`); see `docs/plans/v0.19.12-release.md`. Admin Models is the design blueprint for future sub-module pages (`docs/plans/admin-threed-workspace-blueprint.md`); do not apply its viewport constraints globally without reviewing each host. See `docs/plans/v0.19.11-release.md`. Preserve primary File authority, shared Texture URL reuse, refreshed Character position responses, and the original Character cylinders; generic fallback errors belong in DetailsCard.
+Released centaur: v0.19.10c (`0.19.10-centaur`) adds OBJ bulk importing, required MTL libraries, referenced images and shared local/saved OBJ material rendering. Preserve mandatory MTL checks, inactive image deferral, MTL classification as `other` (never a thumbnail), and the staged single-Model geometry preview. Run `npm run validate -- threed-obj-bundle` with the existing importer checks. See `docs/plans/v0.19.10c.md`; production deployment of `a618a66` is Developer-confirmed. See the completed handoff in `docs/plans/v0.19.10c-release.md`. Released **v0.19.11 — ThreeD Model Management**, package `0.19.11`, commit `9cdc78e`, is Developer-confirmed in production. v0.19.12 (package `0.19.12`, commit `80c6a1d`) is Developer-confirmed in production; v0.19.13 "ThreeD Admin Sub-Module Workspace UI/UX Updates" is Developer-confirmed in production (package `0.19.13`, commit `c976c77`, release `docs/releases/v0.19.13.md`); see `docs/plans/v0.19.12-release.md`. Admin Models is the design blueprint for future sub-module pages (`docs/plans/admin-threed-workspace-blueprint.md`); do not apply its viewport constraints globally without reviewing each host. See `docs/plans/v0.19.11-release.md`. Preserve primary File authority, shared Texture URL reuse, refreshed Character position responses, and the original Character cylinders; generic fallback errors belong in DetailsCard.
 
 v0.19.0b preserves the authenticated `project_threed_markers` create/update paths, stable Runtime Marker ownership, persistent Canvas/Rapier world, synchronized Model visuals and fixed colliders, and Character runtime separation. Existing Project Models may be repositioned through the Leaflet 2D Map or explicit ThreeD Scene Move Model mode; this does not authorize free-form R3F dragging or other Sub-Module movement changes. The developer-local `reference/` directory remains ignored and is not production source or a deployed asset path.
 
 The v0.18.7c candidate defines ThreeD Layers as the Scene transaction boundary. Layer operations must preserve one persistent Canvas and Rapier world, stable `marker_id` identity, saved transforms, and Sub-Module-owned rendering and physics. They must not remount unrelated markers or issue duplicate imperative Rapier initialization writes. The Rapier frame-error circuit is containment only; activation is release-blocking.
 
-v0.18.7c remains the ThreeD Layers Scene safety boundary. Treat future uncommitted work as user-owned and do not overwrite or fold it into unrelated changes.
+v0.18.7c remains the ThreeD Layers Scene safety boundary. Treat future uncommitted work as Developer-owned and do not overwrite or fold it into unrelated changes.
 
 The v0.18.7b release adds manually verified rectangular Bed creation plus Project-instance editing for width, length, height, X/Y/Z position, and degree-based Y rotation. `project_threed_markers` is authoritative after creation; edits must not mutate the reusable `threed_beds` source or reload the Project. Fixed marker bodies synchronize translation and rotation through their existing Rapier refs so visuals and colliders remain aligned.
 
