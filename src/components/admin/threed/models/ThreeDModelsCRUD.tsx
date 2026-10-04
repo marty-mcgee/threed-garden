@@ -634,12 +634,12 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
                         centerAtOrigin
                         perspective={MODEL_WORKSPACE_PERSPECTIVE}
                         title="Draft Model Canvas"
+                        headerActions={<ModelFieldHelp label="Model Canvas Preview">{formData.modelType && formData.modelType !== 'procedural' && !formData.filePath.trim()
+                          ? 'Recovery geometry only: choose a Model file to preview its geometry. Choose the recovery shape under Geometry.'
+                          : 'Previewing unsaved shape, transform, and file lighting changes. Save to apply them to the reusable Model.'}</ModelFieldHelp>}
                         headerMeta={<Badge variant="outline">{formData.modelType || 'Choose a type'}</Badge>}
                         canvasClassName="h-[clamp(16rem,42dvh,30rem)]"
                       />
-                      <div className="mt-1 flex justify-end"><ModelFieldHelp label="Draft Model preview">{formData.modelType && formData.modelType !== 'procedural' && !formData.filePath.trim()
-                        ? 'Recovery geometry only: choose a Model file to preview its geometry. Recovery settings are under Advanced.'
-                        : 'Previewing unsaved shape, transform, and file lighting changes. Save to apply them to the reusable Model.'}</ModelFieldHelp></div>
                       <fieldset aria-label="Library preview image" disabled={busy || !detailsReady} className="mt-3 min-w-0 rounded-lg border bg-card p-3">
                         <ThreeDModelPreviewImageFields mode={view === 'create' ? 'create' : 'edit'} form={formData} setForm={setFormData}
                           isSubmitting={isSubmitting} uploadingPrimary={uploadingPrimary} uploadingThumbnail={uploadingThumbnail} onThumbnail={handleThumbnailUpload}

@@ -1,5 +1,8 @@
 # Character Model source switching — v0.22.18 continuation
 
+Developer-reported production release, confirmed October 4, 2026: **v0.22.18 — ThreeD App: solidify foundations and Model editing**. Prior local validation remains separate. Detailed Developer browser verification remains pending; no browser acceptance or post-deployment testing is inferred. Read-only Git history identifies implementation commit `f3c3c050`, but neither Git history nor the release confirmation establishes deployment of that SHA; the deployed SHA remains unconfirmed. Stage 3A remains partially verified and paused; restoration and cleanup remain deferred. See the [release record](../releases/v0.22.18.md). Earlier candidate/handoff status statements below are historical and superseded only as to production-release status; their local validation and pending browser checks are preserved.
+
+
 Release-preparation update, October 4, 2026: Developer approved preparing the complete v0.22.18 candidate for manual release. See the [combined release handoff](../releases/v0.22.18.md) for final scope, evidence, browser checklist and canonical suggested commit title. This readiness statement is separate from local validation and does not establish full browser acceptance, production deployment or a deployed SHA. Existing implementation evidence and historical notes below are preserved; detailed browser checks remain pending and Stage 3A stays partially verified and paused.
 
 

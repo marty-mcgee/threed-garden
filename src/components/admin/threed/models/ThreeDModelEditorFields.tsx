@@ -125,6 +125,23 @@ export function ThreeDModelEditorFields({
   const source = readModelSource({ ...form, metadata: fallbackMetadata });
   const fileFreeProcedural = source === 'shape';
   const geometrySource = source === 'shape' ? 'procedural' : 'model-file';
+  const activeCategories = categories.filter(category => category.isActive);
+  const assignedCategories = categories.filter(category => form.categoryIds.includes(category.id));
+  const activeCategoryIds = new Set(activeCategories.map(category => category.id));
+  const renderedCategoryIds = new Set<number>();
+
+  function renderCategory(category: ThreeDModelCategoryOption): React.ReactNode {
+    if (renderedCategoryIds.has(category.id)) return null;
+    renderedCategoryIds.add(category.id);
+    const children = activeCategories.filter(child => child.parentId === category.id);
+    return <li key={category.id} className="space-y-1">
+      <label className="flex items-center gap-2 rounded border px-2 py-1.5 text-xs">
+        <input type="checkbox" checked={form.categoryIds.includes(category.id)} onChange={() => update('categoryIds', form.categoryIds.includes(category.id) ? form.categoryIds.filter(categoryId => categoryId !== category.id) : [...form.categoryIds, category.id])} disabled={disabled} />
+        <span className="min-w-0 break-words">{category.name}</span>
+      </label>
+      {children.length > 0 && <ul className="ml-3 space-y-1 border-l pl-3">{children.map(renderCategory)}</ul>}
+    </li>;
+  }
 
   function update<K extends keyof ThreeDModelAdminFormData>(key: K, value: ThreeDModelAdminFormData[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -147,7 +164,7 @@ export function ThreeDModelEditorFields({
   </>;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 [&_[role=switch]]:h-4 [&_[role=switch]]:w-7 [&_[role=switch]>span]:h-3 [&_[role=switch]>span]:w-3 [&_[role=switch]>span[data-state=checked]]:translate-x-3">
       <div className="rounded-md border p-3">
         <div>
           <div className="flex items-center gap-1"><Label htmlFor={id('modelName')}>Model Name *</Label><ModelFieldHelp label="Model name">Name of the reusable Model. Project instance names are separate. Changes apply on Save.</ModelFieldHelp></div>
@@ -256,28 +273,29 @@ export function ThreeDModelEditorFields({
           ['isLibraryItem', 'Model Library Item'],
           ['usedByPlants', 'Used by Plants'],
           ['usedByCharacters', 'Character runtime Model'],
-        ] as const).map(([key, label]) => <div key={key} className="flex items-center gap-2"><Switch id={id(key)} checked={form[key]} onCheckedChange={(value) => update(key, value)} disabled={disabled} /><Label htmlFor={id(key)}>{label}</Label></div>)}
-        <p className={`text-[10px] ${form.usedByCharacters ? 'text-amber-300' : 'text-muted-foreground'}`}>
+        ] as const).map(([key, label]) => <div key={key} className="flex items-center gap-2"><Switch id={id(key)} checked={form[key]} onCheckedChange={(value) => update(key, value)} disabled={disabled} /><Label htmlFor={id(key)}>{label}</Label>{key === 'usedByCharacters' && <ModelFieldHelp label="Character runtime Model">
           {form.usedByCharacters
             ? 'Character runtime Models are excluded from the Dashboard Model Library and use the separate Character Library.'
             : 'Leave Character runtime Model off for ordinary props, buildings, environments, and other placeable Models.'}
-        </p>
+        </ModelFieldHelp>}</div>)}
       </Section>
 
-      <Section title="Categories">
-        {categories.filter((category) => category.isActive).length === 0 ? (
+      <details className="space-y-2 rounded-md border p-3">
+        <summary className="cursor-pointer text-sm font-medium">
+          Categories{' '}
+          {assignedCategories.length > 0 ? <span role="list" aria-label="Assigned categories" className="ml-2 inline-flex max-w-full flex-wrap gap-1 align-middle text-xs font-normal">
+            {assignedCategories.map(category => <span key={category.id} role="listitem" className="rounded border bg-muted px-2 py-0.5 break-words">{category.name}</span>)}
+          </span> : <span className="ml-2 text-xs font-normal text-muted-foreground">None assigned</span>}
+        </summary>
+        {activeCategories.length === 0 ? (
           <p className="text-xs text-muted-foreground">Create an active Model category before assigning taxonomy.</p>
         ) : (
-          <div className="grid grid-cols-2 gap-2">
-            {categories.filter((category) => category.isActive).map((category) => (
-              <label key={category.id} className="flex items-center gap-2 rounded border px-2 py-1.5 text-xs">
-                <input type="checkbox" checked={form.categoryIds.includes(category.id)} onChange={() => update('categoryIds', form.categoryIds.includes(category.id) ? form.categoryIds.filter((categoryId) => categoryId !== category.id) : [...form.categoryIds, category.id])} disabled={disabled} />
-                <span className="truncate">{category.name}</span>
-              </label>
-            ))}
-          </div>
+          <ul className="space-y-2" aria-label="Model category hierarchy">
+            {activeCategories.filter(category => category.parentId === null || !activeCategoryIds.has(category.parentId)).map(renderCategory)}
+            {activeCategories.filter(category => !renderedCategoryIds.has(category.id)).map(renderCategory)}
+          </ul>
         )}
-      </Section>
+      </details>
       {mode === 'edit' && (
         <Section title="Model Files">
           <p className="text-xs text-muted-foreground">

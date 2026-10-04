@@ -1,6 +1,8 @@
 # Agent Documentation
 
-Current v0.22.18 [manual release handoff](../releases/v0.22.18.md) covers foundations and coordinated Model editing/source switching. Preserve its retained-source/runtime/preview boundaries and distinguish local checks, Developer readiness feedback, browser verification and deployment evidence.
+Prepared [v0.22.19 checkpoint handoff](../releases/v0.22.19.md): compact Model Edit Interface, collapsed rounded Categories with visible assigned names and independent hierarchy selections, accessible help and scoped switches. Preserve existing draft/source/Canvas boundaries. Local validation passed; detailed browser verification and production deployment remain separate pending gates.
+
+Developer-reported production v0.22.18 [release record](../releases/v0.22.18.md) covers foundations and coordinated Model editing/source switching. Preserve its retained-source/runtime/preview boundaries and distinguish local checks, Developer readiness feedback, browser verification and deployment evidence.
 
 Canonical development repository: `marty-mcgee/threed-garden`; work from the active repository root supplied by the environment. The released [v0.22.0 repository handoff](../plans/v0.22.0.md) starts the independent release line. `marty-mcgee-neon` is retained as historical source, not the target for new app changes.
 
