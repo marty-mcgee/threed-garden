@@ -1,5 +1,7 @@
 # Agent Documentation
 
+Local [v0.22.20 Character Admin pages candidate](../plans/v0.22.20-character-admin-pages.md) replaces Character overlays with Add/Edit/Animations pages, reuses the Model Canvas blueprint and preserves Character assignment/runtime boundaries. Its 57-task CI, TypeScript and npm build passed locally; browser verification and release remain pending. The animation/runtime analysis and exact browser checklist are in the plan.
+
 Developer-reported production [v0.22.19 release record](../releases/v0.22.19.md): compact Model Edit Interface, collapsed rounded Categories with visible assigned names and independent hierarchy selections, accessible help and scoped switches. Preserve existing draft/source/Canvas boundaries. Production release confirmed October 4, 2026. Prior local validation remains separate from pending detailed browser verification; no post-deployment testing is claimed and deployed SHA remains unconfirmed.
 
 Developer-reported production v0.22.18 [release record](../releases/v0.22.18.md) covers foundations and coordinated Model editing/source switching. Preserve its retained-source/runtime/preview boundaries and distinguish local checks, Developer readiness feedback, browser verification and deployment evidence.

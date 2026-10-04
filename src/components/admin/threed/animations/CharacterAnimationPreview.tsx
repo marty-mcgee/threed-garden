@@ -8,6 +8,8 @@ import type { AssignedAnimationClip } from '@/libraries/utils/assignedCharacterA
 import { Vector3 } from 'three';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { positiveId } from '@/libraries/services/threed/animations/contracts';
+import { readModelSource } from '@/libraries/services/threed/models/model-source-core';
+import { Button } from '@/components/ui/button';
 
 type Character = ComponentProps<typeof GardenCharacter>['character'];
 type Clip = AssignedAnimationClip & { name: string };
@@ -104,6 +106,7 @@ export function CharacterAnimationPreview() {
           defaultEmote: '', positionX: 0, positionY: 0, positionZ: 0, rotation: 0, scale: 1,
           visible: true, activeStartHour: null, activeEndHour: null,
         };
+        if (character.model && readModelSource(character.model) === 'shape') throw new Error('Shape source is active. Restore the saved rig on the Model before previewing rig animations.');
         if (!character.model?.filePath) throw new Error('No accessible primary Model file is available for preview.');
         if (!controller.signal.aborted) setPreview({ target, character: { ...character, positionX: 0, positionY: 0, positionZ: 0,
           rotation: 0, scale: 1, animationSpeed: 1, status: 'active', visible: true, movementType: 'stationary',
@@ -145,16 +148,16 @@ export function CharacterAnimationPreview() {
     <p role="status" className="text-xs text-green-500">{playbackStatus}</p>
     <p className="text-xs text-muted-foreground">Drag to orbit · Scroll to zoom · Preview does not save changes.</p>
     <div className="flex flex-wrap gap-1 text-xs">
-      <button type="button" className="rounded border px-2 py-1 disabled:opacity-40" disabled={!ready} onClick={() => cameraTools.current?.preset(true)}>Front</button>
-      <button type="button" className="rounded border px-2 py-1 disabled:opacity-40" disabled={!ready} onClick={() => cameraTools.current?.preset(false)}>Three-quarter</button>
-      <button type="button" className="rounded border px-2 py-1 disabled:opacity-40" disabled={!ready} onClick={() => cameraTools.current?.save()}>Save view</button>
-      <button type="button" className="rounded border px-2 py-1 disabled:opacity-40" disabled={!ready} onClick={() => cameraTools.current?.reset()}>Reset view</button>
+      <Button type="button" variant="outline" size="sm" className="h-7 text-xs" disabled={!ready} onClick={() => cameraTools.current?.preset(true)}>Front</Button>
+      <Button type="button" variant="outline" size="sm" className="h-7 text-xs" disabled={!ready} onClick={() => cameraTools.current?.preset(false)}>Three-quarter</Button>
+      <Button type="button" variant="outline" size="sm" className="h-7 text-xs" disabled={!ready} onClick={() => cameraTools.current?.save()}>Save view</Button>
+      <Button type="button" variant="outline" size="sm" className="h-7 text-xs" disabled={!ready} onClick={() => cameraTools.current?.reset()}>Reset view</Button>
     </div>
     <p role="status" className="text-xs text-muted-foreground">{cameraNotice || 'Orbit and zoom, then Save view to remember your angle.'}</p>
     {error && <p role="alert" className="text-sm text-orange-500">{error}{ready ? ' The previous animation remains visible.' : ''}</p>}
     <>
       {switching && ready && <p role="status" className="text-xs">Loading animation…</p>}
-      {!ready && <p role="status" className="text-sm">Loading Model and textures…</p>}
+      {!ready && !error && <p role="status" className="text-sm">Loading Model and textures…</p>}
       <div className="relative min-h-0 flex-1">
         {preview && <PreviewBoundary><div className="h-full" style={{ visibility: ready ? 'visible' : 'hidden' }}>
           <Canvas camera={{ position: [3, 2, 3], fov: 45 }}>

@@ -81,6 +81,9 @@ export async function GET(request: NextRequest) {
 
     // Get a single character by ID
     if (id) {
+      if (!/^[1-9]\d*$/.test(id) || !Number.isSafeInteger(Number(id))) {
+        return NextResponse.json({ success: false, error: 'Invalid Character ID' }, { status: 400 });
+      }
       const [character] = await db
         .select()
         .from(threedCharacters)
@@ -110,7 +113,7 @@ export async function GET(request: NextRequest) {
         success: true,
         data: {
           ...character,
-          model: model || null,
+          model: model && (model.userId === userId || (model.isPublic === true && model.isLibraryItem === true)) ? model : null,
         },
       });
     }
@@ -444,7 +447,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // ✅ Verify model exists if provided
-    if (body.modelId) {
+    if (body.modelId && Number(body.modelId) !== existing.modelId) {
       const [model] = await db
         .select(modelSelection())
         .from(threedModels)
@@ -545,7 +548,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // ✅ Verify model exists if provided
-    if (body.modelId) {
+    if (body.modelId && Number(body.modelId) !== existing.modelId) {
       const [model] = await db
         .select(modelSelection())
         .from(threedModels)

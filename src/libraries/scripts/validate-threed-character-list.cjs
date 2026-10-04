@@ -19,6 +19,8 @@ const db = { select(selection) { const query = { selection }; const chain = {};
   for (const method of ['from', 'where', 'orderBy', 'limit', 'offset']) chain[method] = (...args) => { query[method] = args; return chain; };
   chain.then = (resolve, reject) => { queries.push(query); assert.ok(queue.length); return Promise.resolve(queue.shift()).then(resolve, reject); }; return chain;
 } };
+let written;
+db.update = () => ({ set(value) { written = value; return { where() { return { returning: async () => { assert.ok(queue.length); return queue.shift(); } }; } }; } });
 const api = load('src/app/api/threed/characters/route.ts', {
   '@/libraries/services/threed/characters/character-list-query': parser,
   '@/libraries/services/threed/models/model-primary-file': { modelSelection: () => ({ id: 'model.id' }) },
@@ -30,6 +32,19 @@ async function run(query, responses = []) { queries = []; queue = responses; con
 (async () => {
   for (const query of ['limit=0', 'limit=201', 'offset=-1', 'sort=sql', 'direction=sideways', 'isActive=yes', 'type=wrong', 'status=wrong', `search=${'a'.repeat(201)}`]) assert.equal((await run(query)).status, 400);
   signedIn = false; assert.equal((await run('')).status, 401); signedIn = true;
+  for (const id of ['0', '1x', '-1', '9007199254740992']) assert.equal((await run(`id=${id}`)).status, 400);
+  const privateModel = await run('id=11', [[{ id: 11, userId: 'owner', modelId: 7 }], [{ id: 7, userId: 'other', isPublic: false, isLibraryItem: true }]]);
+  assert.equal(privateModel.body.data.model, null, 'single Character read excludes an inaccessible linked Model');
+  assert.equal(queries[0].where[0].args[1].args[1], 'owner');
+  const ownedModel = await run('id=11', [[{ id: 11, userId: 'owner', modelId: 7 }], [{ id: 7, userId: 'owner' }]]);
+  assert.equal(ownedModel.body.data.model.id, 7);
+  async function patch(body, responses) { queries = []; queue = responses; written = undefined; const result = await api.PATCH({ url: 'http://localhost/api/threed/characters?id=11', json: async () => body }); assert.equal(queue.length, 0); return result; }
+  const retained = await patch({ modelId: 7, name: 'Retained', activeStartHour: 0, animations: [], patrolWaypoints: [], teleportPositions: [] }, [[{ id: 11, modelId: 7 }], [{ id: 11, modelId: 7 }]]);
+  assert.equal(retained.status, 200); assert.equal(queries.length, 1, 'unchanged relationship is retained without a replacement Model query');
+  assert.equal(written.modelId, 7); assert.equal(written.activeStartHour, 0);
+  const deniedReplacement = await patch({ modelId: 8 }, [[{ id: 11, modelId: 7 }], []]);
+  assert.equal(deniedReplacement.status, 404); assert.equal(written, undefined);
+  assert.equal(queries[1].where[0].args[1].args[1], 'owner', 'replacement remains owner-scoped');
   for (const size of [1, 50, 200]) {
     const rows = Array.from({ length: size }, (_, id) => ({ id, modelId: 7 }));
     const result = await run(`limit=${size}&offset=200&search=Rose&type=human&status=active&isActive=true&sort=name&direction=asc`, [[{ count: '452' }], rows, [{ id: 7, userId: 'owner' }]]);

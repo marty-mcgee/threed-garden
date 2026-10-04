@@ -25,7 +25,7 @@ export function ModelAnimationAssignments({ modelId }: { modelId: number }) {
   return <CharacterAnimationAssignments modelId={modelId} />;
 }
 
-export function CharacterAnimationAssignments(props: AssignmentTargetProps) {
+export function CharacterAnimationAssignments(props: AssignmentTargetProps & { onStateChange?: (state: { dirty: boolean; busy: boolean }) => void }) {
   const target = props.modelId !== undefined ? 'model' : 'character';
   const targetId = props.modelId ?? props.characterId;
   const [mapping, setMapping] = useState<Mapping | null>(null);
@@ -114,6 +114,7 @@ export function CharacterAnimationAssignments(props: AssignmentTargetProps) {
   const [slotCategory, setSlotCategory] = useState('');
   const slotName = (key: string) => mapping?.slots?.find(slot => slot.actionKey === key)?.name ?? label(key);
   const dirtyCount = Object.entries(drafts).filter(([key, value]) => value !== choice(mapping?.assignments.find(row => row.actionKey === key))).length;
+  useEffect(() => { props.onStateChange?.({ dirty: dirtyCount > 0, busy }); }, [dirtyCount, busy, props.onStateChange]);
   function refreshAssignments() {
     if (dirtyCount && !confirm('Refresh assignments and discard unsaved changes?')) return;
     setNotice(''); setReload(value => value + 1);

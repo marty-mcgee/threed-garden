@@ -2,6 +2,8 @@
 
 Read CONTEXT.md before architectural work.
 
+Local v0.22.20 Character Admin pages candidate: preserve standalone Add/Edit/Animations routing, exact selected-Model resource reads, guarded drafts/assignment navigation, owner-scoped replacements, Model-based centered geometry inspection and camera-only Reset. Clip preview is isolated and does not certify Scene physics/world actions; keep Garden/Ecctrl paths and assignment precedence intact. See docs/plans/v0.22.20-character-admin-pages.md. Local checks passed; browser verification and release remain pending. v0.22.19 remains the latest Developer-reported production checkpoint.
+
 Developer-reported production checkpoint v0.22.19 (released October 4, 2026) — ThreeD App: refine Model Edit Interface: preserve collapsed rounded Categories with draft-assigned names visible, independent parent/child assignments, accessible help Tooltips and editor-scoped compact switches. See [release handoff](docs/releases/v0.22.19.md). Prior local validation is separate from pending detailed browser checks; no post-deployment testing is claimed and deployed SHA remains unconfirmed. Read-only history identifies implementation commit `7093c472`. v0.22.18 is the prior production checkpoint. The Manual Release Gate still applies.
 
 ## Required workflow
