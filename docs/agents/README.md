@@ -1,6 +1,6 @@
 # Agent Documentation
 
-Prepared [v0.22.19 checkpoint handoff](../releases/v0.22.19.md): compact Model Edit Interface, collapsed rounded Categories with visible assigned names and independent hierarchy selections, accessible help and scoped switches. Preserve existing draft/source/Canvas boundaries. Local validation passed; detailed browser verification and production deployment remain separate pending gates.
+Developer-reported production [v0.22.19 release record](../releases/v0.22.19.md): compact Model Edit Interface, collapsed rounded Categories with visible assigned names and independent hierarchy selections, accessible help and scoped switches. Preserve existing draft/source/Canvas boundaries. Production release confirmed October 4, 2026. Prior local validation remains separate from pending detailed browser verification; no post-deployment testing is claimed and deployed SHA remains unconfirmed.
 
 Developer-reported production v0.22.18 [release record](../releases/v0.22.18.md) covers foundations and coordinated Model editing/source switching. Preserve its retained-source/runtime/preview boundaries and distinguish local checks, Developer readiness feedback, browser verification and deployment evidence.
 

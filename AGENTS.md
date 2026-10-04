@@ -2,7 +2,7 @@
 
 Read CONTEXT.md before architectural work.
 
-Prepared candidate v0.22.19 — ThreeD App: refine Model Edit Interface: preserve collapsed rounded Categories with draft-assigned names visible, independent parent/child assignments, accessible help Tooltips and editor-scoped compact switches. See [release handoff](docs/releases/v0.22.19.md). Local validation is separate from pending detailed browser checks and deployment; v0.22.18 remains the latest Developer-reported production release. The Manual Release Gate still applies.
+Developer-reported production checkpoint v0.22.19 (released October 4, 2026) — ThreeD App: refine Model Edit Interface: preserve collapsed rounded Categories with draft-assigned names visible, independent parent/child assignments, accessible help Tooltips and editor-scoped compact switches. See [release handoff](docs/releases/v0.22.19.md). Prior local validation is separate from pending detailed browser checks; no post-deployment testing is claimed and deployed SHA remains unconfirmed. Read-only history identifies implementation commit `7093c472`. v0.22.18 is the prior production checkpoint. The Manual Release Gate still applies.
 
 ## Required workflow
 
