@@ -25,6 +25,7 @@ import {
 import { createThreeDModelLibraryReadiness } from '@/libraries/services/threed/models/model-library-readiness-core';
 import { validModelLightBoost } from '@/libraries/services/threed/models/model-lighting-core';
 import { MODEL_FALLBACK_SHAPES, readModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
+import { readModelSource, validModelSource } from '@/libraries/services/threed/models/model-source-core';
 
 type ModelWithFiles = import('@/libraries/services/threed/models/model-primary-file').ResolvedModel & {
   files: Array<typeof threedModelFiles.$inferSelect>;
@@ -235,7 +236,7 @@ function serializeLibraryModel(model: ModelWithFiles, viewerUserId: string) {
     defaultAnimation: model.defaultAnimation,
     hasExternalFiles: model.hasExternalFiles,
     textureCount: model.textureCount,
-    metadata: { fallbackShape: readModelFallbackShape(model.metadata) },
+    metadata: { fallbackShape: readModelFallbackShape(model.metadata), ...(validModelSource(model.metadata) && (model.metadata as Record<string, unknown>).activeSource !== undefined ? { activeSource: readModelSource(model) } : {}) },
     mainModelFileId: model.mainModelFileId,
     isActive: model.isActive,
     status: model.status,
@@ -552,7 +553,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const fileFreeShape = modelType === 'procedural' && !filePath;
+    if (!validModelSource(metadata ?? {})) return NextResponse.json({ success: false, error: 'Invalid Model source' }, { status: 400 });
+    const fileFreeShape = readModelSource({ modelType, filePath, metadata, usedByCharacters }) === 'shape';
     if (fileFreeShape && metadata?.fallbackShape !== undefined
       && !MODEL_FALLBACK_SHAPES.includes(metadata.fallbackShape)) {
       return NextResponse.json({ success: false, error: 'Invalid procedural Model shape' }, { status: 400 });
@@ -840,6 +842,7 @@ export async function PATCH(request: NextRequest) {
     if (updates.metadata !== undefined && !validModelLightBoost(updates.metadata)) {
       return NextResponse.json({ success: false, error: 'Light boost must be between 0 and 1' }, { status: 400 });
     }
+    if (updates.metadata !== undefined && !validModelSource(updates.metadata)) return NextResponse.json({ success: false, error: 'Invalid Model source' }, { status: 400 });
     const pendingPrimaryFile = normalizePendingPrimaryFile(
       requestedPrimaryFile,
       updates.filePath,
@@ -904,7 +907,7 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Upload or assign a primary Model File to change its URL, size or format' }, { status: 400 });
     }
     if (updates.isActive === true && !pendingPrimaryFile && !updates.mainModelFileId && !existing.filePath
-      && (updates.modelType ?? existing.modelType) !== 'procedural') {
+      && readModelSource({ modelType: updates.modelType ?? existing.modelType, filePath: existing.filePath, metadata: updates.metadata ?? existing.metadata }) !== 'shape') {
       return NextResponse.json({ success: false, error: 'Assign a primary Model File before activation' }, { status: 400 });
     }
     const categoryIds = await validateOwnedCategoryIds(userId, requestedCategoryIds);

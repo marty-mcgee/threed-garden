@@ -15,7 +15,8 @@ vm.runInNewContext(transpile('src/libraries/services/threed/models/model-lightin
 const fallbackModule = { exports: {} };
 vm.runInNewContext(transpile('src/libraries/services/threed/models/model-fallback-core.ts'), { exports: fallbackModule.exports });
 const readinessModule = { exports: {} };
-vm.runInNewContext(transpile('src/libraries/services/threed/models/model-library-readiness-core.ts'), { exports: readinessModule.exports });
+const sourceCore = require('../services/threed/models/model-source-core.ts');
+vm.runInNewContext(transpile('src/libraries/services/threed/models/model-library-readiness-core.ts'), { exports: readinessModule.exports, require: name => { assert.equal(name, './model-source-core.ts'); return sourceCore; } });
 const schema = new Proxy({}, { get: (_, table) => new Proxy({ table }, { get: (value, column) => column === 'table' ? table : `${table}.${String(column)}` }) });
 const op = (kind) => (...args) => ({ kind, args });
 const orm = Object.fromEntries(['eq', 'and', 'or', 'desc', 'inArray', 'asc'].map((kind) => [kind, op(kind)]));
@@ -64,6 +65,7 @@ const mocks = {
   '@vercel/blob': {},
   '@/libraries/services/threed/models/model-file-integrity': { runtimeModelTypeFromFileName: () => 'gltf' },
   '@/libraries/services/threed/models/model-library-readiness-core': readinessModule.exports,
+  '@/libraries/services/threed/models/model-source-core': sourceCore,
   '@/libraries/services/threed/models/model-lighting-core': lightingModule.exports,
   '@/libraries/services/threed/models/model-fallback-core': fallbackModule.exports,
 };
@@ -239,6 +241,12 @@ async function searchOwnershipChecks() {
   assert.equal(library.body.data[0].canManage, false);
   const sharedDetail = await run('id=1159', [[shared], [], [], []]);
   assert.deepEqual(sharedDetail.body.data.metadata, { fallbackShape: 'pyramid' });
+  const retainedRigShape = { ...shared, modelType: 'fbx', filePath: 'https://fixture.test/rig.fbx', mainModelFileId: 81,
+    metadata: { activeSource: 'shape', fallbackShape: 'box', privateNotes: 'owner only', animationMap: { idle: 'Idle' } } };
+  const sourceLibrary = await run('scope=library', [[{ count: 1 }], [retainedRigShape],
+    [{ id: 81, modelId: 1159, fileType: 'model', filePath: retainedRigShape.filePath }], [], []]);
+  assert.deepEqual(sourceLibrary.body.data[0].metadata, { activeSource: 'shape', fallbackShape: 'box' });
+  assert.equal(sourceLibrary.body.data[0].libraryReadiness.status, 'ready', 'Inactive retained FBX does not require texture configuration for active Shape');
   const invalidShape = await run('scope=library', [
     [{ count: 1 }], [{ ...shared, metadata: { fallbackShape: 'unknown', privateNotes: 'owner only' } }], [], [], [],
   ]);
@@ -270,6 +278,14 @@ async function searchOwnershipChecks() {
   assert.equal(unchangedBrokenPrimary.status, 200, 'Unrelated edits may retain a legacy broken primary file');
   assert.deepEqual(plain(transactionUpdates.at(-1).metadata), metadata);
   assert.equal(transactionCalls, 2);
+  for (const activeSource of ['shape', 'character', 'model']) {
+    await runPrimaryPatch(candidateFile, 200, { currentPrimaryFileId: candidateFile.id, updates: { metadata: { activeSource, fallbackShape: 'box', animationMap: { idle: 'Idle' } } } });
+    const update = transactionUpdates.at(-1);
+    assert.equal(update.mainModelFileId, candidateFile.id, 'Source toggle retains the owner-checked saved primary');
+    assert.equal(update.modelType, 'gltf');
+    assert.equal(update.metadata.activeSource, activeSource);
+    assert.equal(update.metadata.animationMap.idle, 'Idle');
+  }
   async function convertToProcedural(updates, expectedStatus, existingOverrides = {}) {
     queue = [[{ id: 5, userId: 'owner', modelType: 'gltf', mainModelFileId: 9, filePath: 'https://assets.example.test/model.gltf', ...existingOverrides }],
       ...(expectedStatus === 200 ? [[{ id: 5, modelType: 'procedural', mainModelFileId: null, filePath: '' }]] : [])];

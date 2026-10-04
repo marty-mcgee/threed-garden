@@ -95,7 +95,7 @@ const flush = () => new Promise(resolve => setImmediate(resolve));
   states[0].inherited[0].mode = 'assigned';
   assert.match(visibleText(tree), /Inherited Model default/);
   assert.match(visibleText(tree), /Assigned — playback not verified/);
-  assert.equal(find(tree, node => node.props?.href === '/admin/threed/model-files?modelId=22').props.href, '/admin/threed/model-files?modelId=22');
+  assert.equal(find(tree, node => node.props?.href === '/admin/threed/models/22?tab=files').props.href, '/admin/threed/models/22?tab=files');
   states[0].effective[0].state = 'unavailable';
   assert.match(visibleText(render()), /Unavailable — replace or restore defaults/);
   states[0].effective[0] = { actionKey: 'pickFruit', source: 'character', state: 'disabled', animationId: null };

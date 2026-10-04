@@ -1,7 +1,12 @@
+'use client';
+import { useMemo } from 'react';
+import { resolveActiveModelGeometry } from '@/libraries/services/threed/models/model-source-core';
+import { readModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
+import { ModelShapeVisual } from './ModelShapeVisual';
 // src/components/threed/shared/EcctrlCharacter.tsx
 // External Farmer animation integration
 
-'use client';
+
 
 import { modelLoadCompletion } from '@/libraries/services/threed/models/model-load-completion';
 import { useSceneResourceStatus, useSceneResourceIssueReporter } from './SceneResourceStatus';
@@ -436,6 +441,11 @@ function useCharacterModel(
       !isActive ||
       !character.model?.filePath
     ) {
+      if (!character.model?.filePath) {
+        setModel(null);
+        setAnimations([]);
+        setError(null);
+      }
       setLoading(false);
       return;
     }
@@ -1019,7 +1029,7 @@ function useWASD(
 
 export function EcctrlCharacter({
   physicsSettings,
-  character,
+  character: savedCharacter,
 
   runtimePosition,
 
@@ -1050,6 +1060,10 @@ export function EcctrlCharacter({
 
   onRuntimeSettled,
 }: EcctrlCharacterProps) {
+  const usesShape = savedCharacter.model?.metadata?.activeSource === 'shape';
+  const character = useMemo(() => usesShape && savedCharacter.model ? { ...savedCharacter, model: resolveActiveModelGeometry(savedCharacter.model) } : savedCharacter, [savedCharacter, usesShape]);
+  const shapeScale = Math.max(0.01, (Number(savedCharacter.model?.scale) || 1) * (Number(savedCharacter.scale) || 1));
+
   const physics = resolveCharacterPhysics(physicsSettings);
   const FLOAT_HEIGHT = physics.clearance;
   const GROUND_OFFSET = CAPSULE_HALF_HEIGHT + CAPSULE_RADIUS + FLOAT_HEIGHT;
@@ -1139,13 +1153,13 @@ export function EcctrlCharacter({
 
   // Readiness belongs to the specific model object, never a previous load.
   const [posedModel, setPosedModel] = useState<THREE.Group | null>(null);
-  const characterVisualReady = !loading && model !== null && posedModel === model;
+  const characterVisualReady = usesShape || (!loading && model !== null && posedModel === model);
   const actionCollisionRef = useRef<ThreeDActionCollisionSampler | null>(null);
   useEffect(() => {
     // A released/hidden/replaced runtime cannot resume a previous contact action.
     actionCollisionRef.current = null;
     return () => { actionCollisionRef.current = null; };
-  }, [model, isControlled, layerEnabled, characterVisualReady]);
+  }, [model, isControlled, layerEnabled, characterVisualReady, usesShape]);
   useSceneResourceStatus(Boolean(modelLoadEnabled && character.model?.filePath && !characterVisualReady && !error), error);
 
 
@@ -1497,6 +1511,7 @@ export function EcctrlCharacter({
   const playTaskAction =
     useCallback(
       (taskName: string, target?: unknown) => {
+        if (usesShape) return false;
         const mixer =
           mixerRef.current;
 
@@ -1535,7 +1550,7 @@ export function EcctrlCharacter({
         if (collisionRequest !== undefined) {
           if (!validSoccerKickRequest(collisionRequest) || collisionRequest.timing !== 'contact'
             || collisionRequest.characterId !== character.id || collisionRequest.characterMarkerId !== markerId
-            || !markerId || !isControlled || !layerEnabled || !characterVisualReady || !model) return false;
+            || usesShape || !markerId || !isControlled || !layerEnabled || !characterVisualReady || !model) return false;
           collisionSampler = createActionCollisionSampler({
             model, clip: taskAction, pointIds: collisionRequest.pointIds!,
             context: { requestId: collisionRequest.requestId, projectId: collisionRequest.projectId,
@@ -1919,6 +1934,7 @@ export function EcctrlCharacter({
         isControlled,
         layerEnabled,
         characterVisualReady,
+        usesShape,
       ]
     );
 
@@ -2273,7 +2289,7 @@ export function EcctrlCharacter({
 
   // Observe the posed rig after mixer/facing updates; the Model owner alone writes physics.
   useFrame((_, delta) => {
-    if (!isControlled || !layerEnabled || !characterVisualReady || !taskLockedRef.current) return;
+    if (usesShape || !isControlled || !layerEnabled || !characterVisualReady || !taskLockedRef.current) return;
     for (const sample of actionCollisionRef.current?.sample(delta) ?? []) {
       window.dispatchEvent(new CustomEvent(THREED_ACTION_COLLISION_SAMPLE_EVENT, { detail: sample }));
     }
@@ -2516,7 +2532,7 @@ export function EcctrlCharacter({
   // FALLBACK CHARACTER
   // ======================================================
 
-  if (
+  if (!usesShape && (
     !character.model
       ?.filePath ||
     error ||
@@ -2524,7 +2540,7 @@ export function EcctrlCharacter({
       !model &&
       !loading
     )
-  ) {
+  )) {
     const colorMap:
       Record<
         string,
@@ -2680,10 +2696,7 @@ export function EcctrlCharacter({
         ecctrl={
           ecctrlRef
         }
-        enabled={
-          character.status ===
-          'active'
-        }
+        enabled={!usesShape && character.status === 'active'}
         resolver={
           createAnimationResolver()
         }
@@ -2731,14 +2744,15 @@ export function EcctrlCharacter({
           CHARACTER VISUAL
       -------------------------------------------------- */}
 
-      {layerEnabled && (!character.model?.filePath || error != null) && (
+      {!usesShape && layerEnabled && (!character.model?.filePath || error != null) && (
         <mesh position={[0, -GROUND_OFFSET + (CAPSULE_HALF_HEIGHT + CAPSULE_RADIUS), 0]} castShadow>
           <cylinderGeometry args={[CAPSULE_RADIUS, CAPSULE_RADIUS, 2 * (CAPSULE_HALF_HEIGHT + CAPSULE_RADIUS), 16]} />
           <meshStandardMaterial color={({animal:'#D2691E',bird:'#87CEEB',insect:'#32CD32',mythical:'#9370DB',human:'#FFB6C1',robot:'#A9A9A9',decoration:'#FFD700'} as Record<string,string>)[character.type] ?? '#FF69B4'} roughness={0.8} />
         </mesh>
       )}
 
-      {model && (
+      {usesShape && <group visible={layerEnabled} position={[0, -GROUND_OFFSET, 0]}><ModelShapeVisual shape={readModelFallbackShape(savedCharacter.model?.metadata)} scale={shapeScale} rotationY={Number(savedCharacter.model?.rotationY) || 0} /></group>}
+      {!usesShape && model && (
         <group
           visible={layerEnabled && characterVisualReady}
           position={[

@@ -9,7 +9,8 @@ import { measureModelLocalBounds } from '@/libraries/services/threed/models/mode
 import { reportModelLoadFailure } from '@/libraries/services/threed/models/model-load-failures';
 import { modelFallbackCollisionBounds, readModelFallbackShape, type ModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
 import { withSavedFbxTextures } from '@/libraries/services/threed/models/model-saved-texture-fallback';
-import { useRef, useState, useEffect, type ReactNode } from 'react';
+import { useRef, useState, useEffect, useMemo, type ReactNode } from 'react';
+import { resolveActiveModelGeometry } from '@/libraries/services/threed/models/model-source-core';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { Html } from '@react-three/drei';
@@ -390,7 +391,8 @@ function ModelFallback({ position, shape, scale = 1, solid = false }: {
 // ============================================
 // COMPONENT
 // ============================================
-export function ModelMarker3D({ model, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange, onGeometryAuditChange, enableSurfaceCollider = false, onMaterialInventoryChange, materialPreviewOverride, materialPreviewSelectionId, onEnvironmentCollisionPreviewChange, onRuntimeSettled, onRuntimeError }: ModelMarker3DProps) {
+export function ModelMarker3D({ model: savedModel, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange, onGeometryAuditChange, enableSurfaceCollider = false, onMaterialInventoryChange, materialPreviewOverride, materialPreviewSelectionId, onEnvironmentCollisionPreviewChange, onRuntimeSettled, onRuntimeError }: ModelMarker3DProps) {
+  const model = useMemo(() => resolveActiveModelGeometry(savedModel), [savedModel]);
   const [labelHovered, setLabelHovered] = useState(false);
   const [labelPosition, setLabelPosition] = useState<[number, number, number]>([0, 1.5, 0]);
   const { loadedModel, loading, error } = useModelLoad(model, fitBounds, applyStoredScale);

@@ -1,6 +1,7 @@
 import type { ModelData } from '@/components/threed/markers/ModelMarker3D';
 import { withSavedFbxTextures } from '@/libraries/services/threed/models/model-saved-texture-fallback';
 import { resolveThreeDModelAttachmentUrl } from '@/libraries/services/threed/models/model-attachment-runtime-core';
+import { resolveActiveModelGeometry } from '@/libraries/services/threed/models/model-source-core';
 export interface PreviewRequirement { kind: string; relativePath: string; satisfied: boolean }
 /** Freeze Admin rendering to explicit resources; never fetch owner-library fallbacks implicitly. */
 export function modelForPreview(model: ModelData, troubleshoot = false): ModelData {
@@ -8,7 +9,7 @@ export function modelForPreview(model: ModelData, troubleshoot = false): ModelDa
     fileName: assignment.textureFileName, filePath: assignment.textureUrl, isActive: true,
   }));
   return {
-    ...model,
+    ...resolveActiveModelGeometry(model),
     renderingAssetsResolved: true,
     textureFallbacks: troubleshoot ? model.textureFallbacks ?? [] : assignedTextures,
   };

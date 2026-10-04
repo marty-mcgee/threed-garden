@@ -1,5 +1,7 @@
 // @ts-expect-error Native Node TypeScript validation requires the explicit extension.
 import { validModelLightBoost } from '../../../../libraries/services/threed/models/model-lighting-core.ts';
+// @ts-expect-error Native Node TypeScript validation requires the explicit extension.
+import { readModelSource, validModelSource } from '../../../../libraries/services/threed/models/model-source-core.ts';
 
 export interface ThreeDModelAdminFormData {
   modelName: string;
@@ -120,7 +122,10 @@ export function buildThreeDModelAdminPayload(form: ThreeDModelAdminFormData, mod
   if (mainModelFileId !== null && mainModelFileId <= 0) {
     throw new ThreeDModelFormValidationError('Select a valid primary Model file');
   }
-  if (!filePath && modelType !== 'procedural' && !(mode === 'edit' && mainModelFileId !== null)) {
+  const metadata = parseJsonObject(form.metadata, 'Metadata');
+  if (!validModelSource(metadata)) throw new ThreeDModelFormValidationError('Invalid Model source');
+  const source = readModelSource({ ...form, metadata });
+  if (source !== 'shape' && !filePath && !(mode === 'edit' && mainModelFileId !== null)) {
     throw new ThreeDModelFormValidationError('Upload or assign a primary Model file before saving');
   }
 
@@ -130,7 +135,6 @@ export function buildThreeDModelAdminPayload(form: ThreeDModelAdminFormData, mod
   assertFiniteNumber(form.offsetY, 'Offset Y');
   assertFiniteNumber(form.offsetZ, 'Offset Z');
 
-  const metadata = parseJsonObject(form.metadata, 'Metadata');
   if (!validModelLightBoost(metadata)) throw new ThreeDModelFormValidationError('Light boost must be between 0 and 1');
 
   return {

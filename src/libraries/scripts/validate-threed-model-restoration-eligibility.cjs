@@ -86,6 +86,7 @@ async function verifyEditor() {
     'lucide-react': { FolderOpen: 'icon' },
     '@/components/admin/layout/AdminWorkspaceHeader': { AdminWorkspaceHeader: 'header' },
     '@/components/ui/button': { Button: 'button' }, '@/components/ui/input': { Input: 'input' }, '@/components/ui/label': { Label: 'label' },
+    '@/components/ui/badge': { Badge: 'badge' },
     '@/libraries/services/threed/models/model-file-edit-core': load(`${serviceDir}model-file-edit-core.ts`),
     '@/libraries/services/threed/models/model-companion-core': load(`${serviceDir}model-companion-core.ts`),
     '@/libraries/services/threed/models/model-file-integrity': { runtimeModelTypeFromFileName: () => null },

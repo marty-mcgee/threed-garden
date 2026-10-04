@@ -405,7 +405,7 @@ const startTask = vm.runInNewContext(ts.transpileModule(`const start = ${taskNod
   activeTaskRef: { current: null }, lastLocomotionStateRef: { current: 'IDLE' }, playAnimation: () => {},
   actionCollisionRef: collisionSamplerRef,
   model: characterModel, markerId: request.characterMarkerId,
-  isControlled: true, layerEnabled: true, characterVisualReady: true,
+  isControlled: true, layerEnabled: true, characterVisualReady: true, usesShape: false,
   validSoccerKickRequest, createActionCollisionSampler, THREED_SOCCER_KICK_REJECT_EVENT,
   planThreeDInteractionApproach, THREED_INTERACTION_FACING_TOLERANCE, CROSSFADE_DURATION: 0.2,
 });

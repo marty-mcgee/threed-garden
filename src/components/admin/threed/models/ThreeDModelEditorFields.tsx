@@ -13,6 +13,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import type { ThreeDModelCategoryOption } from './ThreeDModelCategoriesManager';
 import type { ThreeDModelAdminFormData } from './model-admin-form-core';
+import { readModelSource, setModelSource, type ModelSource } from '@/libraries/services/threed/models/model-source-core';
+import { ModelFieldHelp } from './ModelFieldHelp';
 
 export const MODEL_TYPE_OPTIONS = [
   { value: 'procedural', label: 'Procedural' },
@@ -70,6 +72,7 @@ interface ThreeDModelEditorFieldsProps {
   mode: 'create' | 'edit';
   modelId?: number;
   previewImageAction?: React.ReactNode;
+  showPreviewImage?: boolean;
   form: ThreeDModelAdminFormData;
   setForm: Dispatch<SetStateAction<ThreeDModelAdminFormData>>;
   categories: ThreeDModelCategoryOption[];
@@ -105,6 +108,7 @@ export function ThreeDModelEditorFields({
   onPrimaryFile,
   onThumbnail,
   previewImageAction,
+  showPreviewImage = true,
 }: ThreeDModelEditorFieldsProps) {
   let fallbackMetadata: unknown = {};
   let fallbackMetadataValid = true;
@@ -118,12 +122,9 @@ export function ThreeDModelEditorFields({
   const modelFiles = files.filter((file) => file.fileType === 'model');
   const textureCount = files.filter((file) => file.fileType === 'texture').length;
   const primaryFile = modelFiles.find((file) => String(file.id) === form.mainModelFileId);
-  const fileFreeProcedural = form.modelType === 'procedural' && !form.filePath;
-  const geometrySource = form.modelType === 'procedural'
-    ? 'procedural'
-    : form.modelType || form.filePath || form.mainModelFileId
-      ? 'model-file'
-      : '';
+  const source = readModelSource({ ...form, metadata: fallbackMetadata });
+  const fileFreeProcedural = source === 'shape';
+  const geometrySource = source === 'shape' ? 'procedural' : 'model-file';
 
   function update<K extends keyof ThreeDModelAdminFormData>(key: K, value: ThreeDModelAdminFormData[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -134,7 +135,7 @@ export function ThreeDModelEditorFields({
   }
 
   const shapeFields = <>
-    <Label htmlFor={id('fallbackShape')} className="text-xs">{fileFreeProcedural ? 'Shape' : 'When the Model file is unavailable'}</Label>
+    <div className="flex items-center gap-1"><Label htmlFor={id('fallbackShape')} className="text-xs">{fileFreeProcedural ? 'Procedural shape' : 'File recovery shape'}</Label><ModelFieldHelp label="Geometry shape">{fileFreeProcedural ? 'This is the active geometry. No Model file is used.' : 'Used only when imported geometry is unavailable in the generic Model viewer. Unconfigured Character fallbacks retain their Cylinder. Select Source: Shape to use this geometry for assigned Characters too.'}</ModelFieldHelp></div>
     <Select value={readModelFallbackShape(fallbackMetadata)} disabled={disabled || !fallbackMetadataValid}
       onValueChange={(value) => update('metadata', setModelFallbackShape(form.metadata, value as ModelFallbackShape))}>
       <SelectTrigger id={id('fallbackShape')}><SelectValue /></SelectTrigger>
@@ -142,55 +143,36 @@ export function ThreeDModelEditorFields({
         <SelectItem key={shape} value={shape}>{shape === 'box' ? 'Box / Block' : shape[0].toUpperCase() + shape.slice(1)}</SelectItem>
       ))}</SelectContent>
     </Select>
-    <p className="text-xs text-muted-foreground">{fileFreeProcedural
-      ? 'This shape is used in the Model Library and Project Scene without a Model file.'
-      : 'Used by the generic Model viewer. Characters keep their existing Cylinder; other module-specific fallbacks are preserved.'}</p>
     {!fallbackMetadataValid && <p className="text-xs text-amber-500">Correct the Metadata JSON below before choosing a shape.</p>}
   </>;
 
   return (
     <div className="space-y-4">
-      <Section title="Basic Information">
+      <div className="rounded-md border p-3">
         <div>
-          <Label htmlFor={id('modelName')}>Model Name *</Label>
+          <div className="flex items-center gap-1"><Label htmlFor={id('modelName')}>Model Name *</Label><ModelFieldHelp label="Model name">Name of the reusable Model. Project instance names are separate. Changes apply on Save.</ModelFieldHelp></div>
           <Input id={id('modelName')} value={form.modelName} onChange={(event) => update('modelName', event.target.value)} disabled={disabled} />
         </div>
+      </div>
+      <Section title="Geometry">
         <div>
-          <Label htmlFor={id('geometrySource')}>Geometry Source *</Label>
-          <Select
-            value={geometrySource}
-            onValueChange={(value) => setForm(current => ({ ...current, modelType: value === 'procedural' ? 'procedural' : 'glb', filePath: '', fileSize: '', mainModelFileId: '' }))}
-            disabled={disabled || (mode === 'create' && Boolean(form.filePath)) || form.usedByCharacters}
-          >
-            <SelectTrigger id={id('geometrySource')}><SelectValue placeholder="Choose a geometry source" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="procedural">Procedural shape</SelectItem>
-              <SelectItem value="model-file">Model file</SelectItem>
-            </SelectContent>
+          <div className="flex items-center gap-1"><Label htmlFor={id('geometrySource')}>Source *</Label><ModelFieldHelp label="Geometry source">Model uses saved geometry; Shape uses the selected procedural shape, including assigned Characters; Character restores the saved rig in its existing runtime. All files, rig and animation settings are retained. Save applies the active source.</ModelFieldHelp></div>
+          <Select value={source} onValueChange={value => setForm(current => ({ ...current, metadata: setModelSource(current.metadata, value as ModelSource), usedByCharacters: value === 'character' ? true : current.usedByCharacters, modelType: current.modelType || (value === 'shape' ? 'procedural' : 'glb') }))} disabled={disabled || !fallbackMetadataValid}>
+            <SelectTrigger id={id('geometrySource')}><SelectValue /></SelectTrigger>
+            <SelectContent><SelectItem value="model">Model</SelectItem><SelectItem value="shape">Shape</SelectItem><SelectItem value="character">Character</SelectItem><SelectItem value="other" disabled>Other [...]</SelectItem></SelectContent>
           </Select>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {geometrySource === 'procedural'
-              ? 'Three.js creates this geometry from the Shape settings. No Model file is required.'
-              : geometrySource === 'model-file'
-                ? 'A GLB, GLTF, FBX, OBJ, or USDZ file supplies this Model’s geometry.'
-                : 'Choose whether Three.js creates the geometry or loads it from a Model file.'}
-          </p>
-          {mode === 'edit' && <p className="mt-1 text-[10px] text-muted-foreground">
-            Source changes apply on Save. Existing attachments are retained. Character runtime Models retain their existing source.
-          </p>}
         </div>
         {geometrySource === 'model-file' && <div>
+          {mode === 'edit' ? <Badge variant="outline" aria-label="File format">{form.modelType.toUpperCase()}</Badge> : <>
           <Label htmlFor={id('modelType')}>Model Format *</Label>
-          <Select value={form.modelType} onValueChange={(value) => update('modelType', value)} disabled={disabled || mode === 'edit' || Boolean(form.filePath)}>
+          <Select value={form.modelType} onValueChange={(value) => update('modelType', value)} disabled={disabled || Boolean(form.filePath)}>
             <SelectTrigger id={id('modelType')}><SelectValue placeholder="Select the Model file format" /></SelectTrigger>
             <SelectContent>{MODEL_TYPE_OPTIONS.filter((option) => ['glb', 'gltf', 'fbx', 'obj', 'usdz', form.modelType].includes(option.value) && option.value !== 'procedural').map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
           </Select>
+          </>}
         </div>}
-      </Section>
-
-      {fileFreeProcedural && <Section title="Procedural Shape">{shapeFields}</Section>}
-      {mode === 'edit' && geometrySource === 'model-file' && <Section title="Model File Geometry">
-        <Label htmlFor={id('primaryFile')}>Geometry file</Label>
+      {mode === 'edit' && geometrySource === 'model-file' && <div className="space-y-2">
+        <div className="flex items-center gap-1"><Label htmlFor={id('primaryFile')}>Primary geometry file</Label><ModelFieldHelp label="Primary geometry file">Choose an existing attachment. Selection changes the primary geometry on Save; uploading alone does not select it. Select Source: Shape to stop using a file without clearing its saved configuration.</ModelFieldHelp></div>
         <Select value={form.mainModelFileId} disabled={disabled} onValueChange={value => {
           const file = modelFiles.find(item => String(item.id) === value);
           if (file) setForm(current => ({ ...current, mainModelFileId: value, filePath: file.filePath, fileSize: String(file.fileSize ?? ''), modelType: file.fileName.split('.').at(-1)?.toLowerCase() ?? current.modelType }));
@@ -198,8 +180,10 @@ export function ThreeDModelEditorFields({
           <SelectTrigger id={id('primaryFile')}><SelectValue placeholder="Choose an attached Model file" /></SelectTrigger>
           <SelectContent>{modelFiles.map(file => <SelectItem key={file.id} value={String(file.id)} disabled={!file.filePath.trim() || !file.fileSize || file.fileSize <= 0}>{file.fileName}</SelectItem>)}</SelectContent>
         </Select>
-        <p className="text-xs text-muted-foreground">Choose an existing attachment, or open Model Files to upload one. Uploading alone does not select the geometry source.</p>
-      </Section>}
+      </div>}
+
+        <div className="space-y-2 border-t pt-3">{shapeFields}</div>
+      </Section>
 
       {mode === 'create' && geometrySource === 'model-file' && <Section title="Primary Model File">
         <div>
@@ -255,37 +239,7 @@ export function ThreeDModelEditorFields({
         )}
       </Section>}
 
-      <Section title="Library Preview Image">
-        <div className="space-y-2 rounded border p-2">
-          <div>
-            <Label htmlFor={id('thumbnailUrl')} className="text-xs">Library Preview Image</Label>
-            <Input id={id('thumbnailUrl')} value={form.thumbnailUrl} placeholder="HTTPS JPG, PNG, or WebP URL" onChange={(event) => update('thumbnailUrl', event.target.value)} disabled={disabled} />
-          </div>
-          {form.thumbnailUrl && <img src={form.thumbnailUrl} alt="Model Library preview" className="h-28 w-full rounded border bg-muted object-contain" />}
-          <div className="flex flex-wrap items-center gap-2">
-            <input
-              id={id('thumbnail-upload')}
-              type="file"
-              className="hidden"
-              accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                if (file) onThumbnail(file);
-                event.target.value = '';
-              }}
-              disabled={uploadingThumbnail || disabled}
-            />
-            <Button type="button" variant="outline" size="sm" className="h-8 text-xs" onClick={() => chooseFile(id('thumbnail-upload'))} disabled={uploadingThumbnail || disabled}>
-              {uploadingThumbnail ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />}
-              {form.thumbnailUrl ? 'Replace Preview' : 'Upload Preview'}
-            </Button>
-            {previewImageAction}
-            {form.thumbnailUrl && <Button type="button" variant="ghost" size="sm" className="h-8 text-xs" onClick={() => update('thumbnailUrl', '')} disabled={uploadingThumbnail || disabled}><X className="mr-1 h-4 w-4" />Remove</Button>}
-          </div>
-          <p className="text-[10px] text-muted-foreground">JPG, PNG, or WebP up to 5 MB. A square top-view image is recommended.</p>
-        </div>
-        {mode === 'create' && <p className="text-[10px] text-muted-foreground">Add textures and supporting media from Model Files after creating the Model.</p>}
-      </Section>
+      {showPreviewImage && <ThreeDModelPreviewImageFields mode={mode} form={form} setForm={setForm} isSubmitting={isSubmitting} uploadingPrimary={uploadingPrimary} uploadingThumbnail={uploadingThumbnail} onThumbnail={onThumbnail} previewImageAction={previewImageAction} />}
 
       <Section title="Publishing and Classification">
         <div>
@@ -370,7 +324,6 @@ export function ThreeDModelEditorFields({
         <p className="text-xs text-muted-foreground">For file-based Models, adds brightness to this Model's lit materials in every Project that uses it. 0% keeps the GLB's original appearance; this does not illuminate nearby objects.</p>
       </Section>
 
-      {!fileFreeProcedural && <Section title="File Recovery Shape">{shapeFields}</Section>}
 
       <Section title="LOD and Animation">
         <div className="flex items-center gap-2"><Switch id={id('hasLOD')} checked={form.hasLOD} onCheckedChange={(value) => update('hasLOD', value)} disabled={disabled} /><Label htmlFor={id('hasLOD')}>Has LOD</Label></div>
@@ -387,5 +340,47 @@ export function ThreeDModelEditorFields({
         </div>
       </details>
     </div>
+  );
+}
+
+export function ThreeDModelPreviewImageFields({ mode, form, setForm, isSubmitting, uploadingPrimary, uploadingThumbnail, onThumbnail, previewImageAction }: Pick<ThreeDModelEditorFieldsProps, 'mode' | 'form' | 'setForm' | 'isSubmitting' | 'uploadingPrimary' | 'uploadingThumbnail' | 'onThumbnail' | 'previewImageAction'>) {
+  const id = (name: string) => `${mode === 'edit' ? 'edit-' : 'create-'}${name}`;
+  const disabled = isSubmitting || uploadingPrimary || uploadingThumbnail;
+  const update = (key: 'thumbnailUrl', value: string) => setForm(current => ({ ...current, [key]: value }));
+  const chooseFile = (inputId: string) => document.getElementById(inputId)?.click();
+  return (
+      <section className="space-y-2" aria-label="Library Preview Image">
+        <div className="flex items-center gap-1"><h3 className="text-sm font-medium">Library Preview Image</h3><ModelFieldHelp label="Library image">JPG, PNG, or WebP up to 5 MB. Use a clear square image. The URL and Remove edit the Model draft; Save Changes applies them.</ModelFieldHelp></div>
+        <div className="space-y-2">
+          <details className="rounded-md border p-2">
+            <summary className="cursor-pointer text-xs font-medium">Image location</summary>
+            <Label htmlFor={id('thumbnailUrl')} className="mt-2 block text-xs">Image URL</Label>
+            <Input id={id('thumbnailUrl')} value={form.thumbnailUrl} placeholder="HTTPS JPG, PNG, or WebP URL" onChange={(event) => update('thumbnailUrl', event.target.value)} disabled={disabled} />
+          </details>
+          {form.thumbnailUrl && <img src={form.thumbnailUrl} alt="Model Library preview" className="h-28 w-full rounded border bg-muted object-contain" />}
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              id={id('thumbnail-upload')}
+              type="file"
+              className="hidden"
+              accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file) onThumbnail(file);
+                event.target.value = '';
+              }}
+              disabled={uploadingThumbnail || disabled}
+            />
+            <Button type="button" variant="outline" size="sm" className="h-8 text-xs" onClick={() => chooseFile(id('thumbnail-upload'))} disabled={uploadingThumbnail || disabled}>
+              {uploadingThumbnail ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />}
+              {form.thumbnailUrl ? 'Replace Preview' : 'Upload Preview'}
+            </Button>
+            {previewImageAction}
+            {form.thumbnailUrl && <Button type="button" variant="ghost" size="sm" className="h-8 text-xs" onClick={() => update('thumbnailUrl', '')} disabled={uploadingThumbnail || disabled}><X className="mr-1 h-4 w-4" />Remove</Button>}
+          </div>
+        </div>
+        {mode === 'create' && <p className="text-[10px] text-muted-foreground">Add textures and supporting media from Model Files after creating the Model.</p>}
+      </section>
+
   );
 }

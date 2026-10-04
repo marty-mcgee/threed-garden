@@ -1,5 +1,10 @@
-// src/components/threed/shared/GardenCharacter.tsx
 'use client';
+import { useMemo } from 'react';
+import { resolveActiveModelGeometry } from '@/libraries/services/threed/models/model-source-core';
+import { readModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
+import { ModelShapeVisual } from './ModelShapeVisual';
+// src/components/threed/shared/GardenCharacter.tsx
+
 
 import { modelLoadCompletion } from '@/libraries/services/threed/models/model-load-completion';
 import { useSceneResourceStatus, useSceneResourceIssueReporter } from './SceneResourceStatus';
@@ -324,7 +329,7 @@ function findClip(
 // ========================================================
 
 export function GardenCharacter({
-  character,
+  character: savedCharacter,
 
   currentWeather = 'sunny',
 
@@ -338,6 +343,10 @@ export function GardenCharacter({
   previewSelection,
   onPreviewState,
 }: GardenCharacterProps) {
+  const usesShape = savedCharacter.model?.metadata?.activeSource === 'shape';
+  const character = useMemo(() => usesShape && savedCharacter.model ? { ...savedCharacter, model: resolveActiveModelGeometry(savedCharacter.model) } : savedCharacter, [savedCharacter, usesShape]);
+  const shapeScale = Math.max(0.01, (Number(savedCharacter.model?.scale) || 1) * (Number(savedCharacter.scale) || 1));
+
   /**
    * currentWeather remains part of the component API,
    * but this component is not currently applying weather
@@ -576,6 +585,9 @@ export function GardenCharacter({
       !character.model
         ?.filePath
     ) {
+      setModel(null);
+      setModelError(null);
+      setLoadingModel(false);
       return;
     }
 
@@ -1243,6 +1255,7 @@ export function GardenCharacter({
    * restored.
    */
   const playTaskAction = (taskName: string, target?: unknown) => {
+    if (usesShape) return;
     const mixer = mixerRef.current;
 
     if (!mixer || taskLockedRef.current) {
@@ -1404,7 +1417,7 @@ export function GardenCharacter({
         handleGardenAction,
       );
     };
-  }, [character.id, isPreview]);
+  }, [character.id, isPreview, usesShape]);
 
   // ======================================================
   // FRAME LOOP
@@ -1984,7 +1997,7 @@ export function GardenCharacter({
   // FALLBACK CHARACTER
   // ======================================================
 
-  if (
+  if (!usesShape && (
     !character.model
       ?.filePath ||
     modelError ||
@@ -1992,7 +2005,7 @@ export function GardenCharacter({
       !model &&
       !loadingModel
     )
-  ) {
+  )) {
     const colorMap:
       Record<
         string,
@@ -2106,7 +2119,8 @@ export function GardenCharacter({
         )
       }
     >
-      {model && (
+      {usesShape && <ModelShapeVisual shape={readModelFallbackShape(savedCharacter.model?.metadata)} scale={shapeScale} rotationY={(Number(savedCharacter.model?.rotationY) || 0) + (character.rotation || 0)} />}
+      {!usesShape && model && (
         <primitive
           object={
             model

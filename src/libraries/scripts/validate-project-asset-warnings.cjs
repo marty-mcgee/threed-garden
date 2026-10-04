@@ -34,7 +34,7 @@ assert.equal(rendered.filter(node => node.type === 'button' && node.props.classN
 const links = rendered.filter(node => node.type === 'a');
 assert.equal(links.length, 3, 'Summary and both affected assets provide repair links');
 for (const link of links) {
-  assert.equal(link.props.href, '/admin/threed/model-files?modelId=7');
+  assert.equal(link.props.href, '/admin/threed/models/7?tab=files');
   assert.equal(link.props.target, '_blank');
   assert.equal(link.props.rel, 'noopener noreferrer');
 }

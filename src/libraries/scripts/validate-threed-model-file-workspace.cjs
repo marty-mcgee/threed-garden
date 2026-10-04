@@ -58,7 +58,8 @@ function text(value) {
   if (Array.isArray(value)) return value.map(text).join(' ');
   return value && typeof value === 'object' ? text(value.props?.children) : String(value ?? '');
 }
-const inventory = load('src/components/admin/threed/models/ModelResourceInventory.tsx', { 'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'link' } });
+const inventory = load('src/components/admin/threed/models/ModelResourceInventory.tsx', { 'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'link' },
+  'lucide-react': { Plus: 'icon' }, '@/components/ui/button': { Button: 'button' }, '@/components/ui/badge': { Badge: 'badge' } });
 const companion = load('src/libraries/services/threed/models/model-companion-core.ts', { './model-obj-core.ts': {} });
 const encode = object => new TextEncoder().encode(JSON.stringify(object));
 let state = [], cursor = 0, refs = [], refCursor = 0, requests = [], navigation = [], failUpload = false, failPatch = false;
@@ -73,6 +74,7 @@ const editorModule = load('src/components/admin/threed/models/ThreeDModelFileEdi
   'next/navigation': { useRouter: () => ({ push: value => navigation.push(value) }) },
   'lucide-react': { FolderOpen: 'icon' }, '@/components/admin/layout/AdminWorkspaceHeader': { AdminWorkspaceHeader: 'header' },
   '@/components/ui/button': { Button: 'button' }, '@/components/ui/input': { Input: 'input' }, '@/components/ui/label': { Label: 'label' },
+  '@/components/ui/badge': { Badge: 'badge' },
   '@/libraries/services/threed/models/model-file-edit-core': edit,
   '@/libraries/services/threed/models/model-companion-core': companion,
   '@/libraries/services/threed/models/model-file-integrity': { runtimeModelTypeFromFileName: name => /\.(glb|gltf|fbx|obj)$/i.exec(name)?.[1] ?? null },
@@ -154,6 +156,41 @@ async function verifyEditor() {
   failPatch = false; tree = renderEditor(editedParent, 12, false);
   await find(tree, node => node.type === 'form').props.onSubmit({ preventDefault() {} });
   assert.equal(navigation.at(-1), '/admin/threed/models/7?tab=files', 'Successful edit returns to its exact parent Files tab');
+
+  const primaryGeometry = { id: 1, modelId: 7, fileName: 'primary.glb', relativePath: 'primary.glb', filePath: 'https://fixture.invalid/primary.glb', fileType: 'model' };
+  const alternateGeometry = { id: 81, modelId: 7, fileName: 'alternate.fbx', relativePath: 'alternate.fbx', filePath: 'https://fixture.invalid/alternate.fbx', fileType: 'model', fileSize: 1423166 };
+  const geometryParent = { ...parent, modelType: 'glb', filePath: primaryGeometry.filePath, mainModelFileId: 1, files: [primaryGeometry, alternateGeometry, file] };
+  tree = renderEditor(geometryParent, 81);
+  state[11] = { status: 'analyzed', requirements: [{ relativePath: 'primary.png', kind: 'texture', satisfied: false }] };
+  tree = renderEditor(geometryParent, 81, false);
+  const alternatePreview = find(tree, node => node.type === 'canvas');
+  assert.equal(alternatePreview.props.model.filePath, alternateGeometry.filePath, 'Selected alternate geometry must be the actual preview source');
+  assert.equal(alternatePreview.props.model.modelType, 'fbx');
+  assert.equal(alternatePreview.props.title, 'Selected File Preview');
+  assert.equal(alternatePreview.props.dependencyCount, 0, 'Primary dependencies must not be reported as alternate geometry readiness');
+  assert.equal(alternatePreview.props.materialInspectorReadOnly, true, 'File settings cannot expose an unsavable Model assignment workflow');
+  assert.equal(alternatePreview.props.centerAtOrigin, true, 'File preview centers geometry at the orbit/grid origin');
+  assert(alternatePreview.props.perspective.direction[1] > 0 && alternatePreview.props.perspective.direction[2] > 0, 'Initial view is above-center from the front');
+  assert(text(tree).includes('Alternate geometry')); assert(text(tree).includes('1.36 MiB')); assert(!text(tree).includes('NaN'));
+  assert.equal(find(tree, node => node.type === 'inventory').props.selectedFileId, 81);
+  assert.equal(geometryParent.mainModelFileId, 1, 'Preview never reassigns the primary file');
+  const saveControl = find(tree, node => node.type === 'button' && node.props.type === 'submit');
+  assert.equal(saveControl.props.form, find(tree, node => node.type === 'form').props.id, 'Stationary Save control submits the exact editor form');
+  assert.equal(requests.length, 0, 'Inspection and framing must not write');
+  tree = renderEditor(geometryParent, 1, false);
+  assert.equal(find(tree, node => node.type === 'canvas').props.dependencyCount, 1);
+  assert(text(tree).includes('Primary geometry'));
+  tree = renderEditor(geometryParent, 12, false);
+  assert.equal(find(tree, node => node.type === 'canvas').props.model.filePath, primaryGeometry.filePath);
+  assert.equal(find(tree, node => node.type === 'canvas').props.title, 'Parent Model Preview');
+  const unsupported = { ...alternateGeometry, id: 82, fileName: 'unsupported.usdz' };
+  const unsupportedParent = { ...geometryParent, files: [...geometryParent.files, unsupported] };
+  tree = renderEditor(unsupportedParent, 82);
+  state[11] = { status: 'analyzed', requirements: [{ relativePath: 'primary.png', kind: 'texture', satisfied: false }] };
+  tree = renderEditor(unsupportedParent, 82, false);
+  assert.equal(find(tree, node => node.type === 'canvas').props.title, 'Parent Model Preview');
+  assert.equal(find(tree, node => node.type === 'canvas').props.dependencyCount, 1);
+  assert(text(tree).includes('no supported preview source'));
 }
 (async () => {
   signedIn = false;
@@ -182,6 +219,12 @@ async function verifyEditor() {
   const tree = inventory.ModelResourceInventory(props), links = nodes(tree).filter(node => node.type === 'link');
   assert.equal(links.map(node => node.props.href).join('|'), '/admin/threed/models/7/files/new|/admin/threed/models/7/files/1|/admin/threed/models/7/files/2');
   assert(text(tree).includes('missing.png')); assert(text(tree).includes('not a saved attachment'));
+  const selectedInventory = inventory.ModelResourceInventory({ ...props, selectedFileId: 2 });
+  assert.equal(nodes(selectedInventory).find(node => node.type === 'link' && node.props['aria-current'] === 'page').props.href, '/admin/threed/models/7/files/2');
+  assert(text(selectedInventory).includes('Primary geometry dependencies'));
+  const geometryInventory = inventory.ModelResourceInventory({ ...props, model: { ...model, files: [...model.files, { id: 81, fileName: 'alternate.fbx', fileType: 'model' }] }, selectedFileId: 81 });
+  assert(/Other geometry files \(\s*1\s*\)/.test(text(geometryInventory)));
+  assert(/Supporting attachments \(\s*1\s*\)/.test(text(geometryInventory)), 'Alternate geometry is not presented as an image/buffer supporting attachment');
   assert(!links.some(node => text(node).includes('missing.png'))); assert(!text(tree).includes('Unlinked suggestion'));
   assert(text(tree).includes('1 embedded buffer')); assert(text(tree).includes('2 embedded image'));
   assert(text(inventory.ModelResourceInventory({ ...props, model: { ...model, modelType: 'procedural', mainModelFileId: null, files: [] }, audit: { status: 'not_required', requirements: [] } })).includes('Procedural shape'));

@@ -2,7 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useId, useRef, useState, type ChangeEvent, type ComponentRef, type ReactNode } from 'react';
 import { modelPreviewEvents } from './model-preview-events';
-import { Vector3 } from 'three';
+import { Vector3, type Group } from 'three';
 import { Canvas, useThree, type RootState } from '@react-three/fiber';
 import { Bounds, Grid, OrbitControls, useBounds } from '@react-three/drei';
 import { Box, Check, ImageOff, Loader2, Palette, RotateCcw, Upload } from 'lucide-react';
@@ -20,12 +20,14 @@ import type {
 import { readThreeDModelMaterialOverrides } from '@/libraries/services/threed/models/model-material-override-core';
 
 export interface PreviewPerspective { direction: [number, number, number]; distanceScale: number }
+export const MODEL_WORKSPACE_PERSPECTIVE: PreviewPerspective = { direction: [4, 2, 6], distanceScale: 1 };
 
 interface ThreeDModelAssetPreviewProps {
   model: ModelData | null;
   active?: boolean;
   onBusyChange?: (busy: boolean) => void;
   preserveCameraOnEdit?: boolean;
+  centerAtOrigin?: boolean;
   onCaptureImage?: (image: Blob) => void;
   autoCapture?: boolean;
   outputSize?: { width: number; height: number };
@@ -45,6 +47,7 @@ interface ThreeDModelAssetPreviewProps {
   headerActions?: ReactNode;
   canvasClassName?: string;
   showMaterialInspector?: boolean;
+  materialInspectorReadOnly?: boolean;
   materialInspectorNotice?: string;
   splitMaterialInspector?: boolean;
   requiredFiles?: ReactNode;
@@ -67,6 +70,8 @@ function PreviewModel({
   onSettled,
   preserveCameraOnEdit = false,
   fitRevision = 0,
+  resetRevision = 0,
+  centerAtOrigin = false,
   onError,
   perspective,
   onFitDistance,
@@ -78,6 +83,8 @@ function PreviewModel({
   model: ModelData;
   preserveCameraOnEdit?: boolean;
   fitRevision?: number;
+  resetRevision?: number;
+  centerAtOrigin?: boolean;
   onSettled: () => void;
   onError?: (message: string | null) => void;
   perspective?: PreviewPerspective;
@@ -88,16 +95,29 @@ function PreviewModel({
   materialPreviewSelectionId?: string | null;
 }) {
   const bounds = useBounds();
-  const fittedRevision = useRef<number | null>(null);
+  const fittedRevision = useRef<string | null>(null);
+  const revision = `${fitRevision}:${resetRevision}`;
+  const centeredGroup = useRef<Group>(null);
+  const lastBounds = useRef<ModelCollisionBounds | null>(null);
+  const fitFrame = useRef<number | null>(null);
+  useEffect(() => () => { if (fitFrame.current !== null) cancelAnimationFrame(fitFrame.current); }, []);
   const getState = useThree(state => state.get);
   const handleBounds = useCallback((value: ModelCollisionBounds | null) => {
-    if (!value || (preserveCameraOnEdit && fittedRevision.current === fitRevision)) return;
-    requestAnimationFrame(() => {
+    lastBounds.current = value;
+    if (!value || (!centerAtOrigin && preserveCameraOnEdit && fittedRevision.current === revision)) return;
+    if (fitFrame.current !== null) cancelAnimationFrame(fitFrame.current);
+    fitFrame.current = requestAnimationFrame(() => {
+      fitFrame.current = null;
       bounds.refresh().clip();
+      if (centerAtOrigin && centeredGroup.current) {
+        centeredGroup.current.position.sub(bounds.getSize().center);
+        centeredGroup.current.updateWorldMatrix(true, true);
+        bounds.refresh().clip();
+      }
       const { center, distance } = bounds.getSize();
       onFitDistance?.(distance);
-      if (preserveCameraOnEdit && fittedRevision.current === fitRevision) return;
-      fittedRevision.current = fitRevision;
+      if (preserveCameraOnEdit && fittedRevision.current === revision) return;
+      fittedRevision.current = revision;
       if (perspective) {
         const position = new Vector3(...perspective.direction).normalize().multiplyScalar(distance * perspective.distanceScale).add(center);
         // Apply the reviewed perspective synchronously. Bounds.moveTo animates
@@ -113,13 +133,17 @@ function PreviewModel({
         onCameraReady?.();
       } else bounds.fit();
     });
-  }, [bounds, perspective, onFitDistance, getState, onCameraReady, preserveCameraOnEdit, fitRevision]);
+  }, [bounds, perspective, onFitDistance, getState, onCameraReady, preserveCameraOnEdit, revision, centerAtOrigin]);
+
+  useEffect(() => {
+    if (resetRevision > 0) handleBounds(lastBounds.current);
+  }, [resetRevision, handleBounds]);
 
   // Fit remains available for recovery geometry even when the loader has no bounds.
   useEffect(() => {
     if (!preserveCameraOnEdit || fitRevision === 0) return;
     const frame = requestAnimationFrame(() => {
-      fittedRevision.current = fitRevision;
+      fittedRevision.current = revision;
       bounds.refresh().clip().fit();
     });
     return () => cancelAnimationFrame(frame);
@@ -128,7 +152,7 @@ function PreviewModel({
   const procedural = model.modelType === 'procedural' && !model.filePath;
   const finite = (value: unknown, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
   return (
-    <group position={procedural ? [finite(model.offsetX), finite(model.offsetY), finite(model.offsetZ)] : [0, 0, 0]}
+    <group ref={centeredGroup}><group position={procedural ? [finite(model.offsetX), finite(model.offsetY), finite(model.offsetZ)] : [0, 0, 0]}
       rotation={procedural ? [0, finite(model.rotationY) * Math.PI / 180, 0] : [0, 0, 0]}>
     <ModelMarker3D
       model={model}
@@ -141,7 +165,7 @@ function PreviewModel({
       materialPreviewOverride={materialPreviewOverride}
       materialPreviewSelectionId={materialPreviewSelectionId}
     />
-    </group>
+    </group></group>
   );
 }
 
@@ -160,7 +184,7 @@ function MaterialSlotRow({
     <button
       type="button"
       className={`w-full rounded border px-2.5 py-2 text-left transition-colors ${
-        selected ? 'border-cyan-400/70 bg-cyan-500/10' : 'border-border/60 bg-background/20 hover:bg-muted/40'
+        selected ? 'border-primary/50 bg-accent text-accent-foreground' : 'border-border bg-background hover:bg-muted/40'
       }`}
       onClick={onSelect}
       aria-pressed={selected}
@@ -169,23 +193,23 @@ function MaterialSlotRow({
         {slot.textures.some((texture) => texture.ready)
           ? <Check className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
           : <ImageOff className="h-3.5 w-3.5 shrink-0 text-amber-400" />}
-        <span className="min-w-0 flex-1 truncate text-[11px] font-medium">{slot.materialName}</span>
-        <span className="shrink-0 text-[9px] text-muted-foreground">slot {slot.slotIndex + 1}</span>
+        <span className="min-w-0 flex-1 truncate text-xs font-medium">{slot.materialName}</span>
+        <span className="shrink-0 text-[10px] text-muted-foreground">slot {slot.slotIndex + 1}</span>
       </div>
-      <p className="mt-1 truncate font-mono text-[9px] text-muted-foreground" title={slot.meshPath}>{slot.meshPath}</p>
-      <p className="mt-1 text-[9px] text-muted-foreground">
+      <p className="mt-1 truncate font-mono text-[10px] text-muted-foreground" title={slot.meshPath}>{slot.meshPath}</p>
+      <p className="mt-1 text-[10px] text-muted-foreground">
         {slot.materialType}{slot.color ? ` · ${slot.color}` : ''} · {slot.textures.length > 0
           ? slot.textures.map((texture) => `${texture.label}: ${texture.ready ? `${texture.width}×${texture.height}` : 'image unavailable'}`).join(', ')
           : 'no texture maps connected'}
       </p>
       {slot.textures.map((texture) => texture.source && (
-        <p key={texture.property} className="mt-1 truncate font-mono text-[9px] text-muted-foreground" title={texture.source}>
-          {texture.label}: {texture.source}
+        <p key={texture.property} className="mt-1 truncate font-mono text-[10px] text-muted-foreground" title={texture.source}>
+          {texture.label}: {texture.source.split('/').at(-1) || texture.source}
         </p>
       ))}
       {savedTextureRelativePath && (
-        <p className="mt-1 truncate text-[9px] font-medium text-emerald-400" title={savedTextureRelativePath}>
-          Saved Base Color: {savedTextureRelativePath}
+        <p className="mt-1 truncate text-[10px] font-medium text-emerald-600 dark:text-emerald-400" title={savedTextureRelativePath}>
+          Saved Base Color: {savedTextureRelativePath.split('/').at(-1) || savedTextureRelativePath}
         </p>
       )}
     </button>
@@ -197,6 +221,7 @@ export function ThreeDModelAssetPreview({
   active = true,
   onBusyChange,
   preserveCameraOnEdit = false,
+  centerAtOrigin = false,
   onCaptureImage,
   autoCapture = false,
   outputSize = { width: 400, height: 400 },
@@ -216,6 +241,7 @@ export function ThreeDModelAssetPreview({
   headerActions,
   canvasClassName = 'h-[320px]',
   showMaterialInspector = false,
+  materialInspectorReadOnly = false,
   materialInspectorNotice,
   splitMaterialInspector = false,
   requiredFiles,
@@ -386,9 +412,7 @@ export function ThreeDModelAssetPreview({
         <Box className="h-4 w-4 text-blue-400" />
         <div className="min-w-0 flex-1">
           <h2 id={previewTitleId} className="truncate text-xs font-semibold">{title}</h2>
-          {/* <p className="text-[10px] text-muted-foreground">
-            {description}
-          </p> */}
+          <p className="sr-only">{description}</p>
         </div>
         {headerMeta}
         {dependencyCount > 0 && (
@@ -407,11 +431,12 @@ export function ThreeDModelAssetPreview({
           title="Reset View"
           aria-label="Reset View"
           disabled={!model}
-          onClick={() => { setSettledKey(null); setResetKey((value) => value + 1); }}
+          onClick={() => { setResetKey((value) => value + 1); }}
         >
           <RotateCcw className="h-3.5 w-3.5" />
         </Button>
       </div>
+      {materialInspectorReadOnly && <p className="border-t bg-card px-3 py-2 text-xs text-muted-foreground">{description}</p>}
 
       <div style={onCaptureImage ? { aspectRatio: `${outputSize.width} / ${outputSize.height}` } : undefined} className={`relative bg-gradient-to-b from-sky-950/40 to-slate-950 ${canvasClassName}`}>
         {!active ? null : !model ? (
@@ -419,7 +444,7 @@ export function ThreeDModelAssetPreview({
             Select a Model to preview its available assets.
           </div>
         ) : (
-          <Canvas events={modelPreviewEvents} onCreated={state => { rendererRef.current = state; if (onCaptureImage) state.gl.setClearColor(0x000000, 0); }} gl={{ alpha: true }} key={`${modelKey}:${resetKey}`} camera={{ position: captureCamera, fov: 45 }} dpr={[1, 1.5]}>
+          <Canvas events={modelPreviewEvents} onCreated={state => { rendererRef.current = state; if (onCaptureImage) state.gl.setClearColor(0x000000, 0); }} gl={{ alpha: true }} key={modelKey} camera={{ position: captureCamera, fov: 45 }} dpr={[1, 1.5]}>
             {!onCaptureImage && <color attach="background" args={['#071426']} />}
             <ambientLight intensity={1.4} />
             <directionalLight position={[5, 8, 5]} intensity={2.4} />
@@ -442,6 +467,8 @@ export function ThreeDModelAssetPreview({
                   model={model}
                   preserveCameraOnEdit={preserveCameraOnEdit}
                   fitRevision={fitRevision}
+                  resetRevision={resetKey}
+                  centerAtOrigin={centerAtOrigin}
                   onSettled={() => setSettledKey(modelKey)}
                   onMaterialInventoryChange={showMaterialInspector || onCaptureImage ? setMaterialInventory : undefined}
                   onError={setRuntimeError}
@@ -493,22 +520,23 @@ export function ThreeDModelAssetPreview({
         <section className={`${splitMaterialInspector ? 'rounded-lg border bg-muted/20' : 'border-t bg-background/35'} p-3`} aria-labelledby="model-texture-assignment-title">
           <div className="flex flex-wrap items-center gap-2">
             <Palette className="h-4 w-4 text-cyan-400" />
-            <h3 id="model-texture-assignment-title" className="text-xs font-semibold">1. Model file + global appearance</h3>
+            <h3 id="model-texture-assignment-title" className="text-xs font-semibold">{materialInspectorReadOnly ? 'Saved appearance' : '1. Model file + global appearance'}</h3>
             {materialInventory && (
               <span className="text-[10px] text-muted-foreground">
                 {materialInventory.materialSlotCount} material slots
               </span>
             )}
-            <input
+            {!materialInspectorReadOnly && <input
               ref={materialTextureInputRef}
               type="file"
               accept="image/png,image/jpeg,image/webp,image/bmp"
               className="hidden"
               onChange={handleTemporaryTexture}
-            />
+            />}
           </div>
           {primaryFileControls}
-          {showMaterialInspector && model && materialInventory && materialInventory.slots.length > 0 && (
+          {materialInspectorReadOnly && model && <div className="mt-2 space-y-2 text-xs"><p className="text-muted-foreground">{assignedTargets.size ? `${assignedTargets.size} saved Base Color assignment(s) on the parent Model.` : 'No saved Base Color assignments on the parent Model.'} Loaded image maps are shown in Materials below.</p><Button asChild variant="outline" size="sm" className="h-7 text-xs"><a href={`/admin/threed/models/${model.id}?tab=files`}>Edit Model appearance</a></Button></div>}
+          {!materialInspectorReadOnly && showMaterialInspector && model && materialInventory && materialInventory.slots.length > 0 && (
             <div className="mt-2 space-y-2">
               <div className="flex flex-wrap items-center gap-2">
                 <label htmlFor="model-appearance-texture" className="w-full text-xs">Base Color Texture</label>
@@ -582,12 +610,12 @@ export function ThreeDModelAssetPreview({
       {requiredFiles}
       {((showMaterialInspector && model) || splitMaterialInspector) && (
         <section className="rounded-lg border bg-muted/20 p-3">
-          <details>
-            <summary className="cursor-pointer text-[10px] font-medium text-muted-foreground">
-              3. Individual materials (advanced)
+          <details open={materialInspectorReadOnly || undefined}>
+            <summary className="cursor-pointer text-xs font-medium">
+              {materialInspectorReadOnly ? 'Materials' : '3. Individual materials (advanced)'}
             </summary>
             {(!showMaterialInspector || !model) ? <p className="mt-2 text-xs text-muted-foreground">{materialInspectorNotice || 'Select a Model to inspect its materials.'}</p> : <>
-            <div className="mt-2 flex justify-end">
+            {!materialInspectorReadOnly && <div className="mt-2 flex justify-end">
               <Button
                 type="button"
                 size="sm"
@@ -599,16 +627,16 @@ export function ThreeDModelAssetPreview({
                 <Upload className="mr-1 h-3 w-3" />
                 Test Base Color file
               </Button>
-            </div>
+            </div>}
           {selectedMaterialSlot && (
-            <p className="mt-2 text-[10px] text-cyan-300">
+            <p className="mt-2 text-xs text-muted-foreground">
               Selected: {selectedMaterialSlot.meshPath} / {selectedMaterialSlot.materialName}
               {materialPreviewOverride?.targetKey === selectedMaterialSlot.id
                 ? ` · temporary ${materialPreviewOverride.fileName}`
-                : ' · choose an image to test this slot'}
+                : materialInspectorReadOnly ? '' : ' · choose an image to test this slot'}
             </p>
           )}
-          {selectedMaterialSlot && (availableTextureAttachments.length > 0 || textureLibrary.length > 0) && (
+          {!materialInspectorReadOnly && selectedMaterialSlot && (availableTextureAttachments.length > 0 || textureLibrary.length > 0) && (
             <div className="mt-2 flex items-center gap-2 rounded border border-cyan-500/20 bg-cyan-500/5 p-2">
               <label htmlFor="model-material-attachment" className="shrink-0 text-[10px] font-medium">
                 Select Existing Model Texture
@@ -713,13 +741,13 @@ export function ThreeDModelAssetPreview({
             <p className="mt-2 text-[10px] text-muted-foreground">No mesh material slots were found in this Model.</p>
           ) : (
             <>
-              <div className="mt-2 grid max-h-44 gap-1.5 overflow-y-auto pr-1 sm:grid-cols-2">
+              <div className="mt-2 grid max-h-64 gap-2 overflow-y-auto pr-1 sm:grid-cols-2">
                 {materialInventory.slots.map((slot) => (
                   <MaterialSlotRow
                     key={slot.id}
                     slot={slot}
                     selected={selectedMaterialSlotId === slot.id}
-                    onSelect={() => selectMaterialSlot(slot)}
+                    onSelect={() => materialInspectorReadOnly ? setSelectedMaterialSlotId(slot.id) : selectMaterialSlot(slot)}
                     savedTextureRelativePath={savedMaterialOverrides.assignments.find((assignment) => (
                       assignment.targetKey === slot.id && assignment.channel === 'baseColor'
                     ))?.textureRelativePath}

@@ -19,6 +19,9 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  'application-foundations': [node('validate-application-foundations.cjs')],
+  'theme-provider': [node('validate-theme-provider.cjs')],
+  'threed-scene-resources': [node('validate-threed-scene-resources.cjs')],
   'shadcn-ui-boundary': [node('validate-shadcn-ui-boundary.mjs')],
   'dashboard-project-discovery': [node('validate-dashboard-project-discovery.cjs')],
   'dashboard-scene-route': [ts('validate-dashboard-scene-route.mts')],
@@ -109,8 +112,8 @@ const tasks = {
   'threed-model-list-api': [node('validate-threed-model-list-api.cjs')],
   'threed-model-admin-form': [node('validate-threed-model-admin-form.cjs')],
   'threed-model-file-requirements': [node('validate-threed-model-file-requirements.cjs')],
-  'threed-model-file-workspace': [node('validate-threed-model-file-workspace.cjs')],
-  'threed-model-editor-tabs': [node('validate-threed-model-editor-tabs.cjs')],
+  'threed-model-file-workspace': [node('validate-threed-model-file-workspace.cjs'), node('validate-model-file-preview.cjs')],
+  'threed-model-editor-tabs': [node('validate-threed-model-editor-tabs.cjs'), node('validate-model-source.cjs')],
   'threed-model-file-list': [node('validate-threed-model-file-list.cjs')],
   'threed-model-restoration-eligibility': [node('validate-threed-model-restoration-eligibility.cjs')],
   'threed-database-failures': [node('validate-threed-database-failures.cjs')],
@@ -130,6 +133,9 @@ const tasks = {
 };
 
 const ci = [
+  'application-foundations',
+  'theme-provider',
+  'threed-scene-resources',
   'shadcn-ui-boundary',
   'assets',
   'workspace-settings',

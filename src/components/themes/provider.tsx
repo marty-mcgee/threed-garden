@@ -26,6 +26,16 @@ function isThreeDTheme(value: string | null): value is ThreeDTheme {
   return value === 'light' || value === 'dark' || value === 'system';
 }
 
+function persistTheme(theme: ThreeDTheme): void {
+  // Browser persistence is optional; either store can be unavailable independently.
+  try {
+    window.localStorage.setItem(THREED_THEME_STORAGE_KEY, theme);
+  } catch { /* Keep the current-session theme when browser storage is unavailable. */ }
+  try {
+    document.cookie = `${THREED_THEME_STORAGE_KEY}=${theme}; Path=/; Max-Age=${THREED_THEME_COOKIE_MAX_AGE}; SameSite=Lax`;
+  } catch { /* Cookie restrictions must not prevent localStorage or in-memory use. */ }
+}
+
 export function ThemeProvider({
   children,
   initialTheme = 'dark',
@@ -43,13 +53,15 @@ export function ThemeProvider({
     const synchronizeSystemTheme = () => {
       setSystemTheme(media.matches ? 'dark' : 'light');
     };
-    const storedTheme = window.localStorage.getItem(THREED_THEME_STORAGE_KEY)
-      ?? window.localStorage.getItem('theme');
+    let storedTheme: string | null = null;
+    try {
+      storedTheme = window.localStorage.getItem(THREED_THEME_STORAGE_KEY)
+        ?? window.localStorage.getItem('theme');
+    } catch { /* Retain the server-provided theme if browser storage cannot be read. */ }
 
     synchronizeSystemTheme();
     if (isThreeDTheme(storedTheme)) {
-      window.localStorage.setItem(THREED_THEME_STORAGE_KEY, storedTheme);
-      document.cookie = `${THREED_THEME_STORAGE_KEY}=${storedTheme}; Path=/; Max-Age=${THREED_THEME_COOKIE_MAX_AGE}; SameSite=Lax`;
+      persistTheme(storedTheme);
       setThemeState(storedTheme);
     }
     media.addEventListener('change', synchronizeSystemTheme);
@@ -66,9 +78,8 @@ export function ThemeProvider({
   }, [resolvedTheme]);
 
   const setTheme = (nextTheme: ThreeDTheme) => {
-    window.localStorage.setItem(THREED_THEME_STORAGE_KEY, nextTheme);
-    document.cookie = `${THREED_THEME_STORAGE_KEY}=${nextTheme}; Path=/; Max-Age=${THREED_THEME_COOKIE_MAX_AGE}; SameSite=Lax`;
     setThemeState(nextTheme);
+    persistTheme(nextTheme);
   };
 
   const value = useMemo<ThreeDThemeContextValue>(() => ({

@@ -24,6 +24,7 @@ import {
   useRef,
   useState,
   useEffect,
+  useLayoutEffect,
   useMemo,
   useCallback,
   memo,
@@ -1474,6 +1475,8 @@ function characterSceneSignature(marker: any): string {
       scale: String(model.scale ?? '1'),
       rotationY: String(model.rotationY ?? '0'),
       animationMap: model.metadata?.animationMap ?? null,
+      activeSource: model.metadata?.activeSource ?? null,
+      fallbackShape: model.metadata?.fallbackShape ?? null,
     },
   });
 }
@@ -1994,7 +1997,9 @@ function HighResolutionEnvironmentBackground({ url }: { url: string }) {
 
 function ProceduralDaylightBackground() {
   const scene = useThree((state) => state.scene);
-  const texture = useMemo(() => {
+  // Match Drei Environment's layout lifecycle so it cannot capture a sky that
+  // a later passive cleanup is about to dispose during a preset change.
+  useLayoutEffect(() => {
     const canvas = document.createElement('canvas');
     canvas.width = 2048;
     canvas.height = 1024;
@@ -2045,19 +2050,21 @@ function ProceduralDaylightBackground() {
       context.fill();
     }
 
-    const result = new THREE.CanvasTexture(canvas);
-    result.mapping = THREE.EquirectangularReflectionMapping;
-    result.colorSpace = THREE.SRGBColorSpace;
-    return result;
-  }, []);
-
-  useEffect(() => {
-    const previousBackground = scene.background;
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.mapping = THREE.EquirectangularReflectionMapping;
+    texture.colorSpace = THREE.SRGBColorSpace;
+    let previousBackground = scene.background;
+    const previousTexture = previousBackground instanceof THREE.Texture ? previousBackground : null;
+    // A replaced owner can release its texture while this background is active.
+    const forgetDisposedBackground = () => { previousBackground = null; };
+    previousTexture?.addEventListener('dispose', forgetDisposedBackground);
     scene.background = texture;
     return () => {
       if (scene.background === texture) scene.background = previousBackground;
+      previousTexture?.removeEventListener('dispose', forgetDisposedBackground);
+      texture.dispose();
     };
-  }, [scene, texture]);
+  }, [scene]);
 
   return null;
 }
@@ -2107,12 +2114,23 @@ function InteractiveGround({
   onPlacementClick,
   showVisualGround = true,
 }: any) {
-  const grassTexture = useMemo(() => {
-    const tex = createGrassTexture();
+  const grassMaterialRef = useRef<THREE.MeshStandardMaterial>(null);
+  useLayoutEffect(() => {
+    const material = grassMaterialRef.current;
+    if (!material) return;
+    const texture = createGrassTexture();
     const repeat = Math.max(size / 4, 1);
-    tex.repeat.set(repeat, repeat);
-    return tex;
-  }, [size]);
+    texture.repeat.set(repeat, repeat);
+    material.map = texture;
+    material.needsUpdate = true;
+    return () => {
+      if (material.map === texture) {
+        material.map = null;
+        material.needsUpdate = true;
+      }
+      texture.dispose();
+    };
+  }, [size, showVisualGround]);
 
   return (
     <group>
@@ -2133,7 +2151,7 @@ function InteractiveGround({
         receiveShadow
       >
         <meshStandardMaterial
-          map={grassTexture}
+          ref={grassMaterialRef}
           roughness={0.85}
           metalness={0}
           color="#ffffff"

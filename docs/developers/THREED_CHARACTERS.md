@@ -21,6 +21,10 @@ Both runtimes preserve:
 - task-to-locomotion crossfades;
 - the `garden-character-action-complete` event used by the page-level world-action layer.
 
+## v0.22.18 local retained-source candidate
+
+Explicit Model metadata.activeSource = shape renders a grounded procedural visual within the existing Garden/Ecctrl owner. Saved rig/file/animation configuration is retained; Model/Character restores imported geometry through the established loaders. isMovable still selects the runtime. Character selection enables Character classification; source selection does not migrate Project markers or change controller/collider dimensions. Rigless Shapes settle without loading a rig, report empty animation availability, and never synthesize clip completion/contact-point effects. Source/fallback shape participates in the Scene Character memo signature while marker identity and Canvas/Physics remain stable. Local validation passed; [browser verification and release remain pending](../plans/character-model-source-conversion.md).
+
 ## v0.22.17 action collision points
 
 The Developer approved a narrow contact-time exception for movable-ball kicks. In a loaded Scene with a controlled Ecctrl Character and an exact movable-ball Action Target, eligible foot-kick Action buttons request contact timing by default. Untargeted Actions remain animation previews; **Kick selected ball** retains its assisted, completion-timed impulse. GardenCharacter and all other world-action timing remain separate and unchanged.

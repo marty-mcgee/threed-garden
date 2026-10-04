@@ -12,6 +12,8 @@ Design checkpoint: **v0.19.12 — ThreeD Admin Model Workspace**. The User reque
 
 ## Required presentation and behavior
 
+For the specialized parent Model Details/File editor hosts, the [October 4 workspace continuation](model-file-editor-workspace.md) uses compact stationary navigation/footer, responsive owned scroll regions and an opt-in origin-centered three-quarter preview. Keep the parent's draft/save and editable appearance workflows separate from individual File settings; camera Reset retains loaded geometry. Do not apply preview-only centering to Project runtimes or reviewed capture/export coordinates.
+
 1. Keep App navigation, workspace controls and pagination stationary. Let records scroll independently, with visible column headings and horizontal scrolling when necessary. Keep the sidebar's own navigation scroll area usable.
 2. Place the compact title, total badge, search, create/import actions and related-module links at the top. Keep reusable controls consistent without forcing Model-specific actions onto unrelated modules.
 3. Put result range, `|`, selected count, Delete selected and Clear selection on the pagination row. Use compact button text, page-size selection and First/Previous/Page N of M/Next/Last controls. Permit wrapping on narrow screens.

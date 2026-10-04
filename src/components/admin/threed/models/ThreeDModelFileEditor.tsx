@@ -3,17 +3,18 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { FolderOpen } from 'lucide-react';
+import { ArrowLeft, FileText, FolderOpen } from 'lucide-react';
 import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import type { ModelData } from '@/components/threed/markers/ModelMarker3D';
 import { MODEL_FILE_TEXTURE_TYPES, MAX_MODEL_FILE_LOAD_ORDER, parseModelFileEdit } from '@/libraries/services/threed/models/model-file-edit-core';
 import { normalizeThreeDModelRelativePath } from '@/libraries/services/threed/models/model-companion-core';
 import { runtimeModelTypeFromFileName } from '@/libraries/services/threed/models/model-file-integrity';
 import type { EligibilityResult } from '@/libraries/services/threed/models/model-file-restoration-eligibility-core';
-import { ThreeDModelAssetPreview } from './ThreeDModelAssetPreview';
+import { ThreeDModelAssetPreview, type PreviewPerspective } from './ThreeDModelAssetPreview';
 import { ThreeDModelImportPreview } from './ThreeDModelImportPreview';
 import { modelForPreview } from './model-preview-requirements';
 import { ModelResourceInventory, type ModelResourceAudit } from './ModelResourceInventory';
@@ -26,6 +27,14 @@ interface SavedFile {
 }
 interface ParentModel extends ModelData { userId: string; mainModelFileId: number | null; files: SavedFile[] }
 interface PendingFile { file: File; relativePath: string; saved: boolean; error?: string }
+
+const FILE_PREVIEW_PERSPECTIVE: PreviewPerspective = { direction: [4, 2, 6], distanceScale: 1 };
+
+function formatFileSize(bytes: number | null): string {
+  if (bytes === null || !Number.isFinite(bytes)) return 'Unknown';
+  if (bytes < 1024) return `${bytes} B`;
+  return bytes < 1024 * 1024 ? `${(bytes / 1024).toFixed(1)} KiB` : `${(bytes / (1024 * 1024)).toFixed(2)} MiB`;
+}
 
 function isEligibilityResult(value: unknown, modelId: number, fileId: number): value is EligibilityResult {
   if (!value || typeof value !== 'object') return false;
@@ -138,6 +147,10 @@ export function ThreeDModelFileEditor({ modelId, fileId = null }: { modelId: num
   }, [modelId, revision]);
 
   const selected = model?.files.find(file => file.id === fileId) ?? null;
+  const selectedIsPrimary = Boolean(selected && selected.id === model?.mainModelFileId);
+  const selectedPreviewType = selected?.fileType === 'model' ? runtimeModelTypeFromFileName(selected.fileName) : null;
+  const selectedRole = selected?.fileType === 'model' ? selectedIsPrimary ? 'Primary geometry' : 'Alternate geometry' : 'Supporting attachment';
+  const previewUsesPrimary = !(selectedPreviewType && selected?.filePath) || selectedIsPrimary;
   const eligibilityResult = eligibility?.context === eligibilityContext ? eligibility.result : null;
   const eligibilityFailure = eligibilityError?.context === eligibilityContext ? eligibilityError.message : null;
   const checkingEligibility = eligibilityChecking === eligibilityContext;
@@ -178,9 +191,8 @@ export function ThreeDModelFileEditor({ modelId, fileId = null }: { modelId: num
   const imageUrl = useImageUrl(localFile);
   const savedPreview = useMemo(() => {
     if (!model) return null;
-    const type = selected?.fileType === 'model' ? runtimeModelTypeFromFileName(selected.fileName) : null;
-    return modelForPreview(type && selected?.filePath ? { ...model, modelType: type, filePath: selected.filePath } : model);
-  }, [model, selected]);
+    return modelForPreview(selectedPreviewType && selected?.filePath ? { ...model, modelType: selectedPreviewType, filePath: selected.filePath, metadata: { ...(model.metadata as Record<string, unknown> ?? {}), activeSource: 'model' } } : model);
+  }, [model, selected, selectedPreviewType]);
   const localSnapshot = useMemo<BulkModelPreviewSnapshot | null>(() => {
     if (!model || !localFile || !/\.(glb|gltf|fbx|obj)$/i.test(localFile.name) || localFile.size > 4 * 1024 * 1024) return null;
     const number = (value: unknown, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
@@ -247,22 +259,40 @@ export function ThreeDModelFileEditor({ modelId, fileId = null }: { modelId: num
     else router.push(base);
   };
 
-  return <div className="space-y-3">
-    <AdminWorkspaceHeader icon={FolderOpen} title={fileId ? 'Edit Model File' : 'Add Model Files'} description={model ? `${model.modelName} · Model #${modelId}${selected ? ` · File #${selected.id}` : ''}` : `Model #${modelId}`} />
-    <nav aria-label="Model workspace" className="flex flex-wrap gap-4 text-sm"><Link className="underline" href={`/admin/threed/models/${modelId}`}>Edit Model</Link><Link className="underline" href={base}>Model Files</Link><span aria-current="page">{fileId ? `Edit File #${fileId}` : 'Add Files'}</span></nav>
-    {loading ? <p role="status">Loading selected Model and File…</p> : loadError ? <p role="alert">{loadError}</p> : model && <>
-      <div className="grid items-start gap-4 lg:grid-cols-2">
-        <div className="min-w-0 space-y-3">
-          <ThreeDModelAssetPreview model={savedPreview} preserveCameraOnEdit attachedDependencyCount={audit?.requirements.filter(item => item.satisfied).length ?? 0} dependencyCount={audit?.requirements.length ?? 0}
-            title={selected?.fileType === 'model' ? 'Selected File Preview' : 'Parent Model Preview'} description="Saved geometry and resources. Review appearance separately from dependency readiness." showMaterialInspector />
+  return <div className="flex h-full min-h-0 min-w-0 flex-col gap-2">
+    <AdminWorkspaceHeader className="shrink-0" icon={FolderOpen} title={fileId ? 'Edit Model File' : 'Add Model Files'} description={model ? `${model.modelName} · Model #${modelId}${selected ? ` · File #${selected.id}` : ''}` : `Model #${modelId}`}>
+      <nav aria-label="Model workspace" className="ml-auto flex flex-wrap items-center gap-2">
+        <Button asChild variant="outline" size="sm" className="h-7 gap-1.5 text-xs"><Link href={`/admin/threed/models/${modelId}`}><ArrowLeft className="h-3.5 w-3.5" />Edit Model</Link></Button>
+        <Button asChild variant="outline" size="sm" className="h-7 gap-1.5 text-xs"><Link href={base}><FolderOpen className="h-3.5 w-3.5" />Model Files</Link></Button>
+      </nav>
+    </AdminWorkspaceHeader>
+    <div className="flex min-w-0 shrink-0 flex-wrap items-center gap-2 text-xs text-muted-foreground">
+      <span className="min-w-0 truncate font-medium text-foreground">{model?.modelName || `Model #${modelId}`}</span>
+      <span>Model #{modelId}</span>
+      <Badge variant="outline" aria-current="page">{fileId ? `File #${fileId}` : 'New attachments'}</Badge>
+      {selected && <Badge variant="secondary">{selectedRole}</Badge>}
+    </div>
+    {loading ? <p role="status" className="rounded-lg border bg-card p-4 text-sm">Loading selected Model and File…</p> : loadError ? <p role="alert" className="rounded-lg border bg-card p-4 text-sm text-destructive">{loadError}</p> : model && <>
+      <div className="grid min-h-0 min-w-0 flex-1 gap-3 overflow-y-auto lg:grid-cols-2 lg:overflow-hidden">
+        <section aria-label="Preview and saved appearance" tabIndex={0} className="min-h-0 min-w-0 space-y-3 lg:overflow-y-auto lg:pr-1">
+          <ThreeDModelAssetPreview model={savedPreview} preserveCameraOnEdit centerAtOrigin perspective={FILE_PREVIEW_PERSPECTIVE}
+            attachedDependencyCount={previewUsesPrimary ? audit?.requirements.filter(item => item.satisfied).length ?? 0 : 0}
+            dependencyCount={previewUsesPrimary ? audit?.requirements.length ?? 0 : 0}
+            canvasClassName="h-[clamp(16rem,42dvh,30rem)]"
+            title={selectedPreviewType && selected?.filePath ? 'Selected File Preview' : 'Parent Model Preview'}
+            description="Drag to orbit, scroll to zoom. Reset returns to the initial three-quarter view."
+            showMaterialInspector materialInspectorReadOnly />
+          {selected?.fileType === 'model' && !selectedIsPrimary && <p className="rounded-lg border bg-muted/30 p-3 text-xs text-muted-foreground">{selectedPreviewType && selected.filePath ? `Previewing File #${selected.id}.` : 'Selected geometry has no supported preview source; showing the parent Model.'} The primary geometry and its dependency check are listed in the parent Model resources; this preview does not change the primary file.</p>}
           {localSnapshot && <ThreeDModelImportPreview localSnapshot={localSnapshot} onClose={() => setCandidateIndex(-1)} />}
           {localFile && /\.(glb|gltf|fbx|obj)$/i.test(localFile.name) && !localSnapshot && <p>Local candidate preview supports files up to 4 MiB. This limit does not change the existing upload API.</p>}
-        </div>
-        <form onSubmit={save} className="min-w-0 space-y-4 rounded-lg border p-4">
-          <h2 className="font-semibold">{selected ? selected.fileName : 'New attachments'}</h2>
+        </section>
+        <form id="model-file-settings" onSubmit={save} className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-lg border bg-card">
+          <div aria-label="File details and parent resources" tabIndex={0} className="min-w-0 space-y-4 p-3 lg:min-h-0 lg:flex-1 lg:overflow-y-auto">
+          <div className="flex min-w-0 items-start gap-2 border-b pb-3"><FileText className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" /><div className="min-w-0"><h2 className="break-words text-sm font-semibold">{selected ? selected.fileName : 'New attachments'}</h2><p className="mt-1 text-xs text-muted-foreground">{selected ? 'Edit this saved File’s settings. Appearance is managed on the parent Model.' : 'Choose local resources for this Model, then save the attachments.'}</p></div></div>
           {selected ? <>
-            <dl className="space-y-2 break-all text-sm"><div><dt className="font-medium">Saved identity</dt><dd>Model #{modelId} · File #{selected.id} · {selected.fileType}</dd></div><div><dt className="font-medium">Dependency path</dt><dd>{selected.relativePath || selected.fileName}</dd></div><div><dt className="font-medium">URL</dt><dd>{selected.filePath || 'No saved URL'}</dd></div><div><dt className="font-medium">Size</dt><dd>{selected.fileSize ?? 'Unknown'} bytes</dd></div></dl>
-            <div><Label htmlFor="file-load-order">Load order</Label><Input id="file-load-order" type="number" min={0} max={MAX_MODEL_FILE_LOAD_ORDER} step={1} required disabled={saving} value={loadOrder} onChange={event => setLoadOrder(event.target.value)} /></div>
+            <dl className="grid grid-cols-2 gap-3 rounded-md border bg-muted/20 p-3 text-xs"><div><dt className="text-muted-foreground">File type</dt><dd className="mt-1 font-medium">{selected.fileType}</dd></div><div><dt className="text-muted-foreground">Size</dt><dd className="mt-1 font-medium" title={selected.fileSize === null ? undefined : `${selected.fileSize} bytes`}>{formatFileSize(selected.fileSize)}</dd></div><div className="col-span-2 min-w-0"><dt className="text-muted-foreground">Dependency path</dt><dd className="mt-1 break-all font-mono">{selected.relativePath || selected.fileName}</dd></div></dl>
+            <details className="rounded-md border p-3 text-xs"><summary className="cursor-pointer font-medium">File location</summary><Label htmlFor="file-source-url" className="mt-3 block text-xs text-muted-foreground">Saved source URL</Label><Input id="file-source-url" className="mt-1 font-mono text-xs" readOnly value={selected.filePath || 'No saved URL'} /></details>
+            <div className="space-y-1.5"><Label htmlFor="file-load-order" className="text-xs">Load order</Label><Input id="file-load-order" type="number" min={0} max={MAX_MODEL_FILE_LOAD_ORDER} step={1} required disabled={saving} value={loadOrder} onChange={event => setLoadOrder(event.target.value)} /><p className="text-xs text-muted-foreground">Saved ordering for this attachment. This does not choose the primary geometry.</p></div>
             {selected.fileType === 'texture' && <div><Label htmlFor="file-texture-type">Texture type</Label><select id="file-texture-type" className="w-full rounded border bg-background p-2" value={textureType} disabled={saving} onChange={event => setTextureType(event.target.value)}><option value="">Unspecified</option>{MODEL_FILE_TEXTURE_TYPES.map(type => <option key={type} value={type}>{type}</option>)}{textureType && !MODEL_FILE_TEXTURE_TYPES.some(type => type === textureType) && <option value={textureType} disabled>Unsupported saved value: {textureType}</option>}</select><p className="text-xs text-muted-foreground">Attachment classification; this does not change material assignments or the shared Texture record.</p></div>}
           </> : <>
             <div><Label htmlFor="file-directory">Model-relative attachment directory</Label><Input id="file-directory" value={directory} maxLength={100} disabled={saving} onChange={event => setDirectory(event.target.value)} /><p className="text-xs text-muted-foreground">Used for new selections. Review each dependency path below before Save.</p></div>
@@ -272,10 +302,10 @@ export function ThreeDModelFileEditor({ modelId, fileId = null }: { modelId: num
           </>}
           {(imageUrl || selected?.fileType === 'texture' && /\.(png|jpe?g|webp|gif|bmp|avif)$/i.test(selected.fileName) && selected.filePath) && <img className="max-h-64 max-w-full rounded border object-contain" src={imageUrl || selected!.filePath} alt={localFile?.name || selected?.fileName || 'Supporting image'} />}
           <ModelFileDependencyInspector file={localFile} savedFile={selected} audit={audit} />
-          {selected && <section aria-labelledby="restoration-eligibility-heading" className="space-y-3 rounded border p-3 text-sm">
-            <h3 id="restoration-eligibility-heading" className="font-medium">Restoration eligibility</h3>
+          {selected && <details className="space-y-3 rounded-md border p-3 text-xs">
+            <summary className="cursor-pointer font-medium">Read-only restoration diagnostics</summary>
             <p className="text-muted-foreground">Read-only observations for this saved File. They cannot authorize restoration or guarantee safety. No replacement image or file has been checked.</p>
-            <Button type="button" variant="outline" disabled={saving || loading || checkingEligibility} onClick={() => void checkEligibility()}>Check restoration eligibility</Button>
+            <Button type="button" size="sm" variant="outline" disabled={saving || loading || checkingEligibility} onClick={() => void checkEligibility()}>Check restoration eligibility</Button>
             {checkingEligibility && <p role="status">Checking saved File observations…</p>}
             {(eligibilityResult || eligibilityFailure) && <div aria-live="polite" className="space-y-3">
               <dl className="space-y-1"><div><dt className="font-medium">State</dt><dd>{eligibilityResult ? ELIGIBILITY_STATE_LABELS[eligibilityResult.state] : 'Unknown'}</dd></div><div><dt className="font-medium">Storage availability</dt><dd>{eligibilityResult ? AVAILABILITY_LABELS[eligibilityResult.availability] : 'Unknown'}</dd></div><div><dt className="font-medium">Observed at</dt><dd>{eligibilityResult ? <time dateTime={eligibilityResult.observedAt}>{eligibilityResult.observedAt}</time> : 'Unavailable'}</dd></div></dl>
@@ -286,14 +316,15 @@ export function ThreeDModelFileEditor({ modelId, fileId = null }: { modelId: num
                 <p className="text-muted-foreground">Storage and references can change after this observation. Check again manually for a new observation. Restoration remains unavailable.</p>
               </>}
             </div>}
-          </section>}
+          </details>}
+          {textureLibraryError && <p role="alert" className="text-xs text-destructive">{textureLibraryError}</p>}
+          <ModelResourceInventory model={model} selectedFileId={selected?.id} audit={audit} loading={auditLoading} error={auditError} textureLibrary={textureLibrary} />
           {error && <p role="alert" className="text-sm text-destructive">{error}</p>}{message && <p role="status">{message}</p>}
-          <div className="flex gap-2"><Button type="submit" disabled={saving || loading || !selected && !pending.some(item => !item.saved)}>{saving ? 'Saving…' : selected ? 'Save File settings' : 'Save attachments'}</Button><Button type="button" variant="outline" disabled={saving} onClick={() => { clearEligibility(); router.push(base); }}>Cancel</Button></div>
           {!selected && <p className="text-xs text-muted-foreground">Cancel discards local selections. Successfully saved attachments remain saved after partial upload failure.</p>}
+          </div>
         </form>
       </div>
-      {textureLibraryError && <p role="alert">{textureLibraryError}</p>}
-      <ModelResourceInventory model={model} audit={audit} loading={auditLoading} error={auditError} textureLibrary={textureLibrary} />
+      <div className="flex shrink-0 flex-wrap items-center gap-2 rounded-lg border bg-card p-2"><Button type="submit" form="model-file-settings" size="sm" disabled={saving || loading || !selected && !pending.some(item => !item.saved)}>{saving ? 'Saving…' : selected ? 'Save File settings' : 'Save attachments'}</Button><Button type="button" size="sm" variant="outline" disabled={saving} onClick={() => { clearEligibility(); router.push(base); }}>Cancel</Button></div>
     </>}
   </div>;
 }

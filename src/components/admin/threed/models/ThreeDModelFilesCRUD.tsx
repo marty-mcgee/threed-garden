@@ -54,6 +54,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { useToast } from '@/components/ui/toast';
 import {
   ThreeDModelAssetPreview,
+  MODEL_WORKSPACE_PERSPECTIVE,
   type ThreeDModelTextureLibraryItem,
 } from './ThreeDModelAssetPreview';
 import { ModelPreviewImageExport } from './ModelPreviewImageExport';
@@ -912,6 +913,9 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
 
       <div className="grid items-start gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(400px,0.85fr)] ">
           <ThreeDModelAssetPreview
+            preserveCameraOnEdit
+            centerAtOrigin
+            perspective={MODEL_WORKSPACE_PERSPECTIVE}
             active={active && !exportOpen}
             onBusyChange={setPreviewBusy}
             model={previewModel}
@@ -960,7 +964,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
               </Button>
               </>
             ) : null}
-            canvasClassName="h-[min(48vh,480px)] min-h-[340px]"
+            canvasClassName="h-[clamp(16rem,42dvh,30rem)]"
             showMaterialInspector={mainModelFileId !== null && ['fbx', 'obj', 'glb', 'gltf'].includes(previewModel?.modelType.toLowerCase() ?? '')}
             materialInspectorNotice={!modelId ? 'Select a Model to configure its appearance.' : mainModelFileId === null ? 'Choose and save a primary Model file above to enable appearance settings.' : 'Material editing is available for FBX, OBJ, GLB and GLTF Models.'}
             splitMaterialInspector

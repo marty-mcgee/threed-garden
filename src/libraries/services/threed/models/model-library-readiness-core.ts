@@ -1,3 +1,5 @@
+// @ts-expect-error Native Node validation requires the explicit extension.
+import { readModelSource } from './model-source-core.ts';
 export type ThreeDModelLibraryReadinessStatus = 'ready' | 'needs_configuration' | 'unavailable';
 export type ThreeDModelLibraryDependencyStatus = 'available' | 'unverified';
 
@@ -23,6 +25,8 @@ interface ReadinessAssignment {
 }
 
 interface ReadinessModel {
+  metadata?: unknown;
+  usedByCharacters?: boolean | null;
   modelType: string;
   filePath: string;
   mainModelFileId: number | null;
@@ -59,10 +63,10 @@ export function createThreeDModelLibraryReadiness(model: ReadinessModel): ThreeD
   ).size;
   const issues: ThreeDModelLibraryReadiness['issues'] = [];
 
-  const fileFreeShape = model.modelType === 'procedural' && !model.filePath;
+  const fileFreeShape = readModelSource(model) === 'shape';
   if (!primaryFileAvailable && !fileFreeShape) issues.push('missing_primary_file');
   if (
-    primaryFileAvailable
+    !fileFreeShape && primaryFileAvailable
     && ['fbx', 'obj'].includes(model.modelType.toLowerCase())
     && textureAssignmentCount === 0
     && textureFileCount === 0

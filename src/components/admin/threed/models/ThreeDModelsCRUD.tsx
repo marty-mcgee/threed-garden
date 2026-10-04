@@ -46,11 +46,13 @@ import {
   MODEL_STATUS_OPTIONS,
   MODEL_TYPE_OPTIONS,
   ThreeDModelEditorFields,
+  ThreeDModelPreviewImageFields,
   type ThreeDModelUploadAnalysis,
 } from './ThreeDModelEditorFields';
 import { ModelPreviewBatchExport } from './ModelPreviewBatchExport';
 import { ModelPreviewImageExport } from './ModelPreviewImageExport';
-import { ThreeDModelAssetPreview } from './ThreeDModelAssetPreview';
+import { ModelFieldHelp } from './ModelFieldHelp';
+import { ThreeDModelAssetPreview, MODEL_WORKSPACE_PERSPECTIVE } from './ThreeDModelAssetPreview';
 import { ThreeDModelsBulkImport } from './ThreeDModelsBulkImport';
 import { modelForPreview } from './model-preview-requirements';
 import type { ModelData } from '@/components/threed/markers/ModelMarker3D';
@@ -606,57 +608,52 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
   if (view !== "list") {
     const busy = isSubmitting || uploadingPrimary || uploadingThumbnail || filesBusy || exportOpen || refreshingDetails || tabs.transitioning;
     return (
-      <div className="flex h-full min-h-0 flex-col gap-3">
+      <div className="flex h-full min-h-0 min-w-0 flex-col gap-2">
         {ToastComponent}
-        <AdminWorkspaceHeader icon={Box} title={view === "create" ? "Add Model" : editingModel ? "Edit Model — " + editingModel.modelName : "Edit Model"}
-          description={view === "create" ? "Create a reusable ThreeD Model" : "Model #" + linkedModelId + " · Reusable Model details"}>
-          <Button variant="outline" size="sm" disabled={busy} onClick={() => void leaveForm()}>Back to Models</Button>
-          {editingModel && <Button variant="outline" size="sm" disabled={busy} onClick={() => void leaveForm("/admin/threed/model-files")}>All Model Files</Button>}
-        </AdminWorkspaceHeader>
         <Tabs value={view === 'edit' ? tabs.tab : 'details'} onValueChange={value => tabs.requestTab(value === 'files' ? 'files' : 'details')} activationMode="manual" className="min-h-0 flex-1">
-          {view === 'edit' && <div className="flex flex-wrap items-center justify-between gap-2">
-            <TabsList aria-label="Model workspace"><TabsTrigger value="details" disabled={busy || !editingModel}>Details</TabsTrigger><TabsTrigger value="files" disabled={busy || !editingModel}>Files</TabsTrigger></TabsList>
-            {editingModel && <span className="truncate text-xs text-muted-foreground">{editingModel.modelName} · #{editingModel.id}</span>}
-          </div>}
+        <AdminWorkspaceHeader className="shrink-0" icon={Box} title={view === "create" ? "Add Model" : "Edit Model"}
+          description={view === "create" ? "Create a reusable ThreeD Model" : "Model #" + linkedModelId + " · Reusable Model details"}>
+          {editingModel && <span className="min-w-0 truncate text-xs text-muted-foreground" title={editingModel.modelName}>{editingModel.modelName} <Badge variant="outline">Model #{editingModel.id}</Badge></span>}
+          {view === 'edit' && <TabsList className="ml-auto" aria-label="Model workspace"><TabsTrigger value="details" disabled={busy || !editingModel}>Details</TabsTrigger><TabsTrigger value="files" disabled={busy || !editingModel}>Files</TabsTrigger></TabsList>}
+        </AdminWorkspaceHeader>
+
           {tabs.notice && <p role="status" className="text-sm text-muted-foreground">{tabs.notice}</p>}
-          <TabsContent value="details" forceMount hidden={view === 'edit' && tabs.tab !== 'details'} className="min-h-0 flex flex-col data-[state=inactive]:hidden">
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-lg border p-4">
+          <TabsContent value="details" forceMount hidden={view === 'edit' && tabs.tab !== 'details'} className="min-h-0 min-w-0 flex flex-1 flex-col gap-2 data-[state=inactive]:hidden">
+            <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain lg:overflow-hidden">
               {linkedModelError ? <p role="alert" className="text-destructive">{linkedModelError}</p>
                 : view === "edit" && !editingModel ? <p role="status">Loading Model…</p>
                 : (
-                  <div className="grid min-h-0 gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)]">
-                    <div className="min-w-0 lg:sticky lg:top-0 lg:self-start">
+                  <div className="grid min-h-0 min-w-0 gap-3 lg:h-full lg:grid-cols-2">
+                    <section aria-label="Model draft preview" tabIndex={0} className="min-h-0 min-w-0 lg:overflow-y-auto lg:pr-1">
                       <ThreeDModelAssetPreview
                         active={(view !== 'edit' || tabs.tab === 'details') && !exportOpen}
                         model={importerPreviewModel}
                         attachedDependencyCount={0}
                         dependencyCount={0}
                         preserveCameraOnEdit
+                        centerAtOrigin
+                        perspective={MODEL_WORKSPACE_PERSPECTIVE}
                         title="Draft Model Canvas"
                         headerMeta={<Badge variant="outline">{formData.modelType || 'Choose a type'}</Badge>}
-                        canvasClassName="h-[min(68vh,680px)] min-h-[320px]"
+                        canvasClassName="h-[clamp(16rem,42dvh,30rem)]"
                       />
-                      <p className="mt-2 text-xs text-muted-foreground">{formData.modelType && formData.modelType !== 'procedural' && !formData.filePath.trim()
+                      <div className="mt-1 flex justify-end"><ModelFieldHelp label="Draft Model preview">{formData.modelType && formData.modelType !== 'procedural' && !formData.filePath.trim()
                         ? 'Recovery geometry only: choose a Model file to preview its geometry. Recovery settings are under Advanced.'
-                        : 'Previewing unsaved shape, transform, and file lighting changes. Save to apply them to the reusable Model.'}</p>
-                    </div>
-                    <fieldset disabled={busy || !detailsReady} className="min-w-0 [&_section]:rounded-md [&_section]:border [&_section]:p-3">
+                        : 'Previewing unsaved shape, transform, and file lighting changes. Save to apply them to the reusable Model.'}</ModelFieldHelp></div>
+                      <fieldset aria-label="Library preview image" disabled={busy || !detailsReady} className="mt-3 min-w-0 rounded-lg border bg-card p-3">
+                        <ThreeDModelPreviewImageFields mode={view === 'create' ? 'create' : 'edit'} form={formData} setForm={setFormData}
+                          isSubmitting={isSubmitting} uploadingPrimary={uploadingPrimary} uploadingThumbnail={uploadingThumbnail} onThumbnail={handleThumbnailUpload}
+                          previewImageAction={editingModel && importerPreviewModel && <ModelPreviewImageExport key={editingModel.id} model={importerPreviewModel} useDraftModel onOpenChange={setExportOpen} dependencyCount={0} attachedDependencyCount={0} disabled={busy} onUseImageUrl={url => setFormData(current => ({ ...current, thumbnailUrl: url }))} />} />
+                      </fieldset>
+                    </section>
+                    <fieldset aria-label="Model details" tabIndex={0} disabled={busy || !detailsReady} className="min-h-0 min-w-0 rounded-lg border bg-card p-3 lg:overflow-y-auto [&_section]:rounded-md [&_section]:border [&_section]:p-3">
                       {view === 'create' && formData.modelType === 'obj' && (
                         <p className="mb-4 rounded-md border p-3 text-sm">Attach MTL files and referenced images in Model Files after creation. Use Bulk Import Models to prepare a complete OBJ bundle before uploading.</p>
                       )}
                       <ThreeDModelEditorFields
+                        showPreviewImage={false}
                         mode={view === 'create' ? 'create' : 'edit'}
                         modelId={editingModel?.id}
-                        previewImageAction={editingModel && importerPreviewModel && <ModelPreviewImageExport
-                          key={editingModel.id}
-                          model={importerPreviewModel}
-                          useDraftModel
-                          onOpenChange={setExportOpen}
-                          dependencyCount={0}
-                          attachedDependencyCount={0}
-                          disabled={busy}
-                          onUseImageUrl={url => setFormData(current => ({ ...current, thumbnailUrl: url }))}
-                        />}
                         form={formData}
                         setForm={setFormData}
                         categories={categories}
@@ -672,13 +669,13 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
                   </div>
                 )}
             </div>
-            <div className="shrink-0 space-y-2 border-t bg-background py-3">
+            <div className="shrink-0 space-y-2 rounded-lg border bg-card p-2">
               {refreshingDetails && <p role="status" className="text-sm text-muted-foreground">Reloading saved Model…</p>}
               {detailsRefreshError && <div className="space-y-2"><p role="alert" className="text-sm text-destructive">{detailsRefreshError}</p><Button variant="outline" disabled={busy} onClick={() => void refreshDetails()}>Retry Model refresh</Button></div>}
               {formError && <p role="alert" className="text-sm text-destructive">{formError}</p>}
               <div className="flex justify-end gap-2">
                 <Button variant="outline" disabled={busy} onClick={() => void leaveForm()}>Cancel</Button>
-                <Button onClick={view === "create" ? handleCreate : handleUpdate}
+                <Button className="bg-emerald-600 text-white hover:bg-emerald-700" onClick={view === "create" ? handleCreate : handleUpdate}
                   disabled={busy || !detailsReady || (view === "edit" && !editingModel) || (view === "create" && !formData.filePath.trim() && formData.modelType !== "procedural")}>
                   {refreshingDetails ? "Reloading…" : busy ? "Saving…" : view === "create" ? "Create Model" : "Save Changes"}
                 </Button>

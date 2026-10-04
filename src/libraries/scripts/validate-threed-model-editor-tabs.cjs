@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const vm = require('node:vm');
 const ts = require('typescript');
+const sourceCore = require('../services/threed/models/model-source-core.ts');
 const jsx = (type, props) => ({ type, props });
 const nodes = value => Array.isArray(value) ? value.flatMap(nodes) : value && typeof value === 'object' ? [value, ...nodes(value.props?.children)] : [];
 const text = value => Array.isArray(value) ? value.map(text).join(' ') : value && typeof value === 'object' ? text(value.props?.children) : String(value ?? '');
@@ -115,7 +116,7 @@ async function editorChecks() {
   const hook = load('src/components/admin/threed/models/use-model-editor-tabs.ts', { react: rt.react,
     'next/navigation': { useSearchParams: () => b.window.location.searchParams } }, { window: b.window });
   const lighting = load('src/libraries/services/threed/models/model-lighting-core.ts', {});
-  const form = load('src/components/admin/threed/models/model-admin-form-core.ts', { '../../../../libraries/services/threed/models/model-lighting-core.ts': lighting });
+  const form = load('src/components/admin/threed/models/model-admin-form-core.ts', { '../../../../libraries/services/threed/models/model-lighting-core.ts': lighting, '../../../../libraries/services/threed/models/model-source-core.ts': sourceCore });
   const module = load('src/components/admin/threed/models/ThreeDModelsCRUD.tsx', {
     react: rt.react, 'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'link' },
     'next/navigation': { useRouter: () => ({ push() {} }) }, 'lucide-react': proxy,
@@ -123,8 +124,9 @@ async function editorChecks() {
     '@/components/admin/layout/AdminWorkspaceHeader': proxy, '@/components/ui/toast': { useToast: () => ({ showToast: () => {}, ToastComponent: null }) },
     '@/components/ui/button': proxy, '@/components/ui/badge': proxy, '@/components/ui/table': proxy,
     '@/components/ui/dialog': proxy, '@/components/ui/dropdown-menu': proxy, '@/components/ui/input': proxy, '@/components/ui/tabs': proxy,
-    './model-admin-form-core': form, './ThreeDModelEditorFields': { ...proxy, MODEL_TYPE_OPTIONS: [], MODEL_STATUS_OPTIONS: [], ThreeDModelEditorFields: 'fields' },
+    './model-admin-form-core': form, './ThreeDModelEditorFields': { ...proxy, MODEL_TYPE_OPTIONS: [], MODEL_STATUS_OPTIONS: [], ThreeDModelEditorFields: 'fields', ThreeDModelPreviewImageFields: 'image-fields' },
     './ModelPreviewBatchExport': proxy, './ModelPreviewImageExport': proxy, './ThreeDModelAssetPreview': proxy,
+    './ModelFieldHelp': { ModelFieldHelp: 'help' },
     './ThreeDModelsBulkImport': proxy, './ThreeDModelFilesCRUD': proxy,
     './model-preview-requirements': { modelForPreview: value => value }, './use-model-editor-tabs': hook,
   }, { window: b.window, fetch, confirm: () => true });
@@ -136,7 +138,22 @@ async function editorChecks() {
   const files = () => find(node => node.type === 'ThreeDModelFilesCRUD');
   const saveButton = () => nodes(rt.value).find(node => node.type === 'Button' && node.props.onClick?.name === 'handleUpdate');
   assert.equal(fields().props.form.modelName, 'Oak');
+  assert.equal(fields().props.showPreviewImage, false, 'Form column omits duplicate image controls');
+  const imageFields = () => find(node => node.type === 'image-fields');
+  assert.equal(nodes(rt.value).filter(node => node.type === 'image-fields').length, 1);
+  assert.equal(imageFields().props.form, fields().props.form, 'Image and details edit the same draft');
+  imageFields().props.setForm(current => ({ ...current, thumbnailUrl: 'https://fixture.invalid/draft.png' })); rt.render();
+  assert.equal(fields().props.form.thumbnailUrl, 'https://fixture.invalid/draft.png');
+  assert(!requests.some(request => request.options.method === 'PATCH'), 'Image URL draft is not saved automatically');
+  const draftPreview = () => find(node => node.type === 'ThreeDModelAssetPreview');
+  assert.equal(draftPreview().props.centerAtOrigin, true);
+  assert.equal(draftPreview().props.preserveCameraOnEdit, true);
+  assert(draftPreview().props.perspective, 'Details opts into the workspace initial perspective');
+  assert(find(node => node.type === 'fieldset' && node.props['aria-label'] === 'Model details').props.className.includes('lg:overflow-y-auto'));
+  assert(find(node => node.type === 'section' && node.props['aria-label'] === 'Model draft preview').props.className.includes('lg:overflow-y-auto'));
   const edit = updates => { fields().props.setForm(current => ({ ...current, ...updates })); rt.render(); };
+  edit({ scale: '0.37' });
+  assert.equal(Number(draftPreview().props.model.scale), 0.37, 'Unsaved custom scale reaches the actual preview');
   edit({ modelName: 'Draft Oak' }); tabs().props.onValueChange('files'); rt.render();
   assert(find(node => node.type === 'Dialog' && node.props.open));
   failSave = true;
@@ -219,6 +236,9 @@ async function filesChecks() {
   rt.mount(() => workspace.ThreeDModelFilesCRUD({ initialModelId: 7, embedded: true, active, onBusyChange: reportBusy }));
   await rt.flush();
   const preview = () => nodes(rt.value).find(node => node.type === 'ThreeDModelAssetPreview');
+  assert.equal(preview().props.centerAtOrigin, true);
+  assert.equal(preview().props.preserveCameraOnEdit, true);
+  assert(preview().props.perspective, 'Files keeps the same workspace framing as Details');
   const find = predicate => [...nodes(rt.value), ...nodes(preview().props.primaryFileControls), ...nodes(preview().props.requiredFiles)].find(predicate);
   assert(!text(rt.value).includes('Open Model record'), 'Embedded workspace omits duplicate parent navigation');
   find(node => node.props?.id === 'default-model-shape').props.onChange({ target: { value: 'box' } });
@@ -257,7 +277,67 @@ function previewChecks() {
   active = false; rt.render(); assert.equal(nodes(rt.value).filter(node => node.type === 'canvas').length, 0);
   active = true; rt.render(); assert.equal(nodes(rt.value).filter(node => node.type === 'canvas').length, 1);
 }
+function imageAndGeometryChecks() {
+  const helpRuntime = runtime();
+  const help = load('src/components/admin/threed/models/ModelFieldHelp.tsx', { react: helpRuntime.react, 'react/jsx-runtime': { jsx, jsxs: jsx }, 'lucide-react': proxy, '@/components/ui/button': proxy, '@/components/ui/tooltip': proxy });
+  helpRuntime.mount(() => help.ModelFieldHelp({ label: 'Geometry source', children: 'Retains attachments' }));
+  let prevented = false;
+  nodes(helpRuntime.value).find(node => node.type === 'Button').props.onClick({ preventDefault() { prevented = true; } });
+  helpRuntime.render();
+  assert(prevented, 'Click-open is not cancelled by the Radix trigger default click close');
+  assert(nodes(helpRuntime.value).find(node => node.type === 'Tooltip').props.open);
+  nodes(helpRuntime.value).find(node => node.type === 'Tooltip').props.onOpenChange(false); helpRuntime.render();
+  assert.equal(nodes(helpRuntime.value).find(node => node.type === 'Tooltip').props.open, false);
+  const fields = load('src/components/admin/threed/models/ThreeDModelEditorFields.tsx', {
+    'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'link' }, 'lucide-react': proxy,
+    '@/components/ui/badge': proxy, '@/components/ui/button': proxy, '@/components/ui/input': proxy,
+    '@/components/ui/label': proxy, '@/components/ui/select': proxy, '@/components/ui/switch': proxy,
+    './ModelFieldHelp': { ModelFieldHelp: 'help' },
+    '@/libraries/services/threed/models/model-source-core': sourceCore,
+    '@/libraries/services/threed/models/model-fallback-core': { MODEL_FALLBACK_SHAPES: ['box'], readModelFallbackShape: () => 'box', setModelFallbackShape: value => value },
+    '@/libraries/services/threed/models/model-lighting-core': { readModelLightBoost: () => 0, setModelLightBoost: value => value },
+  });
+  let draft = { modelName: 'Character', modelType: 'fbx', mainModelFileId: '81', filePath: 'https://fixture.invalid/model.fbx', thumbnailUrl: 'https://fixture.invalid/old.png', metadata: '{}', usedByCharacters: true, categoryIds: [], scale: '0.37' };
+  let uploads = 0;
+  const props = () => ({ mode: 'edit', form: draft, setForm: update => { draft = update(draft); }, categories: [], files: [{ id: 81, fileType: 'model', fileName: 'model.fbx', filePath: draft.filePath, fileSize: 123 }], isSubmitting: false, uploadingPrimary: false, uploadingThumbnail: false, onThumbnail: () => uploads++, onPrimaryFile() {} });
+  const renderImage = () => fields.ThreeDModelPreviewImageFields(props());
+  let tree = renderImage();
+  const find = (tree, predicate) => nodes(tree).find(predicate);
+  assert(find(tree, node => node.type === 'details' && text(node).includes('Image location')));
+  assert.equal(find(tree, node => node.type === 'details').props.open, undefined, 'URL starts collapsed');
+  find(tree, node => node.props?.id === 'edit-thumbnailUrl').props.onChange({ target: { value: 'https://fixture.invalid/new.png' } });
+  assert.equal(draft.thumbnailUrl, 'https://fixture.invalid/new.png');
+  assert.equal(draft.scale, '0.37');
+  tree = renderImage();
+  find(tree, node => node.type === 'Button' && text(node).includes('Remove')).props.onClick();
+  assert.equal(draft.thumbnailUrl, ''); assert.equal(uploads, 0, 'Remove only changes the draft');
+  const target = { files: [{ name: 'image.png' }], value: 'selected' };
+  find(renderImage(), node => node.props?.id === 'edit-thumbnail-upload').props.onChange({ target });
+  assert.equal(uploads, 1); assert.equal(target.value, '');
+  tree = fields.ThreeDModelPreviewImageFields({ ...props(), uploadingThumbnail: true });
+  assert(find(tree, node => node.props?.id === 'edit-thumbnailUrl').props.disabled);
+  tree = fields.ThreeDModelEditorFields({ ...props(), showPreviewImage: false });
+  const geometry = find(tree, node => node.props?.title === 'Geometry');
+  assert(geometry && text(geometry).includes('Primary geometry file'));
+  assert.equal(find(geometry, node => node.type === 'Select' && nodes(node).some(child => child.props?.id === 'edit-geometrySource')).props.disabled, false, 'Character source is explicitly switchable');
+  assert(!find(tree, node => node.props?.id === 'edit-modelType'), 'Edit has a format badge instead of a disabled format selector');
+  assert(text(geometry).includes('FBX')); assert(text(geometry).includes('assigned Characters'));
+  assert(!find(geometry, node => node.type === 'SelectItem' && node.props.value === 'procedural' && text(node).includes('No active file')));
+  draft = { ...draft, usedByCharacters: false };
+  tree = fields.ThreeDModelEditorFields({ ...props(), showPreviewImage: false });
+  const original = { ...draft };
+  const sourceSelector = find(tree, node => node.type === 'Select' && nodes(node).some(child => child.props?.id === 'edit-geometrySource'));
+  sourceSelector.props.onValueChange('shape');
+  assert.equal(draft.modelType, original.modelType); assert.equal(draft.mainModelFileId, original.mainModelFileId); assert.equal(draft.filePath, original.filePath);
+  assert.equal(JSON.parse(draft.metadata).activeSource, 'shape');
+  tree = fields.ThreeDModelEditorFields({ ...props(), showPreviewImage: false });
+  assert.equal(nodes(tree).filter(node => node.props?.id === 'edit-fallbackShape').length, 1);
+  find(tree, node => node.type === 'Select' && nodes(node).some(child => child.props?.id === 'edit-geometrySource')).props.onValueChange('character');
+  assert.equal(draft.filePath, original.filePath); assert.equal(JSON.parse(draft.metadata).activeSource, 'character');
+  tree = fields.ThreeDModelEditorFields({ ...props(), mode: 'create', form: { ...draft, usedByCharacters: false, filePath: '' } });
+  assert(find(tree, node => node.props?.id === 'create-modelType'), 'Create format selection remains available');
+}
 (async () => {
-  await controllerChecks(); await editorChecks(); await filesChecks(); await redirects(); previewChecks();
+  await controllerChecks(); await editorChecks(); await filesChecks(); await redirects(); previewChecks(); imageAndGeometryChecks();
   console.log('Model editor tabs: draft/save/discard/history/busy/owner refresh/stale-save/redirect/Canvas checks passed (offline).');
 })().catch(error => { console.error(error); process.exitCode = 1; });

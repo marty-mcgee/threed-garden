@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.22.17",
+  "version": "0.22.18",
   "private": true,
   "packageManager": "npm@11.6.2",
   "scripts": {
@@ -31,7 +31,6 @@
     "@neondatabase/serverless": "^1.1.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.7.0",
-    "@react-three/postprocessing": "^3.0.4",
     "@react-three/rapier": "^2.2.0",
     "@vercel/blob": "^2.4.0",
     "@vercel/functions": "^3.3.3",
