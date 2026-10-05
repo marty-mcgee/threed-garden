@@ -5,7 +5,7 @@ import { PanelsTopLeft, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const KEY = 'threed:panel-opacity:v1';
-const defaults = { idle: 80, hover: 98, headerIdle: 15, headerHover: 90, lightSurface: '#f8fafc', darkSurface: '#111a28', lightControl: '#0f172a', darkControl: '#f8fafc', lightControlText: '#0f172a', darkControlText: '#f8fafc', controlIdle: 0, controlHover: 8, controlActive: 12 };
+const defaults = { idle: 80, hover: 98, headerIdle: 0, headerHover: 0, lightSurface: '#f8fafc', darkSurface: '#111a28', lightControl: '#0f172a', darkControl: '#000040', lightControlText: '#0f172a', darkControlText: '#ffffff', controlIdle: 26, controlHover: 40, controlActive: 60 };
 export type PanelAppearance = typeof defaults;
 type Appearance = PanelAppearance;
 function parse(raw: string | null): Appearance {

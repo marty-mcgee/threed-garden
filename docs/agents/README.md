@@ -1,5 +1,7 @@
 # Agent Documentation
 
+Local [Project Header and Toolbar appearance defaults](../plans/project-header-appearance-defaults.md), October 5, 2026: transparent header, navy/white dark buttons and 26%/40%/60% normal/hover/active opacity, taken from the Developer's saved browser preference. Preserve saved overrides and staged Settings saves/resets. Focused Settings/theme checks, TypeScript and guarded npm build (134 static pages) passed; browser paint remains pending.
+
 Current [v0.22.25 release handoff](../releases/v0.22.25.md), prepared October 5, 2026: Simulation Admin pages plus saved-FBX texture guards. Package/lockfile agree; TypeScript, 61-task CI and guarded npm build (134 static pages) passed. Database migration is Developer-confirmed and needs no repeat execution; application deployment, deployed SHA and detailed browser/live checks remain pending. Remaining edits are unstaged under the Manual Release Gate.
 
 Local v0.22.25 maintenance: [saved FBX texture format guard](../plans/v0.22.25-model-texture-format-guard.md) skips unsupported image requests in Scene/Admin Model and Character rendering. Preserve supported replacements, registered decoders and real resource errors; strict importer contracts and all runtime/world boundaries remain intact. Browser verification remains pending.

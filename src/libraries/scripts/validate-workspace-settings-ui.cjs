@@ -172,9 +172,9 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
   assert.equal(panelState.value.darkControlText, '#f8fafc', 'Preview does not save the draft');
   console.log('PASS Opacity Settings draft: explicit Save, Discard, Refresh confirmation, no write on edit and storage failure retention');
 
-  let savedOpacity = JSON.stringify({ idle: 80, hover: 98 });
+  let savedOpacity = null;
   const css = new Map();
-  function opacityHarness() {
+  function opacityHarness({ readFails = false } = {}) {
     const hooks = harness();
     let panelContext;
     const panel = load('src/components/settings/PanelAppearance.tsx', {
@@ -183,7 +183,7 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
       'lucide-react': new Proxy({}, { get: (_, key) => key }),
       '@/components/ui/button': { Button: 'Button' },
     }, {
-      localStorage: { getItem: () => savedOpacity, setItem: (_, value) => { savedOpacity = value; } },
+      localStorage: { getItem: () => { if (readFails) throw new Error('Storage unavailable'); return savedOpacity; }, setItem: (_, value) => { savedOpacity = value; } },
       window: { addEventListener() {}, removeEventListener() {} },
       document: { documentElement: { style: { setProperty: (key, value) => css.set(key, value) } } },
     });
@@ -195,12 +195,16 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
   const renderOpacity = opacityHarness();
   const slider = (tree, label) => find(find(tree, node => node.type === 'label' && text(node).includes(label)), node => node.props?.type === 'range');
   let opacityTree = renderOpacity();
-  assert.equal(slider(opacityTree, 'Project Header default').props.value, 15);
-  assert.equal(slider(opacityTree, 'Project Header hover').props.value, 90);
-  assert.equal(css.get('--threed-header-idle-opacity'), '0.15');
-  assert.equal(css.get('--threed-header-hover-opacity'), '0.9');
+  assert.equal(slider(opacityTree, 'Project Header default').props.value, 0);
+  assert.equal(slider(opacityTree, 'Project Header hover').props.value, 0);
+  assert.equal(css.get('--threed-header-idle-opacity'), '0');
+  assert.equal(css.get('--threed-header-hover-opacity'), '0');
   assert.equal(css.get('--threed-light-surface'), '#f8fafc');
-  assert.equal(css.get('--threed-control-active-opacity'), '12%');
+  assert.equal(css.get('--threed-control-idle-opacity'), '26%');
+  assert.equal(css.get('--threed-control-hover-opacity'), '40%');
+  assert.equal(css.get('--threed-control-active-opacity'), '60%');
+  assert.equal(css.get('--threed-dark-control'), '#000040');
+  assert.equal(css.get('--threed-dark-control-text'), '#ffffff');
   assert.equal(css.get('--threed-light-control-text'), '#0f172a');
   const lightTextInput = find(opacityTree, node => node.props?.['aria-label'] === 'Light theme Button text color');
   lightTextInput.props.onChange({target:{value:'#ffffff'}});
@@ -237,7 +241,20 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
   assert.equal(css.get('--threed-panel-idle-opacity'), '0');
   assert.equal(css.get('--threed-panel-hover-opacity'), '0');
   find(opacityTree, node => node.type === 'Button').props.onClick();
-  assert.deepEqual(JSON.parse(savedOpacity), {idle:80,hover:98,headerIdle:15,headerHover:90,lightSurface:'#f8fafc',darkSurface:'#111a28',lightControl:'#0f172a',darkControl:'#f8fafc',lightControlText:'#0f172a',darkControlText:'#f8fafc',controlIdle:0,controlHover:8,controlActive:12});
+  assert.deepEqual(JSON.parse(savedOpacity), {idle:80,hover:98,headerIdle:0,headerHover:0,lightSurface:'#f8fafc',darkSurface:'#111a28',lightControl:'#0f172a',darkControl:'#000040',lightControlText:'#0f172a',darkControlText:'#ffffff',controlIdle:26,controlHover:40,controlActive:60});
+  savedOpacity = JSON.stringify({idle:80,hover:98,headerIdle:15,headerHover:90,darkControl:'#654321',darkControlText:'#f8fafc',controlIdle:0,controlHover:8,controlActive:12});
+  opacityHarness()();
+  assert.equal(css.get('--threed-header-idle-opacity'), '0.15', 'Saved custom header opacity wins over new defaults');
+  assert.equal(css.get('--threed-header-hover-opacity'), '0.9');
+  assert.equal(css.get('--threed-dark-control'), '#654321');
+  assert.equal(css.get('--threed-control-idle-opacity'), '0%');
+  assert.equal(css.get('--threed-control-active-opacity'), '12%');
+  opacityHarness({readFails:true})();
+  assert.equal(css.get('--threed-header-idle-opacity'), '0', 'Unavailable storage retains the new safe defaults');
+  assert.equal(css.get('--threed-header-hover-opacity'), '0');
+  assert.equal(css.get('--threed-dark-control'), '#000040');
+  assert.equal(css.get('--threed-dark-control-text'), '#ffffff');
+  assert.equal(css.get('--threed-control-active-opacity'), '60%');
   console.log('PASS Panel Appearance: independent sliders, fixed bounds, CSS values, saved restoration and reset');
   console.log('PASS Settings provider/form: signed-out defaults, stale-account responses, saved appearance, failed-save retention, dirty/discard/refresh and accessible labels (mock React/network).');
 })().catch(error => { console.error(error); process.exitCode = 1; });
