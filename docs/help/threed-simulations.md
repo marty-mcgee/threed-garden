@@ -2,9 +2,9 @@
 
 **Scenario** means a plan: use **Open Scenario** to view its setup and guidance. **Simulation** means Actions and Results: use **Run Simulation** to execute Actions through participating ThreeD modules and collect their responses.
 
-Local v0.22.28 removes Scenario links from Simulation definitions and Results. You can run a Simulation without opening a Scenario. The [corrected design](../plans/v0.22.28-independent-simulations.md) also calls for independent definitions with Project/modules chosen for each run; that broader refactor remains pending. Current forms still bind a definition to its Project/module.
+Released [v0.22.28](../releases/v0.22.28.md) removes Scenario links from Simulation definitions and Results. You can run a Simulation without opening a Scenario. The [corrected design](../plans/v0.22.28-independent-simulations.md) also calls for independent definitions with Project/modules chosen for each run; that broader refactor remains pending. Current forms still bind a definition to its Project/module.
 
-## Current local implementation
+## Current implementation
 
 Open **Admin → ThreeD → Simulations** to plan Actions and Sensor Group observations for a Project. The list supports search, Project filtering, sorting, pagination and selected deletion. Use the colored View/Edit/Delete icons for an individual Simulation.
 
@@ -16,7 +16,7 @@ In **Target Sensors**, select Project Sensor Groups. Keep **All Sensors in this 
 
 Save keeps you on Edit; Cancel asks before discarding changes. Errors retain your draft. A revision conflict means another edit was saved first: review your draft and use Reload when ready to discard it and load the current record. View is read-only. Selected deletion affects the currently selected page records; partial failures appear through Toast and the refreshed list.
 
-The local v0.22.28 controls use **Open Scenario**, **Run Simulation**, **Stop Simulation** and **Refresh Simulations**. The Scenario chooser no longer filters the Simulation launcher. A gray Run button explains missing choices or unfinished placement/editing, and Refresh updates choices without running Actions or reloading the Scene. Preflight and result-save errors remain visible with details closed. These controls remain a candidate while the independent-definition schema/runtime work is pending.
+The v0.22.28 controls use **Open Scenario**, **Run Simulation**, **Stop Simulation** and **Refresh Simulations**. The Scenario chooser no longer filters the Simulation launcher. A gray Run button explains missing choices or unfinished placement/editing, and Refresh updates choices without running Actions or reloading the Scene. Preflight and result-save errors remain visible with details closed. Broader Project/module-independent definitions remain separate future work.
 
 The approved public/private contract remains: authorized public visitors run locally in their browser; owner runs save database Results. The independent redesign must explicitly determine which definitions visitors may access. Publishing a Project must not expose the owner's unrelated private Simulation catalog, Admin pages or result history.
 
