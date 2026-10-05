@@ -226,8 +226,8 @@ const getTypeColor = (type: string) => {
 };
 function CharacterRuntimeReadiness({ model, isMovable }: { model?: Model; isMovable: boolean }) {
   const source = model ? readModelSource(model) : null;
-  return <section className="space-y-2 rounded-md border bg-muted/30 p-3" aria-label="Character runtime">
-    <div className="flex items-center gap-2"><h3 className="text-xs font-medium">Character runtime</h3><Badge variant="outline" className="text-[10px]">{isMovable ? 'User controlled' : 'Automatic'}</Badge><ModelFieldHelp label="Character runtime">Take Control selects the Ecctrl runtime and WASD. Automatic Characters use Garden movement. Model geometry preview does not run either Scene movement or physics. Animation availability is established by loaded clips and saved Action assignments.</ModelFieldHelp></div>
+  return <section className="admin-editor-panel space-y-2 rounded-md border p-3" aria-label="Character runtime">
+    <div className="flex items-center gap-2"><h3 className="text-xs font-medium">Character runtime</h3><ModelFieldHelp label="Character runtime">Take Control selects the Ecctrl runtime and WASD. Automatic Characters use Garden movement. Model geometry preview does not run either Scene movement or physics. Animation availability is established by loaded clips and saved Action assignments.</ModelFieldHelp><Badge variant="outline" className="text-[10px]">{isMovable ? 'User controlled' : 'Automatic'}</Badge></div>
     <p className="text-xs text-muted-foreground">{!model ? 'Choose an accessible Model to inspect geometry.' : source === 'shape' ? 'Shape source is active. Saved rig and animation settings are retained, but rig animation and contact points are unavailable until the rig is restored.' : 'File geometry is configured. Use Animations & Actions to inspect saved defaults, overrides and clip compatibility.'}</p>
     <div className="flex items-center gap-1 text-xs"><span>Animation Actions</span><ModelFieldHelp label="Animation Actions">Character overrides take precedence over Model defaults, then existing runtime behavior. Disabled Actions stay off. Clip previews do not save assignments or perform world actions. Scene actions follow the existing completion and contact rules.</ModelFieldHelp></div>
   </section>;
@@ -637,7 +637,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
     {recordLoading ? <p role="status">Loading Character...</p> : recordError ? <div role="alert"><p className="text-destructive">{recordError}</p><Button variant="outline" size="sm" onClick={fetchCharacters}>Retry</Button></div> : view === 'animations' && characterId ? <CharacterAnimationAssignments characterId={characterId} onStateChange={setAssignmentState} /> : <>
       <div className="grid min-h-0 min-w-0 flex-1 gap-3 overflow-y-auto lg:grid-cols-2 lg:overflow-hidden">
         <section className="min-h-0 min-w-0 space-y-3 lg:overflow-y-auto lg:pr-1" aria-label="Character Model preview" tabIndex={0}>
-          <ThreeDModelAssetPreview model={previewModel} dependencyCount={0} attachedDependencyCount={0} preserveCameraOnEdit centerAtOrigin perspective={MODEL_WORKSPACE_PERSPECTIVE} title="Character Model Canvas" canvasClassName="h-[clamp(16rem,42dvh,30rem)]" headerActions={<ModelFieldHelp label="Character Model Canvas">Geometry preview uses the saved Model and draft Character scale. Orbit, Fit and Reset change only the camera. Animation playback and rig compatibility are checked separately under Animations & Actions; Scene physics and world actions are not run here.</ModelFieldHelp>} />
+          <ThreeDModelAssetPreview model={previewModel} dependencyCount={0} attachedDependencyCount={0} preserveCameraOnEdit centerAtOrigin perspective={MODEL_WORKSPACE_PERSPECTIVE} title="Character Model Canvas" canvasClassName="h-[clamp(16rem,42dvh,30rem)]" headerHelp={<ModelFieldHelp label="Character Model Canvas">Geometry preview uses the saved Model and draft Character scale. Orbit, Fit and Reset change only the camera. Animation playback and rig compatibility are checked separately under Animations & Actions; Scene physics and world actions are not run here.</ModelFieldHelp>} />
           {modelLoading && <p role="status" className="text-xs">Loading selected Model...</p>}
           {modelError && <p role="alert" className="text-xs text-destructive">{modelError} The assigned relationship is retained.</p>}
           <CharacterRuntimeReadiness model={selectedModel} isMovable={formData.isMovable} />
@@ -791,7 +791,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
             </details>
             {/* Movement */}
             <details className="rounded-md border p-3">
-              <summary className="cursor-pointer text-sm font-medium">Movement <span className="ml-2 text-xs font-normal text-muted-foreground">{formData.isMovable ? 'Take Control / WASD' : getOptionLabel(MOVEMENT_TYPE_OPTIONS, formData.movementType)}</span></summary>
+              <summary className="cursor-pointer text-sm font-medium">Movement <ModelFieldHelp label="Take Control">On enables Take Control and WASD in the Scene. Off uses automatic movement settings; Stationary keeps the Character in place. Movement settings are retained when changing control mode.</ModelFieldHelp> <span className="ml-2 text-xs font-normal text-muted-foreground">{formData.isMovable ? 'Take Control / WASD' : getOptionLabel(MOVEMENT_TYPE_OPTIONS, formData.movementType)}</span></summary>
               <div className="space-y-2 mt-2">
                 <div className="flex items-center gap-2">
                   <Switch
@@ -801,7 +801,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
                     disabled={isSubmitting}
                   />
                   <Label htmlFor="edit-isMovable">Allow Take Control (WASD)</Label>
-                </div><ModelFieldHelp label="Take Control">On enables Take Control and WASD in the Scene. Off uses automatic movement settings; Stationary keeps the Character in place. Movement settings are retained when changing control mode.</ModelFieldHelp>
+                </div>
                 <div>
                   <Label htmlFor="edit-movementType" className="text-xs">Movement Type</Label>
                   <Select
@@ -1120,10 +1120,10 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
           </fieldset>
         </form>
       </div>
-      <footer className="flex shrink-0 flex-wrap items-center justify-end gap-2 border-t pt-2">
-        <span className="mr-auto text-xs text-muted-foreground" role="status">{dirty ? 'Unsaved changes' : 'No unsaved changes'}</span>
+      <footer className="admin-editor-actions border-t pt-2">
+        <Button type="submit" form="character-editor-form" variant="success" size="sm" disabled={busy || (view === 'edit' && !dirty)}>{isSubmitting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}{view === 'create' ? 'Create Character' : 'Save Changes'}</Button>
         <Button type="button" size="sm" variant="outline" disabled={busy || !dirty} onClick={() => { if (baseline) setFormData(JSON.parse(baseline)); }}>Discard</Button>
-        <Button type="submit" form="character-editor-form" size="sm" disabled={busy || (view === 'edit' && !dirty)}>{isSubmitting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}{view === 'create' ? 'Create Character' : 'Save Changes'}</Button>
+        <span className="ml-auto text-xs text-muted-foreground" role="status">{dirty ? 'Unsaved changes' : 'No unsaved changes'}</span>
       </footer>
     </>}
   </div>;

@@ -27,24 +27,24 @@ export function ModelResourceInventory({ model, audit, loading, error, textureLi
   const otherAssignments = assignments.filter(assignment => !linked.some(texture => texture.id === assignment.textureId));
   const embedded = audit?.embeddedResources;
   const fileLink = (file: NonNullable<ModelData['files']>[number]) => <Link className="inline-flex max-w-full flex-wrap items-center gap-x-1.5 gap-y-1 break-all font-medium text-primary hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" aria-current={file.id === selectedFileId ? 'page' : undefined} href={`/admin/threed/models/${model.id}/files/${file.id}`}><span>{file.fileName}</span><span className="text-muted-foreground">#{file.id}</span>{file.id === selectedFileId && <Badge variant="outline" className="text-[10px]">Selected File</Badge>}</Link>;
-  return <section aria-label="Model resource inventory" className="space-y-3 rounded-lg border bg-muted/20 p-3 text-xs">
+  return <section aria-label="Model resource inventory" className="space-y-3 rounded-lg border admin-editor-panel p-3 text-xs">
     <div className="flex flex-wrap items-center justify-between gap-2"><h2 className="text-sm font-semibold">Resource inventory</h2>
       <Button asChild size="sm" variant="outline" className="h-7 gap-1 text-xs"><Link href={`/admin/threed/models/${model.id}/files/new`}><Plus className="h-3.5 w-3.5" />Add File</Link></Button></div>
     <p className="text-muted-foreground">Parent Model #{model.id} · {model.modelName}. Primary geometry is the Model’s default file; other geometry files are separate saved choices.</p>
     <div className="grid gap-3 sm:grid-cols-2">
-      <div className="min-w-0 space-y-1.5 rounded-md border bg-card p-2.5"><h3 className="font-semibold">Primary geometry</h3>{primary ? fileLink(primary)
+      <div className="min-w-0 space-y-1.5 rounded-md border admin-editor-panel p-2.5"><h3 className="font-semibold">Primary geometry</h3>{primary ? fileLink(primary)
         : <p className="text-muted-foreground">{model.modelType === 'procedural' && model.mainModelFileId === null ? 'Procedural shape · no primary File required' : 'No valid saved primary File'}</p>}</div>
-      <div className="min-w-0 space-y-1.5 rounded-md border bg-card p-2.5"><h3 className="font-semibold">Other geometry files ({alternateGeometry.length})</h3>
+      <div className="min-w-0 space-y-1.5 rounded-md border admin-editor-panel p-2.5"><h3 className="font-semibold">Other geometry files ({alternateGeometry.length})</h3>
         {alternateGeometry.length ? <ul className="space-y-2">{alternateGeometry.map(file => <li key={file.id}>{fileLink(file)}</li>)}</ul> : <p className="text-muted-foreground">No alternate geometry</p>}</div>
-      <div className="min-w-0 space-y-1.5 rounded-md border bg-card p-2.5"><h3 className="font-semibold">Supporting attachments ({supporting.length})</h3>
+      <div className="min-w-0 space-y-1.5 rounded-md border admin-editor-panel p-2.5"><h3 className="font-semibold">Supporting attachments ({supporting.length})</h3>
         {supporting.length ? <ul className="space-y-2">{supporting.map(file => <li key={file.id}>{fileLink(file)} <span className="text-muted-foreground">· {file.fileType}</span></li>)}</ul> : <p className="text-muted-foreground">No saved supporting attachments</p>}</div>
-      <div className="min-w-0 space-y-1.5 rounded-md border bg-card p-2.5"><h3 className="font-semibold">Linked Texture records</h3>
+      <div className="min-w-0 space-y-1.5 rounded-md border admin-editor-panel p-2.5"><h3 className="font-semibold">Linked Texture records</h3>
         {linked.length || otherAssignments.length ? <ul className="space-y-1">
           {linked.map(texture => <li key={texture.id}>{texture.textureName} · Texture #{texture.id}{assignments.some(assignment => assignment.textureId === texture.id) ? ' · material assignment' : ' · shared attachment URL'}</li>)}
           {otherAssignments.map(assignment => <li key={`${assignment.targetKey}:${assignment.channel}`}>{assignment.textureName} · Texture #{assignment.textureId} · {assignment.targetKey}</li>)}
         </ul> : <p className="text-muted-foreground">No linked records identified</p>}
         <p className="text-xs text-muted-foreground">Library filename suggestions are not saved links.</p></div>
-      <details className="min-w-0 space-y-1.5 rounded-md border bg-card p-2.5 sm:col-span-2"><summary className="cursor-pointer font-semibold">Embedded resources</summary><p className="text-muted-foreground">
+      <details className="min-w-0 space-y-1.5 rounded-md border admin-editor-panel p-2.5 sm:col-span-2"><summary className="cursor-pointer font-semibold">Embedded resources</summary><p className="text-muted-foreground">
         {loading ? 'Inspecting saved geometry…' : embedded?.status === 'inspected'
           ? `${embedded.buffers} embedded buffer(s) · ${embedded.images} embedded image(s), declared inside the geometry File`
           : audit?.status === 'not_required' ? 'Not required for procedural geometry' : 'Embedded inventory unavailable for this format or inspection result'}

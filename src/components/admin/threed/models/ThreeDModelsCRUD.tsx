@@ -634,19 +634,19 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
                         centerAtOrigin
                         perspective={MODEL_WORKSPACE_PERSPECTIVE}
                         title="Draft Model Canvas"
-                        headerActions={<ModelFieldHelp label="Model Canvas Preview">{formData.modelType && formData.modelType !== 'procedural' && !formData.filePath.trim()
+                        headerHelp={<ModelFieldHelp label="Model Canvas Preview">{formData.modelType && formData.modelType !== 'procedural' && !formData.filePath.trim()
                           ? 'Recovery geometry only: choose a Model file to preview its geometry. Choose the recovery shape under Geometry.'
                           : 'Previewing unsaved shape, transform, and file lighting changes. Save to apply them to the reusable Model.'}</ModelFieldHelp>}
                         headerMeta={<Badge variant="outline">{formData.modelType || 'Choose a type'}</Badge>}
                         canvasClassName="h-[clamp(16rem,42dvh,30rem)]"
                       />
-                      <fieldset aria-label="Library preview image" disabled={busy || !detailsReady} className="mt-3 min-w-0 rounded-lg border bg-card p-3">
+                      <fieldset aria-label="Library preview image" disabled={busy || !detailsReady} className="mt-3 min-w-0 rounded-lg border admin-editor-panel p-3">
                         <ThreeDModelPreviewImageFields mode={view === 'create' ? 'create' : 'edit'} form={formData} setForm={setFormData}
                           isSubmitting={isSubmitting} uploadingPrimary={uploadingPrimary} uploadingThumbnail={uploadingThumbnail} onThumbnail={handleThumbnailUpload}
                           previewImageAction={editingModel && importerPreviewModel && <ModelPreviewImageExport key={editingModel.id} model={importerPreviewModel} useDraftModel onOpenChange={setExportOpen} dependencyCount={0} attachedDependencyCount={0} disabled={busy} onUseImageUrl={url => setFormData(current => ({ ...current, thumbnailUrl: url }))} />} />
                       </fieldset>
                     </section>
-                    <fieldset aria-label="Model details" tabIndex={0} disabled={busy || !detailsReady} className="min-h-0 min-w-0 rounded-lg border bg-card p-3 lg:overflow-y-auto [&_section]:rounded-md [&_section]:border [&_section]:p-3">
+                    <fieldset aria-label="Model details" tabIndex={0} disabled={busy || !detailsReady} className="min-h-0 min-w-0 rounded-lg border admin-editor-panel p-3 lg:overflow-y-auto [&_section]:rounded-md [&_section]:border [&_section]:p-3">
                       {view === 'create' && formData.modelType === 'obj' && (
                         <p className="mb-4 rounded-md border p-3 text-sm">Attach MTL files and referenced images in Model Files after creation. Use Bulk Import Models to prepare a complete OBJ bundle before uploading.</p>
                       )}
@@ -669,16 +669,16 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
                   </div>
                 )}
             </div>
-            <div className="shrink-0 space-y-2 rounded-lg border bg-card p-2">
+            <div className="shrink-0 space-y-2 rounded-lg border admin-editor-panel p-2">
               {refreshingDetails && <p role="status" className="text-sm text-muted-foreground">Reloading saved Model…</p>}
               {detailsRefreshError && <div className="space-y-2"><p role="alert" className="text-sm text-destructive">{detailsRefreshError}</p><Button variant="outline" disabled={busy} onClick={() => void refreshDetails()}>Retry Model refresh</Button></div>}
               {formError && <p role="alert" className="text-sm text-destructive">{formError}</p>}
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" disabled={busy} onClick={() => void leaveForm()}>Cancel</Button>
-                <Button className="bg-emerald-600 text-white hover:bg-emerald-700" onClick={view === "create" ? handleCreate : handleUpdate}
+              <div className="admin-editor-actions">
+                <Button variant="success" onClick={view === "create" ? handleCreate : handleUpdate}
                   disabled={busy || !detailsReady || (view === "edit" && !editingModel) || (view === "create" && !formData.filePath.trim() && formData.modelType !== "procedural")}>
                   {refreshingDetails ? "Reloading…" : busy ? "Saving…" : view === "create" ? "Create Model" : "Save Changes"}
                 </Button>
+                <Button variant="outline" disabled={busy} onClick={() => void leaveForm()}>Cancel</Button>
               </div>
             </div>
           </TabsContent>
@@ -691,7 +691,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
           <DialogContent showCloseButton={!busy}>
             <DialogHeader><DialogTitle>Unsaved Model changes</DialogTitle><DialogDescription>Save or discard your Details changes before opening Files. Saved uploads remain saved.</DialogDescription></DialogHeader>
             {formError && <p role="alert" className="text-sm text-destructive">{formError}</p>}
-            <DialogFooter><Button variant="outline" disabled={busy} onClick={() => void tabs.resolve('stay')}>Stay</Button><Button variant="outline" disabled={busy} onClick={() => void tabs.resolve('discard')}>Discard Changes</Button><Button disabled={busy || !detailsReady} onClick={() => void tabs.resolve('save')}>{busy ? 'Saving…' : 'Save Changes'}</Button></DialogFooter>
+            <DialogFooter><Button variant="outline" disabled={busy} onClick={() => void tabs.resolve('stay')}>Stay</Button><Button variant="outline" disabled={busy} onClick={() => void tabs.resolve('discard')}>Discard Changes</Button><Button variant="success" disabled={busy || !detailsReady} onClick={() => void tabs.resolve('save')}>{busy ? 'Saving…' : 'Save Changes'}</Button></DialogFooter>
           </DialogContent>
         </Dialog>
       </div>

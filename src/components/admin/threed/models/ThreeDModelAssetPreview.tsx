@@ -44,6 +44,7 @@ interface ThreeDModelAssetPreviewProps {
   title?: string;
   description?: string;
   headerMeta?: ReactNode;
+  headerHelp?: ReactNode;
   headerActions?: ReactNode;
   canvasClassName?: string;
   showMaterialInspector?: boolean;
@@ -238,6 +239,7 @@ export function ThreeDModelAssetPreview({
   title = 'Model preview',
   description = 'Uses the primary Model file and all currently available attachments.',
   headerMeta,
+  headerHelp,
   headerActions,
   canvasClassName = 'h-[320px]',
   showMaterialInspector = false,
@@ -411,7 +413,10 @@ export function ThreeDModelAssetPreview({
       <div className="flex min-h-10 items-center gap-2 border-b px-3 py-2">
         <Box className="h-4 w-4 text-blue-400" />
         <div className="min-w-0 flex-1">
-          <h2 id={previewTitleId} className="truncate text-xs font-semibold">{title}</h2>
+          <div className="flex min-w-0 items-center gap-1">
+            <h2 id={previewTitleId} className="truncate text-xs font-semibold">{title}</h2>
+            {headerHelp}
+          </div>
           <p className="sr-only">{description}</p>
         </div>
         {headerMeta}

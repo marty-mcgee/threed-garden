@@ -23,6 +23,12 @@ For the specialized parent Model Details/File editor hosts, the [October 4 works
 7. Preserve accessible labels for icon actions, keyboard-operable sorting and scroll panels, focus handling, and readable dark/light states. Do not use color as the only status signal.
 8. Keep module-specific fields, relationships, permissions and validation. Models' primary-file links, Texture substitution and importer geometry checks are not generic requirements for all pages.
 
+## Admin editor styling reference — October 4, 2026
+
+Character Details is the form styling reference, alongside the existing Models table/workspace Blueprint. Use transparent rounded bordered form sections (`admin-editor-panel`), title-adjacent accessible help, and a stationary wrapping bottom-left Save then Cancel/Discard row (`admin-editor-actions`). Enabled Save controls use the shared shadcn Button `success` variant; disabled controls remain muted and retain their existing guards. Keep field/control surfaces, status colors and Canvas rendering separate from panel backgrounds.
+
+These conventions are applied to Character Details, Model Details and standalone Model File settings, including Library image and resource panels. Other editors adopt them incrementally after reviewing their host; this does not impose viewport constraints globally. See the [scoped styling record](admin-editor-blueprint-polish.md). Preserve page-specific save, cancel/discard, history and busy behavior.
+
 ## Proposed incremental rollout
 
 | Stage | Candidate pages | Acceptance focus |

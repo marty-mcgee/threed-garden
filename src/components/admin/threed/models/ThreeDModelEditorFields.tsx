@@ -375,7 +375,7 @@ export function ThreeDModelPreviewImageFields({ mode, form, setForm, isSubmittin
             <Label htmlFor={id('thumbnailUrl')} className="mt-2 block text-xs">Image URL</Label>
             <Input id={id('thumbnailUrl')} value={form.thumbnailUrl} placeholder="HTTPS JPG, PNG, or WebP URL" onChange={(event) => update('thumbnailUrl', event.target.value)} disabled={disabled} />
           </details>
-          {form.thumbnailUrl && <img src={form.thumbnailUrl} alt="Model Library preview" className="h-28 w-full rounded border bg-muted object-contain" />}
+          {form.thumbnailUrl && <img src={form.thumbnailUrl} alt="Model Library preview" className="h-28 w-full rounded border bg-transparent object-contain" />}
           <div className="flex flex-wrap items-center gap-2">
             <input
               id={id('thumbnail-upload')}
