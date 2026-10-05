@@ -2,7 +2,7 @@
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is **v0.22.10 — ThreeD Playable Soccer**, User-confirmed. See the [release record](releases/v0.22.10.md). The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Current production is **v0.22.27 — ThreeD App: wire Drizzle database commands**, Developer-confirmed October 5, 2026. See the [release record](releases/v0.22.27.md) and [npm database workflow](developers/LOCAL_DEVELOPMENT.md#database-schema-commands). Database push completion and live acceptance remain separately unconfirmed. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
 The completed v0.20.0 infrastructure record is available in the [development plan](plans/v0.20.0.md).
 

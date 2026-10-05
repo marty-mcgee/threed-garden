@@ -6,7 +6,7 @@
 
 [![Repository validation](https://github.com/marty-mcgee/threed-garden/actions/workflows/validation.yml/badge.svg?branch=main)](https://github.com/marty-mcgee/threed-garden/actions/workflows/validation.yml?query=branch%3Amain)
 
-🟢 **Latest production milestone:** [v0.22.23 — ThreeD Model Categories: Bulk Updates + Hierarchical Displays](docs/releases/v0.22.23.md)
+🟢 **Latest production milestone:** [v0.22.27 — ThreeD App: wire Drizzle database commands](docs/releases/v0.22.27.md)
 
 [🚀 Get started](docs/users/GETTING_STARTED.md) · [🎮 Explore the controls](docs/users/THREED_CONTROLS.md) · [📚 Browse the docs](docs/README.md) · [🛠️ Run locally](#run-it-locally)
 

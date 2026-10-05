@@ -2,8 +2,9 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Current production: **v0.22.10 — ThreeD Playable Soccer**, User-confirmed.
+Current production: **v0.22.27 — ThreeD App: wire Drizzle database commands**, Developer-confirmed October 5, 2026. Release confirmation is separate from database push completion and live acceptance; see the [release record](v0.22.27.md).
 
+- [v0.22.27 — ThreeD App: wire Drizzle database commands](v0.22.27.md) — production Developer-confirmed
 - [v0.22.10 — ThreeD Playable Soccer](v0.22.10.md) — production User-confirmed
 - [v0.22.9 — ThreeD Scenario Setup and Start](v0.22.9.md) — production User-confirmed
 - [v0.22.8 — Project Scenario Setup](v0.22.8.md) — production User-confirmed
