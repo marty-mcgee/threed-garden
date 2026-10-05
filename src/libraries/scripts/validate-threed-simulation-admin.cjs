@@ -13,6 +13,8 @@ const markersCore = load(root + 'markers/runtime-marker-core.ts');
 const actions = load(root + 'orchestration/action-target-core.ts', { '../markers/runtime-marker-core.ts': markersCore });
 const input = load(root + 'simulations/simulation-input.ts', { '../orchestration/action-target-core': actions });
 const sensor = load(root + 'physics/sensor-group-core.ts');
+const legacy = load(root + 'physics/sensor-legacy-compat.ts');
+const cuboids = load(root + 'physics/sensor-cuboid-core.ts', { './sensor-legacy-compat': legacy });
 const modelSource = ts.createSourceFile('model.ts', fs.readFileSync(root + 'models/project-model-instance-core.ts', 'utf8'), ts.ScriptTarget.Latest, true);
 const ballFunctions = modelSource.statements.filter(node => ts.isFunctionDeclaration(node) && ['isProjectModelEnvironment', 'isProjectModelMovableBall'].includes(node.name?.text));
 const ballCore = { exports: {} }; vm.runInNewContext(ts.transpileModule(ballFunctions.map(node => node.getText(modelSource)).join('\n'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, ballCore);
@@ -42,7 +44,8 @@ const api = load('src/app/api/threed/simulations/route.ts', {
   'drizzle-orm': orm, '@/libraries/auth': { auth: async () => signedIn ? { user: { id: 'owner' } } : null }, '@/libraries/db/client': { db },
   '@/libraries/schema/project': tables, '@/libraries/schema/threed': tables,
   '@/libraries/services/threed/simulations/simulation-input': input, '@/libraries/services/threed/orchestration/action-target-core': actions,
-  '@/libraries/services/threed/physics/sensor-group-core': sensor, '@/libraries/services/threed/physics/sensor-legacy-compat': { IMPORTED_SENSOR_GROUP: { id: 'imported', name: 'Imported' } },
+  '@/libraries/services/threed/physics/sensor-group-core': sensor, '@/libraries/services/threed/physics/sensor-legacy-compat': { ...legacy, IMPORTED_SENSOR_GROUP: { id: 'imported', name: 'Imported' } },
+  '@/libraries/services/threed/physics/sensor-cuboid-core': cuboids,
   '@/libraries/services/threed/models/project-model-instance-core': ballCore.exports,
 });
 const record = { ...valid, id: 9, revision: 1 };
@@ -85,6 +88,10 @@ const predicates = query => JSON.stringify(query.where);
   assert.equal((await run('POST', '', { ...valid, definition: soccerDefinition }, choices)).status, 400, 'Ordinary Model and rigless/nonmovable actor cannot receive Soccer Actions');
   const soccerChoices = [choices[0], choices[1], [{ ...choices[2][0], data: { isMovable: true }, metadata: {} }, { ...choices[2][1], metadata: { physicsMode: 'ball' } }]];
   assert.equal((await run('POST', '', { ...valid, definition: soccerDefinition }, [...soccerChoices, [record]])).status, 201);
+  const sensorChoices = [choices[0], choices[1], [{ ...choices[2][0], id: 101 }, { ...choices[2][1], id: 102, metadata: { physicsVolumeSensor: { id: 'model-volume', name: 'Goal', behavior: 'counter', detection: 'movable-ball', groupId: 'group1' } } }]];
+  const selectedSensors = { ...valid, definition: { ...definition, observations: [{ ...definition.observations[0], sensors: [{ ownerMarkerId: 102, id: 'model-volume' }] }] } };
+  assert.equal((await run('POST', '', selectedSensors, [...sensorChoices, [record]])).status, 201);
+  assert.equal((await run('POST', '', { ...selectedSensors, definition: { ...selectedSensors.definition, observations: [{ ...selectedSensors.definition.observations[0], sensors: [{ ownerMarkerId: 999, id: 'model-volume' }] }] } }, sensorChoices)).status, 400, 'Foreign Sensor selection rejected');
   await run('GET', '?projectId=15&threedId=1&scenarioId=7&isActive=true', null, [[row], [{ total: 1 }]]);
   for (const field of ['projectId', 'threedId', 'scenarioId', 'isActive']) assert(predicates(queries[0]).includes(`threedSimulations.${field}`), 'Scene picker filters exact bindings');
   const { projectId, threedId, ...edit } = { ...valid, id: 9, revision: 1 };

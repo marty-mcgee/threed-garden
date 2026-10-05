@@ -7,7 +7,8 @@ import { threed, threedScenarios, threedSimulations } from '@/libraries/schema/t
 import { MAX_SIMULATION_BYTES, SimulationInputError, simulationFields, simulationId, simulationListQuery, type SimulationDefinition } from '@/libraries/services/threed/simulations/simulation-input';
 import { THREED_PLANTING_TARGET_ACTIONS } from '@/libraries/services/threed/orchestration/action-target-core';
 import { readSensorGroups } from '@/libraries/services/threed/physics/sensor-group-core';
-import { IMPORTED_SENSOR_GROUP } from '@/libraries/services/threed/physics/sensor-legacy-compat';
+import { IMPORTED_SENSOR_GROUP, readModelVolumeSensor } from '@/libraries/services/threed/physics/sensor-legacy-compat';
+import { readPhysicsSensorCuboids } from '@/libraries/services/threed/physics/sensor-cuboid-core';
 import { isProjectModelMovableBall } from '@/libraries/services/threed/models/project-model-instance-core';
 
 const privateHeaders = { 'Cache-Control': 'private, no-store' };
@@ -33,7 +34,7 @@ async function choices(client: Client, userId: string, projectId: number, threed
   if (!assigned) return null;
   const scenarios = await client.select({ id: threedScenarios.id, name: threedScenarios.name, isActive: threedScenarios.isActive }).from(threedScenarios)
     .where(and(eq(threedScenarios.userId, userId), eq(threedScenarios.projectId, projectId), eq(threedScenarios.threedId, threedId))).orderBy(asc(threedScenarios.name));
-  const markerRows = await client.select({ markerId: projectThreedMarkers.markerId, markerType: projectThreedMarkers.markerType, name: projectThreedMarkers.name,
+  const markerRows = await client.select({ id: projectThreedMarkers.id, markerId: projectThreedMarkers.markerId, markerType: projectThreedMarkers.markerType, name: projectThreedMarkers.name,
     data: projectThreedMarkers.data, metadata: projectThreedMarkers.metadata }).from(projectThreedMarkers)
     .where(and(eq(projectThreedMarkers.userId, userId), eq(projectThreedMarkers.projectId, projectId), eq(projectThreedMarkers.threedId, threedId), eq(projectThreedMarkers.isActive, true))).orderBy(asc(projectThreedMarkers.name));
   const metadata = (assigned.metadata ?? {}) as Record<string, unknown>;
@@ -42,7 +43,14 @@ async function choices(client: Client, userId: string, projectId: number, threed
   const markers = markerRows.map(row => ({ markerId: row.markerId, markerType: row.markerType, name: row.name,
     movableCharacter: row.markerType === 'characters' && (row.data as Record<string, unknown> | null)?.isMovable === true,
     movableBall: row.markerType === 'models' && isProjectModelMovableBall(row.metadata) }));
-  return { scenarios, markers, groups };
+  const sensors = markerRows.flatMap(row => {
+    if (!Number.isSafeInteger(row.id) || row.id <= 0) return [];
+    const metadata = row.metadata as Record<string, unknown> | null;
+    const volume = row.markerType === 'models' && !isProjectModelMovableBall(metadata) && metadata?.placementRole !== 'environment' ? readModelVolumeSensor(metadata) : null;
+    return [...readPhysicsSensorCuboids(metadata), ...(volume ? [volume] : [])].map(sensor => ({ ownerMarkerId: row.id, id: sensor.id,
+      name: sensor.name, ownerName: row.name, groupId: sensor.groupId, behavior: sensor.behavior }));
+  });
+  return { scenarios, markers, groups, sensors };
 }
 function validateReferences(options: NonNullable<Awaited<ReturnType<typeof choices>>>, scenarioId: number | null, definition: SimulationDefinition) {
   if (scenarioId !== null && !options.scenarios.some(row => row.id === scenarioId)) throw new SimulationInputError('Choose a Scenario from this Project and ThreeD module.');
@@ -55,6 +63,9 @@ function validateReferences(options: NonNullable<Awaited<ReturnType<typeof choic
     }
   }
   if (definition.observations.some(source => !options.groups.some(group => group.id === source.sensorGroupId))) throw new SimulationInputError('Choose a Sensor Group from this Project.');
+  for (const source of definition.observations) {
+    if (source.sensors?.some(sensor => !options.sensors.some(choice => choice.ownerMarkerId === sensor.ownerMarkerId && choice.id === sensor.id && choice.groupId === source.sensorGroupId))) throw new SimulationInputError('Choose Sensors assigned to the selected Project group.');
+  }
 }
 export async function GET(request: NextRequest) {
   const session = await auth();

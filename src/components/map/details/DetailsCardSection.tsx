@@ -24,6 +24,7 @@ export function DetailsCardSection({
   return (
     <PersistentDetails
       storageId={label}
+      data-character-settings-section={['Module / Position', 'Character Physics', 'Model + Mesh', 'Character Defaults'].includes(label) ? '' : undefined}
       open={defaultOpen}
       className={`mt-2 rounded border border-foreground/10 bg-foreground/[0.035] p-2 ${/^Project .+ Instance$/.test(label) ? 'order-[-10]' : ''} ${className}`}
     >

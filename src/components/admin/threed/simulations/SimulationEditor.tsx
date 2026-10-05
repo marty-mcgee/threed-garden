@@ -35,6 +35,8 @@ export function SimulationEditor({ id, projectId, initialSoccerDraft, readOnly =
   const [choices, setChoices] = useState<SimulationChoices>(emptySimulationChoices), [choicesLoading, setChoicesLoading] = useState(false), [choicesError, setChoicesError] = useState('');
   const [busy, setBusy] = useState(false), [error, setError] = useState('');
   const dirty = !readOnly && JSON.stringify(form) !== baseline;
+  let definitionValid = true;
+  try { parseSimulationDefinition(form.definition); } catch { definitionValid = false; }
   function close() { if (lock.current || busy || (dirty && !window.confirm('Discard unsaved Simulation changes?'))) return; router.push('/admin/threed/simulations'); }
   function refresh() { if (lock.current || (dirty && !window.confirm('Reload and discard unsaved Simulation changes?'))) return; setReload(value => value + 1); }
   function changeBinding(projectId: string, threedId = '') {
@@ -133,7 +135,7 @@ export function SimulationEditor({ id, projectId, initialSoccerDraft, readOnly =
         {choicesLoading && <p role="status" className="text-muted-foreground">Loading Project choices…</p>}{choicesError && <p role="alert" className="text-destructive">{choicesError}</p>}
         <fieldset disabled={choicesLoading || !!choicesError || !form.threedId}><SimulationDefinitionEditor value={form.definition} choices={choices} readOnly={readOnly} onChange={definition => setForm(value => ({ ...value, definition }))} /></fieldset>
         {error && <p role="alert" className="text-destructive">{error}</p>}
-        {!readOnly && <footer className="admin-editor-actions border-t pt-3"><Button variant="success" size="sm" disabled={busy || loading || !!loadError || choicesLoading || !!choicesError || !form.projectId || !form.threedId || !form.name.trim() || !form.slug.trim() || (!!id && !dirty)} onClick={() => void save()}>{busy ? 'Saving…' : 'Save Changes'}</Button><Button variant="outline" size="sm" disabled={busy} onClick={close}>Cancel</Button></footer>}
+        {!readOnly && <footer className="admin-editor-actions border-t pt-3"><Button variant="success" size="sm" disabled={busy || loading || !!loadError || choicesLoading || !!choicesError || !definitionValid || !form.projectId || !form.threedId || !form.name.trim() || !form.slug.trim() || (!!id && !dirty)} onClick={() => void save()}>{busy ? 'Saving…' : 'Save Changes'}</Button><Button variant="outline" size="sm" disabled={busy} onClick={close}>Cancel</Button></footer>}
       </fieldset>
     </div>}
   </div>;

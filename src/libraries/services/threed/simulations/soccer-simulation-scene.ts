@@ -5,6 +5,7 @@ import { soccerKickInRange } from '../physics/soccer-kick-core';
 import type { ThreeDActionCollisionPointId } from '../physics/action-collision-core';
 import type { SensorMember } from '../physics/sensor-counter-core';
 import type { SoccerSimulation } from './soccer-simulation-runner';
+import type { SimulationObservation } from './simulation-input';
 
 export type SoccerSceneContext = {
   projectId?: number; scenario: ScenarioStartRequest | null; allowed: boolean; ready: boolean; busy: boolean;
@@ -39,7 +40,8 @@ export function soccerSimulationReadiness(simulation: SoccerSimulation, scene: S
   if (![scene.position(actor.id), scene.position(ball.id)].every(position => position && Object.values(position).every(Number.isFinite))) return 'Waiting for live Character and ball positions.';
   if (actor.data?.model?.metadata?.activeSource === 'shape' && simulation.definition.steps.some(step => step.action === 'kickBall')) return 'Restore the Character’s rig Model before running a foot kick.';
   if (simulation.definition.steps.some(step => step.action === 'kickBall') && (!kick || !kick.points.length)) return 'Assign an active foot-kick Action and wait for its rig animation to load.';
-  if (simulation.definition.observations.some(source => !scene.groups.some(group => group.id === source.sensorGroupId))) return 'A saved observation Sensor Group is unavailable.';
+  if (simulation.definition.observations.some(source => !scene.groups.some(group => group.id === source.sensorGroupId)
+    || source.sensors?.some(sensor => !scene.sensorMembers.some(member => member.ownerMarkerId === sensor.ownerMarkerId && member.id === sensor.id && member.groupId === source.sensorGroupId)))) return 'A saved observation Sensor or group is unavailable.';
   return null;
 }
 
@@ -49,14 +51,24 @@ export function soccerSimulationKickReady(simulation: SoccerSimulation, scene: S
 }
 
 export type SimulationSensorObservation = { groupId: string; name: string; baseline: number; final: number; delta: number;
-  events: number; truncated: boolean; countersReset: boolean };
+  events: number; truncated: boolean; countersReset: boolean;
+  sensors: { ownerMarkerId: number; id: string; name: string; behavior: 'counter' | 'trigger'; baseline: number; final: number }[] };
+export function simulationObservesSensor(source: SimulationObservation, member: Pick<SensorMember, 'ownerMarkerId' | 'id' | 'groupId'>): boolean {
+  return member.groupId === source.sensorGroupId && (!source.sensors || source.sensors.some(sensor => sensor.ownerMarkerId === member.ownerMarkerId && sensor.id === member.id));
+}
 /** Run-window observations are not claims that the kick caused a goal. No counters are reset. */
 export function simulationSensorSnapshot(simulation: SoccerSimulation, scene: SoccerSceneContext): SimulationSensorObservation[] {
   const counts = scene.counts();
+  let remaining = 128;
   return simulation.definition.observations.map(source => {
-    const total = scene.sensorMembers.filter(member => member.behavior === 'counter' && member.groupId === source.sensorGroupId)
+    const members = scene.sensorMembers.filter(member => simulationObservesSensor(source, member));
+    const total = members.filter(member => member.behavior === 'counter')
       .reduce((sum, member) => sum + (counts[`${member.ownerMarkerId}:${member.id}`] ?? 0), 0);
+    const selected = members.slice(0, remaining); remaining -= selected.length;
     return { groupId: source.sensorGroupId, name: scene.groups.find(group => group.id === source.sensorGroupId)?.name ?? source.sensorGroupId,
-      baseline: total, final: total, delta: 0, events: 0, truncated: false, countersReset: false };
+      baseline: total, final: total, delta: 0, events: 0, truncated: selected.length < members.length, countersReset: false,
+      sensors: selected.map(member => ({ ownerMarkerId: member.ownerMarkerId, id: member.id, name: member.name ?? member.id, behavior: member.behavior,
+        baseline: member.behavior === 'counter' ? counts[`${member.ownerMarkerId}:${member.id}`] ?? 0 : 0,
+        final: member.behavior === 'counter' ? counts[`${member.ownerMarkerId}:${member.id}`] ?? 0 : 0 })) };
   });
 }

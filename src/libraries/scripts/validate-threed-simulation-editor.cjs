@@ -89,5 +89,18 @@ const button = (f, name) => f.find(node => node.type === 'Button' && node.props.
   nodes(render()).find(node => node.props?.['aria-label'] === 'Move Action 1 down').props.onClick(); assert.equal(value.steps[1].id, first);
   nodes(render()).find(node => node.props?.['aria-label'] === 'Remove Action 1').props.onClick(); assert.equal(value.steps.length, 1); assert(!action(render(true)));
   value.steps[0].targetMarkerId = 'models-5'; nodes(render()).find(node => node.props?.id === `action-${value.steps[0].id}`).props.onChange({ target: { value: 'watering' } }); assert.equal(value.steps[0].targetMarkerId, '', 'Planting Actions clear incompatible targets');
+  const common = { actorMarkerId: '', targetMarkerId: '', timeoutMs: 30000, onFailure: 'stop' };
+  value = { version: 1, steps: [{ ...common, id: 'run', action: 'runToTarget' }, { ...common, id: 'kick', action: 'kickBall' }, { ...common, id: 'other', action: 'point', actorMarkerId: 'other-actor' }], observations: [{ id: 'goals', kind: 'sensor-group', sensorGroupId: 'goals' }] };
+  const participants = () => definitionModule.SimulationDefinitionEditor({ value, onChange: next => { value = next; }, choices: { markers: [{ markerId: 'kate', markerType: 'characters', name: 'Kate', movableCharacter: true }, { markerId: 'ball', markerType: 'models', name: 'Ball', movableBall: true }], groups: [{ id: 'goals', name: 'Goals' }], scenarios: [], sensors: [{ ownerMarkerId: 101, id: 'left', name: 'Left', ownerName: 'Field', groupId: 'goals', behavior: 'counter' }] } });
+  nodes(participants()).find(node => node.props?.id === 'soccer-character').props.onChange({ target: { value: 'kate' } });
+  nodes(participants()).find(node => node.props?.id === 'soccer-ball').props.onChange({ target: { value: 'ball' } });
+  assert(value.steps.slice(0, 2).every(step => step.actorMarkerId === 'kate' && step.targetMarkerId === 'ball')); assert.equal(value.steps[2].actorMarkerId, 'other-actor');
+  nodes(participants()).find(node => node.type === 'input' && node.props.type === 'checkbox' && node.props.checked).props.onChange({ target: { checked: false } });
+  assert.equal(value.observations[0].sensors.length, 0);
+  const checks = nodes(participants()).filter(node => node.type === 'input' && node.props.type === 'checkbox');
+  checks[1].props.onChange({ target: { checked: true } }); assert.equal(value.observations[0].sensors[0].ownerMarkerId, 101);
+  assert(!nodes(participants()).some(node => node.props?.id === 'actor-run'), 'Soccer bindings are chosen once');
+  const unfinished = fixture({ projectId: 15, initialSoccerDraft: { threedId: 1, scenarioId: 7, actorMarkerId: '', ballMarkerId: '', sensorGroupId: 'goals' } }); await unfinished.rt.flush();
+  assert(button(unfinished, 'Save Changes').props.disabled, 'Incomplete required bindings do not enable Save');
   console.log('PASS: Simulation exact editor reads, immutable binding, failed-save retention, dirty navigation, double-save locks, create/View routes, revision-aware partial bulk deletes and Action reorder callbacks (offline).');
 })().catch(e => { console.error(e); process.exitCode = 1; });

@@ -39,10 +39,10 @@ export class SoccerSimulationRunner {
   private unsubscribe: (() => void) | null = null;
   constructor(private readonly port: Port) {}
   get running() { return this.state?.phase === 'running'; }
-  start(simulation: SoccerSimulation) {
+  start(simulation: SoccerSimulation, runId = this.port.requestId()) {
     if (this.running) throw new Error('A Simulation is already running.');
     this.simulation = captureSoccerSimulation(simulation, { ...simulation, scenarioId: simulation.scenarioId ?? undefined });
-    this.state = { runId: this.port.requestId(), simulationId: simulation.id, revision: simulation.revision, phase: 'running', stepIndex: 0, outcomes: [] };
+    this.state = { runId, simulationId: simulation.id, revision: simulation.revision, phase: 'running', stepIndex: 0, outcomes: [] };
     this.unsubscribe = this.port.subscribe(reply => this.receive(reply));
     this.next();
   }

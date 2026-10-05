@@ -1,0 +1,69 @@
+# ThreeD Simulations: execution and result analysis
+
+The [v0.22.26 Soccer milestone](../plans/v0.22.26-soccer-scenario-simulation.md) uses existing Character navigation and contact-kick owners. [v0.22.27](../plans/v0.22.27-simulation-results-preparation.md) adds Drizzle-backed result capture, guided preparation and selected Sensor measurements. General Action executors and physical devices remain outside this implementation.
+
+## Definitions, attempts and observations
+
+`threed_simulations` contains Project-owned definitions with an optional Scenario link and revision-aware CRUD. Saving or restoring one never starts it. The Soccer runner supports `runToTarget` and `kickBall`; the same saved movable Character/ball must participate throughout. It subscribes before dispatch, requires correlated arrival before kicking and accepts completion only from the exact ball's applied contact result. Interrupted approaches always stop.
+
+`threed_simulation_results` contains one captured attempt per owner/run UUID. The authoritative Drizzle object is `threedSimulationResults` in `src/libraries/schema/threed/index.ts`. Use `npm run db:generate`, then `npm run db:push` through the configured `DATABASE_URL` before result-backed Scene runs. This Developer-requested npm workflow replaces the earlier manual SQL Editor recommendation; see [database commands](LOCAL_DEVELOPMENT.md#database-schema-commands). The targeted [Drizzle-generated SQL](../releases/sql/v0.22.27-threed-simulation-results.sql) remains a review reference. Native push compares the actual database with the App schema rather than executing that file. Do not rerun v0.22.25 SQL.
+
+| Field | Meaning |
+| --- | --- |
+| `user_id`, `project_id`, `threed_id` | Private immutable ownership/context; owner or Project/module deletion cascades records |
+| `simulation_id`, `scenario_id` | Nullable current links; definition/Scenario deletion sets null, retaining historical snapshot |
+| `run_id`, `simulation_revision` | Idempotent attempt UUID and captured saved revision |
+| `snapshot` | Server-read Simulation ID/name/revision, Scenario ID/name, Project/module names and definition |
+| `status` | `running`, `completed`, `failed`, `cancelled`, `timed-out` |
+| `report` | Terminal browser-scene report with outcomes and selected Sensor readings; null while unfinished |
+| `client_started_at`, `client_ended_at` | Browser epoch timestamps stored as timestamptz; not trusted server execution timestamps |
+| `created_at`, `updated_at` | Server capture/finalization timestamps |
+
+Reports are observations from an authenticated browser, not independent server certification. A successful contact kick does not imply a goal. Counters remain shared with other Scene activity. Events cover the run window, are capped and can be rate-limited upstream. Groups contain totals and individual `{ownerMarkerId,id,name,behavior,baseline,final}` readings; a counter decrease flags reset. Trigger sensors have zero counter readings and contribute to group event totals. There is no raw event stream or causal attribution in this version.
+
+## Private API
+
+All requests use the current authenticated owner and return `private, no-store`. Capture validates owned Project/module membership and locks the saved definition revision. Finalization locks the captured row and validates its report against that immutable snapshot. Bodies reject unknown fields and exceed neither the definition's 64 KiB bound nor the result's 256 KiB bound.
+
+| Request | Contract |
+| --- | --- |
+| `POST /api/threed/simulation-results` | `{simulationId, revision, runId, clientStartedAt}`; server captures before dispatch; no client-authored snapshot |
+| `PATCH /api/threed/simulation-results` | `{runId, report}`; finalize once; identical retry accepted, replacement rejected |
+| `GET /api/threed/simulation-results?runId=<uuid>` | Exact full owner-scoped snapshot/report |
+| `GET /api/threed/simulation-results?projectId=<id>&status=completed&limit=25&offset=0` | Summary list and total; optional `simulationId`/`scenarioId`; maximum page 100; no full JSON in summaries |
+
+`report` is `{version:1,source:'browser-scene',phase,clientStartedAt,clientEndedAt,outcomes,observations,reason?}`. Outcomes are an ordered prefix of saved steps and retain `stepId`, Action, request UUID, start/end, status and optional reason. Completed reports require all steps completed. Other terminal reports may have no outcomes if cancelled/failed after capture but before dispatch.
+
+Specific Sensor selections use `{ownerMarkerId,id}` references within a selected group. Omitted selections mean the whole group, preserving existing definitions. The definition allows 32 groups, up to 32 references per group and 128 selected references total. Reports contain at most 50 outcomes, 128 individual Sensor readings and 256 total events; larger whole groups report truncated individual readings while retaining their aggregate count.
+
+## Retry and interrupted sessions
+
+The client journal uses the same run UUID for every retry. A failed capture blocks movement. A lost capture response is resolved by idempotently capturing that UUID and finalizing a failed/cancelled attempt; it never resumes execution. Failed final saves retain their exact payload in a bounded page-session queue and display Retry. Retrying never invokes an Action. No final report can replace a different already-finalized report.
+
+Stop, normal scope cleanup and pagehide attempt terminal reporting. Hard closes, crashes or prolonged disconnection can leave `running` records with null reports. Treat them as **unfinished reporting**, not evidence of ongoing execution or success. The page-session queue is lost on hard refresh; no background worker reconstructs missing outcomes. Server receipt time and browser timing must be distinguished in analysis.
+
+## Read-only analysis examples
+
+Run these only against the intended database with an authorized owner UUID substituted for `<owner-user-id>`. Summary APIs are preferable for application lists.
+
+```sql
+SELECT id, run_id, snapshot->>'name' AS simulation,
+       simulation_revision, status, client_started_at, client_ended_at
+FROM threed_simulation_results
+WHERE user_id = '<owner-user-id>'
+ORDER BY id DESC
+LIMIT 100;
+```
+
+```sql
+SELECT r.run_id, outcome->>'stepId' AS step,
+       outcome->>'action' AS action, outcome->>'status' AS status,
+       (outcome->>'endedAt')::bigint - (outcome->>'startedAt')::bigint AS duration_ms
+FROM threed_simulation_results AS r
+CROSS JOIN LATERAL jsonb_array_elements(r.report->'outcomes') AS outcome
+WHERE r.user_id = '<owner-user-id>' AND r.status <> 'running';
+```
+
+Use `snapshot.simulationId`/`snapshot.scenarioId` when current foreign keys have been unlinked by deletion. Group/Sensor readings live in `report.observations`; inspect truncation/reset flags before comparing runs. Historical snapshots do not change with later definition edits. These SQL examples were not executed against a live database.
+
+See [user preparation](../help/threed-simulations.md), [local evidence and pending acceptance](../plans/v0.22.27-simulation-results-preparation.md) and [agent validation](../agents/VALIDATION.md). No cross-Project sharing, general metadata collector, automatic Project save, physical-device command or dependency upgrade is included.

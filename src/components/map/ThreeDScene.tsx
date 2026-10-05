@@ -1413,7 +1413,7 @@ function ProjectModelMarkerBody({
         marker={marker}
         projectId={projectId}
         enabled={isLayerEnabled}
-        physicsDebug={physicsDebug || isSelected}
+        physicsDebug={physicsDebug}
         onPhysicsEvent={onSensorPhysicsEvent}
       />
       {regionIndex && <EnvironmentRegionColliders index={regionIndex} enabled={isLayerEnabled} physicsDebug={physicsDebug} markerId={String(marker.id)} position={position} rotation={rotation} onReady={setRegionsReady} />}
@@ -1732,7 +1732,7 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
           ]}
           position={[0, bedColliderSize.height / 2, 0]}
         />
-        <PhysicsSensorCuboidChildren marker={marker} projectId={projectId} enabled={isLayerEnabled} physicsDebug={physicsDebug || isSelected} onPhysicsEvent={onSensorPhysicsEvent} />
+        <PhysicsSensorCuboidChildren marker={marker} projectId={projectId} enabled={isLayerEnabled} physicsDebug={physicsDebug} onPhysicsEvent={onSensorPhysicsEvent} />
         <group
           visible={isLayerEnabled}
           scale={[bedScale, bedScale, bedScale]}
@@ -1779,7 +1779,7 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
           ]}
           position={[0, plantingColliderHeight / 2, 0]}
         />
-        <PhysicsSensorCuboidChildren marker={marker} projectId={projectId} enabled={isLayerEnabled} physicsDebug={physicsDebug || isSelected} onPhysicsEvent={onSensorPhysicsEvent} />
+        <PhysicsSensorCuboidChildren marker={marker} projectId={projectId} enabled={isLayerEnabled} physicsDebug={physicsDebug} onPhysicsEvent={onSensorPhysicsEvent} />
         <group
           visible={isLayerEnabled}
           scale={[plantingModelScale, plantingModelScale, plantingModelScale]}
@@ -1870,7 +1870,7 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
           args={[farmBotWidth / 2, farmBotHeight / 2, farmBotLength / 2]}
           position={[0, farmBotHeight / 2, 0]}
         />
-        <PhysicsSensorCuboidChildren marker={marker} projectId={projectId} enabled={isLayerEnabled} physicsDebug={physicsDebug || isSelected} onPhysicsEvent={onSensorPhysicsEvent} />
+        <PhysicsSensorCuboidChildren marker={marker} projectId={projectId} enabled={isLayerEnabled} physicsDebug={physicsDebug} onPhysicsEvent={onSensorPhysicsEvent} />
         <group
           visible={isLayerEnabled}
           scale={[farmBotWidth / 0.6, farmBotHeight / 0.58, farmBotLength / 0.4]}

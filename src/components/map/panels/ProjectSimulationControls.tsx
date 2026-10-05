@@ -12,12 +12,14 @@ import { NAVIGATION_REQUEST, NAVIGATION_STATUS, type NavigationRequest } from '@
 import { defaultKickCollisionPoints } from '@/libraries/services/threed/physics/action-collision-core';
 import { THREED_SOCCER_KICK_REQUEST_EVENT, THREED_SOCCER_KICK_RESULT_EVENT, THREED_SOCCER_KICK_CANCEL_EVENT,
   THREED_CHARACTER_ACTION_CANCEL_EVENT, type SoccerKickResult } from '@/libraries/services/threed/physics/soccer-kick-core';
-import { THREED_MODEL_PLACEMENT_EVENT } from '@/libraries/services/threed/models/project-model-instance-core';
+import { THREED_MODEL_PLACEMENT_EVENT, isProjectModelMovableBall } from '@/libraries/services/threed/models/project-model-instance-core';
 import type { ThreeDPhysicsEventV1 } from '@/libraries/services/threed/physics/physics-event-core';
 import { captureSoccerSimulation, SoccerSimulationRunner, type SoccerSimulation, type SimulationRunState, type SimulationReply } from '@/libraries/services/threed/simulations/soccer-simulation-runner';
 import { soccerSimulationReadiness, soccerSimulationKickReady, simulationSensorSnapshot, type SoccerSceneContext,
-  type SimulationSensorObservation, type SoccerKickMapping } from '@/libraries/services/threed/simulations/soccer-simulation-scene';
+  simulationObservesSensor, type SimulationSensorObservation, type SoccerKickMapping } from '@/libraries/services/threed/simulations/soccer-simulation-scene';
 import { simulationActionLabel } from '@/libraries/services/threed/simulations/simulation-input';
+import { simulationResultJournal, type SimulationRunStart } from '@/libraries/services/threed/simulations/simulation-result-journal';
+import type { SimulationResultReport } from '@/libraries/services/threed/simulations/simulation-result-input';
 
 type Summary = Pick<SoccerSimulation, 'id' | 'name' | 'revision'>;
 type Props = { context: SoccerSceneContext; subscribeSensors: (listener: (event: Readonly<ThreeDPhysicsEventV1>) => void) => () => void };
@@ -31,6 +33,7 @@ async function read(url: string, signal: AbortSignal) {
 export function ProjectSimulationControls({ context, subscribeSensors }: Props) {
   const { showToast, ToastComponent } = useToast();
   const { slots } = useAnimationActionSlots();
+  useSyncExternalStore(simulationResultJournal.subscribe, simulationResultJournal.snapshot, () => 0);
   const [rows, setRows] = useState<Summary[]>([]), [page, setPage] = useState(0), [total, setTotal] = useState(0), [refresh, setRefresh] = useState(0);
   const [selectedId, setSelectedId] = useState(''), [simulation, setSimulation] = useState<SoccerSimulation | null>(null);
   const [loading, setLoading] = useState(false), [error, setError] = useState(''), [checking, setChecking] = useState(false);
@@ -51,6 +54,16 @@ export function ProjectSimulationControls({ context, subscribeSensors }: Props) 
   const controlledActor = context.markers.find(marker => marker.type === 'characters' && Number(marker.data?.id) === context.controlledCharacterId);
   const draftParams = new URLSearchParams({ projectId: String(context.projectId ?? ''), recipe: 'soccer', threedId: String(threedId ?? ''), scenarioId: String(scenarioId ?? ''),
     actorMarkerId: controlledActor?.id ?? '', ballMarkerId: context.target?.type === 'models' ? context.target.markerId : '', sensorGroupId: context.scenario?.groupId ?? '' });
+  const targetBall = context.markers.find(marker => marker.id === context.target?.markerId && marker.type === 'models' && isProjectModelMovableBall(marker.metadata));
+  const preparation = [
+    { label: 'Saved Scenario started', ready: !!scenarioId && !!threedId },
+    { label: 'Character controlled', ready: !!controlledActor },
+    { label: 'Movable ball targeted', ready: !!targetBall },
+    { label: 'Active Simulation selected', ready: !!simulation },
+    { label: 'Runtime ready', ready: !!simulation && !readiness },
+  ];
+  const pendingResults = simulationResultJournal.list().filter(entry => entry.projectId === context.projectId && entry.status === 'error' && entry.report);
+  const resultEntry = simulationResultJournal.list().find(entry => entry.start.runId === state?.runId);
 
   useEffect(() => {
     setPage(0); setSelectedId(''); setSimulation(null); setState(null); setObservations([]); setError(''); setChecking(false);
@@ -105,6 +118,13 @@ export function ProjectSimulationControls({ context, subscribeSensors }: Props) 
     const controller = new AbortController(); runAbort.current = controller; runLock.current = true; setChecking(true); setError('');
     const binding = { projectId: simulation.projectId, threedId: simulation.threedId, scenarioId: simulation.scenarioId! };
     const startedScenario = current.current.scenario!;
+    let capture: SimulationRunStart | null = null, initialObservations: SimulationSensorObservation[] = [], terminalReported = false, activeInstance: SoccerSimulationRunner | null = null;
+    const finalizeCapture = (phase: SimulationResultReport['phase'], reason: string) => {
+      if (!capture || terminalReported || !simulationResultJournal.list().some(entry => entry.start.runId === capture!.runId)) return;
+      terminalReported = true;
+      void simulationResultJournal.finish(capture.runId, { version: 1, source: 'browser-scene', phase,
+        clientStartedAt: capture.clientStartedAt, clientEndedAt: Date.now(), outcomes: [], observations: initialObservations, reason: reason.slice(0, 200) }).catch(() => {});
+    };
     try {
       // Re-read exact owner records and module membership immediately before execution.
       const [latest, savedScenario, choices] = await Promise.all([
@@ -126,6 +146,12 @@ export function ProjectSimulationControls({ context, subscribeSensors }: Props) 
       }
       const reason = soccerSimulationReadiness(captured, current.current, currentMapping.current);
       if (reason || current.current.scenario?.sequence !== startedScenario.sequence) throw new Error(reason || 'Scenario changed.');
+      capture = { simulationId: captured.id, revision: captured.revision, runId: crypto.randomUUID(), clientStartedAt: Date.now() };
+      initialObservations = simulationSensorSnapshot(captured, current.current);
+      await simulationResultJournal.begin(capture, binding.projectId);
+      if (controller.signal.aborted) { finalizeCapture('cancelled', 'Stopped during run capture.'); return; }
+      const afterCaptureReason = soccerSimulationReadiness(captured, current.current, currentMapping.current);
+      if (afterCaptureReason || current.current.scenario?.sequence !== startedScenario.sequence) throw new Error(afterCaptureReason || 'Scenario changed during run capture.');
       const actor = captured.definition.steps[0].actorMarkerId, ball = captured.definition.steps[0].targetMarkerId;
       const characterId = Number(current.current.markers.find(marker => marker.id === actor)?.data?.id);
       const kick = currentMapping.current;
@@ -142,9 +168,11 @@ export function ProjectSimulationControls({ context, subscribeSensors }: Props) 
         observationSubscription.current?.(); observationSubscription.current = null;
         const final = current.current.projectId === binding.projectId && current.current.scenario?.scenarioId === binding.scenarioId
           ? simulationSensorSnapshot(captured, current.current) : latestReadings;
-        readings = readings.map(item => { const count = final.find(next => next.groupId === item.groupId)?.final ?? item.baseline;
-          return { ...item, final: count, delta: count - item.baseline, countersReset: count < item.baseline }; });
+        readings = readings.map(item => { const group = final.find(next => next.groupId === item.groupId), count = group?.final ?? item.baseline;
+          return { ...item, final: count, delta: count - item.baseline, countersReset: count < item.baseline,
+            sensors: item.sensors.map(sensor => ({ ...sensor, final: group?.sensors.find(next => next.ownerMarkerId === sensor.ownerMarkerId && next.id === sensor.id)?.final ?? sensor.baseline })) }; });
         setObservations(readings);
+        return readings;
       };
       const emitCancel = (requestId: string, action: string) => {
         if (action === 'runToTarget') window.dispatchEvent(new CustomEvent<NavigationRequest>(NAVIGATION_REQUEST, { detail: {
@@ -168,6 +196,7 @@ export function ProjectSimulationControls({ context, subscribeSensors }: Props) 
           const action = (event: Event) => { const value = (event as CustomEvent).detail; if ((value?.markerId === actor || (!value?.markerId && value?.characterId === characterId)) && value?.target?.actionRequestId !== activeRequest.current) instance.stop('Another Character Action interrupted the Simulation.'); };
           const navigationRequest = (event: Event) => { const value = (event as CustomEvent<NavigationRequest>).detail;
             if (value?.actorMarkerId === actor && value.requestId !== activeRequest.current && !value.cancelRequestId) instance.stop('Character navigation changed.'); };
+          const pageHide = () => instance.stop('Scene page closed.');
           const monitor = setInterval(() => { const reason = validateContext();
             if (reason) instance.stop(reason);
             else latestReadings = simulationSensorSnapshot(captured, current.current);
@@ -175,9 +204,10 @@ export function ProjectSimulationControls({ context, subscribeSensors }: Props) 
           window.addEventListener(NAVIGATION_STATUS, navigation); window.addEventListener(THREED_SOCCER_KICK_RESULT_EVENT, result);
           window.addEventListener('keydown', input); window.addEventListener(THREED_MODEL_PLACEMENT_EVENT, placement);
           window.addEventListener('garden-character-action', action); window.addEventListener(NAVIGATION_REQUEST, navigationRequest);
+          window.addEventListener('pagehide', pageHide);
           return () => { clearInterval(monitor); window.removeEventListener(NAVIGATION_STATUS, navigation); window.removeEventListener(THREED_SOCCER_KICK_RESULT_EVENT, result);
             window.removeEventListener('keydown', input); window.removeEventListener(THREED_MODEL_PLACEMENT_EVENT, placement);
-            window.removeEventListener('garden-character-action', action); window.removeEventListener(NAVIGATION_REQUEST, navigationRequest); };
+            window.removeEventListener('garden-character-action', action); window.removeEventListener(NAVIGATION_REQUEST, navigationRequest); window.removeEventListener('pagehide', pageHide); };
         },
         validate: step => validateContext()
           ?? (step.action === 'kickBall' && !soccerSimulationKickReady(captured, current.current) ? 'The ball moved out of kick range.' : null),
@@ -192,22 +222,29 @@ export function ProjectSimulationControls({ context, subscribeSensors }: Props) 
         update: next => {
           setState(next);
           if (next.phase !== 'running') {
-            activeRequest.current = ''; finishObservations();
+            activeRequest.current = ''; const finalObservations = finishObservations(); terminalReported = true;
+            void simulationResultJournal.finish(next.runId, { version: 1, source: 'browser-scene', phase: next.phase,
+              clientStartedAt: capture!.clientStartedAt, clientEndedAt: Date.now(), outcomes: next.outcomes, observations: finalObservations,
+              ...(next.reason ? { reason: next.reason } : {}) }).catch(cause => showToast(cause instanceof Error ? cause.message : 'Result save failed.', 'error'));
             showToast(next.phase === 'completed' ? `Simulation completed${next.outcomes.some(item => item.action === 'kickBall') ? ': the ball received its contact kick.' : '.'}` : `Simulation ${next.phase}${next.reason ? `: ${next.reason}` : '.'}`, next.phase === 'completed' ? 'success' : next.phase === 'cancelled' ? 'info' : 'error');
           }
         },
       });
-      runner.current = instance;
+      runner.current = instance; activeInstance = instance;
       observationSubscription.current = subscribeSensors(event => {
         if (event.projectId !== binding.projectId || !event.sensor) return;
-        const groupId = members.find(member => member.ownerMarkerId === event.sensor!.ownerMarkerId && member.id === event.sensor!.id)?.groupId;
+        const member = members.find(member => member.ownerMarkerId === event.sensor!.ownerMarkerId && member.id === event.sensor!.id);
+        const source = member && captured.definition.observations.find(source => simulationObservesSensor(source, member));
+        const groupId = source?.sensorGroupId;
         if (!groupId || !readings.some(item => item.groupId === groupId)) return;
         latestReadings = simulationSensorSnapshot(captured, current.current);
         if (observedEvents++ >= 256) { readings = readings.map(item => ({ ...item, truncated: true })); return; }
         readings = readings.map(item => item.groupId === groupId ? { ...item, events: item.events + 1 } : item);
       });
-      setObservations([]); instance.start(captured);
+      setObservations([]); instance.start(captured, capture.runId);
     } catch (cause) {
+      if (activeInstance?.running) activeInstance.stop('Simulation could not continue.');
+      finalizeCapture(controller.signal.aborted ? 'cancelled' : 'failed', cause instanceof Error ? cause.message : 'Run preparation failed.');
       if (!controller.signal.aborted) { const message = cause instanceof Error ? cause.message : 'Simulation could not start.'; setError(message); showToast(message, 'error'); }
     } finally {
       if (runAbort.current === controller) { runAbort.current = null; runLock.current = false; setChecking(false); }
@@ -217,9 +254,12 @@ export function ProjectSimulationControls({ context, subscribeSensors }: Props) 
   if (!context.allowed || context.scenario?.kind !== 'soccer') return null;
   return <section aria-label="ThreeD Simulation" className="mt-2 space-y-2 border-t border-foreground/15 pt-2">
     <div className="flex items-center gap-1"><FlaskConical className="h-3.5 w-3.5 text-cyan-500" /><h3 className="text-xs font-semibold">Simulation</h3>
-      <ModelFieldHelp label="Scene Simulation">Load and start a Soccer Scenario, Take Control of the saved Character, and select its ball with Use as Action Target. Run executes the saved Actions through the current physics owners. Stop cancels pending work. Results stay in this Scene session.</ModelFieldHelp>
+      <ModelFieldHelp label="Scene Simulation">Take Control and choose the ball with Use as Action Target. Run captures a database record before executing Actions through current physics owners. Stop cancels pending work. Results report Scene activity and selected Sensors; unfinished browser sessions remain identifiable.</ModelFieldHelp>
       <Button aria-label="Refresh Simulations" variant="ghost" size="icon" className="ml-auto h-6 w-6" disabled={running || checking || loading} onClick={() => setRefresh(value => value + 1)}><RotateCw className="h-3 w-3" /></Button>
     </div>
+    <ol aria-label="Simulation preparation" className="grid gap-1 text-[11px]">{preparation.map(item => <li key={item.label} className={item.ready ? 'text-emerald-700 dark:text-emerald-300' : 'text-muted-foreground'}><span aria-hidden="true">{item.ready ? '✓' : '○'}</span> {item.label}</li>)}</ol>
+    {!controlledActor && <p className="text-[11px] text-amber-600 dark:text-amber-300">Select your Character and choose Take Control.</p>}
+    {controlledActor && !targetBall && <p className="text-[11px] text-amber-600 dark:text-amber-300">Select a movable ball and choose Use as Action Target.</p>}
     {!scenarioId || !threedId ? <p>Reload and start the saved Scenario to enable Simulations.</p> : <>
       <label className="block text-xs">Saved Simulation<select aria-label="Saved Simulation" className="mt-1 w-full rounded border border-foreground/15 bg-background/60 p-1.5 text-xs" value={selectedId} disabled={running || checking || loading} onChange={event => { setSelectedId(event.target.value); setState(null); setObservations([]); }}>
         <option value="">{loading ? 'Loading…' : 'Choose a Simulation'}</option>
@@ -227,7 +267,7 @@ export function ProjectSimulationControls({ context, subscribeSensors }: Props) 
         {rows.map(row => <option key={row.id} value={row.id}>{row.name}</option>)}
       </select></label>
       {total > 25 && <div className="flex items-center gap-2 text-[11px]"><span>Page {page + 1} of {Math.ceil(total / 25)}</span><Button variant="outline" size="sm" className="h-6 text-xs" disabled={!page || running || checking || loading} onClick={() => setPage(value => value - 1)}>Previous</Button><Button variant="outline" size="sm" className="h-6 text-xs" disabled={(page + 1) * 25 >= total || running || checking || loading} onClick={() => setPage(value => value + 1)}>Next</Button></div>}
-      {!rows.length && !loading && !error && <p className="text-muted-foreground">No active Simulations linked to this Scenario. <Link className="underline" href={`/admin/threed/simulations/new?${draftParams}`}>Prepare Soccer Simulation</Link></p>}
+      {!rows.length && !loading && !error && <p className="text-muted-foreground">No active Simulations linked to this Scenario. {controlledActor && targetBall ? <Link className="underline" href={`/admin/threed/simulations/new?${draftParams}`}>Prepare Soccer Simulation</Link> : <span>Take Control and target the ball to prepare a prefilled Simulation.</span>}</p>}
       {simulation && <><p className="text-[11px] text-muted-foreground">Character: {selectedActor?.name ?? 'Unavailable'} · Ball: {context.markers.find(marker => marker.id === simulation.definition.steps[0].targetMarkerId)?.name ?? 'Unavailable'} · Revision {simulation.revision}</p>
         <ol className="list-inside list-decimal text-xs">{simulation.definition.steps.map((step, index) => <li key={step.id} className={running && state.stepIndex === index ? 'text-cyan-500' : ''}>{simulationActionLabel(step.action)}</li>)}</ol>
         {readiness && !running && <p role="status" className="text-xs text-amber-600 dark:text-amber-300">{readiness}</p>}
@@ -236,8 +276,10 @@ export function ProjectSimulationControls({ context, subscribeSensors }: Props) 
         <Button variant="outline" className="h-7 text-xs" disabled={!running && !checking} onClick={stop}><Square className="h-3 w-3" /> Stop</Button></div>
       {state && <div role="status" className="space-y-1 text-xs"><p className="font-medium">{state.phase === 'running' ? `Running Action ${state.stepIndex + 1}` : `Simulation ${state.phase}`}</p>
         {state.reason && <p>{state.reason}</p>}<ul>{state.outcomes.map(item => <li key={item.requestId}>{simulationActionLabel(item.action)}: {item.status}{item.reason ? ` · ${item.reason}` : ''}</li>)}</ul></div>}
+      {resultEntry && <p role="status" className="text-[11px] text-muted-foreground">{resultEntry.status === 'saved' ? `Result #${resultEntry.resultId} saved.` : resultEntry.status === 'error' ? `Result not saved: ${resultEntry.error}` : resultEntry.status === 'saving' ? 'Saving result…' : 'Run record captured.'}</p>}
       {!!observations.length && <details><summary className="cursor-pointer text-xs">Sensor observations during run</summary><p className="mt-1 text-[11px] text-muted-foreground">Run-window activity; a completed kick does not certify a goal. Counts remain shared.</p><ul className="text-[11px]">{observations.map(item => <li key={item.groupId}>{item.name}: {item.baseline} → {item.final} ({item.countersReset ? 'counter reset observed' : `+${item.delta}`}); {item.events} events{item.truncated ? ' (report limit reached)' : ''}</li>)}</ul></details>}
     </>}
+    {!!pendingResults.length && <div role="alert" className="space-y-1 text-xs text-destructive"><p>{pendingResults.length} result{pendingResults.length === 1 ? '' : 's'} awaiting save. Retrying does not run Actions.</p><Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => void simulationResultJournal.retry(context.projectId!)}>Retry result save</Button></div>}
     {error && <p role="alert" className="text-xs text-destructive">{error}</p>}{ToastComponent}
   </section>;
 }

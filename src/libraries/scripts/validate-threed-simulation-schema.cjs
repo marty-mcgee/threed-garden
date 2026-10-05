@@ -47,6 +47,9 @@ assert(fs.readFileSync('src/libraries/schema/index.ts', 'utf8').includes("export
 
 (async () => {
   const current = { ...schema, user, project };
+  // This fixture preserves the historical definition-only migration delta.
+  delete current.threedSimulationResults;
+  delete current.threedSimulationResultsRelations;
   const previous = { ...current }; delete previous.threedSimulations;
   const before = generateDrizzleJson(previous);
   const after = generateDrizzleJson(current, before.id);

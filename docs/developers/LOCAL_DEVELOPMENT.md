@@ -15,16 +15,22 @@ Open `http://localhost:4444`. Create an untracked `.env.local` in the project ro
 
 ## Database schema commands
 
-The Node/npm equivalents of the historical Bun commands are already defined in `package.json`:
+Use the native Drizzle Kit commands defined in `package.json`:
 
 ```bash
 npm run db:generate
 npm run db:push
 ```
 
-Both use the installed Drizzle Kit CLI and `drizzle.config.ts`. That config loads `.env.local` (then `.env` as a fallback) and uses `DATABASE_URL`; the commands target the database named by that URL, not a database selected by the Git branch. `db:generate` writes SQL and schema snapshots under the ignored `drizzle/` directory for review. It does not apply the SQL. `db:push` compares the **whole current Drizzle schema** with the connected database and applies its proposed changes after the script's `--strict` confirmation. It does not replay the file from `db:generate`.
+Both use the installed Drizzle Kit CLI and the central `src/libraries/schema/index.ts`, which exports the authoritative ThreeD schema at `src/libraries/schema/threed/index.ts`.
+
+`db:generate` selects `drizzle.generate.config.ts`. It needs no database credentials or connection and writes SQL/snapshots under the existing ignored `drizzle/` directory. It compares the current schema with the latest local snapshot; a fresh checkout without snapshots generates an initial baseline. In this checkout, the existing v0.22.25 baseline produced `drizzle/0001_threed_simulation_results.sql`, containing only the v0.22.27 result table, constraints and indexes. Generation does not apply SQL.
+
+`db:push` selects `drizzle.config.ts`, which reuses the same schema settings and loads `.env.local`, then `.env` as a fallback. An already supplied process `DATABASE_URL` takes precedence. Push prints its proposed SQL and requires native strict confirmation. It compares the **whole current Drizzle schema** with the connected database; it does not replay files from `db:generate`. No SQL Editor or third-party application is required. The database is selected by `DATABASE_URL`, not by the Git branch. See the official [generate](https://orm.drizzle.team/docs/drizzle-kit-generate) and [push](https://orm.drizzle.team/docs/drizzle-kit-push) references.
 
 Before a push, verify the intended Neon project, branch and database behind `DATABASE_URL`, then review every proposed statement. The User confirmed that this checkout and Vercel Production use the same Neon `DATABASE_URL`; a local `db:push` therefore changes the live database. Verify the actual connection before accepting any proposal. The seed script's `--confirm-development` flag does not establish branch isolation. For v0.22.4, [the release handoff](../releases/v0.22.4.md) records the shared-database comparison. The Scenario table already exists; the broader Drizzle proposal remains unaccepted. Apply schema changes only when that specific change and target have been authorized.
+
+October 5, 2026: the Developer requested this native npm workflow for v0.22.27, replacing the earlier manual SQL Editor recommendation. The agent validated actual offline generation, matching result SQL, shared config/connection precedence, TypeScript, 64-task CI and a guarded npm build (135 pages). No live push or database comparison was executed. The generated files remain locally ignored under the existing repository policy; retain snapshots for incremental generation. Do not use the historical initial baseline through a migration runner against an existing database; `db:migrate` remains the existing informational script.
 
 ## Multimedia seed import
 

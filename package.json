@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.22.26",
+  "version": "0.22.27",
   "private": true,
   "packageManager": "npm@11.6.2",
   "scripts": {
@@ -8,9 +8,9 @@
     "dev": "next dev -p 4444",
     "start": "next dev -p 4444",
     "next:start": "next start -p 4444",
-    "db:generate": "node ./node_modules/drizzle-kit/bin.cjs generate",
+    "db:generate": "node ./node_modules/drizzle-kit/bin.cjs generate --config=drizzle.generate.config.ts",
     "db:migrate": "echo 'Use db:push for development'",
-    "db:push": "node ./node_modules/drizzle-kit/bin.cjs push --strict",
+    "db:push": "node ./node_modules/drizzle-kit/bin.cjs push --config=drizzle.config.ts --strict",
     "db:studio": "node ./node_modules/drizzle-kit/bin.cjs studio",
     "typecheck": "tsc --noEmit --pretty false",
     "validate": "node src/libraries/scripts/validate.mjs",

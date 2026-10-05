@@ -3,12 +3,13 @@ import {
   pgTable, text, timestamp, boolean, index, serial, varchar, 
   integer, decimal, numeric, jsonb, uniqueIndex, foreignKey,
   pgSchema, pgEnum, time, AnyPgColumn, real,
-  check, unique, doublePrecision, primaryKey,
+  check, unique, doublePrecision, primaryKey, uuid,
 } from 'drizzle-orm/pg-core';
 import { relations, sql } from 'drizzle-orm';
 import { user } from '../auth';
 import { project } from '../project';
 import type { ScenarioSetup } from '@/libraries/services/threed/scenarios/scenario-input';
+import type { SimulationResultReport, SimulationResultSnapshot } from '@/libraries/services/threed/simulations/simulation-result-input';
 
 // ============================================
 // THREED MODULE - Main Table
@@ -129,6 +130,42 @@ export const threedSimulationsRelations = relations(threedSimulations, ({ one })
 export type ThreeDSimulation = typeof threedSimulations.$inferSelect;
 export type NewThreeDSimulation = typeof threedSimulations.$inferInsert;
 
+/** Browser Scene run history: snapshots are immutable; a missing final report remains running. */
+export const threedSimulationResults = pgTable('threed_simulation_results', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  projectId: integer('project_id').notNull().references(() => project.id, { onDelete: 'cascade' }),
+  threedId: integer('threed_id').notNull().references(() => threed.id, { onDelete: 'cascade' }),
+  simulationId: integer('simulation_id').references(() => threedSimulations.id, { onDelete: 'set null' }),
+  scenarioId: integer('scenario_id').references(() => threedScenarios.id, { onDelete: 'set null' }),
+  runId: uuid('run_id').notNull(),
+  simulationRevision: integer('simulation_revision').notNull(),
+  status: varchar('status', { length: 16 }).notNull().default('running'),
+  snapshot: jsonb('snapshot').$type<SimulationResultSnapshot>().notNull(),
+  report: jsonb('report').$type<SimulationResultReport>(),
+  clientStartedAt: timestamp('client_started_at', { withTimezone: true }).notNull(),
+  clientEndedAt: timestamp('client_ended_at', { withTimezone: true }),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, table => [
+  uniqueIndex('idx_threed_simulation_results_owner_run').on(table.userId, table.runId),
+  index('idx_threed_simulation_results_owner_project_created').on(table.userId, table.projectId, table.createdAt),
+  index('idx_threed_simulation_results_simulation_created').on(table.simulationId, table.createdAt),
+  index('idx_threed_simulation_results_scenario').on(table.scenarioId),
+  check('threed_simulation_results_revision_positive', sql`${table.simulationRevision} > 0`),
+  check('threed_simulation_results_status_valid', sql`${table.status} IN ('running', 'completed', 'failed', 'cancelled', 'timed-out')`),
+  check('threed_simulation_results_snapshot_valid', sql`coalesce(jsonb_typeof(${table.snapshot}) = 'object' AND jsonb_typeof(${table.snapshot}->'definition') = 'object' AND ${table.snapshot}->'definition'->'version' = '1'::jsonb, false)`),
+  check('threed_simulation_results_lifecycle_valid', sql`(${table.status} = 'running' AND ${table.report} IS NULL AND ${table.clientEndedAt} IS NULL) OR (${table.status} <> 'running' AND ${table.report} IS NOT NULL AND ${table.clientEndedAt} IS NOT NULL AND ${table.clientEndedAt} >= ${table.clientStartedAt} AND coalesce(jsonb_typeof(${table.report}) = 'object' AND ${table.report}->'version' = '1'::jsonb AND ${table.report}->>'source' = 'browser-scene' AND ${table.report}->>'phase' = ${table.status}, false))`),
+]);
+export const threedSimulationResultsRelations = relations(threedSimulationResults, ({ one }) => ({
+  user: one(user, { fields: [threedSimulationResults.userId], references: [user.id] }),
+  project: one(project, { fields: [threedSimulationResults.projectId], references: [project.id] }),
+  threed: one(threed, { fields: [threedSimulationResults.threedId], references: [threed.id] }),
+  simulation: one(threedSimulations, { fields: [threedSimulationResults.simulationId], references: [threedSimulations.id] }),
+  scenario: one(threedScenarios, { fields: [threedSimulationResults.scenarioId], references: [threedScenarios.id] }),
+}));
+export type ThreeDSimulationResult = typeof threedSimulationResults.$inferSelect;
+
 // ============================================
 // RELATIONSHIPS
 // ============================================
@@ -156,6 +193,7 @@ export const threedRelations = relations(threed, ({ one, many }) => ({
   layers: many(threedLayers),
   scenarios: many(threedScenarios),
   simulations: many(threedSimulations),
+  simulationResults: many(threedSimulationResults),
 }));
 
 

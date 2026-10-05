@@ -1,5 +1,6 @@
 import { config } from 'dotenv';
 import { defineConfig } from 'drizzle-kit';
+import schemaConfig from './drizzle.generate.config';
 
 // Next.js development uses .env.local. Drizzle runs as a standalone CLI, so
 // load that file explicitly and retain .env as a lower-priority fallback.
@@ -11,9 +12,7 @@ if (!process.env.DATABASE_URL) {
 }
 
 export default defineConfig({
-  schema: "./src/libraries/schema/index.ts",
-  out: './drizzle',
-  dialect: 'postgresql',
+  ...schemaConfig,
   dbCredentials: {
     url: process.env.DATABASE_URL,
   },

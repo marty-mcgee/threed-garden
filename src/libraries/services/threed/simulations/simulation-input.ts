@@ -10,7 +10,8 @@ export const MAX_SIMULATION_OBSERVATIONS = 32;
 export const MAX_SIMULATION_BYTES = 65_536;
 export type SimulationAction = typeof SIMULATION_ACTIONS[number];
 export type SimulationStep = { id: string; action: SimulationAction; actorMarkerId: string; targetMarkerId: string; timeoutMs: number; onFailure: 'stop' | 'continue' };
-export type SimulationObservation = { id: string; kind: 'sensor-group'; sensorGroupId: string };
+export type SimulationSensorReference = { ownerMarkerId: number; id: string };
+export type SimulationObservation = { id: string; kind: 'sensor-group'; sensorGroupId: string; sensors?: SimulationSensorReference[] };
 export type SimulationDefinition = { version: 1; steps: SimulationStep[]; observations: SimulationObservation[] };
 export const emptySimulationDefinition = (): SimulationDefinition => ({ version: 1, steps: [], observations: [] });
 
@@ -32,6 +33,7 @@ export function parseSimulationDefinition(value: unknown): SimulationDefinition 
   const d = object(value, ['version', 'steps', 'observations']);
   if (d.version !== 1 || !Array.isArray(d.steps) || d.steps.length > MAX_SIMULATION_STEPS || !Array.isArray(d.observations) || d.observations.length > MAX_SIMULATION_OBSERVATIONS) throw new SimulationInputError('Use version 1 with at most 50 Actions and 32 observation sources.');
   const stepIds = new Set<string>(), observationIds = new Set<string>(), groups = new Set<string>();
+  let sensorCount = 0;
   const steps = d.steps.map((value): SimulationStep => {
     const s = object(value, ['id', 'action', 'actorMarkerId', 'targetMarkerId', 'timeoutMs', 'onFailure']);
     const id = token(s.id, 'Action ID', 64);
@@ -42,11 +44,23 @@ export function parseSimulationDefinition(value: unknown): SimulationDefinition 
     return { id, action: s.action as SimulationAction, actorMarkerId: token(s.actorMarkerId, 'Character marker'), targetMarkerId: token(s.targetMarkerId, 'target marker'), timeoutMs: s.timeoutMs as number, onFailure: s.onFailure };
   });
   const observations = d.observations.map(value => {
-    const s = object(value, ['id', 'kind', 'sensorGroupId']);
+    const s = object(value, ['id', 'kind', 'sensorGroupId', 'sensors']);
     const id = token(s.id, 'observation ID', 64), sensorGroupId = token(s.sensorGroupId, 'Sensor Group', 64);
     if (s.kind !== 'sensor-group' || observationIds.has(id) || groups.has(sensorGroupId)) throw new SimulationInputError('Use unique Sensor Group observation sources.');
     observationIds.add(id); groups.add(sensorGroupId);
-    return { id, kind: 'sensor-group' as const, sensorGroupId };
+    let sensors: SimulationSensorReference[] | undefined;
+    if (s.sensors !== undefined) {
+      if (!Array.isArray(s.sensors) || !s.sensors.length || s.sensors.length > 32 || (sensorCount += s.sensors.length) > 128) throw new SimulationInputError('Choose 1–32 Sensors per group, at most 128 overall.');
+      const keys = new Set<string>();
+      sensors = s.sensors.map(value => {
+        const sensor = object(value, ['ownerMarkerId', 'id']);
+        const ownerMarkerId = simulationId(sensor.ownerMarkerId, 'Sensor owner'), id = token(sensor.id, 'Sensor ID', 64);
+        const key = `${ownerMarkerId}:${id}`;
+        if (keys.has(key)) throw new SimulationInputError('Sensor choices must be unique.'); keys.add(key);
+        return { ownerMarkerId, id };
+      });
+    }
+    return { id, kind: 'sensor-group' as const, sensorGroupId, ...(sensors ? { sensors } : {}) };
   });
   return { version: 1, steps, observations };
 }

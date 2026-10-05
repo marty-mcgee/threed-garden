@@ -12,7 +12,7 @@ import { getCharacterAnimationAvailability, subscribeCharacterAnimationAvailabil
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useSession } from 'next-auth/react';
 import { hasModelLoadFailure, subscribeModelLoadFailures } from '@/libraries/services/threed/models/model-load-failures';
-import { Crosshair, ExternalLink, Gamepad2, Loader2, Pause, ScanSearch, X } from 'lucide-react';
+import { Crosshair, ExternalLink, Gamepad2, Loader2, Pause, ScanSearch, Settings2, X } from 'lucide-react';
 import type { RuntimeMarker, ThreeDActionTarget } from '@/libraries/types/map';
 import type { ThreeDRuntimeMarkerPositionResolver } from '@/components/map/UnifiedMapView';
 import {
@@ -289,6 +289,8 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
     setPendingKickRequestId(null);
     setKickFeedback(null);
   }, [projectId, controlledCharacterId, actionTarget?.markerId]);
+  const [showCharacterSettings, setShowCharacterSettings] = useState(false);
+  useEffect(() => { setShowCharacterSettings(false); }, [selected?.id, selected?.type]);
   const customActions = customActionSlots.map(slot => slot.actionKey);
   const customGroups = [...new Set(customActionSlots.map(slot => (slot.categoryName ?? 'Uncategorized')))].map(title => ({ title, actions: customActionSlots.filter(slot => (slot.categoryName ?? 'Uncategorized') === title).map(slot => ({ action: slot.actionKey, label: slot.name })) }));
   const animationAvailability = useSyncExternalStore(subscribeCharacterAnimationAvailability,
@@ -524,7 +526,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
     <DetailsSectionScope.Provider value={`${projectId}:${selected.type}:${selected.id}:${selectedSensorId ?? 'asset'}`}>
     <DetailsCardActionsProvider>
     <div
-      className={`flex flex-col threed-workspace-panel threed-details-surface threed-inspector ${selectedSensorId ? 'threed-sensor-inspector' : ''} absolute top-9 z-40 max-h-[calc(100%-2.25rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-lg border border-foreground/15 text-foreground shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]`}
+      className={`flex flex-col threed-workspace-panel threed-details-surface threed-inspector ${selectedSensorId ? 'threed-sensor-inspector' : ''} ${isCharacterMarker && !showCharacterSettings && !selectedSensorId && movingModuleMarkerId !== characterMarkerId ? '[&_[data-character-settings-section]]:hidden' : ''} absolute top-9 z-40 max-h-[calc(100%-2.25rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-lg border border-foreground/15 text-foreground shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]`}
       style={{
         left: `${leftOffsetRem}rem`,
         backgroundColor: 'var(--threed-details-background, rgba(17, 26, 40, 0.5))',
@@ -619,6 +621,9 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
         >
           <ExternalLink className="h-3.5 w-3.5" />
         </a>
+        {isCharacterMarker && <Button variant="ghost" size="icon" className="h-7 w-7" aria-pressed={showCharacterSettings}
+          aria-label={showCharacterSettings ? 'Hide Character settings' : 'Show Character settings'} title={showCharacterSettings ? 'Hide Character settings' : 'Show Character settings'}
+          onClick={event => { event.stopPropagation(); setShowCharacterSettings(value => !value); }}><Settings2 className="h-3.5 w-3.5" /></Button>}
         <DetailsCardActionsSlot />
       </div>
 

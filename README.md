@@ -48,6 +48,15 @@ npm run dev
 
 Open [🌐 localhost:4444](http://localhost:4444). The interactive Scene lives at `/dashboard/scene`.
 
+For Drizzle schema updates:
+
+```bash
+npm run db:generate
+npm run db:push
+```
+
+Generation writes local SQL; push shows the database changes for confirmation. [🗃️ Database workflow](docs/developers/LOCAL_DEVELOPMENT.md#database-schema-commands).
+
 For checks and a production build:
 
 ```bash

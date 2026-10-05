@@ -6,7 +6,7 @@ function load(file, deps = {}, globals = {}, cache = new Map()) {
   file = path.resolve(file); if (cache.has(file)) return cache.get(file);
   const exports = {}; cache.set(file, exports);
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText,
-    { exports, console, URLSearchParams, AbortController, Date, crypto: require('node:crypto'), ...globals, require(name) {
+    { exports, console, Error, URLSearchParams, AbortController, AbortSignal, TextEncoder, Date, crypto: require('node:crypto'), ...globals, require(name) {
       if (name in deps) return deps[name];
       const target = name.startsWith('@/') ? path.resolve('src', name.slice(2)) : name.startsWith('.') ? path.resolve(path.dirname(file), name) : null;
       assert(target, `Unexpected dependency: ${name}`); return load(target.endsWith('.ts') ? target : target + '.ts', deps, globals, cache);
@@ -119,14 +119,24 @@ function reactRuntime() {
 }
 function controlsFixture() {
   const rt = reactRuntime(), events = [], listeners = new Map(), requests = [], notices = [], timers = new Map(); let timerId = 0, sensorListener, currentContext = context;
-  let saved = { ...simulation }, hold = false, pendingReads = [];
+  let saved = { ...simulation }, hold = false, holdCapture = false, captureFailed = false, pendingReads = [];
   class Event { constructor(type, options) { this.type = type; this.detail = options?.detail; } }
   const window = { addEventListener: (name, fn) => { const set = listeners.get(name) ?? new Set(); set.add(fn); listeners.set(name, set); },
     removeEventListener: (name, fn) => listeners.get(name)?.delete(fn), dispatchEvent: event => { events.push(event); [...(listeners.get(event.type) ?? [])].forEach(fn => fn(event)); } };
   const response = url => url.includes('simulations?id=') ? { success: true, data: saved } : url.includes('scenarios?id=') ? { success: true, data: { id: 7, projectId: 16, threedId: 1, isActive: true, setup: { kind: 'soccer', environmentMarkerId: 'field', sensorGroupId: 'goals' } } }
     : url.includes('options=1') ? { success: true, data: { markers: [{ markerId: 'kate', movableCharacter: true }, { markerId: 'ball', movableBall: true }] } }
     : { success: true, data: [saved], pagination: { total: 1 } };
-  const fetch = async (url, options) => { requests.push({ url, options }); if (hold) await new Promise(resolve => pendingReads.push(resolve)); return Response.json(response(url)); };
+  const fetch = async (url, options = {}) => {
+    requests.push({ url, options }); if (hold || (holdCapture && url === '/api/threed/simulation-results' && options.method === 'POST')) await new Promise(resolve => pendingReads.push(resolve));
+    if (url === '/api/threed/simulation-results') {
+      if (captureFailed && options.method === 'POST') return Response.json({ success: false, error: 'Migration required' }, { status: 503 });
+      const body = JSON.parse(options.body);
+      return Response.json({ success: true, data: options.method === 'POST'
+        ? { id: 1, runId: body.runId, status: 'running', simulationRevision: body.revision, snapshot: { simulationId: body.simulationId } }
+        : { id: 1, runId: body.runId, status: body.report.phase } });
+    }
+    return Response.json(response(url));
+  };
   const deps = { react: rt.react, 'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'Link' }, 'lucide-react': proxy,
     '@/components/ui/button': proxy, '@/components/admin/threed/models/ModelFieldHelp': proxy,
     '@/components/ui/toast': { useToast: () => ({ showToast: (...args) => notices.push(args), ToastComponent: null }) },
@@ -140,7 +150,7 @@ function controlsFixture() {
   rt.mount(() => ui.ProjectSimulationControls({ context: currentContext, subscribeSensors: fn => { sensorListener = fn; return () => { sensorListener = null; }; } }));
   const find = predicate => nodes(rt.tree).find(predicate), button = icon => find(node => node.type === 'Button' && nodes(node.props.children).some(child => child.type === icon));
   return { rt, events, requests, notices, timers, button, find, emit: (type, detail) => window.dispatchEvent(new Event(type, { detail })), sensor: event => sensorListener?.(event),
-    context(value) { currentContext = value; rt.render(); }, revision(value) { saved = { ...saved, revision: value }; }, hold(value) { hold = value; }, release() { pendingReads.splice(0).forEach(resolve => resolve()); } };
+    context(value) { currentContext = value; rt.render(); }, revision(value) { saved = { ...saved, revision: value }; }, hold(value) { hold = value; }, holdCapture(value) { holdCapture = value; }, captureFailed(value) { captureFailed = value; }, release() { pendingReads.splice(0).forEach(resolve => resolve()); } };
 }
 (async () => {
   let ui = controlsFixture(); await ui.rt.flush();
@@ -151,6 +161,7 @@ function controlsFixture() {
   assert.equal(ui.requests.filter(request => request.url.includes('options=1')).length, 1, 'Duplicate Run is locked through asynchronous preflight');
   const navRequest = ui.events.find(event => event.type === navigation.NAVIGATION_REQUEST).detail;
   assert.equal(navRequest.command, 'run'); assert(!ui.events.some(event => event.type === kickCore.THREED_SOCCER_KICK_REQUEST_EVENT));
+  assert(ui.requests.some(request => request.url === '/api/threed/simulation-results' && request.options.method === 'POST'), 'Run captures a database record before navigation');
   positions.set('kate', { x: -1, y: 0.5, z: 0 });
   ui.emit(navigation.NAVIGATION_STATUS, { ...navRequest, phase: 'arrived', targetMarkerId: 'other-ball' }); assert(!ui.events.some(event => event.type === kickCore.THREED_SOCCER_KICK_REQUEST_EVENT));
   ui.emit(navigation.NAVIGATION_STATUS, { ...navRequest, phase: 'arrived' });
@@ -161,11 +172,14 @@ function controlsFixture() {
   ui.emit(kickCore.THREED_SOCCER_KICK_RESULT_EVENT, { ...kick, applied: true, projectId: 99 }); assert.equal(ui.notices.length, 0);
   ui.emit(kickCore.THREED_SOCCER_KICK_RESULT_EVENT, { ...kick, applied: true }); await ui.rt.flush();
   assert(ui.notices.some(([message, type]) => type === 'success' && message.includes('completed'))); assert.equal(ui.timers.size, 0);
+  const report = JSON.parse(ui.requests.find(request => request.url === '/api/threed/simulation-results' && request.options.method === 'PATCH').options.body).report;
+  assert.equal(report.phase, 'completed'); assert.equal(report.outcomes.length, 2); assert.equal(report.observations[0].events, 1); assert.equal(report.observations[0].sensors.length, 2);
   assert(nodes(ui.rt.tree).some(node => node.type === 'li' && JSON.stringify(node.props.children).includes('events'))); ui.rt.cleanup();
   ui = controlsFixture(); await ui.rt.flush(); ui.find(node => node.props?.['aria-label'] === 'Saved Simulation').props.onChange({ target: { value: '26' } }); await ui.rt.flush();
   await ui.button('Play').props.onClick(); await ui.rt.flush(); const pendingNav = ui.events.find(event => event.type === navigation.NAVIGATION_REQUEST).detail;
   ui.button('Square').props.onClick(); await ui.rt.flush();
   assert(ui.events.some(event => event.type === navigation.NAVIGATION_REQUEST && event.detail.cancelRequestId === pendingNav.requestId));
+  assert(ui.requests.some(request => request.options?.method === 'PATCH' && JSON.parse(request.options.body).report.phase === 'cancelled'), 'Stop preserves a cancelled result');
   ui.emit(navigation.NAVIGATION_STATUS, { ...pendingNav, phase: 'arrived' }); assert(!ui.events.some(event => event.type === kickCore.THREED_SOCCER_KICK_REQUEST_EVENT));
   ui.rt.cleanup(); assert.equal(ui.timers.size, 0);
   ui = controlsFixture(); await ui.rt.flush(); ui.find(node => node.props?.['aria-label'] === 'Saved Simulation').props.onChange({ target: { value: '26' } }); await ui.rt.flush();
@@ -173,5 +187,12 @@ function controlsFixture() {
   assert.equal(ui.events.length, 0, 'A delayed preflight cannot start after a Project change'); ui.rt.cleanup();
   ui = controlsFixture(); await ui.rt.flush(); ui.find(node => node.props?.['aria-label'] === 'Saved Simulation').props.onChange({ target: { value: '26' } }); await ui.rt.flush();
   ui.revision(4); await ui.button('Play').props.onClick(); await ui.rt.flush(); assert.equal(ui.events.length, 0); assert(ui.notices.some(([message]) => message.includes('changed'))); ui.rt.cleanup();
+  ui = controlsFixture(); await ui.rt.flush(); ui.find(node => node.props?.['aria-label'] === 'Saved Simulation').props.onChange({ target: { value: '26' } }); await ui.rt.flush();
+  ui.holdCapture(true); ui.button('Play').props.onClick(); await ui.rt.flush();
+  ui.context({ ...context, projectId: 99, scenario: null }); ui.release(); await ui.rt.flush();
+  assert.equal(ui.events.length, 0, 'Late database capture cannot start in another Project');
+  assert(ui.requests.some(request => request.options.method === 'PATCH' && JSON.parse(request.options.body).report.phase === 'cancelled'), 'Late capture receives an honest cancelled report'); ui.rt.cleanup();
+  ui = controlsFixture(); await ui.rt.flush(); ui.find(node => node.props?.['aria-label'] === 'Saved Simulation').props.onChange({ target: { value: '26' } }); await ui.rt.flush();
+  ui.captureFailed(true); await ui.button('Play').props.onClick(); await ui.rt.flush(); assert.equal(ui.events.length, 0); assert(ui.notices.some(([message]) => message.includes('Migration'))); ui.rt.cleanup();
   console.log('PASS: actual Scene controls load exact definitions, recheck owner bindings/revision, lock duplicate Run, dispatch Run then contact Kick, scope observations, Stop and reject stale preflight/Project replies (offline).');
 })().catch(error => { console.error(error); process.exitCode = 1; });
