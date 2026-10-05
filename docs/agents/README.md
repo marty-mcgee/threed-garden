@@ -1,5 +1,7 @@
 # Agent Documentation
 
+Local v0.22.24 candidate: [Scenario Admin Blueprint pages](../plans/v0.22.24-scenarios-simulations.md), with [future Simulations design](../plans/threed-simulations-design.md). Preserve owner-scoped exact reads, locked Project bindings, compact Blueprint controls/icon actions, Project-host workflows and existing Scene behavior. Cross-Project application is theoretical only. Simulation execution, persistence and schema changes remain outside this implementation. Corrected candidate TypeScript, 58-task CI and guarded npm build (131 static pages) passed; browser acceptance/production remain pending.
+
 Developer-reported production [v0.22.23](../releases/v0.22.23.md), confirmed October 4, 2026: Category Trees, sibling Order reordering and bulk Model category assignments. Preserve independent checkbox assignments, owner-scoped category-only mutations, captured page-local targets and honest partial-write Toast/refresh. Prior focused checks/TypeScript passed; detailed browser/live verification remains pending, deployed SHA unconfirmed and no post-deployment testing or v0.22.23 agent build is claimed. Earlier candidate notes below are historical.
 
 Local release candidate: [v0.22.22 Admin editor Blueprint styling](../releases/v0.22.22.md), with Developer appearance approval and production release requested. Preserve opt-in transparent panels, title-adjacent help, green enabled/muted disabled Save and bottom-left wrapping actions. Production remains v0.22.21 pending confirmation; Manual Release Gate applies.

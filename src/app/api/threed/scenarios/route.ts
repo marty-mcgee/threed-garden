@@ -55,6 +55,16 @@ export async function GET(request: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   try {
+    const params = new URL(request.url).searchParams;
+    if (params.has('id')) {
+      const id = positiveId(params.get('id'), 'Scenario ID');
+      const [row] = await db.select({ scenario: threedScenarios, projectName: project.name, threedName: threed.name })
+        .from(threedScenarios).innerJoin(project, eq(project.id, threedScenarios.projectId))
+        .innerJoin(threed, eq(threed.id, threedScenarios.threedId))
+        .where(and(eq(threedScenarios.id, id), eq(threedScenarios.userId, session.user.id), eq(project.userId, session.user.id), eq(threed.userId, session.user.id))).limit(1);
+      if (!row) return NextResponse.json({ success: false, error: 'Scenario not found.' }, { status: 404 });
+      return NextResponse.json({ success: true, data: { ...row.scenario, projectName: row.projectName, threedName: row.threedName } });
+    }
     const query = scenarioListQuery(new URL(request.url).searchParams);
     const conditions = [eq(threedScenarios.userId, session.user.id)];
     if (query.projectId) conditions.push(eq(threedScenarios.projectId, query.projectId));

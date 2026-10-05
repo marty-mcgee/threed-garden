@@ -41,6 +41,13 @@ async function run(method, query, responses) { queue = [...responses]; queries =
 (async () => {
   signedIn = false; for (const method of ['GET', 'POST', 'PATCH', 'DELETE']) assert.equal((await run(method, '', [])).status, 401); signedIn = true;
   assert.equal((await run('GET', '?sort=invalid', [])).status, 400);
+  assert.equal((await run('GET', '?id=invalid', [])).status, 400);
+  assert.equal((await run('GET', '?id=9', [[]])).status, 404);
+  const single = await run('GET', '?id=9', [[{ scenario: { id: 9, projectId: 15 }, projectName: 'Owned Project', threedName: 'Garden' }]]);
+  assert.equal(single.body.data.id, 9); assert.equal(single.body.data.projectName, 'Owned Project');
+  assert.equal(queries.length, 1); assert.equal(queries[0].limit[0][0], 1);
+  assert.deepEqual(queries[0].where[0][0].args.map(condition => condition.args[0]), ['threedScenarios.id', 'threedScenarios.userId', 'project.userId', 'threed.userId']);
+  assert.deepEqual(queries[0].where[0][0].args.map(condition => condition.args[1]), [9, 'owner', 'owner', 'owner']);
   const listed = await run('GET', '?projectId=15&search=Soccer&limit=25&offset=25&sort=project&direction=desc', [[{ total: '201' }], [{ scenario: { id: 9 }, projectName: 'Soccer', threedName: 'Garden' }]]);
   assert.equal(listed.body.pagination.total, 201); assert.equal(listed.body.data[0].id, 9); assert.equal(queries.length, 2);
   assert.deepEqual(queries[0].where, queries[1].where); assert.equal(queries[1].orderBy[0][0].name, 'desc'); assert.equal(queries[1].orderBy[0][1].args[0], 'threedScenarios.id');

@@ -1,5 +1,9 @@
 # ThreeD Scene Scenarios
 
+For v0.22.24, Admin Add/Edit/View uses dedicated pages: `/admin/threed/scenarios/new`, `/admin/threed/scenarios/[id]` and `/admin/threed/scenarios/[id]/view`. Compact typography and colored icon actions follow the Admin Blueprint. The Project's compact Scenario workspace retains its guided form. Scenario bindings remain within their current Project; cross-Project application is a theoretical future capability only. Help sits beside the title; save/delete feedback uses Toast.
+
+Scenarios describe structures and setup. Future **ThreeD Simulations** will run sets of Actions and collect responses from Sensors and other metadata; no Simulation runner is included in this version. See the [design and extension points](../plans/threed-simulations-design.md).
+
 To create or edit a Scenario, open **Admin → ThreeD → Scenarios**, or use **Set up Scenario** from that Project in **Admin → Projects**. Choose a starting idea or **Start from scratch**, select an assigned ThreeD module, then save the name, purpose, setup choices, and slug. Starting ideas suggest editable text; they do not add Scene assets or configure sensors. The Admin workspace retains the Scenario management list. The Scene uses a focused **Templates (Choose a Scenario)** chooser to load an existing active Scenario for the Project. Definitions do not create Scene objects or configure sensors automatically.
 
 After saving, a Scenario detail view shows the Project’s current active ThreeD asset inventory and one next action. Choose **View** on any saved outline to reopen it. Inventory counts describe Project assignments, not assets saved to that Scenario or proof of working interaction. **Open Project assets** leads to that Project’s Modules workspace, where you can add or review assignments.

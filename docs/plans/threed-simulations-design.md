@@ -1,0 +1,55 @@
+# ThreeD Scenarios and future Simulations
+
+Developer definition, October 4, 2026: Scenarios are simple structures interchangeable among authorized Projects. Simulations are sets of Actions that run and collect responses using Sensors and other metadata. v0.22.24 implements Scenario Admin improvements; this document defines future extension points, not a Simulation runner or approved database migration.
+
+## Responsibilities
+
+| Concept | Responsibility | Existing or future |
+| --- | --- | --- |
+| Scenario structure | Name, purpose, setup kind and intended asset roles | Existing outline/setup; reusable role vocabulary can be added in a later approved step |
+| Project binding | Concrete authorized Project/ThreeD module, Model marker and Sensor Group | Existing Project-owned Scenario row/setup |
+| Simulation definition | Ordered Actions, actor/target roles, response requirements and bounded stop conditions | Future |
+| Simulation run | One definition executed against one authorized Project binding, with run/step identities and results | Future |
+| Observation | Sensor event, counter delta or other explicit metadata captured during the run | Existing sources, future correlated collection |
+
+Scenario saving/loading does not execute Actions or mutate Scene assets. Scenario setup readiness is an assignment check; it does not prove successful execution or sensor contact. A Simulation orchestrates existing owner-controlled Actions and reads observations; it must not take ownership of physics, animation mixers or reusable Model records.
+
+## Portability without a schema change
+
+Current storage requires projectId/threedId, with a slug unique within that binding. v0.22.24 retains those existing bindings and ships no cross-Project copy, transfer or apply functionality. Interchangeability is a theoretical architectural goal only. Current authorization is ownership, not a newly invented sharing policy.
+
+Later portability can split a reusable definition from its Project bindings after explicit feature and schema approval. Proposed roles such as environment, actor, action target and observation group must bind to actual authorized instances; names alone cannot establish identity. Missing or inactive bindings should block run start with a specific reason. Concrete reuse/sharing semantics remain future decisions; no demo action is included.
+
+## Proposed execution contract
+
+These are design fields, not current schema columns or API routes:
+
+- Definition: version, stable definition identity, Scenario structure reference, ordered step identities, supported Action identifier, actor/target roles, timeout and failure policy.
+- Run context: unique runId, authorized projectId/threedId, resolved binding snapshot and definition version, start time, status and cancellation generation.
+- Step outcome: runId/stepId/requestId correlation, attempted/started/completed times, completed/failed/cancelled/timed-out status, confirmed Action response and bounded observation samples. Unknown or unconfirmed writes must be reported explicitly.
+- Observations: source identity, projectId, sceneEventId, sensor owner/id or selected metadata key, occurrence time and receipt time. Deduplicate events and reject different-Project, different-session and stale-generation samples.
+
+Initial future runner should execute one step at a time. Observe after subscription setup and record a baseline; evaluate deltas without resetting global Sensor counters. Do not treat unrelated simultaneous events as a step response. Events without reliable Action correlation can be labelled time-window observations, not proof that an Action caused them. Sensor collection alone must not trigger world persistence.
+
+Cancellation, Project switches, missing targets, hidden Layers and timeouts must stop dispatching further steps, unsubscribe collectors and preserve honest terminal outcomes. Use bounded sample counts, metadata allowlists and export limits. Store results only through an explicitly approved owner-scoped persistence design; do not write on render/movement or capture private credentials.
+
+## Integration points
+
+| Existing boundary | Future adapter responsibility |
+| --- | --- |
+| `src/libraries/services/threed/scenarios/scenario-input.ts` | Keep Scenario structure/setup parsing separate from Simulation definitions |
+| `src/libraries/services/threed/orchestration/interaction-core.ts` and existing action path | Dispatch only supported semantic Actions; correlate lifecycle responses |
+| `src/libraries/services/threed/physics/physics-event-core.ts` | Consume provider-neutral Project/marker/sensor events; preserve event identity |
+| Project Scene session and Runtime Marker ownership | Resolve current instances; cancel stale runs; retain persistent Canvas/Rapier world |
+| Existing Sensor Groups and Project snapshot state | Read selected group observations without globally resetting or rewriting sensors |
+
+Preserve Garden/Ecctrl separation, isMovable routing, external animation/action mappings and task-to-locomotion crossfades. World actions retain one-shot completion gating, with only the already approved bounded movable-ball kick contact exception. The Simulation layer cannot grant new harvest/persistence, MQTT, FarmBot command or physical-device permissions.
+
+## Future implementation stages
+
+1. Definition parser and binding validation, with a standalone Admin form and offline fixtures; no execution or schema change.
+2. Explicitly approved local dry-run adapter using bounded mocked responses; demonstrate cancellation, identity isolation and deduplication.
+3. Explicitly approved Scene runner for supported Actions and read-only observation collection; verify browser timing and Project session isolation.
+4. Separately approved run/result persistence and sharing design, then export/replay policy. Replay must distinguish visual playback from redispatching world actions.
+
+No new Simulations menu entry or placeholder operational button is shipped in v0.22.24. Future acceptance must test cancellation during each lifecycle phase, failed Actions, stale/duplicate events, missing bindings, unrelated sensor activity, completion/contact boundaries and authorized Project switching before production claims.

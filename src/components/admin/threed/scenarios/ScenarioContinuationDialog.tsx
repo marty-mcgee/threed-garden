@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Boxes, CircleHelp, UserRound, Sprout, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { summarizeScenarioInventory, type ScenarioInventoryAsset } from '@/libraries/services/threed/scenarios/scenario-inventory';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
+import { BookOpen, Pencil } from 'lucide-react';
 
 type ScenarioSummary = {
   id: number;
@@ -24,7 +26,18 @@ const inventory = [
   { id: 'other', label: 'Other ThreeD assets', icon: CircleHelp },
 ] as const;
 
-export function ScenarioContinuationDialog({ scenario, onClose }: { scenario: ScenarioSummary | null; onClose: () => void }) {
+function ScenarioDetailSurface({ scenario, standalone, onClose, children }: { scenario: ScenarioSummary | null; standalone: boolean; onClose: () => void; children: ReactNode }) {
+  if (standalone) return <>
+    <AdminWorkspaceHeader icon={BookOpen} title={scenario?.name ?? 'Scenario'} description="View a saved Scenario and its current Project inventory.">
+      <AdminWorkspaceLink href="/admin/threed/scenarios" icon={BookOpen}>Scenarios</AdminWorkspaceLink>
+      {scenario && <AdminWorkspaceLink href={`/admin/threed/scenarios/${scenario.id}`} icon={Pencil}>Edit Scenario</AdminWorkspaceLink>}
+    </AdminWorkspaceHeader>
+    <section className="admin-editor-panel min-h-0 overflow-y-auto rounded-lg border p-3 text-xs [&_p]:text-xs [&_h3]:text-xs">{children}</section>
+  </>;
+  return <Dialog open={Boolean(scenario)} onOpenChange={open => { if (!open) onClose(); }}><DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg"><DialogHeader><DialogTitle>{scenario?.name ?? 'Scenario'}</DialogTitle></DialogHeader>{children}</DialogContent></Dialog>;
+}
+
+export function ScenarioContinuationDialog({ scenario, onClose, standalone = false }: { scenario: ScenarioSummary | null; onClose: () => void; standalone?: boolean }) {
   const [assets, setAssets] = useState<ScenarioInventoryAsset[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -49,9 +62,7 @@ export function ScenarioContinuationDialog({ scenario, onClose }: { scenario: Sc
   const summary = summarizeScenarioInventory(assets ?? []);
   const counts = inventory.map(item => ({ ...item, count: summary.counts[item.id] }));
 
-  return <Dialog open={Boolean(scenario)} onOpenChange={open => { if (!open) onClose(); }}>
-    <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
-      <DialogHeader><DialogTitle>{scenario?.name ?? 'Scenario'}</DialogTitle></DialogHeader>
+  return <ScenarioDetailSurface scenario={scenario} standalone={standalone} onClose={onClose}>
       {scenario && <div className="space-y-4">
         <div className="space-y-1">
           <p className="text-xs text-muted-foreground">{scenario.projectName} · {scenario.threedName}</p>
@@ -77,6 +88,5 @@ export function ScenarioContinuationDialog({ scenario, onClose }: { scenario: Sc
           <Button asChild size="sm"><Link href={`/admin/projects/${scenario.projectId}`}>{loading || error ? 'Open Project assets' : summary.nextAction}<ArrowRight aria-hidden="true" className="ml-1.5 h-3.5 w-3.5" /></Link></Button>
         </div>
       </div>}
-    </DialogContent>
-  </Dialog>;
+  </ScenarioDetailSurface>;
 }
