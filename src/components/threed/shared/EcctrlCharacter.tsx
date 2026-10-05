@@ -14,6 +14,7 @@ import { useSceneHoverTitle } from '@/components/threed/shared/SceneHoverTitleCo
 
 import { reportCharacterAnimationAvailability, DETAILS_ANIMATION_ACTIONS } from '@/libraries/services/threed/animations/runtime-availability';
 import { resolveCharacterPhysics } from '@/libraries/services/threed/characters/character-physics';
+import { CHARACTER_CAPSULE_RADIUS as CAPSULE_RADIUS, CHARACTER_CAPSULE_HALF_HEIGHT as CAPSULE_HALF_HEIGHT } from '@/libraries/services/threed/characters/character-controller-dimensions';
 import {
   useRef,
   useState,
@@ -218,8 +219,6 @@ interface EcctrlCharacterProps {
  *
  * above the ground.
  */
-const CAPSULE_HALF_HEIGHT = 0.6;
-const CAPSULE_RADIUS = 0.3;
 // Keep a small suspension clearance so low balls contact the capsule near the feet.
 const FLOAT_HEIGHT = 0.05;
 
@@ -1075,6 +1074,7 @@ export function EcctrlCharacter({
   const previousLayerEnabledRef =
     // Rapier bodies start enabled, even when the controller starts paused.
     useRef(true);
+  const previousPhysicsBodyRef = useRef<EcctrlHandle['body'] | null>(null);
   const runtimePositionKey = `${runtimePosition[0]}:${runtimePosition[1]}:${runtimePosition[2]}`;
   const appliedRuntimePositionKeyRef = useRef(runtimePositionKey);
   const pendingRuntimePositionRef = useRef<{
@@ -1154,6 +1154,12 @@ export function EcctrlCharacter({
   // Readiness belongs to the specific model object, never a previous load.
   const [posedModel, setPosedModel] = useState<THREE.Group | null>(null);
   const characterVisualReady = usesShape || (!loading && model !== null && posedModel === model);
+  // Loading a rig is not a safe fallback. Wait for its own first pose before
+  // allowing gravity, controller input or live-position publication.
+  const characterRuntimeReady = modelLoadEnabled && (
+    characterVisualReady || !character.model?.filePath || error != null
+  );
+  const physicsEnabled = layerEnabled && characterRuntimeReady;
   const actionCollisionRef = useRef<ThreeDActionCollisionSampler | null>(null);
   useEffect(() => {
     // A released/hidden/replaced runtime cannot resume a previous contact action.
@@ -1177,22 +1183,26 @@ export function EcctrlCharacter({
     onRuntimeSettled?.();
   }, [modelLoadEnabled, character.model?.filePath, error, characterVisualReady, onRuntimeSettled]);
 
-  useEffect(() => {
-    if (previousLayerEnabledRef.current === layerEnabled) return;
+  const syncCharacterPhysics = useCallback(() => {
     const ecctrl = ecctrlRef.current;
     if (!ecctrl?.body || !ecctrl.collider) return;
-    previousLayerEnabledRef.current = layerEnabled;
+    if (previousLayerEnabledRef.current === physicsEnabled && previousPhysicsBodyRef.current === ecctrl.body) return;
+    previousLayerEnabledRef.current = physicsEnabled;
+    previousPhysicsBodyRef.current = ecctrl.body;
 
-    if (layerEnabled) {
+    if (physicsEnabled) {
       ecctrl.collider.setEnabled(true);
       ecctrl.body.setEnabled(true);
     } else {
+      ecctrl.setMovement({ joystick: { x: 0, y: 0 }, run: false, jump: false });
       ecctrl.body.setLinvel({ x: 0, y: 0, z: 0 }, true);
       ecctrl.body.setAngvel({ x: 0, y: 0, z: 0 }, true);
       ecctrl.collider.setEnabled(false);
       ecctrl.body.setEnabled(false);
     }
-  }, [error, layerEnabled, loading, model]);
+  }, [error, physicsEnabled, loading, model]);
+  useEffect(syncCharacterPhysics, [syncCharacterPhysics]);
+  useBeforePhysicsStep(syncCharacterPhysics);
 
   const sharedHoverTitle = useSceneHoverTitle();
   const [
@@ -2068,7 +2078,7 @@ export function EcctrlCharacter({
     // ordering, that query can overlap the active physics step and trigger the
     // same WASM borrow error it is intended to prevent. The unmount cleanup
     // above clears stale handles; this callback only needs the null boundary.
-    if (!ec?.body) {
+    if (!ec?.body || !physicsEnabled) {
       return;
     }
 
@@ -2302,13 +2312,12 @@ export function EcctrlCharacter({
   useEffect(() => {
     if (
       isControlled &&
+      physicsEnabled &&
       onControlChange &&
       ecctrlRef.current
     ) {
-      const position =
-        ecctrlRef
-          .current
-          .currPos;
+      const position = ecctrlRef.current.body?.translation();
+      if (!position || ![position.x, position.y, position.z].every(Number.isFinite)) return;
 
       onControlChange({
         x: position.x,
@@ -2318,6 +2327,7 @@ export function EcctrlCharacter({
     }
   }, [
     isControlled,
+    physicsEnabled,
     onControlChange,
   ]);
 
@@ -2338,15 +2348,12 @@ export function EcctrlCharacter({
 
         if (
           isControlled &&
+          physicsEnabled &&
           onControlChange &&
           ecctrlRef.current
         ) {
-          const position =
-            ecctrlRef
-              .current
-              .currPos;
-
-          onControlChange({
+          const position = ecctrlRef.current.body?.translation();
+          if (position && [position.x, position.y, position.z].every(Number.isFinite)) onControlChange({
             x: position.x,
             y: position.y,
             z: position.z,
@@ -2364,6 +2371,7 @@ export function EcctrlCharacter({
         isControlled,
         onControlChange,
         layerEnabled,
+        physicsEnabled,
       ]
     );
 
@@ -2594,7 +2602,7 @@ export function EcctrlCharacter({
         useCustomForward={
           !isControlled || (movementTargetPosition != null && !cameraRelativeTargetMovement) || isAutoWalking
         }
-        enable={layerEnabled}
+        enable={physicsEnabled}
       >
         <mesh
           visible={layerEnabled}
@@ -2680,7 +2688,7 @@ export function EcctrlCharacter({
       useCustomForward={
         !isControlled || (movementTargetPosition != null && !cameraRelativeTargetMovement) || isAutoWalking
       }
-      enable={layerEnabled}
+      enable={physicsEnabled}
       capsuleHalfHeight={
         CAPSULE_HALF_HEIGHT
       }
@@ -2696,7 +2704,7 @@ export function EcctrlCharacter({
         ecctrl={
           ecctrlRef
         }
-        enabled={!usesShape && character.status === 'active'}
+        enabled={!usesShape && physicsEnabled}
         resolver={
           createAnimationResolver()
         }

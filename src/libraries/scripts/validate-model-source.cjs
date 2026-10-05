@@ -48,7 +48,7 @@ for (const name of ['GardenCharacter', 'EcctrlCharacter']) {
     assert(text.includes('visible={layerEnabled} position={[0, -GROUND_OFFSET, 0]}'));
     assert(text.includes('const characterVisualReady = usesShape ||'));
     assert(text.includes('{!usesShape && layerEnabled && (!character.model?.filePath'));
-    assert(text.includes('enabled={!usesShape && character.status'));
+    assert(text.includes('enabled={!usesShape && physicsEnabled}'));
     let samplerFrame, taskAction;
     function findSourceGuards(node) {
       if (ts.isCallExpression(node) && node.expression.getText(ast) === 'useFrame' && node.arguments[0]?.getText(ast).includes('actionCollisionRef.current?.sample')) samplerFrame = node.arguments[0];

@@ -71,6 +71,8 @@ import {
 } from 'lucide-react';
 import { GardenCharacter } from '@/components/threed/shared/GardenCharacter';
 import { EcctrlCharacter } from '@/components/threed/shared/EcctrlCharacter';
+import { createGardenColliderMotionSync } from '@/libraries/services/threed/characters/garden-collider-motion';
+import { GARDEN_CHARACTER_COLLIDER_HALF_EXTENTS, GARDEN_CHARACTER_COLLIDER_CENTER_Y } from '@/libraries/services/threed/characters/character-controller-dimensions';
 import { ThreeDProjectLoadingPresentation } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
 import { FadingRing } from '@/components/threed/shared/FadingRing';
 import { PulseRing } from '@/components/threed/shared/PulseRing';
@@ -716,6 +718,7 @@ function IncidentMarker3D({ incident, onClick, isSelected }: any) {
 
 function SceneMarkerRigidBody({
   sceneEnabled,
+  visualMotionRef,
   onLivePosition,
   smoothPosition = false,
   soccerKickTarget,
@@ -726,6 +729,7 @@ function SceneMarkerRigidBody({
   ...props
 }: RigidBodyProps & {
   sceneEnabled: boolean;
+  visualMotionRef?: React.RefObject<THREE.Group | null>;
   soccerKickTarget?: { projectId: number; markerId: string };
   soccerKickActorPosition?: (request: SoccerKickRequest) => { x: number; y: number; z: number } | null;
   modelPlacementTarget?: { projectId: number; markerId: string };
@@ -733,6 +737,19 @@ function SceneMarkerRigidBody({
   smoothPosition?: boolean;
 }) {
   const rigidBodyRef = useRef<RapierRigidBody>(null);
+  const syncGardenColliders = useMemo(createGardenColliderMotionSync, []);
+  // Capture bounds after commit, then move only this owner's existing colliders
+  // before the physics step. The body and rendered hierarchy remain mounted.
+  useLayoutEffect(() => {
+    if (sceneEnabled && rigidBodyRef.current && visualMotionRef?.current) {
+      syncGardenColliders(rigidBodyRef.current, visualMotionRef.current, true);
+    }
+  });
+  useBeforePhysicsStep(() => {
+    if (sceneEnabled && rigidBodyRef.current && visualMotionRef?.current) {
+      syncGardenColliders(rigidBodyRef.current, visualMotionRef.current);
+    }
+  });
   const { rapier } = useRapier();
   const pendingSoccerKickRef = useRef<SoccerKickApply | null>(null);
   const pendingActionCollisionRef = useRef<SoccerKickApply[]>([]);
@@ -1504,6 +1521,8 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
     characterDataRef.current = marker.data;
   }
   const characterData = useMemo(() => ({...characterDataRef.current, status: characterDataRef.current?.status ?? 'active', visible: characterDataRef.current?.visible !== false}), [signature]);
+  const gardenGroupRef = useRef<THREE.Group>(null);
+  const gardenSceneEnabled = isLayerEnabled && characterData.visible !== false;
   const position: [number, number, number] = [
     Number(marker.position?.x) || 0,
     Number(marker.position?.y) || 0,
@@ -1553,11 +1572,12 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
   }
 
   return (
-    <SceneMarkerRigidBody sceneEnabled={isLayerEnabled} type="fixed" colliders="cuboid" position={position}>
+    <SceneMarkerRigidBody sceneEnabled={gardenSceneEnabled} visualMotionRef={gardenGroupRef} type="fixed" colliders={false} position={position}>
+      <CuboidCollider args={GARDEN_CHARACTER_COLLIDER_HALF_EXTENTS} position={[0, GARDEN_CHARACTER_COLLIDER_CENTER_Y, 0]} />
       <group
-        visible={isLayerEnabled}
+        visible={gardenSceneEnabled}
         onClick={(event) => {
-          if (!isLayerEnabled || placementActive) return;
+          if (!gardenSceneEnabled || placementActive) return;
           event.stopPropagation();
           selectCharacter();
         }}
@@ -1565,10 +1585,13 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
         <GardenCharacter
           character={characterData}
           positionedByParent
+          sceneEnabled={gardenSceneEnabled}
+          runtimeGroupRef={gardenGroupRef}
           onRuntimeSettled={() => onRuntimeSettled?.(String(marker.id))}
-        />
-        {isSelected && <FadingRing position={[0, 0.01, 0]} innerRadius={0.7} outerRadius={1.0} />}
-        {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={0.85} />}
+        >
+          {isSelected && <FadingRing position={[0, 0.01, 0]} innerRadius={0.7} outerRadius={1.0} />}
+          {isActionTarget && <PulseRing position={[0, 0.025, 0]} color="#10b981" size={0.85} />}
+        </GardenCharacter>
       </group>
     </SceneMarkerRigidBody>
   );
@@ -4281,8 +4304,13 @@ export function ThreeDScene({
         <ThreeDProjectLoadingPresentation
           progress={sceneLoadingProgress}
           label={sceneLoadingLabel}
-          className={`absolute inset-0 z-50 pointer-events-none transition-opacity duration-700 ease-out ${sceneProductionStarted ? 'opacity-0' : 'opacity-100'}`}
+          className={`absolute inset-0 z-50 pointer-events-none transition-opacity duration-700 ease-out motion-reduce:transition-none ${sceneProductionStarted ? 'opacity-0' : 'opacity-100'}`}
         />
+      )}
+      {!physicsFailed && scenePostProduction && resourcesPending && (
+        <div role="status" aria-live="polite" className="pointer-events-none absolute bottom-4 right-4 z-30 max-w-[calc(100%-2rem)] rounded-lg border bg-background/95 px-3 py-2 text-xs text-muted-foreground shadow-sm">
+          Loading Scene assets…
+        </div>
       )}
     </div>
     </SceneHoverTitleContext.Provider>

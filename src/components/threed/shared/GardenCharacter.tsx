@@ -152,6 +152,9 @@ interface GardenCharacterProps {
    * already provides the world position.
    */
   positionedByParent?: boolean;
+  sceneEnabled?: boolean;
+  runtimeGroupRef?: React.RefObject<THREE.Group | null>;
+  children?: React.ReactNode;
 
   /** Reports that the complete visual runtime or its safe fallback is ready. */
   onRuntimeSettled?: () => void;
@@ -336,6 +339,9 @@ export function GardenCharacter({
   currentHour = 12,
 
   positionedByParent = false,
+  sceneEnabled = true,
+  runtimeGroupRef,
+  children,
 
   onRuntimeSettled,
   previewMode = false,
@@ -385,10 +391,11 @@ export function GardenCharacter({
 
   const isPreview = previewMode || !!previewClip;
 
-  const groupRef =
+  const localGroupRef =
     useRef<THREE.Group>(
       null,
     );
+  const groupRef = runtimeGroupRef ?? localGroupRef;
 
   const mixerRef =
     useRef<THREE.AnimationMixer | null>(
@@ -1043,7 +1050,8 @@ export function GardenCharacter({
           // ================================================
 
           if (previewMode) loadedModel.traverse(node => { if (node instanceof THREE.SkinnedMesh) node.pose(); });
-          if (isPreview) mixer?.update(0);
+          // Publish an evaluated first pose in both Scene and isolated preview.
+          mixer?.update(0);
           if (
             !cancelled
           ) {
@@ -1428,6 +1436,7 @@ export function GardenCharacter({
       _,
       delta,
     ) => {
+      if (!sceneEnabled) return;
       // ================================================
       // ANIMATION MIXER
       // ================================================
@@ -1437,6 +1446,7 @@ export function GardenCharacter({
       );
 
       if (isPreview) return; // Preview advances animation only, without Scene movement/registration.
+      if (character.model?.filePath && (!model || loadingModel) && !modelError) return;
 
       // ================================================
       // POSITION REGISTRY
@@ -2082,6 +2092,7 @@ export function GardenCharacter({
             }
           />
         </mesh>
+        {children}
       </group>
     );
   }
@@ -2127,6 +2138,7 @@ export function GardenCharacter({
           }
         />
       )}
+      {children}
 
       {/* =================================================
           EMOTE

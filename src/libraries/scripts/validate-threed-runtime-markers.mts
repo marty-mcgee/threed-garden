@@ -1691,7 +1691,7 @@ const savedCharacter = (id: number, x: number, y = 0) => ({
 });
 assert.throws(() => parseProjectThreeDMarkerSnapshot([savedCharacter(20, 0), savedCharacter(21, 0.4)]),
   (error: unknown) => error instanceof ProjectMarkerSnapshotError && error.code === 'overlapping_characters');
-assert.equal(parseProjectThreeDMarkerSnapshot([savedCharacter(20, 0), savedCharacter(21, 0.5)]).length, 2);
+assert.equal(parseProjectThreeDMarkerSnapshot([savedCharacter(20, 0), savedCharacter(21, 0.6)]).length, 2);
 assert.equal(parseProjectThreeDMarkerSnapshot([savedCharacter(20, 0), savedCharacter(21, 0, 3)]).length, 2);
 assert.throws(() => parseProjectThreeDMarkerSnapshot([savedCharacter(20, 0.00049), savedCharacter(21, 0.49949)]),
   (error: unknown) => error instanceof ProjectMarkerSnapshotError && error.code === 'overlapping_characters');

@@ -378,6 +378,22 @@ function UnifiedMapPageInner() {
 
   const placingModelRef = useRef(false);
   const placingCharacterRef = useRef(false);
+  const characterPlacementScopeRef = useRef({ projectId: selectedProjectId });
+  if (characterPlacementScopeRef.current.projectId !== selectedProjectId) {
+    characterPlacementScopeRef.current = { projectId: selectedProjectId };
+  }
+  useEffect(() => {
+    // Restore the current session during React's development setup replay.
+    if (characterPlacementScopeRef.current.projectId !== selectedProjectId) {
+      characterPlacementScopeRef.current = { projectId: selectedProjectId };
+    }
+    const scope = characterPlacementScopeRef.current;
+    return () => {
+      if (characterPlacementScopeRef.current === scope) {
+        characterPlacementScopeRef.current = { projectId: null };
+      }
+    };
+  }, [selectedProjectId]);
   const placingFarmBotRef = useRef(false);
   const placingBedRef = useRef(false);
   const placingPlantingRef = useRef(false);
@@ -1512,6 +1528,7 @@ function UnifiedMapPageInner() {
 
     placingCharacterRef.current = true;
     setPlacingCharacter(true);
+    const placementScope = characterPlacementScopeRef.current;
     try {
       const response = await fetch('/api/project/threed-markers', {
         method: 'POST',
@@ -1524,6 +1541,7 @@ function UnifiedMapPageInner() {
         })),
       });
       const result = await response.json().catch(() => null);
+      if (characterPlacementScopeRef.current !== placementScope) return;
       if (!response.ok || !result?.success || !result.data?.marker) {
         throw new Error(result?.error || `Character placement failed (${response.status})`);
       }
@@ -1544,6 +1562,7 @@ function UnifiedMapPageInner() {
         'success',
       );
     } catch (error) {
+      if (characterPlacementScopeRef.current !== placementScope) return;
       console.error('Failed to place ThreeD Character Library item', {
         errorName: error instanceof Error ? error.name : 'UnknownError',
       });

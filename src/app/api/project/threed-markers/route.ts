@@ -2,6 +2,7 @@ import { retryDisconnectedRead } from '@/libraries/db/read-retry';
 import { databaseConnectionDiagnostic } from '@/libraries/db/connection-diagnostics';
 import { bedPlantingGeometry, bedLocalPoint, bedWorldPoint, containBedPlantings, resolvePlantingBedId } from '@/libraries/services/threed/beds/bed-planting-bounds';
 import { resolveCharacterPhysics } from '@/libraries/services/threed/characters/character-physics';
+import { CHARACTER_SPAWN_CLEARANCE } from '@/libraries/services/threed/characters/character-controller-dimensions';
 import { refreshModelMarkerData, currentPlantingModelId } from '@/libraries/services/threed/models/model-snapshot-assets';
 import { modelSelection } from '@/libraries/services/threed/models/model-primary-file';
 import { NextRequest, NextResponse } from 'next/server';
@@ -1007,7 +1008,7 @@ export async function POST(request: NextRequest) {
               eq(projectThreedMarkers.markerType, 'characters'),
               eq(projectThreedMarkers.isActive, true),
               sql`${projectThreedMarkers.data}->>'isMovable' = 'true'`,
-              sql`power(${projectThreedMarkers.positionX} - ${positionX}::numeric, 2) + power(${projectThreedMarkers.positionZ} - ${positionZ}::numeric, 2) < 0.25`,
+              sql`power(${projectThreedMarkers.positionX} - ${positionX}::numeric, 2) + power(${projectThreedMarkers.positionZ} - ${positionZ}::numeric, 2) < ${CHARACTER_SPAWN_CLEARANCE ** 2}`,
               sql`abs(${projectThreedMarkers.positionY} - ${positionY}::numeric) < 3`,
             ))
             .limit(1);

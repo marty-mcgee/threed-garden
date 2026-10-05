@@ -72,6 +72,7 @@ function visit(node) {
 visit(source); assert.ok(callback);
 const writes = [], forward = [], reports = [];
 const context = {
+  physicsEnabled: true,
   planThreeDTargetRelativeNavigation: load('src/libraries/services/threed/orchestration/interaction-core.ts').planThreeDTargetRelativeNavigation,
   ecctrlRef: { current: { body: {}, currQuat: new THREE.Quaternion(), setLockForward() {}, currPos: { x: 0, y: 1, z: 0 }, setMovement: value => writes.push(value), setForwardDir: value => forward.push(value.clone()) } },
   keys: { current: { w: false, a: false, s: false, d: false, space: false, shift: false } },

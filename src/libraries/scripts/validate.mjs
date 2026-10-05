@@ -53,6 +53,7 @@ const tasks = {
   'multimedia-track-delete': [node('validate-multimedia-track-delete.cjs')],
 
   'threed-hidden-collision-mount': [node('validate-threed-hidden-collision-mount.cjs')],
+  'threed-character-introduction': [node('validate-threed-character-introduction.cjs')],
   'threed-ground-map': [ts('validate-threed-ground-map.mts')],
   'threed-bed-planting-bounds': [ts('validate-threed-bed-planting-bounds.mts')],
   'threed-runtime-markers': [['node', '--import', 'tsx', `${scripts}/validate-threed-runtime-markers.mts`]],
@@ -134,6 +135,7 @@ const tasks = {
 };
 
 const ci = [
+  'threed-character-introduction',
   'application-foundations',
   'theme-provider',
   'threed-scene-resources',
