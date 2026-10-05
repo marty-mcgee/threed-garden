@@ -24,8 +24,8 @@ import {
 } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 import {
-  FBXLoader,
-} from 'three/examples/jsm/loaders/FBXLoader.js';
+  BrowserFBXLoader as FBXLoader,
+} from '@/libraries/services/threed/models/browser-fbx-loader';
 
 import {
   OBJLoader,

@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/components/ui/toast';
 import { ANIMATION_ACTIONS } from '@/libraries/utils/animation';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { BrowserFBXLoader as FBXLoader } from '@/libraries/services/threed/models/browser-fbx-loader';
 
 interface Model {
   id: number;

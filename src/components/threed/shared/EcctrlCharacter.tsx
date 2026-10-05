@@ -43,7 +43,7 @@ import type {
 } from 'ecctrl';
 
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { BrowserFBXLoader as FBXLoader } from '@/libraries/services/threed/models/browser-fbx-loader';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
 import { useCharacterNavigation } from './useCharacterNavigation';

@@ -16,7 +16,7 @@ import * as THREE from 'three';
 import { Html } from '@react-three/drei';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { BrowserFBXLoader as FBXLoader } from '@/libraries/services/threed/models/browser-fbx-loader';
 import { loadStoredObjModel } from '@/libraries/services/threed/models/model-obj-loader';
 import {
   calculateThreeDModelGroundedY,

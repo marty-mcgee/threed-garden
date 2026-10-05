@@ -19,6 +19,7 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  'threed-browser-fbx-textures': [['node', '--import', 'tsx', `${scripts}/validate-browser-fbx-textures.mts`]],
   'application-foundations': [node('validate-application-foundations.cjs')],
   'theme-provider': [node('validate-theme-provider.cjs')],
   'threed-scene-resources': [node('validate-threed-scene-resources.cjs')],
@@ -178,6 +179,7 @@ const ci = [
   'threed-gltf-bundle',
   'threed-gltf-material-targets',
   'threed-model-bulk-preview',
+  'threed-browser-fbx-textures',
   'threed-obj-bundle',
   'threed-bulk-saved-texture',
   'threed-model-blob-paths',
