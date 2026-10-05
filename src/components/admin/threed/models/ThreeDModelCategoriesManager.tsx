@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { ChevronDown, ChevronRight, GripVertical } from 'lucide-react';
+import { buildCategoryTree, flattenCategoryTree, reorderCategorySiblings, saveCategoryOrder } from './category-tree-core';
 import { ArrowLeft, ArrowDown, ArrowUp, ArrowUpDown, Check, X, Clapperboard, FolderOpen, FolderTree, Images, Edit, Loader2, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +14,7 @@ import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@
 import type { CategorySortField } from '@/libraries/services/threed/models/category-list-query';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
+import { ModelFieldHelp } from './ModelFieldHelp';
 
 export interface ThreeDModelCategoryOption {
   id: number;
@@ -44,19 +47,19 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
-  const [rows, setRows] = useState<ThreeDModelCategoryOption[]>([]);
+  const [collapsed, setCollapsed] = useState<Set<number>>(new Set());
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(50);
-  const [total, setTotal] = useState(0);
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState<{ field: CategorySortField; direction: 'asc' | 'desc' }>({ field: 'order', direction: 'asc' });
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [deleting, setDeleting] = useState(false);
-  const [report, setReport] = useState('');
   const [listError, setListError] = useState('');
   const [revision, setRevision] = useState(0);
   const mutationLock = useRef(false);
-  const [operationError, setOperationError] = useState('');
+  const [dragging, setDragging] = useState<number | null>(null);
+  const [dropTarget, setDropTarget] = useState<{ id: number; after: boolean } | null>(null);
+  const canReorder = !loading && !saving && !deleting && !open && !search.trim() && sort.field === 'order' && sort.direction === 'asc';
 
   useEffect(() => {
     const controller = new AbortController();
@@ -64,48 +67,52 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
     setLoading(true);
     setListError('');
     setSelected(new Set());
-    const params = new URLSearchParams({ limit: String(pageSize), offset: String(page * pageSize), search, sort: sort.field, direction: sort.direction });
-    void fetch(`/api/threed/model-categories?${params}`, { signal: controller.signal, cache: 'no-store' })
+    void fetch('/api/threed/model-categories', { signal: controller.signal, cache: 'no-store' })
       .then(async (response) => {
         const result = await response.json();
         if (!current) return;
         if (!response.ok || !result.success) throw new Error(result.error || 'Failed to load categories');
-        const count = Number(result.pagination.total);
-        setTotal(count);
-        const last = Math.max(0, Math.ceil(count / pageSize) - 1);
-        if (page > last) { setPage(last); return; }
-        setRows(result.data);
-      }).catch((error) => { if (current) { setRows([]); setListError(error.message || 'Failed to load categories'); } })
+        setCategories(Array.isArray(result.data) ? result.data : []);
+      }).catch((error) => { if (current) { setCategories([]); setListError(error.message || 'Failed to load categories'); } })
       .finally(() => { if (current) setLoading(false); });
     return () => { current = false; controller.abort(); };
-  }, [page, pageSize, search, sort.field, sort.direction, revision]);
+  }, [revision]);
 
-  async function loadCategories() {
+  const tree = useMemo(() => buildCategoryTree(categories, search, sort), [categories, search, sort]);
+  const total = tree.length;
+  const treeRows = useMemo(() => flattenCategoryTree(tree.slice(page * pageSize, (page + 1) * pageSize), search.trim() ? new Set<number>() : collapsed, category => category.id), [tree, page, pageSize, search, collapsed]);
+  const rows = treeRows.map(row => row.category);
+  useEffect(() => { setSelected(new Set()); }, [page, pageSize, search, sort, collapsed, revision]);
+  useEffect(() => { setPage(value => Math.min(value, Math.max(0, Math.ceil(total / pageSize) - 1))); }, [total, pageSize]);
+
+  async function moveCategory(sourceId: number, targetId: number, after: boolean) {
+    setDragging(null); setDropTarget(null);
+    if (!canReorder || mutationLock.current) return;
+    const updates = reorderCategorySiblings(categories, sourceId, targetId, after);
+    if (!updates.length) return;
+    mutationLock.current = true;
+    setSaving(true); setSelected(new Set());
     try {
-      const response = await fetch('/api/threed/model-categories', { cache: 'no-store' });
-      const result = await response.json();
-      if (!response.ok || !result.success) throw new Error(result.error || 'Failed to load categories');
-      setCategories(Array.isArray(result.data) ? result.data : []);
-    } catch (error) {
-      showToast(error instanceof Error ? error.message : 'Failed to load categories', 'error');
-    }
+      const result = await saveCategoryOrder(updates);
+      if (result.error) {
+        showToast(`${result.saved} of ${updates.length} Order updates confirmed. ${result.error} Reloading saved order; please review before retrying.`, 'error');
+      } else {
+        showToast('Category order saved.', 'success');
+      }
+      // Even an unconfirmed response may have persisted; always refresh and notify.
+      setRevision(value => value + 1);
+      onChanged?.();
+    } finally { mutationLock.current = false; setSaving(false); }
   }
 
-  useEffect(() => {
-    void loadCategories();
-    // Category loading belongs to this mounted workspace.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   function beginCreate() {
-    setOperationError('');
     setOpen(true);
     setEditing(null);
     setForm(EMPTY_FORM);
   }
 
   function beginEdit(category: ThreeDModelCategoryOption) {
-    setOperationError('');
     setOpen(true);
     setEditing(category);
     setForm({
@@ -122,7 +129,7 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
     if (mutationLock.current) return;
     if (!form.name.trim()) return showToast('Category name is required', 'error');
     mutationLock.current = true;
-    setSaving(true); setOperationError('');
+    setSaving(true);
     try {
       const response = await fetch(`/api/threed/model-categories${editing ? `?id=${editing.id}` : ''}`, {
         method: editing ? 'PATCH' : 'POST',
@@ -142,11 +149,10 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
       setOpen(false);
       setEditing(null);
       setForm(EMPTY_FORM);
-      await loadCategories();
       setRevision((value) => value + 1);
       onChanged?.();
     } catch (error) {
-      setOperationError(error instanceof Error ? error.message : 'Failed to save category');
+      showToast(error instanceof Error ? error.message : 'Failed to save category', 'error');
     } finally {
       mutationLock.current = false;
       setSaving(false);
@@ -157,7 +163,7 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
     if (mutationLock.current || !targets.length) return;
     if (!confirm(`Delete ${targets.length} categor${targets.length === 1 ? 'y' : 'ies'}?\n${targets.map((entry) => entry.name).join('\n')}\nModel records remain. Categories with children cannot be deleted.`)) return;
     mutationLock.current = true;
-    setDeleting(true); setOperationError('');
+    setDeleting(true);
     const errors: string[] = [];
     let deleted = 0;
     try {
@@ -169,8 +175,7 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
           deleted++;
         } catch (error) { errors.push(`${category.name}: ${error instanceof Error ? error.message : 'Deletion not confirmed'}`); }
       }
-      setReport(`${deleted} of ${targets.length} deleted.`); setOperationError(errors.join(' · '));
-      await loadCategories();
+      showToast(`${deleted} of ${targets.length} deleted.${errors.length ? ` ${errors.join(' · ')}` : ''}`, errors.length ? 'error' : 'success');
       setRevision((value) => value + 1);
       if (deleted) onChanged?.();
     } finally { mutationLock.current = false; setDeleting(false); }
@@ -191,7 +196,12 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
       {ToastComponent}
       <fieldset disabled={deleting || saving} className="shrink-0 min-w-0">
         <AdminWorkspaceHeader icon={FolderTree} title="Model Categories" description="Organize reusable Models with owner-scoped relational taxonomy">
-          <span className="rounded bg-muted px-2 text-xs">{total}</span>
+          <ModelFieldHelp label="Model Categories">
+            <p>Parents group their children. Use the arrows beside category names to expand or collapse branches.</p>
+            <p>Drag a grip above or below a sibling to save its Order. Focus a grip and use Arrow Up or Arrow Down for keyboard reordering.</p>
+            <p>Clear search and sort Order ascending to reorder. Categories stay within their parent group; moving a parent retains its children.</p>
+          </ModelFieldHelp>
+          <span className="rounded bg-muted px-2 text-xs">{categories.length}</span>
           <Input aria-label="Search categories" placeholder="Search name, slug or description…" value={search} className="h-7 min-w-48 flex-1 text-xs" onChange={(event) => { setPage(0); setSelected(new Set()); setSearch(event.target.value); }} />
           <Button size="sm" className="h-7 text-xs" onClick={beginCreate}><Plus className="h-3 w-3" />Add Category</Button>
           <AdminWorkspaceLink href="/admin/threed/models" icon={ArrowLeft}>Models</AdminWorkspaceLink>
@@ -203,13 +213,13 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
       </fieldset>
       <nav aria-label="Category pagination" className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">
         <div className="flex flex-wrap items-center gap-2">
-          <span role="status">{loading ? 'Loading…' : total ? `${page * pageSize + 1}–${Math.min((page + 1) * pageSize, total)} of ${total} Categories` : '0 Categories'}</span>
+          <span role="status">{loading ? 'Loading…' : total ? `${page * pageSize + 1}–${Math.min((page + 1) * pageSize, total)} of ${total} root branches` : '0 root branches'}</span>
           <span aria-hidden="true">|</span><span>{selected.size} selected</span>
           <Button variant="outline" size="sm" className="h-7 text-xs" disabled={loading || deleting || saving || !selected.size} onClick={() => void deleteCategories(rows.filter((row) => selected.has(row.id)))}>Delete selected ({selected.size})</Button>
           <Button variant="outline" size="sm" className="h-7 text-xs" disabled={deleting || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <label>Per page <select aria-label="Categories per page" className="rounded border bg-background p-1" disabled={loading || deleting || saving} value={pageSize} onChange={(event) => { setPage(0); setPageSize(Number(event.target.value)); }}>
+          <label>Branches per page <select aria-label="Category branches per page" className="rounded border bg-background p-1" disabled={loading || deleting || saving} value={pageSize} onChange={(event) => { setPage(0); setPageSize(Number(event.target.value)); }}>
             {[25, 50, 100, 200].map((size) => <option key={size}>{size}</option>)}
           </select></label>
           <Button variant="outline" size="sm" className="text-xs" disabled={loading || deleting || saving || page === 0} onClick={() => setPage(0)}>First</Button>
@@ -219,8 +229,6 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
           <Button variant="outline" size="sm" className="text-xs" disabled={loading || deleting || saving || (page + 1) * pageSize >= total} onClick={() => setPage(Math.max(0, Math.ceil(total / pageSize) - 1))}>Last</Button>
         </div>
       </nav>
-      {report && <p role="status" className="max-h-24 shrink-0 overflow-auto text-xs text-green-500">{report}</p>}
-      {!open && operationError && <p role="alert" className="max-h-24 overflow-auto text-xs text-destructive">{operationError}</p>}
       {listError && <p role="alert" className="text-sm text-destructive">{listError} <button className="underline" onClick={() => setRevision((value) => value + 1)}>Retry</button></p>}
       <div role="region" aria-label="Category records" tabIndex={0} className="min-h-0 flex-1 overflow-auto overscroll-contain rounded-lg border [&>[data-slot=table-container]]:overflow-visible">
         <Table className="min-w-[800px]">
@@ -231,9 +239,42 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
             {heading('name', 'Name')}{heading('slug', 'Slug')}{heading('parent', 'Parent')}{heading('order', 'Order')}{heading('active', 'Active')}<TableHead className="text-right text-xs">Actions</TableHead>
           </TableRow></TableHeader>
           <TableBody>
-            {loading ? <TableRow><TableCell colSpan={7}>Loading categories…</TableCell></TableRow> : rows.length === 0 ? <TableRow><TableCell colSpan={7}>{listError ? 'Categories could not be loaded.' : 'No categories found.'}</TableCell></TableRow> : rows.map((category) => <TableRow key={category.id}>
+            {loading ? <TableRow><TableCell colSpan={7}>Loading categories…</TableCell></TableRow> : rows.length === 0 ? <TableRow><TableCell colSpan={7}>{listError ? 'Categories could not be loaded.' : 'No categories found.'}</TableCell></TableRow> : treeRows.map(({ category, depth, hasChildren }) => <TableRow key={category.id}
+              className={dragging === category.id ? 'opacity-50' : dropTarget?.id === category.id ? (dropTarget.after ? 'border-b-2 border-b-emerald-500 bg-emerald-500/10' : 'border-t-2 border-t-emerald-500 bg-emerald-500/10') : undefined}
+              onDragOver={event => {
+                const source = categories.find(entry => entry.id === dragging);
+                if (!canReorder || !source || source.id === category.id || source.parentId !== category.parentId) { setDropTarget(null); return; }
+                event.preventDefault(); event.dataTransfer.dropEffect = 'move';
+                const rect = event.currentTarget.getBoundingClientRect();
+                setDropTarget({ id: category.id, after: event.clientY >= rect.top + rect.height / 2 });
+              }}
+              onDrop={event => {
+                event.preventDefault();
+                const rect = event.currentTarget.getBoundingClientRect();
+                if (dragging !== null) void moveCategory(dragging, category.id, event.clientY >= rect.top + rect.height / 2);
+              }}>
               <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${category.name}`} disabled={deleting || saving} checked={selected.has(category.id)} onChange={(event) => { const next = new Set(selected); if (event.target.checked) next.add(category.id); else next.delete(category.id); setSelected(next); }} /></TableCell>
-              <TableCell className="py-1 text-sm"><span className="font-medium">{category.name}</span>{category.description && <p className="max-w-sm truncate text-xs text-muted-foreground" title={category.description}>{category.description}</p>}</TableCell>
+              <TableCell className="py-1 text-sm"><div className="flex items-start gap-1" style={{ paddingLeft: depth * 20 }}>
+                <span className="sr-only">Level {depth + 1}. </span>
+                <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0 cursor-grab active:cursor-grabbing" disabled={!canReorder} draggable={canReorder}
+                  aria-label={`Reorder ${category.name}`} title="Drag to reorder; Arrow Up/Down moves between siblings"
+                  onDragStart={event => { if (!canReorder) { event.preventDefault(); return; } setDragging(category.id); event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', String(category.id)); }}
+                  onDragEnd={() => { setDragging(null); setDropTarget(null); }}
+                  onKeyDown={event => {
+                    if (!canReorder || !['ArrowUp', 'ArrowDown'].includes(event.key)) return;
+                    event.preventDefault();
+                    const siblings = categories.filter(entry => entry.parentId === category.parentId).sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name) || a.id - b.id);
+                    const index = siblings.findIndex(entry => entry.id === category.id);
+                    const target = siblings[index + (event.key === 'ArrowUp' ? -1 : 1)];
+                    if (target) void moveCategory(category.id, target.id, event.key === 'ArrowDown');
+                  }}><GripVertical className="h-4 w-4" /></Button>
+                {hasChildren ? <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0" disabled={!!search.trim() || deleting || saving}
+                  aria-label={(collapsed.has(category.id) && !search.trim() ? 'Expand ' : 'Collapse ') + category.name} aria-expanded={!collapsed.has(category.id) || !!search.trim()}
+                  onClick={() => setCollapsed(current => { const next = new Set(current); if (next.has(category.id)) next.delete(category.id); else next.add(category.id); return next; })}>
+                  {collapsed.has(category.id) && !search.trim() ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button> : <span className="w-6 shrink-0" aria-hidden="true" />}
+                <div><span className="font-medium">{category.name}</span>{category.description && <p className="max-w-sm truncate text-xs text-muted-foreground" title={category.description}>{category.description}</p>}</div>
+              </div></TableCell>
               <TableCell className="py-1 text-xs">{category.slug}</TableCell><TableCell className="py-1 text-xs">{category.parentId ? categories.find((entry) => entry.id === category.parentId)?.name ?? `Category #${category.parentId}` : '—'}</TableCell>
               <TableCell className="py-1 text-xs">{category.sortOrder}</TableCell><TableCell className="py-1">{category.isActive ? <Check aria-label="Active" className="h-4 w-4 text-green-600" /> : <X aria-label="Inactive" className="h-4 w-4 text-gray-400" />}</TableCell>
               <TableCell className="py-1 text-right"><Button variant="ghost" size="icon" className="h-8 w-8" disabled={deleting || saving} aria-label={`Edit ${category.name}`} onClick={() => beginEdit(category)}><Edit className="h-4 w-4" /></Button><Button variant="ghost" size="icon" className="h-8 w-8" disabled={deleting || saving} aria-label={`Delete ${category.name}`} onClick={() => void deleteCategories([category])}><Trash2 className="h-4 w-4" /></Button></TableCell>
@@ -265,7 +306,6 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{editing ? 'Update Category' : 'Create Category'}
               </Button>
           </div>
-          {operationError && <p role="alert" className="text-sm text-destructive">{operationError}</p>}
         </DialogContent>
       </Dialog>
     </div>

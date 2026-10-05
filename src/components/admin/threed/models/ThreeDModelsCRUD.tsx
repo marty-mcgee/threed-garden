@@ -54,6 +54,7 @@ import { ModelPreviewImageExport } from './ModelPreviewImageExport';
 import { ModelFieldHelp } from './ModelFieldHelp';
 import { ThreeDModelAssetPreview, MODEL_WORKSPACE_PERSPECTIVE } from './ThreeDModelAssetPreview';
 import { ThreeDModelsBulkImport } from './ThreeDModelsBulkImport';
+import { BulkModelCategoriesDialog } from './BulkModelCategoriesDialog';
 import { modelForPreview } from './model-preview-requirements';
 import type { ModelData } from '@/components/threed/markers/ModelMarker3D';
 
@@ -177,6 +178,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
   const [deleteReport, setDeleteReport] = useState('');
   const [deleteFailures, setDeleteFailures] = useState<string[]>([]);
   const [categories, setCategories] = useState<ThreeDModelCategoryOption[]>([]);
+  const [bulkCategoryTargets, setBulkCategoryTargets] = useState<{ id: number; modelName: string }[] | null>(null);
 
   // v0.16.4-alpha/beta: Vercel Blob upload state
   const [uploadingPrimary, setUploadingPrimary] = useState(false);
@@ -741,6 +743,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
           <span aria-hidden="true" className="text-muted-foreground">|</span>
           <div className="flex flex-wrap items-center gap-2 text-xs" aria-label="Bulk Model actions">
             <span>{selectedModels.length} selected</span>
+            <Button size="sm" variant="outline" className="h-7 px-2 text-xs" disabled={loading || deleting || !selectedModels.length} onClick={() => setBulkCategoryTargets(selectedModels.map(model => ({ id: model.id, modelName: model.modelName })))}>Update Categories ({selectedModels.length})</Button>
             <Button size="sm" variant="outline" className="h-7 px-2 text-xs" disabled={loading || deleting || !selectedModels.length} onClick={() => void handleDeleteModels(selectedModels)}>
               {deleting ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Trash2 className="mr-1 h-3.5 w-3.5" />}Delete selected ({selectedModels.length})
             </Button>
@@ -884,6 +887,14 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
           {animationModel && <ModelAnimationAssignments key={animationModel.id} modelId={animationModel.id} />}
         </DialogContent>
       </Dialog>
+
+      {bulkCategoryTargets && <BulkModelCategoriesDialog targets={bulkCategoryTargets} categories={categories} onClose={() => setBulkCategoryTargets(null)} onComplete={async result => {
+        showToast(`${result.updated} of ${bulkCategoryTargets.length} Models updated.${result.failures.length ? ` ${result.failures.join(' · ')}` : ''}`, result.failures.length ? 'error' : 'success');
+        setBulkCategoryTargets(null);
+        setSelectedIds(new Set());
+        await fetchModels();
+        onModuleUpdate?.();
+      }} />}
 
 
     </div>

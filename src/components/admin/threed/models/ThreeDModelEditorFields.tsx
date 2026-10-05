@@ -2,9 +2,10 @@
 
 import { MODEL_FALLBACK_SHAPES, readModelFallbackShape, setModelFallbackShape, type ModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
 import { readModelLightBoost, setModelLightBoost } from '@/libraries/services/threed/models/model-lighting-core';
-import type { Dispatch, SetStateAction } from 'react';
+import { useState, type Dispatch, type SetStateAction } from 'react';
 import Link from 'next/link';
-import { AlertCircle, CheckCircle2, Loader2, Upload, X } from 'lucide-react';
+import { AlertCircle, CheckCircle2, ChevronDown, ChevronRight, Loader2, Upload, X } from 'lucide-react';
+import { buildCategoryTree, flattenCategoryTree } from './category-tree-core';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -127,21 +128,11 @@ export function ThreeDModelEditorFields({
   const geometrySource = source === 'shape' ? 'procedural' : 'model-file';
   const activeCategories = categories.filter(category => category.isActive);
   const assignedCategories = categories.filter(category => form.categoryIds.includes(category.id));
-  const activeCategoryIds = new Set(activeCategories.map(category => category.id));
-  const renderedCategoryIds = new Set<number>();
-
-  function renderCategory(category: ThreeDModelCategoryOption): React.ReactNode {
-    if (renderedCategoryIds.has(category.id)) return null;
-    renderedCategoryIds.add(category.id);
-    const children = activeCategories.filter(child => child.parentId === category.id);
-    return <li key={category.id} className="space-y-1">
-      <label className="flex items-center gap-2 rounded border px-2 py-1.5 text-xs">
-        <input type="checkbox" checked={form.categoryIds.includes(category.id)} onChange={() => update('categoryIds', form.categoryIds.includes(category.id) ? form.categoryIds.filter(categoryId => categoryId !== category.id) : [...form.categoryIds, category.id])} disabled={disabled} />
-        <span className="min-w-0 break-words">{category.name}</span>
-      </label>
-      {children.length > 0 && <ul className="ml-3 space-y-1 border-l pl-3">{children.map(renderCategory)}</ul>}
-    </li>;
-  }
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<number>>(new Set());
+  const categoryRows = flattenCategoryTree(
+    buildCategoryTree(activeCategories, '', { field: 'order', direction: 'asc' }),
+    collapsedCategories, category => category.id,
+  );
 
   function update<K extends keyof ThreeDModelAdminFormData>(key: K, value: ThreeDModelAdminFormData[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -291,8 +282,20 @@ export function ThreeDModelEditorFields({
           <p className="text-xs text-muted-foreground">Create an active Model category before assigning taxonomy.</p>
         ) : (
           <ul className="space-y-2" aria-label="Model category hierarchy">
-            {activeCategories.filter(category => category.parentId === null || !activeCategoryIds.has(category.parentId)).map(renderCategory)}
-            {activeCategories.filter(category => !renderedCategoryIds.has(category.id)).map(renderCategory)}
+            {categoryRows.map(({ category, depth, hasChildren }) => <li key={category.id} style={{ paddingLeft: depth * 20 }}>
+              <div className="flex items-center gap-1 rounded border px-2 py-1.5 text-xs">
+                <span className="sr-only">Level {depth + 1}. </span>
+                {hasChildren ? <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0" disabled={disabled}
+                  aria-label={`${collapsedCategories.has(category.id) ? 'Expand' : 'Collapse'} ${category.name}`} aria-expanded={!collapsedCategories.has(category.id)}
+                  onClick={() => setCollapsedCategories(current => { const next = new Set(current); if (next.has(category.id)) next.delete(category.id); else next.add(category.id); return next; })}>
+                  {collapsedCategories.has(category.id) ? <ChevronRight className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                </Button> : <span className="w-6 shrink-0" aria-hidden="true" />}
+                <label className="flex min-w-0 flex-1 items-center gap-2">
+                  <input type="checkbox" checked={form.categoryIds.includes(category.id)} onChange={() => update('categoryIds', form.categoryIds.includes(category.id) ? form.categoryIds.filter(categoryId => categoryId !== category.id) : [...form.categoryIds, category.id])} disabled={disabled} />
+                  <span className="min-w-0 break-words">{category.name}</span>
+                </label>
+              </div>
+            </li>)}
           </ul>
         )}
       </details>

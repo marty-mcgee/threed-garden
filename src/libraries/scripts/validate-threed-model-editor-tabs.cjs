@@ -127,7 +127,7 @@ async function editorChecks() {
     './model-admin-form-core': form, './ThreeDModelEditorFields': { ...proxy, MODEL_TYPE_OPTIONS: [], MODEL_STATUS_OPTIONS: [], ThreeDModelEditorFields: 'fields', ThreeDModelPreviewImageFields: 'image-fields' },
     './ModelPreviewBatchExport': proxy, './ModelPreviewImageExport': proxy, './ThreeDModelAssetPreview': proxy,
     './ModelFieldHelp': { ModelFieldHelp: 'help' },
-    './ThreeDModelsBulkImport': proxy, './ThreeDModelFilesCRUD': proxy,
+    './ThreeDModelsBulkImport': proxy, './ThreeDModelFilesCRUD': proxy, './BulkModelCategoriesDialog': proxy,
     './model-preview-requirements': { modelForPreview: value => value }, './use-model-editor-tabs': hook,
   }, { window: b.window, fetch, confirm: () => true });
   const shell = module.ThreeDModelsCRUD({ view: 'edit', linkedModelId: 7 });
@@ -288,7 +288,10 @@ function imageAndGeometryChecks() {
   assert(nodes(helpRuntime.value).find(node => node.type === 'Tooltip').props.open);
   nodes(helpRuntime.value).find(node => node.type === 'Tooltip').props.onOpenChange(false); helpRuntime.render();
   assert.equal(nodes(helpRuntime.value).find(node => node.type === 'Tooltip').props.open, false);
+  const fieldRuntime = runtime();
   const fields = load('src/components/admin/threed/models/ThreeDModelEditorFields.tsx', {
+    react: fieldRuntime.react,
+    './category-tree-core': require('../../components/admin/threed/models/category-tree-core.ts'),
     'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'link' }, 'lucide-react': proxy,
     '@/components/ui/badge': proxy, '@/components/ui/button': proxy, '@/components/ui/input': proxy,
     '@/components/ui/label': proxy, '@/components/ui/select': proxy, '@/components/ui/switch': proxy,
@@ -336,6 +339,31 @@ function imageAndGeometryChecks() {
   assert.equal(draft.filePath, original.filePath); assert.equal(JSON.parse(draft.metadata).activeSource, 'character');
   tree = fields.ThreeDModelEditorFields({ ...props(), mode: 'create', form: { ...draft, usedByCharacters: false, filePath: '' } });
   assert(find(tree, node => node.props?.id === 'create-modelType'), 'Create format selection remains available');
+  const categories = [
+    { id: 2, parentId: 1, name: 'Child', slug: 'child', description: null, sortOrder: 1, isActive: true },
+    { id: 1, parentId: null, name: 'Parent', slug: 'parent', description: null, sortOrder: 0, isActive: true },
+  ];
+  for (const mode of ['create', 'edit']) {
+    draft = { ...draft, categoryIds: [2] };
+    fieldRuntime.mount(() => fields.ThreeDModelEditorFields({ ...props(), mode, categories, showPreviewImage: false }));
+    tree = fieldRuntime.value;
+    const section = find(tree, node => node.type === 'details' && text(node).startsWith('Categories'));
+    assert.equal(section.props.open, undefined, 'Outer Categories remains collapsed');
+    assert(text(find(section, node => node.type === 'summary')).includes('Child'), 'Assigned draft names remain visible');
+    const list = () => find(fieldRuntime.value, node => node.props?.['aria-label'] === 'Model category hierarchy');
+    assert.deepEqual(nodes(list()).filter(node => node.type === 'label').map(node => text(node).trim()), ['Parent', 'Child']);
+    assert.deepEqual(nodes(list()).filter(node => node.type === 'li').map(node => node.props.style.paddingLeft), [0, 20]);
+    const collapse = () => find(list(), node => node.props?.['aria-label'] === 'Collapse Parent');
+    collapse().props.onClick(); fieldRuntime.render();
+    assert.equal(nodes(list()).filter(node => node.type === 'input').length, 1);
+    assert.deepEqual(draft.categoryIds, [2], 'Collapsing retains child assignment');
+    find(list(), node => node.props?.['aria-label'] === 'Expand Parent').props.onClick(); fieldRuntime.render();
+    const checkboxes = () => nodes(list()).filter(node => node.type === 'input');
+    checkboxes()[0].props.onChange(); fieldRuntime.render();
+    assert.deepEqual(Array.from(draft.categoryIds), [2, 1], 'Parent selection is independent');
+    checkboxes()[1].props.onChange(); fieldRuntime.render();
+    assert.deepEqual(Array.from(draft.categoryIds), [1], 'Child deselection does not clear the parent');
+  }
 }
 (async () => {
   await controllerChecks(); await editorChecks(); await filesChecks(); await redirects(); previewChecks(); imageAndGeometryChecks();
