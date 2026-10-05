@@ -65,17 +65,18 @@ export function parseSimulationDefinition(value: unknown): SimulationDefinition 
   return { version: 1, steps, observations };
 }
 export function simulationFields(value: unknown, edit: boolean) {
-  const input = object(value, edit ? ['id', 'revision', 'name', 'slug', 'description', 'isActive', 'scenarioId', 'definition'] : ['projectId', 'threedId', 'name', 'slug', 'description', 'isActive', 'scenarioId', 'definition']);
+  const input = object(value, edit ? ['id', 'revision', 'name', 'slug', 'description', 'isActive', 'definition'] : ['projectId', 'threedId', 'name', 'slug', 'description', 'isActive', 'definition']);
   const name = typeof input.name === 'string' ? input.name.trim() : '';
   const slug = typeof input.slug === 'string' ? input.slug.trim() : '';
   const description = input.description === null ? '' : typeof input.description === 'string' ? input.description.trim() : '';
   if (!name || name.length > 120 || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug) || slug.length > 100 || description.length > 2000 || typeof input.isActive !== 'boolean' || (input.description !== undefined && input.description !== null && typeof input.description !== 'string')) throw new SimulationInputError('Check the name, slug, description and Active value.');
   const definition = parseSimulationDefinition(input.definition);
   if (input.isActive && !definition.steps.length) throw new SimulationInputError('Add an Action before marking a Simulation active.');
-  return { name, slug, description: description || null, isActive: input.isActive, scenarioId: input.scenarioId === null ? null : simulationId(input.scenarioId, 'Scenario ID'), definition };
+  return { name, slug, description: description || null, isActive: input.isActive, definition };
 }
 const sorts = ['name', 'slug', 'project', 'revision', 'active', 'createdAt'] as const;
 export function simulationListQuery(params: URLSearchParams) {
+  if (params.has('scenarioId')) throw new SimulationInputError('Scenario filters are not supported for Simulations.');
   const limit = params.has('limit') ? simulationId(params.get('limit'), 'Limit') : 50;
   const raw = params.get('offset') ?? '0';
   const search = params.get('search')?.trim() ?? '', sort = params.get('sort') ?? 'name', direction = params.get('direction') ?? 'asc';
@@ -83,6 +84,5 @@ export function simulationListQuery(params: URLSearchParams) {
   if (params.has('isActive') && !['true', 'false'].includes(params.get('isActive')!)) throw new SimulationInputError('Invalid Active filter.');
   return { limit, offset: Number(raw), search, sort: sort as typeof sorts[number], direction, projectId: params.has('projectId') ? simulationId(params.get('projectId'), 'Project ID') : null,
     threedId: params.has('threedId') ? simulationId(params.get('threedId'), 'ThreeD ID') : null,
-    scenarioId: params.has('scenarioId') ? simulationId(params.get('scenarioId'), 'Scenario ID') : null,
     isActive: params.has('isActive') ? params.get('isActive') === 'true' : null };
 }

@@ -4,8 +4,7 @@ import type { SimulationSensorObservation } from './soccer-simulation-scene';
 
 // Reports include up to 50 outcomes and 128 named Sensor readings; definitions retain their own 64 KiB limit.
 export const MAX_SIMULATION_RESULT_BYTES = 262_144;
-export type SimulationResultSnapshot = { simulationId: number; name: string; revision: number; scenarioId: number | null;
-  scenarioName: string | null; projectName: string; threedName: string; definition: SimulationDefinition };
+export type SimulationResultSnapshot = { simulationId: number; name: string; revision: number; projectName: string; threedName: string; definition: SimulationDefinition };
 export type SimulationResultReport = { version: 1; source: 'browser-scene'; phase: Exclude<SimulationRunState['phase'], 'running'>;
   clientStartedAt: number; clientEndedAt: number; outcomes: SimulationOutcome[]; observations: SimulationSensorObservation[]; reason?: string };
 function object(value: unknown, fields: string[]): Record<string, unknown> {

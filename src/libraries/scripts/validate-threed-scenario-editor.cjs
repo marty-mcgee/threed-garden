@@ -5,6 +5,13 @@ const ts = require('typescript');
 const nodes = value => Array.isArray(value) ? value.flatMap(nodes) : value && typeof value === 'object' ? [value, ...nodes(value.props?.children)] : [];
 const jsx = (type, props) => ({ type, props });
 const proxy = new Proxy({}, { get: (_, key) => String(key) });
+function load(file, mocks, globals = {}) {
+  const exports = {};
+  vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText, {
+    exports, AbortController, console, ...globals, require(name) { assert(name in mocks, name); return mocks[name]; },
+  });
+  return exports;
+}
 function runtime() {
   const slots = []; let cursor = 0, effects = [], changed = false, body, value;
   const same = (a, b) => a && b && a.length === b.length && a.every((x, i) => Object.is(x, b[i]));
@@ -53,6 +60,20 @@ function fixture(props) {
     return prevented;
   } };
 }
+function inventoryFixture() {
+  const rt = runtime(), requests = [], pending = [];
+  const inventory = load('src/libraries/services/threed/scenarios/scenario-inventory.ts', {});
+  const detail = load('src/components/admin/threed/scenarios/ScenarioContinuationDialog.tsx', {
+    react: rt.react, 'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'Link' }, 'lucide-react': proxy,
+    '@/components/admin/layout/AdminWorkspaceHeader': proxy, '@/components/ui/button': proxy, '@/components/ui/dialog': proxy,
+    '../models/ModelFieldHelp': proxy, '@/libraries/services/threed/scenarios/scenario-inventory': inventory,
+  }, { fetch(url, options) { requests.push({ url, ...options }); return new Promise(resolve => pending.push(resolve)); } });
+  const scenario = { id: 9, projectId: 15, projectName: 'One', threedName: 'Garden', name: 'Explore', description: 'Explore the farm.' };
+  rt.mount(() => detail.ScenarioContinuationDialog({ scenario, standalone: true, onClose() {} }));
+  return { rt, requests, find: predicate => nodes(rt.value.type(rt.value.props)).find(predicate), async reply(data, error) {
+    pending.shift()(Response.json({ success: !error, data, error }, { status: error ? 403 : 200 })); await rt.flush();
+  } };
+}
 (async () => {
   const edit = fixture({ view: 'edit', scenarioId: 9 }); await edit.rt.flush();
   assert(edit.requests.some(request => request.url === '/api/threed/scenarios?id=9'));
@@ -81,6 +102,27 @@ function fixture(props) {
   const detail = fixture({ view: 'detail', scenarioId: 9 }); await detail.rt.flush();
   assert(detail.find(node => node.type === 'ScenarioContinuationDialog' && node.props.standalone), 'Admin View is a page surface');
   assert(!detail.requests.some(request => request.url.includes('threed-markers') || request.method), 'Read-only detail does not load editor choices or mutate');
+  const inventoryLoading = inventoryFixture();
+  const actionLink = f => f.find(node => node.type === 'Link' && node.props.href === '/admin/projects/15');
+  assert.equal(inventoryLoading.requests.length, 1);
+  assert.equal(inventoryLoading.requests[0].url, '/api/project/assets?projectId=15&moduleType=threed');
+  assert.equal(inventoryLoading.requests[0].cache, 'no-store');
+  assert.equal(actionLink(inventoryLoading).props.children[0], 'Open Project assets', 'Loading keeps a useful Project action');
+  assert(inventoryLoading.find(node => node.type === 'AdminWorkspaceLink' && node.props.href === '/admin/threed/scenarios/9'), 'Edit targets the exact Scenario');
+  assert(!inventoryLoading.find(node => node.props?.href === '/admin/threed/scenarios'), 'No redundant Scenarios link');
+  assert(inventoryLoading.find(node => node.type === 'ModelFieldHelp' && node.props.label === 'Current Project inventory'), 'Inventory scope guidance is available beside its title');
+  assert(!inventoryLoading.find(node => node.props?.children === 'Next step'));
+  assert(inventoryLoading.find(node => node.type === 'Button' && node.props.variant === 'success'), 'Project action uses the green Blueprint button');
+  await inventoryLoading.reply([]);
+  assert.equal(actionLink(inventoryLoading).props.children[0], 'Add the first Project asset');
+  const partialInventory = inventoryFixture(); await partialInventory.reply([{ assetType: 'threed_characters' }]);
+  assert.equal(actionLink(partialInventory).props.children[0], 'Add a Model to this Project');
+  const populatedInventory = inventoryFixture(); await populatedInventory.reply([{ assetType: 'threed_models' }, { assetType: 'threed_characters' }]);
+  assert.equal(actionLink(populatedInventory).props.children[0], 'Review Project assets');
+  const failedInventory = inventoryFixture(); await failedInventory.reply(null, 'Project inventory unavailable.');
+  assert(failedInventory.find(node => node.props?.role === 'alert'));
+  assert.equal(actionLink(failedInventory).props.children[0], 'Open Project assets', 'Failed inventory is not presented as an empty Project');
+  assert([inventoryLoading, partialInventory, populatedInventory, failedInventory].every(f => f.requests.length === 1 && !f.requests[0].method), 'Scenario inventory only reads Project assets; no Simulation request or mutation');
   assert(!fs.readFileSync('src/components/admin/threed/scenarios/ThreeDScenariosCRUD.tsx', 'utf8').includes('Use in another Project'));
   const list = fixture({ view: 'list' }); await new Promise(resolve => setTimeout(resolve, 5)); await list.rt.flush();
   const viewAction = list.find(node => node.props?.['aria-label'] === 'View Soccer');
@@ -89,5 +131,5 @@ function fixture(props) {
   const editAction = list.find(node => node.props?.['aria-label'] === 'Edit Soccer');
   assert.equal(editAction.props.size, 'icon'); editAction.props.onClick();
   assert(list.navigation.includes('/admin/threed/scenarios/9'));
-  console.log('PASS Scenario standalone exact reads, binding locks, draft/cancel/busy guards, failed-save retention and create/read-only page workflows (offline).');
+  console.log('PASS Scenario standalone exact reads, binding locks, draft/cancel/busy guards, failed-save retention, inventory loading/error/empty/partial guidance and exact Edit/Project navigation (offline).');
 })().catch(error => { console.error(error); process.exitCode = 1; });

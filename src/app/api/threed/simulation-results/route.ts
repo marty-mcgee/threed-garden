@@ -3,7 +3,7 @@ import { and, desc, eq, sql, getTableColumns } from 'drizzle-orm';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
 import { project, projectThreed } from '@/libraries/schema/project';
-import { threed, threedScenarios, threedSimulations, threedSimulationResults } from '@/libraries/schema/threed';
+import { threed, threedSimulations, threedSimulationResults } from '@/libraries/schema/threed';
 import { parseSimulationDefinition, SimulationInputError, simulationId } from '@/libraries/services/threed/simulations/simulation-input';
 import { MAX_SIMULATION_RESULT_BYTES, resultStart, resultReport, simulationRunId, sameSimulationReport } from '@/libraries/services/threed/simulations/simulation-result-input';
 
@@ -23,8 +23,9 @@ export async function GET(request: NextRequest) {
   const session = await auth(); if (!session?.user?.id) return reply({ success: false, error: 'Unauthorized' }, 401);
   try {
     const params = new URL(request.url).searchParams, conditions = [eq(threedSimulationResults.userId, session.user.id), eq(project.userId, session.user.id), eq(threed.userId, session.user.id)];
+    if (params.has('scenarioId')) throw new SimulationInputError('Scenario filters are not supported for Simulation Results.');
     if (params.has('runId')) conditions.push(eq(threedSimulationResults.runId, simulationRunId(params.get('runId'))));
-    for (const [key, column] of [['projectId', threedSimulationResults.projectId], ['simulationId', threedSimulationResults.simulationId], ['scenarioId', threedSimulationResults.scenarioId]] as const) {
+    for (const [key, column] of [['projectId', threedSimulationResults.projectId], ['simulationId', threedSimulationResults.simulationId]] as const) {
       if (params.has(key)) conditions.push(eq(column, simulationId(params.get(key))));
     }
     const single = params.has('runId'), limit = params.has('limit') ? simulationId(params.get('limit')) : 25, offset = params.get('offset') ?? '0';
@@ -36,7 +37,7 @@ export async function GET(request: NextRequest) {
     }
     const where = and(...conditions), fields = single ? getTableColumns(threedSimulationResults) : {
       id: threedSimulationResults.id, runId: threedSimulationResults.runId, projectId: threedSimulationResults.projectId, simulationId: threedSimulationResults.simulationId,
-      scenarioId: threedSimulationResults.scenarioId, simulationRevision: threedSimulationResults.simulationRevision, status: threedSimulationResults.status,
+      simulationRevision: threedSimulationResults.simulationRevision, status: threedSimulationResults.status,
       createdAt: threedSimulationResults.createdAt, clientEndedAt: threedSimulationResults.clientEndedAt,
       name: sql<string>`${threedSimulationResults.snapshot}->>'name'`,
     };
@@ -56,19 +57,18 @@ export async function POST(request: NextRequest) {
       if (existing) return existing.snapshot.simulationId === input.simulationId && existing.simulationRevision === input.revision && existing.clientStartedAt.getTime() === input.clientStartedAt
         ? { status: 200, data: existing } : { status: 409, error: 'Run ID already belongs to another captured attempt.' };
       if (Math.abs(input.clientStartedAt - Date.now()) > 300_000) return { status: 400, error: 'Check the browser clock before starting a new run.' };
-      const [row] = await tx.select({ simulation: threedSimulations, projectName: project.name, threedName: threed.name, scenarioName: threedScenarios.name }).from(threedSimulations)
+      const [row] = await tx.select({ simulation: threedSimulations, projectName: project.name, threedName: threed.name }).from(threedSimulations)
         .innerJoin(project, eq(project.id, threedSimulations.projectId)).innerJoin(threed, eq(threed.id, threedSimulations.threedId))
         .innerJoin(projectThreed, and(eq(projectThreed.projectId, threedSimulations.projectId), eq(projectThreed.threedId, threedSimulations.threedId), eq(projectThreed.userId, userId)))
-        .leftJoin(threedScenarios, and(eq(threedScenarios.id, threedSimulations.scenarioId), eq(threedScenarios.userId, userId), eq(threedScenarios.projectId, threedSimulations.projectId), eq(threedScenarios.threedId, threedSimulations.threedId)))
         .where(and(eq(threedSimulations.id, input.simulationId), eq(threedSimulations.userId, userId), eq(project.userId, userId), eq(threed.userId, userId))).limit(1).for('share', { of: threedSimulations });
       if (!row) return { status: 404, error: 'Simulation module unavailable.' };
       const sim = row.simulation;
       if (!sim.isActive || sim.revision !== input.revision) return { status: 409, error: 'Simulation changed or is inactive. Refresh before running.' };
       const definition = parseSimulationDefinition(sim.definition);
       if (!definition.steps.length) return { status: 400, error: 'A run requires at least one Action.' };
-      const [created] = await tx.insert(threedSimulationResults).values({ userId, projectId: sim.projectId, threedId: sim.threedId, simulationId: sim.id, scenarioId: sim.scenarioId,
+      const [created] = await tx.insert(threedSimulationResults).values({ userId, projectId: sim.projectId, threedId: sim.threedId, simulationId: sim.id,
         runId: input.runId, simulationRevision: sim.revision, clientStartedAt: new Date(input.clientStartedAt),
-        snapshot: { simulationId: sim.id, name: sim.name, revision: sim.revision, scenarioId: sim.scenarioId, scenarioName: row.scenarioName,
+        snapshot: { simulationId: sim.id, name: sim.name, revision: sim.revision,
           projectName: row.projectName, threedName: row.threedName, definition } }).onConflictDoNothing({ target: [threedSimulationResults.userId, threedSimulationResults.runId] }).returning();
       if (created) return { status: 201, data: created };
       const [duplicate] = await tx.select().from(threedSimulationResults).where(and(eq(threedSimulationResults.userId, userId), eq(threedSimulationResults.runId, input.runId))).limit(1);

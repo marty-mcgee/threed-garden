@@ -1,10 +1,11 @@
 'use client';
 import { useEffect, useState } from 'react';
 import type { AnimationActionSlot } from '@/libraries/services/threed/animations/action-slots';
-export function useAnimationActionSlots(refresh = 0) {
+export function useAnimationActionSlots(refresh = 0, enabled = true) {
   const [slots, setSlots] = useState<AnimationActionSlot[]>([]);
   const [error, setError] = useState('');
   useEffect(() => {
+    if (!enabled) { setSlots([]); setError(''); return; }
     const controller = new AbortController();
     fetch('/api/threed/animation-action-slots', { signal: controller.signal, cache: 'no-store' }).then(async response => {
       const result = await response.json();
@@ -12,6 +13,6 @@ export function useAnimationActionSlots(refresh = 0) {
       if (!controller.signal.aborted) { setSlots(result.data); setError(''); }
     }).catch(cause => { if (!controller.signal.aborted) { setSlots([]); setError(cause.message || 'Action slots unavailable'); } });
     return () => controller.abort();
-  }, [refresh]);
+  }, [refresh, enabled]);
   return { slots, error };
 }

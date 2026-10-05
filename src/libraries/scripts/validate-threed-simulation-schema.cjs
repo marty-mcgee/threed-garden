@@ -21,13 +21,19 @@ const sqlText = value => dialect.sqlToQuery(value).sql;
 assert.equal(table.name, 'threed_simulations');
 assert(column('id').primary);
 for (const name of ['user_id', 'project_id', 'threed_id', 'name', 'slug', 'definition', 'revision', 'is_active', 'created_at', 'updated_at']) assert(column(name).notNull, name);
-assert.equal(column('scenario_id').notNull, false);
+assert.equal(column('scenario_id'), undefined);
+assert(!table.foreignKeys.some(key => key.reference().foreignTable === schema.threedScenarios));
+assert(!table.indexes.some(item => /scenario/.test(item.config.name)));
+const relational = orm.extractTablesRelationalConfig({ ...schema, user, project }, orm.createTableRelationsHelpers);
+for (const name of ['threedSimulations', 'threedSimulationResults']) {
+  assert(!Object.values(relational.tables[name].relations).some(relation => relation.referencedTable === schema.threedScenarios), 'No Drizzle relation to Scenarios');
+}
 assert.equal(column('is_active').default, false, 'Empty definitions start inactive');
 assert.equal(column('revision').default, 1);
 assert.equal(JSON.stringify(column('definition').default), JSON.stringify({ version: 1, steps: [], observations: [] }));
 for (const [name, parent, deletion] of [
   ['user_id', user, 'cascade'], ['project_id', project, 'cascade'],
-  ['threed_id', schema.threed, 'cascade'], ['scenario_id', schema.threedScenarios, 'set null'],
+  ['threed_id', schema.threed, 'cascade'],
 ]) {
   const key = table.foreignKeys.find(item => item.reference().columns[0].name === name);
   assert.equal(key.reference().foreignTable, parent);
@@ -46,13 +52,12 @@ assert(!table.columns.some(item => /run_id|result|response|started_at|completed_
 assert(fs.readFileSync('src/libraries/schema/index.ts', 'utf8').includes("export * from './threed'"));
 
 (async () => {
-  const current = { ...schema, user, project };
-  // This fixture preserves the historical definition-only migration delta.
-  delete current.threedSimulationResults;
-  delete current.threedSimulationResultsRelations;
-  const previous = { ...current }; delete previous.threedSimulations;
-  const before = generateDrizzleJson(previous);
-  const after = generateDrizzleJson(current, before.id);
+  // Historical SQL is checked against its frozen historical snapshot, never regenerated from today's table.
+  const frozen = JSON.parse(fs.readFileSync('src/libraries/scripts/fixtures/threed-simulations-v02227.json','utf8'));
+  const current = JSON.parse(JSON.stringify(generateDrizzleJson({ ...schema, user, project })));
+  const after = structuredClone(current); delete after.tables['public.threed_simulation_results'];
+  after.tables['public.threed_simulations'] = frozen['public.threed_simulations'];
+  const before = structuredClone(after); delete before.tables['public.threed_simulations'];
   const statements = await generateMigration(before, after);
   assert.equal(Object.keys(after.tables).length, Object.keys(before.tables).length + 1);
   assert(statements.length > 0);
@@ -62,10 +67,16 @@ assert(fs.readFileSync('src/libraries/schema/index.ts', 'utf8').includes("export
   }
   const filename = 'docs/releases/sql/v0.22.25-threed-simulations.sql';
   const body = `BEGIN;\n\n${statements.join('\n\n')}\n\nCOMMIT;\n`;
-  if (process.argv.includes('--write-sql')) fs.writeFileSync(filename,
-    '-- v0.22.25: ThreeD Simulations definition table only. Generated offline by installed Drizzle Kit.\n' +
-    '-- Review against the intended database before execution. No runner or run/results tables.\n' + body);
   const saved = fs.readFileSync(filename, 'utf8').replace(/^--.*\r?\n/gm, '').replace(/\r\n/g, '\n');
-  assert.equal(saved, body, 'Tracked additive migration matches the actual Drizzle schema delta');
-  console.log('PASS: Simulation defaults, optional Scenario unlink, scoped indexes/checks and exact additive Drizzle SQL; no database connection.');
+  assert.equal(saved, body, 'Historical additive migration matches its frozen Drizzle snapshot');
+  const previous = structuredClone(current); Object.assign(previous.tables, frozen);
+  const next = current;
+  const delta = await generateMigration(previous, next);
+  assert.equal(delta.length, 6, 'Only two columns, two foreign keys and two indexes are removed');
+  for (const statement of delta) assert(/^(ALTER TABLE "threed_simulation(?:s|_results)" DROP (?:CONSTRAINT .*scenario.*|COLUMN "scenario_id")|DROP INDEX "idx_threed_simulation(?:s|_results)_scenario(?:_id)?")/.test(statement), statement);
+  const normalize = value => value.replace(/--> statement-breakpoint/g, '').split(';').map(item => item.replace(/\s+/g, ' ').trim()).filter(Boolean).sort();
+  const generated = 'drizzle/0002_threed_simulations_remove_scenarios.sql';
+  if (fs.existsSync(generated)) assert.deepEqual(normalize(fs.readFileSync(generated, 'utf8')), normalize(delta.join('\n')), 'Native local migration matches the reviewed six-statement schema delta');
+  assert.equal(Object.keys(previous.tables).length, Object.keys(next.tables).length, 'No tables removed');
+  console.log('PASS: Simulation defaults, no Scenario relationship, scoped indexes/checks and exact additive Drizzle SQL; no database connection.');
 })().catch(error => { console.error(error); process.exitCode = 1; });

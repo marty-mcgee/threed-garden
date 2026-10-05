@@ -8,6 +8,7 @@ import { summarizeScenarioInventory, type ScenarioInventoryAsset } from '@/libra
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { BookOpen, Pencil } from 'lucide-react';
+import { ModelFieldHelp } from '../models/ModelFieldHelp';
 
 type ScenarioSummary = {
   id: number;
@@ -19,18 +20,17 @@ type ScenarioSummary = {
 };
 
 const inventory = [
-  { id: 'models', label: 'Models', icon: Boxes },
-  { id: 'characters', label: 'Characters', icon: UserRound },
-  { id: 'garden', label: 'Beds & Plantings', icon: Sprout },
-  { id: 'farmbots', label: 'FarmBots', icon: Bot },
-  { id: 'other', label: 'Other ThreeD assets', icon: CircleHelp },
+  { id: 'models', label: 'Models', icon: Boxes, color: 'text-sky-500' },
+  { id: 'characters', label: 'Characters', icon: UserRound, color: 'text-violet-500' },
+  { id: 'garden', label: 'Beds & Plantings', icon: Sprout, color: 'text-emerald-500' },
+  { id: 'farmbots', label: 'FarmBots', icon: Bot, color: 'text-amber-500' },
+  { id: 'other', label: 'Other ThreeD assets', icon: CircleHelp, color: 'text-muted-foreground' },
 ] as const;
 
 function ScenarioDetailSurface({ scenario, standalone, onClose, children }: { scenario: ScenarioSummary | null; standalone: boolean; onClose: () => void; children: ReactNode }) {
   if (standalone) return <>
     <AdminWorkspaceHeader icon={BookOpen} title={scenario?.name ?? 'Scenario'} description="View a saved Scenario and its current Project inventory.">
-      <AdminWorkspaceLink href="/admin/threed/scenarios" icon={BookOpen}>Scenarios</AdminWorkspaceLink>
-      {scenario && <AdminWorkspaceLink href={`/admin/threed/scenarios/${scenario.id}`} icon={Pencil}>Edit Scenario</AdminWorkspaceLink>}
+      {scenario && <div className="ml-auto [&_svg]:text-sky-500"><AdminWorkspaceLink href={`/admin/threed/scenarios/${scenario.id}`} icon={Pencil}>Edit Scenario</AdminWorkspaceLink></div>}
     </AdminWorkspaceHeader>
     <section className="admin-editor-panel min-h-0 overflow-y-auto rounded-lg border p-3 text-xs [&_p]:text-xs [&_h3]:text-xs">{children}</section>
   </>;
@@ -63,29 +63,29 @@ export function ScenarioContinuationDialog({ scenario, onClose, standalone = fal
   const counts = inventory.map(item => ({ ...item, count: summary.counts[item.id] }));
 
   return <ScenarioDetailSurface scenario={scenario} standalone={standalone} onClose={onClose}>
-      {scenario && <div className="space-y-4">
+      {scenario && <div className="space-y-3 text-xs">
         <div className="space-y-1">
           <p className="text-xs text-muted-foreground">{scenario.projectName} · {scenario.threedName}</p>
-          {scenario.description && <p className="text-sm">{scenario.description}</p>}
-          <p className="text-xs text-muted-foreground">Saved outline. Project assets below are available to this Project, not assigned to this Scenario.</p>
+          {scenario.description && <p className="text-xs">{scenario.description}</p>}
         </div>
         <section aria-label="Current Project inventory" className="rounded-lg border p-3">
-          <h3 className="mb-2 flex items-center gap-2 text-sm font-semibold"><Boxes aria-hidden="true" className="h-4 w-4 text-sky-700 dark:text-sky-300" /> Current Project inventory</h3>
+          <div className="mb-2 flex items-center gap-2">
+            <h3 className="flex items-center gap-2 text-xs font-semibold"><Boxes aria-hidden="true" className="h-4 w-4 text-sky-500" /> Current Project inventory</h3>
+            <ModelFieldHelp label="Current Project inventory">This Scenario is a saved plan. These assets are available to its Project; they are not assigned to the Scenario. Review Project assets to add or manage them. Inventory counts do not verify Scene readiness or behavior.</ModelFieldHelp>
+          </div>
           {loading ? <p className="text-xs text-muted-foreground">Checking Project assets…</p> : error ? <p role="alert" className="text-xs text-destructive">{error}</p> : <>
             <ul className="grid gap-2 sm:grid-cols-2">{counts.map(item => {
               const Icon = item.icon;
-              return <li key={item.id} className="flex items-center gap-2 rounded-md border border-foreground/10 bg-foreground/[0.03] px-2.5 py-2 text-xs">
-                <Icon aria-hidden="true" className="h-4 w-4 shrink-0 text-violet-700 dark:text-violet-300" />
+              return <li key={item.id} className="flex items-center gap-2 rounded-md border border-foreground/10 px-2.5 py-1.5 text-xs">
+                <Icon aria-hidden="true" className={`h-4 w-4 shrink-0 ${item.color}`} />
                 <span className="flex-1">{item.label}</span><strong>{item.count}</strong>
               </li>;
             })}</ul>
             <p className="mt-2 text-xs text-muted-foreground">{summary.total === 0 ? 'No active ThreeD assets are assigned yet.' : `${summary.total} active ThreeD asset${summary.total === 1 ? '' : 's'} assigned to this Project.`}</p>
           </>}
         </section>
-        <div className="flex items-start gap-2 rounded-lg bg-amber-500/10 p-3 text-xs text-foreground/80"><CircleHelp aria-hidden="true" className="mt-0.5 h-4 w-4 shrink-0 text-amber-700 dark:text-amber-300" /><span>Inventory is a starting point. Use the Scene setup guide to check specific Models and Sensors; these counts do not verify behavior.</span></div>
-        <div className="flex flex-wrap items-center justify-between gap-2 border-t pt-3">
-          <p className="text-xs font-medium">Next step</p>
-          <Button asChild size="sm"><Link href={`/admin/projects/${scenario.projectId}`}>{loading || error ? 'Open Project assets' : summary.nextAction}<ArrowRight aria-hidden="true" className="ml-1.5 h-3.5 w-3.5" /></Link></Button>
+        <div className="admin-editor-actions border-t pt-3">
+          <Button asChild variant="success" size="sm" className="h-7 text-xs"><Link href={`/admin/projects/${scenario.projectId}`}>{loading || error ? 'Open Project assets' : summary.nextAction}<ArrowRight aria-hidden="true" className="ml-1.5 h-3.5 w-3.5" /></Link></Button>
         </div>
       </div>}
   </ScenarioDetailSurface>;

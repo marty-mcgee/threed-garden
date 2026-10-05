@@ -20,13 +20,13 @@ const definition = { version: 1, steps: [
   { id: 'run', action: 'runToTarget', actorMarkerId: 'kate', targetMarkerId: 'ball', timeoutMs: 60000, onFailure: 'stop' },
   { id: 'kick', action: 'kickBall', actorMarkerId: 'kate', targetMarkerId: 'ball', timeoutMs: 30000, onFailure: 'stop' },
 ], observations: [{ id: 'goals', kind: 'sensor-group', sensorGroupId: 'goals' }] };
-const simulation = { id: 26, revision: 3, name: 'Run to target ball then kick the ball', projectId: 16, threedId: 1, scenarioId: 7, isActive: true, definition };
-for (const bad of [{ ...simulation, isActive: false }, { ...simulation, projectId: 99 }, { ...simulation, scenarioId: null },
+const simulation = { id: 26, revision: 3, name: 'Run to target ball then kick the ball', projectId: 16, threedId: 1, isActive: true, definition };
+for (const bad of [{ ...simulation, isActive: false }, { ...simulation, projectId: 99 }, { ...simulation, threedId: 99 },
   { ...simulation, definition: { ...definition, steps: [{ ...definition.steps[0], action: 'point' }] } },
   { ...simulation, definition: { ...definition, steps: [definition.steps[0], { ...definition.steps[1], targetMarkerId: 'other-ball' }] } }]) {
-  assert.throws(() => core.captureSoccerSimulation(bad, { projectId: 16, threedId: 1, scenarioId: 7 }));
+  assert.throws(() => core.captureSoccerSimulation(bad, { projectId: 16, threedId: 1 }));
 }
-const captured = core.captureSoccerSimulation(simulation, { projectId: 16, threedId: 1, scenarioId: 7 });
+const captured = core.captureSoccerSimulation(simulation, { projectId: 16, threedId: 1 });
 definition.steps[0].timeoutMs = 1000; assert.equal(captured.definition.steps[0].timeoutMs, 60000, 'Run captures an independent parsed definition'); definition.steps[0].timeoutMs = 60000;
 function runnerFixture(overrides = {}) {
   let listener = null, id = 0; const timers = new Map(), requests = [], cancels = [], updates = [];
@@ -59,20 +59,22 @@ const markers = [
 ];
 const members = ['left', 'right'].map(id => ({ id, name: id, ownerMarkerId: 1, groupId: 'goals', behavior: 'counter' }));
 const scenario = { projectId: 16, scenarioId: 7, threedId: 1, name: 'Practice Soccer', kind: 'soccer', sequence: 1, environmentMarkerId: 'field', environmentName: 'Field', groupId: 'goals', groupName: 'Goals' };
-const context = { projectId: 16, scenario, allowed: true, ready: true, busy: false, controlledCharacterId: 9,
+const context = { projectId: 16, allowed: true, ready: true, busy: false, controlledCharacterId: 9,
   target: { markerId: 'ball', type: 'models', id: 53 }, markers, layers: new Set(['models', 'characters']), settledCharacters: new Set(['kate']),
   groups: [{ id: 'goals', name: 'Goals' }], sensorMembers: members, position: id => positions.get(id), counts: () => counts };
 const mapping = { action: 'custom_foot', points: ['left-foot'] };
 assert.equal(sceneCore.soccerSimulationReadiness(simulation, context, mapping), null);
-for (const changes of [{ allowed: false }, { ready: false }, { busy: true }, { projectId: 99 }, { scenario: { ...scenario, scenarioId: 8 } },
+assert.equal(sceneCore.soccerSimulationReadiness(simulation, {...context, scenario: null, sensorMembers: []}, mapping), null, 'No Scenario or goal counter requirement');
+assert.equal(sceneCore.soccerSimulationReadiness(simulation, {...context, scenario: {...scenario, scenarioId: 99}}, mapping), null, 'Changing a separate plan does not block execution');
+for (const changes of [{ allowed: false }, { ready: false }, { busy: true }, { projectId: 99 },
   { controlledCharacterId: null }, { layers: new Set(['models']) }, { settledCharacters: new Set() }, { visibleMarkerIds: new Set(['kate', 'field']) },
-  { target: { ...context.target, markerId: 'other-ball' } }, { position: () => undefined }, { groups: [] }, { sensorMembers: [] },
+  { target: { ...context.target, markerId: 'other-ball' } }, { position: () => undefined }, { groups: [] },
   { markers: markers.map(marker => marker.id === 'kate' ? { ...marker, data: { ...marker.data, model: { filePath: '/kate.fbx', metadata: { activeSource: 'shape' } } } } : marker) }]) {
   assert(sceneCore.soccerSimulationReadiness(simulation, { ...context, ...changes }, mapping), 'Unready runtime cannot execute');
 }
 assert(sceneCore.soccerSimulationReadiness(simulation, context, null)); assert.equal(sceneCore.soccerSimulationKickReady(simulation, context), false);
 const readings = sceneCore.simulationSensorSnapshot(simulation, context); assert.equal(readings[0].baseline, 3); assert.equal(counts['1:left'], 2, 'Observing never resets counters');
-console.log('PASS: exact Scenario/Project/control/target, live positions, settled rig, visibility, goal setup, mapping and run-window counter reads.');
+console.log('PASS: exact Project/control/target, live positions, settled rig, visibility, explicit observation groups, mapping and run-window counter reads.');
 
 const viewCore = load(root + 'markers/project-view-state-core.ts');
 const view = { version: 1, savedAt: '2026-10-05T12:00:00.000Z', viewMode: '3d', panelHeight: 50, cameraMode: 'follow',
@@ -117,13 +119,15 @@ function reactRuntime() {
   const render = () => { let n = 0; do { assert(++n < 40, 'Stable render'); changed = false; cursor = 0; effects = []; tree = body(); effects.forEach(fn => fn()); } while (changed); return tree; };
   return { react, render, mount(fn) { body = fn; render(); }, get tree() { return tree; }, async flush() { for (let i = 0; i < 5; i++) { await new Promise(resolve => setImmediate(resolve)); render(); } }, cleanup() { slots.forEach(slot => slot?.cleanup?.()); } };
 }
-function controlsFixture() {
-  const rt = reactRuntime(), events = [], listeners = new Map(), requests = [], notices = [], timers = new Map(); let timerId = 0, sensorListener, currentContext = context;
+function controlsFixture(launchMode = false) {
+  const rt = reactRuntime(), events = [], listeners = new Map(), requests = [], notices = [], statuses = [], timers = new Map(); let timerId = 0, sensorListener, currentContext = context;
   let saved = { ...simulation }, hold = false, holdCapture = false, captureFailed = false, pendingReads = [];
   class Event { constructor(type, options) { this.type = type; this.detail = options?.detail; } }
   const window = { addEventListener: (name, fn) => { const set = listeners.get(name) ?? new Set(); set.add(fn); listeners.set(name, set); },
     removeEventListener: (name, fn) => listeners.get(name)?.delete(fn), dispatchEvent: event => { events.push(event); [...(listeners.get(event.type) ?? [])].forEach(fn => fn(event)); } };
-  const response = url => url.includes('simulations?id=') ? { success: true, data: saved } : url.includes('scenarios?id=') ? { success: true, data: { id: 7, projectId: 16, threedId: 1, isActive: true, setup: { kind: 'soccer', environmentMarkerId: 'field', sensorGroupId: 'goals' } } }
+  const launch = { simulation, kickMappings: [mapping], saveResults: launchMode === 'owner', request: 0, stopRequest: 0, onStatus: (...args) => statuses.push(args) };
+  const response = url => url.includes('/api/project/simulations?') ? { success: true, data: { ...launch, simulation: saved } }
+    : url.includes('simulations?id=') ? { success: true, data: saved }
     : url.includes('options=1') ? { success: true, data: { markers: [{ markerId: 'kate', movableCharacter: true }, { markerId: 'ball', movableBall: true }] } }
     : { success: true, data: [saved], pagination: { total: 1 } };
   const fetch = async (url, options = {}) => {
@@ -147,15 +151,17 @@ function controlsFixture() {
     setTimeout: (fn, ms) => { timers.set(++timerId, { fn, ms }); return timerId; }, clearTimeout: id => timers.delete(id),
     setInterval: (fn, ms) => { timers.set(++timerId, { fn, ms }); return timerId; }, clearInterval: id => timers.delete(id),
   });
-  rt.mount(() => ui.ProjectSimulationControls({ context: currentContext, subscribeSensors: fn => { sensorListener = fn; return () => { sensorListener = null; }; } }));
+  rt.mount(() => ui.ProjectSimulationControls({ context: currentContext, launch: launchMode ? launch : undefined, subscribeSensors: fn => { sensorListener = fn; return () => { sensorListener = null; }; } }));
   const find = predicate => nodes(rt.tree).find(predicate), button = icon => find(node => node.type === 'Button' && nodes(node.props.children).some(child => child.type === icon));
-  return { rt, events, requests, notices, timers, button, find, emit: (type, detail) => window.dispatchEvent(new Event(type, { detail })), sensor: event => sensorListener?.(event),
+  return { rt, events, requests, notices, statuses, timers, button, find, emit: (type, detail) => window.dispatchEvent(new Event(type, { detail })), sensor: event => sensorListener?.(event),
+    request() { launch.request++; rt.render(); }, stop() { launch.stopRequest++; rt.render(); },
     context(value) { currentContext = value; rt.render(); }, revision(value) { saved = { ...saved, revision: value }; }, hold(value) { hold = value; }, holdCapture(value) { holdCapture = value; }, captureFailed(value) { captureFailed = value; }, release() { pendingReads.splice(0).forEach(resolve => resolve()); } };
 }
 (async () => {
   let ui = controlsFixture(); await ui.rt.flush();
   assert.equal(ui.events.length, 0, 'Rendering and loading never execute Actions');
-  assert(ui.requests[0].url.includes('scenarioId=7') && ui.requests[0].url.includes('threedId=1') && ui.requests[0].url.includes('isActive=true'));
+  assert(ui.requests[0].url.includes('projectId=16') && ui.requests[0].url.includes('isActive=true'));
+  assert(ui.requests.every(request => !request.url.includes('scenarioId=')));
   ui.find(node => node.props?.['aria-label'] === 'Saved Simulation').props.onChange({ target: { value: '26' } }); await ui.rt.flush();
   assert(!ui.button('Play').props.disabled); const run = ui.button('Play').props.onClick; run(); run(); await ui.rt.flush();
   assert.equal(ui.requests.filter(request => request.url.includes('options=1')).length, 1, 'Duplicate Run is locked through asynchronous preflight');
@@ -194,5 +200,22 @@ function controlsFixture() {
   assert(ui.requests.some(request => request.options.method === 'PATCH' && JSON.parse(request.options.body).report.phase === 'cancelled'), 'Late capture receives an honest cancelled report'); ui.rt.cleanup();
   ui = controlsFixture(); await ui.rt.flush(); ui.find(node => node.props?.['aria-label'] === 'Saved Simulation').props.onChange({ target: { value: '26' } }); await ui.rt.flush();
   ui.captureFailed(true); await ui.button('Play').props.onClick(); await ui.rt.flush(); assert.equal(ui.events.length, 0); assert(ui.notices.some(([message]) => message.includes('Migration'))); ui.rt.cleanup();
+  ui = controlsFixture('public'); await ui.rt.flush(); assert.equal(ui.requests.length, 0, 'Public mount makes no private reads or automatic run');
+  ui.request(); await ui.rt.flush(); assert(ui.events.some(event => event.type === navigation.NAVIGATION_REQUEST));
+  assert(ui.requests.every(request => request.url.startsWith('/api/project/simulations?')), 'Public runs never call owner CRUD/results');
+  ui.stop(); await ui.rt.flush(); assert(ui.notices.some(([message]) => message.includes('cancelled'))); ui.rt.cleanup();
+  ui = controlsFixture('public'); ui.request(); await ui.rt.flush();
+  const publicNavigation = ui.events.find(event => event.type === navigation.NAVIGATION_REQUEST).detail;
+  ui.emit(navigation.NAVIGATION_STATUS, { ...publicNavigation, phase: 'arrived' });
+  const publicKick = ui.events.find(event => event.type === kickCore.THREED_SOCCER_KICK_REQUEST_EVENT).detail;
+  ui.emit(kickCore.THREED_SOCCER_KICK_RESULT_EVENT, { ...publicKick, applied: true }); await ui.rt.flush();
+  assert(ui.notices.some(([message]) => message.includes('completed')));
+  assert(ui.requests.every(request => request.url.startsWith('/api/project/simulations?')), 'Completed public runs never persist results'); ui.rt.cleanup();
+  ui = controlsFixture('public'); ui.hold(true); ui.request(); ui.stop(); ui.release(); await ui.rt.flush(); assert.equal(ui.events.length, 0, 'Stopped public preflight cannot dispatch later'); ui.rt.cleanup();
+  ui = controlsFixture('public'); ui.revision(4); ui.request(); await ui.rt.flush(); assert.equal(ui.events.length, 0, 'Changed public revision requires review'); ui.rt.cleanup();
+  ui = controlsFixture('owner'); ui.request(); await ui.rt.flush();
+  assert(ui.requests.some(request => request.url === '/api/threed/simulation-results' && request.options.method === 'POST'), 'One-click owner run still captures results'); ui.stop(); await ui.rt.flush(); ui.rt.cleanup();
+  ui = controlsFixture('owner'); ui.captureFailed(true); ui.request(); await ui.rt.flush();
+  assert.equal(ui.events.length, 0); assert(ui.statuses.some(([busy, state, error]) => !busy && error?.includes('Migration')), 'Owner capture errors reach the visible launch status'); ui.rt.cleanup();
   console.log('PASS: actual Scene controls load exact definitions, recheck owner bindings/revision, lock duplicate Run, dispatch Run then contact Kick, scope observations, Stop and reject stale preflight/Project replies (offline).');
 })().catch(error => { console.error(error); process.exitCode = 1; });

@@ -1,5 +1,4 @@
 import type { RuntimeMarker, ThreeDActionTarget } from '@/libraries/types/map';
-import type { ScenarioStartRequest } from '../scenario-core';
 import { isProjectModelMovableBall } from '../models/project-model-instance-core';
 import { soccerKickInRange } from '../physics/soccer-kick-core';
 import type { ThreeDActionCollisionPointId } from '../physics/action-collision-core';
@@ -8,7 +7,7 @@ import type { SoccerSimulation } from './soccer-simulation-runner';
 import type { SimulationObservation } from './simulation-input';
 
 export type SoccerSceneContext = {
-  projectId?: number; scenario: ScenarioStartRequest | null; allowed: boolean; ready: boolean; busy: boolean;
+  projectId?: number; allowed: boolean; ready: boolean; busy: boolean;
   controlledCharacterId?: number | null; target?: ThreeDActionTarget | null;
   markers: readonly RuntimeMarker[]; layers: ReadonlySet<string>; visibleMarkerIds?: ReadonlySet<string>;
   settledCharacters: ReadonlySet<string>; groups: readonly { id: string; name: string }[];
@@ -20,14 +19,9 @@ export type SoccerKickMapping = { action: string; points: readonly ThreeDActionC
 
 export function soccerSimulationReadiness(simulation: SoccerSimulation, scene: SoccerSceneContext, kick: SoccerKickMapping | null): string | null {
   if (!scene.allowed || !scene.ready || scene.busy) return 'Wait for the Scene to be ready and finish placement or editing.';
-  const scenario = scene.scenario;
-  if (scene.projectId !== simulation.projectId || !scenario || scenario.kind !== 'soccer'
-    || scenario.projectId !== simulation.projectId || scenario.scenarioId !== simulation.scenarioId || scenario.threedId !== simulation.threedId) return 'Load and start this Simulation’s Soccer Scenario in its Project.';
+  if (scene.projectId !== simulation.projectId) return 'Open this Simulation\u2019s Project before running.';
   const active = (marker: RuntimeMarker) => marker.isActive !== false && marker.isVisible !== false
     && scene.layers.has(marker.type) && (scene.visibleMarkerIds?.has(marker.id) ?? true);
-  if (!scene.markers.some(marker => marker.id === scenario.environmentMarkerId && marker.type === 'models' && active(marker))
-    || !scene.groups.some(group => group.id === scenario.groupId)) return 'The Scenario field or Sensor Group is unavailable.';
-  if (scene.sensorMembers.filter(member => member.behavior === 'counter' && member.groupId === scenario.groupId).length < 2) return 'The Soccer Scenario needs two assigned goal-entry counters.';
   const first = simulation.definition.steps[0];
   const actor = scene.markers.find(marker => marker.id === first.actorMarkerId && marker.type === 'characters');
   const ball = scene.markers.find(marker => marker.id === first.targetMarkerId && marker.type === 'models');

@@ -8,12 +8,11 @@ import { ModelFieldHelp } from '../models/ModelFieldHelp';
 import { SIMULATION_ACTIONS, SIMULATION_PLANTING_ACTIONS, MAX_SIMULATION_STEPS, MAX_SIMULATION_OBSERVATIONS, simulationActionLabel, type SimulationDefinition, type SimulationStep } from '@/libraries/services/threed/simulations/simulation-input';
 
 export type SimulationChoices = {
-  scenarios: { id: number; name: string; isActive: boolean }[];
   markers: { markerId: string; markerType: string; name: string; movableCharacter?: boolean; movableBall?: boolean }[];
   groups: { id: string; name: string }[];
   sensors?: { ownerMarkerId: number; id: string; name: string; ownerName: string; groupId: string | null; behavior: 'counter' | 'trigger' }[];
 };
-export const emptySimulationChoices: SimulationChoices = { scenarios: [], markers: [], groups: [], sensors: [] };
+export const emptySimulationChoices: SimulationChoices = { markers: [], groups: [], sensors: [] };
 export function SimulationDefinitionEditor({ value, onChange, choices, readOnly = false }: { value: SimulationDefinition; onChange: (value: SimulationDefinition) => void; choices: SimulationChoices; readOnly?: boolean }) {
   const changeStep = (index: number, changes: Partial<SimulationStep>) => onChange({ ...value, steps: value.steps.map((step, i) => i === index ? { ...step, ...changes } : step) });
   const move = (index: number, offset: number) => {

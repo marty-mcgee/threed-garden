@@ -12,13 +12,15 @@ const definition = { version: 1, steps: [
   { id: 'run', action: 'runToTarget', actorMarkerId: 'kate', targetMarkerId: 'ball', timeoutMs: 60000, onFailure: 'stop' },
   { id: 'kick', action: 'kickBall', actorMarkerId: 'kate', targetMarkerId: 'ball', timeoutMs: 30000, onFailure: 'stop' },
 ], observations: [{ id: 'goals', kind: 'sensor-group', sensorGroupId: 'goals', sensors: [{ ownerMarkerId: 101, id: 'left' }] }] };
-const snapshot = { simulationId: 26, name: 'Practice', revision: 3, projectName: 'Soccer', threedName: 'Field', scenarioId: 4, scenarioName: 'Practice Soccer', definition };
-const saved = { id: 1, userId: 'owner', projectId: 15, threedId: 9, simulationId: 26, scenarioId: 4, simulationRevision: 3, runId: uuid(1), status: 'running', snapshot, report: null, clientStartedAt: new Date(now) };
+const snapshot = { simulationId: 26, name: 'Practice', revision: 3, projectName: 'Soccer', threedName: 'Field', definition };
+const saved = { id: 1, userId: 'owner', projectId: 15, threedId: 9, simulationId: 26, simulationRevision: 3, runId: uuid(1), status: 'running', snapshot, report: null, clientStartedAt: new Date(now) };
 const report = { version: 1, source: 'browser-scene', phase: 'completed', clientStartedAt: now, clientEndedAt: now + 1000,
   outcomes: definition.steps.map((step, index) => ({ stepId: step.id, action: step.action, requestId: uuid(index + 2), startedAt: now + index * 500, endedAt: now + (index + 1) * 500, status: 'completed' })),
   observations: [{ groupId: 'goals', name: 'Goals', baseline: 2, final: 3, delta: 1, events: 1, truncated: false, countersReset: false,
     sensors: [{ ownerMarkerId: 101, id: 'left', name: 'Left goal', behavior: 'counter', baseline: 2, final: 3 }] }] };
 assert.equal(result.resultReport({ runId: uuid(1), report }, saved).report.outcomes.length, 2);
+const historical = { ...saved, snapshot: { ...snapshot, scenarioId: 4, scenarioName: 'Historical plan' } };
+assert.equal(result.resultReport({ runId: uuid(1), report }, historical).report.outcomes.length, 2, 'Retained historical JSON needs no current Scenario relation');
 for (const bad of [{ ...report, source: 'physical-device' }, { ...report, version: 2 }, { ...report, phase: 'running' }, { ...report, clientStartedAt: now + 1 },
   { ...report, outcomes: [] }, { ...report, observations: [] }, { ...report, outcomes: report.outcomes.map(item => ({ ...item, action: 'point' })) },
   { ...report, observations: [{ ...report.observations[0], events: 257 }] }, { ...report, observations: [{ ...report.observations[0], sensors: [{ ...report.observations[0].sensors[0], ownerMarkerId: 999 }] }] }]) assert.throws(() => result.resultReport({ runId: uuid(1), report: bad }, saved));
@@ -44,7 +46,7 @@ const api = load('src/app/api/threed/simulation-results/route.ts', {
   '@/libraries/services/threed/simulations/simulation-input': input, '@/libraries/services/threed/simulations/simulation-result-input': result,
 });
 const start = { runId: uuid(1), simulationId: 26, revision: 3, clientStartedAt: now };
-const simulationRow = { simulation: { id: 26, revision: 3, userId: 'owner', projectId: 15, threedId: 9, scenarioId: 4, name: 'Practice', definition, isActive: true }, projectName: 'Soccer', threedName: 'Field', scenarioName: 'Practice Soccer' };
+const simulationRow = { simulation: { id: 26, revision: 3, userId: 'owner', projectId: 15, threedId: 9, name: 'Practice', definition, isActive: true }, projectName: 'Soccer', threedName: 'Field' };
 async function call(method, data, responses = [], query = '', origin = null) {
   queue = [...responses]; queries = [];
   const response = await api[method]({ url: `https://fixture.invalid/api/threed/simulation-results${query}`, headers: { get: name => name === 'origin' ? origin : null }, text: async () => typeof data === 'string' ? data : JSON.stringify(data) });
@@ -53,6 +55,7 @@ async function call(method, data, responses = [], query = '', origin = null) {
 const where = query => JSON.stringify(query.where);
 (async () => {
   signedIn = false; for (const method of ['GET','POST','PATCH']) assert.equal((await call(method, start)).status, 401); signedIn = true;
+  assert.equal((await call('GET', null, [], '?scenarioId=4')).status, 400);
   assert.equal((await call('POST', start, [], '', 'https://foreign.invalid')).status, 400);
   assert.equal((await call('POST', ' '.repeat(result.MAX_SIMULATION_RESULT_BYTES + 1))).status, 400);
   assert.equal((await call('POST', { ...start, snapshot: {} })).status, 400, 'Browser cannot submit a snapshot');
@@ -62,6 +65,10 @@ const where = query => JSON.stringify(query.where);
   assert.equal(queries[1].for[0][0], 'share');
   assert.equal(queries[2].values[0][0].snapshot.name, simulationRow.simulation.name);
   assert.equal(queries[2].values[0][0].userId, 'owner');
+  assert.equal(queries[1].leftJoin, undefined, 'Capture never queries Scenarios');
+  assert(!Object.hasOwn(queries[2].values[0][0], 'scenarioId'));
+  assert(!Object.hasOwn(queries[2].values[0][0].snapshot, 'scenarioId'));
+  assert(!Object.hasOwn(queries[2].values[0][0].snapshot, 'scenarioName'));
   for (const token of ['project.userId','threed.userId','threedSimulations.userId']) assert(where(queries[1]).includes(token));
   assert(JSON.stringify(queries[1].innerJoin).includes('projectThreed.userId'));
   assert.equal((await call('POST', start, [[], []])).status, 404);

@@ -1,6 +1,7 @@
 'use client';
 
-import { BookOpen, CheckCircle2, Circle, Compass, Goal, LayoutTemplate, Play, X } from 'lucide-react';
+import Link from 'next/link';
+import { BookOpen, CheckCircle2, Circle, Goal, LayoutTemplate, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { isProjectModelMovableBall } from '@/libraries/services/threed/models/project-model-instance-core';
 import type { RuntimeMarker } from '@/libraries/types/map';
@@ -28,17 +29,20 @@ export function ScenarioGuidance({ markers, projectId, loadedScenario, guide, on
   const inputClass = 'mt-1.5 w-full rounded-md border border-foreground/15 bg-background/50 px-2.5 py-2 text-xs text-foreground';
   return <section className="mt-3 space-y-3 rounded-lg border border-foreground/15 bg-foreground/[0.03] p-3" aria-label="Scenario guidance" aria-description="Guide selections are saved with the Project when you choose Save ThreeD Project; they do not alter Scene assets.">
     <div className="flex flex-wrap items-center justify-between gap-2">
-      <h3 className="flex items-center gap-2 text-sm font-semibold"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-500/15 text-violet-700 dark:text-violet-300"><Compass aria-hidden="true" className="h-4 w-4" /></span> Setup guide</h3>
-      <Button type="button" size="sm" variant="outline" className="h-8 gap-1.5 text-xs" onClick={onChooseTemplate}><LayoutTemplate aria-hidden="true" className="h-3.5 w-3.5 text-amber-700 dark:text-amber-300" /> Templates (Choose a Scenario)</Button>
+      <h3 className="text-xs font-semibold">1. Choose a saved Scenario</h3>
+      <Button type="button" size="sm" variant="outline" className="h-7 gap-1.5 text-xs" onClick={onChooseTemplate}><LayoutTemplate aria-hidden="true" className="h-3.5 w-3.5 text-amber-700 dark:text-amber-300" />{loadedScenario ? 'Change Scenario' : 'Choose Scenario'}</Button>
     </div>
     {loadedScenario && <div role="status" className="flex items-center gap-2 rounded-md border border-violet-500/30 bg-violet-500/10 px-2.5 py-2 text-xs">
       <BookOpen aria-hidden="true" className="h-4 w-4 shrink-0 text-violet-700 dark:text-violet-300" />
-      <span className="min-w-0 flex-1 truncate"><span className="font-semibold">Loaded:</span> {loadedScenario.name}</span>
-      <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0" aria-label="Clear loaded Scenario" onClick={onClearLoaded}><X aria-hidden="true" className="h-3.5 w-3.5" /></Button>
+      <span className="min-w-0 flex-1 truncate"><span className="font-semibold">Selected:</span> {loadedScenario.name}</span>
+      <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0" aria-label="Clear selected Scenario" onClick={onClearLoaded}><X aria-hidden="true" className="h-3.5 w-3.5" /></Button>
     </div>}
-    {loadedScenario && !loadedScenario.setup && <p role="status" className="text-xs text-amber-700 dark:text-amber-300">This saved outline has no setup yet. Edit it to choose a Model and Sensor Group.</p>}
+    {loadedScenario && !loadedScenario.setup && <p role="status" className="text-xs text-amber-700 dark:text-amber-300">This Scenario needs saved setup. <Link className="underline" href={`/admin/threed/scenarios/${loadedScenario.id}`}>Edit Scenario</Link> to choose its Model and Sensor Group.</p>}
     {loadedScenario?.setup?.environmentMarkerId && !active.some(marker => marker.type === 'models' && marker.id === loadedScenario.setup?.environmentMarkerId) && <p role="status" className="text-xs text-amber-700 dark:text-amber-300">The saved Model is missing or inactive. Choose an assigned Model.</p>}
     {loadedScenario?.setup?.sensorGroupId && !groups.some(group => group.id === loadedScenario.setup?.sensorGroupId) && <p role="status" className="text-xs text-amber-700 dark:text-amber-300">The saved Sensor Group is missing. Choose a Project group.</p>}
+    {loadedScenario && <Link className="inline-block text-[11px] text-muted-foreground underline" href={`/admin/threed/scenarios/${loadedScenario.id}`}>Edit saved Scenario setup</Link>}
+    <h3 className="text-xs font-semibold">2. Review assigned assets</h3>
+    {!loadedScenario && <p className="text-[11px] text-muted-foreground">Choose a Scenario first to fill its saved field and Sensor Group.</p>}
     <div className="grid gap-2 sm:grid-cols-2">
       <label className="block text-xs font-medium">Scenario type
         <select className={inputClass} value={kind} onChange={event => onGuideChange({ ...guide, kind: event.target.value as ScenarioKind })}>
@@ -64,16 +68,19 @@ export function ScenarioGuidance({ markers, projectId, loadedScenario, guide, on
       <div className="mb-2 flex items-center justify-between gap-2"><span className="flex items-center gap-1.5 text-xs font-semibold"><Goal aria-hidden="true" className="h-4 w-4 text-sky-700 dark:text-sky-300" /> Setup checks</span><span className="rounded-full bg-sky-500/15 px-2 py-0.5 text-[11px] font-medium text-sky-700 dark:text-sky-300">{completed} / {checks.length} ready</span></div>
       <ul className="space-y-1.5 text-xs">{checks.map(check => <li key={check.id} className="flex items-start gap-2"><span className="sr-only">{check.complete ? 'Ready: ' : 'Needed: '}</span>{check.complete ? <CheckCircle2 aria-hidden="true" className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400" /> : <Circle aria-hidden="true" className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-700 dark:text-amber-300" />}<span className={check.complete ? 'text-foreground/75' : 'text-foreground'}>{check.label}</span></li>)}</ul>
     </div>
-    {kind === 'soccer' && <p className="text-xs text-muted-foreground">After starting, take control of a movable Character, select a movable ball with Use as Action Target, and approach it. A mapped foot kick appears in Character Animations when available. Sensor counts change only when the ball enters a goal.</p>}
-    <div className="flex items-center justify-end">
-      <Button type="button" size="sm" className="gap-1.5" disabled={!loadedScenario || !loadedScenario.setup || completed !== checks.length}
+    <h3 className="text-xs font-semibold">3. Open the plan in the current view</h3>
+    <p className="text-[11px] text-muted-foreground">Opening a Scenario displays its plan and guidance. It does not execute Actions or collect Simulation Results.</p>
+    {loadedScenario && <p className="text-[11px] text-muted-foreground">Changes here affect this guide. Use Edit saved Scenario setup to change the saved plan.</p>}
+    {(!loadedScenario || !loadedScenario.setup || completed !== checks.length) && <p role="status" className="text-[11px] text-amber-700 dark:text-amber-300">{!loadedScenario ? 'Choose a saved Scenario to enable loading.' : !loadedScenario.setup ? 'Save this Scenario’s setup in Admin first.' : `Complete the ${checks.length - completed} remaining setup check${checks.length - completed === 1 ? '' : 's'} above to enable loading.`}</p>}
+    <div className="flex items-center">
+      <Button type="button" size="sm" className="h-7 gap-1.5 bg-emerald-600 text-xs text-white hover:bg-emerald-500" disabled={!loadedScenario || !loadedScenario.setup || completed !== checks.length}
         onClick={() => {
           if (!loadedScenario?.setup || completed !== checks.length) return;
           const environmentName = active.find(marker => marker.id === environmentId && marker.type === 'models')?.name ?? 'the selected Model';
           const groupName = groups.find(group => group.id === groupId)?.name ?? 'the selected Sensor Group';
           onStartScenario({ projectId: Number(projectId), scenarioId: loadedScenario.id, threedId: loadedScenario.threedId,
             environmentMarkerId: environmentId, name: loadedScenario.name, kind, environmentName, groupId: kind === 'soccer' ? groupId : '', groupName });
-        }}><Play aria-hidden="true" className="h-3.5 w-3.5" /> Start Scenario</Button>
+        }}><BookOpen aria-hidden="true" className="h-3.5 w-3.5" /> Open Scenario</Button>
     </div>
     {kind === 'farming' && <>
       <label className="block text-xs font-medium">FarmBot observation (optional)

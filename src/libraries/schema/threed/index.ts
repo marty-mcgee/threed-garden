@@ -92,13 +92,12 @@ export type ThreeDSimulationDefinition = {
   observations: Record<string, unknown>[];
 };
 
-/** A Scenario link is optional; writers must verify its owner/Project/module scope. */
+/** Simulation Actions and observations are separate from Scenario plans. */
 export const threedSimulations = pgTable('threed_simulations', {
   id: serial('id').primaryKey(),
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   projectId: integer('project_id').notNull().references(() => project.id, { onDelete: 'cascade' }),
   threedId: integer('threed_id').notNull().references(() => threed.id, { onDelete: 'cascade' }),
-  scenarioId: integer('scenario_id').references(() => threedScenarios.id, { onDelete: 'set null' }),
   name: varchar('name', { length: 120 }).notNull(),
   slug: varchar('slug', { length: 100 }).notNull(),
   description: text('description'),
@@ -112,7 +111,6 @@ export const threedSimulations = pgTable('threed_simulations', {
   uniqueIndex('idx_threed_simulations_project_threed_slug').on(table.projectId, table.threedId, table.slug),
   index('idx_threed_simulations_owner_project').on(table.userId, table.projectId),
   index('idx_threed_simulations_threed_id').on(table.threedId),
-  index('idx_threed_simulations_scenario_id').on(table.scenarioId),
   check('threed_simulations_name_valid', sql`length(trim(${table.name})) > 0 AND ${table.name} = trim(${table.name})`),
   check('threed_simulations_slug_valid', sql`${table.slug} ~ '^[a-z0-9]+(-[a-z0-9]+)*$'`),
   check('threed_simulations_revision_positive', sql`${table.revision} > 0`),
@@ -124,7 +122,6 @@ export const threedSimulationsRelations = relations(threedSimulations, ({ one })
   user: one(user, { fields: [threedSimulations.userId], references: [user.id] }),
   project: one(project, { fields: [threedSimulations.projectId], references: [project.id] }),
   threed: one(threed, { fields: [threedSimulations.threedId], references: [threed.id] }),
-  scenario: one(threedScenarios, { fields: [threedSimulations.scenarioId], references: [threedScenarios.id] }),
 }));
 
 export type ThreeDSimulation = typeof threedSimulations.$inferSelect;
@@ -137,7 +134,6 @@ export const threedSimulationResults = pgTable('threed_simulation_results', {
   projectId: integer('project_id').notNull().references(() => project.id, { onDelete: 'cascade' }),
   threedId: integer('threed_id').notNull().references(() => threed.id, { onDelete: 'cascade' }),
   simulationId: integer('simulation_id').references(() => threedSimulations.id, { onDelete: 'set null' }),
-  scenarioId: integer('scenario_id').references(() => threedScenarios.id, { onDelete: 'set null' }),
   runId: uuid('run_id').notNull(),
   simulationRevision: integer('simulation_revision').notNull(),
   status: varchar('status', { length: 16 }).notNull().default('running'),
@@ -151,7 +147,6 @@ export const threedSimulationResults = pgTable('threed_simulation_results', {
   uniqueIndex('idx_threed_simulation_results_owner_run').on(table.userId, table.runId),
   index('idx_threed_simulation_results_owner_project_created').on(table.userId, table.projectId, table.createdAt),
   index('idx_threed_simulation_results_simulation_created').on(table.simulationId, table.createdAt),
-  index('idx_threed_simulation_results_scenario').on(table.scenarioId),
   check('threed_simulation_results_revision_positive', sql`${table.simulationRevision} > 0`),
   check('threed_simulation_results_status_valid', sql`${table.status} IN ('running', 'completed', 'failed', 'cancelled', 'timed-out')`),
   check('threed_simulation_results_snapshot_valid', sql`coalesce(jsonb_typeof(${table.snapshot}) = 'object' AND jsonb_typeof(${table.snapshot}->'definition') = 'object' AND ${table.snapshot}->'definition'->'version' = '1'::jsonb, false)`),
@@ -162,7 +157,6 @@ export const threedSimulationResultsRelations = relations(threedSimulationResult
   project: one(project, { fields: [threedSimulationResults.projectId], references: [project.id] }),
   threed: one(threed, { fields: [threedSimulationResults.threedId], references: [threed.id] }),
   simulation: one(threedSimulations, { fields: [threedSimulationResults.simulationId], references: [threedSimulations.id] }),
-  scenario: one(threedScenarios, { fields: [threedSimulationResults.scenarioId], references: [threedScenarios.id] }),
 }));
 export type ThreeDSimulationResult = typeof threedSimulationResults.$inferSelect;
 

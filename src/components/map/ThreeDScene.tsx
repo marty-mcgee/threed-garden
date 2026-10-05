@@ -2,7 +2,8 @@
 'use client';
 
 import type { ScenarioStartRequest } from '@/libraries/services/threed/scenario-core';
-import { ProjectSimulationControls } from './panels/ProjectSimulationControls';
+import { ProjectSimulationLauncher } from './panels/ProjectSimulationLauncher';
+import { simulationLaunchParticipants } from '@/libraries/services/threed/simulations/simulation-launch';
 import { SceneResourceStatus, useSceneResourceStatus, SceneResourceIssues, useSceneResourceIssueReporter, type SceneResourceIssue, type SceneResourceState } from '@/components/threed/shared/SceneResourceStatus';
 
 import { useGroundMapInspector } from '@/components/map/details/GroundMapInspectorWorkspace';
@@ -259,6 +260,8 @@ interface ThreeDSceneProps {
   environmentControlsCloseRequest?: number;
   scenarioStartRequest?: ScenarioStartRequest | null;
   canRunSimulations?: boolean;
+  saveSimulationResults?: boolean;
+  onSimulationParticipantsChange?: (characterId: number, target: ThreeDActionTarget) => void;
   scenarioOverlayLeftOffsetRem?: number;
   scenarioOverlaysObscured?: boolean;
   scenarioInstructionDimmed?: boolean;
@@ -2345,6 +2348,8 @@ export function ThreeDScene({
   environmentControlsCloseRequest = 0,
   scenarioStartRequest = null,
   canRunSimulations = false,
+  saveSimulationResults = false,
+  onSimulationParticipantsChange,
   scenarioOverlayLeftOffsetRem = 0.75,
   scenarioOverlaysObscured = false,
   scenarioInstructionDimmed = false,
@@ -3603,21 +3608,28 @@ export function ThreeDScene({
           {groundMapAsset.attribution || groundMapAsset.sourceProvider}
         </div>
       )}
-      {sceneProductionStarted && (scenarioInstruction || showSensors || (canRunSimulations && activeScenario?.kind === 'soccer')) && (
+      {sceneProductionStarted && canRunSimulations && onSimulationParticipantsChange && <ProjectSimulationLauncher key={projectId} saveResults={saveSimulationResults}
+        obscured={scenarioOverlaysObscured || showControls} subscribeSensors={subscribeSimulationSensors}
+        context={{ projectId, allowed: canRunSimulations, ready: sceneProductionStarted && !physicsFailed,
+          busy: !!placementLabel || transforming, controlledCharacterId, target: actionTarget, markers: sceneMarkers,
+          layers: activeLayers, visibleMarkerIds, settledCharacters: settledCharacterMarkerIds, groups: sensorGroups?.groups ?? [], sensorMembers,
+          position: markerId => livePositionsRef.current.get(markerId), counts: () => sensorCounterStateRef.current.counts }}
+        onPrepare={launch => {
+          const participants = simulationLaunchParticipants(launch, { projectId, allowed: canRunSimulations,
+            ready: sceneProductionStarted && !physicsFailed, busy: !!placementLabel || transforming, markers: sceneMarkers, layers: activeLayers,
+            visibleMarkerIds, settledCharacters: settledCharacterMarkerIds, groups: sensorGroups?.groups ?? [], sensorMembers,
+            position: markerId => livePositionsRef.current.get(markerId), counts: () => sensorCounterStateRef.current.counts });
+          onSimulationParticipantsChange(participants.characterId, participants.target);
+        }} />}
+      {sceneProductionStarted && (scenarioInstruction || showSensors) && (
         <div className="pointer-events-none absolute bottom-3 right-3 top-12 z-30 flex flex-wrap content-start items-start justify-between gap-3 overflow-y-auto overscroll-contain"
           style={{ left: `min(${scenarioOverlayLeftOffsetRem}rem, calc(100% - 12rem))` }}>
-          {activeScenario && activeScenario.projectId === projectId && (scenarioInstructionVisible || (canRunSimulations && activeScenario.kind === 'soccer')) && (
+          {activeScenario && activeScenario.projectId === projectId && scenarioInstructionVisible && (
             <section data-scene-hover-obstacle aria-label="Scenario instructions" role="status" aria-hidden={scenarioOverlaysObscured || showControls || scenarioInstructionDimmed} inert={scenarioOverlaysObscured || showControls || scenarioInstructionDimmed} className={`threed-workspace-panel threed-scene-panel-surface max-h-[min(32rem,calc(100dvh-11rem))] w-[min(22rem,100%)] shrink-0 overflow-y-auto overscroll-contain rounded-lg border border-foreground/15 px-3 py-2 text-xs text-foreground shadow-xl backdrop-blur-md transition-opacity duration-200 ${scenarioOverlaysObscured || showControls || scenarioInstructionDimmed ? 'pointer-events-none opacity-40' : 'pointer-events-auto opacity-100'}`}>
           <div className="flex items-start justify-between gap-2"><h2 className="text-sm font-semibold">{activeScenario.name}</h2>{scenarioInstructionVisible && <button type="button" onClick={() => setScenarioInstructionVisible(false)} aria-label="Dismiss Scenario instructions" className="rounded p-1 text-foreground/70 hover:bg-foreground/10"><X className="h-4 w-4" /></button>}</div>
           {scenarioInstructionVisible && (activeScenario.kind === 'soccer'
-            ? <p className="mt-1 text-foreground/80">Take Control of the saved Character and choose its movable ball with Use as Action Target. Run a saved Simulation below, or approach and kick manually. Physics Sensors show goal-entry counts for {activeScenario.groupName}.</p>
+            ? <p className="mt-1 text-foreground/80">This Scenario is a practice plan for {activeScenario.environmentName}. Physics Sensors show goal-entry counts for {activeScenario.groupName}.</p>
             : <p className="mt-1 text-foreground/80">Explore {activeScenario.environmentName}, its Beds and Plantings. Select a FarmBot in the Setup Guide to review its observation.</p>)}
-          {canRunSimulations && activeScenario.kind === 'soccer' && <ProjectSimulationControls context={{ projectId, scenario: activeScenario, allowed: canRunSimulations,
-            ready: sceneProductionStarted && !physicsFailed, busy: !!placementLabel || transforming,
-            controlledCharacterId, target: actionTarget, markers: sceneMarkers, layers: activeLayers, visibleMarkerIds,
-            settledCharacters: settledCharacterMarkerIds, groups: sensorGroups?.groups ?? [], sensorMembers,
-            position: markerId => livePositionsRef.current.get(markerId), counts: () => sensorCounterStateRef.current.counts,
-          }} subscribeSensors={subscribeSimulationSensors} />}
             </section>
           )}
           {showSensors && (

@@ -1,19 +1,33 @@
 # ThreeD Simulations: execution and result analysis
 
-The [v0.22.26 Soccer milestone](../plans/v0.22.26-soccer-scenario-simulation.md) uses existing Character navigation and contact-kick owners. [v0.22.27](../plans/v0.22.27-simulation-results-preparation.md) adds Drizzle-backed result capture, guided preparation and selected Sensor measurements. General Action executors and physical devices remain outside this implementation.
+**Developer correction, October 5, 2026:** a Scenario is a plan (**Open Scenario**); a Simulation executes Actions and collects Results (**Run Simulation**). v0.22.28 removes all Scenario schema/form/API/runtime dependencies. The Developer also confirmed independent definitions with Project/modules chosen when running; that broader refactor remains pending. Follow [the corrected architecture and implementation record](../plans/v0.22.28-independent-simulations.md). Subsequent supplied CLI output confirms native `db:push` applied the Scenario removal; [the prepared release handoff](../plans/v0.22.28-release-handoff.md) distinguishes database evidence, local validation and pending application deployment/live acceptance.
+
+The [v0.22.26 Soccer milestone](../plans/v0.22.26-soccer-scenario-simulation.md) uses existing Character navigation and contact-kick owners. [v0.22.27](../plans/v0.22.27-simulation-results-preparation.md) adds Drizzle-backed result capture, guided preparation and selected Sensor measurements. The [v0.22.28 checkpoint](../plans/v0.22.28-scene-simulation-launch.md) adds one-click preparation and local public visitor runs. General Action executors and physical devices remain outside this implementation.
+
+## Project Scene launch
+
+`ProjectSimulationLauncher.tsx` mounts above the persistent Scene, separately from Scenario instructions. It selects a single choice automatically, requires selection when several exist, and reads the saved definition only on an explicit click. `simulationLaunchParticipants` identifies exact visible saved instances; the page updates existing Character control/target state without opening or changing a Scenario. A bounded 20-second preparation waits for settled physics and loaded kick availability. It never repositions participants, saves the Project, resets counters or runs on restoration.
+
+`GET /api/project/simulations?projectId=<id>&offset=0` returns at most 25 `{id,name}` choices and a total. Adding `id=<simulationId>` returns the bounded supported definition and required kick mappings. Reads use the existing public/owner Project policy, active owner/module joins, active Project asset assignments and exact saved marker membership. No Scenario query, field or setup is involved. The projection excludes owner IDs, private metadata, animation file URLs and results. Kick mappings are restricted to the selected Character's own/inherited assignment keys, with active owner slots. CRUD and result APIs remain private.
+
+**Open Scenario** and **Run Simulation** are separate controls. Refresh clears stale Simulation selection and never dispatches Actions. Disabled readiness/editing/choice states explain their cause; preflight and result errors propagate outside collapsed details. Opening/changing a Scenario does not filter choices or cancel a run. Current Project/module bindings still await the independent-definition refactor.
+
+The Developer authorized public visitor runs to stay local. `saveSimulationResults` is derived from the loaded Project's edit capability, independently from launch read access. Both modes reuse `ProjectSimulationControls` and the same `SoccerSimulationRunner`. Owner execution retains private revision/reference preflight and capture-before-dispatch; visitors recheck the projected Project launch record, then collect only transient browser outcomes/observations. Neither visitor completion nor Stop invokes result capture/finalization. Result history remains owner-only. A published Project exposes its active linked supported Soccer Simulations through this endpoint, without cross-Project use or general Action execution.
+
+Preparation and execution retain duplicate-click locks, aborts and scope cleanup. Stop, manual input, unavailable/hidden participants and stale responses cannot resume a request. A changed saved revision or kick mapping requires another review/click. Details remain mounted when collapsed so their runner and cleanup lifecycle persist.
 
 ## Definitions, attempts and observations
 
-`threed_simulations` contains Project-owned definitions with an optional Scenario link and revision-aware CRUD. Saving or restoring one never starts it. The Soccer runner supports `runToTarget` and `kickBall`; the same saved movable Character/ball must participate throughout. It subscribes before dispatch, requires correlated arrival before kicking and accepts completion only from the exact ball's applied contact result. Interrupted approaches always stop.
+`threed_simulations` currently contains Project/module-bound definitions with revision-aware CRUD; those bindings are transitional. It has no Scenario column, foreign key, index or relation. Saving or restoring one never starts it. The Soccer runner supports `runToTarget` and `kickBall`; the same saved movable Character/ball must participate throughout. It subscribes before dispatch, requires correlated arrival before kicking and accepts completion only from the exact ball's applied contact result. Interrupted approaches always stop. Readiness checks requested observation groups/Sensors, without requiring a field plan or two goal counters.
 
 `threed_simulation_results` contains one captured attempt per owner/run UUID. The authoritative Drizzle object is `threedSimulationResults` in `src/libraries/schema/threed/index.ts`. Use `npm run db:generate`, then `npm run db:push` through the configured `DATABASE_URL` before result-backed Scene runs. This Developer-requested npm workflow replaces the earlier manual SQL Editor recommendation; see [database commands](LOCAL_DEVELOPMENT.md#database-schema-commands). The targeted [Drizzle-generated SQL](../releases/sql/v0.22.27-threed-simulation-results.sql) remains a review reference. Native push compares the actual database with the App schema rather than executing that file. Do not rerun v0.22.25 SQL.
 
 | Field | Meaning |
 | --- | --- |
 | `user_id`, `project_id`, `threed_id` | Private immutable ownership/context; owner or Project/module deletion cascades records |
-| `simulation_id`, `scenario_id` | Nullable current links; definition/Scenario deletion sets null, retaining historical snapshot |
+| `simulation_id` | Nullable current definition link; definition deletion sets null, retaining historical snapshot |
 | `run_id`, `simulation_revision` | Idempotent attempt UUID and captured saved revision |
-| `snapshot` | Server-read Simulation ID/name/revision, Scenario ID/name, Project/module names and definition |
+| `snapshot` | Server-read Simulation ID/name/revision, Project/module names and definition; historical JSON remains untouched |
 | `status` | `running`, `completed`, `failed`, `cancelled`, `timed-out` |
 | `report` | Terminal browser-scene report with outcomes and selected Sensor readings; null while unfinished |
 | `client_started_at`, `client_ended_at` | Browser epoch timestamps stored as timestamptz; not trusted server execution timestamps |
@@ -30,7 +44,7 @@ All requests use the current authenticated owner and return `private, no-store`.
 | `POST /api/threed/simulation-results` | `{simulationId, revision, runId, clientStartedAt}`; server captures before dispatch; no client-authored snapshot |
 | `PATCH /api/threed/simulation-results` | `{runId, report}`; finalize once; identical retry accepted, replacement rejected |
 | `GET /api/threed/simulation-results?runId=<uuid>` | Exact full owner-scoped snapshot/report |
-| `GET /api/threed/simulation-results?projectId=<id>&status=completed&limit=25&offset=0` | Summary list and total; optional `simulationId`/`scenarioId`; maximum page 100; no full JSON in summaries |
+| `GET /api/threed/simulation-results?projectId=<id>&status=completed&limit=25&offset=0` | Summary list and total; optional `simulationId`; maximum page 100; no full JSON in summaries |
 
 `report` is `{version:1,source:'browser-scene',phase,clientStartedAt,clientEndedAt,outcomes,observations,reason?}`. Outcomes are an ordered prefix of saved steps and retain `stepId`, Action, request UUID, start/end, status and optional reason. Completed reports require all steps completed. Other terminal reports may have no outcomes if cancelled/failed after capture but before dispatch.
 
@@ -64,6 +78,6 @@ CROSS JOIN LATERAL jsonb_array_elements(r.report->'outcomes') AS outcome
 WHERE r.user_id = '<owner-user-id>' AND r.status <> 'running';
 ```
 
-Use `snapshot.simulationId`/`snapshot.scenarioId` when current foreign keys have been unlinked by deletion. Group/Sensor readings live in `report.observations`; inspect truncation/reset flags before comparing runs. Historical snapshots do not change with later definition edits. These SQL examples were not executed against a live database.
+Use `snapshot.simulationId` when the current definition foreign key has been unlinked by deletion. Group/Sensor readings live in `report.observations`; inspect truncation/reset flags before comparing runs. Historical snapshots do not change with later definition edits. Older snapshots may retain historical Scenario JSON, but current schema/capture does not link to Scenarios. These SQL examples were not executed against a live database.
 
 See [user preparation](../help/threed-simulations.md), [local evidence and pending acceptance](../plans/v0.22.27-simulation-results-preparation.md) and [agent validation](../agents/VALIDATION.md). No cross-Project sharing, general metadata collector, automatic Project save, physical-device command or dependency upgrade is included.

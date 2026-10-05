@@ -3065,7 +3065,12 @@ function UnifiedMapPageInner() {
                       onThreeDPresentationComplete={handleThreeDPresentationComplete}
                       environmentControlsCloseRequest={environmentControlsCloseRequest}
                       scenarioStartRequest={scenarioStartRequest}
-                      canRunSimulations={canEditProject}
+                      canRunSimulations={projectAccess?.projectId === String(selectedProjectId)}
+                      saveSimulationResults={canEditProject}
+                      onSimulationParticipantsChange={(id, target) => {
+                        setLiveControlledCharacterPosition(null); setCameraMode('stationary'); setControlledCharacterId(id);
+                        setActionTarget(target); setOrchestrationStatus(null);
+                      }}
                       scenarioOverlayLeftOffsetRem={scenarioOverlayLeftOffsetRem}
                       scenarioOverlaysObscured={scenarioOverlaysObscured}
                       scenarioInstructionDimmed={isProjectAssetsOpen}
@@ -3167,7 +3172,12 @@ function UnifiedMapPageInner() {
                 onThreeDPresentationComplete={handleThreeDPresentationComplete}
                 environmentControlsCloseRequest={environmentControlsCloseRequest}
                 scenarioStartRequest={scenarioStartRequest}
-                      canRunSimulations={canEditProject}
+                canRunSimulations={projectAccess?.projectId === String(selectedProjectId)}
+                saveSimulationResults={canEditProject}
+                onSimulationParticipantsChange={(id, target) => {
+                  setLiveControlledCharacterPosition(null); setCameraMode('stationary'); setControlledCharacterId(id);
+                  setActionTarget(target); setOrchestrationStatus(null);
+                }}
                 scenarioOverlayLeftOffsetRem={scenarioOverlayLeftOffsetRem}
                 scenarioOverlaysObscured={scenarioOverlaysObscured}
                 scenarioInstructionDimmed={isProjectAssetsOpen}

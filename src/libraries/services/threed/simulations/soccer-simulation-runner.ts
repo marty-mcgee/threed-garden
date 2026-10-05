@@ -2,7 +2,7 @@ import { parseSimulationDefinition, type SimulationDefinition, type SimulationSt
 
 /** First Scene execution capability. Definitions and outcomes remain separate. */
 export type SoccerSimulation = { id: number; revision: number; name: string; projectId: number; threedId: number;
-  scenarioId: number | null; isActive: boolean; definition: SimulationDefinition };
+  isActive: boolean; definition: SimulationDefinition };
 export type SimulationReply = { requestId: string; actorMarkerId?: string; targetMarkerId?: string; projectId?: number;
   kind: 'navigation' | 'kick'; success: boolean; reason?: string };
 export type SimulationOutcome = { stepId: string; action: string; requestId: string; startedAt: number; endedAt: number;
@@ -10,15 +10,14 @@ export type SimulationOutcome = { stepId: string; action: string; requestId: str
 export type SimulationRunState = { runId: string; simulationId: number; revision: number; phase: 'running' | 'completed' | 'failed' | 'cancelled' | 'timed-out';
   stepIndex: number; outcomes: SimulationOutcome[]; reason?: string };
 
-export function captureSoccerSimulation(value: SoccerSimulation, binding: { projectId: number; threedId?: number; scenarioId?: number }): SoccerSimulation {
+export function captureSoccerSimulation(value: SoccerSimulation, binding: { projectId: number; threedId?: number }): SoccerSimulation {
   if (!Number.isSafeInteger(value.id) || value.id <= 0 || !Number.isSafeInteger(value.revision) || value.revision <= 0
-    || !value.isActive || value.projectId !== binding.projectId || value.threedId !== binding.threedId
-    || !binding.scenarioId || value.scenarioId !== binding.scenarioId) throw new Error('Choose an active Simulation linked to the started Scenario and Project module.');
+    || !value.isActive || value.projectId !== binding.projectId || !Number.isSafeInteger(value.threedId) || value.threedId <= 0 || value.threedId !== binding.threedId) throw new Error('Choose an active Simulation available in this Project module.');
   const definition = parseSimulationDefinition(value.definition), first = definition.steps[0];
   if (!first || definition.steps.some(step => !['runToTarget', 'kickBall'].includes(step.action))) throw new Error('This Scene runner supports Run to target ball and Kick ball only.');
   if (definition.steps.some(step => step.actorMarkerId !== first.actorMarkerId || step.targetMarkerId !== first.targetMarkerId)) throw new Error('Use one Character and one target ball per Soccer Simulation.');
   return { id: value.id, revision: value.revision, name: value.name, projectId: value.projectId, threedId: value.threedId,
-    scenarioId: value.scenarioId, isActive: value.isActive, definition };
+    isActive: value.isActive, definition };
 }
 
 type Port = {
@@ -41,7 +40,7 @@ export class SoccerSimulationRunner {
   get running() { return this.state?.phase === 'running'; }
   start(simulation: SoccerSimulation, runId = this.port.requestId()) {
     if (this.running) throw new Error('A Simulation is already running.');
-    this.simulation = captureSoccerSimulation(simulation, { ...simulation, scenarioId: simulation.scenarioId ?? undefined });
+    this.simulation = captureSoccerSimulation(simulation, simulation);
     this.state = { runId, simulationId: simulation.id, revision: simulation.revision, phase: 'running', stepIndex: 0, outcomes: [] };
     this.unsubscribe = this.port.subscribe(reply => this.receive(reply));
     this.next();

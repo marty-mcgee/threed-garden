@@ -3,7 +3,7 @@ import { and, asc, desc, eq, ilike, or, sql } from 'drizzle-orm';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
 import { project, projectThreed, projectThreedMarkers } from '@/libraries/schema/project';
-import { threed, threedScenarios, threedSimulations } from '@/libraries/schema/threed';
+import { threed, threedSimulations } from '@/libraries/schema/threed';
 import { MAX_SIMULATION_BYTES, SimulationInputError, simulationFields, simulationId, simulationListQuery, type SimulationDefinition } from '@/libraries/services/threed/simulations/simulation-input';
 import { THREED_PLANTING_TARGET_ACTIONS } from '@/libraries/services/threed/orchestration/action-target-core';
 import { readSensorGroups } from '@/libraries/services/threed/physics/sensor-group-core';
@@ -32,8 +32,6 @@ async function choices(client: Client, userId: string, projectId: number, threed
     .innerJoin(project, eq(project.id, projectThreed.projectId)).innerJoin(threed, eq(threed.id, projectThreed.threedId))
     .where(and(eq(projectThreed.userId, userId), eq(projectThreed.projectId, projectId), eq(projectThreed.threedId, threedId), eq(project.userId, userId), eq(threed.userId, userId))).limit(1);
   if (!assigned) return null;
-  const scenarios = await client.select({ id: threedScenarios.id, name: threedScenarios.name, isActive: threedScenarios.isActive }).from(threedScenarios)
-    .where(and(eq(threedScenarios.userId, userId), eq(threedScenarios.projectId, projectId), eq(threedScenarios.threedId, threedId))).orderBy(asc(threedScenarios.name));
   const markerRows = await client.select({ id: projectThreedMarkers.id, markerId: projectThreedMarkers.markerId, markerType: projectThreedMarkers.markerType, name: projectThreedMarkers.name,
     data: projectThreedMarkers.data, metadata: projectThreedMarkers.metadata }).from(projectThreedMarkers)
     .where(and(eq(projectThreedMarkers.userId, userId), eq(projectThreedMarkers.projectId, projectId), eq(projectThreedMarkers.threedId, threedId), eq(projectThreedMarkers.isActive, true))).orderBy(asc(projectThreedMarkers.name));
@@ -50,10 +48,9 @@ async function choices(client: Client, userId: string, projectId: number, threed
     return [...readPhysicsSensorCuboids(metadata), ...(volume ? [volume] : [])].map(sensor => ({ ownerMarkerId: row.id, id: sensor.id,
       name: sensor.name, ownerName: row.name, groupId: sensor.groupId, behavior: sensor.behavior }));
   });
-  return { scenarios, markers, groups, sensors };
+  return { markers, groups, sensors };
 }
-function validateReferences(options: NonNullable<Awaited<ReturnType<typeof choices>>>, scenarioId: number | null, definition: SimulationDefinition) {
-  if (scenarioId !== null && !options.scenarios.some(row => row.id === scenarioId)) throw new SimulationInputError('Choose a Scenario from this Project and ThreeD module.');
+function validateReferences(options: NonNullable<Awaited<ReturnType<typeof choices>>>, definition: SimulationDefinition) {
   for (const step of definition.steps) {
     if (!options.markers.some(row => row.markerId === step.actorMarkerId && row.markerType === 'characters')) throw new SimulationInputError('Choose an active Character marker from this Project module.');
     const target = options.markers.find(row => row.markerId === step.targetMarkerId);
@@ -72,6 +69,7 @@ export async function GET(request: NextRequest) {
   if (!session?.user?.id) return reply({ success: false, error: 'Unauthorized' }, 401);
   try {
     const params = new URL(request.url).searchParams, userId = session.user.id;
+    if (params.has('scenarioId')) throw new SimulationInputError('Scenario filters are not supported for Simulations.');
     if (params.get('options') === '1') {
       const data = await choices(db, userId, simulationId(params.get('projectId'), 'Project ID'), simulationId(params.get('threedId'), 'ThreeD ID'));
       return data ? reply({ success: true, data }) : reply({ success: false, error: 'Project ThreeD module not found.' }, 404);
@@ -82,7 +80,6 @@ export async function GET(request: NextRequest) {
     if (single) conditions.push(eq(threedSimulations.id, simulationId(params.get('id'), 'Simulation ID')));
     if (query?.projectId) conditions.push(eq(threedSimulations.projectId, query.projectId));
     if (query?.threedId) conditions.push(eq(threedSimulations.threedId, query.threedId));
-    if (query?.scenarioId) conditions.push(eq(threedSimulations.scenarioId, query.scenarioId));
     if (query?.isActive !== null && query?.isActive !== undefined) conditions.push(eq(threedSimulations.isActive, query.isActive));
     if (query?.search) {
       const term = `%${query.search.replace(/[\\%_]/g, '\\$&')}%`;
@@ -90,21 +87,20 @@ export async function GET(request: NextRequest) {
     }
     const where = and(...conditions);
     const fields = {
-      simulation: single ? threedSimulations : { id: threedSimulations.id, name: threedSimulations.name, slug: threedSimulations.slug, projectId: threedSimulations.projectId, threedId: threedSimulations.threedId, scenarioId: threedSimulations.scenarioId, isActive: threedSimulations.isActive, revision: threedSimulations.revision },
-      projectName: project.name, threedName: threed.name, scenarioName: threedScenarios.name,
+      simulation: single ? threedSimulations : { id: threedSimulations.id, name: threedSimulations.name, slug: threedSimulations.slug, projectId: threedSimulations.projectId, threedId: threedSimulations.threedId, isActive: threedSimulations.isActive, revision: threedSimulations.revision },
+      projectName: project.name, threedName: threed.name,
       actionCount: sql<number>`jsonb_array_length(${threedSimulations.definition}->'steps')`,
       observationCount: sql<number>`jsonb_array_length(${threedSimulations.definition}->'observations')`,
     };
-    const select = db.select(fields).from(threedSimulations).innerJoin(project, eq(project.id, threedSimulations.projectId)).innerJoin(threed, eq(threed.id, threedSimulations.threedId))
-      .leftJoin(threedScenarios, and(eq(threedScenarios.id, threedSimulations.scenarioId), eq(threedScenarios.userId, userId), eq(threedScenarios.projectId, threedSimulations.projectId), eq(threedScenarios.threedId, threedSimulations.threedId))).where(where);
+    const select = db.select(fields).from(threedSimulations).innerJoin(project, eq(project.id, threedSimulations.projectId)).innerJoin(threed, eq(threed.id, threedSimulations.threedId)).where(where);
     if (single) {
       const [row] = await select.limit(1);
-      return row ? reply({ success: true, data: { ...row.simulation, projectName: row.projectName, threedName: row.threedName, scenarioName: row.scenarioName } }) : reply({ success: false, error: 'Simulation not found.' }, 404);
+      return row ? reply({ success: true, data: { ...row.simulation, projectName: row.projectName, threedName: row.threedName } }) : reply({ success: false, error: 'Simulation not found.' }, 404);
     }
     const sortColumn = { name: threedSimulations.name, slug: threedSimulations.slug, project: project.name, revision: threedSimulations.revision, active: threedSimulations.isActive, createdAt: threedSimulations.createdAt }[query!.sort];
     const rows = await select.orderBy(query!.direction === 'asc' ? asc(sortColumn) : desc(sortColumn), asc(threedSimulations.id)).limit(query!.limit).offset(query!.offset);
     const [count] = await db.select({ total: sql<number>`count(*)` }).from(threedSimulations).innerJoin(project, eq(project.id, threedSimulations.projectId)).innerJoin(threed, eq(threed.id, threedSimulations.threedId)).where(where);
-    return reply({ success: true, data: rows.map(row => ({ ...row.simulation, projectName: row.projectName, threedName: row.threedName, scenarioName: row.scenarioName, actionCount: Number(row.actionCount), observationCount: Number(row.observationCount) })), pagination: { total: Number(count?.total ?? 0), limit: query!.limit, offset: query!.offset } });
+    return reply({ success: true, data: rows.map(row => ({ ...row.simulation, projectName: row.projectName, threedName: row.threedName, actionCount: Number(row.actionCount), observationCount: Number(row.observationCount) })), pagination: { total: Number(count?.total ?? 0), limit: query!.limit, offset: query!.offset } });
   } catch (e) { return failure(e); }
 }
 export async function POST(request: NextRequest) {
@@ -117,7 +113,7 @@ export async function POST(request: NextRequest) {
     const result = await db.transaction(async tx => {
       const options = await choices(tx, session.user!.id!, projectId, threedId);
       if (!options) return null;
-      validateReferences(options, fields.scenarioId, fields.definition);
+      validateReferences(options, fields.definition);
       const [created] = await tx.insert(threedSimulations).values({ ...fields, userId: session.user!.id!, projectId, threedId }).returning();
       return created;
     });
@@ -137,7 +133,7 @@ export async function PATCH(request: NextRequest) {
       if (existing.revision !== revision) return { status: 409, error: 'This Simulation changed. Reload before saving your changes.' };
       const options = await choices(tx, session.user!.id!, existing.projectId, existing.threedId);
       if (!options) return { status: 404, error: 'Project ThreeD module not found.' };
-      validateReferences(options, fields.scenarioId, fields.definition);
+      validateReferences(options, fields.definition);
       const [updated] = await tx.update(threedSimulations).set({ ...fields, revision: existing.revision + 1, updatedAt: new Date() }).where(and(eq(threedSimulations.id, id), eq(threedSimulations.userId, session.user!.id!), eq(threedSimulations.revision, revision))).returning();
       return updated ? { status: 200, data: updated } : { status: 409, error: 'This Simulation changed. Reload before saving your changes.' };
     });

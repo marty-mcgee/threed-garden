@@ -1,0 +1,521 @@
+{
+  "public.threed_simulations": {
+    "name": "threed_simulations",
+    "schema": "",
+    "columns": {
+      "id": {
+        "name": "id",
+        "type": "serial",
+        "primaryKey": true,
+        "notNull": true
+      },
+      "user_id": {
+        "name": "user_id",
+        "type": "text",
+        "primaryKey": false,
+        "notNull": true
+      },
+      "project_id": {
+        "name": "project_id",
+        "type": "integer",
+        "primaryKey": false,
+        "notNull": true
+      },
+      "threed_id": {
+        "name": "threed_id",
+        "type": "integer",
+        "primaryKey": false,
+        "notNull": true
+      },
+      "scenario_id": {
+        "name": "scenario_id",
+        "type": "integer",
+        "primaryKey": false,
+        "notNull": false
+      },
+      "name": {
+        "name": "name",
+        "type": "varchar(120)",
+        "primaryKey": false,
+        "notNull": true
+      },
+      "slug": {
+        "name": "slug",
+        "type": "varchar(100)",
+        "primaryKey": false,
+        "notNull": true
+      },
+      "description": {
+        "name": "description",
+        "type": "text",
+        "primaryKey": false,
+        "notNull": false
+      },
+      "definition": {
+        "name": "definition",
+        "type": "jsonb",
+        "primaryKey": false,
+        "notNull": true,
+        "default": "'{\"version\":1,\"steps\":[],\"observations\":[]}'::jsonb"
+      },
+      "revision": {
+        "name": "revision",
+        "type": "integer",
+        "primaryKey": false,
+        "notNull": true,
+        "default": 1
+      },
+      "is_active": {
+        "name": "is_active",
+        "type": "boolean",
+        "primaryKey": false,
+        "notNull": true,
+        "default": false
+      },
+      "created_at": {
+        "name": "created_at",
+        "type": "timestamp",
+        "primaryKey": false,
+        "notNull": true,
+        "default": "now()"
+      },
+      "updated_at": {
+        "name": "updated_at",
+        "type": "timestamp",
+        "primaryKey": false,
+        "notNull": true,
+        "default": "now()"
+      }
+    },
+    "indexes": {
+      "idx_threed_simulations_project_threed_slug": {
+        "name": "idx_threed_simulations_project_threed_slug",
+        "columns": [
+          {
+            "expression": "project_id",
+            "isExpression": false,
+            "asc": true,
+            "nulls": "last"
+          },
+          {
+            "expression": "threed_id",
+            "isExpression": false,
+            "asc": true,
+            "nulls": "last"
+          },
+          {
+            "expression": "slug",
+            "isExpression": false,
+            "asc": true,
+            "nulls": "last"
+          }
+        ],
+        "isUnique": true,
+        "concurrently": false,
+        "method": "btree",
+        "with": {}
+      },
+      "idx_threed_simulations_owner_project": {
+        "name": "idx_threed_simulations_owner_project",
+        "columns": [
+          {
+            "expression": "user_id",
+            "isExpression": false,
+            "asc": true,
+            "nulls": "last"
+          },
+          {
+            "expression": "project_id",
+            "isExpression": false,
+            "asc": true,
+            "nulls": "last"
+          }
+        ],
+        "isUnique": false,
+        "concurrently": false,
+        "method": "btree",
+        "with": {}
+      },
+      "idx_threed_simulations_threed_id": {
+        "name": "idx_threed_simulations_threed_id",
+        "columns": [
+          {
+            "expression": "threed_id",
+            "isExpression": false,
+            "asc": true,
+            "nulls": "last"
+          }
+        ],
+        "isUnique": false,
+        "concurrently": false,
+        "method": "btree",
+        "with": {}
+      },
+      "idx_threed_simulations_scenario_id": {
+        "name": "idx_threed_simulations_scenario_id",
+        "columns": [
+          {
+            "expression": "scenario_id",
+            "isExpression": false,
+            "asc": true,
+            "nulls": "last"
+          }
+        ],
+        "isUnique": false,
+        "concurrently": false,
+        "method": "btree",
+        "with": {}
+      }
+    },
+    "foreignKeys": {
+      "threed_simulations_user_id_user_id_fk": {
+        "name": "threed_simulations_user_id_user_id_fk",
+        "tableFrom": "threed_simulations",
+        "tableTo": "user",
+        "columnsFrom": [
+          "user_id"
+        ],
+        "columnsTo": [
+          "id"
+        ],
+        "onDelete": "cascade",
+        "onUpdate": "no action"
+      },
+      "threed_simulations_project_id_project_id_fk": {
+        "name": "threed_simulations_project_id_project_id_fk",
+        "tableFrom": "threed_simulations",
+        "tableTo": "project",
+        "columnsFrom": [
+          "project_id"
+        ],
+        "columnsTo": [
+          "id"
+        ],
+        "onDelete": "cascade",
+        "onUpdate": "no action"
+      },
+      "threed_simulations_threed_id_threed_id_fk": {
+        "name": "threed_simulations_threed_id_threed_id_fk",
+        "tableFrom": "threed_simulations",
+        "tableTo": "threed",
+        "columnsFrom": [
+          "threed_id"
+        ],
+        "columnsTo": [
+          "id"
+        ],
+        "onDelete": "cascade",
+        "onUpdate": "no action"
+      },
+      "threed_simulations_scenario_id_threed_scenarios_id_fk": {
+        "name": "threed_simulations_scenario_id_threed_scenarios_id_fk",
+        "tableFrom": "threed_simulations",
+        "tableTo": "threed_scenarios",
+        "columnsFrom": [
+          "scenario_id"
+        ],
+        "columnsTo": [
+          "id"
+        ],
+        "onDelete": "set null",
+        "onUpdate": "no action"
+      }
+    },
+    "compositePrimaryKeys": {},
+    "uniqueConstraints": {},
+    "policies": {},
+    "checkConstraints": {
+      "threed_simulations_name_valid": {
+        "name": "threed_simulations_name_valid",
+        "value": "length(trim(\"threed_simulations\".\"name\")) > 0 AND \"threed_simulations\".\"name\" = trim(\"threed_simulations\".\"name\")"
+      },
+      "threed_simulations_slug_valid": {
+        "name": "threed_simulations_slug_valid",
+        "value": "\"threed_simulations\".\"slug\" ~ '^[a-z0-9]+(-[a-z0-9]+)*$'"
+      },
+      "threed_simulations_revision_positive": {
+        "name": "threed_simulations_revision_positive",
+        "value": "\"threed_simulations\".\"revision\" > 0"
+      },
+      "threed_simulations_definition_valid": {
+        "name": "threed_simulations_definition_valid",
+        "value": "coalesce(jsonb_typeof(\"threed_simulations\".\"definition\") = 'object' AND \"threed_simulations\".\"definition\"->'version' = '1'::jsonb AND jsonb_typeof(\"threed_simulations\".\"definition\"->'steps') = 'array' AND jsonb_typeof(\"threed_simulations\".\"definition\"->'observations') = 'array', false)"
+      }
+    },
+    "isRLSEnabled": false
+  },
+  "public.threed_simulation_results": {
+    "name": "threed_simulation_results",
+    "schema": "",
+    "columns": {
+      "id": {
+        "name": "id",
+        "type": "serial",
+        "primaryKey": true,
+        "notNull": true
+      },
+      "user_id": {
+        "name": "user_id",
+        "type": "text",
+        "primaryKey": false,
+        "notNull": true
+      },
+      "project_id": {
+        "name": "project_id",
+        "type": "integer",
+        "primaryKey": false,
+        "notNull": true
+      },
+      "threed_id": {
+        "name": "threed_id",
+        "type": "integer",
+        "primaryKey": false,
+        "notNull": true
+      },
+      "simulation_id": {
+        "name": "simulation_id",
+        "type": "integer",
+        "primaryKey": false,
+        "notNull": false
+      },
+      "scenario_id": {
+        "name": "scenario_id",
+        "type": "integer",
+        "primaryKey": false,
+        "notNull": false
+      },
+      "run_id": {
+        "name": "run_id",
+        "type": "uuid",
+        "primaryKey": false,
+        "notNull": true
+      },
+      "simulation_revision": {
+        "name": "simulation_revision",
+        "type": "integer",
+        "primaryKey": false,
+        "notNull": true
+      },
+      "status": {
+        "name": "status",
+        "type": "varchar(16)",
+        "primaryKey": false,
+        "notNull": true,
+        "default": "'running'"
+      },
+      "snapshot": {
+        "name": "snapshot",
+        "type": "jsonb",
+        "primaryKey": false,
+        "notNull": true
+      },
+      "report": {
+        "name": "report",
+        "type": "jsonb",
+        "primaryKey": false,
+        "notNull": false
+      },
+      "client_started_at": {
+        "name": "client_started_at",
+        "type": "timestamp with time zone",
+        "primaryKey": false,
+        "notNull": true
+      },
+      "client_ended_at": {
+        "name": "client_ended_at",
+        "type": "timestamp with time zone",
+        "primaryKey": false,
+        "notNull": false
+      },
+      "created_at": {
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "primaryKey": false,
+        "notNull": true,
+        "default": "now()"
+      },
+      "updated_at": {
+        "name": "updated_at",
+        "type": "timestamp with time zone",
+        "primaryKey": false,
+        "notNull": true,
+        "default": "now()"
+      }
+    },
+    "indexes": {
+      "idx_threed_simulation_results_owner_run": {
+        "name": "idx_threed_simulation_results_owner_run",
+        "columns": [
+          {
+            "expression": "user_id",
+            "isExpression": false,
+            "asc": true,
+            "nulls": "last"
+          },
+          {
+            "expression": "run_id",
+            "isExpression": false,
+            "asc": true,
+            "nulls": "last"
+          }
+        ],
+        "isUnique": true,
+        "concurrently": false,
+        "method": "btree",
+        "with": {}
+      },
+      "idx_threed_simulation_results_owner_project_created": {
+        "name": "idx_threed_simulation_results_owner_project_created",
+        "columns": [
+          {
+            "expression": "user_id",
+            "isExpression": false,
+            "asc": true,
+            "nulls": "last"
+          },
+          {
+            "expression": "project_id",
+            "isExpression": false,
+            "asc": true,
+            "nulls": "last"
+          },
+          {
+            "expression": "created_at",
+            "isExpression": false,
+            "asc": true,
+            "nulls": "last"
+          }
+        ],
+        "isUnique": false,
+        "concurrently": false,
+        "method": "btree",
+        "with": {}
+      },
+      "idx_threed_simulation_results_simulation_created": {
+        "name": "idx_threed_simulation_results_simulation_created",
+        "columns": [
+          {
+            "expression": "simulation_id",
+            "isExpression": false,
+            "asc": true,
+            "nulls": "last"
+          },
+          {
+            "expression": "created_at",
+            "isExpression": false,
+            "asc": true,
+            "nulls": "last"
+          }
+        ],
+        "isUnique": false,
+        "concurrently": false,
+        "method": "btree",
+        "with": {}
+      },
+      "idx_threed_simulation_results_scenario": {
+        "name": "idx_threed_simulation_results_scenario",
+        "columns": [
+          {
+            "expression": "scenario_id",
+            "isExpression": false,
+            "asc": true,
+            "nulls": "last"
+          }
+        ],
+        "isUnique": false,
+        "concurrently": false,
+        "method": "btree",
+        "with": {}
+      }
+    },
+    "foreignKeys": {
+      "threed_simulation_results_user_id_user_id_fk": {
+        "name": "threed_simulation_results_user_id_user_id_fk",
+        "tableFrom": "threed_simulation_results",
+        "tableTo": "user",
+        "columnsFrom": [
+          "user_id"
+        ],
+        "columnsTo": [
+          "id"
+        ],
+        "onDelete": "cascade",
+        "onUpdate": "no action"
+      },
+      "threed_simulation_results_project_id_project_id_fk": {
+        "name": "threed_simulation_results_project_id_project_id_fk",
+        "tableFrom": "threed_simulation_results",
+        "tableTo": "project",
+        "columnsFrom": [
+          "project_id"
+        ],
+        "columnsTo": [
+          "id"
+        ],
+        "onDelete": "cascade",
+        "onUpdate": "no action"
+      },
+      "threed_simulation_results_threed_id_threed_id_fk": {
+        "name": "threed_simulation_results_threed_id_threed_id_fk",
+        "tableFrom": "threed_simulation_results",
+        "tableTo": "threed",
+        "columnsFrom": [
+          "threed_id"
+        ],
+        "columnsTo": [
+          "id"
+        ],
+        "onDelete": "cascade",
+        "onUpdate": "no action"
+      },
+      "threed_simulation_results_simulation_id_threed_simulations_id_fk": {
+        "name": "threed_simulation_results_simulation_id_threed_simulations_id_fk",
+        "tableFrom": "threed_simulation_results",
+        "tableTo": "threed_simulations",
+        "columnsFrom": [
+          "simulation_id"
+        ],
+        "columnsTo": [
+          "id"
+        ],
+        "onDelete": "set null",
+        "onUpdate": "no action"
+      },
+      "threed_simulation_results_scenario_id_threed_scenarios_id_fk": {
+        "name": "threed_simulation_results_scenario_id_threed_scenarios_id_fk",
+        "tableFrom": "threed_simulation_results",
+        "tableTo": "threed_scenarios",
+        "columnsFrom": [
+          "scenario_id"
+        ],
+        "columnsTo": [
+          "id"
+        ],
+        "onDelete": "set null",
+        "onUpdate": "no action"
+      }
+    },
+    "compositePrimaryKeys": {},
+    "uniqueConstraints": {},
+    "policies": {},
+    "checkConstraints": {
+      "threed_simulation_results_revision_positive": {
+        "name": "threed_simulation_results_revision_positive",
+        "value": "\"threed_simulation_results\".\"simulation_revision\" > 0"
+      },
+      "threed_simulation_results_status_valid": {
+        "name": "threed_simulation_results_status_valid",
+        "value": "\"threed_simulation_results\".\"status\" IN ('running', 'completed', 'failed', 'cancelled', 'timed-out')"
+      },
+      "threed_simulation_results_snapshot_valid": {
+        "name": "threed_simulation_results_snapshot_valid",
+        "value": "coalesce(jsonb_typeof(\"threed_simulation_results\".\"snapshot\") = 'object' AND jsonb_typeof(\"threed_simulation_results\".\"snapshot\"->'definition') = 'object' AND \"threed_simulation_results\".\"snapshot\"->'definition'->'version' = '1'::jsonb, false)"
+      },
+      "threed_simulation_results_lifecycle_valid": {
+        "name": "threed_simulation_results_lifecycle_valid",
+        "value": "(\"threed_simulation_results\".\"status\" = 'running' AND \"threed_simulation_results\".\"report\" IS NULL AND \"threed_simulation_results\".\"client_ended_at\" IS NULL) OR (\"threed_simulation_results\".\"status\" <> 'running' AND \"threed_simulation_results\".\"report\" IS NOT NULL AND \"threed_simulation_results\".\"client_ended_at\" IS NOT NULL AND \"threed_simulation_results\".\"client_ended_at\" >= \"threed_simulation_results\".\"client_started_at\" AND coalesce(jsonb_typeof(\"threed_simulation_results\".\"report\") = 'object' AND \"threed_simulation_results\".\"report\"->'version' = '1'::jsonb AND \"threed_simulation_results\".\"report\"->>'source' = 'browser-scene' AND \"threed_simulation_results\".\"report\"->>'phase' = \"threed_simulation_results\".\"status\", false))"
+      }
+    },
+    "isRLSEnabled": false
+  }
+}

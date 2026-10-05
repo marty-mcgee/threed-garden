@@ -25,8 +25,9 @@ function fixture(props, list = false) {
   const rt = runtime(), requests = [], navigation = [], notifications = [], listeners = new Map(), docListeners = new Map();
   let confirmation = true, failSave = false, failRead = props?.failRead ?? false;
   class Anchor { href = 'https://fixture.invalid/admin/threed/simulations'; target = ''; hasAttribute() { return false; } closest() { return this; } }
-  const record = { id: 9, revision: 1, projectId: 15, threedId: 1, scenarioId: null, projectName: 'One', threedName: 'Garden', name: 'Plan', slug: 'plan', description: 'Practice', isActive: false, definition: input.emptySimulationDefinition(), actionCount: 0, observationCount: 0 };
-  const choices = { scenarios: [], markers: [], groups: [] };
+  const record = { id: 9, revision: 1, projectId: 15, threedId: 1, projectName: 'One', threedName: 'Garden', name: 'Plan', slug: 'plan', description: 'Practice', isActive: false, definition: input.emptySimulationDefinition(), actionCount: 0, observationCount: 0 };
+  assert(!fs.readFileSync('src/components/admin/threed/simulations/SimulationEditor.tsx','utf8').includes('simulation-scenario'));
+  const choices = { markers: [], groups: [] };
   const fetch = async (url, options = {}) => {
     requests.push({ url, ...options });
     if (options.method === 'PATCH' || options.method === 'POST') return Response.json(failSave ? { success: false, error: 'Changed remotely' } : { success: true, data: { ...record, ...JSON.parse(options.body), id: 9, revision: 2 } }, { status: failSave ? 409 : 200 });
@@ -65,13 +66,27 @@ const button = (f, name) => f.find(node => node.type === 'Button' && node.props.
   const view = fixture({ id: 9, readOnly: true }); await view.rt.flush(); assert(!button(view, 'Save Changes')); assert(field(view, 'simulation-name').props.disabled);
   const missing = fixture({ id: 9, failRead: true }); await missing.rt.flush(); assert(!button(missing, 'Save Changes'), 'Failed exact read does not show blank editor');
   const create = fixture({}); await create.rt.flush(); field(create, 'simulation-project').props.onChange({ target: { value: '15' } }); await create.rt.flush(); field(create, 'simulation-module').props.onChange({ target: { value: '1' } }); await create.rt.flush(); field(create, 'simulation-name').props.onChange({ target: { value: 'Draft' } }); create.rt.render();
-  const soccer = fixture({ projectId: 15, initialSoccerDraft: { threedId: 1, scenarioId: 7, actorMarkerId: 'kate', ballMarkerId: 'ball', sensorGroupId: 'goals' } }); await soccer.rt.flush();
+  assert(!button(create, 'Save Changes').props.disabled, 'An inactive empty draft can be saved');
+  const activeDraftHint = 'Add an Action to save an active Simulation, or turn Active off to save a draft.';
+  field(create, 'simulation-active').props.onCheckedChange(true); create.rt.render();
+  assert(button(create, 'Save Changes').props.disabled, 'Active empty definitions cannot be saved');
+  assert(create.find(node => node.props?.role === 'status' && node.props.children === activeDraftHint), 'The blocked save explains how to continue');
+  button(create, 'Save Changes').props.onClick(); await create.rt.flush();
+  assert(!create.requests.some(request => request.method === 'POST'), 'Direct save callback also rejects active empty definitions');
+  field(create, 'simulation-active').props.onCheckedChange(false); create.rt.render();
+  assert(!button(create, 'Save Changes').props.disabled, 'Turning Active off restores draft saving');
+  assert(!create.find(node => node.props?.children === activeDraftHint));
+  const soccer = fixture({ projectId: 15, initialSoccerDraft: { threedId: 1, actorMarkerId: 'kate', ballMarkerId: 'ball', sensorGroupId: 'goals' } }); await soccer.rt.flush();
   const recipe = soccer.find(node => node.type === 'SimulationDefinitionEditor').props.value;
   assert.equal(recipe.steps[0].action, 'runToTarget'); assert.equal(recipe.steps[1].action, 'kickBall'); assert.equal(recipe.steps[1].actorMarkerId, 'kate');
   assert.equal(field(soccer, 'simulation-name').props.value, 'Run to target ball then kick the ball');
   assert(!soccer.requests.some(request => request.method === 'POST'), 'Preparing the Soccer recipe never writes or executes');
   const definitionEditor = () => create.find(node => node.type === 'SimulationDefinitionEditor');
   definitionEditor().props.onChange({ version: 1, steps: [{ id: 'chosen', action: 'point', actorMarkerId: 'characters-9', targetMarkerId: 'models-5', timeoutMs: 30000, onFailure: 'stop' }], observations: [] }); create.rt.render();
+  field(create, 'simulation-active').props.onCheckedChange(true); create.rt.render();
+  assert(!button(create, 'Save Changes').props.disabled, 'A complete Action permits active definition saving');
+  assert(!create.find(node => node.props?.children === activeDraftHint));
+  field(create, 'simulation-active').props.onCheckedChange(false); create.rt.render();
   create.confirm(false); field(create, 'simulation-project').props.onChange({ target: { value: '16' } }); create.rt.render(); assert.equal(field(create, 'simulation-project').props.value, '15', 'Rejected Project switch preserves its definition');
   definitionEditor().props.onChange(input.emptySimulationDefinition()); create.rt.render(); create.confirm(true);
   await button(create, 'Save Changes').props.onClick(); await create.rt.flush(); assert(create.navigation.includes('/admin/threed/simulations/9?created=1')); assert.equal(JSON.parse(create.requests.find(r => r.method === 'POST').body).isActive, false);
@@ -83,7 +98,7 @@ const button = (f, name) => f.find(node => node.type === 'Button' && node.props.
   assert(bulk); await bulk.props.onClick(); await list.rt.flush();
   const deletes = list.requests.filter(r => r.method === 'DELETE'); assert.equal(deletes.length, 2); assert(deletes[1].url.includes('revision=3')); assert(list.notifications.some(n => n[0].includes('1 of 2') && n[1] === 'error'));
   const definitionModule = load('src/components/admin/threed/simulations/SimulationDefinitionEditor.tsx', { 'react/jsx-runtime': { jsx, jsxs: jsx }, 'lucide-react': proxy, '@/components/ui/button': proxy, '@/components/ui/input': proxy, '@/components/ui/label': proxy, '../models/ModelFieldHelp': proxy, '@/libraries/services/threed/simulations/simulation-input': input });
-  let value = input.emptySimulationDefinition(); const render = (readOnly = false) => definitionModule.SimulationDefinitionEditor({ value, choices: { markers: [], groups: [], scenarios: [] }, readOnly, onChange: next => { value = next; } });
+  let value = input.emptySimulationDefinition(); const render = (readOnly = false) => definitionModule.SimulationDefinitionEditor({ value, choices: { markers: [], groups: [] }, readOnly, onChange: next => { value = next; } });
   const action = tree => nodes(tree).find(node => node.type === 'Button' && node.props.children?.[1] === ' Add Action');
   action(render()).props.onClick(); action(render()).props.onClick(); const first = value.steps[0].id;
   nodes(render()).find(node => node.props?.['aria-label'] === 'Move Action 1 down').props.onClick(); assert.equal(value.steps[1].id, first);
@@ -91,7 +106,7 @@ const button = (f, name) => f.find(node => node.type === 'Button' && node.props.
   value.steps[0].targetMarkerId = 'models-5'; nodes(render()).find(node => node.props?.id === `action-${value.steps[0].id}`).props.onChange({ target: { value: 'watering' } }); assert.equal(value.steps[0].targetMarkerId, '', 'Planting Actions clear incompatible targets');
   const common = { actorMarkerId: '', targetMarkerId: '', timeoutMs: 30000, onFailure: 'stop' };
   value = { version: 1, steps: [{ ...common, id: 'run', action: 'runToTarget' }, { ...common, id: 'kick', action: 'kickBall' }, { ...common, id: 'other', action: 'point', actorMarkerId: 'other-actor' }], observations: [{ id: 'goals', kind: 'sensor-group', sensorGroupId: 'goals' }] };
-  const participants = () => definitionModule.SimulationDefinitionEditor({ value, onChange: next => { value = next; }, choices: { markers: [{ markerId: 'kate', markerType: 'characters', name: 'Kate', movableCharacter: true }, { markerId: 'ball', markerType: 'models', name: 'Ball', movableBall: true }], groups: [{ id: 'goals', name: 'Goals' }], scenarios: [], sensors: [{ ownerMarkerId: 101, id: 'left', name: 'Left', ownerName: 'Field', groupId: 'goals', behavior: 'counter' }] } });
+  const participants = () => definitionModule.SimulationDefinitionEditor({ value, onChange: next => { value = next; }, choices: { markers: [{ markerId: 'kate', markerType: 'characters', name: 'Kate', movableCharacter: true }, { markerId: 'ball', markerType: 'models', name: 'Ball', movableBall: true }], groups: [{ id: 'goals', name: 'Goals' }], sensors: [{ ownerMarkerId: 101, id: 'left', name: 'Left', ownerName: 'Field', groupId: 'goals', behavior: 'counter' }] } });
   nodes(participants()).find(node => node.props?.id === 'soccer-character').props.onChange({ target: { value: 'kate' } });
   nodes(participants()).find(node => node.props?.id === 'soccer-ball').props.onChange({ target: { value: 'ball' } });
   assert(value.steps.slice(0, 2).every(step => step.actorMarkerId === 'kate' && step.targetMarkerId === 'ball')); assert.equal(value.steps[2].actorMarkerId, 'other-actor');
@@ -100,7 +115,7 @@ const button = (f, name) => f.find(node => node.type === 'Button' && node.props.
   const checks = nodes(participants()).filter(node => node.type === 'input' && node.props.type === 'checkbox');
   checks[1].props.onChange({ target: { checked: true } }); assert.equal(value.observations[0].sensors[0].ownerMarkerId, 101);
   assert(!nodes(participants()).some(node => node.props?.id === 'actor-run'), 'Soccer bindings are chosen once');
-  const unfinished = fixture({ projectId: 15, initialSoccerDraft: { threedId: 1, scenarioId: 7, actorMarkerId: '', ballMarkerId: '', sensorGroupId: 'goals' } }); await unfinished.rt.flush();
+  const unfinished = fixture({ projectId: 15, initialSoccerDraft: { threedId: 1, actorMarkerId: '', ballMarkerId: '', sensorGroupId: 'goals' } }); await unfinished.rt.flush();
   assert(button(unfinished, 'Save Changes').props.disabled, 'Incomplete required bindings do not enable Save');
-  console.log('PASS: Simulation exact editor reads, immutable binding, failed-save retention, dirty navigation, double-save locks, create/View routes, revision-aware partial bulk deletes and Action reorder callbacks (offline).');
+  console.log('PASS: Simulation exact editor reads, active/draft save guidance, immutable binding, failed-save retention, dirty navigation, double-save locks, create/View routes, revision-aware partial bulk deletes and Action reorder callbacks (offline).');
 })().catch(e => { console.error(e); process.exitCode = 1; });

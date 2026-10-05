@@ -145,6 +145,8 @@ interface UnifiedMapViewProps {
   environmentControlsCloseRequest?: number;
   scenarioStartRequest?: ScenarioStartRequest | null;
   canRunSimulations?: boolean;
+  saveSimulationResults?: boolean;
+  onSimulationParticipantsChange?: (characterId: number, target: ThreeDActionTarget) => void;
   scenarioOverlayLeftOffsetRem?: number;
   scenarioOverlaysObscured?: boolean;
   scenarioInstructionDimmed?: boolean;
@@ -240,6 +242,8 @@ export function UnifiedMapView({
   environmentControlsCloseRequest,
   scenarioStartRequest,
   canRunSimulations = false,
+  saveSimulationResults = false,
+  onSimulationParticipantsChange,
   scenarioOverlayLeftOffsetRem,
   scenarioOverlaysObscured,
   scenarioInstructionDimmed,
@@ -694,6 +698,8 @@ export function UnifiedMapView({
         environmentControlsCloseRequest={environmentControlsCloseRequest}
         scenarioStartRequest={scenarioStartRequest}
         canRunSimulations={canRunSimulations}
+        saveSimulationResults={saveSimulationResults}
+        onSimulationParticipantsChange={onSimulationParticipantsChange}
         scenarioOverlayLeftOffsetRem={scenarioOverlayLeftOffsetRem}
         scenarioOverlaysObscured={scenarioOverlaysObscured}
         scenarioInstructionDimmed={scenarioInstructionDimmed}
