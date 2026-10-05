@@ -4,6 +4,7 @@ import {
   Bot,
   Box,
   BookOpen,
+  FlaskConical,
   Clapperboard,
   ClipboardList,
   Droplets,
@@ -133,6 +134,14 @@ const sections = [
     description: 'Create and manage Project-scoped ThreeD Scenario definitions.',
     href: '/admin/threed/scenarios',
     icon: BookOpen,
+  },
+  {
+    title: 'Simulations',
+    group: 'automation',
+    iconColor: iconColors.automation,
+    description: 'Plan ordered Actions and Sensor Group observations for a Project.',
+    href: '/admin/threed/simulations',
+    icon: FlaskConical,
   },
   {
     title: 'Layers',

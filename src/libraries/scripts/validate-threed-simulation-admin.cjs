@@ -1,0 +1,91 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const ts = require('typescript');
+const load = (file, deps = {}, globals = {}) => {
+  const exports = {};
+  vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText,
+    { exports, console, URL, URLSearchParams, Buffer, Date, ...globals, require(name) { assert(name in deps, name); return deps[name]; } });
+  return exports;
+};
+const root = 'src/libraries/services/threed/';
+const markersCore = load(root + 'markers/runtime-marker-core.ts');
+const actions = load(root + 'orchestration/action-target-core.ts', { '../markers/runtime-marker-core.ts': markersCore });
+const input = load(root + 'simulations/simulation-input.ts', { '../orchestration/action-target-core': actions });
+const sensor = load(root + 'physics/sensor-group-core.ts');
+const step = { id: 'step1', action: 'point', actorMarkerId: 'characters-9', targetMarkerId: 'models-5', timeoutMs: 30000, onFailure: 'stop' };
+const definition = { version: 1, steps: [step], observations: [{ id: 'obs1', kind: 'sensor-group', sensorGroupId: 'group1' }] };
+const valid = { projectId: 15, threedId: 1, name: 'Practice', slug: 'practice', description: 'Plan', isActive: false, scenarioId: 7, definition };
+assert.equal(input.parseSimulationDefinition(definition).steps[0].actorMarkerId, 'characters-9');
+for (const bad of [null, {}, { ...definition, version: 2 }, { ...definition, credential: 'no' }, { ...definition, steps: [step, step] }, { ...definition, steps: [{ ...step, action: 'rawCommand' }] }, { ...definition, steps: [{ ...step, timeoutMs: 0 }] }, { ...definition, observations: [...definition.observations, ...definition.observations] }, { ...definition, steps: Array(51).fill(step) }]) assert.throws(() => input.parseSimulationDefinition(bad), input.SimulationInputError);
+assert.throws(() => input.simulationFields({ ...valid, isActive: true, definition: input.emptySimulationDefinition() }, false));
+assert.throws(() => input.simulationFields({ ...valid, id: 9, revision: 1 }, true), input.SimulationInputError, 'Edit cannot change Project/module');
+for (const query of ['limit=101', 'offset=-1', 'sort=sql', 'direction=sideways', 'projectId=0']) assert.throws(() => input.simulationListQuery(new URLSearchParams(query)));
+assert.throws(() => input.simulationId(2147483648));
+
+const tables = Object.fromEntries(['project', 'projectThreed', 'projectThreedMarkers', 'threed', 'threedScenarios', 'threedSimulations'].map(name => [name, new Proxy({}, { get: (_, field) => `${name}.${field}` })]));
+const orm = Object.fromEntries(['and', 'eq', 'asc', 'desc', 'ilike', 'or'].map(name => [name, (...args) => ({ name, args })]));
+orm.sql = (strings, ...args) => ({ strings: [...strings], args });
+let queue = [], queries = [], signedIn = true;
+const db = { transaction: async fn => fn(db) };
+for (const method of ['select', 'insert', 'update', 'delete']) db[method] = (...args) => {
+  const query = { method, args }, chain = {};
+  for (const name of ['from', 'innerJoin', 'leftJoin', 'where', 'orderBy', 'limit', 'offset', 'values', 'set', 'returning', 'for']) chain[name] = (...values) => { (query[name] ??= []).push(values); return chain; };
+  chain.then = (resolve, reject) => { queries.push(query); assert(queue.length, 'Unexpected database read/write'); const next = queue.shift(); return Promise.resolve(next).then(resolve, reject); };
+  return chain;
+};
+const api = load('src/app/api/threed/simulations/route.ts', {
+  'next/server': { NextResponse: { json: (data, options) => ({ data, status: options.status, headers: options.headers }) } },
+  'drizzle-orm': orm, '@/libraries/auth': { auth: async () => signedIn ? { user: { id: 'owner' } } : null }, '@/libraries/db/client': { db },
+  '@/libraries/schema/project': tables, '@/libraries/schema/threed': tables,
+  '@/libraries/services/threed/simulations/simulation-input': input, '@/libraries/services/threed/orchestration/action-target-core': actions,
+  '@/libraries/services/threed/physics/sensor-group-core': sensor, '@/libraries/services/threed/physics/sensor-legacy-compat': { IMPORTED_SENSOR_GROUP: { id: 'imported', name: 'Imported' } },
+});
+const record = { ...valid, id: 9, revision: 1 };
+const choices = [[{ metadata: { physicsSensorGroups: [{ id: 'group1', name: 'Goals' }] } }], [{ id: 7, name: 'Soccer', isActive: true }], [{ markerId: 'characters-9', markerType: 'characters', name: 'Kate' }, { markerId: 'models-5', markerType: 'models', name: 'Field' }]];
+async function run(method, query, data, responses = [], origin = null) {
+  queue = [...responses]; queries = [];
+  const result = await api[method]({ url: `https://fixture.invalid/api/threed/simulations${query}`, headers: { get: name => name === 'origin' ? origin : null }, text: async () => typeof data === 'string' ? data : JSON.stringify(data) });
+  assert.equal(queue.length, 0); return result;
+}
+const predicates = query => JSON.stringify(query.where);
+(async () => {
+  signedIn = false; for (const method of ['GET', 'POST', 'PATCH', 'DELETE']) assert.equal((await run(method, '', valid)).status, 401); signedIn = true;
+  assert.equal((await run('GET', '?id=bad')).status, 400);
+  assert.equal((await run('GET', '?id=9', null, [[]])).status, 404);
+  const row = { simulation: record, projectName: 'One', threedName: 'Garden', scenarioName: 'Soccer', actionCount: 1, observationCount: 1 };
+  assert.equal((await run('GET', '?id=9', null, [[row]])).data.data.id, 9);
+  assert.equal(queries[0].limit[0][0], 1);
+  for (const table of ['threedSimulations', 'project', 'threed']) assert(predicates(queries[0]).includes(`${table}.userId`));
+  assert(JSON.stringify(queries[0].leftJoin).includes('threedScenarios.userId'), 'Scenario name is owner-scoped');
+  const list = await run('GET', '?limit=25&offset=25&sort=revision&direction=desc', null, [[row], [{ total: 51 }]]);
+  assert.equal(list.data.pagination.total, 51); assert.equal(list.data.data[0].actionCount, 1);
+  assert.equal(list.headers['Cache-Control'], 'private, no-store');
+  assert(!Object.hasOwn(queries[0].args[0].simulation, 'definition'), 'List projection omits full definitions');
+  assert.equal(queries[0].offset[0][0], 25);
+  assert.equal((await run('GET', '?options=1&projectId=15&threedId=1', null, [[]])).status, 404);
+  const options = await run('GET', '?options=1&projectId=15&threedId=1', null, choices);
+  assert.equal(options.data.data.groups.length, 2);
+  for (const query of queries) assert(predicates(query).includes('owner'));
+  assert.equal((await run('POST', '', valid, [], 'https://evil.invalid')).status, 400);
+  assert.equal((await run('POST', '', ' '.repeat(65537))).status, 400);
+  assert.equal((await run('POST', '', valid, [[]])).status, 404);
+  assert.equal((await run('POST', '', { ...valid, scenarioId: 99 }, choices)).status, 400);
+  assert.equal((await run('POST', '', { ...valid, definition: { ...definition, steps: [{ ...step, actorMarkerId: 'private' }] } }, choices)).status, 400);
+  assert.equal((await run('POST', '', { ...valid, definition: { ...definition, steps: [{ ...step, action: 'watering' }] } }, choices)).status, 400);
+  assert.equal((await run('POST', '', { ...valid, definition: { ...definition, observations: [{ ...definition.observations[0], sensorGroupId: 'private' }] } }, choices)).status, 400);
+  assert.equal((await run('POST', '', valid, [...choices, [record]])).status, 201);
+  assert.equal(queries.at(-1).values[0][0].userId, 'owner');
+  const { projectId, threedId, ...edit } = { ...valid, id: 9, revision: 1 };
+  assert.equal((await run('PATCH', '', edit, [[]])).status, 404);
+  assert.equal((await run('PATCH', '', edit, [[{ ...record, revision: 2 }]])).status, 409);
+  assert.equal((await run('PATCH', '', edit, [[record], ...choices, [{ ...record, revision: 2 }]])).status, 200);
+  assert.equal(queries[0].for[0][0], 'update');
+  assert.equal(queries.at(-1).set[0][0].revision, 2);
+  assert(predicates(queries.at(-1)).includes('threedSimulations.revision'));
+  assert(!Object.hasOwn(queries.at(-1).set[0][0], 'projectId'));
+  assert.equal((await run('DELETE', '?id=9&revision=1', null, [[]])).status, 409);
+  assert.equal((await run('DELETE', '?id=9&revision=1', null, [[{ id: 9 }]])).status, 200);
+  assert(predicates(queries[0]).includes('threedSimulations.userId')); assert(predicates(queries[0]).includes('threedSimulations.revision'));
+  console.log('PASS: Simulation bounded parser, private reads, scoped choices/references, immutable binding, revision conflict/lock and deletion; no Scene dispatch or database connection.');
+})().catch(e => { console.error(e); process.exitCode = 1; });

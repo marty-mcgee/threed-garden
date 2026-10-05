@@ -81,6 +81,55 @@ export const threedScenariosRelations = relations(threedScenarios, ({ one }) => 
 }));
 
 // ============================================
+// THREED SIMULATIONS - Saved Project-owned definitions, not execution records
+// ============================================
+
+/** Nested Action/observation fields will be validated by future CRUD/runner contracts. */
+export type ThreeDSimulationDefinition = {
+  version: 1;
+  steps: Record<string, unknown>[];
+  observations: Record<string, unknown>[];
+};
+
+/** A Scenario link is optional; writers must verify its owner/Project/module scope. */
+export const threedSimulations = pgTable('threed_simulations', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  projectId: integer('project_id').notNull().references(() => project.id, { onDelete: 'cascade' }),
+  threedId: integer('threed_id').notNull().references(() => threed.id, { onDelete: 'cascade' }),
+  scenarioId: integer('scenario_id').references(() => threedScenarios.id, { onDelete: 'set null' }),
+  name: varchar('name', { length: 120 }).notNull(),
+  slug: varchar('slug', { length: 100 }).notNull(),
+  description: text('description'),
+  definition: jsonb('definition').$type<ThreeDSimulationDefinition>().notNull().default({ version: 1, steps: [], observations: [] }),
+  revision: integer('revision').notNull().default(1),
+  // Active denotes availability only; it never starts execution or certifies readiness.
+  isActive: boolean('is_active').notNull().default(false),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, table => [
+  uniqueIndex('idx_threed_simulations_project_threed_slug').on(table.projectId, table.threedId, table.slug),
+  index('idx_threed_simulations_owner_project').on(table.userId, table.projectId),
+  index('idx_threed_simulations_threed_id').on(table.threedId),
+  index('idx_threed_simulations_scenario_id').on(table.scenarioId),
+  check('threed_simulations_name_valid', sql`length(trim(${table.name})) > 0 AND ${table.name} = trim(${table.name})`),
+  check('threed_simulations_slug_valid', sql`${table.slug} ~ '^[a-z0-9]+(-[a-z0-9]+)*$'`),
+  check('threed_simulations_revision_positive', sql`${table.revision} > 0`),
+  // COALESCE rejects missing/null keys rather than allowing SQL UNKNOWN through CHECK.
+  check('threed_simulations_definition_valid', sql`coalesce(jsonb_typeof(${table.definition}) = 'object' AND ${table.definition}->'version' = '1'::jsonb AND jsonb_typeof(${table.definition}->'steps') = 'array' AND jsonb_typeof(${table.definition}->'observations') = 'array', false)`),
+]);
+
+export const threedSimulationsRelations = relations(threedSimulations, ({ one }) => ({
+  user: one(user, { fields: [threedSimulations.userId], references: [user.id] }),
+  project: one(project, { fields: [threedSimulations.projectId], references: [project.id] }),
+  threed: one(threed, { fields: [threedSimulations.threedId], references: [threed.id] }),
+  scenario: one(threedScenarios, { fields: [threedSimulations.scenarioId], references: [threedScenarios.id] }),
+}));
+
+export type ThreeDSimulation = typeof threedSimulations.$inferSelect;
+export type NewThreeDSimulation = typeof threedSimulations.$inferInsert;
+
+// ============================================
 // RELATIONSHIPS
 // ============================================
 
@@ -106,6 +155,7 @@ export const threedRelations = relations(threed, ({ one, many }) => ({
   harvests: many(threedHarvests),
   layers: many(threedLayers),
   scenarios: many(threedScenarios),
+  simulations: many(threedSimulations),
 }));
 
 

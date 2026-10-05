@@ -2,13 +2,17 @@
 
 Developer definition, October 4, 2026: Scenarios are simple structures interchangeable among authorized Projects. Simulations are sets of Actions that run and collect responses using Sensors and other metadata. v0.22.24 implements Scenario Admin improvements; this document defines future extension points, not a Simulation runner or approved database migration.
 
+v0.22.25 explicitly authorizes the [Simulation schema foundation](v0.22.25-threed-simulations-schema.md): Project-owned definitions with an optional Scenario link and a versioned JSON envelope. That implementation supersedes the earlier schema-deferred statement for the definition table only. CRUD, nested input parsing, execution/run history, observations collection and cross-Project reuse remain future work.
+
 ## Responsibilities
+
+Developer confirmed the definition-table migration in the production database October 4, 2026 and requested implementation. The [v0.22.25 Admin pages](v0.22.25-simulation-admin.md) implement definition CRUD and a strict bounded Action/Sensor Group input contract. Earlier statements deferring CRUD/parser are superseded by this step; Scene execution, live observation collection, run/result persistence and cross-Project reuse remain future work.
 
 | Concept | Responsibility | Existing or future |
 | --- | --- | --- |
 | Scenario structure | Name, purpose, setup kind and intended asset roles | Existing outline/setup; reusable role vocabulary can be added in a later approved step |
 | Project binding | Concrete authorized Project/ThreeD module, Model marker and Sensor Group | Existing Project-owned Scenario row/setup |
-| Simulation definition | Ordered Actions, actor/target roles, response requirements and bounded stop conditions | Future |
+| Simulation definition | Ordered Actions, actor/target identities, timeout/failure policy and Sensor Group choices | v0.22.25 schema, strict input and Admin CRUD; execution remains future |
 | Simulation run | One definition executed against one authorized Project binding, with run/step identities and results | Future |
 | Observation | Sensor event, counter delta or other explicit metadata captured during the run | Existing sources, future correlated collection |
 
