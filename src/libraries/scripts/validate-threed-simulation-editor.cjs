@@ -65,6 +65,11 @@ const button = (f, name) => f.find(node => node.type === 'Button' && node.props.
   const view = fixture({ id: 9, readOnly: true }); await view.rt.flush(); assert(!button(view, 'Save Changes')); assert(field(view, 'simulation-name').props.disabled);
   const missing = fixture({ id: 9, failRead: true }); await missing.rt.flush(); assert(!button(missing, 'Save Changes'), 'Failed exact read does not show blank editor');
   const create = fixture({}); await create.rt.flush(); field(create, 'simulation-project').props.onChange({ target: { value: '15' } }); await create.rt.flush(); field(create, 'simulation-module').props.onChange({ target: { value: '1' } }); await create.rt.flush(); field(create, 'simulation-name').props.onChange({ target: { value: 'Draft' } }); create.rt.render();
+  const soccer = fixture({ projectId: 15, initialSoccerDraft: { threedId: 1, scenarioId: 7, actorMarkerId: 'kate', ballMarkerId: 'ball', sensorGroupId: 'goals' } }); await soccer.rt.flush();
+  const recipe = soccer.find(node => node.type === 'SimulationDefinitionEditor').props.value;
+  assert.equal(recipe.steps[0].action, 'runToTarget'); assert.equal(recipe.steps[1].action, 'kickBall'); assert.equal(recipe.steps[1].actorMarkerId, 'kate');
+  assert.equal(field(soccer, 'simulation-name').props.value, 'Run to target ball then kick the ball');
+  assert(!soccer.requests.some(request => request.method === 'POST'), 'Preparing the Soccer recipe never writes or executes');
   const definitionEditor = () => create.find(node => node.type === 'SimulationDefinitionEditor');
   definitionEditor().props.onChange({ version: 1, steps: [{ id: 'chosen', action: 'point', actorMarkerId: 'characters-9', targetMarkerId: 'models-5', timeoutMs: 30000, onFailure: 'stop' }], observations: [] }); create.rt.render();
   create.confirm(false); field(create, 'simulation-project').props.onChange({ target: { value: '16' } }); create.rt.render(); assert.equal(field(create, 'simulation-project').props.value, '15', 'Rejected Project switch preserves its definition');

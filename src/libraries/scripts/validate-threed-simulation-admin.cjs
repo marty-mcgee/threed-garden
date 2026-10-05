@@ -13,6 +13,9 @@ const markersCore = load(root + 'markers/runtime-marker-core.ts');
 const actions = load(root + 'orchestration/action-target-core.ts', { '../markers/runtime-marker-core.ts': markersCore });
 const input = load(root + 'simulations/simulation-input.ts', { '../orchestration/action-target-core': actions });
 const sensor = load(root + 'physics/sensor-group-core.ts');
+const modelSource = ts.createSourceFile('model.ts', fs.readFileSync(root + 'models/project-model-instance-core.ts', 'utf8'), ts.ScriptTarget.Latest, true);
+const ballFunctions = modelSource.statements.filter(node => ts.isFunctionDeclaration(node) && ['isProjectModelEnvironment', 'isProjectModelMovableBall'].includes(node.name?.text));
+const ballCore = { exports: {} }; vm.runInNewContext(ts.transpileModule(ballFunctions.map(node => node.getText(modelSource)).join('\n'), { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, ballCore);
 const step = { id: 'step1', action: 'point', actorMarkerId: 'characters-9', targetMarkerId: 'models-5', timeoutMs: 30000, onFailure: 'stop' };
 const definition = { version: 1, steps: [step], observations: [{ id: 'obs1', kind: 'sensor-group', sensorGroupId: 'group1' }] };
 const valid = { projectId: 15, threedId: 1, name: 'Practice', slug: 'practice', description: 'Plan', isActive: false, scenarioId: 7, definition };
@@ -40,6 +43,7 @@ const api = load('src/app/api/threed/simulations/route.ts', {
   '@/libraries/schema/project': tables, '@/libraries/schema/threed': tables,
   '@/libraries/services/threed/simulations/simulation-input': input, '@/libraries/services/threed/orchestration/action-target-core': actions,
   '@/libraries/services/threed/physics/sensor-group-core': sensor, '@/libraries/services/threed/physics/sensor-legacy-compat': { IMPORTED_SENSOR_GROUP: { id: 'imported', name: 'Imported' } },
+  '@/libraries/services/threed/models/project-model-instance-core': ballCore.exports,
 });
 const record = { ...valid, id: 9, revision: 1 };
 const choices = [[{ metadata: { physicsSensorGroups: [{ id: 'group1', name: 'Goals' }] } }], [{ id: 7, name: 'Soccer', isActive: true }], [{ markerId: 'characters-9', markerType: 'characters', name: 'Kate' }, { markerId: 'models-5', markerType: 'models', name: 'Field' }]];
@@ -66,6 +70,7 @@ const predicates = query => JSON.stringify(query.where);
   assert.equal((await run('GET', '?options=1&projectId=15&threedId=1', null, [[]])).status, 404);
   const options = await run('GET', '?options=1&projectId=15&threedId=1', null, choices);
   assert.equal(options.data.data.groups.length, 2);
+  assert(!Object.hasOwn(options.data.data.markers[0], 'data') && !Object.hasOwn(options.data.data.markers[0], 'metadata'), 'Choices expose capability flags, not private marker payloads');
   for (const query of queries) assert(predicates(query).includes('owner'));
   assert.equal((await run('POST', '', valid, [], 'https://evil.invalid')).status, 400);
   assert.equal((await run('POST', '', ' '.repeat(65537))).status, 400);
@@ -76,6 +81,12 @@ const predicates = query => JSON.stringify(query.where);
   assert.equal((await run('POST', '', { ...valid, definition: { ...definition, observations: [{ ...definition.observations[0], sensorGroupId: 'private' }] } }, choices)).status, 400);
   assert.equal((await run('POST', '', valid, [...choices, [record]])).status, 201);
   assert.equal(queries.at(-1).values[0][0].userId, 'owner');
+  const soccerDefinition = { version: 1, steps: [{ ...step, action: 'runToTarget' }, { ...step, id: 'kick', action: 'kickBall' }], observations: [] };
+  assert.equal((await run('POST', '', { ...valid, definition: soccerDefinition }, choices)).status, 400, 'Ordinary Model and rigless/nonmovable actor cannot receive Soccer Actions');
+  const soccerChoices = [choices[0], choices[1], [{ ...choices[2][0], data: { isMovable: true }, metadata: {} }, { ...choices[2][1], metadata: { physicsMode: 'ball' } }]];
+  assert.equal((await run('POST', '', { ...valid, definition: soccerDefinition }, [...soccerChoices, [record]])).status, 201);
+  await run('GET', '?projectId=15&threedId=1&scenarioId=7&isActive=true', null, [[row], [{ total: 1 }]]);
+  for (const field of ['projectId', 'threedId', 'scenarioId', 'isActive']) assert(predicates(queries[0]).includes(`threedSimulations.${field}`), 'Scene picker filters exact bindings');
   const { projectId, threedId, ...edit } = { ...valid, id: 9, revision: 1 };
   assert.equal((await run('PATCH', '', edit, [[]])).status, 404);
   assert.equal((await run('PATCH', '', edit, [[{ ...record, revision: 2 }]])).status, 409);

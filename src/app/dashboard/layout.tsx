@@ -34,7 +34,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Footer */}
         <footer className={isScenePage ? "pointer-events-none absolute inset-x-0 bottom-0 z-40 bg-transparent px-2 py-1 text-center text-[10px] text-foreground [text-shadow:0_0_3px_var(--background)]" : "py-1.5 text-center text-xs text-muted-foreground"}>
           <p className={isScenePage ? "text-inherit" : "text-gray-600"}>
-            Built by Marty McGee w TypeScript, React, Next.js, Neon, Drizzle ORM, Postgres, Radix-UI, Three.js, React-Three, Rap Physics
+            Built by Marty McGee w TypeScript, React, Next.js, Neon Postgres, Drizzle ORM, Radix-UI, Three.js, React-Three, Rapier Physics
             @ <a href="https://github.com/marty-mcgee/threed-garden" target="_blank" className={isScenePage ? "pointer-events-auto text-inherit underline" : "text-gray-600"}>github</a>
           </p>
         </footer>

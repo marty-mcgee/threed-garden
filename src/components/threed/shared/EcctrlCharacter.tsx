@@ -48,7 +48,7 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
 
 import { useCharacterNavigation } from './useCharacterNavigation';
 import { NAVIGATION_STATUS } from '@/libraries/services/threed/orchestration/navigation-events';
-import { THREED_SOCCER_KICK_REJECT_EVENT, validSoccerKickRequest } from '@/libraries/services/threed/physics/soccer-kick-core';
+import { THREED_SOCCER_KICK_REJECT_EVENT, THREED_CHARACTER_ACTION_CANCEL_EVENT, validSoccerKickRequest, type SoccerKickCancel } from '@/libraries/services/threed/physics/soccer-kick-core';
 import { THREED_ACTION_COLLISION_SAMPLE_EVENT } from '@/libraries/services/threed/physics/action-collision-core';
 import { createActionCollisionSampler, type ThreeDActionCollisionSampler } from '@/libraries/services/threed/physics/action-collision-points';
 import { useCharacterTeleport } from './useCharacterTeleport';
@@ -1952,6 +1952,7 @@ export function EcctrlCharacter({
   // DETAILS CARD ACTION EVENT
   // ======================================================
 
+  const taskRequestRef = useRef<SoccerKickCancel | null>(null);
   useEffect(() => {
     const handleCharacterAction =
       (event: Event) => {
@@ -1984,6 +1985,10 @@ export function EcctrlCharacter({
 
         const started = playTaskAction(action, customEvent.detail?.target);
         const target = customEvent.detail?.target;
+        if (started) {
+          const request = target && typeof target === 'object' && 'collisionRequest' in target ? target.collisionRequest : null;
+          taskRequestRef.current = validSoccerKickRequest(request) ? request : null;
+        }
         if (!started && target && typeof target === 'object'
           && 'soccerKickRequest' in target && target.soccerKickRequest === true
           && 'actionRequestId' in target && typeof target.actionRequestId === 'string') {
@@ -1992,12 +1997,36 @@ export function EcctrlCharacter({
         }
       };
 
+    const cancelCharacterAction = (event: Event) => {
+      const request = (event as CustomEvent<SoccerKickCancel>).detail, current = taskRequestRef.current;
+      if (!current || !request || request.requestId !== current.requestId || request.projectId !== current.projectId
+        || request.characterMarkerId !== markerId || request.characterMarkerId !== current.characterMarkerId
+        || request.ballMarkerId !== current.ballMarkerId) return;
+      taskRequestRef.current = null;
+      actionCollisionRef.current = null;
+      if (finishedListenerRef.current) mixerRef.current?.removeEventListener('finished', finishedListenerRef.current as any);
+      finishedListenerRef.current = null;
+      if (taskCleanupTimerRef.current) clearTimeout(taskCleanupTimerRef.current);
+      taskCleanupTimerRef.current = null;
+      // Cancellation belongs to this action owner; no completion or world Action is fabricated.
+      currentActionRef.current?.stop();
+      activeTaskRef.current = null;
+      taskFacingYawRef.current = null;
+      taskOrientationTransitionRef.current = null;
+      taskLockedRef.current = false;
+      lastClipNameRef.current = null;
+      playAnimation(lastLocomotionStateRef.current, true);
+    };
+    window.addEventListener(THREED_CHARACTER_ACTION_CANCEL_EVENT, cancelCharacterAction);
+
     window.addEventListener(
       'garden-character-action',
       handleCharacterAction
     );
 
     return () => {
+      taskRequestRef.current = null;
+      window.removeEventListener(THREED_CHARACTER_ACTION_CANCEL_EVENT, cancelCharacterAction);
       actionCollisionRef.current = null;
       window.removeEventListener(
         'garden-character-action',
@@ -2045,6 +2074,8 @@ export function EcctrlCharacter({
     character.id,
     mixerRef,
     playTaskAction,
+    playAnimation,
+    markerId,
   ]);
 
   // ======================================================
@@ -2243,7 +2274,7 @@ export function EcctrlCharacter({
       },
 
       run:
-        navigationDirection ? false : k.shift,
+        navigationDirection ? navigationDirection.run === true : k.shift,
 
       jump: navigationDirection ? false : jump,
     });

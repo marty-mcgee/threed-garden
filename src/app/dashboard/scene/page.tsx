@@ -3065,6 +3065,7 @@ function UnifiedMapPageInner() {
                       onThreeDPresentationComplete={handleThreeDPresentationComplete}
                       environmentControlsCloseRequest={environmentControlsCloseRequest}
                       scenarioStartRequest={scenarioStartRequest}
+                      canRunSimulations={canEditProject}
                       scenarioOverlayLeftOffsetRem={scenarioOverlayLeftOffsetRem}
                       scenarioOverlaysObscured={scenarioOverlaysObscured}
                       scenarioInstructionDimmed={isProjectAssetsOpen}
@@ -3166,6 +3167,7 @@ function UnifiedMapPageInner() {
                 onThreeDPresentationComplete={handleThreeDPresentationComplete}
                 environmentControlsCloseRequest={environmentControlsCloseRequest}
                 scenarioStartRequest={scenarioStartRequest}
+                      canRunSimulations={canEditProject}
                 scenarioOverlayLeftOffsetRem={scenarioOverlayLeftOffsetRem}
                 scenarioOverlaysObscured={scenarioOverlaysObscured}
                 scenarioInstructionDimmed={isProjectAssetsOpen}

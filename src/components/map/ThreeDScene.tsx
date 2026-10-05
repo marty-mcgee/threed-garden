@@ -2,6 +2,7 @@
 'use client';
 
 import type { ScenarioStartRequest } from '@/libraries/services/threed/scenario-core';
+import { ProjectSimulationControls } from './panels/ProjectSimulationControls';
 import { SceneResourceStatus, useSceneResourceStatus, SceneResourceIssues, useSceneResourceIssueReporter, type SceneResourceIssue, type SceneResourceState } from '@/components/threed/shared/SceneResourceStatus';
 
 import { useGroundMapInspector } from '@/components/map/details/GroundMapInspectorWorkspace';
@@ -16,7 +17,7 @@ import { acceptsSensorEntry, sensorEntryNormal } from '@/libraries/services/thre
 import { EnvironmentRegionColliders } from '@/components/threed/shared/EnvironmentRegionColliders';
 import { resolveBallPhysics } from '@/libraries/services/threed/models/ball-physics';
 import { THREED_MODEL_PLACEMENT_EVENT, type ThreeDModelPlacement } from '@/libraries/services/threed/models/project-model-instance-core';
-import { findSoccerKickParticipants, planSoccerKickImpulse, validSoccerKickRequest, THREED_SOCCER_KICK_APPLY_EVENT, THREED_SOCCER_KICK_REJECT_EVENT, THREED_SOCCER_KICK_REQUEST_EVENT, THREED_SOCCER_KICK_RESULT_EVENT, type SoccerKickApply, type SoccerKickRequest, type SoccerKickResult } from '@/libraries/services/threed/physics/soccer-kick-core';
+import { findSoccerKickParticipants, planSoccerKickImpulse, validSoccerKickRequest, THREED_SOCCER_KICK_APPLY_EVENT, THREED_SOCCER_KICK_REJECT_EVENT, THREED_SOCCER_KICK_REQUEST_EVENT, THREED_SOCCER_KICK_RESULT_EVENT, THREED_SOCCER_KICK_CANCEL_EVENT, THREED_CHARACTER_ACTION_CANCEL_EVENT, type SoccerKickCancel, type SoccerKickApply, type SoccerKickRequest, type SoccerKickResult } from '@/libraries/services/threed/physics/soccer-kick-core';
 import { THREED_ACTION_COLLISION_SAMPLE_EVENT, validThreeDActionCollisionSample, sweptPointHitsSphere } from '@/libraries/services/threed/physics/action-collision-core';
 
 
@@ -257,6 +258,7 @@ interface ThreeDSceneProps {
   /** Incremented by the Project toolbar when another mutually exclusive menu opens. */
   environmentControlsCloseRequest?: number;
   scenarioStartRequest?: ScenarioStartRequest | null;
+  canRunSimulations?: boolean;
   scenarioOverlayLeftOffsetRem?: number;
   scenarioOverlaysObscured?: boolean;
   scenarioInstructionDimmed?: boolean;
@@ -772,8 +774,16 @@ function SceneMarkerRigidBody({
       consumedSoccerKickIdsRef.current.add(request.requestId);
       pendingSoccerKickRef.current = request;
     };
+    const cancelKick = (event: Event) => {
+      const request = (event as CustomEvent<SoccerKickCancel>).detail;
+      if (!request || request.projectId !== soccerKickTarget.projectId || request.ballMarkerId !== soccerKickTarget.markerId) return;
+      consumedSoccerKickIdsRef.current.add(request.requestId);
+      pendingActionCollisionRef.current = pendingActionCollisionRef.current.filter(item => item.requestId !== request.requestId || item.characterMarkerId !== request.characterMarkerId);
+      if (pendingSoccerKickRef.current?.requestId === request.requestId && pendingSoccerKickRef.current.characterMarkerId === request.characterMarkerId) pendingSoccerKickRef.current = null;
+    };
     window.addEventListener(THREED_SOCCER_KICK_APPLY_EVENT, acceptKick);
-    return () => window.removeEventListener(THREED_SOCCER_KICK_APPLY_EVENT, acceptKick);
+    window.addEventListener(THREED_SOCCER_KICK_CANCEL_EVENT, cancelKick);
+    return () => { window.removeEventListener(THREED_SOCCER_KICK_APPLY_EVENT, acceptKick); window.removeEventListener(THREED_SOCCER_KICK_CANCEL_EVENT, cancelKick); };
   }, [soccerKickTarget?.projectId, soccerKickTarget?.markerId]);
   useEffect(() => {
     if (!modelPlacementTarget) return;
@@ -2334,6 +2344,7 @@ export function ThreeDScene({
   onResourceIssuesChange,
   environmentControlsCloseRequest = 0,
   scenarioStartRequest = null,
+  canRunSimulations = false,
   scenarioOverlayLeftOffsetRem = 0.75,
   scenarioOverlaysObscured = false,
   scenarioInstructionDimmed = false,
@@ -2503,6 +2514,11 @@ export function ThreeDScene({
   const sensorCounterStateRef = useRef(sensorCounterState);
   sensorCounterStateRef.current = sensorCounterState;
   const sensorEventBuffer = useRef(new ThreeDPhysicsEventBuffer({ capacity: 256, minimumIntervalMs: 0 }));
+  const simulationSensorListeners = useRef(new Set<(event: Readonly<ThreeDPhysicsEventV1>) => void>());
+  const subscribeSimulationSensors = useCallback((listener: (event: Readonly<ThreeDPhysicsEventV1>) => void) => {
+    simulationSensorListeners.current.add(listener);
+    return () => { simulationSensorListeners.current.delete(listener); };
+  }, []);
 
   useEffect(() => {
     if (restoredSensorSnapshotRef.current === sensorSnapshotKey) return;
@@ -2527,6 +2543,9 @@ export function ThreeDScene({
     if (event.projectId !== Number(projectId)) return;
     const buffered = sensorEventBuffer.current.append(event);
     if (buffered.status !== 'accepted') return;
+    // A kick result can arrive in the same physics step; expose the accepted counter value to run-window readers immediately.
+    sensorCounterStateRef.current = reduceSensorCounterEvent(sensorCounterStateRef.current, buffered.event, Number(projectId), sensorMembers);
+    simulationSensorListeners.current.forEach(listener => listener(buffered.event));
     setSensorCounterState(current => reduceSensorCounterEvent(current, buffered.event, Number(projectId), sensorMembers));
   }, [projectId, sensorMembers]);
   const clearSeparatedSensorOccupancy = useCallback((separated: ReadonlySet<string>) => {
@@ -2965,6 +2984,16 @@ export function ThreeDScene({
           collisionRequest: request.timing === 'contact' ? request : undefined },
       } }));
     };
+    const onCancel = (event: Event) => {
+      const request = (event as CustomEvent<SoccerKickCancel>).detail;
+      const pending = pendingSoccerKickRef.current;
+      if (!pending || !request || request.requestId !== pending.request.requestId
+        || request.projectId !== pending.request.projectId || request.characterMarkerId !== pending.request.characterMarkerId
+        || request.ballMarkerId !== pending.request.ballMarkerId) return;
+      // Invalidate contact first, then ask the existing animation owner to cancel its matching task.
+      cancel(true);
+      window.dispatchEvent(new CustomEvent(THREED_CHARACTER_ACTION_CANCEL_EVENT, { detail: request }));
+    };
     const onComplete = (event: Event) => {
       const detail = (event as CustomEvent<{ characterId?: number; action?: string;
         target?: ThreeDActionTarget | null }>).detail;
@@ -3022,6 +3051,7 @@ export function ThreeDScene({
         && result.ballMarkerId === pending.request.ballMarkerId) cancel(false);
     };
     window.addEventListener(THREED_SOCCER_KICK_REQUEST_EVENT, onRequest);
+    window.addEventListener(THREED_SOCCER_KICK_CANCEL_EVENT, onCancel);
     window.addEventListener(THREED_SOCCER_KICK_REJECT_EVENT, onReject);
     window.addEventListener('garden-character-action-complete', onComplete);
     window.addEventListener(THREED_SOCCER_KICK_RESULT_EVENT, onResult);
@@ -3030,6 +3060,7 @@ export function ThreeDScene({
     return () => {
       cancel(false);
       window.removeEventListener(THREED_SOCCER_KICK_REQUEST_EVENT, onRequest);
+      window.removeEventListener(THREED_SOCCER_KICK_CANCEL_EVENT, onCancel);
       window.removeEventListener(THREED_SOCCER_KICK_REJECT_EVENT, onReject);
       window.removeEventListener('garden-character-action-complete', onComplete);
       window.removeEventListener(THREED_SOCCER_KICK_RESULT_EVENT, onResult);
@@ -3198,6 +3229,9 @@ export function ThreeDScene({
             name: activeScenario.name, kind: activeScenario.kind,
             environmentName: activeScenario.environmentName,
             groupId: activeScenario.groupId, groupName: activeScenario.groupName,
+            ...(activeScenario.scenarioId ? { scenarioId: activeScenario.scenarioId } : {}),
+            ...(activeScenario.threedId ? { threedId: activeScenario.threedId } : {}),
+            ...(activeScenario.environmentMarkerId ? { environmentMarkerId: activeScenario.environmentMarkerId } : {}),
           } : null,
           instructionVisible: Boolean(activeScenario?.projectId === projectId && scenarioInstructionVisible),
           sensorsVisible: showSensors,
@@ -3569,15 +3603,21 @@ export function ThreeDScene({
           {groundMapAsset.attribution || groundMapAsset.sourceProvider}
         </div>
       )}
-      {sceneProductionStarted && (scenarioInstruction || showSensors) && (
+      {sceneProductionStarted && (scenarioInstruction || showSensors || (canRunSimulations && activeScenario?.kind === 'soccer')) && (
         <div className="pointer-events-none absolute bottom-3 right-3 top-12 z-30 flex flex-wrap content-start items-start justify-between gap-3 overflow-y-auto overscroll-contain"
           style={{ left: `min(${scenarioOverlayLeftOffsetRem}rem, calc(100% - 12rem))` }}>
-          {scenarioInstruction && scenarioInstruction.projectId === projectId && (
-            <section data-scene-hover-obstacle aria-label="Scenario instructions" role="status" aria-hidden={scenarioOverlaysObscured || showControls || scenarioInstructionDimmed} inert={scenarioOverlaysObscured || showControls || scenarioInstructionDimmed} className={`threed-workspace-panel threed-scene-panel-surface w-[min(22rem,100%)] shrink-0 rounded-lg border border-foreground/15 px-3 py-2 text-xs text-foreground shadow-xl backdrop-blur-md transition-opacity duration-200 ${scenarioOverlaysObscured || showControls || scenarioInstructionDimmed ? 'pointer-events-none opacity-40' : 'pointer-events-auto opacity-100'}`}>
-          <div className="flex items-start justify-between gap-2"><h2 className="text-sm font-semibold">{scenarioInstruction.name}</h2><button type="button" onClick={() => setScenarioInstructionVisible(false)} aria-label="Dismiss Scenario instructions" className="rounded p-1 text-foreground/70 hover:bg-foreground/10"><X className="h-4 w-4" /></button></div>
-          {scenarioInstruction.kind === 'soccer'
-            ? <p className="mt-1 text-foreground/80">Take Control of a movable Character. Select a movable ball and choose Use as Action Target, then approach it and use Kick selected ball in Character Animations. Move the ball into a goal on {scenarioInstruction.environmentName}; watch entry counts for {scenarioInstruction.groupName} in Physics Sensors. Reset All Counts to try again.</p>
-            : <p className="mt-1 text-foreground/80">Explore {scenarioInstruction.environmentName}, its Beds and Plantings. Select a FarmBot in the Setup Guide to review its observation.</p>}
+          {activeScenario && activeScenario.projectId === projectId && (scenarioInstructionVisible || (canRunSimulations && activeScenario.kind === 'soccer')) && (
+            <section data-scene-hover-obstacle aria-label="Scenario instructions" role="status" aria-hidden={scenarioOverlaysObscured || showControls || scenarioInstructionDimmed} inert={scenarioOverlaysObscured || showControls || scenarioInstructionDimmed} className={`threed-workspace-panel threed-scene-panel-surface max-h-[min(32rem,calc(100dvh-11rem))] w-[min(22rem,100%)] shrink-0 overflow-y-auto overscroll-contain rounded-lg border border-foreground/15 px-3 py-2 text-xs text-foreground shadow-xl backdrop-blur-md transition-opacity duration-200 ${scenarioOverlaysObscured || showControls || scenarioInstructionDimmed ? 'pointer-events-none opacity-40' : 'pointer-events-auto opacity-100'}`}>
+          <div className="flex items-start justify-between gap-2"><h2 className="text-sm font-semibold">{activeScenario.name}</h2>{scenarioInstructionVisible && <button type="button" onClick={() => setScenarioInstructionVisible(false)} aria-label="Dismiss Scenario instructions" className="rounded p-1 text-foreground/70 hover:bg-foreground/10"><X className="h-4 w-4" /></button>}</div>
+          {scenarioInstructionVisible && (activeScenario.kind === 'soccer'
+            ? <p className="mt-1 text-foreground/80">Take Control of the saved Character and choose its movable ball with Use as Action Target. Run a saved Simulation below, or approach and kick manually. Physics Sensors show goal-entry counts for {activeScenario.groupName}.</p>
+            : <p className="mt-1 text-foreground/80">Explore {activeScenario.environmentName}, its Beds and Plantings. Select a FarmBot in the Setup Guide to review its observation.</p>)}
+          {canRunSimulations && activeScenario.kind === 'soccer' && <ProjectSimulationControls context={{ projectId, scenario: activeScenario, allowed: canRunSimulations,
+            ready: sceneProductionStarted && !physicsFailed, busy: !!placementLabel || transforming,
+            controlledCharacterId, target: actionTarget, markers: sceneMarkers, layers: activeLayers, visibleMarkerIds,
+            settledCharacters: settledCharacterMarkerIds, groups: sensorGroups?.groups ?? [], sensorMembers,
+            position: markerId => livePositionsRef.current.get(markerId), counts: () => sensorCounterStateRef.current.counts,
+          }} subscribeSensors={subscribeSimulationSensors} />}
             </section>
           )}
           {showSensors && (

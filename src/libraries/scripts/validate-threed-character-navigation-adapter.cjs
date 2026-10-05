@@ -58,6 +58,12 @@ request(); actor.visible = false; step({ x: 0, y: 1, z: 0 }, false); assert.equa
 request(); request('stop'); assert.equal(phase(), 'cancelled');
 request(); request('teleport'); assert.equal(phase(), 'cancelled'); assert.equal(step({ x: 0, y: 1, z: 0 }, false), null, 'Teleport cancels automatic walking');
 request(); scene.remove(target); step({ x: 0, y: 1, z: 0 }, false); assert.equal(phase(), 'cancelled'); scene.add(target);
+request('run'); assert.equal(step({ x: 0, y: 1, z: 0 }, false).run, true, 'Run intent retains steering and uses run speed');
+assert.equal(step({ x: 7.5, y: 1, z: 0 }, false).run, false, 'Final approach brakes through normal walk speed');
+window.dispatchEvent(new CustomEvent(NAVIGATION_REQUEST, { detail: { requestId: 'old-stop', command: 'stop', actorMarkerId: 'actor', targetMarkerId: 'target', cancelRequestId: 'older-request' } }));
+assert.equal(phase(), 'walking', 'Scoped Stop cannot cancel a newer request');
+window.dispatchEvent(new CustomEvent(NAVIGATION_REQUEST, { detail: { requestId: 'stop', command: 'stop', actorMarkerId: 'actor', targetMarkerId: 'target', cancelRequestId: 'test' } }));
+assert.equal(phase(), 'cancelled');
 request(); cleanup(); assert.equal(phase(), 'cancelled'); assert.ok(!listeners.has(NAVIGATION_REQUEST));
 assert.ok(!messages.some(m => /action-complete/.test(m.type)));
 console.log('PASS: navigation adapter actor isolation, real bounds arrival, input/task/visibility/removal cancellation, blocked path, stop and teardown.');
@@ -87,6 +93,8 @@ vm.runInContext(ts.transpileModule(`var frame = ${callback.getText(source)};`, {
 context.frame(null, 0.016);
 assert.deepEqual(JSON.parse(JSON.stringify(writes.at(-1))), { joystick: { x: 0, y: 1 }, run: false, jump: false });
 assert.equal(forward.at(-1).x, 1); assert.equal(reports.length, 1);
+context.stepNavigation = () => ({ x: 1, y: 0, z: 0, run: true }); context.frame(null, 0.016);
+assert.equal(writes.at(-1).run, true, 'Automatic run reaches the existing Ecctrl movement API');
 context.stepNavigation = () => null; context.keys.current.w = true; context.keys.current.shift = true;
 context.frame(null, 0.016);
 assert.equal(writes.at(-1).run, true); assert.equal(writes.at(-1).joystick.y, 1);

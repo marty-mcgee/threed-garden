@@ -52,6 +52,8 @@ For Model placement versus queued Rapier impulses, run `npm run validate -- thre
 
 ## Commands
 
+For the v0.22.26 Soccer Scenario/Simulation runner, use `npm run validate -- threed-soccer-simulation threed-simulation-admin threed-scenario-admin threed-character-navigation threed-soccer-kick threed-model-placement-physics threed-action-collision` with existing Character/runtime/Physics Event/Sensor/orchestration checks, TypeScript, CI and the agent-owned npm build. The new CI task executes actual runner and Scene control callbacks, correlation, Stop/preflight races, Character cancellation and same-step sensor reads offline. Extended installed Rapier fixtures prove Stop discards queued contacts/replays and placement retains priority. These checks do not certify the named Project's saved bindings, visual run/foot alignment, WebGL behavior or live CRUD; follow the [browser checklist](../plans/v0.22.26-soccer-scenario-simulation.md).
+
 Package validation is exposed through one parameterized dispatcher:
 
 ```bash

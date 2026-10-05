@@ -71,7 +71,8 @@ export function ScenarioGuidance({ markers, projectId, loadedScenario, guide, on
           if (!loadedScenario?.setup || completed !== checks.length) return;
           const environmentName = active.find(marker => marker.id === environmentId && marker.type === 'models')?.name ?? 'the selected Model';
           const groupName = groups.find(group => group.id === groupId)?.name ?? 'the selected Sensor Group';
-          onStartScenario({ projectId: Number(projectId), name: loadedScenario.name, kind, environmentName, groupId: kind === 'soccer' ? groupId : '', groupName });
+          onStartScenario({ projectId: Number(projectId), scenarioId: loadedScenario.id, threedId: loadedScenario.threedId,
+            environmentMarkerId: environmentId, name: loadedScenario.name, kind, environmentName, groupId: kind === 'soccer' ? groupId : '', groupName });
         }}><Play aria-hidden="true" className="h-3.5 w-3.5" /> Start Scenario</Button>
     </div>
     {kind === 'farming' && <>

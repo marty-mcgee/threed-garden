@@ -1,7 +1,9 @@
 import { THREED_GENERIC_TARGET_ACTIONS, THREED_PLANTING_TARGET_ACTIONS } from '../orchestration/action-target-core';
 
 export class SimulationInputError extends Error {}
-export const SIMULATION_ACTIONS = [...THREED_GENERIC_TARGET_ACTIONS, ...THREED_PLANTING_TARGET_ACTIONS] as const;
+export const SOCCER_SIMULATION_ACTIONS = ['runToTarget', 'kickBall'] as const;
+export const SIMULATION_ACTIONS = [...SOCCER_SIMULATION_ACTIONS, ...THREED_GENERIC_TARGET_ACTIONS, ...THREED_PLANTING_TARGET_ACTIONS] as const;
+export const simulationActionLabel = (action: string) => action === 'runToTarget' ? 'Run to target ball' : action === 'kickBall' ? 'Kick ball (foot contact)' : action;
 export const SIMULATION_PLANTING_ACTIONS = THREED_PLANTING_TARGET_ACTIONS;
 export const MAX_SIMULATION_STEPS = 50;
 export const MAX_SIMULATION_OBSERVATIONS = 32;
@@ -64,5 +66,9 @@ export function simulationListQuery(params: URLSearchParams) {
   const raw = params.get('offset') ?? '0';
   const search = params.get('search')?.trim() ?? '', sort = params.get('sort') ?? 'name', direction = params.get('direction') ?? 'asc';
   if (limit > 100 || !/^\d+$/.test(raw) || Number(raw) > 1_000_000 || search.length > 120 || !sorts.includes(sort as typeof sorts[number]) || !['asc', 'desc'].includes(direction)) throw new SimulationInputError('Invalid Simulation list query.');
-  return { limit, offset: Number(raw), search, sort: sort as typeof sorts[number], direction, projectId: params.has('projectId') ? simulationId(params.get('projectId'), 'Project ID') : null };
+  if (params.has('isActive') && !['true', 'false'].includes(params.get('isActive')!)) throw new SimulationInputError('Invalid Active filter.');
+  return { limit, offset: Number(raw), search, sort: sort as typeof sorts[number], direction, projectId: params.has('projectId') ? simulationId(params.get('projectId'), 'Project ID') : null,
+    threedId: params.has('threedId') ? simulationId(params.get('threedId'), 'ThreeD ID') : null,
+    scenarioId: params.has('scenarioId') ? simulationId(params.get('scenarioId'), 'Scenario ID') : null,
+    isActive: params.has('isActive') ? params.get('isActive') === 'true' : null };
 }

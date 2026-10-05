@@ -15,6 +15,8 @@ import {
   THREED_SOCCER_KICK_REQUEST_EVENT,
   THREED_SOCCER_KICK_APPLY_EVENT,
   THREED_SOCCER_KICK_RESULT_EVENT,
+  THREED_SOCCER_KICK_CANCEL_EVENT,
+  THREED_CHARACTER_ACTION_CANCEL_EVENT,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../services/threed/physics/soccer-kick-core.ts';
 import {
@@ -173,6 +175,8 @@ const effect = vm.runInNewContext(effectCode, {
   THREED_SOCCER_KICK_REQUEST_EVENT,
   THREED_SOCCER_KICK_APPLY_EVENT,
   THREED_SOCCER_KICK_RESULT_EVENT,
+  THREED_SOCCER_KICK_CANCEL_EVENT,
+  THREED_CHARACTER_ACTION_CANCEL_EVENT,
 });
 const cleanup = effect();
 fakeWindow.dispatchEvent(new FakeCustomEvent(THREED_SOCCER_KICK_REQUEST_EVENT, { detail: request }));
@@ -288,6 +292,14 @@ dispatch(THREED_ACTION_COLLISION_SAMPLE_EVENT, moved.sample);
 assert.equal(applyCount(), beforeMoved, 'Live ball movement beyond range cancels the contact handoff');
 assert.equal(pendingRef.current, null);
 positions.set(selectedBall.id, ballPosition);
+const stoppedContact = beginContact();
+dispatch(THREED_SOCCER_KICK_CANCEL_EVENT, { ...stoppedContact.contactRequest, projectId: 99 });
+assert(pendingRef.current, 'Different Project cannot cancel this contact');
+dispatch(THREED_SOCCER_KICK_CANCEL_EVENT, stoppedContact.contactRequest);
+assert.equal(pendingRef.current, null, 'Correlated Stop invalidates the pending contact');
+assert(events.some(event => event.type === THREED_CHARACTER_ACTION_CANCEL_EVENT && event.detail.requestId === stoppedContact.contactRequest.requestId));
+const stoppedApplyCount = applyCount(); dispatch(THREED_ACTION_COLLISION_SAMPLE_EVENT, stoppedContact.sample);
+assert.equal(applyCount(), stoppedApplyCount, 'Stopped animation samples cannot hand off another impulse');
 assert.equal(timers.size, 0, 'Completed, missed and cancelled contact requests leave no pending timeout');
 const placed = beginContact();
 const beforePlacement = applyCount();

@@ -5,5 +5,7 @@ export type NavigationRequest = {
   actorMarkerId: string;
   requestId: string;
   targetMarkerId: string;
-  command: 'walk' | 'stop' | 'teleport';
+  command: 'walk' | 'run' | 'stop' | 'teleport';
+  /** Scoped Stop leaves a newer manual/navigation request alone. */
+  cancelRequestId?: string;
 };

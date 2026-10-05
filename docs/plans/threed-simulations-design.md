@@ -1,5 +1,7 @@
 # ThreeD Scenarios and future Simulations
 
+October 5, 2026: the Developer approved implementation of the first concrete Scenario/Simulation milestone for v0.22.26: ThreeD Soccer → Practice Soccer → Farmer Kate → Run to target ball then kick the ball. The [milestone development record](v0.22.26-soccer-scenario-simulation.md) now records the local two-Action Soccer runner, exact bindings, dedicated Admin recipe, explicit Run/Stop, correlated outcomes and bounded Sensor Group summaries. Focused checks, TypeScript, 62-task CI and guarded npm build passed; named-Project browser verification and release remain pending. General Action execution, result persistence, broader metadata collectors and cross-Project reuse remain future design. No migration or live data mutation was performed by the agent.
+
 Developer definition, October 4, 2026: Scenarios are simple structures interchangeable among authorized Projects. Simulations are sets of Actions that run and collect responses using Sensors and other metadata. v0.22.24 implements Scenario Admin improvements; this document defines future extension points, not a Simulation runner or approved database migration.
 
 v0.22.25 explicitly authorizes the [Simulation schema foundation](v0.22.25-threed-simulations-schema.md): Project-owned definitions with an optional Scenario link and a versioned JSON envelope. That implementation supersedes the earlier schema-deferred statement for the definition table only. CRUD, nested input parsing, execution/run history, observations collection and cross-Project reuse remain future work.
@@ -12,9 +14,9 @@ Developer confirmed the definition-table migration in the production database Oc
 | --- | --- | --- |
 | Scenario structure | Name, purpose, setup kind and intended asset roles | Existing outline/setup; reusable role vocabulary can be added in a later approved step |
 | Project binding | Concrete authorized Project/ThreeD module, Model marker and Sensor Group | Existing Project-owned Scenario row/setup |
-| Simulation definition | Ordered Actions, actor/target identities, timeout/failure policy and Sensor Group choices | v0.22.25 schema, strict input and Admin CRUD; execution remains future |
-| Simulation run | One definition executed against one authorized Project binding, with run/step identities and results | Future |
-| Observation | Sensor event, counter delta or other explicit metadata captured during the run | Existing sources, future correlated collection |
+| Simulation definition | Ordered Actions, actor/target identities, timeout/failure policy and Sensor Group choices | v0.22.25 schema/Admin CRUD; v0.22.26 local Run-to-ball/contact-kick vocabulary |
+| Simulation run | One definition executed against one authorized Project binding, with run/step identities and results | v0.22.26 local Soccer runner and transient outcomes; broader execution/persistence remains future |
+| Observation | Sensor event, counter delta or other explicit metadata captured during the run | v0.22.26 bounded run-window Sensor Group summaries; causal correlation and broader collectors remain future |
 
 Scenario saving/loading does not execute Actions or mutate Scene assets. Scenario setup readiness is an assignment check; it does not prove successful execution or sensor contact. A Simulation orchestrates existing owner-controlled Actions and reads observations; it must not take ownership of physics, animation mixers or reusable Model records.
 

@@ -1,4 +1,4 @@
-# Marty McGee Neon documentation
+# ThreeD Garden documentation
 
 Canonical documentation for humans and automated readers:
 

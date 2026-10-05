@@ -59,6 +59,7 @@ function harness(body, overrides = {}) {
     sweptPointHitsSphere: collisionCore.exports.sweptPointHitsSphere,
     THREED_SOCCER_KICK_APPLY_EVENT: core.exports.THREED_SOCCER_KICK_APPLY_EVENT,
     THREED_SOCCER_KICK_RESULT_EVENT: core.exports.THREED_SOCCER_KICK_RESULT_EVENT,
+    THREED_SOCCER_KICK_CANCEL_EVENT: core.exports.THREED_SOCCER_KICK_CANCEL_EVENT,
     CustomEvent: class { constructor(type, options) { this.type = type; this.detail = options.detail; } },
     window: {
       dispatchEvent(event) { events.push(event); listeners.get(event.type)?.(event); },
@@ -72,6 +73,7 @@ function harness(body, overrides = {}) {
   vm.runInContext(compile(`var mountKick = ${kickEffect}; var cleanupKick = mountKick();`), context);
   return { context, events, step: () => context.beforeStep(),
     receive: request => listeners.get(core.exports.THREED_SOCCER_KICK_APPLY_EVENT)({ detail: request }),
+    cancel: request => listeners.get(core.exports.THREED_SOCCER_KICK_CANCEL_EVENT)({ detail: request }),
     cleanup: () => context.cleanupKick(),
   };
 }
@@ -168,6 +170,16 @@ function harness(body, overrides = {}) {
     assert.deepEqual({ ...contactBody.linvel() }, kickedVelocity);
     assert.deepEqual({ ...unrelated.linvel() }, { x: 0, y: 0, z: 0 });
     contactRuntime.cleanup();
+
+    contactBody.setLinvel({ x: 0, y: 0, z: 0 }, true);
+    const stopped = harness(contactBody, { soccerKickActorPosition: () => ({ x: -1, y: 0.5, z: 5 }) });
+    stopped.receive(contactKick);
+    stopped.cancel({ ...contactKick, requestId: 'another-request' });
+    assert.equal(stopped.context.pendingActionCollisionRef.current.length, 1, 'Another run cannot cancel this pending contact');
+    stopped.cancel(contactKick);
+    stopped.receive(contactKick); stopped.step();
+    assert.deepEqual({ ...contactBody.linvel() }, { x: 0, y: 0, z: 0 }, 'Stop clears a queued contact and prevents a late replay before Rapier');
+    assert.equal(stopped.events.length, 0); stopped.cleanup();
 
     for (const [label, overrides] of [
       ['released control', { soccerKickActorPosition: () => null }],

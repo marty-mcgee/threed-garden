@@ -1,6 +1,8 @@
 /** Scenario guidance consumes snapshots; it never owns or changes Scene objects. */
 export type ScenarioKind = 'soccer' | 'farming';
-export type ScenarioStart = { projectId: number; name: string; kind: ScenarioKind; environmentName: string; groupId: string; groupName: string };
+export type ScenarioStart = { projectId: number; name: string; kind: ScenarioKind; environmentName: string; groupId: string; groupName: string;
+  /** Legacy guidance has no binding and must be reloaded before running a Simulation. */
+  scenarioId?: number; threedId?: number; environmentMarkerId?: string };
 export type ScenarioStartRequest = ScenarioStart & { sequence: number };
 export interface ScenarioAsset {
   id: string;

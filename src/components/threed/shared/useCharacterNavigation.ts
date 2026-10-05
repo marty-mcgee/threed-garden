@@ -13,10 +13,11 @@ export function useCharacterNavigation({ markerId, targetMarkerId, controlled, e
 }) {
   const { scene } = useThree();
   const state = useRef<CharacterNavigationState | null>(null);
+  const running = useRef(false);
   const box = useRef(new Box3()), position = useRef(new Vector3()), destination = useRef(new Vector3());
   const scratch = useRef(new Box3());
   const publish = useCallback((value: CharacterNavigationState) => {
-    window.dispatchEvent(new CustomEvent(NAVIGATION_STATUS, { detail: { actorMarkerId: markerId, requestId: value.requestId, phase: value.phase, reason: value.reason } }));
+    window.dispatchEvent(new CustomEvent(NAVIGATION_STATUS, { detail: { actorMarkerId: markerId, targetMarkerId: value.targetMarkerId, requestId: value.requestId, phase: value.phase, reason: value.reason } }));
   }, [markerId]);
   const cancel = useCallback(() => {
     if (state.current?.phase === 'walking') {
@@ -28,8 +29,11 @@ export function useCharacterNavigation({ markerId, targetMarkerId, controlled, e
     function receive(event: Event) {
       const request = (event as CustomEvent<NavigationRequest>).detail;
       if (!request || request.actorMarkerId !== markerId) return;
-      if (request.command === 'stop' || request.command === 'teleport') { cancel(); return; }
-      if (request.command !== 'walk' || typeof request.requestId !== 'string' || !request.requestId.trim()) return;
+      if (request.command === 'stop' || request.command === 'teleport') {
+        if (!request.cancelRequestId || request.cancelRequestId === state.current?.requestId) cancel();
+        return;
+      }
+      if (!['walk', 'run'].includes(request.command) || typeof request.requestId !== 'string' || !request.requestId.trim()) return;
       if (!controlled || !enabled || taskLocked.current || !targetMarkerId
         || request.targetMarkerId !== targetMarkerId || targetMarkerId === markerId) {
         publish({ requestId: request.requestId, targetMarkerId: targetMarkerId ?? '', phase: 'cancelled', reason: 'unavailable', startedAt: 0, progressAt: 0, bestDistance: 0 });
@@ -37,6 +41,7 @@ export function useCharacterNavigation({ markerId, targetMarkerId, controlled, e
       }
       cancel();
       state.current = createCharacterNavigation(request.requestId, targetMarkerId, performance.now());
+      running.current = request.command === 'run';
       publish(state.current);
     }
     window.addEventListener(NAVIGATION_REQUEST, receive);
@@ -64,6 +69,9 @@ export function useCharacterNavigation({ markerId, targetMarkerId, controlled, e
     });
     if (next.state.phase !== state.current.phase) publish(next.state);
     state.current = next.state;
-    return next.state.phase === 'walking' ? next.direction : null;
+    // Brake through Ecctrl's ordinary walk speed for the final metre; never write a body transform.
+    return next.state.phase === 'walking' && next.direction ? { ...next.direction,
+      run: running.current && Math.hypot(destination.current.x - currentPosition.x, destination.current.z - currentPosition.z) > clearance + 1,
+    } : null;
   };
 }

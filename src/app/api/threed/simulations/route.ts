@@ -8,6 +8,7 @@ import { MAX_SIMULATION_BYTES, SimulationInputError, simulationFields, simulatio
 import { THREED_PLANTING_TARGET_ACTIONS } from '@/libraries/services/threed/orchestration/action-target-core';
 import { readSensorGroups } from '@/libraries/services/threed/physics/sensor-group-core';
 import { IMPORTED_SENSOR_GROUP } from '@/libraries/services/threed/physics/sensor-legacy-compat';
+import { isProjectModelMovableBall } from '@/libraries/services/threed/models/project-model-instance-core';
 
 const privateHeaders = { 'Cache-Control': 'private, no-store' };
 const reply = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: privateHeaders });
@@ -32,11 +33,15 @@ async function choices(client: Client, userId: string, projectId: number, threed
   if (!assigned) return null;
   const scenarios = await client.select({ id: threedScenarios.id, name: threedScenarios.name, isActive: threedScenarios.isActive }).from(threedScenarios)
     .where(and(eq(threedScenarios.userId, userId), eq(threedScenarios.projectId, projectId), eq(threedScenarios.threedId, threedId))).orderBy(asc(threedScenarios.name));
-  const markers = await client.select({ markerId: projectThreedMarkers.markerId, markerType: projectThreedMarkers.markerType, name: projectThreedMarkers.name }).from(projectThreedMarkers)
+  const markerRows = await client.select({ markerId: projectThreedMarkers.markerId, markerType: projectThreedMarkers.markerType, name: projectThreedMarkers.name,
+    data: projectThreedMarkers.data, metadata: projectThreedMarkers.metadata }).from(projectThreedMarkers)
     .where(and(eq(projectThreedMarkers.userId, userId), eq(projectThreedMarkers.projectId, projectId), eq(projectThreedMarkers.threedId, threedId), eq(projectThreedMarkers.isActive, true))).orderBy(asc(projectThreedMarkers.name));
   const metadata = (assigned.metadata ?? {}) as Record<string, unknown>;
   const groups = readSensorGroups(metadata.physicsSensorGroups ?? []);
   if (!groups.some(group => group.id === IMPORTED_SENSOR_GROUP.id)) groups.unshift(IMPORTED_SENSOR_GROUP);
+  const markers = markerRows.map(row => ({ markerId: row.markerId, markerType: row.markerType, name: row.name,
+    movableCharacter: row.markerType === 'characters' && (row.data as Record<string, unknown> | null)?.isMovable === true,
+    movableBall: row.markerType === 'models' && isProjectModelMovableBall(row.metadata) }));
   return { scenarios, markers, groups };
 }
 function validateReferences(options: NonNullable<Awaited<ReturnType<typeof choices>>>, scenarioId: number | null, definition: SimulationDefinition) {
@@ -45,6 +50,9 @@ function validateReferences(options: NonNullable<Awaited<ReturnType<typeof choic
     if (!options.markers.some(row => row.markerId === step.actorMarkerId && row.markerType === 'characters')) throw new SimulationInputError('Choose an active Character marker from this Project module.');
     const target = options.markers.find(row => row.markerId === step.targetMarkerId);
     if (!target || (THREED_PLANTING_TARGET_ACTIONS.includes(step.action as typeof THREED_PLANTING_TARGET_ACTIONS[number]) && target.markerType !== 'plantings')) throw new SimulationInputError('Choose a compatible active target from this Project module.');
+    if (step.action === 'runToTarget' || step.action === 'kickBall') {
+      if (!options.markers.some(row => row.markerId === step.actorMarkerId && row.movableCharacter) || !target.movableBall) throw new SimulationInputError('Soccer Actions require a movable Character and movable ball from this Project module.');
+    }
   }
   if (definition.observations.some(source => !options.groups.some(group => group.id === source.sensorGroupId))) throw new SimulationInputError('Choose a Sensor Group from this Project.');
 }
@@ -62,6 +70,9 @@ export async function GET(request: NextRequest) {
     const query = single ? null : simulationListQuery(params);
     if (single) conditions.push(eq(threedSimulations.id, simulationId(params.get('id'), 'Simulation ID')));
     if (query?.projectId) conditions.push(eq(threedSimulations.projectId, query.projectId));
+    if (query?.threedId) conditions.push(eq(threedSimulations.threedId, query.threedId));
+    if (query?.scenarioId) conditions.push(eq(threedSimulations.scenarioId, query.scenarioId));
+    if (query?.isActive !== null && query?.isActive !== undefined) conditions.push(eq(threedSimulations.isActive, query.isActive));
     if (query?.search) {
       const term = `%${query.search.replace(/[\\%_]/g, '\\$&')}%`;
       conditions.push(or(ilike(threedSimulations.name, term), ilike(threedSimulations.slug, term), ilike(project.name, term))!);

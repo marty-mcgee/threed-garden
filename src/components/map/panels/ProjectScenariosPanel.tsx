@@ -33,7 +33,7 @@ export function ProjectScenariosPanel({ isOpen, projectId, markers, selected, gu
         <Button type="button" variant="ghost" size="icon" className="h-7 w-7" onClick={() => { setLoadOpen(false); onClose(); }} aria-label="Close Scenarios"><X className="h-3.5 w-3.5" /></Button>
       </div>
       <ScenarioGuidance projectId={projectId} markers={markers} loadedScenario={currentSelected} guide={guide} onGuideChange={onGuideChange} onChooseTemplate={() => setLoadOpen(true)} onClearLoaded={() => onSelectedChange(null)} onStartScenario={scenario => { onStartScenario(scenario); onClose(); }} />
-      <ProjectScenarioLoadDialog open={loadOpen} projectId={projectId} onClose={() => setLoadOpen(false)} onLoad={scenario => { onSelectedChange({ id: scenario.id, projectId: scenario.projectId, name: scenario.name, threedName: scenario.threedName, setup: scenario.setup }); onGuideChange({ kind: scenario.setup?.kind ?? 'soccer', environmentId: scenario.setup?.environmentMarkerId ?? '', groupId: scenario.setup?.sensorGroupId ?? '', farmbotId: '' }); setLoadOpen(false); }} />
+      <ProjectScenarioLoadDialog open={loadOpen} projectId={projectId} onClose={() => setLoadOpen(false)} onLoad={scenario => { onSelectedChange({ id: scenario.id, projectId: scenario.projectId, threedId: scenario.threedId, name: scenario.name, threedName: scenario.threedName, setup: scenario.setup }); onGuideChange({ kind: scenario.setup?.kind ?? 'soccer', environmentId: scenario.setup?.environmentMarkerId ?? '', groupId: scenario.setup?.sensorGroupId ?? '', farmbotId: '' }); setLoadOpen(false); }} />
     </section>
   );
 }

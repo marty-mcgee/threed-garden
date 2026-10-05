@@ -144,6 +144,7 @@ interface UnifiedMapViewProps {
   onResourceIssuesChange?: (projectId: number | undefined, issues: SceneResourceIssue[]) => void;
   environmentControlsCloseRequest?: number;
   scenarioStartRequest?: ScenarioStartRequest | null;
+  canRunSimulations?: boolean;
   scenarioOverlayLeftOffsetRem?: number;
   scenarioOverlaysObscured?: boolean;
   scenarioInstructionDimmed?: boolean;
@@ -238,6 +239,7 @@ export function UnifiedMapView({
   onResourceIssuesChange,
   environmentControlsCloseRequest,
   scenarioStartRequest,
+  canRunSimulations = false,
   scenarioOverlayLeftOffsetRem,
   scenarioOverlaysObscured,
   scenarioInstructionDimmed,
@@ -691,6 +693,7 @@ export function UnifiedMapView({
         onResourceIssuesChange={onResourceIssuesChange}
         environmentControlsCloseRequest={environmentControlsCloseRequest}
         scenarioStartRequest={scenarioStartRequest}
+        canRunSimulations={canRunSimulations}
         scenarioOverlayLeftOffsetRem={scenarioOverlayLeftOffsetRem}
         scenarioOverlaysObscured={scenarioOverlaysObscured}
         scenarioInstructionDimmed={scenarioInstructionDimmed}

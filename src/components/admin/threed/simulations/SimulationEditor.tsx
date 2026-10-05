@@ -17,11 +17,19 @@ import { emptySimulationDefinition, parseSimulationDefinition, simulationFields,
 type Form = { projectId: string; threedId: string; scenarioId: string; name: string; slug: string; description: string; isActive: boolean; definition: SimulationDefinition };
 type RecordData = { id: number; revision: number; projectName: string; threedName: string; projectId: number; threedId: number; scenarioId: number | null; name: string; slug: string; description: string | null; isActive: boolean; definition: unknown };
 const blank = (projectId?: number): Form => ({ projectId: projectId ? String(projectId) : '', threedId: '', scenarioId: '', name: '', slug: '', description: '', isActive: false, definition: emptySimulationDefinition() });
+export type SoccerSimulationDraft = { threedId: number; scenarioId: number; actorMarkerId: string; ballMarkerId: string; sensorGroupId: string };
+const soccerDraft = (projectId: number | undefined, draft?: SoccerSimulationDraft): Form => draft ? { ...blank(projectId),
+  threedId: String(draft.threedId), scenarioId: String(draft.scenarioId), name: 'Run to target ball then kick the ball', slug: 'run-to-target-ball-then-kick-the-ball',
+  definition: { version: 1, steps: [
+    { id: 'run-to-ball', action: 'runToTarget', actorMarkerId: draft.actorMarkerId, targetMarkerId: draft.ballMarkerId, timeoutMs: 60000, onFailure: 'stop' },
+    { id: 'kick-ball', action: 'kickBall', actorMarkerId: draft.actorMarkerId, targetMarkerId: draft.ballMarkerId, timeoutMs: 30000, onFailure: 'stop' },
+  ], observations: draft.sensorGroupId ? [{ id: 'goal-observation', kind: 'sensor-group', sensorGroupId: draft.sensorGroupId }] : [] },
+} : blank(projectId);
 const toForm = (row: RecordData): Form => ({ projectId: String(row.projectId), threedId: String(row.threedId), scenarioId: row.scenarioId ? String(row.scenarioId) : '', name: row.name, slug: row.slug, description: row.description ?? '', isActive: row.isActive, definition: parseSimulationDefinition(row.definition) });
-export function SimulationEditor({ id, projectId, readOnly = false }: { id?: number; projectId?: number; readOnly?: boolean }) {
+export function SimulationEditor({ id, projectId, initialSoccerDraft, readOnly = false }: { id?: number; projectId?: number; initialSoccerDraft?: SoccerSimulationDraft; readOnly?: boolean }) {
   const router = useRouter(), { showToast, ToastComponent } = useToast();
   const lock = useRef(false);
-  const [form, setForm] = useState<Form>(() => blank(projectId)), [baseline, setBaseline] = useState(() => JSON.stringify(blank(projectId)));
+  const [form, setForm] = useState<Form>(() => soccerDraft(projectId, initialSoccerDraft)), [baseline, setBaseline] = useState(() => JSON.stringify(blank(projectId)));
   const [record, setRecord] = useState<RecordData | null>(null), [loading, setLoading] = useState(!!id), [loadError, setLoadError] = useState(''), [reload, setReload] = useState(0);
   const [projects, setProjects] = useState<{ id: number; name: string }[]>([]), [modules, setModules] = useState<{ id: number; name: string }[]>([]);
   const [choices, setChoices] = useState<SimulationChoices>(emptySimulationChoices), [choicesLoading, setChoicesLoading] = useState(false), [choicesError, setChoicesError] = useState('');
@@ -107,7 +115,7 @@ export function SimulationEditor({ id, projectId, readOnly = false }: { id?: num
   return <div className="flex min-h-0 flex-1 flex-col gap-2 text-xs">
     {ToastComponent}
     <AdminWorkspaceHeader icon={FlaskConical} title={readOnly ? 'View Simulation' : id ? 'Edit Simulation' : 'New Simulation'} description="Manage a Project-owned Simulation definition.">
-      <ModelFieldHelp label="Simulation">A Simulation plans ordered Actions and Sensor Group observations. Saving stores its definition. Scene execution and results are added separately.</ModelFieldHelp>
+      <ModelFieldHelp label="Simulation">A Simulation plans ordered Actions and Sensor Group observations. Saving stores its definition. The Soccer Scene can explicitly Run its supported Run-to-ball and contact-kick Actions; run notes stay in that Scene session.</ModelFieldHelp>
       {record && <span className="text-xs text-muted-foreground">#{record.id} · Revision {record.revision}</span>}
       <div className="ml-auto flex gap-1"><AdminWorkspaceLink href="/admin/threed/simulations" icon={ArrowLeft}>Simulations</AdminWorkspaceLink>{readOnly && id && <AdminWorkspaceLink href={`/admin/threed/simulations/${id}`} icon={Pencil}>Edit</AdminWorkspaceLink>}{id && <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Reload Simulation" disabled={busy || loading} onClick={refresh}><RotateCcw className="h-3.5 w-3.5" /></Button>}</div>
     </AdminWorkspaceHeader>

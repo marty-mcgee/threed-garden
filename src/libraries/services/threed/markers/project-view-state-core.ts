@@ -22,6 +22,7 @@ export type ProjectScenarioKind = 'soccer' | 'farming';
 export interface ProjectScenarioSelection {
   id: number;
   projectId: number;
+  threedId?: number;
   name: string;
   threedName: string;
   setup: { version: 1; kind: ProjectScenarioKind; environmentMarkerId: string | null; sensorGroupId: string | null } | null;
@@ -43,7 +44,8 @@ export function emptyProjectScenarioPanelState(): ProjectScenarioPanelState {
 
 export interface ProjectScenarioRuntimeState {
   projectId: number;
-  active: { projectId: number; name: string; kind: ProjectScenarioKind; environmentName: string; groupId: string; groupName: string } | null;
+  active: { projectId: number; name: string; kind: ProjectScenarioKind; environmentName: string; groupId: string; groupName: string;
+    scenarioId?: number; threedId?: number; environmentMarkerId?: string } | null;
   instructionVisible: boolean;
   sensorsVisible: boolean;
 }
@@ -135,6 +137,11 @@ function boolean(value: unknown): boolean {
   return value;
 }
 
+function scenarioBindingId(value: unknown): number {
+  if (!Number.isSafeInteger(value) || Number(value) <= 0 || Number(value) > 2_147_483_647) throw new ProjectViewStateError();
+  return Number(value);
+}
+
 function sceneLayers(value: unknown): string[] {
   if (!Array.isArray(value) || value.length > SCENE_LAYERS.size) throw new ProjectViewStateError();
   const layers = value.map((layer) => {
@@ -202,7 +209,8 @@ function scenarioPanel(value: unknown): ProjectScenarioPanelState {
       };
     }
     if (!Number.isSafeInteger(source.projectId) || Number(source.projectId) <= 0) throw new ProjectViewStateError();
-    selected = { id: Number(source.id), projectId: Number(source.projectId), name: boundedText(source.name, 120),
+    selected = { id: Number(source.id), projectId: Number(source.projectId),
+      ...(source.threedId === undefined ? {} : { threedId: scenarioBindingId(source.threedId) }), name: boundedText(source.name, 120),
       threedName: boundedText(source.threedName, 120), setup };
   }
   return { panelOpen: boolean(input.panelOpen), selected, guide: {
@@ -220,6 +228,9 @@ function scenarioRuntime(value: unknown): ProjectScenarioRuntimeState {
     if (!source) throw new ProjectViewStateError();
     if (!Number.isSafeInteger(source.projectId) || Number(source.projectId) <= 0) throw new ProjectViewStateError();
     active = { projectId: Number(source.projectId), name: boundedText(source.name, 120), kind: scenarioKind(source.kind),
+      ...(source.scenarioId === undefined ? {} : { scenarioId: scenarioBindingId(source.scenarioId) }),
+      ...(source.threedId === undefined ? {} : { threedId: scenarioBindingId(source.threedId) }),
+      ...(source.environmentMarkerId === undefined ? {} : { environmentMarkerId: boundedText(source.environmentMarkerId, 200) }),
       environmentName: boundedText(source.environmentName, 200), groupId: boundedText(source.groupId, 200),
       groupName: boundedText(source.groupName, 120) };
   }

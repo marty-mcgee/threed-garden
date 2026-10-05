@@ -10,6 +10,7 @@ import type { ScenarioSetup } from '@/libraries/services/threed/scenarios/scenar
 export type LoadableScenario = {
   id: number;
   projectId: number;
+  threedId: number;
   name: string;
   description: string | null;
   threedName: string;

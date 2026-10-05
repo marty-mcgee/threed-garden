@@ -21,6 +21,10 @@ Both runtimes preserve:
 - task-to-locomotion crossfades;
 - the `garden-character-action-complete` event used by the page-level world-action layer.
 
+## v0.22.26 Soccer Simulation candidate
+
+The [v0.22.26 Soccer Simulation candidate](../plans/v0.22.26-soccer-scenario-simulation.md) adds explicit, controlled Ecctrl `run` navigation followed by a correlated contact kick. Navigation still supplies steering to the existing controller, brakes to walk near the live target bounds and publishes exact actor/target/request status. It does not change Garden routing, bodies or first-pose gating. Scoped Stop cancels only the matching navigation request; contact cancellation clears the matching task/sampler within Ecctrl and queued ball work within its existing owner, restores locomotion and never emits fabricated completion. A saved definition/load/restore does not execute. Existing FarmBot orchestration and world-action completion boundaries remain separate.
+
 ## v0.22.18 local retained-source candidate
 
 Explicit Model metadata.activeSource = shape renders a grounded procedural visual within the existing Garden/Ecctrl owner. Saved rig/file/animation configuration is retained; Model/Character restores imported geometry through the established loaders. isMovable still selects the runtime. Character selection enables Character classification; source selection does not migrate Project markers or change controller/collider dimensions. Rigless Shapes settle without loading a rig, report empty animation availability, and never synthesize clip completion/contact-point effects. Source/fallback shape participates in the Scene Character memo signature while marker identity and Canvas/Physics remain stable. Local validation passed; [browser verification and release remain pending](../plans/character-model-source-conversion.md).
