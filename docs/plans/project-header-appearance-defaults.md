@@ -1,6 +1,6 @@
 # Project Header and Toolbar appearance defaults
 
-Implemented locally October 5, 2026 at package version 0.22.25. The Developer requested the current browser-saved App Settings color scheme as the App's default Project Header and Toolbar scheme.
+Implemented locally October 5, 2026 at package version 0.22.25. The Developer requested the current browser-saved App Settings color scheme as the App's default Project Header and Toolbar scheme, then confirmed production release under `v0.22.25 — ThreeD App: adopt saved Project toolbar appearance defaults`. See the [release record](../releases/v0.22.25.md). Read-only source history identifies implementation `f71c38c0`; exact deployed SHA remains unconfirmed.
 
 ## Prove and scope
 
@@ -23,6 +23,6 @@ Both provider defaults and CSS fallbacks match. The browser storage key/parser a
 
 Passed October 5, 2026: `npm run validate -- workspace-settings theme-provider shadcn-ui-boundary`, `npm run typecheck`, diff review/`git diff --check` and guarded agent-owned `npm run build` (134 static pages). The existing UI fixture exercises actual provider/reset/save callbacks for fresh defaults, CSS variables, persisted customization, independent opacity sliders, staged resets and unavailable storage. The build used the established cached-font localhost fixture and process-only offline database/network guards; development was restored on port 4444. No application code changed after the build. These focused checks are separate from the previous 61-task texture release CI run.
 
-Browser paint remains pending: check a fresh browser on `/dashboard/scene`, normal/hover/active controls in both themes, and App Settings Reset Defaults followed by Save. Check a browser with saved customization for unchanged preference precedence. No browser acceptance or production deployment is claimed; edits remain unstaged for Developer review.
+Browser paint remains pending: check a fresh browser on `/dashboard/scene`, normal/hover/active controls in both themes, and App Settings Reset Defaults followed by Save. Check a browser with saved customization for unchanged preference precedence. Production release is Developer-confirmed; detailed browser acceptance and post-deployment testing are not inferred. This documentation-only confirmation remains unstaged for Developer review.
 
 Suggested commit: `v0.22.25 — ThreeD App: adopt saved Project toolbar appearance defaults`.
