@@ -1,5 +1,7 @@
 # Documentation Hub
 
+Current release: **[v0.23.0 — ThreeD Garden](releases/v0.23.0.md)**. Developer authorized stable GitHub publication of the existing code October 6, 2026. Package/root lockfile are 0.23.0; older checkpoint sections describe history. Preserve existing runtime and schema boundaries. GitHub publication and production deployment are distinct.
+
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
 Current production is **v0.22.27 — ThreeD App: wire Drizzle database commands**, Developer-confirmed October 5, 2026. See the [release record](releases/v0.22.27.md) and [npm database workflow](developers/LOCAL_DEVELOPMENT.md#database-schema-commands). Database push completion and live acceptance remain separately unconfirmed. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.

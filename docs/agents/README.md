@@ -1,5 +1,7 @@
 # Agent Documentation
 
+Current release: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Developer authorized stable GitHub publication of the existing code October 6, 2026. Package/root lockfile are 0.23.0; older checkpoint sections describe history. Preserve existing runtime and schema boundaries. GitHub publication and production deployment are distinct.
+
 Local [v0.23.0-rc.1 coordinated runtime upgrade](../plans/v0.23.0-runtime-upgrade.md): three validated dependency groups, TypeScript and 65 offline CI tasks passed; guarded npm build generated 137 pages. Candidate includes earlier v0.22.30 patch maintenance. Browser/WebGL acceptance is required before stable promotion; no release or live database operation is inferred.
 
 Local [v0.22.30 dependency maintenance](../plans/v0.22.30-dependency-updates.md) follows Developer-confirmed production [v0.22.29](../releases/v0.22.29.md). Next/Tailwind/PostCSS/pg/type patches passed foundations, TypeScript, 65 offline CI tasks and guarded npm build (137 pages); browser/release pending. Preserve the reviewed dependency graph and separate deferred major/runtime upgrades from this scoped checkpoint. Earlier v0.22.29 candidate statements below are historical.

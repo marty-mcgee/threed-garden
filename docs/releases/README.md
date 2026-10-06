@@ -2,7 +2,9 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Current production: **v0.22.28 — ThreeD Simulations: Scenario separation and Scene launch**, Developer-confirmed October 5, 2026. Supplied database-push evidence and prior local validation are separate from pending detailed browser/post-deployment acceptance; see the [release record](v0.22.28.md).
+Previous production: **v0.22.28 — ThreeD Simulations: Scenario separation and Scene launch**, Developer-confirmed October 5, 2026. Supplied database-push evidence and prior local validation are separate from pending detailed browser/post-deployment acceptance; see the [release record](v0.22.28.md).
+
+- [v0.23.0 — ThreeD Garden](v0.23.0.md) — stable GitHub release
 
 - [v0.22.28 — ThreeD Simulations: Scenario separation and Scene launch](v0.22.28.md) — production Developer-confirmed
 - [v0.22.27 — ThreeD App: wire Drizzle database commands](v0.22.27.md) — production Developer-confirmed

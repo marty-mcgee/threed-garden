@@ -1,4 +1,4 @@
-﻿# ThreeD Garden
+# ThreeD Garden
 
 ### 🌱 Build your garden. Explore your world. Bring your models to life.
 
@@ -6,7 +6,7 @@
 
 [![Repository validation](https://github.com/marty-mcgee/threed-garden/actions/workflows/validation.yml/badge.svg?branch=main)](https://github.com/marty-mcgee/threed-garden/actions/workflows/validation.yml?query=branch%3Amain)
 
-🟢 **Latest production milestone:** [v0.22.27 — ThreeD App: wire Drizzle database commands](docs/releases/v0.22.27.md)
+🟢 **Latest release:** [v0.23.0 — ThreeD Garden](docs/releases/v0.23.0.md)
 
 [🚀 Get started](docs/users/GETTING_STARTED.md) · [🎮 Explore the controls](docs/users/THREED_CONTROLS.md) · [📚 Browse the docs](docs/README.md) · [🛠️ Run locally](#run-it-locally)
 
