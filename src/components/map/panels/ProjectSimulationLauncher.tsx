@@ -124,32 +124,31 @@ export function ProjectSimulationLauncher({ context, saveResults, obscured, onPr
   const draftParams = new URLSearchParams({ projectId: String(context.projectId) });
 
   return <div data-scene-hover-obstacle aria-label="Run Simulation" hidden={hidden} aria-hidden={obscured || hidden} inert={obscured || hidden}
-    className={`pointer-events-auto absolute left-1/2 top-14 z-40 w-[min(25rem,calc(100%_-_1.5rem))] -translate-x-1/2 text-center ${obscured ? 'invisible' : ''}`}>
-    <div className="mb-1 flex items-center gap-1 rounded-md bg-background/80 px-2 py-1 text-left text-xs backdrop-blur-md">
+    className={`absolute left-1/2 top-14 z-40 w-[min(22rem,calc(100%_-_1.5rem))] -translate-x-1/2 space-y-2 rounded-lg border border-foreground/15 bg-background/85 p-2 text-center shadow-lg backdrop-blur-md transition-opacity ${obscured ? 'pointer-events-none opacity-15' : 'pointer-events-auto opacity-100'}`}>
+    <div className="flex items-center gap-1 text-left text-xs">
       <span className="min-w-0 flex-1 truncate font-medium">Simulation</span>
       {saveResults && <Link className="text-xs underline" href={`/dashboard/simulations/new?${draftParams}`}>Create Simulation</Link>}
       <Button variant="ghost" size="icon" className="h-6 w-6" aria-label="Close Simulations" onClick={() => { stop(); setHidden(true); }}><X className="h-3.5 w-3.5" /></Button>
-      <ModelFieldHelp label="Run Simulation">A Simulation executes its saved Actions and collects Results from the participating ThreeD modules. A Scenario is a separate plan.</ModelFieldHelp>
+      <ModelFieldHelp label="Run Simulation">Choose a saved Simulation, then Run to activate its participants and Actions. {disabledReason || 'Ready to run.'} Owner runs record Results; public runs stay in your browser. A Scenario is a separate plan. Close hides these controls; Setup reopens them.</ModelFieldHelp>
       <Button variant="ghost" size="icon" className="h-6 w-6" aria-label="Refresh Simulations" title="Refresh Simulations" disabled={preparing || busy || loading} onClick={reload}><RotateCw className="h-3.5 w-3.5" /></Button>
     </div>
-    {total > 1 && <label className="mb-2 block rounded-md border border-foreground/15 bg-background/80 p-1.5 text-left text-xs backdrop-blur-md">Simulation
+    {total > 1 && <label className="block text-left text-xs"><span className="sr-only">Simulation</span>
       <select aria-label="Simulation" value={selectedId} disabled={preparing || busy || loading} onChange={event => { setSelectedId(event.target.value); setLaunch(null); setRequest(0); setStopRequest(0); setState(null); setError(''); setRunError(''); }}
-        className="mt-1 w-full rounded border border-foreground/15 bg-background p-1.5 text-xs">
+        className="h-8 w-full rounded-md border border-foreground/15 bg-background/60 px-2 text-xs">
         <option value="">Choose a Simulation</option>{selectedId && !rows.some(row => String(row.id) === selectedId) && <option value={selectedId}>{launch?.simulation.name ?? 'Selected Simulation'}</option>}
         {rows.map(row => <option key={row.id} value={row.id}>{row.name}</option>)}
       </select>
       {total > 25 && <span className="mt-1 flex items-center justify-between"><Button variant="ghost" size="sm" disabled={!page || preparing || busy || loading} onClick={() => setPage(value => value - 1)}>Previous</Button>Page {page + 1} of {Math.ceil(total / 25)}<Button variant="ghost" size="sm" disabled={(page + 1) * 25 >= total || preparing || busy || loading} onClick={() => setPage(value => value + 1)}>Next</Button></span>}
     </label>}
-    <Button className="h-11 w-full bg-emerald-600 px-5 text-sm font-semibold text-white shadow-lg hover:bg-emerald-500 disabled:bg-muted disabled:text-muted-foreground"
+    <Button className="h-8 w-full bg-emerald-600 px-3 text-xs font-semibold text-white hover:bg-emerald-500 disabled:bg-muted/60 disabled:text-muted-foreground"
       aria-busy={preparing || busy}
       aria-describedby="simulation-launch-status" disabled={!preparing && !busy && !!disabledReason} onClick={() => preparing || busy ? stop() : void start()}>
       {preparing ? <LoaderCircle className="h-4 w-4 animate-spin" /> : busy ? <Square className="h-4 w-4" /> : <Play className="h-4 w-4" />}
       {preparing ? 'Preparing… · Stop' : busy ? 'Stop Simulation' : 'Run Simulation'}
     </Button>
-    <div id="simulation-launch-status" role="status" className="mt-1 rounded bg-background/80 px-2 py-1 text-[11px] backdrop-blur-md">
+    <div id="simulation-launch-status" role="status" className={error || runError || preparing || busy || state || (disabledReason && selectedId) ? 'text-left text-[11px]' : 'sr-only'}>
       {error || runError || (preparing ? readiness ?? 'Preparing the Simulation’s participants…' : busy ? 'Simulation running…'
         : disabledReason ?? (state ? `Simulation ${state.phase}${state.reason ? ` · ${state.reason}` : ''}` : `Ready · ${selectedRow?.name ?? launch?.simulation.name}`))}
-      {!preparing && !busy && !!selectedId && !disabledReason && <p className="mt-1 text-muted-foreground">Run selects the Simulation’s saved participants. {saveResults ? 'Owner runs record results.' : 'This run stays in your browser.'}</p>}
     </div>
     {!loading && !total && !preparing && !busy && <div className="mt-1 space-y-2 rounded-lg border border-foreground/15 bg-background/90 p-2 text-left text-xs backdrop-blur-md">
       {saveResults ? <>

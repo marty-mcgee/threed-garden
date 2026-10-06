@@ -112,7 +112,7 @@ function launcherFixture(total = 1, initial = context, options = {}) {
   const find = predicate => nodes(rt.tree).find(predicate);
   return { rt, requests, prepares, timers, find, toggle(projectId) { listeners.get('threed:simulation-panel')?.({ detail: { projectId } }); rt.render(); }, hold(value) { hold = value; }, release() { queued.splice(0).forEach(fn => fn()); },
     available(value) { total = value; }, fail(value) { fail = value; },
-    button: () => find(node => node.type === 'Button' && String(node.props.className).includes('h-11')), scene(next) { scene = next; rt.render(); } };
+    button: () => find(node => node.type === 'Button' && Object.hasOwn(node.props, 'aria-busy')), scene(next) { scene = next; rt.render(); } };
 }
 function scenarioGuideFixture() {
   const rt = runtime(), starts = [], selected = [], guides = [], closed = [];
