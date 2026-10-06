@@ -1,5 +1,7 @@
 # ThreeD Models — File editor workspace and preview
 
+> Historical record: version/status statements below apply to this named checkpoint. Current App documentation: [v0.23.0 — ThreeD Garden](../releases/v0.23.0.md).
+
 Developer-reported production release, confirmed October 4, 2026: **v0.22.18 — ThreeD App: solidify foundations and Model editing**. Prior local validation remains separate. Detailed Developer browser verification remains pending; no browser acceptance or post-deployment testing is inferred. Read-only Git history identifies implementation commit `f3c3c050`, but neither Git history nor the release confirmation establishes deployment of that SHA; the deployed SHA remains unconfirmed. Stage 3A remains partially verified and paused; restoration and cleanup remain deferred. See the [release record](../releases/v0.22.18.md). Earlier candidate/handoff status statements below are historical and superseded only as to production-release status; their local validation and pending browser checks are preserved.
 
 

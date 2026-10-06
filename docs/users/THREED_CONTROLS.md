@@ -1,5 +1,7 @@
 # ThreeD Controls
 
+Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
+
 Open `/dashboard/scene`, choose a project, and select a ThreeD marker to open its Details Card.
 
 ## Dashboard workspace header

@@ -1,5 +1,7 @@
 # ThreeD Simulations: execution and result analysis
 
+Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
+
 **Developer correction, October 5, 2026:** a Scenario is a plan (**Open Scenario**); a Simulation executes Actions and collects Results (**Run Simulation**). [Production v0.22.28](../releases/v0.22.28.md), Developer-confirmed October 5, removes all Scenario schema/form/API/runtime dependencies. The Developer also confirmed independent definitions with Project/modules chosen when running; that broader refactor remains pending. Follow [the corrected architecture and implementation record](../plans/v0.22.28-independent-simulations.md). Supplied CLI output confirms native `db:push` applied the Scenario removal; [the release handoff](../plans/v0.22.28-release-handoff.md) distinguishes database evidence, prior local validation and pending detailed browser/live acceptance.
 
 The [v0.22.26 Soccer milestone](../plans/v0.22.26-soccer-scenario-simulation.md) uses existing Character navigation and contact-kick owners. [v0.22.27](../plans/v0.22.27-simulation-results-preparation.md) adds Drizzle-backed result capture, guided preparation and selected Sensor measurements. The [v0.22.28 checkpoint](../plans/v0.22.28-scene-simulation-launch.md) adds one-click preparation and local public visitor runs. General Action executors and physical devices remain outside this implementation.

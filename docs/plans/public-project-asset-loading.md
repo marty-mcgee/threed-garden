@@ -1,5 +1,7 @@
 # Public Project asset loading — authorization audit
 
+> Historical record: version/status statements below apply to this named checkpoint. Current App documentation: [v0.23.0 — ThreeD Garden](../releases/v0.23.0.md).
+
 Status: revised non-blocking Scene warning policy implemented locally and validated offline; browser acceptance and deployment pending. Production checkpoint remains v0.22.1.
 
 ## Evidence

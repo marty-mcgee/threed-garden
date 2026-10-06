@@ -1,5 +1,7 @@
 # ThreeD Marker Architecture
 
+Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
+
 This document records the marker architecture through the production-verified v0.18.8-beta **ThreeD Ecctrl Position Authority** checkpoint. The beta promotes the v0.18.8a runtime work without adding database or API authority.
 
 ## Hierarchy and terminology

@@ -1,5 +1,7 @@
 # ThreeD Animations Library
 
+Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
+
 Status: Stage 1 implemented locally after explicit User approval of the four additive tables. Baseline remains v0.19.13. The autonomous upload and management UI is now implemented locally. The User subsequently confirmed schema application and successful FBX uploads. Character assignment editing and Scene playback integration are now implemented locally; live playback acceptance remains pending. No release is included. The standalone workspace exposes the independent library inventory and management APIs. See the [staged plan](../plans/threed-animations-library.md).
 
 ## Ownership and storage

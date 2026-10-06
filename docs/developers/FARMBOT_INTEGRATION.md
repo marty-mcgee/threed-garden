@@ -1,5 +1,7 @@
 # ThreeD FarmBot Integration Plan
 
+Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
+
 Status: v0.18.7d is the current production release. Its Ecctrl spawn safety, ThreeD Model Library, Project marker placement, ThreeD Layers Scene contract, ThreeD Marker snapshot, and Action Target behavior preserve the v0.18.3b FarmBot safety boundary through Phase 4L-K. MQTT publishing and physical device commands remain disabled. Any later command-linked orchestration requires separate approval.
 
 ## Integration boundary

@@ -1,5 +1,7 @@
 # ThreeD Character Runtime Architecture
 
+Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
+
 ThreeD characters share records, models, semantic animations, action events, and completion reporting, but they do not share one movement runtime. The `isMovable` field selects the runtime:
 
 | Concern | GardenCharacter | EcctrlCharacter |

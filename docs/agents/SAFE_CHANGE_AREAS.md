@@ -1,5 +1,7 @@
 # Safe Change Areas
 
+Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
+
 | Change area | Normal requirement |
 |---|---|
 | Documentation and comments | Verify links and factual accuracy; no behavior changes. |

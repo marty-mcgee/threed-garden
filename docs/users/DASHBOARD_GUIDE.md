@@ -1,5 +1,7 @@
 # Dashboard Guide
 
+Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
+
 The Dashboard at `/dashboard` presents project-scoped Multimedia, ThreeD Garden, and Traffic data. Choose a project before evaluating its assets.
 
 ThreeD visualization is centered on `/dashboard/scene`; the former `/dashboard/threed` entry redirects there. ThreeD record creation and editing belong in `/admin/threed`, rather than duplicate Dashboard CRUD pages.

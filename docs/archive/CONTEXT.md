@@ -1,5 +1,7 @@
 # Project Context — marty-mcgee-neon
 
+> Historical record: version/status statements below apply to this named checkpoint. Current App documentation: [v0.23.0 — ThreeD Garden](../releases/v0.23.0.md).
+
 > **Purpose:** Primary repository context for developers and Codex/AI coding agents.
 > Read this file before making architectural changes. Treat current repository code as the source of truth when this document and implementation disagree.
 

@@ -1,5 +1,7 @@
 # ThreeD Model Runtime API
 
+Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
+
 This document defines the v0.19.3d JSON boundary for reusable ThreeD Models and read-only runtime inspection. These routes provide Model data and structural evidence; they do not place Project Markers or create physics.
 
 ## Authority boundary
