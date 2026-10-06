@@ -47,6 +47,7 @@ const api = load('src/app/api/threed/simulations/route.ts', {
   '@/libraries/services/threed/physics/sensor-group-core': sensor, '@/libraries/services/threed/physics/sensor-legacy-compat': { ...legacy, IMPORTED_SENSOR_GROUP: { id: 'imported', name: 'Imported' } },
   '@/libraries/services/threed/physics/sensor-cuboid-core': cuboids,
   '@/libraries/services/threed/models/project-model-instance-core': ballCore.exports,
+  '@/libraries/services/threed/simulations/simulation-preview-contract': load(root + 'simulations/simulation-preview-contract.ts'),
 });
 const record = { ...valid, id: 9, revision: 1 };
 const choices = [[{ metadata: { physicsSensorGroups: [{ id: 'group1', name: 'Goals' }] } }], [{ markerId: 'characters-9', markerType: 'characters', name: 'Kate' }, { markerId: 'models-5', markerType: 'models', name: 'Field' }]];
@@ -75,6 +76,12 @@ const predicates = query => JSON.stringify(query.where);
   const options = await run('GET', '?options=1&projectId=15&threedId=1', null, choices);
   assert.equal(options.data.data.groups.length, 2);
   assert(!Object.hasOwn(options.data.data.markers[0], 'data') && !Object.hasOwn(options.data.data.markers[0], 'metadata'), 'Choices expose capability flags, not private marker payloads');
+  assert.equal(options.data.data.markers[0].preview, null, 'Missing saved positions are not fabricated');
+  const projected = await run('GET', '?options=1&projectId=15&threedId=1', null, [choices[0], [{ ...choices[1][0], sourceAssetId: 9,
+    positionX: '-10.5', positionY: '0.2', positionZ: '2', isVisible: true, data: { rotation: 90, scale: 0.5, privateNote: 'excluded' }, metadata: { secret: 'excluded' } }]]);
+  assert.equal(JSON.stringify(projected.data.data.markers[0].preview.position), '[-10.5,0.2,2]');
+  assert.equal(projected.data.data.markers[0].preview.rotation[1], Math.PI / 2);
+  assert(!JSON.stringify(projected.data).includes('excluded'), 'Private options expose a bounded pose projection only');
   for (const query of queries) assert(predicates(query).includes('owner'));
   assert.equal((await run('POST', '', valid, [], 'https://evil.invalid')).status, 400);
   assert.equal((await run('POST', '', ' '.repeat(65537))).status, 400);

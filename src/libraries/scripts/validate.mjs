@@ -79,7 +79,7 @@ const tasks = {
   'threed-scenarios': [ts('validate-threed-scenarios.mts')],
   'threed-scenario-admin': [node('validate-threed-scenario-admin.cjs'), node('validate-threed-scenario-editor.cjs')],
   'threed-simulation-schema': [node('validate-threed-simulation-schema.cjs')],
-  'threed-simulation-admin': [node('validate-threed-simulation-admin.cjs'), node('validate-threed-simulation-editor.cjs')],
+  'threed-simulation-admin': [node('validate-threed-simulation-admin.cjs'), node('validate-threed-simulation-editor.cjs'), node('validate-threed-simulation-preview.cjs')],
   'threed-soccer-simulation': [node('validate-threed-soccer-simulation.cjs')],
   'threed-simulation-launch': [node('validate-threed-simulation-launch.cjs')],
   'threed-simulation-results': [node('validate-threed-simulation-results-schema.cjs'), node('validate-threed-simulation-results.cjs')],

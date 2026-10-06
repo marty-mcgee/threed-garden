@@ -39,7 +39,7 @@ function fixture(props, list = false) {
   };
   const deps = { react: rt.react, 'react/jsx-runtime': { jsx, jsxs: jsx }, 'lucide-react': proxy, 'next/navigation': { useRouter: () => ({ push: url => navigation.push(url), replace: url => navigation.push(url) }) },
     '@/components/admin/layout/AdminWorkspaceHeader': proxy, '@/components/ui/button': proxy, '@/components/ui/input': proxy, '@/components/ui/label': proxy, '@/components/ui/textarea': proxy, '@/components/ui/switch': proxy, '@/components/ui/table': proxy,
-    '../models/ModelFieldHelp': proxy, '@/libraries/services/threed/simulations/simulation-input': input, './SimulationDefinitionEditor': { SimulationDefinitionEditor: 'SimulationDefinitionEditor', emptySimulationChoices: choices },
+    '../models/ModelFieldHelp': proxy, '@/libraries/services/threed/simulations/simulation-input': input, './SimulationPreview': { SimulationPreview: 'SimulationPreview' }, './SimulationDefinitionEditor': { SimulationDefinitionEditor: 'SimulationDefinitionEditor', emptySimulationChoices: choices },
     '@/components/ui/toast': { useToast: () => ({ showToast: (...args) => notifications.push(args), ToastComponent: null }) },
   };
   const module = load(`src/components/admin/threed/simulations/${list ? 'SimulationsList' : 'SimulationEditor'}.tsx`, deps, { fetch, HTMLAnchorElement: Anchor,
@@ -64,6 +64,9 @@ const button = (f, name) => f.find(node => node.type === 'Button' && node.props.
   assert.equal(edit.requests.filter(r => r.method === 'PATCH').length, 2, 'Failed request plus one guarded successful request');
   const payload = JSON.parse(edit.requests.filter(r => r.method === 'PATCH').at(-1).body); assert.equal(payload.revision, 1); assert(!Object.hasOwn(payload, 'projectId')); assert(!edit.listeners.has('beforeunload'));
   const view = fixture({ id: 9, readOnly: true }); await view.rt.flush(); assert(!button(view, 'Save Changes')); assert(field(view, 'simulation-name').props.disabled);
+  const frontend = fixture({ id: 9, surface: 'dashboard' }); await frontend.rt.flush();
+  assert(frontend.find(node => node.type === 'SimulationPreview'), 'Dashboard shares the preview');
+  button(frontend, 'Cancel').props.onClick(); assert.equal(frontend.navigation.at(-1), '/dashboard/scene?projectId=15');
   const missing = fixture({ id: 9, failRead: true }); await missing.rt.flush(); assert(!button(missing, 'Save Changes'), 'Failed exact read does not show blank editor');
   const create = fixture({}); await create.rt.flush(); field(create, 'simulation-project').props.onChange({ target: { value: '15' } }); await create.rt.flush(); field(create, 'simulation-module').props.onChange({ target: { value: '1' } }); await create.rt.flush(); field(create, 'simulation-name').props.onChange({ target: { value: 'Draft' } }); create.rt.render();
   assert(!button(create, 'Save Changes').props.disabled, 'An inactive empty draft can be saved');
@@ -78,6 +81,9 @@ const button = (f, name) => f.find(node => node.type === 'Button' && node.props.
   assert(!create.find(node => node.props?.children === activeDraftHint));
   const soccer = fixture({ projectId: 15, initialSoccerDraft: { threedId: 1, actorMarkerId: 'kate', ballMarkerId: 'ball', sensorGroupId: 'goals' } }); await soccer.rt.flush();
   const recipe = soccer.find(node => node.type === 'SimulationDefinitionEditor').props.value;
+  const preview = soccer.find(node => node.type === 'SimulationPreview');
+  assert.equal(preview.props.definition, recipe, 'Preview uses the current draft, not a second saved record');
+  assert.equal(preview.props.context, '15:1:0');
   assert.equal(recipe.steps[0].action, 'runToTarget'); assert.equal(recipe.steps[1].action, 'kickBall'); assert.equal(recipe.steps[1].actorMarkerId, 'kate');
   assert.equal(field(soccer, 'simulation-name').props.value, 'Run to target ball then kick the ball');
   assert(!soccer.requests.some(request => request.method === 'POST'), 'Preparing the Soccer recipe never writes or executes');

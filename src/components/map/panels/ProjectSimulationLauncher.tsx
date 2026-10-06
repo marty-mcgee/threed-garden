@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
-import { LoaderCircle, Play, RotateCw, Square } from 'lucide-react';
+import { LoaderCircle, Play, RotateCw, Square, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 import { useToast } from '@/components/ui/toast';
@@ -32,6 +32,16 @@ export function ProjectSimulationLauncher({ context, saveResults, obscured, onPr
   const [runError, setRunError] = useState('');
   const [request, setRequest] = useState(0), [stopRequest, setStopRequest] = useState(0);
   const [refresh, setRefresh] = useState(0);
+  const [hidden, setHidden] = useState(false);
+  useEffect(() => {
+    const toggle = (event: Event) => {
+      if ((event as CustomEvent<{ projectId: number }>).detail?.projectId !== context.projectId) return;
+      setHidden(value => !value);
+      stop();
+    };
+    window.addEventListener('threed:simulation-panel', toggle);
+    return () => window.removeEventListener('threed:simulation-panel', toggle);
+  }, [context.projectId]);
   const current = useRef(context); current.current = context;
   const lock = useRef(false), controller = useRef<AbortController | null>(null), pending = useRef<SimulationLaunch | null>(null);
   const actor = context.markers.find(marker => marker.id === launch?.simulation.definition.steps[0]?.actorMarkerId);
@@ -113,10 +123,12 @@ export function ProjectSimulationLauncher({ context, saveResults, obscured, onPr
   const selectedRow = rows.find(row => String(row.id) === selectedId);
   const draftParams = new URLSearchParams({ projectId: String(context.projectId) });
 
-  return <div data-scene-hover-obstacle aria-label="Run Simulation" aria-hidden={obscured} inert={obscured}
+  return <div data-scene-hover-obstacle aria-label="Run Simulation" hidden={hidden} aria-hidden={obscured || hidden} inert={obscured || hidden}
     className={`pointer-events-auto absolute left-1/2 top-14 z-40 w-[min(25rem,calc(100%_-_1.5rem))] -translate-x-1/2 text-center ${obscured ? 'invisible' : ''}`}>
     <div className="mb-1 flex items-center gap-1 rounded-md bg-background/80 px-2 py-1 text-left text-xs backdrop-blur-md">
       <span className="min-w-0 flex-1 truncate font-medium">Simulation</span>
+      {saveResults && <Link className="text-xs underline" href={`/dashboard/simulations/new?${draftParams}`}>Create Simulation</Link>}
+      <Button variant="ghost" size="icon" className="h-6 w-6" aria-label="Close Simulations" onClick={() => { stop(); setHidden(true); }}><X className="h-3.5 w-3.5" /></Button>
       <ModelFieldHelp label="Run Simulation">A Simulation executes its saved Actions and collects Results from the participating ThreeD modules. A Scenario is a separate plan.</ModelFieldHelp>
       <Button variant="ghost" size="icon" className="h-6 w-6" aria-label="Refresh Simulations" title="Refresh Simulations" disabled={preparing || busy || loading} onClick={reload}><RotateCw className="h-3.5 w-3.5" /></Button>
     </div>
@@ -146,7 +158,7 @@ export function ProjectSimulationLauncher({ context, saveResults, obscured, onPr
           <li>Save the Simulation with Active enabled, then refresh here.</li>
         </ol>
         <div className="flex flex-wrap items-center gap-2">
-          <Link className="text-emerald-700 underline dark:text-emerald-300" href={`/admin/threed/simulations/new?${draftParams}`}>Prepare Simulation</Link>
+          <Link className="text-emerald-700 underline dark:text-emerald-300" href={`/dashboard/simulations/new?${draftParams}`}>Prepare Simulation</Link>
           <Link className="text-muted-foreground underline" href={`/admin/threed/simulations?projectId=${context.projectId}`}>Review saved Simulations</Link>
         </div>
       </> : <p>The Project owner needs to make an active Simulation available. Refresh after the owner saves it.</p>}

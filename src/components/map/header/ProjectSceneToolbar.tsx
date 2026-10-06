@@ -108,6 +108,7 @@ export function ProjectSceneToolbar({
           <DropdownMenuContent align="end" className="threed-workspace-panel threed-toolbar-dropdown-surface z-[2000] w-56 space-y-0.5 rounded-lg border-foreground/10 p-1.5 text-foreground shadow-xl backdrop-blur-sm">
             <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onOpenProjectTour}><ScanSearch className="h-3.5 w-3.5" /> Project Tour</DropdownMenuItem>
             <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onOpenScenarios}><Layers className="h-3.5 w-3.5" /> Open Scenario</DropdownMenuItem>
+            <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={() => window.dispatchEvent(new CustomEvent('threed:simulation-panel', { detail: { projectId: Number(selectedProjectId) } }))}><Layers className="h-3.5 w-3.5" /> Show / Hide Simulations</DropdownMenuItem>
             <DropdownMenuItem className="threed-toolbar-menu-item" asChild><a href="/dashboard/assembly-groups" target="_blank" rel="noopener noreferrer"><Boxes className="h-3.5 w-3.5" /> Assembly Groups</a></DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

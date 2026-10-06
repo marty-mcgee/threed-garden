@@ -8,7 +8,7 @@ import { ModelFieldHelp } from '../models/ModelFieldHelp';
 import { SIMULATION_ACTIONS, SIMULATION_PLANTING_ACTIONS, MAX_SIMULATION_STEPS, MAX_SIMULATION_OBSERVATIONS, simulationActionLabel, type SimulationDefinition, type SimulationStep } from '@/libraries/services/threed/simulations/simulation-input';
 
 export type SimulationChoices = {
-  markers: { markerId: string; markerType: string; name: string; movableCharacter?: boolean; movableBall?: boolean }[];
+  markers: { markerId: string; markerType: string; name: string; movableCharacter?: boolean; movableBall?: boolean; preview?: import('@/libraries/services/threed/simulations/simulation-preview-contract').SimulationMarkerPreview | null }[];
   groups: { id: string; name: string }[];
   sensors?: { ownerMarkerId: number; id: string; name: string; ownerName: string; groupId: string | null; behavior: 'counter' | 'trigger' }[];
 };

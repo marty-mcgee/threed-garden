@@ -110,7 +110,7 @@ function launcherFixture(total = 1, initial = context, options = {}) {
     scene = { ...scene, controlledCharacterId: chosen.characterId, target: chosen.target };
   } }));
   const find = predicate => nodes(rt.tree).find(predicate);
-  return { rt, requests, prepares, timers, find, hold(value) { hold = value; }, release() { queued.splice(0).forEach(fn => fn()); },
+  return { rt, requests, prepares, timers, find, toggle(projectId) { listeners.get('threed:simulation-panel')?.({ detail: { projectId } }); rt.render(); }, hold(value) { hold = value; }, release() { queued.splice(0).forEach(fn => fn()); },
     available(value) { total = value; }, fail(value) { fail = value; },
     button: () => find(node => node.type === 'Button' && String(node.props.className).includes('h-11')), scene(next) { scene = next; rt.render(); } };
 }
@@ -158,6 +158,10 @@ function scenarioGuideFixture() {
   assert.equal((await read('&scenarioId=8&id=26')).status, 400); assert.equal((await read('&scenarioId=invalid')).status, 400);
   console.log('PASS: actual Project launch API enforces public/owner access, active owned module bindings, no Scenario dependency, participant membership, supported Actions and minimal projection.');
   let ui = launcherFixture(); await ui.rt.flush(); assert.equal(ui.prepares.length, 0, 'Mount never starts'); assert.equal(ui.button().props.disabled, false);
+  ui.find(node => node.props?.['aria-label'] === 'Close Simulations').props.onClick(); ui.rt.render();
+  assert(ui.find(node => node.props?.['aria-label'] === 'Run Simulation').props.hidden);
+  ui.toggle(999); assert(ui.find(node => node.props?.['aria-label'] === 'Run Simulation').props.hidden, 'Other Project event cannot reopen');
+  ui.toggle(16); assert.equal(ui.find(node => node.props?.['aria-label'] === 'Run Simulation').props.hidden, false);
   assert(ui.button().props.className.includes('bg-emerald-600'), 'Enabled Run uses the green action style');
   ui.button().props.onClick(); ui.button().props.onClick(); await ui.rt.flush(); assert.equal(ui.prepares.length, 1, 'One-click preparation locks duplicate clicks');
   let controls = ui.find(node => node.type === 'ProjectSimulationControls'); assert.equal(controls.props.launch.request, 1); assert.equal(controls.props.launch.saveResults, false);

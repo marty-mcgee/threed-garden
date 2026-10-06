@@ -1,10 +1,18 @@
 # ThreeD Simulations
 
+Kick previews now respond to animated foot contact: the target Sphere rolls away locally and remains visible after the timeline completes. A missed target or unsupported foot animation reports guidance. Stop restores the saved preview positions; replay starts from those positions. Project Scene physics, Sensors and saved Results remain separate from this preview.
+
+In a Project, choose **Setup → Show / Hide Simulations** to reopen or hide the controls. **Close Simulations** hides them and stops an active attempt. Owners can choose **Create Simulation** to use the front-end editor with the same form and Preview Canvas as Admin. Walk/Run previews approach the selected target; Stop restores saved positions. Preview movement is local; run in the Project Scene for physics, Sensor readings and Results.
+
 **Scenario** means a plan: use **Open Scenario** to view its setup and guidance. **Simulation** means Actions and Results: use **Run Simulation** to execute Actions through participating ThreeD modules and collect their responses.
 
 Released [v0.22.28](../releases/v0.22.28.md) removes Scenario links from Simulation definitions and Results. You can run a Simulation without opening a Scenario. The [corrected design](../plans/v0.22.28-independent-simulations.md) also calls for independent definitions with Project/modules chosen for each run; that broader refactor remains pending. Current forms still bind a definition to its Project/module.
 
 ## Current implementation
+
+Local v0.22.29 adds an **Admin Preview Canvas** on Add/Edit/View. Choose participants and targets in the form to see their saved Project positions; click an **Action Timeline** step to highlight its connection. **Play Timeline** plays one mapped animation cycle per Action in order, and **Stop preview** cancels it. Missing sources or animation mappings explain why Play is unavailable. Orbit/zoom, Fit and Reset change the camera. Generic targets without a Model renderer appear as labeled target markers.
+
+Expand **Animations & Actions** to preview existing loaded compatible clips and open the Character assignment editor or Animation Library. This preview does not move the Project Character, kick a physical ball, collect Sensors or save Results; use **Run Simulation** in the Project for those actions. Draft edits stop preview playback. See the [implementation and browser checklist](../plans/v0.22.29-simulation-admin-preview.md).
 
 Open **Admin → ThreeD → Simulations** to plan Actions and Sensor Group observations for a Project. The list supports search, Project filtering, sorting, pagination and selected deletion. Use the colored View/Edit/Delete icons for an individual Simulation.
 

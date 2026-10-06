@@ -42,6 +42,10 @@ import {
 } from '@/libraries/utils/animation';
 
 import { loadAssignedCharacterAnimations, loadCharacterPreviewAnimation, type AssignedAnimationClip, assignedAnimationMap } from '@/libraries/utils/assignedCharacterAnimations';
+import { LIBRARY_ACTIONS } from '@/libraries/services/threed/animations/contracts';
+import { playCharacterPreviewAction, playCharacterPreviewIdle, type CharacterPreviewAction, type CharacterPreviewClip } from '@/libraries/utils/character-preview-action';
+import { createActionCollisionSampler, type ThreeDActionCollisionSampler } from '@/libraries/services/threed/physics/action-collision-points';
+import type { ThreeDActionCollisionSample } from '@/libraries/services/threed/physics/action-collision-core';
 
 // ========================================================
 // TYPES
@@ -142,6 +146,12 @@ interface GardenCharacterProps {
   previewClip?: AssignedAnimationClip;
   previewSelection?: AssignedAnimationClip | null;
   onPreviewState?: (error: string | null) => void;
+  previewActions?: boolean;
+  previewAction?: CharacterPreviewAction | null;
+  onPreviewActions?: (clips: CharacterPreviewClip[]) => void;
+  onPreviewActionFinished?: (id: string) => void;
+  onPreviewResourceIssue?: (url: string, message: string) => void;
+  onPreviewContact?: (sample: ThreeDActionCollisionSample) => void;
   character: CharacterData;
 
   currentWeather?: string;
@@ -348,6 +358,12 @@ export function GardenCharacter({
   previewClip,
   previewSelection,
   onPreviewState,
+  previewActions = false,
+  previewAction,
+  onPreviewActions,
+  onPreviewActionFinished,
+  onPreviewResourceIssue,
+  onPreviewContact,
 }: GardenCharacterProps) {
   const usesShape = savedCharacter.model?.metadata?.activeSource === 'shape';
   const character = useMemo(() => usesShape && savedCharacter.model ? { ...savedCharacter, model: resolveActiveModelGeometry(savedCharacter.model) } : savedCharacter, [savedCharacter, usesShape]);
@@ -628,7 +644,9 @@ export function GardenCharacter({
             : null;
           if (cancelled) return;
           const resourceManager = textureResolution?.manager ?? new THREE.LoadingManager();
-          const waitForResources = modelLoadCompletion(resourceManager, reportResourceIssue);
+          const waitForResources = modelLoadCompletion(resourceManager, previewMode && previewActions
+            ? (url, message) => onPreviewResourceIssue?.(url, message)
+            : reportResourceIssue);
 
           const cacheKey =
             `${modelPath}-${modelType}-${textureResolution?.signature ?? ''}`;
@@ -810,7 +828,7 @@ export function GardenCharacter({
           // EXTERNAL ANIMATIONS
           // ================================================
 
-          const externalLibrary = previewMode ? { clips: [], blocked: new Set<string>(), assigned: new Set<string>() } : previewClip ? await loadCharacterPreviewAnimation(previewClip, loadedModel) : await loadAssignedCharacterAnimations(
+          const externalLibrary = previewMode && !previewActions ? { clips: [], blocked: new Set<string>(), assigned: new Set<string>() } : previewClip ? await loadCharacterPreviewAnimation(previewClip, loadedModel) : await loadAssignedCharacterAnimations(
             character.id, character.model!.id, character.model!.modelName,
             character.model!.filePath, loadedModel, character.sceneAnimationMapping,
           );
@@ -889,7 +907,7 @@ export function GardenCharacter({
             .current
             ?.stopAllAction();
 
-          animationMixers.delete(
+          if (!isPreview) animationMixers.delete(
             character.id,
           );
 
@@ -930,6 +948,12 @@ export function GardenCharacter({
               overrides,
             );
           animMapRef.current = assignedAnimationMap(animMapRef.current, externalLibrary.blocked, externalLibrary.assigned);
+          if (!cancelled && previewMode && previewActions) onPreviewActions?.([...new Set([
+            ...LIBRARY_ACTIONS, ...(character.sceneAnimationMapping?.slots ?? []).filter(slot => slot.isActive).map(slot => slot.actionKey), ...animations.map(clip => clip.name),
+          ])].flatMap(action => {
+            const clip = findClip(animMapRef.current, animations, action);
+            return clip && Number.isFinite(clip.duration) && clip.duration > 0 ? [{ action, clipName: clip.name, duration: clip.duration }] : [];
+          }));
           if (!cancelled && !previewMode && !previewClip) releaseAvailability = reportCharacterAnimationAvailability(character.id, character.model!.filePath, [...new Set([...DETAILS_ANIMATION_ACTIONS, ...animations.map(clip => clip.name)])].filter(action => Boolean(findClip(animMapRef.current, animations, action))));
 
           // ================================================
@@ -1134,17 +1158,43 @@ export function GardenCharacter({
       animMapRef.current =
         null;
 
-      animationMixers.delete(
+      if (!isPreview) animationMixers.delete(
         character.id,
       );
 
-      activeCharacterPositions.delete(
+      if (!isPreview) activeCharacterPositions.delete(
         character.id,
       );
     };
   }, [
-    character, previewClip, previewMode, isPreview, onPreviewState, reportResourceIssue,
+    character, previewClip, previewMode, previewActions, isPreview, onPreviewActions, onPreviewState, onPreviewResourceIssue, reportResourceIssue,
   ]);
+
+  const previewContact = useRef<ThreeDActionCollisionSampler | null>(null);
+  useEffect(() => {
+    previewContact.current = null;
+    if (!previewMode || !previewActions) return;
+    if (usesShape || !character.model?.filePath) { onPreviewActions?.([]); onPreviewState?.('This Character has no active rig for animation preview.'); return; }
+    if (!model || !mixerRef.current) return;
+    if (!previewAction) {
+      const restingClip = findClip(animMapRef.current, animationsRef.current, character.defaultAnimation || 'idle')
+        ?? findClip(animMapRef.current, animationsRef.current, 'idle');
+      if (!restingClip) { onPreviewState?.('Default Idle animation unavailable. Check Character animation assignments.'); return; }
+      try { return playCharacterPreviewIdle(mixerRef.current, restingClip); }
+      catch (cause) { onPreviewState?.(cause instanceof Error ? cause.message : 'Default animation preview failed.'); return; }
+    }
+    const clip = findClip(animMapRef.current, animationsRef.current, previewAction.action);
+    if (!clip) { onPreviewState?.(`Animation unavailable: ${previewAction.action}.`); return; }
+    try {
+      const cancel = previewAction.approach ? playCharacterPreviewIdle(mixerRef.current, clip) : playCharacterPreviewAction(mixerRef.current, clip, () => onPreviewActionFinished?.(previewAction.id));
+      if (previewAction.kick) {
+        previewContact.current = createActionCollisionSampler({ model, clip: mixerRef.current.clipAction(clip), ...previewAction.kick });
+        if (!previewContact.current) { cancel(); onPreviewState?.('Kick preview unavailable: the assigned clip has no supported animated foot contact.'); return; }
+      }
+      return () => { previewContact.current = null; cancel(); };
+    }
+    catch (cause) { onPreviewState?.(cause instanceof Error ? cause.message : 'Animation preview failed.'); }
+  }, [previewMode, previewActions, model, usesShape, character.model?.filePath, character.defaultAnimation, previewAction, onPreviewActions, onPreviewState, onPreviewActionFinished]);
 
   // Preview-only switches retain the loaded Model, mixer and camera.
   useEffect(() => {
@@ -1445,7 +1495,10 @@ export function GardenCharacter({
         delta,
       );
 
-      if (isPreview) return; // Preview advances animation only, without Scene movement/registration.
+      if (isPreview) {
+        for (const sample of previewContact.current?.sample(delta) ?? []) onPreviewContact?.(sample);
+        return; // Isolated preview contact never dispatches Scene/world events.
+      }
       if (character.model?.filePath && (!model || loadingModel) && !modelError) return;
 
       // ================================================

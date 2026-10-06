@@ -10,6 +10,7 @@ import { readSensorGroups } from '@/libraries/services/threed/physics/sensor-gro
 import { IMPORTED_SENSOR_GROUP, readModelVolumeSensor } from '@/libraries/services/threed/physics/sensor-legacy-compat';
 import { readPhysicsSensorCuboids } from '@/libraries/services/threed/physics/sensor-cuboid-core';
 import { isProjectModelMovableBall } from '@/libraries/services/threed/models/project-model-instance-core';
+import { simulationMarkerPreview } from '@/libraries/services/threed/simulations/simulation-preview-contract';
 
 const privateHeaders = { 'Cache-Control': 'private, no-store' };
 const reply = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: privateHeaders });
@@ -33,14 +34,15 @@ async function choices(client: Client, userId: string, projectId: number, threed
     .where(and(eq(projectThreed.userId, userId), eq(projectThreed.projectId, projectId), eq(projectThreed.threedId, threedId), eq(project.userId, userId), eq(threed.userId, userId))).limit(1);
   if (!assigned) return null;
   const markerRows = await client.select({ id: projectThreedMarkers.id, markerId: projectThreedMarkers.markerId, markerType: projectThreedMarkers.markerType, name: projectThreedMarkers.name,
-    data: projectThreedMarkers.data, metadata: projectThreedMarkers.metadata }).from(projectThreedMarkers)
+    sourceAssetId: projectThreedMarkers.sourceAssetId, positionX: projectThreedMarkers.positionX, positionY: projectThreedMarkers.positionY, positionZ: projectThreedMarkers.positionZ,
+    isVisible: projectThreedMarkers.isVisible, data: projectThreedMarkers.data, metadata: projectThreedMarkers.metadata }).from(projectThreedMarkers)
     .where(and(eq(projectThreedMarkers.userId, userId), eq(projectThreedMarkers.projectId, projectId), eq(projectThreedMarkers.threedId, threedId), eq(projectThreedMarkers.isActive, true))).orderBy(asc(projectThreedMarkers.name));
   const metadata = (assigned.metadata ?? {}) as Record<string, unknown>;
   const groups = readSensorGroups(metadata.physicsSensorGroups ?? []);
   if (!groups.some(group => group.id === IMPORTED_SENSOR_GROUP.id)) groups.unshift(IMPORTED_SENSOR_GROUP);
   const markers = markerRows.map(row => ({ markerId: row.markerId, markerType: row.markerType, name: row.name,
     movableCharacter: row.markerType === 'characters' && (row.data as Record<string, unknown> | null)?.isMovable === true,
-    movableBall: row.markerType === 'models' && isProjectModelMovableBall(row.metadata) }));
+    movableBall: row.markerType === 'models' && isProjectModelMovableBall(row.metadata), preview: simulationMarkerPreview(row) }));
   const sensors = markerRows.flatMap(row => {
     if (!Number.isSafeInteger(row.id) || row.id <= 0) return [];
     const metadata = row.metadata as Record<string, unknown> | null;
