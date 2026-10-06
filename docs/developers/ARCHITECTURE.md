@@ -1,7 +1,5 @@
 # Architecture
 
-Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
-
 The application is a Next.js App Router project with two surfaces:
 
 - `src/app/admin` provides authenticated CRUD and project-assignment workflows.

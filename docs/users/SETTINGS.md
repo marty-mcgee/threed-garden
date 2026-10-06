@@ -1,7 +1,5 @@
 # Personal workspace Settings
 
-Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
-
 Open **Admin → Settings** (`/admin/settings`). These preferences belong to your signed-in account; they do not change another User's App.
 
 | Control | Effect after Save Changes |

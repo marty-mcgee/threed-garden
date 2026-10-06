@@ -1,7 +1,5 @@
 # ThreeD Scene Scenarios
 
-Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
-
 For v0.22.24, Admin Add/Edit/View uses dedicated pages: `/admin/threed/scenarios/new`, `/admin/threed/scenarios/[id]` and `/admin/threed/scenarios/[id]/view`. Compact typography and colored icon actions follow the Admin Blueprint. The Project's compact Scenario workspace retains its guided form. Scenario bindings remain within their current Project; cross-Project application is a theoretical future capability only. Help sits beside the title; save/delete feedback uses Toast.
 
 Scenarios describe structures and setup. The local v0.22.26 **ThreeD Simulations** candidate adds explicit Soccer Run/Stop through the existing Character and ball owners, with per-step responses and Sensor Group summaries. See the [Simulation guide](threed-simulations.md) and [design and extension points](../plans/threed-simulations-design.md). Broader Actions, result persistence and cross-Project reuse remain separate work.

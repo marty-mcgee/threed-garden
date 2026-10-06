@@ -1,7 +1,5 @@
 # ThreeD Dashboard Scene Coordinator
 
-Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
-
 Production checkpoint: **v0.19.7b — ThreeD Dashboard Scene Coordinator Boundaries**.
 
 The `/dashboard/scene` page is the **Dashboard Scene Coordinator**. It coordinates a Project session across Dashboard controls, supporting 2D views, ThreeD Scene presentation, Runtime Markers, and explicit user operations.

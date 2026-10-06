@@ -1,7 +1,5 @@
 # Physics Sensors and Sensor Groups
 
-Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
-
 A Physics Sensor Cuboid is an invisible detection volume attached to a Project Model, Bed, Planting or FarmBot. Its name is descriptive metadata. Names do not change detection or counting.
 
 ## Configure sensors

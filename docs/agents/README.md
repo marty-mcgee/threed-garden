@@ -1,9 +1,5 @@
 # Agent Documentation
 
-Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
-
-Developer-reported production [v0.23.0-rc.1](../releases/v0.23.0-rc.1.md), confirmed October 6, 2026: runtime refresh and compact Simulation presentation. Stable promotion and detailed browser/post-deployment acceptance remain pending. See the [stage evidence](../plans/v0.23.0-runtime-upgrade.md); earlier local-candidate descriptions below are historical. No additional agent code checks or deployment occurred for this confirmation.
-
 Local [v0.23.0-rc.1 coordinated runtime upgrade](../plans/v0.23.0-runtime-upgrade.md): three validated dependency groups, TypeScript and 65 offline CI tasks passed; guarded npm build generated 137 pages. Candidate includes earlier v0.22.30 patch maintenance. Browser/WebGL acceptance is required before stable promotion; no release or live database operation is inferred.
 
 Local [v0.22.30 dependency maintenance](../plans/v0.22.30-dependency-updates.md) follows Developer-confirmed production [v0.22.29](../releases/v0.22.29.md). Next/Tailwind/PostCSS/pg/type patches passed foundations, TypeScript, 65 offline CI tasks and guarded npm build (137 pages); browser/release pending. Preserve the reviewed dependency graph and separate deferred major/runtime upgrades from this scoped checkpoint. Earlier v0.22.29 candidate statements below are historical.

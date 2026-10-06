@@ -1,12 +1,8 @@
 # ThreeD Garden project context
 
-Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](docs/releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
-
 This is the active `marty-mcgee/threed-garden` repository. Read [AGENTS.md](AGENTS.md) for the required Prove → Act → Document workflow and safety boundaries. The implementation and Drizzle schema are authoritative when documentation differs. The older `marty-mcgee-neon` context is retained only in [the archive](docs/archive/CONTEXT.md).
 
-## Checkpoint history
-
-**Developer-reported production v0.23.0-rc.1 — ThreeD App: runtime refresh and Simulation presentation**, confirmed October 6, 2026: [release record](docs/releases/v0.23.0-rc.1.md). Package/root lock 0.23.0-rc.1; read-only history identifies implementation `8ea4a3af`, deployed SHA unconfirmed. Preserve upgraded runtime peers and compact translucent Simulation presentation. Prior stage checks/TypeScript/65 CI/build (137 pages) and later presentation-focused checks remain separate; final combined CI/build completion was not supplied. Detailed browser/post-deployment acceptance and stable v0.23.0 promotion remain pending. This documentation-only confirmation is unstaged; no agent Git/deployment/database operation. Earlier candidate statements below are historical.
+## Current production checkpoint
 
 Developer explicitly included the approved compact Simulation launcher presentation in the planned **v0.23.0-rc.1** release October 6, 2026: [combined candidate scope](docs/releases/v0.23.0-rc.1.md). Runtime upgrades and retained patch maintenance are included. Final combined CI/build and comprehensive browser acceptance remain release-preparation checks; no candidate deployment or stable promotion is inferred.
 

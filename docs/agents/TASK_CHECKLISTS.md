@@ -1,7 +1,5 @@
 # Agent Task Checklists
 
-Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
-
 ## Prove
 
 - Read `AGENTS.md`, `CONTEXT.md`, and relevant source files completely.

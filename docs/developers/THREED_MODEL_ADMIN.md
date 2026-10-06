@@ -1,8 +1,6 @@
 # ThreeD Model Administration
 
-Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
-
-Historical production checkpoint: **v0.19.12 — ThreeD Admin Model Workspace**, package `0.19.12`, commit `80c6a1d`. Successful production deployment is User-confirmed. See the [release record](../releases/v0.19.12.md) and [completed scope, verification and deployment handoff](../plans/v0.19.12-release.md). Historical checkpoint sections below describe behavior at their named releases.
+Current production checkpoint: **v0.19.12 — ThreeD Admin Model Workspace**, package `0.19.12`, commit `80c6a1d`. Successful production deployment is User-confirmed. See the [release record](../releases/v0.19.12.md) and [completed scope, verification and deployment handoff](../plans/v0.19.12-release.md). Historical checkpoint sections below describe behavior at their named releases.
 
 Released checkpoint: [v0.19.12 — ThreeD Admin Model Workspace](../plans/v0.19.12-release.md). This page is the [design blueprint for future Admin ThreeD sub-module pages](../plans/admin-threed-workspace-blueprint.md); only the Models workspace is adapted in this release.
 

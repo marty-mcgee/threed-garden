@@ -1,7 +1,5 @@
 # Admin Guide
 
-Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
-
 The Admin surface at `/admin` manages Projects, Settings, Music, ThreeD Garden, and Traffic data.
 
 Use [Personal workspace Settings](SETTINGS.md) for appearance and navigation preferences, Save/Discard behavior and their scope.

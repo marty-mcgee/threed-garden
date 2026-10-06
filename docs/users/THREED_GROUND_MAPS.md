@@ -1,7 +1,5 @@
 # ThreeD Ground Maps
 
-Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
-
 ThreeD Ground Maps let a Project owner use a PNG, JPG or WebP map screenshot as the visible flat ground beneath a ThreeD Scene. This is useful for placing Models, Characters, Beds, Plantings and FarmBots against an existing property, site or map reference.
 
 ## Open Ground Map controls

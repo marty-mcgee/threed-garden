@@ -1,7 +1,5 @@
 # Agent Validation Guide
 
-Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
-
 For local v0.22.29 Admin Simulation previews, run `npm run validate -- threed-simulation-admin threed-character-preview-switch threed-model-file-workspace threed-model-preview-batch threed-model-editor-tabs shadcn-ui-boundary`, TypeScript, maintained CI and the guarded npm build. The Admin task includes the new offline pose/source, animation-mapping, actual Garden preview effect/Three.js mixer, timeline Stop/timeout/stale/draft/busy and camera Fit/Reset fixture. Prior local TypeScript, 65 CI tasks and guarded npm build (136 pages) passed; browser/WebGL/live persistence remain pending. Preview animation completion must never dispatch Scene world Actions, navigation, impulses or result writes. Follow the [implementation and browser checklist](../plans/v0.22.29-simulation-admin-preview.md).
 
 The local v0.22.28 correction removes all Scenario dependencies from Simulation/Result schema, APIs, forms and runner. Follow [implementation and independent-definition design](../plans/v0.22.28-independent-simulations.md); Project/module independence is a separate pending refactor.

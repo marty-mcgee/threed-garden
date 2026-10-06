@@ -1,7 +1,5 @@
 # Legacy ThreeD Feature Assessment and Integration
 
-Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
-
 ## Milestone
 
 `v0.19.0-alpha` begins an assessment-first effort to adapt selected possibilities from legacy JavaScript into the current ThreeD App. The first release candidate is `v0.19.0a — Shared ThreeD Model Library Placement`. It does not authorize a wholesale legacy-code import or replacement of established ThreeD architecture.

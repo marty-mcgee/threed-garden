@@ -1,7 +1,5 @@
 # FarmBot Adapter for ThreeD MQTT Services
 
-Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
-
 Status: v0.18.2b released and production-verified with the provider-neutral ThreeD MQTT control layer and Phase 3 safety boundary. Phase 4 adds a signed, strictly validated command request and response, dormant server-only worker handoff, process-local idempotency/concurrency gate, RPC correlation, queued signed acknowledgement reporting, and acknowledgement-to-completion coordination only through a disabled executor. MQTT remains read-only, worker health reports commands disabled, and no publish or physical command exists.
 
 ## Goal

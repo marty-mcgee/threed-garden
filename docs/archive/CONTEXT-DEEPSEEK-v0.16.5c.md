@@ -1,7 +1,5 @@
 # Project Context – threed-garden-neon, marty-mcgee-neon
 
-> Historical record: version/status statements below apply to this named checkpoint. Current App documentation: [v0.23.0 — ThreeD Garden](../releases/v0.23.0.md).
-
 **Last Updated:** August 13, 2026 @ 9:15am PST
 **Current Version:** v0.16.4-centaur "Character Grounding + Gravity Spawn" — ✅ Released to Production
 **In Progress:** v0.16.5 "Character Animations + Actions"

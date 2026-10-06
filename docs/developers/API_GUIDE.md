@@ -1,7 +1,5 @@
 # API Guide
 
-Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
-
 API routes live under `src/app/api`. The maintained domain families include:
 
 - `/api/project` for project, module, and asset management.

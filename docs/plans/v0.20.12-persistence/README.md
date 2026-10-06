@@ -1,7 +1,5 @@
 # ThreeD Assembly — Drizzle persistence experiment
 
-Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
-
 The User approved the `threed_assembly` sub-module, the title **ThreeD Assembly**, and the proposed persistence structure, then required Drizzle ORM and the existing canonical ThreeD schema location.
 
 ## Source of truth

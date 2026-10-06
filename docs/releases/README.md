@@ -1,14 +1,8 @@
 # Releases
 
-Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
+This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-This directory records production history and prepared checkpoints. Each record states its deployment status.
-
-Prior confirmed production: **v0.22.28 — ThreeD Simulations: Scenario separation and Scene launch**, Developer-confirmed October 5, 2026. Supplied database-push evidence and prior local validation are separate from pending detailed browser/post-deployment acceptance; see the [release record](v0.22.28.md).
-
-- [v0.23.0 - ThreeD Garden](v0.23.0.md) - current documentation checkpoint
-- [v0.23.0-rc.1](v0.23.0-rc.1.md) - production Developer-confirmed
-- [v0.22.29](v0.22.29.md) - production Developer-confirmed
+Current production: **v0.22.28 — ThreeD Simulations: Scenario separation and Scene launch**, Developer-confirmed October 5, 2026. Supplied database-push evidence and prior local validation are separate from pending detailed browser/post-deployment acceptance; see the [release record](v0.22.28.md).
 
 - [v0.22.28 — ThreeD Simulations: Scenario separation and Scene launch](v0.22.28.md) — production Developer-confirmed
 - [v0.22.27 — ThreeD App: wire Drizzle database commands](v0.22.27.md) — production Developer-confirmed

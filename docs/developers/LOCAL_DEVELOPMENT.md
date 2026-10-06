@@ -1,7 +1,5 @@
 # Local Development
 
-Current App documentation checkpoint: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Older checkpoint sections are historical; the linked record distinguishes package, deployment and validation status.
-
 ## Setup
 
 Use Node.js 24.x and the npm version declared by `packageManager` in `package.json` (currently 11.6.2). `.nvmrc` selects Node 24; `package-lock.json` is the dependency lockfile and must be committed with dependency changes. Use `npm install` locally and in CI. CI explicitly installs the declared npm version before `npm install`, then checks that installation leaves the committed lockfile unchanged. Different npm versions can rewrite lockfile metadata even when installation succeeds.

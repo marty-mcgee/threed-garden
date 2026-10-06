@@ -1,7 +1,5 @@
 # Admin ThreeD workspace continuation
 
-> Historical record: version/status statements below apply to this named checkpoint. Current App documentation: [v0.23.0 — ThreeD Garden](../releases/v0.23.0.md).
-
 Baseline: [v0.19.13](../releases/v0.19.13.md), commit `c976c77`, User-confirmed production deployment and manual build. The User has resumed the remaining stages. Current production: [v0.19.15 — ThreeD Admin Pages: UI Updates](../releases/v0.19.15.md), commit `9157e06`; deployment and manual build User-confirmed. Earlier stage notes retain their historical status. The manual build gate remains User-owned.
 
 ## Model Animations — presentation step
