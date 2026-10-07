@@ -2,7 +2,7 @@
 
 Kick previews now respond to animated foot contact: the target Sphere rolls away locally and remains visible after the timeline completes. A missed target or unsupported foot animation reports guidance. Stop restores the saved preview positions; replay starts from those positions. Project Scene physics, Sensors and saved Results remain separate from this preview.
 
-In a Project, choose **Setup → Show / Hide Simulations** to reopen or hide the controls. **Close Simulations** hides them and stops an active attempt. Owners can choose **Create Simulation** to use the front-end editor with the same form and Preview Canvas as Admin. Walk/Run previews approach the selected target; Stop restores saved positions. Preview movement is local; run in the Project Scene for physics, Sensor readings and Results.
+In a Project, choose **Setup → Simulations** to reopen or hide the controls. **Close Simulations** hides them and stops an active attempt. Owners can choose **Create Simulation** to use the front-end editor with the same form and Preview Canvas as Admin. Walk/Run previews approach the selected target; Stop restores saved positions. Preview movement is local; run in the Project Scene for physics, Sensor readings and Results.
 
 **Scenario** means a plan: use **Open Scenario** to view its setup and guidance. **Simulation** means Actions and Results: use **Run Simulation** to execute Actions through participating ThreeD modules and collect their responses.
 
