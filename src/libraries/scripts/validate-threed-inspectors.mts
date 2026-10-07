@@ -23,6 +23,35 @@ console.log('PASS: parent lists both sensors without forms; each sensor inspecto
 // must not clear selection or dismiss the independent Assets workspace.
 const { readFileSync } = await import('node:fs');
 const page = readFileSync('src/app/dashboard/scene/page.tsx', 'utf8');
+for (const name of ['openCharacterLibrary', 'openFarmBotLibrary', 'openPlantingPlacement', 'openBedPlacement']) {
+  const start = page.indexOf(`  const ${name} = useCallback(`);
+  const end = page.indexOf('\n  }, [', start);
+  assert(start >= 0 && end > start);
+  const body = page.slice(start, end);
+  assert(!body.includes('setIsProjectSetupOpen(false)') && !body.includes('setIsScenariosOpen(false)'), `${name} preserves Project overlays`);
+}
+const libraryStart = page.indexOf('  const openModelLibrary = useCallback(async (');
+const libraryBodyStart = page.indexOf(') => {', libraryStart) + 6;
+const libraryBody = page.slice(libraryBodyStart, page.indexOf('    if (loadingLibraryModels)', libraryBodyStart));
+assert(libraryStart >= 0);
+const librarySetters = [...new Set(libraryBody.match(/\bset[A-Z]\w*/g) ?? [])];
+const libraryCalls: string[] = [];
+new Function('initialRole', ...librarySetters, libraryBody)('object', ...librarySetters.map(setter => () => libraryCalls.push(setter)));
+assert(!libraryCalls.includes('setIsProjectSetupOpen') && !libraryCalls.includes('setIsScenariosOpen'), 'Model Library opening preserves overlays');
+// The Tour onboarding effect reruns after the toolbar sets its session state.
+// It must not close an already-open Scenario, even in an empty Project.
+const tourEffectStart = page.indexOf('    if (dismissedProjectSetupProjectId === selectedProjectId || initialProjectViewState?.scenario?.panelOpen) return;');
+const tourEffectBody = page.slice(tourEffectStart, page.indexOf('  }, [', tourEffectStart));
+assert(tourEffectStart >= 0);
+for (const markerCount of [0, 3]) {
+  const calls: [string, unknown][] = [];
+  const setters = [...new Set(tourEffectBody.match(/\bset[A-Z]\w*/g) ?? [])];
+  new Function('dismissedProjectSetupProjectId', 'selectedProjectId', 'initialProjectViewState', 'projectRuntimeMarkers', 'projectSetupSessionProjectId', ...setters, tourEffectBody)(
+    null, '15', null, Array(markerCount), '15', ...setters.map(setter => (value: unknown) => calls.push([setter, value])),
+  );
+  assert(!calls.some(([setter]) => setter === 'setIsScenariosOpen'), 'Tour effect preserves Scenarios');
+  assert(calls.some(([setter, value]) => setter === 'setIsProjectSetupOpen' && value === true));
+}
 for (const name of ['openProjectAssets', 'openProjectSetup', 'handleEnvironmentControlsOpenChange']) {
   const start = page.indexOf(`const ${name} = useCallback(`);
   assert(start >= 0);
@@ -41,7 +70,7 @@ assert(!page.includes('hidden={isProjectSummaryOpen || (viewMode'));
 assert(!/hidden=\{isProjectSummaryOpen\}[^>]*>\s*<ProjectAssetsPanel/.test(page));
 console.log('PASS: Assets, Tour and Environment handlers preserve inspector selection and independent Assets visibility; summary cannot hide either workspace.');
 
-for (const name of ['onSetupMenuOpenChange', 'onOpenScenarios']) {
+for (const name of ['onSetupMenuOpenChange', 'onOpenScenarios', 'onTrigger']) {
   const start = page.indexOf(`${name}={`);
   assert(start >= 0);
   const bodyStart = page.indexOf('=> {', start) + 4;
@@ -52,13 +81,21 @@ for (const name of ['onSetupMenuOpenChange', 'onOpenScenarios']) {
   const calls: [string, unknown][] = [];
   new Function('open', 'selectedProjectId', ...setters, body)(true, '15', ...setters.map(setter => (value: unknown) => calls.push([setter, value])));
   assert(!calls.some(([setter]) => ['setSelectedMarker', 'setSensorInspector', 'setGroupInspector', 'setIsProjectAssetsOpen'].includes(setter)));
-  assert(calls.some(([setter, value]) => setter === 'setIsProjectSetupOpen' && value === false));
-  assert(calls.some(([setter, value]) => setter === 'setIsScenariosOpen' && value === (name === 'onOpenScenarios')));
+  if (name === 'onSetupMenuOpenChange' || name === 'onTrigger') {
+    assert(!calls.some(([setter]) => ['setIsProjectSetupOpen', 'setIsScenariosOpen'].includes(setter)), 'Setup preserves open overlays for dimming');
+  } else {
+    assert(!calls.some(([setter]) => setter === 'setIsProjectSetupOpen'), 'Opening Scenarios preserves Tour');
+    assert(calls.some(([setter, value]) => setter === 'setIsScenariosOpen' && value === true));
+  }
 }
 const tourSource = readFileSync('src/components/map/panels/ProjectSetupPanel.tsx', 'utf8');
 assert(!tourSource.includes('ScenarioGuidance'), 'Scenarios is not nested inside Tour');
 assert(!page.includes('ProjectScenarioSceneCard'), 'saved Scenario definitions must not mount automatically over the Scene');
 const scenariosPanel = readFileSync('src/components/map/panels/ProjectScenariosPanel.tsx', 'utf8');
+for (const source of [tourSource, scenariosPanel, readFileSync('src/components/map/panels/ProjectSimulationLauncher.tsx', 'utf8')]) {
+  assert(!source.includes('opacity-20'), 'Menus must not dim open overlays');
+  assert(!source.includes('inert={obscured'), 'Menus must not disable open overlays');
+}
 assert(scenariosPanel.includes('<ScenarioGuidance projectId={projectId}'), 'the Setup Guide mounts in the opt-in Scenarios panel');
 assert(scenariosPanel.includes('<ProjectScenarioLoadDialog open={loadOpen}'), 'the Load Scenario chooser mounts in the opt-in Scenarios panel');
 assert(!scenariosPanel.includes('<ThreeDScenariosCRUD'), 'the Scene panel does not duplicate the saved Scenario CRUD list');

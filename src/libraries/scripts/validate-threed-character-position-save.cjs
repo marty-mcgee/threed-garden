@@ -61,13 +61,15 @@ const savePosition = (ok) => callback('src/app/dashboard/scene/page.tsx', 'handl
     lastProjectThreeDViewStateRef: {}, lastProjectMapViewStateRef: {}, initialProjectViewState: null,
     PROJECT_VIEW_STATE_VERSION: 1, viewMode: '3d', panelHeight: 500, cameraMode: 'stationary',
     scenarioPanelState: { selected: null, guide: { kind: 'soccer', environmentId: '', groupId: '', farmbotId: '' } },
-    isScenariosOpen: false,
+    isScenariosOpen: false, isProjectSetupOpen: true, overlayPositions: { sensors: { x: 1, y: 0.2 } },
     fetch: async (url, options) => { requests.push({ url, ...options }); return { ok: true, json: async () => ({ success: true, data: { markerCount: 1, markers: [] } }) }; },
   });
   await projectSave();
   const payload = JSON.parse(requests.at(-1).body);
   assert.deepEqual(payload.markers[0].position, { x: 25, y: 3, z: 45 });
   assert.equal(payload.viewState.scenario.panelOpen, false);
+  assert.equal(payload.viewState.projectTourOpen, true);
+  assert.deepEqual(payload.viewState.overlayPositions, { sensors: { x: 1, y: 0.2 } });
   assert.equal(requests.at(-1).method, 'PUT');
   assert.equal(payload.markers[0].data.rotation, 45);
   registry.replaceAssetMarkers([{ moduleType: 'characters', assetId: 11, name: 'Farmer', assetPosition: { x: 5, y: 1, z: 7 } }]);

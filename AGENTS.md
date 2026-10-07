@@ -1,5 +1,8 @@
 # Codex Instructions
 
+Release preparation: **[v0.23.1 - ThreeD Garden: Project overlays and workspace polish](docs/releases/v0.23.1.md)**. Package/root lockfile are 0.23.1; publication and deployment remain pending Developer review.
+
+
 Current release: **[v0.23.0 — ThreeD Garden](docs/releases/v0.23.0.md)**. Developer authorized stable GitHub publication of the existing code October 6, 2026. Package/root lockfile are 0.23.0; older checkpoint sections describe history. Preserve existing runtime and schema boundaries. GitHub publication and production deployment are distinct.
 
 Developer approved staged coordinated React/ThreeD upgrades toward v0.23.0. Current local package/lock is 0.23.0-rc.1; see docs/plans/v0.23.0-runtime-upgrade.md for exact groups, validation and browser acceptance before stable promotion. This explicitly authorizes the reviewed runtime dependency upgrades, superseding earlier deferred-runtime/no-upgrade statements for this step. Preserve all Scene/preview/source/physics/auth/schema boundaries and existing uncommitted v0.22.30 patch work. Stable release is not inferred; Manual Release Gate applies.

@@ -1,5 +1,8 @@
 'use client';
 
+import { Radio, X } from 'lucide-react';
+import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
+import { useProjectOverlayPosition } from '@/components/map/panels/ProjectOverlayLayout';
 import type { RuntimeMarker } from '@/libraries/types/map';
 import { readPhysicsSensorCuboids } from '@/libraries/services/threed/physics/sensor-cuboid-core';
 import { SensorGroupEditor, useSensorGroups } from '@/components/threed/physics/SensorGroupsWorkspace';
@@ -13,15 +16,16 @@ export function SensorGroupInspector({ groupId, markers, leftOffsetRem, onClose,
   onSelectGroup: (id: string) => void;
   onSelectSensor: (marker: RuntimeMarker, sensorId: string) => void;
 }) {
+  const overlay = useProjectOverlayPosition('sensorGroup');
   const workspace = useSensorGroups();
   const group = workspace?.groups.find(item => item.id === groupId);
   const members = markers.flatMap(marker => readPhysicsSensorCuboids(marker.metadata)
     .filter(sensor => sensor.groupId === groupId).map(sensor => ({ marker, sensor })));
-  return <section aria-label="Sensor Group details" className="threed-workspace-panel threed-details-surface threed-inspector absolute top-9 z-40 flex max-h-[calc(100%-2.25rem)] w-72 flex-col overflow-hidden rounded-lg border border-foreground/15 text-foreground shadow-xl"
-    style={{ left: `${leftOffsetRem}rem`, backgroundColor: 'var(--threed-details-background)' }}>
-    <header className="flex shrink-0 items-center justify-between gap-2 p-2">
-      <h2 className="truncate text-sm font-semibold">{group?.name ?? 'New Sensor Group'}</h2>
-      <button type="button" onClick={onClose} aria-label="Close Sensor Group details" className="rounded px-2 py-1 hover:bg-foreground/10">×</button>
+  return <section ref={overlay.ref} aria-label="Sensor Group details" className="threed-workspace-panel threed-details-surface threed-inspector absolute top-[38px] z-40 flex max-h-[calc(100%-2.25rem)] w-72 flex-col overflow-hidden rounded-lg border border-foreground/15 text-foreground shadow-xl"
+    style={{ left: `${leftOffsetRem}rem`, backgroundColor: 'var(--threed-details-background)', ...overlay.style }}>
+    <header {...overlay.handle} className={`${overlay.handle.className} flex shrink-0 items-center justify-between gap-2 p-2`}>
+      <div className="flex min-w-0 items-center gap-2"><Radio aria-hidden="true" className="h-4 w-4 shrink-0 text-cyan-600 dark:text-cyan-300" /><h2 className="truncate text-sm font-semibold">{group?.name ?? 'New Sensor Group'}</h2><span data-overlay-control><ModelFieldHelp label="Sensor Groups">Assign sensors to a group from their sensor settings. Open Environment ? Show Sensors to watch entry counts. Group names save immediately; sensor membership saves with the sensor.</ModelFieldHelp></span></div>
+      <button type="button" onClick={onClose} aria-label="Close Sensor Group details" className="rounded p-1 hover:bg-foreground/10"><X className="h-4 w-4" /></button>
     </header>
     <div className="min-h-0 space-y-3 overflow-y-auto overscroll-contain p-2">
       <div>
@@ -33,8 +37,7 @@ export function SensorGroupInspector({ groupId, markers, leftOffsetRem, onClose,
         </div>
         {!members.length && <p className="text-xs text-foreground/65">Assign a sensor to this group from its sensor settings.</p>}
       </div>
-      <p className="rounded border border-foreground/10 bg-foreground/5 p-2 text-xs text-foreground/75">To watch entry counts, open <strong>Environment → Show Sensors</strong> in the top toolbar.</p>
-      <SensorGroupEditor key={groupId} initialGroupId={groupId} onSelectGroup={onSelectGroup} />
+      <SensorGroupEditor key={groupId} initialGroupId={groupId} showHelp={false} onSelectGroup={onSelectGroup} />
     </div>
   </section>;
 }

@@ -1,5 +1,8 @@
 # ThreeD Garden project context
 
+Release preparation: **[v0.23.1 - ThreeD Garden: Project overlays and workspace polish](docs/releases/v0.23.1.md)**. Package/root lockfile are 0.23.1; publication and deployment remain pending Developer review.
+
+
 Current release: **[v0.23.0 — ThreeD Garden](docs/releases/v0.23.0.md)**. Developer authorized stable GitHub publication of the existing code October 6, 2026. Package/root lockfile are 0.23.0; older checkpoint sections describe history. Preserve existing runtime and schema boundaries. GitHub publication and production deployment are distinct.
 
 This is the active `marty-mcgee/threed-garden` repository. Read [AGENTS.md](AGENTS.md) for the required Prove → Act → Document workflow and safety boundaries. The implementation and Drizzle schema are authoritative when documentation differs. The older `marty-mcgee-neon` context is retained only in [the archive](docs/archive/CONTEXT.md).

@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import Link from 'next/link';
-import { LoaderCircle, Play, RotateCw, Square, X } from 'lucide-react';
+import { FlaskConical, LoaderCircle, Play, Plus, RotateCw, Square, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 import { useToast } from '@/components/ui/toast';
+import { useProjectOverlayPosition } from './ProjectOverlayLayout';
 import { ProjectSimulationControls } from './ProjectSimulationControls';
 import { getCharacterAnimationAvailability, subscribeCharacterAnimationAvailability } from '@/libraries/services/threed/animations/runtime-availability';
 import { soccerSimulationReadiness, type SoccerSceneContext } from '@/libraries/services/threed/simulations/soccer-simulation-scene';
@@ -13,7 +14,7 @@ import { simulationLaunchParticipants, type SimulationLaunch, type SimulationLau
 import type { SimulationRunState } from '@/libraries/services/threed/simulations/soccer-simulation-runner';
 import type { ThreeDPhysicsEventV1 } from '@/libraries/services/threed/physics/physics-event-core';
 
-type Props = { context: SoccerSceneContext; saveResults: boolean; obscured: boolean;
+type Props = { context: SoccerSceneContext; saveResults: boolean;
   onPrepare: (launch: SimulationLaunch) => void;
   subscribeSensors: (listener: (event: Readonly<ThreeDPhysicsEventV1>) => void) => () => void };
 async function read(projectId: number, signal: AbortSignal, suffix = '') {
@@ -23,7 +24,8 @@ async function read(projectId: number, signal: AbortSignal, suffix = '') {
   return result;
 }
 
-export function ProjectSimulationLauncher({ context, saveResults, obscured, onPrepare, subscribeSensors }: Props) {
+export function ProjectSimulationLauncher({ context, saveResults, onPrepare, subscribeSensors }: Props) {
+  const overlay = useProjectOverlayPosition('simulations');
   const { showToast, ToastComponent } = useToast();
   const [rows, setRows] = useState<SimulationLaunchSummary[]>([]), [page, setPage] = useState(0), [total, setTotal] = useState(0);
   const [selectedId, setSelectedId] = useState(''), [loading, setLoading] = useState(true), [error, setError] = useState('');
@@ -36,8 +38,7 @@ export function ProjectSimulationLauncher({ context, saveResults, obscured, onPr
   useEffect(() => {
     const toggle = (event: Event) => {
       if ((event as CustomEvent<{ projectId: number }>).detail?.projectId !== context.projectId) return;
-      setHidden(value => !value);
-      stop();
+      setHidden(false);
     };
     window.addEventListener('threed:simulation-panel', toggle);
     return () => window.removeEventListener('threed:simulation-panel', toggle);
@@ -123,14 +124,18 @@ export function ProjectSimulationLauncher({ context, saveResults, obscured, onPr
   const selectedRow = rows.find(row => String(row.id) === selectedId);
   const draftParams = new URLSearchParams({ projectId: String(context.projectId) });
 
-  return <div data-scene-hover-obstacle aria-label="Run Simulation" hidden={hidden} aria-hidden={obscured || hidden} inert={obscured || hidden}
-    className={`absolute left-1/2 top-14 z-40 w-[min(22rem,calc(100%_-_1.5rem))] -translate-x-1/2 space-y-2 rounded-lg border border-foreground/15 bg-background/85 p-2 text-center shadow-lg backdrop-blur-md transition-opacity ${obscured ? 'pointer-events-none opacity-15' : 'pointer-events-auto opacity-100'}`}>
-    <div className="flex items-center gap-1 text-left text-xs">
-      <span className="min-w-0 flex-1 truncate font-medium">Simulations</span>
-      {saveResults && <Link className="text-xs underline" href={`/dashboard/simulations/new?${draftParams}`}>Create Simulation</Link>}
-      <Button variant="ghost" size="icon" className="h-6 w-6" aria-label="Close Simulations" onClick={() => { stop(); setHidden(true); }}><X className="h-3.5 w-3.5" /></Button>
-      <ModelFieldHelp label="Run Simulation">Choose a saved Simulation, then Run to activate its participants and Actions. {disabledReason || 'Ready to run.'} Owner runs record Results; public runs stay in your browser. A Scenario is a separate plan. Close hides these controls; Setup reopens them.</ModelFieldHelp>
-      <Button variant="ghost" size="icon" className="h-6 w-6" aria-label="Refresh Simulations" title="Refresh Simulations" disabled={preparing || busy || loading} onClick={reload}><RotateCw className="h-3.5 w-3.5" /></Button>
+  return <div ref={overlay.ref as React.Ref<HTMLDivElement>} style={overlay.style} data-scene-hover-obstacle aria-label="Run Simulation" hidden={hidden} aria-hidden={hidden} inert={hidden}
+    className={`threed-workspace-panel threed-toolbar-dropdown-surface absolute left-1/2 top-10 z-40 max-h-[calc(100%_-_4rem)] overflow-y-auto overscroll-contain w-[min(22rem,calc(100%_-_1.5rem))] -translate-x-1/2 space-y-2 rounded-lg border border-foreground/15 bg-background/85 p-2 text-center shadow-lg backdrop-blur-md transition-opacity pointer-events-auto opacity-100`}>
+    <div {...overlay.handle} className={`${overlay.handle.className} flex items-center justify-between gap-3 text-left`}>
+      <div className="flex min-w-0 flex-wrap items-center gap-2">
+      <h2 className="flex items-center gap-2 text-sm font-semibold"><FlaskConical aria-hidden="true" className="h-4 w-4 text-cyan-600 dark:text-cyan-300" /> Simulations</h2>
+      <span data-overlay-control><ModelFieldHelp label="Run Simulation">Choose a saved Simulation, then Run to activate its participants and Actions. {disabledReason || 'Ready to run.'} Owner runs record Results; public runs stay in your browser. A Scenario is a separate plan. Close hides these controls; Setup reopens them.</ModelFieldHelp></span>
+      </div>
+      <div className="flex shrink-0 items-center gap-1">
+      {saveResults && <Button asChild variant="ghost" size="icon" className="h-7 w-7"><Link aria-label="Create Simulation" title="Create Simulation" href={`/dashboard/simulations/new?${draftParams}`}><Plus aria-hidden="true" className="h-3.5 w-3.5" /></Link></Button>}
+      <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Refresh Simulations" title="Refresh Simulations" disabled={preparing || busy || loading} onClick={reload}><RotateCw className="h-3.5 w-3.5" /></Button>
+      <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Close Simulations" onClick={() => { stop(); setHidden(true); }}><X className="h-3.5 w-3.5" /></Button>
+      </div>
     </div>
     {total > 1 && <label className="block text-left text-xs"><span className="sr-only">Simulation</span>
       <select aria-label="Simulation" value={selectedId} disabled={preparing || busy || loading} onChange={event => { setSelectedId(event.target.value); setLaunch(null); setRequest(0); setStopRequest(0); setState(null); setError(''); setRunError(''); }}

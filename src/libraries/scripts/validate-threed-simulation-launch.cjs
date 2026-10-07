@@ -9,7 +9,7 @@ function load(file, mocks = {}, globals = {}, cache = new Map()) {
     { exports, console, URL, URLSearchParams, AbortController, AbortSignal, Error, Date, TextEncoder, ...globals, require(name) {
       if (name in mocks) return mocks[name];
       const target = name.startsWith('@/') ? path.resolve('src', name.slice(2)) : name.startsWith('.') ? path.resolve(path.dirname(file), name) : null;
-      assert(target, name); return load(target.endsWith('.ts') ? target : target + '.ts', mocks, globals, cache);
+      assert(target, name); return load(target.endsWith('.ts') ? target : fs.existsSync(target + '.tsx') ? target + '.tsx' : target + '.ts', mocks, globals, cache);
     } }); return exports;
 }
 const definition = { version: 1, steps: [{ id: 'run', action: 'runToTarget', actorMarkerId: 'kate', targetMarkerId: 'ball', timeoutMs: 60000, onFailure: 'stop' },
@@ -83,7 +83,7 @@ async function read(suffix = '') { return api.GET({ url: `http://localhost/api/p
 function runtime() {
   const slots = []; let cursor = 0, changed = false, effects = [], tree, body;
   const same = (a, b) => a && b && a.length === b.length && a.every((x, i) => Object.is(x, b[i]));
-  const react = { useState(initial) { const i = cursor++; slots[i] ??= { value: typeof initial === 'function' ? initial() : initial };
+  const react = { createContext: value => ({ value }), useContext: context => context.value, useLayoutEffect: () => {}, useState(initial) { const i = cursor++; slots[i] ??= { value: typeof initial === 'function' ? initial() : initial };
     return [slots[i].value, next => { const value = typeof next === 'function' ? next(slots[i].value) : next; if (!Object.is(value, slots[i].value)) { slots[i].value = value; changed = true; } }]; },
     useRef(initial) { return slots[cursor++] ??= { current: initial }; }, useSyncExternalStore(subscribe, get) { return get(); },
     useEffect(fn, deps) { const i = cursor++; if (!same(slots[i]?.deps, deps)) effects.push(() => { slots[i]?.cleanup?.(); slots[i] = { deps, cleanup: fn() }; }); },
@@ -95,7 +95,7 @@ function runtime() {
 function launcherFixture(total = 1, initial = context, options = {}) {
   const rt = runtime(), requests = [], prepares = [], timers = new Map(), listeners = new Map(); let scene = initial, hold = false, queued = [], timerId = 0, fail = false;
   const ui = load('src/components/map/panels/ProjectSimulationLauncher.tsx', {
-    react: rt.react, 'react/jsx-runtime': { jsx, jsxs: jsx }, 'lucide-react': proxy, '@/components/ui/button': proxy,
+    react: rt.react, 'react/jsx-runtime': { jsx, jsxs: jsx }, 'lucide-react': proxy, '@/components/ui/button': proxy, '@/components/admin/threed/models/ModelFieldHelp': proxy,
     'next/link': { default: 'Link' }, '@/components/admin/threed/models/ModelFieldHelp': proxy,
     './ProjectSimulationControls': { ProjectSimulationControls: 'ProjectSimulationControls' },
     '@/components/ui/toast': { useToast: () => ({ showToast: () => {}, ToastComponent: null }) },
@@ -120,14 +120,14 @@ function scenarioGuideFixture() {
   const props = () => ({projectId: '16', markers, loadedScenario: selection, guide, onGuideChange: next => {guide = next;},
     onChooseTemplate: () => {}, onClearLoaded: () => {}, onStartScenario: next => starts.push(next)});
   const ui = load('src/components/map/panels/ScenarioGuidance.tsx', {
-    react: rt.react, 'react/jsx-runtime': {jsx, jsxs: jsx}, 'lucide-react': proxy, 'next/link': {default: 'Link'}, '@/components/ui/button': proxy,
+    react: rt.react, 'react/jsx-runtime': {jsx, jsxs: jsx}, 'lucide-react': proxy, 'next/link': {default: 'Link'}, '@/components/ui/button': proxy, '@/components/admin/threed/models/ModelFieldHelp': proxy,
     '@/components/threed/physics/SensorGroupsWorkspace': {useSensorGroups: () => ({groups: [{id: 'goals', name: 'Goals'}]})},
     '@/components/map/useFarmBotLiveState': {useFarmBotLiveState: () => ({})},
     '@/libraries/services/threed/physics/sensor-cuboid-core': {readPhysicsSensorCuboids: metadata => metadata?.testSensors ?? []},
   });
   const panelRt = runtime();
   const panel = load('src/components/map/panels/ProjectScenariosPanel.tsx', {
-    react: panelRt.react, 'react/jsx-runtime': {jsx, jsxs: jsx}, 'lucide-react': proxy, '@/components/ui/button': proxy,
+    react: panelRt.react, 'react/jsx-runtime': {jsx, jsxs: jsx}, 'lucide-react': proxy, '@/components/ui/button': proxy, '@/components/admin/threed/models/ModelFieldHelp': proxy,
     './ScenarioGuidance': {ScenarioGuidance: 'ScenarioGuidance'}, './ProjectScenarioLoadDialog': {ProjectScenarioLoadDialog: 'ProjectScenarioLoadDialog'},
   });
   panelRt.mount(() => panel.ProjectScenariosPanel({isOpen: true, projectId: '16', markers, selected: selection, guide, startedScenarioName: null,
@@ -162,6 +162,7 @@ function scenarioGuideFixture() {
   assert(ui.find(node => node.props?.['aria-label'] === 'Run Simulation').props.hidden);
   ui.toggle(999); assert(ui.find(node => node.props?.['aria-label'] === 'Run Simulation').props.hidden, 'Other Project event cannot reopen');
   ui.toggle(16); assert.equal(ui.find(node => node.props?.['aria-label'] === 'Run Simulation').props.hidden, false);
+  ui.toggle(16); assert.equal(ui.find(node => node.props?.['aria-label'] === 'Run Simulation').props.hidden, false, 'Opening an open panel is idempotent');
   assert(ui.button().props.className.includes('bg-emerald-600'), 'Enabled Run uses the green action style');
   ui.button().props.onClick(); ui.button().props.onClick(); await ui.rt.flush(); assert.equal(ui.prepares.length, 1, 'One-click preparation locks duplicate clicks');
   let controls = ui.find(node => node.type === 'ProjectSimulationControls'); assert.equal(controls.props.launch.request, 1); assert.equal(controls.props.launch.saveResults, false);

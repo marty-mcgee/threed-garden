@@ -7,6 +7,18 @@ import { resolveCharacterPhysics } from '../services/threed/characters/character
 import { DEFAULT_THREE_D_ENVIRONMENT_PRESET_KEY } from '../services/threed/environment-presets.ts';
 const saved = {version:1, savedAt:new Date().toISOString(), viewMode:'3d', panelHeight:50, cameraMode:'orbit', threeD:{ cameraPosition:{x:1,y:2,z:3}, cameraTarget:{x:0,y:0,z:0}, activeLayers:['models'], environment:DEFAULT_THREE_D_ENVIRONMENT_PRESET_KEY, autoRotate:false, showGrid:false, showLegend:false, showGizmo:true, sunlight:{azimuth:210,elevation:25}, ground:{enabled:true,size:300,height:-0.2}}};
 assert.deepEqual(parseThreeDProjectViewState(JSON.parse(JSON.stringify(saved))).threeD, saved.threeD);
+const overlayPositions = { simulations: { x: 0.3, y: 0.5 }, scenarios: { x: 0, y: 1 }, tour: { x: 1, y: 0 }, sensorGroup: { x: 0.1, y: 0.2 }, sensors: { x: 1, y: 0.4 } };
+assert.deepEqual(parseThreeDProjectViewState(JSON.parse(JSON.stringify({ ...saved, overlayPositions }))).overlayPositions, overlayPositions);
+assert.equal(parseThreeDProjectViewState(saved).overlayPositions, undefined);
+assert.equal(parseThreeDProjectViewState(saved).projectTourOpen, undefined);
+for (const projectTourOpen of [true, false]) {
+  assert.equal(parseThreeDProjectViewState({ ...saved, projectTourOpen }).projectTourOpen, projectTourOpen);
+}
+assert.throws(() => parseThreeDProjectViewState({ ...saved, projectTourOpen: 'true' }));
+assert.deepEqual(parseThreeDProjectViewState({ ...saved, overlayPositions: {} }).overlayPositions, {});
+for (const bad of [{ unknown: { x: 0, y: 0 } }, { tour: { x: -1, y: 0 } }, { tour: { x: 0, y: Infinity } }, { tour: { x: '0', y: 0 } }]) {
+  assert.throws(() => parseThreeDProjectViewState({ ...saved, overlayPositions: bad }));
+}
 assert.throws(() => parseThreeDProjectViewState({...saved, threeD:{...saved.threeD,ground:{enabled:true,size:Infinity,height:0}}}));
 const legacy = {...saved,threeD:{...saved.threeD,sunlight:undefined,ground:undefined}};
 assert.equal(parseThreeDProjectViewState(legacy).threeD?.ground,undefined);

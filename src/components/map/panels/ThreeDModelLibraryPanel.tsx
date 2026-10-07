@@ -3,6 +3,7 @@
 import { AlertTriangle, Box, CheckCircle2, ExternalLink, Loader2, Search, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -116,13 +117,10 @@ export function ThreeDModelLibraryPanel({
       : '3D Scene';
 
   return (
-    <div className="threed-workspace-panel threed-scene-panel-surface threed-model-library-panel absolute bottom-0 left-0 top-9 z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md">
+    <div className="threed-workspace-panel threed-scene-panel-surface threed-model-library-panel absolute bottom-0 left-0 top-[38px] z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md">
       <div className="mb-2 flex items-center justify-between gap-2">
         <div>
-          <h2 className="text-sm font-semibold">ThreeD Model Library</h2>
-          <p className="text-[11px] text-muted-foreground">
-            Drag a model onto the active 2D Map or ThreeD Scene, or choose Place and click.
-          </p>
+          <div className="flex items-center gap-2"><h2 className="flex items-center gap-2 text-sm font-semibold"><Box aria-hidden="true" className="h-4 w-4 text-violet-700 dark:text-violet-300" />ThreeD Model Library</h2><ModelFieldHelp label="Model Library">Drag a model onto the active 2D Map or ThreeD Scene, or choose Place and click.</ModelFieldHelp></div>
         </div>
         <Button type="button" variant="ghost" size="icon" className="h-7 w-7" disabled={placing} onClick={onClose}>
           <X className="h-3.5 w-3.5" />

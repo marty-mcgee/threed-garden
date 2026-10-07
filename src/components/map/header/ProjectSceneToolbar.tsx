@@ -50,6 +50,7 @@ interface ProjectSceneToolbarProps {
   projectTourOpen: boolean;
   onOpenProjectTour: () => void;
   savingProject: boolean;
+  onResetOverlayPositions?: () => void;
   onSaveProject: () => void;
 }
 
@@ -81,6 +82,7 @@ export function ProjectSceneToolbar({
   onOpenProjectTour,
   savingProject,
   onSaveProject,
+  onResetOverlayPositions,
 }: ProjectSceneToolbarProps) {
   return (
     <div className="flex flex-wrap items-center gap-1">
@@ -109,6 +111,7 @@ export function ProjectSceneToolbar({
             <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onOpenProjectTour}><ScanSearch className="h-3.5 w-3.5" /> Project Tour</DropdownMenuItem>
             <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onOpenScenarios}><Layers className="h-3.5 w-3.5" /> Scenarios</DropdownMenuItem>
             <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={() => window.dispatchEvent(new CustomEvent('threed:simulation-panel', { detail: { projectId: Number(selectedProjectId) } }))}><Layers className="h-3.5 w-3.5" /> Simulations</DropdownMenuItem>
+            {onResetOverlayPositions && <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onResetOverlayPositions}><ScanSearch className="h-3.5 w-3.5" /> Reset Overlay Positions</DropdownMenuItem>}
             <DropdownMenuItem className="threed-toolbar-menu-item" asChild><a href="/dashboard/assembly-groups" target="_blank" rel="noopener noreferrer"><Boxes className="h-3.5 w-3.5" /> Assembly Groups</a></DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

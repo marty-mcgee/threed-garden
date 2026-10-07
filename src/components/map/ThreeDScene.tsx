@@ -1,5 +1,8 @@
 // components/map/ThreeDScene.tsx
 'use client';
+import { Radio } from 'lucide-react';
+import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
+import { useProjectOverlayPosition } from './panels/ProjectOverlayLayout';
 
 import type { ScenarioStartRequest } from '@/libraries/services/threed/scenario-core';
 import { ProjectSimulationLauncher } from './panels/ProjectSimulationLauncher';
@@ -2382,6 +2385,7 @@ export function ThreeDScene({
   const [showGrid, setShowGrid] = useState(false);
   const [showLegend, setShowLegend] = useState(false);
   const [showSensors, setShowSensors] = useState(false);
+  const sensorsOverlay = useProjectOverlayPosition('sensors');
   const [activeScenario, setActiveScenario] = useState<ScenarioStartRequest | null>(null);
   const [scenarioInstructionVisible, setScenarioInstructionVisible] = useState(false);
   const scenarioInstruction = activeScenario?.projectId === projectId && scenarioInstructionVisible ? activeScenario : null;
@@ -3609,7 +3613,7 @@ export function ThreeDScene({
         </div>
       )}
       {sceneProductionStarted && canRunSimulations && onSimulationParticipantsChange && <ProjectSimulationLauncher key={projectId} saveResults={saveSimulationResults}
-        obscured={scenarioOverlaysObscured || showControls} subscribeSensors={subscribeSimulationSensors}
+        subscribeSensors={subscribeSimulationSensors}
         context={{ projectId, allowed: canRunSimulations, ready: sceneProductionStarted && !physicsFailed,
           busy: !!placementLabel || transforming, controlledCharacterId, target: actionTarget, markers: sceneMarkers,
           layers: activeLayers, visibleMarkerIds, settledCharacters: settledCharacterMarkerIds, groups: sensorGroups?.groups ?? [], sensorMembers,
@@ -3632,10 +3636,12 @@ export function ThreeDScene({
             : <p className="mt-1 text-foreground/80">Explore {activeScenario.environmentName}, its Beds and Plantings. Select a FarmBot in the Setup Guide to review its observation.</p>)}
             </section>
           )}
-          {showSensors && (
-            <section data-scene-hover-obstacle aria-label="Physics Sensors" aria-hidden={scenarioOverlaysObscured || showControls} inert={scenarioOverlaysObscured || showControls} className={`threed-workspace-panel threed-scene-panel-surface ml-auto flex max-h-[min(32rem,calc(100dvh-11rem))] w-72 max-w-full shrink-0 flex-col overflow-hidden rounded-lg border border-foreground/15 text-xs text-foreground shadow-xl backdrop-blur-md transition-opacity duration-200 ${scenarioOverlaysObscured || showControls ? 'pointer-events-none opacity-40' : 'pointer-events-auto opacity-100'}`}>
-          <header className="flex shrink-0 items-center justify-between gap-2 px-3 py-2">
-            <h2 className="text-sm font-semibold">Physics Sensors</h2>
+        </div>
+      )}
+          {sceneProductionStarted && showSensors && (
+            <section ref={sensorsOverlay.ref} style={sensorsOverlay.style} data-scene-hover-obstacle aria-label="Physics Sensors" className="threed-workspace-panel threed-scene-panel-surface absolute right-0 top-10 z-30 flex max-h-[calc(100%_-_4rem)] w-72 max-w-full flex-col overflow-hidden rounded-lg border border-foreground/15 text-xs text-foreground shadow-xl backdrop-blur-md">
+          <header {...sensorsOverlay.handle} className={`${sensorsOverlay.handle.className} flex shrink-0 items-center justify-between gap-2 px-3 py-2`}>
+            <div className="flex items-center gap-2"><h2 className="flex items-center gap-2 text-sm font-semibold"><Radio aria-hidden="true" className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />Physics Sensors</h2><span data-overlay-control><ModelFieldHelp label="Physics Sensors">Add a Physics Sensor Cuboid in an asset?s DetailsCard and choose Count Entries. Counts continue while hidden. Save Project to keep them after reload.</ModelFieldHelp></span></div>
             <button type="button" onClick={() => setShowSensors(false)} aria-label="Close Physics Sensors" className="rounded p-1 text-foreground/70 hover:bg-foreground/10"><X className="h-4 w-4" /></button>
           </header>
           <div className="min-h-0 space-y-2 overflow-y-auto overscroll-contain px-3 pb-3 [scrollbar-width:thin]">
@@ -3648,12 +3654,10 @@ export function ThreeDScene({
                 <span className="shrink-0 tabular-nums">{sensorCounterState.counts[sensorMemberKey(member)] ?? 0}</span>
               </div>)}</div>
             </details>)}
-            <p className="text-[10px] text-foreground/55">Counts continue while hidden. Save Project to keep them after reload.</p>
           </div>
             </section>
           )}
-        </div>
-      )}
+
       {/* Scene-owned controls are presented from the shared Project toolbar. */}
       {groundMapInspector?.host && createPortal(groundMapControls, groundMapInspector.host)}
       {environmentControlsHost && createPortal(<div data-scene-hover-obstacle className="relative">

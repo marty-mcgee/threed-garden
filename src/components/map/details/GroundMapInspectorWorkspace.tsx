@@ -1,7 +1,8 @@
 'use client';
 
 import { createContext, useContext, useState, type ReactNode } from 'react';
-import { X } from 'lucide-react';
+import { Map, X } from 'lucide-react';
+import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 import { Button } from '@/components/ui/button';
 
 const Context = createContext<{
@@ -23,11 +24,11 @@ export function GroundMapInspector({ leftOffsetRem, available, onSave, saving }:
 }) {
   const workspace = useGroundMapInspector();
   return <section hidden={!workspace?.open || !available} aria-label="Ground Map inspector"
-    className="threed-workspace-panel threed-details-surface absolute top-9 z-40 flex max-h-[calc(100%-2.25rem)] w-[min(18rem,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-lg border border-foreground/15 text-foreground shadow-xl"
+    className="threed-workspace-panel threed-details-surface absolute top-[38px] z-40 flex max-h-[calc(100%-38px)] w-[min(18rem,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-lg border border-foreground/15 text-foreground shadow-xl"
     style={{ display: !workspace?.open || !available ? 'none' : undefined, left: `${leftOffsetRem}rem`, backgroundColor: 'var(--threed-details-background)' }}>
     <div className="shrink-0 border-b border-foreground/10 p-2">
       <Button className="h-8 w-full text-xs" variant="outline" disabled={saving} onClick={onSave}>{saving ? 'Saving…' : 'Save Project'}</Button>
-      <div className="mt-2 flex items-center justify-between"><h2 className="text-sm font-semibold">Ground Map</h2>
+      <div className="mt-2 flex items-center justify-between"><div className="flex items-center gap-2"><Map aria-hidden="true" className="h-4 w-4 text-sky-600 dark:text-sky-300" /><h2 className="text-sm font-semibold">Ground Map</h2><ModelFieldHelp label="Ground Map">Adjust the Project ground map settings, then Save Project to keep your changes.</ModelFieldHelp></div>
         <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Close Ground Map" onClick={() => workspace?.setOpen(false)}><X className="h-4 w-4" /></Button>
       </div>
     </div>

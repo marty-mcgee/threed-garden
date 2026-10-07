@@ -1,7 +1,8 @@
 'use client';
 
-import { Loader2, X } from 'lucide-react';
+import { Layers, Loader2, X } from 'lucide-react';
 
+import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -61,14 +62,9 @@ export function ThreeDBedPlacementPanel({
   const inputsDisabled = placementActive || placing;
 
   return (
-    <div className="threed-workspace-panel threed-scene-panel-surface absolute bottom-0 left-0 top-9 z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-y-auto overscroll-contain rounded-md border p-3 shadow-xl backdrop-blur-md">
+    <div className="threed-workspace-panel threed-scene-panel-surface absolute bottom-0 left-0 top-[38px] z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-y-auto overscroll-contain rounded-md border p-3 shadow-xl backdrop-blur-md">
       <div className="mb-2 flex shrink-0 items-start justify-between gap-2">
-        <div>
-          <h2 className="text-sm font-semibold">Add ThreeD Bed</h2>
-          <p className="text-[11px] text-muted-foreground">
-            Set the Bed parameters, then choose its location in the ThreeD Scene.
-          </p>
-        </div>
+        <div className="flex min-w-0 items-center gap-2"><Layers aria-hidden="true" className="h-4 w-4 shrink-0 text-orange-600 dark:text-orange-300" /><h2 className="text-sm font-semibold">Add ThreeD Bed</h2><ModelFieldHelp label="Add ThreeD Bed">Set the Bed parameters, then choose its location in the ThreeD Scene.</ModelFieldHelp></div>
         <Button type="button" variant="ghost" size="icon" className="h-7 w-7" disabled={placing} onClick={onClose}>
           <X className="h-3.5 w-3.5" />
         </Button>

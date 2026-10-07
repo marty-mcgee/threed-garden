@@ -10,6 +10,7 @@ const mocks = {
   '@/components/map/details/PersistentDetails': { DetailsSectionScope: { Provider: 'Scope' }, PersistentDetails: 'Details' },
   '@/components/ui/button': { Button: 'button' },
   '@/components/ui/input': { Input: 'input' },
+  '@/components/admin/threed/models/ModelFieldHelp': { ModelFieldHelp: 'Help' },
   '@/libraries/services/threed/physics/sensor-cuboid-core': { readPhysicsSensorCuboids: () => [] },
   '@/components/threed/transform/SceneTransformWorkspace': { useSceneTransform: () => ({ session: null }) },
   '@/components/threed/physics/SensorGroupsWorkspace': { useSensorGroups: () => null },

@@ -12,7 +12,8 @@ import { getCharacterAnimationAvailability, subscribeCharacterAnimationAvailabil
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useSession } from 'next-auth/react';
 import { hasModelLoadFailure, subscribeModelLoadFailures } from '@/libraries/services/threed/models/model-load-failures';
-import { Crosshair, ExternalLink, Gamepad2, Loader2, Pause, ScanSearch, Settings2, X } from 'lucide-react';
+import { Box, Radio, Crosshair, ExternalLink, Gamepad2, Loader2, Pause, ScanSearch, Settings2, X } from 'lucide-react';
+import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 import type { RuntimeMarker, ThreeDActionTarget } from '@/libraries/types/map';
 import type { ThreeDRuntimeMarkerPositionResolver } from '@/components/map/UnifiedMapView';
 import {
@@ -526,7 +527,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
     <DetailsSectionScope.Provider value={`${projectId}:${selected.type}:${selected.id}:${selectedSensorId ?? 'asset'}`}>
     <DetailsCardActionsProvider>
     <div
-      className={`flex flex-col threed-workspace-panel threed-details-surface threed-inspector ${selectedSensorId ? 'threed-sensor-inspector' : ''} ${isCharacterMarker && !showCharacterSettings && !selectedSensorId && movingModuleMarkerId !== characterMarkerId ? '[&_[data-character-settings-section]]:hidden' : ''} absolute top-9 z-40 max-h-[calc(100%-2.25rem)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-lg border border-foreground/15 text-foreground shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]`}
+      className={`flex flex-col threed-workspace-panel threed-details-surface threed-inspector ${selectedSensorId ? 'threed-sensor-inspector' : ''} ${isCharacterMarker && !showCharacterSettings && !selectedSensorId && movingModuleMarkerId !== characterMarkerId ? '[&_[data-character-settings-section]]:hidden' : ''} absolute top-[38px] z-40 max-h-[calc(100%-38px)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-lg border border-foreground/15 text-foreground shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]`}
       style={{
         left: `${leftOffsetRem}rem`,
         backgroundColor: 'var(--threed-details-background, rgba(17, 26, 40, 0.5))',
@@ -537,14 +538,13 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
         className="shrink-0 flex items-start justify-between gap-2 border-b border-foreground/10 px-3 py-3"
       >
         <div className="min-w-0 pb-1 pt-0.5">
+          <div className="flex min-w-0 items-center gap-2">
+          {selectedSensorId ? <Radio aria-hidden="true" className="h-4 w-4 shrink-0 text-cyan-600 dark:text-cyan-300" /> : <Box aria-hidden="true" className="h-4 w-4 shrink-0 text-violet-600 dark:text-violet-300" />}
           <div className="truncate text-sm font-semibold text-foreground">
             {selectedSensorId ? (readPhysicsSensorCuboids(selected.metadata).find(sensor => sensor.id === selectedSensorId)?.name ?? 'New Physics Sensor') : selected.name || selected.title || selected.label || 'Unknown'}
           </div>
-          {selectedSensorId && (
-            <p className="mt-0.5 text-[10px] font-medium uppercase tracking-wide text-cyan-800/80 dark:text-cyan-100/80">
-              Physics Sensor · {selectedSensorCount} on this asset
-            </p>
-          )}
+          <ModelFieldHelp label={selectedSensorId ? 'Physics Sensor' : 'Asset details'}>{selectedSensorId ? `Edit this Physics Sensor. ${selectedSensorCount} sensors are configured on this asset.` : 'Inspect this Project asset and use its controls to adjust settings, position or available Actions.'}</ModelFieldHelp>
+          </div>
         </div>
         <button
           type="button"

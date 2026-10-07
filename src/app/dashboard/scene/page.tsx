@@ -1,5 +1,6 @@
 // dashboard/scene/page
 'use client';
+import { ProjectOverlayLayoutContext } from '@/components/map/panels/ProjectOverlayLayout';
 import type { SceneResourceIssue } from '@/components/threed/shared/SceneResourceStatus';
 import { GroundMapInspectorWorkspace, GroundMapInspector, useGroundMapInspector } from '@/components/map/details/GroundMapInspectorWorkspace';
 import { SensorGroupInspector } from '@/components/map/details/SensorGroupInspector';
@@ -112,6 +113,7 @@ import {
   emptyProjectScenarioPanelState,
   type ProjectScenarioGuideState,
   type ProjectScenarioSelection,
+  type ProjectOverlayPositions,
   type ThreeDProjectViewState,
 } from '@/libraries/services/threed/markers/project-view-state-core';
 
@@ -215,8 +217,10 @@ function UnifiedMapPageInner() {
   const [data, setData] = useState<UnifiedMapData>(getDefaultMapData());
   const [isDefaultView, setIsDefaultView] = useState(!projectIdParam);
   const [savingProjectMarkers, setSavingProjectMarkers] = useState(false);
+  const [overlayPositions, setOverlayPositions] = useState<ProjectOverlayPositions>({});
   const saveRequestRef = useRef(0);
   useEffect(() => {
+    setOverlayPositions({});
     saveRequestRef.current += 1;
     setSavingProjectMarkers(false);
     setScenarioPanelState(emptyProjectScenarioPanelState());
@@ -668,8 +672,6 @@ function UnifiedMapPageInner() {
     selectModelId?: number,
   ) => {
     setIsProjectAssetsOpen(false);
-    setIsProjectSetupOpen(false);
-    setIsScenariosOpen(false);
     setIsSetupMenuOpen(false);
     setIsSceneAddMenuOpen(false);
     setIsFarmBotLibraryOpen(false);
@@ -788,8 +790,6 @@ function UnifiedMapPageInner() {
 
   const openCharacterLibrary = useCallback(async () => {
     setIsProjectAssetsOpen(false);
-    setIsProjectSetupOpen(false);
-    setIsScenariosOpen(false);
     setIsSetupMenuOpen(false);
     setIsSceneAddMenuOpen(false);
     setIsFarmBotLibraryOpen(false);
@@ -828,8 +828,6 @@ function UnifiedMapPageInner() {
 
   const openFarmBotLibrary = useCallback(async () => {
     setIsProjectAssetsOpen(false);
-    setIsProjectSetupOpen(false);
-    setIsScenariosOpen(false);
     setIsSetupMenuOpen(false);
     setIsSceneAddMenuOpen(false);
     setIsModelLibraryOpen(false);
@@ -867,8 +865,6 @@ function UnifiedMapPageInner() {
 
   const openPlantingPlacement = useCallback(async () => {
     setIsProjectAssetsOpen(false);
-    setIsProjectSetupOpen(false);
-    setIsScenariosOpen(false);
     setIsSetupMenuOpen(false);
     setIsSceneAddMenuOpen(false);
     setIsFarmBotLibraryOpen(false);
@@ -911,8 +907,6 @@ function UnifiedMapPageInner() {
 
   const openBedPlacement = useCallback(() => {
     setIsProjectAssetsOpen(false);
-    setIsProjectSetupOpen(false);
-    setIsScenariosOpen(false);
     setIsSetupMenuOpen(false);
     setIsSceneAddMenuOpen(false);
     setIsFarmBotLibraryOpen(false);
@@ -962,6 +956,8 @@ function UnifiedMapPageInner() {
           assetSearch: projectAssetSearch,
           assetType: projectAssetType,
         },
+        projectTourOpen: isProjectSetupOpen,
+        overlayPositions,
         scenario: { ...scenarioPanelState, panelOpen: isScenariosOpen },
       };
       const response = await fetch('/api/project/threed-markers', {
@@ -999,7 +995,7 @@ function UnifiedMapPageInner() {
     } finally {
       if (saveRequestRef.current === requestId) setSavingProjectMarkers(false);
     }
-  }, [cameraMode, initialProjectViewState, panelHeight, savingProjectMarkers, selectedProjectId, viewMode, selectedMarker, isProjectAssetsOpen, isModelLibraryOpen, projectAssetSearch, projectAssetType, scenarioPanelState, isScenariosOpen]);
+  }, [cameraMode, initialProjectViewState, panelHeight, savingProjectMarkers, selectedProjectId, viewMode, selectedMarker, isProjectAssetsOpen, isModelLibraryOpen, projectAssetSearch, projectAssetType, scenarioPanelState, isScenariosOpen, isProjectSetupOpen, overlayPositions]);
 
   // Phase 5A compatibility bridge: establish the orchestration request
   // lifecycle while preserving immediate animation until proximity is gated.
@@ -1378,6 +1374,7 @@ function UnifiedMapPageInner() {
         const { session } = outcome;
         setProjectAccess({ projectId: String(selectedProjectId), canEdit: session.canEdit });
         setInitialProjectViewState(session.savedViewState);
+        setOverlayPositions(session.savedViewState?.overlayPositions ?? {});
         setScenarioPanelState(session.savedViewState?.scenario ?? emptyProjectScenarioPanelState());
         setScenarioStartRequest(null);
         if (session.savedViewState) {
@@ -2471,6 +2468,7 @@ function UnifiedMapPageInner() {
     setProjectAssetType(workspace?.assetType && projectRuntimeMarkers.some(marker => marker.type === workspace.assetType)
       ? workspace.assetType : 'all');
     setIsScenariosOpen(initialProjectViewState.scenario?.panelOpen ?? false);
+    if (initialProjectViewState.projectTourOpen !== undefined) setIsProjectSetupOpen(initialProjectViewState.projectTourOpen);
   }, [canEditProject, initialProjectViewState, isThreeDPresentationComplete, openModelLibrary, projectRuntimeMarkers, viewMode]);
   useEffect(() => {
     if (!canEditProject || !selectedProjectId || !isThreeDPresentationComplete) {
@@ -2479,16 +2477,15 @@ function UnifiedMapPageInner() {
       setIsSetupMenuOpen(false);
       return;
     }
+    if (initialProjectViewState?.projectTourOpen !== undefined) return;
     if (dismissedProjectSetupProjectId === selectedProjectId || initialProjectViewState?.scenario?.panelOpen) return;
     if (projectRuntimeMarkers.length === 0) {
       setProjectSetupSessionProjectId(selectedProjectId);
-      setIsScenariosOpen(false);
       setIsSetupMenuOpen(false);
       setIsProjectSetupOpen(true);
       return;
     }
     if (projectSetupSessionProjectId === selectedProjectId) {
-      setIsScenariosOpen(false);
       setIsSetupMenuOpen(false);
       setIsProjectSetupOpen(true);
     }
@@ -2571,7 +2568,6 @@ function UnifiedMapPageInner() {
     setPlantingPlacementActive(false);
     setIsSceneAddMenuOpen(false);
     setIsProjectSummaryOpen(false);
-    setIsScenariosOpen(false);
     setIsSetupMenuOpen(false);
     setIsProjectSetupOpen(true);
   }, []);
@@ -2580,8 +2576,6 @@ function UnifiedMapPageInner() {
     if (!open) return;
     setIsProjectSummaryOpen(false);
     setIsSceneAddMenuOpen(false);
-    setIsProjectSetupOpen(false);
-    setIsScenariosOpen(false);
     setIsSetupMenuOpen(false);
     setProjectSetupSessionProjectId(null);
     setDismissedProjectSetupProjectId(selectedProjectId);
@@ -2631,6 +2625,7 @@ function UnifiedMapPageInner() {
   const scenarioOverlaysObscured = isScenariosOpen || isProjectSetupOpen || isSetupMenuOpen || isSceneAddMenuOpen || isProjectSummaryOpen;
 
   return (
+    <ProjectOverlayLayoutContext.Provider value={{ positions: overlayPositions, move: (id, position) => setOverlayPositions(current => ({ ...current, [id]: position })) }}>
     <div className="relative">
       {ToastComponent}
 
@@ -2678,8 +2673,6 @@ function UnifiedMapPageInner() {
           }))}
           onTrigger={() => {
             setIsSetupMenuOpen(false);
-            setIsScenariosOpen(false);
-            setIsProjectSetupOpen(false);
             setEnvironmentControlsCloseRequest((request) => request + 1);
             setIsSceneAddMenuOpen(false);
             if (selectedProjectId) {
@@ -2712,6 +2705,7 @@ function UnifiedMapPageInner() {
         />
         
         <ProjectSceneToolbar
+          onResetOverlayPositions={() => setOverlayPositions({})}
           selectedProjectId={selectedProjectId}
           viewMode={viewMode}
           onViewModeChange={(mode) => {
@@ -2729,8 +2723,6 @@ function UnifiedMapPageInner() {
             const nextOpen = !isSceneAddMenuOpen;
             if (nextOpen) {
               setEnvironmentControlsCloseRequest((request) => request + 1);
-              setIsProjectSetupOpen(false);
-              setIsScenariosOpen(false);
               setIsSetupMenuOpen(false);
               setProjectSetupSessionProjectId(null);
               setDismissedProjectSetupProjectId(selectedProjectId);
@@ -2759,30 +2751,17 @@ function UnifiedMapPageInner() {
               setEnvironmentControlsCloseRequest(request => request + 1);
               setIsSceneAddMenuOpen(false);
               setIsProjectSummaryOpen(false);
-              setIsProjectSetupOpen(false);
-              setIsScenariosOpen(false);
-              setProjectSetupSessionProjectId(null);
-              setDismissedProjectSetupProjectId(selectedProjectId);
             }
             setIsSetupMenuOpen(open);
           }}
           onOpenScenarios={() => {
             setIsSetupMenuOpen(false);
-            setIsProjectSetupOpen(false);
             setIsScenariosOpen(true);
             setProjectSetupSessionProjectId(null);
             setDismissedProjectSetupProjectId(selectedProjectId);
           }}
           projectTourOpen={isProjectSetupOpen}
           onOpenProjectTour={() => {
-            if (isProjectSetupOpen) {
-              setIsProjectSetupOpen(false);
-              setIsScenariosOpen(false);
-              setIsSetupMenuOpen(false);
-              setProjectSetupSessionProjectId(null);
-              setDismissedProjectSetupProjectId(selectedProjectId);
-              return;
-            }
             setDismissedProjectSetupProjectId(null);
             setProjectSetupSessionProjectId(selectedProjectId);
             openProjectSetup();
@@ -2861,26 +2840,19 @@ function UnifiedMapPageInner() {
           )}
           onClose={() => {
             setIsProjectSetupOpen(false);
-            setIsScenariosOpen(false);
             setIsSetupMenuOpen(false);
             setProjectSetupSessionProjectId(null);
             setDismissedProjectSetupProjectId(selectedProjectId);
           }}
           onAddEnvironment={() => {
-            setIsProjectSetupOpen(false);
-            setIsScenariosOpen(false);
             setIsSetupMenuOpen(false);
             void openModelLibrary('environment');
           }}
           onAddCharacter={() => {
-            setIsProjectSetupOpen(false);
-            setIsScenariosOpen(false);
             setIsSetupMenuOpen(false);
             void openCharacterLibrary();
           }}
           onOpenModelLibrary={() => {
-            setIsProjectSetupOpen(false);
-            setIsScenariosOpen(false);
             setIsSetupMenuOpen(false);
             void openModelLibrary('object');
           }}
@@ -3374,5 +3346,6 @@ function UnifiedMapPageInner() {
       </div>
       
     </div>
+    </ProjectOverlayLayoutContext.Provider>
   );
 }

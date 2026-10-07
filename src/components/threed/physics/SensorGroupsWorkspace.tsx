@@ -49,7 +49,7 @@ export function SensorGroupsWorkspace({ children }: { children: ReactNode }) {
   const projectId = useSearchParams().get('projectId');
   return <ProjectGroups projectId={projectId}>{children}</ProjectGroups>;
 }
-export function SensorGroupEditor({ initialGroupId = '', expanded = false, onSelectGroup }: { initialGroupId?: string; expanded?: boolean; onSelectGroup?: (id: string) => void }) {
+export function SensorGroupEditor({ initialGroupId = '', expanded = false, showHelp = true, onSelectGroup }: { initialGroupId?: string; expanded?: boolean; showHelp?: boolean; onSelectGroup?: (id: string) => void }) {
   const workspace = useSensorGroups();
   const [id, setId] = useState(initialGroupId);
   const [name, setName] = useState(() => workspace?.groups.find(group => group.id === initialGroupId)?.name ?? '');
@@ -68,7 +68,7 @@ export function SensorGroupEditor({ initialGroupId = '', expanded = false, onSel
       }} className="rounded border border-white/20 p-1">Save Group</button>
       {id && <button type="button" disabled={workspace.saving || workspace.loading} onClick={async () => { if (await workspace.save({ id, name: name || 'Group' }, 'delete')) { setId(''); setName(''); onSelectGroup?.(''); } }} className="ml-2 rounded border border-red-300/30 p-1">Delete Empty Group</button>}
       {workspace.error && <p role="alert" className="text-red-200">{workspace.error}</p>}
-      <p>Group names save immediately. Sensor membership saves with the sensor.</p>
+      {showHelp && <p>Group names save immediately. Sensor membership saves with the sensor.</p>}
     </div>
   </details>;
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { Box, CheckCircle2, ExternalLink, Map, Sparkles, User, X } from 'lucide-react';
+import { useProjectOverlayPosition } from './ProjectOverlayLayout';
 import { Button } from '@/components/ui/button';
 import {
   createProjectTourState,
@@ -30,6 +31,7 @@ export function ProjectSetupPanel({
   onOpenModelLibrary: () => void;
   onOpenProjectSettings: () => void;
 }) {
+  const overlay = useProjectOverlayPosition('tour');
   if (!isOpen) return null;
   const tour = createProjectTourState({ hasEnvironment, hasSceneModel, hasCharacter });
   const stepActions: Record<ProjectTourStepKey, () => void> = {
@@ -44,13 +46,13 @@ export function ProjectSetupPanel({
   } satisfies Record<ProjectTourStepKey, typeof Box>;
 
   return (
-    <section
-      className="threed-workspace-panel threed-toolbar-dropdown-surface absolute left-1/2 top-14 z-30 w-[min(28rem,calc(100%-2rem))] -translate-x-1/2 max-h-[calc(100%-4rem)] overflow-y-auto overscroll-contain rounded-xl border border-white/10 shadow-2xl backdrop-blur-md"
+    <section ref={overlay.ref} style={overlay.style}
+      className={`threed-workspace-panel threed-toolbar-dropdown-surface absolute left-1/2 top-10 z-30 w-[min(28rem,calc(100%_-_2rem))] -translate-x-1/2 max-h-[calc(100%_-_4rem)] overflow-y-auto overscroll-contain rounded-xl border border-white/10 shadow-2xl backdrop-blur-md transition-opacity opacity-100`}
       aria-labelledby="project-setup-title"
     >
       <div className="h-1 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500" />
       <div className="p-3">
-        <div className="flex items-start justify-between gap-3">
+        <div {...overlay.handle} className={`${overlay.handle.className} flex items-start justify-between gap-3`}>
           <div className="flex min-w-0 gap-2">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cyan-500/15 ring-1 ring-cyan-400/30">
               <Sparkles className="h-4 w-4 text-cyan-500" aria-hidden="true" />

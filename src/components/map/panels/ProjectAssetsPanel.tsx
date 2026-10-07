@@ -3,7 +3,8 @@
 import type { SceneResourceIssue } from '@/components/threed/shared/SceneResourceStatus';
 import { DetailsSectionScope, PersistentDetails } from '@/components/map/details/PersistentDetails';
 import { useEffect, useRef } from 'react';
-import { AlertTriangle, ExternalLink, Crosshair, Search, X } from 'lucide-react';
+import { AlertTriangle, Boxes, Radio, ExternalLink, Crosshair, Search, X } from 'lucide-react';
+import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import type { RuntimeMarker } from '@/libraries/types/map';
@@ -90,11 +91,11 @@ export function ProjectAssetsPanel({
           id="project-assets-panel"
           role="region"
           aria-label="Project Assets"
-          className="threed-workspace-panel threed-scene-panel-surface absolute bottom-0 left-0 top-9 z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md"
+          className="threed-workspace-panel threed-scene-panel-surface absolute bottom-0 left-0 top-[38px] z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md"
         >
           <div className="mb-2 flex shrink-0 items-start justify-between gap-2">
             <div className="min-w-0">
-              <h2 className="text-sm font-semibold">Project Assets</h2>
+              <div className="flex items-center gap-2"><h2 className="flex items-center gap-2 text-sm font-semibold"><Boxes aria-hidden="true" className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />Project Assets</h2><ModelFieldHelp label="Project Assets">Browse and search assets assigned to this Project. Select an asset to inspect it, or use its target icon to locate it in the Scene. Sensor tools manage this Project’s Sensor Groups.</ModelFieldHelp></div>
 
             </div>
             <Button
@@ -241,7 +242,7 @@ export function ProjectAssetsPanel({
             </PersistentDetails>}
           </div>
           <div className="shrink-0 space-y-2 border-t border-foreground/15 pt-2 mt-2 mb-14 max-h-[30%] overflow-y-auto" aria-label="Sensor Tools">
-            <h3 className="text-xs font-semibold">Sensor Tools</h3>
+            <div className="flex items-center gap-2"><h3 className="flex items-center gap-2 text-xs font-semibold"><Radio aria-hidden="true" className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-300" />Sensor Tools</h3><ModelFieldHelp label="Sensor Tools">Select a Sensor Group to inspect its members, or create a new group. Select a Project asset to add and configure its Sensors.</ModelFieldHelp></div>
             {!groundMapSelected && selectedMarker && ['project-marker', 'project-snapshot'].includes(String(selectedMarker.metadata?.source)) && ['model', 'models', 'bed', 'beds', 'planting', 'plantings', 'farmbot', 'farmbots'].includes(selectedMarker.type.toLowerCase()) && (
               <Button disabled={Boolean(transform.session) || readPhysicsSensorCuboids(selectedMarker.metadata).length >= 8} variant="outline" size="sm" className="w-full text-xs truncate" onClick={() => onSelectSensor(selectedMarker, '__new__')}>
                 + Add Sensor to {selectedMarker.name}
