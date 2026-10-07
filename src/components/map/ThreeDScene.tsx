@@ -2432,7 +2432,7 @@ export function ThreeDScene({
     setShowControls(false);
   }, [environmentControlsCloseRequest]);
   const [environmentControlsHost, setEnvironmentControlsHost] = useState<HTMLElement | null>(null);
-  const [showGizmoCube, setShowGizmoCube] = useState(true);
+  const [showGizmoCube, setShowGizmoCube] = useState(false);
   const [controlsReady, setControlsReady] = useState(false);
   const [selectedDetails, setSelectedDetails] = useState<any>(null);
   const [placementPreviewPosition, setPlacementPreviewPosition] = useState<{
@@ -3740,6 +3740,10 @@ export function ThreeDScene({
               <Compass className="h-3.5 w-3.5" />
               {showCompass ? 'Hide Compass' : 'Show Compass'}
             </button>
+            <button onClick={() => setShowGizmoCube(!showGizmoCube)} aria-pressed={showGizmoCube} className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-foreground/70 transition-colors hover:bg-foreground/10 hover:text-foreground">
+              <Move3D className="h-3.5 w-3.5" />
+              {showGizmoCube ? 'Hide Gizmo' : 'Show Gizmo'}
+            </button>
             {hasData && Object.keys(typeCounts).length > 0 && (
               <button onClick={() => setShowLegend(!showLegend)} aria-pressed={showLegend} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showLegend ? 'bg-foreground/10 text-foreground' : 'text-foreground/70 hover:bg-foreground/10 hover:text-foreground'}`}>
                 <List className="h-3.5 w-3.5" />
@@ -3757,10 +3761,6 @@ export function ThreeDScene({
             >
               <BrickWall className="h-3.5 w-3.5" />
               {physicsDebug ? 'Hide Physics Debug' : 'Show Physics Debug'}
-            </button>
-            <button onClick={() => setShowGizmoCube(!showGizmoCube)} aria-pressed={showGizmoCube} className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-foreground/70 transition-colors hover:bg-foreground/10 hover:text-foreground">
-              <Move3D className="h-3.5 w-3.5" />
-              {showGizmoCube ? 'Hide Gizmo' : 'Show Gizmo'}
             </button>
             {incidents.length > 0 && (
               <button onClick={() => setShowIncidents(!showIncidents)} aria-pressed={showIncidents} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showIncidents ? 'bg-foreground/10 text-foreground' : 'text-foreground/70 hover:bg-foreground/10 hover:text-foreground'}`}>
@@ -3950,7 +3950,7 @@ export function ThreeDScene({
       )}
 
       <div
-        className={`pointer-events-none absolute right-3 z-50 flex h-20 w-20 items-center justify-center rounded-full border border-white/15 bg-black/70 text-white shadow-lg backdrop-blur-sm ${showGizmoCube ? 'bottom-24' : 'bottom-3'}`}
+        className={`pointer-events-none absolute right-6 z-50 flex h-20 w-20 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white shadow-lg ${showGizmoCube ? 'bottom-26' : 'bottom-3'}`}
         style={{ display: showCompass ? undefined : 'none' }}
         aria-label="True north and Scene positive X and Z axes"
         title={`True north · Project heading ${geographicHeadingDegrees.toFixed(1)}°`}
