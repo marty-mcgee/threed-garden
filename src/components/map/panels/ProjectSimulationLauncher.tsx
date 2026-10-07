@@ -126,7 +126,7 @@ export function ProjectSimulationLauncher({ context, saveResults, obscured, onPr
   return <div data-scene-hover-obstacle aria-label="Run Simulation" hidden={hidden} aria-hidden={obscured || hidden} inert={obscured || hidden}
     className={`absolute left-1/2 top-14 z-40 w-[min(22rem,calc(100%_-_1.5rem))] -translate-x-1/2 space-y-2 rounded-lg border border-foreground/15 bg-background/85 p-2 text-center shadow-lg backdrop-blur-md transition-opacity ${obscured ? 'pointer-events-none opacity-15' : 'pointer-events-auto opacity-100'}`}>
     <div className="flex items-center gap-1 text-left text-xs">
-      <span className="min-w-0 flex-1 truncate font-medium">Simulation</span>
+      <span className="min-w-0 flex-1 truncate font-medium">Simulations</span>
       {saveResults && <Link className="text-xs underline" href={`/dashboard/simulations/new?${draftParams}`}>Create Simulation</Link>}
       <Button variant="ghost" size="icon" className="h-6 w-6" aria-label="Close Simulations" onClick={() => { stop(); setHidden(true); }}><X className="h-3.5 w-3.5" /></Button>
       <ModelFieldHelp label="Run Simulation">Choose a saved Simulation, then Run to activate its participants and Actions. {disabledReason || 'Ready to run.'} Owner runs record Results; public runs stay in your browser. A Scenario is a separate plan. Close hides these controls; Setup reopens them.</ModelFieldHelp>
