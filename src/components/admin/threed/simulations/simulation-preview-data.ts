@@ -7,7 +7,7 @@ import type { SimulationChoices } from './SimulationDefinitionEditor';
 
 export type PreviewMarker = SimulationChoices['markers'][number];
 export type PreviewCharacter = ComponentProps<typeof GardenCharacter>['character'];
-export type PreviewMapping = Omit<CharacterAnimationMapping, 'slots'> & { slots?: { actionKey: string; name: string; isActive: boolean }[] };
+export type PreviewMapping = Omit<CharacterAnimationMapping, 'slots'> & { effective?: { actionKey: string; state: string; source: string; animationId: number | null }[]; slots?: { actionKey: string; name: string; isActive: boolean }[] };
 export type SimulationPreviewAsset = { marker: PreviewMarker; model?: ModelData; character?: PreviewCharacter; mapping?: PreviewMapping; error?: string };
 
 /** Read selected sources only; cached promises deduplicate reusable Models within a preview. */

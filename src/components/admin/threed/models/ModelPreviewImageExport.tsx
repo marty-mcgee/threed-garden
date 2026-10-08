@@ -28,10 +28,11 @@ export function ModelPreviewImageExport({ model, dependencyCount, attachedDepend
   const uploadedUrl = useRef<string | null>(null);
   const busy = useRef(false);
   const [requirements, setRequirements] = useState<{ total: number; attached: number; textures: number } | null>(null);
-  const inspectRequirements = true;
+  const inspectRequirements = model.id > 0;
   const [captureModel, setCaptureModel] = useState<ModelData>(model);
   useEffect(() => {
-    if (!open || !inspectRequirements) return;
+    if (!open) return;
+    if (!inspectRequirements) { setCaptureModel(model); setError(''); return; }
     const controller = new AbortController();
     setRequirements(null);
     setError('');

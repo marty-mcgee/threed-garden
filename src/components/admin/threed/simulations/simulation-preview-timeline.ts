@@ -2,12 +2,32 @@ import type { CharacterPreviewClip } from '@/libraries/utils/character-preview-a
 import { defaultKickCollisionPoints } from '@/libraries/services/threed/physics/action-collision-core';
 import type { SimulationStep } from '@/libraries/services/threed/simulations/simulation-input';
 import type { PreviewMapping } from './simulation-preview-data';
+import { LIBRARY_ACTIONS } from '@/libraries/services/threed/animations/contracts';
+
+/** Present the configured Action vocabulary, rather than raw rig clip aliases. */
+export function simulationPreviewChoices(clips: CharacterPreviewClip[], mapping?: PreviewMapping, set: 'strict' | 'broad' = 'broad') {
+  if (!mapping?.slots) return clips.map(clip => ({ action: clip.action, label: clip.action, clip, reason: '' }));
+  const slots = mapping.slots;
+  const keys = [...new Set([...LIBRARY_ACTIONS, ...slots.map(slot => slot.actionKey)])];
+  return keys.filter(action => slots.find(slot => slot.actionKey === action)?.isActive !== false && mapping.effective?.find(row => row.actionKey === action)?.state !== 'disabled').map(action => ({
+    action,
+    label: slots.find(slot => slot.actionKey === action)?.name
+      ?? action.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ').replace(/^./, value => value.toUpperCase()),
+    clip: clips.find(clip => clip.action === action),
+    reason: mapping.effective?.find(row => row.actionKey === action)?.state === 'disabled' ? 'Mapping disabled' : mapping.effective?.find(row => row.actionKey === action)?.state === 'assigned' ? 'Assigned clip is not loaded or compatible' : 'Assign a compatible animation to this Character or its Model',
+  })).filter(choice => set === 'broad' || !!choice.clip);
+}
 
 export function simulationPreviewAction(step: SimulationStep, clips: CharacterPreviewClip[], mapping?: PreviewMapping): CharacterPreviewClip | undefined {
   const action = step.action === 'runToTarget' ? 'run' : step.action === 'kickBall'
-    ? mapping?.slots?.find(slot => slot.isActive && defaultKickCollisionPoints(slot.name).length && clips.some(clip => clip.action === slot.actionKey))?.actionKey
+    ? simulationPreviewChoices(clips, mapping, 'strict').find(choice => defaultKickCollisionPoints(choice.label).length)?.action
     : step.action;
   return clips.find(clip => clip.action === action);
+}
+
+export function simulationPreviewStepChoices(step: SimulationStep, clips: CharacterPreviewClip[], mapping?: PreviewMapping, set: 'strict' | 'broad' = 'broad') {
+  const choices = simulationPreviewChoices(clips, mapping, set);
+  return step.action === 'kickBall' ? choices.filter(choice => defaultKickCollisionPoints(choice.label).length) : choices;
 }
 
 export type PreviewTimelineState = { phase: 'idle' | 'playing' | 'finished' | 'stopped' | 'failed'; index: number; requestId?: string; message: string };

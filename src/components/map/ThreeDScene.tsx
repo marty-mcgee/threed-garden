@@ -1,6 +1,6 @@
 // components/map/ThreeDScene.tsx
 'use client';
-import { Radio } from 'lucide-react';
+import { Radio, RotateCcw } from 'lucide-react';
 import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 import { useProjectOverlayPosition } from './panels/ProjectOverlayLayout';
 
@@ -3625,27 +3625,13 @@ export function ThreeDScene({
             position: markerId => livePositionsRef.current.get(markerId), counts: () => sensorCounterStateRef.current.counts });
           onSimulationParticipantsChange(participants.characterId, participants.target);
         }} />}
-      {sceneProductionStarted && (scenarioInstruction || showSensors) && (
-        <div className="pointer-events-none absolute bottom-3 right-3 top-12 z-30 flex flex-wrap content-start items-start justify-between gap-3 overflow-y-auto overscroll-contain"
-          style={{ left: `min(${scenarioOverlayLeftOffsetRem}rem, calc(100% - 12rem))` }}>
-          {activeScenario && activeScenario.projectId === projectId && scenarioInstructionVisible && (
-            <section data-scene-hover-obstacle aria-label="Scenario instructions" role="status" aria-hidden={scenarioOverlaysObscured || showControls || scenarioInstructionDimmed} inert={scenarioOverlaysObscured || showControls || scenarioInstructionDimmed} className={`threed-workspace-panel threed-scene-panel-surface max-h-[min(32rem,calc(100dvh-11rem))] w-[min(22rem,100%)] shrink-0 overflow-y-auto overscroll-contain rounded-lg border border-foreground/15 px-3 py-2 text-xs text-foreground shadow-xl backdrop-blur-md transition-opacity duration-200 ${scenarioOverlaysObscured || showControls || scenarioInstructionDimmed ? 'pointer-events-none opacity-40' : 'pointer-events-auto opacity-100'}`}>
-          <div className="flex items-start justify-between gap-2"><h2 className="text-sm font-semibold">{activeScenario.name}</h2>{scenarioInstructionVisible && <button type="button" onClick={() => setScenarioInstructionVisible(false)} aria-label="Dismiss Scenario instructions" className="rounded p-1 text-foreground/70 hover:bg-foreground/10"><X className="h-4 w-4" /></button>}</div>
-          {scenarioInstructionVisible && (activeScenario.kind === 'soccer'
-            ? <p className="mt-1 text-foreground/80">This Scenario is a practice plan for {activeScenario.environmentName}. Physics Sensors show goal-entry counts for {activeScenario.groupName}.</p>
-            : <p className="mt-1 text-foreground/80">Explore {activeScenario.environmentName}, its Beds and Plantings. Select a FarmBot in the Setup Guide to review its observation.</p>)}
-            </section>
-          )}
-        </div>
-      )}
           {sceneProductionStarted && showSensors && (
             <section ref={sensorsOverlay.ref} style={sensorsOverlay.style} data-scene-hover-obstacle aria-label="Physics Sensors" className="threed-workspace-panel threed-scene-panel-surface absolute right-0 top-10 z-30 flex max-h-[calc(100%_-_4rem)] w-72 max-w-full flex-col overflow-hidden rounded-lg border border-foreground/15 text-xs text-foreground shadow-xl backdrop-blur-md">
           <header {...sensorsOverlay.handle} className={`${sensorsOverlay.handle.className} flex shrink-0 items-center justify-between gap-2 px-3 py-2`}>
             <div className="flex items-center gap-2"><h2 className="flex items-center gap-2 text-sm font-semibold"><Radio aria-hidden="true" className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />Physics Sensors</h2><span data-overlay-control><ModelFieldHelp label="Physics Sensors">Add a Physics Sensor Cuboid in an asset?s DetailsCard and choose Count Entries. Counts continue while hidden. Save Project to keep them after reload.</ModelFieldHelp></span></div>
-            <button type="button" onClick={() => setShowSensors(false)} aria-label="Close Physics Sensors" className="rounded p-1 text-foreground/70 hover:bg-foreground/10"><X className="h-4 w-4" /></button>
+            <div className="flex shrink-0 items-center gap-1"><button type="button" disabled={!visibleCounterGroups.length} onClick={resetSensorCounterState} aria-label="Reset All Counts" title="Reset All Counts" className="rounded p-1 text-foreground/70 hover:bg-foreground/10 disabled:opacity-40"><RotateCcw className="h-4 w-4" /></button><button type="button" onClick={() => setShowSensors(false)} aria-label="Close Physics Sensors" className="rounded p-1 text-foreground/70 hover:bg-foreground/10"><X className="h-4 w-4" /></button></div>
           </header>
           <div className="min-h-0 space-y-2 overflow-y-auto overscroll-contain px-3 pb-3 [scrollbar-width:thin]">
-            <button type="button" disabled={!visibleCounterGroups.length} onClick={resetSensorCounterState} className="rounded border border-foreground/15 px-2 py-1 disabled:opacity-40">{activeScenario?.kind === 'soccer' ? 'Reset All Counts' : 'Reset Counts'}</button>
             {!visibleCounterGroups.length && <p className="text-foreground/65">No entry counters configured. Add a Physics Sensor Cuboid in an asset’s DetailsCard and choose Count Entries.</p>}
             {visibleCounterGroups.map(([id, group]) => <details key={id} open className="rounded border border-foreground/10 p-2">
               <summary className="cursor-pointer text-foreground/80">{group.name}</summary>
@@ -3954,7 +3940,7 @@ export function ThreeDScene({
       )}
 
       <div
-        className={`pointer-events-none absolute right-6 z-50 flex h-20 w-20 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white shadow-lg ${showGizmoCube ? 'bottom-26' : 'bottom-3'}`}
+        className={`pointer-events-none absolute right-4 z-50 flex h-18 w-18 items-center justify-center rounded-full border border-white/15 bg-black/40 text-white shadow-lg ${showGizmoCube ? 'bottom-26' : 'bottom-4'}`}
         style={{ display: showCompass ? undefined : 'none' }}
         aria-label="True north and Scene positive X and Z axes"
         title={`True north · Project heading ${geographicHeadingDegrees.toFixed(1)}°`}
@@ -4082,7 +4068,7 @@ export function ThreeDScene({
         {controlsReady && showGizmoCube && (
           <GizmoHelper
             alignment='bottom-right'
-            margin={[64, 64]}
+            margin={[54, 54]}
           >
             <group scale={0.7}>
               <GizmoViewcube onClick={(event) => {

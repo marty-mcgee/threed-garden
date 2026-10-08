@@ -11,7 +11,7 @@ import type { CharacterPreviewAction, CharacterPreviewClip } from '@/libraries/u
 import { defaultKickCollisionPoints } from '@/libraries/services/threed/physics/action-collision-core';
 import type { SimulationChoices } from './SimulationDefinitionEditor';
 import { loadSimulationPreviewAssets, type SimulationPreviewAsset } from './simulation-preview-data';
-import { SimulationPreviewTimeline, simulationPreviewAction, type PreviewTimelineState } from './simulation-preview-timeline';
+import { SimulationPreviewTimeline, simulationPreviewAction, simulationPreviewChoices, simulationPreviewStepChoices, type PreviewTimelineState } from './simulation-preview-timeline';
 import type { SimulationPreviewCameraTools } from './SimulationPreviewCanvas';
 
 const PreviewCanvas = dynamic(() => import('./SimulationPreviewCanvas'), { ssr: false, loading: () => <p role="status" className="p-3 text-xs">Loading Canvas…</p> });
@@ -24,6 +24,9 @@ export function SimulationPreview({ definition, choices, context, loading, error
   const [states, setStates] = useState<Record<string, string | null>>({});
   const [playback, setPlayback] = useState<PreviewTimelineState>({ phase: 'idle', index: 0, message: '' });
   const [manual, setManual] = useState<{ actorId: string; action: string; id: string } | null>(null);
+  const [clipSelections, setClipSelections] = useState<Record<string, string>>({});
+  const [animationSet, setAnimationSet] = useState<'strict' | 'broad'>('strict');
+  const [timelineClips, setTimelineClips] = useState<Record<string, string>>({});
   const [resourceIssues, setResourceIssues] = useState<Record<string, string>>({});
   const timeline = useRef<SimulationPreviewTimeline | null>(null);
   if (!timeline.current) timeline.current = new SimulationPreviewTimeline(state => { setPlayback(state); setSelected(state.index); });
@@ -32,7 +35,7 @@ export function SimulationPreview({ definition, choices, context, loading, error
   const sourceKey = JSON.stringify(markers), definitionKey = JSON.stringify(definition);
   useEffect(() => {
     timeline.current?.stop(false); setManual(null); setPlayback({ phase: 'idle', index: 0, message: '' });
-    setAssets([]); setStates({}); setClips({}); setResourceIssues({});
+    setAssets([]); setStates({}); setClips({}); setClipSelections({}); setTimelineClips({}); setResourceIssues({});
     if (loading || error || !markers.length) { setFetching(false); return; }
     const controller = new AbortController(); setFetching(true);
     const deadline = setTimeout(() => {
@@ -79,8 +82,9 @@ export function SimulationPreview({ definition, choices, context, loading, error
   }, []);
   const currentIndex = playback.phase === 'playing' ? playback.index : selected;
   const step = definition.steps[currentIndex];
-  const actorAsset = assets.find(asset => asset.marker.markerId === step?.actorMarkerId);
-  const selectedClip = step ? simulationPreviewAction(step, clips[step.actorMarkerId] ?? [], actorAsset?.mapping) : undefined;
+  const timelineClip = (item: SimulationDefinition['steps'][number]) => (clips[item.actorMarkerId] ?? []).find(clip => clip.action === timelineClips[item.id]) ?? simulationPreviewAction(item, clips[item.actorMarkerId] ?? [], assets.find(asset => asset.marker.markerId === item.actorMarkerId)?.mapping);
+  const choicesFor = (actorId: string) => simulationPreviewChoices(clips[actorId] ?? [], assets.find(asset => asset.marker.markerId === actorId)?.mapping, animationSet);
+  const selectedClip = step ? timelineClip(step) : undefined;
   const problem = (actorId: string, targetId: string) => {
     for (const id of [actorId, targetId]) {
       const asset = assets.find(item => item.marker.markerId === id);
@@ -92,11 +96,16 @@ export function SimulationPreview({ definition, choices, context, loading, error
     }
     return '';
   };
-  const readiness = loading || fetching ? 'Loading participants and animations…' : error || definition.steps.map(item => {
+  const stepProblem = (item: SimulationDefinition['steps'][number]) => {
     const asset = assets.find(asset => asset.marker.markerId === item.actorMarkerId);
-    return problem(item.actorMarkerId, item.targetMarkerId) || (!simulationPreviewAction(item, clips[item.actorMarkerId] ?? [], asset?.mapping)
-      ? `${simulationActionLabel(item.action)}: assign a compatible animation to the selected Character.` : '');
-  }).find(Boolean) || '';
+    const clip = timelineClip(item);
+    const action = item.action === 'runToTarget' ? 'run' : item.action;
+    const choice = simulationPreviewChoices(clips[item.actorMarkerId] ?? [], asset?.mapping).find(value => value.action === action);
+    return problem(item.actorMarkerId, item.targetMarkerId) || (!clip
+      ? item.action === 'kickBall' ? 'Assign a compatible Kick, Kick (Right Foot), or Kick (Left Foot) animation to this Character or its Model.' : `${simulationActionLabel(item.action)}: ${choice?.reason || 'Mapping is inactive or unavailable'}.`
+      : item.action === 'kickBall' && !defaultKickCollisionPoints(asset?.mapping?.slots?.find(slot => slot.actionKey === clip.action)?.name ?? clip.action).length ? 'Choose a foot-kick mapping. Header has no ball-contact support.' : '');
+  };
+  const readiness = loading || fetching ? 'Loading participants and animations…' : error || definition.steps.map(stepProblem).find(Boolean) || '';
   const playing = playback.phase === 'playing' || !!manual;
   const request: CharacterPreviewAction | null = manual ? { id: manual.id, action: manual.action, approach: ['walk', 'run'].includes(manual.action.toLowerCase()) } : playback.phase === 'playing' && playback.requestId && selectedClip ? { id: playback.requestId, action: selectedClip.action, approach: step?.action === 'runToTarget' } : null;
   const activeActorId = manual?.actorId ?? step?.actorMarkerId;
@@ -134,23 +143,25 @@ export function SimulationPreview({ definition, choices, context, loading, error
         <Button type="button" variant="success" size="xs" className="ml-auto" disabled={busy || playing || !definition.steps.length || !!readiness} onClick={() => { setManual(null); timeline.current?.play(definition.steps); }}><Play />Play Timeline</Button>
         <Button type="button" variant="outline" size="icon-xs" aria-label="Stop preview" disabled={!playing && playback.phase !== 'finished'} onClick={stop}><Square /></Button>
       </div>
+      <label className="flex items-center gap-2 text-xs">Animation Set<select aria-label="Animation Set" className="h-7 rounded border bg-background px-2" value={animationSet} onChange={event => setAnimationSet(event.target.value as 'strict' | 'broad')}><option value="strict">Strict: playable mappings</option><option value="broad">Broad: defaults and mappings</option></select></label>
+      <p className="text-xs text-muted-foreground">Header animations can preview; head contact does not move the ball.</p>
       <ol className="flex max-h-36 gap-2 overflow-auto pb-1" aria-label="Ordered Simulation Actions">
         {definition.steps.map((item, index) => <li key={item.id} className="min-w-44 flex-1"><Button type="button" variant={currentIndex === index ? 'secondary' : 'outline'}
           className="h-auto w-full items-start justify-start whitespace-normal px-2 py-2 text-left text-xs" aria-pressed={currentIndex === index} disabled={playing} onClick={() => setSelected(index)}>
           <span className="text-emerald-600 dark:text-emerald-300">{index + 1}</span><span>{simulationActionLabel(item.action)}<span className="block text-[10px] font-normal text-muted-foreground">{choices.markers.find(marker => marker.markerId === item.actorMarkerId)?.name ?? 'Choose Character'} → {choices.markers.find(marker => marker.markerId === item.targetMarkerId)?.name ?? 'Choose target'}</span>
-            <span className="block text-[10px] font-normal text-muted-foreground">Timeout {item.timeoutMs / 1000}s</span></span></Button></li>)}
+            <span className="block text-[10px] font-normal text-muted-foreground">Timeout {item.timeoutMs / 1000}s</span></span></Button><label className="mt-1 block text-[10px]">Preview clip<select aria-label={`Timeline preview clip for Action ${index + 1}`} className="mt-1 h-7 w-full rounded border bg-background px-1 text-xs" disabled={busy || playing} value={timelineClips[item.id] ?? ''} onChange={event => setTimelineClips(value => ({ ...value, [item.id]: event.target.value }))}><option value="">Use saved Action mapping</option>{simulationPreviewStepChoices(item, clips[item.actorMarkerId] ?? [], assets.find(asset => asset.marker.markerId === item.actorMarkerId)?.mapping, animationSet).map(choice => <option key={choice.action} value={choice.action} disabled={!choice.clip} title={!choice.clip ? choice.reason : undefined}>{choice.label}{!choice.clip ? " (unavailable)" : ""}</option>)}</select></label><p className="mt-1 text-[10px] text-muted-foreground">{stepProblem(item) || `Resolved: ${timelineClip(item)?.clipName}`}</p></li>)}
       </ol>
       <p role="status" aria-live="polite" className={`text-xs ${playback.phase === 'failed' ? 'text-destructive' : 'text-muted-foreground'}`}>{manual ? `Previewing ${manual.action}.` : playback.message || readiness || (definition.steps.length ? 'Ready to preview the Action timeline.' : 'No Actions yet.')}</p>
       {assets.some(asset => asset.error || states[asset.marker.markerId]) && <div className="space-y-1 text-xs text-destructive">{assets.filter(asset => asset.error || states[asset.marker.markerId]).map(asset => <p key={asset.marker.markerId}>{asset.marker.name}: {asset.error || states[asset.marker.markerId]}</p>)}
         <Button type="button" variant="outline" size="xs" disabled={busy || fetching || playing} onClick={() => setRetry(value => value + 1)}>Retry preview</Button></div>}
       {!!Object.keys(resourceIssues).length && <details className="rounded-md border p-2 text-xs text-amber-600 dark:text-amber-300"><summary className="cursor-pointer">Model texture warnings ({Object.keys(resourceIssues).length})</summary><p>Geometry remains available; some textures may be missing.</p>{Object.entries(resourceIssues).map(([key, message]) => <p key={key}>{message}</p>)}</details>}
-      <details className="rounded-md border p-2"><summary className="cursor-pointer text-xs font-medium">Animations &amp; Actions ({Object.values(clips).reduce((sum, value) => sum + value.length, 0)})</summary>
+      <details className="rounded-md border p-2"><summary className="cursor-pointer text-xs font-medium">Animation Clip Previews ({assets.filter(asset => asset.character).reduce((sum, asset) => sum + choicesFor(asset.marker.markerId).length, 0)}) <ModelFieldHelp label="Animation Clip Previews">Choose active Animation Action Maps by their configured titles. Unavailable mapped Actions remain visible but cannot play. Audition loaded clips locally. These selections do not assign animations or change the Simulation timeline. Timeline Actions use saved Character mappings unless you choose a local Preview clip for that Action. Local choices are not saved. Only one manual audition plays at a time; each Character retains its selection.</ModelFieldHelp></summary>
         <div className="mt-2 space-y-2">{assets.filter(asset => asset.character).map(asset => <div key={asset.marker.markerId}>
-          <span className="text-xs">{asset.marker.name}</span><select className="mt-1 h-8 w-full rounded-md border bg-background px-2 text-xs" aria-label={`Preview Animation Action for ${asset.marker.name}`} disabled={busy || playing || !!states[asset.marker.markerId] || !clips[asset.marker.markerId]?.length}
-            value="" onChange={event => { const action = event.target.value; if (clips[asset.marker.markerId]?.some(clip => clip.action === action)) { setPlayback({ phase: 'idle', index: selected, message: '' }); setManual({ actorId: asset.marker.markerId, action, id: crypto.randomUUID() }); } }}>
-            <option value="">Choose an Animation Action to preview</option>{(clips[asset.marker.markerId] ?? []).map(clip => <option key={clip.action} value={clip.action}>{asset.mapping?.slots?.find(slot => slot.actionKey === clip.action)?.name ?? clip.action} · {clip.duration.toFixed(2)}s</option>)}</select>
-          <Link className="text-xs text-blue-600 underline dark:text-blue-300" href={`/admin/threed/characters/${asset.marker.preview!.sourceAssetId}/animations`}>Character Animations &amp; Actions</Link>
-        </div>)}<Link className="text-xs text-blue-600 underline dark:text-blue-300" href="/admin/threed/animations">Animations Library</Link></div>
+          <span className="text-xs font-medium">{asset.marker.name} <span className="font-normal text-muted-foreground">({choicesFor(asset.marker.markerId).length} Actions)</span></span><select className="mt-1 h-8 w-full rounded-md border bg-background px-2 text-xs" aria-label={`Preview Animation Action for ${asset.marker.name}`} disabled={busy || playing || !!states[asset.marker.markerId] || !clips[asset.marker.markerId]?.length}
+            value={clipSelections[asset.marker.markerId] ?? ''} onChange={event => { const action = event.target.value; if (clips[asset.marker.markerId]?.some(clip => clip.action === action)) { setClipSelections(value => ({ ...value, [asset.marker.markerId]: action })); setPlayback({ phase: 'idle', index: selected, message: '' }); setManual({ actorId: asset.marker.markerId, action, id: crypto.randomUUID() }); } }}>
+            <option value="">Choose a clip to preview</option>{choicesFor(asset.marker.markerId).map(choice => <option key={choice.action} value={choice.action} disabled={!choice.clip}>{choice.label} · {choice.clip ? `${choice.clip.duration.toFixed(2)}s` : "unavailable"}</option>)}</select>
+          <Link className="text-xs text-blue-600 underline dark:text-blue-300" href={`/admin/threed/characters/${asset.marker.preview!.sourceAssetId}/animations`} target="_blank" rel="noopener noreferrer">Configure {asset.marker.name} animations (new tab)</Link>
+        </div>)}<Link className="text-xs text-blue-600 underline dark:text-blue-300" href="/admin/threed/animations" target="_blank" rel="noopener noreferrer">Browse Animations Library (new tab)</Link></div>
       </details>
     </div>
   </section>;

@@ -32,6 +32,8 @@ function fn(name, context) { return vm.runInNewContext(compile('(' + expressions
 
 (async () => {
   validateCharacterDraft(form);
+  assert.match(source, /<form id="character-editor-form" noValidate/, 'Explicit draft validation must receive submits from collapsed numeric sections');
+  validateCharacterDraft({ ...form, scale: '0.05', rotation: '12.25', movementSpeed: '0' });
   for (const change of [{ animations: '{}' }, { metadata: '[]' }, { name: ' ' }, { scale: '-1' }, { positionY: 'Infinity' }, { activeStartHour: '24' }, { modelId: '1x' }]) {
     assert.throws(() => validateCharacterDraft({ ...form, ...change }));
   }
@@ -54,6 +56,8 @@ function fn(name, context) { return vm.runInNewContext(compile('(' + expressions
   assert.equal(saved, 0); assert.equal(lock.current, false); assert.equal(draft.scale, '2.5'); assert.ok(notices.includes('Denied'));
   const success = update(); releaseFetch({ ok: true, json: async () => ({ success: true, data: loaded }) }); await success; assert.equal(saved, 1);
   context.recordError = 'Unavailable'; await update(); assert.equal(requests.length, 2, 'failed reads cannot save');
+  context.recordError = ''; context.editingCharacter = null;
+  await update(); assert.ok(notices.some(message => message.includes('not ready to save')));
   let models, urls = [];
   const picker = fn('fetchModels', { AbortController, modelChoicesRequest: { current: null }, setModelsError() {}, setModels: value => { models = value; },
     fetch: async url => { urls.push(url); const offset = Number(new URL('http://local' + url).searchParams.get('offset')); return { ok: true, json: async () => ({ success: true, data: Array.from({ length: offset === 400 ? 1 : 200 }, (_, index) => ({ id: offset + index + 1 })), pagination: { total: 401 } }) }; } });

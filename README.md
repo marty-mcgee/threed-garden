@@ -6,7 +6,9 @@
 
 [![Repository validation](https://github.com/marty-mcgee/threed-garden/actions/workflows/validation.yml/badge.svg?branch=main)](https://github.com/marty-mcgee/threed-garden/actions/workflows/validation.yml?query=branch%3Amain)
 
-🟢 **Latest release:** [v0.23.0 — ThreeD Garden](docs/releases/v0.23.0.md)
+🟢 **Latest release:** [v0.23.1 — ThreeD Garden: Project overlays and workspace polish](docs/releases/v0.23.1.md)
+
+🛠️ **Release preparation:** [v0.23.2 — Animation mappings and Simulation workflow](docs/releases/v0.23.2.md)
 
 [🚀 Get started](docs/users/GETTING_STARTED.md) · [🎮 Explore the controls](docs/users/THREED_CONTROLS.md) · [📚 Browse the docs](docs/README.md) · [🛠️ Run locally](#run-it-locally)
 

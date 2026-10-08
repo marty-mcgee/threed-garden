@@ -52,14 +52,20 @@ export function assertModelTexturesReady(root: Object3D) {
     const mesh = object as Mesh;
     if (!mesh.isMesh) return;
     for (const material of Array.isArray(mesh.material) ? mesh.material : [mesh.material]) {
-      for (const value of Object.values(material)) {
+      for (const [slot, value] of Object.entries(material)) {
         const texture = value as Texture | null;
         if (!texture?.isTexture) continue;
         const image = texture.source?.data;
         const images = Array.isArray(image) ? image : [image];
         if (!images.length || images.some(item => !(Number(item?.naturalWidth ?? item?.videoWidth ?? item?.width) > 0)
           || !(Number(item?.naturalHeight ?? item?.videoHeight ?? item?.height) > 0))) {
-          throw new Error('A required Model texture is unavailable');
+          const location = images.find(item => item?.currentSrc || item?.src);
+          // Identify the final map, not an obsolete source superseded by a saved assignment.
+          // Strip query/hash values so signed URLs never enter error messages.
+          const source = String(location?.currentSrc || location?.src || '').split(/[?#]/, 1)[0];
+          const fileName = source.startsWith('data:') || source.startsWith('blob:') ? '' : source.replaceAll('\\', '/').split('/').pop();
+          const name = texture.name || fileName || 'unnamed texture';
+          throw new Error(`A required Model texture is unavailable: ${name} (${material.name || 'unnamed material'}, ${slot}). Check the Model's saved texture files and assignments.`);
         }
       }
     }

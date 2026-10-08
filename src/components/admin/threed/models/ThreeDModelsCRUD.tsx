@@ -341,7 +341,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
 
   // Upload the primary model file (GLB/GLTF/FBX/OBJ/USDZ) to Vercel Blob.
   async function handlePrimaryFileUpload(file: File) {
-    if (!file || formData.modelType === 'procedural' || !formData.modelType) return;
+    if (!file || uploadingPrimary || isSubmitting) return;
     if (pendingPrimaryFile && !(await discardPendingPrimaryUpload(pendingPrimaryFile))) return;
     setUploadingPrimary(true);
     setUploadAnalysis(null);
@@ -645,7 +645,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
                       <fieldset aria-label="Library preview image" disabled={busy || !detailsReady} className="mt-3 min-w-0 rounded-lg border admin-editor-panel p-3">
                         <ThreeDModelPreviewImageFields mode={view === 'create' ? 'create' : 'edit'} form={formData} setForm={setFormData}
                           isSubmitting={isSubmitting} uploadingPrimary={uploadingPrimary} uploadingThumbnail={uploadingThumbnail} onThumbnail={handleThumbnailUpload}
-                          previewImageAction={editingModel && importerPreviewModel && <ModelPreviewImageExport key={editingModel.id} model={importerPreviewModel} useDraftModel onOpenChange={setExportOpen} dependencyCount={0} attachedDependencyCount={0} disabled={busy} onUseImageUrl={url => setFormData(current => ({ ...current, thumbnailUrl: url }))} />} />
+                          previewImageAction={importerPreviewModel && <ModelPreviewImageExport key={editingModel?.id ?? 'draft'} model={importerPreviewModel} useDraftModel onOpenChange={setExportOpen} dependencyCount={0} attachedDependencyCount={0} disabled={busy} onUseImageUrl={url => setFormData(current => ({ ...current, thumbnailUrl: url }))} />} />
                       </fieldset>
                     </section>
                     <fieldset aria-label="Model details" tabIndex={0} disabled={busy || !detailsReady} className="min-h-0 min-w-0 rounded-lg border admin-editor-panel p-3 lg:overflow-y-auto [&_section]:rounded-md [&_section]:border [&_section]:p-3">

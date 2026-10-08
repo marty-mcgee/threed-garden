@@ -1,6 +1,6 @@
 # ThreeD Garden project context
 
-Release preparation: **[v0.23.1 - ThreeD Garden: Project overlays and workspace polish](docs/releases/v0.23.1.md)**. Package/root lockfile are 0.23.1; publication and deployment remain pending Developer review.
+Release preparation: **[v0.23.2 - ThreeD Garden: Animation mappings and Simulation workflow](docs/releases/v0.23.2.md)**. Package/root lockfile are 0.23.2; publication and deployment remain pending Developer review. Developer reported v0.23.1 released October 7, 2026; older checkpoint statements below are historical.
 
 
 Current release: **[v0.23.0 — ThreeD Garden](docs/releases/v0.23.0.md)**. Developer authorized stable GitHub publication of the existing code October 6, 2026. Package/root lockfile are 0.23.0; older checkpoint sections describe history. Preserve existing runtime and schema boundaries. GitHub publication and production deployment are distinct.

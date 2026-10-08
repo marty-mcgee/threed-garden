@@ -5,7 +5,8 @@ export type ThreeDActionCollisionPointId = 'left-foot' | 'right-foot';
 
 /** Semantic defaults are independent of a particular renderer or physics provider. */
 export function defaultKickCollisionPoints(slotName: string): readonly ThreeDActionCollisionPointId[] {
-  if (!/\b(?:left|right)\s+foot\b|\bkick\b.*\bsoccer(?:ball)?\b|\bsoccer(?:ball)?\b.*\bkick\b/i.test(slotName)
+  slotName = slotName.replace(/[-–—_()]+/g, ' ').replace(/\s+/g, ' ').trim();
+  if (!/^kick\s*$/i.test(slotName.trim()) && !/\b(?:left|right)\s+foot\b|\bkick\b.*\bsoccer(?:ball)?\b|\bsoccer(?:ball)?\b.*\bkick\b/i.test(slotName)
     || /\b(?:header|pass|penalty)\b/i.test(slotName)) return [];
   const left = /\bleft\b/i.test(slotName);
   const right = /\bright\b/i.test(slotName);

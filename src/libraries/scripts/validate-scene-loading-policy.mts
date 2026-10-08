@@ -43,6 +43,12 @@ console.log('PASS scoped referenced textures, cache/URL boundaries, delayed reso
 const root = new Group(); const material = new MeshStandardMaterial({ map: new Texture() });
 root.add(new Mesh(new BoxGeometry(), material));
 assert.throws(() => assertModelTexturesReady(root), /texture is unavailable/);
+material.name = 'Character outfit';
+material.map!.name = 'outfit.png';
+assert.throws(() => assertModelTexturesReady(root), /outfit\.png \(Character outfit, map\)/);
+material.map!.name = '';
+material.map!.source.data = { src: 'https://assets.invalid/outfit.png?token=private', naturalWidth: 0, naturalHeight: 0 };
+assert.throws(() => assertModelTexturesReady(root), error => error instanceof Error && error.message.includes('outfit.png') && !error.message.includes('private'));
 material.map = new Texture({ width: 4, height: 4 });
 assert.doesNotThrow(() => assertModelTexturesReady(root), 'Valid saved replacement supersedes failed original texture');
 const replacementManager = new LoadingManager(); const waitReplacement = modelLoadCompletion(replacementManager);

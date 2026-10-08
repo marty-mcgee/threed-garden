@@ -378,7 +378,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
     files: selectedModel.files?.map(file => ({ ...file, relativePath: file.relativePath || file.fileName })),
     scale: (Number(selectedModel.scale) || 1) * (Number(formData.scale) || 1),
     rotationY: (Number(selectedModel.rotationY) || 0) + (Number(formData.rotation) || 0),
-  }) : null, [selectedModel, formData.modelId, formData.scale, formData.rotation, formData.isMovable]);
+  }, true) : null, [selectedModel, formData.modelId, formData.scale, formData.rotation, formData.isMovable]);
   const handleCreate = async () => {
     if (saveLock.current || recordLoading || recordError) return;
     try { validateCharacterDraft(formData); } catch (error) { showToast(error instanceof Error ? error.message : 'Invalid Character fields', 'error'); return; }
@@ -439,7 +439,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
   const handleUpdate = async () => {
     if (saveLock.current || recordLoading || recordError) return;
     try { validateCharacterDraft(formData); } catch (error) { showToast(error instanceof Error ? error.message : 'Invalid Character fields', 'error'); return; }
-    if (!editingCharacter) return;
+    if (!editingCharacter) { showToast('Character is not ready to save. Reload the page and try again.', 'error'); return; }
     if (!formData.characterId) {
       showToast('Character ID is required', 'error');
       return;
@@ -643,7 +643,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
           <CharacterRuntimeReadiness model={selectedModel} isMovable={formData.isMovable} />
           {view === 'create' && <p className="rounded-md border p-3 text-xs text-muted-foreground">Save the Character to configure Action assignments and preview animation clips.</p>}
         </section>
-        <form id="character-editor-form" onSubmit={event => { event.preventDefault(); void (view === 'create' ? handleCreate() : handleUpdate()); }} className="min-h-0 min-w-0 lg:overflow-y-auto lg:pr-1" aria-label="Character details">
+        <form id="character-editor-form" noValidate onSubmit={event => { event.preventDefault(); void (view === 'create' ? handleCreate() : handleUpdate()); }} className="min-h-0 min-w-0 lg:overflow-y-auto lg:pr-1" aria-label="Character details">
           <fieldset disabled={busy} className="min-w-0 space-y-3 [&_[role=switch]]:h-4 [&_[role=switch]]:w-7 [&_[role=switch]>span]:h-3 [&_[role=switch]>span]:w-3 [&_[role=switch]>span[data-state=checked]]:translate-x-3">
             {modelsError && <p role="alert" className="text-xs text-destructive">{modelsError}<Button type="button" size="sm" variant="outline" onClick={() => void fetchModels()}>Retry Models</Button></p>}
           <div className="grid min-w-0 grid-cols-1 items-start [&>details]:col-span-full [&>div]:rounded-md [&>div]:border [&>div]:p-3 gap-3 pt-1 sm:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">

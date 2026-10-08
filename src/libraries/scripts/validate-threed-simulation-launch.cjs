@@ -134,6 +134,10 @@ function scenarioGuideFixture() {
     onSelectedChange: next => { selection = next; selected.push(next); }, onGuideChange: next => {guide = next; guides.push(next);},
     onClose: () => closed.push(true), onStartScenario: next => starts.push(next)}));
   rt.mount(() => ui.ScenarioGuidance(props()));
+  const panelStart = nodes(panelRt.tree).find(node => node.type === 'ScenarioGuidance').props.onStartScenario;
+  panelStart({ projectId: 16, name: 'Preview plan' });
+  assert.equal(closed.length, 0, 'Opening a Scenario preserves its panel');
+  starts.length = 0;
   const find = predicate => nodes(rt.tree).find(predicate);
   return {rt, panelRt, starts, selected, guides, closed, find, props,
     select(next) {nodes(panelRt.tree).find(node => node.type === 'ProjectScenarioLoadDialog').props.onLoad(next); rt.render(); panelRt.render();},

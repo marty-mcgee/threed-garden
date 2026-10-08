@@ -51,6 +51,11 @@ assert(!sweptPointHitsSphere(sample, { x: Infinity, y: 0, z: 0 }, 0.3));
 assert.deepEqual(plain(defaultKickCollisionPoints('Kick - Left Foot')), ['left-foot']);
 assert.deepEqual(plain(defaultKickCollisionPoints('Kick Soccerball Right')), ['right-foot']);
 assert.deepEqual(plain(defaultKickCollisionPoints('Kick Soccerball')), ['left-foot', 'right-foot']);
+assert.deepEqual(plain(defaultKickCollisionPoints('Kick')), ['left-foot', 'right-foot']);
+assert.deepEqual(plain(defaultKickCollisionPoints('Kick (Right Foot)')), ['right-foot']);
+assert.deepEqual(plain(defaultKickCollisionPoints('Kick (Left Foot)')), ['left-foot']);
+assert.deepEqual(plain(defaultKickCollisionPoints('Kick - Left Foot')), ['left-foot']);
+assert.deepEqual(plain(defaultKickCollisionPoints('Kick - Right Foot')), ['right-foot']);
 for (const name of ['Header Soccer', 'Penalty Kick Soccer', 'Pass Soccer', 'Water', 'Walk', 'Point']) {
   assert.equal(defaultKickCollisionPoints(name).length, 0, `${name} must not gain contact effects`);
 }

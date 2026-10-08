@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.23.1",
+  "version": "0.23.2",
   "private": true,
   "packageManager": "npm@11.6.2",
   "scripts": {

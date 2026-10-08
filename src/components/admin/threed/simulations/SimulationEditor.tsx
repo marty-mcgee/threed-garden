@@ -38,9 +38,21 @@ export function SimulationEditor({ id, projectId, initialSoccerDraft, readOnly =
   const [choices, setChoices] = useState<SimulationChoices>(emptySimulationChoices), [choicesLoading, setChoicesLoading] = useState(false), [choicesError, setChoicesError] = useState('');
   const [busy, setBusy] = useState(false), [error, setError] = useState('');
   const dirty = !readOnly && JSON.stringify(form) !== baseline;
-  let definitionValid = true;
-  try { parseSimulationDefinition(form.definition); } catch { definitionValid = false; }
+  let definitionError = '';
+  try { parseSimulationDefinition(form.definition); } catch (e) { definitionError = e instanceof Error ? e.message : 'Check the Simulation definition.'; }
   const activeWithoutActions = form.isActive && form.definition.steps.length === 0;
+  const saveBlockedReason = busy ? 'Saving Simulation…'
+    : loading ? 'Loading the saved Simulation…'
+    : loadError ? `Reload the Simulation: ${loadError}`
+    : choicesLoading ? 'Loading Project participants and Sensors…'
+    : choicesError ? `Reload Project choices: ${choicesError}`
+    : !form.projectId ? 'Choose a Project.'
+    : !form.threedId ? 'Choose a ThreeD module.'
+    : !form.name.trim() ? 'Enter a Simulation name.'
+    : !form.slug.trim() ? 'Enter a Simulation slug.'
+    : activeWithoutActions ? 'Add an Action, or turn Active off to save a draft.'
+    : id && !dirty ? 'No unsaved changes. Edit a field or Action to enable Save.'
+    : '';
   function close() { if (lock.current || busy || (dirty && !window.confirm('Discard unsaved Simulation changes?'))) return; router.push(returnPath); }
   function refresh() { if (lock.current || (dirty && !window.confirm('Reload and discard unsaved Simulation changes?'))) return; setReload(value => value + 1); }
   function changeBinding(projectId: string, threedId = '') {
@@ -126,7 +138,6 @@ export function SimulationEditor({ id, projectId, initialSoccerDraft, readOnly =
       <div className="ml-auto flex gap-1"><AdminWorkspaceLink href={returnPath} icon={ArrowLeft}>{surface === 'dashboard' ? 'Project Scene' : 'Simulations'}</AdminWorkspaceLink>{readOnly && id && <AdminWorkspaceLink href={`${basePath}/${id}`} icon={Pencil}>Edit</AdminWorkspaceLink>}{id && <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Reload Simulation" disabled={busy || loading} onClick={refresh}><RotateCcw className="h-3.5 w-3.5" /></Button>}</div>
     </AdminWorkspaceHeader>
     {loading ? <p role="status">Loading Simulation…</p> : loadError ? <p role="alert" className="text-destructive">{loadError}</p> : <div className="min-h-0 flex-1 overflow-y-auto xl:grid xl:grid-cols-2 xl:gap-3 xl:overflow-hidden">
-      <div className="mb-3 min-h-0 xl:mb-0 xl:overflow-y-auto"><SimulationPreview definition={form.definition} choices={choices} context={`${form.projectId}:${form.threedId}:${reload}`} loading={choicesLoading} error={choicesError} busy={busy} /></div>
       <div className="min-h-0 xl:overflow-y-auto">
       <fieldset disabled={busy} className="admin-editor-panel space-y-3 text-xs [&_input]:h-8 [&_input]:text-xs [&_label]:text-xs [&_select]:h-8 [&_select]:rounded-md [&_select]:border [&_select]:bg-background [&_select]:px-2 [&_select]:text-xs [&_textarea]:text-xs [&_[data-slot=switch]]:h-4 [&_[data-slot=switch]]:w-7 [&_[data-slot=switch-thumb]]:size-3">
         <section className="admin-editor-panel grid gap-3 rounded-lg border p-3 sm:grid-cols-2">
@@ -140,10 +151,12 @@ export function SimulationEditor({ id, projectId, initialSoccerDraft, readOnly =
         </section>
         {choicesLoading && <p role="status" className="text-muted-foreground">Loading Project choices…</p>}{choicesError && <p role="alert" className="text-destructive">{choicesError}</p>}
         <fieldset disabled={choicesLoading || !!choicesError || !form.threedId}><SimulationDefinitionEditor value={form.definition} choices={choices} readOnly={readOnly} onChange={definition => setForm(value => ({ ...value, definition }))} /></fieldset>
-        {error && <p role="alert" className="text-destructive">{error}</p>}
-        {!readOnly && <footer className="admin-editor-actions border-t pt-3"><Button variant="success" size="sm" disabled={busy || loading || !!loadError || choicesLoading || !!choicesError || !definitionValid || activeWithoutActions || !form.projectId || !form.threedId || !form.name.trim() || !form.slug.trim() || (!!id && !dirty)} onClick={() => void save()}>{busy ? 'Saving…' : 'Save Changes'}</Button><Button variant="outline" size="sm" disabled={busy} onClick={close}>Cancel</Button></footer>}
+        {(error || definitionError) && <p role="alert" className="text-destructive">{error || definitionError}</p>}
+
       </fieldset>
       </div>
+      <div className="mb-3 min-h-0 xl:mb-0 xl:overflow-y-auto"><SimulationPreview definition={form.definition} choices={choices} context={`${form.projectId}:${form.threedId}:${reload}`} loading={choicesLoading} error={choicesError} busy={busy} /></div>
     </div>}
+        {!readOnly && !loading && !loadError && <footer className="admin-editor-actions shrink-0 flex flex-wrap items-center gap-2 border-t pt-3"><Button variant="success" size="sm" disabled={!!saveBlockedReason} aria-describedby="simulation-save-status" onClick={() => void save()}>{busy ? 'Saving…' : 'Save Changes'}</Button><Button variant="outline" size="sm" disabled={busy} onClick={close}>Cancel</Button><p id="simulation-save-status" role="status" className="text-xs text-muted-foreground">{saveBlockedReason || (definitionError ? `Check required Action and Sensor fields: ${definitionError}` : 'Unsaved changes. Ready to save.')}</p></footer>}
   </div>;
 }

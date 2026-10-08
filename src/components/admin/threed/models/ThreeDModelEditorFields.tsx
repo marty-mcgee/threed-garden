@@ -172,9 +172,9 @@ export function ThreeDModelEditorFields({
         </div>
         {geometrySource === 'model-file' && <div>
           {mode === 'edit' ? <Badge variant="outline" aria-label="File format">{form.modelType.toUpperCase()}</Badge> : <>
-          <Label htmlFor={id('modelType')}>Model Format *</Label>
+          <Label htmlFor={id('modelType')}>Model Format</Label>
           <Select value={form.modelType} onValueChange={(value) => update('modelType', value)} disabled={disabled || Boolean(form.filePath)}>
-            <SelectTrigger id={id('modelType')}><SelectValue placeholder="Select the Model file format" /></SelectTrigger>
+            <SelectTrigger id={id('modelType')}><SelectValue placeholder="Detected from uploaded file" /></SelectTrigger>
             <SelectContent>{MODEL_TYPE_OPTIONS.filter((option) => ['glb', 'gltf', 'fbx', 'obj', 'usdz', form.modelType].includes(option.value) && option.value !== 'procedural').map((option) => <SelectItem key={option.value} value={option.value}>{option.label}</SelectItem>)}</SelectContent>
           </Select>
           </>}
