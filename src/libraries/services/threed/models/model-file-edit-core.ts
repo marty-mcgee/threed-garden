@@ -1,5 +1,7 @@
 /** Matches attachment texture roles in schema/threed and upload classification. */
-export const MODEL_FILE_TEXTURE_TYPES = ['baseColor', 'normalMap', 'roughness', 'metallic', 'emissive', 'occlusion'] as const;
+// @ts-expect-error Native offline validation requires an explicit extension.
+import { THREED_MODEL_MATERIAL_CHANNELS } from './model-material-override-core.ts';
+export const MODEL_FILE_TEXTURE_TYPES = THREED_MODEL_MATERIAL_CHANNELS;
 export const MAX_MODEL_FILE_LOAD_ORDER = 2_147_483_647; // PostgreSQL integer
 
 export function parseModelFileEdit(input: unknown): { loadOrder?: number; textureType?: string | null } {

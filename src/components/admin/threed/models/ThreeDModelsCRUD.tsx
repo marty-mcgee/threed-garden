@@ -52,6 +52,8 @@ import {
 import { ModelPreviewBatchExport } from './ModelPreviewBatchExport';
 import { ModelPreviewImageExport } from './ModelPreviewImageExport';
 import { ModelFieldHelp } from './ModelFieldHelp';
+import { uploadThreeDPrimaryFile } from '@/libraries/services/threed/models/model-primary-upload-client';
+import { threeDModelUploadPolicy } from '@/libraries/services/threed/models/model-upload-policy-core';
 import { ThreeDModelAssetPreview, MODEL_WORKSPACE_PERSPECTIVE } from './ThreeDModelAssetPreview';
 import { ThreeDModelsBulkImport } from './ThreeDModelsBulkImport';
 import { BulkModelCategoriesDialog } from './BulkModelCategoriesDialog';
@@ -182,6 +184,10 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
 
   // v0.16.4-alpha/beta: Vercel Blob upload state
   const [uploadingPrimary, setUploadingPrimary] = useState(false);
+  const primaryUploadAbort = useRef<AbortController | null>(null);
+  const [primaryUploadNotice, setPrimaryUploadNotice] = useState('');
+  const [primaryCanCancel, setPrimaryCanCancel] = useState(false);
+  useEffect(() => () => primaryUploadAbort.current?.abort(), []);
   const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
   const [uploadAnalysis, setUploadAnalysis] = useState<ThreeDModelUploadAnalysis | null>(null);
   const [pendingPrimaryFile, setPendingPrimaryFile] = useState<PendingPrimaryModelFile | null>(null);
@@ -341,47 +347,52 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
 
   // Upload the primary model file (GLB/GLTF/FBX/OBJ/USDZ) to Vercel Blob.
   async function handlePrimaryFileUpload(file: File) {
-    if (!file || uploadingPrimary || isSubmitting) return;
-    if (pendingPrimaryFile && !(await discardPendingPrimaryUpload(pendingPrimaryFile))) return;
+    if (!file || primaryUploadAbort.current || uploadingPrimary || isSubmitting) return;
+    try { threeDModelUploadPolicy(file.name, file.size); }
+    catch (error) { setPrimaryUploadNotice(error instanceof Error ? error.message : 'Check the selected Model file.'); return; }
+    const controller = new AbortController(); primaryUploadAbort.current = controller;
     setUploadingPrimary(true);
-    setUploadAnalysis(null);
-    setPendingPrimaryFile(null);
+    setPrimaryCanCancel(true);
+    setPrimaryUploadNotice(`Uploading ${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MiB)…`);
     try {
-      const fd = new FormData();
-      fd.append('file', file);
-      const response = await fetch('/api/threed/models/upload', { method: 'POST', body: fd });
-      const data = await response.json();
-      if (data.success) {
+      const uploaded = await uploadThreeDPrimaryFile(file, { signal: controller.signal,
+        onProgress: (percentage, phase) => setPrimaryUploadNotice(phase === 'verifying' ? 'Verifying uploaded Model…' : `Uploading ${file.name}: ${Math.round(percentage)}%`) });
+      setPrimaryCanCancel(false);
+      // A failed/cancelled candidate never discards the reviewed draft or its upload.
+      if (pendingPrimaryFile && !(await discardPendingPrimaryUpload(pendingPrimaryFile))) {
+        const candidateDiscarded = await discardPendingPrimaryUpload({ fileName: uploaded.fileName, filePath: uploaded.url, fileSize: uploaded.fileSize, modelType: uploaded.modelType });
+        setPrimaryUploadNotice(candidateDiscarded ? 'Your previous staged Model is retained. Retry after its cleanup issue is resolved.'
+          : 'Your previous staged Model is retained. New candidate cleanup is also unconfirmed; review staged uploads before retrying.');
+        return;
+      }
         setFormData((prev) => ({
           ...prev,
-          modelName: prev.modelName.trim() ? prev.modelName : data.data.suggestedModelName,
-          filePath: data.data.url,
-          fileSize: String(data.data.fileSize || ''),
-          modelType: MODEL_TYPE_OPTIONS.some((o) => o.value === data.data.modelType)
-            ? data.data.modelType
+          modelName: prev.modelName.trim() ? prev.modelName : uploaded.suggestedModelName,
+          filePath: uploaded.url,
+          fileSize: String(uploaded.fileSize || ''),
+          modelType: MODEL_TYPE_OPTIONS.some((o) => o.value === uploaded.modelType)
+            ? uploaded.modelType
             : 'custom',
         }));
-        setUploadAnalysis(data.data.analysis ?? null);
+        setUploadAnalysis(uploaded.analysis ?? null);
         setPendingPrimaryFile({
-          fileName: data.data.fileName,
-          filePath: data.data.url,
-          fileSize: data.data.fileSize,
-          modelType: data.data.modelType,
+          fileName: uploaded.fileName,
+          filePath: uploaded.url,
+          fileSize: uploaded.fileSize,
+          modelType: uploaded.modelType,
         });
+        setPrimaryUploadNotice('Model uploaded and verified. Save Changes to register this Model.');
         showToast(
-          data.data.analysis?.status === 'analyzed'
+          uploaded.analysis?.status === 'analyzed'
             ? 'Model uploaded and analyzed'
             : 'Model file uploaded',
           'success',
         );
-      } else {
-        setPendingPrimaryFile(null);
-        showToast(data.error || 'Failed to upload model file', 'error');
-      }
     } catch (error) {
-      console.error('Error uploading primary model file:', error);
-      showToast('Failed to upload model file', 'error');
+      setPrimaryUploadNotice(error instanceof Error ? error.message : 'Model upload failed. Your previous draft is retained.');
     } finally {
+      primaryUploadAbort.current = null;
+      setPrimaryCanCancel(false);
       setUploadingPrimary(false);
     }
   }
@@ -618,6 +629,9 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
           {editingModel && <span className="min-w-0 truncate text-xs text-muted-foreground" title={editingModel.modelName}>{editingModel.modelName} <Badge variant="outline">Model #{editingModel.id}</Badge></span>}
           {view === 'edit' && <TabsList className="ml-auto" aria-label="Model workspace"><TabsTrigger value="details" disabled={busy || !editingModel}>Details</TabsTrigger><TabsTrigger value="files" disabled={busy || !editingModel}>Files</TabsTrigger></TabsList>}
         </AdminWorkspaceHeader>
+        {primaryUploadNotice && <div role="status" className="flex items-center gap-2 rounded border p-2 text-xs">
+          <span>{primaryUploadNotice}</span>{uploadingPrimary && primaryCanCancel && <Button type="button" variant="outline" size="sm" onClick={() => primaryUploadAbort.current?.abort()}>Cancel upload</Button>}
+        </div>}
 
           {tabs.notice && <p role="status" className="text-sm text-muted-foreground">{tabs.notice}</p>}
           <TabsContent value="details" forceMount hidden={view === 'edit' && tabs.tab !== 'details'} className="min-h-0 min-w-0 flex flex-1 flex-col gap-2 data-[state=inactive]:hidden">

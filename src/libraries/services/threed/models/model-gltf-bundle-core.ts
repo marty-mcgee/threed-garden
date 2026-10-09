@@ -2,7 +2,8 @@ import type { ThreeDModelCompanionRequirement } from './model-companion-core';
 
 export const MAX_GLTF_BUNDLE_BYTES = 32 * 1024 * 1024;
 export const MAX_GLTF_BUNDLE_RESOURCES = 500;
-const MAX_PRIMARY_BYTES = 4 * 1024 * 1024;
+export const MAX_GLTF_PRIMARY_BYTES = 32 * 1024 * 1024;
+const MAX_COMPANION_BYTES = 4 * 1024 * 1024;
 const MAX_RECORDS = 4_096;
 const MAX_DEPTH = 128;
 const IMAGE_MIMES = new Set(['image/png', 'image/jpeg', 'image/webp']);
@@ -107,7 +108,7 @@ function dataUri(uri: string, kind: 'buffer' | 'image') {
 }
 
 function parseContainer(fileName: string, bytes: Uint8Array): { modelType: 'glb' | 'gltf'; document: JsonObject; bin?: Uint8Array } {
-  check(bytes.byteLength > 0 && bytes.byteLength <= MAX_PRIMARY_BYTES, 'Bulk GLB/GLTF primaries must contain 1 byte through 4 MiB.');
+  check(bytes.byteLength > 0 && bytes.byteLength <= MAX_GLTF_PRIMARY_BYTES, 'Bulk GLB/GLTF primaries must contain 1 byte through 32 MiB.');
   const modelType = fileName.split('.').at(-1)?.toLowerCase();
   check(modelType === 'glb' || modelType === 'gltf', 'Choose a GLB or GLTF primary.');
   let json = bytes;
@@ -547,7 +548,7 @@ export function validateThreeDGltfBundleResources(
       const path = normalizeThreeDGltfBundlePath(resource.relativePath).toLowerCase();
       check(!paths.has(path), `Duplicate resource destination: ${resource.relativePath}.`);
       paths.add(path);
-      check(resource.bytes.byteLength > 0 && resource.bytes.byteLength <= MAX_PRIMARY_BYTES, 'Selected resource files must contain 1 byte through 4 MiB.');
+      check(resource.bytes.byteLength > 0 && resource.bytes.byteLength <= MAX_COMPANION_BYTES, 'Selected resource files must contain 1 byte through 4 MiB.');
       if (!charged.has(resource.bytes)) { actualBytes += resource.bytes.byteLength; charged.add(resource.bytes); }
     }
     check(actualBytes <= MAX_GLTF_BUNDLE_BYTES, 'Selected and embedded resources exceed the 32 MiB bundle limit.');

@@ -5,7 +5,7 @@ import { resolveActiveModelGeometry } from '@/libraries/services/threed/models/m
 export interface PreviewRequirement { kind: string; relativePath: string; satisfied: boolean }
 /** Freeze Admin rendering to explicit resources; never fetch owner-library fallbacks implicitly. */
 export function modelForPreview(model: ModelData, troubleshoot = false): ModelData {
-  const assignedTextures = (model.materialAssignments ?? []).map(assignment => ({
+  const assignedTextures = (model.materialAssignments ?? []).filter(assignment => assignment.channel === 'baseColor').map(assignment => ({
     fileName: assignment.textureFileName, filePath: assignment.textureUrl, isActive: true,
   }));
   return {

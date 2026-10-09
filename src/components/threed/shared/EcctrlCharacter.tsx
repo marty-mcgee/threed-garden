@@ -27,7 +27,7 @@ import { useFrame } from '@react-three/fiber';
 import { useBeforePhysicsStep } from '@react-three/rapier';
 
 import * as THREE from 'three';
-import { loadCharacterTextureManager } from '@/libraries/services/threed/models/character-model-textures';
+import { loadCharacterTextureManager, applyCharacterModelMaterialAssignments } from '@/libraries/services/threed/models/character-model-textures';
 
 import { Html } from '@react-three/drei';
 
@@ -451,6 +451,7 @@ function useCharacterModel(
 
     let cancelled = false;
     let releaseAvailability: (() => void) | undefined;
+    let releaseMaterialAssignments: (() => void) | undefined;
 
     const loadModel =
       async () => {
@@ -530,6 +531,9 @@ function useCharacterModel(
           if (cancelled) {
             return;
           }
+
+          releaseMaterialAssignments = await applyCharacterModelMaterialAssignments(loadedModel, textureResolution?.resources ?? character.model!, resourceManager);
+          if (cancelled) { releaseMaterialAssignments(); return; }
 
           // ==================================================
           // MODEL TRANSFORMS
@@ -770,6 +774,8 @@ function useCharacterModel(
         } catch (
           loadError
         ) {
+          releaseMaterialAssignments?.();
+          releaseMaterialAssignments = undefined;
           if (
             !cancelled
           ) {
@@ -786,6 +792,7 @@ function useCharacterModel(
             );
           }
         } finally {
+          if (cancelled) releaseMaterialAssignments?.();
           if (
             !cancelled
           ) {
@@ -802,6 +809,7 @@ function useCharacterModel(
       cancelled =
         true;
       releaseAvailability?.();
+      releaseMaterialAssignments?.();
 
       mixerRef
         .current

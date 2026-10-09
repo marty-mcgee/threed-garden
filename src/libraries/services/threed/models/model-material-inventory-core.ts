@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import type { ThreeDModelMaterialChannel } from './model-material-override-core';
+// @ts-expect-error Native offline validation requires an explicit extension.
+import { THREED_MODEL_MATERIAL_CHANNELS, THREED_MODEL_MATERIAL_TEXTURE_PROPERTIES } from './model-material-override-core.ts';
 
 export const THREED_MODEL_MATERIAL_INVENTORY_LIMIT = 500;
 
@@ -35,6 +38,7 @@ export interface ThreeDModelMaterialSlot {
   color: string | null;
   opacity: number;
   transparent: boolean;
+  supportedChannels?: ThreeDModelMaterialChannel[];
   textures: ThreeDModelMaterialTextureChannel[];
 }
 
@@ -51,6 +55,7 @@ export interface ThreeDModelMaterialInventory {
 
 export interface ThreeDModelMaterialPreviewOverride {
   targetKey: string;
+  channel?: ThreeDModelMaterialChannel;
   textureUrl: string;
   fileName: string;
 }
@@ -116,6 +121,7 @@ function materialSlot(
     color: values.color instanceof THREE.Color ? `#${values.color.getHexString()}` : null,
     opacity: material.opacity,
     transparent: material.transparent,
+    supportedChannels: THREED_MODEL_MATERIAL_CHANNELS.filter(channel => THREED_MODEL_MATERIAL_TEXTURE_PROPERTIES[channel] in material),
     textures,
   };
 }

@@ -127,9 +127,16 @@ async function editorChecks() {
     './model-admin-form-core': form, './ThreeDModelEditorFields': { ...proxy, MODEL_TYPE_OPTIONS: [], MODEL_STATUS_OPTIONS: [], ThreeDModelEditorFields: 'fields', ThreeDModelPreviewImageFields: 'image-fields' },
     './ModelPreviewBatchExport': proxy, './ModelPreviewImageExport': proxy, './ThreeDModelAssetPreview': proxy,
     './ModelFieldHelp': { ModelFieldHelp: 'help' },
+    '@/libraries/services/threed/models/model-primary-upload-client': {
+      async uploadThreeDPrimaryFile(file) {
+        assert.equal(file.name, 'staged.glb');
+        return { url: 'https://fixture.invalid/staged.glb', fileName: file.name, fileSize: file.size, modelType: 'glb', suggestedModelName: 'Staged' };
+      },
+    },
+    '@/libraries/services/threed/models/model-upload-policy-core': require('../services/threed/models/model-upload-policy-core.ts'),
     './ThreeDModelsBulkImport': proxy, './ThreeDModelFilesCRUD': proxy, './BulkModelCategoriesDialog': proxy,
     './model-preview-requirements': { modelForPreview: value => value }, './use-model-editor-tabs': hook,
-  }, { window: b.window, fetch, confirm: () => true });
+  }, { window: b.window, fetch, confirm: () => true, AbortController });
   const shell = module.ThreeDModelsCRUD({ view: 'edit', linkedModelId: 7 });
   rt.mount(() => shell.props.children.type(shell.props.children.props)); await rt.flush();
   const find = predicate => nodes(rt.value).find(predicate);
@@ -187,7 +194,7 @@ async function editorChecks() {
   wrongId = false;
   await find(node => node.type === 'Button' && text(node) === 'Retry Model refresh').props.onClick(); await rt.flush(); assert.equal(saveButton().props.disabled, false);
   assert.equal(files().props.active, false, 'Files component remains mounted but inactive');
-  await fields().props.onPrimaryFile({ name: 'staged.glb' }); await rt.flush();
+  await fields().props.onPrimaryFile({ name: 'staged.glb', size: 100 }); await rt.flush();
   assert.equal(fields().props.form.filePath, 'https://fixture.invalid/staged.glb');
   tabs().props.onValueChange('files'); rt.render(); failDiscard = true;
   find(node => node.type === 'Button' && text(node) === 'Discard Changes').props.onClick(); await rt.flush();
@@ -221,6 +228,7 @@ async function filesChecks() {
     './model-preview-requirements': { modelForPreview: value => value },
     '@/libraries/services/threed/models/model-fallback-core': fallback,
     '@/libraries/services/threed/models/model-saved-texture-fallback': { withSavedFbxTextures: (_, files) => files },
+    '@/libraries/services/threed/models/model-material-override-core': require('../services/threed/models/model-material-override-core.ts'),
   }, { fetch: async (url, options = {}) => {
     requests.push({ url, options });
     let data;
@@ -269,7 +277,7 @@ function previewChecks() {
     react: rt.react, 'react/jsx-runtime': { jsx, jsxs: jsx }, './model-preview-events': {}, three: proxy,
     '@react-three/fiber': { Canvas: 'canvas' }, '@react-three/drei': proxy, 'lucide-react': proxy,
     '@/components/ui/button': proxy, '@/components/threed/markers/ModelMarker3D': proxy,
-    '@/libraries/services/threed/models/model-material-override-core': { readThreeDModelMaterialOverrides: () => ({ assignments: [] }) },
+    '@/libraries/services/threed/models/model-material-override-core': require('../services/threed/models/model-material-override-core.ts'),
   }, { requestAnimationFrame: () => 1, cancelAnimationFrame() {} });
   let active = true;
   rt.mount(() => preview.ThreeDModelAssetPreview({ active, model: { id: 7, modelType: 'procedural', filePath: '' }, attachedDependencyCount: 0, dependencyCount: 0 }));

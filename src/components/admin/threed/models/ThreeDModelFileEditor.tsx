@@ -194,7 +194,8 @@ export function ThreeDModelFileEditor({ modelId, fileId = null }: { modelId: num
     return modelForPreview(selectedPreviewType && selected?.filePath ? { ...model, modelType: selectedPreviewType, filePath: selected.filePath, metadata: { ...(model.metadata as Record<string, unknown> ?? {}), activeSource: 'model' } } : model);
   }, [model, selected, selectedPreviewType]);
   const localSnapshot = useMemo<BulkModelPreviewSnapshot | null>(() => {
-    if (!model || !localFile || !/\.(glb|gltf|fbx|obj)$/i.test(localFile.name) || localFile.size > 4 * 1024 * 1024) return null;
+    if (!model || !localFile || !/\.(glb|gltf|fbx|obj)$/i.test(localFile.name)
+      || localFile.size > (/\.(glb|gltf)$/i.test(localFile.name) ? 32 : 4) * 1024 * 1024) return null;
     const number = (value: unknown, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
     return { file: localFile, modelName: `${model.modelName} · candidate ${localFile.name}`,
       attachments: pending.filter(item => item.file !== localFile && !/\.(glb|gltf|fbx|obj|usdz)$/i.test(item.file.name)).map(item => ({ file: item.file, relativePath: item.relativePath })),
@@ -284,7 +285,7 @@ export function ThreeDModelFileEditor({ modelId, fileId = null }: { modelId: num
             showMaterialInspector materialInspectorReadOnly />
           {selected?.fileType === 'model' && !selectedIsPrimary && <p className="rounded-lg border admin-editor-panel p-3 text-xs text-muted-foreground">{selectedPreviewType && selected.filePath ? `Previewing File #${selected.id}.` : 'Selected geometry has no supported preview source; showing the parent Model.'} The primary geometry and its dependency check are listed in the parent Model resources; this preview does not change the primary file.</p>}
           {localSnapshot && <ThreeDModelImportPreview localSnapshot={localSnapshot} onClose={() => setCandidateIndex(-1)} />}
-          {localFile && /\.(glb|gltf|fbx|obj)$/i.test(localFile.name) && !localSnapshot && <p>Local candidate preview supports files up to 4 MiB. This limit does not change the existing upload API.</p>}
+          {localFile && /\.(glb|gltf|fbx|obj)$/i.test(localFile.name) && !localSnapshot && <p>Local candidate preview supports GLB/GLTF primaries up to 32 MiB; other primaries and companions support 4 MiB. This does not change attachment upload transport.</p>}
         </section>
         <form id="model-file-settings" onSubmit={save} className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-lg border admin-editor-panel">
           <div aria-label="File details and parent resources" tabIndex={0} className="min-w-0 space-y-4 p-3 lg:min-h-0 lg:flex-1 lg:overflow-y-auto">

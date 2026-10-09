@@ -1,8 +1,12 @@
 # Admin Guide
 
+Local v0.24.0-alpha adds **ThreeD → Models → Home Design**. Draw walls/floors in 2D while 3D geometry updates live. Finish Floor or Enter saves the floor and returns to Select. Choose Door/Window and click a host wall to add a real opening; drag it along that wall or edit its dimensions/sill in inches. Add/name levels and set their elevations; the 2D plan edits the Active level, while Show all levels in 3D controls the preview. Wall/floor offsets are relative to their level. Select shapes in either view, drag yellow shared corners and use Undo/Redo. Draw Roof footprints and edit Flat/Shed/Gable type, pitch, direction, thickness and eave offset. Finish Roof or Enter returns to Select. Choose Roof Cutout/Skylight and click inside a roof for a 24 x 36 inch opening; drag it or edit dimensions/offsets in inches. Keep one inch from roof edges/other openings; gable skylights also need one inch from the ridge. Select the intended roof first when roofs overlap. Show roofs in 3D hides roofs and skylights to inspect rooms below. Export/import version 5 JSON for local recovery; versions 1-4 upgrade automatically without adding new geometry. This prototype does not save a Project/register a Model. See [drawing, opening, level and roof steps](../developers/THREED_HOME_DESIGN.md#acceptance).
+
 The Admin surface at `/admin` manages Projects, Settings, Music, ThreeD Garden, and Traffic data.
 
 Use [Personal workspace Settings](SETTINGS.md) for appearance and navigation preferences, Save/Discard behavior and their scope.
+
+The local v0.24.0-alpha adds **ThreeD → Models → Model Builder**. Adjust the Cottage dimensions in inches, choose **Generate Preview**, then download the metre-based GLB/manifest or capture a PNG. **Save as New Model** creates a private, inactive Model with managed PBR textures. Review and activate it before placing it through a Project's Model Library. Generation does not replace an existing Model or add it to a Project. See the [Builder workflow and limitations](../developers/THREED_MODEL_BUILDER.md#builder-workflow).
 
 ## Project setup
 

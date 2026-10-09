@@ -56,6 +56,7 @@ import {
   MapPin,
   BookOpen,
   FlaskConical,
+  Hammer,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -124,6 +125,8 @@ const navSections: NavSection[] = [
         ],
         children: [
           { title: 'Models', href: '/admin/threed/models', icon: Package },
+          { title: 'Model Builder', href: '/admin/threed/models/builder', icon: Hammer },
+          { title: 'Home Design', href: '/admin/threed/models/home-design', icon: Building2 },
           { title: 'Files', href: '/admin/threed/model-files', icon: FolderOpen },
           { title: 'Categories', href: '/admin/threed/model-categories', icon: FolderTree },
           { title: 'Textures', href: '/admin/threed/model-textures', icon: Image },

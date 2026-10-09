@@ -217,6 +217,7 @@ export function ThreeDModelEditorFields({
           </Button>
           {form.filePath && <span className="truncate text-xs text-muted-foreground">✓ file selected</span>}
         </div>
+        <p className="text-xs text-muted-foreground">Direct storage upload supports Model files up to 32 MiB. Save Changes registers the verified file.</p>
         {uploadAnalysis && (
           <div className="rounded-md border border-cyan-500/30 bg-cyan-500/10 p-3">
             <div className="flex items-start gap-2">

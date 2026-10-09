@@ -58,6 +58,7 @@ vm.runInNewContext(code('src/app/api/map/threed/route.ts'), {
     if (name === '@/libraries/services/project/scene-texture-resources') return { sceneTextureResources: async () => [] };
     if (name === '@/libraries/services/project/scene-character-animations') return { sceneCharacterAnimations: async () => new Map() };
     if (name === '@/libraries/services/project/scene-read-policy') return scenePolicy;
+    if (name === '@/libraries/services/threed/models/model-material-override-core') return require('../services/threed/models/model-material-override-core.ts');
     if (name === '@/libraries/db/read-retry') return readRetry;
     if (name === '@/libraries/db/connection-diagnostics') return { databaseConnectionDiagnostic: () => ({}) };
     if (name === 'next/server') return { NextResponse: { json: (body, options) => ({ body, status: options?.status ?? 200 }) } };
@@ -105,6 +106,7 @@ vm.runInNewContext(code('src/app/api/map/threed/route.ts'), {
     exports: modelsApi, URL, console: { error() {} },
     require(name) {
       if (name === '@/libraries/db/read-retry') return readRetry;
+      if (name === '@/libraries/services/threed/models/model-material-override-core') return require('../services/threed/models/model-material-override-core.ts');
       if (name === '@/libraries/db/connection-diagnostics') return diagnostics;
       if (name === 'next/server') return { NextResponse: { json: (body, options) => ({ body, status: options?.status ?? 200 }) } };
       if (name === '@/libraries/auth') return { auth: async () => ({ user: { id: 'owner' } }) };
@@ -120,7 +122,7 @@ vm.runInNewContext(code('src/app/api/map/threed/route.ts'), {
   const model = {id:61,userId:'owner',modelType:'fbx',modelName:'SM Bld Barn 03'};
   const modelRead = () => [[model], [], []]; // Model, files, categories
   const request = {url:'http://localhost/api/threed/models?id=61'};
-  queue = [...modelRead(), disconnect(), ...modelRead(), [{modelId:61,targetKey:'barn',textureId:7}], []];
+  queue = [...modelRead(), disconnect(), ...modelRead(), [{modelId:61,targetKey:'mesh:0:material:0',channel:'baseColor',textureId:7}], []];
   const recoveredModel = await modelsApi.GET(request);
   assert.equal(recoveredModel.status,200);
   assert.equal(recoveredModel.body.data.materialAssignments[0].textureId,7);

@@ -34,7 +34,7 @@ import {
 import { Html } from '@react-three/drei';
 
 import * as THREE from 'three';
-import { loadCharacterTextureManager } from '@/libraries/services/threed/models/character-model-textures';
+import { loadCharacterTextureManager, applyCharacterModelMaterialAssignments } from '@/libraries/services/threed/models/character-model-textures';
 
 import {
   buildAnimationMap,
@@ -617,6 +617,7 @@ export function GardenCharacter({
     let cancelled =
       false;
     let releaseAvailability: (() => void) | undefined;
+    let releaseMaterialAssignments: (() => void) | undefined;
 
     const loadModel =
       async () => {
@@ -726,6 +727,9 @@ export function GardenCharacter({
           ) {
             return;
           }
+
+          releaseMaterialAssignments = await applyCharacterModelMaterialAssignments(loadedModel, textureResolution?.resources ?? character.model!, resourceManager);
+          if (cancelled) { releaseMaterialAssignments(); return; }
 
           // ================================================
           // TRANSFORM
@@ -1088,6 +1092,8 @@ export function GardenCharacter({
         } catch (
           error
         ) {
+          releaseMaterialAssignments?.();
+          releaseMaterialAssignments = undefined;
           if (
             !cancelled
           ) {
@@ -1107,6 +1113,7 @@ export function GardenCharacter({
             );
           }
         } finally {
+          if (cancelled) releaseMaterialAssignments?.();
           if (
             !cancelled
           ) {
@@ -1123,6 +1130,7 @@ export function GardenCharacter({
       cancelled =
         true;
       releaseAvailability?.();
+      releaseMaterialAssignments?.();
 
       if (
         mixerRef.current &&

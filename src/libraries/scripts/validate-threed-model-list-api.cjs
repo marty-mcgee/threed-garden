@@ -66,6 +66,7 @@ const mocks = {
   '@/libraries/services/threed/models/model-file-integrity': { runtimeModelTypeFromFileName: () => 'gltf' },
   '@/libraries/services/threed/models/model-library-readiness-core': readinessModule.exports,
   '@/libraries/services/threed/models/model-source-core': sourceCore,
+  '@/libraries/services/threed/models/model-material-override-core': require('../services/threed/models/model-material-override-core.ts'),
   '@/libraries/services/threed/models/model-lighting-core': lightingModule.exports,
   '@/libraries/services/threed/models/model-fallback-core': fallbackModule.exports,
 };

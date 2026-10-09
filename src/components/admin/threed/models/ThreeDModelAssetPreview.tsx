@@ -17,7 +17,7 @@ import type {
   ThreeDModelMaterialPreviewOverride,
   ThreeDModelMaterialSlot,
 } from '@/libraries/services/threed/models/model-material-inventory-core';
-import { readThreeDModelMaterialOverrides } from '@/libraries/services/threed/models/model-material-override-core';
+import { mergeThreeDModelMaterialAssignments, readThreeDModelMaterialOverrides, THREED_MODEL_MATERIAL_CHANNELS, THREED_MODEL_MATERIAL_CHANNEL_LABELS, type ThreeDModelMaterialChannel } from '@/libraries/services/threed/models/model-material-override-core';
 
 export interface PreviewPerspective { direction: [number, number, number]; distanceScale: number }
 export const MODEL_WORKSPACE_PERSPECTIVE: PreviewPerspective = { direction: [4, 2, 6], distanceScale: 1 };
@@ -55,7 +55,7 @@ interface ThreeDModelAssetPreviewProps {
   primaryFileControls?: ReactNode;
   savedFilesStatus?: { ready: boolean; message: string; readyLabel?: string };
   textureLibrary?: ThreeDModelTextureLibraryItem[];
-  onSaveMaterialAssignment?: (assignment: { targetKeys: string[]; textureFileId?: number; textureId?: number }) => Promise<void>;
+  onSaveMaterialAssignment?: (assignment: { targetKeys: string[]; channel: ThreeDModelMaterialChannel; textureFileId?: number; textureId?: number }) => Promise<void>;
 }
 
 export interface ThreeDModelTextureLibraryItem {
@@ -175,11 +175,13 @@ function MaterialSlotRow({
   selected,
   onSelect,
   savedTextureRelativePath,
+  channelLabel = 'Base Color',
 }: {
   slot: ThreeDModelMaterialSlot;
   selected: boolean;
   onSelect: () => void;
   savedTextureRelativePath?: string;
+  channelLabel?: string;
 }) {
   return (
     <button
@@ -210,7 +212,7 @@ function MaterialSlotRow({
       ))}
       {savedTextureRelativePath && (
         <p className="mt-1 truncate text-[10px] font-medium text-emerald-600 dark:text-emerald-400" title={savedTextureRelativePath}>
-          Saved Base Color: {savedTextureRelativePath.split('/').at(-1) || savedTextureRelativePath}
+          Saved {channelLabel}: {savedTextureRelativePath.split('/').at(-1) || savedTextureRelativePath}
         </p>
       )}
     </button>
@@ -271,6 +273,7 @@ export function ThreeDModelAssetPreview({
   useEffect(() => { if (active) setSettledKey(null); }, [active]);
   const [materialAssignmentError, setMaterialAssignmentError] = useState<string | null>(null);
   const [quickTextureId, setQuickTextureId] = useState('');
+  const [materialChannel, setMaterialChannel] = useState<ThreeDModelMaterialChannel>('baseColor');
   const materialTextureInputRef = useRef<HTMLInputElement>(null);
   const modelKey = model
     ? `${model.id}:${model.filePath}:${model.files?.map((file) => `${file.relativePath}:${file.filePath}`).join('|') ?? ''}`
@@ -286,6 +289,9 @@ export function ThreeDModelAssetPreview({
     && /^https:\/\//i.test(file.filePath)
   )) ?? [];
   const savedMaterialOverrides = readThreeDModelMaterialOverrides(model?.metadata);
+  const effectiveAssignments = mergeThreeDModelMaterialAssignments(model?.metadata, model?.materialAssignments);
+  const assignableSlots = materialInventory?.slots.filter(slot => (slot.supportedChannels ?? ['baseColor']).includes(materialChannel)) ?? [];
+  const channelLabel = THREED_MODEL_MATERIAL_CHANNEL_LABELS[materialChannel];
   const selectedUploadedTexture = materialPreviewOverride && !materialPreviewOverride.textureUrl.startsWith('blob:')
     ? availableTextureAttachments.find((file) => file.filePath === materialPreviewOverride.textureUrl) ?? null
     : null;
@@ -295,7 +301,7 @@ export function ThreeDModelAssetPreview({
 
   const previewMatchesSavedSlot = (targetKey: string) => {
     if (!materialPreviewOverride) return true;
-    const assignment = savedMaterialOverrides.assignments.find(item => item.targetKey === targetKey && item.channel === 'baseColor');
+    const assignment = effectiveAssignments.find(item => item.targetKey === targetKey && item.channel === (materialPreviewOverride.channel ?? 'baseColor'));
     if (!assignment) return false;
     const attachment = availableTextureAttachments.find(file =>
       (file.relativePath || file.fileName).toLowerCase() === assignment.textureRelativePath.toLowerCase());
@@ -303,7 +309,7 @@ export function ThreeDModelAssetPreview({
   };
   const hasUnsavedPreview = Boolean(materialPreviewOverride && (
     quickTextureId
-      ? !materialInventory?.slots.length || materialInventory.slots.some(slot => !previewMatchesSavedSlot(slot.id))
+      ? !assignableSlots.length || assignableSlots.some(slot => !previewMatchesSavedSlot(slot.id))
       : !previewMatchesSavedSlot(materialPreviewOverride.targetKey)
   ));
 
@@ -312,6 +318,7 @@ export function ThreeDModelAssetPreview({
     setMaterialPreviewOverride(null);
     setMaterialAssignmentError(null);
     setQuickTextureId('');
+    setMaterialChannel('baseColor');
   }, [modelKey]);
 
   useEffect(() => () => {
@@ -326,16 +333,17 @@ export function ThreeDModelAssetPreview({
     if (!file || !selectedMaterialSlotId) return;
     setMaterialPreviewOverride({
       targetKey: selectedMaterialSlotId,
+      channel: materialChannel,
       textureUrl: URL.createObjectURL(file),
       fileName: file.name,
     });
   };
 
-  const selectMaterialSlot = (slot: ThreeDModelMaterialSlot) => {
+  const selectMaterialSlot = (slot: ThreeDModelMaterialSlot, channel = materialChannel) => {
     setSelectedMaterialSlotId(slot.id);
     setMaterialAssignmentError(null);
-    const saved = savedMaterialOverrides.assignments.find((assignment) => (
-      assignment.targetKey === slot.id && assignment.channel === 'baseColor'
+    const saved = effectiveAssignments.find((assignment) => (
+      assignment.targetKey === slot.id && assignment.channel === channel
     ));
     const attachment = saved
       ? availableTextureAttachments.find((file) => (
@@ -348,6 +356,7 @@ export function ThreeDModelAssetPreview({
     const selectedTexture = libraryTexture ?? attachment;
     setMaterialPreviewOverride(selectedTexture ? {
       targetKey: slot.id,
+      channel,
       textureUrl: selectedTexture.filePath,
       fileName: selectedTexture.fileName,
     } : null);
@@ -379,7 +388,7 @@ export function ThreeDModelAssetPreview({
   };
   const assignedTargets = new Set([
     ...(model?.materialAssignments ?? []).filter(item => item.channel === 'baseColor').map(item => item.targetKey),
-    ...savedMaterialOverrides.assignments.map(item => item.targetKey),
+    ...savedMaterialOverrides.assignments.filter(item => item.channel === 'baseColor').map(item => item.targetKey),
   ]);
   const assignedTextureCoverage = Boolean(materialInventory?.slots.length && !materialInventory.omittedSlotCount
     && materialInventory.slots.every(slot => assignedTargets.has(slot.id) && slot.textures.some(texture => texture.property === 'map' && texture.ready)));
@@ -544,7 +553,17 @@ export function ThreeDModelAssetPreview({
           {!materialInspectorReadOnly && showMaterialInspector && model && materialInventory && materialInventory.slots.length > 0 && (
             <div className="mt-2 space-y-2">
               <div className="flex flex-wrap items-center gap-2">
-                <label htmlFor="model-appearance-texture" className="w-full text-xs">Base Color Texture</label>
+                <label htmlFor="model-appearance-channel" className="text-xs">Texture channel</label>
+                <select id="model-appearance-channel" aria-label="Texture channel" className="h-8 rounded border bg-background px-2 text-xs" value={materialChannel}
+                  disabled={savingMaterialAssignment} onChange={event => {
+                    const channel = event.target.value as ThreeDModelMaterialChannel;
+                    setMaterialChannel(channel); setQuickTextureId(''); setMaterialAssignmentError(null);
+                    if (selectedMaterialSlot) selectMaterialSlot(selectedMaterialSlot, channel);
+                    else setMaterialPreviewOverride(null);
+                  }}>
+                  {THREED_MODEL_MATERIAL_CHANNELS.map(channel => <option key={channel} value={channel}>{THREED_MODEL_MATERIAL_CHANNEL_LABELS[channel]}</option>)}
+                </select>
+                <label htmlFor="model-appearance-texture" className="w-full text-xs">{channelLabel} Texture</label>
                 {textureLibrary.length > 0 ? (
                   <>
                     <select
@@ -555,11 +574,12 @@ export function ThreeDModelAssetPreview({
                       onChange={(event) => {
                         setQuickTextureId(event.target.value);
                         const texture = textureLibrary.find((item) => item.id === Number(event.target.value));
-                        const firstSlot = materialInventory.slots[0];
+                        const firstSlot = assignableSlots[0];
                         if (texture && firstSlot) {
                           setSelectedMaterialSlotId(firstSlot.id);
                           setMaterialPreviewOverride({
                             targetKey: firstSlot.id,
+                            channel: materialChannel,
                             textureUrl: texture.filePath,
                             fileName: texture.fileName,
                           });
@@ -577,14 +597,15 @@ export function ThreeDModelAssetPreview({
                       type="button"
                       size="sm"
                       className="h-8 shrink-0 text-xs"
-                      disabled={!quickTextureId || savingMaterialAssignment || materialInventory.omittedSlotCount > 0 || !onSaveMaterialAssignment}
+                      disabled={!quickTextureId || !assignableSlots.length || savingMaterialAssignment || materialInventory.omittedSlotCount > 0 || !onSaveMaterialAssignment}
                       onClick={async () => {
                         if (!quickTextureId || !onSaveMaterialAssignment) return;
                         setSavingMaterialAssignment(true);
                         setMaterialAssignmentError(null);
                         try {
                           await onSaveMaterialAssignment({
-                            targetKeys: materialInventory.slots.map((slot) => slot.id),
+                            targetKeys: assignableSlots.map((slot) => slot.id),
+                            channel: materialChannel,
                             textureId: Number(quickTextureId),
                           });
                         } catch (saveError) {
@@ -595,7 +616,7 @@ export function ThreeDModelAssetPreview({
                       }}
                     >
                       {savingMaterialAssignment ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Check className="mr-1 h-3.5 w-3.5" />}
-                      {savingMaterialAssignment ? 'Saving…' : 'Save Texture to all materials'}
+                      {savingMaterialAssignment ? 'Saving…' : materialChannel === 'baseColor' ? 'Save Texture to all materials' : `Save ${channelLabel} to ${assignableSlots.length} supported materials`}
                     </Button>
                   </>
                 ) : (
@@ -604,6 +625,7 @@ export function ThreeDModelAssetPreview({
                   </Button>
                 )}
               </div>
+              <p className="text-[10px] text-muted-foreground">Embedded maps stay in the Model file. These saved image assignments override only the selected channel. A packed ORM image can be reused for Occlusion (R), Roughness (G), and Metallic (B).</p>
 
             </div>
           )}
@@ -626,11 +648,11 @@ export function ThreeDModelAssetPreview({
                 size="sm"
                 variant="outline"
                 className="h-7 text-[10px]"
-                disabled={!selectedMaterialSlot}
+                disabled={!selectedMaterialSlot || !(selectedMaterialSlot.supportedChannels ?? ['baseColor']).includes(materialChannel)}
                 onClick={() => materialTextureInputRef.current?.click()}
               >
                 <Upload className="mr-1 h-3 w-3" />
-                Test Base Color file
+                {`Test ${channelLabel} file`}
               </Button>
             </div>}
           {selectedMaterialSlot && (
@@ -641,6 +663,9 @@ export function ThreeDModelAssetPreview({
                 : materialInspectorReadOnly ? '' : ' · choose an image to test this slot'}
             </p>
           )}
+          {!materialInspectorReadOnly && selectedMaterialSlot && !(selectedMaterialSlot.supportedChannels ?? ['baseColor']).includes(materialChannel) && (
+            <p className="mt-2 text-xs text-muted-foreground">This material does not support {channelLabel} textures. Choose another channel or material.</p>
+          )}
           {!materialInspectorReadOnly && selectedMaterialSlot && (availableTextureAttachments.length > 0 || textureLibrary.length > 0) && (
             <div className="mt-2 flex items-center gap-2 rounded border border-cyan-500/20 bg-cyan-500/5 p-2">
               <label htmlFor="model-material-attachment" className="shrink-0 text-[10px] font-medium">
@@ -649,6 +674,7 @@ export function ThreeDModelAssetPreview({
               <select
                 id="model-material-attachment"
                 className="h-7 min-w-0 flex-1 rounded border bg-background px-2 text-[10px]"
+                disabled={savingMaterialAssignment || !(selectedMaterialSlot.supportedChannels ?? ['baseColor']).includes(materialChannel)}
                 value={selectedLibraryTexture ? `library:${selectedLibraryTexture.id}` : selectedUploadedTexture ? `attachment:${selectedUploadedTexture.id}`
                   : ''}
                 onChange={(event) => {
@@ -660,6 +686,7 @@ export function ThreeDModelAssetPreview({
                   if (!selected) return;
                   setMaterialPreviewOverride({
                     targetKey: selectedMaterialSlot.id,
+                    channel: materialChannel,
                     textureUrl: selected.filePath,
                     fileName: selected.fileName,
                   });
@@ -686,7 +713,7 @@ export function ThreeDModelAssetPreview({
                   type="button"
                   size="sm"
                   className="h-7 shrink-0 text-[10px]"
-                  disabled={(!selectedUploadedTexture?.id && !selectedLibraryTexture?.id) || savingMaterialAssignment}
+                  disabled={(!selectedUploadedTexture?.id && !selectedLibraryTexture?.id) || savingMaterialAssignment || !(selectedMaterialSlot.supportedChannels ?? ['baseColor']).includes(materialChannel)}
                   onClick={async () => {
                     if (!selectedUploadedTexture?.id && !selectedLibraryTexture?.id) return;
                     setSavingMaterialAssignment(true);
@@ -694,6 +721,7 @@ export function ThreeDModelAssetPreview({
                     try {
                       await onSaveMaterialAssignment({
                         targetKeys: [selectedMaterialSlot.id],
+                        channel: materialChannel,
                         ...(selectedLibraryTexture?.id
                           ? { textureId: selectedLibraryTexture.id }
                           : { textureFileId: selectedUploadedTexture!.id }),
@@ -715,14 +743,15 @@ export function ThreeDModelAssetPreview({
                   size="sm"
                   variant="secondary"
                   className="h-7 shrink-0 text-[10px]"
-                  disabled={(!selectedUploadedTexture?.id && !selectedLibraryTexture?.id) || savingMaterialAssignment || !materialInventory?.slots.length || materialInventory.omittedSlotCount > 0}
+                  disabled={(!selectedUploadedTexture?.id && !selectedLibraryTexture?.id) || savingMaterialAssignment || !assignableSlots.length || !materialInventory || materialInventory.omittedSlotCount > 0}
                   onClick={async () => {
                     if ((!selectedUploadedTexture?.id && !selectedLibraryTexture?.id) || !materialInventory?.slots.length) return;
                     setSavingMaterialAssignment(true);
                     setMaterialAssignmentError(null);
                     try {
                       await onSaveMaterialAssignment({
-                        targetKeys: materialInventory.slots.map((slot) => slot.id),
+                        targetKeys: assignableSlots.map((slot) => slot.id),
+                        channel: materialChannel,
                         ...(selectedLibraryTexture?.id
                           ? { textureId: selectedLibraryTexture.id }
                           : { textureFileId: selectedUploadedTexture!.id }),
@@ -735,7 +764,7 @@ export function ThreeDModelAssetPreview({
                   }}
                 >
                   <Check className="mr-1 h-3 w-3" />
-                  Save to all {materialInventory?.slots.length ?? 0} slots
+                  Save to all {assignableSlots.length} supported slots
                 </Button>
               )}
             </div>
@@ -753,8 +782,9 @@ export function ThreeDModelAssetPreview({
                     slot={slot}
                     selected={selectedMaterialSlotId === slot.id}
                     onSelect={() => materialInspectorReadOnly ? setSelectedMaterialSlotId(slot.id) : selectMaterialSlot(slot)}
-                    savedTextureRelativePath={savedMaterialOverrides.assignments.find((assignment) => (
-                      assignment.targetKey === slot.id && assignment.channel === 'baseColor'
+                    channelLabel={channelLabel}
+                    savedTextureRelativePath={effectiveAssignments.find((assignment) => (
+                      assignment.targetKey === slot.id && assignment.channel === materialChannel
                     ))?.textureRelativePath}
                   />
                 ))}

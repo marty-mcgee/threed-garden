@@ -1,5 +1,9 @@
 # Agent Documentation
 
+Home Design: [Milestones 1-4 evidence](../plans/v0.24.0-alpha-home-design.md), [reference audit/topology/hosted-opening/level/roof/resource contracts](../developers/THREED_HOME_DESIGN.md). Keep this local editor independent of Project Scene owners and Drizzle persistence. Preserve v1-v4 imports into v5 documents, level-isolated topology, relative elevations, hosted rectangular roof cutouts/skylights, concave-safe hole/ridge triangulation, one-inch fit/separation/ridge guards, retained visibility owners and atomic host/level deletion rules. Run core/TypeScript/CI/build; native Edge acceptance is optional and separate.
+
+Current production is Developer-confirmed [v0.23.2](../releases/v0.23.2.md); local package/root lockfile are v0.24.0-alpha for the [Model Builder implementation](../plans/v0.24.0-alpha-model-builder.md). Preserve the [Builder contracts](../developers/THREED_MODEL_BUILDER.md), six-role Model Texture fidelity, signed direct Blob verification, new inactive/private Model creation and explicit Project adoption. No schema/dependency/live-system changes or automatic replacement are included. Follow [validation](VALIDATION.md) and the Manual Release Gate. Older checkpoint statements below are historical.
+
 Current release: **[v0.23.0 — ThreeD Garden](../releases/v0.23.0.md)**. Developer authorized stable GitHub publication of the existing code October 6, 2026. Package/root lockfile are 0.23.0; older checkpoint sections describe history. Preserve existing runtime and schema boundaries. GitHub publication and production deployment are distinct.
 
 Local [v0.23.0-rc.1 coordinated runtime upgrade](../plans/v0.23.0-runtime-upgrade.md): three validated dependency groups, TypeScript and 65 offline CI tasks passed; guarded npm build generated 137 pages. Candidate includes earlier v0.22.30 patch maintenance. Browser/WebGL acceptance is required before stable promotion; no release or live database operation is inferred.

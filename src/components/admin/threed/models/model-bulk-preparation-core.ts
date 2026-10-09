@@ -6,7 +6,7 @@ import {
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../../../../libraries/services/threed/models/model-companion-core.ts';
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
-import { MAX_GLTF_BUNDLE_BYTES, type GltfBundleInspection } from '../../../../libraries/services/threed/models/model-gltf-bundle-core.ts';
+import { MAX_GLTF_BUNDLE_BYTES, MAX_GLTF_PRIMARY_BYTES, type GltfBundleInspection } from '../../../../libraries/services/threed/models/model-gltf-bundle-core.ts';
 
 export const MAX_BULK_MODELS = 100;
 // Leave multipart overhead below the deployed Function request-body limit.
@@ -93,15 +93,16 @@ function pathSuffixes(path: string): string[] {
   return suffixes;
 }
 
-function selectedFileIssue(file: File): string | null {
+function selectedFileIssue(file: File, maximumBytes = MAX_BULK_FILE_BYTES): string | null {
   if (file.name.length > 255) return 'Filenames cannot exceed 255 characters.';
   if (safePath(file.name) !== file.name || file.name.includes('/')) return 'Choose a file with a valid filename.';
   if (file.size <= 0) return 'Selected files must not be empty.';
-  return file.size > MAX_BULK_FILE_BYTES ? 'Bulk uploads currently support files up to 4 MiB.' : null;
+  return file.size > maximumBytes ? `${file.name} is ${(file.size / 1024 / 1024).toFixed(2)} MiB. This upload path supports up to ${maximumBytes / 1024 / 1024} MiB per file.` : null;
 }
 
 export function validateBulkPrimary(file: File): string | null {
-  return !['fbx', 'glb', 'gltf', 'obj'].includes(extension(file.name)) ? 'Select an FBX, GLB, GLTF, or OBJ Model file.' : selectedFileIssue(file);
+  return !['fbx', 'glb', 'gltf', 'obj'].includes(extension(file.name)) ? 'Select an FBX, GLB, GLTF, or OBJ Model file.'
+    : selectedFileIssue(file, /\.(glb|gltf)$/i.test(file.name) ? MAX_GLTF_PRIMARY_BYTES : MAX_BULK_FILE_BYTES);
 }
 
 export function bulkCompanionType(file: File): 'texture' | 'binary' | 'other' {

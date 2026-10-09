@@ -49,6 +49,7 @@ const api = load('src/app/api/map/threed/route.ts', {
   '@/libraries/db/connection-diagnostics': { databaseConnectionDiagnostic: () => ({}) },
   '@/libraries/services/threed/models/model-snapshot-assets': snapshot,
   '@/libraries/services/threed/models/model-primary-file': { modelSelection: () => ({}) },
+  '@/libraries/services/threed/models/model-material-override-core': require('../services/threed/models/model-material-override-core.ts'),
   'drizzle-orm': orm,
   'next/server': { NextResponse: { json: (body, options) => ({ body, status: options?.status ?? 200 }) } },
   '@/libraries/auth': { auth: async () => viewer ? { user: { id: viewer } } : null },

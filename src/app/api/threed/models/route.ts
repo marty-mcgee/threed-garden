@@ -26,6 +26,7 @@ import { createThreeDModelLibraryReadiness } from '@/libraries/services/threed/m
 import { validModelLightBoost } from '@/libraries/services/threed/models/model-lighting-core';
 import { MODEL_FALLBACK_SHAPES, readModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
 import { readModelSource, validModelSource } from '@/libraries/services/threed/models/model-source-core';
+import { isThreeDModelMaterialChannel } from '@/libraries/services/threed/models/model-material-override-core';
 
 type ModelWithFiles = import('@/libraries/services/threed/models/model-primary-file').ResolvedModel & {
   files: Array<typeof threedModelFiles.$inferSelect>;
@@ -100,6 +101,7 @@ async function loadMaterialAssignmentsByModelIds(modelIds: number[]): Promise<Ma
     eq(threedModelTextures.id, threedModelMaterialAssignments.textureId),
   ).where(inArray(threedModelMaterialAssignments.modelId, modelIds));
   for (const { modelId, ...assignment } of rows) {
+    if (!isThreeDModelMaterialChannel(assignment.channel)) continue;
     const assignments = byModel.get(modelId) ?? [];
     assignments.push(assignment);
     byModel.set(modelId, assignments);

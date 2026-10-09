@@ -22,6 +22,7 @@ import {
 import { isOwnedThreeDBlobUrl } from '@/libraries/services/threed/models/model-file-integrity';
 import {
   isThreeDModelMaterialTargetKey,
+  isThreeDModelMaterialChannel,
   writeThreeDModelMaterialOverride,
 } from '@/libraries/services/threed/models/model-material-override-core';
 
@@ -186,11 +187,12 @@ export async function PATCH(request: NextRequest) {
     || requestedTargetKeys.length < 1
     || requestedTargetKeys.length > 500
     || requestedTargetKeys.some((targetKey) => !isThreeDModelMaterialTargetKey(targetKey))
-    || body.channel !== 'baseColor'
+    || !isThreeDModelMaterialChannel(body.channel)
   ) {
     return NextResponse.json({ success: false, error: 'Invalid material assignment' }, { status: 400 });
   }
   const modelId = Number(body.modelId);
+  const channel = body.channel;
   const textureFileId = body.textureFileId === undefined ? null : Number(body.textureFileId);
   const textureId = body.textureId === undefined ? null : Number(body.textureId);
   if (
@@ -226,7 +228,7 @@ export async function PATCH(request: NextRequest) {
   const metadata = requestedTargetKeys.reduce<Record<string, unknown>>(
     (currentMetadata, targetKey) => writeThreeDModelMaterialOverride(currentMetadata, {
       targetKey: targetKey as string,
-      channel: 'baseColor',
+      channel,
       textureRelativePath: textureReference,
     }),
     model.metadata && typeof model.metadata === 'object' && !Array.isArray(model.metadata)
@@ -241,7 +243,7 @@ export async function PATCH(request: NextRequest) {
           modelId,
           textureId: libraryTexture.id,
           targetKey,
-          channel: 'baseColor',
+          channel,
         }).onConflictDoUpdate({
           target: [
             threedModelMaterialAssignments.modelId,
@@ -250,6 +252,16 @@ export async function PATCH(request: NextRequest) {
           ],
           set: { textureId: libraryTexture.id, userId, updatedAt: new Date() },
         });
+      }
+    } else {
+      // An attachment assignment replaces a prior reusable link for this channel.
+      for (const targetKey of requestedTargetKeys as string[]) {
+        await tx.delete(threedModelMaterialAssignments).where(and(
+          eq(threedModelMaterialAssignments.modelId, modelId),
+          eq(threedModelMaterialAssignments.userId, userId),
+          eq(threedModelMaterialAssignments.targetKey, targetKey),
+          eq(threedModelMaterialAssignments.channel, channel),
+        ));
       }
     }
     return tx.update(threedModels).set({ metadata, updatedAt: new Date() }).where(and(

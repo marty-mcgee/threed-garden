@@ -5,6 +5,7 @@ import { retryDisconnectedRead } from '@/libraries/db/read-retry';
 import { databaseConnectionDiagnostic } from '@/libraries/db/connection-diagnostics';
 import { currentModelAssets } from '@/libraries/services/threed/models/model-snapshot-assets';
 import { modelSelection } from '@/libraries/services/threed/models/model-primary-file';
+import { isThreeDModelMaterialChannel } from '@/libraries/services/threed/models/model-material-override-core';
 import { getTableColumns } from 'drizzle-orm';
 // app/api/map/threed/route.ts
 
@@ -353,13 +354,13 @@ export async function GET(request: NextRequest) {
         }));
       }
       const currentModelById = new Map(currentModels.filter(model => canRenderAssignedModel(model, projectData.userId!, canEdit)).map((model) => {
-        const materialAssignments = assignments.filter(item => item.modelId === model.id && item.textureOwner === model.userId)
+        const materialAssignments = assignments.filter(item => item.modelId === model.id && item.textureOwner === model.userId && isThreeDModelMaterialChannel(item.channel))
           .map(({ modelId: _model, textureOwner: _owner, ...item }) => item);
         return [model.id, {
           ...model,
           renderingAssetsResolved: true,
           materialAssignments,
-          textureFallbacks: [...materialAssignments.map(item => ({ fileName: item.textureFileName, filePath: item.textureUrl, isActive: true })), ...(referencedTextures.get(model.id) ?? []).filter(texture => !materialAssignments.some(item => item.textureFileName.toLowerCase() === texture.fileName.toLowerCase()))],
+          textureFallbacks: [...materialAssignments.filter(item => item.channel === 'baseColor').map(item => ({ fileName: item.textureFileName, filePath: item.textureUrl, isActive: true })), ...(referencedTextures.get(model.id) ?? []).filter(texture => !materialAssignments.some(item => item.channel === 'baseColor' && item.textureFileName.toLowerCase() === texture.fileName.toLowerCase()))],
           files: currentFiles.filter((file) => file.modelId === model.id && file.userId === model.userId && Boolean(file.filePath))
             .map(({ id, fileName, relativePath, filePath, fileType }) => ({ id, fileName, relativePath, filePath, fileType })),
         }];

@@ -1,6 +1,8 @@
 # ThreeD Model Administration
 
-Current production checkpoint: **v0.19.12 — ThreeD Admin Model Workspace**, package `0.19.12`, commit `80c6a1d`. Successful production deployment is User-confirmed. See the [release record](../releases/v0.19.12.md) and [completed scope, verification and deployment handoff](../plans/v0.19.12-release.md). Historical checkpoint sections below describe behavior at their named releases.
+Current production is [v0.23.2](../releases/v0.23.2.md). The local [v0.24.0-alpha Model Builder](THREED_MODEL_BUILDER.md) adds Admin → ThreeD → Models → Model Builder, browser Cottage GLB/PNG generation and explicit new private/inactive Model registration. Managed assignments now support Base Color, Normal, Roughness, Metallic, Ambient Occlusion and Emissive while preserving imported factors and texture sampling. Primary uploads use authenticated direct Blob transfer up to 32 MiB; bulk GLB/glTF primaries use that tier while bulk FBX/OBJ and companion files retain 4 MiB. Alternate/supporting File uploads retain their existing transport. Older limits and checkpoint statements below describe their named historical versions.
+
+Historical production checkpoint: **v0.19.12 — ThreeD Admin Model Workspace**, package `0.19.12`, commit `80c6a1d`. Successful production deployment is User-confirmed. See the [release record](../releases/v0.19.12.md) and [completed scope, verification and deployment handoff](../plans/v0.19.12-release.md). Historical checkpoint sections below describe behavior at their named releases.
 
 Released checkpoint: [v0.19.12 — ThreeD Admin Model Workspace](../plans/v0.19.12-release.md). This page is the [design blueprint for future Admin ThreeD sub-module pages](../plans/admin-threed-workspace-blueprint.md); only the Models workspace is adapted in this release.
 

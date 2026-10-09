@@ -143,6 +143,7 @@ const uiContext = vm.createContext({
   Button: 'button', Box: 'icon', Check: 'icon', ImageOff: 'icon', Loader2: 'icon', Palette: 'icon', RotateCcw: 'icon', Upload: 'icon',
   require(name) { assert.equal(name, 'react/jsx-runtime'); return { jsx, jsxs: jsx }; },
   readThreeDModelMaterialOverrides: () => ({ assignments: [] }),
+  ...require('../services/threed/models/model-material-override-core.ts'),
   useId: () => 'preview-id', useRef: initial => ({ current: initial }), useCallback: callback => callback, useEffect() {},
   useState(initial) {
     const index = stateCursor++;
@@ -153,12 +154,12 @@ const uiContext = vm.createContext({
 vm.runInContext(compiled, uiContext);
 const renderPreview = vm.runInContext('ThreeDModelAssetPreview', uiContext);
 const model = { id: 7, modelType: 'fbx', filePath: 'offline.fbx', files: [], materialAssignments: [{ channel: 'baseColor', targetKey: 'mesh:0' }] };
-function ui(readOnly) {
+function ui(readOnly, save = () => { throw new Error('Inspection must not save an assignment'); }) {
   stateCursor = 0;
   return renderPreview({ model, materialInspectorReadOnly: readOnly, showMaterialInspector: true, attachedDependencyCount: 0, dependencyCount: 0,
     preserveCameraOnEdit: true, perspective: defaultView,
     textureLibrary: [{ id: 4, textureName: 'Texture', fileName: 'texture.png', filePath: 'https://fixture.invalid/texture.png', assignmentCount: 1 }],
-    onSaveMaterialAssignment() { throw new Error('Inspection must not save an assignment'); } });
+    onSaveMaterialAssignment: save });
 }
 let tree = ui(true);
 assert(text(tree).includes('Saved appearance'));
@@ -177,5 +178,19 @@ tree = ui(false);
 assert(nodes(tree).some(node => node.type === 'select' && node.props.id === 'model-appearance-texture'), 'Editable Model appearance keeps its existing selector');
 assert(text(tree).includes('Save Texture to all materials'));
 assert(text(tree).includes('Test Base Color file'));
+const channelSelector = nodes(tree).find(node => node.type === 'select' && node.props.id === 'model-appearance-channel');
+assert.equal(nodes(channelSelector).filter(node => node.type === 'option').length, 6, 'Parent appearance exposes the six supported PBR roles');
+channelSelector.props.onChange({ target: { value: 'roughness' } });
+tree = ui(false);
+assert(/This material does not support\s+Roughness \(G\)\s+textures/.test(text(tree)), 'Unsupported material roles explain the disabled controls');
+assert(nodes(tree).find(node => node.type === 'select' && node.props.id === 'model-material-attachment').props.disabled);
+inventory.slots[0].supportedChannels = ['baseColor', 'normalMap', 'roughness', 'metallic', 'occlusion', 'emissive'];
+tree = ui(false);
+nodes(tree).find(node => node.type === 'select' && node.props.id === 'model-material-attachment').props.onChange({ target: { value: 'library:4' } });
+const savedBindings = [];
+tree = ui(false, assignment => { savedBindings.push(JSON.parse(JSON.stringify(assignment))); return Promise.resolve(); });
+nodes(tree).find(node => node.type === 'button' && text(node).includes('Save assignment')).props.onClick();
+assert.deepEqual(savedBindings, [{ targetKeys: ['mesh:0'], channel: 'roughness', textureId: 4 }], 'Saving an image keeps the selected role, rather than silently writing Base Color');
 console.log('PASS File preview: actual center-relative fit, preserved orbit, manual Fit, Reset, capture perspective and cancelled callbacks.');
 console.log('PASS saved appearance inspection: no unsavable Texture workflow; parent editing controls remain available.');
+console.log('PASS PBR appearance controls: six roles, material support guidance and selected-channel Save payload.');

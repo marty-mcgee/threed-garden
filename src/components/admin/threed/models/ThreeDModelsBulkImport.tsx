@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { inspectThreeDModelPrimary } from '@/libraries/services/threed/models/model-companion-core';
 import { inspectObjGeometry } from '@/libraries/services/threed/models/model-obj-core';
 import { inspectThreeDGltfBundle } from '@/libraries/services/threed/models/model-gltf-bundle-core';
+import { uploadThreeDPrimaryFile } from '@/libraries/services/threed/models/model-primary-upload-client';
 import type { ThreeDModelCategoryOption } from './ThreeDModelCategoriesManager';
 import {
   createBulkDefaults, createBulkDraft, bulkModelTitle, defaultDestination, MAX_BULK_MODELS,
@@ -71,6 +72,8 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
   const [notice, setNotice] = useState('');
   const [importing, setImporting] = useState(false);
   const busyRef = useRef(false);
+  const uploadAbortRef = useRef<AbortController | null>(null);
+  const [uploadTransferActive, setUploadTransferActive] = useState(false);
   const [checkingPreview, setCheckingPreview] = useState(false);
   const previewCheckRef = useRef(0);
   const mountedRef = useRef(true);
@@ -86,7 +89,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
 
   useEffect(() => {
     mountedRef.current = true;
-    return () => { mountedRef.current = false; previewCheckRef.current += 1; previewWindowCleanupRef.current?.(); };
+    return () => { mountedRef.current = false; previewCheckRef.current += 1; previewWindowCleanupRef.current?.(); uploadAbortRef.current?.abort(); };
   }, []);
   useEffect(() => {
     if (!preferenceKey) return;
@@ -316,6 +319,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
     if (busyRef.current || checkingPreview || (!previous && !eligible.length)) return;
     busyRef.current = true;
     setImporting(true);
+    const controller = new AbortController(); uploadAbortRef.current = controller;
     setNotice('');
     // Freeze reviewed settings/associations. Rows still scanning are excluded from this run.
     const run = previous ? [{
@@ -337,12 +341,19 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
     let failed = 0;
     try {
       for (const { draft, plan, submitted } of run) {
+        if (controller.signal.aborted) break;
         const outcome = await runBulkModel({
           file: draft.source.file, modelName: draft.modelName, settings: plan.settings,
           rotationY: draft.rotationY, offsetX: draft.offsetX, offsetY: draft.offsetY, offsetZ: draft.offsetZ,
           configureLater: draft.configureLater, previewFile: draft.previewFile,
           attachments: plan.attachments.map((attachment) => ({ file: attachment.source.file, relativePath: attachment.relativePath, fileType: attachment.fileType, sharedTexture: attachment.source.sharedTexture })),
-        }, (label) => { if (mountedRef.current) setProgress((current) => ({ ...current, [draft.id]: label })); });
+        }, (label) => { if (mountedRef.current) setProgress((current) => ({ ...current, [draft.id]: label })); }, undefined, undefined,
+        async (file, reportProgress) => {
+          if (mountedRef.current) setUploadTransferActive(true);
+          try { return await uploadThreeDPrimaryFile(file, { signal: controller.signal,
+            onProgress: (percentage, phase) => reportProgress(phase === 'verifying' ? 'Verifying uploaded Model' : `Uploading ${Math.round(percentage)}%`) }); }
+          finally { if (mountedRef.current) setUploadTransferActive(false); }
+        });
         if (outcome.modelId) created += 1;
         if (outcome.status !== 'imported') failed += 1;
         if (mountedRef.current) {
@@ -351,10 +362,12 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
         }
       }
       await onComplete({ created, failed });
+      if (controller.signal.aborted && mountedRef.current) setNotice('Upload cancelled. Completed imports remain saved; unsubmitted selections are retained.');
     } catch {
       if (mountedRef.current) setNotice('The batch stopped unexpectedly. Check Models before starting another import.');
     } finally {
       busyRef.current = false;
+      uploadAbortRef.current = null;
       if (mountedRef.current) setImporting(false);
     }
   }
@@ -422,7 +435,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
                 <DialogDescription>File limits, naming, batch settings and previews.</DialogDescription>
               </DialogHeader>
               <div className="space-y-3 text-sm text-muted-foreground">
-                <p><strong className="text-foreground">Files:</strong> Up to 100 Models, with a limit of 4 MiB per file for bulk uploads.</p>
+                <p><strong className="text-foreground">Files:</strong> Up to 100 Models. GLB/GLTF primaries support 32 MiB through direct storage upload; other primaries and companions support 4 MiB. Each inspected bundle and decoded geometry remains limited to 32 MiB.</p>
                 <p><strong className="text-foreground">Names:</strong> Prefixes apply to unsubmitted Models, separated from the name by a space. Title Case capitalizes each word while preserving the prefix and existing capitalization. Example: FarmBot: Belt Clip.</p>
                 <p><strong className="text-foreground">Scale:</strong> 100% = scale 1. Choose a shortcut or enter a custom scale, then preview the resulting size.</p>
                 <p><strong className="text-foreground">Batch settings:</strong> Changes apply to inherited values. Models stay inactive unless activation is requested and their saved dependency audit succeeds.</p>
@@ -633,6 +646,7 @@ export function ThreeDModelsBulkImport({ categories, onComplete }: {
           <p>Clear selections to start a new batch. Clearing does not delete saved Models.</p>
         </div>
         <div className="flex flex-wrap gap-2">
+          {uploadTransferActive && <Button type="button" variant="outline" size="sm" onClick={() => uploadAbortRef.current?.abort()}>Cancel upload</Button>}
           <Button type="button" variant="outline" size="sm" disabled={importing || (drafts.length === 0 && pool.length === 0)} onClick={clearAllSelectedFiles}>Clear All Selected Files</Button>
           <Button type="button" variant="ghost" size="sm" disabled={importing || !drafts.some((draft) => results[draft.id]?.status === 'imported')} onClick={() => changeDrafts((current) => current.filter((draft) => results[draft.id]?.status !== 'imported'))}>Clear imported rows</Button>
           <Button type="button" size="sm" className="bg-green-700 text-white hover:bg-green-800 focus-visible:ring-green-500/50 disabled:bg-muted disabled:text-muted-foreground" disabled={importing || checkingPreview || eligible.length === 0} onClick={() => void importReady()}>{importing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{importing ? 'Importing…' : `Import ${eligible.length} ready Models`}</Button>

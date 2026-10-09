@@ -12,6 +12,7 @@ import {
   inspectThreeDGltfBundle,
   resolveThreeDGltfBundleResource,
   validateThreeDGltfBundleResources,
+  MAX_GLTF_PRIMARY_BYTES,
   type GltfBundleResource,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from '../../../../libraries/services/threed/models/model-gltf-bundle-core.ts';
@@ -48,7 +49,8 @@ export async function loadBulkGltfBundle(
 ): Promise<BulkLocalModelLease> {
   if (attachments.length > 500) throw new Error('A GLB/GLTF bundle may contain at most 500 companion files.');
   const selected = [file, ...attachments.map((attachment) => attachment.file)];
-  if (selected.some((entry) => entry.size <= 0 || entry.size > MAX_FILE_BYTES)) throw new Error('Each selected GLB/GLTF bundle file must be nonempty and at most 4 MiB.');
+  if (file.size <= 0 || file.size > MAX_GLTF_PRIMARY_BYTES) throw new Error('GLB/GLTF primaries must be nonempty and at most 32 MiB.');
+  if (attachments.some(({ file: entry }) => entry.size <= 0 || entry.size > MAX_FILE_BYTES)) throw new Error('Each selected GLB/GLTF companion must be nonempty and at most 4 MiB.');
   if (selected.reduce((total, entry) => total + entry.size, 0) > MAX_BUNDLE_BYTES) throw new Error('Selected files for one GLB/GLTF Model exceed the 32 MiB bundle limit.');
 
   const urls = new Set<string>();

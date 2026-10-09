@@ -45,9 +45,10 @@ next-env.d.ts
 
 # custom public/other
 public/assets-archive
+public/home-design
 reference/
 
-# Windows download metadata
+# Windows WSL Ubuntu download metadata
 *:Zone.Identifier
 # Windows misc
 desktop.ini

@@ -8,10 +8,10 @@ import {
 // @ts-expect-error Node's native TypeScript validator requires the explicit extension.
 } from '../../../../libraries/services/threed/models/model-companion-core.ts';
 // @ts-expect-error Node's native TypeScript validator requires the explicit extension.
-import { MAX_BULK_FILE_BYTES, validateBulkPreview } from './model-bulk-preparation-core.ts';
+import { MAX_BULK_FILE_BYTES, validateBulkPrimary, validateBulkPreview } from './model-bulk-preparation-core.ts';
+import type { ThreeDPrimaryUploadResult } from '../../../../libraries/services/threed/models/model-primary-upload-client';
 import {
   isThreeDModelMaterialTargetKey,
-  THREED_MODEL_MATERIAL_OVERRIDE_LIMIT,
 // @ts-expect-error Node's native TypeScript validator requires the explicit extension.
 } from '../../../../libraries/services/threed/models/model-material-override-core.ts';
 
@@ -78,6 +78,8 @@ const FILES_ROUTE = '/api/threed/models/files';
 const TEXTURES_ROUTE = '/api/threed/model-textures';
 const ASSIGNMENT_ROUTE = `${FILES_ROUTE}/requirements`;
 const MAX_ASSIGNMENT_BYTES = 2_048;
+// Inventory counts slots; a slot may now contain several independent PBR bindings.
+const MAX_MATERIAL_SLOTS = 500;
 const REJECTED_BEFORE_WRITE = new Set([400, 401, 403, 404, 413, 415, 422]);
 
 type JsonObject = Record<string, unknown>;
@@ -166,7 +168,7 @@ function assignmentTargets(analysis: unknown): string[] | null {
   const inventory = object(inspected?.materialTargets);
   const keys = inventory?.targetKeys;
   if (inspected?.status !== 'analyzed' || !Array.isArray(keys)
-    || keys.length < 1 || keys.length > THREED_MODEL_MATERIAL_OVERRIDE_LIMIT
+    || keys.length < 1 || keys.length > MAX_MATERIAL_SLOTS
     || inventory?.materialSlotCount !== keys.length || inventory.omittedSlotCount !== 0
     || !keys.every(isThreeDModelMaterialTargetKey) || new Set(keys).size !== keys.length) return null;
   return [...keys];
@@ -193,6 +195,7 @@ export async function runBulkModel(
   onProgress: (label: string) => void,
   request: typeof fetch = fetch,
   inspectBundle: BulkGltfBundleInspector = inspectGltfBundle,
+  uploadPrimary?: (file: File, onProgress: (label: string) => void) => Promise<ThreeDPrimaryUploadResult>,
 ): Promise<BulkImportResult> {
   // Validate before the first upload. Inputs are an immutable snapshot of a reviewed row.
   const sourceFile = input.file;
@@ -204,7 +207,7 @@ export async function runBulkModel(
   let attachments: Array<{ file: File; relativePath: string; fileType: 'texture' | 'binary' | 'other'; sharedTexture?: { id: number; filePath: string } }>;
   const { existingTextureId = null, ...modelSettings } = input.settings;
   try {
-    checkFile(sourceFile, /\.(?:fbx|glb|gltf|obj)$/i);
+    const primaryIssue = validateBulkPrimary(sourceFile); if (primaryIssue) throw new Error(primaryIssue);
     if (!normalizeThreeDModelRelativePath(sourceFile.name)) throw new Error('Invalid primary filename.');
     for (const value of [input.settings.scale, input.rotationY, input.offsetX, input.offsetY, input.offsetZ]) {
       if (!value.trim()) throw new Error('Every transform must contain a finite number.');
@@ -327,8 +330,19 @@ export async function runBulkModel(
   const primaryBody = new FormData();
   primaryBody.append('file', sourceFile);
   let upload: Reply;
-  try { upload = await send(request, PRIMARY_ROUTE, { method: 'POST', body: primaryBody }); }
-  catch { return result('unknown', 'The upload response was lost before Model creation. Try Again to upload a fresh copy using these files and settings.', true); }
+  try { upload = uploadPrimary
+    ? { ok: true, status: 200, body: { success: true, data: await uploadPrimary(sourceFile, onProgress) } }
+    : await send(request, PRIMARY_ROUTE, { method: 'POST', body: primaryBody }); }
+  catch (error) {
+    if (uploadPrimary && error instanceof Error && error.name === 'AbortError') {
+      return result('failed', 'Model upload cancelled. No Model was created; reviewed selections are retained.', true);
+    }
+    if (uploadPrimary && error instanceof Error && error.name === 'ThreeDPrimaryUploadError') {
+      const uncertain = 'cleanupUnconfirmed' in error && error.cleanupUnconfirmed === true;
+      return result(uncertain ? 'unknown' : 'failed', error.message.slice(0, 400), !uncertain);
+    }
+    return result('unknown', 'The upload response was lost before Model creation. Try Again to upload a fresh copy using these files and settings.', true);
+  }
   if (!upload.ok && REJECTED_BEFORE_WRITE.has(upload.status)) {
     return result('failed', upload.status === 413
       ? 'The upload transport rejected this file size. Use a smaller file and retry.'

@@ -6,9 +6,11 @@
 
 [![Repository validation](https://github.com/marty-mcgee/threed-garden/actions/workflows/validation.yml/badge.svg?branch=main)](https://github.com/marty-mcgee/threed-garden/actions/workflows/validation.yml?query=branch%3Amain)
 
-🟢 **Latest release:** [v0.23.1 — ThreeD Garden: Project overlays and workspace polish](docs/releases/v0.23.1.md)
+🟢 **Latest release:** [v0.23.2 — ThreeD Garden: Animation mappings and Simulation workflow](docs/releases/v0.23.2.md)
 
-🛠️ **Release preparation:** [v0.23.2 — Animation mappings and Simulation workflow](docs/releases/v0.23.2.md)
+🛠️ **Local alpha:** [v0.24.0-alpha — ThreeD Model Builder Tool](docs/plans/v0.24.0-alpha-model-builder.md) · [Builder guide](docs/developers/THREED_MODEL_BUILDER.md)
+
+🏠 **Home Design prototype:** [Live 2D-to-3D planning surface](docs/plans/v0.24.0-alpha-home-design.md) · [Drawing and developer guide](docs/developers/THREED_HOME_DESIGN.md)
 
 [🚀 Get started](docs/users/GETTING_STARTED.md) · [🎮 Explore the controls](docs/users/THREED_CONTROLS.md) · [📚 Browse the docs](docs/README.md) · [🛠️ Run locally](#run-it-locally)
 

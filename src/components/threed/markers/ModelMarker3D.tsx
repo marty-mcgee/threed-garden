@@ -46,7 +46,8 @@ import {
   type ThreeDModelMaterialInventory,
   type ThreeDModelMaterialPreviewOverride,
 } from '@/libraries/services/threed/models/model-material-inventory-core';
-import { readThreeDModelMaterialOverrides } from '@/libraries/services/threed/models/model-material-override-core';
+import { mergeThreeDModelMaterialAssignments } from '@/libraries/services/threed/models/model-material-override-core';
+import { applyThreeDModelMaterialAssignments, bindThreeDModelMaterialTexture } from '@/libraries/services/threed/models/model-material-texture';
 import { readModelLightBoost } from '@/libraries/services/threed/models/model-lighting-core';
 import { applyModelLightBoost } from '@/libraries/services/threed/models/model-lighting-material';
 
@@ -201,6 +202,7 @@ function useModelLoad(
       return;
     }
     let cancelled = false;
+    let releaseMaterialAssignments: (() => void) | undefined;
 
     const loadModel = async () => {
       setLoading(true);
@@ -244,46 +246,17 @@ function useModelLoad(
           if (await waitForResources(30000, true) && !hadResourceIssue) modelCache.set(cacheKey, m.clone());
         }
 
-        const savedMaterialOverrides = readThreeDModelMaterialOverrides(model.metadata);
-        const relationalAssignments = Array.isArray(model.materialAssignments)
-          ? model.materialAssignments.filter((assignment) => assignment.channel === 'baseColor')
-          : [];
-        const relationalTargetKeys = new Set(relationalAssignments.map((assignment) => assignment.targetKey));
-        const materialAssignments = [
-          ...relationalAssignments.map((assignment) => ({
-            targetKey: assignment.targetKey,
-            channel: 'baseColor' as const,
-            textureRelativePath: assignment.textureUrl,
-          })),
-          ...savedMaterialOverrides.assignments.filter((assignment) => !relationalTargetKeys.has(assignment.targetKey)),
-        ];
-        for (const assignment of materialAssignments) {
-          const target = resolveThreeDModelMaterialTarget(m, assignment.targetKey);
-          if (!target) continue;
-          const resolvedTextureUrl = resolveThreeDModelAttachmentUrl(
-            assignment.textureRelativePath,
-            attachments,
-          );
-          if (!/^(?:https:|data:|blob:)/i.test(resolvedTextureUrl)) continue;
-          const originalMaterials = Array.isArray(target.mesh.material)
-            ? [...target.mesh.material]
-            : [target.mesh.material];
-          const originalMaterial = originalMaterials[target.slotIndex];
-          if (!(originalMaterial instanceof THREE.Material)) continue;
-          const material = originalMaterial.clone() as THREE.Material & { color?: THREE.Color; map?: THREE.Texture | null };
-          const texture = await new THREE.TextureLoader(manager).loadAsync(resolvedTextureUrl).catch(error => {
-            if (!reportResourceIssue) throw error;
-            reportResourceIssue(resolvedTextureUrl, 'Could not load assigned texture');
-            return null;
+        releaseMaterialAssignments = await applyThreeDModelMaterialAssignments(m, modelType,
+          mergeThreeDModelMaterialAssignments(model.metadata, model.materialAssignments), async reference => {
+            const url = resolveThreeDModelAttachmentUrl(reference, attachments);
+            if (!/^(?:https:|data:|blob:)/i.test(url)) return null;
+            return new THREE.TextureLoader(manager).loadAsync(url).catch(error => {
+              if (!reportResourceIssue) throw error;
+              reportResourceIssue(url, 'Could not load assigned texture');
+              return null;
+            });
           });
-          if (!texture) { material.dispose(); continue; }
-          texture.colorSpace = THREE.SRGBColorSpace;
-          material.map = texture;
-          material.color?.set('#ffffff');
-          material.needsUpdate = true;
-          originalMaterials[target.slotIndex] = material;
-          target.mesh.material = Array.isArray(target.mesh.material) ? originalMaterials : material;
-        }
+        if (cancelled) { releaseMaterialAssignments(); return; }
 
         applyModelLightBoost(m, model.modelLightBoost ?? readModelLightBoost(model.metadata));
 
@@ -344,6 +317,8 @@ function useModelLoad(
           setLoadedModel(m);
         }
       } catch (err) {
+        releaseMaterialAssignments?.();
+        releaseMaterialAssignments = undefined;
         if (!cancelled) {
           reportResourceIssue?.(model.filePath, 'Could not load Model');
           console.error(`ModelMarker3D: failed to load "${model.modelName}":`, err);
@@ -359,6 +334,7 @@ function useModelLoad(
     void loadModel();
     return () => {
       cancelled = true;
+      releaseMaterialAssignments?.();
     };
   }, [applyStoredScale, fitDepth, fitHeight, fitWidth, model, reportResourceIssue]);
 
@@ -466,7 +442,7 @@ export function ModelMarker3D({ model: savedModel, position, name, scale = 1, an
     const materials = Array.isArray(originalMaterial) ? [...originalMaterial] : [originalMaterial];
     const target = materials[slotIndex];
     if (!(target instanceof THREE.Material)) return;
-    const previewMaterial = target.clone() as THREE.Material & { color?: THREE.Color; map?: THREE.Texture | null };
+    const previewMaterial = target.clone();
     materials[slotIndex] = previewMaterial;
     mesh.material = Array.isArray(originalMaterial) ? materials : previewMaterial;
 
@@ -477,11 +453,9 @@ export function ModelMarker3D({ model: savedModel, position, name, scale = 1, an
         texture.dispose();
         return;
       }
-      previewTexture = texture;
-      texture.colorSpace = THREE.SRGBColorSpace;
-      previewMaterial.map = texture;
-      previewMaterial.color?.set('#ffffff');
-      previewMaterial.needsUpdate = true;
+      try {
+        previewTexture = bindThreeDModelMaterialTexture(previewMaterial, texture, materialPreviewOverride.channel ?? 'baseColor', model.modelType);
+      } finally { texture.dispose(); }
     }).catch((loadError) => {
       console.error('ModelMarker3D: failed to load temporary material preview texture', loadError);
     });
@@ -492,7 +466,7 @@ export function ModelMarker3D({ model: savedModel, position, name, scale = 1, an
       previewTexture?.dispose();
       previewMaterial.dispose();
     };
-  }, [loadedModel, materialPreviewOverride]);
+  }, [loadedModel, materialPreviewOverride, model.modelType]);
 
   const regionJobRef = useRef<{ generator: ReturnType<typeof indexEnvironmentRegions>; audit: ModelGeometryAudit; batches: number; lastReport: number } | null>(null);
   useEffect(() => {

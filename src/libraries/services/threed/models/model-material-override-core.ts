@@ -1,9 +1,26 @@
 export const THREED_MODEL_MATERIAL_OVERRIDE_VERSION = 1 as const;
-export const THREED_MODEL_MATERIAL_OVERRIDE_LIMIT = 500;
+// Inventory is bounded to 500 slots, each with at most six PBR bindings.
+export const THREED_MODEL_MATERIAL_OVERRIDE_LIMIT = 500 * 6;
+
+/** Matches Model File texture roles; roles belong to bindings, not image assets. */
+export const THREED_MODEL_MATERIAL_CHANNELS = ['baseColor', 'normalMap', 'roughness', 'metallic', 'occlusion', 'emissive'] as const;
+export type ThreeDModelMaterialChannel = (typeof THREED_MODEL_MATERIAL_CHANNELS)[number];
+export const THREED_MODEL_MATERIAL_TEXTURE_PROPERTIES = {
+  baseColor: 'map', normalMap: 'normalMap', roughness: 'roughnessMap',
+  metallic: 'metalnessMap', occlusion: 'aoMap', emissive: 'emissiveMap',
+} as const;
+export const THREED_MODEL_MATERIAL_CHANNEL_LABELS: Record<ThreeDModelMaterialChannel, string> = {
+  baseColor: 'Base Color', normalMap: 'Normal', roughness: 'Roughness (G)',
+  metallic: 'Metallic (B)', occlusion: 'Ambient Occlusion (R)', emissive: 'Emissive',
+};
+
+export function isThreeDModelMaterialChannel(value: unknown): value is ThreeDModelMaterialChannel {
+  return THREED_MODEL_MATERIAL_CHANNELS.some(channel => channel === value);
+}
 
 export interface ThreeDModelMaterialOverrideAssignment {
   targetKey: string;
-  channel: 'baseColor';
+  channel: ThreeDModelMaterialChannel;
   textureRelativePath: string;
 }
 
@@ -33,18 +50,35 @@ export function readThreeDModelMaterialOverrides(metadata: unknown): ThreeDModel
     const assignment = item as Record<string, unknown>;
     if (
       !isThreeDModelMaterialTargetKey(assignment.targetKey)
-      || assignment.channel !== 'baseColor'
+      || !isThreeDModelMaterialChannel(assignment.channel)
       || typeof assignment.textureRelativePath !== 'string'
       || !assignment.textureRelativePath
       || assignment.textureRelativePath.length > 500
     ) return [];
     return [{
       targetKey: assignment.targetKey,
-      channel: 'baseColor' as const,
+      channel: assignment.channel,
       textureRelativePath: assignment.textureRelativePath,
     }];
   });
   return { version: THREED_MODEL_MATERIAL_OVERRIDE_VERSION, assignments };
+}
+
+/** Relational library links win only for the same slot AND channel. */
+export function mergeThreeDModelMaterialAssignments(metadata: unknown, relational: readonly {
+  targetKey: string; channel: string; textureUrl: string;
+}[] = []): ThreeDModelMaterialOverrideAssignment[] {
+  const assignments = new Map(readThreeDModelMaterialOverrides(metadata).assignments.map(assignment => [
+    `${assignment.targetKey}:${assignment.channel}`, assignment,
+  ]));
+  for (const assignment of relational) {
+    if (!isThreeDModelMaterialTargetKey(assignment.targetKey) || !isThreeDModelMaterialChannel(assignment.channel)
+      || !assignment.textureUrl || assignment.textureUrl.length > 500) continue;
+    assignments.set(`${assignment.targetKey}:${assignment.channel}`, {
+      targetKey: assignment.targetKey, channel: assignment.channel, textureRelativePath: assignment.textureUrl,
+    });
+  }
+  return [...assignments.values()];
 }
 
 export function writeThreeDModelMaterialOverride(

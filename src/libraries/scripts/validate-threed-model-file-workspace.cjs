@@ -12,7 +12,9 @@ function load(file, mocks, globals = {}) {
     require(name) { assert(name in mocks, `Unexpected import: ${name}`); return mocks[name]; } });
   return exports;
 }
-const edit = load('src/libraries/services/threed/models/model-file-edit-core.ts', {});
+const edit = load('src/libraries/services/threed/models/model-file-edit-core.ts', {
+  './model-material-override-core.ts': require('../services/threed/models/model-material-override-core.ts'),
+});
 const schemaText = fs.readFileSync('src/libraries/schema/threed/index.ts', 'utf8');
 for (const type of edit.MODEL_FILE_TEXTURE_TYPES) assert(schemaText.includes(`'${type}'`), `Missing schema Texture role ${type}`);
 for (const body of [{}, [], null, { filePath: 'new' }, { relativePath: 'new' }, { fileName: 'new' }, { fileType: 'model' },

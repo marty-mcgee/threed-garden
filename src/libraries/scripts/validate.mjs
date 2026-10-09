@@ -19,6 +19,8 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  'threed-home-design': [node('validate-threed-home-design.cjs')],
+  'threed-home-design-browser': [node('validate-threed-home-design-browser.cjs')],
   'drizzle-workflow': [node('validate-drizzle-workflow.cjs')],
   'threed-browser-fbx-textures': [['node', '--import', 'tsx', `${scripts}/validate-browser-fbx-textures.mts`]],
   'application-foundations': [node('validate-application-foundations.cjs')],
@@ -120,6 +122,10 @@ const tasks = {
   'threed-animation-library': [node('validate-threed-animation-library.cjs')],
   'threed-model-list-api': [node('validate-threed-model-list-api.cjs')],
   'threed-model-admin-form': [node('validate-threed-model-admin-form.cjs')],
+  'threed-model-builder': [node('validate-threed-model-builder.cjs'), node('validate-threed-model-builder-registration.cjs'), node('validate-threed-model-builder-ui.cjs')],
+  'threed-model-builder-browser': [node('validate-threed-model-builder-browser.cjs')],
+  'threed-model-pbr': [node('validate-model-pbr.cjs')],
+  'threed-model-direct-upload': [ts('validate-threed-model-direct-upload.mts')],
   'threed-character-editor': [node('validate-threed-character-editor.cjs')],
   'threed-model-file-requirements': [node('validate-threed-model-file-requirements.cjs')],
   'threed-model-file-workspace': [node('validate-threed-model-file-workspace.cjs'), node('validate-model-file-preview.cjs')],
@@ -168,6 +174,10 @@ const ci = [
   'threed-animation-library',
   'threed-model-list-api',
   'threed-model-admin-form',
+  'threed-model-builder',
+  'threed-home-design',
+  'threed-model-pbr',
+  'threed-model-direct-upload',
   'threed-character-editor',
   'threed-model-file-requirements',
   'threed-model-file-workspace',
@@ -212,7 +222,8 @@ const ci = [
 ];
 
 const unavailableFixtures = ['threed-fbx-material-targets'];
-const runnableTasks = Object.keys(tasks).filter((name) => !unavailableFixtures.includes(name));
+// Native Chromium/WebGL is optional and intentionally separate from portable CI/all.
+const runnableTasks = Object.keys(tasks).filter((name) => !unavailableFixtures.includes(name) && !['threed-model-builder-browser', 'threed-home-design-browser'].includes(name));
 
 const groups = {
   all: runnableTasks,

@@ -60,6 +60,7 @@ import {
 import { ModelPreviewImageExport } from './ModelPreviewImageExport';
 import { withSavedFbxTextures } from '@/libraries/services/threed/models/model-saved-texture-fallback';
 import type { ModelData } from '@/components/threed/markers/ModelMarker3D';
+import { THREED_MODEL_MATERIAL_CHANNEL_LABELS, type ThreeDModelMaterialChannel } from '@/libraries/services/threed/models/model-material-override-core';
 
 // ============================================
 // TYPES
@@ -431,31 +432,38 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
 
   const saveMaterialAssignment = useCallback(async ({
     targetKeys,
+    channel,
     textureFileId,
     textureId,
   }: {
     targetKeys: string[];
+    channel: ThreeDModelMaterialChannel;
     textureFileId?: number;
     textureId?: number;
   }) => {
     if (!modelId) throw new Error('Select a Model before saving a material assignment');
-    const response = await fetch('/api/threed/models/files/requirements', {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        modelId: Number(modelId),
-        targetKeys,
-        channel: 'baseColor',
-        ...(textureId ? { textureId } : { textureFileId }),
-      }),
-    });
-    const result = await response.json().catch(() => null);
-    if (!response.ok || !result?.success) {
-      throw new Error(result?.error || 'Failed to save material assignment');
+    // Keep every request within the existing 2 KiB assignment API boundary.
+    for (let offset = 0; offset < targetKeys.length; offset += 30) {
+      const response = await fetch('/api/threed/models/files/requirements', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          modelId: Number(modelId),
+          targetKeys: targetKeys.slice(offset, offset + 30),
+          channel,
+          ...(textureId ? { textureId } : { textureFileId }),
+        }),
+      });
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        await loadFiles(Number(modelId));
+        await loadTextureLibrary();
+        throw new Error(`${result?.error || 'Failed to save material assignment'}${offset ? ` (${offset} slots were saved before this failure.)` : ''}`);
+      }
     }
     await loadFiles(Number(modelId));
     await loadTextureLibrary();
-    showToast(targetKeys.length > 1 ? `Base Color saved to ${targetKeys.length} material slots` : 'Base Color assignment saved', 'success');
+    showToast(targetKeys.length > 1 ? `${THREED_MODEL_MATERIAL_CHANNEL_LABELS[channel]} saved to ${targetKeys.length} material slots` : `${THREED_MODEL_MATERIAL_CHANNEL_LABELS[channel]} assignment saved`, 'success');
   }, [loadFiles, loadTextureLibrary, modelId, showToast]);
 
   useEffect(() => {

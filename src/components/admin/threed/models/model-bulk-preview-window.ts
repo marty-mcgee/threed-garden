@@ -1,10 +1,12 @@
 import {
-  MAX_BULK_FILE_BYTES, validateBulkCompanion, validateBulkPrimary,
+  validateBulkCompanion, validateBulkPrimary,
   type BulkDraft, type BulkPreparedModel,
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 } from './model-bulk-preparation-core.ts';
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 import { normalizeThreeDModelRelativePath } from '../../../../libraries/services/threed/models/model-companion-core.ts';
+// @ts-expect-error Native TypeScript validation requires explicit extensions.
+import { MAX_GLTF_BUNDLE_BYTES } from '../../../../libraries/services/threed/models/model-gltf-bundle-core.ts';
 
 export const BULK_PREVIEW_MESSAGE = 'threed-model-import-preview';
 export const BULK_PREVIEW_PATH = '/threed/model-import-preview';
@@ -42,7 +44,8 @@ export function createBulkModelPreviewSnapshot(draft: BulkDraft, plan: BulkPrepa
 export function validateBulkModelPreviewSnapshot(value: unknown): asserts value is BulkModelPreviewSnapshot {
   if (!value || typeof value !== 'object') throw new Error('Choose a Model in the importer first.');
   const data = value as Partial<BulkModelPreviewSnapshot>;
-  if (!(data.file instanceof File) || validateBulkPrimary(data.file)) throw new Error('Choose a supported Model file up to 4 MiB.');
+  if (!(data.file instanceof File)) throw new Error('Choose a supported Model file.');
+  const primaryIssue = validateBulkPrimary(data.file); if (primaryIssue) throw new Error(primaryIssue);
   if (typeof data.modelName !== 'string' || data.modelName.length > 255) throw new Error('Use a Model name up to 255 characters.');
   if (![data.scale, data.rotationY, data.offsetX, data.offsetY, data.offsetZ].every((entry) => typeof entry === 'number' && Number.isFinite(entry))
     || Number(data.scale) < 0.01) throw new Error('Enter a scale of at least 0.01 and finite rotation/offset values before previewing.');
@@ -57,7 +60,7 @@ export function validateBulkModelPreviewSnapshot(value: unknown): asserts value 
     }
     bytes += attachment.file.size;
   }
-  if (bytes > 8 * MAX_BULK_FILE_BYTES) throw new Error('Selected preview files exceed the 32 MiB bundle limit.');
+  if (bytes > MAX_GLTF_BUNDLE_BYTES) throw new Error('Selected preview files exceed the 32 MiB bundle limit.');
   if (!Array.isArray(data.missingTexturePaths) || data.missingTexturePaths.length > 500
     || data.missingTexturePaths.some((path) => typeof path !== 'string' || path.length > 1024)) throw new Error('The preview has invalid texture requirements.');
 }

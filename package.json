@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.23.2",
+  "version": "0.24.0-alpha",
   "private": true,
   "packageManager": "npm@11.6.2",
   "scripts": {
@@ -15,6 +15,7 @@
     "typecheck": "tsc --noEmit --pretty false",
     "validate": "node src/libraries/scripts/validate.mjs",
     "validate:all": "node src/libraries/scripts/validate.mjs all",
+    "threed:models:build": "node --import tsx src/libraries/scripts/build-threed-cottage.ts",
     "threed:models:import": "node --import tsx src/libraries/scripts/import-threed-models.ts",
     "threed:models:import:check": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/libraries/scripts/validate-threed-model-import.mts",
     "threed:models:manifest:legacy": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types src/libraries/scripts/generate-legacy-threed-model-manifest.mts",

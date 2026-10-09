@@ -573,6 +573,46 @@ await group('GLB and GLTF always inspect the same primary File before requests w
   }
 });
 
+await group('large GLB direct upload preserves inspected bytes and skips multipart primary transport', async () => {
+  const fixture = formatFixture('glb');
+  const file = new File([new Uint8Array(4 * 1024 * 1024 + 1)], fixture.file.name);
+  const record = { ...fixture.model(), files: [{ ...primary, fileName: file.name,
+    relativePath: file.name, filePath: fixture.url, fileSize: file.size }] };
+  const create = createStep();
+  create.check = (init) => {
+    const payload = JSON.parse(String(init.body));
+    assert.equal(payload.isActive, false);
+    assert.deepEqual(payload.primaryFile, { fileName: file.name, filePath: fixture.url, fileSize: file.size, modelType: 'glb' });
+  };
+  const client = mock([create, savedStep(record), auditStep()]);
+  let inspected = false, transfers = 0;
+  const outcome = await runBulkModel(input({ file }), () => {}, client.request,
+    async (selected) => { assert.equal(selected, file); inspected = true; return localInventory; },
+    async (selected) => {
+      assert.equal(inspected, true); assert.equal(selected, file); assert.equal(client.calls.length, 0);
+      transfers++;
+      return { url: fixture.url, fileName: file.name, fileSize: file.size, modelType: 'glb', extension: 'glb',
+        suggestedModelName: 'Barn', analysis: { status: 'not_supported', message: 'offline adapter fixture' } };
+    });
+  client.done();
+  assert.equal(transfers, 1); assert.equal(outcome.status, 'imported');
+  assert.equal(client.calls.some(call => call.url === UPLOAD), false);
+});
+
+await group('direct upload cleanup uncertainty blocks duplicate import retries before creation', async () => {
+  for (const cleanupUnconfirmed of [false, true]) {
+    const client = mock([]);
+    const failure = Object.assign(new Error('Model verification failed; review the staged upload.'), {
+      name: 'ThreeDPrimaryUploadError', cleanupUnconfirmed,
+    });
+    const outcome = await runBulkModel(input(), () => {}, client.request, undefined, async () => { throw failure; });
+    client.done();
+    assert.equal(outcome.status, cleanupUnconfirmed ? 'unknown' : 'failed');
+    assert.equal(outcome.canRetry, !cleanupUnconfirmed); assert.equal(outcome.modelId, undefined);
+    assert.match(outcome.message, /review the staged upload/);
+  }
+});
+
 await group('GLTF binary and image attachments retain classifications and saved buffer identity', async () => {
   const fixture = formatFixture('gltf');
   const binary = new File([new Uint8Array(12)], 'mesh.bin');
