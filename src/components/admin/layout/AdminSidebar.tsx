@@ -126,7 +126,6 @@ const navSections: NavSection[] = [
         children: [
           { title: 'Models', href: '/admin/threed/models', icon: Package },
           { title: 'Model Builder', href: '/admin/threed/models/builder', icon: Hammer },
-          { title: 'Home Design', href: '/admin/threed/models/home-design', icon: Building2 },
           { title: 'Files', href: '/admin/threed/model-files', icon: FolderOpen },
           { title: 'Categories', href: '/admin/threed/model-categories', icon: FolderTree },
           { title: 'Textures', href: '/admin/threed/model-textures', icon: Image },
@@ -136,6 +135,7 @@ const navSections: NavSection[] = [
           { title: 'Assembly Groups', href: '/admin/threed/assembly-groups', icon: Boxes },
         ],
       },
+      { title: 'Designs', href: '/admin/threed/designs', icon: Building2 },
       { title: 'Characters', href: '/admin/threed/characters', icon: User, exact: false },
       { title: 'Plants', href: '/admin/threed/plants', icon: Sprout, exact: false },
       { title: 'Beds', href: '/admin/threed/beds', icon: Cuboid, exact: false },

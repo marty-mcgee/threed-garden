@@ -1,5 +1,7 @@
 # ThreeD Home Design
 
+**Current local continuation: [ThreeD Designs](THREED_DESIGNS.md).** Shared Design tools now edit architecture in the active Project Scene and use Project Save. Module routes choose an existing Project; new project.config.threeDArchitecture uses the existing JSONB column and requires no new table/migration. Earlier isolated/no-write text below describes the released prototype; geometry/portable JSON contracts remain applicable.
+
 Released in **[v0.24.0-alpha — 3D Object Builder + Home Design Tools](../releases/v0.24.0-alpha.md)**, Developer-confirmed in production October 9, 2026: Milestones 1-4 (roofs with hosted openings), `/admin/threed/models/home-design`, reached through **Admin → ThreeD → Models → Home Design**. Walls/floors, hosted doors/windows, named levels, Flat/Shed/Gable roofs, rectangular roof cutouts and skylights are included. This editable local planning surface performs no Project, Model, File, Texture or database writes. Detailed App/post-deployment acceptance remains separate.
 
 ## Reference audit
@@ -32,11 +34,11 @@ The authoritative `src/libraries/schema/threed/index.ts` has Model/File/Texture 
 
 | File | Responsibility |
 | --- | --- |
-| `src/app/admin/threed/models/home-design/page.tsx` | Local editor route under the existing Admin host. |
-| `src/components/admin/threed/models/home-design/HomeDesignEditor.tsx` | Tools, Imperial properties, shared selection, local import/export, guarded navigation and history. |
-| `HomeDesignPlan.tsx` in the same directory | SVG interaction, screen/plan transforms, endpoint/grid snapping, captured movement, drawing drafts and plan framing. |
-| `HomeDesignPreview.tsx` in the same directory | Isolated Fiber Canvas, real mesh picking, retained geometry owners and camera-only Fit/Reset. |
-| `src/libraries/services/threed/home-design/document.ts` | Version 5 DTO, version 1-4 upgrade, level/host/geometry validation, topology transforms, units and snapping. |
+| `src/app/admin/threed/models/home-design/page.tsx` | Compatibility redirect to `/admin/threed/designs`. |
+| `src/components/threed/design/DesignEditor.tsx` | Shared tools, Imperial properties, selection, import/export, guarded navigation/history and Design persistence UI. |
+| `DesignPlan.tsx` in the same directory | SVG interaction, screen/plan transforms, endpoint/grid snapping, captured movement, drawing drafts and plan framing. |
+| `DesignPreview.tsx` in the same directory | Isolated Fiber Canvas, real mesh picking, retained geometry owners and camera-only Fit/Reset. |
+| `src/libraries/services/threed/design/document.ts` | Version 5 DTO, version 1-4 upgrade, level/host/geometry validation, topology transforms, units and snapping. |
 | `history.ts` in the same service directory | Immutable commit/undo/redo, bounded to 100 history entries. |
 | `geometry.ts` in the same service directory | Shared wall footprint, modern BufferGeometry extrusion and incremental mesh/resource ownership. |
 | Admin Sidebar and `validate.mjs` | Navigation entry, portable CI task and optional native browser task. |

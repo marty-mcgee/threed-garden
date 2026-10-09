@@ -7,6 +7,9 @@ import { SensorGroupInspector } from '@/components/map/details/SensorGroupInspec
 
 import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { DesignEditor } from '@/components/threed/design/DesignEditor';
+import { acknowledgeArchitecture, architectureIsDirty, projectArchitectureDraft, type ProjectArchitectureDraft } from '@/libraries/services/threed/design/project-architecture';
+import type { DesignDocument } from '@/libraries/services/threed/design/document';
 import { 
   MapPin, 
   Settings,
@@ -513,7 +516,42 @@ function UnifiedMapPageInner() {
   const { dataAge, isStale } = useDataFreshness(lastUpdated);
   
   // ✅ Default view ['3d','2d','combined']
-  const [viewMode, setViewMode] = useState<MapViewMode>('3d');
+  const [viewMode, setViewMode] = useState<MapViewMode>(searchParams.get('view') === 'design' ? 'design' : '3d');
+  const architectureDrafts = useRef(new Map<string, ProjectArchitectureDraft>());
+  const [, renderArchitecture] = useState(0);
+  const [architecturePreview, setArchitecturePreview] = useState<DesignDocument | null>(null);
+  const [architectureVisibility, setArchitectureVisibility] = useState<{ levelId?: string; showRoofs: boolean }>({ showRoofs: true });
+  const [architectureSaveError, setArchitectureSaveError] = useState('');
+  const [metersPerSceneUnit, setMetersPerSceneUnit] = useState(0.3048);
+  const projectSaveBusy = useRef(false);
+  const architectureKey = selectedProjectId ?? '';
+  if (!architectureDrafts.current.has(architectureKey)) architectureDrafts.current.set(architectureKey, projectArchitectureDraft());
+  const architectureDraft = architectureDrafts.current.get(architectureKey)!;
+  const changeArchitecture = useCallback((update: (draft: ProjectArchitectureDraft) => ProjectArchitectureDraft) => {
+    if (!canEditProject || !selectedProjectId) return;
+    const current = architectureDrafts.current.get(selectedProjectId)!;
+    architectureDrafts.current.set(selectedProjectId, update(current)); renderArchitecture(value => value + 1);
+  }, [selectedProjectId, canEditProject]);
+  const selectArchitecture = useCallback((selected: string | null) => {
+    if (!selectedProjectId) return;
+    const current = architectureDrafts.current.get(selectedProjectId)!;
+    architectureDrafts.current.set(selectedProjectId, { ...current, selected }); renderArchitecture(value => value + 1);
+  }, [selectedProjectId]);
+  const showArchitecture = useCallback((levelId: string | undefined, showRoofs: boolean) => setArchitectureVisibility(current => current.levelId === levelId && current.showRoofs === showRoofs ? current : { levelId, showRoofs }), []);
+  useEffect(() => { setArchitecturePreview(null); setArchitectureSaveError(''); projectSaveBusy.current = false; }, [selectedProjectId]);
+  useEffect(() => {
+    const unload = (event: BeforeUnloadEvent) => { if ([...architectureDrafts.current.values()].some(architectureIsDirty) || projectSaveBusy.current) { event.preventDefault(); event.returnValue = ''; } };
+    const navigate = (event: MouseEvent) => {
+      const link = (event.target as Element)?.closest?.('a[href]');
+      if (!(link instanceof HTMLAnchorElement) || link.target === '_blank' || link.hasAttribute('download') || event.button || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      if (projectSaveBusy.current || ([...architectureDrafts.current.values()].some(architectureIsDirty) && !window.confirm('Leave with unsaved Project architecture? Save Project or Export JSON to retain it.'))) { event.preventDefault(); event.stopImmediatePropagation(); }
+    };
+    window.addEventListener('beforeunload', unload); document.addEventListener('click', navigate, true);
+    return () => { window.removeEventListener('beforeunload', unload); document.removeEventListener('click', navigate, true); };
+  }, []);
+  const [designVisited, setDesignVisited] = useState(searchParams.get('view') === 'design');
+  const sceneViewMode = viewMode === 'design' ? '3d' : viewMode;
+  useEffect(() => { if (viewMode === 'design') setDesignVisited(true); }, [viewMode]);
   const {
     containerRef,
     panelHeight,
@@ -922,14 +960,17 @@ function UnifiedMapPageInner() {
   }, []);
 
   const handleSaveThreeDProject = useCallback(async () => {
-    if (!selectedProjectId || savingProjectMarkers) return;
+    if (!selectedProjectId || !canEditProject || savingProjectMarkers || projectSaveBusy.current) return;
     const provider = projectMarkerSnapshotProviderRef.current;
     if (!provider) {
+      setArchitectureSaveError('Project Scene data is not ready. Wait for loading to finish, then Save Project.');
       showToastRef.current('ThreeD Project marker data is not ready to save', 'error');
       return;
     }
 
     const requestId = ++saveRequestRef.current;
+    const architecture = { version: 1 as const, document: architectureDrafts.current.get(selectedProjectId)!.history.present };
+    projectSaveBusy.current = true; setArchitectureSaveError('');
     setSavingProjectMarkers(true);
     try {
       const markers = provider();
@@ -967,6 +1008,7 @@ function UnifiedMapPageInner() {
           projectId: Number(selectedProjectId),
           markers,
           viewState,
+          architecture,
         }),
       });
       const result = await response.json().catch(() => null);
@@ -978,6 +1020,8 @@ function UnifiedMapPageInner() {
       setData(current => applyThreeDProjectClientTransaction(current, {
         markers: {upsert: result.data.markers as ProjectThreeDMarkerRecord[]},
       }));
+      const current = architectureDrafts.current.get(selectedProjectId)!;
+      architectureDrafts.current.set(selectedProjectId, acknowledgeArchitecture(current, architecture)); renderArchitecture(value => value + 1);
       setLastUpdated(new Date());
       showToastRef.current(
         `ThreeD Project saved (${result.data.markerCount} markers)`,
@@ -988,14 +1032,15 @@ function UnifiedMapPageInner() {
       console.error('Failed to save ThreeD Project marker snapshot', {
         errorName: error instanceof Error ? error.name : 'UnknownError',
       });
+      setArchitectureSaveError(error instanceof Error ? error.message : 'Failed to save ThreeD Project');
       showToastRef.current(
         error instanceof Error ? error.message : 'Failed to save ThreeD Project',
         'error',
       );
     } finally {
-      if (saveRequestRef.current === requestId) setSavingProjectMarkers(false);
+      if (saveRequestRef.current === requestId) { projectSaveBusy.current = false; setSavingProjectMarkers(false); }
     }
-  }, [cameraMode, initialProjectViewState, panelHeight, savingProjectMarkers, selectedProjectId, viewMode, selectedMarker, isProjectAssetsOpen, isModelLibraryOpen, projectAssetSearch, projectAssetType, scenarioPanelState, isScenariosOpen, isProjectSetupOpen, overlayPositions]);
+  }, [canEditProject, cameraMode, initialProjectViewState, panelHeight, savingProjectMarkers, selectedProjectId, viewMode, selectedMarker, isProjectAssetsOpen, isModelLibraryOpen, projectAssetSearch, projectAssetType, scenarioPanelState, isScenariosOpen, isProjectSetupOpen, overlayPositions]);
 
   // Phase 5A compatibility bridge: establish the orchestration request
   // lifecycle while preserving immediate animation until proximity is gated.
@@ -1085,6 +1130,7 @@ function UnifiedMapPageInner() {
 
   // ✅ Handle project selection
   const handleProjectSelect = (projectId: string) => {
+    if (!window.dispatchEvent(new Event('threed:design:transition', { cancelable: true }))) return;
     // Enter the load boundary in the same React event transaction as the
     // Project identity change. Otherwise a transient Canvas can mount with
     // the new Project ID and previous Project data, then unmount when the
@@ -1133,6 +1179,7 @@ function UnifiedMapPageInner() {
     setIsPlantingPlacementOpen(false);
     const url = new URL(window.location.href);
     url.searchParams.set('projectId', projectId);
+    url.searchParams.delete('designId');
     window.history.pushState({}, '', url.toString());
   };
 
@@ -1373,12 +1420,15 @@ function UnifiedMapPageInner() {
       if (outcome.status === 'loaded') {
         const { session } = outcome;
         setProjectAccess({ projectId: String(selectedProjectId), canEdit: session.canEdit });
+        const cachedArchitecture = architectureDrafts.current.get(String(selectedProjectId));
+        if (!cachedArchitecture || !architectureIsDirty(cachedArchitecture)) architectureDrafts.current.set(String(selectedProjectId), projectArchitectureDraft(session.architecture));
+        setMetersPerSceneUnit(session.metersPerSceneUnit); renderArchitecture(value => value + 1);
         setInitialProjectViewState(session.savedViewState);
         setOverlayPositions(session.savedViewState?.overlayPositions ?? {});
         setScenarioPanelState(session.savedViewState?.scenario ?? emptyProjectScenarioPanelState());
         setScenarioStartRequest(null);
         if (session.savedViewState) {
-          setViewMode(session.savedViewState.viewMode);
+          if (new URL(window.location.href).searchParams.get('view') !== 'design') setViewMode(session.savedViewState.viewMode);
           setPanelHeight(session.savedViewState.panelHeight);
           setCameraMode(session.savedViewState.cameraMode);
           lastProjectThreeDViewStateRef.current = session.savedViewState.threeD;
@@ -1406,6 +1456,7 @@ function UnifiedMapPageInner() {
         console.warn('API fetch failed:', outcome.error);
       }
       setData(getDefaultMapData());
+      setProjectAccess(null);
       setProjectInfo({ name: 'Error Loading Data', hasData: false });
       setIsDefaultView(true);
       showToastRef.current(
@@ -2626,7 +2677,7 @@ function UnifiedMapPageInner() {
 
   return (
     <ProjectOverlayLayoutContext.Provider value={{ positions: overlayPositions, move: (id, position) => setOverlayPositions(current => ({ ...current, [id]: position })) }}>
-    <div className="relative">
+    <div className="relative h-[calc(100dvh-48px)] min-h-0" data-testid="project-scene-workspace">
       {ToastComponent}
 
       {/* Project Selector Dialog */}
@@ -2649,8 +2700,8 @@ function UnifiedMapPageInner() {
 
       {/* Project controls overlay the persistent Scene canvas. */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-50">
-      <div inert={viewMode !== '2d' && !isThreeDPresentationComplete}
-        style={{ ...(viewMode !== '2d' && !isThreeDPresentationComplete ? { visibility: 'hidden' as const, height: 37, overflow: 'hidden' } : {}) }}
+      <div inert={viewMode !== 'design' && viewMode !== '2d' && !isThreeDPresentationComplete}
+        style={{ ...(viewMode !== 'design' && viewMode !== '2d' && !isThreeDPresentationComplete ? { visibility: 'hidden' as const, height: 37, overflow: 'hidden' } : {}) }}
         className="threed-project-toolbar pointer-events-auto m-0 flex flex-wrap items-center justify-between gap-2 px-1 py-1">
         
         {canEditProject ? <>
@@ -2709,6 +2760,13 @@ function UnifiedMapPageInner() {
           selectedProjectId={selectedProjectId}
           viewMode={viewMode}
           onViewModeChange={(mode) => {
+            if (!window.dispatchEvent(new Event('threed:design:transition', { cancelable: true }))) return;
+            if (mode === 'design') {
+              cancelActiveSceneOperation(); setControlledCharacterId(null); setLiveControlledCharacterPosition(null);
+              window.dispatchEvent(new Event('threed:design:entered'));
+            }
+            const url = new URL(window.location.href); url.searchParams.set('view', mode);
+            window.history.replaceState(window.history.state, '', url);
             groundMapInspector?.setOpen(false);
             transform.cancel();
             if (mode === '2d') setIsSceneAddMenuOpen(false);
@@ -2775,6 +2833,10 @@ function UnifiedMapPageInner() {
 
       </div>
 
+      {designVisited && selectedProjectId && <section hidden={viewMode !== 'design'} inert={viewMode !== 'design'} className="absolute left-0 top-[38px] bottom-[50%] w-full z-[60] bg-[#0d1420] p-2 xl:bottom-4 xl:w-1/2" aria-label="Project ThreeD Design">
+        <DesignEditor key={selectedProjectId} active={viewMode === 'design'} canSave={canEditProject} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} />
+      </section>}
+      <div className={viewMode === 'design' ? '[&>*:not([data-project-canvas])]:hidden' : undefined}>
       {/* Project Assets is independent of toolbar menu visibility. */}
       <div>
       <ProjectAssetsPanel
@@ -3016,130 +3078,21 @@ function UnifiedMapPageInner() {
         }}
       />
       {/* ✅ Map Container */}
-      <Card className="gap-0 rounded-none border-0 py-0 shadow-none">
-        <CardContent className="p-0 overflow-hidden">
-          <div style={{ height: 'calc(100dvh - 48px)' }}>
+      {architectureIsDirty(architectureDraft) && <span className="absolute bottom-0 left-2 z-[70] text-xs text-amber-300" role="status">Unsaved Project architecture</span>}
+      <Card data-project-canvas className={viewMode === 'design' ? 'absolute inset-x-0 bottom-4 top-1/2 gap-0 rounded-none border-0 py-0 shadow-none xl:left-1/2 xl:top-[38px]' : 'gap-0 rounded-none border-0 py-0 shadow-none'}>
+        <CardContent className="h-full p-0 overflow-hidden">
+          <div style={{ height: viewMode === 'design' ? '100%' : 'calc(100dvh - 48px)' }}>
             
             {/* Pass cameraMode to combined view's 3D UnifiedMapView */}
-            {viewMode === 'combined' && (
-              <div 
-                ref={containerRef}
-                className="flex flex-col w-full h-full gap-0 p-0 relative"
-              >
-                <div 
-                  className="min-h-0 transition-none"
-                  style={{ height: `${panelHeight}%` }}
-                >
-                  <div className="relative w-full h-full rounded-t-lg overflow-hidden border border-white/10 bg-black/5">
-                    <UnifiedMapView
-                      onResourceIssuesChange={handleResourceIssuesChange}
-                      projectId={selectedProjectId ? Number(selectedProjectId) : null}
-                      onThreeDPresentationComplete={handleThreeDPresentationComplete}
-                      environmentControlsCloseRequest={environmentControlsCloseRequest}
-                      scenarioStartRequest={scenarioStartRequest}
-                      canRunSimulations={projectAccess?.projectId === String(selectedProjectId)}
-                      saveSimulationResults={canEditProject}
-                      onSimulationParticipantsChange={(id, target) => {
-                        setLiveControlledCharacterPosition(null); setCameraMode('stationary'); setControlledCharacterId(id);
-                        setActionTarget(target); setOrchestrationStatus(null);
-                      }}
-                      scenarioOverlayLeftOffsetRem={scenarioOverlayLeftOffsetRem}
-                      scenarioOverlaysObscured={scenarioOverlaysObscured}
-                      scenarioInstructionDimmed={isProjectAssetsOpen}
-                      onEnvironmentControlsOpenChange={handleEnvironmentControlsOpenChange}
-                      onOpenEnvironmentDetails={() => openEnvironmentDetails()}
-                      hasProjectEnvironment={projectEnvironmentMarkers.length > 0}
-                      runtimeMarkerRegistry={projectRuntimeMarkerRegistryRef.current}
-                      geographicOrigin={projectGeographicOrigin}
-                      data={data}
-                      layers={layers}
-                      viewMode="3d"
-                      onIncidentSelect={(incident) => setSelectedIncident(incident)}
-                      onMarkerSelect={(marker) => { groundMapInspector?.setOpen(false); setSensorInspector(null); setGroupInspector(null); setSelectedMarker(marker); }}
-                      onFocusMarker={handleFocusMarker}
-                      selectedIncident={selectedIncident}
-                      selectedMarker={selectedMarker}
-                      height="100%"
-                      visibleAssetTypes={visibleAssetTypes}
-                      controlledCharacterId={controlledCharacterId}
-                      onControlChange={handleControlChange}
-                      cameraMode={cameraMode}
-                      onCameraModeChange={setCameraMode}
-                      focusRequest={focusRequest}
-                      sensorFocusRequest={sensorFocusRequest}
-                      sensorFocusPosition={sensorFocusPosition}
-                      actionTarget={actionTarget}
-                      actionTargetFocusRequest={actionTargetFocusRequest}
-                      placementModel={placementModel}
-                      onModelPlacement={handleModelPlacement}
-                      movingModelName={movingModelInstance?.name ?? null}
-                      onModelReposition={handleThreeDModelReposition}
-                      placementCharacterName={placementCharacter?.name ?? null}
-                      onCharacterPlacement={handleCharacterPlacement}
-                      placementFarmBotName={placementFarmBot?.name ?? null}
-                      onFarmBotPlacement={handleFarmBotPlacement}
-                      placementBedName={bedPlacementActive ? bedPlacementDraft.name : null}
-                      onBedPlacement={handleBedPlacement}
-                      placementPlantingName={plantingPlacementActive
-                        ? plantingOptions.find((plant) => String(plant.id) === plantingPlacementDraft.plantId)?.commonName ?? 'Planting'
-                        : null}
-                      onPlantingPlacement={handlePlantingPlacement}
-                      placementPhysicsSensor={placementPhysicsSensorPreview}
-                      onPhysicsSensorPlacement={handlePhysicsSensorPlacement}
-                      onProjectMarkerSnapshotProviderChange={handleProjectMarkerSnapshotProviderChange}
-                      initialProjectViewState={initialProjectViewState}
-                      onProjectThreeDViewStateProviderChange={handleProjectThreeDViewStateProviderChange}
-                      onRuntimeMarkerPositionResolverChange={handleRuntimeMarkerPositionResolverChange}
-                      onRejectedProjectMarkerDelete={handleRejectedProjectMarkerDelete}
-                      onRejectedCharacterMarkerRepair={handleRejectedCharacterMarkerRepair}
-                    />
-                  </div>
-                </div>
-                
-                <div 
-                  className="flex-shrink-0 h-1.5 cursor-row-resize hover:bg-primary/50 transition-colors bg-border/50 my-0.5 rounded-full group"
-                  onMouseDown={handleMouseDown}
-                >
-                  <div className="w-full h-full flex items-center justify-center">
-                    <div className="w-12 h-1 rounded-full bg-muted-foreground/30 group-hover:bg-primary/50 transition-colors" />
-                  </div>
-                </div>
-                
-                <div 
-                  className="min-h-0 transition-none"
-                  style={{ height: `${100 - panelHeight}%` }}
-                >
-                  <div className="relative w-full h-full rounded-b-lg overflow-hidden border border-white/10 bg-black/5">
-                    <UnifiedMapView
-                      onResourceIssuesChange={handleResourceIssuesChange}
-                      projectId={selectedProjectId ? Number(selectedProjectId) : null}
-                      runtimeMarkerRegistry={projectRuntimeMarkerRegistryRef.current}
-                      geographicOrigin={projectGeographicOrigin}
-                      data={data}
-                      layers={layers}
-                      viewMode="2d"
-                      onIncidentSelect={(incident) => setSelectedIncident(incident)}
-                      onMarkerSelect={(marker) => { groundMapInspector?.setOpen(false); setSensorInspector(null); setGroupInspector(null); setSelectedMarker(marker); }}
-                      onFocusMarker={handleFocusMarker}
-                      selectedIncident={selectedIncident}
-                      selectedMarker={selectedMarker}
-                      height="100%"
-                      visibleAssetTypes={visibleAssetTypes}
-                      controlledCharacterId={controlledCharacterId}
-                      placementModel={placementModel}
-                      onModelPlacement={handleModelPlacement}
-                      onModelMove={handleMoveModelInstance}
-                      initialProjectViewState={initialProjectViewState}
-                      onProjectMapViewStateProviderChange={handleProjectMapViewStateProviderChange}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {viewMode === '3d' && (
-              <UnifiedMapView
-                      onResourceIssuesChange={handleResourceIssuesChange}
+            <div ref={containerRef} className="relative flex h-full w-full flex-col">
+              <div hidden={sceneViewMode === '2d'} className="min-h-0 flex-shrink-0" style={{ height: sceneViewMode === 'combined' ? panelHeight + '%' : '100%' }}>
+              <UnifiedMapView architecture={architecturePreview ?? architectureDraft.history.present}
+                metersPerSceneUnit={metersPerSceneUnit}
+                selectedArchitectureId={architectureDraft.selected}
+                onArchitectureSelect={selectArchitecture}
+                architectureLevelId={viewMode === 'design' ? architectureVisibility.levelId : undefined}
+                architectureShowRoofs={viewMode !== 'design' || architectureVisibility.showRoofs}
+                onResourceIssuesChange={handleResourceIssuesChange}
                 projectId={selectedProjectId ? Number(selectedProjectId) : null}
                 onThreeDPresentationComplete={handleThreeDPresentationComplete}
                 environmentControlsCloseRequest={environmentControlsCloseRequest}
@@ -3199,12 +3152,16 @@ function UnifiedMapPageInner() {
                 onRuntimeMarkerPositionResolverChange={handleRuntimeMarkerPositionResolverChange}
                 onRejectedProjectMarkerDelete={handleRejectedProjectMarkerDelete}
                 onRejectedCharacterMarkerRepair={handleRejectedCharacterMarkerRepair}
-              />
-            )}
-
-            {viewMode === '2d' && (
-              <UnifiedMapView
-                      onResourceIssuesChange={handleResourceIssuesChange}
+              /></div>
+              <div hidden={sceneViewMode !== 'combined'} className="h-1.5 shrink-0 cursor-row-resize bg-border/50" onMouseDown={handleMouseDown} />
+              <div hidden={sceneViewMode !== '2d' && sceneViewMode !== 'combined'} className="min-h-0 flex-1">
+              <UnifiedMapView architecture={architecturePreview ?? architectureDraft.history.present}
+                metersPerSceneUnit={metersPerSceneUnit}
+                selectedArchitectureId={architectureDraft.selected}
+                onArchitectureSelect={selectArchitecture}
+                architectureLevelId={viewMode === 'design' ? architectureVisibility.levelId : undefined}
+                architectureShowRoofs={viewMode !== 'design' || architectureVisibility.showRoofs}
+                onResourceIssuesChange={handleResourceIssuesChange}
                 projectId={selectedProjectId ? Number(selectedProjectId) : null}
                 runtimeMarkerRegistry={projectRuntimeMarkerRegistryRef.current}
                 geographicOrigin={projectGeographicOrigin}
@@ -3225,9 +3182,8 @@ function UnifiedMapPageInner() {
                 onModelMove={handleMoveModelInstance}
                 initialProjectViewState={initialProjectViewState}
                 onProjectMapViewStateProviderChange={handleProjectMapViewStateProviderChange}
-              />
-            )}
-
+              /></div>
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -3343,6 +3299,7 @@ function UnifiedMapPageInner() {
       />
       </div>
       </>}
+      </div>
       </div>
       
     </div>

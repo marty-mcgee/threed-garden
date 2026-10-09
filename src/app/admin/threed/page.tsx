@@ -4,6 +4,7 @@ import {
   Bot,
   Box,
   BookOpen,
+  Building2,
   FlaskConical,
   Clapperboard,
   ClipboardList,
@@ -31,6 +32,14 @@ const iconColors = {
 } as const;
 
 const sections = [
+  {
+    title: 'Designs',
+    group: 'assets',
+    iconColor: iconColors.automation,
+    description: 'Draw editable plans with live 3D previews and save their source.',
+    href: '/admin/threed/designs',
+    icon: Building2,
+  },
   {
     title: 'Plants',
     group: 'garden',

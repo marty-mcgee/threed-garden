@@ -6,12 +6,12 @@ const ts = require('typescript');
 const THREE = require('three');
 const previous = require.extensions['.ts'];
 require.extensions['.ts'] = (module, filename) => {
-  assert(filename.includes(`${path.sep}home-design${path.sep}`));
+  assert(filename.includes(`${path.sep}design${path.sep}`));
   module._compile(ts.transpileModule(fs.readFileSync(filename, 'utf8'), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText, filename);
 };
-const D = require('../services/threed/home-design/document.ts');
-const H = require('../services/threed/home-design/history.ts');
-const G = require('../services/threed/home-design/geometry.ts');
+const D = require('../services/threed/design/document.ts');
+const H = require('../services/threed/design/history.ts');
+const G = require('../services/threed/design/geometry.ts');
 if (previous) require.extensions['.ts'] = previous; else delete require.extensions['.ts'];
 const near = (a, b) => assert(Math.abs(a - b) < 1e-5, `${a} differs from ${b}`);
 const room = D.validateDesign({ ...D.newDesign(), nodes: [{ id:'a',x:0,z:0 },{ id:'b',x:120*D.INCH,z:0 },{ id:'c',x:120*D.INCH,z:120*D.INCH },{ id:'d',x:0,z:120*D.INCH }],

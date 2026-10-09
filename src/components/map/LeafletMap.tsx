@@ -26,7 +26,11 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
+export interface ArchitectureMapLine { id: string; positions: [number, number][]; closed: boolean }
 interface LeafletMapProps {
+  architectureLines?: ArchitectureMapLine[];
+  selectedArchitectureId?: string | null;
+  onArchitectureSelect?: (id: string) => void;
   incidents: TrafficIncident[];
   markers: Array<{
     id: string;
@@ -94,6 +98,7 @@ function escapeHtml(str: string | null | undefined): string {
 }
 
 function LeafletMapComponent({
+  architectureLines, selectedArchitectureId, onArchitectureSelect,
   incidents,
   markers,
   onIncidentClick,
@@ -115,6 +120,7 @@ function LeafletMapComponent({
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<L.Map | null>(null);
   const initializedRef = useRef(false);
+  const markerLayerRef = useRef<L.LayerGroup | null>(null);
   const previousSelectedRef = useRef<string | null>(null);
   const restoredViewKeyRef = useRef<string | null>(null);
 
@@ -168,6 +174,26 @@ function LeafletMapComponent({
       previousSelectedRef.current = null;
     };
   }, []);
+
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || !mapRef.current) return;
+    const observer = new ResizeObserver(() => { if (mapRef.current?.clientWidth && mapRef.current?.clientHeight) map.invalidateSize({ pan: false }); });
+    observer.observe(mapRef.current); return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map) return;
+    const layer = L.layerGroup().addTo(map);
+    for (const line of architectureLines ?? []) {
+      const shape = line.closed ? L.polygon(line.positions, { fillOpacity: 0.08, bubblingMouseEvents: false }) : L.polyline(line.positions, { bubblingMouseEvents: false });
+      shape.setStyle({ color: line.id === selectedArchitectureId ? '#fbbf24' : '#22d3ee', weight: 3 });
+      shape.on('click', () => onArchitectureSelect?.(line.id)); shape.addTo(layer);
+    }
+    return () => { layer.remove(); };
+  }, [architectureLines, selectedArchitectureId, onArchitectureSelect]);
+
+
 
   useEffect(() => {
     if (!onViewStateProviderChange) return;
@@ -298,13 +324,10 @@ function LeafletMapComponent({
 
     const map = mapInstanceRef.current;
 
-    // Clear old markers
-    map.eachLayer((layer) => {
-      if (layer instanceof L.TileLayer) return;
-      map.removeLayer(layer);
-    });
-
+    // Replace only this marker owner; architectural layers have their own lifecycle.
+    markerLayerRef.current?.remove();
     const group = L.layerGroup().addTo(map);
+    markerLayerRef.current = group;
     const bounds = L.latLngBounds([] as any);
     let hasMarkers = false;
 

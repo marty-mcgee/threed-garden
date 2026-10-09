@@ -1,5 +1,8 @@
 // components/map/ThreeDScene.tsx
 'use client';
+import { DesignSceneObjects } from '@/components/threed/design/DesignSceneObjects';
+import type { DesignDocument } from '@/libraries/services/threed/design/document';
+
 import { Radio, RotateCcw } from 'lucide-react';
 import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 import { useProjectOverlayPosition } from './panels/ProjectOverlayLayout';
@@ -183,6 +186,13 @@ function GroundMapImagePlane({ asset, transform }: { asset: ProjectGroundMapAsse
 }
 
 interface ThreeDSceneProps {
+  architecture?: DesignDocument;
+  metersPerSceneUnit?: number;
+  selectedArchitectureId?: string | null;
+  onArchitectureSelect?: (id: string | null) => void;
+  architectureLevelId?: string;
+  architectureShowRoofs?: boolean;
+
   incidents: any[];
   markers: any[];
   /** Presentation visibility without removing stable marker runtimes. */
@@ -2306,6 +2316,8 @@ function SceneModelDropTarget({
 }
 
 export function ThreeDScene({
+  architecture, metersPerSceneUnit = 0.3048, selectedArchitectureId, onArchitectureSelect, architectureLevelId, architectureShowRoofs = true,
+
   incidents,
   markers,
   visibleMarkerIds,
@@ -3999,6 +4011,7 @@ export function ThreeDScene({
         gl={{ antialias: true, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0 }}
         shadows={{ type: THREE.PCFShadowMap }}
       >
+        {projectId && architecture && <DesignSceneObjects document={architecture} projectId={projectId} metersPerSceneUnit={metersPerSceneUnit} selected={selectedArchitectureId} onSelect={onArchitectureSelect} visibleLevelId={architectureLevelId} showRoofs={architectureShowRoofs} />}
         <SceneHoverTitlePosition markerId={hoveredSceneMarker ? String(hoveredSceneMarker.id) : undefined} point={hoveredSceneMarkerIdentity?.point} labelRef={hoverTitleRef} />
         <SceneFrameReadyNotifier
           key={presentationKey}

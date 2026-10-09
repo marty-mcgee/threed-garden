@@ -42,6 +42,7 @@ const animationMappings = load('src/libraries/services/project/scene-character-a
   'drizzle-orm': orm, '@/libraries/db/client': { db }, '@/libraries/schema/threed': schema,
 });
 const api = load('src/app/api/map/threed/route.ts', {
+  '@/libraries/services/threed/design/project-architecture': { readProjectArchitecture: config => config?.threeDArchitecture },
   '@/libraries/services/project/scene-texture-resources': { sceneTextureResources: async () => [{ fileName: 'referenced.png', filePath: 'https://fixture.invalid/referenced.png', isActive: true }] },
   '@/libraries/services/project/scene-character-animations': animationMappings,
   '@/libraries/services/project/scene-read-policy': policy,

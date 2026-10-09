@@ -1,5 +1,9 @@
 # Documentation Hub
 
+Prepared checkpoint: **[v0.24.0-alpha - ThreeD Designs: Project Scene integration](releases/v0.24.0-alpha-project-design.md)**. Same package version; manual release and authenticated App acceptance pending.
+
+Local continuation: **[ThreeD Designs](developers/THREED_DESIGNS.md)** - [Project Scene integration](plans/v0.24.0-alpha-designs-persistence.md). Design edits the same Project/Scene, saving architecture and existing Models through Project Save. No separate table/migration is required; authenticated App acceptance and the next release remain pending. Earlier independent persistence instructions are superseded.
+
 Released v0.24.0-alpha tools: [Home Design live planning milestones](plans/v0.24.0-alpha-home-design.md) · [Drawing/opening/level/roof contracts and remaining stages](developers/THREED_HOME_DESIGN.md). Local wall/floor/door/window editing, named levels, Flat/Shed/Gable roofs with rectangular cutouts/skylights and editable version 5 JSON recovery. Overhangs/roof joins and Project persistence remain future work.
 
 Latest production checkpoint: **[v0.24.0-alpha — 3D Object Builder + Home Design Tools](releases/v0.24.0-alpha.md)**, Developer-confirmed October 9, 2026. Older release statements below are historical.

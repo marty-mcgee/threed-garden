@@ -7,12 +7,50 @@ const path = require('node:path');
 const http = require('node:http');
 const { spawn } = require('node:child_process');
 const esbuild = require('esbuild');
+const ts = require('typescript');
 const root = path.resolve(__dirname,'../../..');
+// Read the actual Dashboard positioning contracts: a full-height standalone host
+// otherwise masks a collapsed Scene host when its normal-flow content is hidden.
+const sceneAst = ts.createSourceFile('scene.tsx', fs.readFileSync(path.join(root,'src/app/dashboard/scene/page.tsx'),'utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
+let sceneWorkspaceClass, designSectionClass;
+function findHost(node) {
+ if(ts.isJsxOpeningElement(node)) {
+  const attributes = Object.fromEntries(node.attributes.properties.filter(ts.isJsxAttribute).filter(a=>a.initializer&&ts.isStringLiteral(a.initializer)).map(a=>[a.name.getText(sceneAst),a.initializer.text]));
+  if(attributes['data-testid']==='project-scene-workspace') sceneWorkspaceClass=attributes.className;
+  if(attributes['aria-label']==='Project ThreeD Design') designSectionClass=attributes.className;
+ }
+ ts.forEachChild(node,findHost);
+}
+findHost(sceneAst); assert(sceneWorkspaceClass && designSectionClass,'Dashboard Design host must be discoverable.');
 const browser = process.env.THREED_TEST_BROWSER || ['C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','C:/Program Files/Microsoft/Edge/Application/msedge.exe'].find(fs.existsSync);
 if (!browser) throw new Error('Set THREED_TEST_BROWSER to an installed Chromium/Edge executable.');
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(),'threed-home-design-browser-'));
 const delay = milliseconds => new Promise(resolve=>setTimeout(resolve,milliseconds));
-const bundle = esbuild.buildSync({stdin:{contents:`import React from 'react';import {createRoot} from 'react-dom/client';import {HomeDesignEditor} from './src/components/admin/threed/models/home-design/HomeDesignEditor';createRoot(document.getElementById('root')).render(<HomeDesignEditor/>);`,resolveDir:root,sourcefile:'home-browser.tsx',loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',define:{'process.env.NODE_ENV':'"production"'},logLevel:'silent'}).outputFiles[0].contents;
+const fixture=`import React from 'react';import {createRoot} from 'react-dom/client';import {Canvas,useThree} from '@react-three/fiber';import {OrbitControls} from '@react-three/drei';
+import {DesignEditor} from './src/components/threed/design/DesignEditor';
+import {DesignSceneObjects} from './src/components/threed/design/DesignSceneObjects';
+import {projectArchitectureDraft,acknowledgeArchitecture} from './src/libraries/services/threed/design/project-architecture';
+window.__projectSaved={config:{keep:'settings'},markers:[{markerId:'existing-model',position:{x:10,y:0,z:5},data:{filePath:'saved.glb',rotationY:25,scale:2,materials:{map:'saved.png'}}}]};
+function Probe(){const state=useThree();React.useLayoutEffect(()=>{window.__projectScene=state.scene;},[state.scene]);return null;}
+function ProjectFixture(){const[draft,setDraft]=React.useState(()=>projectArchitectureDraft()),[preview,setPreview]=React.useState(null),[mode,setMode]=React.useState('design'),[saving,setSaving]=React.useState(false),[error,setError]=React.useState('');
+ const draftRef=React.useRef(draft);draftRef.current=draft;const busy=React.useRef(false);
+ window.__setProjectMode=setMode;window.__projectDraft=draft;window.__reopenProject=()=>{setDraft(projectArchitectureDraft(window.__projectSaved.config.threeDArchitecture));setMode('design')};
+ const save=async()=>{if(busy.current)return;busy.current=true;setSaving(true);setError('');const captured={version:1,document:draftRef.current.history.present};
+  try{if(window.__projectSaveMode==='pending')await new Promise(resolve=>window.__finishProjectSave=resolve);if(window.__projectSaveMode==='fail')throw Error('Mock Project Save failure. Draft retained.');
+   window.__projectSaved={...window.__projectSaved,config:{...window.__projectSaved.config,threeDArchitecture:captured}};setDraft(current=>acknowledgeArchitecture(current,captured));
+  }catch(error){setError(error.message)}finally{busy.current=false;setSaving(false)}};
+ const visibility=React.useCallback(()=>{},[]);
+ return <div className=${JSON.stringify(sceneWorkspaceClass)} data-testid="fixture-scene-host">
+  <section hidden={mode!=='design'} className=${JSON.stringify(designSectionClass)}><DesignEditor active={mode==='design'} scene={{projectId:15,projectName:'Existing Project',draft,onChange:setDraft,onSave:save,saving,onPreview:setPreview,onVisibility:visibility,error}}/></section>
+  <div data-testid="existing-scene" style={{position:'absolute',right:0,top:38,bottom:16,width:mode==='design'?'50%':'100%'}}>
+   <Canvas camera={{position:[20,20,20],fov:45}}><ambientLight intensity={2}/><directionalLight position={[10,20,10]} intensity={2}/><mesh name="existing-model" position={[10,0,5]} rotation={[0,25*Math.PI/180,0]} scale={2}><boxGeometry/><meshStandardMaterial color="#be6852"/></mesh>
+   <DesignSceneObjects projectId={15} metersPerSceneUnit={.3048} document={preview??draft.history.present} selected={draft.selected} onSelect={selected=>setDraft(current=>({...current,selected}))}/><OrbitControls target={[5,0,5]}/><Probe/></Canvas>
+  </div>
+ </div>;
+}
+function Fixture(){const[project,setProject]=React.useState(false);window.__mountProject=()=>setProject(true);return project?<ProjectFixture/>:<div style={{height:'100%'}}><DesignEditor/></div>}
+createRoot(document.getElementById('root')).render(<Fixture/>);`;
+const bundle=esbuild.buildSync({stdin:{contents:fixture,resolveDir:root,sourcefile:'home-browser.tsx',loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',define:{'process.env.NODE_ENV':'"production"'},logLevel:'silent'}).outputFiles[0].contents;
 let stylesheet='';
 const html = `<html class="dark"><head><link rel="stylesheet" href="/app.css"><style>body{margin:0;font-family:Arial}#root{padding:12px;height:100dvh}</style></head><body><div id="root"></div><script src="/bundle.js"></script></body></html>`;
 const server=http.createServer((req,res)=> { if(req.url==='/bundle.js'){res.setHeader('Content-Type','application/javascript');res.end(bundle);}else if(req.url==='/app.css'){res.setHeader('Content-Type','text/css');res.end(stylesheet);}else{res.setHeader('Content-Type','text/html');res.end(html);} });
@@ -36,6 +74,7 @@ async function main(){
     const evaluate=async(expression)=>{const reply=await send('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true});if(reply.exceptionDetails)throw new Error(reply.exceptionDetails.exception?.description||reply.exceptionDetails.text);return reply.result.value;};
     await send('Runtime.enable');await send('Page.enable');await send('Emulation.setDeviceMetricsOverride',{width:1250,height:1000,deviceScaleFactor:1,mobile:false});
     for(let i=0;i<100;i++){if(await evaluate(`!!document.querySelector('[data-testid="home-plan"]') && !!document.querySelector('[data-testid="home-preview"] canvas')`))break;await delay(100);}
+    await evaluate(`(()=>{const select=document.querySelector('[aria-label="JSON import behavior"]');select.value='replace';select.dispatchEvent(new Event('change',{bubbles:true}));})()`);
     const rect=await evaluate(`(()=>{const r=document.querySelector('[data-testid="home-plan"]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()`);
     assert(rect.width>200&&rect.height>300,'Plan viewport must grow beyond the old 280px height.');
     const fillsWorkspace=()=>evaluate(`(()=>{const views=document.querySelector('[data-testid="home-viewports"]').getBoundingClientRect(),workspace=document.querySelector('[data-testid="home-workspace"]').getBoundingClientRect(),preview=document.querySelector('[data-testid="home-preview"]').getBoundingClientRect();return Math.abs(views.bottom-workspace.bottom)<2&&Math.abs(preview.bottom-views.bottom)<2&&preview.height>200})()`);
@@ -134,7 +173,7 @@ async function main(){
     await evaluate(`window.confirm=()=>false`);await button('Delete Level');assert.equal((await exported()).levels.length,2,'Cancelling populated-level deletion must preserve all geometry.');
     await evaluate(`window.confirm=()=>true`);await button('Delete Level');assert.deepEqual(await counts(),[4,1,4]);assert.equal((await exported()).openings.length,2);
     await button('Undo');assert.equal((await exported()).levels.length,2);assert.equal((await exported()).openings.length,3);await button('Redo');assert.equal((await exported()).levels.length,1);await button('Undo');
-    await importDesign(stacked);assert.deepEqual((await exported()).levels,stacked.levels);await chooseLevel('Upper');
+    await importDesign(stacked);assert.deepEqual((await exported()).levels.map(({id,levelId,wallId,roofId,vertices,...item})=>item),stacked.levels.map(({id,levelId,wallId,roofId,vertices,...item})=>item));await chooseLevel('Upper');
     const v2={...openingDoc,version:2};delete v2.levels;delete v2.roofs;delete v2.roofOpenings;v2.walls=v2.walls.map(({levelId,...wall})=>wall);v2.floors=v2.floors.map(({levelId,...floor})=>floor);await importDesign(v2);const upgraded=await exported();assert.equal(upgraded.version,5);assert.equal(upgraded.levels.length,1);assert.equal(upgraded.openings.length,2);await button('Undo');await chooseLevel('Upper');
     await evaluate(`(()=>{const box=document.querySelector('input[aria-label="Show all levels in 3D"]');if(!box.checked)box.click()})()`);
     console.log('Passed: level create/name/elevation, isolated same-coordinate upper drawing, active plan filtering, draft cancellation, retained Canvas visibility, confirmed/cancelled cascading deletion/Undo/Redo and editable v1/v2/v3 recovery.');
@@ -159,7 +198,7 @@ async function main(){
     await send('Input.dispatchMouseEvent',{type:'mousePressed',...roofCorner,button:'left',clickCount:1});await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:roofCorner.x-14,y:roofCorner.y+14,button:'left',buttons:1});await send('Input.dispatchMouseEvent',{type:'mouseReleased',x:roofCorner.x-14,y:roofCorner.y+14,button:'left',clickCount:1});await delay(80);assert.notDeepEqual((await exported()).nodes,roofDoc.nodes);await button('Undo');assert.deepEqual((await exported()).nodes,roofDoc.nodes);await click(roofBody.x,roofBody.y);
     await scalar('Pitch (rise / 12)',25);assert.match(await evaluate(`document.querySelector('[role="alert"]').textContent`),/pitch/i);assert.equal((await exported()).roofs[0].pitch,8);await scalar('Pitch (rise / 12)',8);
     await edit('Corner 2 X',132);assert.notDeepEqual((await exported()).nodes,roofDoc.nodes);await button('Undo');assert.deepEqual((await exported()).nodes,roofDoc.nodes);
-    await importDesign(roofDoc);assert.deepEqual((await exported()).roofs,roofDoc.roofs);await chooseLevel('Upper');
+    await importDesign(roofDoc);assert.deepEqual((await exported()).roofs.map(({id,levelId,wallId,roofId,vertices,...item})=>item),roofDoc.roofs.map(({id,levelId,wallId,roofId,vertices,...item})=>item));await chooseLevel('Upper');
     const roofLabel=await evaluate(`(()=>{const r=document.querySelector('[data-roof] text').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);await click(roofLabel.x,roofLabel.y);await button('Delete Selected');assert.equal((await exported()).roofs.length,0);await button('Undo');assert.equal((await exported()).roofs.length,1);
     await chooseLevel('Upper');await button('Delete Level');assert.equal((await exported()).roofs.length,0);await button('Undo');assert.equal((await exported()).roofs.length,1);await chooseLevel('Upper');
     const version3={...roofDoc,version:3};delete version3.roofs;delete version3.roofOpenings;await importDesign(version3);assert.equal((await exported()).version,5);assert.equal((await exported()).roofs.length,0);await button('Undo');await chooseLevel('Upper');
@@ -180,7 +219,7 @@ async function main(){
     await send('Input.dispatchMouseEvent',{type:'mousePressed',...skyPoint,button:'left',clickCount:1});await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:skyPoint.x+6*.0254*45,y:skyPoint.y,button:'left',buttons:1});await send('Input.dispatchMouseEvent',{type:'mouseReleased',x:skyPoint.x+6*.0254*45,y:skyPoint.y,button:'left',clickCount:1});await delay(80);
     assert((await exported()).roofOpenings[0].along>withRoofOpenings.roofOpenings[0].along);await button('Undo');assert.deepEqual((await exported()).roofOpenings,withRoofOpenings.roofOpenings);
     await click(skyPoint.x,skyPoint.y);await button('Delete Selected');assert.equal((await exported()).roofOpenings.length,1);await button('Undo');assert.equal((await exported()).roofOpenings.length,2);
-    await importDesign(withRoofOpenings);assert.deepEqual((await exported()).roofOpenings,withRoofOpenings.roofOpenings);await chooseLevel('Upper');
+    await importDesign(withRoofOpenings);assert.deepEqual((await exported()).roofOpenings.map(({id,levelId,wallId,roofId,vertices,...item})=>item),withRoofOpenings.roofOpenings.map(({id,levelId,wallId,roofId,vertices,...item})=>item));await chooseLevel('Upper');
     await evaluate(`document.querySelector('input[aria-label="Show roofs in 3D"]').click()`);await button('Fit');assert.equal(await evaluate(`window.__canvas===document.querySelector('[data-testid="home-preview"] canvas')`),true);await evaluate(`document.querySelector('input[aria-label="Show roofs in 3D"]').click()`);
     // Roof label at 60,60 remains outside both rectangular openings.
     const hostPoint=point(60*.0254,60*.0254);await click(hostPoint.x,hostPoint.y);await button('Delete Selected');assert.equal((await exported()).roofs.length,0);assert.equal((await exported()).roofOpenings.length,0);await button('Undo');assert.equal((await exported()).roofOpenings.length,2);
@@ -196,6 +235,32 @@ async function main(){
     await send('Emulation.setDeviceMetricsOverride',{width:1250,height:600,deviceScaleFactor:1,mobile:false});await delay(150);
     assert(await evaluate(`(()=>{const editor=document.querySelector('[data-testid="home-editor"]'),scroll=document.querySelector('[data-testid="home-workspace"]').parentElement,footer=editor.querySelector('footer').getBoundingClientRect();return footer.bottom<=innerHeight&&scroll.scrollHeight>scroll.clientHeight})()`),'Short viewports must scroll the workspace while keeping the footer visible.');
     await send('Emulation.setDeviceMetricsOverride',{width:1250,height:1000,deviceScaleFactor:1,mobile:false});await delay(100);
+    // Same Project room + existing Model, using the actual shared Scene geometry owner.
+    await send('Emulation.setDeviceMetricsOverride',{width:1800,height:1100,deviceScaleFactor:1,mobile:false});
+    await evaluate('window.__mountProject()');await delay(600);
+    const projectRect=await evaluate(`(()=>{const r=document.querySelector('[data-testid="home-plan"]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()`);
+    assert(projectRect.height>500,'Project Design plan fills the available height');
+    const pp=(x,z)=>({x:projectRect.x+80+x*45,y:projectRect.y+80+z*45});
+    await button('Wall');for(const corner of corners){const p=pp(...corner);await click(p.x,p.y);}
+    await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape'});await send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape'});
+    await button('Floor');for(const corner of corners.slice(0,4)){const p=pp(...corner);await click(p.x,p.y);}await button('Finish Floor');
+    await button('Door');const projectDoorPoint=pp(.9144,0);await click(projectDoorPoint.x,projectDoorPoint.y);
+    assert.deepEqual(await counts(),[4,1,4]);assert.equal(await evaluate('window.__projectDraft.history.present.openings.length'),1);
+    await evaluate(`window.__roomBefore=window.__projectDraft.history.present;window.__projectCanvas=document.querySelector('[data-testid="existing-scene"] canvas');window.__model=window.__projectScene.getObjectByName('existing-model');window.__wall=window.__projectScene.getObjectByName(window.__roomBefore.walls[0].id);window.__setProjectMode('3d')`);await delay(200);
+    assert(await evaluate(`window.__projectCanvas===document.querySelector('[data-testid="existing-scene"] canvas')&&window.__model===window.__projectScene.getObjectByName('existing-model')&&window.__wall===window.__projectScene.getObjectByName(window.__roomBefore.walls[0].id)`),'Mode switching retains the Canvas, Model and generated wall owners');
+    assert(await evaluate(`window.__wall.userData.sceneObjectId==='project:15:architecture:'+window.__roomBefore.walls[0].id&&Math.abs(window.__wall.parent.parent.scale.x-1/.3048)<1e-6`),'Stable entity identity and Project Scene scale');
+    await evaluate("window.__setProjectMode('design')");await delay(150);await button('Save Project');await delay(100);
+    assert.equal(await evaluate('window.__projectSaved.config.keep'),'settings');assert.equal(await evaluate('window.__projectSaved.markers.length'),1);assert.equal(await evaluate('window.__projectSaved.markers[0].data.filePath'),'saved.glb');
+    assert.match(await evaluate(`document.querySelector('[data-testid="design-save-status"]').textContent`),/saved/);
+    await evaluate('window.__reopenProject()');await delay(150);assert.deepEqual(await counts(),[4,1,4]);assert.equal(await evaluate('window.__projectDraft.history.present.openings.length'),1);
+    await button('Select');await click(projectDoorPoint.x,projectDoorPoint.y);assert.match(await evaluate('document.querySelector("aside").textContent'),/Selected Door/);
+    const nameEdit=async(name)=>{await evaluate(`(()=>{const input=document.querySelector('input[aria-label="Design name"]');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,${JSON.stringify(name)});input.dispatchEvent(new Event('input',{bubbles:true}));})()`);await delay(50);};
+    await nameEdit('Captured Project edit');await evaluate("window.__projectSaveMode='pending'");await button('Save Project');await nameEdit('Newer Project edit');
+    await evaluate("window.__finishProjectSave();window.__projectSaveMode='normal'");await delay(120);
+    assert.match(await evaluate(`document.querySelector('[data-testid="design-save-status"]').textContent`),/Unsaved Project/);assert.equal(await evaluate('window.__projectSaved.config.threeDArchitecture.document.name'),'Captured Project edit');
+    await evaluate("window.__projectSaveMode='fail'");await button('Save Project');await delay(120);assert.match(await evaluate('document.querySelector("[role=alert]").textContent'),/Mock Project Save failure/);
+    assert.equal(await evaluate('window.__projectDraft.history.present.name'),'Newer Project edit');
+    console.log('Passed: native Project room/floor/door drawing alongside existing Model, Scene-unit scale/stable IDs, retained Canvas/owners on mode switching, mocked Project Save/reopen/editability and pending/failing Save retention.');
     assert.deepEqual(exceptions,[]);
     await delay(500);const capture=await send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(temporary,'home-design.png'),Buffer.from(capture.data,'base64'));
     console.log('Passed: native wall/floor drawing, Finish/Enter/closure completion into Select, completed floor retention/Undo, endpoint reuse, live shared-corner drag, numeric height, single-step Undo/Redo, cancellation, JSON export/import/rejection, deletion, isolated wheel zoom, retained Canvas Fit/shared 3D picking and real App CSS viewport fill/resize/short-height scrolling.');

@@ -4,8 +4,8 @@ import { Canvas, useThree, type ThreeEvent } from '@react-three/fiber';
 import { Grid, OrbitControls } from '@react-three/drei';
 import { Box3, Group, Object3D, Vector3, type PerspectiveCamera } from 'three';
 import { Button } from '@/components/ui/button';
-import { entityElevation, levelDocument, pruneNodes, roofProfile, type DesignDocument } from '@/libraries/services/threed/home-design/document';
-import { DesignGeometryCache } from '@/libraries/services/threed/home-design/geometry';
+import { entityElevation, levelDocument, pruneNodes, roofProfile, type DesignDocument } from '@/libraries/services/threed/design/document';
+import { DesignGeometryCache } from '@/libraries/services/threed/design/geometry';
 
 function Geometry({ document, selected, onSelect, visibleLevelId, showRoofs = true }: { document: DesignDocument; selected: string | null; onSelect: (id: string) => void; visibleLevelId?: string; showRoofs?: boolean }) {
   const host = useRef<Group>(null), cache = useRef<DesignGeometryCache | null>(null);
@@ -34,7 +34,7 @@ function FitCamera({ document, request, controls }: { document: DesignDocument; 
   }, [request, camera, controls, size.width, size.height]);
   return null;
 }
-export function HomeDesignPreview({ document, selected, onSelect, visibleLevelId, showRoofs = true }: { document: DesignDocument; selected: string | null; onSelect: (id: string) => void; visibleLevelId?: string; showRoofs?: boolean }) {
+export function DesignPreview({ document, selected, onSelect, visibleLevelId, showRoofs = true }: { document: DesignDocument; selected: string | null; onSelect: (id: string) => void; visibleLevelId?: string; showRoofs?: boolean }) {
   const levelVisible = visibleLevelId ? levelDocument(document, visibleLevelId) : document;
   const visible = showRoofs ? levelVisible : pruneNodes({ ...levelVisible, roofs: [], roofOpenings: [] });
   const [reset, setReset] = useState(0);

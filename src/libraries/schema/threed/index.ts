@@ -10,6 +10,31 @@ import { user } from '../auth';
 import { project } from '../project';
 import type { ScenarioSetup } from '@/libraries/services/threed/scenarios/scenario-input';
 import type { SimulationResultReport, SimulationResultSnapshot } from '@/libraries/services/threed/simulations/simulation-result-input';
+import type { DesignDocument } from '@/libraries/services/threed/design/document';
+
+/** Legacy candidate records retained for read-only recovery; current edits use project.config.threeDArchitecture. */
+export const threedDesigns = pgTable('threed_designs', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  projectId: integer('project_id').references(() => project.id, { onDelete: 'set null' }),
+  createKey: uuid('create_key').notNull(),
+  name: varchar('name', { length: 120 }).notNull(),
+  formatVersion: integer('format_version').notNull(),
+  document: jsonb('document').$type<DesignDocument>().notNull(),
+  revision: integer('revision').notNull().default(1),
+  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, table => [
+  uniqueIndex('idx_threed_designs_owner_create').on(table.userId, table.createKey),
+  index('idx_threed_designs_owner_project').on(table.userId, table.projectId),
+  check('threed_designs_revision_positive', sql`${table.revision} > 0`),
+  check('threed_designs_document_valid', sql`coalesce(jsonb_typeof(${table.document}) = 'object' AND ${table.document}->>'format' = 'threed-home-design' AND ${table.document}->>'units' = 'metres' AND ${table.document}->'version' = to_jsonb(${table.formatVersion}) AND ${table.formatVersion} = 5 AND ${table.document}->>'name' = ${table.name} AND length(trim(${table.name})) > 0, false)`),
+]);
+export const threedDesignsRelations = relations(threedDesigns, ({ one }) => ({
+  user: one(user, { fields: [threedDesigns.userId], references: [user.id] }),
+  project: one(project, { fields: [threedDesigns.projectId], references: [project.id] }),
+}));
+export type ThreeDDesign = typeof threedDesigns.$inferSelect;
 
 // ============================================
 // THREED MODULE - Main Table

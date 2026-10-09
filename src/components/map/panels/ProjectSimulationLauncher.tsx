@@ -93,6 +93,11 @@ export function ProjectSimulationLauncher({ context, saveResults, onPrepare, sub
     setPreparing(false); setStopRequest(value => value + 1);
     if (reason) { setError(reason); showToast(reason, 'info'); }
   }
+  useEffect(() => {
+    const cancel = () => stop();
+    window.addEventListener('threed:design:entered', cancel);
+    return () => window.removeEventListener('threed:design:entered', cancel);
+  }, []);
   async function start() {
     if (!selectedId || lock.current || busy || !current.current.ready || current.current.busy || !current.current.allowed) return;
     const abort = new AbortController(); controller.current = abort; lock.current = true; setPreparing(true); setError(''); setRunError('');

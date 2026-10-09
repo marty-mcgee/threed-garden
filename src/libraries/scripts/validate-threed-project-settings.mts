@@ -7,6 +7,12 @@ import { resolveCharacterPhysics } from '../services/threed/characters/character
 import { DEFAULT_THREE_D_ENVIRONMENT_PRESET_KEY } from '../services/threed/environment-presets.ts';
 const saved = {version:1, savedAt:new Date().toISOString(), viewMode:'3d', panelHeight:50, cameraMode:'orbit', threeD:{ cameraPosition:{x:1,y:2,z:3}, cameraTarget:{x:0,y:0,z:0}, activeLayers:['models'], environment:DEFAULT_THREE_D_ENVIRONMENT_PRESET_KEY, autoRotate:false, showGrid:false, showLegend:false, showGizmo:true, sunlight:{azimuth:210,elevation:25}, ground:{enabled:true,size:300,height:-0.2}}};
 assert.deepEqual(parseThreeDProjectViewState(JSON.parse(JSON.stringify(saved))).threeD, saved.threeD);
+for (const viewMode of ['3d', '2d', 'combined', 'design']) {
+  const restored = parseThreeDProjectViewState(JSON.parse(JSON.stringify({ ...saved, viewMode })));
+  assert.equal(restored.viewMode, viewMode);
+  assert.deepEqual(restored.threeD, saved.threeD, 'Design mode must preserve the saved Scene state.');
+}
+assert.throws(() => parseThreeDProjectViewState({ ...saved, viewMode: 'unknown' }));
 const overlayPositions = { simulations: { x: 0.3, y: 0.5 }, scenarios: { x: 0, y: 1 }, tour: { x: 1, y: 0 }, sensorGroup: { x: 0.1, y: 0.2 }, sensors: { x: 1, y: 0.4 } };
 assert.deepEqual(parseThreeDProjectViewState(JSON.parse(JSON.stringify({ ...saved, overlayPositions }))).overlayPositions, overlayPositions);
 assert.equal(parseThreeDProjectViewState(saved).overlayPositions, undefined);

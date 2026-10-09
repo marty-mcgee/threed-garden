@@ -3,6 +3,7 @@
 import type { RefObject } from 'react';
 import {
   Box,
+  PencilRuler,
   Boxes,
   ChevronDown,
   ChevronUp,
@@ -96,9 +97,12 @@ export function ProjectSceneToolbar({
         <Button variant={viewMode === 'combined' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" aria-pressed={viewMode === 'combined'} onClick={() => onViewModeChange('combined')} title="Combined View">
           <Layers className="h-3.5 w-3.5" />
         </Button>
+        <Button variant={viewMode === 'design' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" aria-pressed={viewMode === 'design'} onClick={() => onViewModeChange('design')} title="ThreeD Design View" aria-label="ThreeD Design View">
+          <PencilRuler className="h-3.5 w-3.5 text-cyan-400" />
+        </Button>
       </div>
 
-      {selectedProjectId && (
+      {selectedProjectId && viewMode !== 'design' && (
         <DropdownMenu open={setupMenuOpen} onOpenChange={onSetupMenuOpenChange} modal={false}>
           <DropdownMenuTrigger asChild>
             <Button type="button" variant={setupMenuOpen ? 'secondary' : 'outline'} size="sm"
@@ -117,11 +121,11 @@ export function ProjectSceneToolbar({
         </DropdownMenu>
       )}
 
-      {selectedProjectId && viewMode !== '2d' && (
-        <div id="project-environment-controls-host" className="relative" />
+      {selectedProjectId && (
+        <div id="project-environment-controls-host" className="relative" hidden={viewMode === '2d' || viewMode === 'design'} />
       )}
 
-      {selectedProjectId && viewMode !== '2d' && (
+      {selectedProjectId && viewMode !== '2d' && viewMode !== 'design' && (
         <div className="relative">
           <Button
             type="button"
@@ -162,7 +166,7 @@ export function ProjectSceneToolbar({
 
       <SceneOperationStatus operation={activeOperation} viewMode={viewMode} onCancel={onCancelOperation} />
 
-      {selectedProjectId && (
+      {selectedProjectId && viewMode !== 'design' && (
         <Button ref={projectAssetsTriggerRef} type="button" variant={projectAssetsOpen ? 'secondary' : 'outline'} size="sm" className="h-7 gap-1 px-2 text-xs" aria-expanded={projectAssetsOpen} aria-controls="project-assets-panel" aria-label="Project Assets" title="Browse and focus Project ThreeD Assets" onClick={onToggleProjectAssets}>
           <ListTree className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">Assets</span>
@@ -174,7 +178,7 @@ export function ProjectSceneToolbar({
 
 
       {selectedProjectId && (
-        <Button type="button" variant={savingProject ? 'secondary' : 'outline'} size="icon" className="h-7 w-7" disabled={savingProject} aria-label="Save ThreeD Project" title="Save ThreeD Project markers and current view" onClick={onSaveProject}>
+        <Button type="button" variant={savingProject ? 'secondary' : 'outline'} size="icon" className="h-7 w-7" disabled={savingProject} aria-label="Save ThreeD Project" title="Save ThreeD Project objects, architecture and current view" onClick={onSaveProject}>
           {savingProject ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5 text-foreground dark:text-white" />}
         </Button>
       )}

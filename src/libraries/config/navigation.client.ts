@@ -4,7 +4,7 @@
 import {
   MapPin, AlertTriangle, Radio, Car, Flame, BarChart3,
   ScanEye, Droplets, TrendingUp, Activity, Carrot,
-  LayoutDashboard, Music, type LucideIcon
+  LayoutDashboard, Music, Building2, type LucideIcon
 } from 'lucide-react';
 import { defaultWorkspaceSettings, workspaceLinkVisible, workspaceModules, type WorkspaceSettings } from './workspace-settings';
 
@@ -39,6 +39,7 @@ export const ALL_NAV_ITEMS: NavItem[] = [
   
   // ThreeD
   { path: '/dashboard/scene', name: 'Overview', icon: LayoutDashboard, color: 'green', module: 'threed' },
+  { path: '/dashboard/designs', name: 'Designs', icon: Building2, color: 'cyan', module: 'threed' },
   { path: '/dashboard/threed/weather', name: 'Weather', icon: Droplets, color: 'cyan', module: 'threed', service: 'weather' },
   { path: '/dashboard/threed/garden/analytics', name: 'Analytics', icon: TrendingUp, color: 'amber', module: 'threed', service: 'analytics' },
 ];

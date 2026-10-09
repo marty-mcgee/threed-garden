@@ -188,7 +188,7 @@ export interface UnifiedMapData {
 // Map View Types
 // ============================================
 
-export type MapViewMode = '2d' | '3d' | 'combined';
+export type MapViewMode = '2d' | '3d' | 'combined' | 'design';
 
 export interface MapLayerConfig {
   traffic: Record<string, { enabled: boolean; visible: boolean }>;

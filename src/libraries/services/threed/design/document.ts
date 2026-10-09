@@ -19,7 +19,7 @@ export const inchesToMetres = (inches: number) => inches * INCH;
 export const legacyCentimetresToMetres = (centimetres: number) => centimetres / 100;
 export const roundMetres = (value: number) => Math.round(value * 1e6) / 1e6;
 export const distance = (a: PlanPoint, b: PlanPoint) => Math.hypot(a.x - b.x, a.z - b.z);
-export const newDesign = (): DesignDocument => ({ format: 'threed-home-design', version: 5, units: 'metres', name: 'Untitled Home Design',
+export const newDesign = (): DesignDocument => ({ format: 'threed-home-design', version: 5, units: 'metres', name: 'Untitled ThreeD Design',
   levels: [{ id: 'ground', name: 'Ground', elevation: 0 }], nodes: [], walls: [], floors: [], roofs: [], openings: [], roofOpenings: [], defaults: { wallHeight: 96 * INCH, wallThickness: 6 * INCH, floorThickness: 6 * INCH, doorHeight: 80 * INCH, doorWidth: 36 * INCH, windowHeight: 48 * INCH, windowWidth: 36 * INCH, windowSill: 36 * INCH } });
 export const formatLength = (metres: number) => `${Number((metres / INCH).toFixed(2))} in (${Number((metres / (12 * INCH)).toFixed(2))} ft)`;
 export const signedArea = (points: PlanPoint[]) => points.reduce((sum, p, i) => { const q = points[(i + 1) % points.length]; return sum + p.x * q.z - q.x * p.z; }, 0) / 2;
@@ -57,7 +57,7 @@ export function validateDesign(value: unknown): DesignDocument {
   const version = value && typeof value === 'object' ? (value as Record<string, unknown>).version : undefined;
   const leveled = version === 3 || version === 4 || version === 5, roofed = version === 4 || version === 5;
   const doc = object(value, ['format', 'version', 'units', 'name', 'nodes', 'walls', 'floors', 'defaults', ...(legacy ? [] : ['openings']), ...(leveled ? ['levels'] : []), ...(roofed ? ['roofs'] : []), ...(version === 5 ? ['roofOpenings'] : [])]);
-  if (doc.format !== 'threed-home-design' || ![1, 2, 3, 4, 5].includes(doc.version as number) || doc.units !== 'metres') fail('Import a ThreeD Home Design version 1–5 JSON document (metres). Legacy .threed files require a separate converter.');
+  if (doc.format !== 'threed-home-design' || ![1, 2, 3, 4, 5].includes(doc.version as number) || doc.units !== 'metres') fail('Import a ThreeD Design version 1–5 JSON document (metres). Legacy .threed files require a separate converter.');
   if (typeof doc.name !== 'string' || !doc.name.trim() || doc.name.length > 120) fail('Design name must contain 1–120 characters.');
   // Pick a migration ID outside the old global ID namespace, including orphan nodes.
   const oldIds = new Set(['nodes', 'walls', 'floors', 'openings'].flatMap(key => Array.isArray(doc[key]) ? (doc[key] as { id?: unknown }[]).map(entity => entity?.id) : []));

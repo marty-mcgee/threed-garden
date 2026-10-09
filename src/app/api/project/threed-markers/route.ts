@@ -1,3 +1,4 @@
+import { parseProjectArchitecture, ProjectArchitectureError } from '@/libraries/services/threed/design/project-architecture';
 import { retryDisconnectedRead } from '@/libraries/db/read-retry';
 import { databaseConnectionDiagnostic } from '@/libraries/db/connection-diagnostics';
 import { bedPlantingGeometry, bedLocalPoint, bedWorldPoint, containBedPlantings, resolvePlantingBedId } from '@/libraries/services/threed/beds/bed-planting-bounds';
@@ -381,6 +382,7 @@ async function saveSnapshot(request: NextRequest) {
     }
     const markers = parseProjectThreeDMarkerSnapshot(requestBody.markers);
     const viewState = parseThreeDProjectViewState(requestBody.viewState);
+    const architecture = requestBody.architecture === undefined ? undefined : parseProjectArchitecture(requestBody.architecture);
     if (viewState.threeD?.sensorState && viewState.threeD.sensorState.projectId !== projectId) {
       return NextResponse.json({ success: false, error: 'Sensor state belongs to another Project' }, { status: 400 });
     }
@@ -538,7 +540,7 @@ async function saveSnapshot(request: NextRequest) {
       }
 
       await tx.update(project).set({
-        config: sql`coalesce(${project.config}, '{}'::jsonb) || ${JSON.stringify({ threeDViewState: viewState })}::jsonb`,
+        config: sql`coalesce(${project.config}, '{}'::jsonb) || ${JSON.stringify({ threeDViewState: viewState, ...(architecture ? { threeDArchitecture: architecture } : {}) })}::jsonb`,
         updatedAt: new Date(),
       }).where(and(eq(project.id, projectId), eq(project.userId, userId)));
       return savedRows;
@@ -548,12 +550,14 @@ async function saveSnapshot(request: NextRequest) {
       success: true,
       data: {
         projectId,
+        ...(architecture ? { architecture } : {}),
         markerCount: saved.length,
         markers: saved,
         savedAt: new Date().toISOString(),
       },
     });
   } catch (error) {
+    if (error instanceof ProjectArchitectureError) return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     if (error instanceof ProjectPlantingPlacementInputError) return NextResponse.json({success:false,error:error.message},{status:400});
     if (error instanceof ProjectMarkerSnapshotError || error instanceof ProjectViewStateError) {
       return NextResponse.json(

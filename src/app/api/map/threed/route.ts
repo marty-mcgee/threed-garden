@@ -1,3 +1,4 @@
+import { readProjectArchitecture } from '@/libraries/services/threed/design/project-architecture';
 import { sceneTextureResources } from '@/libraries/services/project/scene-texture-resources';
 import { sceneCharacterAnimations } from '@/libraries/services/project/scene-character-animations';
 import { canRenderAssignedModel } from '@/libraries/services/project/scene-read-policy';
@@ -481,6 +482,8 @@ export async function GET(request: NextRequest) {
       success: true,
       data: allData,
       projectContext: {
+        architecture: readProjectArchitecture(projectData.config),
+        metersPerSceneUnit: Number(projectData.metersPerSceneUnit),
         projectId: projectData.id,
         canEdit,
         projectName: projectData.name,

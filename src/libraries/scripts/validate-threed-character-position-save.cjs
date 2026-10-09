@@ -6,6 +6,8 @@ const ts = require('typescript');
 const root = path.resolve(__dirname, '../../..');
 const read = (file) => fs.readFileSync(path.join(root, file), 'utf8');
 const compile = (source) => ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
+const architectureDocument = {};
+vm.runInNewContext(compile(read('src/libraries/services/threed/design/document.ts')), { exports: architectureDocument });
 const exportsObject = {};
 vm.runInNewContext(compile(read('src/libraries/services/threed/markers/runtime-marker-core.ts')), { exports: exportsObject });
 const registry = new exportsObject.ThreeDRuntimeMarkerRegistry();
@@ -56,6 +58,10 @@ const savePosition = (ok) => callback('src/app/dashboard/scene/page.tsx', 'handl
   registry.updateLiveRotation('characters', 11, 45);
   assert.equal(registry.updateLiveRotation('characters', 11, NaN), false);
   const projectSave = callback('src/app/dashboard/scene/page.tsx', 'handleSaveThreeDProject', {
+    canEditProject: true, projectSaveBusy: { current: false },
+    architectureDrafts: { current: new Map([['5', { history: { present: architectureDocument.newDesign() }, selected: null }]]) },
+    acknowledgeArchitecture: (draft, captured) => ({ ...draft, saved: JSON.stringify(captured.document) }),
+    renderArchitecture() {}, setArchitectureSaveError() {},
     ...base, saveRequestRef: {current:0}, selectedMarker:null, isProjectAssetsOpen:false, isModelLibraryOpen:false, projectAssetSearch:'', projectAssetType:'all', selectedProjectId: '5', savingProjectMarkers: false, setSavingProjectMarkers() {}, setLastUpdated() {},
     projectMarkerSnapshotProviderRef: { current: snapshot }, projectThreeDViewStateProviderRef: {}, projectMapViewStateProviderRef: {},
     lastProjectThreeDViewStateRef: {}, lastProjectMapViewStateRef: {}, initialProjectViewState: null,

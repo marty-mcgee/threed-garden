@@ -9,7 +9,7 @@ import { parseProjectGroundMapTransform, type ProjectGroundMapTransform } from '
 
 export const PROJECT_VIEW_STATE_VERSION = 1 as const;
 
-export type ProjectViewMode = '2d' | '3d' | 'combined';
+export type ProjectViewMode = '2d' | '3d' | 'combined' | 'design';
 export type ProjectCameraMode = 'follow' | 'topdown' | 'firstperson' | 'orbit' | 'stationary';
 
 export type ProjectOverlayPositions = Partial<Record<'simulations' | 'scenarios' | 'tour' | 'sensorGroup' | 'sensors', { x: number; y: number }>>;
@@ -110,7 +110,7 @@ export class ProjectViewStateError extends Error {
 const CAMERA_MODES = new Set<ProjectCameraMode>([
   'follow', 'topdown', 'firstperson', 'orbit', 'stationary',
 ]);
-const VIEW_MODES = new Set<ProjectViewMode>(['2d', '3d', 'combined']);
+const VIEW_MODES = new Set<ProjectViewMode>(['2d', '3d', 'combined', 'design']);
 const SCENE_LAYERS = new Set(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']);
 const ENVIRONMENTS = new Set(THREE_D_ENVIRONMENT_PRESET_KEYS);
 

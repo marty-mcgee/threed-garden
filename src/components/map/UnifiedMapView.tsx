@@ -1,6 +1,8 @@
 // components/map/UnifiedMapView.tsx
 'use client';
 
+import type { DesignDocument } from '@/libraries/services/threed/design/document';
+import type { ArchitectureMapLine } from '@/components/map/LeafletMap';
 import type { ScenarioStartRequest } from '@/libraries/services/threed/scenario-core';
 import type { SceneResourceIssue } from '@/components/threed/shared/SceneResourceStatus';
 import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
@@ -53,6 +55,13 @@ const ThreeDScene = dynamic(
 );
 
 interface UnifiedMapViewProps {
+  architecture?: DesignDocument;
+  metersPerSceneUnit?: number;
+  selectedArchitectureId?: string | null;
+  onArchitectureSelect?: (id: string | null) => void;
+  architectureLevelId?: string;
+  architectureShowRoofs?: boolean;
+
   /** Active Project identity; changing it starts a separate marker collection. */
   projectId?: number | null;
   /** Shared Project-session registry; required when 2D and 3D mount separately. */
@@ -192,6 +201,8 @@ function isSameRuntimeMarker(left: RuntimeMarker, right: RuntimeMarker): boolean
 }
 
 export function UnifiedMapView({
+  architecture, metersPerSceneUnit = 0.3048, selectedArchitectureId, onArchitectureSelect, architectureLevelId, architectureShowRoofs = true,
+
   projectId,
   runtimeMarkerRegistry,
   data,
@@ -619,8 +630,23 @@ export function UnifiedMapView({
     ) ?? Promise.resolve(false);
   }, [filteredMarkers, geographicOrigin, gpsCenter, onModelMove]);
 
+  const architectureLines = useMemo<ArchitectureMapLine[]>(() => {
+    if (!architecture) return [];
+    const nodes = new Map(architecture.nodes.map(node => [node.id, node]));
+    const point = (id: string): [number, number] => {
+      const node = nodes.get(id)!;
+      const local = { x: node.x / metersPerSceneUnit, y: 0, z: node.z / metersPerSceneUnit };
+      if (geographicOrigin) { const geo = projectLocalPositionToGeographicPosition(local, geographicOrigin); return [geo.latitude, geo.longitude]; }
+      const geo = projectPlanPositionToMapPosition(local, gpsCenter); return [geo.lat, geo.lng];
+    };
+    return [...architecture.walls.map(wall => ({ id: wall.id, positions: [point(wall.start), point(wall.end)], closed: false })),
+      ...[...architecture.floors, ...architecture.roofs].map(entity => ({ id: entity.id, positions: entity.vertices.map(point), closed: true }))];
+  }, [architecture, metersPerSceneUnit, geographicOrigin, gpsCenter]);
   const render2DView = () => (
     <LeafletMap
+      architectureLines={architectureLines}
+      selectedArchitectureId={selectedArchitectureId}
+      onArchitectureSelect={onArchitectureSelect}
       incidents={leafletIncidents}
       markers={leafletMarkers}
       onIncidentClick={handleIncidentClick}
@@ -650,6 +676,12 @@ export function UnifiedMapView({
       }));
     return (
       <ThreeDScene
+        architecture={architecture}
+        metersPerSceneUnit={metersPerSceneUnit}
+        selectedArchitectureId={selectedArchitectureId}
+        onArchitectureSelect={onArchitectureSelect}
+        architectureLevelId={architectureLevelId}
+        architectureShowRoofs={architectureShowRoofs}
         projectId={projectId ?? undefined}
         geographicHeadingDegrees={geographicOrigin?.headingDegrees ?? 0}
         incidents={sceneIncidents}

@@ -19,6 +19,7 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  'threed-designs': [node('validate-threed-designs.cjs')],
   'threed-home-design': [node('validate-threed-home-design.cjs')],
   'threed-home-design-browser': [node('validate-threed-home-design-browser.cjs')],
   'drizzle-workflow': [node('validate-drizzle-workflow.cjs')],
@@ -87,7 +88,7 @@ const tasks = {
   'threed-simulation-launch': [node('validate-threed-simulation-launch.cjs')],
   'threed-simulation-results': [node('validate-threed-simulation-results-schema.cjs'), node('validate-threed-simulation-results.cjs')],
   'threed-library-collections': [ts('validate-threed-library-collections.mts')],
-  'threed-project-session': [ts('validate-threed-project-session.mts'), node('validate-public-scene-api.cjs'), node('validate-project-asset-warnings.cjs'), ['node', '--import', 'tsx', `${scripts}/validate-scene-loading-policy.mts`]],
+  'threed-project-session': [['node', '--import', 'tsx', `${scripts}/validate-threed-project-session.mts`], node('validate-public-scene-api.cjs'), node('validate-project-asset-warnings.cjs'), ['node', '--import', 'tsx', `${scripts}/validate-scene-loading-policy.mts`]],
   'threed-mqtt': [['node', '--import', 'tsx', 'src/libraries/services/threed/mqtt/validate.mts']],
   'threed-assembly-persistence': [['node', '--conditions=react-server', '--import', 'tsx', `${scripts}/validate-assembly-persistence.mts`]],
   'threed-assembly-group': [ts('validate-assembly-group.mts')],
@@ -149,6 +150,7 @@ const tasks = {
 };
 
 const ci = [
+  'threed-designs',
   'drizzle-workflow',
   'threed-character-introduction',
   'application-foundations',

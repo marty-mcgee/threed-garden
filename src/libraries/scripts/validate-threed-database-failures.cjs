@@ -55,6 +55,7 @@ const api = {};
 vm.runInNewContext(code('src/app/api/map/threed/route.ts'), {
   exports: api, URL, console: { error() {} },
   require(name) {
+    if (name === '@/libraries/services/threed/design/project-architecture') return { readProjectArchitecture: config => config?.threeDArchitecture };
     if (name === '@/libraries/services/project/scene-texture-resources') return { sceneTextureResources: async () => [] };
     if (name === '@/libraries/services/project/scene-character-animations') return { sceneCharacterAnimations: async () => new Map() };
     if (name === '@/libraries/services/project/scene-read-policy') return scenePolicy;

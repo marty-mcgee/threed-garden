@@ -1,5 +1,7 @@
 # ThreeD Garden
 
+Prepared checkpoint: **[v0.24.0-alpha - ThreeD Designs: Project Scene integration](docs/releases/v0.24.0-alpha-project-design.md)**. Same package version; manual release and authenticated App acceptance pending.
+
 ### 🌱 Build your garden. Explore your world. Bring your models to life.
 
 **Turn your assets into an interactive world.** ThreeD Garden brings 3D scenes, geographic maps, animated characters, and multimedia together in one project workspace. Organize your library, compose a scene, and step inside it.
@@ -10,7 +12,7 @@
 
 🛠️ **3D Object Builder:** [Implementation record](docs/plans/v0.24.0-alpha-model-builder.md) · [Builder guide](docs/developers/THREED_MODEL_BUILDER.md)
 
-🏠 **Home Design prototype:** [Live 2D-to-3D planning surface](docs/plans/v0.24.0-alpha-home-design.md) · [Drawing and developer guide](docs/developers/THREED_HOME_DESIGN.md)
+**Designs - local continuation:** [Project Scene integration](docs/plans/v0.24.0-alpha-designs-persistence.md) and [ThreeD Designs guide](docs/developers/THREED_DESIGNS.md). Design edits the active Project Scene and uses Project Save; no separate table/migration is required. Authenticated App acceptance remains pending. [Released drawing foundations](docs/plans/v0.24.0-alpha-home-design.md).
 
 [🚀 Get started](docs/users/GETTING_STARTED.md) · [🎮 Explore the controls](docs/users/THREED_CONTROLS.md) · [📚 Browse the docs](docs/README.md) · [🛠️ Run locally](#run-it-locally)
 

@@ -1,3 +1,4 @@
+import { parseProjectArchitecture, type ProjectArchitecture } from '../threed/design/project-architecture';
 import type { ThreeDProjectViewState } from '@/libraries/services/threed/markers/project-view-state-core';
 import type { ThreeDGeographicOrigin } from '@/libraries/services/threed/markers/map-coordinate-core';
 import type { UnifiedMapData } from '@/libraries/types/map';
@@ -15,6 +16,8 @@ export interface ThreeDProjectSessionData {
   threedModules: ThreeDProjectModuleSummary[];
   geographicOrigin: ThreeDGeographicOrigin | null;
   savedViewState: ThreeDProjectViewState | null;
+  architecture?: ProjectArchitecture;
+  metersPerSceneUnit: number;
 }
 
 export type ThreeDProjectSessionResult =
@@ -67,6 +70,9 @@ export function buildThreeDProjectSession(
     };
   }
 
+  let architecture: ProjectArchitecture | undefined;
+  try { if (result.projectContext?.architecture !== undefined) architecture = parseProjectArchitecture(result.projectContext.architecture); }
+  catch { return { success: false, error: 'Project architectural content is invalid. Loading stopped to protect the saved content.' }; }
   const resultData = result.data || {};
   const threedModules = Array.isArray(result.projectContext?.threedModules)
     ? result.projectContext.threedModules.filter((module: any) => (
@@ -141,6 +147,8 @@ export function buildThreeDProjectSession(
       projectName: result.projectContext?.projectName || `Project #${projectId}`,
       hasData: result.total > 0,
       threedModules,
+      architecture,
+      metersPerSceneUnit: Number(result.projectContext?.metersPerSceneUnit) > 0 && Number.isFinite(Number(result.projectContext?.metersPerSceneUnit)) ? Number(result.projectContext.metersPerSceneUnit) : 0.3048,
       geographicOrigin: parseGeographicOrigin(result.projectContext?.geographicOrigin),
       savedViewState: (result.projectContext?.viewState as ThreeDProjectViewState | null) ?? null,
     },
