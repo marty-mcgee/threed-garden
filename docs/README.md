@@ -1,12 +1,12 @@
 # Documentation Hub
 
-Prepared checkpoint: **[v0.24.0-alpha - ThreeD Designs: Project Scene integration](releases/v0.24.0-alpha-project-design.md)**. Same package version; manual release and authenticated App acceptance pending.
+Current production: **[v0.24.0-alpha — ThreeD Designs: Project Scene integration](releases/v0.24.0-alpha-project-design.md)**, Developer-confirmed October 9, 2026. Detailed authenticated App and post-deployment verification remain separate.
 
-Local continuation: **[ThreeD Designs](developers/THREED_DESIGNS.md)** - [Project Scene integration](plans/v0.24.0-alpha-designs-persistence.md). Design edits the same Project/Scene, saving architecture and existing Models through Project Save. No separate table/migration is required; authenticated App acceptance and the next release remain pending. Earlier independent persistence instructions are superseded.
+Released integration: **[ThreeD Designs](developers/THREED_DESIGNS.md)** - [Project Scene integration](plans/v0.24.0-alpha-designs-persistence.md). Design edits the same Project/Scene, saving architecture and existing Models through Project Save. No separate table/migration is required; detailed authenticated App acceptance remains pending. Earlier independent persistence instructions are superseded.
 
 Released v0.24.0-alpha tools: [Home Design live planning milestones](plans/v0.24.0-alpha-home-design.md) · [Drawing/opening/level/roof contracts and remaining stages](developers/THREED_HOME_DESIGN.md). Local wall/floor/door/window editing, named levels, Flat/Shed/Gable roofs with rectangular cutouts/skylights and editable version 5 JSON recovery. Overhangs/roof joins and Project persistence remain future work.
 
-Latest production checkpoint: **[v0.24.0-alpha — 3D Object Builder + Home Design Tools](releases/v0.24.0-alpha.md)**, Developer-confirmed October 9, 2026. Older release statements below are historical.
+Earlier latest production checkpoint: **[v0.24.0-alpha — 3D Object Builder + Home Design Tools](releases/v0.24.0-alpha.md)**, Developer-confirmed October 9, 2026. Older release statements below are historical.
 
 Released Builder: [v0.24.0-alpha implementation](plans/v0.24.0-alpha-model-builder.md) · [Developer documentation](developers/THREED_MODEL_BUILDER.md). Admin Cottage generation, browser GLB/PNG export, six-role Model Textures, direct Blob primary uploads and explicit new Model registration. Detailed App/live and post-deployment acceptance remain separate from prior local validation.
 

@@ -1,6 +1,6 @@
 # ThreeD Designs: editing the active Project Scene
 
-Designs is an editing interface for the current Project. The four View Modes 3d, 2d, combined and design share Project identity, architectural parameters, Model instances and Project Save. This local correction follows the Developer-confirmed v0.24.0-alpha release; authenticated App acceptance and a new release remain pending.
+Designs is an editing interface for the current Project. The four View Modes 3d, 2d, combined and design share Project identity, architectural parameters, Model instances and Project Save. This integration was released to production as v0.24.0-alpha — ThreeD Designs: Project Scene integration, Developer-confirmed October 9, 2026. Detailed authenticated App and post-deployment acceptance remain pending; exact deployed SHA is unconfirmed.
 
 ## Architecture inspection and correction
 
