@@ -1,10 +1,10 @@
 # Documentation Hub
 
-Local v0.24.0-alpha extension: [Home Design live planning milestones](plans/v0.24.0-alpha-home-design.md) · [Drawing/opening/level/roof contracts and remaining stages](developers/THREED_HOME_DESIGN.md). Local wall/floor/door/window editing, named levels, Flat/Shed/Gable roofs with rectangular cutouts/skylights and editable version 5 JSON recovery. Overhangs/roof joins and Project persistence remain future work.
+Released v0.24.0-alpha tools: [Home Design live planning milestones](plans/v0.24.0-alpha-home-design.md) · [Drawing/opening/level/roof contracts and remaining stages](developers/THREED_HOME_DESIGN.md). Local wall/floor/door/window editing, named levels, Flat/Shed/Gable roofs with rectangular cutouts/skylights and editable version 5 JSON recovery. Overhangs/roof joins and Project persistence remain future work.
 
-Latest production checkpoint: **[v0.23.2 — ThreeD Garden](releases/v0.23.2.md)**, Developer-confirmed October 8, 2026. Older release statements below are historical.
+Latest production checkpoint: **[v0.24.0-alpha — 3D Object Builder + Home Design Tools](releases/v0.24.0-alpha.md)**, Developer-confirmed October 9, 2026. Older release statements below are historical.
 
-Local candidate: [v0.24.0-alpha — ThreeD Model Builder Tool](plans/v0.24.0-alpha-model-builder.md) · [Developer documentation](developers/THREED_MODEL_BUILDER.md). Admin Cottage generation, browser GLB/PNG export, six-role Model Textures, direct Blob primary uploads and explicit new Model registration. App/live acceptance remains separate from local validation; production remains v0.23.2.
+Released Builder: [v0.24.0-alpha implementation](plans/v0.24.0-alpha-model-builder.md) · [Developer documentation](developers/THREED_MODEL_BUILDER.md). Admin Cottage generation, browser GLB/PNG export, six-role Model Textures, direct Blob primary uploads and explicit new Model registration. Detailed App/live and post-deployment acceptance remain separate from prior local validation.
 
 Current release: **[v0.23.0 — ThreeD Garden](releases/v0.23.0.md)**. Developer authorized stable GitHub publication of the existing code October 6, 2026. Package/root lockfile are 0.23.0; older checkpoint sections describe history. Preserve existing runtime and schema boundaries. GitHub publication and production deployment are distinct.
 

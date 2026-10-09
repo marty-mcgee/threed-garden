@@ -1,6 +1,6 @@
 # ThreeD Home Design
 
-Local v0.24.0-alpha Milestones 1-4 (roofs with hosted openings): `/admin/threed/models/home-design`, reached through **Admin → ThreeD → Models → Home Design**. Walls/floors, hosted doors/windows, named levels, Flat/Shed/Gable roofs, rectangular roof cutouts and skylights are implemented locally. Production remains Developer-confirmed v0.23.2. This editable local planning surface performs no Project, Model, File, Texture or database writes.
+Released in **[v0.24.0-alpha — 3D Object Builder + Home Design Tools](../releases/v0.24.0-alpha.md)**, Developer-confirmed in production October 9, 2026: Milestones 1-4 (roofs with hosted openings), `/admin/threed/models/home-design`, reached through **Admin → ThreeD → Models → Home Design**. Walls/floors, hosted doors/windows, named levels, Flat/Shed/Gable roofs, rectangular roof cutouts and skylights are included. This editable local planning surface performs no Project, Model, File, Texture or database writes. Detailed App/post-deployment acceptance remains separate.
 
 ## Reference audit
 
