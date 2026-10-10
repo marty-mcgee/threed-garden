@@ -1,5 +1,7 @@
 # ThreeD Garden
 
+Current development: **[v0.24.0-delta — Cleanup toward release candidacy](docs/plans/v0.24.0-delta-cleanup.md)**. Package/root lockfile are `0.24.0-delta`; production remains `v0.24.0-centaur`, including its Developer-confirmed documentation release. Delta is for existing bug fixes and acceptance, before a proposed `0.24.0-rc.1` and stable `0.24.0`. No new runtime fix or release readiness is claimed by this preparation. Earlier package/version statements below describe their historical checkpoints.
+
 Current production: **[v0.24.0-centaur — ThreeD Designs: Workspace tools and state](docs/releases/v0.24.0-centaur.md)**, Developer-confirmed October 10, 2026. Package/root lockfile remain `0.24.0-centaur`. Includes canvas-local tools, staged JSON import, Project workspace snapshot support and compact colored Properties headers. Authenticated Save/reopen, post-deployment verification and exact deployed SHA remain unconfirmed. This records release confirmation only; no Git write or deployment is authorized. Earlier checkpoint statements below are historical.
 
 Previous production: **[v0.24.0-beta — ThreeD Designs: Dashboard workspace](docs/releases/v0.24.0-beta.md)**, Developer-confirmed October 10, 2026. Production was released at 0.24.0-beta; local package/root lockfile are now 0.24.0-centaur. The revised Design layout is accepted; authenticated architecture Save/reload and post-deployment verification remain unverified. Exact deployed SHA is unconfirmed.
