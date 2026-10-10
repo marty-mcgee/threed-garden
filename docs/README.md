@@ -1,5 +1,7 @@
 # Documentation Hub
 
+Prepared checkpoint: **[v0.24.0-centaur — ThreeD Designs: Workspace tools and state](releases/v0.24.0-centaur.md)** (October 10, 2026). Package/root lockfile are `0.24.0-centaur`; production remains Developer-confirmed `v0.24.0-beta`. Includes canvas-local tools, staged JSON import, Project workspace snapshot support and compact colored Properties headers. Authenticated Save/reopen remains unverified. Prepared locally; no publication or deployment. Earlier version statements below record their original checkpoints.
+
 Current production: **[v0.24.0-beta — ThreeD Designs: Dashboard workspace](releases/v0.24.0-beta.md)**, Developer-confirmed October 10, 2026. Package/root lockfile remain `0.24.0-beta`. Layout acceptance and prior local checks are separate from still-unverified authenticated architecture Save/reload and post-deployment testing. Exact deployed SHA remains unconfirmed.
 
 Previous production: **[v0.24.0-alpha — ThreeD Designs: Project Scene integration](releases/v0.24.0-alpha-project-design.md)**, Developer-confirmed October 9, 2026. Detailed authenticated App and post-deployment verification remain separate.

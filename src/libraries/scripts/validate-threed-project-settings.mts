@@ -54,12 +54,12 @@ const ts = (await import('typescript')).default;
 const pageSource = ts.createSourceFile('page.tsx', readFileSync(new URL('../../app/dashboard/scene/page.tsx', import.meta.url), 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 let captureExpression = '';
 function findWorkspace(node: import('typescript').Node) {
-  if (ts.isPropertyAssignment(node) && node.name.getText(pageSource) === 'workspace' && ts.isObjectLiteralExpression(node.initializer)) captureExpression = node.initializer.getText(pageSource);
+  if (ts.isPropertyAssignment(node) && node.name.getText(pageSource) === 'workspace' && ts.isObjectLiteralExpression(node.initializer)) if (node.initializer.properties.some(prop => ts.isPropertyAssignment(prop) && prop.name.getText(pageSource) === 'selectedMarkerId')) captureExpression = node.initializer.getText(pageSource);
   ts.forEachChild(node, findWorkspace);
 }
 findWorkspace(pageSource);
 assert(captureExpression, 'Project Save workspace capture must exist');
-const capture = new Function('isProjectSummaryOpen', 'isProjectAssetsOpen', 'selectedMarker', 'projectAssetSearch', 'projectAssetType', 'isModelLibraryOpen', `return (${captureExpression});`);
+const capture = new Function('isProjectSummaryOpen', 'isProjectAssetsOpen', 'selectedMarker', 'projectAssetSearch', 'projectAssetType', 'isModelLibraryOpen', `const groundMapInspector=null,groupInspector=null,sensorInspector=null; return (${captureExpression});`);
 for (const assetsOpen of [true,false]) {
   for (const modelsOpen of [true,false]) {
     const toolbar = capture(false,assetsOpen,{id:'models-example'},'ball','models',modelsOpen);
@@ -104,3 +104,12 @@ for (const bad of [
   {...scenarioRuntime,active:null,instructionVisible:true},
 ]) assert.throws(()=>parseThreeDProjectViewState({...saved,threeD:{...saved.threeD,scenarioRuntime:bad}}));
 console.log('PASS: Scenario selection, Guide choices, started status and overlays round-trip with legacy and invalid-state handling');
+
+// Workspace preference validation is exercised through the actual server parser.
+const design = {plan:{x:-321,y:224,scale:73},levelId:'ground',selectedEntityId:'wall-1',showAllLevels:true,showRoofs:false,gridSnap:true,split:62,sections:{'details:wall-1':false}};
+const preferences = {...saved,design,workspace:{...workspace,inspector:{kind:'sensor',id:'sensor-1'}},threeD:{...saved.threeD,cameraZoom:1.4,cameraFov:60}};
+const roundtrip = parseThreeDProjectViewState(JSON.parse(JSON.stringify(preferences)));
+assert.equal(JSON.stringify(roundtrip.design),JSON.stringify(design));assert.equal(roundtrip.threeD?.cameraZoom,1.4);assert.equal(roundtrip.threeD?.cameraFov,60);assert.equal(roundtrip.workspace?.inspector?.id,'sensor-1');
+for(const invalid of [{...design,plan:{...design.plan,scale:0}},{...design,sections:{'bad':'yes'}},{...design,split:99},{...design,plan:{...design.plan,x:Infinity}}]) assert.throws(()=>parseThreeDProjectViewState({...saved,design:invalid}));
+assert.throws(()=>parseThreeDProjectViewState({...saved,threeD:{...saved.threeD,cameraFov:180}}));
+console.log('PASS: Design pan/zoom, selection, split, section state, inspector reference and camera projection roundtrip with bounded validation.');

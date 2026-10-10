@@ -1,5 +1,6 @@
 import { newDesign, validateDesign, type DesignDocument } from './document';
 import { designHistory, type DesignHistory } from './history';
+import { defaultDesignWorkspace, parseDesignWorkspace, type ProjectDesignWorkspaceState } from './workspace-state';
 
 /** Editable architectural content in project.config; not a separate record or Scene. */
 export interface ProjectArchitecture { version: 1; document: DesignDocument }
@@ -18,20 +19,24 @@ export function readProjectArchitecture(config: unknown): ProjectArchitecture | 
   if (!config || typeof config !== 'object' || !('threeDArchitecture' in config)) return undefined;
   return parseProjectArchitecture((config as Record<string, unknown>).threeDArchitecture);
 }
-export interface ProjectArchitectureDraft { history: DesignHistory; saved: string; selected: string | null }
-export function projectArchitectureDraft(content?: ProjectArchitecture): ProjectArchitectureDraft {
+export interface ProjectArchitectureDraft { history: DesignHistory; saved: string; selected: string | null; workspace?: ProjectDesignWorkspaceState; savedWorkspace?: string }
+export function projectArchitectureDraft(content?: ProjectArchitecture, preferences?: ProjectDesignWorkspaceState): ProjectArchitectureDraft {
   const document = content ? parseProjectArchitecture(content).document : newDesign();
   const history = designHistory(document);
-  return { history, saved: JSON.stringify(history.present), selected: null };
+  const workspace = preferences ? parseDesignWorkspace(preferences) : defaultDesignWorkspace();
+  const ids = [...history.present.walls, ...history.present.floors, ...history.present.roofs, ...history.present.openings, ...history.present.roofOpenings];
+  const selected = ids.some(item => item.id === workspace.selectedEntityId) ? workspace.selectedEntityId : null;
+  return { history, saved: JSON.stringify(history.present), selected, workspace, savedWorkspace: JSON.stringify(workspace) };
 }
 /** Hydrate clean placeholders/caches only; never erase an actual unsaved edit. */
-export function hydrateArchitectureDraft(draft: ProjectArchitectureDraft | undefined, content?: ProjectArchitecture): ProjectArchitectureDraft {
-  return draft && architectureIsDirty(draft) ? draft : projectArchitectureDraft(content);
+export function hydrateArchitectureDraft(draft: ProjectArchitectureDraft | undefined, content?: ProjectArchitecture, preferences?: ProjectDesignWorkspaceState): ProjectArchitectureDraft {
+  return draft && architectureIsDirty(draft) ? draft : projectArchitectureDraft(content, preferences);
 }
-export const architectureIsDirty = (draft: ProjectArchitectureDraft) => JSON.stringify(draft.history.present) !== draft.saved;
+export const architectureIsDirty = (draft: ProjectArchitectureDraft) => JSON.stringify(draft.history.present) !== draft.saved
+  || (draft.workspace !== undefined && JSON.stringify(draft.workspace) !== draft.savedWorkspace);
 /** Acknowledges captured source only, retaining edits completed during Project Save. */
-export function acknowledgeArchitecture(draft: ProjectArchitectureDraft, captured: ProjectArchitecture): ProjectArchitectureDraft {
-  return { ...draft, saved: JSON.stringify(parseProjectArchitecture(captured).document) };
+export function acknowledgeArchitecture(draft: ProjectArchitectureDraft, captured: ProjectArchitecture, workspace?: ProjectDesignWorkspaceState): ProjectArchitectureDraft {
+  return { ...draft, saved: JSON.stringify(parseProjectArchitecture(captured).document), ...(workspace ? { savedWorkspace: JSON.stringify(parseDesignWorkspace(workspace)) } : {}) };
 }
 /** Imported IDs are local portability references, never overwrite or access authority. */
 export function importProjectArchitecture(current: DesignDocument, input: unknown, mode: 'merge' | 'replace', makeId: () => string): DesignDocument {

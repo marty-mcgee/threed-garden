@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useRef, useState, type PointerEvent } from 'react';
+import { useEffect, useId, useRef, useState, type PointerEvent, type ReactNode, type SetStateAction, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Focus, Maximize, RotateCcw } from 'lucide-react';
 import { DesignAction } from './DesignAction';
@@ -13,7 +13,7 @@ import { wallFootprint } from '@/libraries/services/threed/design/geometry';
 
 export type DesignTool = 'select' | 'wall' | 'floor' | 'roof' | 'door' | 'window' | 'cutout' | 'skylight' | 'pan';
 type DrawPoint = PlanPoint & { nodeId?: string };
-interface Props { toolbarHost?: HTMLDivElement | null; embedded?: boolean; active?: boolean; disabled?: boolean; document: DesignDocument; displayDocument?: DesignDocument; activeLevelId: string; selected: string | null; tool: DesignTool; gridSnap: boolean;
+interface Props { drawingActions?: ReactNode; planView?: PlanView; onViewChange?: (view: PlanView) => void; toolbarHost?: HTMLDivElement | null; embedded?: boolean; active?: boolean; disabled?: boolean; document: DesignDocument; displayDocument?: DesignDocument; activeLevelId: string; selected: string | null; tool: DesignTool; gridSnap: boolean;
   onSelect: (id: string | null) => void; onCommit: (doc: DesignDocument) => void;
   onPreview: (doc: DesignDocument | null) => void; onMessage: (text: string) => void;
   onDrawComplete: (id: string) => void; cancelToken: number }
@@ -35,10 +35,18 @@ function addShape(doc: DesignDocument, points: DrawPoint[], tool: 'wall' | 'floo
     floors: tool === 'floor' ? [...doc.floors, { id, levelId, vertices: ids, thickness: doc.defaults.floorThickness, elevation: 0 }] : doc.floors, roofs: tool === 'roof' ? [...doc.roofs, { id, levelId, vertices: ids, kind: 'gable', pitch: 6, direction: 0, thickness: 6 * INCH, elevation: doc.defaults.wallHeight }] : doc.roofs };
 }
 
-export function DesignPlan({ toolbarHost, embedded = false, active: enabled = true, disabled = false, document: doc, displayDocument = doc, activeLevelId, selected, tool, gridSnap, onSelect, onCommit, onPreview, onMessage, onDrawComplete, cancelToken }: Props) {
+export function DesignPlan({ drawingActions, planView, onViewChange, toolbarHost, embedded = false, active: enabled = true, disabled = false, document: doc, displayDocument = doc, activeLevelId, selected, tool, gridSnap, onSelect, onCommit, onPreview, onMessage, onDrawComplete, cancelToken }: Props) {
   const visible = levelDocument(displayDocument, activeLevelId), active = levelDocument(doc, activeLevelId);
   const svg = useRef<SVGSVGElement>(null), patternId = useId();
-  const [view, setView] = useState<PlanView>({ x: 80, y: 80, scale: 45 });
+  const [localView, setLocalView] = useState<PlanView>({ x: 80, y: 80, scale: 45 });
+  const view = planView ?? localView;
+  const viewRef = useRef(view); viewRef.current = view;
+  const changeViewRef = useRef(onViewChange); changeViewRef.current = onViewChange;
+  const setView = useCallback((update: SetStateAction<PlanView>) => {
+    const next = typeof update === 'function' ? update(viewRef.current) : update;
+    viewRef.current = next;
+    if (changeViewRef.current) changeViewRef.current(next); else setLocalView(next);
+  }, []);
   const [size, setSize] = useState({ width: 600, height: 280 });
   const [points, setPoints] = useState<DrawPoint[]>([]), [hover, setHover] = useState<DrawPoint | null>(null);
   const [draftOpeningId] = useState(makeId);
@@ -209,8 +217,8 @@ export function DesignPlan({ toolbarHost, embedded = false, active: enabled = tr
     const next = framePlan(selection ? selectionPoints : [...active.nodes, ...active.walls.flatMap(wall => wallFootprint(doc, wall))], size); if (next) setView(next);
   }
   const viewActions = <div role="group" aria-label="Design plan navigation" className="flex items-center gap-1"><DesignAction label="Fit Plan" disabled={!active.nodes.length} onClick={() => fitPlan()}><Maximize className="h-3.5 w-3.5" /></DesignAction><DesignAction label="Zoom to Selection" disabled={!selectionPoints.length} onClick={() => fitPlan(true)}><Focus className="h-3.5 w-3.5" /></DesignAction><DesignAction label="Reset View" onClick={() => setView({ x: 80, y: 80, scale: 45 })}><RotateCcw className="h-3.5 w-3.5" /></DesignAction></div>;
-  return <section aria-label="Design plan canvas" className={`flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#091423] ${embedded ? '' : 'rounded-lg border border-white/10'}`}>
-    {enabled && toolbarHost && createPortal(viewActions, toolbarHost)}
+  return <section aria-label="Design plan canvas" className={`relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#091423] ${embedded ? '' : 'rounded-lg border border-white/10'}`}>
+    {embedded && enabled && <div data-testid="design-canvas-tools" role="toolbar" aria-label="Design drawing and view tools" className="threed-workspace-panel threed-scene-panel-surface absolute z-10 flex max-w-[calc(100%-40px)] flex-wrap items-center gap-1 rounded-md border p-1 shadow-md" style={{ left: RULER_SIZE + 8, top: RULER_SIZE + 8 }} onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}>{drawingActions}{viewActions}</div>}
     {!embedded && <div data-testid="design-plan-header" className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-white/10 px-3 py-2 text-xs">
       <span className="font-semibold">2D Plan · {doc.levels.find(level => level.id === activeLevelId)?.name} · X / Z · {gridFeet} ft grid</span>
       <div className="flex items-center gap-2"><span>{Number(view.scale.toFixed(2))} px/m</span>{viewActions}</div>

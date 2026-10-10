@@ -7,7 +7,8 @@ function load(file, deps = {}) {
 }
 const root = 'src/libraries/services/threed/design/';
 const document = load(root+'document.ts'), history = load(root+'history.ts', {'./document':document});
-const architecture = load(root+'project-architecture.ts', {'./document':document,'./history':history});
+const workspace = load(root+'workspace-state.ts');
+const architecture = load(root+'project-architecture.ts', {'./document':document,'./history':history,'./workspace-state':workspace});
 const source = document.validateDesign({...document.newDesign(), nodes:[{id:'a',x:0,z:0},{id:'b',x:3.048,z:0},{id:'c',x:3.048,z:3.048},{id:'d',x:0,z:3.048}],
  walls:[['a','b'],['b','c'],['c','d'],['d','a']].map(([start,end],i)=>({id:'w'+i,levelId:'ground',start,end,height:2.4384,thickness:.1524,elevation:0})),
  floors:[{id:'floor',levelId:'ground',vertices:['a','b','c','d'],thickness:.1524,elevation:0}],
@@ -207,7 +208,7 @@ async function checkClientSave(model,view) {
 const context={selectedProjectId:'15',canEditProject:true,loading:false,savingProjectMarkers:false,projectSaveBusy:{current:false},saveRequestRef:{current:0},architectureDrafts:drafts,acknowledgeArchitecture:architecture.acknowledgeArchitecture,parseProjectArchitecture:architecture.parseProjectArchitecture,
  projectMarkerSnapshotProviderRef:{current:()=>[model]},showToastRef:{current:()=>{}},setSavingProjectMarkers:()=>{},setArchitectureSaveError:value=>feedback=value,
  projectThreeDViewStateProviderRef:{current:null},lastProjectThreeDViewStateRef:{current:null},projectMapViewStateProviderRef:{current:null},lastProjectMapViewStateRef:{current:null},initialProjectViewState:null,
- PROJECT_VIEW_STATE_VERSION:3,viewMode:'design',panelHeight:50,cameraMode:'stationary',selectedMarker:null,isProjectAssetsOpen:false,isModelLibraryOpen:false,projectAssetSearch:'',projectAssetType:'all',isProjectSetupOpen:false,overlayPositions:{},scenarioPanelState:{},isScenariosOpen:false,
+ PROJECT_VIEW_STATE_VERSION:3,viewMode:'design',panelHeight:50,cameraMode:'stationary',groundMapInspector:null,groupInspector:null,sensorInspector:null,defaultDesignWorkspace:()=>({}),selectedMarker:null,isProjectAssetsOpen:false,isModelLibraryOpen:false,projectAssetSearch:'',projectAssetType:'all',isProjectSetupOpen:false,overlayPositions:{},scenarioPanelState:{},isScenariosOpen:false,
  fetch:async(url,options)=>{assert.equal(url,'/api/project/threed-markers');assert.equal(options.method,'PUT');transportCount++;body=JSON.parse(options.body);return new Promise(resolve=>finish=resolve);},
  setData:()=>{},applyThreeDProjectClientTransaction:()=>{},renderArchitecture:()=>{},setLastUpdated:()=>{},Date,JSON,console:{error(){}}
  };
@@ -227,7 +228,7 @@ const context={selectedProjectId:'15',canEditProject:true,loading:false,savingPr
  const unconfirmed=callback();finish({ok:true,json:async()=>({success:true,data:{projectId:15,markers:[],markerCount:0}})});await unconfirmed;
  assert.match(feedback,/did not confirm/);assert(architecture.architectureIsDirty(drafts.current.get('15')));
  // Latest editor state -> actual client Save -> PUT transaction -> GET -> session -> actual Dashboard hydration.
- drafts.current.set('15',draft);
+ drafts.current.set('15',{...draft,workspace:{...workspace.defaultDesignWorkspace(),plan:{x:-321,y:224,scale:73},selectedEntityId:'door',split:62,sections:{'design:properties':false}}});
  context.fetch=async(url,options)=>{body=JSON.parse(options.body);const result=await save(request(body));return {ok:result.status===200,status:result.status,json:async()=>result.body};};
  await callback();assert.equal(feedback,'');assert(!architecture.architectureIsDirty(drafts.current.get('15')));
  const response=await get({url:'http://local/api/map/threed?projectId=15'});assert.equal(response.status,200);
@@ -237,6 +238,8 @@ const context={selectedProjectId:'15',canEditProject:true,loading:false,savingPr
  assert.equal(JSON.stringify(restored.history.present),JSON.stringify(source));assert(!architecture.architectureIsDirty(restored));
  assert.equal(loaded.session.data.threed.raw.models[0].filePath,'saved.glb');assert.equal(loaded.session.data.threed.raw.projectThreedMarkers[0].markerId,model.markerId);
  assert.equal(stored.config.unrelated.keep,true);
+ assert.equal(restored.workspace.plan.x,-321);assert.equal(restored.workspace.plan.scale,73);assert.equal(restored.workspace.split,62);assert.equal(restored.selected,'door');assert.equal(restored.workspace.sections['design:properties'],false);
+ const workspaceEdit={...restored,workspace:{...restored.workspace,split:55}};assert(architecture.architectureIsDirty(workspaceEdit));assert(architecture.architectureIsDirty(architecture.acknowledgeArchitecture(workspaceEdit,captured,restored.workspace)),'A workspace edit during Save must remain unsaved.');
  fresh.current.set('15',newer);assert.equal(await hydrateDashboard(loaded.session,fresh),newer,'Reload may not overwrite genuine unsaved edits.');
  fresh.current.set('16',architecture.projectArchitectureDraft());await hydrateDashboard({...loaded.session,architecture:undefined},fresh,'16');
  assert.equal(fresh.current.get('15'),newer);assert.equal(fresh.current.get('16').history.present.walls.length,0);assert(!architecture.architectureIsDirty(fresh.current.get('16')));
@@ -279,3 +282,22 @@ async function run(){
  console.log('PASS: actual Project snapshot transaction and load roundtrip with existing Model, room/floor/door, owner guards, malformed/oversized input rejection, atomic failure, legacy Save preservation, pending-edit acknowledgment, safe merge/replace IDs and real Scene-unit geometry. No database connection.');
 }
 run().catch(error=>{console.error(error);process.exitCode=1;});
+
+// Execute the Dashboard restoration effect against delayed and missing Scene references.
+let restoreEffect;
+function findRestore(node){if(ts.isCallExpression(node)&&node.expression.getText(sceneAst)==='useEffect'&&node.arguments[0]?.getText(sceneAst).includes('restoredWorkspaceRef.current = initialProjectViewState'))restoreEffect=node.arguments[0].getText(sceneAst);ts.forEachChild(node,findRestore);}findRestore(sceneAst);assert(restoreEffect);
+const restoredUI={};const restoreContext={loading:false,canEditProject:true,viewMode:'design',isThreeDPresentationComplete:false,restoredWorkspaceRef:{current:null},initialProjectViewState:{workspace:{selectedMarkerId:'model-1',inspector:{kind:'sensor',id:'sensor-1'},panel:'assets',assetSearch:'',assetType:'models'}},projectRuntimeMarkers:[{id:'model-1',type:'models',metadata:{sensors:[{id:'sensor-1'}]}}],sensorGroupsWorkspace:{loading:false,groups:[]},readPhysicsSensorCuboids:metadata=>metadata.sensors,groundMapInspector:{setOpen:value=>restoredUI.ground=value},openModelLibrary:()=>{restoredUI.library=true}};
+for(const name of ['SelectedMarker','SensorInspector','GroupInspector','IsProjectSummaryOpen','IsProjectAssetsOpen','ProjectAssetSearch','ProjectAssetType','IsScenariosOpen','IsProjectSetupOpen'])restoreContext['set'+name]=value=>restoredUI[name]=value;
+const restore=vm.runInNewContext(compile('('+restoreEffect+')'),restoreContext);restore();assert.equal(Object.keys(restoredUI).length,0,'Do not restore before Scene readiness.');restoreContext.isThreeDPresentationComplete=true;restore();assert.equal(restoredUI.SelectedMarker.id,'model-1');assert.equal(restoredUI.SensorInspector.sensorId,'sensor-1');
+restoreContext.initialProjectViewState={workspace:{selectedMarkerId:'deleted',inspector:{kind:'sensor',id:'missing'},panel:'none',assetSearch:'',assetType:'models'}};restore();assert.equal(restoredUI.SelectedMarker,null);assert.equal(restoredUI.SensorInspector,null);
+restoreContext.initialProjectViewState={workspace:{selectedMarkerId:null,inspector:{kind:'group',id:'missing'},panel:'none',assetSearch:'',assetType:'all'}};restore();assert.equal(restoredUI.GroupInspector,null);
+console.log('PASS: actual inspector hydration waits for Scene readiness and ignores missing marker, Sensor and Group references.');
+
+const cameraFile='src/components/map/ThreeDScene.tsx',cameraAst=ts.createSourceFile(cameraFile,fs.readFileSync(cameraFile,'utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);let cameraEffect;
+function findCamera(node){if(ts.isCallExpression(node)&&node.expression.getText(cameraAst)==='useEffect'&&node.arguments[0]?.getText(cameraAst).includes('restoredProjectViewKeyRef.current = key'))cameraEffect=node.arguments[0].getText(cameraAst);ts.forEachChild(node,findCamera);}findCamera(cameraAst);assert(cameraEffect);
+const compatible=vm.runInNewContext(compile(functionSource(cameraFile,'isSavedCameraCompatibleWithScene')+';isSavedCameraCompatibleWithScene;'),{});
+const projection={position:{set(...values){this.values=values}},isPerspectiveCamera:true,updateProjectionMatrix(){this.updated=true}};const target={set(...values){this.values=values}};
+const cameraContext={controlsReady:false,controlsRef:{current:{object:projection,target,update(){}}},initialViewState:{cameraPosition:{x:10000,y:10,z:10000},cameraTarget:{x:9990,y:0,z:9990},cameraZoom:1.5,cameraFov:60,activeLayers:['models'],environment:'sunset',autoRotate:false,showGrid:false,showLegend:false,showGizmo:true},projectId:15,restoredProjectViewKeyRef:{current:null},isSavedCameraCompatibleWithScene:compatible,availableLayers:['models'],autoRotate:false,resolveRestoredThreeDActiveLayers:value=>value,updateGeographicCompass(){},zoomToPosition(){throw Error('Saved camera must not auto-fit to Model bounds')}};
+for(const name of new Set(cameraEffect.match(/\bset[A-Z]\w+/g)))cameraContext[name]=()=>{};
+const restoreCamera=vm.runInNewContext(compile('('+cameraEffect+')'),cameraContext);restoreCamera();assert.equal(projection.updated,undefined);cameraContext.controlsReady=true;restoreCamera();assert.deepEqual(projection.position.values,[10000,10,10000]);assert.deepEqual(target.values,[9990,0,9990]);assert.equal(projection.zoom,1.5);assert.equal(projection.fov,60);assert(projection.updated);projection.position.values=[12,13,14];restoreCamera();assert.deepEqual(projection.position.values,[12,13,14],'Later renders must not reapply saved camera over user navigation.');
+console.log('PASS: actual camera restoration waits for controls, restores position/target/zoom/FOV beyond Model bounds, and does not reapply on later renders.');

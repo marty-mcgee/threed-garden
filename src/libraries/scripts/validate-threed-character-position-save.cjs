@@ -63,7 +63,7 @@ const savePosition = (ok) => callback('src/app/dashboard/scene/page.tsx', 'handl
     architectureDrafts: { current: new Map([['5', { history: { present: architectureDocument.newDesign() }, selected: null }]]) },
     acknowledgeArchitecture: (draft, captured) => ({ ...draft, saved: JSON.stringify(captured.document) }),
     renderArchitecture() {}, setArchitectureSaveError() {},
-    ...base, saveRequestRef: {current:0}, selectedMarker:null, isProjectAssetsOpen:false, isModelLibraryOpen:false, projectAssetSearch:'', projectAssetType:'all', selectedProjectId: '5', savingProjectMarkers: false, setSavingProjectMarkers() {}, setLastUpdated() {},
+    ...base, saveRequestRef: {current:0}, groundMapInspector:null,groupInspector:null,sensorInspector:null,defaultDesignWorkspace:()=>({}),selectedMarker:null, isProjectAssetsOpen:false, isModelLibraryOpen:false, projectAssetSearch:'', projectAssetType:'all', selectedProjectId: '5', savingProjectMarkers: false, setSavingProjectMarkers() {}, setLastUpdated() {},
     projectMarkerSnapshotProviderRef: { current: snapshot }, projectThreeDViewStateProviderRef: {}, projectMapViewStateProviderRef: {},
     lastProjectThreeDViewStateRef: {}, lastProjectMapViewStateRef: {}, initialProjectViewState: null,
     PROJECT_VIEW_STATE_VERSION: 1, viewMode: '3d', panelHeight: 500, cameraMode: 'stationary',

@@ -99,10 +99,11 @@ import {
 } from '@/libraries/services/threed/orchestration/action-target-core';
 import { applyThreeDProjectClientTransaction } from '@/libraries/services/threed/markers/project-marker-client-state-core';
 import { THREED_MODEL_PLACEMENT_EVENT, type ThreeDModelPlacement } from '@/libraries/services/threed/models/project-model-instance-core';
-import { SensorGroupsWorkspace } from '@/components/threed/physics/SensorGroupsWorkspace';
+import { ProjectDetailsSections } from '@/components/map/details/PersistentDetails';
+import { SensorGroupsWorkspace, useSensorGroups } from '@/components/threed/physics/SensorGroupsWorkspace';
 import { SceneTransformWorkspace, useSceneTransform } from '@/components/threed/transform/SceneTransformWorkspace';
 import { sceneOwnerPose, sceneLocalToWorld, sceneWorldToLocal } from '@/libraries/services/threed/transforms/scene-transform-core';
-import { validatePhysicsSensorCuboids, type PhysicsSensorCuboid } from '@/libraries/services/threed/physics/sensor-cuboid-core';
+import { readPhysicsSensorCuboids, validatePhysicsSensorCuboids, type PhysicsSensorCuboid } from '@/libraries/services/threed/physics/sensor-cuboid-core';
 import type { PhysicsSensorPlacementResult } from '@/components/map/details/PhysicsSensorCuboidsEditor';
 import {
   createProjectCharacterLibraryPlacementRequest,
@@ -115,6 +116,7 @@ import { buildThreeDRuntimeMarkerResult } from '@/libraries/services/threed/mark
 import type { ThreeDGeographicOrigin } from '@/libraries/services/threed/markers/map-coordinate-core';
 import {
   PROJECT_VIEW_STATE_VERSION,
+  defaultDesignWorkspace,
   emptyProjectScenarioPanelState,
   type ProjectScenarioGuideState,
   type ProjectScenarioSelection,
@@ -197,6 +199,7 @@ function UnifiedMapPageInner() {
   const { showToast, ToastComponent } = useToast();
   const transform = useSceneTransform();
   const groundMapInspector = useGroundMapInspector();
+  const sensorGroupsWorkspace = useSensorGroups();
   const searchParams = useSearchParams();
   const projectIdParam = searchParams.get('projectId');
   const projectRuntimeMarkerRegistryRef = useRef<ThreeDRuntimeMarkerRegistry | null>(null);
@@ -519,7 +522,7 @@ function UnifiedMapPageInner() {
   
   // All four views share the same active Project and retained Scene owners.
   const [viewMode, setViewMode] = useState<MapViewMode>(searchParams.get('view') === 'design' ? 'design' : '3d');
-  const [designActionsHost, setDesignActionsHost] = useState<HTMLDivElement | null>(null);
+
   const [designHistoryHost, setDesignHistoryHost] = useState<HTMLDivElement | null>(null);
   const [designAssetsHost, setDesignAssetsHost] = useState<HTMLDivElement | null>(null);
   const [designActionsBusy, setDesignActionsBusy] = useState(false);
@@ -535,6 +538,7 @@ function UnifiedMapPageInner() {
   const architectureKey = selectedProjectId ?? '';
   if (!architectureDrafts.current.has(architectureKey)) architectureDrafts.current.set(architectureKey, projectArchitectureDraft());
   const architectureDraft = architectureDrafts.current.get(architectureKey)!;
+  const designWorkspace = architectureDraft.workspace ?? defaultDesignWorkspace();
   const changeArchitecture = useCallback((update: (draft: ProjectArchitectureDraft) => ProjectArchitectureDraft) => {
     if (!canEditProject || !selectedProjectId || loading) return;
     const current = architectureDrafts.current.get(selectedProjectId)!;
@@ -543,7 +547,7 @@ function UnifiedMapPageInner() {
   const selectArchitecture = useCallback((selected: string | null) => {
     if (!selectedProjectId) return;
     const current = architectureDrafts.current.get(selectedProjectId)!;
-    architectureDrafts.current.set(selectedProjectId, { ...current, selected }); renderArchitecture(value => value + 1);
+    architectureDrafts.current.set(selectedProjectId, { ...current, selected, workspace: { ...(current.workspace ?? defaultDesignWorkspace()), selectedEntityId: selected } }); renderArchitecture(value => value + 1);
   }, [selectedProjectId]);
   const showArchitecture = useCallback((levelId: string | undefined, showRoofs: boolean) => setArchitectureVisibility(current => current.levelId === levelId && current.showRoofs === showRoofs ? current : { levelId, showRoofs }), []);
   useEffect(() => { setArchitecturePreview(null); setArchitectureSaveError(''); projectSaveBusy.current = false; }, [selectedProjectId]);
@@ -997,12 +1001,14 @@ function UnifiedMapPageInner() {
         version: PROJECT_VIEW_STATE_VERSION,
         savedAt: new Date().toISOString(),
         viewMode,
+        design: architectureDrafts.current.get(selectedProjectId)!.workspace ?? defaultDesignWorkspace(),
         panelHeight,
         cameraMode: cameraMode as ThreeDProjectViewState['cameraMode'],
         ...(currentThreeDView ? { threeD: currentThreeDView } : {}),
         ...(currentMapView ? { map: currentMapView } : {}),
         workspace: {
           selectedMarkerId: selectedMarker?.id ?? null,
+          inspector: groundMapInspector?.open ? { kind: 'ground', id: null } : groupInspector ? { kind: 'group', id: groupInspector } : sensorInspector && sensorInspector.sensorId !== '__new__' ? { kind: 'sensor', id: sensorInspector.sensorId } : { kind: 'asset', id: selectedMarker?.id ?? null },
           // Persist the open workspace independently of transient toolbar dropdowns.
           panel: isProjectAssetsOpen ? 'assets' : isModelLibraryOpen ? 'models' : 'none',
           assetSearch: projectAssetSearch,
@@ -1036,7 +1042,7 @@ function UnifiedMapPageInner() {
         markers: {upsert: result.data.markers as ProjectThreeDMarkerRecord[]},
       }));
       const current = architectureDrafts.current.get(selectedProjectId)!;
-      architectureDrafts.current.set(selectedProjectId, acknowledgeArchitecture(current, result.data.architecture)); renderArchitecture(value => value + 1);
+      architectureDrafts.current.set(selectedProjectId, acknowledgeArchitecture(current, result.data.architecture, viewState.design)); renderArchitecture(value => value + 1);
       setLastUpdated(new Date());
       showToastRef.current(
         `ThreeD Project saved (${result.data.markerCount} markers)`,
@@ -1055,7 +1061,7 @@ function UnifiedMapPageInner() {
     } finally {
       if (saveRequestRef.current === requestId) { projectSaveBusy.current = false; setSavingProjectMarkers(false); }
     }
-  }, [canEditProject, loading, cameraMode, initialProjectViewState, panelHeight, savingProjectMarkers, selectedProjectId, viewMode, selectedMarker, isProjectAssetsOpen, isModelLibraryOpen, projectAssetSearch, projectAssetType, scenarioPanelState, isScenariosOpen, isProjectSetupOpen, overlayPositions]);
+  }, [canEditProject, loading, cameraMode, initialProjectViewState, panelHeight, savingProjectMarkers, selectedProjectId, viewMode, selectedMarker, sensorInspector, groupInspector, groundMapInspector?.open, isProjectAssetsOpen, isModelLibraryOpen, projectAssetSearch, projectAssetType, scenarioPanelState, isScenariosOpen, isProjectSetupOpen, overlayPositions]);
 
   // Phase 5A compatibility bridge: establish the orchestration request
   // lifecycle while preserving immediate animation until proximity is gated.
@@ -1436,7 +1442,7 @@ function UnifiedMapPageInner() {
         const { session } = outcome;
         setProjectAccess({ projectId: String(selectedProjectId), canEdit: session.canEdit });
         const cachedArchitecture = architectureDrafts.current.get(String(selectedProjectId));
-        architectureDrafts.current.set(String(selectedProjectId), hydrateArchitectureDraft(cachedArchitecture, session.architecture));
+        architectureDrafts.current.set(String(selectedProjectId), hydrateArchitectureDraft(cachedArchitecture, session.architecture, session.savedViewState?.design));
         setMetersPerSceneUnit(session.metersPerSceneUnit); renderArchitecture(value => value + 1);
         setInitialProjectViewState(session.savedViewState);
         setOverlayPositions(session.savedViewState?.overlayPositions ?? {});
@@ -2521,12 +2527,18 @@ function UnifiedMapPageInner() {
   );
   const restoredWorkspaceRef = useRef<ThreeDProjectViewState | null>(null);
   useEffect(() => {
-    if (!canEditProject || (viewMode !== '2d' && !isThreeDPresentationComplete) || !initialProjectViewState || restoredWorkspaceRef.current === initialProjectViewState) return;
+    if (loading || (sensorGroupsWorkspace?.loading && !sensorGroupsWorkspace.error) || !canEditProject || (viewMode !== '2d' && !isThreeDPresentationComplete) || !initialProjectViewState || restoredWorkspaceRef.current === initialProjectViewState) return;
     restoredWorkspaceRef.current = initialProjectViewState;
     const workspace = initialProjectViewState.workspace;
     setSelectedMarker(workspace?.selectedMarkerId
       ? projectRuntimeMarkers.find(marker => marker.id === workspace.selectedMarkerId) ?? null
       : null);
+    const inspector = workspace?.inspector;
+    const owner = projectRuntimeMarkers.find(marker => marker.id === workspace?.selectedMarkerId);
+    setSensorInspector(inspector?.kind === 'sensor' && owner && readPhysicsSensorCuboids(owner.metadata).some(sensor => sensor.id === inspector.id)
+      ? { ownerId: owner.id, sensorId: inspector.id! } : null);
+    setGroupInspector(inspector?.kind === 'group' && sensorGroupsWorkspace?.groups.some(group => group.id === inspector.id) ? inspector.id : null);
+    groundMapInspector?.setOpen(inspector?.kind === 'ground' && viewMode !== '2d');
     setIsProjectSummaryOpen(workspace?.panel === 'summary');
     setIsProjectAssetsOpen(workspace?.panel === 'assets');
     if (workspace?.panel === 'models') void openModelLibrary();
@@ -2535,7 +2547,7 @@ function UnifiedMapPageInner() {
       ? workspace.assetType : 'all');
     setIsScenariosOpen(initialProjectViewState.scenario?.panelOpen ?? false);
     if (initialProjectViewState.projectTourOpen !== undefined) setIsProjectSetupOpen(initialProjectViewState.projectTourOpen);
-  }, [canEditProject, initialProjectViewState, isThreeDPresentationComplete, openModelLibrary, projectRuntimeMarkers, viewMode]);
+  }, [loading, sensorGroupsWorkspace?.error, sensorGroupsWorkspace?.loading, sensorGroupsWorkspace?.groups, groundMapInspector?.setOpen, canEditProject, initialProjectViewState, isThreeDPresentationComplete, openModelLibrary, projectRuntimeMarkers, viewMode]);
   useEffect(() => {
     if (!canEditProject || !selectedProjectId || !isThreeDPresentationComplete) {
       setIsProjectSetupOpen(false);
@@ -2691,6 +2703,7 @@ function UnifiedMapPageInner() {
   const scenarioOverlaysObscured = isScenariosOpen || isProjectSetupOpen || isSetupMenuOpen || isSceneAddMenuOpen || isProjectSummaryOpen;
 
   return (
+    <ProjectDetailsSections.Provider value={canEditProject ? { sections: designWorkspace.sections, change: (key, open) => changeArchitecture(draft => { const workspace = draft.workspace ?? defaultDesignWorkspace(); return { ...draft, workspace: { ...workspace, sections: { ...workspace.sections, [key]: open } } }; }) } : null}>
     <ProjectOverlayLayoutContext.Provider value={{ positions: overlayPositions, move: (id, position) => setOverlayPositions(current => ({ ...current, [id]: position })) }}>
     <div className="relative h-[calc(100dvh-48px)] min-h-0 bg-[var(--threed-surface-color)]" data-testid="project-scene-workspace">
       {ToastComponent}
@@ -2770,7 +2783,6 @@ function UnifiedMapPageInner() {
           )}
         />
         
-        <div ref={setDesignActionsHost} hidden={viewMode !== 'design' || !selectedProjectId} data-testid="project-design-actions" className="flex min-w-0 max-w-full flex-1 flex-wrap items-center justify-center gap-1 [&_button]:h-7 [&_button]:w-7" />
         <ProjectSceneToolbar
           designHistoryHostRef={setDesignHistoryHost}
           saveDisabled={loading || !canEditProject || (viewMode === 'design' && designActionsBusy)}
@@ -3094,8 +3106,8 @@ function UnifiedMapPageInner() {
         }}
       />
       {/* ✅ Map Container */}
-      {architectureIsDirty(architectureDraft) && <span className="absolute bottom-0 left-2 z-[70] text-xs text-amber-300" role="status">Unsaved Project architecture</span>}
-      <DesignWorkspace assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor key={selectedProjectId} active={viewMode === 'design'} toolbarHost={designActionsHost} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
+      {architectureIsDirty(architectureDraft) && <span className="absolute bottom-0 left-2 z-[70] text-xs text-amber-300" role="status">Unsaved Project architecture or workspace</span>}
+      <DesignWorkspace split={designWorkspace.split} onSplitChange={split => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), split } }))} assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor key={selectedProjectId} active={viewMode === 'design'} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
       <Card data-project-canvas className="h-full gap-0 rounded-none border-0 py-0 shadow-none">
         <CardContent className="h-full p-0 overflow-hidden">
           <div className="h-full">
@@ -3322,5 +3334,6 @@ function UnifiedMapPageInner() {
       
     </div>
     </ProjectOverlayLayoutContext.Provider>
+    </ProjectDetailsSections.Provider>
   );
 }

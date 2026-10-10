@@ -1,3 +1,5 @@
+Prepared checkpoint: v0.24.0-centaur - ThreeD Designs: Workspace tools and state. Package version 0.24.0-centaur; production remains v0.24.0-beta. See docs/releases/v0.24.0-centaur.md. Authenticated Save/reopen remains unverified.
+
 # ThreeD Garden documentation
 
 Current production: v0.24.0-beta — ThreeD Designs: Dashboard workspace, Developer-confirmed October 10, 2026. Package/root lockfile remain 0.24.0-beta. Revised layout accepted; authenticated architecture Save/reload and post-deployment verification remain unverified. Exact deployed SHA remains unconfirmed.

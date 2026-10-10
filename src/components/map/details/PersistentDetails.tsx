@@ -3,10 +3,20 @@
 import { createContext, useContext, useEffect, useRef, useState, type ComponentProps } from 'react';
 
 export const DetailsSectionScope = createContext<string | null>(null);
+/** When mounted in a Project, sections belong to its saved workspace, not browser storage. */
+export const ProjectDetailsSections = createContext<{ sections: Record<string, boolean>; change: (key: string, open: boolean) => void } | null>(null);
 
 export function PersistentDetails({ storageId, ...props }: ComponentProps<'details'> & { storageId: string }) {
   const scope = useContext(DetailsSectionScope);
+  const project = useContext(ProjectDetailsSections);
   const storageKey = scope ? `threed:details:v1:${scope}:${storageId}` : null;
+  if (project && storageKey) {
+    const open = project.sections[storageKey] ?? props.open ?? false;
+    return <details {...props} open={open} onToggle={event => {
+      if (event.currentTarget.open !== open) project.change(storageKey, event.currentTarget.open);
+      props.onToggle?.(event);
+    }} />;
+  }
   return <StoredDetails key={storageKey ?? storageId} {...props} storageKey={storageKey} />;
 }
 

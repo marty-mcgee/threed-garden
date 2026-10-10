@@ -1,3 +1,7 @@
+// @ts-expect-error Native validation requires the TypeScript extension.
+import { defaultDesignWorkspace, parseDesignWorkspace, type ProjectDesignWorkspaceState } from '../design/workspace-state.ts';
+export { defaultDesignWorkspace, parseDesignWorkspace };
+export type { ProjectDesignWorkspaceState };
 // @ts-expect-error Node's native TypeScript runner requires the explicit extension.
 import { parseProjectSensorSnapshot, type ProjectSensorSnapshot } from '../physics/sensor-snapshot-core.ts';
 import {
@@ -53,6 +57,8 @@ export interface ProjectScenarioRuntimeState {
 }
 
 export interface ProjectThreeDViewState {
+  cameraZoom?: number;
+  cameraFov?: number;
   cameraPosition: ProjectVector3;
   cameraTarget: ProjectVector3;
   activeLayers: string[];
@@ -82,6 +88,7 @@ export interface ProjectMapViewState {
 }
 
 export interface ThreeDProjectViewState {
+  design?: ProjectDesignWorkspaceState;
   projectTourOpen?: boolean;
   overlayPositions?: ProjectOverlayPositions;
   version: typeof PROJECT_VIEW_STATE_VERSION;
@@ -97,6 +104,7 @@ export interface ThreeDProjectViewState {
     panel: 'none' | 'summary' | 'assets' | 'models';
     assetSearch: string;
     assetType: string;
+    inspector?: { kind: 'asset' | 'sensor' | 'group' | 'ground'; id: string | null };
   };
 }
 
@@ -272,6 +280,7 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
   };
 
   if (input.projectTourOpen !== undefined) result.projectTourOpen = boolean(input.projectTourOpen);
+  if (input.design !== undefined) { try { result.design = parseDesignWorkspace(input.design); } catch { throw new ProjectViewStateError(); } }
   if (input.overlayPositions !== undefined) {
     const positions = record(input.overlayPositions);
     if (!positions || Object.keys(positions).some(key => !['simulations', 'scenarios', 'tour', 'sensorGroup', 'sensors'].includes(key))) throw new ProjectViewStateError();
@@ -298,6 +307,11 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
       assetSearch: text(workspace.assetSearch, 200),
       assetType: text(workspace.assetType, 80),
     };
+    if (workspace.inspector !== undefined) {
+      const inspector = record(workspace.inspector);
+      if (!inspector || !['asset', 'sensor', 'group', 'ground'].includes(String(inspector.kind))) throw new ProjectViewStateError();
+      result.workspace.inspector = { kind: inspector.kind as 'asset' | 'sensor' | 'group' | 'ground', id: inspector.id === null ? null : text(inspector.id, 200) };
+    }
   }
 
   if (input.threeD !== undefined) {
@@ -311,6 +325,8 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
       throw new ProjectViewStateError();
     }
     result.threeD = {
+      ...(threeD.cameraZoom !== undefined ? { cameraZoom: finite(threeD.cameraZoom, .001, 1000) } : {}),
+      ...(threeD.cameraFov !== undefined ? { cameraFov: finite(threeD.cameraFov, 1, 179) } : {}),
       cameraPosition: vector(threeD.cameraPosition),
       cameraTarget: vector(threeD.cameraTarget),
       activeLayers,

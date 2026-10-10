@@ -361,26 +361,11 @@ function calculateBounds(positions: { x: number; z: number }[]) {
   };
 }
 
-function isSavedCameraCompatibleWithScene(
-  view: ProjectThreeDViewState,
-  bounds: ReturnType<typeof calculateBounds>,
-  maximumUsefulDistance: number,
-): boolean {
-  const camera = view.cameraPosition;
-  const target = view.cameraTarget;
-  const targetInsideCurrentScene = target.x >= bounds.minX
-    && target.x <= bounds.maxX
-    && target.z >= bounds.minZ
-    && target.z <= bounds.maxZ;
-  const distance = Math.hypot(
-    camera.x - target.x,
-    camera.y - target.y,
-    camera.z - target.z,
-  );
-  return targetInsideCurrentScene
-    && camera.y > -0.5
-    && distance >= 1
-    && distance <= maximumUsefulDistance;
+// Architecture can extend beyond Model bounds. Restore any finite, non-degenerate saved orbit.
+function isSavedCameraCompatibleWithScene(view: ProjectThreeDViewState): boolean {
+  const camera = view.cameraPosition, target = view.cameraTarget;
+  return [...Object.values(camera), ...Object.values(target)].every(Number.isFinite)
+    && Math.hypot(camera.x-target.x, camera.y-target.y, camera.z-target.z) > .001;
 }
 
 // ✅ Detects when OrbitControls ref is ready
@@ -3218,6 +3203,8 @@ export function ThreeDScene({
     onViewStateProviderChange(() => {
       const controls = controlsRef.current;
       return {
+        cameraZoom: Number(controls?.object?.zoom ?? 1),
+        cameraFov: Number(controls?.object?.fov ?? 50),
         cameraPosition: {
           x: Number(controls?.object?.position?.x ?? 0),
           y: Number(controls?.object?.position?.y ?? 0),
@@ -3268,11 +3255,7 @@ export function ThreeDScene({
     const key = JSON.stringify([projectId, initialViewState]);
     if (restoredProjectViewKeyRef.current === key) return;
     restoredProjectViewKeyRef.current = key;
-    if (isSavedCameraCompatibleWithScene(
-      initialViewState,
-      bounds,
-      maxOrbitDistance,
-    )) {
+    if (isSavedCameraCompatibleWithScene(initialViewState)) {
       controlsRef.current.object.position.set(
         initialViewState.cameraPosition.x,
         initialViewState.cameraPosition.y,
@@ -3283,6 +3266,9 @@ export function ThreeDScene({
         initialViewState.cameraTarget.y,
         initialViewState.cameraTarget.z,
       );
+      if (initialViewState.cameraZoom !== undefined) controlsRef.current.object.zoom = initialViewState.cameraZoom;
+      if (initialViewState.cameraFov !== undefined && controlsRef.current.object.isPerspectiveCamera) controlsRef.current.object.fov = initialViewState.cameraFov;
+      controlsRef.current.object.updateProjectionMatrix();
       controlsRef.current.update();
     } else {
       zoomToPosition(centerX, centerZ);
