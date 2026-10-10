@@ -1,5 +1,9 @@
 # ThreeD Garden project context
 
+Current production: **[v0.24.1 — ThreeD Scene: UI/UX Improvements: App Layout + Page Headers](docs/releases/v0.24.1.md)**. Developer confirmed production release October 10, 2026. Package and both root lockfile version fields remain 0.24.1; dependencies and schema are unchanged. Prior local CI/build/browser checks are pre-release evidence, not post-deployment verification. Exact deployed SHA and independent post-deployment checks remain unconfirmed. v0.24.0 authenticated Save/Reload remains Developer-accepted 100%. This documentation update performs no Git write, deployment or live-system operation; leave changes unstaged.
+
+The preparation-only statements below are historical and superseded by this release confirmation. Builder-specific acceptance and broader mobile/touch coverage remain separately documented.
+
 ## v0.24.1 Interface Polish checkpoint
 
 Prepared locally on main: Dashboard/Admin beside App title; Admin Workspace Administration label removed; Dashboard footer credits right-aligned; DetailsCard left-position animation removed. Runtime changes are limited to AppHeader.tsx, WorkspaceSurfaceNav.tsx, Dashboard layout.tsx and globals.css. Package and two root lockfile version fields agree at 0.24.1; dependencies/schema and Project Save/load are unchanged.
