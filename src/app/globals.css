@@ -317,7 +317,8 @@
 
 .threed-workspace-panel.threed-details-surface {
   --threed-details-background: color-mix(in srgb, var(--threed-surface-color) calc(var(--threed-panel-idle-opacity, 0.8) * 100%), transparent);
-  transition: background-color 150ms ease, left 150ms ease;
+  /* Restored/measured positions and dragging must apply immediately. */
+  transition: background-color 150ms ease;
   text-shadow: var(--threed-surface-text-shadow);
 }
 .threed-details-surface:hover,

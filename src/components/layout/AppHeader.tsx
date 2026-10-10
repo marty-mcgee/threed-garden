@@ -1,10 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
-import { Carrot, Moon, Radio, Settings, Sun } from 'lucide-react';
+import { Carrot, Moon, Sun } from 'lucide-react';
 import { SignOutButton } from '@/components/auth/SignOutButton';
 import NavDropdown from '@/components/navigation/NavDropdown';
 import { useTheme } from '@/components/themes/provider';
@@ -18,9 +17,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/libraries/utils';
+import { WorkspaceSurfaceNav } from './WorkspaceSurfaceNav';
 
 export function AppHeader({ surface }: { surface: 'dashboard' | 'admin' }) {
-  const pathname = usePathname();
   const { data: session, status } = useSession();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -57,9 +56,9 @@ export function AppHeader({ surface }: { surface: 'dashboard' | 'admin' }) {
 
   return (
     <header className="threed-app-header sticky top-0 z-40 h-12 border-b border-foreground/10">
-      <div className="grid h-full grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 px-2 sm:px-3">
-        <div className="min-w-0">
-          {surface === 'dashboard' ? (
+      <div className="grid h-full grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-2 sm:px-3">
+        <div className="flex min-w-0 items-center gap-2">
+          {surface === 'dashboard' && (
             <Link href="/dashboard" className="flex w-fit min-w-0 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-green-600 shadow-sm">
                 <Carrot className="size-4 text-white" />
@@ -68,35 +67,9 @@ export function AppHeader({ surface }: { surface: 'dashboard' | 'admin' }) {
                 <span className="block truncate text-sm font-semibold leading-4 text-foreground">ThreeD Garden</span>
               </span>
             </Link>
-          ) : (
-            <span className="hidden truncate text-xs font-medium text-muted-foreground sm:block">Workspace Administration</span>
           )}
+          <WorkspaceSurfaceNav />
         </div>
-
-        <nav aria-label="Workspace surfaces" className="flex items-center gap-0.5 rounded-md border border-foreground/10 bg-muted/50 p-0.5">
-          <Button
-            variant="ghost"
-            size="xs"
-            className={cn('h-7 px-2 text-xs text-muted-foreground hover:bg-foreground/10 hover:text-foreground', pathname?.startsWith('/dashboard') && 'bg-foreground/10 text-foreground')}
-            asChild
-          >
-            <Link href="/dashboard" aria-current={pathname?.startsWith('/dashboard') ? 'page' : undefined}>
-              <Radio className="size-3.5" />
-              <span className="hidden min-[420px]:inline">Dashboard</span>
-            </Link>
-          </Button>
-          <Button
-            variant="ghost"
-            size="xs"
-            className={cn('h-7 px-2 text-xs text-muted-foreground hover:bg-foreground/10 hover:text-foreground', pathname?.startsWith('/admin') && 'bg-foreground/10 text-foreground')}
-            asChild
-          >
-            <Link href="/admin" aria-current={pathname?.startsWith('/admin') ? 'page' : undefined}>
-              <Settings className="size-3.5" />
-              <span className="hidden min-[420px]:inline">Admin</span>
-            </Link>
-          </Button>
-        </nav>
 
         {/* Optical spacing: the 24px avatar needs 4px more separation than the 16px icons. */}
         <div className="flex items-center justify-self-end gap-0">
