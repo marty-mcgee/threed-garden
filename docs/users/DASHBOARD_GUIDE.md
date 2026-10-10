@@ -24,7 +24,7 @@ For character movement and world-action testing, see [ThreeD controls](THREED_CO
 
 ## ThreeD Design beta
 
-In the prepared [v0.24.0-beta checkpoint](../releases/v0.24.0-beta.md), open an existing Project at `/dashboard/scene` and choose **Design** in the Project toolbar. This edits architectural content in that Project's Scene; switching between 3D, 2D, Combined and Design retains the same Project.
+In the released [v0.24.0-beta checkpoint](../releases/v0.24.0-beta.md), open an existing Project at `/dashboard/scene` and choose **Design** in the Project toolbar. This edits architectural content in that Project's Scene; switching between 3D, 2D, Combined and Design retains the same Project.
 
 The accepted layout has Project Assets above Design Properties on the left and the 3D Scene above the 2D Plan on the right. Open Assets using its existing toolbar control. Drag the horizontal divider to resize the rows; Properties scrolls internally. Drawing/Fit/Frame/Reset icons occupy the toolbar middle; Undo/Redo/import/export sit beside the existing Project Save on the right. Hover or focus an icon for its Tooltip. No additional Plan header or separate Design Save is needed.
 

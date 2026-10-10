@@ -1,8 +1,8 @@
 # Documentation Hub
 
-Prepared checkpoint: **[v0.24.0-beta — ThreeD Designs: Dashboard workspace](releases/v0.24.0-beta.md)**. Package/root lockfile are `0.24.0-beta`; the Developer accepted the revised Dashboard Design layout October 10, 2026. Beta publication/deployment and authenticated architecture Save/reload are not confirmed.
+Current production: **[v0.24.0-beta — ThreeD Designs: Dashboard workspace](releases/v0.24.0-beta.md)**, Developer-confirmed October 10, 2026. Package/root lockfile remain `0.24.0-beta`. Layout acceptance and prior local checks are separate from still-unverified authenticated architecture Save/reload and post-deployment testing. Exact deployed SHA remains unconfirmed.
 
-Current production: **[v0.24.0-alpha — ThreeD Designs: Project Scene integration](releases/v0.24.0-alpha-project-design.md)**, Developer-confirmed October 9, 2026. Detailed authenticated App and post-deployment verification remain separate.
+Previous production: **[v0.24.0-alpha — ThreeD Designs: Project Scene integration](releases/v0.24.0-alpha-project-design.md)**, Developer-confirmed October 9, 2026. Detailed authenticated App and post-deployment verification remain separate.
 
 **[ThreeD Designs](developers/THREED_DESIGNS.md)** edits the same active Project/Scene through shared drawing tools, linked 2D/3D geometry and the existing Project Save pipeline. The beta's accepted layout has Assets above Properties at the shared left-panel width, Scene above Plan/X/Z rulers on the right, a resizable row divider and one top Project toolbar with icon actions/tooltips. [User instructions](users/DASHBOARD_GUIDE.md#threed-design-beta) · [layout evidence](plans/v0.24.0-alpha-design-mockup-layout.md) · [storage and pipeline](developers/THREED_DESIGNS.md#exact-persistence-mapping). Mocked Save/load passed; authenticated restoration remains unverified. No separate table/migration is required; independent persistence guidance is superseded.
 

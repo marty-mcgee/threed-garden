@@ -2,11 +2,11 @@
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
-Prepared beta: **[v0.24.0-beta — ThreeD Designs: Dashboard workspace](v0.24.0-beta.md)**. Layout accepted by the Developer October 10, 2026; authenticated architecture Save/reload remains unverified. No beta publication/deployment is inferred.
+Latest Developer-confirmed production: **[v0.24.0-beta — ThreeD Designs: Dashboard workspace](v0.24.0-beta.md)**, October 10, 2026. Layout accepted; authenticated architecture Save/reload, post-deployment checks and exact deployed SHA remain unconfirmed.
 
-Latest Developer-confirmed production: **[v0.24.0-alpha — ThreeD Designs: Project Scene integration](v0.24.0-alpha-project-design.md)**, October 9, 2026. Earlier release records retain their own validation limits.
+Previous production: **[v0.24.0-alpha — ThreeD Designs: Project Scene integration](v0.24.0-alpha-project-design.md)**, October 9, 2026. Earlier release records retain their own validation limits.
 
-- [v0.24.0-beta — ThreeD Designs: Dashboard workspace](v0.24.0-beta.md) — prepared prerelease checkpoint, unpublished
+- [v0.24.0-beta — ThreeD Designs: Dashboard workspace](v0.24.0-beta.md) — production Developer-confirmed; beta checkpoint
 - [v0.24.0-alpha — ThreeD Designs: Project Scene integration](v0.24.0-alpha-project-design.md) — production Developer-confirmed
 - [v0.24.0-alpha — 3D Object Builder + Home Design Tools](v0.24.0-alpha.md) — earlier production checkpoint
 - [v0.23.2 — ThreeD Garden: Animation mappings and Simulation workflow](v0.23.2.md) — production Developer-confirmed

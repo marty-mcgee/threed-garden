@@ -1,6 +1,6 @@
 # ThreeD Designs: editing the active Project Scene
 
-Current prepared checkpoint: [v0.24.0-beta](../releases/v0.24.0-beta.md), October 10, 2026. The Developer accepted the revised Dashboard layout. Source implementation and mocked/native verification are documented below; real authenticated architecture Save/reload remains unverified, including resolution of the reported disappearing-content issue. Beta publication/deployment is not confirmed. Earlier alpha statements describe the released predecessor.
+Current production checkpoint: [v0.24.0-beta](../releases/v0.24.0-beta.md), Developer-confirmed October 10, 2026. The revised Dashboard layout is accepted. Source implementation and prior mocked/native verification are documented below; authenticated architecture Save/reload, resolution of the reported disappearing-content issue and post-deployment verification remain unconfirmed. Exact deployed SHA is unconfirmed. Earlier alpha statements describe the released predecessor.
 
 Designs is an editing interface for the current Project. The four View Modes 3d, 2d, combined and design share Project identity, architectural parameters, Model instances and Project Save. This integration was released to production as v0.24.0-alpha — ThreeD Designs: Project Scene integration, Developer-confirmed October 9, 2026. Detailed authenticated App and post-deployment acceptance remain pending; exact deployed SHA is unconfirmed.
 

@@ -1,6 +1,6 @@
 # ThreeD Garden documentation
 
-Prepared local checkpoint: v0.24.0-beta — ThreeD Designs: Dashboard workspace. Developer accepted the revised layout October 10, 2026; authenticated architecture Save/reload remains unverified. Beta is not confirmed published/deployed. Latest confirmed production remains v0.24.0-alpha.
+Current production: v0.24.0-beta — ThreeD Designs: Dashboard workspace, Developer-confirmed October 10, 2026. Package/root lockfile remain 0.24.0-beta. Revised layout accepted; authenticated architecture Save/reload and post-deployment verification remain unverified. Exact deployed SHA remains unconfirmed.
 
 Canonical documentation for humans and automated readers:
 

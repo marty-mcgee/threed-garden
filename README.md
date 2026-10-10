@@ -1,8 +1,8 @@
 # ThreeD Garden
 
-Prepared checkpoint: **[v0.24.0-beta — ThreeD Designs: Dashboard workspace](docs/releases/v0.24.0-beta.md)**. Package/root lockfile are `0.24.0-beta`. The Developer accepted the revised Design layout October 10, 2026; authenticated architecture Save/reload remains unverified. This beta has not been published or deployed by the agent.
+Current production: **[v0.24.0-beta — ThreeD Designs: Dashboard workspace](docs/releases/v0.24.0-beta.md)**, Developer-confirmed October 10, 2026. Package/root lockfile remain `0.24.0-beta`. The revised Design layout is accepted; authenticated architecture Save/reload and post-deployment verification remain unverified. Exact deployed SHA is unconfirmed.
 
-Current production: **[v0.24.0-alpha — ThreeD Designs: Project Scene integration](docs/releases/v0.24.0-alpha-project-design.md)**, Developer-confirmed October 9, 2026. Detailed authenticated App and post-deployment verification remain separate.
+Previous production: **[v0.24.0-alpha — ThreeD Designs: Project Scene integration](docs/releases/v0.24.0-alpha-project-design.md)**, Developer-confirmed October 9, 2026. Detailed authenticated App and post-deployment verification remain separate.
 
 ### 🌱 Build your garden. Explore your world. Bring your models to life.
 

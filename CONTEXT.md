@@ -1,6 +1,10 @@
 # ThreeD Garden project context
 
-## Prepared checkpoint — v0.24.0-beta
+## Current production — v0.24.0-beta
+
+Developer confirmed **[v0.24.0-beta — ThreeD Designs: Dashboard workspace](docs/releases/v0.24.0-beta.md)** released to production October 10, 2026. Package/root lockfile remain 0.24.0-beta. Preserve the accepted layout, same-Project architecture and shared Save/load. This release confirmation does not establish authenticated architecture Save/reload, resolution of the disappearing-content report, post-deployment checks or exact deployed SHA; these remain unconfirmed. Prior automated results below are pre-release local evidence. This documentation-only update leaves changes unstaged and performs no Git write, live database operation or deployment.
+
+## Historical beta preparation — October 10, 2026
 
 Beta preparation validation, October 10: TypeScript, seven focused validation tasks and all 71 maintained offline CI tasks passed again. Agent-owned guarded npm build passed compilation/TypeScript and generated 143 pages with local cached fonts, unreachable localhost database configuration and remote connections blocked; the dev server was stopped and restored. Version/package/lockfile consistency, unchanged dependency tree, primary documentation/release links, package-driven footer and final diff whitespace checks passed. Native Edge evidence is from the preceding implementation step, not rerun for these metadata/documentation changes. Exact commands and limits are in the beta release entry below; real authenticated Save/reload remains unverified.
 
