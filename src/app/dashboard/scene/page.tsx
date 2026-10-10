@@ -7,8 +7,10 @@ import { SensorGroupInspector } from '@/components/map/details/SensorGroupInspec
 
 import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { DesignWorkspace } from '@/components/threed/design/DesignWorkspace';
+import { ScenePanelDivider } from '@/components/map/panels/ScenePanelDivider';
 import { DesignEditor } from '@/components/threed/design/DesignEditor';
-import { acknowledgeArchitecture, architectureIsDirty, projectArchitectureDraft, type ProjectArchitectureDraft } from '@/libraries/services/threed/design/project-architecture';
+import { acknowledgeArchitecture, architectureIsDirty, hydrateArchitectureDraft, parseProjectArchitecture, projectArchitectureDraft, type ProjectArchitectureDraft } from '@/libraries/services/threed/design/project-architecture';
 import type { DesignDocument } from '@/libraries/services/threed/design/document';
 import { 
   MapPin, 
@@ -515,8 +517,14 @@ function UnifiedMapPageInner() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const { dataAge, isStale } = useDataFreshness(lastUpdated);
   
-  // ✅ Default view ['3d','2d','combined']
+  // All four views share the same active Project and retained Scene owners.
   const [viewMode, setViewMode] = useState<MapViewMode>(searchParams.get('view') === 'design' ? 'design' : '3d');
+  const [designActionsHost, setDesignActionsHost] = useState<HTMLDivElement | null>(null);
+  const [designHistoryHost, setDesignHistoryHost] = useState<HTMLDivElement | null>(null);
+  const [designAssetsHost, setDesignAssetsHost] = useState<HTMLDivElement | null>(null);
+  const [designActionsBusy, setDesignActionsBusy] = useState(false);
+  // Editable client drafts are keyed by Project. They are hydrated from the API's
+  // projectContext.architecture, backed by project.config JSONB on the server.
   const architectureDrafts = useRef(new Map<string, ProjectArchitectureDraft>());
   const [, renderArchitecture] = useState(0);
   const [architecturePreview, setArchitecturePreview] = useState<DesignDocument | null>(null);
@@ -528,10 +536,10 @@ function UnifiedMapPageInner() {
   if (!architectureDrafts.current.has(architectureKey)) architectureDrafts.current.set(architectureKey, projectArchitectureDraft());
   const architectureDraft = architectureDrafts.current.get(architectureKey)!;
   const changeArchitecture = useCallback((update: (draft: ProjectArchitectureDraft) => ProjectArchitectureDraft) => {
-    if (!canEditProject || !selectedProjectId) return;
+    if (!canEditProject || !selectedProjectId || loading) return;
     const current = architectureDrafts.current.get(selectedProjectId)!;
     architectureDrafts.current.set(selectedProjectId, update(current)); renderArchitecture(value => value + 1);
-  }, [selectedProjectId, canEditProject]);
+  }, [selectedProjectId, canEditProject, loading]);
   const selectArchitecture = useCallback((selected: string | null) => {
     if (!selectedProjectId) return;
     const current = architectureDrafts.current.get(selectedProjectId)!;
@@ -556,7 +564,6 @@ function UnifiedMapPageInner() {
     containerRef,
     panelHeight,
     setPanelHeight,
-    beginResize: handleMouseDown,
   } = useCombinedMapPanelResize();
 
   useEffect(() => {
@@ -961,6 +968,10 @@ function UnifiedMapPageInner() {
 
   const handleSaveThreeDProject = useCallback(async () => {
     if (!selectedProjectId || !canEditProject || savingProjectMarkers || projectSaveBusy.current) return;
+    if (loading) {
+      setArchitectureSaveError('Project data is still loading. Wait for it to finish, then Save Project. If loading failed, reload the Project first.');
+      return;
+    }
     const provider = projectMarkerSnapshotProviderRef.current;
     if (!provider) {
       setArchitectureSaveError('Project Scene data is not ready. Wait for loading to finish, then Save Project.');
@@ -1016,12 +1027,16 @@ function UnifiedMapPageInner() {
       if (!response.ok || !result?.success) {
         throw new Error(result?.error || `Project save failed (${response.status})`);
       }
+      if (result.data?.projectId !== Number(selectedProjectId) || !result.data?.architecture
+        || JSON.stringify(parseProjectArchitecture(result.data.architecture)) !== JSON.stringify(parseProjectArchitecture(architecture))) {
+        throw new Error('Project Save did not confirm the architectural content. Your edits are retained. Retry Save Project; if it repeats, reload the App after checking that its API is up to date.');
+      }
 
       setData(current => applyThreeDProjectClientTransaction(current, {
         markers: {upsert: result.data.markers as ProjectThreeDMarkerRecord[]},
       }));
       const current = architectureDrafts.current.get(selectedProjectId)!;
-      architectureDrafts.current.set(selectedProjectId, acknowledgeArchitecture(current, architecture)); renderArchitecture(value => value + 1);
+      architectureDrafts.current.set(selectedProjectId, acknowledgeArchitecture(current, result.data.architecture)); renderArchitecture(value => value + 1);
       setLastUpdated(new Date());
       showToastRef.current(
         `ThreeD Project saved (${result.data.markerCount} markers)`,
@@ -1040,7 +1055,7 @@ function UnifiedMapPageInner() {
     } finally {
       if (saveRequestRef.current === requestId) { projectSaveBusy.current = false; setSavingProjectMarkers(false); }
     }
-  }, [canEditProject, cameraMode, initialProjectViewState, panelHeight, savingProjectMarkers, selectedProjectId, viewMode, selectedMarker, isProjectAssetsOpen, isModelLibraryOpen, projectAssetSearch, projectAssetType, scenarioPanelState, isScenariosOpen, isProjectSetupOpen, overlayPositions]);
+  }, [canEditProject, loading, cameraMode, initialProjectViewState, panelHeight, savingProjectMarkers, selectedProjectId, viewMode, selectedMarker, isProjectAssetsOpen, isModelLibraryOpen, projectAssetSearch, projectAssetType, scenarioPanelState, isScenariosOpen, isProjectSetupOpen, overlayPositions]);
 
   // Phase 5A compatibility bridge: establish the orchestration request
   // lifecycle while preserving immediate animation until proximity is gated.
@@ -1421,7 +1436,7 @@ function UnifiedMapPageInner() {
         const { session } = outcome;
         setProjectAccess({ projectId: String(selectedProjectId), canEdit: session.canEdit });
         const cachedArchitecture = architectureDrafts.current.get(String(selectedProjectId));
-        if (!cachedArchitecture || !architectureIsDirty(cachedArchitecture)) architectureDrafts.current.set(String(selectedProjectId), projectArchitectureDraft(session.architecture));
+        architectureDrafts.current.set(String(selectedProjectId), hydrateArchitectureDraft(cachedArchitecture, session.architecture));
         setMetersPerSceneUnit(session.metersPerSceneUnit); renderArchitecture(value => value + 1);
         setInitialProjectViewState(session.savedViewState);
         setOverlayPositions(session.savedViewState?.overlayPositions ?? {});
@@ -2677,7 +2692,7 @@ function UnifiedMapPageInner() {
 
   return (
     <ProjectOverlayLayoutContext.Provider value={{ positions: overlayPositions, move: (id, position) => setOverlayPositions(current => ({ ...current, [id]: position })) }}>
-    <div className="relative h-[calc(100dvh-48px)] min-h-0" data-testid="project-scene-workspace">
+    <div className="relative h-[calc(100dvh-48px)] min-h-0 bg-[var(--threed-surface-color)]" data-testid="project-scene-workspace">
       {ToastComponent}
 
       {/* Project Selector Dialog */}
@@ -2755,7 +2770,10 @@ function UnifiedMapPageInner() {
           )}
         />
         
+        <div ref={setDesignActionsHost} hidden={viewMode !== 'design' || !selectedProjectId} data-testid="project-design-actions" className="flex min-w-0 max-w-full flex-1 flex-wrap items-center justify-center gap-1 [&_button]:h-7 [&_button]:w-7" />
         <ProjectSceneToolbar
+          designHistoryHostRef={setDesignHistoryHost}
+          saveDisabled={loading || !canEditProject || (viewMode === 'design' && designActionsBusy)}
           onResetOverlayPositions={() => setOverlayPositions({})}
           selectedProjectId={selectedProjectId}
           viewMode={viewMode}
@@ -2833,13 +2851,11 @@ function UnifiedMapPageInner() {
 
       </div>
 
-      {designVisited && selectedProjectId && <section hidden={viewMode !== 'design'} inert={viewMode !== 'design'} className="absolute left-0 top-[38px] bottom-[50%] w-full z-[60] bg-[#0d1420] p-2 xl:bottom-4 xl:w-1/2" aria-label="Project ThreeD Design">
-        <DesignEditor key={selectedProjectId} active={viewMode === 'design'} canSave={canEditProject} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} />
-      </section>}
-      <div className={viewMode === 'design' ? '[&>*:not([data-project-canvas])]:hidden' : undefined}>
+      <div>
       {/* Project Assets is independent of toolbar menu visibility. */}
       <div>
       <ProjectAssetsPanel
+        dockHost={viewMode === 'design' ? designAssetsHost : null}
         resourceIssues={sceneResourceIssues?.projectId === selectedProjectId ? sceneResourceIssues.issues : []}
         selectedProjectId={selectedProjectId}
         isOpen={canEditProject && isProjectAssetsOpen}
@@ -3079,9 +3095,10 @@ function UnifiedMapPageInner() {
       />
       {/* ✅ Map Container */}
       {architectureIsDirty(architectureDraft) && <span className="absolute bottom-0 left-2 z-[70] text-xs text-amber-300" role="status">Unsaved Project architecture</span>}
-      <Card data-project-canvas className={viewMode === 'design' ? 'absolute inset-x-0 bottom-4 top-1/2 gap-0 rounded-none border-0 py-0 shadow-none xl:left-1/2 xl:top-[38px]' : 'gap-0 rounded-none border-0 py-0 shadow-none'}>
+      <DesignWorkspace assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor key={selectedProjectId} active={viewMode === 'design'} toolbarHost={designActionsHost} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
+      <Card data-project-canvas className="h-full gap-0 rounded-none border-0 py-0 shadow-none">
         <CardContent className="h-full p-0 overflow-hidden">
-          <div style={{ height: viewMode === 'design' ? '100%' : 'calc(100dvh - 48px)' }}>
+          <div className="h-full">
             
             {/* Pass cameraMode to combined view's 3D UnifiedMapView */}
             <div ref={containerRef} className="relative flex h-full w-full flex-col">
@@ -3153,7 +3170,7 @@ function UnifiedMapPageInner() {
                 onRejectedProjectMarkerDelete={handleRejectedProjectMarkerDelete}
                 onRejectedCharacterMarkerRepair={handleRejectedCharacterMarkerRepair}
               /></div>
-              <div hidden={sceneViewMode !== 'combined'} className="h-1.5 shrink-0 cursor-row-resize bg-border/50" onMouseDown={handleMouseDown} />
+              <ScenePanelDivider hidden={sceneViewMode !== 'combined'} containerRef={containerRef} value={panelHeight} onChange={setPanelHeight} axis="vertical" label="Resize 3D and 2D panels" />
               <div hidden={sceneViewMode !== '2d' && sceneViewMode !== 'combined'} className="min-h-0 flex-1">
               <UnifiedMapView architecture={architecturePreview ?? architectureDraft.history.present}
                 metersPerSceneUnit={metersPerSceneUnit}
@@ -3187,6 +3204,7 @@ function UnifiedMapPageInner() {
           </div>
         </CardContent>
       </Card>
+      </DesignWorkspace>
 
       {/* ✅ v0.15.2: Details Card — rendered outside map to avoid Leaflet interference */}
       <div

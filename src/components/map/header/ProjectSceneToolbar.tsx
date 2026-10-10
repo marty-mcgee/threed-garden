@@ -1,6 +1,6 @@
 'use client';
 
-import type { RefObject } from 'react';
+import type { Ref, RefObject } from 'react';
 import {
   Box,
   PencilRuler,
@@ -22,9 +22,12 @@ import {
 import { SceneOperationStatus, type SceneOperationStatusValue } from '@/components/map/panels/SceneOperationStatus';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { MapViewMode } from '@/libraries/types/map';
 
 interface ProjectSceneToolbarProps {
+  designHistoryHostRef?: Ref<HTMLDivElement>;
+  saveDisabled?: boolean;
   selectedProjectId: string | null;
   viewMode: MapViewMode;
   onViewModeChange: (mode: MapViewMode) => void;
@@ -56,6 +59,8 @@ interface ProjectSceneToolbarProps {
 }
 
 export function ProjectSceneToolbar({
+  designHistoryHostRef,
+  saveDisabled = false,
   selectedProjectId,
   viewMode,
   onViewModeChange,
@@ -86,7 +91,7 @@ export function ProjectSceneToolbar({
   onResetOverlayPositions,
 }: ProjectSceneToolbarProps) {
   return (
-    <div className="flex flex-wrap items-center gap-1">
+    <div className="flex min-w-0 max-w-full flex-wrap items-center gap-1">
       <div role="group" aria-label="Scene view mode" className="threed-view-modes flex items-center gap-0 rounded-lg border p-0">
         <Button variant={viewMode === '3d' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" aria-pressed={viewMode === '3d'} onClick={() => onViewModeChange('3d')} title="3D View">
           <Box className="h-3.5 w-3.5" />
@@ -102,7 +107,7 @@ export function ProjectSceneToolbar({
         </Button>
       </div>
 
-      {selectedProjectId && viewMode !== 'design' && (
+      {selectedProjectId && (
         <DropdownMenu open={setupMenuOpen} onOpenChange={onSetupMenuOpenChange} modal={false}>
           <DropdownMenuTrigger asChild>
             <Button type="button" variant={setupMenuOpen ? 'secondary' : 'outline'} size="sm"
@@ -122,10 +127,10 @@ export function ProjectSceneToolbar({
       )}
 
       {selectedProjectId && (
-        <div id="project-environment-controls-host" className="relative" hidden={viewMode === '2d' || viewMode === 'design'} />
+        <div id="project-environment-controls-host" className="relative" hidden={viewMode === '2d'} />
       )}
 
-      {selectedProjectId && viewMode !== '2d' && viewMode !== 'design' && (
+      {selectedProjectId && viewMode !== '2d' && (
         <div className="relative">
           <Button
             type="button"
@@ -166,7 +171,7 @@ export function ProjectSceneToolbar({
 
       <SceneOperationStatus operation={activeOperation} viewMode={viewMode} onCancel={onCancelOperation} />
 
-      {selectedProjectId && viewMode !== 'design' && (
+      {selectedProjectId && (
         <Button ref={projectAssetsTriggerRef} type="button" variant={projectAssetsOpen ? 'secondary' : 'outline'} size="sm" className="h-7 gap-1 px-2 text-xs" aria-expanded={projectAssetsOpen} aria-controls="project-assets-panel" aria-label="Project Assets" title="Browse and focus Project ThreeD Assets" onClick={onToggleProjectAssets}>
           <ListTree className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">Assets</span>
@@ -175,12 +180,13 @@ export function ProjectSceneToolbar({
       )}
 
 
-
-
+      <div ref={designHistoryHostRef} data-testid="project-design-history" hidden={viewMode !== 'design' || !selectedProjectId} className="min-w-0 max-w-full" />
       {selectedProjectId && (
-        <Button type="button" variant={savingProject ? 'secondary' : 'outline'} size="icon" className="h-7 w-7" disabled={savingProject} aria-label="Save ThreeD Project" title="Save ThreeD Project objects, architecture and current view" onClick={onSaveProject}>
+        <TooltipProvider delayDuration={200}><Tooltip><TooltipTrigger asChild><span className="inline-flex" tabIndex={savingProject || saveDisabled ? 0 : undefined} aria-disabled={savingProject || saveDisabled || undefined}>
+        <Button type="button" variant={savingProject ? 'secondary' : 'outline'} size="icon" className="h-7 w-7" disabled={savingProject || saveDisabled} aria-label="Save ThreeD Project" title="Save ThreeD Project objects, architecture and current view" onClick={onSaveProject}>
           {savingProject ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5 text-foreground dark:text-white" />}
         </Button>
+        </span></TooltipTrigger><TooltipContent>{savingProject ? 'Saving Project…' : 'Save ThreeD Project'}</TooltipContent></Tooltip></TooltipProvider>
       )}
     </div>
   );

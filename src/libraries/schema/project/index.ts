@@ -91,6 +91,9 @@ export const project = pgTable('project', {
   calibrationPointBLocalZ: decimal('calibration_point_b_local_z', { precision: 12, scale: 3 }),
   calibrationPointBLatitude: decimal('calibration_point_b_latitude', { precision: 10, scale: 7 }),
   calibrationPointBLongitude: decimal('calibration_point_b_longitude', { precision: 10, scale: 7 }),
+  // Project-owned JSONB: threeDViewState and threeDArchitecture are merged by
+  // the authenticated marker snapshot transaction. The editor holds a draft,
+  // not a client mirror of this column; only successful Project Save persists it.
   config: jsonb('config').default({}),
   metadata: jsonb('metadata').default({}),
   createdAt: timestamp('created_at').defaultNow(),

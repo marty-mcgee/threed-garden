@@ -1,5 +1,7 @@
 # ThreeD Garden documentation
 
+Prepared local checkpoint: v0.24.0-beta — ThreeD Designs: Dashboard workspace. Developer accepted the revised layout October 10, 2026; authenticated architecture Save/reload remains unverified. Beta is not confirmed published/deployed. Latest confirmed production remains v0.24.0-alpha.
+
 Canonical documentation for humans and automated readers:
 
 - /docs/README.md
@@ -21,6 +23,8 @@ Canonical documentation for humans and automated readers:
 - /docs/agents/TASK_CHECKLISTS.md
 - /docs/agents/VALIDATION.md
 - /docs/releases/README.md
+- /docs/releases/v0.24.0-beta.md
+- /docs/developers/THREED_DESIGNS.md
 
 Implementation source of truth:
 

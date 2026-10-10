@@ -1,14 +1,19 @@
 'use client';
 
 import { useEffect, useId, useRef, useState, type PointerEvent } from 'react';
+import { createPortal } from 'react-dom';
+import { Focus, Maximize, RotateCcw } from 'lucide-react';
+import { DesignAction } from './DesignAction';
 import { Button } from '@/components/ui/button';
 import { distance, formatLength, insidePolygon, roofFrame, roofOpeningFootprint, INCH, levelDocument, mergeNodes, moveNodes, openingFootprint, openingMargin, roundMetres, screenToPlan, snapPoint, validateDesign, wallFrame,
   type DesignDocument, type PlanPoint, type PlanView } from '@/libraries/services/threed/design/document';
+import { framePlan, gridFeet as planGridFeet, rulerTicks, RULER_SIZE, zoomPlan } from '@/libraries/services/threed/design/plan-navigation';
+import { entityPoints } from '@/libraries/services/threed/design/object-properties';
 import { wallFootprint } from '@/libraries/services/threed/design/geometry';
 
 export type DesignTool = 'select' | 'wall' | 'floor' | 'roof' | 'door' | 'window' | 'cutout' | 'skylight' | 'pan';
 type DrawPoint = PlanPoint & { nodeId?: string };
-interface Props { document: DesignDocument; displayDocument?: DesignDocument; activeLevelId: string; selected: string | null; tool: DesignTool; gridSnap: boolean;
+interface Props { toolbarHost?: HTMLDivElement | null; embedded?: boolean; active?: boolean; disabled?: boolean; document: DesignDocument; displayDocument?: DesignDocument; activeLevelId: string; selected: string | null; tool: DesignTool; gridSnap: boolean;
   onSelect: (id: string | null) => void; onCommit: (doc: DesignDocument) => void;
   onPreview: (doc: DesignDocument | null) => void; onMessage: (text: string) => void;
   onDrawComplete: (id: string) => void; cancelToken: number }
@@ -30,7 +35,7 @@ function addShape(doc: DesignDocument, points: DrawPoint[], tool: 'wall' | 'floo
     floors: tool === 'floor' ? [...doc.floors, { id, levelId, vertices: ids, thickness: doc.defaults.floorThickness, elevation: 0 }] : doc.floors, roofs: tool === 'roof' ? [...doc.roofs, { id, levelId, vertices: ids, kind: 'gable', pitch: 6, direction: 0, thickness: 6 * INCH, elevation: doc.defaults.wallHeight }] : doc.roofs };
 }
 
-export function DesignPlan({ document: doc, displayDocument = doc, activeLevelId, selected, tool, gridSnap, onSelect, onCommit, onPreview, onMessage, onDrawComplete, cancelToken }: Props) {
+export function DesignPlan({ toolbarHost, embedded = false, active: enabled = true, disabled = false, document: doc, displayDocument = doc, activeLevelId, selected, tool, gridSnap, onSelect, onCommit, onPreview, onMessage, onDrawComplete, cancelToken }: Props) {
   const visible = levelDocument(displayDocument, activeLevelId), active = levelDocument(doc, activeLevelId);
   const svg = useRef<SVGSVGElement>(null), patternId = useId();
   const [view, setView] = useState<PlanView>({ x: 80, y: 80, scale: 45 });
@@ -40,23 +45,22 @@ export function DesignPlan({ document: doc, displayDocument = doc, activeLevelId
   const gesture = useRef<Gesture | null>(null);
   const nodes = new Map(visible.nodes.map(node => [node.id, node]));
   const wall = doc.walls.find(entity => entity.id === selected), floor = doc.floors.find(entity => entity.id === selected);
-  const handles = wall ? [wall.start, wall.end] : floor?.vertices ?? doc.roofs.find(entity => entity.id === selected)?.vertices ?? [];
+  const handles = (wall ? [wall.start, wall.end] : floor?.vertices ?? doc.roofs.find(entity => entity.id === selected)?.vertices ?? []).filter(key => nodes.has(key));
   useEffect(() => { const element = svg.current; if (!element) return; const observer = new ResizeObserver(([entry]) => setSize({ width: entry.contentRect.width, height: entry.contentRect.height })); observer.observe(element); return () => observer.disconnect(); }, []);
   useEffect(() => {
     const element = svg.current; if (!element) return;
     const wheel = (event: WheelEvent) => {
       event.preventDefault(); event.stopPropagation();
       const rect = element.getBoundingClientRect(), p = { x: event.clientX - rect.left, y: event.clientY - rect.top };
-      const world = screenToPlan(p, view), scale = Math.min(300, Math.max(.05, view.scale * Math.exp(-event.deltaY * .001)));
-      setView({ x: p.x - world.x * scale, y: p.y - world.z * scale, scale });
+      if (!gesture.current) setView(current => zoomPlan(current, p, event.deltaY));
     };
     element.addEventListener('wheel', wheel, { passive: false }); return () => element.removeEventListener('wheel', wheel);
-  }, [view]);
+  }, []);
   useEffect(() => {
     const active = gesture.current; gesture.current = null; setPoints([]); setHover(null); onPreview(null);
     const element = svg.current;
     if (active && element?.hasPointerCapture(active.pointerId)) element.releasePointerCapture(active.pointerId);
-  }, [cancelToken, tool, activeLevelId, onPreview]);
+  }, [cancelToken, tool, activeLevelId, enabled, disabled, onPreview]);
   useEffect(() => {
     if ((tool !== 'wall' && tool !== 'floor' && tool !== 'roof') || !points.length || !hover) { onPreview(null); return; }
     const draft = [...points, hover];
@@ -64,8 +68,15 @@ export function DesignPlan({ document: doc, displayDocument = doc, activeLevelId
   }, [points, hover, tool, doc, activeLevelId, onPreview]);
   const local = (event: { clientX: number; clientY: number }) => { const rect = svg.current!.getBoundingClientRect(); return { x: event.clientX - rect.left, y: event.clientY - rect.top }; };
   const pointer = (event: { clientX: number; clientY: number }) => screenToPlan(local(event), view);
-  function snapped(point: PlanPoint, exclude: string[] = []): DrawPoint {
+  function snapped(point: PlanPoint, exclude: string[] = [], orthogonal = false): DrawPoint {
+    const start = points[points.length - 1];
+    if (orthogonal && start) point = Math.abs(point.x - start.x) > Math.abs(point.z - start.z) ? { x: point.x, z: start.z } : { x: start.x, z: point.z };
     const result = snapPoint(point, [...active.nodes, ...points.map((point, index) => ({ ...point, id: point.nodeId ?? `drawing-${index}` }))], view.scale, gridSnap, exclude);
+    if (orthogonal && start) {
+      if (point.x === start.x) result.point = { x: start.x, z: result.point.z }; else result.point = { x: result.point.x, z: start.z };
+      const node = doc.nodes.find(node => node.id === result.nodeId);
+      if (node && distance(node, result.point) > .000001) result.nodeId = undefined;
+    }
     return { ...result.point, nodeId: doc.nodes.some(node => node.id === result.nodeId) ? result.nodeId : undefined };
   }
   function finishPolygon() {
@@ -75,7 +86,7 @@ export function DesignPlan({ document: doc, displayDocument = doc, activeLevelId
   }
   useEffect(() => {
     const key = (event: KeyboardEvent) => {
-      if (event.key !== 'Enter' || (tool !== 'floor' && tool !== 'roof') || points.length < 3 || event.repeat
+      if (!enabled || disabled || event.key !== 'Enter' || (tool !== 'floor' && tool !== 'roof') || points.length < 3 || event.repeat
         || (event.target as Element)?.closest?.('input, textarea, select, button, [contenteditable="true"]')) return;
       event.preventDefault(); finishPolygon();
     };
@@ -106,7 +117,7 @@ export function DesignPlan({ document: doc, displayDocument = doc, activeLevelId
     return { next: validateDesign({ ...doc, roofOpenings: [...doc.roofOpenings, opening] }), id: opening.id };
   }
   function down(event: PointerEvent<SVGSVGElement>) {
-    if (event.button !== 0 && event.button !== 1) return;
+    if (!enabled || gesture.current || (event.button !== 0 && event.button !== 1) || local(event).x < RULER_SIZE || local(event).y < RULER_SIZE) return;
     event.preventDefault(); svg.current?.focus();
     const point = pointer(event), target = (event.target as Element).closest('[data-entity]'), entityId = target?.getAttribute('data-entity') ?? null;
     const nodeId = (event.target as Element).getAttribute('data-node');
@@ -114,6 +125,7 @@ export function DesignPlan({ document: doc, displayDocument = doc, activeLevelId
       gesture.current = { pointerId: event.pointerId, base: doc, latest: doc, point, screenStart: local(event), view, nodes: [], pan: true };
       svg.current!.setPointerCapture(event.pointerId); return;
     }
+    if (disabled) { onSelect(entityId); return; }
     if (tool === 'door' || tool === 'window') {
       try { const placed = placeOpening(point, false); if (!placed) { onMessage('Choose a host wall in the plan.'); return; } onCommit(placed.next); onDrawComplete(placed.id); onMessage(`${tool === 'door' ? 'Door' : 'Window'} placed and selected. Drag along its wall or edit its dimensions.`); }
       catch (error) { onPreview(null); onMessage((error as Error).message); }
@@ -125,7 +137,7 @@ export function DesignPlan({ document: doc, displayDocument = doc, activeLevelId
       return;
     }
     if (tool === 'wall' || tool === 'floor' || tool === 'roof') {
-      const hit = snapped(point);
+      const hit = snapped(point, [], event.shiftKey);
       if ((tool === 'floor' || tool === 'roof') && points.length >= 3 && distance(hit, points[0]) < 10 / view.scale) { finishPolygon(); return; }
       if (tool === 'wall' && points.length) {
         try { const next = validateDesign(addShape(doc, [points[0], hit], 'wall', activeLevelId)); onCommit(next); setPoints([{ ...hit, nodeId: next.walls[next.walls.length - 1].end }]); setHover(null); onPreview(null); onMessage('Wall added. Click the next endpoint, or Escape to finish.'); }
@@ -142,9 +154,10 @@ export function DesignPlan({ document: doc, displayDocument = doc, activeLevelId
     } else onSelect(null);
   }
   function move(event: PointerEvent<SVGSVGElement>) {
+    if (!enabled || (disabled && !gesture.current?.pan)) return;
     const active = gesture.current;
     if (!active) {
-      if ((tool === 'wall' || tool === 'floor' || tool === 'roof') && points.length) setHover(snapped(pointer(event)));
+      if ((tool === 'wall' || tool === 'floor' || tool === 'roof') && points.length) setHover(snapped(pointer(event), [], event.shiftKey));
       if (tool === 'cutout' || tool === 'skylight') { try { onPreview(placeRoofOpening(pointer(event), true)?.next ?? null); } catch (error) { onPreview(null); onMessage((error as Error).message); } }
       if (tool === 'door' || tool === 'window') { try { onPreview(placeOpening(pointer(event), true)?.next ?? null); } catch (error) { onPreview(null); onMessage((error as Error).message); } }
       return;
@@ -188,20 +201,20 @@ export function DesignPlan({ document: doc, displayDocument = doc, activeLevelId
     onPreview(null); if (svg.current?.hasPointerCapture(event.pointerId)) svg.current.releasePointerCapture(event.pointerId);
   }
   const polygon = (points: PlanPoint[]) => points.map(point => `${point.x},${point.z}`).join(' ');
-  const gridFeet = 2 ** Math.max(0, Math.ceil(Math.log2(12 / (12 * INCH * view.scale))));
-  const grid = gridFeet * 12 * INCH * view.scale;
-  function fitPlan() {
-    if (!active.nodes.length) return;
-    const minX = Math.min(...active.nodes.map(node => node.x)) - .3, maxX = Math.max(...active.nodes.map(node => node.x)) + .3;
-    const minZ = Math.min(...active.nodes.map(node => node.z)) - .3, maxZ = Math.max(...active.nodes.map(node => node.z)) + .3;
-    const scale = Math.max(.05, Math.min(300, (size.width - 40) / (maxX - minX), (size.height - 40) / (maxZ - minZ)));
-    setView({ x: size.width / 2 - (minX + maxX) / 2 * scale, y: size.height / 2 - (minZ + maxZ) / 2 * scale, scale });
+  const gridFeet = planGridFeet(view.scale), grid = gridFeet * 12 * INCH * view.scale;
+  const selectedWall = doc.walls.find(wall => wall.id === selected);
+  const selectionPoints = selectedWall ? wallFootprint(doc, selectedWall) : entityPoints(doc, selected);
+  const xTicks = rulerTicks(view.x, view.scale, size.width), zTicks = rulerTicks(view.y, view.scale, size.height);
+  function fitPlan(selection = false) {
+    const next = framePlan(selection ? selectionPoints : [...active.nodes, ...active.walls.flatMap(wall => wallFootprint(doc, wall))], size); if (next) setView(next);
   }
-  return <section className="flex min-h-0 min-w-0 flex-col overflow-hidden rounded-lg border border-white/10 bg-[#091423]">
-    <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-white/10 px-3 py-2 text-xs">
+  const viewActions = <div role="group" aria-label="Design plan navigation" className="flex items-center gap-1"><DesignAction label="Fit Plan" disabled={!active.nodes.length} onClick={() => fitPlan()}><Maximize className="h-3.5 w-3.5" /></DesignAction><DesignAction label="Zoom to Selection" disabled={!selectionPoints.length} onClick={() => fitPlan(true)}><Focus className="h-3.5 w-3.5" /></DesignAction><DesignAction label="Reset View" onClick={() => setView({ x: 80, y: 80, scale: 45 })}><RotateCcw className="h-3.5 w-3.5" /></DesignAction></div>;
+  return <section aria-label="Design plan canvas" className={`flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#091423] ${embedded ? '' : 'rounded-lg border border-white/10'}`}>
+    {enabled && toolbarHost && createPortal(viewActions, toolbarHost)}
+    {!embedded && <div data-testid="design-plan-header" className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-white/10 px-3 py-2 text-xs">
       <span className="font-semibold">2D Plan · {doc.levels.find(level => level.id === activeLevelId)?.name} · X / Z · {gridFeet} ft grid</span>
-      <div className="flex items-center gap-2"><span>{Number(view.scale.toFixed(2))} px/m</span><Button size="sm" variant="outline" disabled={!active.nodes.length} onClick={fitPlan}>Fit Plan</Button><Button size="sm" variant="outline" onClick={() => setView({ x: 80, y: 80, scale: 45 })}>Reset View</Button></div>
-    </div>
+      <div className="flex items-center gap-2"><span>{Number(view.scale.toFixed(2))} px/m</span>{viewActions}</div>
+    </div>}
     <svg ref={svg} data-testid="home-plan" aria-label="ThreeD Design 2D plan" tabIndex={0} width="100%" height="100%" className="block min-h-0 w-full flex-1 touch-none select-none outline-none focus-visible:ring-2 focus-visible:ring-cyan-400" style={{ cursor: tool === 'pan' ? 'grab' : tool === 'select' ? 'default' : 'crosshair' }}
       onPointerDown={down} onPointerMove={move} onPointerUp={end} onPointerCancel={() => { gesture.current = null; setPoints([]); setHover(null); onPreview(null); onMessage('Gesture cancelled.'); }}
       onLostPointerCapture={() => { if (gesture.current) { gesture.current = null; onPreview(null); } }}
@@ -209,7 +222,12 @@ export function DesignPlan({ document: doc, displayDocument = doc, activeLevelId
       onContextMenu={event => event.preventDefault()}>
       <defs><pattern id={patternId} width={grid} height={grid} patternUnits="userSpaceOnUse" x={view.x % grid} y={view.y % grid}><path d={`M ${grid} 0 L 0 0 0 ${grid}`} fill="none" stroke="#204259" strokeWidth=".7" /></pattern></defs>
       <rect width={size.width} height={size.height} fill={`url(#${patternId})`} />
+      <g pointerEvents="none" stroke="#4d91a6" strokeWidth="1"><line x1={view.x} x2={view.x} y1={RULER_SIZE} y2={size.height}/><line y1={view.y} y2={view.y} x1={RULER_SIZE} x2={size.width}/></g>
       <g transform={`translate(${view.x} ${view.y}) scale(${view.scale})`}>
+        {hover && points.length > 0 && <g pointerEvents="none" stroke="#38bdf8" strokeWidth={1 / view.scale} strokeDasharray={`${4 / view.scale} ${4 / view.scale}`}>
+          {active.nodes.some(node => Math.abs(node.x - hover.x) < .000001) && <line x1={hover.x} x2={hover.x} y1={(RULER_SIZE - view.y) / view.scale} y2={(size.height - view.y) / view.scale}/>}
+          {active.nodes.some(node => Math.abs(node.z - hover.z) < .000001) && <line y1={hover.z} y2={hover.z} x1={(RULER_SIZE - view.x) / view.scale} x2={(size.width - view.x) / view.scale}/>}
+        </g>}
         {visible.floors.map(floor => <polygon key={floor.id} data-entity={floor.id} points={polygon(floor.vertices.map(id => nodes.get(id)!))} fill={selected === floor.id ? '#177986' : '#405a76'} fillOpacity=".55" stroke="#7694b8" strokeWidth={1 / view.scale} />)}
         {visible.roofs.map(roof => { const points = roof.vertices.map(id => nodes.get(id)!); const center = points.reduce((sum, point) => ({ x: sum.x + point.x / points.length, z: sum.z + point.z / points.length }), { x: 0, z: 0 }); return <g key={roof.id} data-entity={roof.id} data-roof={roof.kind}><polygon points={polygon(points)} fill="#c084fc" fillOpacity={selected === roof.id ? .18 : .06} stroke="#c084fc" strokeWidth={3 / view.scale} pointerEvents="stroke" /><text x={center.x} y={center.z} fill="#e9d5ff" fontSize={12 / view.scale} textAnchor="middle" className="cursor-move">{roof.kind} roof</text></g>; })}
         {visible.walls.map(wall => <g key={wall.id}><polygon data-entity={wall.id} points={polygon(wallFootprint(displayDocument, wall))} fill={selected === wall.id ? '#36b8c8' : '#b4c8df'} stroke="#5b8baf" strokeWidth={1 / view.scale} /><line data-entity={wall.id} x1={nodes.get(wall.start)!.x} y1={nodes.get(wall.start)!.z} x2={nodes.get(wall.end)!.x} y2={nodes.get(wall.end)!.z} stroke="transparent" strokeWidth={Math.max(wall.thickness, 10 / view.scale)} /><text x={(nodes.get(wall.start)!.x + nodes.get(wall.end)!.x) / 2} y={(nodes.get(wall.start)!.z + nodes.get(wall.end)!.z) / 2 - .2} fill="#dde8f6" fontSize={11 / view.scale} textAnchor="middle" pointerEvents="none">{formatLength(distance(nodes.get(wall.start)!, nodes.get(wall.end)!))}</text></g>)}
@@ -221,6 +239,13 @@ export function DesignPlan({ document: doc, displayDocument = doc, activeLevelId
         {visible.roofOpenings.map(opening => { const points = roofOpeningFootprint(displayDocument, opening), center = points.reduce((sum, p) => ({ x: sum.x + p.x / 4, z: sum.z + p.z / 4 }), { x: 0, z: 0 }); const color = selected === opening.id ? '#facc15' : opening.kind === 'skylight' ? '#67e8f9' : '#fb923c'; return <g key={opening.id} data-entity={opening.id} data-roof-opening={opening.kind}><polygon points={polygon(points)} fill={opening.kind === 'skylight' ? '#164e63' : '#091423'} fillOpacity={opening.kind === 'skylight' ? .65 : .9} stroke={color} strokeWidth={2 / view.scale} /><text x={center.x} y={center.z} fill={color} fontSize={10 / view.scale} textAnchor="middle" pointerEvents="none">{opening.kind === 'skylight' ? 'Skylight' : 'Cutout'}</text></g>; })}
         {handles.map(key => <circle key={key} data-node={key} cx={nodes.get(key)!.x} cy={nodes.get(key)!.z} r={6 / view.scale} fill="#facc15" stroke="#101827" strokeWidth={1 / view.scale} />)}
         {!!points.length && <><polyline points={polygon(hover ? [...points, hover] : points)} fill={tool !== 'wall' ? '#15b8a633' : 'none'} stroke="#2dd4bf" strokeWidth={2 / view.scale} strokeDasharray={`${6 / view.scale} ${4 / view.scale}`} pointerEvents="none" />{points.map((p, index) => <circle key={index} cx={p.x} cy={p.z} r={4 / view.scale} fill="#2dd4bf" pointerEvents="none" />)}{hover && <circle cx={hover.x} cy={hover.z} r={6 / view.scale} fill="none" stroke={hover.nodeId ? '#facc15' : '#2dd4bf'} strokeWidth={2 / view.scale} pointerEvents="none" />}</>}
+      </g>
+      <g data-testid="design-rulers" pointerEvents="none" fontSize="10" fill="#cbd5e1">
+        <title>Project coordinates in feet. +X points right; +Z points down. Cyan axes mark zero.</title>
+        <rect width={size.width} height={RULER_SIZE} fill="#111e30"/><rect width={RULER_SIZE} height={size.height} fill="#111e30"/>
+        {xTicks.map(tick => <g key={tick.index} data-axis="x" data-world={tick.world} data-pixel={tick.pixel}><line x1={tick.pixel} x2={tick.pixel} y1={tick.major ? 16 : 22} y2={28} stroke={tick.index === 0 ? '#22d3ee' : '#64748b'}/>{tick.major && <text x={tick.pixel + 3} y={12}>{tick.label}</text>}</g>)}
+        {zTicks.map(tick => <g key={tick.index} data-axis="z" data-world={tick.world} data-pixel={tick.pixel}><line y1={tick.pixel} y2={tick.pixel} x1={tick.major ? 16 : 22} x2={28} stroke={tick.index === 0 ? '#22d3ee' : '#64748b'}/>{tick.major && <text transform={`translate(12 ${tick.pixel + 3}) rotate(-90)`}>{tick.label}</text>}</g>)}
+        <rect width={28} height={28} fill="#111e30"/><text x={3} y={11} fill="#22d3ee">X +</text><text x={3} y={24} fill="#22d3ee">Z +</text>
       </g>
     </svg>
     {(tool === 'floor' || tool === 'roof') && <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-white/10 bg-[#111a28] px-3 py-2 text-xs" data-testid={`home-${tool}-draft`}>

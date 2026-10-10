@@ -5,6 +5,7 @@ const ts = require('typescript');
 const jsx = (type, props) => ({ type, props });
 const mocks = {
   react: { useEffect() {}, useRef: () => ({ current: null }) },
+  'react-dom': { createPortal: panel => panel },
   'react/jsx-runtime': { jsx, jsxs: jsx },
   'lucide-react': new Proxy({}, { get: (_, name) => name }),
   '@/components/map/details/PersistentDetails': { DetailsSectionScope: { Provider: 'Scope' }, PersistentDetails: 'Details' },

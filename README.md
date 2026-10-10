@@ -1,5 +1,7 @@
 # ThreeD Garden
 
+Prepared checkpoint: **[v0.24.0-beta — ThreeD Designs: Dashboard workspace](docs/releases/v0.24.0-beta.md)**. Package/root lockfile are `0.24.0-beta`. The Developer accepted the revised Design layout October 10, 2026; authenticated architecture Save/reload remains unverified. This beta has not been published or deployed by the agent.
+
 Current production: **[v0.24.0-alpha — ThreeD Designs: Project Scene integration](docs/releases/v0.24.0-alpha-project-design.md)**, Developer-confirmed October 9, 2026. Detailed authenticated App and post-deployment verification remain separate.
 
 ### 🌱 Build your garden. Explore your world. Bring your models to life.
@@ -8,11 +10,13 @@ Current production: **[v0.24.0-alpha — ThreeD Designs: Project Scene integrati
 
 [![Repository validation](https://github.com/marty-mcgee/threed-garden/actions/workflows/validation.yml/badge.svg?branch=main)](https://github.com/marty-mcgee/threed-garden/actions/workflows/validation.yml?query=branch%3Amain)
 
-🟢 **Earlier latest release:** [v0.24.0-alpha — 3D Object Builder + Home Design Tools](docs/releases/v0.24.0-alpha.md), Developer-confirmed in production October 9, 2026.
+🟢 **Earlier production release:** [v0.24.0-alpha — 3D Object Builder + Home Design Tools](docs/releases/v0.24.0-alpha.md), Developer-confirmed in production October 9, 2026.
 
 🛠️ **3D Object Builder:** [Implementation record](docs/plans/v0.24.0-alpha-model-builder.md) · [Builder guide](docs/developers/THREED_MODEL_BUILDER.md)
 
-**Designs:** [Project Scene integration](docs/plans/v0.24.0-alpha-designs-persistence.md) and [ThreeD Designs guide](docs/developers/THREED_DESIGNS.md). Design edits the active Project Scene and uses Project Save; no separate table/migration is required. Authenticated App acceptance remains pending. [Released drawing foundations](docs/plans/v0.24.0-alpha-home-design.md).
+**ThreeD Designs beta:** Edit the active Project/Scene in `design` View Mode using linked 2D/3D walls, floors, doors/windows, levels and roofs with cutouts/skylights. The accepted layout places Assets above Properties on the left and the Scene above the ruled Plan on the right, beneath one shared Project toolbar. Resize the rows, edit Imperial properties, use icon actions/tooltips, snap/pan/zoom, Undo/Redo and validated JSON merge or architecture-only replacement. [ThreeD Designs guide](docs/developers/THREED_DESIGNS.md) · [Dashboard instructions](docs/users/DASHBOARD_GUIDE.md#threed-design-beta).
+
+Architecture uses the existing `project.config.threeDArchitecture` JSONB content and Project snapshot Save/load; no separate table/migration is required. Automated mocked roundtrips passed, but the previously reported disappearing-architecture issue still needs authenticated draw → Save → reload verification. A Save success message alone is not evidence that this beta restores editable content. See [beta status and limitations](docs/releases/v0.24.0-beta.md).
 
 [🚀 Get started](docs/users/GETTING_STARTED.md) · [🎮 Explore the controls](docs/users/THREED_CONTROLS.md) · [📚 Browse the docs](docs/README.md) · [🛠️ Run locally](#run-it-locally)
 

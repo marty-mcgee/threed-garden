@@ -21,7 +21,12 @@ export function readProjectArchitecture(config: unknown): ProjectArchitecture | 
 export interface ProjectArchitectureDraft { history: DesignHistory; saved: string; selected: string | null }
 export function projectArchitectureDraft(content?: ProjectArchitecture): ProjectArchitectureDraft {
   const document = content ? parseProjectArchitecture(content).document : newDesign();
-  return { history: designHistory(document), saved: JSON.stringify(document), selected: null };
+  const history = designHistory(document);
+  return { history, saved: JSON.stringify(history.present), selected: null };
+}
+/** Hydrate clean placeholders/caches only; never erase an actual unsaved edit. */
+export function hydrateArchitectureDraft(draft: ProjectArchitectureDraft | undefined, content?: ProjectArchitecture): ProjectArchitectureDraft {
+  return draft && architectureIsDirty(draft) ? draft : projectArchitectureDraft(content);
 }
 export const architectureIsDirty = (draft: ProjectArchitectureDraft) => JSON.stringify(draft.history.present) !== draft.saved;
 /** Acknowledges captured source only, retaining edits completed during Project Save. */

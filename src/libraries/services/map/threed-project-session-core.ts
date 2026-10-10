@@ -70,6 +70,10 @@ export function buildThreeDProjectSession(
     };
   }
 
+  if (result.projectContext?.projectId !== undefined && String(result.projectContext.projectId) !== projectId) {
+    return { success: false, error: 'Project response belongs to another Project. Reload the selected Project.' };
+  }
+
   let architecture: ProjectArchitecture | undefined;
   try { if (result.projectContext?.architecture !== undefined) architecture = parseProjectArchitecture(result.projectContext.architecture); }
   catch { return { success: false, error: 'Project architectural content is invalid. Loading stopped to protect the saved content.' }; }

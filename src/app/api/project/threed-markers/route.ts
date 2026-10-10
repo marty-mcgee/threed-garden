@@ -539,20 +539,23 @@ async function saveSnapshot(request: NextRequest) {
         ));
       }
 
-      await tx.update(project).set({
+      const [savedProject] = await tx.update(project).set({
         config: sql`coalesce(${project.config}, '{}'::jsonb) || ${JSON.stringify({ threeDViewState: viewState, ...(architecture ? { threeDArchitecture: architecture } : {}) })}::jsonb`,
         updatedAt: new Date(),
-      }).where(and(eq(project.id, projectId), eq(project.userId, userId)));
-      return savedRows;
+      }).where(and(eq(project.id, projectId), eq(project.userId, userId))).returning({ config: project.config });
+      if (!savedProject) throw new Error('Project disappeared during Save');
+      const savedArchitecture = architecture ? parseProjectArchitecture((savedProject.config as Record<string, unknown>)?.threeDArchitecture) : undefined;
+      if (architecture && JSON.stringify(savedArchitecture) !== JSON.stringify(architecture)) throw new Error('Project architecture write was not confirmed');
+      return { markers: savedRows, architecture: savedArchitecture };
     });
 
     return NextResponse.json({
       success: true,
       data: {
         projectId,
-        ...(architecture ? { architecture } : {}),
-        markerCount: saved.length,
-        markers: saved,
+        ...(saved.architecture ? { architecture: saved.architecture } : {}),
+        markerCount: saved.markers.length,
+        markers: saved.markers,
         savedAt: new Date().toISOString(),
       },
     });

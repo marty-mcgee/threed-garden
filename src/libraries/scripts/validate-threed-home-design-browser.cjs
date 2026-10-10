@@ -12,45 +12,60 @@ const root = path.resolve(__dirname,'../../..');
 // Read the actual Dashboard positioning contracts: a full-height standalone host
 // otherwise masks a collapsed Scene host when its normal-flow content is hidden.
 const sceneAst = ts.createSourceFile('scene.tsx', fs.readFileSync(path.join(root,'src/app/dashboard/scene/page.tsx'),'utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
-let sceneWorkspaceClass, designSectionClass;
+let sceneWorkspaceClass;
 function findHost(node) {
  if(ts.isJsxOpeningElement(node)) {
   const attributes = Object.fromEntries(node.attributes.properties.filter(ts.isJsxAttribute).filter(a=>a.initializer&&ts.isStringLiteral(a.initializer)).map(a=>[a.name.getText(sceneAst),a.initializer.text]));
   if(attributes['data-testid']==='project-scene-workspace') sceneWorkspaceClass=attributes.className;
-  if(attributes['aria-label']==='Project ThreeD Design') designSectionClass=attributes.className;
+
  }
  ts.forEachChild(node,findHost);
 }
-findHost(sceneAst); assert(sceneWorkspaceClass && designSectionClass,'Dashboard Design host must be discoverable.');
+findHost(sceneAst); assert(sceneWorkspaceClass,'Dashboard Design host must be discoverable.');
 const browser = process.env.THREED_TEST_BROWSER || ['C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe','C:/Program Files/Microsoft/Edge/Application/msedge.exe'].find(fs.existsSync);
 if (!browser) throw new Error('Set THREED_TEST_BROWSER to an installed Chromium/Edge executable.');
 const temporary = fs.mkdtempSync(path.join(os.tmpdir(),'threed-home-design-browser-'));
 const delay = milliseconds => new Promise(resolve=>setTimeout(resolve,milliseconds));
+const assetsClass=fs.readFileSync(path.join(root,'src/components/map/panels/ProjectAssetsPanel.tsx'),'utf8').match(/className="(threed-workspace-panel threed-scene-panel-surface threed-scene-sidebar-size[^\"]*)"/)[1];
+const libraryClass=fs.readFileSync(path.join(root,'src/components/map/panels/ThreeDModelLibraryPanel.tsx'),'utf8').match(/className="(threed-workspace-panel threed-scene-panel-surface threed-scene-sidebar-size[^\"]*)"/)[1];
 const fixture=`import React from 'react';import {createRoot} from 'react-dom/client';import {Canvas,useThree} from '@react-three/fiber';import {OrbitControls} from '@react-three/drei';
 import {DesignEditor} from './src/components/threed/design/DesignEditor';
+import {DesignWorkspace} from './src/components/threed/design/DesignWorkspace';
+import {ProjectHeaderMenu} from './src/components/map/header/ProjectHeaderMenu';
+import {ProjectSceneToolbar} from './src/components/map/header/ProjectSceneToolbar';
+import {ProjectAssetsPanel} from './src/components/map/panels/ProjectAssetsPanel';
+import {SceneTransformWorkspace} from './src/components/threed/transform/SceneTransformWorkspace';
+import {ProjectSimulationLauncher} from './src/components/map/panels/ProjectSimulationLauncher';
+import {ProjectOverlayLayoutContext} from './src/components/map/panels/ProjectOverlayLayout';
+window.fetch=async url=>{if(String(url).startsWith('/api/project/simulations'))return {ok:true,json:async()=>({success:true,data:[],pagination:{total:0}})};throw Error('Unexpected native fixture request: '+url)};
 import {DesignSceneObjects} from './src/components/threed/design/DesignSceneObjects';
 import {projectArchitectureDraft,acknowledgeArchitecture} from './src/libraries/services/threed/design/project-architecture';
 window.__projectSaved={config:{keep:'settings'},markers:[{markerId:'existing-model',position:{x:10,y:0,z:5},data:{filePath:'saved.glb',rotationY:25,scale:2,materials:{map:'saved.png'}}}]};
-function Probe(){const state=useThree();React.useLayoutEffect(()=>{window.__projectScene=state.scene;},[state.scene]);return null;}
+function Probe(){const state=useThree();React.useLayoutEffect(()=>{window.__projectScene=state.scene;window.__projectCamera=state.camera;},[state.scene]);return null;}
 function ProjectFixture(){const[draft,setDraft]=React.useState(()=>projectArchitectureDraft()),[preview,setPreview]=React.useState(null),[mode,setMode]=React.useState('design'),[saving,setSaving]=React.useState(false),[error,setError]=React.useState('');
- const draftRef=React.useRef(draft);draftRef.current=draft;const busy=React.useRef(false);
- window.__setProjectMode=setMode;window.__projectDraft=draft;window.__reopenProject=()=>{setDraft(projectArchitectureDraft(window.__projectSaved.config.threeDArchitecture));setMode('design')};
+ const [toolbarHost,setToolbarHost]=React.useState(null),[historyHost,setHistoryHost]=React.useState(null),[assetsHost,setAssetsHost]=React.useState(null),[assetsOpen,setAssetsOpen]=React.useState(true),[assetSearch,setAssetSearch]=React.useState(''),[actionsBusy,setActionsBusy]=React.useState(false); const draftRef=React.useRef(draft);draftRef.current=draft;const busy=React.useRef(false);
+ window.__setAssetsOpen=setAssetsOpen;window.__setProjectMode=setMode;window.__projectDraft=draft;window.__projectPreview=preview;window.__reopenProject=()=>{setDraft(projectArchitectureDraft(window.__projectSaved.config.threeDArchitecture));setMode('design')};
  const save=async()=>{if(busy.current)return;busy.current=true;setSaving(true);setError('');const captured={version:1,document:draftRef.current.history.present};
   try{if(window.__projectSaveMode==='pending')await new Promise(resolve=>window.__finishProjectSave=resolve);if(window.__projectSaveMode==='fail')throw Error('Mock Project Save failure. Draft retained.');
    window.__projectSaved={...window.__projectSaved,config:{...window.__projectSaved.config,threeDArchitecture:captured}};setDraft(current=>acknowledgeArchitecture(current,captured));
   }catch(error){setError(error.message)}finally{busy.current=false;setSaving(false)}};
- const visibility=React.useCallback(()=>{},[]);
- return <div className=${JSON.stringify(sceneWorkspaceClass)} data-testid="fixture-scene-host">
-  <section hidden={mode!=='design'} className=${JSON.stringify(designSectionClass)}><DesignEditor active={mode==='design'} scene={{projectId:15,projectName:'Existing Project',draft,onChange:setDraft,onSave:save,saving,onPreview:setPreview,onVisibility:visibility,error}}/></section>
-  <div data-testid="existing-scene" style={{position:'absolute',right:0,top:38,bottom:16,width:mode==='design'?'50%':'100%'}}>
+ const visibility=React.useCallback(()=>{},[]),dismissAssets=React.useCallback(()=>setAssetsOpen(false),[]);
+ const fixtureAssets=[{id:'existing-model',type:'models',name:'Existing Model',position:{x:10,y:0,z:5},data:{id:1},metadata:{source:'project-marker'}}];
+ return <SceneTransformWorkspace><ProjectOverlayLayoutContext.Provider value={{positions:{simulations:{x:1,y:0}},move:()=>{}}}><div className=${JSON.stringify(sceneWorkspaceClass)} data-testid="project-scene-workspace">
+  <div data-testid="assets-sizing-reference" aria-hidden="true" className=${JSON.stringify(assetsClass)} style={{visibility:"hidden",pointerEvents:"none"}}/><div data-testid="library-sizing-reference" aria-hidden="true" className=${JSON.stringify(libraryClass)} style={{visibility:"hidden",pointerEvents:"none"}}/>
+  <div className="threed-project-toolbar pointer-events-auto absolute inset-x-0 top-0 z-50 m-0 flex flex-wrap items-center justify-between gap-2 px-1 py-1"><ProjectHeaderMenu selectedProjectId="15" projectName="Existing Project" isOpen={false} trafficItemCount={0} threeDItemCount={1} hasRealData={true} isStale={false} dataAge="now" lastUpdated={null} savingProject={saving} projectAssetCount={1} projectAssetsOpen={assetsOpen} environments={[]} onTrigger={()=>{}} onDismiss={()=>{}} onChooseProject={()=>{}} onCreateProject={()=>{}} onSaveProject={save} onOpenProjectAssets={()=>setAssetsOpen(true)} onOpenEnvironment={()=>{}} onOpenProjectTour={()=>{}} onOpenProjectSettings={()=>{}}/><div ref={setToolbarHost} hidden={mode!=='design'} data-testid="project-design-actions" className="flex min-w-0 max-w-full flex-1 flex-wrap items-center justify-center gap-1 [&_button]:h-7 [&_button]:w-7"/><ProjectSceneToolbar savingProject={saving} designHistoryHostRef={setHistoryHost} projectAssetsOpen={assetsOpen} saveDisabled={actionsBusy} selectedProjectId="15" viewMode={mode} onViewModeChange={setMode} presentationComplete={true} hasThreeDModule={true} projectAssetCount={1} onSaveProject={save} onSetupMenuOpenChange={()=>{}} onToggleSceneAddMenu={()=>{}} onToggleProjectAssets={()=>setAssetsOpen(value=>!value)} /></div>
+  <ProjectAssetsPanel dockHost={mode==='design'?assetsHost:null} selectedProjectId="15" isOpen={assetsOpen} search={assetSearch} setSearch={setAssetSearch} typeFilter="all" setTypeFilter={()=>{}} projectRuntimeMarkers={fixtureAssets} projectAssetTypes={['models']} projectAssetTypeCounts={new Map([['models',1]])} visibleProjectAssets={fixtureAssets.filter(marker=>marker.name.toLowerCase().includes(assetSearch.toLowerCase()))} selectedMarker={null} resolveRuntimeMarkerPosition={()=>null} onDismiss={dismissAssets} onSelectAsset={()=>{}} onSelectGroup={()=>{}} onSelectSensor={()=>{}} onOpenGroundMap={()=>{}}/>
+  <DesignWorkspace assetsHostRef={setAssetsHost} active={mode==='design'} editor={<DesignEditor active={mode==='design'} toolbarHost={toolbarHost} historyHost={historyHost} onActionsBusyChange={setActionsBusy} scene={{projectId:15,projectName:'Existing Project',draft,onChange:setDraft,onSave:save,saving,onPreview:setPreview,onVisibility:visibility,error}}/>}>
+  <div data-testid="existing-scene" className="relative h-full">
+   <ProjectSimulationLauncher context={{projectId:15,allowed:true,ready:true,busy:false,markers:[],layers:new Set(),settledCharacters:new Set(),groups:[],sensorMembers:[],position:()=>undefined,counts:()=>({})}} saveResults={true} onPrepare={()=>{}} subscribeSensors={()=>()=>{}}/>
    <Canvas camera={{position:[20,20,20],fov:45}}><ambientLight intensity={2}/><directionalLight position={[10,20,10]} intensity={2}/><mesh name="existing-model" position={[10,0,5]} rotation={[0,25*Math.PI/180,0]} scale={2}><boxGeometry/><meshStandardMaterial color="#be6852"/></mesh>
    <DesignSceneObjects projectId={15} metersPerSceneUnit={.3048} document={preview??draft.history.present} selected={draft.selected} onSelect={selected=>setDraft(current=>({...current,selected}))}/><OrbitControls target={[5,0,5]}/><Probe/></Canvas>
-  </div>
- </div>;
+  </div></DesignWorkspace>
+ </div></ProjectOverlayLayoutContext.Provider></SceneTransformWorkspace>;
 }
 function Fixture(){const[project,setProject]=React.useState(false);window.__mountProject=()=>setProject(true);return project?<ProjectFixture/>:<div style={{height:'100%'}}><DesignEditor/></div>}
 createRoot(document.getElementById('root')).render(<Fixture/>);`;
-const bundle=esbuild.buildSync({stdin:{contents:fixture,resolveDir:root,sourcefile:'home-browser.tsx',loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',define:{'process.env.NODE_ENV':'"production"'},logLevel:'silent'}).outputFiles[0].contents;
+const bundle=esbuild.buildSync({stdin:{contents:fixture,resolveDir:root,sourcefile:'home-browser.tsx',loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',define:{'process.env.NODE_ENV':'"production"','process.env':'{}'},logLevel:'silent'}).outputFiles[0].contents;
 let stylesheet='';
 const html = `<html class="dark"><head><link rel="stylesheet" href="/app.css"><style>body{margin:0;font-family:Arial}#root{padding:12px;height:100dvh}</style></head><body><div id="root"></div><script src="/bundle.js"></script></body></html>`;
 const server=http.createServer((req,res)=> { if(req.url==='/bundle.js'){res.setHeader('Content-Type','application/javascript');res.end(bundle);}else if(req.url==='/app.css'){res.setHeader('Content-Type','text/css');res.end(stylesheet);}else{res.setHeader('Content-Type','text/html');res.end(html);} });
@@ -69,18 +84,19 @@ async function main(){
     ws=new WebSocket(targets.find(target=>target.type==='page').webSocketDebuggerUrl);
     await new Promise((resolve,reject)=>{ws.addEventListener('open',resolve,{once:true});ws.addEventListener('error',reject,{once:true});});
     let id=0;const pending=new Map(),exceptions=[];
-    ws.addEventListener('message',event=>{const data=JSON.parse(event.data);if(data.method==='Runtime.exceptionThrown')exceptions.push(data.params.exceptionDetails.text);const task=pending.get(data.id);if(task){pending.delete(data.id);data.error?task.reject(new Error(data.error.message)):task.resolve(data.result);}});
+    ws.addEventListener('message',event=>{const data=JSON.parse(event.data);if(data.method==='Runtime.exceptionThrown')exceptions.push(data.params.exceptionDetails.exception?.description||data.params.exceptionDetails.text);const task=pending.get(data.id);if(task){pending.delete(data.id);data.error?task.reject(new Error(data.error.message)):task.resolve(data.result);}});
     const send=(method,params={})=>new Promise((resolve,reject)=>{const key=++id;pending.set(key,{resolve,reject});ws.send(JSON.stringify({id:key,method,params}));});
     const evaluate=async(expression)=>{const reply=await send('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true});if(reply.exceptionDetails)throw new Error(reply.exceptionDetails.exception?.description||reply.exceptionDetails.text);return reply.result.value;};
     await send('Runtime.enable');await send('Page.enable');await send('Emulation.setDeviceMetricsOverride',{width:1250,height:1000,deviceScaleFactor:1,mobile:false});
     for(let i=0;i<100;i++){if(await evaluate(`!!document.querySelector('[data-testid="home-plan"]') && !!document.querySelector('[data-testid="home-preview"] canvas')`))break;await delay(100);}
+    assert(await evaluate(`!!document.querySelector('[data-testid="home-plan"]')`),'Native editor did not mount: '+JSON.stringify(exceptions));
     await evaluate(`(()=>{const select=document.querySelector('[aria-label="JSON import behavior"]');select.value='replace';select.dispatchEvent(new Event('change',{bubbles:true}));})()`);
     const rect=await evaluate(`(()=>{const r=document.querySelector('[data-testid="home-plan"]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()`);
     assert(rect.width>200&&rect.height>300,'Plan viewport must grow beyond the old 280px height.');
     const fillsWorkspace=()=>evaluate(`(()=>{const views=document.querySelector('[data-testid="home-viewports"]').getBoundingClientRect(),workspace=document.querySelector('[data-testid="home-workspace"]').getBoundingClientRect(),preview=document.querySelector('[data-testid="home-preview"]').getBoundingClientRect();return Math.abs(views.bottom-workspace.bottom)<2&&Math.abs(preview.bottom-views.bottom)<2&&preview.height>200})()`);
     assert(await fillsWorkspace(),'Plan and live preview must fill the available workspace height.');
     const click=async(x,y)=>{await send('Input.dispatchMouseEvent',{type:'mousePressed',x,y,button:'left',clickCount:1});await send('Input.dispatchMouseEvent',{type:'mouseReleased',x,y,button:'left',clickCount:1});await delay(70);};
-    const button=async(text)=>{const point=await evaluate(`(()=>{const b=[...document.querySelectorAll('button')].find(b=>b.textContent.trim()===${JSON.stringify(text)});if(!b||b.disabled)throw Error('Button unavailable: '+${JSON.stringify(text)});b.scrollIntoView({block:'nearest'});const r=b.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);await click(point.x,point.y);};
+    const button=async(text)=>{const point=await evaluate(`(()=>{const b=[...document.querySelectorAll('button')].find(b=>(b.getAttribute('aria-label')||b.textContent.trim())===${JSON.stringify(text)});if(!b||b.disabled)throw Error('Button unavailable: '+${JSON.stringify(text)});b.scrollIntoView({block:'nearest'});const r=b.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);await click(point.x,point.y);};
     const counts=()=>evaluate(`document.querySelector('aside').textContent.match(/(\\d+) walls · (\\d+) floors · (\\d+) nodes/).slice(1).map(Number)`);
     const point=(x,z)=>({x:rect.x+80+x*45,y:rect.y+80+z*45});
     const corners=[[0,0],[3.048,0],[3.048,3.048],[0,3.048],[0,0]];
@@ -89,7 +105,7 @@ async function main(){
     await button('Floor');for(const corner of corners.slice(0,4)){const p=point(...corner);await click(p.x,p.y);}
     assert.deepEqual(await counts(),[4,0,4],'A floor draft must remain separate until Finish.');
     await button('Finish Floor');assert.deepEqual(await counts(),[4,1,4]);
-    assert.equal(await evaluate(`[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Select').getAttribute('aria-pressed')`),'true','Finishing a floor must exit drawing into Select.');
+    assert.equal(await evaluate(`[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')==='Select').getAttribute('aria-pressed')`),'true','Finishing a floor must exit drawing into Select.');
     await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape'});await send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape'});assert.deepEqual(await counts(),[4,1,4],'Escape after Finish must retain the completed floor.');
     await button('Undo');assert.deepEqual(await counts(),[4,0,4]);await button('Redo');assert.deepEqual(await counts(),[4,1,4]);
     await button('Floor');for(const corner of corners.slice(0,3)){const p=point(...corner);await click(p.x,p.y);}
@@ -181,7 +197,7 @@ async function main(){
     // Roof tools share the active level's existing corners, without consuming floor hits.
     await button('Reset View');await button('Roof');for(const corner of corners.slice(0,4)){const p=point(...corner);await click(p.x,p.y);}await button('Finish Roof');
     let roofDoc=await exported();assert.equal(roofDoc.version,5);assert.equal(roofDoc.roofs.length,1);assert.equal(roofDoc.nodes.length,8);assert.equal(roofDoc.roofs[0].levelId,roofDoc.levels[1].id);
-    assert.equal(await evaluate(`[...document.querySelectorAll('button')].find(b=>b.textContent.trim()==='Select').getAttribute('aria-pressed')`),'true');
+    assert.equal(await evaluate(`[...document.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')==='Select').getAttribute('aria-pressed')`),'true');
     const scalar=async(label,value)=>{await evaluate(`(()=>{const input=document.querySelector('input[aria-label='+JSON.stringify(${JSON.stringify(label)})+']');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,${JSON.stringify(String(value))});input.dispatchEvent(new Event('input',{bubbles:true}));})()`);await delay(50)};
     const roofKind=async(kind)=>{await evaluate(`(()=>{const select=document.querySelector('select[aria-label="Roof type"]');select.value=${JSON.stringify(kind)};select.dispatchEvent(new Event('change',{bubbles:true}));})()`);await delay(50)};
     await scalar('Pitch (rise / 12)',8);await scalar('Direction (degrees)',45);await edit('Eave offset',108);await edit('Roof thickness',8);
@@ -237,9 +253,31 @@ async function main(){
     await send('Emulation.setDeviceMetricsOverride',{width:1250,height:1000,deviceScaleFactor:1,mobile:false});await delay(100);
     // Same Project room + existing Model, using the actual shared Scene geometry owner.
     await send('Emulation.setDeviceMetricsOverride',{width:1800,height:1100,deviceScaleFactor:1,mobile:false});
-    await evaluate('window.__mountProject()');await delay(600);
+    await evaluate('window.__mountProject()');await delay(600);assert.match(await evaluate(`document.querySelector('[data-testid=design-save-status]').textContent`),/No unsaved/,'Fresh Project placeholder starts clean.');
+    const projectStyles=()=>evaluate(`[document.querySelector('.threed-project-toolbar'),document.querySelector('.threed-project-toolbar button'),document.querySelector('.threed-project-toolbar [aria-label="Project Assets"]')].map(el=>{const c=getComputedStyle(el);return Object.fromEntries(['fontFamily','fontSize','fontWeight','lineHeight','color','backgroundColor','borderColor','borderWidth','padding','margin','height','alignItems'].map(k=>[k,c[k]]))})`);
+    const designStyles=await projectStyles();await evaluate("window.__setProjectMode('3d')");await delay(130);assert.deepEqual(await projectStyles(),designStyles,'Project Header and Toolbar CSS must match the established 3D mode.');await evaluate("window.__setProjectMode('design')");await delay(130);
+    const splitRect=()=>evaluate(`(()=>{const r=document.querySelector('[data-testid="home-plan"]').getBoundingClientRect();return {width:r.width,height:r.height}})()`);
+    const layoutCheck=()=>evaluate(`(()=>{const bottom=document.querySelector('[data-testid="design-bottom-panel"]').getBoundingClientRect(),scene=document.querySelector('[data-testid="existing-scene"]').getBoundingClientRect(),plan=document.querySelector('[data-testid="home-plan"]').getBoundingClientRect(),controls=document.querySelector('[data-testid="design-controls"]').getBoundingClientRect();return bottom.top>=scene.bottom&&plan.top>=bottom.top&&plan.bottom<=bottom.bottom&&controls.top>=bottom.top&&controls.bottom<=bottom.bottom&&Math.abs(scene.left-plan.left)<2&&Math.abs(scene.right-plan.right)<2&&bottom.bottom<=innerHeight})()`);
+    assert(await layoutCheck(),'The full Design editor, including Plan and controls, belongs below the Scene in aligned columns.');
+    const sidebarCheck=()=>evaluate(`(()=>{const properties=document.querySelector('[data-testid="design-properties-panel"]').getBoundingClientRect(),plan=document.querySelector('[data-testid="home-plan"]').getBoundingClientRect(),bottom=document.querySelector('[data-testid="design-bottom-panel"]').getBoundingClientRect(),assets=document.querySelector('[data-testid="assets-sizing-reference"]').getBoundingClientRect(),library=document.querySelector('[data-testid="library-sizing-reference"]').getBoundingClientRect();return Math.abs(properties.width-assets.width)<1&&Math.abs(properties.width-library.width)<1&&Math.abs(properties.left-bottom.left)<1&&Math.abs(properties.right-plan.left)<2&&Math.abs(plan.right-bottom.right)<12&&plan.width>bottom.width-properties.width-20})()`);
+    console.log('Rendered column bounds:',await evaluate(`['#project-assets-panel','[data-testid="design-properties-panel"]','[data-testid="existing-scene"]','[data-testid="home-plan"]'].map(selector=>({selector,...document.querySelector(selector).getBoundingClientRect().toJSON()}))`));
+    assert(await evaluate(`(()=>{const assets=document.querySelector('#project-assets-panel').getBoundingClientRect(),properties=document.querySelector('[data-testid="design-properties-panel"]').getBoundingClientRect(),scene=document.querySelector('[data-testid="existing-scene"]').getBoundingClientRect(),plan=document.querySelector('[data-testid="home-plan"]').getBoundingClientRect();return Math.abs(assets.left-properties.left)<1&&Math.abs(assets.right-properties.right)<1&&Math.abs(scene.left-plan.left)<1&&Math.abs(scene.right-plan.right)<1&&assets.bottom<=properties.top&&Math.abs(scene.top-assets.top)<1})()`),'Actual Assets above Properties and Scene above Plan form two exactly aligned columns.');
+    assert(await sidebarCheck(),'Bottom-left Properties reuse actual Assets/Model Library width and Plan fills the remaining right side.');
+    assert(await evaluate(`(()=>{const c=document.querySelector('[data-testid="design-controls"]');return c.scrollWidth<=c.clientWidth+1&&c.scrollHeight>c.clientHeight})()`),'Properties scroll vertically with no clipped horizontal controls.');
+    assert(await evaluate(`['Select','Wall','Floor','Roof','Roof Cutout','Skylight','Door','Window','Pan','Fit Plan','Zoom to Selection','Reset View','Undo','Redo','Import JSON','Export JSON'].every(label=>!!document.querySelector('.threed-project-toolbar [aria-label="'+label+'"]'))&&!document.querySelector('[data-testid="design-bottom-panel"] nav')&&document.querySelectorAll('[aria-label="Save ThreeD Project"]').length===1&&!document.querySelector('[aria-label="Save Project"]')`),'All Design actions belong to the existing Project toolbar, with only one Save control.');
+    assert(await evaluate(`(()=>{const middle=document.querySelector('[data-testid="project-design-actions"]'),right=document.querySelector('[data-testid="project-design-history"]'),bottom=document.querySelector('[data-testid="design-bottom-panel"]');return ['Wall','Fit Plan','Zoom to Selection','Reset View'].every(label=>middle.querySelector('[aria-label="'+label+'"]'))&&['Undo','Redo','Import JSON','Export JSON'].every(label=>right.querySelector('[aria-label="'+label+'"]'))&&!bottom.querySelector('[data-testid="design-plan-header"]')&&!bottom.querySelector('nav')&&bottom.querySelector('[data-testid="design-rulers"]')&&getComputedStyle(middle).backgroundColor==='rgba(0, 0, 0, 0)'&&getComputedStyle(right).backgroundColor==='rgba(0, 0, 0, 0)'})()`),'One transparent Project toolbar separates middle Design tools and right actions; redundant Plan header is absent.');
+    await evaluate(`void(window.__simulationPanel=document.querySelector('[aria-label="Run Simulation"]'))`);
+    await button('Close Project Assets');assert(!await evaluate(`!!document.querySelector('#project-assets-panel')`));await button('Project Assets');await delay(80);assert(await layoutCheck());assert(await evaluate(`window.__simulationPanel===document.querySelector('[aria-label="Run Simulation"]')&&!window.__simulationPanel.hidden`),'Assets close/reopen retains the floating Simulation panel.');
+    assert(await evaluate(`document.querySelector('.threed-project-toolbar [aria-label="Select"]').dataset.variant==='secondary'&&document.querySelector('.threed-project-toolbar [aria-label="Undo"]').disabled`),'Active/disabled Design states use existing toolbar theme variants.');
+    await evaluate(`document.querySelector('[aria-label="Resize bottom Design workspace"]').focus()`);
+    await send('Input.dispatchKeyEvent',{type:'keyDown',key:'ArrowUp',code:'ArrowUp'});await send('Input.dispatchKeyEvent',{type:'keyUp',key:'ArrowUp',code:'ArrowUp'});await delay(100);
+    assert(await evaluate(`(()=>{const c=document.querySelector('[data-testid="existing-scene"] canvas'),r=c.getBoundingClientRect();return Math.abs(window.__projectCamera.aspect-r.width/r.height)<.01})()`),'R3F camera aspect follows the resized Canvas.');
+    await evaluate(`document.querySelector('[aria-label="Wall"]').focus()`);await delay(300);
+    assert(await evaluate(`[...document.querySelectorAll('[role="tooltip"]')].some(e=>e.textContent==='Wall')`),'Icon tooltip opens on keyboard focus.');
+    assert(await evaluate(`['Setup','Add'].every(text=>[...document.querySelectorAll('.threed-project-toolbar button')].some(b=>b.textContent.includes(text)))&&!!document.querySelector('.threed-project-toolbar [aria-label="Project Assets"]')`),'Project toolbar actions remain visible in Design.');
+    await evaluate(`document.activeElement.blur()`);
     const projectRect=await evaluate(`(()=>{const r=document.querySelector('[data-testid="home-plan"]').getBoundingClientRect();return {x:r.x,y:r.y,width:r.width,height:r.height}})()`);
-    assert(projectRect.height>500,'Project Design plan fills the available height');
+    assert(projectRect.height>250,'Project plan fills its bottom workspace: '+JSON.stringify(projectRect));
     const pp=(x,z)=>({x:projectRect.x+80+x*45,y:projectRect.y+80+z*45});
     await button('Wall');for(const corner of corners){const p=pp(...corner);await click(p.x,p.y);}
     await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape'});await send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape'});
@@ -249,18 +287,67 @@ async function main(){
     await evaluate(`window.__roomBefore=window.__projectDraft.history.present;window.__projectCanvas=document.querySelector('[data-testid="existing-scene"] canvas');window.__model=window.__projectScene.getObjectByName('existing-model');window.__wall=window.__projectScene.getObjectByName(window.__roomBefore.walls[0].id);window.__setProjectMode('3d')`);await delay(200);
     assert(await evaluate(`window.__projectCanvas===document.querySelector('[data-testid="existing-scene"] canvas')&&window.__model===window.__projectScene.getObjectByName('existing-model')&&window.__wall===window.__projectScene.getObjectByName(window.__roomBefore.walls[0].id)`),'Mode switching retains the Canvas, Model and generated wall owners');
     assert(await evaluate(`window.__wall.userData.sceneObjectId==='project:15:architecture:'+window.__roomBefore.walls[0].id&&Math.abs(window.__wall.parent.parent.scale.x-1/.3048)<1e-6`),'Stable entity identity and Project Scene scale');
-    await evaluate("window.__setProjectMode('design')");await delay(150);await button('Save Project');await delay(100);
+    for(const mode of ['2d','combined','design']){await evaluate(`window.__setProjectMode(${JSON.stringify(mode)})`);await delay(120);assert(await evaluate(`window.__projectCanvas===document.querySelector('[data-testid="existing-scene"] canvas')`));}await button('Save ThreeD Project');await delay(100);
     assert.equal(await evaluate('window.__projectSaved.config.keep'),'settings');assert.equal(await evaluate('window.__projectSaved.markers.length'),1);assert.equal(await evaluate('window.__projectSaved.markers[0].data.filePath'),'saved.glb');
-    assert.match(await evaluate(`document.querySelector('[data-testid="design-save-status"]').textContent`),/saved/);
+    assert.match(await evaluate(`document.querySelector('[data-testid="design-save-status"]').textContent`),/No unsaved/);
     await evaluate('window.__reopenProject()');await delay(150);assert.deepEqual(await counts(),[4,1,4]);assert.equal(await evaluate('window.__projectDraft.history.present.openings.length'),1);
     await button('Select');await click(projectDoorPoint.x,projectDoorPoint.y);assert.match(await evaluate('document.querySelector("aside").textContent'),/Selected Door/);
     const nameEdit=async(name)=>{await evaluate(`(()=>{const input=document.querySelector('input[aria-label="Design name"]');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,${JSON.stringify(name)});input.dispatchEvent(new Event('input',{bubbles:true}));})()`);await delay(50);};
-    await nameEdit('Captured Project edit');await evaluate("window.__projectSaveMode='pending'");await button('Save Project');await nameEdit('Newer Project edit');
+    await nameEdit('Captured Project edit');await evaluate("window.__projectSaveMode='pending'");await button('Save ThreeD Project');assert(await evaluate(`document.querySelector('[aria-label="Save ThreeD Project"]').disabled`),'Pending Project Save disables its sole toolbar control.');await nameEdit('Newer Project edit');
     await evaluate("window.__finishProjectSave();window.__projectSaveMode='normal'");await delay(120);
     assert.match(await evaluate(`document.querySelector('[data-testid="design-save-status"]').textContent`),/Unsaved Project/);assert.equal(await evaluate('window.__projectSaved.config.threeDArchitecture.document.name'),'Captured Project edit');
-    await evaluate("window.__projectSaveMode='fail'");await button('Save Project');await delay(120);assert.match(await evaluate('document.querySelector("[role=alert]").textContent'),/Mock Project Save failure/);
+    await evaluate("window.__projectSaveMode='fail'");await button('Save ThreeD Project');await delay(120);assert.match(await evaluate('document.querySelector("[role=alert]").textContent'),/Mock Project Save failure/);
     assert.equal(await evaluate('window.__projectDraft.history.present.name'),'Newer Project edit');
+    const bottomPoint=await evaluate(`(()=>{const r=document.querySelector('[aria-label="Resize bottom Design workspace"]').getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2}})()`);
+    const originalHeight=(await splitRect()).height;
+    await send('Input.dispatchMouseEvent',{type:'mousePressed',...bottomPoint,button:'left',clickCount:1});
+    await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:bottomPoint.x,y:bottomPoint.y-90,button:'left',buttons:1});
+    await send('Input.dispatchMouseEvent',{type:'mouseReleased',x:bottomPoint.x,y:bottomPoint.y-90,button:'left',clickCount:1});await delay(180);
+    assert((await splitRect()).height>originalHeight+65,'Raising the divider grows the bottom Plan and resizes the Scene above.');assert(await layoutCheck());
+    assert(await evaluate(`(()=>{const r=document.querySelector('[data-testid="existing-scene"] canvas').getBoundingClientRect();return Math.abs(window.__projectCamera.aspect-r.width/r.height)<.01})()`));
+    // Select a wall through the real Project 3D geometry click handler.
+    const scenePick=await evaluate(`(()=>{const wall=window.__projectScene.getObjectByName(window.__projectDraft.history.present.walls[0].id);wall.geometry.computeBoundingBox();const p=wall.geometry.boundingBox.getCenter(wall.position.clone()).applyMatrix4(wall.matrixWorld).project(window.__projectCamera),r=document.querySelector('[data-testid="existing-scene"] canvas').getBoundingClientRect();return {x:r.x+(p.x+1)*r.width/2,y:r.y+(1-p.y)*r.height/2}})()`);
+    await click(scenePick.x,scenePick.y);
+    assert.match(await evaluate('document.querySelector("[data-testid=design-selected-properties]").textContent'),/Selected Wall/,'3D picking exposes the selected wall properties.');
+    const editNumber=async(label,value)=>{await evaluate(`(()=>{const input=document.querySelector('input[aria-label="'+${JSON.stringify(label)}+'"]');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,${JSON.stringify(String(value))});input.dispatchEvent(new Event('input',{bubbles:true}));})()`);await delay(90)};
+    await evaluate('window.__selectedWall=window.__projectDraft.selected;window.__heightBefore=window.__projectDraft.history.present.walls.find(w=>w.id===window.__selectedWall).height');
+    await editNumber('Height (in)',120);
+    assert.equal(await evaluate('window.__projectDraft.history.present.walls.find(w=>w.id===window.__selectedWall).height'),3.048);
+    assert(await evaluate(`(()=>{const wall=window.__projectScene.getObjectByName(window.__selectedWall);wall.geometry.computeBoundingBox();return Math.abs(wall.geometry.boundingBox.max.y-3.048)<.001&&!!document.querySelector('[data-entity="'+window.__selectedWall+'"]')})()`),'Numeric property edits update the shared 2D entity and actual 3D geometry.');
+    assert.match(await evaluate('document.querySelector("[data-testid=design-save-status]").textContent'),/Unsaved/);
+    await evaluate(`document.querySelector('[aria-label="Height (in)"]').focus()`);
+    const historyBeforeInput=await evaluate('window.__projectDraft.history.past.length');
+    for(const key of ['Delete','Backspace','Escape']){await send('Input.dispatchKeyEvent',{type:'keyDown',key,code:key});await send('Input.dispatchKeyEvent',{type:'keyUp',key,code:key});}
+    await send('Input.dispatchKeyEvent',{type:'keyDown',key:'z',code:'KeyZ',modifiers:2});await send('Input.dispatchKeyEvent',{type:'keyUp',key:'z',code:'KeyZ',modifiers:2});
+    assert.equal(await evaluate('window.__projectDraft.history.past.length'),historyBeforeInput,'Property inputs retain their native editing shortcuts.');
+    assert.equal(await evaluate('window.__projectDraft.history.present.walls.length'),4);
+    await evaluate('document.activeElement.blur()');await button('Undo');assert.equal(await evaluate('window.__projectDraft.history.present.walls.find(w=>w.id===window.__selectedWall).height'),await evaluate('window.__heightBefore'));await button('Redo');
+    // Ruler samples expose their world positions; the same SVG transformation paints geometry and grid.
+    const rulerCheck=()=>evaluate(`(()=>{const svg=document.querySelector('[data-testid="home-plan"]'),g=[...svg.children].find(e=>e.hasAttribute('transform')),matrix=g.transform.baseVal.consolidate().matrix;return [...svg.querySelectorAll('[data-world]')].every(t=>Math.abs(Number(t.dataset.pixel)-(t.dataset.axis==='x'?matrix.e:matrix.f)-Number(t.dataset.world)*matrix.a)<.001)})()`);
+    assert(await rulerCheck());await click(scenePick.x,scenePick.y);await button('Zoom to Selection');assert(await rulerCheck());await button('Fit Plan');assert(await rulerCheck());
+    const zoomPointer=await evaluate(`(()=>{const svg=document.querySelector('[data-testid="home-plan"]'),r=svg.getBoundingClientRect(),g=[...svg.children].find(e=>e.hasAttribute('transform')),m=g.transform.baseVal.consolidate().matrix;const x=Math.round(r.x+r.width*.6),y=Math.round(r.y+r.height*.6);return {x,y,localX:x-r.x,localY:y-r.y,worldX:(x-r.x-m.e)/m.a,worldZ:(y-r.y-m.f)/m.a}})()`);
+    await send('Input.dispatchMouseEvent',{type:'mouseWheel',x:zoomPointer.x,y:zoomPointer.y,deltaX:0,deltaY:-200});await delay(120);
+    assert(await evaluate(`(()=>{const svg=document.querySelector('[data-testid="home-plan"]'),g=[...svg.children].find(e=>e.hasAttribute('transform')),m=g.transform.baseVal.consolidate().matrix;return Math.abs((${zoomPointer.localX}-m.e)/m.a-${zoomPointer.worldX})<1e-6&&Math.abs((${zoomPointer.localY}-m.f)/m.a-${zoomPointer.worldZ})<1e-6})()`),'Native wheel zoom preserves the world point beneath the cursor.');
+    await send('Input.dispatchMouseEvent',{type:'mousePressed',x:zoomPointer.x,y:zoomPointer.y,button:'left',clickCount:1,modifiers:1});await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:zoomPointer.x+30,y:zoomPointer.y+20,button:'left',buttons:1,modifiers:1});await send('Input.dispatchMouseEvent',{type:'mouseReleased',x:zoomPointer.x+30,y:zoomPointer.y+20,button:'left',clickCount:1,modifiers:1});await delay(100);assert(await rulerCheck());
+    const panOutside=await evaluate(`(()=>{const r=document.querySelector('[data-testid="home-plan"]').getBoundingClientRect();return {x:Math.round(r.x+r.width*.7),y:Math.round(r.y+r.height*.7),outX:Math.round(r.right+40),outY:Math.round(r.bottom+20)}})()`);
+    await send('Input.dispatchMouseEvent',{type:'mousePressed',x:panOutside.x,y:panOutside.y,button:'left',clickCount:1,modifiers:1});await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:panOutside.outX,y:panOutside.outY,button:'left',buttons:1,modifiers:1});await send('Input.dispatchMouseEvent',{type:'mouseReleased',x:panOutside.outX,y:panOutside.outY,button:'left',clickCount:1,modifiers:1});await delay(90);
+    const releasedTransform=await evaluate(`[...document.querySelector('[data-testid="home-plan"]').children].find(e=>e.hasAttribute('transform')).getAttribute('transform')`);
+    await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:panOutside.x,y:panOutside.y});await delay(60);
+    assert.equal(await evaluate(`[...document.querySelector('[data-testid="home-plan"]').children].find(e=>e.hasAttribute('transform')).getAttribute('transform')`),releasedTransform,'Releasing a captured pan outside the SVG cleans up the gesture.');assert(await rulerCheck());
+    await button('Fit Plan');await button('Wall');
+    const drawPoint=await evaluate(`(()=>{const r=document.querySelector('[data-testid="home-plan"]').getBoundingClientRect();return {x:Math.round(r.x+r.width*.6),y:Math.round(r.y+r.height*.3)}})()`);
+    await click(drawPoint.x,drawPoint.y);await send('Input.dispatchMouseEvent',{type:'mouseMoved',x:drawPoint.x+70,y:drawPoint.y+20,modifiers:8});await delay(80);
+    assert(await evaluate(`(()=>{const d=window.__projectPreview,w=d?.walls.at(-1);if(!w)return false;const a=d.nodes.find(n=>n.id===w.start),b=d.nodes.find(n=>n.id===w.end);return a.x===b.x||a.z===b.z})()`),'Shift drawing constrains the wall to a Project axis.');
+    await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape'});await send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape'});await delay(80);assert.equal(await evaluate('window.__projectPreview'),null);assert.equal(await evaluate('window.__projectDraft.history.present.walls.length'),4);await button('Select');
+    await send('Emulation.setDeviceMetricsOverride',{width:1800,height:1100,deviceScaleFactor:2,mobile:false});await delay(120);assert(await rulerCheck());
+    console.log('Passed: bottom height resizing/camera aspect, actual Project 3D selection, Imperial property/geometry/history/dirty updates, input keyboard isolation, selection framing, pointer-centered zoom, Alt pan and rulers at DPR 2.');
     console.log('Passed: native Project room/floor/door drawing alongside existing Model, Scene-unit scale/stable IDs, retained Canvas/owners on mode switching, mocked Project Save/reopen/editability and pending/failing Save retention.');
+    await send('Emulation.setDeviceMetricsOverride',{width:800,height:650,deviceScaleFactor:1,mobile:false});await delay(200);
+    assert(await evaluate(`(()=>{const plan=document.querySelector('[data-testid="home-plan"]').getBoundingClientRect(),toolbar=document.querySelector('.threed-project-toolbar').getBoundingClientRect(),split=document.querySelector('[data-testid="design-scene-split"]').getBoundingClientRect();return plan.width>150&&plan.height>150&&Math.abs(split.top-toolbar.bottom)<2})()`),'Narrow layout follows the actual wrapped toolbar and retains a usable drawing surface.');
+    assert(await evaluate(`(()=>{const panel=document.querySelector('[data-testid="design-bottom-panel"]'),bounds=panel.getBoundingClientRect(),main=document.querySelector('[data-testid="design-viewing-area"]').getBoundingClientRect(),groups=panel.querySelectorAll('aside > section');return bounds.top>=main.bottom&&bounds.width>main.width-2&&groups[1].getBoundingClientRect().left===groups[0].getBoundingClientRect().left&&panel.scrollHeight>=panel.clientHeight})()`),'Bottom Properties stack within their left sidebar and scroll internally.');assert(await sidebarCheck());assert(await evaluate(`(()=>{const c=document.querySelector('[data-testid="design-controls"]');return c.scrollWidth<=c.clientWidth+1})()`),'Responsive sidebar controls must not require horizontal scrolling.');
+    assert(await evaluate(`window.__projectCanvas===document.querySelector('[data-testid="existing-scene"] canvas')&&window.__projectDraft.history.present.walls.length===4`));
+    await send('Emulation.setDeviceMetricsOverride',{width:1800,height:1100,deviceScaleFactor:1,mobile:false});await delay(120);
+    console.log('Passed: mockup-aligned Assets/Properties and Scene/Plan columns, actual docked Assets close/reopen and retained Simulations, middle tools/right actions, no redundant Plan header, transparent theme wrappers, complete bottom Design workspace, native height divider/keyboard resizing, SVG bounds and camera aspect, toolbar CSS parity/availability, keyboard-focus tooltip and bounded responsive properties.');
     assert.deepEqual(exceptions,[]);
     await delay(500);const capture=await send('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(temporary,'home-design.png'),Buffer.from(capture.data,'base64'));
     console.log('Passed: native wall/floor drawing, Finish/Enter/closure completion into Select, completed floor retention/Undo, endpoint reuse, live shared-corner drag, numeric height, single-step Undo/Redo, cancellation, JSON export/import/rejection, deletion, isolated wheel zoom, retained Canvas Fit/shared 3D picking and real App CSS viewport fill/resize/short-height scrolling.');
@@ -268,5 +355,5 @@ async function main(){
     console.log('Passed: Door/Window hover/place/properties, invalid-height guidance, captured opening drag/Undo, host deletion cascade/Undo and editable v1/v2 JSON import/export.');
   }finally{ws?.close();process.kill();server.close();}
 }
-const deadline=setTimeout(()=>{console.error('Browser acceptance timed out.');process.exit(1);},75000);
+const deadline=setTimeout(()=>{console.error('Browser acceptance timed out.');process.exit(1);},150000);
 main().then(()=>clearTimeout(deadline)).catch(error=>{clearTimeout(deadline);console.error(error);process.exitCode=1;server.close();});

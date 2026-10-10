@@ -30,6 +30,8 @@ export function designService(database: Database) {
       await projectAccess(database, owner, row.projectId);
       return row;
     },
+    /** Historical candidate writer, with no active route caller. POST/PATCH return 410.
+     * Current editing must use Project Save, never this independent-record path. */
     async save(owner: string, value: unknown, updating: boolean) {
       const input = designInput(value, updating);
       return database.transaction(async tx => {

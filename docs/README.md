@@ -1,20 +1,22 @@
 # Documentation Hub
 
+Prepared checkpoint: **[v0.24.0-beta — ThreeD Designs: Dashboard workspace](releases/v0.24.0-beta.md)**. Package/root lockfile are `0.24.0-beta`; the Developer accepted the revised Dashboard Design layout October 10, 2026. Beta publication/deployment and authenticated architecture Save/reload are not confirmed.
+
 Current production: **[v0.24.0-alpha — ThreeD Designs: Project Scene integration](releases/v0.24.0-alpha-project-design.md)**, Developer-confirmed October 9, 2026. Detailed authenticated App and post-deployment verification remain separate.
 
-Released integration: **[ThreeD Designs](developers/THREED_DESIGNS.md)** - [Project Scene integration](plans/v0.24.0-alpha-designs-persistence.md). Design edits the same Project/Scene, saving architecture and existing Models through Project Save. No separate table/migration is required; detailed authenticated App acceptance remains pending. Earlier independent persistence instructions are superseded.
+**[ThreeD Designs](developers/THREED_DESIGNS.md)** edits the same active Project/Scene through shared drawing tools, linked 2D/3D geometry and the existing Project Save pipeline. The beta's accepted layout has Assets above Properties at the shared left-panel width, Scene above Plan/X/Z rulers on the right, a resizable row divider and one top Project toolbar with icon actions/tooltips. [User instructions](users/DASHBOARD_GUIDE.md#threed-design-beta) · [layout evidence](plans/v0.24.0-alpha-design-mockup-layout.md) · [storage and pipeline](developers/THREED_DESIGNS.md#exact-persistence-mapping). Mocked Save/load passed; authenticated restoration remains unverified. No separate table/migration is required; independent persistence guidance is superseded.
 
-Released v0.24.0-alpha tools: [Home Design live planning milestones](plans/v0.24.0-alpha-home-design.md) · [Drawing/opening/level/roof contracts and remaining stages](developers/THREED_HOME_DESIGN.md). Local wall/floor/door/window editing, named levels, Flat/Shed/Gable roofs with rectangular cutouts/skylights and editable version 5 JSON recovery. Overhangs/roof joins and Project persistence remain future work.
+Released v0.24.0-alpha drawing foundations: [Home Design milestones](plans/v0.24.0-alpha-home-design.md) · [Drawing/opening/level/roof contracts](developers/THREED_HOME_DESIGN.md). Shared wall/floor/door/window editing, named levels, Flat/Shed/Gable roofs with rectangular cutouts/skylights and editable version 5 JSON recovery now support the Project integration above. Overhangs/roof joins remain deferred; Project persistence is implemented against mocks but real Save/reload acceptance is pending.
 
 Earlier latest production checkpoint: **[v0.24.0-alpha — 3D Object Builder + Home Design Tools](releases/v0.24.0-alpha.md)**, Developer-confirmed October 9, 2026. Older release statements below are historical.
 
 Released Builder: [v0.24.0-alpha implementation](plans/v0.24.0-alpha-model-builder.md) · [Developer documentation](developers/THREED_MODEL_BUILDER.md). Admin Cottage generation, browser GLB/PNG export, six-role Model Textures, direct Blob primary uploads and explicit new Model registration. Detailed App/live and post-deployment acceptance remain separate from prior local validation.
 
-Current release: **[v0.23.0 — ThreeD Garden](releases/v0.23.0.md)**. Developer authorized stable GitHub publication of the existing code October 6, 2026. Package/root lockfile are 0.23.0; older checkpoint sections describe history. Preserve existing runtime and schema boundaries. GitHub publication and production deployment are distinct.
+Historical stable release: **[v0.23.0 — ThreeD Garden](releases/v0.23.0.md)**. Developer authorized stable GitHub publication October 6, 2026; package/root lockfile were 0.23.0 at that checkpoint. GitHub publication and production deployment are distinct.
 
 This directory is the canonical entry point for project documentation. Choose the path that matches what you are trying to do.
 
-Current production is **v0.22.27 — ThreeD App: wire Drizzle database commands**, Developer-confirmed October 5, 2026. See the [release record](releases/v0.22.27.md) and [npm database workflow](developers/LOCAL_DEVELOPMENT.md#database-schema-commands). Database push completion and live acceptance remain separately unconfirmed. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
+Historical production checkpoint **v0.22.27 — ThreeD App: wire Drizzle database commands** was Developer-confirmed October 5, 2026. See the [release record](releases/v0.22.27.md) and [npm database workflow](developers/LOCAL_DEVELOPMENT.md#database-schema-commands). Its validation limits remain recorded separately. The latest ThreeD MQTT safety boundary remains v0.18.3b through Phase 4L-K.
 
 The completed v0.20.0 infrastructure record is available in the [development plan](plans/v0.20.0.md).
 

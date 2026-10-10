@@ -20,6 +20,9 @@ export function useThreeDProjectSessionLoader() {
   const [loading, setLoading] = useState(true);
 
   const beginProjectTransition = useCallback(() => {
+    loadSequenceRef.current += 1;
+    abortRef.current?.abort();
+    abortRef.current = null;
     setLoading(true);
   }, []);
 

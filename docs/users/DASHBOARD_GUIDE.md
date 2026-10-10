@@ -22,4 +22,18 @@ The Dashboard is primarily a visualization surface. Authenticated ThreeD world a
 
 For character movement and world-action testing, see [ThreeD controls](THREED_CONTROLS.md).
 
+## ThreeD Design beta
+
+In the prepared [v0.24.0-beta checkpoint](../releases/v0.24.0-beta.md), open an existing Project at `/dashboard/scene` and choose **Design** in the Project toolbar. This edits architectural content in that Project's Scene; switching between 3D, 2D, Combined and Design retains the same Project.
+
+The accepted layout has Project Assets above Design Properties on the left and the 3D Scene above the 2D Plan on the right. Open Assets using its existing toolbar control. Drag the horizontal divider to resize the rows; Properties scrolls internally. Drawing/Fit/Frame/Reset icons occupy the toolbar middle; Undo/Redo/import/export sit beside the existing Project Save on the right. Hover or focus an icon for its Tooltip. No additional Plan header or separate Design Save is needed.
+
+Draw connected walls, close a floor, add hosted doors/windows, manage named levels and create Flat/Shed/Gable roofs with cutouts/skylights. Select architectural geometry in either view to show its supported properties. Length inputs use inches; X/Z rulers show feet. Position, dimensions, elevation, rotation and geometry flips appear only where applicable; drawing defaults are separate from selected-object settings. Invalid host/opening edits are rejected together and Undo/Redo preserves history.
+
+Use Pan, middle-drag or Alt-drag; wheel zoom anchors to the pointer. Fit Plan frames the active level, Zoom to Selection uses the selected geometry, and Reset View restores the original Plan view. Endpoint/grid snapping, Shift axis constraints, Escape cancellation, Delete/Backspace and Undo/Redo shortcuts are supported; text inputs retain their normal editing keys.
+
+Export JSON for architectural portability. Before Import, explicitly choose **Merge architectural content** or **Replace architectural content only**. Imports validate first and assign fresh IDs; replacement affects architecture only, preserving unrelated Models and Scene content. Imported edits use Project Save.
+
+**Beta verification limit:** the Developer accepted the layout, and automated mocked Save/load checks passed. Real authenticated architecture Save/reload remains unverified after an earlier disappearing-content report. Do not rely solely on a Save success message. For acceptance, draw a room/floor/door beside an existing Model, Save, reload, and confirm both remain and the room is still editable with no unsaved warning. No new schema script is needed. See [storage/source details and limitations](../developers/THREED_DESIGNS.md).
+
 In v0.18.1b, an active FarmBot assigned to the selected Project appears as a runtime ThreeD marker. Its DetailsCard can show the authenticated read-only MQTT connection state, freshness, recent status/message times, device position, and token expiry. The same marker can be used as an animation-only action target. Dashboard status does not expose credentials, broker/session identities, event history, worker controls, MQTT publishing, or physical FarmBot operation.

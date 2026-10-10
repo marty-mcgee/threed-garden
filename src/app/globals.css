@@ -407,6 +407,10 @@
   transition: background-color 150ms ease;
   text-shadow: var(--threed-surface-text-shadow);
 }
+/* Shared desktop/sidebar sizing used by Assets, Model Library and Design properties. */
+.threed-scene-sidebar-size {
+  @apply w-72 max-w-[calc(100vw-1rem)];
+}
 .threed-toolbar-dropdown-surface:hover,
 .threed-toolbar-dropdown-surface:focus-within,
 .threed-scene-panel-surface:hover,

@@ -3,6 +3,7 @@
 import type { SceneResourceIssue } from '@/components/threed/shared/SceneResourceStatus';
 import { DetailsSectionScope, PersistentDetails } from '@/components/map/details/PersistentDetails';
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { AlertTriangle, Boxes, Radio, ExternalLink, Crosshair, Search, X } from 'lucide-react';
 import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,7 @@ import { useSensorGroups } from '@/components/threed/physics/SensorGroupsWorkspa
 import { getThreeDIcon, getThreeDLabel } from '@/libraries/utils/map-helpers';
 
 export function ProjectAssetsPanel({
+  dockHost,
   selectedProjectId,
   resourceIssues = [],
   isOpen: isProjectAssetsOpen,
@@ -37,6 +39,7 @@ export function ProjectAssetsPanel({
   groundMapSelected = false,
   onOpenGroundMap,
 }: {
+  dockHost?: HTMLDivElement | null;
   resourceIssues?: SceneResourceIssue[];
   groundMapSelected?: boolean;
   onOpenGroundMap?: () => void;
@@ -73,6 +76,7 @@ export function ProjectAssetsPanel({
     const focusFrame = window.requestAnimationFrame(() => searchInputRef.current?.focus());
     const dismissWithEscape = (event: KeyboardEvent) => {
       if (event.key !== 'Escape') return;
+      if (dockHost && !dockHost.contains(event.target as Node)) return;
       event.preventDefault();
       onDismiss();
     };
@@ -82,16 +86,15 @@ export function ProjectAssetsPanel({
       window.cancelAnimationFrame(focusFrame);
       document.removeEventListener('keydown', dismissWithEscape);
     };
-  }, [isVisible, onDismiss]);
+  }, [isVisible, onDismiss, dockHost]);
 
-  return (
-    <DetailsSectionScope.Provider value={`assets:${selectedProjectId}`} >
-      {isVisible && (
+  const panel = isVisible && (
         <div
           id="project-assets-panel"
           role="region"
           aria-label="Project Assets"
-          className="threed-workspace-panel threed-scene-panel-surface absolute bottom-0 left-0 top-[38px] z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md"
+          className="threed-workspace-panel threed-scene-panel-surface threed-scene-sidebar-size absolute bottom-0 left-0 top-[38px] z-40 flex flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md"
+          style={dockHost ? { position: 'relative', top: 0, height: '100%' } : undefined}
         >
           <div className="mb-2 flex shrink-0 items-start justify-between gap-2">
             <div className="min-w-0">
@@ -257,8 +260,8 @@ export function ProjectAssetsPanel({
             <Button variant="outline" size="sm" className="w-full text-xs" disabled={Boolean(transform.session)} onClick={() => onSelectGroup('')}>+ New Sensor Group</Button>
           </div>
         </div>
-      )}
-
-    </DetailsSectionScope.Provider>
-  );
+      );
+  return <DetailsSectionScope.Provider value={`assets:${selectedProjectId}`}>
+    {dockHost ? createPortal(panel, dockHost) : panel}
+  </DetailsSectionScope.Provider>;
 }
