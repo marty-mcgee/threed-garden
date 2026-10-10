@@ -1,6 +1,8 @@
-Current development: 0.24.0-delta - cleanup toward release candidacy. Production remains 0.24.0-centaur. See docs/plans/v0.24.0-delta-cleanup.md. No stable or release-candidate readiness is implied.
+Prepared final release: 0.24.0 - ThreeD Designs: Project workspace and saved state. Developer confirms authenticated Save/Reload checks pass 100% on October 10, 2026. No RC suffix. Final publication/deployment not yet confirmed. See docs/releases/v0.24.0.md. Earlier pending-check statements are historical.
 
-Current production: v0.24.0-centaur - ThreeD Designs: Workspace tools and state. Developer-confirmed October 10, 2026. Package version remains 0.24.0-centaur. See docs/releases/v0.24.0-centaur.md. Authenticated Save/reopen, post-deployment checks and deployed SHA remain unconfirmed.
+Current development: 0.24.0-delta - cleanup toward release candidacy. The 0.24.0-delta planning checkpoint is Developer-confirmed released October 10, 2026; runtime cleanup acceptance is separate. See docs/plans/v0.24.0-delta-cleanup.md. No stable or release-candidate readiness is implied.
+
+Previous production: v0.24.0-centaur - ThreeD Designs: Workspace tools and state. Developer-confirmed October 10, 2026. Package version remains 0.24.0-centaur. See docs/releases/v0.24.0-centaur.md. Authenticated Save/reopen, post-deployment checks and deployed SHA remain unconfirmed.
 
 # ThreeD Garden documentation
 

@@ -147,7 +147,7 @@ const capture = vm.runInNewContext(ts.transpileModule(`const capture = ${provide
   { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText, {
   controlsRef: { current: null }, activeLayers: new Set(['models']), availableLayers: ['models'], envPreset: 'default-daylight',
   sunlight: undefined, extraGround: undefined, groundMap: undefined, autoRotate: false,
-  showGrid: false, showLegend: false, showGizmoCube: true, showControls: false, physicsDebug: false,
+  showGrid: false, showLegend: false, showSimulations: false, showGizmoCube: true, showControls: false, physicsDebug: false,
   projectId: 15, sensorCounterStateRef: sensorRef, activeScenario: null,
   scenarioInstructionVisible: false, showSensors: true, viewPresets: [],
 });

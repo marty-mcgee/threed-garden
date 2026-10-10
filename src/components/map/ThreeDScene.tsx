@@ -2382,11 +2382,12 @@ export function ThreeDScene({
   const [showGrid, setShowGrid] = useState(false);
   const [showLegend, setShowLegend] = useState(false);
   const [showSensors, setShowSensors] = useState(false);
+  const [showSimulations, setShowSimulations] = useState(true);
   const sensorsOverlay = useProjectOverlayPosition('sensors');
   const [activeScenario, setActiveScenario] = useState<ScenarioStartRequest | null>(null);
   const [scenarioInstructionVisible, setScenarioInstructionVisible] = useState(false);
   const scenarioInstruction = activeScenario?.projectId === projectId && scenarioInstructionVisible ? activeScenario : null;
-  useEffect(() => { setShowSensors(false); setActiveScenario(null); setScenarioInstructionVisible(false); }, [projectId]);
+  useEffect(() => { setShowSimulations(true); setShowSensors(false); setActiveScenario(null); setScenarioInstructionVisible(false); }, [projectId]);
   useEffect(() => {
     if (!scenarioStartRequest || scenarioStartRequest.projectId !== projectId) return;
     setShowSensors(scenarioStartRequest.kind === 'soccer');
@@ -3224,6 +3225,7 @@ export function ThreeDScene({
         autoRotate: Boolean(autoRotate),
         showGrid,
         showLegend,
+        showSimulations,
         showGizmo: showGizmoCube,
         showControls,
         physicsDebug,
@@ -3248,7 +3250,7 @@ export function ThreeDScene({
       };
     });
     return () => onViewStateProviderChange(null);
-  }, [sunlight, extraGround, groundMap, activeLayers, activeScenario, autoRotate, availableLayers, controlsReady, envPreset, onViewStateProviderChange, physicsDebug, projectId, scenarioInstructionVisible, showControls, showGizmoCube, showGrid, showLegend, showSensors, viewPresets]);
+  }, [sunlight, extraGround, groundMap, activeLayers, activeScenario, autoRotate, availableLayers, controlsReady, envPreset, onViewStateProviderChange, physicsDebug, projectId, scenarioInstructionVisible, showControls, showGizmoCube, showGrid, showLegend, showSensors, showSimulations, viewPresets]);
 
   useEffect(() => {
     if (!controlsReady || !controlsRef.current || !initialViewState) return;
@@ -3281,6 +3283,7 @@ export function ThreeDScene({
     setEnvPreset(initialViewState.environment);
     setShowGrid(initialViewState.showGrid);
     setShowLegend(initialViewState.showLegend);
+    setShowSimulations(initialViewState.showSimulations ?? true);
     setShowGizmoCube(initialViewState.showGizmo);
     setShowControls(initialViewState.showControls ?? false);
     setPhysicsDebug(initialViewState.physicsDebug ?? false);
@@ -3610,7 +3613,7 @@ export function ThreeDScene({
           {groundMapAsset.attribution || groundMapAsset.sourceProvider}
         </div>
       )}
-      {sceneProductionStarted && canRunSimulations && onSimulationParticipantsChange && <ProjectSimulationLauncher key={projectId} saveResults={saveSimulationResults}
+      {sceneProductionStarted && canRunSimulations && onSimulationParticipantsChange && <ProjectSimulationLauncher key={projectId} visible={showSimulations} onVisibleChange={setShowSimulations} saveResults={saveSimulationResults}
         subscribeSensors={subscribeSimulationSensors}
         context={{ projectId, allowed: canRunSimulations, ready: sceneProductionStarted && !physicsFailed,
           busy: !!placementLabel || transforming, controlledCharacterId, target: actionTarget, markers: sceneMarkers,

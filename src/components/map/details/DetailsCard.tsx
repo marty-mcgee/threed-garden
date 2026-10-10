@@ -10,6 +10,7 @@ import { assignedBedPlantings } from '@/libraries/services/threed/beds/bed-plant
 import { useAnimationActionSlots } from '@/components/admin/threed/animations/AnimationActionSlots';
 import { getCharacterAnimationAvailability, subscribeCharacterAnimationAvailability } from '@/libraries/services/threed/animations/runtime-availability';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { useProjectOverlayPosition } from '../panels/ProjectOverlayLayout';
 import { useSession } from 'next-auth/react';
 import { hasModelLoadFailure, subscribeModelLoadFailures } from '@/libraries/services/threed/models/model-load-failures';
 import { Box, Radio, Crosshair, ExternalLink, Gamepad2, Loader2, Pause, ScanSearch, Settings2, X } from 'lucide-react';
@@ -297,6 +298,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
   const animationAvailability = useSyncExternalStore(subscribeCharacterAnimationAvailability,
     () => getCharacterAnimationAvailability(Number(selected?.data?.id), String(selected?.data?.model?.filePath ?? '')),
     () => null);
+  const overlay = useProjectOverlayPosition('details');
   if (!selected) return null;
   const d = selected.data || selected.metadata?.data || selected.metadata || {};
   const isIncident = selected.latitude != null || selected.severity || (selected.title && selected.location);
@@ -527,15 +529,19 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
     <DetailsSectionScope.Provider value={`${projectId}:${selected.type}:${selected.id}:${selectedSensorId ?? 'asset'}`}>
     <DetailsCardActionsProvider>
     <div
-      className={`flex flex-col threed-workspace-panel threed-details-surface threed-inspector ${selectedSensorId ? 'threed-sensor-inspector' : ''} ${isCharacterMarker && !showCharacterSettings && !selectedSensorId && movingModuleMarkerId !== characterMarkerId ? '[&_[data-character-settings-section]]:hidden' : ''} absolute top-[38px] z-40 max-h-[calc(100%-38px)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-lg border border-foreground/15 text-foreground shadow-xl pointer-events-auto [scrollbar-width:thin] transition-[left]`}
+      ref={overlay.ref as React.Ref<HTMLDivElement>}
+      className={`flex flex-col threed-workspace-panel threed-details-surface threed-inspector ${selectedSensorId ? 'threed-sensor-inspector' : ''} ${isCharacterMarker && !showCharacterSettings && !selectedSensorId && movingModuleMarkerId !== characterMarkerId ? '[&_[data-character-settings-section]]:hidden' : ''} absolute top-[38px] z-40 max-h-[calc(100%-38px)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-lg border border-foreground/15 text-foreground shadow-xl pointer-events-auto [scrollbar-width:thin]`}
       style={{
         left: `${leftOffsetRem}rem`,
         backgroundColor: 'var(--threed-details-background, rgba(17, 26, 40, 0.5))',
+        ...overlay.style,
       }}
     >
       {/* Header */}
       <div
-        className="shrink-0 flex items-start justify-between gap-2 border-b border-foreground/10 px-3 py-3"
+        {...overlay.handle}
+        aria-label="Move asset details panel"
+        className={`${overlay.handle.className} shrink-0 flex items-start justify-between gap-2 border-b border-foreground/10 px-3 py-3`}
       >
         <div className="min-w-0 pb-1 pt-0.5">
           <div className="flex min-w-0 items-center gap-2">

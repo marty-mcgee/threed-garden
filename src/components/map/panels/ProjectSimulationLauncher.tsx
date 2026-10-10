@@ -14,7 +14,7 @@ import { simulationLaunchParticipants, type SimulationLaunch, type SimulationLau
 import type { SimulationRunState } from '@/libraries/services/threed/simulations/soccer-simulation-runner';
 import type { ThreeDPhysicsEventV1 } from '@/libraries/services/threed/physics/physics-event-core';
 
-type Props = { context: SoccerSceneContext; saveResults: boolean;
+type Props = { visible?: boolean; onVisibleChange?: (visible: boolean) => void; context: SoccerSceneContext; saveResults: boolean;
   onPrepare: (launch: SimulationLaunch) => void;
   subscribeSensors: (listener: (event: Readonly<ThreeDPhysicsEventV1>) => void) => () => void };
 async function read(projectId: number, signal: AbortSignal, suffix = '') {
@@ -24,7 +24,7 @@ async function read(projectId: number, signal: AbortSignal, suffix = '') {
   return result;
 }
 
-export function ProjectSimulationLauncher({ context, saveResults, onPrepare, subscribeSensors }: Props) {
+export function ProjectSimulationLauncher({ context, saveResults, onPrepare, subscribeSensors, visible, onVisibleChange }: Props) {
   const overlay = useProjectOverlayPosition('simulations');
   const { showToast, ToastComponent } = useToast();
   const [rows, setRows] = useState<SimulationLaunchSummary[]>([]), [page, setPage] = useState(0), [total, setTotal] = useState(0);
@@ -34,7 +34,9 @@ export function ProjectSimulationLauncher({ context, saveResults, onPrepare, sub
   const [runError, setRunError] = useState('');
   const [request, setRequest] = useState(0), [stopRequest, setStopRequest] = useState(0);
   const [refresh, setRefresh] = useState(0);
-  const [hidden, setHidden] = useState(false);
+  const [localHidden, setLocalHidden] = useState(false);
+  const hidden = visible === undefined ? localHidden : !visible;
+  const setHidden = useCallback((value: boolean) => { setLocalHidden(value); onVisibleChange?.(!value); }, [onVisibleChange]);
   useEffect(() => {
     const toggle = (event: Event) => {
       if ((event as CustomEvent<{ projectId: number }>).detail?.projectId !== context.projectId) return;
@@ -42,7 +44,7 @@ export function ProjectSimulationLauncher({ context, saveResults, onPrepare, sub
     };
     window.addEventListener('threed:simulation-panel', toggle);
     return () => window.removeEventListener('threed:simulation-panel', toggle);
-  }, [context.projectId]);
+  }, [context.projectId, setHidden]);
   const current = useRef(context); current.current = context;
   const lock = useRef(false), controller = useRef<AbortController | null>(null), pending = useRef<SimulationLaunch | null>(null);
   const actor = context.markers.find(marker => marker.id === launch?.simulation.definition.steps[0]?.actorMarkerId);

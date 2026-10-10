@@ -13,7 +13,7 @@ for (const viewMode of ['3d', '2d', 'combined', 'design']) {
   assert.deepEqual(restored.threeD, saved.threeD, 'Design mode must preserve the saved Scene state.');
 }
 assert.throws(() => parseThreeDProjectViewState({ ...saved, viewMode: 'unknown' }));
-const overlayPositions = { simulations: { x: 0.3, y: 0.5 }, scenarios: { x: 0, y: 1 }, tour: { x: 1, y: 0 }, sensorGroup: { x: 0.1, y: 0.2 }, sensors: { x: 1, y: 0.4 } };
+const overlayPositions = { details: { x: 0.75, y: 0.25 }, simulations: { x: 0.3, y: 0.5 }, scenarios: { x: 0, y: 1 }, tour: { x: 1, y: 0 }, sensorGroup: { x: 0.1, y: 0.2 }, sensors: { x: 1, y: 0.4 } };
 assert.deepEqual(parseThreeDProjectViewState(JSON.parse(JSON.stringify({ ...saved, overlayPositions }))).overlayPositions, overlayPositions);
 assert.equal(parseThreeDProjectViewState(saved).overlayPositions, undefined);
 assert.equal(parseThreeDProjectViewState(saved).projectTourOpen, undefined);
@@ -113,3 +113,10 @@ assert.equal(JSON.stringify(roundtrip.design),JSON.stringify(design));assert.equ
 for(const invalid of [{...design,plan:{...design.plan,scale:0}},{...design,sections:{'bad':'yes'}},{...design,split:99},{...design,plan:{...design.plan,x:Infinity}}]) assert.throws(()=>parseThreeDProjectViewState({...saved,design:invalid}));
 assert.throws(()=>parseThreeDProjectViewState({...saved,threeD:{...saved.threeD,cameraFov:180}}));
 console.log('PASS: Design pan/zoom, selection, split, section state, inspector reference and camera projection roundtrip with bounded validation.');
+
+for (const visible of [false, true]) {
+ const input = {...saved, threeD: {...saved.threeD, showSimulations: visible}};
+ assert.equal(parseThreeDProjectViewState(JSON.parse(JSON.stringify(input))).threeD?.showSimulations, visible);
+}
+assert.equal(parseThreeDProjectViewState(saved).threeD?.showSimulations, undefined);
+assert.throws(() => parseThreeDProjectViewState({...saved, threeD: {...saved.threeD, showSimulations: 'false'}}));

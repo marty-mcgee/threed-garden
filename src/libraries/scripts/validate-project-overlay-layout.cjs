@@ -23,7 +23,8 @@ vm.runInNewContext(ts.transpileModule(fs.readFileSync('src/components/map/panels
     useLayoutEffect: effect => effects.push(effect),
   }; },
 });
-function render() { cursor = 0; effects = []; const result = exportsObject.useProjectOverlayPosition('simulations'); result.ref.current = panel; effects.forEach(effect => effect()); return result; }
+let overlayId = 'simulations';
+function render() { cursor = 0; effects = []; const result = exportsObject.useProjectOverlayPosition(overlayId); result.ref.current = panel; effects.forEach(effect => effect()); return result; }
 let result = render(); result = render(); assert.equal(result.style, undefined);
 let captured = false;
 const handle = { setPointerCapture() { captured = true; }, hasPointerCapture() { return captured; }, releasePointerCapture() { captured = false; } };
@@ -51,3 +52,11 @@ panel.left = 250;
 result.handle.onKeyDown({ key: 'ArrowLeft', currentTarget: handle, target: handle, preventDefault() {}, stopPropagation() {} });
 assert.equal(layout.positions.simulations.x, 234 / 250);
 console.log('PASS: actual overlay drag, viewport bounds, resizing, cancellation, control exclusion, keyboard movement and reset.');
+
+// The active DetailsCard uses the same persisted slot and reset path.
+overlayId = 'details'; layout.positions = {}; parent.clientWidth = 1000;
+result = render(); result = render(); result.handle.onPointerDown(event(0, 0)); result.handle.onPointerMove(event(9999, 9999)); result.handle.onPointerUp(event(9999,9999));
+assert.equal(layout.positions.details.x, 1); assert.equal(layout.positions.details.y, 1);
+result = render(); assert.equal(result.style.left, 650);
+layout.positions = JSON.parse(JSON.stringify(layout.positions)); result = render(); assert.equal(result.style.left,650);
+layout.positions = {}; result = render(); assert.equal(result.style,undefined,'Reset restores the DetailsCard default placement.');

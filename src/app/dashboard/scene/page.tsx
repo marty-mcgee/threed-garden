@@ -3241,7 +3241,7 @@ function UnifiedMapPageInner() {
         selectedSensorId={sensorInspector?.ownerId === selectedMarker?.id ? sensorInspector?.sensorId : null}
         onSelectSensor={(sensorId) => setSensorInspector(sensorId && selectedMarker ? { ownerId: selectedMarker.id, sensorId } : null)}
         projectId={selectedProjectId}
-        leftOffsetRem={isLeftSceneWorkspaceOpen ? 18.25 : 0.25}
+        leftOffsetRem={isLeftSceneWorkspaceOpen ? 18 : 0}
         onClose={() => { setSelectedMarker(null); setSelectedIncident(null); }}
         sceneAvailable={viewMode !== '2d' && isThreeDPresentationComplete}
         controlledCharacterId={controlledCharacterId}

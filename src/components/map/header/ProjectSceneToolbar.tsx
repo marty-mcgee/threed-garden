@@ -96,14 +96,14 @@ export function ProjectSceneToolbar({
         <Button variant={viewMode === '3d' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" aria-pressed={viewMode === '3d'} onClick={() => onViewModeChange('3d')} title="3D View">
           <Box className="h-3.5 w-3.5" />
         </Button>
+        <Button variant={viewMode === 'design' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" aria-pressed={viewMode === 'design'} onClick={() => onViewModeChange('design')} title="ThreeD Design View" aria-label="ThreeD Design View">
+          <PencilRuler className="h-3.5 w-3.5 text-cyan-400" />
+        </Button>
         <Button variant={viewMode === '2d' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" aria-pressed={viewMode === '2d'} onClick={() => onViewModeChange('2d')} title="2D View">
           <Touchpad className="h-3.5 w-3.5" />
         </Button>
         <Button variant={viewMode === 'combined' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" aria-pressed={viewMode === 'combined'} onClick={() => onViewModeChange('combined')} title="Combined View">
           <Layers className="h-3.5 w-3.5" />
-        </Button>
-        <Button variant={viewMode === 'design' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" aria-pressed={viewMode === 'design'} onClick={() => onViewModeChange('design')} title="ThreeD Design View" aria-label="ThreeD Design View">
-          <PencilRuler className="h-3.5 w-3.5 text-cyan-400" />
         </Button>
       </div>
 

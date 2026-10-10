@@ -152,10 +152,10 @@ const route='src/app/api/project/threed-markers/route.ts';
 const tables=Object.fromEntries(['project','projectAssets','projectThreed','projectThreedMarkers'].map(name=>[name,new Proxy({name},{get:(o,key)=>key==='name'?name:name+'.'+String(key)})]));
 const orm=Object.fromEntries(['and','eq','inArray','notInArray'].map(name=>[name,(...args)=>({name,args})]));
 orm.sql=(strings,...values)=>({strings:[...strings],values});
-let signedIn=true,owned=true,fail=false,missingUpdate=false,writes=0,conditions=[],assignments=[{moduleId:7,assetType:'threed_models',assetId:20}];
+let signedIn=true,owned=true,fail=false,missingUpdate=false,workspaceWriteFault=null,writes=0,conditions=[],assignments=[{moduleId:7,assetType:'threed_models',assetId:20}];
 let stored={config:{unrelated:{keep:true}},markers:[]};
 const db={select(){const q={};const chain={from(table){q.table=table;return chain;},innerJoin(){return chain;},limit(){return chain;},where(condition){conditions.push(condition);return chain;},then(resolve,reject){return Promise.resolve(q.table===tables.project?(owned?[{id:15,userId:'owner',metersPerSceneUnit:'.3048'}]:[]):assignments).then(resolve,reject);}};return chain;},
- async transaction(fn){writes++;const pending=structuredClone(stored);const tx={execute:async()=>{},insert(){return{values(rows){pending.markers=structuredClone(rows);return{onConflictDoUpdate(){return{returning:async()=>rows};}}}};},delete(){return{where:async()=>{}};},update(){return{set(values){const delta=JSON.parse(values.config.values[1]);return{where(){return{returning:async()=>{if(fail)throw Error('mock transaction failure');if(missingUpdate)return [];pending.config={...pending.config,...delta};return [{config:structuredClone(pending.config)}];}};}};}};}};
+ async transaction(fn){writes++;const pending=structuredClone(stored);const tx={execute:async()=>{},insert(){return{values(rows){pending.markers=structuredClone(rows);return{onConflictDoUpdate(){return{returning:async()=>rows};}}}};},delete(){return{where:async()=>{}};},update(){return{set(values){const delta=JSON.parse(values.config.values[1]);return{where(){return{returning:async()=>{if(fail)throw Error('mock transaction failure');if(missingUpdate)return [];pending.config={...pending.config,...delta};const returned=structuredClone(pending.config);if(workspaceWriteFault==='missing')delete returned.threeDViewState;if(workspaceWriteFault==='reordered')returned.threeDViewState=Object.fromEntries(Object.entries(returned.threeDViewState).reverse());if(workspaceWriteFault==='stale')returned.threeDViewState={...returned.threeDViewState,panelHeight:33};return [{config:returned}];}};}};}};}};
  const result=await fn(tx);stored=pending;return result;}};
 class MarkerError extends Error{};class ViewError extends Error{};class PlantingError extends Error{};
 const scope={...tables,...orm,db,Buffer,Date,console:{error(){}},NextResponse:{json:(body,options)=>({body,status:options?.status??200})},
@@ -229,6 +229,7 @@ const context={selectedProjectId:'15',canEditProject:true,loading:false,savingPr
  assert.match(feedback,/did not confirm/);assert(architecture.architectureIsDirty(drafts.current.get('15')));
  // Latest editor state -> actual client Save -> PUT transaction -> GET -> session -> actual Dashboard hydration.
  drafts.current.set('15',{...draft,workspace:{...workspace.defaultDesignWorkspace(),plan:{x:-321,y:224,scale:73},selectedEntityId:'door',split:62,sections:{'design:properties':false}}});
+ context.overlayPositions={details:{x:0.7,y:0.2}};
  context.fetch=async(url,options)=>{body=JSON.parse(options.body);const result=await save(request(body));return {ok:result.status===200,status:result.status,json:async()=>result.body};};
  await callback();assert.equal(feedback,'');assert(!architecture.architectureIsDirty(drafts.current.get('15')));
  const response=await get({url:'http://local/api/map/threed?projectId=15'});assert.equal(response.status,200);
@@ -238,6 +239,7 @@ const context={selectedProjectId:'15',canEditProject:true,loading:false,savingPr
  assert.equal(JSON.stringify(restored.history.present),JSON.stringify(source));assert(!architecture.architectureIsDirty(restored));
  assert.equal(loaded.session.data.threed.raw.models[0].filePath,'saved.glb');assert.equal(loaded.session.data.threed.raw.projectThreedMarkers[0].markerId,model.markerId);
  assert.equal(stored.config.unrelated.keep,true);
+ assert.equal(loaded.session.savedViewState.overlayPositions.details.x,0.7);assert.equal(loaded.session.savedViewState.overlayPositions.details.y,0.2);
  assert.equal(restored.workspace.plan.x,-321);assert.equal(restored.workspace.plan.scale,73);assert.equal(restored.workspace.split,62);assert.equal(restored.selected,'door');assert.equal(restored.workspace.sections['design:properties'],false);
  const workspaceEdit={...restored,workspace:{...restored.workspace,split:55}};assert(architecture.architectureIsDirty(workspaceEdit));assert(architecture.architectureIsDirty(architecture.acknowledgeArchitecture(workspaceEdit,captured,restored.workspace)),'A workspace edit during Save must remain unsaved.');
  fresh.current.set('15',newer);assert.equal(await hydrateDashboard(loaded.session,fresh),newer,'Reload may not overwrite genuine unsaved edits.');
@@ -267,6 +269,14 @@ async function run(){
  const invalid=session.buildThreeDProjectSession({success:true,projectContext:{architecture:{version:99}}},'15');assert.equal(invalid.success,false);
  assert.equal(session.buildThreeDProjectSession({success:true,projectContext:{projectId:16,architecture:captured}},'15').success,false);
  const beforeMissing=JSON.stringify(stored);missingUpdate=true;assert.equal((await save(request(input))).status,500);assert.equal(JSON.stringify(stored),beforeMissing);missingUpdate=false;
+ for(const fault of ['missing','stale']) {
+  const beforeFault=JSON.stringify(stored);workspaceWriteFault=fault;
+  const rejected=await save(request({...input,architecture:{version:1,document:{...source,name:'Must roll back'}}}));
+  assert.equal(rejected.status,500,'Unconfirmed workspace must fail Save: '+fault);
+  assert.equal(JSON.stringify(stored),beforeFault,'Markers, architecture and workspace must roll back together.');
+ }
+ workspaceWriteFault='reordered';assert.equal((await save(request(input))).status,200,'JSONB key order must not cause false Save failures.');
+ workspaceWriteFault=null;
  await checkClientSave(model,view);
  const complete=document.validateDesign({...withRoof,levels:[...withRoof.levels,{id:'upper',name:'Upper',elevation:3.048}],nodes:[...withRoof.nodes,{id:'up-a',x:5,z:0},{id:'up-b',x:8,z:0}],walls:[...withRoof.walls,{...withRoof.walls[0],id:'upper-wall',levelId:'upper',start:'up-a',end:'up-b'}]});
  assert.equal((await save(request({...input,architecture:{version:1,document:complete}}))).status,200);
@@ -301,3 +311,12 @@ const cameraContext={controlsReady:false,controlsRef:{current:{object:projection
 for(const name of new Set(cameraEffect.match(/\bset[A-Z]\w+/g)))cameraContext[name]=()=>{};
 const restoreCamera=vm.runInNewContext(compile('('+cameraEffect+')'),cameraContext);restoreCamera();assert.equal(projection.updated,undefined);cameraContext.controlsReady=true;restoreCamera();assert.deepEqual(projection.position.values,[10000,10,10000]);assert.deepEqual(target.values,[9990,0,9990]);assert.equal(projection.zoom,1.5);assert.equal(projection.fov,60);assert(projection.updated);projection.position.values=[12,13,14];restoreCamera();assert.deepEqual(projection.position.values,[12,13,14],'Later renders must not reapply saved camera over user navigation.');
 console.log('PASS: actual camera restoration waits for controls, restores position/target/zoom/FOV beyond Model bounds, and does not reapply on later renders.');
+
+let simulationVisibility;
+cameraContext.setShowSimulations=value=>simulationVisibility=value;
+cameraContext.restoredProjectViewKeyRef.current=null;
+cameraContext.initialViewState={...cameraContext.initialViewState,showSimulations:false};restoreCamera();assert.equal(simulationVisibility,false,'Saved closed Simulations must restore closed.');
+cameraContext.restoredProjectViewKeyRef.current=null;
+cameraContext.initialViewState={...cameraContext.initialViewState,showSimulations:true};restoreCamera();assert.equal(simulationVisibility,true);
+cameraContext.restoredProjectViewKeyRef.current=null;
+delete cameraContext.initialViewState.showSimulations;restoreCamera();assert.equal(simulationVisibility,true,'Legacy Projects retain visible default.');

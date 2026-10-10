@@ -544,6 +544,14 @@ async function saveSnapshot(request: NextRequest) {
         updatedAt: new Date(),
       }).where(and(eq(project.id, projectId), eq(project.userId, userId))).returning({ config: project.config });
       if (!savedProject) throw new Error('Project disappeared during Save');
+      // JSONB may reorder object keys, including dynamic section IDs.
+      const workspaceJSON = (value: unknown) => JSON.stringify(value, (_key, item) =>
+        item && typeof item === 'object' && !Array.isArray(item)
+          ? Object.fromEntries(Object.entries(item).sort(([a], [b]) => a.localeCompare(b))) : item);
+      let savedViewState;
+      try { savedViewState = parseThreeDProjectViewState((savedProject.config as Record<string, unknown>)?.threeDViewState); }
+      catch { throw new Error('Project workspace write was not confirmed'); }
+      if (workspaceJSON(savedViewState) !== workspaceJSON(viewState)) throw new Error('Project workspace write was not confirmed');
       const savedArchitecture = architecture ? parseProjectArchitecture((savedProject.config as Record<string, unknown>)?.threeDArchitecture) : undefined;
       if (architecture && JSON.stringify(savedArchitecture) !== JSON.stringify(architecture)) throw new Error('Project architecture write was not confirmed');
       return { markers: savedRows, architecture: savedArchitecture };
