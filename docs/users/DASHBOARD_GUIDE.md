@@ -1,6 +1,6 @@
 # Dashboard Guide
 
-Prepared checkpoint: **[v0.24.0-centaur — ThreeD Designs: Workspace tools and state](../releases/v0.24.0-centaur.md)** (October 10, 2026). Package/root lockfile are `0.24.0-centaur`; production remains Developer-confirmed `v0.24.0-beta`. Includes canvas-local tools, staged JSON import, Project workspace snapshot support and compact colored Properties headers. Authenticated Save/reopen remains unverified. Prepared locally; no publication or deployment. Earlier version statements below record their original checkpoints.
+Current production: **[v0.24.0-centaur — ThreeD Designs: Workspace tools and state](../releases/v0.24.0-centaur.md)**, Developer-confirmed October 10, 2026. Package/root lockfile remain `0.24.0-centaur`. Includes canvas-local tools, staged JSON import, Project workspace snapshot support and compact colored Properties headers. Authenticated Save/reopen, post-deployment verification and exact deployed SHA remain unconfirmed. This records release confirmation only; no Git write or deployment is authorized. Earlier checkpoint statements below are historical.
 
 The Dashboard at `/dashboard` presents project-scoped Multimedia, ThreeD Garden, and Traffic data. Choose a project before evaluating its assets.
 
