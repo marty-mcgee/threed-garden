@@ -1,10 +1,14 @@
+## Current production: v0.24.4
+
+**[v0.24.4 — ThreeD Workspace: Save feedback and interface cleanup](docs/releases/v0.24.4.md)**. Developer confirmed production release October 11, 2026. Package/root lockfile remain `0.24.4`; dependencies and database schema are unchanged. Prior local TypeScript, 71-task offline CI and guarded build (143 pages) are pre-release evidence, not independent post-deployment verification. Exact deployed SHA and independent post-deployment checks remain unconfirmed. v0.24.0 authenticated Save/Reload remains Developer-accepted 100%; named-view authenticated smoke, physical-device touch and Builder acceptance remain separately documented. This confirmation changes documentation only; leave changes unstaged under the Manual Release Gate. Earlier preparation-only and production-version statements below are historical and superseded by this confirmation.
+
 ## v0.24.4 local checkpoint validation
 
 October 11, 2026: npm run typecheck passed; npm run validate -- ci passed all 71 offline tasks with mocked boundaries; guarded agent-owned npm run build passed compilation/TypeScript and generated 143 pages. Build used explicit offline Google-font CSS mocks with a local system-font source, an unreachable localhost DATABASE_URL and a Node network/fetch guard. No server was started or stopped. Package and both root lockfile version fields are 0.24.4; other package/lock content matches HEAD. Ten relative checkpoint links resolve and git diff --check passed. No standalone lint configuration exists. No browser visual, authenticated App or production verification, real database/device/storage writes, migrations/seeds, Git writes or deployment were performed.
 
 See [release notes](docs/releases/v0.24.4.md) for exact scope and manual smoke checks. Production remains Developer-confirmed v0.24.3; leave changes unstaged.
 
-## Local v0.24.4 release checkpoint
+## Historical local v0.24.4 release checkpoint
 
 **[v0.24.4 — ThreeD Workspace: Save feedback and interface cleanup](docs/releases/v0.24.4.md)**. Prepared locally October 11, 2026 on `main`. Package/root lockfile are `0.24.4`; dependencies and database schema are unchanged. Production remains Developer-confirmed v0.24.3. This checkpoint is not yet published or deployed. Earlier local-version statements below are historical; leave changes unstaged under the Manual Release Gate.
 
@@ -38,7 +42,7 @@ October 11, 2026: Developer requested removal of the bottom-left unsaved archite
 
 Checks: npm run typecheck, node src/libraries/scripts/validate-workspace-save-feedback.cjs and git diff --check passed. No browser/visual verification, build, server, database writes or Git writes were performed. Manual check: change Project workspace state; confirm no bottom-left yellow message, a green Save outline and yellow corner dot, with the hover/focus explanation still available. This starts v0.24.4 work; package/root lockfile remain released 0.24.3 until release preparation. Leave changes unstaged.
 
-## Current production: v0.24.3
+## Previous production: v0.24.3
 
 **[v0.24.3 — ThreeD Scene: Saved views and component cleanup](docs/releases/v0.24.3.md)**. Developer confirmed production release October 11, 2026. Package/root lockfile remain `0.24.3`; dependencies and database schema are unchanged. Prior local validation is pre-release evidence, not independent post-deployment verification. Exact deployed SHA and authenticated named-view Save/reload smoke checks remain unconfirmed. v0.24.0 authenticated Save/Reload remains Developer-accepted 100%. This records release confirmation only; leave changes unstaged under the Manual Release Gate.
 
