@@ -22,7 +22,7 @@ function callback(file, name, context) {
   }
   visit(source);
   assert.ok(arrow, name);
-  return vm.runInNewContext(compile(`const result = ${arrow.getText(source)}; result;`), context);
+  return vm.runInNewContext(compile(`(${arrow.getText(source)});`), context);
 }
 const registryRef = { current: registry };
 const snapshot = callback('src/components/map/UnifiedMapView.tsx', 'getProjectMarkerSnapshot', {
@@ -57,7 +57,7 @@ const savePosition = (ok) => callback('src/app/dashboard/scene/page.tsx', 'handl
   registry.updateLivePosition('characters', 11, { x: 25, y: 3, z: 45 });
   registry.updateLiveRotation('characters', 11, 45);
   assert.equal(registry.updateLiveRotation('characters', 11, NaN), false);
-  const projectSave = callback('src/app/dashboard/scene/page.tsx', 'handleSaveThreeDProject', {
+  const projectSaveContext = {
     canEditProject: true, loading: false, projectSaveBusy: { current: false },
     parseProjectArchitecture: value => ({ version: value.version, document: architectureDocument.validateDesign(value.document) }),
     architectureDrafts: { current: new Map([['5', { history: { present: architectureDocument.newDesign() }, selected: null }]]) },
@@ -70,7 +70,10 @@ const savePosition = (ok) => callback('src/app/dashboard/scene/page.tsx', 'handl
     scenarioPanelState: { selected: null, guide: { kind: 'soccer', environmentId: '', groupId: '', farmbotId: '' } },
     isScenariosOpen: false, isProjectSetupOpen: true, overlayPositions: { sensors: { x: 1, y: 0.2 } },
     fetch: async (url, options) => { requests.push({ url, ...options }); return { ok: true, json: async () => ({ success: true, data: { projectId: 5, architecture: JSON.parse(options.body).architecture, markerCount: 1, markers: [] } }) }; },
-  });
+  };
+  projectSaveContext.captureProjectWorkspace = callback('src/app/dashboard/scene/page.tsx', 'captureProjectWorkspace', projectSaveContext);
+  projectSaveContext.workspaceFeedback = { acknowledge() {} };
+  const projectSave = callback('src/app/dashboard/scene/page.tsx', 'handleSaveThreeDProject', projectSaveContext);
   await projectSave();
   const payload = JSON.parse(requests.at(-1).body);
   assert.deepEqual(payload.markers[0].position, { x: 25, y: 3, z: 45 });

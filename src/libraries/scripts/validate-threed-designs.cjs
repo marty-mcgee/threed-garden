@@ -196,8 +196,9 @@ async function hydrateDashboard(loaded, drafts, projectId='15'){
  await vm.runInNewContext(compile('('+clientLoadSource+')'),context)();
  return drafts.current.get(projectId);
 }
-let clientSaveSource;
+let clientSaveSource, captureWorkspaceSource;
 function findClientSave(node) {
+ if(ts.isVariableDeclaration(node)&&node.name.getText(sceneAst)==='captureProjectWorkspace') captureWorkspaceSource=node.initializer.arguments[0].getText(sceneAst);
  if(ts.isVariableDeclaration(node)&&node.name.getText(sceneAst)==='handleSaveThreeDProject') clientSaveSource=node.initializer.arguments[0].getText(sceneAst);
  ts.forEachChild(node,findClientSave);
 }
@@ -212,6 +213,8 @@ const context={selectedProjectId:'15',canEditProject:true,loading:false,savingPr
  fetch:async(url,options)=>{assert.equal(url,'/api/project/threed-markers');assert.equal(options.method,'PUT');transportCount++;body=JSON.parse(options.body);return new Promise(resolve=>finish=resolve);},
  setData:()=>{},applyThreeDProjectClientTransaction:()=>{},renderArchitecture:()=>{},setLastUpdated:()=>{},Date,JSON,console:{error(){}}
  };
+ context.captureProjectWorkspace=vm.runInNewContext(compile('('+captureWorkspaceSource+')'),context);
+ context.workspaceFeedback={acknowledge:()=>{}};
  const callback=vm.runInNewContext(compile('('+clientSaveSource+')'),context);
  const pending=callback();await callback();assert.equal(transportCount,1,'Duplicate click must not start a second Project Save.');
  assert.equal(body.projectId,15);assert.equal(body.markers[0].data.filePath,model.data.filePath);assert.equal(body.architecture.document.openings[0].id,'door');

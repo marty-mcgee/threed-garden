@@ -1,5 +1,6 @@
 // dashboard/scene/page
 'use client';
+import { useWorkspaceSaveFeedback } from '@/components/map/hooks/useWorkspaceSaveFeedback';
 import { ProjectOverlayLayoutContext } from '@/components/map/panels/ProjectOverlayLayout';
 import type { SceneResourceIssue } from '@/components/threed/shared/SceneResourceStatus';
 import { GroundMapInspectorWorkspace, GroundMapInspector, useGroundMapInspector } from '@/components/map/details/GroundMapInspectorWorkspace';
@@ -970,6 +971,43 @@ function UnifiedMapPageInner() {
     setIsProjectSummaryOpen(false);
   }, []);
 
+  const captureProjectWorkspace = useCallback((): ThreeDProjectViewState => {
+      const currentThreeDView = projectThreeDViewStateProviderRef.current?.()
+        ?? lastProjectThreeDViewStateRef.current
+        ?? initialProjectViewState?.threeD;
+      const currentMapView = projectMapViewStateProviderRef.current?.()
+        ?? lastProjectMapViewStateRef.current
+        ?? initialProjectViewState?.map;
+      if (currentThreeDView) lastProjectThreeDViewStateRef.current = currentThreeDView;
+      if (currentMapView) lastProjectMapViewStateRef.current = currentMapView;
+      return {
+        version: PROJECT_VIEW_STATE_VERSION,
+        savedAt: new Date().toISOString(),
+        viewMode,
+        design: architectureDrafts.current.get(selectedProjectId ?? '')?.workspace ?? defaultDesignWorkspace(),
+        panelHeight,
+        cameraMode: cameraMode as ThreeDProjectViewState['cameraMode'],
+        ...(currentThreeDView ? { threeD: currentThreeDView } : {}),
+        ...(currentMapView ? { map: currentMapView } : {}),
+        workspace: {
+          selectedMarkerId: selectedMarker?.id ?? null,
+          inspector: groundMapInspector?.open ? { kind: 'ground', id: null } : groupInspector ? { kind: 'group', id: groupInspector } : sensorInspector && sensorInspector.sensorId !== '__new__' ? { kind: 'sensor', id: sensorInspector.sensorId } : { kind: 'asset', id: selectedMarker?.id ?? null },
+          // Persist the open workspace independently of transient toolbar dropdowns.
+          panel: isProjectAssetsOpen ? 'assets' : isModelLibraryOpen ? 'models' : 'none',
+          assetSearch: projectAssetSearch,
+          assetType: projectAssetType,
+        },
+        projectTourOpen: isProjectSetupOpen,
+        overlayPositions,
+        scenario: { ...scenarioPanelState, panelOpen: isScenariosOpen },
+      };
+  }, [cameraMode, initialProjectViewState, panelHeight, selectedProjectId, viewMode, selectedMarker, sensorInspector, groupInspector, groundMapInspector?.open, isProjectAssetsOpen, isModelLibraryOpen, projectAssetSearch, projectAssetType, scenarioPanelState, isScenariosOpen, isProjectSetupOpen, overlayPositions]);
+  const workspaceFeedback = useWorkspaceSaveFeedback(
+    `${selectedProjectId}:${initialProjectViewState?.savedAt ?? 'new'}`,
+    Boolean(selectedProjectId && canEditProject && !loading && (viewMode === '2d' || isThreeDPresentationComplete) && !sensorGroupsWorkspace?.loading),
+    captureProjectWorkspace,
+  );
+
   const handleSaveThreeDProject = useCallback(async () => {
     if (!selectedProjectId || !canEditProject || savingProjectMarkers || projectSaveBusy.current) return;
     if (loading) {
@@ -989,35 +1027,7 @@ function UnifiedMapPageInner() {
     setSavingProjectMarkers(true);
     try {
       const markers = provider();
-      const currentThreeDView = projectThreeDViewStateProviderRef.current?.()
-        ?? lastProjectThreeDViewStateRef.current
-        ?? initialProjectViewState?.threeD;
-      const currentMapView = projectMapViewStateProviderRef.current?.()
-        ?? lastProjectMapViewStateRef.current
-        ?? initialProjectViewState?.map;
-      if (currentThreeDView) lastProjectThreeDViewStateRef.current = currentThreeDView;
-      if (currentMapView) lastProjectMapViewStateRef.current = currentMapView;
-      const viewState: ThreeDProjectViewState = {
-        version: PROJECT_VIEW_STATE_VERSION,
-        savedAt: new Date().toISOString(),
-        viewMode,
-        design: architectureDrafts.current.get(selectedProjectId)!.workspace ?? defaultDesignWorkspace(),
-        panelHeight,
-        cameraMode: cameraMode as ThreeDProjectViewState['cameraMode'],
-        ...(currentThreeDView ? { threeD: currentThreeDView } : {}),
-        ...(currentMapView ? { map: currentMapView } : {}),
-        workspace: {
-          selectedMarkerId: selectedMarker?.id ?? null,
-          inspector: groundMapInspector?.open ? { kind: 'ground', id: null } : groupInspector ? { kind: 'group', id: groupInspector } : sensorInspector && sensorInspector.sensorId !== '__new__' ? { kind: 'sensor', id: sensorInspector.sensorId } : { kind: 'asset', id: selectedMarker?.id ?? null },
-          // Persist the open workspace independently of transient toolbar dropdowns.
-          panel: isProjectAssetsOpen ? 'assets' : isModelLibraryOpen ? 'models' : 'none',
-          assetSearch: projectAssetSearch,
-          assetType: projectAssetType,
-        },
-        projectTourOpen: isProjectSetupOpen,
-        overlayPositions,
-        scenario: { ...scenarioPanelState, panelOpen: isScenariosOpen },
-      };
+      const viewState = captureProjectWorkspace();
       const response = await fetch('/api/project/threed-markers', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -1043,6 +1053,7 @@ function UnifiedMapPageInner() {
       }));
       const current = architectureDrafts.current.get(selectedProjectId)!;
       architectureDrafts.current.set(selectedProjectId, acknowledgeArchitecture(current, result.data.architecture, viewState.design)); renderArchitecture(value => value + 1);
+      workspaceFeedback.acknowledge(viewState);
       setLastUpdated(new Date());
       showToastRef.current(
         `ThreeD Project saved (${result.data.markerCount} markers)`,
@@ -1061,7 +1072,7 @@ function UnifiedMapPageInner() {
     } finally {
       if (saveRequestRef.current === requestId) { projectSaveBusy.current = false; setSavingProjectMarkers(false); }
     }
-  }, [canEditProject, loading, cameraMode, initialProjectViewState, panelHeight, savingProjectMarkers, selectedProjectId, viewMode, selectedMarker, sensorInspector, groupInspector, groundMapInspector?.open, isProjectAssetsOpen, isModelLibraryOpen, projectAssetSearch, projectAssetType, scenarioPanelState, isScenariosOpen, isProjectSetupOpen, overlayPositions]);
+  }, [captureProjectWorkspace, workspaceFeedback.acknowledge, canEditProject, loading, cameraMode, initialProjectViewState, panelHeight, savingProjectMarkers, selectedProjectId, viewMode, selectedMarker, sensorInspector, groupInspector, groundMapInspector?.open, isProjectAssetsOpen, isModelLibraryOpen, projectAssetSearch, projectAssetType, scenarioPanelState, isScenariosOpen, isProjectSetupOpen, overlayPositions]);
 
   // Phase 5A compatibility bridge: establish the orchestration request
   // lifecycle while preserving immediate animation until proximity is gated.
@@ -2784,6 +2795,8 @@ function UnifiedMapPageInner() {
         />
         
         <ProjectSceneToolbar
+          workspaceSaveMessage={architectureSaveError ? `Save failed: ${architectureSaveError}` : architectureIsDirty(architectureDraft) || workspaceFeedback.dirty ? 'Unsaved architecture or workspace; Save Project to keep changes' : 'Workspace unchanged since loading or last Save'}
+          workspaceDirty={architectureIsDirty(architectureDraft) || workspaceFeedback.dirty}
           designHistoryHostRef={setDesignHistoryHost}
           saveDisabled={loading || !canEditProject || (viewMode === 'design' && designActionsBusy)}
           onResetOverlayPositions={() => setOverlayPositions({})}
@@ -3106,7 +3119,7 @@ function UnifiedMapPageInner() {
         }}
       />
       {/* ✅ Map Container */}
-      {architectureIsDirty(architectureDraft) && <span className="absolute bottom-0 left-2 z-[70] text-xs text-amber-300" role="status">Unsaved Project architecture or workspace</span>}
+      {(architectureIsDirty(architectureDraft) || workspaceFeedback.dirty) && <span className="absolute bottom-0 left-2 z-[70] text-xs text-amber-300" role="status">Unsaved Project architecture or workspace</span>}
       <DesignWorkspace split={designWorkspace.split} onSplitChange={split => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), split } }))} assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor key={selectedProjectId} active={viewMode === 'design'} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
       <Card data-project-canvas className="h-full gap-0 rounded-none border-0 py-0 shadow-none">
         <CardContent className="h-full p-0 overflow-hidden">

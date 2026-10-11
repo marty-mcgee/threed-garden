@@ -33,6 +33,8 @@ export function useProjectOverlayPosition(id: keyof ProjectOverlayPositions) {
     const observer = new ResizeObserver(measure);
     observer.observe(element);
     if (element.offsetParent instanceof HTMLElement) observer.observe(element.offsetParent);
+    const toolbar = document.querySelector('.threed-project-toolbar');
+    if (toolbar) observer.observe(toolbar);
     window.addEventListener('resize', measure);
     measure();
     return () => { observer.disconnect(); window.removeEventListener('resize', measure); };

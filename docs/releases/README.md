@@ -1,3 +1,5 @@
+Local development: [v0.24.2 - Workspace Feedback + Responsive Reliability](v0.24.2.md). Production remains v0.24.1; no publication is inferred.
+
 # Releases
 
 Current production: **[v0.24.1 — ThreeD Scene: UI/UX Improvements: App Layout + Page Headers](v0.24.1.md)**. Developer confirmed production release October 10, 2026. Package and both root lockfile version fields remain 0.24.1; dependencies and schema are unchanged. Prior local CI/build/browser checks are pre-release evidence, not post-deployment verification. Exact deployed SHA and independent post-deployment checks remain unconfirmed. v0.24.0 authenticated Save/Reload remains Developer-accepted 100%. This documentation update performs no Git write, deployment or live-system operation; leave changes unstaged.

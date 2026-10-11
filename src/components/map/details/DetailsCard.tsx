@@ -530,6 +530,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
     <DetailsCardActionsProvider>
     <div
       ref={overlay.ref as React.Ref<HTMLDivElement>}
+      data-positioned={overlay.style ? 'true' : undefined}
       className={`flex flex-col threed-workspace-panel threed-details-surface threed-inspector ${selectedSensorId ? 'threed-sensor-inspector' : ''} ${isCharacterMarker && !showCharacterSettings && !selectedSensorId && movingModuleMarkerId !== characterMarkerId ? '[&_[data-character-settings-section]]:hidden' : ''} absolute top-[38px] z-40 max-h-[calc(100%-38px)] w-[min(18rem,calc(100vw-1.5rem))] overflow-hidden rounded-lg border border-foreground/15 text-foreground shadow-xl pointer-events-auto [scrollbar-width:thin]`}
       style={{
         left: `${leftOffsetRem}rem`,
