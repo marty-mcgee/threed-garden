@@ -1,3 +1,43 @@
+## v0.24.4 local checkpoint validation
+
+October 11, 2026: npm run typecheck passed; npm run validate -- ci passed all 71 offline tasks with mocked boundaries; guarded agent-owned npm run build passed compilation/TypeScript and generated 143 pages. Build used explicit offline Google-font CSS mocks with a local system-font source, an unreachable localhost DATABASE_URL and a Node network/fetch guard. No server was started or stopped. Package and both root lockfile version fields are 0.24.4; other package/lock content matches HEAD. Ten relative checkpoint links resolve and git diff --check passed. No standalone lint configuration exists. No browser visual, authenticated App or production verification, real database/device/storage writes, migrations/seeds, Git writes or deployment were performed.
+
+See [release notes](docs/releases/v0.24.4.md) for exact scope and manual smoke checks. Production remains Developer-confirmed v0.24.3; leave changes unstaged.
+
+## Local v0.24.4 release checkpoint
+
+**[v0.24.4 — ThreeD Workspace: Save feedback and interface cleanup](docs/releases/v0.24.4.md)**. Prepared locally October 11, 2026 on `main`. Package/root lockfile are `0.24.4`; dependencies and database schema are unchanged. Production remains Developer-confirmed v0.24.3. This checkpoint is not yet published or deployed. Earlier local-version statements below are historical; leave changes unstaged under the Manual Release Gate.
+
+## v0.24.4 final surface-button placement
+
+October 11: Developer superseded the 260px/288px positions with far-right placement in both surfaces. Shared AppHeader now places WorkspaceSurfaceNav in the right control group immediately before the theme button, with 8px separation. Removed the fixed Dashboard title width and Admin-only inset; shared responsive header padding is restored. Sidebar collapse no longer determines surface-button placement. TypeScript and git diff --check passed; visual acceptance remains manual, no server started. Earlier positioning entries below are historical.
+
+## v0.24.4 surface-button alignment correction
+
+Developer revised the desktop target from 288px to 260px. AppHeader Dashboard title column is now 240px (12px inset + 240px + 8px gap = 260px). Admin header uses a 4px left inset after its existing 256px expanded sidebar, also x=260px. Collapsed/mobile Admin retains sidebar-relative flow; narrow Dashboard keeps compact flow. This supersedes the earlier 288px placement below. npm run typecheck and git diff --check passed; no browser/server verification.
+
+## v0.24.4 header and drawing-toolbar positioning
+
+October 11: Dashboard AppHeader reserves a 268px title-link column at md+ widths; existing 12px header padding plus 8px gap places WorkspaceSurfaceNav at x=288px from the App left border. Narrow screens retain compact flow; Admin keeps its sidebar-owned layout. Embedded DesignPlan tools now anchor right:8px instead of left:RULER_SIZE+8, retaining ruler clearance, bounded wrapping, tooltips and pointer/wheel/keyboard event isolation. No canvas coordinates or persistence changed.
+
+Checks: npm run typecheck, node src/libraries/scripts/validate-threed-designs.cjs and git diff --check passed. No browser visual check or server was run. Manual check: desktop Dashboard surface buttons start at 288px, tools sit at the upper-right of the Plan below the X ruler, and narrow layouts keep controls usable. Package version remains 0.24.3 during 0.24.4 development; changes unstaged.
+
+## v0.24.4 legacy Legend removal
+
+October 11: removed Show/Hide Legend from both Scene owners, the Legend overlay, its state/effect, display-only counts, icon import and snapshot capture/restoration. Removed showLegend from the existing view-state TypeScript/parser contract (no database schema change); old saved JSON values are ignored while supported state remains intact. Removed the legacy Legend3D component and its only caller in ThreeDGarden. Scene Layers, marker colors, other Environment controls and unrelated HTML fieldset legends remain intact. Updated snapshot fixtures and added legacy-field compatibility coverage.
+
+Checks: npm run typecheck; six focused offline tasks (threed-overlay-layout, threed-designs, threed-sensors, threed-runtime-markers, threed-ground-map, threed-scene-resources); git diff --check passed. Mocked persistence only; no browser/server/build/live writes. Manual check: Environment has no Legend control, no Legend overlay appears, and older saved Projects still load their cameras/layers normally. Version remains 0.24.3 during v0.24.4 development; leave changes unstaged.
+
+## v0.24.4 Save success toast copy
+
+October 11: removed the marker-count suffix from the existing Project Save success toast in src/app/dashboard/scene/page.tsx. It now reads "ThreeD Project saved". Snapshot contents, response validation and ToastComponent behavior are unchanged. npm run typecheck and git diff --check passed; no browser/server or live writes were used.
+
+## v0.24.4 first increment: Project Save feedback styling
+
+October 11, 2026: Developer requested removal of the bottom-left unsaved architecture/workspace message and a green Save outline with the yellow notification dot retained. Inspection located the message in src/app/dashboard/scene/page.tsx and the dirty-state ring/dot in src/components/map/header/ProjectSceneToolbar.tsx. Removed only that visible span and changed ring-amber-400 to ring-green-400. Existing toolbar tooltip, screen-reader status, dirty detection, busy/error handling and Save pipeline remain unchanged. Updated the maintained toolbar feedback assertion to check the green ring and yellow dot.
+
+Checks: npm run typecheck, node src/libraries/scripts/validate-workspace-save-feedback.cjs and git diff --check passed. No browser/visual verification, build, server, database writes or Git writes were performed. Manual check: change Project workspace state; confirm no bottom-left yellow message, a green Save outline and yellow corner dot, with the hover/focus explanation still available. This starts v0.24.4 work; package/root lockfile remain released 0.24.3 until release preparation. Leave changes unstaged.
+
 ## Current production: v0.24.3
 
 **[v0.24.3 — ThreeD Scene: Saved views and component cleanup](docs/releases/v0.24.3.md)**. Developer confirmed production release October 11, 2026. Package/root lockfile remain `0.24.3`; dependencies and database schema are unchanged. Prior local validation is pre-release evidence, not independent post-deployment verification. Exact deployed SHA and authenticated named-view Save/reload smoke checks remain unconfirmed. v0.24.0 authenticated Save/Reload remains Developer-accepted 100%. This records release confirmation only; leave changes unstaged under the Manual Release Gate.

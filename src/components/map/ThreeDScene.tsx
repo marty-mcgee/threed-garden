@@ -69,7 +69,6 @@ import {
   Target,
   RotateCw,
   Grid3X3,
-  List,
   BrickWall,
   Move3D,
   Siren,
@@ -2378,9 +2377,7 @@ export function ThreeDScene({
   const compassXRef = useRef<HTMLDivElement | null>(null);
   const compassZRef = useRef<HTMLDivElement | null>(null);
   const compassNeedleRef = useRef<HTMLDivElement | null>(null);
-  const [hasData, setHasData] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
-  const [showLegend, setShowLegend] = useState(false);
   const [showSensors, setShowSensors] = useState(false);
   const [showSimulations, setShowSimulations] = useState(true);
   const sensorsOverlay = useProjectOverlayPosition('sensors');
@@ -2874,10 +2871,6 @@ export function ThreeDScene({
   }, [groundMapAsset, projectId]);
   const environmentPreset = resolveThreeDEnvironmentPreset(envPreset);
 
-  useEffect(() => {
-    setHasData(incidents.length > 0 || markers.length > 0);
-  }, [incidents, markers]);
-
   // Fallback: if ControlsReadyNotifier doesn't fire within 1s, check manually
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -3140,12 +3133,6 @@ export function ThreeDScene({
   if (architecture) availableTypeCounts.designs = architecture.walls.length + architecture.floors.length
     + architecture.roofs.length + architecture.openings.length + architecture.roofOpenings.length;
 
-  const typeCounts = visibleMarkers.reduce((acc: Record<string, number>, marker: any) => {
-    const type = normalizeSceneLayerType(marker.type);
-    if (type) acc[type] = (acc[type] || 0) + 1;
-    return acc;
-  }, {});
-
   useEffect(() => {
     const session = transform?.session;
     if (session && !visibleMarkers.some(marker => session.ownerKey === `${projectId}:${marker.id}`)) {
@@ -3228,7 +3215,6 @@ export function ThreeDScene({
         groundMap,
         autoRotate: Boolean(autoRotate),
         showGrid,
-        showLegend,
         showSimulations,
         showGizmo: showGizmoCube,
         showControls,
@@ -3254,7 +3240,7 @@ export function ThreeDScene({
       };
     });
     return () => onViewStateProviderChange(null);
-  }, [sunlight, extraGround, groundMap, activeLayers, activeScenario, autoRotate, availableLayers, controlsReady, envPreset, onViewStateProviderChange, physicsDebug, projectId, scenarioInstructionVisible, showControls, showGizmoCube, showGrid, showLegend, showSensors, showSimulations, viewPresets]);
+  }, [sunlight, extraGround, groundMap, activeLayers, activeScenario, autoRotate, availableLayers, controlsReady, envPreset, onViewStateProviderChange, physicsDebug, projectId, scenarioInstructionVisible, showControls, showGizmoCube, showGrid, showSensors, showSimulations, viewPresets]);
 
   useEffect(() => {
     if (!controlsReady || !controlsRef.current || !initialViewState) return;
@@ -3286,7 +3272,6 @@ export function ThreeDScene({
     )));
     setEnvPreset(initialViewState.environment);
     setShowGrid(initialViewState.showGrid);
-    setShowLegend(initialViewState.showLegend);
     setShowSimulations(initialViewState.showSimulations ?? true);
     setShowGizmoCube(initialViewState.showGizmo);
     setShowControls(initialViewState.showControls ?? false);
@@ -3726,12 +3711,6 @@ export function ThreeDScene({
               <Move3D className="h-3.5 w-3.5" />
               {showGizmoCube ? 'Hide Gizmo' : 'Show Gizmo'}
             </button>
-            {hasData && Object.keys(typeCounts).length > 0 && (
-              <button onClick={() => setShowLegend(!showLegend)} aria-pressed={showLegend} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showLegend ? 'bg-foreground/10 text-foreground' : 'text-foreground/70 hover:bg-foreground/10 hover:text-foreground'}`}>
-                <List className="h-3.5 w-3.5" />
-                {showLegend ? 'Hide Legend' : 'Show Legend'}
-              </button>
-            )}
             <button onClick={() => { setShowSensors(value => !value); setShowControls(false); }} aria-pressed={showSensors} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showSensors ? 'bg-foreground/10 text-foreground' : 'text-foreground/70 hover:bg-foreground/10 hover:text-foreground'}`}>
               <Target className="h-3.5 w-3.5" />
               {showSensors ? 'Hide Sensors' : 'Show Sensors'}
@@ -3826,19 +3805,6 @@ export function ThreeDScene({
       {hoveredSceneMarker && (
         <div ref={hoverTitleRef} style={{ visibility: 'hidden' }} className="pointer-events-none absolute z-50 max-w-[calc(100%_-_2rem)] rounded-md border border-white/15 bg-slate-950/45 px-3 py-1.5 text-sm font-medium text-white shadow-sm [text-shadow:0_1px_3px_rgba(0,0,0,0.9)]">
           <span className="block truncate">{hoveredSceneMarker.name || hoveredSceneMarker.data?.name || hoveredSceneMarker.data?.modelName || 'Scene Asset'}</span>
-        </div>
-      )}
-
-      {/* Legend */}
-      {hasData && showLegend && Object.keys(typeCounts).length > 0 && (
-        <div className="absolute bottom-3 left-3 z-50 bg-black/70 backdrop-blur-sm text-white p-2 rounded border border-white/10 min-w-[90px]">
-          <div className="text-[10px] font-medium text-white/80 mb-1">Legend</div>
-          {(Object.entries(typeCounts) as [string, number][]).map(([type, count]) => (
-            <div key={type} className="flex items-center gap-1.5 text-[10px] text-white/70 py-0.5">
-              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: getMarkerColor(type) }} />
-              <span className="capitalize">{type}: {count}</span>
-            </div>
-          ))}
         </div>
       )}
 

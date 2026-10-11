@@ -1838,7 +1838,6 @@ const savedEnvironmentView = {
     environment: 'default-daylight',
     autoRotate: false,
     showGrid: false,
-    showLegend: false,
     showGizmo: true,
   },
 };

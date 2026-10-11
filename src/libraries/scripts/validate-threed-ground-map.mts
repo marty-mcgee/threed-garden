@@ -30,8 +30,7 @@ group('Project Save and Restore retains exact Ground Map alignment', () => {
   const parsed = parseThreeDProjectViewState({
     version: 1, savedAt: new Date().toISOString(), viewMode: '3d', panelHeight: 50, cameraMode: 'orbit',
     threeD: { cameraPosition: { x: 1, y: 2, z: 3 }, cameraTarget: { x: 0, y: 0, z: 0 },
-      activeLayers: [], environment: 'default-daylight', autoRotate: false, showGrid: false,
-      showLegend: false, showGizmo: true, groundMap: aligned },
+      activeLayers: [], environment: 'default-daylight', autoRotate: false, showGrid: false, showGizmo: true, groundMap: aligned },
   });
   assert.deepEqual(parsed.threeD?.groundMap, aligned);
 });

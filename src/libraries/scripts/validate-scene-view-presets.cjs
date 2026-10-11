@@ -33,7 +33,7 @@ for (const name of ['ThreeDScene', 'ThreeDDesign']) {
     newPresetName: 'Field', activeLayers: new Set(['models', 'designs']), availableLayers: ['models', 'designs'],
     projectId: 15, sensorCounterStateRef: { current: { counts: {}, occupied: [] } },
     envPreset: 'sunset', sunlight: {}, extraGround: {}, groundMap: {}, autoRotate: false,
-    showGrid: false, showLegend: false, showSimulations: true, showGizmoCube: true, showControls: false,
+    showGrid: false, showSimulations: true, showGizmoCube: true, showControls: false,
     physicsDebug: false, activeScenario: null, scenarioInstructionVisible: false, showSensors: false,
     setViewPresets(value) { context.pendingRender = value; },
     setNewPresetName() {}, setShowPresetDialog() {}, confirm: () => true,

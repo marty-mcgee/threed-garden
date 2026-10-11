@@ -67,7 +67,6 @@ export interface ProjectThreeDViewState {
   environment: string;
   autoRotate: boolean;
   showGrid: boolean;
-  showLegend: boolean;
   showGizmo: boolean;
   showControls?: boolean;
   showSimulations?: boolean;
@@ -335,7 +334,6 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
       environment: threeD.environment,
       autoRotate: boolean(threeD.autoRotate),
       showGrid: boolean(threeD.showGrid),
-      showLegend: boolean(threeD.showLegend),
       showGizmo: boolean(threeD.showGizmo),
       ...(threeD.showSimulations === undefined ? {} : { showSimulations: boolean(threeD.showSimulations) }),
       ...(threeD.showControls === undefined ? {} : { showControls: boolean(threeD.showControls) }),

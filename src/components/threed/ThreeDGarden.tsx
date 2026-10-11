@@ -12,7 +12,6 @@ import { GardenLayer } from './layers/GardenLayer';
 import { FarmBotLayer } from './layers/FarmBotLayer';
 import { WeatherLayer } from './layers/WeatherLayer';
 import { CharacterLayer } from './layers/CharacterLayer';
-import { Legend3D } from './controls/Legend3D';
 
 // Import types
 import { ThreeDData, LayerVisibility } from '@/libraries/types/threed';
@@ -94,9 +93,6 @@ export function ThreeDGarden({
         {layers.farmbots && <FarmBotLayer farmbots={data.farmbots} />}
         {layers.weather && <WeatherLayer weather={data.weather} />}
         {layers.characters && <CharacterLayer characters={data.characters} />}
-
-        {/* Legend */}
-        <Legend3D layers={layers} />
 
         {/* Info overlay */}
         <Html position={[-4, 0, -4]} distanceFactor={10}>

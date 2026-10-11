@@ -1056,7 +1056,7 @@ function UnifiedMapPageInner() {
       workspaceFeedback.acknowledge(viewState);
       setLastUpdated(new Date());
       showToastRef.current(
-        `ThreeD Project saved (${result.data.markerCount} markers)`,
+        'ThreeD Project saved',
         'success',
       );
     } catch (error) {
@@ -3119,7 +3119,6 @@ function UnifiedMapPageInner() {
         }}
       />
       {/* ✅ Map Container */}
-      {(architectureIsDirty(architectureDraft) || workspaceFeedback.dirty) && <span className="absolute bottom-0 left-2 z-[70] text-xs text-amber-300" role="status">Unsaved Project architecture or workspace</span>}
       <DesignWorkspace split={designWorkspace.split} onSplitChange={split => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), split } }))} assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor key={selectedProjectId} active={viewMode === 'design'} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
       <Card data-project-canvas className="h-full gap-0 rounded-none border-0 py-0 shadow-none">
         <CardContent className="h-full p-0 overflow-hidden">

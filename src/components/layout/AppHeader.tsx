@@ -68,11 +68,11 @@ export function AppHeader({ surface }: { surface: 'dashboard' | 'admin' }) {
               </span>
             </Link>
           )}
-          <WorkspaceSurfaceNav />
         </div>
 
         {/* Optical spacing: the 24px avatar needs 4px more separation than the 16px icons. */}
         <div className="flex items-center justify-self-end gap-0">
+          <div className="mr-2"><WorkspaceSurfaceNav /></div>
           <Button
             variant="ghost"
             size="icon-sm"

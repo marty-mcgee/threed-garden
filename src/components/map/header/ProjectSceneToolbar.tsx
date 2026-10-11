@@ -188,7 +188,7 @@ export function ProjectSceneToolbar({
       <div ref={designHistoryHostRef} data-testid="project-design-history" hidden={viewMode !== 'design' || !selectedProjectId} className="min-w-0 max-w-full" />
       {selectedProjectId && (
         <TooltipProvider delayDuration={200}><Tooltip><TooltipTrigger asChild><span className="inline-flex" tabIndex={savingProject || saveDisabled ? 0 : undefined} aria-disabled={savingProject || saveDisabled || undefined}>
-        <Button type="button" variant={savingProject ? 'secondary' : 'outline'} size="icon" className={`relative h-7 w-7 ${workspaceDirty ? 'ring-1 ring-amber-400' : ''}`} disabled={savingProject || saveDisabled} aria-label="Save ThreeD Project" title={workspaceSaveMessage} onClick={onSaveProject}>
+        <Button type="button" variant={savingProject ? 'secondary' : 'outline'} size="icon" className={`relative h-7 w-7 ${workspaceDirty ? 'ring-1 ring-green-400' : ''}`} disabled={savingProject || saveDisabled} aria-label="Save ThreeD Project" title={workspaceSaveMessage} onClick={onSaveProject}>
           {savingProject ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5 text-foreground dark:text-white" />}
           {workspaceDirty && <span className="absolute right-0 top-0 h-1.5 w-1.5 rounded-full bg-amber-400" aria-hidden="true" />}
         </Button>

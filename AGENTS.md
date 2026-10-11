@@ -1,3 +1,7 @@
+## Local v0.24.4 release checkpoint
+
+**[v0.24.4 — ThreeD Workspace: Save feedback and interface cleanup](docs/releases/v0.24.4.md)**. Prepared locally October 11, 2026 on `main`. Package/root lockfile are `0.24.4`; dependencies and database schema are unchanged. Production remains Developer-confirmed v0.24.3. This checkpoint is not yet published or deployed. Earlier local-version statements below are historical; leave changes unstaged under the Manual Release Gate.
+
 ## Current production: v0.24.3
 
 **[v0.24.3 — ThreeD Scene: Saved views and component cleanup](docs/releases/v0.24.3.md)**. Developer confirmed production release October 11, 2026. Package/root lockfile remain `0.24.3`; dependencies and database schema are unchanged. Prior local validation is pre-release evidence, not independent post-deployment verification. Exact deployed SHA and authenticated named-view Save/reload smoke checks remain unconfirmed. v0.24.0 authenticated Save/Reload remains Developer-accepted 100%. This records release confirmation only; leave changes unstaged under the Manual Release Gate.

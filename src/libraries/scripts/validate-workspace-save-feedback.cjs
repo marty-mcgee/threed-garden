@@ -43,10 +43,11 @@ vm.runInNewContext(ts.transpileModule(fs.readFileSync('src/components/map/header
 function descendants(node) { if (!node || typeof node !== 'object') return []; return [node, ...[node.props?.children].flat(Infinity).flatMap(descendants)]; }
 const props = { selectedProjectId: '15', viewMode: '3d', projectAssetsTriggerRef: { current: null }, workspaceDirty: true, workspaceSaveMessage: 'Unsaved workspace; Save Project', savingProject: false };
 let nodes = descendants(toolbarExports.ProjectSceneToolbar(props));
-assert.match(nodes.find(n => n.props?.['aria-label'] === 'Save ThreeD Project').props.className, /ring-amber/);
+assert.match(nodes.find(n => n.props?.['aria-label'] === 'Save ThreeD Project').props.className, /ring-green-400/);
+assert(nodes.some(n => n.props?.className?.includes('bg-amber-400') && n.props?.['aria-hidden'] === 'true'), 'Unsaved notification dot stays yellow');
 assert.equal(nodes.find(n => n.type === 'TooltipContent').props.children, props.workspaceSaveMessage, 'Keyboard focus tooltip explains changed workspace');
 assert.equal(nodes.find(n => n.props?.role === 'status').props.children, props.workspaceSaveMessage);
 nodes = descendants(toolbarExports.ProjectSceneToolbar({ ...props, savingProject: true }));
 assert.equal(nodes.find(n => n.props?.['aria-label'] === 'Save ThreeD Project').props.disabled, true);
 assert.match(nodes.find(n => n.type === 'TooltipContent').props.children, /Saving Project/);
-console.log('PASS: actual toolbar amber Save, accessible status, focus tooltip and pending-Save disabled feedback.');
+console.log('PASS: actual toolbar green Save outline, yellow dot, accessible status, focus tooltip and pending-Save disabled feedback.');
