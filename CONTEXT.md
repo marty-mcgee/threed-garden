@@ -1,7 +1,39 @@
+## Local v0.24.3 checkpoint
+
+**[v0.24.3 — ThreeD Scene: Saved views and component cleanup](docs/releases/v0.24.3.md)**. Prepared locally October 11, 2026 on `main`; not yet released. Package/root lockfile are `0.24.3`; dependencies and database schema are unchanged. Production remains Developer-confirmed v0.24.2. See the release notes for evidence and manual checks. Leave changes unstaged; no Git writes or deployment are authorized.
+
+This checkpoint preserves the Developer's manual edits and accepted panel extractions, fixes immediate named-view snapshot capture/hydration and adds Designs layer visibility. ThreeDDesign remains unconnected to callers. Historical version/status records below retain their original evidence; newer checkpoint records supersede their local-version statements.
+
 # ThreeD Garden project context
+
+## New-chat handoff — October 10, 2026
+
+Read [v0.24 handoff](docs/agents/V0.24-HANDOFF.md). October 11 clarification supersedes the earlier rejection/pause: the Developer explicitly accepted PhysicsSensorsPanel, SceneViewPresetDialog and SceneResourceFeedback and requested continued focused restructuring. Following the requested rollback, all backed-up local work was restored with byte verification, including manual edits and the FarmBot hook relocation. No version 0.24.3 release or new architecture direction is approved.
+
+The Developer has exclusive control of local servers: agents must not start dev servers or temporary fixture servers. Notify them before stopping their server. The prior Next.js process tree rooted at PID 26252 was stopped after the reported port conflict; a later inspection found no Node processes or listener on 4444. The Developer did not successfully start their server at that point. Do not infer a current running server or resolved startup from these historical checks.
 
 Current production: **[v0.24.2 — Workspace Feedback + Responsive Reliability](docs/releases/v0.24.2.md)**. Developer confirmed production release October 10, 2026. Package/root lockfile remain 0.24.2; dependencies and schema are unchanged. Prior local validation is pre-release evidence, not post-deployment verification. Exact deployed SHA and independent post-deployment checks remain unconfirmed. v0.24.0 authenticated Save/Reload remains Developer-accepted 100%. New-feedback authenticated smoke testing, physical-device touch and Builder-specific acceptance remain separately documented. This records release confirmation only; leave changes unstaged under the Manual Release Gate.
 
+
+## v0.24.3 release-preparation evidence
+
+TypeScript passed. All 71 offline CI tasks passed, including named-view immediate capture/hydration, the actual view-state parser, mocked Project snapshot save/load, layer restoration, Sensor snapshots and Scene resource checks. Guarded npm run build passed compilation/TypeScript and generated 143 pages. Build used explicit offline Google-font CSS mocks with a local system-font source, an unreachable localhost DATABASE_URL and a Node network/fetch guard; it started no server. Font appearance and full-App rendering were not visually verified. Initial CI found two extraction/provider fixture assumptions; both were corrected before the full passing run. An initial build font mock was not accepted by Turbopack; an explicit URL-keyed mock passed on rerun. Version/dependency consistency, nine checkpoint links and git diff --check passed. No standalone lint configuration exists. No authenticated App, real database/device/storage write, migration/seed or production verification was performed.
+
+No server was started or stopped. Preserve manual edits, unchanged routing and accepted component extractions; authenticated smoke checks remain in docs/releases/v0.24.3.md. Production remains 0.24.2 pending Developer release confirmation.
+
+## October 11 named views and Designs layer
+
+Developer reports a named Save Current View entry missing after Project Save/reload. The existing path is Scene snapshot provider -> Dashboard captureProjectWorkspace -> /api/project/threed-markers -> project.config.threeDViewState -> /api/map/threed -> initialViewState. No new storage or schema is introduced. A reproduced client scheduling gap allowed the registered snapshot provider to return the old preset list immediately after add/delete. Both Scene owners now update a ref synchronously and capture that list; initial state and layout-phase hydration restore loaded presets before passive snapshot registration. This fixes the reproduced gap, but does not independently establish the cause of every authenticated reload failure. The dialog explains that Save Project is required after naming a view.
+
+Scene Layers now inventories Designs when architecture is present, counts its entities and persists the layer through the existing view-state parser. DesignSceneObjects toggles retained host visibility, preserving resources and content; the existing ancestor-visibility raycast guard excludes hidden geometry. The 2D plan is unchanged. Older snapshots expose the newly available layer; snapshots explicitly saving it hidden retain that choice. ThreeDDesign remains unconnected to callers, with the matching fix preserved in its existing implementation.
+
+Checks actually run: npm run typecheck; npm run validate -- threed-overlay-layout threed-home-design threed-scene-resources threed-designs; independent named-view handler/provider regression; git diff --check. Passed. Targeted validation outside the known Windows tsx sandbox ENOMEM restriction passed. Tests use actual extracted handlers/parser plus mocked persistence boundaries. No server, browser, build, authenticated App or production verification was run. Manual acceptance: create a named view, Save Project, reload and confirm the name; hide Designs, Save/reload, confirm hidden, then show it and verify unchanged architecture beside existing Models. Version remains 0.24.2; leave changes unstaged.
+
+## October 11 focused restructuring continuation
+
+ThreeDScene.tsx and ThreeDDesign.tsx now share panels/SceneViewPresetsMenu.tsx and panels/SceneLayersMenu.tsx for the duplicated Environment dropdown sections. Preset props reuse ProjectThreeDViewState's existing saved-view type; layer props use readonly collections and explicit callbacks. Parent conditions, stable list keys, DOM fragments and CSS are preserved. Preset loading/deletion, layer toggles/state, camera restoration, Project Save/load, Design tools, FarmBot subscriptions and Canvas/physics remain in the existing owners. ThreeDDesign remains unconnected to callers. No version/dependency/schema change.
+
+Checks actually run for this increment: npm run typecheck; npm run validate -- threed-scene-resources threed-designs shadcn-ui-boundary; node src/libraries/scripts/validate-project-overlay-layout.cjs; node src/libraries/scripts/validate-workspace-save-feedback.cjs. All passed. An ad-hoc mocked JSX/callback comparison against pre-edit sources passed for both owners across all four layer visibility combinations and null/first/second preset selection, including preset load/delete and layer toggle callbacks. Canvas subtrees matched the pre-edit sources exactly. No standalone lint configuration exists; the maintained UI boundary check passed. No browser/server fixture, build, authenticated App or live-system operation was run. Manual checks remain: open Environment, load/delete a saved view, toggle individual/all layers, and verify camera/visibility and retained Design editing in the App. Leave changes unstaged; no Git writes/push/deploy.
 
 ## v0.24.2 implementation and pre-release evidence
 

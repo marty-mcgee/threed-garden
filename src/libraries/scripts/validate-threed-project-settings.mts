@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 // @ts-ignore Node source extension.
-import { parseThreeDProjectViewState } from '../services/threed/markers/project-view-state-core.ts';
+import { parseThreeDProjectViewState, resolveRestoredThreeDActiveLayers } from '../services/threed/markers/project-view-state-core.ts';
 // @ts-ignore Node source extension.
 import { resolveCharacterPhysics } from '../services/threed/characters/character-physics.ts';
 // @ts-ignore Node source extension.
@@ -120,3 +120,11 @@ for (const visible of [false, true]) {
 }
 assert.equal(parseThreeDProjectViewState(saved).threeD?.showSimulations, undefined);
 assert.throws(() => parseThreeDProjectViewState({...saved, threeD: {...saved.threeD, showSimulations: 'false'}}));
+
+// Designs is a Project Scene visibility layer, including within named-view snapshots.
+const designPreset = {...preset,layers:['models','designs']};
+const designView = {...expanded,threeD:{...expanded.threeD,activeLayers:['models','designs'],availableLayers:['models','designs'],viewPresets:[designPreset]}};
+assert.deepEqual(parseThreeDProjectViewState(JSON.parse(JSON.stringify(designView))).threeD?.viewPresets,[designPreset]);
+assert.deepEqual(resolveRestoredThreeDActiveLayers(['models'],['models'],['models','designs']),['models','designs']);
+assert.deepEqual(resolveRestoredThreeDActiveLayers(['models'],['models','designs'],['models','designs']),['models']);
+console.log('PASS: Designs layer/named-view parsing, legacy default visibility and saved hidden visibility');

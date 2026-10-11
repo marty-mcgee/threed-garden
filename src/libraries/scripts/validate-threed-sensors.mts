@@ -149,7 +149,7 @@ const capture = vm.runInNewContext(ts.transpileModule(`const capture = ${provide
   sunlight: undefined, extraGround: undefined, groundMap: undefined, autoRotate: false,
   showGrid: false, showLegend: false, showSimulations: false, showGizmoCube: true, showControls: false, physicsDebug: false,
   projectId: 15, sensorCounterStateRef: sensorRef, activeScenario: null,
-  scenarioInstructionVisible: false, showSensors: true, viewPresets: [],
+  scenarioInstructionVisible: false, showSensors: true, viewPresetsRef: { current: [] },
 });
 const view = { version: 1, savedAt: '2026-09-29T12:00:00Z', viewMode: '3d', panelHeight: 50, cameraMode: 'stationary', threeD: capture() };
 assert.deepEqual(parseThreeDProjectViewState(JSON.parse(JSON.stringify(view))).threeD?.sensorState, savedSensors);

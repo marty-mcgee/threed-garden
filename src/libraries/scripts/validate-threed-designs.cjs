@@ -250,7 +250,8 @@ const context={selectedProjectId:'15',canEditProject:true,loading:false,savingPr
  assert.equal(fresh.current.get('15'),newer);assert.equal(fresh.current.get('16').history.present.walls.length,0);assert(!architecture.architectureIsDirty(fresh.current.get('16')));
 }
 const model={markerId:'model-20',moduleType:'models',assetId:20,name:'Existing Model',position:{x:10,y:0,z:5},positionSource:'project',isVisible:true,isActive:true,data:{rotationY:25,scale:2,filePath:'saved.glb',materials:{map:'saved.png'}},metadata:{keep:'settings'}};
-const view={version:1,savedAt:'2026-10-09T00:00:00.000Z',viewMode:'design',panelHeight:50,cameraMode:'stationary'};
+const savedViewPreset={id:'room-view',name:'Room view',position:{x:10,y:8,z:12},target:{x:4,y:0,z:4},layers:['models','designs'],createdAt:'2026-10-09T00:00:00.000Z'};
+const view={version:1,savedAt:'2026-10-09T00:00:00.000Z',viewMode:'design',panelHeight:50,cameraMode:'stationary',threeD:{cameraPosition:savedViewPreset.position,cameraTarget:savedViewPreset.target,activeLayers:['models','designs'],availableLayers:['models','designs'],environment:'sunset',autoRotate:false,showGrid:false,showLegend:false,showGizmo:true,viewPresets:[savedViewPreset]}};
 const request=(body)=>({text:async()=>JSON.stringify(body)});
 async function run(){
  await checkStaleLoads();
@@ -266,6 +267,8 @@ async function run(){
  const reopened=session.buildThreeDProjectSession({success:true,total:1,data:{models:[{id:20,filePath:'saved.glb',positionX:10,positionY:0,positionZ:5}]},markerSnapshot:stored.markers,projectContext:{canEdit:true,projectName:'Existing Project',metersPerSceneUnit:.3048,architecture:stored.config.threeDArchitecture,viewState:stored.config.threeDViewState}},'15');
  assert(reopened.success);assert.equal(reopened.session.data.threed.raw.models.length,1);assert.equal(reopened.session.architecture.document.openings[0].wallId,'w0');assert.equal(reopened.session.metersPerSceneUnit,.3048);
  assert(!architecture.architectureIsDirty(architecture.projectArchitectureDraft(reopened.session.architecture)));
+ assert.deepEqual(reopened.session.savedViewState.threeD.viewPresets,[savedViewPreset],'Named views must survive Project snapshot Save/load.');
+ assert.deepEqual(reopened.session.savedViewState.threeD.activeLayers,['models','designs']);
  const emptyProject=session.buildThreeDProjectSession({success:true,data:{},projectContext:{canEdit:true}},'16');assert(emptyProject.success);assert.equal(emptyProject.session.architecture,undefined,'Architecture-free Projects load normally.');
  const previous=JSON.stringify(stored);fail=true;assert.equal((await save(request({...input,architecture:{version:1,document:{...source,name:'Failed'}}}))).status,500);assert.equal(JSON.stringify(stored),previous);fail=false;
  const legacy={...input};delete legacy.architecture;assert.equal((await save(request(legacy))).status,200);assert.equal(JSON.stringify(stored.config.threeDArchitecture.document),JSON.stringify(source),'Legacy Project Save must preserve architecture.');

@@ -6,9 +6,9 @@ import { DesignGeometryCache } from '@/libraries/services/threed/design/geometry
 import type { DesignDocument } from '@/libraries/services/threed/design/document';
 
 /** Mount inside the existing Scene Canvas. Only this owner's generated resources are changed. */
-export function DesignSceneObjects({ document, projectId, metersPerSceneUnit, selected = null, onSelect, visibleLevelId, showRoofs = true }: {
+export function DesignSceneObjects({ document, projectId, metersPerSceneUnit, selected = null, onSelect, visibleLevelId, showRoofs = true, visible = true }: {
   document: DesignDocument; projectId: number; metersPerSceneUnit: number;
-  selected?: string | null; onSelect?: (id: string) => void; visibleLevelId?: string; showRoofs?: boolean;
+  selected?: string | null; onSelect?: (id: string) => void; visibleLevelId?: string; showRoofs?: boolean; visible?: boolean;
 }) {
   const host = useRef<Group>(null), cache = useRef<DesignGeometryCache | null>(null);
   useLayoutEffect(() => {
@@ -30,5 +30,5 @@ export function DesignSceneObjects({ document, projectId, metersPerSceneUnit, se
     const id = event.object.userData.designEntityId;
     if (typeof id === 'string') { event.stopPropagation(); onSelect?.(id); }
   };
-  return <group ref={host} name={`project:${projectId}:architecture`} scale={1 / metersPerSceneUnit} onClick={select} />;
+  return <group visible={visible} ref={host} name={`project:${projectId}:architecture`} scale={1 / metersPerSceneUnit} onClick={select} />;
 }

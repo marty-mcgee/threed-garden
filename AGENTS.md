@@ -1,4 +1,16 @@
+## Local v0.24.3 checkpoint
+
+**[v0.24.3 — ThreeD Scene: Saved views and component cleanup](docs/releases/v0.24.3.md)**. Prepared locally October 11, 2026 on `main`; not yet released. Package/root lockfile are `0.24.3`; dependencies and database schema are unchanged. Production remains Developer-confirmed v0.24.2. See the release notes for evidence and manual checks. Leave changes unstaged; no Git writes or deployment are authorized.
+
+This checkpoint preserves the Developer's manual edits and accepted panel extractions, fixes immediate named-view snapshot capture/hydration and adds Designs layer visibility. ThreeDDesign remains unconnected to callers. Historical version/status records below retain their original evidence; newer checkpoint records supersede their local-version statements.
+
 # Codex Instructions
+
+## October 10, 2026 chat handoff: read first
+
+Read [the current v0.24 handoff](docs/agents/V0.24-HANDOFF.md) before continuing. Preserve all Developer manual edits. October 11 clarification: the Developer explicitly accepted PhysicsSensorsPanel, SceneViewPresetDialog and SceneResourceFeedback and authorized continued focused component restructuring. This supersedes the earlier rejection/pause record. Local continuation extracts Saved Views and Scene Layers menus with typed props; state, camera/layer callbacks and Canvas owners remain in their existing modules. Do not wire ThreeDDesign into routing or interpret it as authorization for future renderer separation. Version remains 0.24.2.
+
+**Local servers belong to the Developer. Do not start local servers**, including temporary browser-fixture HTTP servers, background helpers serving pages, `npm start`, `npm run dev`, or `next start`. Notify the Developer before stopping their server for builds or other work. Earlier fixture/build practices do not override this instruction. The last process inspection found no Node process or listener on port 4444; this is historical evidence, not a guarantee about the next session. Never kill unidentified processes or assume a port conflict proves agent ownership.
 
 Current production: **[v0.24.2 — Workspace Feedback + Responsive Reliability](docs/releases/v0.24.2.md)**. Developer confirmed production release October 10, 2026. Package/root lockfile remain 0.24.2; dependencies and schema are unchanged. Prior local validation is pre-release evidence, not post-deployment verification. Exact deployed SHA and independent post-deployment checks remain unconfirmed. v0.24.0 authenticated Save/Reload remains Developer-accepted 100%. New-feedback authenticated smoke testing, physical-device touch and Builder-specific acceptance remain separately documented. This records release confirmation only; leave changes unstaged under the Manual Release Gate.
 

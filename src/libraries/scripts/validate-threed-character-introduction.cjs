@@ -181,7 +181,11 @@ assert.match(route, /CHARACTER_SPAWN_CLEARANCE \*\* 2/, 'Server clearance shares
   assert.match(scene, /visualMotionRef=\{gardenGroupRef\} type="fixed" colliders=\{false\}/);
   assert.match(scene, /CuboidCollider args=\{GARDEN_CHARACTER_COLLIDER_HALF_EXTENTS\}/);
   assert.match(scene, /gardenSceneEnabled = isLayerEnabled && characterData.visible !== false/, 'Explicit proxy cannot participate for an invisible Garden Character');
-  assert.match(scene, /scenePostProduction && resourcesPending/);
-  assert.match(scene, /motion-reduce:transition-none/);
+  assert.match(scene, /<SceneResourceFeedback\b/);
+  assert.match(scene, /scenePostProduction=\{scenePostProduction\}/);
+  assert.match(scene, /resourcesPending=\{resourcesPending\}/);
+  const feedback = fs.readFileSync('src/components/map/presentation/SceneResourceFeedback.tsx', 'utf8');
+  assert.match(feedback, /scenePostProduction && resourcesPending/);
+  assert.match(feedback, /motion-reduce:transition-none/);
   console.log('PASS Character first-pose physics, replacement bodies, Garden collider motion, hidden movement and capsule spawn clearance.');
 })().catch(error => { console.error(error); process.exitCode = 1; });

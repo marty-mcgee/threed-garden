@@ -1,3 +1,9 @@
+## v0.24.3 checkpoint validation
+
+TypeScript passed. All 71 offline CI tasks passed, including named-view immediate capture/hydration, the actual view-state parser, mocked Project snapshot save/load, layer restoration, Sensor snapshots and Scene resource checks. Guarded npm run build passed compilation/TypeScript and generated 143 pages. Build used explicit offline Google-font CSS mocks with a local system-font source, an unreachable localhost DATABASE_URL and a Node network/fetch guard; it started no server. Font appearance and full-App rendering were not visually verified. Initial CI found two extraction/provider fixture assumptions; both were corrected before the full passing run. An initial build font mock was not accepted by Turbopack; an explicit URL-keyed mock passed on rerun. Version/dependency consistency, nine checkpoint links and git diff --check passed. No standalone lint configuration exists. No authenticated App, real database/device/storage write, migration/seed or production verification was performed.
+
+See [release notes](../releases/v0.24.3.md) for manual steps. Do not rerun historical browser fixtures that start servers; the Developer controls local servers.
+
 # Agent Validation Guide
 
 ## v0.24.2 workspace feedback and responsive reliability

@@ -9,7 +9,7 @@ import type { RuntimeMarker } from '@/libraries/types/map';
 import { evaluateScenario, type ScenarioKind, type ScenarioStart } from '@/libraries/services/threed/scenario-core';
 import { readPhysicsSensorCuboids } from '@/libraries/services/threed/physics/sensor-cuboid-core';
 import { useSensorGroups } from '@/components/threed/physics/SensorGroupsWorkspace';
-import { useFarmBotLiveState } from '@/components/map/useFarmBotLiveState';
+import { useFarmBotLiveState } from '@/components/map/hooks/useFarmBotLiveState';
 import type { ProjectScenarioGuideState, ProjectScenarioSelection } from '@/libraries/services/threed/markers/project-view-state-core';
 
 function Observation({ marker, projectId }: { marker: RuntimeMarker; projectId: string }) {

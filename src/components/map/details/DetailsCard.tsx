@@ -41,7 +41,7 @@ import { defaultKickCollisionPoints } from '@/libraries/services/threed/physics/
 import { PlantingInstanceEditor } from './PlantingInstanceEditor';
 import { DetailsCardSection } from './DetailsCardSection';
 import { sceneOwnerPose } from '@/libraries/services/threed/transforms/scene-transform-core';
-import { useFarmBotLiveState } from '@/components/map/useFarmBotLiveState';
+import { useFarmBotLiveState } from '@/components/map/hooks/useFarmBotLiveState';
 import {
   PhysicsSensorCuboidsEditor,
   type PhysicsSensorPlacementResult,

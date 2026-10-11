@@ -120,7 +120,7 @@ const CAMERA_MODES = new Set<ProjectCameraMode>([
   'follow', 'topdown', 'firstperson', 'orbit', 'stationary',
 ]);
 const VIEW_MODES = new Set<ProjectViewMode>(['2d', '3d', 'combined', 'design']);
-const SCENE_LAYERS = new Set(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']);
+const SCENE_LAYERS = new Set(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers', 'designs']);
 const ENVIRONMENTS = new Set(THREE_D_ENVIRONMENT_PRESET_KEYS);
 
 function record(value: unknown): Record<string, unknown> | null {

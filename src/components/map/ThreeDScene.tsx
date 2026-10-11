@@ -3,7 +3,11 @@
 import { DesignSceneObjects } from '@/components/threed/design/DesignSceneObjects';
 import type { DesignDocument } from '@/libraries/services/threed/design/document';
 
-import { Radio, RotateCcw } from 'lucide-react';
+import { PhysicsSensorsPanel } from './panels/PhysicsSensorsPanel';
+import { SceneViewPresetDialog } from './panels/SceneViewPresetDialog';
+import { SceneViewPresetsMenu } from './panels/SceneViewPresetsMenu';
+import { SceneLayersMenu } from './panels/SceneLayersMenu';
+import { SceneResourceFeedback } from './presentation/SceneResourceFeedback';
 import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 import { useProjectOverlayPosition } from './panels/ProjectOverlayLayout';
 
@@ -63,7 +67,6 @@ import {
   ChevronUp,
   X,
   Target,
-  Layers,
   RotateCw,
   Grid3X3,
   List,
@@ -72,16 +75,12 @@ import {
   Siren,
   Crosshair,
   Save,
-  Eye,
-  EyeOff,
-  Trash2,
   Compass,
 } from 'lucide-react';
 import { GardenCharacter } from '@/components/threed/shared/GardenCharacter';
 import { EcctrlCharacter } from '@/components/threed/shared/EcctrlCharacter';
 import { createGardenColliderMotionSync } from '@/libraries/services/threed/characters/garden-collider-motion';
 import { GARDEN_CHARACTER_COLLIDER_HALF_EXTENTS, GARDEN_CHARACTER_COLLIDER_CENTER_Y } from '@/libraries/services/threed/characters/character-controller-dimensions';
-import { ThreeDProjectLoadingPresentation } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
 import { FadingRing } from '@/components/threed/shared/FadingRing';
 import { PulseRing } from '@/components/threed/shared/PulseRing';
 import { BedMarker3D } from '@/components/threed/markers/BedMarker3D';
@@ -142,7 +141,7 @@ import {
   alignFarmBotPhysicalPosition,
   readFarmBotLiveAlignmentConfiguration,
 } from '@/libraries/services/threed/farmbot/coordinate-alignment-core';
-import { useFarmBotLiveState } from './useFarmBotLiveState';
+import { useFarmBotLiveState } from './hooks/useFarmBotLiveState';
 import { createThreeDRuntimeMarkerKey, normalizeThreeDRuntimeMarkerModuleType, type ThreeDRuntimeMarkerIdentity } from '@/libraries/services/threed/markers/runtime-marker-core';
 
 interface ProjectGroundMapAsset {
@@ -314,6 +313,7 @@ const getMarkerColor = (type: string): string => {
     characters: '#8b5cf6',
     markers: '#ec4899',
     layers: '#06b6d4',
+    designs: '#0ea5e9',
     farmbots: '#64748b',
   };
   return colors[type] || '#6b7280';
@@ -2481,7 +2481,7 @@ export function ThreeDScene({
   const [isAnimating, setIsAnimating] = useState(false);
 
   // ✅ Layer visibility state
-  const [activeLayers, setActiveLayers] = useState<Set<string>>(new Set(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers']));
+  const [activeLayers, setActiveLayers] = useState<Set<string>>(new Set(['beds', 'characters', 'farmbots', 'models', 'plantings', 'layers', 'designs']));
   const sceneMarkers = useMemo(() => {
     if (physicsIsolation === 'all-markers') return [];
     const filterCharacterRuntime = (candidateMarkers: typeof markers) => candidateMarkers.filter(
@@ -2797,7 +2797,8 @@ export function ThreeDScene({
   }, [characterIsolation, characterMarkerIsolation, markers.length, physicsIsolation, sceneMarkers]);
 
   // ✅ View presets state
-  const [viewPresets, setViewPresets] = useState<ViewPreset[]>([]);
+  const [viewPresets, setViewPresets] = useState<ViewPreset[]>(initialViewState?.viewPresets ?? []);
+  const viewPresetsRef = useRef(viewPresets);
   const [showPresetDialog, setShowPresetDialog] = useState(false);
   const [newPresetName, setNewPresetName] = useState('');
   const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
@@ -2888,8 +2889,9 @@ export function ThreeDScene({
   }, [controlsReady]);
 
   // Named views belong to this Project snapshot, rather than browser-wide storage.
-  useEffect(() => {
-    setViewPresets(initialViewState?.viewPresets ?? []);
+  useLayoutEffect(() => {
+    viewPresetsRef.current = initialViewState?.viewPresets ?? [];
+    setViewPresets(viewPresetsRef.current);
   }, [projectId, initialViewState?.viewPresets]);
 
   // Environment selection is Project-scoped. A Project without saved view
@@ -2903,11 +2905,10 @@ export function ThreeDScene({
   // Scene visibility controls operate on the marker types that are actually
   // present. Database ThreeD Layer records do not currently assign individual
   // Runtime Markers to a layer record, so they cannot accurately drive this UI.
-  const availableLayers = useMemo(() => Array.from(new Set(
-    markers
-      .map((marker) => normalizeSceneLayerType(marker.type))
-      .filter(Boolean),
-  )).sort(), [markers]);
+  const availableLayers = useMemo(() => Array.from(new Set([
+    ...markers.map((marker) => normalizeSceneLayerType(marker.type)).filter(Boolean),
+    ...(architecture ? ['designs'] : []),
+  ])).sort(), [markers, Boolean(architecture)]);
 
   const visibleMarkers = markers.filter((marker) => {
     if (activeLayers.size === 0) return false;
@@ -3136,6 +3137,9 @@ export function ThreeDScene({
     return acc;
   }, {});
 
+  if (architecture) availableTypeCounts.designs = architecture.walls.length + architecture.floors.length
+    + architecture.roofs.length + architecture.openings.length + architecture.roofOpenings.length;
+
   const typeCounts = visibleMarkers.reduce((acc: Record<string, number>, marker: any) => {
     const type = normalizeSceneLayerType(marker.type);
     if (type) acc[type] = (acc[type] || 0) + 1;
@@ -3246,7 +3250,7 @@ export function ThreeDScene({
           instructionVisible: Boolean(activeScenario?.projectId === projectId && scenarioInstructionVisible),
           sensorsVisible: showSensors,
         },
-        viewPresets,
+        viewPresets: viewPresetsRef.current,
       };
     });
     return () => onViewStateProviderChange(null);
@@ -3504,7 +3508,7 @@ export function ThreeDScene({
   // ✅ Save current view as preset
   const saveCurrentView = () => {
     if (!controlsRef.current) return;
-    if (viewPresets.length >= 50) {
+    if (viewPresetsRef.current.length >= 50) {
       alert('A Project can keep up to 50 saved views.');
       return;
     }
@@ -3530,7 +3534,8 @@ export function ThreeDScene({
       createdAt: new Date().toISOString(),
     };
     
-    setViewPresets([...viewPresets, preset]);
+    viewPresetsRef.current = [...viewPresetsRef.current, preset];
+    setViewPresets(viewPresetsRef.current);
     setNewPresetName('');
     setShowPresetDialog(false);
   };
@@ -3555,7 +3560,8 @@ export function ThreeDScene({
   // ✅ Delete a view preset
   const deleteViewPreset = (id: string) => {
     if (confirm('Delete this saved view?')) {
-      setViewPresets(viewPresets.filter(p => p.id !== id));
+      viewPresetsRef.current = viewPresetsRef.current.filter(p => p.id !== id);
+      setViewPresets(viewPresetsRef.current);
     }
   };
 
@@ -3627,22 +3633,7 @@ export function ThreeDScene({
           onSimulationParticipantsChange(participants.characterId, participants.target);
         }} />}
           {sceneProductionStarted && showSensors && (
-            <section ref={sensorsOverlay.ref} style={sensorsOverlay.style} data-scene-hover-obstacle aria-label="Physics Sensors" className="threed-workspace-panel threed-scene-panel-surface absolute right-0 top-10 z-30 flex max-h-[calc(100%_-_4rem)] w-72 max-w-full flex-col overflow-hidden rounded-lg border border-foreground/15 text-xs text-foreground shadow-xl backdrop-blur-md">
-          <header {...sensorsOverlay.handle} className={`${sensorsOverlay.handle.className} flex shrink-0 items-center justify-between gap-2 px-3 py-2`}>
-            <div className="flex items-center gap-2"><h2 className="flex items-center gap-2 text-sm font-semibold"><Radio aria-hidden="true" className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />Physics Sensors</h2><span data-overlay-control><ModelFieldHelp label="Physics Sensors">Add a Physics Sensor Cuboid in an asset?s DetailsCard and choose Count Entries. Counts continue while hidden. Save Project to keep them after reload.</ModelFieldHelp></span></div>
-            <div className="flex shrink-0 items-center gap-1"><button type="button" disabled={!visibleCounterGroups.length} onClick={resetSensorCounterState} aria-label="Reset All Counts" title="Reset All Counts" className="rounded p-1 text-foreground/70 hover:bg-foreground/10 disabled:opacity-40"><RotateCcw className="h-4 w-4" /></button><button type="button" onClick={() => setShowSensors(false)} aria-label="Close Physics Sensors" className="rounded p-1 text-foreground/70 hover:bg-foreground/10"><X className="h-4 w-4" /></button></div>
-          </header>
-          <div className="min-h-0 space-y-2 overflow-y-auto overscroll-contain px-3 pb-3 [scrollbar-width:thin]">
-            {!visibleCounterGroups.length && <p className="text-foreground/65">No entry counters configured. Add a Physics Sensor Cuboid in an asset’s DetailsCard and choose Count Entries.</p>}
-            {visibleCounterGroups.map(([id, group]) => <details key={id} open className="rounded border border-foreground/10 p-2">
-              <summary className="cursor-pointer text-foreground/80">{group.name}</summary>
-              <div className="mt-2 space-y-1">{group.members.map(member => <div key={sensorMemberKey(member)} className="flex items-start justify-between gap-3">
-                <span className="min-w-0 break-words">{member.name}</span>
-                <span className="shrink-0 tabular-nums">{sensorCounterState.counts[sensorMemberKey(member)] ?? 0}</span>
-              </div>)}</div>
-            </details>)}
-          </div>
-            </section>
+            <PhysicsSensorsPanel sensorsOverlay={sensorsOverlay} visibleCounterGroups={visibleCounterGroups} sensorCounterState={sensorCounterState} resetSensorCounterState={resetSensorCounterState} onClose={() => setShowSensors(false)} />
           )}
 
       {/* Scene-owned controls are presented from the shared Project toolbar. */}
@@ -3789,84 +3780,39 @@ export function ThreeDScene({
             
             {/* ✅ View presets list */}
             {viewPresets.length > 0 && (
-              <>
-                <div className="border-t border-foreground/10 my-1"></div>
-                <div className="text-[10px] text-foreground/60 px-2 py-0.5">Saved Views</div>
-                {viewPresets.map((preset) => (
-                  <div key={preset.id} className="flex items-center gap-1 group">
-                    <button
-                      onClick={() => loadViewPreset(preset)}
-                      className={`flex-1 text-left px-2 py-0.5 rounded text-xs transition-colors ${
-                        selectedPresetId === preset.id
-                          ? 'text-green-700 dark:text-green-400 bg-green-500/20'
-                          : 'text-foreground/70 hover:text-foreground hover:bg-foreground/10'
-                      }`}
-                    >
-                      {preset.name}
-                    </button>
-                    <button
-                      onClick={() => deleteViewPreset(preset.id)}
-                      className="opacity-0 group-hover:opacity-100 text-foreground/30 hover:text-red-400 transition-all text-xs px-1"
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </button>
-                  </div>
-                ))}
-              </>
+              <SceneViewPresetsMenu
+                viewPresets={viewPresets}
+                selectedPresetId={selectedPresetId}
+                onLoadPreset={loadViewPreset}
+                onDeletePreset={deleteViewPreset}
+              />
             )}
             
             {/* Layer controls */}
             {availableLayers.length > 0 && (
-              <>
-                <div className="border-t border-foreground/10 my-1"></div>
-                <div className="text-[10px] text-foreground/60 px-2 py-0.5 flex items-center gap-1">
-                  <Layers className="w-3 h-3" />
-                  <span>Scene Layers</span>
-                  <button
-                    onClick={() => {
-                      if (allAvailableLayersVisible) {
-                        setActiveLayers(new Set());
-                      } else {
-                        setActiveLayers(new Set(availableLayers));
-                      }
-                    }}
-                    className="ml-auto text-[10px] text-foreground/40 hover:text-foreground/80 transition-colors"
-                  >
-                    {allAvailableLayersVisible ? 'Hide All' : 'Show All'}
-                  </button>
-                </div>
-                {availableLayers.map((layer) => (
-                  <button
-                    key={layer}
-                    onClick={() => {
-                      const newSet = new Set(activeLayers);
-                      if (newSet.has(layer)) {
-                        newSet.delete(layer);
-                      } else {
-                        newSet.add(layer);
-                      }
-                      setActiveLayers(newSet);
-                    }}
-                    className={`w-full text-left px-2 py-0.5 rounded text-xs transition-colors flex items-center gap-1.5 ${
-                      activeLayers.has(layer) 
-                        ? 'text-foreground hover:bg-foreground/10'
-                        : 'text-foreground/40 hover:bg-foreground/5'
-                    }`}
-                  >
-                    <span
-                      className="w-2 h-2 rounded-full flex-shrink-0"
-                      style={{ backgroundColor: activeLayers.has(layer) ? getMarkerColor(layer) : '#4b5563' }}
-                    />
-                    <span className="capitalize">{layer}</span>
-                    <span className="ml-auto text-[10px] flex items-center gap-1">
-                      <span className="text-foreground/40">{availableTypeCounts[layer] ?? 0}</span>
-                      {activeLayers.has(layer)
-                        ? <Eye className="h-3 w-3" />
-                        : <EyeOff className="h-3 w-3" />}
-                    </span>
-                  </button>
-                ))}
-              </>
+              <SceneLayersMenu
+                availableLayers={availableLayers}
+                activeLayers={activeLayers}
+                allAvailableLayersVisible={allAvailableLayersVisible}
+                availableTypeCounts={availableTypeCounts}
+                getMarkerColor={getMarkerColor}
+                onToggleAllLayers={() => {
+                  if (allAvailableLayersVisible) {
+                    setActiveLayers(new Set());
+                  } else {
+                    setActiveLayers(new Set(availableLayers));
+                  }
+                }}
+                onToggleLayer={(layer) => {
+                  const newSet = new Set(activeLayers);
+                  if (newSet.has(layer)) {
+                    newSet.delete(layer);
+                  } else {
+                    newSet.add(layer);
+                  }
+                  setActiveLayers(newSet);
+                }}
+              />
             )}
           </div>
         )}
@@ -3874,51 +3820,7 @@ export function ThreeDScene({
 
       {/* ✅ Save View Dialog */}
       {showPresetDialog && (
-        <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="threed-workspace-panel border border-foreground/10 rounded-lg p-4 max-w-sm w-full mx-4 shadow-2xl">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-medium text-foreground">Save Current View</h3>
-              <button
-                onClick={() => setShowPresetDialog(false)}
-                className="text-foreground/40 hover:text-foreground/80 transition-colors"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            
-            <p className="text-xs text-foreground/50 mb-3">
-              Save the current camera position and active layers as a named view.
-            </p>
-            
-            <input
-              type="text"
-              placeholder="Enter view name..."
-              value={newPresetName}
-              onChange={(e) => setNewPresetName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') saveCurrentView();
-                if (e.key === 'Escape') setShowPresetDialog(false);
-              }}
-              className="w-full bg-foreground/5 border border-foreground/10 rounded px-3 py-2 text-sm text-foreground placeholder-foreground/30 focus:outline-none focus:border-foreground/30 transition-colors"
-              autoFocus
-            />
-            
-            <div className="flex gap-2 mt-3">
-              <button
-                onClick={() => setShowPresetDialog(false)}
-                className="flex-1 px-3 py-1.5 text-xs text-foreground/60 hover:text-foreground/80 border border-foreground/10 rounded transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={saveCurrentView}
-                className="flex-1 px-3 py-1.5 text-xs bg-primary text-primary-foreground rounded hover:bg-primary/80 transition-colors"
-              >
-                Save View
-              </button>
-            </div>
-          </div>
-        </div>
+        <SceneViewPresetDialog newPresetName={newPresetName} onNameChange={setNewPresetName} saveCurrentView={saveCurrentView} onClose={() => setShowPresetDialog(false)} />
       )}
 
       {hoveredSceneMarker && (
@@ -4000,7 +3902,7 @@ export function ThreeDScene({
         gl={{ antialias: true, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0 }}
         shadows={{ type: THREE.PCFShadowMap }}
       >
-        {projectId && architecture && <DesignSceneObjects document={architecture} projectId={projectId} metersPerSceneUnit={metersPerSceneUnit} selected={selectedArchitectureId} onSelect={onArchitectureSelect} visibleLevelId={architectureLevelId} showRoofs={architectureShowRoofs} />}
+        {projectId && architecture && <DesignSceneObjects document={architecture} projectId={projectId} metersPerSceneUnit={metersPerSceneUnit} selected={selectedArchitectureId} onSelect={onArchitectureSelect} visibleLevelId={architectureLevelId} showRoofs={architectureShowRoofs} visible={activeLayers.has('designs')} />}
         <SceneHoverTitlePosition markerId={hoveredSceneMarker ? String(hoveredSceneMarker.id) : undefined} point={hoveredSceneMarkerIdentity?.point} labelRef={hoverTitleRef} />
         <SceneFrameReadyNotifier
           key={presentationKey}
@@ -4332,30 +4234,7 @@ export function ThreeDScene({
       </div>
       )}
 
-      {!physicsFailed && !warningsDismissed && (resourceFailed || visibleResourceIssues.length > 0) && (
-        <aside aria-label="Scene file loading warnings" className="absolute bottom-4 left-4 z-40 max-w-sm max-h-[35%] overflow-auto rounded-lg border border-amber-600/40 bg-amber-50/95 dark:border-amber-400/40 dark:bg-slate-950/90 p-3 text-xs text-amber-950 dark:text-amber-100 shadow-lg">
-          <div className="flex items-start justify-between gap-3">
-            <p role="status" className="font-semibold">Some files could not be loaded</p>
-            <button type="button" aria-label="Close file loading warnings" title="Close warnings" className="shrink-0 rounded p-1 hover:bg-amber-900/10 dark:hover:bg-white/10 focus-visible:outline focus-visible:outline-2" onClick={() => setWarningsDismissed(true)}><X className="h-3.5 w-3.5" /></button>
-          </div>
-          <p className="mt-1 text-amber-900 dark:text-amber-100/80">You can continue using this Project.</p>
-          {visibleResourceIssues.length > 0 ? <ul className="mt-2 space-y-1">
-            {visibleResourceIssues.map(issue => <li key={`${issue.modelId ?? "resource"}:${issue.fileName}:${issue.message}`} className="break-words"><span className="font-mono">{issue.fileName}</span> — {issue.message}</li>)}
-          </ul> : <p className="mt-2">A Model or Ground Map is unavailable.</p>}
-        </aside>
-      )}
-      {!physicsFailed && !scenePostProduction && (
-        <ThreeDProjectLoadingPresentation
-          progress={sceneLoadingProgress}
-          label={sceneLoadingLabel}
-          className={`absolute inset-0 z-50 pointer-events-none transition-opacity duration-700 ease-out motion-reduce:transition-none ${sceneProductionStarted ? 'opacity-0' : 'opacity-100'}`}
-        />
-      )}
-      {!physicsFailed && scenePostProduction && resourcesPending && (
-        <div role="status" aria-live="polite" className="pointer-events-none absolute bottom-4 right-4 z-30 max-w-[calc(100%-2rem)] rounded-lg border bg-background/95 px-3 py-2 text-xs text-muted-foreground shadow-sm">
-          Loading Scene assets…
-        </div>
-      )}
+      <SceneResourceFeedback physicsFailed={physicsFailed} warningsDismissed={warningsDismissed} resourceFailed={resourceFailed} visibleResourceIssues={visibleResourceIssues} onDismissWarnings={() => setWarningsDismissed(true)} scenePostProduction={scenePostProduction} sceneLoadingProgress={sceneLoadingProgress} sceneLoadingLabel={sceneLoadingLabel} sceneProductionStarted={sceneProductionStarted} resourcesPending={resourcesPending} />
     </div>
     </SceneHoverTitleContext.Provider>
     </SceneResourceStatus.Provider>
