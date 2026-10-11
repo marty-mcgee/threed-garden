@@ -1,3 +1,7 @@
+## Next development version: [v0.24.5](docs/plans/v0.24.5.md)
+
+Opened October 11, 2026 on `main`. Local package/root lockfile metadata are `0.24.5`; production remains Developer-confirmed v0.24.4. Scope, acceptance criteria and release title are TBD. This is development preparation, not release readiness. Dependencies, database schema and runtime behavior are unchanged. Preserve the released workspace, manual edits and Developer control of local servers. Leave changes unstaged; no Git writes or deployment. Earlier package-version statements describe their historical checkpoints.
+
 ## Current production: v0.24.4
 
 **[v0.24.4 — ThreeD Workspace: Save feedback and interface cleanup](docs/releases/v0.24.4.md)**. Developer confirmed production release October 11, 2026. Package/root lockfile remain `0.24.4`; dependencies and database schema are unchanged. Prior local TypeScript, 71-task offline CI and guarded build (143 pages) are pre-release evidence, not independent post-deployment verification. Exact deployed SHA and independent post-deployment checks remain unconfirmed. v0.24.0 authenticated Save/Reload remains Developer-accepted 100%; named-view authenticated smoke, physical-device touch and Builder acceptance remain separately documented. This confirmation changes documentation only; leave changes unstaged under the Manual Release Gate. Earlier preparation-only and production-version statements below are historical and superseded by this confirmation.

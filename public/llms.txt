@@ -1,3 +1,5 @@
+Next development version: 0.24.5; scope TBD. Production remains Developer-confirmed v0.24.4. Metadata/docs preparation only; dependencies/schema/runtime unchanged. See docs/plans/v0.24.5.md. No release readiness or deployment is claimed.
+
 Current production: v0.24.4 - ThreeD Workspace: Save feedback and interface cleanup. Developer-confirmed October 11, 2026. Package/root lockfile remain 0.24.4; dependencies/schema unchanged. Local validation is pre-release evidence; deployed SHA and independent post-deployment checks remain unconfirmed. See docs/releases/v0.24.4.md. Historical preparation and production-version statements below are superseded. Documentation only; no Git writes or deployment.
 
 Local preparation: v0.24.4 - ThreeD Workspace: Save feedback and interface cleanup. Package/root lockfile 0.24.4; production remains Developer-confirmed v0.24.3. See docs/releases/v0.24.4.md. No dependency/schema change. Earlier local-version statements are superseded.
