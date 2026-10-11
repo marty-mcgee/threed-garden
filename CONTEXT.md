@@ -1,9 +1,9 @@
 # ThreeD Garden project context
 
-Local next checkpoint: **[v0.24.2 - Workspace Feedback + Responsive Reliability](docs/plans/v0.24.2.md)**. Package/root lockfile metadata are now 0.24.2; production remains Developer-confirmed v0.24.1. Adds workspace Save feedback and narrow-screen saved DetailsCard positioning, with unchanged dependencies/schema and existing Project Save/load. See the plan for automated evidence and remaining authenticated/physical-device checks. Earlier package-version statements below describe historical checkpoints. Leave changes unstaged; no Git write or deployment.
+Current production: **[v0.24.2 — Workspace Feedback + Responsive Reliability](docs/releases/v0.24.2.md)**. Developer confirmed production release October 10, 2026. Package/root lockfile remain 0.24.2; dependencies and schema are unchanged. Prior local validation is pre-release evidence, not post-deployment verification. Exact deployed SHA and independent post-deployment checks remain unconfirmed. v0.24.0 authenticated Save/Reload remains Developer-accepted 100%. New-feedback authenticated smoke testing, physical-device touch and Builder-specific acceptance remain separately documented. This records release confirmation only; leave changes unstaged under the Manual Release Gate.
 
 
-## v0.24.2 local implementation
+## v0.24.2 implementation and pre-release evidence
 
 Workspace feedback shares captureProjectWorkspace with existing Project Save. The hook samples camera/view/panel/overlay/Design preferences every 750ms after hydration, excluding timestamps and live Sensor readings. Amber Save styling, hover/focus tooltip, accessible status and the bottom message identify changed architecture/workspace; captured-only acknowledgment preserves later edits. This is not a universal Scene dirty tracker; navigation guards are unchanged. Narrow custom DetailsCard positions now bypass the default inset, and overlay bounds observe toolbar wrapping.
 
@@ -11,7 +11,7 @@ TypeScript, 71 offline CI tasks and actual-hook/toolbar regressions passed. Nati
 
 October 10, 2026: Developer confirmed the docs: v0.24.1 documentation checkpoint released to production. The application release title remains v0.24.1 — ThreeD Scene: UI/UX Improvements: App Layout + Page Headers. This confirms documentation release only; it does not establish additional post-deployment testing or the exact deployed SHA. Package/root lockfile remain 0.24.1. No next version is opened by this confirmation; the Manual Release Gate remains in force.
 
-Current production: **[v0.24.1 — ThreeD Scene: UI/UX Improvements: App Layout + Page Headers](docs/releases/v0.24.1.md)**. Developer confirmed production release October 10, 2026. Package and both root lockfile version fields remain 0.24.1; dependencies and schema are unchanged. Prior local CI/build/browser checks are pre-release evidence, not post-deployment verification. Exact deployed SHA and independent post-deployment checks remain unconfirmed. v0.24.0 authenticated Save/Reload remains Developer-accepted 100%. This documentation update performs no Git write, deployment or live-system operation; leave changes unstaged.
+Previous production: **[v0.24.1 — ThreeD Scene: UI/UX Improvements: App Layout + Page Headers](docs/releases/v0.24.1.md)**. Developer confirmed production release October 10, 2026. Package and both root lockfile version fields remain 0.24.1; dependencies and schema are unchanged. Prior local CI/build/browser checks are pre-release evidence, not post-deployment verification. Exact deployed SHA and independent post-deployment checks remain unconfirmed. v0.24.0 authenticated Save/Reload remains Developer-accepted 100%. This documentation update performs no Git write, deployment or live-system operation; leave changes unstaged.
 
 The preparation-only statements below are historical and superseded by this release confirmation. Builder-specific acceptance and broader mobile/touch coverage remain separately documented.
 

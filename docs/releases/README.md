@@ -1,8 +1,8 @@
-Local development: [v0.24.2 - Workspace Feedback + Responsive Reliability](v0.24.2.md). Production remains v0.24.1; no publication is inferred.
+Current production: **[v0.24.2 — Workspace Feedback + Responsive Reliability](v0.24.2.md)**. Developer confirmed production release October 10, 2026. Package/root lockfile remain 0.24.2; dependencies and schema are unchanged. Prior local validation is pre-release evidence, not post-deployment verification. Exact deployed SHA and independent post-deployment checks remain unconfirmed. v0.24.0 authenticated Save/Reload remains Developer-accepted 100%. New-feedback authenticated smoke testing, physical-device touch and Builder-specific acceptance remain separately documented. This records release confirmation only; leave changes unstaged under the Manual Release Gate.
 
 # Releases
 
-Current production: **[v0.24.1 — ThreeD Scene: UI/UX Improvements: App Layout + Page Headers](v0.24.1.md)**. Developer confirmed production release October 10, 2026. Package and both root lockfile version fields remain 0.24.1; dependencies and schema are unchanged. Prior local CI/build/browser checks are pre-release evidence, not post-deployment verification. Exact deployed SHA and independent post-deployment checks remain unconfirmed. v0.24.0 authenticated Save/Reload remains Developer-accepted 100%. This documentation update performs no Git write, deployment or live-system operation; leave changes unstaged.
+Previous production: **[v0.24.1 — ThreeD Scene: UI/UX Improvements: App Layout + Page Headers](v0.24.1.md)**. Developer confirmed production release October 10, 2026. Package and both root lockfile version fields remain 0.24.1; dependencies and schema are unchanged. Prior local CI/build/browser checks are pre-release evidence, not post-deployment verification. Exact deployed SHA and independent post-deployment checks remain unconfirmed. v0.24.0 authenticated Save/Reload remains Developer-accepted 100%. This documentation update performs no Git write, deployment or live-system operation; leave changes unstaged.
 
 Previous production: **[v0.24.0 — ThreeD Designs: Project workspace and saved state](v0.24.0.md)**. Developer confirmed final `0.24.0` released to production October 10, 2026, following authenticated Save/Reload checks reported 100% passed. Released package/root lockfile were `0.24.0`; local preparation is now `0.24.1`. This supersedes earlier pending authenticated Save/Reload and RC-versioning statements below. Verification is Developer-reported, separate from agent automated checks. Production release is Developer-confirmed; exact deployed SHA and independent post-deployment checks remain unconfirmed. Leave changes unstaged; no Git write or deployment is authorized.
 
@@ -10,7 +10,7 @@ Historical development: **[v0.24.0-delta — Cleanup toward release candidacy](.
 
 Previous production: **[v0.24.0-centaur — ThreeD Designs: Workspace tools and state](v0.24.0-centaur.md)**, Developer-confirmed October 10, 2026. Package/root lockfile remain `0.24.0-centaur`. Includes canvas-local tools, staged JSON import, Project workspace snapshot support and compact colored Properties headers. Authenticated Save/reopen, post-deployment verification and exact deployed SHA remain unconfirmed. This records release confirmation only; no Git write or deployment is authorized. Earlier checkpoint statements below are historical.
 
-Latest release: [v0.24.1 — ThreeD Scene: UI/UX Improvements: App Layout + Page Headers](v0.24.1.md), Developer-confirmed in production.
+Previous release: [v0.24.1 — ThreeD Scene: UI/UX Improvements: App Layout + Page Headers](v0.24.1.md), Developer-confirmed in production.
 
 This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
 
