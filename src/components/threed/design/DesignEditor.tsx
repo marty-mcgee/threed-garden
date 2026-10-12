@@ -33,6 +33,7 @@ function Scalar({ label, value, onChange, max }: { label: string; value: number;
 }
 
 export interface DesignEditorProps {
+  frameRequest?: { id: string; sequence: number } | null;
   toolbarHost?: HTMLDivElement | null;
   historyHost?: HTMLDivElement | null;
   onActionsBusyChange?: (busy: boolean) => void;
@@ -47,7 +48,7 @@ export interface DesignEditorProps {
     error?: string;
   };
 }
-export function DesignEditor({ active = true, canSave = true, scene, toolbarHost, historyHost, onActionsBusyChange }: DesignEditorProps = {}) {
+export function DesignEditor({ frameRequest, active = true, canSave = true, scene, toolbarHost, historyHost, onActionsBusyChange }: DesignEditorProps = {}) {
   const controlsHost = useRef<HTMLDivElement>(null);
   const [localDraft, setLocalDraft] = useState(() => projectArchitectureDraft());
   const draft = scene?.draft ?? localDraft, history = draft.history;
@@ -206,7 +207,7 @@ export function DesignEditor({ active = true, canSave = true, scene, toolbarHost
       </aside>;
   const footer = <footer className="shrink-0 border-t pt-2 text-xs"><p role="status" aria-live="polite">{message}</p>{(error || scene?.error) && <p role="alert" className="mt-1 text-red-400">{error || scene?.error}</p>}<p className="mt-1 text-muted-foreground">{dirty ? 'Unsaved changes' : 'Saved Project architecture'} · 1 in = 0.0254 m · Project coordinates - Save Project retains these edits</p></footer>;
   const controls = <div ref={controlsHost} className="flex min-h-0 min-w-0 flex-col gap-2 overflow-auto overscroll-contain text-foreground [&_input]:min-w-0 [&_label]:min-w-0 [&_select]:max-w-full" data-testid="design-controls">{importStatus}<fieldset disabled={loading || importing || !canSave} className="min-w-0 border-0 p-0">{propertiesPanel}</fieldset>{footer}</div>;
-  const plan = <DesignPlan embedded={Boolean(scene)} drawingActions={scene ? drawingActions : undefined} planView={workspace.plan} onViewChange={plan => changeWorkspace({ plan })} active={active} disabled={!canSave || importing} document={doc} displayDocument={displayed} activeLevelId={activeLevelId} selected={selected} tool={tool} gridSnap={gridSnap} onSelect={select} onCommit={commit} onPreview={previewUpdate} onMessage={setMessage} onDrawComplete={id => { setSelected(id); setTool('select'); }} cancelToken={cancelToken} />;
+  const plan = <DesignPlan frameRequest={frameRequest} embedded={Boolean(scene)} drawingActions={scene ? drawingActions : undefined} planView={workspace.plan} onViewChange={plan => changeWorkspace({ plan })} active={active} disabled={!canSave || importing} document={doc} displayDocument={displayed} activeLevelId={activeLevelId} selected={selected} tool={tool} gridSnap={gridSnap} onSelect={select} onCommit={commit} onPreview={previewUpdate} onMessage={setMessage} onDrawComplete={id => { setSelected(id); setTool('select'); }} cancelToken={cancelToken} />;
   if (scene) return <div className="flex h-full min-h-0 min-w-0 overflow-hidden" data-testid="home-editor">
     {importDialog}
     {active && historyHost && createPortal(historyActions, historyHost)}

@@ -1,3 +1,9 @@
+## v0.24.5 release preparation evidence
+
+October 12, 2026: npm run typecheck passed; npm run validate -- ci passed all 71 offline tasks; guarded npm run build passed compilation/TypeScript and generated 143 pages. Build used an unreachable localhost DATABASE_URL, a Node network/fetch guard and explicit Google-font CSS mocks with a local system-font source. No local server was started or stopped. Package and both root lockfile version fields are 0.24.5; metadata matches HEAD and dependencies/schema are unchanged. Version/link consistency and git diff --check passed. No standalone lint configuration exists. No browser visual, authenticated App Save/reopen, real database/device/storage writes, migration/seed or independent production checks were performed.
+
+[Release notes and pending manual smoke checks](../releases/v0.24.5.md). Production remains Developer-confirmed v0.24.4. Historical v0.24.0 authenticated Save/Reload remains Developer-accepted; new feature checks remain separate. Leave unstaged.
+
 ## v0.24.4 local checkpoint validation
 
 October 11, 2026: npm run typecheck passed; npm run validate -- ci passed all 71 offline tasks with mocked boundaries; guarded agent-owned npm run build passed compilation/TypeScript and generated 143 pages. Build used explicit offline Google-font CSS mocks with a local system-font source, an unreachable localhost DATABASE_URL and a Node network/fetch guard. No server was started or stopped. Package and both root lockfile version fields are 0.24.4; other package/lock content matches HEAD. Ten relative checkpoint links resolve and git diff --check passed. No standalone lint configuration exists. No browser visual, authenticated App or production verification, real database/device/storage writes, migrations/seeds, Git writes or deployment were performed.

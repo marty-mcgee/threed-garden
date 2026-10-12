@@ -1,4 +1,6 @@
-Next development version: 0.24.5; scope TBD. Production remains Developer-confirmed v0.24.4. Metadata/docs preparation only; dependencies/schema/runtime unchanged. See docs/plans/v0.24.5.md. No release readiness or deployment is claimed.
+Local release preparation: v0.24.5 - ThreeD Designs: Architecture in Project Assets. Production remains v0.24.4. Version metadata 0.24.5; no dependency/schema change. See docs/releases/v0.24.5.md for checks and pending manual acceptance. Unreleased; no deployment.
+
+Next development version: 0.24.5; Architecture in Project Assets (unreleased). Production remains Developer-confirmed v0.24.4. Derived architecture inventory and existing selection/Locate integration; dependencies/schema unchanged. See docs/plans/v0.24.5.md. No release readiness or deployment is claimed.
 
 Current production: v0.24.4 - ThreeD Workspace: Save feedback and interface cleanup. Developer-confirmed October 11, 2026. Package/root lockfile remain 0.24.4; dependencies/schema unchanged. Local validation is pre-release evidence; deployed SHA and independent post-deployment checks remain unconfirmed. See docs/releases/v0.24.4.md. Historical preparation and production-version statements below are superseded. Documentation only; no Git writes or deployment.
 

@@ -1,4 +1,4 @@
-import { newDesign, validateDesign, type DesignDocument } from './document';
+import { entityLevelId, newDesign, validateDesign, type DesignDocument } from './document';
 import { designHistory, type DesignHistory } from './history';
 import { defaultDesignWorkspace, parseDesignWorkspace, type ProjectDesignWorkspaceState } from './workspace-state';
 
@@ -64,4 +64,10 @@ export function importProjectArchitecture(current: DesignDocument, input: unknow
   };
   if (mode === 'replace') return validateDesign(imported);
   return validateDesign({ ...current, levels: [...current.levels, ...imported.levels], nodes: [...current.nodes, ...imported.nodes], walls: [...current.walls, ...imported.walls], floors: [...current.floors, ...imported.floors], roofs: [...current.roofs, ...imported.roofs], openings: [...current.openings, ...imported.openings], roofOpenings: [...current.roofOpenings, ...imported.roofOpenings] });
+}
+
+/** Normalize selection after edits, cascading deletions, Undo or document replacement. */
+export function reconcileArchitectureSelection(draft: ProjectArchitectureDraft): ProjectArchitectureDraft {
+  if (!draft.selected || entityLevelId(draft.history.present, draft.selected)) return draft;
+  return { ...draft, selected: null, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), selectedEntityId: null } };
 }

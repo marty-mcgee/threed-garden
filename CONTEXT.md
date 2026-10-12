@@ -1,8 +1,30 @@
+## v0.24.5 release preparation evidence
+
+October 12, 2026: npm run typecheck passed; npm run validate -- ci passed all 71 offline tasks; guarded npm run build passed compilation/TypeScript and generated 143 pages. Build used an unreachable localhost DATABASE_URL, a Node network/fetch guard and explicit Google-font CSS mocks with a local system-font source. No local server was started or stopped. Package and both root lockfile version fields are 0.24.5; metadata matches HEAD and dependencies/schema are unchanged. Version/link consistency and git diff --check passed. No standalone lint configuration exists. No browser visual, authenticated App Save/reopen, real database/device/storage writes, migration/seed or independent production checks were performed.
+
+[Release notes and pending manual smoke checks](docs/releases/v0.24.5.md). Production remains Developer-confirmed v0.24.4. Historical v0.24.0 authenticated Save/Reload remains Developer-accepted; new feature checks remain separate. Leave unstaged.
+
+## Local release preparation: [v0.24.5 — ThreeD Designs: Architecture in Project Assets](docs/releases/v0.24.5.md)
+
+Prepared October 12, 2026 on main; package/root lockfile 0.24.5. Architecture inventory, shared selection and mode-preserving Locate are implemented and checked offline. Production remains Developer-confirmed v0.24.4. See release notes for validation, source boundaries and pending manual browser/Save-reopen checks. Dependencies/schema unchanged; preserve manual edits and Developer control of servers. Leave unstaged; no commit, publication or deployment. Earlier preparation records below are historical.
+
+## v0.24.5 local implementation: Architecture in Project Assets
+
+Production remains Developer-confirmed v0.24.4; v0.24.5 is development, not released. [Scope, source boundaries, acceptance and manual steps](docs/plans/v0.24.5.md). The earlier erroneous v0.24.5 production labels are corrected to the Developer's clarified baseline; no independent production verification is inferred.
+
+ProjectAssetsPanel now derives a searchable, collapsible Architecture inventory from the active ProjectArchitectureDraft.history.present. New ArchitectureAssetsSection uses PersistentDetails, existing panel/row CSS and DesignAction focus/hover tooltips. Entries use stable document IDs and type/level/Imperial dimensions for walls/floors/roofs/doors/windows/skylights/cutouts; there are no Model records or independent writes. Assets and existing canvas picking share draft.selected. Dashboard selection opens Design Properties; reconcileArchitectureSelection removes missing selections after edits/cascades/Undo. Existing Models, Characters and Sensor tools remain in place.
+
+Explicit Locate uses the actual DesignPlan framePlan path (one-shot, level-aware), existing Scene coordinate focus with metre-to-Scene conversion in 3d/combined, or existing geographic conversions and Leaflet fitBounds in 2d. It never switches View Mode. Transient requests are Project-keyed/cleared on switch, not persisted; framing changes existing workspace pan/zoom normally. Geographic architecture rendering remains the existing wall/floor/roof representation. Properties remain in the existing Design workspace and become visible when Design mode is active; no extra DetailsCards or new selection store is added.
+
+Save/load still uses project.config.threeDArchitecture, the existing Project snapshot API/transaction and session hydration. New inventory assertions execute that existing mocked full roundtrip, retain the Model/unrelated config and verify empty-Project isolation. Supported type/search/dimension/cascade/selection and actual row, Project callback, plan/map focus tests were added to validate-threed-designs.cjs. The existing Model-warning fixture now knows the optional inventory imports.
+
+Checks actually run: npm run typecheck; node src/libraries/scripts/validate-threed-designs.cjs; node src/libraries/scripts/validate-project-asset-warnings.cjs; npm run validate -- ci (all 71 offline tasks passed after fixing fixture imports); git diff --check. Final panel memoization and both geographic Locate viewport adapters were rechecked with the affected warning/Designs fixtures and TypeScript. Production build and browser visual/authenticated Save/reopen were not run. No server started, real database/device/storage write, migration/seed, Git write or deployment. Leave unstaged. No version, dependency or database schema change in this implementation step. Historical v0.24.0 authenticated Save/Reload acceptance remains separate from v0.24.5 manual checks.
+
 ## Next development version: [v0.24.5](docs/plans/v0.24.5.md)
 
 Preparation checks: npm run typecheck, version/dependency/link consistency and git diff --check passed. No runtime code changed; CI/build and browser checks were not rerun for this planning-only step.
 
-Opened October 11, 2026 on `main`. Local package/root lockfile metadata are `0.24.5`; production remains Developer-confirmed v0.24.4. Scope, acceptance criteria and release title are TBD. This is development preparation, not release readiness. Dependencies, database schema and runtime behavior are unchanged. Preserve the released workspace, manual edits and Developer control of local servers. Leave changes unstaged; no Git writes or deployment. Earlier package-version statements describe their historical checkpoints.
+Opened October 11, 2026 on `main`. Local package/root lockfile metadata are `0.24.5`; production remains Developer-confirmed v0.24.4. Approved development scope: Architecture in Project Assets; see the v0.24.5 plan for implementation and acceptance. This is unreleased development. Dependencies and database schema are unchanged. Preserve the released workspace, manual edits and Developer control of local servers. Leave changes unstaged; no Git writes or deployment. Earlier package-version statements describe their historical checkpoints.
 
 ## Current production: v0.24.4
 

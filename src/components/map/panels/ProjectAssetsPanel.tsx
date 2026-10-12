@@ -1,8 +1,11 @@
 'use client';
 
+import { ArchitectureAssetsSection } from './ArchitectureAssetsSection';
+import { architectureAssets } from '@/libraries/services/threed/design/asset-inventory';
+import type { DesignDocument } from '@/libraries/services/threed/design/document';
 import type { SceneResourceIssue } from '@/components/threed/shared/SceneResourceStatus';
 import { DetailsSectionScope, PersistentDetails } from '@/components/map/details/PersistentDetails';
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { AlertTriangle, Boxes, Radio, ExternalLink, Crosshair, Search, X } from 'lucide-react';
 import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
@@ -16,6 +19,7 @@ import { useSensorGroups } from '@/components/threed/physics/SensorGroupsWorkspa
 import { getThreeDIcon, getThreeDLabel } from '@/libraries/utils/map-helpers';
 
 export function ProjectAssetsPanel({
+  architecture, selectedArchitectureId, onSelectArchitecture, onLocateArchitecture, architectureLocateAvailable = true,
   dockHost,
   selectedProjectId,
   resourceIssues = [],
@@ -39,6 +43,11 @@ export function ProjectAssetsPanel({
   groundMapSelected = false,
   onOpenGroundMap,
 }: {
+  architecture?: DesignDocument;
+  selectedArchitectureId?: string | null;
+  onSelectArchitecture?: (id: string) => void;
+  onLocateArchitecture?: (id: string) => void;
+  architectureLocateAvailable?: boolean;
   dockHost?: HTMLDivElement | null;
   resourceIssues?: SceneResourceIssue[];
   groundMapSelected?: boolean;
@@ -88,6 +97,7 @@ export function ProjectAssetsPanel({
     };
   }, [isVisible, onDismiss, dockHost]);
 
+  const visibleArchitecture = useMemo(() => architecture ? architectureAssets(architecture, projectAssetSearch) : [], [architecture, projectAssetSearch]);
   const panel = isVisible && (
         <div
           id="project-assets-panel"
@@ -142,9 +152,9 @@ export function ProjectAssetsPanel({
 
           {onOpenGroundMap && <Button type="button" variant="outline" className="mb-2 h-8 shrink-0 justify-start text-xs" aria-pressed={groundMapSelected} onClick={onOpenGroundMap}>Ground Map · Settings</Button>}
           <div className="min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pr-1">
-            {visibleProjectAssets.length === 0 ? (
+            {visibleProjectAssets.length === 0 && visibleArchitecture.length === 0 ? (
               <p className="py-8 text-center text-xs text-muted-foreground">
-                {projectRuntimeMarkers.length === 0
+                {projectRuntimeMarkers.length === 0 && (!architecture || architecture.walls.length + architecture.floors.length + architecture.roofs.length + architecture.openings.length + architecture.roofOpenings.length === 0)
                   ? 'This Project has no ThreeD assets.'
                   : 'No Project assets match this search.'}
               </p>
@@ -155,7 +165,7 @@ export function ProjectAssetsPanel({
                 </summary>
                 <div className="space-y-1">
                 {visibleProjectAssets.filter(marker => marker.type === type).map(marker => {
-              const isSelected = selectedMarker?.id === marker.id && !selectedSensorId && selectedGroupId == null && !groundMapSelected;
+              const isSelected = !selectedArchitectureId && selectedMarker?.id === marker.id && !selectedSensorId && selectedGroupId == null && !groundMapSelected;
               const sourceAssetId = Number(marker.data?.id);
               const currentPosition = Number.isSafeInteger(sourceAssetId) && sourceAssetId > 0
                 ? resolveRuntimeMarkerPosition(marker.type, sourceAssetId) ?? marker.position
@@ -235,6 +245,7 @@ export function ProjectAssetsPanel({
                 </div>
               </PersistentDetails>
             ))}
+            {onSelectArchitecture && onLocateArchitecture && <ArchitectureAssetsSection assets={visibleArchitecture} selectedId={selectedArchitectureId} onSelect={onSelectArchitecture} onLocate={onLocateArchitecture} locateAvailable={architectureLocateAvailable} />}
             {resourceIssues.length > 0 && <PersistentDetails storageId="file-loading-warnings" aria-label="Project file loading warnings" className="rounded border border-amber-400/40 bg-amber-500/10 p-2 text-xs text-amber-800 dark:text-amber-200">
               <summary className="cursor-pointer font-semibold"><AlertTriangle className="mr-1 inline h-3.5 w-3.5" />Some files could not be loaded · {resourceIssues.length}</summary>
               <p className="mt-1">You can continue using this Project.</p>

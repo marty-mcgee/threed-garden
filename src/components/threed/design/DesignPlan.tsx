@@ -13,7 +13,7 @@ import { wallFootprint } from '@/libraries/services/threed/design/geometry';
 
 export type DesignTool = 'select' | 'wall' | 'floor' | 'roof' | 'door' | 'window' | 'cutout' | 'skylight' | 'pan';
 type DrawPoint = PlanPoint & { nodeId?: string };
-interface Props { drawingActions?: ReactNode; planView?: PlanView; onViewChange?: (view: PlanView) => void; toolbarHost?: HTMLDivElement | null; embedded?: boolean; active?: boolean; disabled?: boolean; document: DesignDocument; displayDocument?: DesignDocument; activeLevelId: string; selected: string | null; tool: DesignTool; gridSnap: boolean;
+interface Props { frameRequest?: { id: string; sequence: number } | null; drawingActions?: ReactNode; planView?: PlanView; onViewChange?: (view: PlanView) => void; toolbarHost?: HTMLDivElement | null; embedded?: boolean; active?: boolean; disabled?: boolean; document: DesignDocument; displayDocument?: DesignDocument; activeLevelId: string; selected: string | null; tool: DesignTool; gridSnap: boolean;
   onSelect: (id: string | null) => void; onCommit: (doc: DesignDocument) => void;
   onPreview: (doc: DesignDocument | null) => void; onMessage: (text: string) => void;
   onDrawComplete: (id: string) => void; cancelToken: number }
@@ -35,7 +35,7 @@ function addShape(doc: DesignDocument, points: DrawPoint[], tool: 'wall' | 'floo
     floors: tool === 'floor' ? [...doc.floors, { id, levelId, vertices: ids, thickness: doc.defaults.floorThickness, elevation: 0 }] : doc.floors, roofs: tool === 'roof' ? [...doc.roofs, { id, levelId, vertices: ids, kind: 'gable', pitch: 6, direction: 0, thickness: 6 * INCH, elevation: doc.defaults.wallHeight }] : doc.roofs };
 }
 
-export function DesignPlan({ drawingActions, planView, onViewChange, toolbarHost, embedded = false, active: enabled = true, disabled = false, document: doc, displayDocument = doc, activeLevelId, selected, tool, gridSnap, onSelect, onCommit, onPreview, onMessage, onDrawComplete, cancelToken }: Props) {
+export function DesignPlan({ frameRequest, drawingActions, planView, onViewChange, toolbarHost, embedded = false, active: enabled = true, disabled = false, document: doc, displayDocument = doc, activeLevelId, selected, tool, gridSnap, onSelect, onCommit, onPreview, onMessage, onDrawComplete, cancelToken }: Props) {
   const visible = levelDocument(displayDocument, activeLevelId), active = levelDocument(doc, activeLevelId);
   const svg = useRef<SVGSVGElement>(null), patternId = useId();
   const [localView, setLocalView] = useState<PlanView>({ x: 80, y: 80, scale: 45 });
@@ -216,6 +216,14 @@ export function DesignPlan({ drawingActions, planView, onViewChange, toolbarHost
   function fitPlan(selection = false) {
     const next = framePlan(selection ? selectionPoints : [...active.nodes, ...active.walls.flatMap(wall => wallFootprint(doc, wall))], size); if (next) setView(next);
   }
+  const framedRequest = useRef<typeof frameRequest>(null);
+  useEffect(() => {
+    if (!enabled || !frameRequest || framedRequest.current === frameRequest) return;
+    // Selection's level is reconciled by the editor first; hidden plans never consume a request.
+    if (!entityPoints(active, frameRequest.id).length) return;
+    const next = framePlan(doc.walls.some(w => w.id === frameRequest.id) ? wallFootprint(doc, doc.walls.find(w => w.id === frameRequest.id)!) : entityPoints(doc, frameRequest.id), size);
+    if (next) { framedRequest.current = frameRequest; setView(next); }
+  }, [frameRequest, enabled, activeLevelId, size.width, size.height, doc, setView]);
   const viewActions = <div role="group" aria-label="Design plan navigation" className="flex items-center gap-1"><DesignAction label="Fit Plan" disabled={!active.nodes.length} onClick={() => fitPlan()}><Maximize className="h-3.5 w-3.5" /></DesignAction><DesignAction label="Zoom to Selection" disabled={!selectionPoints.length} onClick={() => fitPlan(true)}><Focus className="h-3.5 w-3.5" /></DesignAction><DesignAction label="Reset View" onClick={() => setView({ x: 80, y: 80, scale: 45 })}><RotateCcw className="h-3.5 w-3.5" /></DesignAction></div>;
   return <section aria-label="Design plan canvas" className={`relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#091423] ${embedded ? '' : 'rounded-lg border border-white/10'}`}>
     {embedded && enabled && <div data-testid="design-canvas-tools" role="toolbar" aria-label="Design drawing and view tools" className="threed-workspace-panel threed-scene-panel-surface absolute z-10 flex max-w-[calc(100%-40px)] flex-wrap items-center gap-1 rounded-md border p-1 shadow-md" style={{ right: 8, top: RULER_SIZE + 8 }} onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}>{drawingActions}{viewActions}</div>}

@@ -1,6 +1,10 @@
+## Local release preparation: [v0.24.5 — ThreeD Designs: Architecture in Project Assets](releases/v0.24.5.md)
+
+Prepared October 12, 2026 on main; package/root lockfile 0.24.5. Architecture inventory, shared selection and mode-preserving Locate are implemented and checked offline. Production remains Developer-confirmed v0.24.4. See release notes for validation, source boundaries and pending manual browser/Save-reopen checks. Dependencies/schema unchanged; preserve manual edits and Developer control of servers. Leave unstaged; no commit, publication or deployment. Earlier preparation records below are historical.
+
 ## Next development version: [v0.24.5](plans/v0.24.5.md)
 
-Opened October 11, 2026 on `main`. Local package/root lockfile metadata are `0.24.5`; production remains Developer-confirmed v0.24.4. Scope, acceptance criteria and release title are TBD. This is development preparation, not release readiness. Dependencies, database schema and runtime behavior are unchanged. Preserve the released workspace, manual edits and Developer control of local servers. Leave changes unstaged; no Git writes or deployment. Earlier package-version statements describe their historical checkpoints.
+Opened October 11, 2026 on `main`. Local package/root lockfile metadata are `0.24.5`; production remains Developer-confirmed v0.24.4. Approved development scope: Architecture in Project Assets; see the v0.24.5 plan for implementation and acceptance. This is unreleased development. Dependencies and database schema are unchanged. Preserve the released workspace, manual edits and Developer control of local servers. Leave changes unstaged; no Git writes or deployment. Earlier package-version statements describe their historical checkpoints.
 
 ## Current production: v0.24.4
 

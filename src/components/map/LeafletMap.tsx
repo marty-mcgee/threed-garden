@@ -28,6 +28,7 @@ L.Icon.Default.mergeOptions({
 
 export interface ArchitectureMapLine { id: string; positions: [number, number][]; closed: boolean }
 interface LeafletMapProps {
+  architectureFocus?: { sequence: number; positions: [number, number][] } | null;
   architectureLines?: ArchitectureMapLine[];
   selectedArchitectureId?: string | null;
   onArchitectureSelect?: (id: string) => void;
@@ -98,7 +99,7 @@ function escapeHtml(str: string | null | undefined): string {
 }
 
 function LeafletMapComponent({
-  architectureLines, selectedArchitectureId, onArchitectureSelect,
+  architectureFocus, architectureLines, selectedArchitectureId, onArchitectureSelect,
   incidents,
   markers,
   onIncidentClick,
@@ -192,6 +193,14 @@ function LeafletMapComponent({
     }
     return () => { layer.remove(); };
   }, [architectureLines, selectedArchitectureId, onArchitectureSelect]);
+  const focusedArchitecture = useRef<number | null>(null);
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!architectureFocus) { focusedArchitecture.current = null; return; }
+    if (!map || !architectureFocus.positions.length || focusedArchitecture.current === architectureFocus.sequence) return;
+    focusedArchitecture.current = architectureFocus.sequence;
+    map.fitBounds(architectureFocus.positions, { padding: [40, 40], maxZoom: 22 });
+  }, [architectureFocus]);
 
 
 

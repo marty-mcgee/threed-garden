@@ -1,6 +1,7 @@
 // components/map/UnifiedMapView.tsx
 'use client';
 
+import { entityPoints } from '@/libraries/services/threed/design/object-properties';
 import type { DesignDocument } from '@/libraries/services/threed/design/document';
 import type { ArchitectureMapLine } from '@/components/map/LeafletMap';
 import type { ScenarioStartRequest } from '@/libraries/services/threed/scenario-core';
@@ -55,6 +56,7 @@ const ThreeDScene = dynamic(
 );
 
 interface UnifiedMapViewProps {
+  architectureFrameRequest?: { id: string; sequence: number } | null;
   architecture?: DesignDocument;
   metersPerSceneUnit?: number;
   selectedArchitectureId?: string | null;
@@ -201,7 +203,7 @@ function isSameRuntimeMarker(left: RuntimeMarker, right: RuntimeMarker): boolean
 }
 
 export function UnifiedMapView({
-  architecture, metersPerSceneUnit = 0.3048, selectedArchitectureId, onArchitectureSelect, architectureLevelId, architectureShowRoofs = true,
+  architectureFrameRequest, architecture, metersPerSceneUnit = 0.3048, selectedArchitectureId, onArchitectureSelect, architectureLevelId, architectureShowRoofs = true,
 
   projectId,
   runtimeMarkerRegistry,
@@ -642,8 +644,18 @@ export function UnifiedMapView({
     return [...architecture.walls.map(wall => ({ id: wall.id, positions: [point(wall.start), point(wall.end)], closed: false })),
       ...[...architecture.floors, ...architecture.roofs].map(entity => ({ id: entity.id, positions: entity.vertices.map(point), closed: true }))];
   }, [architecture, metersPerSceneUnit, geographicOrigin, gpsCenter]);
+  const architectureFocus = useMemo(() => {
+    if (!architecture || !architectureFrameRequest) return null;
+    const positions = entityPoints(architecture, architectureFrameRequest.id).map(point => {
+      const local = { x: point.x / metersPerSceneUnit, y: 0, z: point.z / metersPerSceneUnit };
+      if (geographicOrigin) { const geo = projectLocalPositionToGeographicPosition(local, geographicOrigin); return [geo.latitude, geo.longitude] as [number, number]; }
+      const geo = projectPlanPositionToMapPosition(local, gpsCenter); return [geo.lat, geo.lng] as [number, number];
+    });
+    return { sequence: architectureFrameRequest.sequence, positions };
+  }, [architectureFrameRequest, architecture, metersPerSceneUnit, geographicOrigin, gpsCenter]);
   const render2DView = () => (
     <LeafletMap
+      architectureFocus={architectureFocus}
       architectureLines={architectureLines}
       selectedArchitectureId={selectedArchitectureId}
       onArchitectureSelect={onArchitectureSelect}

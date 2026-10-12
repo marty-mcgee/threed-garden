@@ -11,7 +11,9 @@ import { useSearchParams } from 'next/navigation';
 import { DesignWorkspace } from '@/components/threed/design/DesignWorkspace';
 import { ScenePanelDivider } from '@/components/map/panels/ScenePanelDivider';
 import { DesignEditor } from '@/components/threed/design/DesignEditor';
-import { acknowledgeArchitecture, architectureIsDirty, hydrateArchitectureDraft, parseProjectArchitecture, projectArchitectureDraft, type ProjectArchitectureDraft } from '@/libraries/services/threed/design/project-architecture';
+import { acknowledgeArchitecture, reconcileArchitectureSelection, architectureIsDirty, hydrateArchitectureDraft, parseProjectArchitecture, projectArchitectureDraft, type ProjectArchitectureDraft } from '@/libraries/services/threed/design/project-architecture';
+import { architectureAssets } from '@/libraries/services/threed/design/asset-inventory';
+import { entityLevelId } from '@/libraries/services/threed/design/document';
 import type { DesignDocument } from '@/libraries/services/threed/design/document';
 import { 
   MapPin, 
@@ -531,6 +533,7 @@ function UnifiedMapPageInner() {
   // projectContext.architecture, backed by project.config JSONB on the server.
   const architectureDrafts = useRef(new Map<string, ProjectArchitectureDraft>());
   const [, renderArchitecture] = useState(0);
+  const [architectureFrame, setArchitectureFrame] = useState<{ projectId: string; id: string; sequence: number } | null>(null);
   const [architecturePreview, setArchitecturePreview] = useState<DesignDocument | null>(null);
   const [architectureVisibility, setArchitectureVisibility] = useState<{ levelId?: string; showRoofs: boolean }>({ showRoofs: true });
   const [architectureSaveError, setArchitectureSaveError] = useState('');
@@ -543,15 +546,16 @@ function UnifiedMapPageInner() {
   const changeArchitecture = useCallback((update: (draft: ProjectArchitectureDraft) => ProjectArchitectureDraft) => {
     if (!canEditProject || !selectedProjectId || loading) return;
     const current = architectureDrafts.current.get(selectedProjectId)!;
-    architectureDrafts.current.set(selectedProjectId, update(current)); renderArchitecture(value => value + 1);
+    architectureDrafts.current.set(selectedProjectId, reconcileArchitectureSelection(update(current))); renderArchitecture(value => value + 1);
   }, [selectedProjectId, canEditProject, loading]);
   const selectArchitecture = useCallback((selected: string | null) => {
     if (!selectedProjectId) return;
     const current = architectureDrafts.current.get(selectedProjectId)!;
-    architectureDrafts.current.set(selectedProjectId, { ...current, selected, workspace: { ...(current.workspace ?? defaultDesignWorkspace()), selectedEntityId: selected } }); renderArchitecture(value => value + 1);
+    if (selected && !entityLevelId(current.history.present, selected)) return;
+    architectureDrafts.current.set(selectedProjectId, { ...current, selected, workspace: { ...(current.workspace ?? defaultDesignWorkspace()), selectedEntityId: selected, ...(selected ? { sections: { ...(current.workspace ?? defaultDesignWorkspace()).sections, [`threed:details:v1:design:${selectedProjectId}:selected-properties`]: true } } : {}) } }); renderArchitecture(value => value + 1);
   }, [selectedProjectId]);
   const showArchitecture = useCallback((levelId: string | undefined, showRoofs: boolean) => setArchitectureVisibility(current => current.levelId === levelId && current.showRoofs === showRoofs ? current : { levelId, showRoofs }), []);
-  useEffect(() => { setArchitecturePreview(null); setArchitectureSaveError(''); projectSaveBusy.current = false; }, [selectedProjectId]);
+  useEffect(() => { setArchitectureFrame(null); setArchitecturePreview(null); setArchitectureSaveError(''); projectSaveBusy.current = false; }, [selectedProjectId]);
   useEffect(() => {
     const unload = (event: BeforeUnloadEvent) => { if ([...architectureDrafts.current.values()].some(architectureIsDirty) || projectSaveBusy.current) { event.preventDefault(); event.returnValue = ''; } };
     const navigate = (event: MouseEvent) => {
@@ -2679,6 +2683,7 @@ function UnifiedMapPageInner() {
   const dismissProjectAssets = useCallback(() => closeProjectAssets(true), [closeProjectAssets]);
 
   const selectProjectAsset = useCallback((marker: RuntimeMarker) => {
+    selectArchitecture(null);
     groundMapInspector?.setOpen(false);
     setSensorInspector(null);
     setGroupInspector(null);
@@ -2688,7 +2693,7 @@ function UnifiedMapPageInner() {
       : null;
     setSelectedIncident(null);
     setSelectedMarker(currentPosition ? { ...marker, position: currentPosition } : marker);
-  }, [resolveRuntimeMarkerPosition, groundMapInspector?.setOpen]);
+  }, [resolveRuntimeMarkerPosition, groundMapInspector?.setOpen, selectArchitecture]);
 
   // Keep Project data loading visually continuous with the ThreeD Scene
   // presentation that follows it.
@@ -2880,6 +2885,18 @@ function UnifiedMapPageInner() {
       {/* Project Assets is independent of toolbar menu visibility. */}
       <div>
       <ProjectAssetsPanel
+        architecture={architectureDraft.history.present}
+        selectedArchitectureId={architectureDraft.selected}
+        onSelectArchitecture={id => { if (transform.session) return; selectArchitecture(id); setSelectedMarker(null); setSelectedIncident(null); setSensorInspector(null); setGroupInspector(null); groundMapInspector?.setOpen(false); }}
+        architectureLocateAvailable={!transform.session}
+        onLocateArchitecture={id => {
+          if (transform.session || !selectedProjectId) return;
+          const asset = architectureAssets(architectureDraft.history.present).find(item => item.id === id);
+          if (!asset) return;
+          selectArchitecture(id);
+          if (viewMode === 'design' || viewMode === '2d') setArchitectureFrame(current => ({ projectId: selectedProjectId, id, sequence: (current?.sequence ?? 0) + 1 }));
+          else { setSensorFocusPosition({ x: asset.position.x / metersPerSceneUnit, y: asset.position.y / metersPerSceneUnit, z: asset.position.z / metersPerSceneUnit }); setSensorFocusRequest(value => value + 1); }
+        }}
         dockHost={viewMode === 'design' ? designAssetsHost : null}
         resourceIssues={sceneResourceIssues?.projectId === selectedProjectId ? sceneResourceIssues.issues : []}
         selectedProjectId={selectedProjectId}
@@ -3119,7 +3136,7 @@ function UnifiedMapPageInner() {
         }}
       />
       {/* ✅ Map Container */}
-      <DesignWorkspace split={designWorkspace.split} onSplitChange={split => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), split } }))} assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor key={selectedProjectId} active={viewMode === 'design'} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
+      <DesignWorkspace split={designWorkspace.split} onSplitChange={split => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), split } }))} assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor key={selectedProjectId} frameRequest={architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} active={viewMode === 'design'} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
       <Card data-project-canvas className="h-full gap-0 rounded-none border-0 py-0 shadow-none">
         <CardContent className="h-full p-0 overflow-hidden">
           <div className="h-full">
@@ -3127,7 +3144,7 @@ function UnifiedMapPageInner() {
             {/* Pass cameraMode to combined view's 3D UnifiedMapView */}
             <div ref={containerRef} className="relative flex h-full w-full flex-col">
               <div hidden={sceneViewMode === '2d'} className="min-h-0 flex-shrink-0" style={{ height: sceneViewMode === 'combined' ? panelHeight + '%' : '100%' }}>
-              <UnifiedMapView architecture={architecturePreview ?? architectureDraft.history.present}
+              <UnifiedMapView architectureFrameRequest={viewMode === '2d' && architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} architecture={architecturePreview ?? architectureDraft.history.present}
                 metersPerSceneUnit={metersPerSceneUnit}
                 selectedArchitectureId={architectureDraft.selected}
                 onArchitectureSelect={selectArchitecture}
@@ -3196,7 +3213,7 @@ function UnifiedMapPageInner() {
               /></div>
               <ScenePanelDivider hidden={sceneViewMode !== 'combined'} containerRef={containerRef} value={panelHeight} onChange={setPanelHeight} axis="vertical" label="Resize 3D and 2D panels" />
               <div hidden={sceneViewMode !== '2d' && sceneViewMode !== 'combined'} className="min-h-0 flex-1">
-              <UnifiedMapView architecture={architecturePreview ?? architectureDraft.history.present}
+              <UnifiedMapView architectureFrameRequest={viewMode === '2d' && architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} architecture={architecturePreview ?? architectureDraft.history.present}
                 metersPerSceneUnit={metersPerSceneUnit}
                 selectedArchitectureId={architectureDraft.selected}
                 onArchitectureSelect={selectArchitecture}

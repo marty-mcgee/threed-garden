@@ -4,7 +4,9 @@ const vm = require('node:vm');
 const ts = require('typescript');
 const jsx = (type, props) => ({ type, props });
 const mocks = {
-  react: { useEffect() {}, useRef: () => ({ current: null }) },
+  './ArchitectureAssetsSection': { ArchitectureAssetsSection: 'Architecture' },
+  '@/libraries/services/threed/design/asset-inventory': { architectureAssets() { throw new Error('Model warnings fixture has no architecture document'); } },
+  react: { useMemo: fn => fn(), useEffect() {}, useRef: () => ({ current: null }) },
   'react-dom': { createPortal: panel => panel },
   'react/jsx-runtime': { jsx, jsxs: jsx },
   'lucide-react': new Proxy({}, { get: (_, name) => name }),

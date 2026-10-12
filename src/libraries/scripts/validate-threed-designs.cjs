@@ -17,6 +17,41 @@ const captured={version:1,document:source};
 assert(!architecture.architectureIsDirty(architecture.projectArchitectureDraft()), 'A new empty draft must be clean before hydration; otherwise Dashboard refuses to restore saved architecture.');
 const properties = load(root+'object-properties.ts', {'./document':document});
 const navigation = load(root+'plan-navigation.ts', {'./document':document});
+const inventory = load(root+'asset-inventory.ts', {'./document':document,'./object-properties':properties});
+const complete = document.validateDesign({...source, roofs:[{id:'roof',levelId:'ground',vertices:['a','b','c','d'],kind:'flat',pitch:0,direction:0,thickness:.1524,elevation:2.4384}],
+ roofOpenings:[{id:'skylight',roofId:'roof',kind:'skylight',along:.4,across:.4,width:.6,length:.8},{id:'cutout',roofId:'roof',kind:'cutout',along:1.5,across:.4,width:.6,length:.8}],
+ openings:[...source.openings,{id:'window',wallId:'w2',kind:'window',offset:.4,width:.6,height:.6,sill:1}]});
+const assets = inventory.architectureAssets(complete);
+assert.equal(assets.length,10);assert.equal(new Set(assets.map(a=>a.id)).size,10);
+assert.deepEqual(Array.from(new Set(assets.map(a=>a.type))).sort(),['Door','Floor','Roof','Roof Cutout','Skylight','Wall','Window']);
+assert.equal(inventory.architectureAssets(complete,'skylight')[0].id,'skylight');
+assert.equal(inventory.architectureAssets(complete,'ground').length,10);
+assert.equal(inventory.architectureAssets(complete,'Architecture').length,10);
+assert.equal(inventory.architectureAssets(complete,'not a match').length,0);
+assert.equal(inventory.architectureAssets(complete,'window')[0].levelId,'ground');
+assert.equal(inventory.architectureAssets({...complete,walls:complete.walls.map(w=>w.id==='w0'?{...w,height:3}:w)}).find(a=>a.id==='w0').position.y,1.5);
+const resizedWallAsset = properties.editObject(source,'w0',{field:'length',value:4});
+assert.notEqual(inventory.architectureAssets(resizedWallAsset)[0].dimensions,inventory.architectureAssets(source)[0].dimensions);
+let removed = document.removeEntity(complete,'roof');
+assert.equal(inventory.architectureAssets(removed).length,7,'Roof deletion removes hosted cutout/skylight inventory entries.');
+const invalidSelection={...architecture.projectArchitectureDraft({version:1,document:removed}),selected:'skylight',workspace:{...workspace.defaultDesignWorkspace(),selectedEntityId:'skylight'}};
+assert.equal(architecture.reconcileArchitectureSelection(invalidSelection).selected,null);
+assert.equal(architecture.reconcileArchitectureSelection(invalidSelection).workspace.selectedEntityId,null);
+// Execute real Assets row callbacks and selected-state rendering without browser/persistence.
+const jsx=(type,props)=>({type,props});
+const section=load('src/components/map/panels/ArchitectureAssetsSection.tsx',{
+ 'react/jsx-runtime':{jsx,jsxs:jsx},'lucide-react':{Building2:'icon',Crosshair:'icon'},
+ '@/components/map/details/PersistentDetails':{PersistentDetails:'details'},
+ '@/components/threed/design/DesignAction':{DesignAction:'action'},
+});
+function flatten(tree){if(!tree||typeof tree!=='object')return [];return [tree,...[tree.props?.children].flat(Infinity).flatMap(flatten)];}
+let selectedAsset,locatedAsset;
+const rows=flatten(section.ArchitectureAssetsSection({assets,selectedId:'w0',locateAvailable:true,onSelect:id=>selectedAsset=id,onLocate:id=>locatedAsset=id}));
+const selectedRow=rows.find(n=>n.type==='button'&&n.props['aria-pressed']);assert(selectedRow);selectedRow.props.onClick();assert.equal(selectedAsset,'w0');
+rows.find(n=>n.type==='action'&&n.props.label==='Locate Wall w0').props.onClick();assert.equal(locatedAsset,'w0');
+const disabledRows=flatten(section.ArchitectureAssetsSection({assets,locateAvailable:false,onSelect:()=>{},onLocate:()=>{}}));assert(disabledRows.filter(n=>n.type==='action').every(n=>n.props.disabled));
+console.log('PASS: Derived architecture Assets types/search/dimensions/selection/cascading deletion and actual row callbacks.');
+
 const moved = properties.editObject(source,'floor',{field:'x',value:6.096});
 assert.equal(moved.floors[0].id,'floor');assert.deepEqual(moved.nodes.map(n=>n.id),source.nodes.map(n=>n.id));
 assert.equal(moved.nodes[0].x,4.572);assert.equal(moved.openings[0].wallId,'w0');
@@ -128,11 +163,11 @@ assert(elements.some(e=>e.type==='button'&&e.props['aria-label']==='Wall'&&e.pro
 // Run the actual Project-keyed edit callback for two Projects, including a read-only context.
 let editSource;
 function findEdit(node){if(ts.isVariableDeclaration(node)&&node.name.getText(sceneAst)==='changeArchitecture')editSource=node.initializer.arguments[0].getText(sceneAst);ts.forEachChild(node,findEdit);}findEdit(sceneAst);
-const editContext={canEditProject:true,loading:false,selectedProjectId:'15',architectureDrafts:{current:new Map([['15',draft],['16',architecture.projectArchitectureDraft()]])},renderArchitecture:()=>{}};
+const editContext={reconcileArchitectureSelection:architecture.reconcileArchitectureSelection,canEditProject:true,loading:false,selectedProjectId:'15',architectureDrafts:{current:new Map([['15',draft],['16',architecture.projectArchitectureDraft()]])},renderArchitecture:()=>{}};
 const edit=vm.runInNewContext(ts.transpileModule('('+editSource+')',{compilerOptions:{target:ts.ScriptTarget.ES2022}}).outputText,editContext);
 edit(current=>({...current,selected:'w0'}));const firstProject=editContext.architectureDrafts.current.get('15');editContext.selectedProjectId='16';
 edit(current=>({...current,selected:'other'}));assert.equal(editContext.architectureDrafts.current.get('15'),firstProject);assert.equal(editContext.architectureDrafts.current.get('16').history.present.walls.length,0);
-editContext.canEditProject=false;edit(current=>({...current,selected:'denied'}));assert.equal(editContext.architectureDrafts.current.get('16').selected,'other');
+editContext.canEditProject=false;edit(current=>({...current,selected:'denied'}));assert.equal(editContext.architectureDrafts.current.get('16').selected,null);
 
 // Verify both real adapters receive the authoritative source and selection; a standalone fixture alone cannot prove forwarding.
 const unifiedAst=ts.createSourceFile('UnifiedMapView.tsx',fs.readFileSync('src/components/map/UnifiedMapView.tsx','utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
@@ -239,6 +274,7 @@ const context={selectedProjectId:'15',canEditProject:true,loading:false,savingPr
  const loaded=session.buildThreeDProjectSession(response.body,'15');assert(loaded.success);
  const fresh={current:new Map([['15',architecture.projectArchitectureDraft()]])};
  const restored=await hydrateDashboard(loaded.session,fresh);
+ assert.equal(JSON.stringify(inventory.architectureAssets(restored.history.present)),JSON.stringify(inventory.architectureAssets(source)),'Assets reconstruct from the actual mocked Project Save/GET/hydration roundtrip.');
  assert.equal(JSON.stringify(restored.history.present),JSON.stringify(source));assert(!architecture.architectureIsDirty(restored));
  assert.equal(loaded.session.data.threed.raw.models[0].filePath,'saved.glb');assert.equal(loaded.session.data.threed.raw.projectThreedMarkers[0].markerId,model.markerId);
  assert.equal(stored.config.unrelated.keep,true);
@@ -247,6 +283,7 @@ const context={selectedProjectId:'15',canEditProject:true,loading:false,savingPr
  const workspaceEdit={...restored,workspace:{...restored.workspace,split:55}};assert(architecture.architectureIsDirty(workspaceEdit));assert(architecture.architectureIsDirty(architecture.acknowledgeArchitecture(workspaceEdit,captured,restored.workspace)),'A workspace edit during Save must remain unsaved.');
  fresh.current.set('15',newer);assert.equal(await hydrateDashboard(loaded.session,fresh),newer,'Reload may not overwrite genuine unsaved edits.');
  fresh.current.set('16',architecture.projectArchitectureDraft());await hydrateDashboard({...loaded.session,architecture:undefined},fresh,'16');
+ assert.equal(inventory.architectureAssets(fresh.current.get('16').history.present).length,0,'Project switch must not leak inventory.');
  assert.equal(fresh.current.get('15'),newer);assert.equal(fresh.current.get('16').history.present.walls.length,0);assert(!architecture.architectureIsDirty(fresh.current.get('16')));
 }
 const model={markerId:'model-20',moduleType:'models',assetId:20,name:'Existing Model',position:{x:10,y:0,z:5},positionSource:'project',isVisible:true,isActive:true,data:{rotationY:25,scale:2,filePath:'saved.glb',materials:{map:'saved.png'}},metadata:{keep:'settings'}};
@@ -326,3 +363,39 @@ cameraContext.restoredProjectViewKeyRef.current=null;
 cameraContext.initialViewState={...cameraContext.initialViewState,showSimulations:true};restoreCamera();assert.equal(simulationVisibility,true);
 cameraContext.restoredProjectViewKeyRef.current=null;
 delete cameraContext.initialViewState.showSimulations;restoreCamera();assert.equal(simulationVisibility,true,'Legacy Projects retain visible default.');
+
+// Run the actual Assets -> Project selection and Locate callbacks in each visible mode.
+let selectionSource, locateSource;
+function findInventoryCallbacks(node){
+ if(ts.isVariableDeclaration(node)&&node.name.getText(sceneAst)==='selectArchitecture')selectionSource=node.initializer.arguments[0].getText(sceneAst);
+ if(ts.isJsxAttribute(node)&&node.name.getText(sceneAst)==='onLocateArchitecture')locateSource=node.initializer.expression.getText(sceneAst);
+ ts.forEachChild(node,findInventoryCallbacks);
+}findInventoryCallbacks(sceneAst);
+const selectionContext={selectedProjectId:'15',architectureDrafts:{current:new Map([['15',architecture.projectArchitectureDraft(captured)],['16',architecture.projectArchitectureDraft()]])},entityLevelId:document.entityLevelId,defaultDesignWorkspace:workspace.defaultDesignWorkspace,renderArchitecture:()=>{}};
+const selectFromAssets=vm.runInNewContext(compile('('+selectionSource+')'),selectionContext);
+selectFromAssets('door');assert.equal(selectionContext.architectureDrafts.current.get('15').selected,'door');assert(selectionContext.architectureDrafts.current.get('15').workspace.sections['threed:details:v1:design:15:selected-properties']);
+selectFromAssets('missing');assert.equal(selectionContext.architectureDrafts.current.get('15').selected,'door');
+selectionContext.selectedProjectId='16';selectFromAssets('door');assert.equal(selectionContext.architectureDrafts.current.get('16').selected,null);
+for(const mode of ['design','2d','3d','combined']){
+ let frame=null,position=null,requests=0,selectedId;
+ const locateContext={transform:{session:null},viewMode:mode,selectedProjectId:'15',architectureDraft:architecture.projectArchitectureDraft(captured),architectureAssets:inventory.architectureAssets,metersPerSceneUnit:.3048,selectArchitecture:id=>selectedId=id,setArchitectureFrame:fn=>frame=fn(frame),setSensorFocusPosition:value=>position=value,setSensorFocusRequest:fn=>requests=fn(requests)};
+ const locate=vm.runInNewContext(compile('('+locateSource+')'),locateContext);locate('w0');assert.equal(selectedId,'w0');assert.equal(locateContext.viewMode,mode);
+ if(mode==='design'||mode==='2d'){assert.equal(frame.id,'w0');assert.equal(frame.projectId,'15');assert.equal(requests,0);}else {assert.equal(position.x,5);assert.equal(position.y,4);assert.equal(requests,1);}
+ locate('missing');locateContext.transform.session={};locate('floor');assert.equal(selectedId,'w0');
+}
+function effectContaining(file,needle){const ast=ts.createSourceFile(file,fs.readFileSync(file,'utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);let source;function visit(node){if(ts.isCallExpression(node)&&node.expression.getText(ast)==='useEffect'&&node.arguments[0]?.getText(ast).includes(needle))source=node.arguments[0].getText(ast);ts.forEachChild(node,visit);}visit(ast);assert(source);return source;}
+const planContext={enabled:true,frameRequest:{id:'floor',sequence:1},framedRequest:{current:null},active:source,doc:source,entityPoints:properties.entityPoints,framePlan:navigation.framePlan,size:{width:900,height:400},setView:value=>planContext.result=value};
+const frameEffect=vm.runInNewContext(compile('('+effectContaining('src/components/threed/design/DesignPlan.tsx','framedRequest.current = frameRequest')+')'),planContext);
+frameEffect();assert.equal(planContext.result.scale,navigation.framePlan(properties.entityPoints(source,'floor'),planContext.size).scale);planContext.result=null;frameEffect();assert.equal(planContext.result,null,'Same request cannot override later pan/zoom or resizing.');
+planContext.frameRequest={id:'floor',sequence:2};planContext.enabled=false;frameEffect();assert.equal(planContext.result,null);planContext.enabled=true;frameEffect();assert(planContext.result);
+const mapContext={architectureFocus:{sequence:1,positions:[[1,2],[3,4]]},focusedArchitecture:{current:null},mapInstanceRef:{current:{fitBounds:(points,options)=>mapContext.result={points,options}}}};
+const mapEffect=vm.runInNewContext(compile('('+effectContaining('src/components/map/LeafletMap.tsx','focusedArchitecture.current = architectureFocus.sequence')+')'),mapContext);mapEffect();assert.equal(mapContext.result.options.maxZoom,22);mapContext.result=null;mapEffect();assert.equal(mapContext.result,null);mapContext.architectureFocus=null;mapEffect();assert.equal(mapContext.focusedArchitecture.current,null);
+console.log('PASS: Actual Project-keyed Assets selection/properties, mode-preserving Locate, plan framing and map fit callbacks.');
+
+let workspaceAdapters=0;
+function assertInventoryForwarding(node){
+ if(ts.isJsxSelfClosingElement(node)&&node.tagName.getText(sceneAst)==='UnifiedMapView'){
+  workspaceAdapters++;const attrs=node.attributes.properties.filter(ts.isJsxAttribute);assert(attrs.some(a=>a.name.getText(sceneAst)==='architectureFrameRequest'),'Both actual Dashboard viewport adapters must forward Locate, including geographic 2d.');
+ }
+ ts.forEachChild(node,assertInventoryForwarding);
+}assertInventoryForwarding(sceneAst);assert.equal(workspaceAdapters,2);
