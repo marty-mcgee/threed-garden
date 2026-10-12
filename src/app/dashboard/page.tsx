@@ -66,13 +66,13 @@ export default function DashboardHomePage() {
 
   if (loading && projects.length === 0) {
     return (
-      <div className="threed-workspace-panel m-2 min-w-0 space-y-4 rounded-lg border border-foreground/10 p-3" role="status" aria-label="Loading Projects">
+      <div className="threed-workspace-panel threed-presentation m-2 min-w-0 space-y-5 rounded-lg border border-foreground/10 p-3" role="status" aria-label="Loading Projects">
         {createDialog}
         <DashboardWelcome onCreate={createProject} creationPending={status === 'loading'} loading={loading} failed={false} />
         <DashboardHeroSkeleton />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Card key={i} className="animate-pulse motion-reduce:animate-none">
+            <Card key={i} className="threed-workspace-panel threed-presentation-surface animate-pulse motion-reduce:animate-none">
               <CardContent className="p-6">
                 <Skeleton className="h-5 w-2/3 mb-3" />
                 <Skeleton className="h-4 w-full mb-2" />
@@ -91,7 +91,7 @@ export default function DashboardHomePage() {
   }
 
   return (
-    <div className="threed-workspace-panel m-2 min-w-0 space-y-4 rounded-lg border border-foreground/10 p-3">
+    <div className="threed-workspace-panel threed-presentation m-2 min-w-0 space-y-5 rounded-lg border border-foreground/10 p-3">
       {createDialog}
       <DashboardWelcome onCreate={createProject} creationPending={status === 'loading'} loading={loading} failed={Boolean(error)} />
       {/* Error State */}
@@ -108,7 +108,7 @@ export default function DashboardHomePage() {
 
       {/* Empty State */}
       {!loading && !error && projects.length === 0 && (
-        <Card className="border-dashed">
+        <Card className="threed-workspace-panel threed-presentation-surface border-dashed">
           <CardContent className="p-6 text-center">
             <FolderOpen className="w-16 h-16 mx-auto mb-4 text-muted-foreground/40" />
             <h2 className="text-lg font-semibold mb-2">No Projects Available</h2>
@@ -147,7 +147,7 @@ export default function DashboardHomePage() {
           {matchingProjects.map((project) => (
             <Card
               key={project.id}
-              className="group rounded-lg bg-transparent shadow-none transition-colors hover:border-primary/30 hover:bg-accent/30"
+              className="threed-workspace-panel threed-presentation-surface group rounded-lg shadow-sm"
             >
               <CardContent className="flex h-full flex-col p-3">
                 {/* Project Header */}
@@ -206,7 +206,7 @@ export default function DashboardHomePage() {
 
                 {/* Actions */}
                 <div className="mt-auto flex gap-2">
-                  <Button asChild variant="outline" size="sm" className={`flex-1 bg-transparent text-foreground shadow-none dark:bg-transparent ${touchControl}`}>
+                  <Button asChild variant="outline" size="sm" className={`flex-1 border-emerald-600/35 bg-emerald-500/10 text-emerald-800 shadow-none hover:bg-emerald-500/20 hover:text-emerald-900 dark:bg-emerald-500/10 dark:text-emerald-200 dark:hover:bg-emerald-500/20 dark:hover:text-emerald-100 ${touchControl}`}>
                     <Link href={`/dashboard/scene?projectId=${project.id}`} aria-label={`Open Project: ${project.name}`}>
                       <Map className="w-3.5 h-3.5 mr-1" />
                       Open Project
@@ -243,7 +243,7 @@ export default function DashboardHomePage() {
           title="ThreeD Scenes"
           description="Open your workspace to explore, draw and arrange objects"
           href="/dashboard/scene"
-          color="text-emerald-500"
+          color="text-emerald-700 dark:text-emerald-300"
           bgColor="bg-emerald-500/10"
         />}
         {preferences.modules.multimedia && <QuickLinkCard
@@ -251,7 +251,7 @@ export default function DashboardHomePage() {
           title="Multimedia Library"
           description="Browse albums and listen to tracks"
           href="/dashboard/multimedia"
-          color="text-violet-500"
+          color="text-violet-700 dark:text-violet-300"
           bgColor="bg-violet-500/10"
         />}
         {preferences.modules.traffic && <QuickLinkCard
@@ -259,8 +259,8 @@ export default function DashboardHomePage() {
           title="Traffic Monitor"
           description="Real-time traffic incidents and closures"
           href="/dashboard/traffic"
-          color="text-orange-500"
-          bgColor="bg-orange-500/10"
+          color="text-amber-700 dark:text-amber-300"
+          bgColor="bg-amber-500/10"
         />}
       </div>
 
@@ -289,7 +289,7 @@ function QuickLinkCard({
 }) {
   return (
     <Link href={href} className="block rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
-      <Card className="group hover:shadow-md transition-all cursor-pointer border-muted/60 hover:border-primary/30 h-full">
+      <Card className="threed-workspace-panel threed-presentation-surface group h-full cursor-pointer shadow-none">
         <CardContent className="p-4 flex items-start gap-3">
           <div className={`w-10 h-10 rounded-lg ${bgColor} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform motion-reduce:transform-none motion-reduce:transition-none`}>
             <Icon className={`w-5 h-5 ${color}`} />
@@ -307,7 +307,7 @@ function QuickLinkCard({
 
 function DashboardHeroSkeleton() {
   return (
-    <div className="animate-pulse motion-reduce:animate-none">
+    <div className="threed-workspace-panel threed-presentation-surface animate-pulse motion-reduce:animate-none">
       <div className="flex items-center gap-3 mb-2">
         <Skeleton className="w-10 h-10 rounded-xl" />
         <div>

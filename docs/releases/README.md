@@ -1,4 +1,8 @@
-## Local release preparation: [v0.25.0 — CSS polish and App Header consolidation](v0.25.0.md)
+## Current production: [v0.25.0 — ThreeD Garden: CSS polish and App Header consolidation](v0.25.0.md)
+
+Developer-confirmed released to production in chat. Repository checkpoint `89e42a23` is visible; exact deployed SHA and independent production verification remain unconfirmed. Local development is now **[v0.25.1 — App Styling (Blueprints + Customizations)](../plans/v0.25.1.md)**; package/root lockfile are 0.25.1. The Developer accepted the Home/Dashboard/Learn translucent surfaces, accents and green actions as its opening checkpoint. This work is unreleased; further refinements remain to be selected. Keep local dev servers untouched and changes unstaged. Earlier preparation records below are historical.
+
+## Historical local release preparation: [v0.25.0 — CSS polish and App Header consolidation](v0.25.0.md)
 
 The Developer accepted the focused header checkpoint and requested v0.25.0 directly, superseding the unreleased v0.24.7 target. Package/root lockfile are 0.25.0; dependencies/schema unchanged. Includes the Home brand link, left public menu, compact header spacing and Developer Home/menu copy refinements. No larger feature stage is included. Production remains Developer-confirmed v0.24.6; exact deployed SHA and independent production checks remain unconfirmed. See the release record for local verification and manual limitations. Preserve accepted editor/Project behavior and manual edits. Keep port 4444 servers untouched and all changes unstaged; no commit, tag, push or deployment. Earlier planning/status entries below are historical.
 

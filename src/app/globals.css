@@ -301,6 +301,43 @@
   border-radius: 3px;
 }
 
+/* Opt-in Home/Dashboard/Learn presentation using the existing App panel palette.
+   Alpha applies to backgrounds only, keeping text and controls fully readable. */
+.threed-presentation {
+  background-color: var(--background);
+  background-image:
+    radial-gradient(ellipse at top left, rgb(16 185 129 / 10%), transparent 55%),
+    radial-gradient(ellipse at top right, rgb(6 182 212 / 7%), transparent 50%);
+  color: var(--foreground);
+}
+.threed-presentation-surface {
+  --threed-panel-background: color-mix(in srgb, var(--threed-surface-color) calc(var(--threed-panel-idle-opacity, 0.8) * 100%), transparent);
+  background-color: var(--threed-panel-background);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: var(--foreground);
+  transition: background-color 150ms ease, border-color 150ms ease;
+}
+.threed-presentation-surface:hover,
+.threed-presentation-surface:focus-within {
+  --threed-panel-background: color-mix(in srgb, var(--threed-surface-color) calc(var(--threed-panel-hover-opacity, 0.98) * 100%), transparent);
+  border-color: color-mix(in srgb, #059669 35%, var(--border));
+}
+.threed-presentation-featured {
+  background-image: linear-gradient(120deg, rgb(16 185 129 / 12%), rgb(6 182 212 / 4%) 70%, transparent);
+}
+@media (prefers-reduced-motion: reduce) {
+  .threed-presentation-surface { transition: none; }
+}
+@media (forced-colors: active) {
+  .threed-presentation,
+  .threed-presentation-featured { background-image: none; }
+  .threed-presentation-surface,
+  .threed-presentation-surface:is(:hover, :focus-within) {
+    --threed-panel-background: Canvas;
+    border-color: CanvasText;
+  }
+}
+
 @media (any-pointer: coarse) {
   .threed-workspace-panel :is(summary, button, a, input, select) {
     min-height: 44px;
