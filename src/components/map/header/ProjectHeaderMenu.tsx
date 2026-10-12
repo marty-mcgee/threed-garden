@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import Link from 'next/link';
 import {
   Clock,
   ExternalLink,
@@ -135,6 +136,7 @@ export function ProjectHeaderMenu({
           </div>
 
           <div className="border-t pt-2">
+            <Button asChild variant="ghost" size="sm" className="h-auto min-h-7 w-full justify-start px-2 py-1 text-xs"><Link href="/learn#first-project" target="_blank" rel="noopener noreferrer" onClick={onDismiss}>Learn ThreeD (new tab)</Link></Button>
             <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Project Navigation</div>
             <div className="mt-1 grid grid-cols-1 gap-1">
               <Button type="button" variant="secondary" size="sm" className="h-8 w-full justify-start px-2 text-xs" onClick={onChooseProject}>

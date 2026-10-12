@@ -1,3 +1,9 @@
+## v0.24.6 release preparation evidence
+
+October 12, 2026: TypeScript, focused presentation validator, all 71 maintained offline CI tasks, package/lock metadata-only comparison, release/plan links and diff checks passed. An initial sandboxed CI run hit a Windows `tsx` OS user-info ENOMEM error; the full outside-sandbox rerun passed. Guarded `npm run build` passed compilation/TypeScript and 144/144 page generation in a disposable source/config copy, with isolated build artifacts, existing dependencies, dummy database URL, network/fetch guard (including port 4444) and offline Google-font CSS mocks. No `.env` files copied. Source bytes matched the working tree; the temporary copy was removed. Original `.next/dev` and all dev servers remained untouched.
+
+Prior isolated browser checks and current manual limits are recorded in [v0.24.6](../releases/v0.24.6.md). No real database/device/storage/account writes, migration/seed, Git writes or deployment occurred. Do not reuse historical helpers that start font or fixture HTTP servers. No standalone lint configuration exists.
+
 ## v0.24.5 release preparation evidence
 
 October 12, 2026: npm run typecheck passed; npm run validate -- ci passed all 71 offline tasks; guarded npm run build passed compilation/TypeScript and generated 143 pages. Build used an unreachable localhost DATABASE_URL, a Node network/fetch guard and explicit Google-font CSS mocks with a local system-font source. No local server was started or stopped. Package and both root lockfile version fields are 0.24.5; metadata matches HEAD and dependencies/schema are unchanged. Version/link consistency and git diff --check passed. No standalone lint configuration exists. No browser visual, authenticated App Save/reopen, real database/device/storage writes, migration/seed or independent production checks were performed.

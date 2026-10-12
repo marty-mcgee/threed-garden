@@ -1,5 +1,11 @@
 # Dashboard Guide
 
+## Home, Dashboard and Learn (v0.24.6 checkpoint)
+
+The locally prepared [v0.24.6 checkpoint](../releases/v0.24.6.md) adds public `/learn` guides and matches Home to the existing App header: Carrot logo/title, right-side navigation/theme controls and the NextAuth account menu. `/dashboard` emphasizes **Create Project**, with **Learn ThreeD** beside it and available Projects below. Creation uses the existing sign-in/template flow; choose an existing Project's Open action to continue it. Projects are sorted newest-created first, not by recent activity.
+
+Learn covers a first Project, drawing a room, adding Models, properties, View Modes, Save/reopen and architectural JSON backups. Open it from App navigation or the Project menu; Project help opens separately to retain drafts. Guides are public, while creation, editing and saving retain their existing access requirements. Production remains Developer-confirmed v0.24.5; historical status/acceptance notes below retain their original evidence.
+
 Current production: **[v0.24.0 — ThreeD Designs: Project workspace and saved state](../releases/v0.24.0.md)**. Developer confirmed final `0.24.0` released to production October 10, 2026, following authenticated Save/Reload checks reported 100% passed. Package/root lockfile are `0.24.0`. This supersedes earlier pending authenticated Save/Reload and RC-versioning statements below. Verification is Developer-reported, separate from agent automated checks. Production release is Developer-confirmed; exact deployed SHA and independent post-deployment checks remain unconfirmed. Leave changes unstaged; no Git write or deployment is authorized.
 
 Current production: **[v0.24.0-centaur — ThreeD Designs: Workspace tools and state](../releases/v0.24.0-centaur.md)**, Developer-confirmed October 10, 2026. Package/root lockfile remain `0.24.0-centaur`. Includes canvas-local tools, staged JSON import, Project workspace snapshot support and compact colored Properties headers. Authenticated Save/reopen, post-deployment verification and exact deployed SHA remain unconfirmed. This records release confirmation only; no Git write or deployment is authorized. Earlier checkpoint statements below are historical.

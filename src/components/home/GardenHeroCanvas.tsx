@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useRef, useState, type ComponentRef } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
-import { Html, Line, OrbitControls } from '@react-three/drei';
+import { useEffect, useMemo, useRef, useState, type ComponentRef, type RefObject } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Line, OrbitControls } from '@react-three/drei';
+import { Vector3 } from 'three';
 
 type Props = { active: boolean; reducedMotion: boolean; reset: number; onReady: () => void; onFailure: () => void };
 
@@ -36,9 +37,28 @@ function Garden() {
     <Line points={[[-.83, .02, -1.2], [-.83, .02, 1.2]]} color="#c5d8a4" lineWidth={1} />
     {[-.6, .6].map(x => <Line key={x} points={[[x, .02, 1.39], [x, .02, 1.57]]} color="#c5d8a4" />)}
     {[-1.2, 1.2].map(z => <Line key={z} points={[[-.92, .02, z], [-.74, .02, z]]} color="#c5d8a4" />)}
-    <Html center position={[0, .08, 1.6]} style={{ pointerEvents: 'none' }}><span className="whitespace-nowrap rounded bg-green-950/85 px-2 py-1 text-[10px] text-emerald-100">1.2 m</span></Html>
-    <Html center position={[-.98, .08, 0]} style={{ pointerEvents: 'none' }}><span className="whitespace-nowrap rounded bg-green-950/85 px-2 py-1 text-[10px] text-emerald-100">2.4 m</span></Html>
   </group>;
+}
+
+// Keep DOM labels in the page root. Drei Html owns separate roots whose layout
+// cleanup can synchronously unmount React while the R3F tree is committing.
+function DimensionLabelPositions({ widthLabel, depthLabel }: {
+  widthLabel: RefObject<HTMLSpanElement | null>;
+  depthLabel: RefObject<HTMLSpanElement | null>;
+}) {
+  const point = useMemo(() => new Vector3(), []);
+  useFrame(({ camera, size }) => {
+    camera.updateMatrixWorld();
+    const place = (label: HTMLSpanElement | null, x: number, z: number) => {
+      if (!label) return;
+      point.set(x, .08, z).project(camera);
+      label.style.visibility = point.z >= -1 && point.z <= 1 ? 'visible' : 'hidden';
+      label.style.transform = `translate(-50%, -50%) translate(${(point.x + 1) * size.width / 2}px, ${(1 - point.y) * size.height / 2}px)`;
+    };
+    place(widthLabel.current, 0, 1.6);
+    place(depthLabel.current, -.98, 0);
+  });
+  return null;
 }
 
 function CameraRig({ active, reducedMotion, reset }: Pick<Props, 'active' | 'reducedMotion' | 'reset'>) {
@@ -67,12 +87,20 @@ function ContextGuard({ onFailure }: Pick<Props, 'onFailure'>) {
 }
 
 export default function GardenHeroCanvas(props: Props) {
-  return <Canvas style={{ position: 'absolute', inset: 0 }} shadows dpr={[1, 1.5]} frameloop={props.active ? 'demand' : 'never'} camera={{ position: [4.7, 4, 5.2], fov: 42 }} gl={{ alpha: true, antialias: true }} onCreated={props.onReady} fallback={<span>Interactive 3D requires a browser with canvas support.</span>}>
+  const widthLabel = useRef<HTMLSpanElement>(null);
+  const depthLabel = useRef<HTMLSpanElement>(null);
+  const labelClass = 'pointer-events-none absolute left-0 top-0 whitespace-nowrap rounded bg-green-950/85 px-2 py-1 text-[10px] text-emerald-100';
+  return <div className="absolute inset-0">
+  <Canvas style={{ position: 'absolute', inset: 0 }} shadows dpr={[1, 1.5]} frameloop={props.active ? 'demand' : 'never'} camera={{ position: [4.7, 4, 5.2], fov: 42 }} gl={{ alpha: true, antialias: true }} onCreated={props.onReady} fallback={<span>Interactive 3D requires a browser with canvas support.</span>}>
     <ambientLight intensity={.7} />
     <hemisphereLight args={['#e4f3da', '#254531', 1.4]} />
     <directionalLight position={[3, 6, 2]} intensity={2.5} castShadow shadow-mapSize={[1024, 1024]} shadow-camera-left={-4} shadow-camera-right={4} shadow-camera-top={4} shadow-camera-bottom={-4} shadow-normalBias={.04} />
     <Garden />
     <CameraRig active={props.active} reducedMotion={props.reducedMotion} reset={props.reset} />
     <ContextGuard onFailure={props.onFailure} />
-  </Canvas>;
+    <DimensionLabelPositions widthLabel={widthLabel} depthLabel={depthLabel} />
+  </Canvas>
+  <span ref={widthLabel} className={labelClass} style={{ visibility: 'hidden' }}>1.2 m</span>
+  <span ref={depthLabel} className={labelClass} style={{ visibility: 'hidden' }}>2.4 m</span>
+  </div>;
 }

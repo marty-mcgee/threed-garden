@@ -1,3 +1,7 @@
+## Local release preparation: [v0.24.6 — ThreeD Garden: Home, Dashboard and Learn](docs/releases/v0.24.6.md)
+
+Prepared October 12, 2026 on main; package and root lockfile metadata are 0.24.6. Includes the Developer-accepted Dashboard/Learn presentation, shared Home header/NextAuth controls and garden label cleanup fix. Production remains [v0.24.5](docs/releases/v0.24.5.md), Developer-confirmed in chat; exact deployed SHA and independent production verification remain unconfirmed. The release record separates local automated/browser evidence from remaining authenticated App checks. Dependencies/schema and Project save/load are unchanged. Preserve manual changes and leave port 4444 dev servers untouched. Leave changes unstaged; no commit, tag, push or deployment. Earlier production/preparation statements below are historical and superseded by this status.
+
 ## Local release preparation: [v0.24.5 — ThreeD Designs: Architecture in Project Assets](docs/releases/v0.24.5.md)
 
 Prepared October 12, 2026 on main; package/root lockfile 0.24.5. Architecture inventory, shared selection and mode-preserving Locate are implemented and checked offline. Production remains Developer-confirmed v0.24.4. See release notes for validation, source boundaries and pending manual browser/Save-reopen checks. Dependencies/schema unchanged; preserve manual edits and Developer control of servers. Leave unstaged; no commit, publication or deployment. Earlier preparation records below are historical.

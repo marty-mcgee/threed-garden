@@ -52,6 +52,7 @@ export default function NavDropdown() {
       <DropdownMenuContent align="end" className="threed-app-menu-surface w-56">
         <DropdownMenuItem asChild><Link href="/dashboard">Projects</Link></DropdownMenuItem>
         <DropdownMenuItem asChild><Link href="/admin/settings">Settings</Link></DropdownMenuItem>
+        <DropdownMenuItem asChild><Link href="/learn">Learn ThreeD</Link></DropdownMenuItem>
         {sections.length > 0 && <DropdownMenuSeparator />}
         {sections.map((section, index) => (
           <div key={section.module}>

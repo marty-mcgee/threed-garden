@@ -59,7 +59,7 @@ export function AppHeader({ surface }: { surface: 'dashboard' | 'admin' }) {
       <div className="grid h-full grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-2 sm:px-3">
         <div className="flex min-w-0 items-center gap-2">
           {surface === 'dashboard' && (
-            <Link href="/dashboard" className="flex w-fit min-w-0 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <Link href="/dashboard" aria-label="ThreeD Garden" className="flex w-fit min-w-0 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-green-600 shadow-sm">
                 <Carrot className="size-4 text-white" />
               </span>

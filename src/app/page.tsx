@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { AppHeader } from '@/components/layout/AppHeader';
 import GardenHero from '@/components/home/GardenHero';
 import { MusicPlayer } from '@/components/multimedia/MusicPlayer';
 
@@ -177,37 +178,31 @@ export default function HomePage() {
     {
       icon: "🎵",
       title: "Music Streaming",
-      description: "Full-featured music player with waveform mixing",
+      description: "Browse available albums and listen to tracks",
       href: "/dashboard/multimedia",
       color: "from-green-800 to-emerald-700",
       external: false
     },
     {
       icon: "💻",
-      title: "Full-Stack Physics Platform",
-      description: "Next.js 16, Neon, Drizzle ORM, Postgres, TypeScript, Three.js, R3F, Physics, ThreeD",
+      title: "Open-source project",
+      description: "Explore the source and developer documentation",
       href: "https://github.com/marty-mcgee/threed-garden",
       color: "from-gray-500 to-gray-700",
       external: true
     },
   ];
 
-  const stats = [
-    { value: "8+", label: "Albums", icon: "🎵" },
-    { value: "48+", label: "Tracks", icon: "🎵" },
-    { value: "16", label: "APIs", icon: "🗄️" },
-    { value: "24/7", label: "Live", icon: "📡" },
-  ];
-
   const techStack = [
-    { name: "Next.js", url: "https://nextjs.org" },
     { name: "TypeScript", url: "https://www.typescriptlang.org" },
-    { name: "Neon", url: "https://neon.tech" },
+    { name: "Postgres", url: "https://www.postgresql.org/about/" },
+    // { name: "Neon", url: "https://neon.tech" },
     { name: "Drizzle ORM", url: "https://orm.drizzle.team" },
-    { name: "Three.js", url: "https://threejs.org" },
+    { name: "Next.js", url: "https://nextjs.org" },
     { name: "React", url: "https://react.org" },
-    { name: "ThreeDFiber", url: "https://threejs.org" },
-    { name: "Tailwind", url: "https://tailwindcss.com" },
+    { name: "Three.js", url: "https://threejs.org" },
+    { name: "React-Three", url: "https://r3f.docs.pmnd.rs/getting-started/introduction" },
+    { name: "ThreeD Design", url: "https://threed.design" },
     { name: "AWS S3", url: "https://aws.amazon.com/s3" },
     { name: "Vercel", url: "https://vercel.com" },
   ];
@@ -219,6 +214,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950">
 
+      <AppHeader surface="dashboard" />
       {/* Garden studio hero */}
       <div className="relative overflow-hidden bg-gradient-to-br from-green-950 via-[#123e2c] to-emerald-950">
         {/* Content */}
@@ -238,11 +234,12 @@ export default function HomePage() {
               ThreeD Garden
             </h1>
             <p className="text-lg lg:text-xl mb-6 text-white/90">
-              Build • Plant • Explore • Create
+              Plan spaces, build interactive scenes, and explore your ideas in 3D.
             </p>
 
-            <p className="mx-auto mb-8 max-w-md text-base leading-relaxed text-emerald-100/75 lg:mx-0">A living space for your ideas. Explore models, plan your garden, and see every angle before bringing it to life.</p>
+            <p className="mx-auto mb-8 max-w-md text-base leading-relaxed text-emerald-100/75 lg:mx-0">Draw a room, arrange a garden layout, or explore a scene with Models and Characters. Begin with a small Project and inspect it from different views.</p>
 
+            <div className="mb-4 flex flex-wrap justify-center gap-3 lg:justify-start"><Link href="#garden-demo" className="rounded-md bg-white px-4 py-3 text-sm font-semibold text-green-950 focus-visible:outline-2 focus-visible:outline-white">Try the garden demo</Link><Link href="/learn" className="rounded-md border border-white/50 px-4 py-3 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-white">Learn ThreeD</Link></div>
             {/* Hero CTA Buttons - Horizontal layout */}
             <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
               {features.map((feature, index) => {
@@ -280,7 +277,7 @@ export default function HomePage() {
             </div>
 
           </div>
-          <GardenHero />
+          <div id="garden-demo" className="scroll-mt-16"><GardenHero /><p className="mt-3 text-sm text-emerald-100">Illustrative garden: practice orbit and zoom without an account. To draw and save, open your own Project from Dashboard.</p></div>
         </div>
       </div>
 
@@ -335,15 +332,7 @@ export default function HomePage() {
               <div className="w-12 h-0.5 bg-gradient-to-r from-green-800 to-emerald-600 mx-auto md:mx-0 mb-4" />
               <p className="text-muted-foreground">Create interactive gardens with 3D models, characters, physics, and maps. Bring your projects to life in a shared workspace for nature, technology, and creativity.</p>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              {stats.map((stat, index) => (
-                <div key={index} className="text-center p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50">
-                  <div className="text-3xl mb-1">{stat.icon}</div>
-                  <div className="text-xl font-bold">{stat.value}</div>
-                  <div className="text-xs text-muted-foreground">{stat.label}</div>
-                </div>
-              ))}
-            </div>
+            <div className="space-y-3 rounded-lg border p-5"><h3 className="font-semibold">Open source, ready to explore</h3><p className="text-sm text-muted-foreground">ThreeD Garden is available under the MIT License. Explore the source, follow a guide, or start a Project of your own.</p><a className="text-sm underline underline-offset-4" href="https://github.com/marty-mcgee/threed-garden">View the ThreeD Garden repository</a></div>
           </div>
         </div>
       </div>
@@ -412,7 +401,8 @@ export default function HomePage() {
           <div className="flex justify-center gap-3 mt-1">
             <Link href="/dashboard/multimedia" className="hover:text-foreground transition-colors">Music</Link>
             <Link href="/dashboard/threed" className="hover:text-foreground transition-colors">3D Garden</Link>
-            <Link href="/dashboard" className="hover:text-foreground transition-colors">Traffic</Link>
+            <Link href="/dashboard/traffic" className="hover:text-foreground transition-colors">Traffic</Link>
+            <Link href="/learn" className="hover:text-foreground transition-colors">Learn ThreeD</Link>
             <a href="https://github.com/marty-mcgee/threed-garden" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">GitHub</a>
           </div>
         </div>

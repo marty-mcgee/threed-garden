@@ -1,4 +1,8 @@
-Local release preparation: v0.24.5 - ThreeD Designs: Architecture in Project Assets. Production remains v0.24.4. Version metadata 0.24.5; no dependency/schema change. See docs/releases/v0.24.5.md for checks and pending manual acceptance. Unreleased; no deployment.
+Local release preparation: v0.24.6 - ThreeD Garden: Home, Dashboard and Learn. Package/root lockfile 0.24.6; dependencies/schema unchanged. Production remains Developer-confirmed v0.24.5; independent production verification and deployed SHA remain unconfirmed. See docs/releases/v0.24.6.md. Shared public App header with NextAuth account controls, Dashboard Create/Project discovery hierarchy, public /learn guides and Home garden label cleanup. No public Services offering. Local checks and remaining authenticated manual checks are recorded separately. Not yet committed or deployed; port 4444 dev servers remain Developer-controlled. Earlier status statements below are historical and superseded.
+
+Public learning: /learn provides first-Project, drawing, Models, properties, navigation, Save/reopen and architecture JSON guides without an authentication gate. /dashboard retains owner/public discovery rules; create/save require the existing authorized flows.
+
+Historical local release preparation: v0.24.5 - ThreeD Designs: Architecture in Project Assets. Production remains v0.24.4. Version metadata 0.24.5; no dependency/schema change. See docs/releases/v0.24.5.md for checks and pending manual acceptance. Unreleased; no deployment.
 
 Next development version: 0.24.5; Architecture in Project Assets (unreleased). Production remains Developer-confirmed v0.24.4. Derived architecture inventory and existing selection/Locate integration; dependencies/schema unchanged. See docs/plans/v0.24.5.md. No release readiness or deployment is claimed.
 

@@ -3,8 +3,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { ProjectTemplateDialog } from '@/components/map/panels/ProjectTemplateDialog';
 import { useWorkspaceSettings } from '@/components/settings/WorkspaceSettingsProvider';
 import Link from 'next/link';
+import { DashboardWelcome, DashboardStartingPaths } from '@/components/home/DashboardWelcome';
 import {
   FolderOpen, Map, Music, Box, Car, Loader2, ChevronRight, Search,
   BarChart3, Layers
@@ -18,6 +22,11 @@ import { readDashboardProjectPage, mergeDashboardProjects, filterDashboardProjec
 
 export default function DashboardHomePage() {
   const { preferences } = useWorkspaceSettings();
+  const router = useRouter();
+  const { status } = useSession();
+  const [creating, setCreating] = useState(false);
+  const createProject = () => { if (status === 'loading') return; if (status !== 'authenticated') { router.push('/auth/sign-in'); return; } setCreating(true); };
+  const createDialog = <ProjectTemplateDialog open={creating} onOpenChange={setCreating} onCreated={id => router.push(`/dashboard/scene?projectId=${id}`)} />;
   const [projects, setProjects] = useState<DashboardProject[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,7 +66,9 @@ export default function DashboardHomePage() {
 
   if (loading && projects.length === 0) {
     return (
-      <div className="space-y-4 p-1" role="status" aria-label="Loading Projects">
+      <div className="threed-workspace-panel m-2 min-w-0 space-y-4 rounded-lg border border-foreground/10 p-3" role="status" aria-label="Loading Projects">
+        {createDialog}
+        <DashboardWelcome onCreate={createProject} creationPending={status === 'loading'} loading={loading} failed={false} />
         <DashboardHeroSkeleton />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -80,7 +91,9 @@ export default function DashboardHomePage() {
   }
 
   return (
-    <div className="space-y-4 p-1">
+    <div className="threed-workspace-panel m-2 min-w-0 space-y-4 rounded-lg border border-foreground/10 p-3">
+      {createDialog}
+      <DashboardWelcome onCreate={createProject} creationPending={status === 'loading'} loading={loading} failed={Boolean(error)} />
       {/* Error State */}
       {error && (
         <Card className="border-destructive/50 bg-destructive/5">
@@ -101,15 +114,17 @@ export default function DashboardHomePage() {
             <h2 className="text-lg font-semibold mb-2">No Projects Available</h2>
             <p className="text-sm text-muted-foreground mb-4 max-w-md mx-auto">
               Projects group your Multimedia, ThreeD Garden, and Traffic modules together.
-              Create a Project in Admin, or return here when a Project is available to you.
+              Use Create Project above to start with a template. Sign in to create and save your own work.
             </p>
-            <Button asChild>
-              <Link href="/admin/projects/new">Create Project</Link>
-            </Button>
+
           </CardContent>
         </Card>
       )}
 
+      <header className="space-y-1">
+        <h2 className="text-base font-semibold">Your available Projects</h2>
+        <p className="text-sm text-muted-foreground">Newest created first. Signed-in users see their own Projects; guests see eligible public Projects.</p>
+      </header>
       {projects.length > 0 && (
         <section aria-label="Find Projects" className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
@@ -126,41 +141,13 @@ export default function DashboardHomePage() {
         </section>
       )}
 
-      {/* Quick Links Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {preferences.modules.threed && <QuickLinkCard
-          icon={Map}
-          title="ThreeD Scenes"
-          description="View 2D maps and 3D scenes with runtime markers"
-          href="/dashboard/scene"
-          color="text-emerald-500"
-          bgColor="bg-emerald-500/10"
-        />}
-        {preferences.modules.multimedia && <QuickLinkCard
-          icon={Music}
-          title="Multimedia Library"
-          description="Browse albums and listen to tracks"
-          href="/dashboard/multimedia"
-          color="text-violet-500"
-          bgColor="bg-violet-500/10"
-        />}
-        {preferences.modules.traffic && <QuickLinkCard
-          icon={Car}
-          title="Traffic Monitor"
-          description="Real-time traffic incidents and closures"
-          href="/dashboard/traffic"
-          color="text-orange-500"
-          bgColor="bg-orange-500/10"
-        />}
-      </div>
-
       {/* Project Grid */}
       {matchingProjects.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {matchingProjects.map((project) => (
             <Card
               key={project.id}
-              className="group hover:shadow-md transition-shadow border-muted/60 hover:border-primary/30"
+              className="group rounded-lg bg-transparent shadow-none transition-colors hover:border-primary/30 hover:bg-accent/30"
             >
               <CardContent className="flex h-full flex-col p-3">
                 {/* Project Header */}
@@ -206,14 +193,14 @@ export default function DashboardHomePage() {
                 </div>
 
                 {/* Stats Row */}
-                <div className="flex items-center gap-3 text-xs text-muted-foreground mb-3">
-                  <span className="flex items-center gap-1">
+                <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                  <span className="flex shrink-0 items-center gap-1">
                     <Layers className="w-3 h-3" />
                     {project.sceneAssetCount > 0 ? `${project.sceneAssetCount} Scene asset${project.sceneAssetCount !== 1 ? 's' : ''}` : `${project.assetCount} assignment${project.assetCount !== 1 ? 's' : ''}`}
                   </span>
-                  {project.sceneAssetCount > 0 && project.assetCount > 0 && <span>{project.assetCount} assignment{project.assetCount !== 1 ? 's' : ''}</span>}
+                  {project.sceneAssetCount > 0 && project.assetCount > 0 && <span className="shrink-0">{project.assetCount} assignment{project.assetCount !== 1 ? 's' : ''}</span>}
                   {project.slug && (
-                    <span className="truncate">/{project.slug}</span>
+                    <span className="min-w-0 truncate">/{project.slug}</span>
                   )}
                 </div>
 
@@ -247,6 +234,38 @@ export default function DashboardHomePage() {
           </Button>
         </div>
       )}
+      <DashboardStartingPaths />
+      <section aria-label="Other App areas" className="border-t pt-4">
+      {/* Quick Links Section */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {preferences.modules.threed && <QuickLinkCard
+          icon={Map}
+          title="ThreeD Scenes"
+          description="Open your workspace to explore, draw and arrange objects"
+          href="/dashboard/scene"
+          color="text-emerald-500"
+          bgColor="bg-emerald-500/10"
+        />}
+        {preferences.modules.multimedia && <QuickLinkCard
+          icon={Music}
+          title="Multimedia Library"
+          description="Browse albums and listen to tracks"
+          href="/dashboard/multimedia"
+          color="text-violet-500"
+          bgColor="bg-violet-500/10"
+        />}
+        {preferences.modules.traffic && <QuickLinkCard
+          icon={Car}
+          title="Traffic Monitor"
+          description="Real-time traffic incidents and closures"
+          href="/dashboard/traffic"
+          color="text-orange-500"
+          bgColor="bg-orange-500/10"
+        />}
+      </div>
+
+      </section>
+
 
 
     </div>
