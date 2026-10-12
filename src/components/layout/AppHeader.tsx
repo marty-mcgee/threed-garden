@@ -56,10 +56,11 @@ export function AppHeader({ surface }: { surface: 'dashboard' | 'admin' }) {
 
   return (
     <header className="threed-app-header sticky top-0 z-40 h-12 border-b border-foreground/10">
-      <div className="grid h-full grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-2 sm:px-3">
+      <div className="grid h-full grid-cols-[minmax(0,1fr)_auto] items-center gap-2 px-1 sm:px-1">
         <div className="flex min-w-0 items-center gap-2">
+          <NavDropdown />
           {surface === 'dashboard' && (
-            <Link href="/dashboard" aria-label="ThreeD Garden" className="flex w-fit min-w-0 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <Link href="/" aria-label="ThreeD Garden" className="flex w-fit min-w-0 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-green-600 shadow-sm">
                 <Carrot className="size-4 text-white" />
               </span>
@@ -84,34 +85,32 @@ export function AppHeader({ surface }: { surface: 'dashboard' | 'admin' }) {
             {resolvedTheme === 'dark' ? <Sun className="text-yellow-400" /> : <Moon />}
           </Button>
 
-          <NavDropdown />
-
           <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon-sm" className="relative ml-1 shrink-0 rounded-full p-1 text-xs text-foreground hover:bg-foreground/15" aria-label={`Account menu — ${loginStatus}`} title={loginStatus}>
-                  {avatarUrl && avatarUrl !== failedAvatarUrl
-                    ? <img src={avatarUrl} alt="" width={24} height={24} className="size-6 rounded-full object-cover" referrerPolicy="no-referrer" onError={() => setFailedAvatarUrl(avatarUrl)} />
-                    : <span className="flex size-6 items-center justify-center rounded-full bg-foreground/10">{userInitials}</span>}
-                  <span aria-hidden="true" className={cn('absolute bottom-1 right-1 size-2 rounded-full border border-slate-900', mounted && status === 'authenticated' ? 'bg-green-400' : 'bg-slate-400')} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="threed-app-menu-surface w-56">
-                <DropdownMenuLabel className="font-normal">
-                  <div className="flex flex-col gap-1">
-                    <p className="truncate text-sm font-medium leading-none">{userDisplayName || 'Guest'}</p>
-                    <p className="text-xs text-muted-foreground" role="status">{loginStatus}</p>
-                    {userEmail && <p className="truncate text-xs leading-none text-muted-foreground">{userEmail}</p>}
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                {mounted && status === 'authenticated' ? (
-                  <DropdownMenuItem className="p-0" onSelect={event => event.preventDefault()}>
-                    <SignOutButton variant="ghost" className="w-full justify-start text-red-700 dark:text-red-300 hover:bg-red-950/40 hover:text-red-200" />
-                  </DropdownMenuItem>
-                ) : status === 'unauthenticated' && (
-                  <DropdownMenuItem asChild><Link href="/auth/sign-in">Sign in</Link></DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon-sm" className="relative mx-1 shrink-0 rounded-full p-1 text-xs text-foreground hover:bg-foreground/15" aria-label={`Account menu — ${loginStatus}`} title={loginStatus}>
+                {avatarUrl && avatarUrl !== failedAvatarUrl
+                  ? <img src={avatarUrl} alt="" width={24} height={24} className="size-6 rounded-full object-cover" referrerPolicy="no-referrer" onError={() => setFailedAvatarUrl(avatarUrl)} />
+                  : <span className="flex size-6 items-center justify-center rounded-full bg-foreground/10">{userInitials}</span>}
+                <span aria-hidden="true" className={cn('absolute bottom-1 right-1 size-2 rounded-full border border-slate-900', mounted && status === 'authenticated' ? 'bg-green-400' : 'bg-slate-400')} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="threed-app-menu-surface w-56">
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col gap-1">
+                  <p className="truncate text-sm font-medium leading-none">{userDisplayName || 'Guest'}</p>
+                  <p className="text-xs text-muted-foreground" role="status">{loginStatus}</p>
+                  {userEmail && <p className="truncate text-xs leading-none text-muted-foreground">{userEmail}</p>}
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {mounted && status === 'authenticated' ? (
+                <DropdownMenuItem className="p-0" onSelect={event => event.preventDefault()}>
+                  <SignOutButton variant="ghost" className="w-full justify-start text-red-700 dark:text-red-300 hover:bg-red-950/40 hover:text-red-200" />
+                </DropdownMenuItem>
+              ) : status === 'unauthenticated' && (
+                <DropdownMenuItem asChild><Link href="/auth/sign-in">Sign in</Link></DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
           </DropdownMenu>
         </div>
       </div>

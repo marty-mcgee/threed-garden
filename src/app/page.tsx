@@ -185,7 +185,7 @@ export default function HomePage() {
     },
     {
       icon: "💻",
-      title: "Open-source project",
+      title: "Open-Source Project",
       description: "Explore the source and developer documentation",
       href: "https://github.com/marty-mcgee/threed-garden",
       color: "from-gray-500 to-gray-700",
@@ -195,13 +195,13 @@ export default function HomePage() {
 
   const techStack = [
     { name: "TypeScript", url: "https://www.typescriptlang.org" },
-    { name: "Postgres", url: "https://www.postgresql.org/about/" },
+    { name: "Postgres", url: "https://www.postgresql.org/about" },
     // { name: "Neon", url: "https://neon.tech" },
     { name: "Drizzle ORM", url: "https://orm.drizzle.team" },
     { name: "Next.js", url: "https://nextjs.org" },
     { name: "React", url: "https://react.org" },
     { name: "Three.js", url: "https://threejs.org" },
-    { name: "React-Three", url: "https://r3f.docs.pmnd.rs/getting-started/introduction" },
+    { name: "React-Three", url: "https://r3f.docs.pmnd.rs/next" },
     { name: "ThreeD Design", url: "https://threed.design" },
     { name: "AWS S3", url: "https://aws.amazon.com/s3" },
     { name: "Vercel", url: "https://vercel.com" },
@@ -239,7 +239,7 @@ export default function HomePage() {
 
             <p className="mx-auto mb-8 max-w-md text-base leading-relaxed text-emerald-100/75 lg:mx-0">Draw a room, arrange a garden layout, or explore a scene with Models and Characters. Begin with a small Project and inspect it from different views.</p>
 
-            <div className="mb-4 flex flex-wrap justify-center gap-3 lg:justify-start"><Link href="#garden-demo" className="rounded-md bg-white px-4 py-3 text-sm font-semibold text-green-950 focus-visible:outline-2 focus-visible:outline-white">Try the garden demo</Link><Link href="/learn" className="rounded-md border border-white/50 px-4 py-3 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-white">Learn ThreeD</Link></div>
+            <div className="mb-4 flex flex-wrap justify-center gap-3 lg:justify-start"><Link href="#garden-demo" className="rounded-md bg-white px-4 py-3 text-sm font-semibold text-green-950 focus-visible:outline-2 focus-visible:outline-white">Open Garden Demo</Link><Link href="/learn" className="rounded-md border border-white/50 px-4 py-3 text-sm font-semibold text-white focus-visible:outline-2 focus-visible:outline-white">Learn ThreeD Design</Link></div>
             {/* Hero CTA Buttons - Horizontal layout */}
             <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
               {features.map((feature, index) => {

@@ -1,4 +1,14 @@
-## Local release preparation: [v0.24.6 — ThreeD Garden: Home, Dashboard and Learn](v0.24.6.md)
+## Local release preparation: [v0.25.0 — CSS polish and App Header consolidation](v0.25.0.md)
+
+The Developer accepted the focused header checkpoint and requested v0.25.0 directly, superseding the unreleased v0.24.7 target. Package/root lockfile are 0.25.0; dependencies/schema unchanged. Includes the Home brand link, left public menu, compact header spacing and Developer Home/menu copy refinements. No larger feature stage is included. Production remains Developer-confirmed v0.24.6; exact deployed SHA and independent production checks remain unconfirmed. See the release record for local verification and manual limitations. Preserve accepted editor/Project behavior and manual edits. Keep port 4444 servers untouched and all changes unstaged; no commit, tag, push or deployment. Earlier planning/status entries below are historical.
+
+## Historical v0.24.7 focus: [v0.24.7 — Styling and React polish](../plans/v0.24.7.md)
+
+Developer-approved scope: CSS styling and small React refinements only, as a stabilization step toward v0.25.0. Specific fixes and v0.25.0 features remain TBD. Preserve the accepted layouts, component/Canvas owners, Project persistence and manual edits. No major features, broad restructuring, dependency/schema changes or new styling system. This step documents the plan only; package/root lockfile remain 0.24.6 until checkpoint release preparation. Keep port 4444 dev servers untouched and changes unstaged.
+
+Production: **[v0.24.6 — ThreeD Garden: Home, Dashboard and Learn (Pages + Styling)](../releases/v0.24.6.md)**, Developer-confirmed in chat. Clean main checkpoint at inspection: 1337b913. Exact deployed SHA and independent post-deployment verification remain unconfirmed; prior local checks are not production verification. The earlier preparation/production labels below are historical and superseded.
+
+## Historical release preparation: [v0.24.6 — ThreeD Garden: Home, Dashboard and Learn](v0.24.6.md)
 
 Prepared October 12, 2026 on main; package and root lockfile metadata are 0.24.6. Includes the Developer-accepted Dashboard/Learn presentation, shared Home header/NextAuth controls and garden label cleanup fix. Production remains [v0.24.5](v0.24.5.md), Developer-confirmed in chat; exact deployed SHA and independent production verification remain unconfirmed. The release record separates local automated/browser evidence from remaining authenticated App checks. Dependencies/schema and Project save/load are unchanged. Preserve manual changes and leave port 4444 dev servers untouched. Leave changes unstaged; no commit, tag, push or deployment. Earlier production/preparation statements below are historical and superseded by this status.
 
