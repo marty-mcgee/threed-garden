@@ -64,6 +64,7 @@ export interface ThreeDModelTextureLibraryItem {
   fileName: string;
   filePath: string;
   assignmentCount: number;
+  mimeType?: string | null;
 }
 
 function PreviewModel({

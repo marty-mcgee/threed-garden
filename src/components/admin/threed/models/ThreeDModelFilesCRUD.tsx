@@ -59,6 +59,7 @@ import {
 } from './ThreeDModelAssetPreview';
 import { ModelPreviewImageExport } from './ModelPreviewImageExport';
 import { withSavedFbxTextures } from '@/libraries/services/threed/models/model-saved-texture-fallback';
+import { canLinkThreeDTextureRequirement } from '@/libraries/services/threed/models/model-texture-link-core';
 import type { ModelData } from '@/components/threed/markers/ModelMarker3D';
 import { THREED_MODEL_MATERIAL_CHANNEL_LABELS, type ThreeDModelMaterialChannel } from '@/libraries/services/threed/models/model-material-override-core';
 
@@ -1086,8 +1087,8 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
                         value={requirementTextureChoices[`${modelId}:${requirement.relativePath}`] ?? ''}
                         onChange={event => setRequirementTextureChoices(previous => ({ ...previous, [`${modelId}:${requirement.relativePath}`]: event.target.value }))}>
                         <option value="">Choose a shared Texture to satisfy this requirement…</option>
-                        {textureLibrary.filter(texture => texture.isActive && texture.fileName.split('.').at(-1)?.toLowerCase() === requirement.fileName.split('.').at(-1)?.toLowerCase()).map(texture => (
-                          <option key={texture.id} value={texture.id}>{texture.fileName}</option>
+                        {textureLibrary.filter(texture => texture.isActive && canLinkThreeDTextureRequirement(requirement.fileName, texture)).map(texture => (
+                          <option key={texture.id} value={texture.id}>{texture.fileName}{/\.tga$/i.test(requirement.fileName) && /\.png$/i.test(texture.fileName) ? ' (PNG replacement for TGA)' : ''}</option>
                         ))}
                       </select>
                       <Button type="button" variant="outline" size="sm" className="text-xs" disabled={linkingTexture !== null || uploading || !requirementTextureChoices[`${modelId}:${requirement.relativePath}`]}
@@ -1095,6 +1096,9 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
                           const texture = textureLibrary.find(item => item.id === Number(requirementTextureChoices[`${modelId}:${requirement.relativePath}`]));
                           if (texture) void saveSharedRequirement(requirement, texture);
                         }}>Link to requirement</Button>
+                      {/\.tga$/i.test(requirement.fileName) && (
+                        <p className="w-full text-[10px] text-muted-foreground">Choose a PNG converted from this TGA, preserving transparency. Linking keeps the original dependency name.</p>
+                      )}
                     </div>
                   )}
                   {!requirement.satisfied && sharedTexture && (

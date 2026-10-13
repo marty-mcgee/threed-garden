@@ -17,6 +17,12 @@ When a nested Physics Sensor is selected in Project Assets, its focused inspecto
 
 The toolbar separates Project guidance from live Scene presentation: **Project Tour** owns setup/Help and **Environment** owns Scene presentation. The Details Card remains responsible for the selected marker's actions and editing. See [ThreeD Ground Maps](THREED_GROUND_MAPS.md) for image-ground setup and alignment.
 
+## 2D Design tools and navigation
+
+In Design mode, the drawing toolbar is inside the upper-right of the 2D canvas, clear of the X/Z rulers. Groups are **Select, Pan | Wall, Floor, Roof | Door, Window | Skylight, Roof Cutout | Fit Plan, Zoom to Selection, Reset View**. Hover or focus a button for its tooltip.
+
+Drag a blank area to pan with any tool; a normal click still selects, draws or places an opening. Panning retains the active tool, selected entity and unfinished drawing points. Select and Pan remain separate tools. Use Pan, Alt-drag or middle-drag to pan even when starting over an object. Wheel zoom stays anchored to the pointer; use Fit Plan or Zoom to Selection to frame content. Save Project uses the existing architecture and workspace snapshot.
+
 ## Characters
 
 - Autonomous `GardenCharacter` characters use their configured NPC movement behavior, which may include wandering, patrol, circle, follow, teleport, or stationary behavior.

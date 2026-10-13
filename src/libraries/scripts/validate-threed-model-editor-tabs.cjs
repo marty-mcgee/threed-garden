@@ -228,6 +228,7 @@ async function filesChecks() {
     './model-preview-requirements': { modelForPreview: value => value },
     '@/libraries/services/threed/models/model-fallback-core': fallback,
     '@/libraries/services/threed/models/model-saved-texture-fallback': { withSavedFbxTextures: (_, files) => files },
+    '@/libraries/services/threed/models/model-texture-link-core': load('src/libraries/services/threed/models/model-texture-link-core.ts', {}),
     '@/libraries/services/threed/models/model-material-override-core': require('../services/threed/models/model-material-override-core.ts'),
   }, { fetch: async (url, options = {}) => {
     requests.push({ url, options });

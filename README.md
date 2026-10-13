@@ -1,4 +1,10 @@
-## Current production: [v0.25.0 — ThreeD Garden: CSS polish and App Header consolidation](docs/releases/v0.25.0.md)
+## Local release preparation: [v0.25.2 — ThreeD Garden: Design tools and texture linking](docs/releases/v0.25.2.md)
+
+Prepared October 13, 2026 on main; package/root lockfile are 0.25.2. Includes grouped Design tools, blank-space drag panning with separate Select/Pan tools, and explicit PNG replacements for FBX TGA requirements. The Developer accepted toolbar/panning behavior. Stable React Three Fiber 9.8.1 is restored; existing optional lockfile cleanup is preserved. See release notes for offline verification and remaining authenticated texture-link, Scene appearance, Save/reopen and touch checks. No database schema change or server operation; leave changes unstaged.
+
+Production remains **Developer-confirmed [v0.25.1 — App Styling (Blueprints + Customizations)](docs/plans/v0.25.1.md)**. Repository checkpoint `038021a4` is visible, not independent deployment evidence. v0.25.2 is prepared locally, not released. Historical production/development labels below are superseded.
+
+## Historical production: [v0.25.0 — ThreeD Garden: CSS polish and App Header consolidation](docs/releases/v0.25.0.md)
 
 Developer-confirmed released to production in chat. Repository checkpoint `89e42a23` is visible; exact deployed SHA and independent production verification remain unconfirmed. Local development is now **[v0.25.1 — App Styling (Blueprints + Customizations)](docs/plans/v0.25.1.md)**; package/root lockfile are 0.25.1. The Developer accepted the Home/Dashboard/Learn translucent surfaces, accents and green actions as its opening checkpoint. This work is unreleased; further refinements remain to be selected. Keep local dev servers untouched and changes unstaged. Earlier preparation records below are historical.
 

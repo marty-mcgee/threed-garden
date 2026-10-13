@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { Focus, Maximize, RotateCcw } from 'lucide-react';
 import { DesignAction } from './DesignAction';
 import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import { distance, formatLength, insidePolygon, roofFrame, roofOpeningFootprint, INCH, levelDocument, mergeNodes, moveNodes, openingFootprint, openingMargin, roundMetres, screenToPlan, snapPoint, validateDesign, wallFrame,
   type DesignDocument, type PlanPoint, type PlanView } from '@/libraries/services/threed/design/document';
 import { framePlan, gridFeet as planGridFeet, rulerTicks, RULER_SIZE, zoomPlan } from '@/libraries/services/threed/design/plan-navigation';
@@ -17,7 +18,8 @@ interface Props { frameRequest?: { id: string; sequence: number } | null; drawin
   onSelect: (id: string | null) => void; onCommit: (doc: DesignDocument) => void;
   onPreview: (doc: DesignDocument | null) => void; onMessage: (text: string) => void;
   onDrawComplete: (id: string) => void; cancelToken: number }
-interface Gesture { pointerId: number; base: DesignDocument; point: PlanPoint; screenStart?: { x: number; y: number }; view: PlanView; nodes: string[]; pan: boolean; node?: string; opening?: string; roofOpening?: string; merge?: string; latest: DesignDocument }
+interface Gesture { pointerId: number; base: DesignDocument; point: PlanPoint; screenStart?: { x: number; y: number }; view: PlanView; nodes: string[]; pan: boolean; pendingClick?: { shiftKey: boolean }; node?: string; opening?: string; roofOpening?: string; merge?: string; latest: DesignDocument }
+const PAN_DRAG_THRESHOLD = 4; // CSS pixels: allow ordinary click jitter without drawing during a pan.
 const makeId = () => crypto.randomUUID();
 
 function addShape(doc: DesignDocument, points: DrawPoint[], tool: 'wall' | 'floor' | 'roof', levelId: string, draft = false): DesignDocument {
@@ -127,13 +129,29 @@ export function DesignPlan({ frameRequest, drawingActions, planView, onViewChang
   function down(event: PointerEvent<SVGSVGElement>) {
     if (!enabled || gesture.current || (event.button !== 0 && event.button !== 1) || local(event).x < RULER_SIZE || local(event).y < RULER_SIZE) return;
     event.preventDefault(); svg.current?.focus();
-    const point = pointer(event), target = (event.target as Element).closest('[data-entity]'), entityId = target?.getAttribute('data-entity') ?? null;
+    const point = pointer(event), target = (event.target as Element).closest('[data-entity]'), targetId = target?.getAttribute('data-entity') ?? null;
+    // A transient drawing/placement preview is still blank canvas, not a saved object.
+    const entityId = targetId && [...doc.walls, ...doc.floors, ...doc.roofs, ...doc.openings, ...doc.roofOpenings].some(entity => entity.id === targetId) ? targetId : null;
     const nodeId = (event.target as Element).getAttribute('data-node');
-    if (tool === 'pan' || event.button === 1 || event.altKey) {
-      gesture.current = { pointerId: event.pointerId, base: doc, latest: doc, point, screenStart: local(event), view, nodes: [], pan: true };
+    const explicitPan = tool === 'pan' || event.button === 1 || event.altKey;
+    if (explicitPan || (!entityId && !nodeId)) {
+      gesture.current = { pointerId: event.pointerId, base: doc, latest: doc, point, screenStart: local(event), view, nodes: [], pan: true,
+        pendingClick: explicitPan ? undefined : { shiftKey: event.shiftKey } };
       svg.current!.setPointerCapture(event.pointerId); return;
     }
     if (disabled) { onSelect(entityId); return; }
+    if (tool !== 'select') { activateTool(point, event.shiftKey); return; }
+    if (nodeId || entityId) {
+      if (entityId) onSelect(entityId);
+      const entity = doc.walls.find(wall => wall.id === entityId) ?? doc.floors.find(floor => floor.id === entityId) ?? doc.roofs.find(roof => roof.id === entityId);
+      const keys = nodeId ? [nodeId] : entity ? 'vertices' in entity ? entity.vertices : [entity.start, entity.end] : [];
+      gesture.current = { pointerId: event.pointerId, base: doc, latest: doc, point, view, nodes: keys, pan: false, node: nodeId ?? undefined, opening: doc.openings.some(o => o.id === entityId) ? entityId! : undefined, roofOpening: doc.roofOpenings.some(o => o.id === entityId) ? entityId! : undefined };
+      svg.current!.setPointerCapture(event.pointerId);
+    }
+  }
+  // Blank-space clicks run only on release, once we know the user did not drag to pan.
+  function activateTool(point: PlanPoint, shiftKey: boolean) {
+    if (disabled || tool === 'select') { onSelect(null); return; }
     if (tool === 'door' || tool === 'window') {
       try { const placed = placeOpening(point, false); if (!placed) { onMessage('Choose a host wall in the plan.'); return; } onCommit(placed.next); onDrawComplete(placed.id); onMessage(`${tool === 'door' ? 'Door' : 'Window'} placed and selected. Drag along its wall or edit its dimensions.`); }
       catch (error) { onPreview(null); onMessage((error as Error).message); }
@@ -145,7 +163,7 @@ export function DesignPlan({ frameRequest, drawingActions, planView, onViewChang
       return;
     }
     if (tool === 'wall' || tool === 'floor' || tool === 'roof') {
-      const hit = snapped(point, [], event.shiftKey);
+      const hit = snapped(point, [], shiftKey);
       if ((tool === 'floor' || tool === 'roof') && points.length >= 3 && distance(hit, points[0]) < 10 / view.scale) { finishPolygon(); return; }
       if (tool === 'wall' && points.length) {
         try { const next = validateDesign(addShape(doc, [points[0], hit], 'wall', activeLevelId)); onCommit(next); setPoints([{ ...hit, nodeId: next.walls[next.walls.length - 1].end }]); setHover(null); onPreview(null); onMessage('Wall added. Click the next endpoint, or Escape to finish.'); }
@@ -153,13 +171,15 @@ export function DesignPlan({ frameRequest, drawingActions, planView, onViewChang
       } else if (!points.some(existing => distance(existing, hit) < .000001)) { setPoints([...points, hit]); setHover(hit); onMessage(tool !== 'wall' ? 'Click corners, then Finish, Enter, or the first corner to save. Escape cancels the draft.' : 'Click an endpoint. Escape cancels.'); }
       return;
     }
-    if (nodeId || entityId) {
-      if (entityId) onSelect(entityId);
-      const entity = doc.walls.find(wall => wall.id === entityId) ?? doc.floors.find(floor => floor.id === entityId) ?? doc.roofs.find(roof => roof.id === entityId);
-      const keys = nodeId ? [nodeId] : entity ? 'vertices' in entity ? entity.vertices : [entity.start, entity.end] : [];
-      gesture.current = { pointerId: event.pointerId, base: doc, latest: doc, point, view, nodes: keys, pan: false, node: nodeId ?? undefined, opening: doc.openings.some(o => o.id === entityId) ? entityId! : undefined, roofOpening: doc.roofOpenings.some(o => o.id === entityId) ? entityId! : undefined };
-      svg.current!.setPointerCapture(event.pointerId);
-    } else onSelect(null);
+  }
+  function panGesture(active: Gesture, here: { x: number; y: number }) {
+    const start = active.screenStart!, dx = here.x - start.x, dy = here.y - start.y;
+    if (active.pendingClick) {
+      if (Math.hypot(dx, dy) < PAN_DRAG_THRESHOLD) return;
+      active.pendingClick = undefined;
+      setHover(null); onPreview(null);
+    }
+    setView({ ...active.view, x: active.view.x + dx, y: active.view.y + dy });
   }
   function move(event: PointerEvent<SVGSVGElement>) {
     if (!enabled || (disabled && !gesture.current?.pan)) return;
@@ -171,7 +191,7 @@ export function DesignPlan({ frameRequest, drawingActions, planView, onViewChang
       return;
     }
     if (event.pointerId !== active.pointerId) return;
-    if (active.pan) { const here = local(event), start = active.screenStart!; setView({ ...active.view, x: active.view.x + here.x - start.x, y: active.view.y + here.y - start.y }); return; }
+    if (active.pan) { panGesture(active, local(event)); return; }
     const p = screenToPlan(local(event), active.view), baseNodes = new Map(active.base.nodes.map(node => [node.id, node]));
     if (active.roofOpening) {
       const opening = active.base.roofOpenings.find(opening => opening.id === active.roofOpening)!, roof = active.base.roofs.find(roof => roof.id === opening.roofId)!, frame = roofFrame(active.base, roof);
@@ -203,8 +223,12 @@ export function DesignPlan({ frameRequest, drawingActions, planView, onViewChang
   }
   function end(event: PointerEvent<SVGSVGElement>) {
     const active = gesture.current; if (!active || event.pointerId !== active.pointerId) return;
+    if (active.pan) panGesture(active, local(event));
     gesture.current = null;
-    try { if (!active.pan) onCommit(active.node && active.merge ? mergeNodes(active.latest, active.node, active.merge) : active.latest); }
+    try {
+      if (active.pendingClick) activateTool(active.point, active.pendingClick.shiftKey);
+      else if (!active.pan) onCommit(active.node && active.merge ? mergeNodes(active.latest, active.node, active.merge) : active.latest);
+    }
     catch (error) { onMessage((error as Error).message); }
     onPreview(null); if (svg.current?.hasPointerCapture(event.pointerId)) svg.current.releasePointerCapture(event.pointerId);
   }
@@ -224,7 +248,7 @@ export function DesignPlan({ frameRequest, drawingActions, planView, onViewChang
     const next = framePlan(doc.walls.some(w => w.id === frameRequest.id) ? wallFootprint(doc, doc.walls.find(w => w.id === frameRequest.id)!) : entityPoints(doc, frameRequest.id), size);
     if (next) { framedRequest.current = frameRequest; setView(next); }
   }, [frameRequest, enabled, activeLevelId, size.width, size.height, doc, setView]);
-  const viewActions = <div role="group" aria-label="Design plan navigation" className="flex items-center gap-1"><DesignAction label="Fit Plan" disabled={!active.nodes.length} onClick={() => fitPlan()}><Maximize className="h-3.5 w-3.5" /></DesignAction><DesignAction label="Zoom to Selection" disabled={!selectionPoints.length} onClick={() => fitPlan(true)}><Focus className="h-3.5 w-3.5" /></DesignAction><DesignAction label="Reset View" onClick={() => setView({ x: 80, y: 80, scale: 45 })}><RotateCcw className="h-3.5 w-3.5" /></DesignAction></div>;
+  const viewActions = <div role="group" aria-label="Design plan navigation" className="flex shrink-0 items-center gap-1">{embedded && drawingActions && <Separator orientation="vertical" className="mx-1 bg-foreground/20 data-[orientation=vertical]:h-5" />}<DesignAction label="Fit Plan" disabled={!active.nodes.length} onClick={() => fitPlan()}><Maximize className="h-3.5 w-3.5" /></DesignAction><DesignAction label="Zoom to Selection" disabled={!selectionPoints.length} onClick={() => fitPlan(true)}><Focus className="h-3.5 w-3.5" /></DesignAction><DesignAction label="Reset View" onClick={() => setView({ x: 80, y: 80, scale: 45 })}><RotateCcw className="h-3.5 w-3.5" /></DesignAction></div>;
   return <section aria-label="Design plan canvas" className={`relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#091423] ${embedded ? '' : 'rounded-lg border border-white/10'}`}>
     {embedded && enabled && <div data-testid="design-canvas-tools" role="toolbar" aria-label="Design drawing and view tools" className="threed-workspace-panel threed-scene-panel-surface absolute z-10 flex max-w-[calc(100%-40px)] flex-wrap items-center gap-1 rounded-md border p-1 shadow-md" style={{ right: 8, top: RULER_SIZE + 8 }} onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}>{drawingActions}{viewActions}</div>}
     {!embedded && <div data-testid="design-plan-header" className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-white/10 px-3 py-2 text-xs">

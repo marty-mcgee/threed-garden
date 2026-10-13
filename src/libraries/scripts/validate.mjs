@@ -23,7 +23,10 @@ const tasks = {
   'threed-home-design': [node('validate-threed-home-design.cjs')],
   'threed-home-design-browser': [node('validate-threed-home-design-browser.cjs')],
   'drizzle-workflow': [node('validate-drizzle-workflow.cjs')],
-  'threed-browser-fbx-textures': [['node', '--import', 'tsx', `${scripts}/validate-browser-fbx-textures.mts`]],
+  'threed-browser-fbx-textures': [
+    ['node', '--import', 'tsx', `${scripts}/validate-browser-fbx-textures.mts`],
+    node('validate-threed-requirement-texture-link.cjs'),
+  ],
   'application-foundations': [node('validate-application-foundations.cjs')],
   'theme-provider': [node('validate-theme-provider.cjs')],
   'threed-scene-resources': [node('validate-threed-scene-resources.cjs')],

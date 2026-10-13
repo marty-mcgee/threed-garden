@@ -81,6 +81,19 @@ try {
   assert(material(replacement).map?.isTexture);
   assertModelTexturesReady(replacement);
 
+  const tgaManager = new LoadingManager();
+  const tgaWait = modelLoadCompletion(tgaManager);
+  tgaManager.setURLModifier(url => resolveThreeDModelAttachmentUrl(url, [{
+    fileName: 'paint.tga', relativePath: 'textures/paint.tga',
+    filePath: 'https://assets.invalid/paint-converted.png', fileType: 'texture',
+  }]));
+  const convertedTga = new BrowserFBXLoader(tgaManager).parse(fixture('tga'), 'https://assets.invalid/');
+  await tgaWait();
+  assert.equal(requests.at(-1), 'https://assets.invalid/paint-converted.png', 'Explicit TGA dependency aliases load the converted PNG');
+  assert(material(convertedTga).map?.isTexture, 'The original FBX material keeps its resolved map');
+  assertModelTexturesReady(convertedTga);
+  assert(requests.every(url => !/\.tga(?:[?#]|$)/i.test(url)), 'No raw TGA request reaches the browser image loader');
+
   const supportedManager = new LoadingManager();
   const supportedWait = modelLoadCompletion(supportedManager);
   const supported = new BrowserFBXLoader(supportedManager).parse(fixture('png'), 'https://assets.invalid/');

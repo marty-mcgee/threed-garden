@@ -12,6 +12,7 @@ import { and, asc, eq } from 'drizzle-orm';
 import { BlobNotFoundError, head, put } from '@vercel/blob';
 import { ensureTableSequence } from '@/libraries/db/sequence';
 import { normalizeThreeDModelRelativePath } from '@/libraries/services/threed/models/model-companion-core';
+import { canLinkThreeDTextureRequirement } from '@/libraries/services/threed/models/model-texture-link-core';
 import {
   isOwnedThreeDBlobUrl,
   runtimeModelTypeFromFileName,
@@ -116,7 +117,7 @@ async function linkSharedTexture(request: NextRequest, userId: string) {
     const [model] = await tx.select(modelSelection()).from(threedModels).where(and(eq(threedModels.id, body.modelId), eq(threedModels.userId, userId))).limit(1).for('update');
     const [texture] = await tx.select().from(threedModelTextures).where(and(eq(threedModelTextures.id, body.textureId), eq(threedModelTextures.userId, userId))).limit(1).for('update');
     if (!model || !texture || !texture.isActive) return { status: 404, error: 'Model or active Texture not found' };
-    if (model.modelType !== 'fbx' || relativePath.split('.').at(-1)?.toLowerCase() !== texture.fileName.split('.').at(-1)?.toLowerCase()
+    if (model.modelType !== 'fbx' || !canLinkThreeDTextureRequirement(relativePath, texture)
       || !/^https:\/\//i.test(texture.filePath)) return { status: 422, error: 'Shared Texture does not match the FBX attachment' };
     const files = await tx.select().from(threedModelFiles).where(and(eq(threedModelFiles.modelId, model.id), eq(threedModelFiles.userId, userId)));
     const existing = files.find((file) => (file.relativePath ?? file.fileName).toLowerCase() === relativePath.toLowerCase());

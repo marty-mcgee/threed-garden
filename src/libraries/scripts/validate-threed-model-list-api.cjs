@@ -329,6 +329,7 @@ async function searchOwnershipChecks() {
     '@/libraries/db/sequence': { ensureTableSequence: async () => {} },
     '@/libraries/services/threed/models/model-blob-paths': { createThreeDAttachmentBlobPath: () => 'fixture/model.glb' },
     '@/libraries/services/threed/models/model-companion-core': { normalizeThreeDModelRelativePath: value => value },
+    '@/libraries/services/threed/models/model-texture-link-core': require('../services/threed/models/model-texture-link-core.ts'),
     '@vercel/blob': { put: async () => ({ url: 'https://fixture.test/model.glb' }) },
   };
   vm.runInNewContext(transpile('src/app/api/threed/models/files/route.ts'), {
