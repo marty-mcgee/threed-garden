@@ -120,9 +120,9 @@ export function ThreeDModelLibraryPanel({
     <div className="threed-workspace-panel threed-scene-panel-surface threed-scene-sidebar-size threed-model-library-panel absolute bottom-0 left-0 top-[38px] z-40 flex flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md">
       <div className="mb-2 flex items-center justify-between gap-2">
         <div>
-          <div className="flex items-center gap-2"><h2 className="flex items-center gap-2 text-sm font-semibold"><Box aria-hidden="true" className="h-4 w-4 text-violet-700 dark:text-violet-300" />ThreeD Model Library</h2><ModelFieldHelp label="Model Library">Drag a model onto the active 2D Map or ThreeD Scene, or choose Place and click.</ModelFieldHelp></div>
+          <div className="flex items-center gap-2"><h2 className="flex items-center gap-2 text-sm font-semibold"><Box aria-hidden="true" className="h-4 w-4 text-violet-700 dark:text-violet-300" />ThreeD Model Library</h2><ModelFieldHelp label="Model Library">Browse reusable Models. Inspect opens a preview; Place adds another instance to this Project. Use Project Assets to select an existing instance. Collections organize the Library independently of Project assignments.</ModelFieldHelp></div>
         </div>
-        <Button type="button" variant="ghost" size="icon" className="h-7 w-7" disabled={placing} onClick={onClose}>
+        <Button type="button" variant="ghost" size="icon" className="h-7 w-7" aria-label="Close Model Library" disabled={placing} onClick={onClose}>
           <X className="h-3.5 w-3.5" />
         </Button>
       </div>
@@ -185,7 +185,7 @@ export function ThreeDModelLibraryPanel({
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
               <div className="break-words text-xs font-medium [overflow-wrap:anywhere]">{inspectedModel.modelName}</div>
-              <div className="uppercase text-muted-foreground">{inspectedModel.modelType}</div>
+              <div className="text-muted-foreground"><span className="uppercase">{inspectedModel.modelType}</span> · Model #{inspectedModel.id}</div>
             </div>
             <Button type="button" variant="ghost" size="icon" className="h-5 w-5 shrink-0" aria-label="Close Model metadata" title="Close Model metadata" onClick={() => onInspectModel(null)}>
               <X className="h-3 w-3" />
@@ -199,11 +199,11 @@ export function ThreeDModelLibraryPanel({
             <span>Saved base scale</span><span className="text-right text-foreground">{Number(inspectedModel.scale ?? 1)}</span>
             <span>Y rotation</span><span className="text-right text-foreground">{Number(inspectedModel.rotationY ?? 0)}°</span>
             <span>File size</span><span className="text-right text-foreground">{inspectedModel.fileSize ? `${(inspectedModel.fileSize / 1024 / 1024).toFixed(1)} MB` : '—'}</span>
-            <span>Texture assignments</span><span className="text-right text-foreground">{inspectedModel.libraryReadiness.textureAssignmentCount}</span>
-            <span>Dependencies</span><span className="text-right text-foreground">{inspectedModel.libraryReadiness.dependencyStatus === 'available' ? `${inspectedModel.libraryReadiness.supportingFileCount} available` : 'Not yet verified'}</span>
+            <span>Color map assignments</span><span className="text-right text-foreground">{inspectedModel.libraryReadiness.textureAssignmentCount}</span>
+            <span>Supporting files</span><span className="text-right text-foreground">{inspectedModel.libraryReadiness.supportingFileCount} attached</span>
           </div>
           <div className="flex items-center justify-between gap-2 pt-1">
-            <span className="text-muted-foreground">Library readiness</span>
+            <span className="inline-flex items-center gap-1 text-muted-foreground">Placement setup<ModelFieldHelp label="Model placement setup">Ready means the required setup records are present. The preview checks whether files can actually load. OBJ materials can use solid colors from an MTL file without image assignments. Supporting files can include MTL libraries and images.</ModelFieldHelp></span>
             <ModelReadinessBadge model={inspectedModel} />
           </div>
           <label className="block rounded border bg-background/60 p-1.5">
@@ -236,7 +236,9 @@ export function ThreeDModelLibraryPanel({
             <p className="pt-1 text-amber-300">
               {inspectedModel.libraryReadiness.issues.includes('missing_primary_file')
                 ? 'A usable primary Model file is required.'
-                : 'Configure a reusable Texture or Model-owned Texture attachment before placement.'}
+                : inspectedModel.modelType.toLowerCase() === 'obj'
+                  ? 'Attach the OBJ material library (MTL) and any images it references, or configure a Texture source.'
+                  : 'Configure a reusable Texture or Model-owned Texture attachment before placement.'}
             </p>
           )}
           {inspectedModel.categories?.length > 0 && (
@@ -339,6 +341,7 @@ export function ThreeDModelLibraryPanel({
                 aria-label={`Inspect ${model.modelName}`}
                 onClick={() => onInspectModel(model.id)}
                 onKeyDown={(event) => {
+                  if (event.target !== event.currentTarget) return;
                   if (event.key === 'Enter' || event.key === ' ') {
                     event.preventDefault();
                     onInspectModel(model.id);
@@ -350,7 +353,7 @@ export function ThreeDModelLibraryPanel({
                   {model.thumbnailUrl ? (
                     <img src={model.thumbnailUrl} alt={`${model.modelName} top-view preview`} className="h-full w-full object-contain transition-transform group-hover:scale-105" />
                   ) : (
-                    <Box className="h-8 w-8 text-cyan-600/60" />
+                    <span className="flex flex-col items-center gap-1 text-muted-foreground"><Box aria-hidden="true" className="h-8 w-8 text-cyan-600/60" /><span className="text-[9px]">No thumbnail</span></span>
                   )}
                 </div>
                 <div className="min-w-0 p-2">
@@ -365,10 +368,10 @@ export function ThreeDModelLibraryPanel({
                         {category.name}
                       </span>
                     )) : (
-                      <span className="text-[9px] text-muted-foreground">Unassigned</span>
+                      <span className="text-[9px] text-muted-foreground">No collection</span>
                     )}
                   </div>
-                  <Button type="button" size="sm" variant={readyToPlace ? 'default' : 'outline'} className="mt-1.5 h-6 w-full text-[10px]" disabled={!selectedModuleId || placing || !readyToPlace} draggable={false} onClick={(event) => { event.stopPropagation(); onBeginPlacement(model); }}>
+                  <Button type="button" size="sm" variant={readyToPlace ? 'default' : 'outline'} className="mt-1.5 h-6 w-full text-[10px]" disabled={placing || (readyToPlace && !selectedModuleId)} draggable={false} onClick={(event) => { event.stopPropagation(); if (readyToPlace) onBeginPlacement(model); else onInspectModel(model.id); }}>
                     {readyToPlace ? 'Place' : 'Inspect'}
                   </Button>
                 </div>

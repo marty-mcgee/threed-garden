@@ -1,4 +1,15 @@
-## Local release preparation: [v0.25.2 — ThreeD Garden: Design tools and texture linking](releases/v0.25.2.md)
+## Release checkpoint: [v0.25.3 — ThreeD Designs: Legacy recovery and Model guidance](releases/v0.25.3.md)
+
+Prepared locally October 14, 2026; package/root lockfile are 0.25.3 with stable Fiber 9.8.1. Production remains Developer-confirmed v0.25.2. Includes staged legacy architecture JSON import, a separate explicit OBJ/MTL recovery CLI and clearer Model Library/DetailsCard guidance. No schema change or automatic import/recovery runs on deployment.
+
+- [Legacy import and completed recovery evidence](plans/legacy-design-json-import.md)
+- [Implemented native capabilities and planned extensions](plans/design-architecture-capabilities.md)
+- [Accepted browser screenshot](images/v0.25.3/design-workspace.png) and [earlier annotated review](images/v0.25.3/design-review-annotations.png)
+- [Project Design contracts and persistence](developers/THREED_DESIGNS.md)
+
+The Developer accepted this visual checkpoint. Release notes separate screenshot acceptance, offline checks, previously authorized live recovery and still-manual Save/reopen. Not committed, published or deployed by the agent. Older status entries below retain their historical context.
+
+## Historical local release preparation: [v0.25.2 — ThreeD Garden: Design tools and texture linking](releases/v0.25.2.md)
 
 Prepared October 13, 2026 on main; package/root lockfile are 0.25.2. Includes grouped Design tools, blank-space drag panning with separate Select/Pan tools, and explicit PNG replacements for FBX TGA requirements. The Developer accepted toolbar/panning behavior. Stable React Three Fiber 9.8.1 is restored; existing optional lockfile cleanup is preserved. See release notes for offline verification and remaining authenticated texture-link, Scene appearance, Save/reopen and touch checks. No database schema change or server operation; leave changes unstaged.
 

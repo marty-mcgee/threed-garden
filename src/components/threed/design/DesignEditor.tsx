@@ -153,7 +153,7 @@ export function DesignEditor({ frameRequest, active = true, canSave = true, scen
   }
   function importFile(incoming: DesignDocument, mode: 'merge' | 'replace') {
     const next = importProjectArchitecture(doc, incoming, mode, () => crypto.randomUUID());
-    cancel(); commit(next); setLevelChoice(next.levels[0].id); setSelected(null); setTool('select'); setError('');
+    cancel(); commit(next); setLevelChoice(next.levels[mode === 'merge' ? doc.levels.length : 0].id); setSelected(null); setTool('select'); setError('');
     setMessage('Architecture imported. Save Project to retain these changes.');
   }
   function exportFile() {

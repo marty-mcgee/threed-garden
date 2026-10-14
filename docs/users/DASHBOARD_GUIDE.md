@@ -1,5 +1,15 @@
 # Dashboard Guide
 
+## Legacy plans and Model guidance (v0.25.3 checkpoint)
+
+[v0.25.3](../releases/v0.25.3.md) is prepared locally; production remains Developer-confirmed v0.25.2. The older checkpoint notes below are historical. Design drawing/view tools currently sit at the **upper-right inside the 2D canvas**, with Project-wide Import/Export/Save in the Project toolbar.
+
+To import supported legacy Home Design JSON, open a Project in Design mode, choose **Import JSON**, select the file and review converted counts and omissions. Choose Merge or Replace architectural content only. A partial import requires acknowledgement; Cancel and invalid files leave the Project unchanged. Imported architecture receives fresh IDs and uses the existing Project Save. The dialog imports supported architecture, not catalog OBJ/MTL Models or their boolean cutout masks. Full catalog recovery is a separate explicit [operator workflow](../plans/legacy-design-json-import.md).
+
+Use **Project Assets** to select an existing Model instance. The **Model Library** browses reusable Models: Inspect previews one; Place adds another instance. No collection and No thumbnail describe Library metadata, not an absent Scene placement or loading failure. Color-only OBJ materials can use a saved MTL without image Texture assignments. Placement setup summarizes saved records; preview/loading still checks actual dependencies.
+
+The Model DetailsCard's Project placement, Object or environment, Collisions & movement, Whole-model entry counter, Physics Sensors and Model information sections have question-mark help. Focus or click help for guidance; expand the header to edit supported fields. Native architectural objects use **Design Properties**. See the [accepted workspace screenshot](../images/v0.25.3/design-workspace.png) and [remaining architecture capabilities](../plans/design-architecture-capabilities.md).
+
 ## Home, Dashboard and Learn (v0.24.6 checkpoint)
 
 The locally prepared [v0.24.6 checkpoint](../releases/v0.24.6.md) adds public `/learn` guides and matches Home to the existing App header: Carrot logo/title, right-side navigation/theme controls and the NextAuth account menu. `/dashboard` emphasizes **Create Project**, with **Learn ThreeD** beside it and available Projects below. Creation uses the existing sign-in/template flow; choose an existing Project's Open action to continue it. Projects are sorted newest-created first, not by recent activity.

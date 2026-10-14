@@ -165,9 +165,11 @@ export function ModelInstancePlacementEditor({
         </button>
       </DetailsCardActions>
       <DetailsCardSection
+        storageId="Project Model Instance"
+        help="Edit this placed copy's name, scale, position and rotation. Save Model applies these fields to this Project instance; the reusable Library Model is unchanged. Save Project keeps the workspace view and panel state."
         title={<span className="inline-flex items-center gap-1.5">
           <Box className="h-3.5 w-3.5" />
-          Project Model Instance
+          Project placement
         </span>}
         summaryAside={<span className={`text-[9px] ${dirty ? (valid ? 'text-amber-800 dark:text-amber-200' : 'text-red-800 dark:text-red-300') : 'text-foreground/35'}`} aria-live="polite">
           {editStatus}
@@ -232,7 +234,7 @@ export function ModelInstancePlacementEditor({
         Effective scale: {(baseModelScale * (Number.isFinite(parsedScale) ? parsedScale : 0)).toLocaleString()}
       </div>
       </DetailsCardSection>
-      <DetailsCardSection title="Scene Role">
+      <DetailsCardSection title="Object or environment" storageId="Scene Role" help="Use Scene Object for furniture, trees, doors and other individual Models. Environment / Base Map is for a whole site or terrain Model: it hides procedural grass and avoids treating the entire map as a box obstacle. This role does not link a Model to an architectural wall or opening.">
         <label className="block space-y-1">
           <span className="text-[10px] text-foreground/60">Model role in this Project</span>
           <select
@@ -250,7 +252,7 @@ export function ModelInstancePlacementEditor({
           </select>
         </label>
       </DetailsCardSection>
-      <DetailsCardSection title="Physics Mode">
+      <DetailsCardSection title="Collisions & movement" storageId="Physics Mode" help="Fixed Box uses the Model's overall bounds. Fixed Triangle Surface follows its geometry for walkable surfaces. Movable Ball enables ball motion for a suitable ball Model. Choose deliberately; imported appearance alone does not configure ball physics. Apply changes with Save Model.">
       <label className="block space-y-1">
         <span className="text-[10px] text-foreground/60">Collision and movement profile</span>
         <select
@@ -285,7 +287,7 @@ export function ModelInstancePlacementEditor({
         </DetailsCardSection>
       )}
       {physicsMode !== 'ball' && placementRole !== 'environment' && (
-        <DetailsCardSection title="Model Volume Sensor">
+        <DetailsCardSection title="Whole-model entry counter" storageId="Model Volume Sensor" help="Optional: count movable balls entering this Model's bounding box. This is separate from collision shape and architectural openings. Use Physics Sensors for smaller named detection regions. Apply the option with Save Model; save runtime counts with Save Project.">
           <label className="flex items-center gap-2 text-[10px]">
             <input type="checkbox" checked={volumeSensor} disabled={busy} onChange={event => setVolumeSensor(event.target.checked)} />
             Use the Model bounding box as an entry counter

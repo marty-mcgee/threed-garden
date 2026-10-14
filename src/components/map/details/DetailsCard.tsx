@@ -550,7 +550,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
           <div className="truncate text-sm font-semibold text-foreground">
             {selectedSensorId ? (readPhysicsSensorCuboids(selected.metadata).find(sensor => sensor.id === selectedSensorId)?.name ?? 'New Physics Sensor') : selected.name || selected.title || selected.label || 'Unknown'}
           </div>
-          <ModelFieldHelp label={selectedSensorId ? 'Physics Sensor' : 'Asset details'}>{selectedSensorId ? `Edit this Physics Sensor. ${selectedSensorCount} sensors are configured on this asset.` : 'Inspect this Project asset and use its controls to adjust settings, position or available Actions.'}</ModelFieldHelp>
+          <ModelFieldHelp label={selectedSensorId ? 'Physics Sensor' : 'Asset details'}>{selectedSensorId ? `Edit this Physics Sensor. ${selectedSensorCount} sensors are configured on this asset.` : isProjectModelInstance ? 'This card edits a placed Model instance. Expand a section for its settings and use the question-mark help for guidance. Architectural walls, floors, roofs and openings are edited in Design Properties. Selecting a Library preview does not change the selected Scene instance.' : 'Inspect this Project asset and use its controls to adjust settings, position or available Actions.'}</ModelFieldHelp>
           </div>
         </div>
         <button
@@ -643,7 +643,8 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
 
       {/* Metadata grid */}
       {metaRows.length > 0 && !(isProjectCharacterInstance && onUpdateCharacterPosition && onDeleteCharacterInstance) && (
-        <DetailsCardSection title="Module / Position" className="order-1">
+        <DetailsCardSection title={isProjectModelInstance ? 'Model information' : 'Module / Position'} storageId="Module / Position" className="order-1"
+          help={isProjectModelInstance ? 'Reference information for the selected instance. Use Project placement to edit its transform, or Edit in Admin to manage the reusable Model and its Files.' : undefined}>
           {metaRows.map((r, i) => <KvRow key={i} label={r.label} value={r.value} />)}
         </DetailsCardSection>
       )}

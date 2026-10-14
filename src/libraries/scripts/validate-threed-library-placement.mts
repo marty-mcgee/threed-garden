@@ -140,6 +140,32 @@ const untexturedFbxReadiness = createThreeDModelLibraryReadiness({
 assert.equal(untexturedFbxReadiness.status, 'needs_configuration');
 assert.deepEqual(untexturedFbxReadiness.issues, ['missing_texture_source']);
 
+const solidColorObj = {
+  modelType: 'obj', filePath: 'https://assets.example.test/ball.obj', mainModelFileId: 20,
+  files: [{ id: 20, fileType: 'model', filePath: 'https://assets.example.test/ball.obj' }],
+  materialAssignments: [],
+};
+const savedMtl = { id: 21, fileName: 'ball.MTL', fileType: 'other', filePath: 'https://assets.example.test/ball.mtl' };
+const colorOnlyObjReadiness = createThreeDModelLibraryReadiness({ ...solidColorObj, files: [...solidColorObj.files, savedMtl] });
+assert.equal(colorOnlyObjReadiness.status, 'ready', 'Saved OBJ solid-color MTLs do not need image textures');
+assert.equal(colorOnlyObjReadiness.textureFileCount, 0);
+assert.equal(colorOnlyObjReadiness.textureAssignmentCount, 0);
+assert.equal(colorOnlyObjReadiness.supportingFileCount, 1);
+assert.deepEqual(colorOnlyObjReadiness.issues, []);
+for (const invalidMaterial of [
+  { ...savedMtl, filePath: '' },
+  { ...savedMtl, filePath: 'http://assets.example.test/ball.mtl' },
+  { ...savedMtl, filePath: 'file:///ball.mtl' },
+  { ...savedMtl, fileName: 'notes.txt' },
+  { ...savedMtl, fileType: 'thumbnail' },
+]) {
+  assert.equal(createThreeDModelLibraryReadiness({ ...solidColorObj, files: [...solidColorObj.files, invalidMaterial] }).status, 'needs_configuration');
+}
+assert.equal(createThreeDModelLibraryReadiness(solidColorObj).status, 'needs_configuration');
+assert.equal(createThreeDModelLibraryReadiness({ ...solidColorObj, mainModelFileId: null, files: [...solidColorObj.files, savedMtl] }).status, 'unavailable');
+assert.equal(createThreeDModelLibraryReadiness({ ...solidColorObj, modelType: 'fbx', files: [...solidColorObj.files, savedMtl] }).status, 'needs_configuration', 'An OBJ material library must not bypass FBX texture configuration');
+console.log('✓ Solid-color OBJ material sources enable placement without bypassing primary, URL, file-role or FBX guards');
+
 const missingPrimaryReadiness = createThreeDModelLibraryReadiness({
   modelType: 'glb',
   filePath: '',

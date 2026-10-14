@@ -16,7 +16,7 @@ const fallbackModule = { exports: {} };
 vm.runInNewContext(transpile('src/libraries/services/threed/models/model-fallback-core.ts'), { exports: fallbackModule.exports });
 const readinessModule = { exports: {} };
 const sourceCore = require('../services/threed/models/model-source-core.ts');
-vm.runInNewContext(transpile('src/libraries/services/threed/models/model-library-readiness-core.ts'), { exports: readinessModule.exports, require: name => { assert.equal(name, './model-source-core.ts'); return sourceCore; } });
+vm.runInNewContext(transpile('src/libraries/services/threed/models/model-library-readiness-core.ts'), { exports: readinessModule.exports, URL, require: name => { assert.equal(name, './model-source-core.ts'); return sourceCore; } });
 const schema = new Proxy({}, { get: (_, table) => new Proxy({ table }, { get: (value, column) => column === 'table' ? table : `${table}.${String(column)}` }) });
 const op = (kind) => (...args) => ({ kind, args });
 const orm = Object.fromEntries(['eq', 'and', 'or', 'desc', 'inArray', 'asc'].map((kind) => [kind, op(kind)]));
@@ -240,6 +240,21 @@ async function searchOwnershipChecks() {
   assert.deepEqual(library.body.data[0].metadata, { fallbackShape: 'pyramid' });
   assert.equal(library.body.data[0].libraryReadiness.status, 'ready');
   assert.equal(library.body.data[0].canManage, false);
+  const colorOnlyObj = { ...shared, id: 1160, modelName: 'Solid-color ball', modelType: 'obj',
+    filePath: 'https://fixture.test/ball.obj', mainModelFileId: 82 };
+  const colorOnlyFiles = [
+    { id: 82, modelId: 1160, fileName: 'ball.obj', fileType: 'model', filePath: colorOnlyObj.filePath },
+    { id: 83, modelId: 1160, fileName: 'ball.mtl', relativePath: 'ball.mtl', fileType: 'other', filePath: 'https://fixture.test/ball.mtl' },
+  ];
+  const colorOnlyLibrary = await run('scope=library', [[{ count: 1 }], [colorOnlyObj], [], colorOnlyFiles, []]);
+  assert.equal(colorOnlyLibrary.body.data[0].libraryReadiness.status, 'ready');
+  assert.equal(colorOnlyLibrary.body.data[0].libraryReadiness.textureFileCount, 0);
+  assert.deepEqual(colorOnlyLibrary.body.data[0].materialAssignments, []);
+  assert.equal(colorOnlyLibrary.body.data[0].files[1].fileType, 'other', 'MTL remains a material attachment, never a Texture or thumbnail');
+  assert.deepEqual(colorOnlyLibrary.body.data[0].metadata, { fallbackShape: 'pyramid' }, 'Readiness does not expose private metadata');
+  const missingMtlLibrary = await run('scope=library', [[{ count: 1 }], [colorOnlyObj], [], colorOnlyFiles.slice(0, 1), []]);
+  assert.equal(missingMtlLibrary.body.data[0].libraryReadiness.status, 'needs_configuration');
+  console.log('PASS: Library serialization accepts saved solid-color OBJ materials while preserving missing-resource and public metadata boundaries');
   const sharedDetail = await run('id=1159', [[shared], [], [], []]);
   assert.deepEqual(sharedDetail.body.data.metadata, { fallbackShape: 'pyramid' });
   const retainedRigShape = { ...shared, modelType: 'fbx', filePath: 'https://fixture.test/rig.fbx', mainModelFileId: 81,

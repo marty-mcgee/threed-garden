@@ -1,4 +1,22 @@
-## Local release preparation: [v0.25.2 — ThreeD Garden: Design tools and texture linking](docs/releases/v0.25.2.md)
+## Release checkpoint: [v0.25.3 — ThreeD Designs: Legacy recovery and Model guidance](docs/releases/v0.25.3.md)
+
+Prepared locally October 14, 2026 on `main`, based on `8ee6bd14` and the accepted working changes. Package/root lockfile are **0.25.3**; React Three Fiber remains stable **9.8.1**. Current production is **Developer-confirmed v0.25.2**. This checkpoint is ready for the Developer's release process; it has not been committed, published or deployed by the agent. Earlier status entries below are historical.
+
+- **Recover editable architecture:** Import supported legacy Paper.js plan JSON through the existing staged Import JSON dialog. Review omitted content, choose merge or architecture-only replacement, and retain fresh IDs, Imperial editing and the Project Save workflow.
+- **Recover a legacy scene deliberately:** The separate `threed:design:recover` CLI prepares and verifies OBJ/MTL/texture bundles, with explicit create-only apply and recovery receipts. The authorized demo recovery created Project #17 with 53 Model placements alongside 38 editable walls, 10 floors, four roofs and three levels. Ordinary Import JSON does not import catalog Models or legacy boolean masks.
+- **Understand Models and their settings:** Solid-color OBJ materials can satisfy Library setup through an attached MTL without image textures. Clearer Library labels, usable Inspect actions and compact DetailsCard sections with accessible help distinguish reusable Models, placed instances and architecture.
+
+### Accepted browser checkpoint
+
+![ThreeD Design workspace with the recovered house, Project Assets, Model guidance, and linked 2D plan](docs/images/v0.25.3/design-workspace.png)
+
+Developer-supplied screenshot, October 14, 2026 at 11:28, from the local App. It records the accepted visible checkpoint: recovered Models and architecture together, linked 2D/3D views, Project Assets and updated DetailsCard guidance. [Earlier annotated review](docs/images/v0.25.3/design-review-annotations.png) shows the original orange guidance areas and green accepted views; annotations are review markup, not App styling. Both originals are preserved unchanged.
+
+[Release notes and checks](docs/releases/v0.25.3.md) · [Legacy import/recovery guide](docs/plans/legacy-design-json-import.md) · [Architecture capability roadmap](docs/plans/design-architecture-capabilities.md)
+
+The earlier authorized recovery verified committed data and all 60 uploaded files. Screenshots and offline tests do not establish a subsequent authenticated Save/reopen. Catalog-to-opening connections, sloped-top walls, floor holes and advanced roof joins remain documented follow-ups; this release does not claim full legacy geometry parity. Local servers remain under Developer control.
+
+## Historical local release preparation: [v0.25.2 — ThreeD Garden: Design tools and texture linking](docs/releases/v0.25.2.md)
 
 Prepared October 13, 2026 on main; package/root lockfile are 0.25.2. Includes grouped Design tools, blank-space drag panning with separate Select/Pan tools, and explicit PNG replacements for FBX TGA requirements. The Developer accepted toolbar/panning behavior. Stable React Three Fiber 9.8.1 is restored; existing optional lockfile cleanup is preserved. See release notes for offline verification and remaining authenticated texture-link, Scene appearance, Save/reopen and touch checks. No database schema change or server operation; leave changes unstaged.
 

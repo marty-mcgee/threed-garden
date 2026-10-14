@@ -106,6 +106,7 @@ export function PhysicsSensorCuboidsEditor({
     <DetailsCardSection
       key={selectedSensorId ?? 'sensor-list'}
       title={selectedSensorId ? 'Sensor Settings' : 'Physics Sensors'}
+      help="Optional named detection boxes attached to this asset, up to eight. Count Entries observes movable balls; these boxes do not create doors, windows or other architectural openings. Save Sensor keeps its setup; Save Project keeps runtime counts."
       defaultOpen={Boolean(selectedSensorId)}
       summaryAside={<span className="text-[9px] text-foreground/40">{sensors.length}/8</span>}
     >

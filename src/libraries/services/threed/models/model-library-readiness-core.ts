@@ -15,6 +15,7 @@ export interface ThreeDModelLibraryReadiness {
 
 interface ReadinessFile {
   id: number;
+  fileName?: string;
   fileType: string;
   filePath: string;
 }
@@ -61,6 +62,15 @@ export function createThreeDModelLibraryReadiness(model: ReadinessModel): ThreeD
       .filter((assignment) => assignment.channel === 'baseColor')
       .map((assignment) => assignment.targetKey),
   ).size;
+  // OBJ materials can be authored entirely with MTL colors (Kd/Ks/etc.),
+  // without image maps. Their saved material library is a valid source; it
+  // must not force an unrelated Texture assignment just to enable placement.
+  // This remains a metadata summary: the OBJ loader still validates exact
+  // mtllib/usemtl references and any image dependencies when loading the asset.
+  const objMaterialSourceAvailable = model.modelType.toLowerCase() === 'obj'
+    && model.files.some((file) => file.fileType === 'other'
+      && /\.mtl$/i.test(file.fileName ?? '')
+      && isRuntimeFilePath(file.filePath));
   const issues: ThreeDModelLibraryReadiness['issues'] = [];
 
   const fileFreeShape = readModelSource(model) === 'shape';
@@ -70,6 +80,7 @@ export function createThreeDModelLibraryReadiness(model: ReadinessModel): ThreeD
     && ['fbx', 'obj'].includes(model.modelType.toLowerCase())
     && textureAssignmentCount === 0
     && textureFileCount === 0
+    && !objMaterialSourceAvailable
   ) {
     issues.push('missing_texture_source');
   }
