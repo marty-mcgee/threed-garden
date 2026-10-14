@@ -1,5 +1,14 @@
 ## v0.25.3 release preparation — October 14, 2026
 
+## v0.25.4 ? Page titles and Project context
+
+Prepared locally October 14, 2026. Package/root lockfile metadata are 0.25.4; dependencies and schema are unchanged. Production remains Developer-confirmed v0.25.3; v0.25.4 has not been reported deployed. Earlier release-preparation statuses below are historical.
+
+The shared React/TypeScript title owner derives readable titles from the Next.js pathname and appends the loaded Scene Project name and ID. Example: `ThreeD Garden - Dashboard - Scene - Legacy Plan Demo 1 Recovery [17]`. Existing descriptions remain in Next metadata; visible headers and Project persistence are unchanged. See [release notes](docs/releases/v0.25.4.md) and [implementation guide](docs/developers/PAGE_TITLES.md).
+
+TypeScript and six mocked route/server-rendered title checks passed during implementation. Developer accepted the result; independent browser navigation, authenticated Project-switch checks and production verification were not executed. No local server, database, Git write or deployment operation.
+
+
 The Developer accepted the legacy recovery and guidance checkpoint, supplied successful local browser screenshots and requested production preparation as **v0.25.3 — ThreeD Designs: Legacy recovery and Model guidance**. Package/root lockfile are 0.25.3; stable Fiber 9.8.1 and all dependency ranges/database schema remain unchanged. Branch `main`, HEAD `8ee6bd14` plus accepted working changes. Current production remains Developer-confirmed v0.25.2; this is preparation, not release confirmation or independent production verification.
 
 [Release notes](docs/releases/v0.25.3.md) describe architecture-only staged JSON import, separate explicit OBJ/MTL recovery automation, MTL material-source readiness and Library/DetailsCard guidance. Root README and documentation indexes link both supplied images under `docs/images/v0.25.3`; originals are unchanged. The latest 11:28 screenshot is accepted appearance evidence; the 10:53 annotated screenshot is review history. Neither establishes later authenticated Save/reopen or completes the documented architecture gaps.

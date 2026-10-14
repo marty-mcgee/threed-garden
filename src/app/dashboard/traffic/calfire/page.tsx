@@ -2,7 +2,6 @@
 import CalFireContent from './calfireContent';
 
 export const metadata = {
-  title: 'CalFire Incidents - MCNews Traffic',
   description: 'Real-time wildfire incidents from CalFire',
 };
 

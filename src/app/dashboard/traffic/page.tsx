@@ -1,7 +1,6 @@
 import { TrafficMapDashboard } from '@/components/traffic/dashboard/TrafficMapDashboard';
 
 export const metadata = {
-  title: 'Traffic Dashboard',
   description: 'Traffic incidents and closures in California',
 };
 

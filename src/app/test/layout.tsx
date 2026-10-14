@@ -6,7 +6,6 @@ import type { Metadata } from "next";
 // import { NowPlayingBar } from '@/components/multimedia/NowPlayingBar';
 
 export const metadata: Metadata = {
-  title: "Marty McGee Tests",
   description: "Track Dragon: Music Management • Real-time Traffic • ThreeD Integration",
 };
 

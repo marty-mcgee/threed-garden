@@ -4,7 +4,7 @@ import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHe
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
-export const metadata = { title: 'Learn ThreeD | ThreeD Garden', description: 'Start a Project, draw a room, add Models, and save your work.' };
+export const metadata = { description: 'Start a Project, draw a room, add Models, and save your work.' };
 
 const guides = [
   { id: 'draw-room', title: 'Draw a room', steps: ['Open your own Project and choose Design in the View Mode controls.', 'In the toolbar inside the 2D canvas, choose Wall. Click a start and end corner for each wall; use snapping to join corners.', 'Choose Floor and click the room corners. Finish Floor, Enter, or clicking the first corner completes it. Escape cancels an unfinished draft.', 'Choose Door or Window and click a wall with enough space. Inspect the opening and its dimensions in Design Properties.', 'Switch to 3D to inspect the room alongside existing objects. Save ThreeD Project to retain it.'], result: 'Walls, floor and hosted openings appear in both views and in Project Assets under Architecture.' },

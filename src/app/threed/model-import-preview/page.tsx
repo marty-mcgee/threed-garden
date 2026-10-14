@@ -2,7 +2,6 @@ import { redirect } from 'next/navigation';
 import { auth } from '@/libraries/auth';
 import { ThreeDModelImportPreview } from '@/components/admin/threed/models/ThreeDModelImportPreview';
 
-export const metadata = { title: 'ThreeD Model Import Preview' };
 
 export default async function ModelImportPreviewPage() {
   const session = await auth();

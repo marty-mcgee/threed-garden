@@ -1,5 +1,6 @@
 // dashboard/scene/page
 'use client';
+import { useProjectPageTitle } from '@/components/layout/AppPageTitle';
 import { useWorkspaceSaveFeedback } from '@/components/map/hooks/useWorkspaceSaveFeedback';
 import { ProjectOverlayLayoutContext } from '@/components/map/panels/ProjectOverlayLayout';
 import type { SceneResourceIssue } from '@/components/threed/shared/SceneResourceStatus';
@@ -239,6 +240,10 @@ function UnifiedMapPageInner() {
     setIsScenariosOpen(false);
   }, [selectedProjectId]);
   const [projectInfo, setProjectInfo] = useState<{ name: string; hasData: boolean } | null>(null);
+  useProjectPageTitle(
+    !loading && !isDefaultView && projectAccess?.projectId === selectedProjectId ? selectedProjectId : null,
+    projectInfo?.name,
+  );
   const [projectThreeDModules, setProjectThreeDModules] = useState<Array<{
     id: number;
     name: string;

@@ -4,10 +4,10 @@ import { cookies } from 'next/headers';
 import { Providers } from "./providers";
 import "./globals.css";
 import { inter } from "./fonts";
+import AppPageTitle from '@/components/layout/AppPageTitle';
 // import { NowPlayingBar } from '@/components/multimedia/NowPlayingBar';
 
 export const metadata: Metadata = {
-  title: "ThreeD Garden",
   description: "Create and explore interactive 3D gardens with models, characters, physics, maps, and multimedia.",
 };
 
@@ -31,12 +31,14 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body>
+        <AppPageTitle>
         <Providers initialTheme={initialTheme} initialResolvedTheme={initialResolvedTheme}>
           {children}
 
           {/* Global player - always visible */}
           {/* <NowPlayingBar /> */}
         </Providers>
+        </AppPageTitle>
       </body>
     </html>
   );

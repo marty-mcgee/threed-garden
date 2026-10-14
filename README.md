@@ -1,5 +1,14 @@
 ## Release checkpoint: [v0.25.3 — ThreeD Designs: Legacy recovery and Model guidance](docs/releases/v0.25.3.md)
 
+## v0.25.4 ? Page titles and Project context
+
+Prepared locally October 14, 2026. Package/root lockfile metadata are 0.25.4; dependencies and schema are unchanged. Production remains Developer-confirmed v0.25.3; v0.25.4 has not been reported deployed. Earlier release-preparation statuses below are historical.
+
+The shared React/TypeScript title owner derives readable titles from the Next.js pathname and appends the loaded Scene Project name and ID. Example: `ThreeD Garden - Dashboard - Scene - Legacy Plan Demo 1 Recovery [17]`. Existing descriptions remain in Next metadata; visible headers and Project persistence are unchanged. See [release notes](docs/releases/v0.25.4.md) and [implementation guide](docs/developers/PAGE_TITLES.md).
+
+TypeScript and six mocked route/server-rendered title checks passed during implementation. Developer accepted the result; independent browser navigation, authenticated Project-switch checks and production verification were not executed. No local server, database, Git write or deployment operation.
+
+
 Prepared locally October 14, 2026 on `main`, based on `8ee6bd14` and the accepted working changes. Package/root lockfile are **0.25.3**; React Three Fiber remains stable **9.8.1**. Current production is **Developer-confirmed v0.25.2**. This checkpoint is ready for the Developer's release process; it has not been committed, published or deployed by the agent. Earlier status entries below are historical.
 
 - **Recover editable architecture:** Import supported legacy Paper.js plan JSON through the existing staged Import JSON dialog. Review omitted content, choose merge or architecture-only replacement, and retain fresh IDs, Imperial editing and the Project Save workflow.
