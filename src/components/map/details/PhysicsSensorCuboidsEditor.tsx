@@ -237,6 +237,7 @@ export function PhysicsSensorCuboidsEditor({
               </section>
               <section aria-label="Sensor dimensions and rotation">
                 <p className="mb-1 text-[9px] font-semibold uppercase tracking-wide text-foreground/55">Dimensions and rotation</p>
+                <p className="mb-1 text-[10px] text-muted-foreground">Local offsets and dimensions use Scene units. Rotation uses degrees.</p>
                 <div className="grid grid-cols-3 gap-1">
                   {(['x', 'y', 'z'] as const).map((axis) => (
                     <label key={axis} className="text-[8px] text-foreground/45">Local {axis.toUpperCase()}

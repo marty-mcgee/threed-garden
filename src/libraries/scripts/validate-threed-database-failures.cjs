@@ -52,9 +52,15 @@ vm.runInNewContext(code('src/libraries/db/read-retry.ts'), { exports: readRetry 
 const scenePolicy = {};
 vm.runInNewContext(code('src/libraries/services/project/scene-read-policy.ts'), { exports: scenePolicy });
 const api = {};
+const sceneUnits = {}, measurementUnits = {};
+vm.runInNewContext(code('src/libraries/services/threed/scene-units.ts'), { exports: sceneUnits });
+vm.runInNewContext(code('src/libraries/services/project/measurement-units.ts'), {
+  exports: measurementUnits, require(name) { assert.equal(name, '../threed/scene-units'); return sceneUnits; },
+});
 vm.runInNewContext(code('src/app/api/map/threed/route.ts'), {
   exports: api, URL, console: { error() {} },
   require(name) {
+    if (name === '@/libraries/services/project/measurement-units') return measurementUnits;
     if (name === '@/libraries/services/threed/design/project-architecture') return { readProjectArchitecture: config => config?.threeDArchitecture };
     if (name === '@/libraries/services/project/scene-texture-resources') return { sceneTextureResources: async () => [] };
     if (name === '@/libraries/services/project/scene-character-animations') return { sceneCharacterAnimations: async () => new Map() };

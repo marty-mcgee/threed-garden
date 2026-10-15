@@ -187,7 +187,7 @@ export function ModelInstancePlacementEditor({
       </label>
       <div className="grid grid-cols-2 gap-2">
         <label className="block space-y-1">
-          <span className="text-[10px] text-foreground/50">Instance scale</span>
+          <span className="text-[10px] text-foreground/50">Instance scale (multiplier)</span>
           <input
             type="number"
             min="0.0001"
@@ -211,6 +211,7 @@ export function ModelInstancePlacementEditor({
           />
         </label>
       </div>
+      <p className="text-[10px] text-muted-foreground">Position (Scene units)</p>
       <div className="grid grid-cols-3 gap-1.5">
         {[
           ['Position X', positionX, setPositionX],
@@ -219,7 +220,7 @@ export function ModelInstancePlacementEditor({
         ].map(([label, value, setter]) => (
           <label key={label as string} className="block min-w-0 space-y-1">
             <span className="text-[9px] text-foreground/50">{label as string}</span>
-            <input
+            <input aria-label={`${label as string} (Scene units)`}
               type="number"
               step="0.1"
               value={value as string}

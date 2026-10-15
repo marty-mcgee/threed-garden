@@ -1,8 +1,10 @@
+import { parseMeasurementUnits, MeasurementUnitsError } from '@/libraries/services/project/measurement-units';
 import { parseProjectArchitecture, ProjectArchitectureError } from '@/libraries/services/threed/design/project-architecture';
+import { saveProjectDesignProjection, ProjectDesignProjectionError } from '@/libraries/services/threed/design/project-design-projection';
 import { retryDisconnectedRead } from '@/libraries/db/read-retry';
 import { databaseConnectionDiagnostic } from '@/libraries/db/connection-diagnostics';
 import { bedPlantingGeometry, bedLocalPoint, bedWorldPoint, containBedPlantings, resolvePlantingBedId } from '@/libraries/services/threed/beds/bed-planting-bounds';
-import { resolveCharacterPhysics } from '@/libraries/services/threed/characters/character-physics';
+import { parseCharacterPhysicsSettings, CharacterPhysicsInputError } from '@/libraries/services/threed/characters/character-physics';
 import { CHARACTER_SPAWN_CLEARANCE } from '@/libraries/services/threed/characters/character-controller-dimensions';
 import { refreshModelMarkerData, currentPlantingModelId } from '@/libraries/services/threed/models/model-snapshot-assets';
 import { modelSelection } from '@/libraries/services/threed/models/model-primary-file';
@@ -382,6 +384,8 @@ async function saveSnapshot(request: NextRequest) {
     }
     const markers = parseProjectThreeDMarkerSnapshot(requestBody.markers);
     const viewState = parseThreeDProjectViewState(requestBody.viewState);
+    const rawUnits = (requestBody.viewState as {design?: {measurementUnits?: unknown}})?.design?.measurementUnits;
+    const measurementPatch = rawUnits === undefined ? {} : { measurementUnits: parseMeasurementUnits(rawUnits) };
     const architecture = requestBody.architecture === undefined ? undefined : parseProjectArchitecture(requestBody.architecture);
     if (viewState.threeD?.sensorState && viewState.threeD.sensorState.projectId !== projectId) {
       return NextResponse.json({ success: false, error: 'Sensor state belongs to another Project' }, { status: 400 });
@@ -392,6 +396,14 @@ async function saveSnapshot(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'Project not found' }, { status: 404 });
     }
 
+    for (const marker of markers) {
+      const settings = marker.metadata.characterPhysics;
+      // Legacy snapshots retain their original permissive read/default behavior.
+      if (marker.moduleType === 'characters' && settings && typeof settings === 'object'
+        && ('version' in settings || 'units' in settings || 'values' in settings)) {
+        marker.metadata.characterPhysics = parseCharacterPhysicsSettings(settings, Number(ownedProject.metersPerSceneUnit));
+      }
+    }
     const assignmentRows = markers.length === 0
       ? []
       : await db
@@ -540,7 +552,7 @@ async function saveSnapshot(request: NextRequest) {
       }
 
       const [savedProject] = await tx.update(project).set({
-        config: sql`coalesce(${project.config}, '{}'::jsonb) || ${JSON.stringify({ threeDViewState: viewState, ...(architecture ? { threeDArchitecture: architecture } : {}) })}::jsonb`,
+        config: sql`coalesce(${project.config}, '{}'::jsonb) || ${JSON.stringify({ ...measurementPatch, threeDViewState: viewState, ...(architecture ? { threeDArchitecture: architecture } : {}) })}::jsonb`,
         updatedAt: new Date(),
       }).where(and(eq(project.id, projectId), eq(project.userId, userId))).returning({ config: project.config });
       if (!savedProject) throw new Error('Project disappeared during Save');
@@ -552,8 +564,12 @@ async function saveSnapshot(request: NextRequest) {
       try { savedViewState = parseThreeDProjectViewState((savedProject.config as Record<string, unknown>)?.threeDViewState); }
       catch { throw new Error('Project workspace write was not confirmed'); }
       if (workspaceJSON(savedViewState) !== workspaceJSON(viewState)) throw new Error('Project workspace write was not confirmed');
+      if (measurementPatch.measurementUnits && (savedProject.config as Record<string, unknown>)?.measurementUnits !== measurementPatch.measurementUnits) throw new Error('Project measurement preference write was not confirmed');
       const savedArchitecture = architecture ? parseProjectArchitecture((savedProject.config as Record<string, unknown>)?.threeDArchitecture) : undefined;
       if (architecture && JSON.stringify(savedArchitecture) !== JSON.stringify(architecture)) throw new Error('Project architecture write was not confirmed');
+      // Derived Designs record participates in the same commit/rollback as config and markers.
+      try { await saveProjectDesignProjection(tx, userId, projectId); }
+      catch { throw new ProjectDesignProjectionError('Design synchronization failed. No Project changes were saved. Keep your draft and retry; if this continues, check Designs storage availability.'); }
       return { markers: savedRows, architecture: savedArchitecture };
     });
 
@@ -568,6 +584,9 @@ async function saveSnapshot(request: NextRequest) {
       },
     });
   } catch (error) {
+    if (error instanceof MeasurementUnitsError) return NextResponse.json({success:false,error:error.message},{status:400});
+    if (error instanceof ProjectDesignProjectionError) return NextResponse.json({ success: false, error: error.message }, { status: 503 });
+    if (error instanceof CharacterPhysicsInputError) return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     if (error instanceof ProjectArchitectureError) return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     if (error instanceof ProjectPlantingPlacementInputError) return NextResponse.json({success:false,error:error.message},{status:400});
     if (error instanceof ProjectMarkerSnapshotError || error instanceof ProjectViewStateError) {
@@ -1201,6 +1220,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (
       error instanceof ProjectModelInstanceInputError
+      || error instanceof CharacterPhysicsInputError
       || error instanceof ProjectBedPlacementInputError
       || error instanceof ProjectPlantingPlacementInputError
       || error instanceof ProjectCharacterPlacementInputError
@@ -1373,7 +1393,7 @@ async function updateProjectMarker(request: NextRequest, id: number) {
           positionSource: 'asset',
           ...(updateBody.characterPhysics === undefined ? {} : { metadata: {
             ...(marker.metadata as Record<string, unknown> ?? {}),
-            characterPhysics: resolveCharacterPhysics(updateBody.characterPhysics),
+            characterPhysics: parseCharacterPhysicsSettings(updateBody.characterPhysics, Number(ownedProject.metersPerSceneUnit)),
           } }),
           data: {
             ...currentData,
@@ -1615,6 +1635,7 @@ async function updateProjectMarker(request: NextRequest, id: number) {
   } catch (error) {
     if (
       error instanceof ProjectModelInstanceInputError
+      || error instanceof CharacterPhysicsInputError
       || error instanceof ProjectBedPlacementInputError
       || error instanceof ProjectPlantingPlacementInputError
       || error instanceof ProjectCharacterPlacementInputError

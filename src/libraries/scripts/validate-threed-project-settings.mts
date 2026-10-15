@@ -110,7 +110,7 @@ console.log('PASS: Scenario selection, Guide choices, started status and overlay
 const design = {plan:{x:-321,y:224,scale:73},levelId:'ground',selectedEntityId:'wall-1',showAllLevels:true,showRoofs:false,gridSnap:true,split:62,sections:{'details:wall-1':false}};
 const preferences = {...saved,design,workspace:{...workspace,inspector:{kind:'sensor',id:'sensor-1'}},threeD:{...saved.threeD,cameraZoom:1.4,cameraFov:60}};
 const roundtrip = parseThreeDProjectViewState(JSON.parse(JSON.stringify(preferences)));
-assert.equal(JSON.stringify(roundtrip.design),JSON.stringify(design));assert.equal(roundtrip.threeD?.cameraZoom,1.4);assert.equal(roundtrip.threeD?.cameraFov,60);assert.equal(roundtrip.workspace?.inspector?.id,'sensor-1');
+assert.equal(JSON.stringify(roundtrip.design),JSON.stringify({measurementUnits:'imperial',...design}));assert.equal(roundtrip.threeD?.cameraZoom,1.4);assert.equal(roundtrip.threeD?.cameraFov,60);assert.equal(roundtrip.workspace?.inspector?.id,'sensor-1');
 for(const invalid of [{...design,plan:{...design.plan,scale:0}},{...design,sections:{'bad':'yes'}},{...design,split:99},{...design,plan:{...design.plan,x:Infinity}}]) assert.throws(()=>parseThreeDProjectViewState({...saved,design:invalid}));
 assert.throws(()=>parseThreeDProjectViewState({...saved,threeD:{...saved.threeD,cameraFov:180}}));
 console.log('PASS: Design pan/zoom, selection, split, section state, inspector reference and camera projection roundtrip with bounded validation.');

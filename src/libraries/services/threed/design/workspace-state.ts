@@ -5,6 +5,7 @@ function boolean(value: unknown): boolean { if (typeof value !== 'boolean') thro
 function boundedText(value: unknown, max: number): string { if (typeof value !== 'string' || !value.length || value.length > max) throw new DesignWorkspaceError(); return value; }
 /** Workspace preferences only; geometry remains in threeDArchitecture. */
 export interface ProjectDesignWorkspaceState {
+  measurementUnits?: 'imperial' | 'metric';
   plan: { x: number; y: number; scale: number };
   levelId: string;
   selectedEntityId: string | null;
@@ -15,6 +16,7 @@ export interface ProjectDesignWorkspaceState {
   sections: Record<string, boolean>;
 }
 export const defaultDesignWorkspace = (): ProjectDesignWorkspaceState => ({
+  measurementUnits: 'imperial',
   plan: { x: 80, y: 80, scale: 45 }, levelId: 'ground', selectedEntityId: null,
   showAllLevels: true, showRoofs: true, gridSnap: true, split: 45, sections: {},
 });
@@ -26,7 +28,8 @@ export function parseDesignWorkspace(value: unknown): ProjectDesignWorkspaceStat
     if (!key || key.length > 500 || ['__proto__', 'constructor', 'prototype'].includes(key)) throw new DesignWorkspaceError();
     result[key] = boolean(value);
   }
-  return { plan: { x: finite(plan.x, -1e7, 1e7), y: finite(plan.y, -1e7, 1e7), scale: finite(plan.scale, .05, 300) },
+  if (item.measurementUnits !== undefined && !['imperial', 'metric'].includes(String(item.measurementUnits))) throw new DesignWorkspaceError();
+  return { measurementUnits: item.measurementUnits === 'metric' ? 'metric' : 'imperial', plan: { x: finite(plan.x, -1e7, 1e7), y: finite(plan.y, -1e7, 1e7), scale: finite(plan.scale, .05, 300) },
     levelId: boundedText(item.levelId, 200), selectedEntityId: item.selectedEntityId === null ? null : boundedText(item.selectedEntityId, 200),
     showAllLevels: boolean(item.showAllLevels), showRoofs: boolean(item.showRoofs), gridSnap: boolean(item.gridSnap),
     split: finite(item.split, 10, 90), sections: result };

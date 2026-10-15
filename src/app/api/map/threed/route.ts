@@ -1,3 +1,4 @@
+import { readProjectMeasurementUnits } from '@/libraries/services/project/measurement-units';
 import { readProjectArchitecture } from '@/libraries/services/threed/design/project-architecture';
 import { sceneTextureResources } from '@/libraries/services/project/scene-texture-resources';
 import { sceneCharacterAnimations } from '@/libraries/services/project/scene-character-animations';
@@ -483,6 +484,7 @@ export async function GET(request: NextRequest) {
       data: allData,
       projectContext: {
         architecture: readProjectArchitecture(projectData.config),
+        measurementUnits: readProjectMeasurementUnits(projectData.config),
         metersPerSceneUnit: Number(projectData.metersPerSceneUnit),
         projectId: projectData.id,
         canEdit,

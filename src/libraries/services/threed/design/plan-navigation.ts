@@ -14,11 +14,11 @@ export function framePlan(points: PlanPoint[], size: { width: number; height: nu
   return { x: (size.width + RULER_SIZE) / 2 - (minX + maxX) / 2 * scale, y: (size.height + RULER_SIZE) / 2 - (minZ + maxZ) / 2 * scale, scale };
 }
 /** CSS pixels match the SVG coordinates; SVG itself handles device pixel ratio. */
-export function rulerTicks(origin: number, scale: number, extent: number) {
+export function rulerTicks(origin: number, scale: number, extent: number, units: 'imperial' | 'metric' = 'imperial') {
   const step = gridFeet(scale) * 12 * INCH, major = 2 ** Math.max(0, Math.ceil(Math.log2(64 / (step * scale))));
   const first = Math.ceil((RULER_SIZE - origin) / (scale * step)), last = Math.floor((extent - origin) / (scale * step));
   return Array.from({ length: Math.max(0, Math.min(2000, last - first + 1)) }, (_, n) => {
     const index = first + n, world = index * step;
-    return { index, world, pixel: origin + world * scale, major: index % major === 0, label: `${Number((world / (12 * INCH)).toFixed(3))} ft` };
+    return { index, world, pixel: origin + world * scale, major: index % major === 0, label: units === 'metric' ? `${Number(world.toFixed(4))} m` : `${Number((world / (12 * INCH)).toFixed(3))} ft` };
   });
 }

@@ -12,7 +12,7 @@ import type { ScenarioSetup } from '@/libraries/services/threed/scenarios/scenar
 import type { SimulationResultReport, SimulationResultSnapshot } from '@/libraries/services/threed/simulations/simulation-result-input';
 import type { DesignDocument } from '@/libraries/services/threed/design/document';
 
-/** Legacy candidate records retained for read-only recovery; current edits use project.config.threeDArchitecture. */
+/** Project Save maintains derived Design records; project.config.threeDArchitecture remains authoritative. Historical records remain readable. */
 export const threedDesigns = pgTable('threed_designs', {
   id: serial('id').primaryKey(),
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),

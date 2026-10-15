@@ -1,6 +1,7 @@
 // components/map/ThreeDScene.tsx
 'use client';
 import { DesignSceneObjects } from '@/components/threed/design/DesignSceneObjects';
+import { DesignScenePhysics } from '@/components/threed/design/DesignScenePhysics';
 import type { DesignDocument } from '@/libraries/services/threed/design/document';
 
 import { PhysicsSensorsPanel } from './panels/PhysicsSensorsPanel';
@@ -1493,6 +1494,7 @@ function characterSceneSignature(marker: any): string {
     movementType: String(data.movementType ?? ''),
     speed: Number(data.speed ?? 0),
     scale: Number(data.scale ?? 1),
+    scaleMultiplier: Number(data.scaleMultiplier ?? 1),
     rotation: Number(data.rotation ?? 0),
     model: {
       id: Number(model.id),
@@ -1530,7 +1532,14 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
     characterSignatureRef.current = signature;
     characterDataRef.current = marker.data;
   }
-  const characterData = useMemo(() => ({...characterDataRef.current, status: characterDataRef.current?.status ?? 'active', visible: characterDataRef.current?.visible !== false}), [signature]);
+  const characterData = useMemo(() => ({
+    ...characterDataRef.current,
+    // Render the Project instance multiplier without changing the catalog scale.
+    // Keep this derived value out of marker data and Project Save snapshots.
+    scale: (Number(characterDataRef.current?.scale) || 1) * (Number(characterDataRef.current?.scaleMultiplier) || 1),
+    status: characterDataRef.current?.status ?? 'active',
+    visible: characterDataRef.current?.visible !== false,
+  }), [signature]);
   const gardenGroupRef = useRef<THREE.Group>(null);
   const gardenSceneEnabled = isLayerEnabled && characterData.visible !== false;
   const position: [number, number, number] = [
@@ -3569,9 +3578,9 @@ export function ThreeDScene({
                 {groundMapAsset && <div className="text-[10px] text-muted-foreground">{groundMapAsset.fileName} · {groundMapAsset.width} × {groundMapAsset.height}px</div>}
                 {groundMap.visualMode === 'image' && groundMapAsset && <div className="grid grid-cols-2 gap-1">
                   {([
-                    ['Width', 'width', 1, 20000, 1], ['Length', 'length', 1, 20000, 1],
-                    ['Center X', 'centerX', -1000000, 1000000, 0.1], ['Center Z', 'centerZ', -1000000, 1000000, 0.1],
-                    ['Height', 'height', -1000, 1000, 0.05], ['Rotation', 'rotationY', -360, 360, 1],
+                    ['Width (Scene units)', 'width', 1, 20000, 1], ['Length (Scene units)', 'length', 1, 20000, 1],
+                    ['Center X (Scene units)', 'centerX', -1000000, 1000000, 0.1], ['Center Z (Scene units)', 'centerZ', -1000000, 1000000, 0.1],
+                    ['Elevation (Scene units)', 'height', -1000, 1000, 0.05], ['Rotation (degrees)', 'rotationY', -360, 360, 1],
                   ] as const).map(([label, key, min, max, step]) => <label key={key} className="block text-[10px]">{label}
                     <input className="mt-0.5 w-full rounded bg-black/40 px-1 py-1" type="number" min={min} max={max} step={step} value={groundMap[key]} onChange={event => { const next = Number(event.target.value); if (Number.isFinite(next) && next >= min && next <= max) setGroundMap(value => ({ ...value, [key]: next })); }} />
                   </label>)}
@@ -3994,6 +4003,7 @@ export function ThreeDScene({
           paused={transforming}
         >
           <SensorOccupancySync stateRef={sensorCounterStateRef} onSeparated={clearSeparatedSensorOccupancy} />
+          {projectId && architecture && <DesignScenePhysics document={architecture} projectId={projectId} metersPerSceneUnit={metersPerSceneUnit} />}
           {/* Physics Debug renders the active Rapier colliders as well as
               each owner's focused Sensor and Environment guides. */}
           {groundMap.visualMode === 'image' && groundMapAsset && groundMap.groundMapId === groundMapAsset.id && <RigidBody

@@ -14,7 +14,8 @@ function load(file, dependencies = {}, globals = {}) {
   });
   return exports;
 }
-const document = load(service + 'document.ts');
+const sceneUnits = load('src/libraries/services/threed/scene-units.ts');
+const document = load(service + 'document.ts', { '../scene-units': sceneUnits });
 const navigation = load(service + 'plan-navigation.ts', { './document': document });
 const properties = load(service + 'object-properties.ts', { './document': document });
 // Use the real footprint function without initializing unrelated Three/WebGL geometry owners.

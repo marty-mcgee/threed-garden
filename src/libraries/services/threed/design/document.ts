@@ -13,7 +13,8 @@ export interface DesignDocument {
   levels: DesignLevel[]; nodes: DesignNode[]; walls: DesignWall[]; floors: DesignFloor[]; roofs: DesignRoof[]; openings: DesignOpening[]; roofOpenings: DesignRoofOpening[];
   defaults: { wallHeight: number; wallThickness: number; floorThickness: number; doorHeight: number; doorWidth: number; windowHeight: number; windowWidth: number; windowSill: number };
 }
-export const INCH = 0.0254;
+import { METRES_PER_INCH } from '../scene-units';
+export const INCH = METRES_PER_INCH;
 export const EPS = 0.000001;
 export const inchesToMetres = (inches: number) => inches * INCH;
 export const legacyCentimetresToMetres = (centimetres: number) => centimetres / 100;

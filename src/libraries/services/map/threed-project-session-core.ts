@@ -18,6 +18,7 @@ export interface ThreeDProjectSessionData {
   savedViewState: ThreeDProjectViewState | null;
   architecture?: ProjectArchitecture;
   metersPerSceneUnit: number;
+  measurementUnits?: 'imperial' | 'metric';
 }
 
 export type ThreeDProjectSessionResult =
@@ -153,6 +154,7 @@ export function buildThreeDProjectSession(
       threedModules,
       architecture,
       metersPerSceneUnit: Number(result.projectContext?.metersPerSceneUnit) > 0 && Number.isFinite(Number(result.projectContext?.metersPerSceneUnit)) ? Number(result.projectContext.metersPerSceneUnit) : 0.3048,
+      measurementUnits: result.projectContext?.measurementUnits === 'metric' ? 'metric' : result.projectContext?.measurementUnits === 'imperial' ? 'imperial' : result.projectContext?.viewState?.design?.measurementUnits ?? 'imperial',
       geographicOrigin: parseGeographicOrigin(result.projectContext?.geographicOrigin),
       savedViewState: (result.projectContext?.viewState as ThreeDProjectViewState | null) ?? null,
     },

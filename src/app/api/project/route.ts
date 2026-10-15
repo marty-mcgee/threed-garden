@@ -1,10 +1,11 @@
+import { parseMeasurementUnits, MeasurementUnitsError } from '@/libraries/services/project/measurement-units';
 // app/api/project/route.ts - Updated to filter by user
 
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
 import { project, projectThreedMarkers } from '@/libraries/schema/project';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, and, desc, sql } from 'drizzle-orm';
 import {
   calibrateThreeDGeographicOrigin,
   projectLocalPositionToGeographicPosition,
@@ -74,6 +75,7 @@ export async function GET(request: NextRequest) {
       data: projects,
     });
   } catch (error) {
+    if (error instanceof MeasurementUnitsError) return NextResponse.json({success:false,error:error.message},{status:400});
     console.error('Error fetching projects:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch projects' },
@@ -115,6 +117,7 @@ export async function POST(request: NextRequest) {
         name,
         description: description || null,
         slug,
+        config: { measurementUnits: body.measurementUnits === undefined ? 'imperial' : parseMeasurementUnits(body.measurementUnits) },
         isPublic: isPublic || false,
         isActive: isActive !== false,
       })
@@ -126,6 +129,7 @@ export async function POST(request: NextRequest) {
       message: 'Project created successfully',
     });
   } catch (error) {
+    if (error instanceof MeasurementUnitsError) return NextResponse.json({success:false,error:error.message},{status:400});
     console.error('Error creating project:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to create project' },
@@ -215,6 +219,7 @@ export async function PATCH(request: NextRequest) {
           description: description !== undefined ? description : existing.description,
           isPublic: isPublic !== undefined ? isPublic : existing.isPublic,
           isActive: isActive !== undefined ? isActive : existing.isActive,
+          ...(body.measurementUnits === undefined ? {} : { config: sql`coalesce(${project.config}, '{}'::jsonb) || ${JSON.stringify({ measurementUnits: parseMeasurementUnits(body.measurementUnits) })}::jsonb` }),
           ...(calibration ? {
             originLatitude: calibration.latitude.toFixed(7),
             originLongitude: calibration.longitude.toFixed(7),
@@ -295,6 +300,7 @@ export async function PATCH(request: NextRequest) {
         : 'Project updated successfully',
     });
   } catch (error) {
+    if (error instanceof MeasurementUnitsError) return NextResponse.json({success:false,error:error.message},{status:400});
     if (error instanceof ThreeDMapCoordinateError) {
       return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }
@@ -366,6 +372,7 @@ export async function DELETE(request: NextRequest) {
       message: 'Project deleted successfully',
     });
   } catch (error) {
+    if (error instanceof MeasurementUnitsError) return NextResponse.json({success:false,error:error.message},{status:400});
     console.error('Error deleting project:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to delete project' },

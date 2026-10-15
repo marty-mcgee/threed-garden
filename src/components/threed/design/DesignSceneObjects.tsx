@@ -4,6 +4,7 @@ import type { ThreeEvent } from '@react-three/fiber';
 import { Group } from 'three';
 import { DesignGeometryCache } from '@/libraries/services/threed/design/geometry';
 import type { DesignDocument } from '@/libraries/services/threed/design/document';
+import { sceneUnitsPerMetre } from '@/libraries/services/threed/scene-units';
 
 /** Mount inside the existing Scene Canvas. Only this owner's generated resources are changed. */
 export function DesignSceneObjects({ document, projectId, metersPerSceneUnit, selected = null, onSelect, visibleLevelId, showRoofs = true, visible = true }: {
@@ -30,5 +31,5 @@ export function DesignSceneObjects({ document, projectId, metersPerSceneUnit, se
     const id = event.object.userData.designEntityId;
     if (typeof id === 'string') { event.stopPropagation(); onSelect?.(id); }
   };
-  return <group visible={visible} ref={host} name={`project:${projectId}:architecture`} scale={1 / metersPerSceneUnit} onClick={select} />;
+  return <group visible={visible} ref={host} name={`project:${projectId}:architecture`} scale={sceneUnitsPerMetre(metersPerSceneUnit)} onClick={select} />;
 }

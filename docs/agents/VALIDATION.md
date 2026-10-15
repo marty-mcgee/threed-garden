@@ -1,3 +1,9 @@
+## v0.26.0 release preparation - October 15, 2026
+
+Final release checks: all 72 offline CI tasks passed; TypeScript, seven focused projection/units/physics/asset-sizing checks, version/dependency consistency, release links and whitespace checks passed. Guarded isolated production build compiled and generated 144/144 pages. Runtime source matched the built copy; subsequent changes were validation fixtures and documentation only. Installed Three CommonJS and isolated build-root warnings remain non-failing. No new browser/production verification or deployment is claimed.
+
+See [release notes](../releases/v0.26.0.md). Live database/device writes and local server operations were not performed. Prior records below are historical.
+
 ## v0.25.0 release preparation evidence
 
 October 12, 2026: TypeScript, focused presentation validation and all 71 offline CI tasks passed. The initial sandboxed CI run hit the known Windows tsx user-profile ENOMEM error; the complete outside-sandbox rerun passed. Guarded agent-owned npm run build passed Turbopack compilation/TypeScript and 144/144 page generation using a disposable source/config copy, installed dependencies, dummy database URL, network/fetch guard including port 4444 and offline font responses. No .env copied; 952 source files and package/config inputs matched the working tree. All three version fields are 0.25.0 and remaining package/lock content matches HEAD; 18 relative release/plan/status links resolve. No server start/stop, real database/device/storage/account writes, migrations/seeds, Git writes or deployment. No standalone lint configuration. See release notes for visual evidence and manual limitations.

@@ -1462,7 +1462,7 @@ function UnifiedMapPageInner() {
         const { session } = outcome;
         setProjectAccess({ projectId: String(selectedProjectId), canEdit: session.canEdit });
         const cachedArchitecture = architectureDrafts.current.get(String(selectedProjectId));
-        architectureDrafts.current.set(String(selectedProjectId), hydrateArchitectureDraft(cachedArchitecture, session.architecture, session.savedViewState?.design));
+        architectureDrafts.current.set(String(selectedProjectId), hydrateArchitectureDraft(cachedArchitecture, session.architecture, { ...(session.savedViewState?.design ?? defaultDesignWorkspace()), measurementUnits: session.measurementUnits ?? 'imperial' }));
         setMetersPerSceneUnit(session.metersPerSceneUnit); renderArchitecture(value => value + 1);
         setInitialProjectViewState(session.savedViewState);
         setOverlayPositions(session.savedViewState?.overlayPositions ?? {});
@@ -1990,7 +1990,7 @@ function UnifiedMapPageInner() {
 
   const handleUpdateCharacterPosition = useCallback(async (
     markerId: number,
-    position: { positionX: number; positionY: number; positionZ: number; rotation?: number; characterPhysics?: import("@/libraries/services/threed/characters/character-physics").CharacterPhysics },
+    position: { positionX: number; positionY: number; positionZ: number; rotation?: number; scaleMultiplier?: number; characterPhysics?: import("@/libraries/services/threed/characters/character-physics").CharacterPhysicsSettings },
   ) => {
     if (updatingCharacterMarkerId != null || controlledCharacterId != null) return false;
     const sourceId = data.threed.raw?.projectThreedMarkers?.find((marker) => marker.id === markerId)?.sourceAssetId;
@@ -2805,6 +2805,8 @@ function UnifiedMapPageInner() {
         />
         
         <ProjectSceneToolbar
+          measurementUnits={designWorkspace.measurementUnits ?? 'imperial'}
+          onMeasurementUnitsChange={canEditProject ? measurementUnits => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), measurementUnits } })) : undefined}
           workspaceSaveMessage={architectureSaveError ? `Save failed: ${architectureSaveError}` : architectureIsDirty(architectureDraft) || workspaceFeedback.dirty ? 'Unsaved architecture or workspace; Save Project to keep changes' : 'Workspace unchanged since loading or last Save'}
           workspaceDirty={architectureIsDirty(architectureDraft) || workspaceFeedback.dirty}
           designHistoryHostRef={setDesignHistoryHost}
@@ -2890,6 +2892,8 @@ function UnifiedMapPageInner() {
       {/* Project Assets is independent of toolbar menu visibility. */}
       <div>
       <ProjectAssetsPanel
+        measurementUnits={designWorkspace.measurementUnits ?? 'imperial'}
+        metersPerSceneUnit={metersPerSceneUnit}
         architecture={architectureDraft.history.present}
         selectedArchitectureId={architectureDraft.selected}
         onSelectArchitecture={id => { if (transform.session) return; selectArchitecture(id); setSelectedMarker(null); setSelectedIncident(null); setSensorInspector(null); setGroupInspector(null); groundMapInspector?.setOpen(false); }}
@@ -2955,6 +2959,9 @@ function UnifiedMapPageInner() {
       />
       <div id="project-setup-panel">
         <ProjectSetupPanel
+          measurementUnits={designWorkspace.measurementUnits ?? 'imperial'}
+          onMeasurementUnitsChange={measurementUnits => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), measurementUnits } }))}
+          metersPerSceneUnit={metersPerSceneUnit}
           isOpen={canEditProject && Boolean(selectedProjectId) && isThreeDPresentationComplete && isProjectSetupOpen}
           hasThreeDModule={projectThreeDModules.length > 0}
           hasEnvironment={projectEnvironmentMarkers.length > 0}
@@ -3269,6 +3276,7 @@ function UnifiedMapPageInner() {
       />}
       <div hidden={groupInspector !== null || Boolean(groundMapInspector?.open && viewMode !== '2d')}>
       <DetailsCard
+        metersPerSceneUnit={metersPerSceneUnit}
         selected={selectedMarker || selectedIncident}
         projectMarkers={projectRuntimeMarkers}
         onSelectProjectMarker={selectProjectAsset}

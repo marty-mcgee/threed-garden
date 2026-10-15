@@ -3,13 +3,17 @@
 import { Box, CheckCircle2, ExternalLink, Map, Sparkles, User, X } from 'lucide-react';
 import { useProjectOverlayPosition } from './ProjectOverlayLayout';
 import { Button } from '@/components/ui/button';
+import { ProjectMeasurementUnits } from '@/components/project/ProjectMeasurementUnits';
+import { metresToSceneUnits } from '@/libraries/services/threed/scene-units';
 import {
   createProjectTourState,
   type ProjectTourStepKey,
 } from '@/libraries/services/project/project-tour-core';
 
 export function ProjectSetupPanel({
+  measurementUnits = 'imperial', onMeasurementUnitsChange,
   isOpen,
+  metersPerSceneUnit = 0.3048,
   hasThreeDModule,
   hasEnvironment,
   hasCharacter,
@@ -20,7 +24,10 @@ export function ProjectSetupPanel({
   onOpenModelLibrary,
   onOpenProjectSettings,
 }: {
+  measurementUnits?: 'imperial' | 'metric';
+  onMeasurementUnitsChange?: (units: 'imperial' | 'metric') => void;
   isOpen: boolean;
+  metersPerSceneUnit?: number;
   hasThreeDModule: boolean;
   hasEnvironment: boolean;
   hasCharacter: boolean;
@@ -78,6 +85,18 @@ export function ProjectSetupPanel({
             <span className="sr-only">Close Project setup</span>
           </Button>
         </div>
+
+        <section className="mt-3 rounded-lg border border-foreground/10 bg-foreground/5 p-3" aria-label="Project units and measurements">
+          <h3 className="text-xs font-semibold">Units &amp; measurements</h3>
+          <ProjectMeasurementUnits value={measurementUnits} onChange={units => onMeasurementUnitsChange?.(units)} disabled={!onMeasurementUnitsChange} />
+          <dl className="mt-2 space-y-1 text-xs text-muted-foreground">
+            <div>Scene calibration: 1 unit = {Number(metersPerSceneUnit.toFixed(6))} m</div>
+            <div>Use Save Project to retain the measurement preference.</div>
+            <div>1 metre = {Number(metresToSceneUnits(1, metersPerSceneUnit).toFixed(6))} Scene units</div>
+            <div>Exact conversions: 1 foot = 0.3048 m; 1 inch = 0.0254 m</div>
+          </dl>
+          <p className="mt-2 text-xs text-muted-foreground">Calibration is read-only. Architecture stores metres; rendering and collisions convert to Scene units. Character and Model sizes do not define the measurement system. Displayed decimal values are rounded.</p>
+        </section>
 
         {!hasThreeDModule && (
           <div className="mt-3 rounded-lg border border-cyan-400/25 bg-cyan-500/10 p-3">

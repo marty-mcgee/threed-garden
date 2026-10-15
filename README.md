@@ -1,3 +1,17 @@
+Final release checks: all 72 offline CI tasks passed; TypeScript, seven focused projection/units/physics/asset-sizing checks, version/dependency consistency, release links and whitespace checks passed. Guarded isolated production build compiled and generated 144/144 pages. Runtime source matched the built copy; subsequent changes were validation fixtures and documentation only. Installed Three CommonJS and isolated build-root warnings remain non-failing. No new browser/production verification or deployment is claimed.
+
+## v0.26.0 release candidate - October 15, 2026
+
+Developer requested release preparation of the accepted current checkpoint. Package/root lockfile remain **0.26.0** on main, based on 1e5c9f97 plus local changes. Production remains user-confirmed v0.25.4; this is local preparation, not deployment. [Release notes](docs/releases/v0.26.0.md) now cover Project measurement preferences, derived Designs records, architectural Rapier collisions, Character scale/physics compatibility, name editing and inspector labels alongside the v0.25.x navigation consolidation.
+
+User-reported acceptance is recorded separately from offline validation. TypeScript, focused mocked persistence tests, local collision/conversion tests and guarded isolated build (144 pages) passed. No agent browser/production verification, live writes, server operations, migration, commit, tag or deployment. Capsule/world-gravity normalization, legacy apertures/advanced architecture, Builder acceptance and broader touch coverage remain separate limitations. The final full CI run passed all 72 tasks.
+
+## Stable v0.26.0 preparation
+
+The Developer accepted the v0.25.5 navigation checkpoint and requested direct promotion to stable **0.26.0**, consolidating the v0.25.x improvements. Package/root lockfile metadata are 0.26.0; dependencies/schema are unchanged. Production remains Developer-confirmed v0.25.4 until a separate deployment confirmation. v0.25.5 is included in this checkpoint, not claimed as separately released.
+
+See [v0.26.0 release notes](docs/releases/v0.26.0.md) for consolidated features, source records, verification and remaining manual checks. This preparation runs TypeScript, version/dependency consistency and whitespace checks; it does not rerun full CI/build or independently verify browser/production behavior. Existing legacy/Builder/touch limitations remain explicit. No local server, database, Git write or deployment operation. Earlier status entries below are historical.
+
 ## Release checkpoint: [v0.25.3 — ThreeD Designs: Legacy recovery and Model guidance](docs/releases/v0.25.3.md)
 
 ## v0.25.4 ? Page titles and Project context

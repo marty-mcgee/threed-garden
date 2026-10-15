@@ -6,7 +6,7 @@ const ts = require('typescript');
 const THREE = require('three');
 const previous = require.extensions['.ts'];
 require.extensions['.ts'] = (module, filename) => {
-  assert(filename.includes(`${path.sep}design${path.sep}`));
+  assert(filename.includes(`${path.sep}design${path.sep}`) || filename === path.resolve(__dirname, '../services/threed/scene-units.ts'));
   module._compile(ts.transpileModule(fs.readFileSync(filename, 'utf8'), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText, filename);
 };
 const D = require('../services/threed/design/document.ts');

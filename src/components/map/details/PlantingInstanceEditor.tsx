@@ -110,11 +110,12 @@ export function PlantingInstanceEditor({
         </select>
       </label>
       <label className="block space-y-1">
-        <span className="text-[9px] text-foreground/50">Model scale</span>
+        <span className="text-[9px] text-foreground/50">Model scale (multiplier)</span>
         <input type="number" min="0.01" max="1000" step="0.01" value={modelScale}
           disabled={updating || deleting} onChange={(event) => setModelScale(event.target.value)}
           className="h-7 w-full rounded border border-foreground/10 bg-foreground/5 px-1.5 text-[11px] text-foreground outline-none focus:border-foreground/30 disabled:opacity-50" />
       </label>
+      <p className="text-[10px] text-muted-foreground">Position (Scene units)</p>
       <div className="grid grid-cols-3 gap-1.5">
         {[
           ['Position X', positionX, setPositionX],
@@ -123,7 +124,7 @@ export function PlantingInstanceEditor({
         ].map(([label, value, setter]) => (
           <label key={label as string} className="block min-w-0 space-y-1">
             <span className="text-[9px] text-foreground/50">{label as string}</span>
-            <input type="number" step="0.1" value={value as string} disabled={updating || deleting}
+            <input aria-label={`${label as string} (Scene units)`} type="number" step="0.1" value={value as string} disabled={updating || deleting}
               onChange={(event) => (setter as (value: string) => void)(event.target.value)}
               className="h-7 w-full rounded border border-foreground/10 bg-foreground/5 px-1.5 text-[11px] text-foreground outline-none focus:border-foreground/30 disabled:opacity-50" />
           </label>

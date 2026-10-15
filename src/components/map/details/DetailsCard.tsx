@@ -163,8 +163,9 @@ function FarmBotMqttStatusSummary({
 }
 
 
-export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projectId, projectMarkers, onSelectProjectMarker, leftOffsetRem = 0.75, onClose, sceneAvailable, controlledCharacterId, liveControlledCharacterPosition, liveCharacterRotation, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, movingModelInstanceId, onMoveModelToggle, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdateFarmBotInstance, updatingFarmBotMarkerId, onDeleteFarmBotInstance, deletingFarmBotMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId, movingPlantingMarkerId, onMovePlantingToggle, movingModuleMarkerId, onMoveModuleToggle, onUpdatePhysicsSensors, updatingPhysicsSensorMarkerId, placingPhysicsSensor, physicsSensorPlacementResult, onBeginPhysicsSensorPlacement, onCancelPhysicsSensorPlacement, onZoomToPhysicsSensor, onUpdateCharacterPosition, updatingCharacterMarkerId, onDeleteCharacterInstance, deletingCharacterMarkerId }: {
+export function DetailsCard({ metersPerSceneUnit, selectedSensorId, onSelectSensor, selected, projectId, projectMarkers, onSelectProjectMarker, leftOffsetRem = 0.75, onClose, sceneAvailable, controlledCharacterId, liveControlledCharacterPosition, liveCharacterRotation, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, movingModelInstanceId, onMoveModelToggle, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdateFarmBotInstance, updatingFarmBotMarkerId, onDeleteFarmBotInstance, deletingFarmBotMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId, movingPlantingMarkerId, onMovePlantingToggle, movingModuleMarkerId, onMoveModuleToggle, onUpdatePhysicsSensors, updatingPhysicsSensorMarkerId, placingPhysicsSensor, physicsSensorPlacementResult, onBeginPhysicsSensorPlacement, onCancelPhysicsSensorPlacement, onZoomToPhysicsSensor, onUpdateCharacterPosition, updatingCharacterMarkerId, onDeleteCharacterInstance, deletingCharacterMarkerId }: {
   selected: any;
+  metersPerSceneUnit?: number;
   projectId: string | null;
   projectMarkers?: readonly RuntimeMarker[];
   selectedSensorId?: string | null;
@@ -258,7 +259,8 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
   onZoomToPhysicsSensor?: (marker: RuntimeMarker, sensor: PhysicsSensorCuboid) => void;
   onUpdateCharacterPosition?: (markerId: number, position: {
     rotation?: number;
-    characterPhysics?: import("@/libraries/services/threed/characters/character-physics").CharacterPhysics;
+    scaleMultiplier?: number;
+    characterPhysics?: import("@/libraries/services/threed/characters/character-physics").CharacterPhysicsSettings;
     positionX: number;
     positionY: number;
     positionZ: number;
@@ -316,7 +318,7 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
     const py = live?.y != null ? live.y : (dbY ?? 0);
     const pz = live?.z != null ? live.z : dbZ;
     if (px != null && pz != null) {
-      metaRows.push({ label: 'Position', value: `X:${Number(px).toFixed(1)} Y:${Number(py).toFixed(1)} Z:${Number(pz).toFixed(1)}` });
+      metaRows.push({ label: 'Position', value: `X:${Number(px).toFixed(1)} Y:${Number(py).toFixed(1)} Z:${Number(pz).toFixed(1)} (Scene units)` });
     }
     const geographic = selected.metadata?.geographicPosition;
     const latitude = geographic?.latitude ?? d.latitude;
@@ -1099,7 +1101,9 @@ export function DetailsCard({ selectedSensorId, onSelectSensor, selected, projec
           metadata={<>{metaRows.filter(row => row.label !== 'Position').map((row, i) => <KvRow key={i} label={row.label} value={row.value} />)}</>}
           movable={d.isMovable === true}
           initialRotation={liveCharacterRotation ?? Number(d.rotation ?? 0)}
+          initialScaleMultiplier={Number(d.scaleMultiplier ?? 1)}
           initialPhysics={selected.metadata?.characterPhysics}
+          metersPerSceneUnit={metersPerSceneUnit}
           initialPosition={{
             x: Number(selected.position?.x ?? d.positionX ?? 0),
             y: Number(selected.position?.y ?? d.positionY ?? 0),

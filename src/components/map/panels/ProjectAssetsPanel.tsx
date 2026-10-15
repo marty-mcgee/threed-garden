@@ -1,6 +1,7 @@
 'use client';
 
 import { ArchitectureAssetsSection } from './ArchitectureAssetsSection';
+import { formatProjectSceneLength } from '@/libraries/services/project/measurement-units';
 import { architectureAssets } from '@/libraries/services/threed/design/asset-inventory';
 import type { DesignDocument } from '@/libraries/services/threed/design/document';
 import type { SceneResourceIssue } from '@/components/threed/shared/SceneResourceStatus';
@@ -19,6 +20,7 @@ import { useSensorGroups } from '@/components/threed/physics/SensorGroupsWorkspa
 import { getThreeDIcon, getThreeDLabel } from '@/libraries/utils/map-helpers';
 
 export function ProjectAssetsPanel({
+  measurementUnits = 'imperial', metersPerSceneUnit = 0.3048,
   architecture, selectedArchitectureId, onSelectArchitecture, onLocateArchitecture, architectureLocateAvailable = true,
   dockHost,
   selectedProjectId,
@@ -43,6 +45,8 @@ export function ProjectAssetsPanel({
   groundMapSelected = false,
   onOpenGroundMap,
 }: {
+  measurementUnits?: 'imperial' | 'metric';
+  metersPerSceneUnit?: number;
   architecture?: DesignDocument;
   selectedArchitectureId?: string | null;
   onSelectArchitecture?: (id: string) => void;
@@ -97,7 +101,7 @@ export function ProjectAssetsPanel({
     };
   }, [isVisible, onDismiss, dockHost]);
 
-  const visibleArchitecture = useMemo(() => architecture ? architectureAssets(architecture, projectAssetSearch) : [], [architecture, projectAssetSearch]);
+  const visibleArchitecture = useMemo(() => architecture ? architectureAssets(architecture, projectAssetSearch, measurementUnits) : [], [architecture, projectAssetSearch, measurementUnits]);
   const panel = isVisible && (
         <div
           id="project-assets-panel"
@@ -194,7 +198,7 @@ export function ProjectAssetsPanel({
                           {isSelected && <span className="shrink-0 text-[9px] font-semibold uppercase text-cyan-500">Selected</span>}
                         </span>
                         <span className="block break-words text-[10px] leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">
-                          X{currentPosition.x.toFixed(1)} Y{currentPosition.y.toFixed(1)} Z{currentPosition.z.toFixed(1)} · {Math.hypot(currentPosition.x, currentPosition.z).toFixed(1)} ft from origin
+                          X {formatProjectSceneLength(currentPosition.x, metersPerSceneUnit, measurementUnits)} Y {formatProjectSceneLength(currentPosition.y, metersPerSceneUnit, measurementUnits)} Z {formatProjectSceneLength(currentPosition.z, metersPerSceneUnit, measurementUnits)} · {formatProjectSceneLength(Math.hypot(currentPosition.x, currentPosition.z), metersPerSceneUnit, measurementUnits)} from origin
                         </span>
                       </span>
                       <Crosshair className={`h-3.5 w-3.5 shrink-0 ${isSelected ? 'text-cyan-500' : 'text-muted-foreground'}`} />

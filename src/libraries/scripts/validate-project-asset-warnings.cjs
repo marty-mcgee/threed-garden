@@ -3,7 +3,17 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const ts = require('typescript');
 const jsx = (type, props) => ({ type, props });
+function loadUnits(file, dependencies = {}) {
+  const exports = {};
+  vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), {
+    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
+  }).outputText, { exports, require(name) { assert(name in dependencies, name); return dependencies[name]; } });
+  return exports;
+}
 const mocks = {
+  '@/libraries/services/project/measurement-units': loadUnits('src/libraries/services/project/measurement-units.ts', {
+    '../threed/scene-units': loadUnits('src/libraries/services/threed/scene-units.ts'),
+  }),
   './ArchitectureAssetsSection': { ArchitectureAssetsSection: 'Architecture' },
   '@/libraries/services/threed/design/asset-inventory': { architectureAssets() { throw new Error('Model warnings fixture has no architecture document'); } },
   react: { useMemo: fn => fn(), useEffect() {}, useRef: () => ({ current: null }) },

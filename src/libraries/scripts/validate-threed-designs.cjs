@@ -8,7 +8,9 @@ function load(file, deps = {}) {
   { exports, Buffer, TextEncoder, URL, Date, AbortController, console, require(name) { assert(name in deps, name); return deps[name]; } }); return exports;
 }
 const root = 'src/libraries/services/threed/design/';
-const document = load(root+'document.ts'), history = load(root+'history.ts', {'./document':document});
+const sceneUnits = load('src/libraries/services/threed/scene-units.ts');
+const measurementUnits = load('src/libraries/services/project/measurement-units.ts', {'../threed/scene-units':sceneUnits});
+const document = load(root+'document.ts', {'../scene-units':sceneUnits}), history = load(root+'history.ts', {'./document':document});
 const workspace = load(root+'workspace-state.ts');
 const architecture = load(root+'project-architecture.ts', {'./document':document,'./history':history,'./workspace-state':workspace});
 const source = document.validateDesign({...document.newDesign(), nodes:[{id:'a',x:0,z:0},{id:'b',x:3.048,z:0},{id:'c',x:3.048,z:3.048},{id:'d',x:0,z:3.048}],
@@ -196,6 +198,9 @@ const db={select(){const q={};const chain={from(table){q.table=table;return chai
  const result=await fn(tx);stored=pending;return result;}};
 class MarkerError extends Error{};class ViewError extends Error{};class PlantingError extends Error{};
 const scope={...tables,...orm,db,Buffer,Date,console:{error(){}},NextResponse:{json:(body,options)=>({body,status:options?.status??200})},
+ ...measurementUnits,
+ // Projection storage has its own focused validator; this fixture isolates the Project roundtrip.
+ saveProjectDesignProjection:async()=>{},ProjectDesignProjectionError:class extends Error{},CharacterPhysicsInputError:class extends Error{},
  auth:async()=>signedIn?{user:{id:'owner'}}:null,MAX_REQUEST_BYTES:1048576,
  parsePositiveId:value=>Number.isSafeInteger(Number(value))&&Number(value)>0?Number(value):null,
  parseProjectThreeDMarkerSnapshot:value=>value,parseThreeDProjectViewState:value=>value,
@@ -219,6 +224,7 @@ const mapDb={select(selection){let table;const chain={from(value){table=value;re
 const get=vm.runInNewContext(compile(functionSource(mapRoute,'GET')+'\nGET;'),{...scope,...tables,exports:{},db:mapDb,URL,
  or:(...args)=>({args}),desc:value=>value,sql:orm.sql,getTableColumns:table=>table,modelSelection:()=>({}),retryDisconnectedRead:fn=>fn(),
  readProjectArchitecture:architecture.readProjectArchitecture,readThreeDProjectViewStateFromConfig:config=>config?.threeDViewState,
+ readProjectMeasurementUnits:measurementUnits.readProjectMeasurementUnits,
  canRenderAssignedModel:()=>true,currentModelAssets:model=>({filePath:model.filePath}),sceneTextureResources:async()=>[],
  MARKER_ASSET_TYPE_BY_MODULE:{models:'threed_models'},databaseConnectionDiagnostic:()=>({}),
 });
@@ -226,6 +232,7 @@ let clientLoadSource;
 function findLoad(node){if(ts.isVariableDeclaration(node)&&node.name.getText(sceneAst)==='loadData')clientLoadSource=node.initializer.arguments[0].getText(sceneAst);ts.forEachChild(node,findLoad);}findLoad(sceneAst);
 async function hydrateDashboard(loaded, drafts, projectId='15'){
  const context={selectedProjectId:projectId,architectureDrafts:drafts,hydrateArchitectureDraft:architecture.hydrateArchitectureDraft,
+ defaultDesignWorkspace:workspace.defaultDesignWorkspace,
  loadProjectSession:async(id,receive)=>receive({status:'loaded',session:loaded}),URL,window:{location:{href:'http://local/dashboard/scene?view=design'}},
  lastProjectThreeDViewStateRef:{current:null},lastProjectMapViewStateRef:{current:null},showToastRef:{current:()=>{}},Date,
  emptyProjectScenarioPanelState:()=>({})};
@@ -328,6 +335,21 @@ async function run(){
  const fullResponse=await get({url:'http://local/api/map/threed?projectId=15'}),fullSession=session.buildThreeDProjectSession(fullResponse.body,'15');assert(fullSession.success);
  const fullDraft=await hydrateDashboard(fullSession.session,{current:new Map([['15',architecture.projectArchitectureDraft()]])});
  assert.equal(JSON.stringify(fullDraft.history.present),JSON.stringify(complete),'Stable level/entity IDs, dimensions, doors, roofs and roof openings survive PUT/GET/hydration.');assert(!architecture.architectureIsDirty(fullDraft));
+ for (const units of ['metric','imperial']) {
+  const unitInput={...input,viewState:{...view,design:{...workspace.defaultDesignWorkspace(),measurementUnits:units}}};
+  assert.equal((await save(request(unitInput))).status,200);
+  assert.equal(stored.config.measurementUnits,units);
+  const response=await get({url:'http://local/api/map/threed?projectId=15'});
+  const reopenedUnits=session.buildThreeDProjectSession(response.body,'15');assert(reopenedUnits.success);
+  const restoredUnits=await hydrateDashboard(reopenedUnits.session,{current:new Map()});
+  assert.equal(restoredUnits.workspace.measurementUnits,units);
+  assert(!architecture.architectureIsDirty(restoredUnits),'Restored unit preferences start clean.');
+  assert.equal(JSON.stringify(restoredUnits.history.present),JSON.stringify(source),'Display preference never rescales geometry.');
+  assert.deepEqual(stored.config.unrelated,{keep:true});
+ }
+ const beforeInvalidUnits=JSON.stringify(stored);
+ assert.equal((await save(request({...input,viewState:{...view,design:{...workspace.defaultDesignWorkspace(),measurementUnits:'yards'}}}))).status,400);
+ assert.equal(JSON.stringify(stored),beforeInvalidUnits,'Invalid units leave the complete Project unchanged.');
  const THREE=require('three'),merge=await import('three/examples/jsm/utils/BufferGeometryUtils.js');
  const geometry=load(root+'geometry.ts',{'three':THREE,'three/examples/jsm/utils/BufferGeometryUtils.js':merge,'./document':document});
  const cache=new geometry.DesignGeometryCache();cache.update(reopened.session.architecture.document,'door');

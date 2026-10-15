@@ -2,6 +2,8 @@
 
 'use client';
 
+import { ProjectMeasurementUnits } from '@/components/project/ProjectMeasurementUnits';
+import { readProjectMeasurementUnits, type MeasurementUnits } from '@/libraries/services/project/measurement-units';
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
@@ -264,6 +266,7 @@ export default function ProjectDetailPage() {
     description: '',
   });
   const [formData, setFormData] = useState({
+    measurementUnits: 'imperial' as MeasurementUnits,
     name: '',
     description: '',
     isPublic: false,
@@ -345,6 +348,7 @@ export default function ProjectDetailPage() {
       setProject(projectData.data);
       setCalibrationDiagnostics(getStoredCalibrationDiagnostics(projectData.data));
       setFormData({
+        measurementUnits: readProjectMeasurementUnits(projectData.data.config),
         name: projectData.data.name || '',
         description: projectData.data.description || '',
         isPublic: projectData.data.isPublic || false,
@@ -786,6 +790,7 @@ export default function ProjectDetailPage() {
                   />
                 </div>
               </div>
+              <ProjectMeasurementUnits value={formData.measurementUnits} onChange={measurementUnits => setFormData({ ...formData, measurementUnits })} disabled={isSubmitting} />
               <div className="flex flex-wrap items-center gap-4">
                 <div className="flex items-center gap-2">
                   <Switch

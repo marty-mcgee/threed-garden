@@ -1,6 +1,8 @@
 // app/admin/projects/new/page.tsx
 'use client';
 
+import { ProjectMeasurementUnits } from '@/components/project/ProjectMeasurementUnits';
+import { type MeasurementUnits } from '@/libraries/services/project/measurement-units';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Save, X, Loader2 } from 'lucide-react';
@@ -18,6 +20,7 @@ export default function NewProjectPage() {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
+    measurementUnits: 'imperial' as MeasurementUnits,
     description: '',
     isPublic: false,
   });
@@ -93,6 +96,7 @@ export default function NewProjectPage() {
               />
             </div>
 
+            <ProjectMeasurementUnits value={formData.measurementUnits} onChange={measurementUnits => setFormData({ ...formData, measurementUnits })} disabled={loading} />
             <div className="flex items-center gap-2">
               <Switch
                 id="isPublic"

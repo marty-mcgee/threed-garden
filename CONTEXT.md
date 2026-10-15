@@ -1,3 +1,75 @@
+Final release checks: all 72 offline CI tasks passed; TypeScript, seven focused projection/units/physics/asset-sizing checks, version/dependency consistency, release links and whitespace checks passed. Guarded isolated production build compiled and generated 144/144 pages. Runtime source matched the built copy; subsequent changes were validation fixtures and documentation only. Installed Three CommonJS and isolated build-root warnings remain non-failing. No new browser/production verification or deployment is claimed.
+
+## v0.26.0 release candidate - October 15, 2026
+
+Developer requested release preparation of the accepted current checkpoint. Package/root lockfile remain **0.26.0** on main, based on 1e5c9f97 plus local changes. Production remains user-confirmed v0.25.4; this is local preparation, not deployment. [Release notes](docs/releases/v0.26.0.md) now cover Project measurement preferences, derived Designs records, architectural Rapier collisions, Character scale/physics compatibility, name editing and inspector labels alongside the v0.25.x navigation consolidation.
+
+User-reported acceptance is recorded separately from offline validation. TypeScript, focused mocked persistence tests, local collision/conversion tests and guarded isolated build (144 pages) passed. No agent browser/production verification, live writes, server operations, migration, commit, tag or deployment. Capsule/world-gravity normalization, legacy apertures/advanced architecture, Builder acceptance and broader touch coverage remain separate limitations. The final full CI run passed all 72 tasks.
+
+## October 15: Remaining inspector unit-label audit
+
+Implemented a presentation-only pass over existing inspectors. Character, Model, Bed/FarmBot and Planting placement groups explicitly say Position (Scene units), and coordinate inputs include units in their accessible names. DetailsCard metadata coordinates also identify Scene units while preserving the internal Position row key. Model/Planting/Bed scale labels identify dimensionless multipliers. Sensor local offsets and dimensions identify Scene units and rotation degrees. Ground Map image dimensions/centre/elevation identify Scene units, and rotation identifies degrees.
+
+Retained contracts: Bed/FarmBot dimensions remain explicitly feet; FarmBot telemetry bounds remain millimetres and alignment calibration millimetres per Scene unit. Character physics retains legacy Scene units or its explicitly converted metre/second envelope, mass kilograms and degree rotation. Sensor Group inspector has no dimensional editor. Ground Map inspector delegates its fields to ThreeDScene. Catalog Character movementSpeed is shared by legacy animation/movement consumers; no unproven metres/second label was assigned to it.
+
+This pass changes labels only: no input conversion, numeric defaults/ranges, event callbacks, Save payloads, physics or calibration changes. The Project display preference continues to control Design and Assets; legacy inspector inputs retain their explicitly labelled contracts. Converting those inputs to the preference would require a separate draft/conversion pass with precision and pending-edit coverage.
+
+Checks passed: TypeScript, validate-character-physics-units.cjs and validate-project-measurement-units.cjs (mocked boundaries). Agent browser appearance was not checked. Manual check: inspect placement fields, Sensor dimensions and Ground Map image controls; confirm labels fit the narrow panels. No local server, live database, version, Git or deployment operations.
+
+## October 15: Project measurement acceptance and regression follow-up
+
+The Developer reports the Project-wide Metric/Imperial checks passed. This is user-reported browser acceptance of the preceding requested checks, not independent agent production verification.
+
+The formerly blocked Design validation fixtures now load the real shared scene-unit constants and measurement preference parser. The Project roundtrip fixture supplies an explicit mocked Design projection boundary (projection storage remains separately tested), plus current hydration dependencies. It exercises Metric and Imperial through the actual snapshot handler, mocked transaction, load handler, session and Dashboard hydration; invalid units leave the Project unchanged, unrelated configuration and Models survive, and geometry is unchanged.
+
+The restored suite exposed a default-workspace normalization mismatch: defaultDesignWorkspace omitted measurementUnits while Save normalization added Imperial, potentially leaving a default draft dirty after Save. The default now explicitly includes Imperial in canonical field order. The existing client Save/acknowledgement assertion covers this edge case.
+
+Checks run and passed: node src/libraries/scripts/validate-threed-designs.cjs, node src/libraries/scripts/validate-project-measurement-units.cjs, npm.cmd run typecheck. The Design suite emits an installed Three CommonJS deprecation warning; assertions pass. This supersedes the earlier fixture-blocked status. No new agent browser test, live database operation, server operation, version change or release occurred. Capsule/world-physics normalization and remaining legacy inspector unit conversions remain separate work.
+
+## October 15: Global Project measurement preference
+
+Developer verified the preceding Character compatibility tests, then prioritized a simple global Project setting. `project.config.measurementUnits` now owns Imperial/Metric display selection through Project Header Setup, Project Setup and Admin New/Edit Project. Older Design preference is a read fallback; existing Design workspace transports the active draft and mirrors it on Project Save. Canonical config wins on fresh load. JSONB merge preserves unrelated config, validation rejects invalid units, and Project snapshot readback confirms the preference. Design and Project Assets dimensions/coordinate summaries use it without changing geometry/calibration/physics. No Character conversion is required.
+
+TypeScript and focused mocked Admin API/session/dirty-state/inventory tests pass. Broader Design validation stopped before assertions in an older pointer fixture lacking the earlier `../scene-units` dependency; not a successful suite run. Browser appearance and authenticated cross-surface Save/reopen remain manual. Other legacy inspector fields keep their explicit units. See docs/plans/project-units.md for paths, boundaries and manual steps. Local servers, database and version remain untouched; no Git writes or deployment.
+
+## October 15: Character physics unit compatibility
+
+Stage 2A adds explicit DetailsCard conversion from legacy Scene values to versioned physical-unit metadata through existing Save Character and Project snapshot paths. Conversion preserves runtime values, mass, visual scale, capsule and gravity. Validation rejects unsupported versions, invalid values and mismatched owned-Project calibration; unrelated metadata is preserved. Existing legacy records remain unchanged. The editor labels velocity/clearance units, retains failed-save drafts, and shows read-only loaded-model capsule/gravity measurements. Fixed capsule, fallback differences, shared gravity and controller gravity-ref behavior remain open; this is not complete cross-Project physics normalization. See docs/plans/project-units.md for the exact audit, changed boundaries and manual checkpoint.
+
+TypeScript, new offline unit/snapshot/editor checks and existing Character introduction/Rapier checks passed. No live DB, browser, server, version, dependency, Git write or deployment operation. Next major manual check: convert and save/reopen a Character in Projects 16 and 17, confirming unchanged size/motion/contact and retained unit labels. Then coordinate capsule/spawn/probe and world-gravity normalization without changing existing settings implicitly.
+
+## October 15: Design display-unit preference
+
+Follow-up acceptance: Developer confirms the selector works well throughout their Project tests. Exact Save/reopen scenarios were not specified; independent browser verification is not claimed. Continued the separate asset-sizing stage: the read-only FBX measurement script now requires explicit combined catalog scale and Project calibration, with an optional target height instead of hardcoded Kate assumptions. Pure sizing tests and TypeScript pass. No actual FBX measurement was rerun. Existing per-instance Character Physics controls were found and preserved; fixed capsule and movement-unit normalization remain pending. See docs/plans/project-units.md for command, boundaries and next audit.
+
+Implemented Imperial/Metric selection in Design settings using the existing Project workspace snapshot. Legacy preferences default to Imperial. Metric dimensions use centimetre inputs and metre ruler/length labels, with square-metre areas; Imperial retains inches/feet. Display changes preserve authoritative metre geometry, physical snapping distances, minimum dimensions and ruler coordinates. This supersedes the pending Design display-unit stage below; broader Assets summaries and asset/Character normalization remain separate. TypeScript, the offline display-unit validation (legacy defaults, JSON round-trip, invalid preferences and invariant ruler coordinates), and diff whitespace checks passed. Browser appearance and authenticated Save/reopen for this preference remain manual. No server, database, version or Git-write operations. See docs/plans/project-units.md.
+
+## October 15: mathematical Project measurement reference
+
+Developer rejected Character height as a calibration standard. Removed Kate from Project Setup measurement guidance; it now presents the one-metre conversion and exact Imperial definitions. Her desired 5-foot-8 height is optional asset sizing only. Shared metre/inch constants and an offline one-metre Design cube test verify plan coordinate round-trips, rendered dimensions and actual Rapier surface intersection at metre/foot/centimetre Scene scales. TypeScript and reference tests passed. No saved content, calibration or Character scale changed; no live DB/server operation. See docs/plans/project-units.md for superseding scope and pending display-unit/asset-unit stages.
+
+## October 15: Design architecture physics
+
+Developer confirmed Character Scale Save/reload persistence and requested solid architecture. DesignScenePhysics now mounts fixed Rapier triangle-mesh colliders inside the existing Scene Physics provider. Shapes derive from DesignGeometryCache, including wall apertures, opening frames/glass and roof cutouts, transformed by the same reciprocal metres-per-Scene-unit factor as rendering. Hidden layers/levels remain solid; collision visibility is not tied to presentation. No saved schema or architecture data change. Geometry changes rebuild collider inputs; selection is excluded.
+
+TypeScript and an offline Rapier test passed: a dynamic sphere stops at a generated wall and metre/foot vertex scaling matches. The initial sandbox tsx user-info error was bypassed by an approved offline rerun. Actual App Character/ball contacts, doorway traversal, roof/floor contacts and interactive geometry changes remain manual verification. No server/database operations.
+
+## October 15: Design name editing and scale investigation
+
+DesignNameInput now buffers incomplete text and commits a trimmed nonempty name on blur/Enter; Escape restores the current document name. This fixes per-keystroke validation removing trailing spaces and rejecting temporary empty text. TypeScript passed; browser editing checks remain manual.
+
+Read-only Project 17 inspection confirms meters_per_scene_unit=1 and recovered walls commonly 2.65 metres. DesignSceneObjects correctly uses reciprocal Project metres-per-unit. Character renderers apply catalog/Character scale directly, while Ecctrl uses fixed capsule dimensions; a physical-height calibration/consistent unit contract remains unresolved. No architecture rescaling or Character physics change was made: enlarging architecture alone would break recovered Model alignment. No live writes or server operations. Next: verify name editing and measure Farmer Kate model bounds against her intended physical height before choosing a unit-safe Character correction.
+
+## Stable v0.26.0 preparation
+
+The Developer accepted the v0.25.5 navigation checkpoint and requested direct promotion to stable **0.26.0**, consolidating the v0.25.x improvements. Package/root lockfile metadata are 0.26.0; dependencies/schema are unchanged. Production remains Developer-confirmed v0.25.4 until a separate deployment confirmation. v0.25.5 is included in this checkpoint, not claimed as separately released.
+
+See [v0.26.0 release notes](docs/releases/v0.26.0.md) for consolidated features, source records, verification and remaining manual checks. This preparation runs TypeScript, version/dependency consistency and whitespace checks; it does not rerun full CI/build or independently verify browser/production behavior. Existing legacy/Builder/touch limitations remain explicit. No local server, database, Git write or deployment operation. Earlier status entries below are historical.
+
+## v0.25.5 navigation polish ? October 14, 2026
+
+Production is Developer-confirmed v0.25.4; earlier preparation-only status below is superseded. Local navigation refinements are described in [the v0.25.5 plan](docs/plans/v0.25.5.md). Shared menu styling, clearer groups, larger rows, static icon colors and closest-route selection are implemented. TypeScript and whitespace checks passed; browser appearance and keyboard/narrow-screen checks remain manual. Package/root lockfile stay 0.25.4 until release preparation. No server, database, Git write or deployment operation.
+
 ## v0.25.3 release preparation — October 14, 2026
 
 ## v0.25.4 ? Page titles and Project context
