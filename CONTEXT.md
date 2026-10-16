@@ -1,3 +1,25 @@
+## v0.26.2 — ThreeD Workspace: View Modes + Access Panels
+
+Release checks passed: isolated clean install, fresh TypeScript, four focused offline suites, source/config/version/link checks, and guarded production build (144/144 pages, explicit exit 0) on Next.js 16.4.2. Full CI and independent browser/Save-reopen checks were not rerun. See release notes for initial lockfile repair and non-failing isolated-build warning.
+
+Local release preparation, October 15, 2026, on main at c7d0326e plus accepted working changes. Package/root lockfile version is 0.26.2. This is not a deployment confirmation; prior v0.26.1 checkpoint is committed, while the latest explicit production confirmation in this conversation remains v0.26.0. Earlier status records below are historical.
+
+Model Library, FarmBot Library, Bed and Planting placement now share the upper-left Design Assets dock, bounded sizing and complete-form scrolling. The 2D map has an isolated stacking context and reserves the measured Project toolbar height, keeping the header accessible. Design/Combined continuity from v0.26.1 remains intact; explicit mode order stays 3d, design, 2d, combined. Project data, Save/load, physics and renderer quality are unchanged.
+
+Developer accepted the 2D header correction and requested release preparation. This is user feedback, not independent browser testing. Full four-mode placement, narrow-screen/divider behavior and authenticated Save/reopen remain manual checks. The existing rendering fail-safe does not establish GPU-crash prevention. The Developer's Next.js ^16.4.2 edit is retained with synchronized release dependencies; the active development installation/server is untouched.
+
+See [release record](docs/releases/v0.26.2.md) for exact checks and limitations and [implementation plan](docs/plans/v0.26.2.md). No commit, tag, push, publication or deployment is performed by this preparation.
+
+## October 15: 2D Project Header stacking fix
+
+Leaflet panes/controls could paint over the Project toolbar because the 2D map lacked a stacking boundary and occupied the header area. Added a local stacking context to the 2D map wrapper and a measured toolbar offset for 2D-only DesignWorkspace layout. Other mode offsets and existing Canvas owners remain unchanged. TypeScript and focused panel/mode/layout checks pass; actual browser appearance remains pending. See docs/plans/v0.26.2.md. No server or live data operations.
+
+## October 15: v0.26.2 access-panel docking
+
+Approved View Modes + Access Panels work begins with the remaining four full-height panels: Models, FarmBots, Beds and Plantings now use the existing Design Assets dock, shared sidebar sizing and complete-form internal scrolling. Docked Model Library stays within the host even under its narrow-screen CSS rule. Existing mode-preserving actions, toolbar order, Canvas owners, placement and persistence remain unchanged. TypeScript and mocked panel/mode checks passed; browser appearance, resizing, project switching and Save/reopen remain manual. See [v0.26.2 staged plan](docs/plans/v0.26.2.md).
+
+Package remains 0.26.1. Preserve the Developer's separate Next.js ^16.4.2 package edit; no install/lock rewrite performed. Servers untouched; no live writes or release actions.
+
 ## v0.26.1 ? ThreeD Workspace: Rendering fail-safe and Design mode continuity
 
 Prepared locally October 15, 2026 on main, based on 53372d24 plus accepted working changes. Package/root lockfile are **0.26.1**; dependencies and database schema are unchanged. Production remains **Developer-confirmed v0.26.0**. This checkpoint is not yet released. Earlier preparation/status entries below are historical and superseded by this summary.

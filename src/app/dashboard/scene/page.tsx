@@ -3002,6 +3002,7 @@ function UnifiedMapPageInner() {
       </div>
       <div>
       <ThreeDModelLibraryPanel
+        dockHost={viewMode === 'design' ? designAssetsHost : null}
         isOpen={canEditProject && Boolean(selectedProjectId) && isModelLibraryOpen}
         viewMode={viewMode}
         projectModules={projectThreeDModules}
@@ -3077,6 +3078,7 @@ function UnifiedMapPageInner() {
 
       <div>
       <ThreeDFarmBotLibraryPanel
+        dockHost={viewMode === 'design' ? designAssetsHost : null}
         isOpen={canEditProject && Boolean(selectedProjectId) && isFarmBotLibraryOpen}
         projectModules={projectThreeDModules}
         selectedModuleId={placementThreedId}
@@ -3103,6 +3105,7 @@ function UnifiedMapPageInner() {
       </div>
 
       <ThreeDBedPlacementPanel
+        dockHost={viewMode === 'design' ? designAssetsHost : null}
         isOpen={canEditProject && Boolean(selectedProjectId) && isBedPlacementOpen}
         projectModules={projectThreeDModules}
         selectedModuleId={placementThreedId}
@@ -3125,6 +3128,7 @@ function UnifiedMapPageInner() {
       />
 
       <ThreeDPlantingPlacementPanel
+        dockHost={viewMode === 'design' ? designAssetsHost : null}
         isOpen={canEditProject && Boolean(selectedProjectId) && isPlantingPlacementOpen}
         projectModules={projectThreeDModules}
         selectedModuleId={placementThreedId}
@@ -3149,7 +3153,7 @@ function UnifiedMapPageInner() {
         }}
       />
       {/* ✅ Map Container */}
-      <DesignWorkspace split={designWorkspace.split} onSplitChange={split => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), split } }))} assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor key={selectedProjectId} frameRequest={architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} active={viewMode === 'design'} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
+      <DesignWorkspace reserveToolbar={viewMode === '2d'} split={designWorkspace.split} onSplitChange={split => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), split } }))} assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor key={selectedProjectId} frameRequest={architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} active={viewMode === 'design'} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
       <Card data-project-canvas className="h-full gap-0 rounded-none border-0 py-0 shadow-none">
         <CardContent className="h-full p-0 overflow-hidden">
           <div className="h-full">
@@ -3225,7 +3229,7 @@ function UnifiedMapPageInner() {
                 onRejectedCharacterMarkerRepair={handleRejectedCharacterMarkerRepair}
               /></div>
               <ScenePanelDivider hidden={sceneViewMode !== 'combined'} containerRef={containerRef} value={panelHeight} onChange={setPanelHeight} axis="vertical" label="Resize 3D and 2D panels" />
-              <div hidden={sceneViewMode !== '2d' && sceneViewMode !== 'combined'} className="min-h-0 flex-1">
+              <div hidden={sceneViewMode !== '2d' && sceneViewMode !== 'combined'} className="relative isolate min-h-0 flex-1">
               <UnifiedMapView architectureFrameRequest={viewMode === '2d' && architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} architecture={architecturePreview ?? architectureDraft.history.present}
                 metersPerSceneUnit={metersPerSceneUnit}
                 selectedArchitectureId={architectureDraft.selected}

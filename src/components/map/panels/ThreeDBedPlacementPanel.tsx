@@ -1,5 +1,7 @@
 'use client';
 
+import { createPortal } from 'react-dom';
+
 import { Layers, Loader2, X } from 'lucide-react';
 
 import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
@@ -24,6 +26,7 @@ interface ThreeDModuleOption {
 
 interface ThreeDBedPlacementPanelProps {
   isOpen: boolean;
+  dockHost?: HTMLDivElement | null;
   projectModules: ThreeDModuleOption[];
   selectedModuleId: number | null;
   draft: ThreeDBedPlacementDraft;
@@ -46,6 +49,7 @@ const DIMENSION_FIELDS = [
 
 export function ThreeDBedPlacementPanel({
   isOpen,
+  dockHost,
   projectModules,
   selectedModuleId,
   draft,
@@ -61,11 +65,11 @@ export function ThreeDBedPlacementPanel({
 
   const inputsDisabled = placementActive || placing;
 
-  return (
-    <div className="threed-workspace-panel threed-scene-panel-surface absolute bottom-0 left-0 top-[38px] z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-y-auto overscroll-contain rounded-md border p-3 shadow-xl backdrop-blur-md">
+  const panel = (
+    <div className="threed-workspace-panel threed-scene-panel-surface absolute bottom-0 left-0 top-[38px] z-40 flex threed-scene-sidebar-size flex-col overflow-y-auto overscroll-contain [&>*]:shrink-0 rounded-md border p-3 shadow-xl backdrop-blur-md" role="region" aria-label="ThreeD Bed Placement" style={dockHost ? { position: 'relative', top: 0, left: 0, width: '100%', maxWidth: '100%', height: '100%' } : undefined}>
       <div className="mb-2 flex shrink-0 items-start justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2"><Layers aria-hidden="true" className="h-4 w-4 shrink-0 text-orange-600 dark:text-orange-300" /><h2 className="text-sm font-semibold">Add ThreeD Bed</h2><ModelFieldHelp label="Add ThreeD Bed">Set the Bed parameters, then choose its location in the ThreeD Scene.</ModelFieldHelp></div>
-        <Button type="button" variant="ghost" size="icon" className="h-7 w-7" disabled={placing} onClick={onClose}>
+        <Button type="button" variant="ghost" size="icon" className="h-7 w-7" aria-label="Close Bed Placement" disabled={placing} onClick={onClose}>
           <X className="h-3.5 w-3.5" />
         </Button>
       </div>
@@ -148,4 +152,5 @@ export function ThreeDBedPlacementPanel({
       </div>
     </div>
   );
+  return dockHost ? createPortal(panel, dockHost) : panel;
 }

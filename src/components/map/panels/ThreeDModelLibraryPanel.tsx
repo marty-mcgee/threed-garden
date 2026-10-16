@@ -1,5 +1,7 @@
 'use client';
 
+import { createPortal } from 'react-dom';
+
 import { AlertTriangle, Box, CheckCircle2, ExternalLink, Loader2, Search, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -44,6 +46,7 @@ interface ThreeDModuleOption {
 
 interface ThreeDModelLibraryPanelProps {
   isOpen: boolean;
+  dockHost?: HTMLDivElement | null;
   viewMode: MapViewMode;
   projectModules: ThreeDModuleOption[];
   selectedModuleId: number | null;
@@ -75,6 +78,7 @@ interface ThreeDModelLibraryPanelProps {
 
 export function ThreeDModelLibraryPanel({
   isOpen,
+  dockHost,
   viewMode,
   projectModules,
   selectedModuleId,
@@ -116,8 +120,8 @@ export function ThreeDModelLibraryPanel({
       ? '2D Map'
       : '3D Scene';
 
-  return (
-    <div className="threed-workspace-panel threed-scene-panel-surface threed-scene-sidebar-size threed-model-library-panel absolute bottom-0 left-0 top-[38px] z-40 flex flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md">
+  const panel = (
+    <div className="threed-workspace-panel threed-scene-panel-surface threed-scene-sidebar-size threed-model-library-panel absolute bottom-0 left-0 top-[38px] z-40 flex flex-col overflow-y-auto overscroll-contain [&>*]:shrink-0 rounded-md border p-3 shadow-xl backdrop-blur-md" role="region" aria-label="ThreeD Model Library" style={dockHost ? { position: 'relative', top: 0, left: 0, width: '100%', maxWidth: '100%', height: '100%' } : undefined}>
       <div className="mb-2 flex items-center justify-between gap-2">
         <div>
           <div className="flex items-center gap-2"><h2 className="flex items-center gap-2 text-sm font-semibold"><Box aria-hidden="true" className="h-4 w-4 text-violet-700 dark:text-violet-300" />ThreeD Model Library</h2><ModelFieldHelp label="Model Library">Browse reusable Models. Inspect opens a preview; Place adds another instance to this Project. Use Project Assets to select an existing instance. Collections organize the Library independently of Project assignments.</ModelFieldHelp></div>
@@ -313,7 +317,7 @@ export function ThreeDModelLibraryPanel({
         </div>
       )}
 
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1">
+      <div className="shrink-0 pr-1">
         {loading ? (
           <div className="flex items-center justify-center gap-2 py-8 text-xs text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> Loading models…
@@ -383,4 +387,5 @@ export function ThreeDModelLibraryPanel({
       </div>
     </div>
   );
+  return dockHost ? createPortal(panel, dockHost) : panel;
 }

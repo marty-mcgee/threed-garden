@@ -1,5 +1,7 @@
 'use client';
 
+import { createPortal } from 'react-dom';
+
 import { Bot, Loader2, X } from 'lucide-react';
 
 import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
@@ -21,6 +23,7 @@ interface ThreeDModuleOption {
 
 interface ThreeDFarmBotLibraryPanelProps {
   isOpen: boolean;
+  dockHost?: HTMLDivElement | null;
   projectModules: ThreeDModuleOption[];
   selectedModuleId: number | null;
   onSelectedModuleChange: (moduleId: number) => void;
@@ -46,6 +49,7 @@ const DIMENSION_FIELDS = [
 
 export function ThreeDFarmBotLibraryPanel({
   isOpen,
+  dockHost,
   projectModules,
   selectedModuleId,
   onSelectedModuleChange,
@@ -62,11 +66,11 @@ export function ThreeDFarmBotLibraryPanel({
 }: ThreeDFarmBotLibraryPanelProps) {
   if (!isOpen) return null;
 
-  return (
-    <div className="threed-workspace-panel threed-scene-panel-surface absolute bottom-0 left-0 top-[38px] z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md">
+  const panel = (
+    <div className="threed-workspace-panel threed-scene-panel-surface absolute bottom-0 left-0 top-[38px] z-40 flex threed-scene-sidebar-size flex-col overflow-y-auto overscroll-contain [&>*]:shrink-0 rounded-md border p-3 shadow-xl backdrop-blur-md" role="region" aria-label="ThreeD Farm Bot Library" style={dockHost ? { position: 'relative', top: 0, left: 0, width: '100%', maxWidth: '100%', height: '100%' } : undefined}>
       <div className="mb-2 flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2"><Bot aria-hidden="true" className="h-4 w-4 shrink-0 text-amber-600 dark:text-amber-300" /><h2 className="text-sm font-semibold">ThreeD FarmBot Library</h2><ModelFieldHelp label="ThreeD FarmBot Library">Select an existing FarmBot, set its Project dimensions, then click the Scene ground.</ModelFieldHelp></div>
-        <Button type="button" variant="ghost" size="icon" className="h-7 w-7" disabled={placing} onClick={onClose}>
+        <Button type="button" variant="ghost" size="icon" className="h-7 w-7" aria-label="Close Farm Bot Library" disabled={placing} onClick={onClose}>
           <X className="h-3.5 w-3.5" />
         </Button>
       </div>
@@ -121,7 +125,7 @@ export function ThreeDFarmBotLibraryPanel({
         </div>
       )}
 
-      <div className="min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain pr-1">
+      <div className="shrink-0 space-y-1 pr-1">
         {loading ? (
           <div className="flex items-center justify-center gap-2 py-8 text-xs text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" /> Loading FarmBots…
@@ -148,4 +152,5 @@ export function ThreeDFarmBotLibraryPanel({
       </div>
     </div>
   );
+  return dockHost ? createPortal(panel, dockHost) : panel;
 }
