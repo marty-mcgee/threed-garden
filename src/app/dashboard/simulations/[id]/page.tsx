@@ -4,5 +4,5 @@ export default async function SimulationPage({ params, searchParams }: { params:
   const { id } = await params;
   if (!/^[1-9]\d*$/.test(id) || !Number.isSafeInteger(Number(id)) || Number(id) > 2_147_483_647) notFound();
   const { created } = await searchParams;
-  redirect(`/admin/threed/simulations/${id}/view${created === '1' ? '?created=1' : ''}`);
+  redirect(`/admin/threed/simulations/${id}${created === '1' ? '?created=1' : ''}`);
 }

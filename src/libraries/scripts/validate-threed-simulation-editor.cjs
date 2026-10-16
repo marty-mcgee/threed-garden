@@ -67,9 +67,9 @@ const button = (f, name) => f.find(node => node.type === 'Button' && node.props.
     catch (error) { assert.equal(error.message, 'redirect'); return new URL(error.destination, 'https://fixture.invalid'); }
   };
   let target = await redirected(legacyView, { params: Promise.resolve({ id: '4' }), searchParams: Promise.resolve({ created: '1', projectId: '999', next: 'https://other.invalid' }) });
-  assert.equal(target.pathname + target.search, '/admin/threed/simulations/4/view?created=1', 'Legacy exact links land on Admin View and retain only creation feedback');
+  assert.equal(target.pathname + target.search, '/admin/threed/simulations/4?created=1', 'Legacy exact links land on Admin Edit and retain only creation feedback');
   target = await redirected(legacyView, { params: Promise.resolve({ id: '4' }), searchParams: Promise.resolve({ created: ['1', '1'] }) });
-  assert.equal(target.pathname + target.search, '/admin/threed/simulations/4/view', 'Repeated creation flags cannot inject redirect state');
+  assert.equal(target.pathname + target.search, '/admin/threed/simulations/4', 'Repeated creation flags cannot inject redirect state');
   for (const id of ['0', '-1', '4junk', '1.2', '2147483648', '9007199254740992']) {
     await assert.rejects(legacyView({ params: Promise.resolve({ id }), searchParams: Promise.resolve({}) }), /not-found/);
     await assert.rejects(adminView({ params: Promise.resolve({ id }) }), /not-found/);
@@ -98,8 +98,10 @@ const button = (f, name) => f.find(node => node.type === 'Button' && node.props.
     }
     await assert.rejects(adminNew({ searchParams: Promise.resolve(forwarded) }), /not-found/, 'Admin validates forwarded draft values before rendering');
   }
-  const canonicalView = await adminView({ params: Promise.resolve({ id: '4' }) });
-  assert.equal(canonicalView.type, 'SimulationEditor'); assert.equal(canonicalView.props.id, 4); assert.equal(canonicalView.props.readOnly, true);
+  const canonicalView = await redirected(adminView, { params: Promise.resolve({ id: '4' }), searchParams: Promise.resolve({ created: '1', next: '//other.invalid' }) });
+  assert.equal(canonicalView.pathname + canonicalView.search, '/admin/threed/simulations/4?created=1');
+  const repeated = await redirected(adminView, { params: Promise.resolve({ id: '4' }), searchParams: Promise.resolve({ created: ['1', '1'] }) });
+  assert.equal(repeated.search, '');
   const edit = fixture({ id: 9 }); await edit.rt.flush();
   assert(edit.requests.some(r => r.url === '/api/threed/simulations?id=9'));
   assert(!edit.requests.some(r => r.url.includes('simulations?limit=')));
@@ -149,9 +151,9 @@ const button = (f, name) => f.find(node => node.type === 'Button' && node.props.
   field(create, 'simulation-active').props.onCheckedChange(false); create.rt.render();
   create.confirm(false); field(create, 'simulation-project').props.onChange({ target: { value: '16' } }); create.rt.render(); assert.equal(field(create, 'simulation-project').props.value, '15', 'Rejected Project switch preserves its definition');
   definitionEditor().props.onChange(input.emptySimulationDefinition()); create.rt.render(); create.confirm(true);
-  await button(create, 'Save Changes').props.onClick(); await create.rt.flush(); assert(create.navigation.includes('/admin/threed/simulations/9/view?created=1')); assert.equal(JSON.parse(create.requests.find(r => r.method === 'POST').body).isActive, false);
+  await button(create, 'Save Changes').props.onClick(); await create.rt.flush(); assert(create.navigation.includes('/admin/threed/simulations/9?created=1')); assert.equal(JSON.parse(create.requests.find(r => r.method === 'POST').body).isActive, false);
   const list = fixture({}, true); await new Promise(resolve => setTimeout(resolve, 5)); await list.rt.flush();
-  list.find(node => node.props?.['aria-label'] === 'View Plan').props.onClick(); assert(list.navigation.includes('/admin/threed/simulations/9/view'));
+  assert(!list.find(node => node.props?.['aria-label'] === 'View Plan'));
   list.find(node => node.props?.['aria-label'] === 'Edit Plan').props.onClick(); assert(list.navigation.includes('/admin/threed/simulations/9'));
   list.find(node => node.props?.['aria-label'] === 'Select current page of Simulations').props.onChange({ target: { checked: true } }); list.rt.render();
   const bulk = list.find(node => node.type === 'Button' && nodes(node.props.children).some(child => child.type === 'Trash2') && typeof node.props.children?.[1] === 'string');
@@ -207,6 +209,6 @@ const button = (f, name) => f.find(node => node.type === 'Button' && node.props.
   field(edit, 'simulation-slug').props.onChange({ target: { value: 'Invalid Slug' } }); edit.rt.render();
   assert(button(edit, 'Save Changes').props.disabled && field(edit, 'simulation-slug').props['aria-invalid'], 'Invalid slugs disable Save and expose field invalidity');
   assert(field(edit, 'simulation-save-status').props.children.includes('lowercase letters'));
-  console.log('PASS: legacy Simulation routes redirect to Admin with bounded IDs and allowlisted draft context; creation opens read-only Admin View with feedback and explicit Edit navigation.');
+  console.log('PASS: legacy Simulation routes redirect to Admin with bounded IDs and allowlisted draft context; creation opens canonical Admin Edit with feedback; legacy View links redirect.');
   console.log('PASS: Simulation editor validation, participant guidance, supported/preview-only action groups, scoped navigation, read-only views, draft-retaining refresh and failed saves; list combined filters, result links, revision guards and offline callbacks.');
 })().catch(e => { console.error(e); process.exitCode = 1; });

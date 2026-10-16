@@ -1,3 +1,15 @@
+## v0.26.7 - ThreeD Simulations: Unified Admin editor
+
+Final preparation passed: all 77 offline CI tasks, four focused suites (eight scripts), fresh TypeScript, metadata consistency, source/config parity and whitespace checks. Guarded production build passed on isolated Next.js 16.4.2 (145/145 pages, exit 0). The existing matching isolated dependency installation was reused; no fresh dependency install is claimed. External network/dev-server access was blocked, credentials scrubbed and dummy database/offline fonts used. CI ran outside the Windows sandbox to avoid the previously confirmed tsx userInfo restriction. The build emitted the known non-failing nested-lockfile workspace-root warning. Next regenerated only the isolated next-env dev/build type paths; the Developer source copy was untouched. Runtime browser/authenticated persistence and production verification remain manual. No servers, live writes, Git writes or deployment.
+
+Prepared locally October 16, 2026 on main at 5b176631 plus accepted changes. Package/root lockfile are 0.26.7; dependencies/schema unchanged. The Developer intends to release v0.26.6, but explicit deployment completion remains unconfirmed; latest explicit confirmed production is v0.26.5. Repository history is not deployed provenance. See [release notes](docs/releases/v0.26.7.md). Preserve manual sidebar taxonomy and existing Project/Scene owners. This preparation does not commit, tag, push, publish or deploy. Older statuses below are historical.
+
+## Simulation route consolidation - October 16
+
+Developer requested one Admin Simulation page. /admin/threed/simulations/[id] is the canonical editable page; former /view URLs redirect there without fetching data or mounting a preview. Legacy Dashboard detail URLs redirect directly to the same destination. Only scalar created=1 is forwarded, preserving success feedback and existing ID validation. Creation and current-definition links now target Edit directly; the list retains one Edit action instead of redundant View/Edit actions. Captured Results remain separate and read-only; authorization, APIs, drafts and Scene execution are unchanged. Earlier Add/Edit/View instructions below are historical and superseded for Simulation definitions.
+
+Focused threed-simulation-admin and threed-simulation-results checks passed (six scripts, mocked boundaries). No browser, live writes, servers, schema/version changes or Git/deployment operations. Manual check: open old /view?created=1 and Dashboard links, confirm Edit destination and feedback; inspect list and Result definition links.
+
 ## v0.26.6 - Admin Sidebar: Navigation and persistent toggles
 
 Developer accepted the manual entity-focused menu taxonomy and intends to release this checkpoint. Package/root lockfile are now 0.26.6. Production remains Developer-confirmed v0.26.5 until release completion is confirmed. See [release notes](docs/releases/v0.26.6.md). Preserve manual labels/order, user-scoped browser toggles, specific active matching and mobile drawer visibility. No commit, tag, push or deployment was performed. Older statuses below are historical.

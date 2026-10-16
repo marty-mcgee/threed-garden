@@ -1,3 +1,7 @@
+## Prepared checkpoint: [v0.26.7 - ThreeD Simulations: Unified Admin editor](v0.26.7.md)
+
+Local preparation; deployment is not performed or independently verified.
+
 ## Prepared checkpoint: [v0.26.6 - Admin Sidebar: Navigation and persistent toggles](v0.26.6.md)
 
 Developer intends to release; completion is not yet confirmed.

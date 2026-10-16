@@ -131,7 +131,7 @@ async function checkComponents() {
   await detail.respond(oldRead, { success: true, data: record(1) });
   assert(detail.text().includes('Captured run 2')); assert(!detail.text().includes('Captured run 1'));
   assert(detail.text().includes('The Simulation definition was deleted'));
-  assert(!detail.find(node => node.props?.href === '/admin/threed/simulations/4/view'), 'Deleted live definition is not linked from historical snapshot ID');
+  assert(!detail.find(node => node.props?.href === '/admin/threed/simulations/4'), 'Deleted live definition is not linked from historical snapshot ID');
   assert(detail.text().includes('Run to target ball') && detail.text().includes('Left goal'));
   assert(detail.text().includes('Counter reset observed') && detail.text().includes('Event report limit reached'));
   assert(detail.text().includes('Read-only history'));

@@ -38,7 +38,7 @@ export function SimulationResultDetail({ runId }: { runId: string }) {
     <AdminWorkspaceHeader icon={ClipboardList} title={record ? `Simulation Result #${record.id}` : 'Simulation Result'} description="Read the captured definition and browser-reported outcome.">
       <div className="ml-auto flex flex-wrap gap-1">
         <AdminWorkspaceLink href={resultsHref} icon={ArrowLeft}>Results</AdminWorkspaceLink>
-        {record?.simulationId && <AdminWorkspaceLink href={`/admin/threed/simulations/${record.simulationId}/view`} icon={FlaskConical}>Current definition</AdminWorkspaceLink>}
+        {record?.simulationId && <AdminWorkspaceLink href={`/admin/threed/simulations/${record.simulationId}`} icon={FlaskConical}>Current definition</AdminWorkspaceLink>}
         {record && <AdminWorkspaceLink href={`/dashboard/scene?projectId=${record.projectId}`} icon={Map}>Project Scene</AdminWorkspaceLink>}
         <Button variant="outline" size="sm" disabled={loading} onClick={() => setRefresh(value => value + 1)}><RotateCw className="h-3.5 w-3.5" /> Refresh</Button>
         <Button variant="outline" size="sm" disabled={!record || loading} onClick={exportReport}><Download className="h-3.5 w-3.5" /> Export report</Button>

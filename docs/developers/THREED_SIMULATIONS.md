@@ -1,3 +1,9 @@
+## Simulation route consolidation - October 16
+
+Developer requested one Admin Simulation page. /admin/threed/simulations/[id] is the canonical editable page; former /view URLs redirect there without fetching data or mounting a preview. Legacy Dashboard detail URLs redirect directly to the same destination. Only scalar created=1 is forwarded, preserving success feedback and existing ID validation. Creation and current-definition links now target Edit directly; the list retains one Edit action instead of redundant View/Edit actions. Captured Results remain separate and read-only; authorization, APIs, drafts and Scene execution are unchanged. Earlier Add/Edit/View instructions below are historical and superseded for Simulation definitions.
+
+Focused threed-simulation-admin and threed-simulation-results checks passed (six scripts, mocked boundaries). No browser, live writes, servers, schema/version changes or Git/deployment operations. Manual check: open old /view?created=1 and Dashboard links, confirm Edit destination and feedback; inspect list and Result definition links.
+
 # ThreeD Simulations: execution and result analysis
 
 **Developer correction, October 5, 2026:** a Scenario is a plan (**Open Scenario**); a Simulation executes Actions and collects Results (**Run Simulation**). [Production v0.22.28](../releases/v0.22.28.md), Developer-confirmed October 5, removes all Scenario schema/form/API/runtime dependencies. The Developer also confirmed independent definitions with Project/modules chosen when running; that broader refactor remains pending. Follow [the corrected architecture and implementation record](../plans/v0.22.28-independent-simulations.md). Supplied CLI output confirms native `db:push` applied the Scenario removal; [the release handoff](../plans/v0.22.28-release-handoff.md) distinguishes database evidence, prior local validation and pending detailed browser/live acceptance.

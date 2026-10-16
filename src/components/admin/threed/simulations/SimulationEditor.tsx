@@ -137,7 +137,7 @@ export function SimulationEditor({ id, projectId, initialSoccerDraft, readOnly =
       const draft = toForm({ ...result.data, projectName: record?.projectName ?? '', threedName: record?.threedName ?? '' });
       setRecord({ ...result.data, projectName: record?.projectName ?? '', threedName: record?.threedName ?? '' }); setForm(draft); setBaseline(JSON.stringify(draft));
       showToast(id ? 'Simulation updated.' : 'Simulation created.', 'success');
-      if (!id) router.replace(`${basePath}/${result.data.id}/view?created=1`);
+      if (!id) router.replace(`${basePath}/${result.data.id}?created=1`);
     } catch (e) { const message = e instanceof Error ? e.message : 'Could not save Simulation.'; setError(message); showToast(message, 'error'); }
     finally { lock.current = false; setBusy(false); }
   }
