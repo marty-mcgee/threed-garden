@@ -1,4 +1,8 @@
-## v0.26.5 ? ThreeD Projects: Admin Setup and unified configuration
+## Current production: [v0.26.5 — ThreeD Projects: Admin Setup and unified configuration](docs/releases/v0.26.5.md)
+
+October 16, 2026: Developer confirmed this release is in production. Package/root lockfile remain 0.26.5. Exact deployed commit and independent production verification remain unconfirmed. Prior 76-task offline CI, TypeScript and guarded build results are pre-release evidence; this confirmation does not establish new browser or authenticated Save/reopen checks. Earlier preparation-only and production-version statements below are historical and superseded. This documentation-only update leaves application code, servers and live data untouched.
+
+## v0.26.5 — ThreeD Projects: Admin Setup and unified configuration
 
 Release validation passed October 16: all 76 offline CI tasks, fresh TypeScript (tsc --noEmit --incremental false), version/Developer-lock preservation and source/config parity checks, checkpoint documentation links, whitespace checks, and guarded production build (145/145 pages, exit 0). The isolated copy reused matching Next.js 16.4.2 dependencies; the Developer installation/server was untouched. No clean install was performed against the edited lockfile. Differences from the reused dependency lock are optional Linux/esbuild and WASI metadata. CI's initial sandbox run hit the known Windows tsx userInfo ENOMEM restriction; the unchanged guarded rerun outside that restriction passed. The build emitted a non-failing nested-lockfile workspace-root warning. No agent browser/authenticated persistence or production check is claimed.
 

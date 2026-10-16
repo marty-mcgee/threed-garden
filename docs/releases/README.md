@@ -1,4 +1,8 @@
-## Prepared checkpoint: [v0.26.5 ? ThreeD Projects: Admin Setup and unified configuration](v0.26.5.md)
+## Current production: [v0.26.5 — ThreeD Projects: Admin Setup and unified configuration](v0.26.5.md)
+
+October 16, 2026: Developer confirmed this release is in production. Package/root lockfile remain 0.26.5. Exact deployed commit and independent production verification remain unconfirmed. Prior 76-task offline CI, TypeScript and guarded build results are pre-release evidence; this confirmation does not establish new browser or authenticated Save/reopen checks. Earlier preparation-only and production-version statements below are historical and superseded. This documentation-only update leaves application code, servers and live data untouched.
+
+## Prepared checkpoint: [v0.26.5 — ThreeD Projects: Admin Setup and unified configuration](v0.26.5.md)
 
 Local preparation; production remains Developer-confirmed v0.26.4. See release notes for evidence and limits. Older status entries below are historical.
 
