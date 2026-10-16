@@ -22,7 +22,7 @@ function FitCamera({ document, request, controls }: { document: DesignDocument; 
     if (!request || !controls.current || !latest.current.nodes.length) return;
     const doc = latest.current, bounds = new Box3();
     const low = Math.min(...doc.walls.map(wall => entityElevation(doc, wall)), ...doc.floors.map(floor => entityElevation(doc, floor) - floor.thickness), ...doc.roofs.map(roof => entityElevation(doc, roof)));
-    const high = Math.max(...doc.walls.map(wall => entityElevation(doc, wall) + wall.height), ...doc.floors.map(floor => entityElevation(doc, floor)), ...doc.roofs.map(roof => entityElevation(doc, roof) + roofProfile(roof.vertices.map(id => doc.nodes.find(node => node.id === id)!), roof).rise + roof.thickness + (doc.roofOpenings.some(opening => opening.roofId === roof.id && opening.kind === 'skylight') ? .0254 : 0)));
+    const high = Math.max(...doc.walls.map(wall => entityElevation(doc, wall) + Math.max(wall.height, wall.endHeight ?? wall.height)), ...doc.floors.map(floor => entityElevation(doc, floor)), ...doc.roofs.map(roof => entityElevation(doc, roof) + roofProfile(roof.vertices.map(id => doc.nodes.find(node => node.id === id)!), roof).rise + roof.thickness + (doc.roofOpenings.some(opening => opening.roofId === roof.id && opening.kind === 'skylight') ? .0254 : 0)));
     if (!Number.isFinite(low) || !Number.isFinite(high)) return;
     const margin = Math.max(.15, ...doc.walls.map(wall => wall.thickness));
     for (const node of doc.nodes) { bounds.expandByPoint(new Vector3(node.x - margin, low, node.z - margin)); bounds.expandByPoint(new Vector3(node.x + margin, high, node.z + margin)); }

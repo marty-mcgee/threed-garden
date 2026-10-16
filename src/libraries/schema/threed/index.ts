@@ -28,7 +28,7 @@ export const threedDesigns = pgTable('threed_designs', {
   uniqueIndex('idx_threed_designs_owner_create').on(table.userId, table.createKey),
   index('idx_threed_designs_owner_project').on(table.userId, table.projectId),
   check('threed_designs_revision_positive', sql`${table.revision} > 0`),
-  check('threed_designs_document_valid', sql`coalesce(jsonb_typeof(${table.document}) = 'object' AND ${table.document}->>'format' = 'threed-home-design' AND ${table.document}->>'units' = 'metres' AND ${table.document}->'version' = to_jsonb(${table.formatVersion}) AND ${table.formatVersion} = 5 AND ${table.document}->>'name' = ${table.name} AND length(trim(${table.name})) > 0, false)`),
+  check('threed_designs_document_valid', sql`coalesce(jsonb_typeof(${table.document}) = 'object' AND ${table.document}->>'format' = 'threed-home-design' AND ${table.document}->>'units' = 'metres' AND ${table.document}->'version' = to_jsonb(${table.formatVersion}) AND ${table.formatVersion} IN (5, 6) AND ${table.document}->>'name' = ${table.name} AND length(trim(${table.name})) > 0, false)`),
 ]);
 export const threedDesignsRelations = relations(threedDesigns, ({ one }) => ({
   user: one(user, { fields: [threedDesigns.userId], references: [user.id] }),

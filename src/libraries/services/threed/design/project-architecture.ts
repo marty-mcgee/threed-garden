@@ -63,7 +63,7 @@ export function importProjectArchitecture(current: DesignDocument, input: unknow
     roofOpenings: incoming.roofOpenings.map(opening => ({ ...opening, id: id(opening.id), roofId: id(opening.roofId) })),
   };
   if (mode === 'replace') return validateDesign(imported);
-  return validateDesign({ ...current, levels: [...current.levels, ...imported.levels], nodes: [...current.nodes, ...imported.nodes], walls: [...current.walls, ...imported.walls], floors: [...current.floors, ...imported.floors], roofs: [...current.roofs, ...imported.roofs], openings: [...current.openings, ...imported.openings], roofOpenings: [...current.roofOpenings, ...imported.roofOpenings] });
+  return validateDesign({ ...current, version: current.version === 6 || incoming.version === 6 ? 6 : 5, levels: [...current.levels, ...imported.levels], nodes: [...current.nodes, ...imported.nodes], walls: [...current.walls, ...imported.walls], floors: [...current.floors, ...imported.floors], roofs: [...current.roofs, ...imported.roofs], openings: [...current.openings, ...imported.openings], roofOpenings: [...current.roofOpenings, ...imported.roofOpenings] });
 }
 
 /** Normalize selection after edits, cascading deletions, Undo or document replacement. */

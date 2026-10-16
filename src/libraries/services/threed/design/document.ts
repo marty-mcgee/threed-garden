@@ -2,14 +2,15 @@
 export interface PlanPoint { x: number; z: number }
 export interface DesignNode extends PlanPoint { id: string }
 export interface DesignLevel { id: string; name: string; elevation: number }
-export interface DesignWall { id: string; levelId: string; start: string; end: string; height: number; thickness: number; elevation: number }
+/** height belongs to start; absent endHeight keeps the constant-height workflow. */
+export interface DesignWall { id: string; levelId: string; start: string; end: string; height: number; endHeight?: number; thickness: number; elevation: number }
 export interface DesignFloor { id: string; levelId: string; vertices: string[]; thickness: number; elevation: number }
 export interface DesignRoof { id: string; levelId: string; vertices: string[]; kind: 'flat' | 'shed' | 'gable'; pitch: number; direction: number; thickness: number; elevation: number }
 export interface DesignOpening { id: string; wallId: string; kind: 'door' | 'window'; offset: number; width: number; height: number; sill: number }
 /** Rectangles in the host roof's direction/perpendicular frame, from its first corner. */
 export interface DesignRoofOpening { id: string; roofId: string; kind: 'cutout' | 'skylight'; along: number; across: number; width: number; length: number }
 export interface DesignDocument {
-  format: 'threed-home-design'; version: 5; units: 'metres'; name: string;
+  format: 'threed-home-design'; version: 5 | 6; units: 'metres'; name: string;
   levels: DesignLevel[]; nodes: DesignNode[]; walls: DesignWall[]; floors: DesignFloor[]; roofs: DesignRoof[]; openings: DesignOpening[]; roofOpenings: DesignRoofOpening[];
   defaults: { wallHeight: number; wallThickness: number; floorThickness: number; doorHeight: number; doorWidth: number; windowHeight: number; windowWidth: number; windowSill: number };
 }
@@ -56,9 +57,10 @@ function list(value: unknown, max: number): unknown[] { if (!Array.isArray(value
 export function validateDesign(value: unknown): DesignDocument {
   const legacy = !!value && typeof value === 'object' && (value as Record<string, unknown>).version === 1;
   const version = value && typeof value === 'object' ? (value as Record<string, unknown>).version : undefined;
-  const leveled = version === 3 || version === 4 || version === 5, roofed = version === 4 || version === 5;
-  const doc = object(value, ['format', 'version', 'units', 'name', 'nodes', 'walls', 'floors', 'defaults', ...(legacy ? [] : ['openings']), ...(leveled ? ['levels'] : []), ...(roofed ? ['roofs'] : []), ...(version === 5 ? ['roofOpenings'] : [])]);
-  if (doc.format !== 'threed-home-design' || ![1, 2, 3, 4, 5].includes(doc.version as number) || doc.units !== 'metres') fail('Import a ThreeD Design version 1–5 JSON document (metres). Legacy .threed files require a separate converter.');
+  const leveled = version === 3 || version === 4 || version === 5 || version === 6, roofed = version === 4 || version === 5 || version === 6;
+  const roofOpened = version === 5 || version === 6;
+  const doc = object(value, ['format', 'version', 'units', 'name', 'nodes', 'walls', 'floors', 'defaults', ...(legacy ? [] : ['openings']), ...(leveled ? ['levels'] : []), ...(roofed ? ['roofs'] : []), ...(roofOpened ? ['roofOpenings'] : [])]);
+  if (doc.format !== 'threed-home-design' || ![1, 2, 3, 4, 5, 6].includes(doc.version as number) || doc.units !== 'metres') fail('Import a ThreeD Design version 1–6 JSON document (metres). Legacy .threed files require a separate converter.');
   if (typeof doc.name !== 'string' || !doc.name.trim() || doc.name.length > 120) fail('Design name must contain 1–120 characters.');
   // Pick a migration ID outside the old global ID namespace, including orphan nodes.
   const oldIds = new Set(['nodes', 'walls', 'floors', 'openings'].flatMap(key => Array.isArray(doc[key]) ? (doc[key] as { id?: unknown }[]).map(entity => entity?.id) : []));
@@ -72,7 +74,14 @@ export function validateDesign(value: unknown): DesignDocument {
   if (new Set(levels.map(level => level.name.toLowerCase())).size !== levels.length) fail('Level names must be unique.');
   const defaults = object(doc.defaults, ['wallHeight', 'wallThickness', 'floorThickness', 'doorHeight', 'doorWidth', ...(legacy ? [] : ['windowHeight', 'windowWidth', 'windowSill'])]);
   const nodes = list(doc.nodes, 1200).map(value => { const n = object(value, ['id', 'x', 'z']); return { id: id(n.id), x: finite(n.x, -1000, 1000, 'X'), z: finite(n.z, -1000, 1000, 'Z') }; });
-  const walls = list(doc.walls, 500).map(value => { const w = object(value, ['id', 'start', 'end', 'height', 'thickness', 'elevation', ...(leveled ? ['levelId'] : [])]); return { id: id(w.id), levelId: leveled ? id(w.levelId) : groundId, start: id(w.start), end: id(w.end), height: finite(w.height, .0254, 30, 'Wall height'), thickness: finite(w.thickness, .0254, 3, 'Wall thickness'), elevation: finite(w.elevation, -100, 100, 'Elevation') }; });
+  const walls = list(doc.walls, 500).map(value => {
+    const sloped = version === 6 && !!value && typeof value === 'object' && 'endHeight' in value;
+    const w = object(value, ['id', 'start', 'end', 'height', 'thickness', 'elevation', ...(leveled ? ['levelId'] : []), ...(sloped ? ['endHeight'] : [])]);
+    const height = finite(w.height, sloped ? 0 : INCH, 30, 'Wall start height');
+    const endHeight = sloped ? finite(w.endHeight, 0, 30, 'Wall end height') : height;
+    if (Math.max(height, endHeight) < INCH) fail('At least one wall endpoint must be one inch high.');
+    return { id: id(w.id), levelId: leveled ? id(w.levelId) : groundId, start: id(w.start), end: id(w.end), height, ...(sloped ? { endHeight } : {}), thickness: finite(w.thickness, INCH, 3, 'Wall thickness'), elevation: finite(w.elevation, -100, 100, 'Elevation') };
+  });
   const floors = list(doc.floors, 100).map(value => { const f = object(value, ['id', 'vertices', 'thickness', 'elevation', ...(leveled ? ['levelId'] : [])]); return { id: id(f.id), levelId: leveled ? id(f.levelId) : groundId, vertices: list(f.vertices, 100).map(id), thickness: finite(f.thickness, .0254, 3, 'Floor thickness'), elevation: finite(f.elevation, -100, 100, 'Elevation') }; });
   const roofs: DesignRoof[] = (roofed ? list(doc.roofs, 100) : []).map(value => {
     const r = object(value, ['id', 'levelId', 'vertices', 'kind', 'pitch', 'direction', 'thickness', 'elevation']);
@@ -86,7 +95,7 @@ export function validateDesign(value: unknown): DesignDocument {
     if (o.kind !== 'door' && o.kind !== 'window') fail('Choose a Door or Window opening.');
     return { id: id(o.id), wallId: id(o.wallId), kind: o.kind as 'door' | 'window', offset: finite(o.offset, 0, 3000, 'Opening offset'), width: finite(o.width, INCH, 30, 'Opening width'), height: finite(o.height, INCH, 30, 'Opening height'), sill: finite(o.sill, 0, 30, 'Sill height') };
   });
-  const roofOpenings: DesignRoofOpening[] = (version === 5 ? list(doc.roofOpenings, 200) : []).map(value => {
+  const roofOpenings: DesignRoofOpening[] = (roofOpened ? list(doc.roofOpenings, 200) : []).map(value => {
     const o = object(value, ['id', 'roofId', 'kind', 'along', 'across', 'width', 'length']);
     if (o.kind !== 'cutout' && o.kind !== 'skylight') fail('Choose a Roof Cutout or Skylight.');
     return { id: id(o.id), roofId: id(o.roofId), kind: o.kind as DesignRoofOpening['kind'], along: finite(o.along, -3000, 3000, 'Roof opening along offset'), across: finite(o.across, -3000, 3000, 'Roof opening across offset'), width: finite(o.width, INCH, 30, 'Roof opening width'), length: finite(o.length, INCH, 30, 'Roof opening length') };
@@ -123,7 +132,8 @@ export function validateDesign(value: unknown): DesignDocument {
     const label = opening.kind === 'door' ? 'Door' : 'Window';
     if (opening.offset < openingMargin(wall) - EPS || opening.offset + opening.width > length - openingMargin(wall) + EPS)
       fail(`${label} does not fit its host wall. Keep ${formatLength(openingMargin(wall))} clear at both ends; move/resize the opening before shortening the wall.`);
-    if (opening.sill + opening.height > wall.height - INCH + EPS) fail(`${label} is taller than its host wall allows. Keep at least one inch of wall above the opening.`);
+    const clearance = Math.min(wallHeightAt(wall, opening.offset, length), wallHeightAt(wall, opening.offset + opening.width, length));
+    if (opening.sill + opening.height > clearance - INCH + EPS) fail(`${label} is taller than its host wall allows. Keep at least one inch of wall above both opening edges.`);
     if (opening.kind === 'door' && opening.sill !== 0) fail('Door sill must be zero relative to its host wall base.');
     if (opening.kind === 'window' && opening.sill < INCH) fail('Window sill must be at least one inch above its host wall base.');
     const hosted = openings.filter(other => other.wallId === opening.wallId);
@@ -131,9 +141,13 @@ export function validateDesign(value: unknown): DesignDocument {
     if (hosted.some(other => other.id !== opening.id && opening.offset < other.offset + other.width + INCH - EPS && opening.offset + opening.width + INCH > other.offset + EPS && opening.sill < other.sill + other.height + INCH - EPS && opening.sill + opening.height + INCH > other.sill + EPS)) fail('Openings must not overlap. Keep at least one inch between their edges.');
   }
   for (const opening of roofOpenings) { const issue = roofOpeningIssue({ nodes, roofs, roofOpenings }, opening); if (issue) fail(issue); }
-  return { format: 'threed-home-design', version: 5, units: 'metres', name: (doc.name as string).trim(), levels, nodes, walls, floors, roofs, openings, roofOpenings,
+  return { format: 'threed-home-design', version: version === 6 ? 6 : 5, units: 'metres', name: (doc.name as string).trim(), levels, nodes, walls, floors, roofs, openings, roofOpenings,
     defaults: { wallHeight: finite(defaults.wallHeight, .0254, 30, 'Default height'), wallThickness: finite(defaults.wallThickness, .0254, 3, 'Default wall thickness'), floorThickness: finite(defaults.floorThickness, .0254, 3, 'Default floor thickness'), doorHeight: finite(defaults.doorHeight, .0254, 30, 'Door height'), doorWidth: finite(defaults.doorWidth, .0254, 30, 'Door width'),
       windowHeight: finite(legacy ? 48 * INCH : defaults.windowHeight, INCH, 30, 'Window height'), windowWidth: finite(legacy ? 36 * INCH : defaults.windowWidth, INCH, 30, 'Window width'), windowSill: finite(legacy ? 36 * INCH : defaults.windowSill, INCH, 30, 'Window sill') } };
+}
+/** Clamp miter extensions to their endpoint height; shared by validation and solids. */
+export function wallHeightAt(wall: DesignWall, offset: number, length: number): number {
+  return wall.height + ((wall.endHeight ?? wall.height) - wall.height) * Math.max(0, Math.min(1, offset / length));
 }
 /** Elevations on walls/floors are offsets from their named level; openings inherit their host. */
 export const entityElevation = (doc: DesignDocument, entity: DesignWall | DesignFloor | DesignRoof) => (doc.levels.find(level => level.id === entity.levelId)?.elevation ?? fail('Missing level.')) + entity.elevation;

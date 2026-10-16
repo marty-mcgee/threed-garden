@@ -26,7 +26,7 @@ legacyRoom.walls=legacyRoom.walls.map(({levelId,...wall})=>wall);legacyRoom.floo
 for(const key of ['windowHeight','windowWidth','windowSill']) delete (legacyRoom.defaults={...legacyRoom.defaults})[key];
 legacyRoom.version=1;
 assert.deepEqual(D.parseDesign(JSON.stringify(legacyRoom)),room,'Version 1 editable documents upgrade losslessly to version 3 defaults.');
-for (const invalid of [null, [], {...room,version:6}, {...room,units:'cm'}, {...room,unexpected:0}, {...room,nodes:[...room.nodes,room.nodes[0]]},
+for (const invalid of [null, [], {...room,version:7}, {...room,units:'cm'}, {...room,unexpected:0}, {...room,nodes:[...room.nodes,room.nodes[0]]},
   {...room,walls:[{...room.walls[0],end:'a'}]}, {...room,walls:[{...room.walls[0],start:'absent'}]}, {...room,walls:[...room.walls, {...room.walls[0],id:'duplicate'}]},
   {...room,floors:[{...room.floors[0],vertices:['a','c','b','d']}]}, {...room,nodes:room.nodes.map((n,i)=>i===0?{...n,x:Infinity}:n)},
   {...room,defaults:{...room.defaults,doorHeight:-1}}, {...room,floors:[{...room.floors[0],vertices:['a','b','a']}]},

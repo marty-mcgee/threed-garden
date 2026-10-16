@@ -1,3 +1,15 @@
+![ThreeD Design workspace with the recovered house, Project Assets, Model guidance, and linked 2D plan](docs/images/v0.25.3/design-workspace.png)
+
+## v0.26.4 — ThreeD Simulations: Admin workflows and Results
+
+Release checkpoint prepared locally October 15, 2026. Package/root lockfile are **0.26.4**; production remains Developer-confirmed **v0.26.3**. Dependencies and database schema are unchanged. Earlier preparation statuses below are historical and superseded by this checkpoint.
+
+Manage Simulation definitions in Admin, review captured Results and Sensor observations, and return to the Project Scene to run supported Actions. Scene feedback now separates execution progress from Result saving. Existing Dashboard management URLs redirect to Admin. Scenarios, Characters and Animation workspaces share clearer filters, navigation, status and Save guidance.
+
+The Developer accepted the Scene improvements and Admin direction. Automated verification and remaining browser/authenticated checks are recorded separately in the [v0.26.4 release notes](docs/releases/v0.26.4.md). See the [implementation plan](docs/plans/v0.26.4.md) and [Simulation guide](docs/developers/THREED_SIMULATIONS.md). This is local preparation, not a deployment confirmation.
+
+Release checks passed: 75 offline CI tasks, supplemental Animation checks, fresh TypeScript and an isolated guarded production build (145/145 pages). Authenticated Admin/browser smoke checks remain separate; local servers and the development installation were left untouched.
+
 ## v0.26.3 — ThreeD Design Tools + Toolbar
 
 Local checkpoint prepared October 15, 2026. Package/root lockfile are 0.26.3; dependencies and schema are unchanged. Production is Developer-confirmed v0.26.2; this checkpoint is not yet reported released. Earlier preparation statuses below are historical.

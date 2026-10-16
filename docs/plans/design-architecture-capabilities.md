@@ -1,5 +1,62 @@
 # ThreeD Design: architecture capabilities and legacy connections
 
+## October 15 reassessment — recommendations only; implementation on hold
+
+The Developer explicitly requested documentation only: **do not implement this recommended sequence yet**. No stage below is newly authorized or assigned a release version. Existing v0.26.4 release preparation remains separate. The October 14 records below retain their historical status; this reassessment supersedes their outdated statements about current physics, measurement support and Design persistence.
+
+Reference: Developer-supplied `Screenshot 2026-10-15 202442.png`, showing the legacy `/home-design/index.html` page. The screenshot shows catalog objects in the plan, level tabs, rulers/guides and translucent architecture in 3D. Source inspection covered `reference/home-design/index.html` and relevant handlers in `reference/home-design/scripts/threed.js`, compared with the current typed Design modules. This is source/screenshot analysis, not a new executed legacy-browser test or proof of complete parity.
+
+### Reassessed feature inventory
+
+| Capability | Legacy evidence | Current App and remaining gap |
+| --- | --- | --- |
+| Sloped-top walls | `updateWallHeight0` / `updateWallHeight1` edit separate endpoint heights. | Constant-height walls, shared nodes and editable dimensions exist. Paired endpoint heights, opening clearance and corresponding geometry remain missing. |
+| Doors/windows | `applyMasksToWall` subtracts intersecting catalog masks on the same level. | Native hosted apertures and generic visuals exist. Recovered catalog Models are not linked to native openings; handing/swing and rehosting remain separate gaps. |
+| Floor openings | `redrawFloor` extrudes a polygon and subtracts intersecting masks. | Native polygon slabs exist; interior holes and their editing/validation remain missing. |
+| Roofs | `relinkRoofReferences` / `reDrawRoofCorners` join legacy roof segments. | Flat/Shed/Gable roofs exist. Compatible roof joins, further forms and legacy join conversion remain gaps. |
+| Skylights/cutouts | `applyMasksToRoof` subtracts catalog masks. | Native rectangular roof holes/skylights exist. Catalog associations and unsupported multi-surface/nonrectangular masks remain gaps. |
+| Project Models in the plan | `loadThreed` links an OBJ/MTL object to a Paper.js raster loaded from `_top.png`. | Library and Scene placement exist. `DesignPlan.tsx` currently renders architecture, without these Project Model representations or interactions. |
+| Model transforms | `updateThreedWidth/Depth/Height`, position handlers and `flipX/flipZ`. | Current placement editor exposes position, positive uniform scale and Y rotation. Independent dimensions/flips require explicit compatibility with existing instance transforms, bounds and physics. |
+| Levels | `newLevel`, `setLevel`, `updateLevelHeight` and per-level object groups. | Architectural levels/elevations exist. Explicit Project Model association with Design levels requires definition. Preserve existing world positions. |
+| Dimensions and text | `drawDimension`, `loadDimension`, `loadText`, text-edit handlers. | Automatic dimensions and rulers exist; persistent user-created dimension/text entities are missing. |
+| Guides | Horizontal/vertical guide creation, removal and plan interaction handlers. | Grid/endpoint snapping and angle constraints exist; persistent editable guide entities are missing. |
+| Tracing underlay | `loadBackgroundImage`, opacity, resize and flip handlers. | No corresponding native Design tracing-image workflow was found. File lifecycle and persistence need explicit design; legacy UI alone does not establish saved-underlay parity. |
+| Architectural appearance | Wall/floor/roof color and opacity controls; shared legacy materials. | Generated architecture uses fixed materials. Per-category transparency/color settings are missing; these are separate from a full materials manager. |
+| Navigation/environment | Recenter, fullscreen, compass, sunlight and grid controls. | Much already exists in Project/Design controls. Reuse existing owners and identify only specific missing behavior. |
+| Copy/paste | `doCopy` / `doPaste` duplicate catalog objects with a positional offset. | Legacy behavior is not general architecture duplication. Any equivalent must explicitly define scope and use current instance identity. |
+| Save/share/export | Local plan JSON, `generateShareLink` server request and `exportToObj`. | Project Save and validated architecture JSON exist. Legacy OBJ export collects walls, roofs and floors, not a complete furnished/material scene. Design geometry export and sharing require separate scope. |
+
+### Current integration boundaries
+
+- `src/libraries/services/threed/design/document.ts` remains the strict, versioned editable document contract; `geometry.ts` derives and retains geometry resources. New parameters must propagate through validation, history, Assets, properties, import/export, geometry and bounds.
+- `DesignEditor.tsx` and `DesignPlan.tsx` retain the current App tools, properties, selection and interaction conventions. Project Models must remain references to existing Project instances, not duplicate records inside architecture.
+- `project.config.threeDArchitecture` remains authoritative. `project-design-projection.ts::saveProjectDesignProjection` maintains a derived `threed_designs` record inside the Project Save transaction in `src/app/api/project/threed-markers/route.ts`. Do not revive a disconnected Design save system.
+- Architecture already has Rapier colliders through `DesignScenePhysics.tsx`, generated from the same solids. Geometry changes must preserve real apertures in both rendering and collisions. Physics is no longer a wholly deferred capability as the historical Stage 6 text might suggest.
+- Project measurement preferences and metre/Scene calibration already exist. Use `scene-units.ts` and existing Metric/Imperial inputs; do not recalibrate from an assumed Character height. The historical Imperial-only wording below is superseded.
+- Preserve current layout, Canvas/physics owners, stable IDs, selection, undo/redo, dirty state, concurrent-save handling, Project isolation and unrelated Models/settings. New JSON document fields may require a version upgrade; that is not evidence that a SQL migration is needed.
+- Reuse mathematical behavior from legacy JavaScript without importing its global mutable state, DOM property switching or obsolete ThreeBSP/Three.js APIs. The legacy mask handlers scan objects and repeatedly subtract meshes; bounded regeneration, retained resources and disposal require explicit verification in the current App.
+
+### Recommended sequence — not scheduled or approved for implementation
+
+**Scope clarification, October 15:** the Developer agrees with these recommendations as future stages within **ThreeD Designs (Schema + Module)**. This is agreement on scope, not permission to start implementation. All six stages extend the existing Designs data contracts, module UI and Project integration. They do not constitute a separate legacy editor, independent persistence service or general-purpose modeling framework.
+
+For each future stage, review the existing `threedDesigns` definition in `src/libraries/schema/threed/index.ts`, the typed Design document and the Project Save projection together. Specify which parameters are durable Design content, which are workspace preferences and which are references to existing Project Models/Files. Preserve current ownership and Project relationships; propose only justified schema changes after identifying an actual gap. Do not assume each new entity needs its own SQL table or change the current authoritative storage contract implicitly.
+
+1. **Sloped-top walls:** endpoint heights, opening clearance, shared render/collision geometry, properties and legacy conversion. Upgrade old documents without changing existing wall appearance or IDs.
+2. **Floor openings:** hosted holes with stable IDs, containment/separation validation, editing, actual slab/collider gaps and atomic deletion/Undo.
+3. **Project Models in the 2D plan, then catalog opening links:** first represent/select/edit existing instances; subsequently define explicit host associations and generic-versus-catalog visuals. Missing top-view images need a supported fallback; no automatic thumbnail generation is assumed.
+4. **Roof joins:** begin with bounded compatible joins and deterministic geometry; defer more complex roof forms until those contracts are verified.
+5. **Dimensions, text, guides and tracing underlays:** separate focused increments using current measurement, snapping and persistence conventions. Underlay storage/ownership must be specified before implementation.
+6. **Architectural appearance and export:** category transparency/color controls, followed by a separately bounded geometry export scope. Presentation changes must not change collision behavior.
+
+**Stability requirement across all six stages:** regenerate affected geometry, retain unchanged mesh/material resources and dispose replaced resources. Preserve consistent collider updates and bound any boolean work; do not reproduce the legacy full-object scans and repeated mesh subtraction on every interaction. Future verification must cover repeated edits, Undo/Redo, deletion and Project switching for resource retention/disposal as well as geometric correctness. These are implementation requirements to verify later, not claims that new optimizations or a GPU-memory guarantee have been delivered.
+
+This revised ordering expands the historical Stage 4 catalog-link proposal with the missing 2D Model representation prerequisite and adds appearance/export as a separate recommendation. It does not mark historical Stages 2–6 completed or authorized. Do not automatically restore omitted records, rerun recovery, replace Project #17 or alter existing Projects.
+
+When implementation is explicitly authorized, each increment needs focused old-document upgrade, geometry/collider, selection/history, import-ID and mocked Project roundtrip checks. Browser acceptance and authenticated Save/reopen remain separate. This documentation-only pass runs no runtime/build/browser/database checks and makes no application, dependency, schema or version change.
+
+## Historical October 14 assessment
+
 Checkpoint update: the Developer accepted Stage 1's visible browser result and requested [v0.25.3 release preparation](../releases/v0.25.3.md), with [the latest screenshot](../images/v0.25.3/design-workspace.png) supplied October 14. Stage 1 is included in that local checkpoint; Stages 2–6 remain planned. Screenshot acceptance does not establish later Save/reopen or complete legacy geometry parity.
 
 Local staged roadmap, October 14, 2026. Production remains Developer-confirmed **v0.25.2**. This roadmap does not select a release version or claim the later stages are implemented.

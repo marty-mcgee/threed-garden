@@ -1,6 +1,6 @@
 import { BoxGeometry, BufferGeometry, Float32BufferAttribute, ExtrudeGeometry, Group, Mesh, MeshStandardMaterial, Shape, ShapeUtils, Vector2 } from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { distance, entityElevation, entityLevelId, EPS, INCH, polygonIssue, roofOpeningFootprint, roofProfile, signedArea, wallFrame, type DesignDocument, type DesignOpening, type DesignRoof, type DesignRoofOpening, type DesignWall, type PlanPoint } from './document';
+import { distance, entityElevation, entityLevelId, EPS, INCH, polygonIssue, roofOpeningFootprint, roofProfile, signedArea, wallFrame, wallHeightAt, type DesignDocument, type DesignOpening, type DesignRoof, type DesignRoofOpening, type DesignWall, type PlanPoint } from './document';
 /** Same footprint drives SVG and 3D. Two-way corners miter; acute joins cap at 4 half-widths. */
 export function wallFootprint(doc: DesignDocument, wall: DesignWall): PlanPoint[] {
   const nodes = new Map(doc.nodes.map(node => [node.id, node]));
@@ -95,6 +95,7 @@ function skylightGroup(doc: DesignDocument, opening: DesignRoofOpening) {
 }
 /** Partition wall solids around rectangular apertures. No CSG or hidden covering planes. */
 export function wallGeometry(doc: DesignDocument, wall: DesignWall): BufferGeometry {
+  if (wall.endHeight !== undefined && wall.endHeight !== wall.height) return slopedWallGeometry(doc, wall);
   const points = wallFootprint(doc, wall), hosted = doc.openings.filter(o => o.wallId === wall.id);
   const elevation = entityElevation(doc, wall);
   if (!hosted.length) return extrudePlan(points, wall.height, elevation)!;
@@ -116,6 +117,45 @@ export function wallGeometry(doc: DesignDocument, wall: DesignWall): BufferGeome
   for (const part of parts) part.dispose();
   if (!merged) throw new Error('Unable to generate the host wall openings.');
   merged.computeBoundingBox(); return merged;
+}
+/** Bounded axis/height partitions preserve miter ends and real openings without boolean meshes. */
+function slopedWallGeometry(doc: DesignDocument, wall: DesignWall): BufferGeometry {
+  const outline = wallFootprint(doc, wall), frame = wallFrame(doc, wall);
+  const span = distance(doc.nodes.find(n => n.id === wall.start)!, doc.nodes.find(n => n.id === wall.end)!);
+  const height = (point: PlanPoint) => wallHeightAt(wall, frame.project(point), span);
+  const base = entityElevation(doc, wall), maximum = Math.max(wall.height, wall.endHeight!);
+  const openings = doc.openings.filter(o => o.wallId === wall.id), axis = outline.map(frame.project);
+  const cuts = [...new Set([Math.min(...axis), 0, span, Math.max(...axis), ...openings.flatMap(o => [o.offset, o.offset + o.width])])].sort((a, b) => a - b);
+  const positions: number[] = [];
+  const triangle = (a: number[], b: number[], c: number[]) => {
+    const u = b.map((v, i) => v - a[i]), v = c.map((n, i) => n - a[i]);
+    if (Math.hypot(u[1]*v[2]-u[2]*v[1], u[2]*v[0]-u[0]*v[2], u[0]*v[1]-u[1]*v[0]) > 1e-12) positions.push(...a, ...b, ...c);
+  };
+  for (let i = 0; i < cuts.length - 1; i++) {
+    const left = cuts[i], right = cuts[i + 1];
+    if (right - left < EPS) continue;
+    const footprint = clipFootprint(clipFootprint(outline, frame.project, left, true), frame.project, right, false);
+    const holes = openings.filter(o => (left + right) / 2 > o.offset && (left + right) / 2 < o.offset + o.width);
+    const bands = [...new Set([0, maximum, ...holes.flatMap(o => [o.sill, o.sill + o.height])])].sort((a, b) => a - b);
+    for (let j = 0; j < bands.length - 1; j++) {
+      const low = bands[j], high = bands[j + 1];
+      if (holes.some(o => (low + high) / 2 > o.sill && (low + high) / 2 < o.sill + o.height)) continue;
+      // Each partition has a linear top, including constant-height miter extensions.
+      const points = clipFootprint(footprint, height, low, true);
+      // Split at the band ceiling, so no triangle crosses a top-profile crease.
+      const split = points.some(p => height(p) < high - EPS) && points.some(p => height(p) > high + EPS);
+      for (let ring of split ? [clipFootprint(points, height, high, false), clipFootprint(points, height, high, true)] : [points]) {
+        if (ring.length < 3 || Math.abs(signedArea(ring)) < EPS * EPS) continue;
+        if (signedArea(ring) < 0) ring = [...ring].reverse();
+        const vertex = (p: PlanPoint, top: boolean) => [p.x, base + (top ? Math.min(high, height(p)) : low), p.z];
+        const faces = ShapeUtils.triangulateShape(ring.map(p => new Vector2(p.x, p.z)), []);
+        for (const [a, b, c] of faces) { triangle(vertex(ring[a], true), vertex(ring[c], true), vertex(ring[b], true)); triangle(vertex(ring[a], false), vertex(ring[b], false), vertex(ring[c], false)); }
+        for (let k = 0; k < ring.length; k++) { const a = ring[k], b = ring[(k + 1) % ring.length]; triangle(vertex(a, false), vertex(a, true), vertex(b, false)); triangle(vertex(b, false), vertex(a, true), vertex(b, true)); }
+      }
+    }
+  }
+  const geometry = new BufferGeometry(); geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
+  geometry.computeVertexNormals(); geometry.computeBoundingBox(); return geometry;
 }
 function openingGroup(doc: DesignDocument, opening: DesignOpening) {
   const wall = doc.walls.find(w => w.id === opening.wallId)!, frame = wallFrame(doc, wall), start = frame.point(opening.offset);
@@ -167,7 +207,7 @@ export class DesignGeometryCache {
     const update = (id: string, points: PlanPoint[], height: number, bottom: number, floor: boolean, wall?: DesignWall, roof?: DesignRoof) => {
       if (polygonIssue(points)) return;
       desired.add(id);
-      const signature = JSON.stringify([points, height, bottom, wall ? doc.openings.filter(o => o.wallId === id) : [], roof, roof ? doc.roofOpenings.filter(o => o.roofId === id) : []]); let entry = this.entries.get(id);
+      const signature = JSON.stringify([points, height, bottom, wall ? [wall.endHeight, wall.start, wall.end, doc.openings.filter(o => o.wallId === id)] : [], roof, roof ? doc.roofOpenings.filter(o => o.roofId === id) : []]); let entry = this.entries.get(id);
       if (!entry) {
         const geometry = roof ? roofGeometry(doc, roof) : wall ? wallGeometry(doc, wall) : extrudePlan(points, height, bottom)!;
         const mesh = new Mesh(geometry, new MeshStandardMaterial({ color: roof ? '#927b9f' : floor ? '#536b83' : '#ccd4dd', roughness: .85 }));

@@ -34,6 +34,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   Gamepad2,
+  FlaskConical,
+  RefreshCw,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -240,6 +242,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
   const [modelLoading, setModelLoading] = useState(false);
   const [modelError, setModelError] = useState('');
   const [modelsError, setModelsError] = useState('');
+  const [modelChoicesLoading, setModelChoicesLoading] = useState(false);
   const [recordLoading, setRecordLoading] = useState(view !== 'create' && view !== 'list');
   const [recordError, setRecordError] = useState('');
   const [baseline, setBaseline] = useState('');
@@ -251,6 +254,9 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingCharacter, setEditingCharacter] = useState<Character | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+  const [activeFilter, setActiveFilter] = useState('');
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(25);
   const [total, setTotal] = useState(0);
@@ -308,9 +314,13 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
     return () => modelChoicesRequest.current?.abort();
   }, []);
   useEffect(() => {
+    if (view !== 'list') return;
     const controller = new AbortController();
     setLoading(true); setLoadError(''); setSelected(new Set());
     const params = new URLSearchParams({ limit: String(pageSize), offset: String(page * pageSize), search: searchQuery, sort: sort.key, direction: sort.direction });
+    if (typeFilter) params.set('type', typeFilter);
+    if (statusFilter) params.set('status', statusFilter);
+    if (activeFilter) params.set('isActive', activeFilter);
     const timer = setTimeout(async () => {
       try {
         const response = await fetch(`/api/threed/characters?${params}`, { signal: controller.signal, cache: 'no-store' });
@@ -320,16 +330,16 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
         setCharacters(data.data); setTotal(Number(data.pagination.total));
         if (page > 0 && page * pageSize >= data.pagination.total) setPage(Math.max(0, Math.ceil(data.pagination.total / pageSize) - 1));
       } catch (error) {
-        if (!controller.signal.aborted) { setLoadError(error instanceof Error ? error.message : 'Failed to fetch Characters'); setCharacters([]); }
+        if (!controller.signal.aborted) { setLoadError(error instanceof Error ? error.message : 'Failed to fetch Characters'); setCharacters([]); setTotal(0); }
       } finally { if (!controller.signal.aborted) setLoading(false); }
     }, 200);
     return () => { clearTimeout(timer); controller.abort(); };
-  }, [view, page, pageSize, searchQuery, sort, revision]);
+  }, [view, page, pageSize, searchQuery, typeFilter, statusFilter, activeFilter, sort, revision]);
   const fetchModels = async () => {
     modelChoicesRequest.current?.abort();
     const controller = new AbortController();
     modelChoicesRequest.current = controller;
-    setModelsError('');
+    setModelsError(''); setModelChoicesLoading(true);
     try {
       const choices: Array<Pick<Model, 'id' | 'modelName' | 'modelType'>> = [];
       let offset = 0;
@@ -344,12 +354,18 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
       }
       setModels(choices);
     } catch (error) { if (!controller.signal.aborted) setModelsError(error instanceof Error ? error.message : 'Model choices unavailable'); }
+    finally { if (!controller.signal.aborted) setModelChoicesLoading(false); }
   };
   const filteredCharacters = characters;
   const modelOptions = editingCharacter?.model && editingCharacter.model.id === editingCharacter.modelId && !models.some(model => model.id === editingCharacter.model!.id)
     ? [editingCharacter.model, ...models] : models;
   const dirty = view === 'animations' ? assignmentState.dirty : Boolean(baseline && JSON.stringify(formData) !== baseline);
   const busy = isSubmitting || recordLoading || assignmentState.busy;
+  const draftIssue = useMemo(() => {
+    if (view !== 'create' && view !== 'edit') return '';
+    try { validateCharacterDraft(formData); return ''; }
+    catch (error) { return error instanceof Error ? error.message : 'Check the Character fields before saving.'; }
+  }, [view, formData]);
   const allowPageLeave = useCharacterPageGuard(view !== 'list', dirty, busy);
   useEffect(() => {
     if (view === 'create') { setBaseline(JSON.stringify(formData)); return; }
@@ -586,7 +602,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
+          <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={`More actions for ${character.name}`} disabled={bulkBusy || isSubmitting}>
             <MoreHorizontal className="w-4 h-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -632,6 +648,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
       <nav className="flex flex-wrap gap-2 lg:ml-auto" aria-label="Character workspace">
         <Button asChild variant="outline" size="sm" className="h-7 text-xs"><a href="/admin/threed/characters">Characters</a></Button>
         {characterId && <><Button asChild variant={view === 'edit' ? 'secondary' : 'outline'} size="sm" className="h-7 text-xs"><a aria-current={view === 'edit' ? 'page' : undefined} href={'/admin/threed/characters/' + characterId}>Details</a></Button><Button asChild variant={view === 'animations' ? 'secondary' : 'outline'} size="sm" className="h-7 text-xs"><a aria-current={view === 'animations' ? 'page' : undefined} href={'/admin/threed/characters/' + characterId + '/animations'}>Animations & Actions</a></Button></>}
+        <AdminWorkspaceLink href="/admin/threed/simulations" icon={FlaskConical}>Simulations</AdminWorkspaceLink>
       </nav>
     </AdminWorkspaceHeader>
     {recordLoading ? <p role="status">Loading Character...</p> : recordError ? <div role="alert"><p className="text-destructive">{recordError}</p><Button variant="outline" size="sm" onClick={fetchCharacters}>Retry</Button></div> : view === 'animations' && characterId ? <CharacterAnimationAssignments characterId={characterId} onStateChange={setAssignmentState} /> : <>
@@ -645,7 +662,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
         </section>
         <form id="character-editor-form" noValidate onSubmit={event => { event.preventDefault(); void (view === 'create' ? handleCreate() : handleUpdate()); }} className="min-h-0 min-w-0 lg:overflow-y-auto lg:pr-1" aria-label="Character details">
           <fieldset disabled={busy} className="min-w-0 space-y-3 [&_[role=switch]]:h-4 [&_[role=switch]]:w-7 [&_[role=switch]>span]:h-3 [&_[role=switch]>span]:w-3 [&_[role=switch]>span[data-state=checked]]:translate-x-3">
-            {modelsError && <p role="alert" className="text-xs text-destructive">{modelsError}<Button type="button" size="sm" variant="outline" onClick={() => void fetchModels()}>Retry Models</Button></p>}
+            {modelsError && <p role="alert" className="text-xs text-destructive">{modelsError}<Button type="button" size="sm" variant="outline" disabled={busy || modelChoicesLoading} onClick={() => void fetchModels()}>Retry Models</Button></p>}
           <div className="grid min-w-0 grid-cols-1 items-start [&>details]:col-span-full [&>div]:rounded-md [&>div]:border [&>div]:p-3 gap-3 pt-1 sm:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
             <div>
               <Label htmlFor="edit-characterId">Character ID *</Label>
@@ -737,6 +754,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
               </div>
               {selectedModel?.files && <details className="rounded-md border p-2"><summary className="cursor-pointer text-xs font-medium">Model Files <span className="text-muted-foreground">({selectedModel.files.length})</span></summary><ModelFileList files={selectedModel.files} emptyText="No files attached to this Model (add them in Models)" /></details>}
               {selectedModel && <Button asChild variant="outline" size="sm" className="h-7 text-xs"><a href={'/admin/threed/models/' + selectedModel.id}>View Model / source settings</a></Button>}
+              <Button type="button" variant="outline" size="sm" className="h-7 text-xs" disabled={busy || modelChoicesLoading} aria-busy={modelChoicesLoading} onClick={() => void fetchModels()}><RefreshCw className={`mr-1 h-3 w-3 ${modelChoicesLoading ? 'animate-spin' : ''}`} aria-hidden="true" />{modelChoicesLoading ? 'Loading Model choices...' : 'Refresh Model choices'}</Button>
               {formData.modelId && <p className="text-xs text-muted-foreground">
                   Assigned Model #{formData.modelId}{selectedModel ? ` — ${selectedModel.modelName}` : ' — unavailable; the saved relationship is retained until you choose a replacement or None.'}
                 </p>}
@@ -1121,7 +1139,8 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
         </form>
       </div>
       <footer className="admin-editor-actions border-t pt-2">
-        <Button type="submit" form="character-editor-form" variant="success" size="sm" disabled={busy || (view === 'edit' && !dirty)}>{isSubmitting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}{view === 'create' ? 'Create Character' : 'Save Changes'}</Button>
+        {draftIssue && <p id="character-save-guidance" role="status" className="w-full text-xs text-amber-600 dark:text-amber-400">{draftIssue}</p>}
+        <Button type="submit" form="character-editor-form" variant="success" size="sm" aria-describedby={draftIssue ? 'character-save-guidance' : undefined} disabled={busy || !!draftIssue || (view === 'edit' && !dirty)}>{isSubmitting ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : null}{view === 'create' ? 'Create Character' : 'Save Changes'}</Button>
         <Button type="button" size="sm" variant="outline" disabled={busy || !dirty} onClick={() => { if (baseline) setFormData(JSON.parse(baseline)); }}>Discard</Button>
         <span className="ml-auto text-xs text-muted-foreground" role="status">{dirty ? 'Unsaved changes' : 'No unsaved changes'}</span>
       </footer>
@@ -1138,7 +1157,16 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
         <AdminWorkspaceLink href="/admin/threed/animations" icon={Clapperboard}>Animations</AdminWorkspaceLink>
         <AdminWorkspaceLink href="/admin/threed/animation-slots" icon={Clapperboard}>Animation Slots</AdminWorkspaceLink>
         <AdminWorkspaceLink href="/admin/threed/animation-categories" icon={Clapperboard}>Animation Categories</AdminWorkspaceLink>
+        <AdminWorkspaceLink href="/admin/threed/simulations" icon={FlaskConical}>Simulations</AdminWorkspaceLink>
       </AdminWorkspaceHeader>
+      <div className="flex shrink-0 flex-wrap items-center gap-2 text-xs" aria-label="Character filters">
+        <label className="flex items-center gap-1">Type <select aria-label="Filter Characters by type" value={typeFilter} disabled={bulkBusy} className="h-7 rounded border bg-background px-2 text-xs" onChange={event => { resetList(); setTypeFilter(event.target.value); }}><option value="">All types</option>{CHARACTER_TYPE_OPTIONS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+        <label className="flex items-center gap-1">Status <select aria-label="Filter Characters by status" value={statusFilter} disabled={bulkBusy} className="h-7 rounded border bg-background px-2 text-xs" onChange={event => { resetList(); setStatusFilter(event.target.value); }}><option value="">All statuses</option>{CHARACTER_STATUS_OPTIONS.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
+        <label className="flex items-center gap-1">Availability <select aria-label="Filter Characters by active availability" value={activeFilter} disabled={bulkBusy} className="h-7 rounded border bg-background px-2 text-xs" onChange={event => { resetList(); setActiveFilter(event.target.value); }}><option value="">Active and inactive</option><option value="true">Active</option><option value="false">Inactive</option></select></label>
+        <Button type="button" variant="outline" size="sm" className="h-7 text-xs" disabled={loading || bulkBusy || isSubmitting} onClick={fetchCharacters}><RefreshCw className="mr-1 h-3 w-3" aria-hidden="true" />Refresh</Button>
+        <Button type="button" variant="outline" size="sm" className="h-7 text-xs" disabled={bulkBusy || (!searchQuery && !typeFilter && !statusFilter && !activeFilter)} onClick={() => { resetList(); setSearchQuery(''); setTypeFilter(''); setStatusFilter(''); setActiveFilter(''); }}>Reset filters</Button>
+        <ModelFieldHelp label="Character availability">Active availability and Character status are separate saved fields. Scene Library placement requires Active availability, Active status and Visible, plus a supported Model and runtime. Editing these reusable defaults does not move existing Project placements.</ModelFieldHelp>
+      </div>
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">
         <div className="flex flex-wrap items-center gap-2"><span>{loading ? 'Loading…' : loadError ? 'Characters unavailable' : `${total ? page * pageSize + 1 : 0}–${Math.min((page + 1) * pageSize, total)} of ${total} Characters`}</span><span aria-hidden="true">|</span><span>{selected.size} selected</span>
           <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={loading || bulkBusy || isSubmitting || !!loadError || !selected.size} onClick={() => void deleteSelected()}>Delete selected ({selected.size})</Button>
@@ -1193,8 +1221,8 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
                       {getOptionLabel(CHARACTER_STATUS_OPTIONS, character.status)}
                     </span>
                   </TableCell>
-                  <TableCell className="text-center py-1">
-                    {character.isActive ? <Check aria-label="Active" className="mx-auto h-4 w-4 text-green-500" /> : <X aria-label="Inactive" className="mx-auto h-4 w-4 text-gray-500" />}
+                  <TableCell className="py-1 text-xs">
+                    <span className={`inline-flex items-center gap-1 ${character.isActive ? 'text-green-600 dark:text-green-400' : 'text-muted-foreground'}`}>{character.isActive ? <Check aria-hidden="true" className="h-4 w-4" /> : <X aria-hidden="true" className="h-4 w-4" />}{character.isActive ? 'Active' : 'Inactive'}</span>
                   </TableCell>
                   <TableCell className="py-1 text-right">{renderActions(character)}</TableCell>
                 </TableRow>

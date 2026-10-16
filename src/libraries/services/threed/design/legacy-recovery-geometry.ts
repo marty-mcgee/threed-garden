@@ -202,7 +202,7 @@ export function reconstructLegacyOpenings(
       const projectedHalf = (width * alignment + depth * across) / 2;
       const projectedDepthHalf = (depth * alignment + width * across) / 2;
       const base = entityElevation(result, wall), bottom = placement.position.y;
-      if (projection + projectedHalf <= 0 || projection - projectedHalf >= frame.length || Math.abs(perpendicular) >= projectedDepthHalf + wall.thickness / 2 || bottom + height <= base || bottom >= base + wall.height) continue;
+      if (projection + projectedHalf <= 0 || projection - projectedHalf >= frame.length || Math.abs(perpendicular) >= projectedDepthHalf + wall.thickness / 2 || bottom + height <= base || bottom >= base + Math.max(wall.height, wall.endHeight ?? wall.height)) continue;
       intersected++;
       // A rotated box intersection is a trapezoid; the bounding rectangle is not an exact conversion.
       if (across > 1e-6 || alignment < 1 - 1e-6 || depth / 2 + 1e-6 < Math.abs(perpendicular) + wall.thickness / 2) continue;

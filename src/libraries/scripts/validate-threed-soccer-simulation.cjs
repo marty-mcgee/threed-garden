@@ -200,7 +200,7 @@ function controlsFixture(launchMode = false) {
   assert(ui.requests.some(request => request.options.method === 'PATCH' && JSON.parse(request.options.body).report.phase === 'cancelled'), 'Late capture receives an honest cancelled report'); ui.rt.cleanup();
   ui = controlsFixture(); await ui.rt.flush(); ui.find(node => node.props?.['aria-label'] === 'Saved Simulation').props.onChange({ target: { value: '26' } }); await ui.rt.flush();
   ui.captureFailed(true); await ui.button('Play').props.onClick(); await ui.rt.flush(); assert.equal(ui.events.length, 0); assert(ui.notices.some(([message]) => message.includes('Migration'))); ui.rt.cleanup();
-  ui = controlsFixture('public'); await ui.rt.flush(); assert.equal(ui.requests.length, 0, 'Public mount makes no private reads or automatic run');
+  ui = controlsFixture('public'); await ui.rt.flush(); assert(!ui.button('Play') && !ui.button('Square'), 'Embedded runner leaves Run/Stop exclusively to the launcher'); assert.equal(ui.requests.length, 0, 'Public mount makes no private reads or automatic run');
   ui.request(); await ui.rt.flush(); assert(ui.events.some(event => event.type === navigation.NAVIGATION_REQUEST));
   assert(ui.requests.every(request => request.url.startsWith('/api/project/simulations?')), 'Public runs never call owner CRUD/results');
   ui.stop(); await ui.rt.flush(); assert(ui.notices.some(([message]) => message.includes('cancelled'))); ui.rt.cleanup();
@@ -210,11 +210,13 @@ function controlsFixture(launchMode = false) {
   const publicKick = ui.events.find(event => event.type === kickCore.THREED_SOCCER_KICK_REQUEST_EVENT).detail;
   ui.emit(kickCore.THREED_SOCCER_KICK_RESULT_EVENT, { ...publicKick, applied: true }); await ui.rt.flush();
   assert(ui.notices.some(([message]) => message.includes('completed')));
-  assert(ui.requests.every(request => request.url.startsWith('/api/project/simulations?')), 'Completed public runs never persist results'); ui.rt.cleanup();
+  assert(ui.requests.every(request => request.url.startsWith('/api/project/simulations?')), 'Completed public runs never persist results');
+  assert(!nodes(ui.rt.tree).some(node => node.type === 'p' && JSON.stringify(node.props.children).includes('Simulation completed')), 'Embedded outcomes do not duplicate the launcher completion status'); ui.rt.cleanup();
   ui = controlsFixture('public'); ui.hold(true); ui.request(); ui.stop(); ui.release(); await ui.rt.flush(); assert.equal(ui.events.length, 0, 'Stopped public preflight cannot dispatch later'); ui.rt.cleanup();
   ui = controlsFixture('public'); ui.revision(4); ui.request(); await ui.rt.flush(); assert.equal(ui.events.length, 0, 'Changed public revision requires review'); ui.rt.cleanup();
   ui = controlsFixture('owner'); ui.request(); await ui.rt.flush();
-  assert(ui.requests.some(request => request.url === '/api/threed/simulation-results' && request.options.method === 'POST'), 'One-click owner run still captures results'); ui.stop(); await ui.rt.flush(); ui.rt.cleanup();
+  assert(ui.requests.some(request => request.url === '/api/threed/simulation-results' && request.options.method === 'POST'), 'One-click owner run still captures results'); ui.stop(); await ui.rt.flush();
+  assert(ui.find(node => node.props?.['aria-label'] === 'Simulation result save status'), 'Result persistence remains separately labelled'); ui.rt.cleanup();
   ui = controlsFixture('owner'); ui.captureFailed(true); ui.request(); await ui.rt.flush();
   assert.equal(ui.events.length, 0); assert(ui.statuses.some(([busy, state, error]) => !busy && error?.includes('Migration')), 'Owner capture errors reach the visible launch status'); ui.rt.cleanup();
   console.log('PASS: actual Scene controls load exact definitions, recheck owner bindings/revision, lock duplicate Run, dispatch Run then contact Kick, scope observations, Stop and reject stale preflight/Project replies (offline).');

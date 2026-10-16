@@ -1,4 +1,8 @@
-## Prepared checkpoint: [v0.25.3 — ThreeD Designs: Legacy recovery and Model guidance](v0.25.3.md)
+## Prepared checkpoint: [v0.26.4 — ThreeD Simulations: Admin workflows and Results](v0.26.4.md)
+
+October 15, 2026: local package/root lockfile 0.26.4, based on main a6e9e441 plus accepted working changes. Includes Admin Simulation management, read-only Results, Scene feedback and related Admin conventions. Production remains Developer-confirmed [v0.26.3](v0.26.3.md); exact deployed SHA and independent production verification remain unconfirmed. See release notes for executed checks and manual limits. No commit, tag, push, publication or deployment is included. Earlier status entries below are historical.
+
+## Historical prepared checkpoint: [v0.25.3 — ThreeD Designs: Legacy recovery and Model guidance](v0.25.3.md)
 
 October 14, 2026: package/root lockfile 0.25.3. The Developer accepted the browser checkpoint and requested production release preparation. Staged legacy JSON import, explicit scene-recovery automation and Model guidance/readiness improvements are included. [Release notes](v0.25.3.md) record actual checks, supplied screenshots and remaining limitations. Production remains Developer-confirmed [v0.25.2](v0.25.2.md); no commit, tag, push, publication or deployment is performed by this preparation. Earlier status entries below are historical.
 

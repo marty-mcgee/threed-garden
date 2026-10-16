@@ -88,7 +88,13 @@ function omitted(family, id, entity, message) {
   assert(result.warnings.some(warning => warning.includes(String(id))), `Omission must identify legacy record ${id}.`);
   assert.deepEqual(json(result.document.nodes), json(doc.nodes), 'Rejected records cannot leave orphan corner nodes.');
 }
-omitted('walls', 71, paper('wall', 71, [[800, 0], [1000, 0]], { height: [250, 350], thickness: 20 }), 'Tapered walls cannot silently become constant-height walls.');
+const slopedInput = fixture();
+slopedInput.walls[71] = paper('wall', 71, [[800, 0], [1000, 0]], { height: [0, 350], thickness: 20 });
+const slopedImport = parseDesignImport(JSON.stringify(slopedInput));
+assert.equal(slopedImport.document.version, 6);
+const slopedWall = slopedImport.document.walls.find(wall => wall.id === 'legacy-wall-71');
+assert.equal(slopedWall.height, 0); assert.equal(slopedWall.endHeight, 3.5);
+assert.equal(slopedImport.document.walls.length, 4, 'Sloped walls remain editable, with endpoint identity and centimetre conversion.');
 omitted('walls', 72, paper('wall', 72, [[800, 0], [800, 0]], { height: [250, 250], thickness: 20 }), 'Degenerate walls must be omitted.');
 omitted('walls', 73, paper('wall', 73, [[[800, 0], [0, 0], [20, 20]], [1000, 0]], { height: [250, 250], thickness: 20 }), 'Curved Paper segments cannot silently become straight walls.');
 omitted('walls', 74, paper('wall', 74, [[800, 0], [1000, 0]], { height: [250, 250], thickness: 20 }, { matrix: [1, 0, 0, 1, 20, 0] }), 'Unapplied transforms cannot change coordinates silently.');

@@ -18,8 +18,8 @@ export function architectureAssets(doc: DesignDocument, search = '', units: 'imp
     const z = (Math.min(...points.map(p => p.z)) + Math.max(...points.map(p => p.z))) / 2;
     const hostWall = opening ? doc.walls.find(item => item.id === opening.wallId) : undefined;
     const hostRoof = roof ?? ('roofId' in entity ? doc.roofs.find(item => item.id === entity.roofId) : undefined);
-    const y = level.elevation + (wall ? wall.elevation + wall.height / 2 : floor ? floor.elevation : opening && hostWall ? hostWall.elevation + opening.sill + opening.height / 2 : hostRoof ? hostRoof.elevation + roofProfile(entityPoints(doc, hostRoof.id), hostRoof).height({ x, z }) : 0);
-    const dimensions = wall ? `${length(distance(points[0], points[1]))} long / ${length(wall.height)} high`
+    const y = level.elevation + (wall ? wall.elevation + (wall.height + (wall.endHeight ?? wall.height)) / 4 : floor ? floor.elevation : opening && hostWall ? hostWall.elevation + opening.sill + opening.height / 2 : hostRoof ? hostRoof.elevation + roofProfile(entityPoints(doc, hostRoof.id), hostRoof).height({ x, z }) : 0);
+    const dimensions = wall ? `${length(distance(points[0], points[1]))} long / ${wall.endHeight !== undefined ? `${length(wall.height)} to ${length(wall.endHeight)}` : length(wall.height)} high`
       : opening ? `${length(opening.width)} wide / ${length(opening.height)} high`
       : 'length' in entity ? `${length(entity.width)} / ${length(entity.length)}`
       : `${length(Math.max(...points.map(p => p.x)) - Math.min(...points.map(p => p.x)))} / ${length(Math.max(...points.map(p => p.z)) - Math.min(...points.map(p => p.z)))}`;

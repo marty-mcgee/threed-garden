@@ -59,7 +59,7 @@ function fn(name, context) { return vm.runInNewContext(compile('(' + expressions
   context.recordError = ''; context.editingCharacter = null;
   await update(); assert.ok(notices.some(message => message.includes('not ready to save')));
   let models, urls = [];
-  const picker = fn('fetchModels', { AbortController, modelChoicesRequest: { current: null }, setModelsError() {}, setModels: value => { models = value; },
+  const picker = fn('fetchModels', { AbortController, modelChoicesRequest: { current: null }, setModelChoicesLoading() {}, setModelsError() {}, setModels: value => { models = value; },
     fetch: async url => { urls.push(url); const offset = Number(new URL('http://local' + url).searchParams.get('offset')); return { ok: true, json: async () => ({ success: true, data: Array.from({ length: offset === 400 ? 1 : 200 }, (_, index) => ({ id: offset + index + 1 })), pagination: { total: 401 } }) }; } });
   await picker(); assert.equal(models.length, 401); assert.equal(urls.length, 3); assert.ok(urls[2].endsWith('offset=400'));
   const modelEffect = effects.find(text => text.includes("'/api/threed/models?id='"));

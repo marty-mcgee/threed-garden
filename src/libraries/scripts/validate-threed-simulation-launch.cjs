@@ -193,7 +193,12 @@ function scenarioGuideFixture() {
   assert.equal(ui.button().props.disabled, true); assert(textOf(ui.rt.tree).includes('No runnable Simulation is available in this Project.'));
   assert(!ui.requests[0].includes('scenarioId='), 'Opening a Scenario does not filter the Simulation list');
   assert(!ui.find(node => node.props?.['aria-label'] === 'Choose Scenario'), 'Scenario controls remain separate from Run Simulation');
-  const prepare = ui.find(node => node.type === 'Link' && node.props.href.includes('/simulations/new?'));
+  const prepare = ui.find(node => node.type === 'Link' && node.props.children === 'Prepare Simulation');
+  const createLink = ui.find(node => node.type === 'Link' && node.props['aria-label'] === 'Create Simulation');
+  assert.equal(prepare.props.href, '/admin/threed/simulations/new?projectId=16', 'Scene preparation opens the Admin editor directly');
+  assert.equal(createLink.props.href, prepare.props.href, 'The Create icon shares the scoped Admin destination');
+  assert.equal(ui.find(node => node.type === 'Link' && node.props.children === 'Review saved Simulations').props.href, '/admin/threed/simulations?projectId=16');
+  assert(!nodes(ui.rt.tree).some(node => typeof node.props?.href === 'string' && node.props.href.startsWith('/dashboard/simulations')), 'Scene authoring links no longer open a Dashboard editor');
   const params = new URL(prepare.props.href, 'http://fixture').searchParams;
   assert.equal(params.get('projectId'), '16'); assert.equal(params.get('scenarioId'), null); assert.equal(params.get('recipe'), null);
   ui.available(1); ui.find(node => node.props?.['aria-label'] === 'Refresh Simulations').props.onClick(); await ui.rt.flush();

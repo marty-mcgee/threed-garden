@@ -69,7 +69,8 @@ export function ProjectSimulationControls({ context, subscribeSensors, launch }:
   const pendingResults = saveResults ? simulationResultJournal.list().filter(entry => entry.projectId === context.projectId && entry.status === 'error' && entry.report) : [];
   const resultEntry = saveResults ? simulationResultJournal.list().find(entry => entry.start.runId === state?.runId) : undefined;
 
-  const launchError = error || (resultEntry?.status === 'error' ? `Result not saved: ${resultEntry.error}` : '');
+  // Execution errors belong to the launcher; result persistence has its own feedback below.
+  const launchError = error;
   useEffect(() => { launch?.onStatus(checking || running, state, launchError); }, [checking, running, state, launchError, launch?.onStatus]);
   useEffect(() => {
     if (!launch || launch.request === consumedRequest.current) return;
@@ -271,7 +272,7 @@ export function ProjectSimulationControls({ context, subscribeSensors, launch }:
 
   if (!context.allowed) return null;
   return <section aria-label="ThreeD Simulation" className="mt-2 space-y-2 border-t border-foreground/15 pt-2">
-    <div className="flex items-center gap-1"><FlaskConical className="h-3.5 w-3.5 text-cyan-500" /><h3 className="text-xs font-semibold">Simulation</h3>
+    <div className="flex items-center gap-1"><FlaskConical className="h-3.5 w-3.5 text-cyan-500" /><h3 className="text-xs font-semibold">Participants and readiness</h3>
       <ModelFieldHelp label="Scene Simulation">Run executes saved Actions through current physics owners. Stop cancels pending work. {saveResults ? 'A database record is captured before Actions execute; unfinished browser sessions remain identifiable.' : 'Public visitor runs stay in this browser and do not write database results.'}</ModelFieldHelp>
       {!launch && <Button aria-label="Refresh Simulations" variant="ghost" size="icon" className="ml-auto h-6 w-6" disabled={running || checking || loading} onClick={() => setRefresh(value => value + 1)}><RotateCw className="h-3 w-3" /></Button>}
     </div>
@@ -291,15 +292,15 @@ export function ProjectSimulationControls({ context, subscribeSensors, launch }:
         <ol className="list-inside list-decimal text-xs">{simulation.definition.steps.map((step, index) => <li key={step.id} className={running && state.stepIndex === index ? 'text-cyan-500' : ''}>{simulationActionLabel(step.action)}</li>)}</ol>
         {readiness && !running && <p role="status" className="text-xs text-amber-600 dark:text-amber-300">{readiness}</p>}
       </>}
-      <div className="flex items-center gap-2"><Button className="h-7 bg-emerald-600 text-xs text-white hover:bg-emerald-500" disabled={!simulation || !!readiness || running || checking || loading} onClick={run}><Play className="h-3 w-3" />{checking ? 'Checking…' : 'Run'}</Button>
-        <Button variant="outline" className="h-7 text-xs" disabled={!running && !checking} onClick={stop}><Square className="h-3 w-3" /> Stop</Button></div>
-      {state && <div role="status" className="space-y-1 text-xs"><p className="font-medium">{state.phase === 'running' ? `Running Action ${state.stepIndex + 1}` : `Simulation ${state.phase}`}</p>
-        {state.reason && <p>{state.reason}</p>}<ul>{state.outcomes.map(item => <li key={item.requestId}>{simulationActionLabel(item.action)}: {item.status}{item.reason ? ` · ${item.reason}` : ''}</li>)}</ul></div>}
-      {resultEntry && <p role="status" className="text-[11px] text-muted-foreground">{resultEntry.status === 'saved' ? `Result #${resultEntry.resultId} saved.` : resultEntry.status === 'error' ? `Result not saved: ${resultEntry.error}` : resultEntry.status === 'saving' ? 'Saving result…' : 'Run record captured.'}</p>}
+      {!launch && <div className="flex items-center gap-2"><Button className="h-7 bg-emerald-600 text-xs text-white hover:bg-emerald-500" disabled={!simulation || !!readiness || running || checking || loading} onClick={run}><Play className="h-3 w-3" />{checking ? 'Checking…' : 'Run'}</Button>
+        <Button variant="outline" className="h-7 text-xs" disabled={!running && !checking} onClick={stop}><Square className="h-3 w-3" /> Stop</Button></div>}
+      {state && <div role="status" className="space-y-1 text-xs">{!launch && <p className="font-medium">{state.phase === 'running' ? `Running Action ${state.stepIndex + 1}` : `Simulation ${state.phase}`}</p>}
+        {!launch && state.reason && <p>{state.reason}</p>}<p className="font-medium">Action outcomes</p><ul>{state.outcomes.map(item => <li key={item.requestId}>{simulationActionLabel(item.action)}: {item.status}{item.reason ? ` · ${item.reason}` : ''}</li>)}</ul></div>}
+      {resultEntry && <p role="status" aria-label="Simulation result save status" className="border-t border-foreground/15 pt-2 text-[11px] text-muted-foreground">{resultEntry.status === 'saved' ? <Link className="underline underline-offset-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring" href={`/admin/threed/simulation-results/${resultEntry.start.runId}`}>Result #{resultEntry.resultId} saved. View report</Link> : resultEntry.status === 'error' ? `Result not saved: ${resultEntry.error}` : resultEntry.status === 'saving' ? 'Saving result…' : 'Run record captured.'}</p>}
       {!saveResults && <p className="text-[11px] text-muted-foreground">Local run · database results are saved only for the Project owner.</p>}
       {!!observations.length && <details><summary className="cursor-pointer text-xs">Sensor observations during run</summary><p className="mt-1 text-[11px] text-muted-foreground">Run-window activity; a completed kick does not certify a goal. Counts remain shared.</p><ul className="text-[11px]">{observations.map(item => <li key={item.groupId}>{item.name}: {item.baseline} → {item.final} ({item.countersReset ? 'counter reset observed' : `+${item.delta}`}); {item.events} events{item.truncated ? ' (report limit reached)' : ''}</li>)}</ul></details>}
     </>
     {!!pendingResults.length && <div role="alert" className="space-y-1 text-xs text-destructive"><p>{pendingResults.length} result{pendingResults.length === 1 ? '' : 's'} awaiting save. Retrying does not run Actions.</p><Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => void simulationResultJournal.retry(context.projectId!)}>Retry result save</Button></div>}
-    {error && <p role="alert" className="text-xs text-destructive">{error}</p>}{ToastComponent}
+    {!launch && error && <p role="alert" className="text-xs text-destructive">{error}</p>}{ToastComponent}
   </section>;
 }

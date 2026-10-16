@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { Clapperboard, Upload, ArrowUpDown, ArrowUp, ArrowDown, ToggleLeft, ToggleRight, Images, Box, Check, X, Pencil, Trash2, ExternalLink } from 'lucide-react';
+import { Clapperboard, Upload, ArrowUpDown, ArrowUp, ArrowDown, ToggleLeft, ToggleRight, Images, Box, Check, X, Pencil, Trash2, ExternalLink, FlaskConical } from 'lucide-react';
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,8 +20,8 @@ async function request(url: string, init?: RequestInit) {
 }
 
 // The library owns this workspace. No Model/Character selection or target API is required.
-export function ThreeDAnimationsWorkspace() {
-  const [category, setCategory] = useState('');
+export function ThreeDAnimationsWorkspace({ initialCategoryId }: { initialCategoryId?: number } = {}) {
+  const [category, setCategory] = useState(initialCategoryId ? String(initialCategoryId) : '');
   const [categoryRefresh, setCategoryRefresh] = useState(0);
   const { categories, error: categoryError } = useAnimationCategories(categoryRefresh);
   const [categoryEditing, setCategoryEditing] = useState<Animation | null>(null);
@@ -50,7 +50,7 @@ export function ThreeDAnimationsWorkspace() {
           if (controller.signal.aborted) return;
           setRows(result.data); setTotal(result.pagination.total);
           if (page > 0 && page * pageSize >= result.pagination.total) setPage(Math.max(0, Math.ceil(result.pagination.total / pageSize) - 1));
-        }).catch(err => { if (!controller.signal.aborted) setError(err instanceof Error ? err.message : 'Library unavailable'); })
+        }).catch(err => { if (!controller.signal.aborted) { setRows([]); setTotal(0); setError(err instanceof Error ? err.message : 'Library unavailable'); } })
         .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     }, 200);
     return () => { clearTimeout(timer); controller.abort(); };
@@ -129,11 +129,13 @@ export function ThreeDAnimationsWorkspace() {
     <AdminWorkspaceHeader icon={Clapperboard} title="Animations" description="Reusable animation assets, independent of Models and Characters">
       <span className="rounded bg-muted px-2 text-xs">{error ? '—' : total}</span>
       <Input aria-label="Search saved animations" placeholder="Search saved animations…" value={search} disabled={busy} onChange={event => { setSearch(event.target.value); setPage(0); }} className="h-7 min-w-48 flex-1 text-xs" />
-      <select aria-label="Filter Animations by category" className="h-7 min-w-40 rounded border bg-background px-2 text-xs" disabled={busy || !!categoryError} value={category} onChange={e => { setCategory(e.target.value); setPage(0); }}><option value="">All categories</option>{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
+      <select aria-label="Filter Animations by category" className="h-7 min-w-40 rounded border bg-background px-2 text-xs" disabled={busy || !!categoryError} value={category} onChange={e => { setCategory(e.target.value); setPage(0); }}><option value="">All categories</option>{category && !categories.some(c => String(c.id) === category) && <option value={category}>Category #{category}</option>}{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
       <AdminWorkspaceLink href="/admin/threed/animation-slots" icon={Clapperboard}>Animation Slots</AdminWorkspaceLink>
       <AdminWorkspaceLink href="/admin/threed/animation-categories" icon={Clapperboard}>Animation Categories</AdminWorkspaceLink>
       <Button size="sm" className="h-7 text-xs" disabled={busy} onClick={() => uploadRef.current?.click()}><Upload className="mr-1 h-3 w-3" />Upload Animations</Button>
-      <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading} onClick={() => setRefresh(value => value + 1)}>Refresh</Button>
+      <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading} onClick={() => { setRefresh(value => value + 1); setCategoryRefresh(value => value + 1); }}>Refresh</Button>
+      <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || (!search && !category)} onClick={() => { setSearch(''); setCategory(''); setPage(0); setSelected(new Set()); }}>Reset filters</Button>
+      <AdminWorkspaceLink href="/admin/threed/simulations" icon={FlaskConical}>Simulations</AdminWorkspaceLink>
       <AdminWorkspaceLink href="/admin/threed/models" icon={Box}>Models</AdminWorkspaceLink>
       <AdminWorkspaceLink href="/admin/threed/model-textures" icon={Images}>Model Textures</AdminWorkspaceLink>
     </AdminWorkspaceHeader>
@@ -144,14 +146,14 @@ export function ThreeDAnimationsWorkspace() {
           <fieldset disabled={busy} className="space-y-3">
             <label className="grid gap-1 text-xs">Name<Input aria-label="Animation name" autoFocus required maxLength={255} value={editing.name} onChange={event => setEditing({ ...editing, name: event.target.value })} className="h-8 text-xs" /></label>
             <p className="text-xs text-muted-foreground">{editing.fileName} · Clip {editing.clipIndex + 1}. Renaming preserves saved assignments.</p>
-            <div className="flex justify-end gap-2"><Button type="button" size="sm" variant="outline" onClick={() => setEditing(null)}>Cancel</Button><Button type="submit" size="sm" disabled={!editing.name.trim()}>Update Animation</Button></div>
+            <div className="admin-editor-actions"><Button type="submit" size="sm" variant="success" disabled={!editing.name.trim()}>{busy ? 'Saving…' : 'Update Animation'}</Button><Button type="button" size="sm" variant="outline" onClick={() => setEditing(null)}>Cancel</Button></div>
           </fieldset>
           {operationError && <p role="alert" className="text-xs text-destructive">{operationError}</p>}
         </form>}
       </DialogContent>
     </Dialog>
     {!editing && operationError && <p role="alert" className="text-xs text-destructive">{operationError}</p>}
-    {categoryError && <p role="alert" className="text-xs text-destructive">{categoryError}</p>}
+    {categoryError && <div role="alert" className="flex flex-wrap items-center gap-2 text-xs text-destructive">{categoryError}<Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy} onClick={() => setCategoryRefresh(value => value + 1)}>Retry Categories</Button></div>}
     {categoryEditing && <AnimationCategoryEditor key={categoryEditing.id} animation={categoryEditing} categories={categories} onClose={() => setCategoryEditing(null)} onSaved={() => { setCategoryEditing(null); setRefresh(v => v + 1); }} />}
     {notice && <p role="status" className="shrink-0 text-xs text-green-500">{notice}</p>}
     {uploadResults.length > 0 && <section aria-label="Animation import results" className="shrink-0 rounded-lg border p-2 text-xs">
@@ -177,7 +179,7 @@ export function ThreeDAnimationsWorkspace() {
         {heading('name', 'Name')}<TableHead className="text-xs">Categories</TableHead>{heading('fileName', 'Source / Clip')}{heading('type', 'Type')}{heading('duration', 'Duration')}{heading('active', 'Active')}{heading('references', 'References')}{heading('size', 'Size')}<TableHead className="text-right text-xs">Actions</TableHead></TableRow></TableHeader>
         <TableBody>{loading ? <TableRow><TableCell colSpan={10}>Loading Animations…</TableCell></TableRow> : error ? <TableRow><TableCell colSpan={10}><div role="alert" className="flex items-center gap-2 text-sm text-destructive">{error}<Button variant="outline" size="sm" className="h-7 text-xs" disabled={busy} onClick={() => setRefresh(value => value + 1)}>Retry</Button></div></TableCell></TableRow> : rows.length === 0 ? <TableRow><TableCell colSpan={10}>No Animations found. Use Upload Animations to add FBX or self-contained GLB sources (up to 100 files, 4 MiB each).</TableCell></TableRow> : rows.map(row => <TableRow key={row.id}>
           <TableCell className="py-1 text-xs"><input type="checkbox" aria-label={`Select ${row.name}`} disabled={busy || loading || row.modelUsage + row.characterUsage + (row.presetUsage ?? 0) > 0} checked={selected.has(row.id)} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(row.id); else next.delete(row.id); return next; })} /></TableCell>
-          <TableCell className="py-1 text-sm"><div className="flex items-center gap-2"><Clapperboard aria-hidden="true" className="h-4 w-4 shrink-0 text-blue-500" />{row.name}</div></TableCell><TableCell className="py-1 text-xs"><button className="text-left underline decoration-dotted" disabled={busy || !!categoryError} onClick={() => setCategoryEditing(row)} aria-label={`Edit categories for ${row.name}`}>{(row.categoryIds ?? []).map(id => categories.find(c => c.id === id)?.name).filter(Boolean).join(', ') || 'Assign'}</button></TableCell><TableCell className="py-1 text-xs">{row.fileName} · #{row.clipIndex + 1}</TableCell><TableCell className="py-1 text-xs uppercase">{row.format}</TableCell><TableCell className="py-1 text-xs">{row.duration.toFixed(2)}s</TableCell><TableCell className="py-1 text-xs">{row.isActive ? <Check aria-label="Active" className="h-4 w-4 text-green-500" /> : <X aria-label="Inactive" className="h-4 w-4 text-gray-500" />}</TableCell><TableCell className="py-1 text-xs">{row.modelUsage} Models · {row.characterUsage} Characters · {row.presetUsage ?? 0} Presets</TableCell><TableCell className="py-1 text-xs">{(row.fileSize / 1024).toFixed(1)} KiB</TableCell>
+          <TableCell className="py-1 text-sm"><div className="flex items-center gap-2"><Clapperboard aria-hidden="true" className="h-4 w-4 shrink-0 text-blue-500" />{row.name}</div><span className="text-xs text-muted-foreground">#{row.id}</span></TableCell><TableCell className="py-1 text-xs"><button className="text-left underline decoration-dotted" disabled={busy || !!categoryError} onClick={() => setCategoryEditing(row)} aria-label={`Edit categories for ${row.name}`}>{(row.categoryIds ?? []).map(id => categories.find(c => c.id === id)?.name).filter(Boolean).join(', ') || 'Assign'}</button></TableCell><TableCell className="py-1 text-xs">{row.fileName} · #{row.clipIndex + 1}</TableCell><TableCell className="py-1 text-xs uppercase">{row.format}</TableCell><TableCell className="py-1 text-xs">{row.duration.toFixed(2)}s</TableCell><TableCell className="py-1 text-xs">{row.isActive ? <span className="inline-flex items-center gap-1 text-green-500"><Check aria-hidden="true" className="h-4 w-4" />Active</span> : <span className="inline-flex items-center gap-1 text-muted-foreground"><X aria-hidden="true" className="h-4 w-4" />Inactive</span>}</TableCell><TableCell className="py-1 text-xs">{row.modelUsage} Models · {row.characterUsage} Characters · {row.presetUsage ?? 0} Presets</TableCell><TableCell className="py-1 text-xs">{(row.fileSize / 1024).toFixed(1)} KiB</TableCell>
           <TableCell className="py-1 text-xs"><div className="flex justify-end gap-1"><Button size="icon" variant="ghost" className="h-8 w-8" aria-label={`Edit ${row.name}`} title="Rename animation" disabled={busy || loading} onClick={() => { setNotice(''); setOperationError(''); setEditing({ ...row }); }}><Pencil className="h-4 w-4" /></Button><Button variant="ghost" size="icon" className="h-8 w-8" disabled={busy || loading} aria-label={`${row.isActive ? 'Deactivate' : 'Activate'} ${row.name}`} onClick={() => void toggle(row)}>{row.isActive ? <ToggleRight className="h-4 w-4" /> : <ToggleLeft className="h-4 w-4" />}</Button><Button size="icon" variant="ghost" className="h-8 w-8" title="Delete unreferenced animation" aria-label={`Delete ${row.name}`} disabled={busy || loading || row.modelUsage + row.characterUsage + (row.presetUsage ?? 0) > 0} onClick={() => void remove(row)}><Trash2 className="h-4 w-4" /></Button><Button asChild size="icon" variant="ghost" className="h-8 w-8"><a href={row.filePath} target="_blank" rel="noopener noreferrer" title="Open source file" aria-label={`Open source for ${row.name}`}><ExternalLink className="h-4 w-4" /></a></Button></div></TableCell>
         </TableRow>)}</TableBody></Table>
     </div>

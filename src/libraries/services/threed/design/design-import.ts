@@ -114,8 +114,8 @@ export function parseDesignImport(text: string, fileName = ''): DesignImportPrev
       const heights = Array.isArray(data.height) ? data.height : [data.height, data.height];
       if (heights.length !== 2) fail('Expected two wall endpoint heights.');
       const height = metres(heights[0], 'Wall height');
-      if (height !== metres(heights[1], 'Wall height')) fail('Tapered walls with different endpoint heights are not supported.');
-      next = { ...document, nodes, walls: [...document.walls, { id, levelId, start: vertices[0], end: vertices[1], height, thickness: metres(data.thickness, 'Wall thickness'), elevation: 0 }] };
+      const endHeight = metres(heights[1], 'Wall end height');
+      next = { ...document, version: endHeight !== height ? 6 : document.version, nodes, walls: [...document.walls, { id, levelId, start: vertices[0], end: vertices[1], height, ...(endHeight !== height ? { endHeight } : {}), thickness: metres(data.thickness, 'Wall thickness'), elevation: 0 }] };
     } else if (kind === 'floors') {
       if (shape.closed !== true) fail('Floor path must be closed.');
       const thickness = metres(item.thickness ?? data.thickness ?? 25, 'Floor thickness');

@@ -12,12 +12,14 @@ import {
   FolderOpen,
   Layers3,
   Images,
+  ListChecks,
   Package,
   Sprout,
   Trees,
   UserRound,
 } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card';
+import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
 
 const iconColors = {
   garden: 'bg-emerald-500/10 text-emerald-700 group-hover:bg-emerald-500/20 dark:text-emerald-300',
@@ -153,6 +155,14 @@ const sections = [
     icon: FlaskConical,
   },
   {
+    title: 'Simulation Results',
+    group: 'automation',
+    iconColor: iconColors.automation,
+    description: 'Review captured runs, Action outcomes, and Sensor observations.',
+    href: '/admin/threed/simulation-results',
+    icon: ListChecks,
+  },
+  {
     title: 'Layers',
     group: 'assets',
     iconColor: iconColors.assets,
@@ -171,12 +181,12 @@ const groups = [
 export default function ThreeDAdminPage() {
   return (
     <div className="space-y-3">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">ThreeD Modules</h1>
-        <p className="text-muted-foreground">
-          Manage garden assets, characters, automation, and 3D presentation.
-        </p>
-      </div>
+      <AdminWorkspaceHeader
+        icon={Box}
+        title="ThreeD Modules"
+        description="Manage garden assets, characters, automation, and 3D presentation."
+      />
+      <p className="text-xs text-muted-foreground">Manage garden assets, characters, automation, and 3D presentation.</p>
 
       {groups.map(({ key, title: groupTitle, icon: GroupIcon, iconColor }) => (
         <section key={key} aria-labelledby={`${key}-heading`} className="space-y-2">

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Boxes, CircleHelp, UserRound, Sprout, Bot } from 'lucide-react';
+import { ArrowRight, Boxes, CircleHelp, UserRound, Sprout, Bot, FlaskConical, Map } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { summarizeScenarioInventory, type ScenarioInventoryAsset } from '@/libraries/services/threed/scenarios/scenario-inventory';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -30,7 +30,7 @@ const inventory = [
 function ScenarioDetailSurface({ scenario, standalone, onClose, children }: { scenario: ScenarioSummary | null; standalone: boolean; onClose: () => void; children: ReactNode }) {
   if (standalone) return <>
     <AdminWorkspaceHeader icon={BookOpen} title={scenario?.name ?? 'Scenario'} description="View a saved Scenario and its current Project inventory.">
-      {scenario && <div className="ml-auto [&_svg]:text-sky-500"><AdminWorkspaceLink href={`/admin/threed/scenarios/${scenario.id}`} icon={Pencil}>Edit Scenario</AdminWorkspaceLink></div>}
+      {scenario && <div className="ml-auto flex flex-wrap gap-2 [&_svg]:text-sky-500"><AdminWorkspaceLink href={`/admin/threed/scenarios?projectId=${scenario.projectId}`} icon={BookOpen}>Scenarios</AdminWorkspaceLink><AdminWorkspaceLink href={`/dashboard/scene?projectId=${scenario.projectId}`} icon={Map}>Project Scene</AdminWorkspaceLink><AdminWorkspaceLink href={`/admin/threed/simulations?projectId=${scenario.projectId}`} icon={FlaskConical}>Simulations</AdminWorkspaceLink><AdminWorkspaceLink href={`/admin/threed/scenarios/${scenario.id}`} icon={Pencil}>Edit Scenario</AdminWorkspaceLink></div>}
     </AdminWorkspaceHeader>
     <section className="admin-editor-panel min-h-0 overflow-y-auto rounded-lg border p-3 text-xs [&_p]:text-xs [&_h3]:text-xs">{children}</section>
   </>;

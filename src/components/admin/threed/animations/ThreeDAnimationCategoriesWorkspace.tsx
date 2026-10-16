@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowDown, ArrowUp, ArrowUpDown, FolderTree, Clapperboard, Box, Users, Pencil, Plus, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, FolderTree, Clapperboard, Box, Users, Pencil, Plus, Trash2, FlaskConical } from 'lucide-react';
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -70,6 +70,8 @@ export function ThreeDAnimationCategoriesWorkspace() {
       <AdminWorkspaceLink href="/admin/threed/animation-slots" icon={Clapperboard}>Animation Slots</AdminWorkspaceLink>
       <AdminWorkspaceLink href="/admin/threed/animations" icon={Clapperboard}>Animations Library</AdminWorkspaceLink>
       <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading || !!draft} onClick={() => setRefresh(value => value + 1)}>Refresh</Button>
+      <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || !search} onClick={() => { setSearch(''); setPage(0); setSelected(new Set()); }}>Reset filters</Button>
+      <AdminWorkspaceLink href="/admin/threed/simulations" icon={FlaskConical}>Simulations</AdminWorkspaceLink>
       <AdminWorkspaceLink href="/admin/threed/models" icon={Box}>Models</AdminWorkspaceLink>
       <AdminWorkspaceLink href="/admin/threed/characters" icon={Users}>Characters</AdminWorkspaceLink>
     </AdminWorkspaceHeader>
@@ -80,7 +82,7 @@ export function ThreeDAnimationCategoriesWorkspace() {
         {draft && <form aria-label={draft.id ? 'Edit Animation Category' : 'New Animation Category'} onSubmit={event => { event.preventDefault(); void save(); }} className="space-y-3">
       <fieldset disabled={busy} className="grid gap-3 [&_input]:h-8 [&_input]:text-xs">
         <label className="space-y-1 text-xs">Name<Input autoFocus required maxLength={120} value={draft.name} onChange={event => setDraft({ ...draft, name: event.target.value })} /></label>
-        <div className="flex justify-end gap-2"><Button type="submit" size="sm" className="h-8 text-xs" disabled={!draft.name.trim()}>{draft.id ? 'Update Category' : 'Create Category'}</Button><Button type="button" size="sm" variant="outline" className="h-8 text-xs" onClick={() => { setDraft(null); }}>Cancel</Button></div>
+        <div className="admin-editor-actions"><Button type="submit" size="sm" variant="success" className="h-8 text-xs" disabled={!draft.name.trim()}>{busy ? 'Saving…' : draft.id ? 'Update Category' : 'Create Category'}</Button><Button type="button" size="sm" variant="outline" className="h-8 text-xs" onClick={() => { setDraft(null); }}>Cancel</Button></div>
       </fieldset><p className="mt-2 text-xs text-muted-foreground">Categories organize clips and Action Slots. Renaming keeps assignments. Reassign Action Slots before deleting a Category. Deleting removes clip Category labels, not clips or action mappings.</p>
       {operationError && <p role="alert" className="text-sm text-destructive">{operationError}</p>}
     </form>}
@@ -98,8 +100,8 @@ export function ThreeDAnimationCategoriesWorkspace() {
         {heading('name', 'Name')}{heading('references', 'References')}<TableHead className="text-right text-xs">Actions</TableHead>
       </TableRow></TableHeader><TableBody>{loading ? <TableRow><TableCell colSpan={4}>Loading Animation Categories…</TableCell></TableRow> : error ? <TableRow><TableCell colSpan={4}><div role="alert" className="text-destructive">{error} <Button size="sm" variant="outline" onClick={() => setRefresh(value => value + 1)}>Retry</Button></div></TableCell></TableRow> : !visible.length ? <TableRow><TableCell colSpan={4}>No Animation Categories found. Use Add Category to create a Category.</TableCell></TableRow> : visible.map(category => <TableRow key={category.id}>
         <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${category.name}`} disabled={busy || references(category) > 0} checked={selected.has(category.id)} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(category.id); else next.delete(category.id); return next; })} /></TableCell>
-        <TableCell className="py-1 text-sm"><span className="flex items-center gap-2"><FolderTree aria-hidden="true" className="h-4 w-4 shrink-0 text-blue-500" />{category.name}</span></TableCell><TableCell className="py-1 text-xs">{category.clipUsage} Clips · {category.slotUsage} Slots</TableCell>
-        <TableCell className="py-1"><div className="flex justify-end gap-1"><Button size="icon" variant="ghost" className="h-8 w-8" aria-label={`Edit ${category.name}`} disabled={busy || !!draft} onClick={() => { setOperationError(''); setNotice(''); setDraft({ id: category.id, name: category.name }); }}><Pencil className="h-4 w-4" /></Button><Button size="icon" variant="ghost" className="h-8 w-8" aria-label={`Delete ${category.name}`} title={references(category) ? 'Reassign Action Slots before deleting' : 'Delete Category'} disabled={busy || !!draft || references(category) > 0} onClick={() => void remove([category])}><Trash2 className="h-4 w-4" /></Button></div></TableCell>
+        <TableCell className="py-1 text-sm"><span className="flex items-center gap-2"><FolderTree aria-hidden="true" className="h-4 w-4 shrink-0 text-blue-500" />{category.name}</span><span className="text-xs text-muted-foreground">#{category.id}</span></TableCell><TableCell className="py-1 text-xs">{category.clipUsage} Clips · {category.slotUsage} Slots</TableCell>
+        <TableCell className="py-1"><div className="flex items-center justify-end gap-1"><AdminWorkspaceLink href={`/admin/threed/animations?categoryId=${category.id}`} icon={Clapperboard}>Clips<span className="sr-only"> in {category.name}</span></AdminWorkspaceLink><AdminWorkspaceLink href={`/admin/threed/animation-slots?categoryId=${category.id}`} icon={Clapperboard}>Slots<span className="sr-only"> in {category.name}</span></AdminWorkspaceLink><Button size="icon" variant="ghost" className="h-8 w-8" aria-label={`Edit ${category.name}`} disabled={busy || !!draft} onClick={() => { setOperationError(''); setNotice(''); setDraft({ id: category.id, name: category.name }); }}><Pencil className="h-4 w-4" /></Button><Button size="icon" variant="ghost" className="h-8 w-8" aria-label={`Delete ${category.name}`} title={references(category) ? 'Reassign Action Slots before deleting' : 'Delete Category'} disabled={busy || !!draft || references(category) > 0} onClick={() => void remove([category])}><Trash2 className="h-4 w-4" /></Button></div></TableCell>
       </TableRow>)}</TableBody></Table>
     </div>
   </div>;

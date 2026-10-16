@@ -1,3 +1,9 @@
+## v0.26.4 release preparation - October 15, 2026
+
+Final checks passed: all 75 offline CI tasks, supplemental Animation Slots/Categories tasks (four scripts), fresh TypeScript, version/dependency consistency, five current release/plan links, whitespace and unchanged schema/API checks. Guarded isolated npm production build passed on Next16.4.2 with 145/145 pages and explicit exit 0. Final SHA-256 parity covers 994 source files, six authoritative package/config inputs and 73 tracked public assets; generated next-env was copied but excluded from final parity. Matching dependencies from the prior isolated release installation were reused, not newly installed. No .env copied; credentials scrubbed, dummy DB, network/4444 guard and offline fonts retained.
+
+The Developer installation remains Next16.4.0 versus locked16.4.2; no local dependency or server operation was performed. One older Model preview fixture now mocks existing SafeCanvas. A known Windows tsx sandbox uv_os_get_passwd/ENOMEM failure was resolved by rerunning the unchanged guarded suite outside that restriction. Existing Three CommonJS and nested-copy root warnings remain non-failing. Logs/manifests: ignored .next/release-0264-build-tools. No rendered-page, authenticated CRUD/Save-reopen, live-system or production check is claimed. See [release notes](../releases/v0.26.4.md). Earlier records remain historical.
+
 ## v0.26.0 release preparation - October 15, 2026
 
 Final release checks: all 72 offline CI tasks passed; TypeScript, seven focused projection/units/physics/asset-sizing checks, version/dependency consistency, release links and whitespace checks passed. Guarded isolated production build compiled and generated 144/144 pages. Runtime source matched the built copy; subsequent changes were validation fixtures and documentation only. Installed Three CommonJS and isolated build-root warnings remain non-failing. No new browser/production verification or deployment is claimed.

@@ -2,18 +2,19 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, FlaskConical, Pencil, RotateCcw } from 'lucide-react';
+import { ArrowLeft, FlaskConical, ListChecks, Map, Pencil, RotateCcw } from 'lucide-react';
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
 import { ModelFieldHelp } from '../models/ModelFieldHelp';
-import { SimulationDefinitionEditor, emptySimulationChoices, type SimulationChoices } from './SimulationDefinitionEditor';
+import { SimulationDefinitionEditor, emptySimulationChoices, simulationReferenceIssue, type SimulationChoices } from './SimulationDefinitionEditor';
 import { SimulationPreview } from './SimulationPreview';
-import { emptySimulationDefinition, parseSimulationDefinition, simulationFields, type SimulationDefinition } from '@/libraries/services/threed/simulations/simulation-input';
+import { emptySimulationDefinition, parseSimulationDefinition, simulationFields, SOCCER_SIMULATION_ACTIONS, type SimulationDefinition } from '@/libraries/services/threed/simulations/simulation-input';
 
 type Form = { projectId: string; threedId: string; name: string; slug: string; description: string; isActive: boolean; definition: SimulationDefinition };
 type RecordData = { id: number; revision: number; projectName: string; threedName: string; projectId: number; threedId: number; name: string; slug: string; description: string | null; isActive: boolean; definition: unknown };
@@ -27,20 +28,28 @@ const soccerDraft = (projectId: number | undefined, draft?: SoccerSimulationDraf
   ], observations: draft.sensorGroupId ? [{ id: 'goal-observation', kind: 'sensor-group', sensorGroupId: draft.sensorGroupId }] : [] },
 } : blank(projectId);
 const toForm = (row: RecordData): Form => ({ projectId: String(row.projectId), threedId: String(row.threedId), name: row.name, slug: row.slug, description: row.description ?? '', isActive: row.isActive, definition: parseSimulationDefinition(row.definition) });
-export function SimulationEditor({ id, projectId, initialSoccerDraft, readOnly = false, surface = 'admin' }: { id?: number; projectId?: number; initialSoccerDraft?: SoccerSimulationDraft; readOnly?: boolean; surface?: 'admin' | 'dashboard' }) {
-  const basePath = surface === 'dashboard' ? '/dashboard/simulations' : '/admin/threed/simulations';
+export function SimulationEditor({ id, projectId, initialSoccerDraft, readOnly = false }: { id?: number; projectId?: number; initialSoccerDraft?: SoccerSimulationDraft; readOnly?: boolean }) {
+  const basePath = '/admin/threed/simulations';
   const router = useRouter(), { showToast, ToastComponent } = useToast();
   const lock = useRef(false);
   const [form, setForm] = useState<Form>(() => soccerDraft(projectId, initialSoccerDraft)), [baseline, setBaseline] = useState(() => JSON.stringify(blank(projectId)));
   const [record, setRecord] = useState<RecordData | null>(null), [loading, setLoading] = useState(!!id), [loadError, setLoadError] = useState(''), [reload, setReload] = useState(0);
-  const returnPath = surface === 'dashboard' ? `/dashboard/scene${record?.projectId || projectId ? `?projectId=${record?.projectId || projectId}` : ''}` : basePath;
+  const selectedProjectId = record?.projectId || Number(form.projectId) || projectId;
+  const scenePath = `/dashboard/scene${selectedProjectId ? `?projectId=${selectedProjectId}` : ''}`;
+  const returnPath = `${basePath}${selectedProjectId ? `?projectId=${selectedProjectId}` : ''}`;
   const [projects, setProjects] = useState<{ id: number; name: string }[]>([]), [modules, setModules] = useState<{ id: number; name: string }[]>([]);
-  const [choices, setChoices] = useState<SimulationChoices>(emptySimulationChoices), [choicesLoading, setChoicesLoading] = useState(false), [choicesError, setChoicesError] = useState('');
+  const [choices, setChoices] = useState<SimulationChoices>(emptySimulationChoices), [choicesLoading, setChoicesLoading] = useState(false), [choicesError, setChoicesError] = useState(''), [choicesReload, setChoicesReload] = useState(0);
   const [busy, setBusy] = useState(false), [error, setError] = useState('');
   const dirty = !readOnly && JSON.stringify(form) !== baseline;
   let definitionError = '';
   try { parseSimulationDefinition(form.definition); } catch (e) { definitionError = e instanceof Error ? e.message : 'Check the Simulation definition.'; }
+  const referenceError = !choicesLoading && !choicesError && form.projectId && form.threedId ? simulationReferenceIssue(form.definition, choices) : '';
+  const validationError = referenceError || definitionError;
+  const slugInvalid = !!form.slug && !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(form.slug.trim());
   const activeWithoutActions = form.isActive && form.definition.steps.length === 0;
+  const sceneActionsOnly = form.definition.steps.every(step => SOCCER_SIMULATION_ACTIONS.some(action => action === step.action));
+  const firstStep = form.definition.steps[0];
+  const sameParticipants = !firstStep || form.definition.steps.every(step => step.actorMarkerId === firstStep.actorMarkerId && step.targetMarkerId === firstStep.targetMarkerId);
   const saveBlockedReason = busy ? 'Saving Simulation…'
     : loading ? 'Loading the saved Simulation…'
     : loadError ? `Reload the Simulation: ${loadError}`
@@ -50,7 +59,9 @@ export function SimulationEditor({ id, projectId, initialSoccerDraft, readOnly =
     : !form.threedId ? 'Choose a ThreeD module.'
     : !form.name.trim() ? 'Enter a Simulation name.'
     : !form.slug.trim() ? 'Enter a Simulation slug.'
+    : slugInvalid ? 'Use lowercase letters, numbers and single hyphens in the slug.'
     : activeWithoutActions ? 'Add an Action, or turn Active off to save a draft.'
+    : validationError ? validationError
     : id && !dirty ? 'No unsaved changes. Edit a field or Action to enable Save.'
     : '';
   function close() { if (lock.current || busy || (dirty && !window.confirm('Discard unsaved Simulation changes?'))) return; router.push(returnPath); }
@@ -112,9 +123,10 @@ export function SimulationEditor({ id, projectId, initialSoccerDraft, readOnly =
     }).catch(e => { if (!controller.signal.aborted) setChoicesError(e.message); })
       .finally(() => { if (!controller.signal.aborted) setChoicesLoading(false); });
     return () => controller.abort();
-  }, [form.projectId, form.threedId, reload]);
+  }, [form.projectId, form.threedId, reload, choicesReload]);
   async function save() {
     if (lock.current || loading || loadError || choicesLoading || choicesError || readOnly) return;
+    if (saveBlockedReason) { setError(saveBlockedReason); showToast(saveBlockedReason, 'error'); return; }
     let fields;
     try { fields = simulationFields({ name: form.name, slug: form.slug, description: form.description, isActive: form.isActive, definition: form.definition }, false); }
     catch (e) { const message = e instanceof Error ? e.message : 'Check the Simulation definition.'; setError(message); showToast(message, 'error'); return; }
@@ -125,17 +137,23 @@ export function SimulationEditor({ id, projectId, initialSoccerDraft, readOnly =
       const draft = toForm({ ...result.data, projectName: record?.projectName ?? '', threedName: record?.threedName ?? '' });
       setRecord({ ...result.data, projectName: record?.projectName ?? '', threedName: record?.threedName ?? '' }); setForm(draft); setBaseline(JSON.stringify(draft));
       showToast(id ? 'Simulation updated.' : 'Simulation created.', 'success');
-      if (!id) router.replace(`${basePath}/${result.data.id}?created=1`);
+      if (!id) router.replace(`${basePath}/${result.data.id}/view?created=1`);
     } catch (e) { const message = e instanceof Error ? e.message : 'Could not save Simulation.'; setError(message); showToast(message, 'error'); }
     finally { lock.current = false; setBusy(false); }
   }
   useEffect(() => { if (id && new URLSearchParams(window.location.search).get('created') === '1') showToast('Simulation created.', 'success'); }, [id]);
-  return <div className={`flex h-full min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-hidden text-xs ${surface === 'dashboard' ? 'threed-workspace-panel rounded-lg border border-foreground/10 p-3' : ''}`}>
+  return <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-hidden text-xs">
     {ToastComponent}
     <AdminWorkspaceHeader icon={FlaskConical} title={readOnly ? 'View Simulation' : id ? 'Edit Simulation' : 'New Simulation'} description="Manage a Project-owned Simulation definition.">
       <ModelFieldHelp label="Simulation">A Simulation defines ordered Actions and Sensor observations. Saving stores its definition. Run Simulation executes supported Run-to-ball and contact-kick Actions. Owner runs save Results; public visitor runs stay in the browser.</ModelFieldHelp>
       {record && <span className="text-xs text-muted-foreground">#{record.id} · Revision {record.revision}</span>}
-      <div className="ml-auto flex gap-1"><AdminWorkspaceLink href={returnPath} icon={ArrowLeft}>{surface === 'dashboard' ? 'Project Scene' : 'Simulations'}</AdminWorkspaceLink>{readOnly && id && <AdminWorkspaceLink href={`${basePath}/${id}`} icon={Pencil}>Edit</AdminWorkspaceLink>}{id && <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Reload Simulation" disabled={busy || loading} onClick={refresh}><RotateCcw className="h-3.5 w-3.5" /></Button>}</div>
+      <div className="ml-auto flex flex-wrap gap-1">
+        <AdminWorkspaceLink href={returnPath} icon={ArrowLeft}>Simulations</AdminWorkspaceLink>
+        {selectedProjectId && <AdminWorkspaceLink href={scenePath} icon={Map}>Project Scene</AdminWorkspaceLink>}
+        {id && selectedProjectId && <AdminWorkspaceLink href={`/admin/threed/simulation-results?projectId=${selectedProjectId}&simulationId=${id}`} icon={ListChecks}>Results</AdminWorkspaceLink>}
+        {readOnly && id && <AdminWorkspaceLink href={`${basePath}/${id}`} icon={Pencil}>Edit</AdminWorkspaceLink>}
+        {id && <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Reload Simulation" disabled={busy || loading} onClick={refresh}><RotateCcw className="h-3.5 w-3.5" /></Button>}
+      </div>
     </AdminWorkspaceHeader>
     {loading ? <p role="status">Loading Simulation…</p> : loadError ? <p role="alert" className="text-destructive">{loadError}</p> : <div className="min-h-0 flex-1 overflow-y-auto xl:grid xl:grid-cols-2 xl:gap-3 xl:overflow-hidden">
       <div className="min-h-0 xl:overflow-y-auto">
@@ -143,20 +161,25 @@ export function SimulationEditor({ id, projectId, initialSoccerDraft, readOnly =
         <section className="admin-editor-panel grid gap-3 rounded-lg border p-3 sm:grid-cols-2">
           <div><Label htmlFor="simulation-project">Project</Label>{id ? <Input id="simulation-project" disabled value={record?.projectName ?? form.projectId} /> : <select id="simulation-project" className="w-full" value={form.projectId} onChange={event => changeBinding(event.target.value)}><option value="">Choose a Project</option>{projects.map(project => <option key={project.id} value={project.id}>{project.name}</option>)}</select>}</div>
           <div><Label htmlFor="simulation-module">ThreeD module</Label>{id ? <Input id="simulation-module" disabled value={record?.threedName ?? form.threedId} /> : <select id="simulation-module" className="w-full" value={form.threedId} disabled={!form.projectId} onChange={event => changeBinding(form.projectId, event.target.value)}><option value="">Choose an assigned ThreeD module</option>{modules.map(module => <option key={module.id} value={module.id}>{module.name}</option>)}</select>}</div>
-          <div><Label htmlFor="simulation-name">Name *</Label><Input id="simulation-name" disabled={readOnly} maxLength={120} value={form.name} onChange={event => setForm(value => ({ ...value, name: event.target.value, slug: !id && (!value.slug || value.slug === value.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')) ? event.target.value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 100).replace(/-$/, '') : value.slug }))} /></div>
-          <div><Label htmlFor="simulation-slug">Slug *</Label><Input id="simulation-slug" disabled={readOnly} maxLength={100} value={form.slug} onChange={event => setForm(value => ({ ...value, slug: event.target.value }))} /></div>
+          <div><Label htmlFor="simulation-name">Name *</Label><Input id="simulation-name" required aria-invalid={!form.name.trim()} disabled={readOnly} maxLength={120} value={form.name} onChange={event => setForm(value => ({ ...value, name: event.target.value, slug: !id && (!value.slug || value.slug === value.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')) ? event.target.value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 100).replace(/-$/, '') : value.slug }))} /></div>
+          <div><Label htmlFor="simulation-slug">Slug *</Label><Input id="simulation-slug" required aria-invalid={!form.slug.trim() || slugInvalid} aria-describedby="simulation-slug-help" disabled={readOnly} maxLength={100} value={form.slug} onChange={event => setForm(value => ({ ...value, slug: event.target.value }))} /><p id="simulation-slug-help" className="mt-1 text-xs text-muted-foreground">Lowercase letters, numbers and hyphens; unique within this Project and ThreeD module.</p></div>
           <div className="sm:col-span-2"><Label htmlFor="simulation-description">Description</Label><Textarea id="simulation-description" disabled={readOnly} maxLength={2000} value={form.description} onChange={event => setForm(value => ({ ...value, description: event.target.value }))} /></div>
           <div className="flex items-center gap-2"><Switch id="simulation-active" disabled={readOnly} checked={form.isActive} onCheckedChange={isActive => setForm(value => ({ ...value, isActive }))} /><Label htmlFor="simulation-active">Active</Label><ModelFieldHelp label="Simulation Active">Active makes a saved definition available. It does not run the Simulation or certify Scene readiness.</ModelFieldHelp></div>
           {activeWithoutActions && <p role="status" className="text-muted-foreground sm:col-span-2">Add an Action to save an active Simulation, or turn Active off to save a draft.</p>}
         </section>
-        {choicesLoading && <p role="status" className="text-muted-foreground">Loading Project choices…</p>}{choicesError && <p role="alert" className="text-destructive">{choicesError}</p>}
+        <section aria-label="Scene execution support" className="admin-editor-panel space-y-2 rounded-lg border p-3">
+          <div className="flex flex-wrap items-center gap-2"><h2 className="text-xs font-semibold">Scene execution</h2><Badge variant="outline">{form.isActive ? 'Active availability' : 'Inactive draft'}</Badge><Badge variant="outline" className={firstStep && sceneActionsOnly && sameParticipants ? 'text-emerald-700 dark:text-emerald-300' : 'text-muted-foreground'}>{!firstStep ? 'No Actions' : !sceneActionsOnly ? 'Definition / preview only' : !sameParticipants ? 'Multiple participant pairs' : 'Run / Kick supported'}</Badge></div>
+          <p className="text-xs text-muted-foreground">{!firstStep ? 'Add Actions to prepare a Scene run. Inactive drafts stay out of the Scene picker.' : !sceneActionsOnly ? 'This definition includes Actions the Scene runner does not execute. Save and animation preview remain available; use Run to target ball and Kick ball for Scene execution.' : !sameParticipants ? 'The Scene runner needs one Character and one target ball shared by every Action. Update participants to run this definition in the Scene.' : 'Scene execution checks the selected Character, movable ball, animation mappings and runtime readiness before starting. Active availability and a successful preview do not certify a run.'}</p>
+        </section>
+        <div className="flex flex-wrap items-center gap-2"><p className="text-xs text-muted-foreground">Participants and Sensors come from the saved Project.</p><Button type="button" variant="outline" size="sm" className="ml-auto h-7 text-xs" disabled={busy || choicesLoading || !form.projectId || !form.threedId} onClick={() => setChoicesReload(value => value + 1)}><RotateCcw className="h-3.5 w-3.5" />Reload choices</Button></div>
+        {choicesLoading && <p role="status" className="text-muted-foreground">Loading Project choices…</p>}{choicesError && <p role="alert" className="text-destructive">{choicesError} Use Reload choices to try again; your draft is retained.</p>}
         <fieldset disabled={choicesLoading || !!choicesError || !form.threedId}><SimulationDefinitionEditor value={form.definition} choices={choices} readOnly={readOnly} onChange={definition => setForm(value => ({ ...value, definition }))} /></fieldset>
-        {(error || definitionError) && <p role="alert" className="text-destructive">{error || definitionError}</p>}
+        {(error || validationError) && <p role="alert" className="text-destructive">{error || validationError}</p>}
 
       </fieldset>
       </div>
       <div className="mb-3 min-h-0 xl:mb-0 xl:overflow-y-auto"><SimulationPreview definition={form.definition} choices={choices} context={`${form.projectId}:${form.threedId}:${reload}`} loading={choicesLoading} error={choicesError} busy={busy} /></div>
     </div>}
-        {!readOnly && !loading && !loadError && <footer className="admin-editor-actions shrink-0 flex flex-wrap items-center gap-2 border-t pt-3"><Button variant="success" size="sm" disabled={!!saveBlockedReason} aria-describedby="simulation-save-status" onClick={() => void save()}>{busy ? 'Saving…' : 'Save Changes'}</Button><Button variant="outline" size="sm" disabled={busy} onClick={close}>Cancel</Button><p id="simulation-save-status" role="status" className="text-xs text-muted-foreground">{saveBlockedReason || (definitionError ? `Check required Action and Sensor fields: ${definitionError}` : 'Unsaved changes. Ready to save.')}</p></footer>}
+        {!readOnly && !loading && !loadError && <footer className="admin-editor-actions shrink-0 flex flex-wrap items-center gap-2 border-t pt-3"><Button variant="success" size="sm" disabled={!!saveBlockedReason} aria-describedby="simulation-save-status" onClick={() => void save()}>{busy ? 'Saving…' : 'Save Changes'}</Button><Button variant="outline" size="sm" disabled={busy} onClick={close}>Cancel</Button><p id="simulation-save-status" role="status" aria-live="polite" className="text-xs text-muted-foreground">{saveBlockedReason || 'Unsaved changes. Ready to save.'}</p></footer>}
   </div>;
 }

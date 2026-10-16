@@ -23,20 +23,26 @@ function runtime() {
   const render = () => { let n = 0; do { assert(++n < 40); changed = false; cursor = 0; effects = []; value = body(); effects.forEach(effect => effect()); } while (changed); return value; };
   return { react, render, mount(fn) { body = fn; return render(); }, get value() { return value; }, async flush() { for (let i = 0; i < 4; i++) { await new Promise(resolve => setImmediate(resolve)); render(); } } };
 }
-function fixture(props) {
+function fixture(props, initialProjectFailure = false) {
   const rt = runtime(), requests = [], navigation = [], notifications = [], listeners = new Map(), documentListeners = new Map();
   class Anchor { href = 'https://fixture.invalid/admin/threed/scenarios'; target = ''; hasAttribute() { return false; } closest() { return this; } }
-  let confirmation = true, fail = false;
+  let confirmation = true, fail = false, failList = false, failProjects = initialProjectFailure, failModules = false;
   const record = { id: 9, projectId: 15, threedId: 1, name: 'Soccer', slug: 'soccer', description: 'Practice', isActive: true, projectName: 'One', threedName: 'Garden', setup: { version: 1, kind: 'soccer', environmentMarkerId: 'marker-source', sensorGroupId: 'group-source' } };
   const router = { push: url => navigation.push(url), replace: url => navigation.push(url) };
   const request = async (url, options = {}) => {
     requests.push({ url, ...options });
     if (options.method === 'PATCH' || options.method === 'POST') return Response.json(fail ? { success: false, error: 'Rejected' } : { success: true, data: { ...record, ...JSON.parse(options.body), id: 9 } }, { status: fail ? 409 : 200 });
     let data = [];
-    if (url === '/api/project') data = [{ id: 15, name: 'One' }, { id: 16, name: 'Two' }];
+    if (url === '/api/project') {
+      if (failProjects) return Response.json({ success: false, error: 'Projects unavailable' }, { status: 500 });
+      data = [{ id: 15, name: 'One' }, { id: 16, name: 'Two' }];
+    }
     else if (url.includes('scenarios?id=')) data = record;
-    else if (url.includes('scenarios?limit=')) return Response.json({ success: true, data: [record], pagination: { total: 1 } });
-    else if (url.includes('/modules?')) data = { threed: [{ id: 1, name: 'Garden' }] };
+    else if (url.includes('scenarios?limit=')) return Response.json(failList ? { success: false, error: 'List unavailable' } : { success: true, data: [record], pagination: { total: 1 } }, { status: failList ? 500 : 200 });
+    else if (url.includes('/modules?')) {
+      if (failModules) return Response.json({ success: false, error: 'Modules unavailable' }, { status: 500 });
+      data = { threed: [{ id: 1, name: 'Garden' }] };
+    }
     return Response.json({ success: true, data });
   };
   const mocks = {
@@ -54,7 +60,7 @@ function fixture(props) {
     require(name) { assert(name in mocks, name); return mocks[name]; },
   });
   rt.mount(() => exports.ThreeDScenariosCRUD(props));
-  return { rt, requests, navigation, notifications, listeners, record, find: predicate => nodes(rt.value).find(predicate), confirm(value) { confirmation = value; }, fail(value) { fail = value; }, clickLink() {
+  return { rt, requests, navigation, notifications, listeners, record, find: predicate => nodes(rt.value).find(predicate), confirm(value) { confirmation = value; }, fail(value) { fail = value; }, failList(value) { failList = value; }, failProjects(value) { failProjects = value; }, failModules(value) { failModules = value; }, clickLink() {
     let prevented = false;
     documentListeners.get('click')?.({ target: new Anchor(), button: 0, preventDefault() { prevented = true; }, stopImmediatePropagation() {} });
     return prevented;
@@ -84,12 +90,27 @@ function inventoryFixture() {
   input(edit, 'scenario-name').props.onChange({ target: { value: 'New name' } }); edit.rt.render();
   assert(edit.listeners.has('beforeunload')); edit.confirm(false); button(edit, 'Cancel').props.onClick(); assert.equal(edit.navigation.length, 0);
   assert(edit.clickLink()); assert.equal(edit.navigation.length, 0, 'Rejected navigation blocks surrounding page links');
+  const links = nodes(edit.find(node => node.type === 'ScenarioEditorSurface').props.actions);
+  assert(links.some(node => node.props?.href === '/admin/threed/scenarios?projectId=15'));
+  assert(links.some(node => node.props?.href === '/admin/threed/simulations?projectId=15'));
+  assert(links.some(node => node.props?.href === '/dashboard/scene?projectId=15'));
+  const choiceReads = edit.requests.filter(request => request.url.includes('threed-markers')).length;
+  edit.find(node => node.type === 'Button' && nodes(node).some(child => child.type === 'RefreshCw')).props.onClick(); await edit.rt.flush();
+  assert.equal(edit.requests.filter(request => request.url.includes('threed-markers')).length, choiceReads + 1);
+  assert.equal(input(edit, 'scenario-name').props.value, 'New name', 'Reload choices preserves the draft');
+  input(edit, 'scenario-slug').props.onChange({ target: { value: 'invalid--slug' } }); edit.rt.render();
+  assert(button(edit, 'Save Changes').props.disabled, 'Invalid slug explains why Save is disabled');
+  await button(edit, 'Save Changes').props.onClick(); await edit.rt.flush();
+  assert.equal(edit.requests.filter(request => request.method).length, 0, 'Invalid input does not write');
+  input(edit, 'scenario-slug').props.onChange({ target: { value: 'soccer' } }); edit.rt.render();
   edit.fail(true); await button(edit, 'Save Changes').props.onClick(); await edit.rt.flush();
   assert.equal(input(edit, 'scenario-name').props.value, 'New name', 'Failed save retains draft');
   edit.fail(false); const save = button(edit, 'Save Changes'); save.props.onClick(); save.props.onClick(); await edit.rt.flush();
   assert.equal(edit.requests.filter(request => request.method === 'PATCH').length, 2, 'One failed then one successful save; repeated click locked');
   assert(!edit.listeners.has('beforeunload'));
   assert(!Object.hasOwn(JSON.parse(edit.requests.filter(request => request.method === 'PATCH').at(-1).body), 'setup'), 'Unchanged setup not rewritten');
+  button(edit, 'Cancel').props.onClick();
+  assert(edit.navigation.includes('/admin/threed/scenarios?projectId=15'), 'Return to list keeps Project scope');
   const create = fixture({ view: 'create' }); await create.rt.flush();
   const prompt = create.find(node => node.type === 'button' && typeof node.props.onClick === 'function');
   prompt.props.onClick(); await create.rt.flush();
@@ -131,5 +152,73 @@ function inventoryFixture() {
   const editAction = list.find(node => node.props?.['aria-label'] === 'Edit Soccer');
   assert.equal(editAction.props.size, 'icon'); editAction.props.onClick();
   assert(list.navigation.includes('/admin/threed/scenarios/9'));
-  console.log('PASS Scenario standalone exact reads, binding locks, draft/cancel/busy guards, failed-save retention, inventory loading/error/empty/partial guidance and exact Edit/Project navigation (offline).');
+  const scoped = fixture({ view: 'list', projectId: '15' }); await new Promise(resolve => setTimeout(resolve, 5)); await scoped.rt.flush();
+  assert(scoped.requests.filter(request => request.url.includes('scenarios?limit=')).every(request => new URL(request.url, 'https://fixture.invalid').searchParams.get('projectId') === '15'), 'Initial list is Project-scoped before choices load');
+  assert(scoped.find(node => node.type === 'AdminWorkspaceLink' && node.props.href === '/admin/threed/simulations?projectId=15'));
+  scoped.find(node => node.props?.['aria-label'] === 'Select Soccer').props.onChange({ target: { checked: true } }); scoped.rt.render();
+  scoped.find(node => node.props?.['aria-label'] === 'Filter by availability').props.onChange({ target: { value: 'false' } }); scoped.rt.render();
+  await new Promise(resolve => setTimeout(resolve, 5)); await scoped.rt.flush();
+  assert(scoped.requests.at(-1).url.includes('isActive=false'));
+  assert.equal(scoped.find(node => node.props?.['aria-label'] === 'Select Soccer').props.checked, false, 'Filter change clears page selection');
+  scoped.failList(true);
+  scoped.find(node => node.type === 'Button' && nodes(node).some(child => child.type === 'RefreshCw')).props.onClick(); scoped.rt.render();
+  await new Promise(resolve => setTimeout(resolve, 5)); await scoped.rt.flush();
+  assert(scoped.find(node => node.props?.role === 'alert'), 'List failure is visible');
+  assert(scoped.find(node => node.type === 'span' && node.props.children?.[0] === 0), 'Failed list clears stale totals');
+  scoped.failList(false); button(scoped, 'Retry').props.onClick(); scoped.rt.render();
+  await new Promise(resolve => setTimeout(resolve, 5)); await scoped.rt.flush();
+  assert(!scoped.find(node => node.props?.role === 'alert'));
+  button(scoped, 'Reset filters').props.onClick(); scoped.rt.render();
+  await new Promise(resolve => setTimeout(resolve, 5)); await scoped.rt.flush();
+  const resetUrl = new URL(scoped.requests.at(-1).url, 'https://fixture.invalid');
+  assert(!resetUrl.searchParams.has('projectId') && !resetUrl.searchParams.has('isActive'));
+  assert(!scoped.requests.some(request => request.method), 'List navigation/filter/refresh never writes');
+  const unavailableProject = fixture({ view: 'list', projectId: '99' }); await new Promise(resolve => setTimeout(resolve, 5)); await unavailableProject.rt.flush();
+  assert(unavailableProject.find(node => node.props?.children === 'This Project is unavailable.'));
+  button(unavailableProject, 'Reset filters').props.onClick(); await unavailableProject.rt.flush();
+  assert(!unavailableProject.find(node => node.props?.children === 'This Project is unavailable.'), 'Reset filters clears only the unavailable scope warning');
+  const projectFailure = fixture({ view: 'list', projectId: '15' }, true); await new Promise(resolve => setTimeout(resolve, 5)); await projectFailure.rt.flush();
+  assert(projectFailure.find(node => node.props?.children === 'Projects unavailable'));
+  projectFailure.failProjects(false);
+  projectFailure.find(node => node.type === 'Button' && nodes(node).some(child => child.type === 'RefreshCw')).props.onClick(); await projectFailure.rt.flush();
+  assert.equal(projectFailure.requests.filter(request => request.url === '/api/project').length, 2, 'Refresh also retries Project choices');
+  assert(!projectFailure.find(node => node.props?.children === 'Projects unavailable'));
+  const editorProjectFailure = fixture({ view: 'edit', scenarioId: 9 }, true); await editorProjectFailure.rt.flush();
+  editorProjectFailure.failProjects(false);
+  editorProjectFailure.find(node => node.type === 'Button' && nodes(node).some(child => child.type === 'RefreshCw')).props.onClick(); await editorProjectFailure.rt.flush();
+  assert.equal(editorProjectFailure.requests.filter(request => request.url === '/api/project').length, 2, 'Reload choices also retries Projects');
+  assert(!editorProjectFailure.find(node => node.props?.children === 'Projects unavailable'));
+  const moduleRecovery = fixture({ view: 'create', projectId: '15' }); await moduleRecovery.rt.flush();
+  moduleRecovery.find(node => node.type === 'button' && typeof node.props.onClick === 'function').props.onClick(); await moduleRecovery.rt.flush();
+  input(moduleRecovery, 'scenario-threed').props.onChange({ target: { value: '1' } });
+  input(moduleRecovery, 'scenario-name').props.onChange({ target: { value: 'Keep this draft' } }); moduleRecovery.rt.render();
+  moduleRecovery.fail(true); await button(moduleRecovery, 'Save Changes').props.onClick(); await moduleRecovery.rt.flush();
+  assert(moduleRecovery.find(node => node.props?.role === 'alert' && node.props.children === 'Rejected'));
+  moduleRecovery.failModules(true);
+  moduleRecovery.find(node => node.type === 'Button' && nodes(node).some(child => child.type === 'RefreshCw')).props.onClick(); moduleRecovery.rt.render();
+  assert(input(moduleRecovery, 'scenario-threed').props.disabled, 'Module selection waits for reloaded options');
+  await moduleRecovery.rt.flush();
+  assert(moduleRecovery.find(node => node.props?.role === 'alert' && node.props.children === 'Modules unavailable'));
+  assert(button(moduleRecovery, 'Save Changes').props.disabled, 'Unavailable module options block saving');
+  moduleRecovery.failModules(false);
+  moduleRecovery.find(node => node.type === 'Button' && nodes(node).some(child => child.type === 'RefreshCw')).props.onClick(); await moduleRecovery.rt.flush();
+  assert.equal(moduleRecovery.requests.filter(request => request.url.includes('/modules?')).length, 3, 'Reload choices retries creation module choices');
+  assert(!moduleRecovery.find(node => node.props?.children === 'Modules unavailable'), 'Successful retry clears module error');
+  assert.equal(input(moduleRecovery, 'scenario-threed').props.value, '1');
+  assert.equal(input(moduleRecovery, 'scenario-name').props.value, 'Keep this draft');
+  assert(moduleRecovery.find(node => node.props?.role === 'alert' && node.props.children === 'Rejected'), 'Choice refresh preserves unrelated Save error');
+  assert(!button(moduleRecovery, 'Save Changes').props.disabled, 'Recovered choices allow retrying the failed Save');
+  assert.equal(moduleRecovery.requests.filter(request => request.method).length, 1, 'Choice recovery does not write');
+  const routeMocks = {
+    'react/jsx-runtime': { jsx, jsxs: jsx }, '@/components/admin/threed/scenarios/ThreeDScenariosCRUD': proxy,
+    'next/navigation': { notFound() { throw new Error('NOT_FOUND'); }, redirect(url) { throw new Error(`REDIRECT:${url}`); } },
+  };
+  const route = load('src/app/admin/threed/scenarios/page.tsx', routeMocks).default;
+  assert.equal((await route({ searchParams: Promise.resolve({ projectId: '15' }) })).props.projectId, '15');
+  assert.equal((await route({ searchParams: Promise.resolve({}) })).props.projectId, undefined);
+  for (const projectId of ['0', '-1', '1.5', '2147483648', ['15', '16']]) await assert.rejects(route({ searchParams: Promise.resolve({ projectId }) }), /NOT_FOUND/);
+  await assert.rejects(route({ searchParams: Promise.resolve({ projectId: '15', create: '1' }) }), /REDIRECT:\/admin\/threed\/scenarios\/new\?projectId=15/);
+  const createRoute = load('src/app/admin/threed/scenarios/new/page.tsx', routeMocks).default;
+  await assert.rejects(createRoute({ searchParams: Promise.resolve({ projectId: ['15'] }) }), /NOT_FOUND/);
+  console.log('PASS Scenario scoped lists/filter/refresh/retry, route bounds, exact reads, binding locks, draft-safe choice reload, slug validation, dirty/cancel/busy guards, failed-save retention and inventory navigation (offline).');
 })().catch(error => { console.error(error); process.exitCode = 1; });

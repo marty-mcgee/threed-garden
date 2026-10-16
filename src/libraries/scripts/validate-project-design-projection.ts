@@ -23,6 +23,12 @@ async function main() {
   assert.equal(row.createKey, key);
   assert.equal(row.document.name, 'Updated room');
   assert.deepEqual(config.unrelated, { retained: true });
+  document.version = 6;
+  document.nodes = [{ id: 'a', x: 0, z: 0 }, { id: 'b', x: 4, z: 0 }];
+  document.walls = [{ id: 'sloped', levelId: document.levels[0].id, start: 'a', end: 'b', height: 2, endHeight: 4, thickness: .2, elevation: 0 }];
+  assert.equal(await saveProjectDesignProjection(tx, 'owner', 17), 1);
+  assert.equal(row.formatVersion, 6);
+  assert.deepEqual(row.document, document, 'Complete editable v6 parameters survive the mocked projection boundary.');
   assert.notEqual(key, projectDesignCreateKey('other-owner', 17));
   assert.notEqual(key, projectDesignCreateKey('owner', 18));
   owned = false;

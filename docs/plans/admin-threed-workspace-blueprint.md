@@ -4,6 +4,23 @@ Design checkpoint: **v0.19.12 — ThreeD Admin Model Workspace**. The User reque
 
 ## Reference implementation
 
+### Accepted Simulation reference — October 15, 2026
+
+The Developer accepted the v0.26.4 Simulation list, editor and Results workflow as a reference for Admin pages, API routes, CRUD forms and front-end UX, and authorized applying its conventions where they fit. This extends the existing Models/Characters blueprint; it does not replace module-specific contracts or introduce a generic CRUD framework.
+
+- `src/components/admin/threed/simulations/SimulationsList.tsx`: searchable server-paged inventory, Project/availability filters, Refresh/Reset, readable status, scoped navigation and page-local bulk selection.
+- `src/components/admin/threed/simulations/SimulationEditor.tsx` and `SimulationDefinitionEditor.tsx`: typed draft validation, contextual disabled-Save explanation, guarded navigation and reference refresh that preserves the draft.
+- `src/components/admin/threed/simulations/SimulationResultsList.tsx` and `SimulationResultDetail.tsx`: read-only history with filters, retained snapshots, explicit unfinished states and bounded report export.
+- `src/app/api/threed/simulations/route.ts` and `simulation-results/route.ts`: existing authenticated owner scope, bounded query parsing, reference checks and Simulation-specific revision/idempotency rules. Keep authorization on the server; route/filter IDs are navigation context, never access authority.
+
+Use `AdminWorkspaceHeader`/`AdminWorkspaceLink`, shared `Button`, `Input`, `Table`, `Badge`, accessible help and the existing `admin-editor-panel`/`admin-editor-actions` classes. Keep labels beside navigation icons, text alongside status colors, green enabled Save actions, honest loading/error/empty states and retry controls. Validate route query values before initializing filters; retain unavailable choices visibly instead of silently changing a saved binding. Apply filters to the whole supported result set before pagination, cancel/ignore stale responses, and clear page selection when its scope changes.
+
+Respect the resource's meaning. A Scenario is a plan, a Simulation defines Actions, and Results are captured history. Do not add generic edit/delete actions to read-only history, reuse a Simulation revision field on unrelated tables, make Scenarios a Simulation prerequisite, or change runtime/preview ownership as a styling task. Embedded editors retain their host's sizing and navigation guards. Roll out to reviewed pages incrementally and document the pages actually changed; this reference is not a claim that every Admin page has the same implementation.
+
+See [v0.26.4 scope and checks](v0.26.4.md). Developer acceptance is separate from agent offline checks and authenticated CRUD/browser verification.
+
+### Original Model reference
+
 - `src/components/admin/threed/models/ThreeDModelsCRUD.tsx`: compact workspace controls, pagination, selection, records panel and sticky table headings.
 - `src/components/admin/layout/AdminWorkspaceHeader.tsx`: common title/action layout.
 - `src/components/admin/layout/AdminLayout.tsx`: viewport-constrained workspace enabled for individually reviewed standalone routes. Embedded Project components retain natural sizing.

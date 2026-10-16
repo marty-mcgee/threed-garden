@@ -184,7 +184,7 @@ const nodes = value => Array.isArray(value) ? value.flatMap(nodes) : value && ty
   const bounds = { refresh() { return this; }, clip() { return this; }, fit() { fits++; return this; }, getSize() { return { center, distance: 20 }; } };
   const cameraReact = { ...cameraRt.react, useRef(value) { const ref = cameraRt.react.useRef(value); if (value === null) ref.current ??= { target, update() {} }; return ref; } };
   const canvasModule = load(root + 'SimulationPreviewCanvas.tsx', { react: { ...cameraReact, Component: class {} }, 'react/jsx-runtime': { jsx, jsxs: jsx }, '@react-three/fiber': { useThree: () => ({ camera, invalidate: () => invalidations++ }) },
-    '@react-three/drei': { useBounds: () => bounds, OrbitControls: 'OrbitControls' }, '@/components/threed/shared/GardenCharacter': proxy, '@/components/threed/markers/ModelMarker3D': proxy,
+    '@react-three/drei': { useBounds: () => bounds, OrbitControls: 'OrbitControls' }, '@/components/threed/shared/SafeCanvas': proxy, '@/components/threed/shared/GardenCharacter': proxy, '@/components/threed/markers/ModelMarker3D': proxy,
     '../models/model-preview-events': proxy }, { requestAnimationFrame: fn => { frame = fn; return 1; }, cancelAnimationFrame: () => { frame = null; } });
   const cameraTools = { current: null }; cameraRt.mount(() => canvasModule.SimulationPreviewCamera({ tools: cameraTools, framingKey: 'initial' })); frame();
   assert(camera.position.distanceTo(center.clone().addScaledVector(new THREE.Vector3(4, 2, 6).normalize(), 20)) < 1e-9);

@@ -21,7 +21,7 @@ const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 const tasks = {
   'threed-designs': [node('validate-threed-designs.cjs')],
   'legacy-design-recovery': [node('validate-legacy-recovery-geometry.cjs'), node('validate-legacy-recovery-files.cjs'), node('validate-legacy-recovery-apply.cjs')],
-  'threed-home-design': [node('validate-threed-home-design.cjs')],
+  'threed-home-design': [node('validate-threed-home-design.cjs'), node('validate-design-sloped-walls.cjs')],
   'threed-home-design-browser': [node('validate-threed-home-design-browser.cjs')],
   'drizzle-workflow': [node('validate-drizzle-workflow.cjs')],
   'threed-browser-fbx-textures': [
@@ -93,7 +93,7 @@ const tasks = {
   'threed-simulation-admin': [node('validate-threed-simulation-admin.cjs'), node('validate-threed-simulation-editor.cjs'), node('validate-threed-simulation-preview.cjs')],
   'threed-soccer-simulation': [node('validate-threed-soccer-simulation.cjs')],
   'threed-simulation-launch': [node('validate-threed-simulation-launch.cjs')],
-  'threed-simulation-results': [node('validate-threed-simulation-results-schema.cjs'), node('validate-threed-simulation-results.cjs')],
+  'threed-simulation-results': [node('validate-threed-simulation-results-schema.cjs'), node('validate-threed-simulation-results.cjs'), node('validate-threed-simulation-results-admin.cjs')],
   'threed-library-collections': [ts('validate-threed-library-collections.mts')],
   'threed-project-session': [['node', '--import', 'tsx', `${scripts}/validate-threed-project-session.mts`], node('validate-public-scene-api.cjs'), node('validate-project-asset-warnings.cjs'), ['node', '--import', 'tsx', `${scripts}/validate-scene-loading-policy.mts`]],
   'threed-mqtt': [['node', '--import', 'tsx', 'src/libraries/services/threed/mqtt/validate.mts']],
@@ -134,7 +134,7 @@ const tasks = {
   'threed-model-builder-browser': [node('validate-threed-model-builder-browser.cjs')],
   'threed-model-pbr': [node('validate-model-pbr.cjs')],
   'threed-model-direct-upload': [ts('validate-threed-model-direct-upload.mts')],
-  'threed-character-editor': [node('validate-threed-character-editor.cjs')],
+  'threed-character-editor': [node('validate-threed-character-editor.cjs'), node('validate-character-admin-conventions.cjs')],
   'threed-model-file-requirements': [node('validate-threed-model-file-requirements.cjs')],
   'threed-model-file-workspace': [node('validate-threed-model-file-workspace.cjs'), node('validate-model-file-preview.cjs')],
   'threed-model-editor-tabs': [node('validate-threed-model-editor-tabs.cjs'), node('validate-model-source.cjs')],

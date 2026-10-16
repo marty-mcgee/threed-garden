@@ -56,6 +56,7 @@ import {
   MapPin,
   BookOpen,
   FlaskConical,
+  ClipboardList,
   Hammer,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -142,6 +143,7 @@ const navSections: NavSection[] = [
       { title: 'Plantings', href: '/admin/threed/plantings', icon: Bean, exact: false },
       { title: 'Scenarios', href: '/admin/threed/scenarios', icon: BookOpen, exact: false },
       { title: 'Simulations', href: '/admin/threed/simulations', icon: FlaskConical, exact: false },
+      { title: 'Simulation Results', href: '/admin/threed/simulation-results', icon: ClipboardList, exact: false },
       { title: 'Layers', href: '/admin/threed/layers', icon: Layers, exact: false },
       { title: 'Tasks', href: '/admin/threed/tasks', icon: ListTodo, exact: false },
       { title: 'Waterings', href: '/admin/threed/watering-schedules', icon: Droplets, exact: false },

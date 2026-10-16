@@ -277,6 +277,7 @@ function previewChecks() {
   const preview = load('src/components/admin/threed/models/ThreeDModelAssetPreview.tsx', {
     react: rt.react, 'react/jsx-runtime': { jsx, jsxs: jsx }, './model-preview-events': {}, three: proxy,
     '@react-three/fiber': { Canvas: 'canvas' }, '@react-three/drei': proxy, 'lucide-react': proxy,
+    '@/components/threed/shared/SafeCanvas': { SafeCanvas: 'canvas' },
     '@/components/ui/button': proxy, '@/components/threed/markers/ModelMarker3D': proxy,
     '@/libraries/services/threed/models/model-material-override-core': require('../services/threed/models/model-material-override-core.ts'),
   }, { requestAnimationFrame: () => 1, cancelAnimationFrame() {} });

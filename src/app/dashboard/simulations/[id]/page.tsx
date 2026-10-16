@@ -1,8 +1,8 @@
-import { notFound } from 'next/navigation';
-import { SimulationEditor } from '@/components/admin/threed/simulations/SimulationEditor';
+import { notFound, redirect } from 'next/navigation';
 
-export default async function SimulationPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function SimulationPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ created?: string | string[] }> }) {
   const { id } = await params;
   if (!/^[1-9]\d*$/.test(id) || !Number.isSafeInteger(Number(id)) || Number(id) > 2_147_483_647) notFound();
-  return <div className="h-[calc(100dvh-100px)] p-2"><SimulationEditor surface="dashboard" id={Number(id)} /></div>;
+  const { created } = await searchParams;
+  redirect(`/admin/threed/simulations/${id}/view${created === '1' ? '?created=1' : ''}`);
 }
