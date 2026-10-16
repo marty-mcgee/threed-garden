@@ -3,12 +3,10 @@ import { ProjectMeasurementUnits } from '@/components/project/ProjectMeasurement
 import { DesignNameInput } from './DesignNameInput';
 
 import { useCallback, useEffect, useRef, useState, type SetStateAction } from 'react';
-import { createPortal } from 'react-dom';
 import dynamic from 'next/dynamic';
 import { Eye, Settings2, SlidersHorizontal, Building2, Scissors, SquareDashed, House, DoorOpen, Download, Layers, MousePointer2, Move, PanelsTopLeft, Pentagon, PencilRuler, Plus, Redo2, Trash2, Undo2, Upload, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { DetailsSectionScope, PersistentDetails } from '@/components/map/details/PersistentDetails';
 import { defaultDesignWorkspace, type ProjectDesignWorkspaceState } from '@/libraries/services/threed/markers/project-view-state-core';
 import { DesignImportDialog } from './DesignImportDialog';
@@ -53,7 +51,7 @@ export interface DesignEditorProps {
     error?: string;
   };
 }
-export function DesignEditor({ frameRequest, active = true, canSave = true, scene, toolbarHost, historyHost, onActionsBusyChange }: DesignEditorProps = {}) {
+export function DesignEditor({ frameRequest, active = true, canSave = true, scene, onActionsBusyChange }: DesignEditorProps = {}) {
   const controlsHost = useRef<HTMLDivElement>(null);
   const [localDraft, setLocalDraft] = useState(() => projectArchitectureDraft());
   const draft = scene?.draft ?? localDraft, history = draft.history;
@@ -169,23 +167,24 @@ export function DesignEditor({ frameRequest, active = true, canSave = true, scen
   }
   const drawingActions = <nav aria-label="ThreeD Design Action Tools" className={`flex min-w-0 max-w-full flex-wrap items-center gap-1 ${scene ? "[&_button]:h-7 [&_button]:w-7 [&_svg]:size-3.5" : ""}`}>
     {([
-      { label: 'Selection and pan', tools: [{ key: 'select', title: 'Select', icon: MousePointer2 }, { key: 'pan', title: 'Pan', icon: Move }] },
-      { label: 'Structures', tools: [{ key: 'wall', title: 'Wall', icon: PencilRuler }, { key: 'floor', title: 'Floor', icon: Pentagon }, { key: 'roof', title: 'Roof', icon: House }] },
-      { label: 'Wall openings', tools: [{ key: 'door', title: 'Door', icon: DoorOpen }, { key: 'window', title: 'Window', icon: PanelsTopLeft }] },
-      { label: 'Roof openings', tools: [{ key: 'skylight', title: 'Skylight', icon: SquareDashed }, { key: 'cutout', title: 'Roof Cutout', icon: Scissors }] },
-    ] as const).map((group, index) => <div key={group.label} role="group" aria-label={group.label} className="flex shrink-0 items-center gap-1">
-      {index > 0 && <Separator orientation="vertical" className="mx-1 bg-foreground/20 data-[orientation=vertical]:h-5" />}
-      {group.tools.map(item => <DesignAction key={item.key} label={item.title} disabled={!canSave || importing || loading} variant={tool === item.key ? (scene ? 'secondary' : 'default') : 'outline'} aria-pressed={tool === item.key} onClick={() => { cancel(); setTool(item.key); if (item.key === 'cutout' || item.key === 'skylight') { setShowRoofs(true); setMessage('Choose a host roof in the active plan. Hover to preview a 24 by 36 inch opening. Select the roof first when roofs overlap.'); } if (item.key === 'door' || item.key === 'window') setMessage(`Choose a host wall in the plan to place a ${item.title.toLowerCase()}. Hover to preview; Escape cancels.`); }}><item.icon className="h-4 w-4" aria-hidden="true" /></DesignAction>)}
+      { label: 'Selection and pan', color: 'text-cyan-700 dark:text-cyan-300', tools: [{ key: 'select', title: 'Select', icon: MousePointer2 }, { key: 'pan', title: 'Pan', icon: Move }] },
+      { label: 'Structures', color: 'text-emerald-700 dark:text-emerald-300', tools: [{ key: 'wall', title: 'Wall', icon: PencilRuler }, { key: 'floor', title: 'Floor', icon: Pentagon }, { key: 'roof', title: 'Roof', icon: House }] },
+      { label: 'Wall openings', color: 'text-amber-700 dark:text-amber-300', tools: [{ key: 'door', title: 'Door', icon: DoorOpen }, { key: 'window', title: 'Window', icon: PanelsTopLeft }] },
+      { label: 'Roof openings', color: 'text-violet-700 dark:text-violet-300', tools: [{ key: 'skylight', title: 'Skylight', icon: SquareDashed }, { key: 'cutout', title: 'Roof Cutout', icon: Scissors }] },
+    ] as const).map(group => <div key={group.label} role="group" aria-label={group.label} className="flex shrink-0 items-center gap-1 rounded-md border border-border bg-muted/40 p-1">
+      {group.tools.map(item => <DesignAction key={item.key} label={item.title} disabled={!canSave || importing || loading} variant={tool === item.key ? (scene ? 'secondary' : 'default') : 'outline'} aria-pressed={tool === item.key} onClick={() => { cancel(); setTool(item.key); if (item.key === 'cutout' || item.key === 'skylight') { setShowRoofs(true); setMessage('Choose a host roof in the active plan. Hover to preview a 24 by 36 inch opening. Select the roof first when roofs overlap.'); } if (item.key === 'door' || item.key === 'window') setMessage(`Choose a host wall in the plan to place a ${item.title.toLowerCase()}. Hover to preview; Escape cancels.`); }}><item.icon className={`h-4 w-4 ${tool === item.key && !scene ? "" : group.color}`} aria-hidden="true" /></DesignAction>)}
     </div>)}
-  </nav>;
-  const historyActions = <div className={`flex flex-wrap gap-1 ${scene ? "[&_button]:h-7 [&_button]:w-7 [&_svg]:size-3.5" : ""}`}>
+    <div role="group" aria-label="Design history" className="flex shrink-0 items-center gap-1 rounded-md border border-border bg-muted/40 p-1 [&_svg]:text-sky-700 dark:[&_svg]:text-sky-300">
         <DesignAction label="Undo" disabled={!canSave || !history.past.length || importing || loading} onClick={() => { cancel(); setHistory(undoDesign); setSelected(null); }}><Undo2 className="h-4 w-4" /></DesignAction>
         <DesignAction label="Redo" disabled={!canSave || !history.future.length || importing || loading} onClick={() => { cancel(); setHistory(redoDesign); setSelected(null); }}><Redo2 className="h-4 w-4" /></DesignAction>
+    </div>
+    <div role="group" aria-label="Design JSON files" className="flex shrink-0 items-center gap-1 rounded-md border border-border bg-muted/40 p-1 [&_svg]:text-teal-700 dark:[&_svg]:text-teal-300">
         <DesignAction label="Import JSON" disabled={!canSave || saving || importing || loading} onClick={() => setImporting(true)}>{importing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}</DesignAction>
         <DesignAction label="Export JSON" disabled={importing || loading} onClick={exportFile}><Download className="h-4 w-4" /></DesignAction>
-      </div>;
+    </div>
+  </nav>;
   const header =     <header className="flex shrink-0 flex-wrap items-center gap-2 border-b pb-2"><div className="flex min-w-0 flex-wrap items-center gap-2"><Building2 className="h-5 w-5 text-cyan-400" /><h1 className="text-base font-semibold">ThreeD Design</h1><DesignFieldHelp label="ThreeD Design">Draw architectural content in the active Project Scene. Save Project stores editable parameters and existing Scene objects together. Export JSON makes a portable architectural backup. Wall centers and floor corners share node IDs.</DesignFieldHelp><span className="text-xs text-muted-foreground">{scene?.projectName ?? 'Local tools preview'}</span></div>
-{drawingActions}{historyActions}</header>;
+{drawingActions}</header>;
   const importDialog = <DesignImportDialog open={importing} onOpenChange={setImporting} onImport={importFile} />;
   const importStatus = <div data-testid="design-save-status" aria-live="polite" className="text-xs text-muted-foreground">{saving ? 'Saving Project...' : scene?.error ? 'Project save failed - edits retained' : dirty ? 'Unsaved Project changes' : 'No unsaved architecture changes'}{!canSave && ' / Sign in as the Project owner to edit.'}</div>;
   const propertiesPanel = <aside data-testid="design-properties" className={`flex min-w-0 flex-col gap-3 [&>section]:min-w-0 ${scene ? '' : 'rounded-lg border border-white/10 bg-[#111a28] p-3'}`}>
@@ -227,7 +226,6 @@ export function DesignEditor({ frameRequest, active = true, canSave = true, scen
   const plan = <DesignPlan measurementUnits={units} frameRequest={frameRequest} embedded={Boolean(scene)} drawingActions={scene ? drawingActions : undefined} planView={workspace.plan} onViewChange={plan => changeWorkspace({ plan })} active={active} disabled={!canSave || importing} document={doc} displayDocument={displayed} activeLevelId={activeLevelId} selected={selected} tool={tool} gridSnap={gridSnap} onSelect={select} onCommit={commit} onPreview={previewUpdate} onMessage={setMessage} onDrawComplete={id => { setSelected(id); setTool('select'); }} cancelToken={cancelToken} />;
   if (scene) return <div className="flex h-full min-h-0 min-w-0 overflow-hidden" data-testid="home-editor">
     {importDialog}
-    {active && historyHost && createPortal(historyActions, historyHost)}
     <div data-testid="design-properties-panel" className="threed-workspace-panel threed-scene-panel-surface threed-scene-sidebar-size flex min-h-0 min-w-0 shrink-0 flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md"><DetailsSectionScope.Provider value={`design:${scene.projectId}`}><div className="mb-2 flex shrink-0 items-center gap-2 text-sm font-semibold"><Building2 className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />Design Properties<DesignFieldHelp label="Design Properties">Edit selected geometry and workspace settings. Save Project retains both.</DesignFieldHelp></div>{controls}</DetailsSectionScope.Provider></div>
     <div className="flex min-h-0 min-w-0 flex-1 flex-col">{plan}</div>
   </div>;

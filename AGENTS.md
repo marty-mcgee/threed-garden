@@ -1,3 +1,11 @@
+## v0.26.3 — ThreeD Design Tools + Toolbar
+
+Local checkpoint prepared October 15, 2026. Package/root lockfile are 0.26.3; dependencies and schema are unchanged. Production is Developer-confirmed v0.26.2; this checkpoint is not yet reported released. Earlier preparation statuses below are historical.
+
+The canvas-local Design toolbar now groups drawing tools, Undo/Redo, Import/Export JSON and plan navigation with colored icons and bordered groups. Existing accessible names, tooltips, active/disabled states and handlers remain; Project Save stays in the Project header. Developer accepted the toolbar appearance in chat. TypeScript and whitespace checks passed; full CI/build and independent browser/Save-reopen checks were not rerun.
+
+See [release notes](docs/releases/v0.26.3.md). Preserve existing Project/Scene owners, import validation and manual edits. Local servers remain untouched; no live writes, commit, tag, push or deployment.
+
 ## v0.26.2 — ThreeD Workspace: View Modes + Access Panels
 
 Release checks passed: isolated clean install, fresh TypeScript, four focused offline suites, source/config/version/link checks, and guarded production build (144/144 pages, explicit exit 0) on Next.js 16.4.2. Full CI and independent browser/Save-reopen checks were not rerun. See release notes for initial lockfile repair and non-failing isolated-build warning.
