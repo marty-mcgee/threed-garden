@@ -2,7 +2,8 @@
 'use client';
 
 import React, { Suspense, useRef, useState } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
+import { SafeCanvas as Canvas } from '@/components/threed/shared/SafeCanvas';
 import { 
   OrbitControls, 
   PerspectiveCamera, 

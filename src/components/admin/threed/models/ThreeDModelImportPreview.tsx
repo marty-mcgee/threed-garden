@@ -1,7 +1,7 @@
 'use client';
 
 import { Component, useEffect, useState, type ReactNode } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { SafeCanvas as Canvas } from '@/components/threed/shared/SafeCanvas';
 import { Bounds, Grid, OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import { Box, Loader2, RotateCcw } from 'lucide-react';

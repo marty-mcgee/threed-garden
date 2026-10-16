@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, useCallback, useEffect, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { SafeCanvas as Canvas } from '@/components/threed/shared/SafeCanvas';
 import { Bounds, Grid, OrbitControls, useBounds } from '@react-three/drei';
 import { AlertTriangle, Loader2, RotateCcw } from 'lucide-react';
 

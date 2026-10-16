@@ -1,5 +1,6 @@
 'use client';
 
+import { createPortal } from 'react-dom';
 import { UserRound, Loader2, X } from 'lucide-react';
 
 import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
@@ -13,6 +14,7 @@ interface ThreeDModuleOption {
 
 interface ThreeDCharacterLibraryPanelProps {
   isOpen: boolean;
+  dockHost?: HTMLDivElement | null;
   projectModules: ThreeDModuleOption[];
   selectedModuleId: number | null;
   onSelectedModuleChange: (moduleId: number) => void;
@@ -28,6 +30,7 @@ interface ThreeDCharacterLibraryPanelProps {
 
 export function ThreeDCharacterLibraryPanel({
   isOpen,
+  dockHost,
   projectModules,
   selectedModuleId,
   onSelectedModuleChange,
@@ -42,11 +45,11 @@ export function ThreeDCharacterLibraryPanel({
 }: ThreeDCharacterLibraryPanelProps) {
   if (!isOpen) return null;
 
-  return (
-    <div className="threed-workspace-panel threed-scene-panel-surface absolute bottom-0 left-0 top-[38px] z-40 flex w-72 max-w-[calc(100vw-1rem)] flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md">
+  const panel = (
+    <div className="threed-workspace-panel threed-scene-panel-surface absolute bottom-0 left-0 top-[38px] z-40 flex threed-scene-sidebar-size flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md" role="region" aria-label="ThreeD Character Library" style={dockHost ? { position: 'relative', top: 0, height: '100%' } : undefined}>
       <div className="mb-2 flex items-center justify-between gap-2">
         <div className="flex min-w-0 items-center gap-2"><UserRound aria-hidden="true" className="h-4 w-4 shrink-0 text-violet-600 dark:text-violet-300" /><h2 className="text-sm font-semibold">ThreeD Character Library</h2><ModelFieldHelp label="ThreeD Character Library">Select a Character, then click its unique spawn location in the ThreeD Scene.</ModelFieldHelp></div>
-        <Button type="button" variant="ghost" size="icon" className="h-7 w-7" disabled={placing} onClick={onClose}>
+        <Button type="button" variant="ghost" size="icon" className="h-7 w-7" aria-label="Close Character Library" disabled={placing} onClick={onClose}>
           <X className="h-3.5 w-3.5" />
         </Button>
       </div>
@@ -117,4 +120,5 @@ export function ThreeDCharacterLibraryPanel({
       </div>
     </div>
   );
+  return dockHost ? createPortal(panel, dockHost) : panel;
 }

@@ -1,7 +1,8 @@
 'use client';
 
 import { Component, Suspense, useCallback, useEffect, useRef, useState, type ComponentProps, type ReactNode, type RefObject } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import { useThree } from '@react-three/fiber';
+import { SafeCanvas as Canvas } from '@/components/threed/shared/SafeCanvas';
 import { Bounds, OrbitControls, useBounds } from '@react-three/drei';
 import { GardenCharacter } from '@/components/threed/shared/GardenCharacter';
 import type { AssignedAnimationClip } from '@/libraries/utils/assignedCharacterAnimations';

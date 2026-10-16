@@ -1,7 +1,7 @@
 // src/components/threed/ModelPreview.tsx
 'use client';
 
-import { Canvas } from '@react-three/fiber';
+import { SafeCanvas as Canvas } from '@/components/threed/shared/SafeCanvas';
 import { OrbitControls, useGLTF, Environment } from '@react-three/drei';
 import { Suspense } from 'react';
 

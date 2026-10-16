@@ -1,6 +1,7 @@
 'use client';
 import { useLayoutEffect, useRef, useState } from 'react';
-import { Canvas, useThree, type ThreeEvent } from '@react-three/fiber';
+import { useThree, type ThreeEvent } from '@react-three/fiber';
+import { SafeCanvas as Canvas } from '@/components/threed/shared/SafeCanvas';
 import { Grid, OrbitControls } from '@react-three/drei';
 import { Box3, Group, Object3D, Vector3, type PerspectiveCamera } from 'three';
 import { Button } from '@/components/ui/button';

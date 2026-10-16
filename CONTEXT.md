@@ -1,3 +1,37 @@
+## v0.26.1 ? ThreeD Workspace: Rendering fail-safe and Design mode continuity
+
+Prepared locally October 15, 2026 on main, based on 53372d24 plus accepted working changes. Package/root lockfile are **0.26.1**; dependencies and database schema are unchanged. Production remains **Developer-confirmed v0.26.0**. This checkpoint is not yet released. Earlier preparation/status entries below are historical and superseded by this summary.
+
+- **Rendering fail-safe:** active Scene and preview canvases stop after detected context loss, unhandled recursion/update-depth errors, or caught Canvas rendering failures. The page-local guard latches without automatic retries and defers shutdown notification until the current callback finishes. Project state remains outside the Canvas boundary.
+- **Original visual quality:** caller pixel-density/antialias settings and 4096 Scene shadows are preserved. The initial quality reductions were reverted; the Developer confirmed restored quality.
+- **Design mode continuity:** Character Library uses the upper-left Assets dock and shared panel sizing. Character placement, DetailsCard movement, transforms, sensors and other viewport-requiring actions retain Design/Combined mode; 2D-only mode switches when a 3D viewport is needed.
+
+Developer feedback accepts the visible quality and workspace improvements. Offline TypeScript and focused mocked/lifecycle checks passed; these are not independent browser or production verification. The reported GPU/whole-computer crash remains undiagnosed: the guard is not a GPU-memory limit or a guarantee against driver failures. Full CI/build and authenticated Save/reopen have not been rerun for this checkpoint.
+
+[Release notes and manual checks](docs/releases/v0.26.1.md) ? [Fail-safe implementation and limits](docs/plans/rendering-failsafe.md)
+
+## October 15: Preserve View Mode for Scene actions
+
+Follow-up to Character Library docking: all eight action-level requests for a 3D viewport in Dashboard Scene now use a functional View Mode updater that switches only from 2D-only mode. Existing Design, Combined and 3D modes are preserved for transform sessions, Character/Bed/FarmBot Move Placement, Planting movement, scenario start, Character/FarmBot/Bed placement and Physics Sensor placement. Explicit View Mode buttons and saved workspace hydration remain unchanged. No placement/persistence/physics logic or panel styling was changed in this increment.
+
+Passed: npm.cmd run typecheck and validate-character-library-design.cjs, extended to execute the actual mode updaters for all four modes and reject unconditional action switches to 3d. Browser interaction remains manual: in Design, try Character DetailsCard Move Placement, cancel or complete in the upper Scene, then check the other placement actions; the lower Design workspace should remain visible. Servers and live data untouched; no version, commit or deployment operation.
+
+## October 15: Character Library in Design mode
+
+Fixed the Character Library Place callback in src/app/dashboard/scene/page.tsx: it previously unconditionally switched to 3d. Design, Combined and 3D now retain their mode; only 2D-only mode switches to enable 3D placement. ThreeDCharacterLibraryPanel uses the same designAssetsHost portal and threed-scene-sidebar-size convention as ProjectAssetsPanel. In Design it occupies the upper-left row, with internal list scrolling, leaving lower Design Properties/canvas available. Existing Character placement, cancellation, Project persistence and Canvas ownership remain unchanged.
+
+Passed: TypeScript, validate-character-library-design.cjs (actual callback across four modes and mocked portal/component sizing), diff whitespace check. Browser placement and divider resizing still require manual verification. No servers, live writes, version or deployment changes. Developer has separately confirmed the preceding visual-quality restoration; fail-safe crash prevention remains unverified.
+
+## October 15: Rendering fail-safe after v0.26.0
+
+Developer reports repeated whole-computer/graphics-driver failures across Projects over many months and requests a basic App fail-safe. No exact error stack or GPU diagnostics establish the root cause. v0.26.0 is Developer-confirmed production; these are new, unreleased local changes with version unchanged.
+
+Active Canvas hosts now use shared SafeCanvas: a document-local, latched circuit breaker stops registered R3F frame loops on WebGL context loss, unhandled recursion/update-depth errors, or a caught Canvas render failure. Teardown notification is deferred until the current callback unwinds; there is no automatic retry. Project/editor state remains outside this boundary. Scene loading overlays are suppressed on failure so the fallback stays visible. Existing Rapier-specific error handling remains, with corrected guidance that does not request restarting the Developer's server.
+
+Follow-up: Developer reported poor visual quality and requested reversal of the quality reductions. SafeCanvas now preserves caller DPR and renderer options/defaults; Scene antialiasing is restored to true and shadow maps to 4096. The shared fail-safe remains active. TypeScript and the updated mocked fail-safe check passed; visual restoration awaits Developer confirmation. The dormant manual ThreeDDesign copy is untouched. This is not a GPU-memory ceiling, a cross-tab/device governor, a fix for a diagnosed recursion source, or a guarantee against driver/OS crashes. Large assets, loading concurrency and background activity still need separate budget/lifecycle investigation.
+
+Checks: TypeScript, new offline mocked fail-safe tests, Scene resource-lifecycle tests and Character/Rapier lifecycle tests passed. No browser/WebGL stress tests, full build, live database operation, server operation, version bump, commit or deployment. See [rendering fail-safe](docs/plans/rendering-failsafe.md) for boundaries and manual verification. Previous release checks below belong to v0.26.0, not this increment.
+
 Final release checks: all 72 offline CI tasks passed; TypeScript, seven focused projection/units/physics/asset-sizing checks, version/dependency consistency, release links and whitespace checks passed. Guarded isolated production build compiled and generated 144/144 pages. Runtime source matched the built copy; subsequent changes were validation fixtures and documentation only. Installed Three CommonJS and isolated build-root warnings remain non-failing. No new browser/production verification or deployment is claimed.
 
 ## v0.26.0 release candidate - October 15, 2026

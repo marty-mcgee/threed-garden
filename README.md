@@ -1,3 +1,15 @@
+## v0.26.1 ? ThreeD Workspace: Rendering fail-safe and Design mode continuity
+
+Prepared locally October 15, 2026 on main, based on 53372d24 plus accepted working changes. Package/root lockfile are **0.26.1**; dependencies and database schema are unchanged. Production remains **Developer-confirmed v0.26.0**. This checkpoint is not yet released. Earlier preparation/status entries below are historical and superseded by this summary.
+
+- **Rendering fail-safe:** active Scene and preview canvases stop after detected context loss, unhandled recursion/update-depth errors, or caught Canvas rendering failures. The page-local guard latches without automatic retries and defers shutdown notification until the current callback finishes. Project state remains outside the Canvas boundary.
+- **Original visual quality:** caller pixel-density/antialias settings and 4096 Scene shadows are preserved. The initial quality reductions were reverted; the Developer confirmed restored quality.
+- **Design mode continuity:** Character Library uses the upper-left Assets dock and shared panel sizing. Character placement, DetailsCard movement, transforms, sensors and other viewport-requiring actions retain Design/Combined mode; 2D-only mode switches when a 3D viewport is needed.
+
+Developer feedback accepts the visible quality and workspace improvements. Offline TypeScript and focused mocked/lifecycle checks passed; these are not independent browser or production verification. The reported GPU/whole-computer crash remains undiagnosed: the guard is not a GPU-memory limit or a guarantee against driver failures. Full CI/build and authenticated Save/reopen have not been rerun for this checkpoint.
+
+[Release notes and manual checks](docs/releases/v0.26.1.md) ? [Fail-safe implementation and limits](docs/plans/rendering-failsafe.md)
+
 Final release checks: all 72 offline CI tasks passed; TypeScript, seven focused projection/units/physics/asset-sizing checks, version/dependency consistency, release links and whitespace checks passed. Guarded isolated production build compiled and generated 144/144 pages. Runtime source matched the built copy; subsequent changes were validation fixtures and documentation only. Installed Three CommonJS and isolated build-root warnings remain non-failing. No new browser/production verification or deployment is claimed.
 
 ## v0.26.0 release candidate - October 15, 2026

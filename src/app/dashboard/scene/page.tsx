@@ -379,7 +379,7 @@ function UnifiedMapPageInner() {
     setIsProjectSetupOpen(false);
     setIsScenariosOpen(false);
     setIsSetupMenuOpen(false);
-    setViewMode('3d');
+    setViewMode(current => current === '2d' ? '3d' : current);
     // Only begin once; pointer updates must not reopen or reset the Scene.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transform.session?.objectKey]);
@@ -2412,7 +2412,7 @@ function UnifiedMapPageInner() {
     const marker = data.threed.raw?.projectThreedMarkers?.find(record=>record.id===markerId && record.markerType==='plantings');
     if (!marker) return;
     setMovingModelInstance(current=>current?.id===markerId && current.planting ? null : {id:markerId,name:marker.name || 'Planting',planting:input});
-    setViewMode('3d');
+    setViewMode(current => current === '2d' ? '3d' : current);
     setPlacementModel(null); setPlacementCharacter(null); setPlacementFarmBot(null);
     setBedPlacementActive(false); setPlantingPlacementActive(false);
   }, [data.threed.raw]);
@@ -2422,7 +2422,7 @@ function UnifiedMapPageInner() {
     if (!marker || !['beds','farmbots','characters'].includes(marker.markerType)) return;
     if (marker.markerType === 'characters' && controlledCharacterId != null) return;
     setMovingModelInstance(current=>current?.id===markerId && current.module ? null : {id:markerId,name:marker.name,module:marker.markerType as 'beds'|'farmbots'|'characters'});
-    setViewMode('3d'); setPlacementModel(null); setPlacementCharacter(null); setPlacementFarmBot(null);
+    setViewMode(current => current === '2d' ? '3d' : current); setPlacementModel(null); setPlacementCharacter(null); setPlacementFarmBot(null);
     setBedPlacementActive(false); setPlantingPlacementActive(false);
   }, [data.threed.raw,controlledCharacterId]);
 
@@ -2953,7 +2953,7 @@ function UnifiedMapPageInner() {
         onGuideChange={(guide: ProjectScenarioGuideState) => setScenarioPanelState(current => ({ ...current, guide }))}
         onClose={() => setIsScenariosOpen(false)}
         onStartScenario={scenario => {
-          setViewMode('3d');
+          setViewMode(current => current === '2d' ? '3d' : current);
           setScenarioStartRequest(current => ({ ...scenario, sequence: (current?.sequence ?? 0) + 1 }));
         }}
       />
@@ -3053,6 +3053,7 @@ function UnifiedMapPageInner() {
 
       <div>
       <ThreeDCharacterLibraryPanel
+        dockHost={viewMode === 'design' ? designAssetsHost : null}
         isOpen={canEditProject && Boolean(selectedProjectId) && isCharacterLibraryOpen}
         projectModules={projectThreeDModules}
         selectedModuleId={placementThreedId}
@@ -3064,7 +3065,7 @@ function UnifiedMapPageInner() {
         placementCharacter={placementCharacter}
         onSelectCharacter={(character) => {
           setPlacementCharacter(character);
-          setViewMode('3d');
+          setViewMode(current => current === '2d' ? '3d' : current);
         }}
         onCancelPlacement={() => setPlacementCharacter(null)}
         onClose={() => {
@@ -3091,7 +3092,7 @@ function UnifiedMapPageInner() {
         }}
         onSelectFarmBot={(farmBot) => {
           setPlacementFarmBot(farmBot);
-          setViewMode('3d');
+          setViewMode(current => current === '2d' ? '3d' : current);
         }}
         onCancelPlacement={() => setPlacementFarmBot(null)}
         onClose={() => {
@@ -3114,7 +3115,7 @@ function UnifiedMapPageInner() {
         }}
         onBeginPlacement={() => {
           setBedPlacementActive(true);
-          setViewMode('3d');
+          setViewMode(current => current === '2d' ? '3d' : current);
         }}
         onCancelPlacement={() => setBedPlacementActive(false)}
         onClose={() => {
@@ -3360,7 +3361,7 @@ function UnifiedMapPageInner() {
           setBedPlacementActive(false);
           setPlantingPlacementActive(false);
           setPlacingPhysicsSensor({ marker, markerId, sensor, operation });
-          setViewMode('3d');
+          setViewMode(current => current === '2d' ? '3d' : current);
         }}
         onCancelPhysicsSensorPlacement={() => setPlacingPhysicsSensor(null)}
         onZoomToPhysicsSensor={handleZoomToPhysicsSensor}

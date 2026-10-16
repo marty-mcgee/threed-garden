@@ -44,7 +44,8 @@ import {
   Suspense,
 } from 'react';
 import { createPortal } from 'react-dom';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
+import { SafeCanvas as Canvas, StoppedViewport, useRenderFailure } from '@/components/threed/shared/SafeCanvas';
 import { 
   OrbitControls, Environment, Html, Plane, Grid, useTexture,
   GizmoHelper, GizmoViewcube, GizmoViewport,
@@ -2407,6 +2408,7 @@ export function ThreeDScene({
   // has mounted successfully through the Controls menu.
   const [physicsDebug, setPhysicsDebug] = useState(false);
   const [physicsFailed, setPhysicsFailed] = useState(false);
+  const renderFailure = useRenderFailure();
   const stopCanvasFrameLoopRef = useRef<(() => void) | null>(null);
   const physicsFailureHandledRef = useRef(false);
   const physicsUnmountTimerRef = useRef<number | null>(null);
@@ -3837,12 +3839,12 @@ export function ThreeDScene({
         Left-click: Select • Right-click: Zoom
       </div> */}
 
-      {physicsFailed ? (
+      {renderFailure ? <StoppedViewport /> : physicsFailed ? (
         <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/90 p-4">
           <div className="w-80 rounded border border-red-400/40 bg-black p-4 text-center text-white shadow-xl">
             <div className="text-sm font-semibold text-red-300">ThreeD physics stopped</div>
             <div className="mt-1 text-xs text-white/70">
-              The Canvas was unmounted after a physics error. Restart the development server before testing again.
+              Rendering stopped after a physics error. Save any available Project edits before reloading the page.
             </div>
           </div>
         </div>
@@ -4210,7 +4212,7 @@ export function ThreeDScene({
       </div>
       )}
 
-      <SceneResourceFeedback physicsFailed={physicsFailed} warningsDismissed={warningsDismissed} resourceFailed={resourceFailed} visibleResourceIssues={visibleResourceIssues} onDismissWarnings={() => setWarningsDismissed(true)} scenePostProduction={scenePostProduction} sceneLoadingProgress={sceneLoadingProgress} sceneLoadingLabel={sceneLoadingLabel} sceneProductionStarted={sceneProductionStarted} resourcesPending={resourcesPending} />
+      <SceneResourceFeedback physicsFailed={physicsFailed || Boolean(renderFailure)} warningsDismissed={warningsDismissed} resourceFailed={resourceFailed} visibleResourceIssues={visibleResourceIssues} onDismissWarnings={() => setWarningsDismissed(true)} scenePostProduction={scenePostProduction} sceneLoadingProgress={sceneLoadingProgress} sceneLoadingLabel={sceneLoadingLabel} sceneProductionStarted={sceneProductionStarted} resourcesPending={resourcesPending} />
     </div>
     </SceneHoverTitleContext.Provider>
     </SceneResourceStatus.Provider>

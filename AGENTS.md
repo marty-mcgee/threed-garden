@@ -1,3 +1,13 @@
+## Current local checkpoint: [v0.26.1 ? ThreeD Workspace: Rendering fail-safe and Design mode continuity](docs/releases/v0.26.1.md)
+
+October 15, 2026: Developer accepted restored visual quality and Design placement continuity and requested v0.26.1 documentation/preparation. Package/root lockfile are 0.26.1; production remains Developer-confirmed v0.26.0. Branch main at inspection, HEAD 53372d24 plus local work. Earlier release labels below are historical.
+
+Preserve SafeCanvas and its document-local, deferred, latched failure handling across active Canvas hosts. Preserve original rendering quality: no forced DPR/antialias reduction, Scene shadows 4096. Do not claim the recurring GPU/driver crash is diagnosed or prevented. No automatic retry, cross-device governor or portable VRAM ceiling exists. The dormant manual ThreeDDesign copy remains untouched.
+
+Preserve Character Library docking through designAssetsHost and the shared sidebar sizing. All eight action-level 3D viewport requests preserve Design/Combined/3D and only switch from 2D-only mode; explicit View Mode buttons and saved hydration retain their behavior. Keep existing placement/Save/physics owners.
+
+TypeScript and focused mocked guard, placement-mode and resource/Character lifecycle checks passed; no new agent browser, full CI/build or authenticated Save/reopen verification is claimed. Developer feedback is separate evidence. See release notes for exact checks and limitations. Keep local servers untouched; do not stress-test/reproduce a machine crash, run live writes, rerun recovery, commit, tag, push or deploy. Leave all changes unstaged.
+
 ## Current release preparation: [v0.25.3 — Legacy recovery and Model guidance](docs/releases/v0.25.3.md)
 
 October 14: Developer accepted this checkpoint and supplied successful local browser screenshots for README documentation. Package/root lockfile are now 0.25.3; dependencies/schema remain unchanged, including stable Fiber 9.8.1. Based on main `8ee6bd14` plus accepted local work. Production remains Developer-confirmed v0.25.2; do not mark 0.25.3 released until the Developer confirms. See release notes for final checks and manual limits. Preserve the completed Project #17 recovery/journal: deployment does not run recovery, and this release request authorizes no repeat apply or live writes. Screenshots confirm visible Scene/plan/guidance acceptance, not later Save/reopen or full legacy parity. Keep local servers untouched and changes unstaged; no commit, tag, push or deployment. Earlier version/preparation entries below are historical.

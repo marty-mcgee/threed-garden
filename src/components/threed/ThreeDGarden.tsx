@@ -2,7 +2,7 @@
 'use client';
 
 import { useRef } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { SafeCanvas as Canvas } from '@/components/threed/shared/SafeCanvas';
 import { OrbitControls, Environment, Html, Plane, Grid } from '@react-three/drei';
 import * as THREE from 'three';
 

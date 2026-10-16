@@ -3,7 +3,8 @@
 import { Suspense, useCallback, useEffect, useId, useRef, useState, type ChangeEvent, type ComponentRef, type ReactNode } from 'react';
 import { modelPreviewEvents } from './model-preview-events';
 import { Vector3, type Group } from 'three';
-import { Canvas, useThree, type RootState } from '@react-three/fiber';
+import { useThree, type RootState } from '@react-three/fiber';
+import { SafeCanvas as Canvas } from '@/components/threed/shared/SafeCanvas';
 import { Bounds, Grid, OrbitControls, useBounds } from '@react-three/drei';
 import { Box, Check, ImageOff, Loader2, Palette, RotateCcw, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';

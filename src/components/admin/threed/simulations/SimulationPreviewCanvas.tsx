@@ -1,7 +1,8 @@
 'use client';
 
 import { Component, Suspense, useCallback, useEffect, useRef, type ReactNode, type RefObject } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
+import { SafeCanvas as Canvas } from '@/components/threed/shared/SafeCanvas';
 import { Bounds, Grid, Html, Line, OrbitControls, useBounds } from '@react-three/drei';
 import { Box3, Group, Vector3 } from 'three';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
