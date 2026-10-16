@@ -2,13 +2,15 @@
 
 'use client';
 
-import { ProjectMeasurementUnits } from '@/components/project/ProjectMeasurementUnits';
-import { readProjectMeasurementUnits, type MeasurementUnits } from '@/libraries/services/project/measurement-units';
-import { useState, useEffect } from 'react';
+import { ProjectConfigurations } from '@/components/admin/projects/ProjectConfigurations';
+import { ProjectDetailsFields } from '@/components/admin/projects/ProjectDetailsFields';
+import type { ProjectConfigurationRequest } from '@/libraries/services/project/configuration';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import {
-  Plus, Box, Car, Music, Edit, Trash2, Save, X, Loader2,
+  Plus, Box, Car, Music, Trash2, X, Loader2,
   CheckCircle, XCircle, MoreHorizontal, ChevronDown, ChevronRight,
   FolderOpen, Layers, Sprout, Package, User, AlertTriangle, Music2,
   Image, Link2, FileText, Route, Flame, Radio, MapPin
@@ -19,7 +21,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/toast';
@@ -59,6 +60,7 @@ import {
 } from '@/libraries/services/threed/markers/map-coordinate-core';
 
 interface Project {
+  config?: unknown;
   id: number;
   name: string;
   description: string;
@@ -249,6 +251,9 @@ export default function ProjectDetailPage() {
   const { showToast, ToastComponent } = useToast();
   const { data: session, status } = useSession();
   const projectId = parseInt(params.id as string);
+  const projectScopeRef = useRef(projectId);
+  projectScopeRef.current = projectId;
+  const loadSequenceRef = useRef(0);
 
   const [project, setProject] = useState<Project | null>(null);
   const [modules, setModules] = useState<Record<ModuleType, Module[]>>({
@@ -257,7 +262,7 @@ export default function ProjectDetailPage() {
     multimedia: [],
   });
   const [loading, setLoading] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
+  const [projectTab, setProjectTab] = useState('setup');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showNewModuleDialog, setShowNewModuleDialog] = useState(false);
   const [newModuleData, setNewModuleData] = useState({
@@ -266,7 +271,6 @@ export default function ProjectDetailPage() {
     description: '',
   });
   const [formData, setFormData] = useState({
-    measurementUnits: 'imperial' as MeasurementUnits,
     name: '',
     description: '',
     isPublic: false,
@@ -283,6 +287,21 @@ export default function ProjectDetailPage() {
     pointBLongitude: '',
   });
   const [calibrationDiagnostics, setCalibrationDiagnostics] = useState<CalibrationDiagnostics | null>(null);
+
+  const restoreProjectDetails = (saved: Project) => {
+    setFormData({ name: saved.name || '', description: saved.description || '', isPublic: saved.isPublic || false, isActive: saved.isActive !== false });
+    setCalibrationDiagnostics(getStoredCalibrationDiagnostics(saved));
+    setCalibrationData({
+      pointALocalX: saved.calibrationPointALocalX ?? '0',
+      pointALocalZ: saved.calibrationPointALocalZ ?? '0',
+      pointALatitude: saved.calibrationPointALatitude ?? saved.originLatitude ?? '',
+      pointALongitude: saved.calibrationPointALongitude ?? saved.originLongitude ?? '',
+      pointBLocalX: saved.calibrationPointBLocalX ?? '',
+      pointBLocalZ: saved.calibrationPointBLocalZ ?? '',
+      pointBLatitude: saved.calibrationPointBLatitude ?? '',
+      pointBLongitude: saved.calibrationPointBLongitude ?? '',
+    });
+  };
 
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>(() => {
     return getStoredExpandedState();
@@ -314,9 +333,12 @@ export default function ProjectDetailPage() {
       return;
     }
 
-    setLoading(true);
+    const requestId = ++loadSequenceRef.current;
+    const isCurrent = () => projectScopeRef.current === projectId && loadSequenceRef.current === requestId;
+    if (project?.id !== projectId) setLoading(true);
     try {
       const projectRes = await fetch(`/api/project?id=${projectId}`);
+      if (!isCurrent()) return;
 
       if (!projectRes.ok) {
         if (projectRes.status === 404) {
@@ -332,6 +354,7 @@ export default function ProjectDetailPage() {
       }
 
       const projectData = await projectRes.json();
+      if (!isCurrent()) return;
 
       if (!projectData.data) {
         showToast('Project not found', 'error');
@@ -346,35 +369,16 @@ export default function ProjectDetailPage() {
       }
 
       setProject(projectData.data);
-      setCalibrationDiagnostics(getStoredCalibrationDiagnostics(projectData.data));
-      setFormData({
-        measurementUnits: readProjectMeasurementUnits(projectData.data.config),
-        name: projectData.data.name || '',
-        description: projectData.data.description || '',
-        isPublic: projectData.data.isPublic || false,
-        isActive: projectData.data.isActive !== false,
-      });
-      setCalibrationData({
-        pointALocalX: projectData.data.calibrationPointALocalX ?? '0',
-        pointALocalZ: projectData.data.calibrationPointALocalZ ?? '0',
-        pointALatitude: projectData.data.calibrationPointALatitude
-          ?? projectData.data.originLatitude
-          ?? '',
-        pointALongitude: projectData.data.calibrationPointALongitude
-          ?? projectData.data.originLongitude
-          ?? '',
-        pointBLocalX: projectData.data.calibrationPointBLocalX ?? '',
-        pointBLocalZ: projectData.data.calibrationPointBLocalZ ?? '',
-        pointBLatitude: projectData.data.calibrationPointBLatitude ?? '',
-        pointBLongitude: projectData.data.calibrationPointBLongitude ?? '',
-      });
+      restoreProjectDetails(projectData.data);
 
       const modulesRes = await fetch(`/api/project/modules?projectId=${projectId}`);
+      if (!isCurrent()) return;
 
       if (modulesRes.status === 404) {
         setModules({ threed: [], traffic: [], multimedia: [] });
       } else if (modulesRes.ok) {
         const modulesData = await modulesRes.json();
+        if (!isCurrent()) return;
         const newModules = modulesData.data || { threed: [], traffic: [], multimedia: [] };
         setModules(newModules);
 
@@ -430,44 +434,54 @@ export default function ProjectDetailPage() {
         setModules({ threed: [], traffic: [], multimedia: [] });
       }
     } catch (error) {
+      if (!isCurrent()) return;
       console.error('Error fetching project:', error);
       showToast(error instanceof Error ? error.message : 'Failed to load project', 'error');
       router.push('/admin');
     } finally {
-      setLoading(false);
+      if (isCurrent()) setLoading(false);
     }
   };
 
-  const updateProject = async () => {
+  const updateProject = async (configuration: ProjectConfigurationRequest | undefined, signal: AbortSignal) => {
     if (!session?.user?.id) {
-      showToast('You must be signed in', 'error');
-      return;
+      throw new Error('You must be signed in');
     }
 
+    const captured = { ...formData };
     setIsSubmitting(true);
     try {
       const response = await fetch(`/api/project?id=${projectId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        signal,
+        body: JSON.stringify({ ...captured, ...(configuration ? { configuration } : {}) }),
       });
+      const result = await response.json().catch(() => null);
 
-      if (!response.ok) {
+      if (!response.ok || !result?.success) {
         if (response.status === 401) {
           router.push('/auth/sign-in');
-          return;
         }
-        throw new Error('Failed to update project');
+        throw new Error(result?.error || 'Failed to save Project changes. Your edits are retained.');
       }
+      if (signal.aborted || projectScopeRef.current !== projectId) throw new Error('Project changed before Save completed.');
+      if (result.data?.id !== projectId || !('config' in result.data)) throw new Error('Save did not confirm the Project. Your edits are retained.');
 
+      setProject(result.data);
+      setFormData(current => ({
+        name: current.name === captured.name ? result.data.name : current.name,
+        description: current.description === captured.description ? result.data.description || '' : current.description,
+        isPublic: current.isPublic === captured.isPublic ? result.data.isPublic === true : current.isPublic,
+        isActive: current.isActive === captured.isActive ? result.data.isActive !== false : current.isActive,
+      }));
       showToast('Project updated successfully', 'success');
-      setIsEditing(false);
-      await fetchProject();
+      return result.data.config as unknown;
     } catch (error) {
-      console.error('Error updating project:', error);
-      showToast(error instanceof Error ? error.message : 'Failed to update project', 'error');
+      if (!signal.aborted && projectScopeRef.current === projectId) showToast(error instanceof Error ? error.message : 'Failed to save Project', 'error');
+      throw error;
     } finally {
-      setIsSubmitting(false);
+      if (projectScopeRef.current === projectId) setIsSubmitting(false);
     }
   };
 
@@ -694,7 +708,7 @@ export default function ProjectDetailPage() {
     return result;
   };
 
-  if (status === 'loading' || loading) {
+  if (status === 'loading' || loading || (project !== null && project.id !== projectId)) {
     return (
       <div className="flex items-center justify-center h-96">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -759,58 +773,26 @@ export default function ProjectDetailPage() {
             <span>Created: {formatDate(project.createdAt)}</span>
           </div>
         </div>
-        <Button variant="outline" onClick={() => setIsEditing(true)} disabled={isSubmitting}>
-          <Edit className="w-4 h-4 mr-2" />
-          Edit Project
+        <Button variant="outline" asChild>
+          <Link href="/admin/projects"><FolderOpen aria-hidden="true" className="w-4 h-4 mr-2" />All Projects</Link>
         </Button>
       </div>
 
-      {/* Edit Form */}
-      {isEditing && (
+      <Tabs value={projectTab} onValueChange={setProjectTab} className="space-y-4">
+        <TabsList><TabsTrigger value="setup">Setup</TabsTrigger><TabsTrigger value="modules">Modules and assets</TabsTrigger></TabsList>
+        <TabsContent value="setup" forceMount className="space-y-4 data-[state=inactive]:hidden">
+      {/* Project details are always available on the Setup tab. */}
+      <ProjectConfigurations key={project.id} project={project} disabled={isSubmitting}
+        detailsDirty={formData.name !== project.name || formData.description !== (project.description || '') || formData.isPublic !== (project.isPublic === true) || formData.isActive !== (project.isActive !== false)}
+        onSave={updateProject} onReset={() => restoreProjectDetails(project)}
+        onSaved={config => setProject(current => current?.id === project.id ? { ...current, config } : current)}
+        onCalibrate={() => { requestAnimationFrame(() => document.getElementById('calibration-pointALocalX')?.focus()); }}
+        details={
         <Card>
           <CardContent className="p-4">
+            <h2 className="mb-3 text-base font-semibold">Project details and access</h2>
             <div className="space-y-3">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <Label htmlFor="edit-name" className="text-sm">Project Name</Label>
-                  <Input
-                    id="edit-name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                </div>
-                <div className="space-y-1">
-                  <Label htmlFor="edit-description" className="text-sm">Description</Label>
-                  <Input
-                    id="edit-description"
-                    value={formData.description}
-                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    disabled={isSubmitting}
-                  />
-                </div>
-              </div>
-              <ProjectMeasurementUnits value={formData.measurementUnits} onChange={measurementUnits => setFormData({ ...formData, measurementUnits })} disabled={isSubmitting} />
-              <div className="flex flex-wrap items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="edit-public"
-                    checked={formData.isPublic}
-                    onCheckedChange={(checked) => setFormData({ ...formData, isPublic: checked })}
-                    disabled={isSubmitting}
-                  />
-                  <Label htmlFor="edit-public" className="text-sm">Public</Label>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Switch
-                    id="edit-active"
-                    checked={formData.isActive}
-                    onCheckedChange={(checked) => setFormData({ ...formData, isActive: checked })}
-                    disabled={isSubmitting}
-                  />
-                  <Label htmlFor="edit-active" className="text-sm">Active</Label>
-                </div>
-              </div>
+              <ProjectDetailsFields value={formData} onChange={setFormData} disabled={isSubmitting} idPrefix="edit" />
               <div className="space-y-3 rounded-md border p-3">
                 <div>
                   <h3 className="text-sm font-semibold">Project Coordinate Calibration</h3>
@@ -875,30 +857,11 @@ export default function ProjectDetailPage() {
                   </div>
                 )}
               </div>
-              <div className="flex gap-2">
-                <Button onClick={updateProject} disabled={isSubmitting} size="sm">
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4 mr-2" />
-                      Save Changes
-                    </>
-                  )}
-                </Button>
-                <Button variant="outline" onClick={() => setIsEditing(false)} disabled={isSubmitting} size="sm">
-                  <X className="w-4 h-4 mr-2" />
-                  Cancel
-                </Button>
-              </div>
             </div>
           </CardContent>
-        </Card>
-      )}
-
+        </Card>} />
+        </TabsContent>
+        <TabsContent value="modules" className="space-y-4">
       {/* Modules Section */}
       <div className="flex flex-wrap justify-between items-center gap-2">
         <div>
@@ -1132,6 +1095,8 @@ export default function ProjectDetailPage() {
           })}
         </div>
       )}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

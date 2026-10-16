@@ -1,4 +1,22 @@
-## Current release preparation: v0.26.4
+## v0.26.5 ? ThreeD Projects: Admin Setup and unified configuration
+
+Release validation passed October 16: all 76 offline CI tasks, fresh TypeScript (tsc --noEmit --incremental false), version/Developer-lock preservation and source/config parity checks, checkpoint documentation links, whitespace checks, and guarded production build (145/145 pages, exit 0). The isolated copy reused matching Next.js 16.4.2 dependencies; the Developer installation/server was untouched. No clean install was performed against the edited lockfile. Differences from the reused dependency lock are optional Linux/esbuild and WASI metadata. CI's initial sandbox run hit the known Windows tsx userInfo ENOMEM restriction; the unchanged guarded rerun outside that restriction passed. The build emitted a non-failing nested-lockfile workspace-root warning. No agent browser/authenticated persistence or production check is claimed.
+
+Prepared locally October 16, 2026 on main at 54ede874 plus accepted working changes. Package/root lockfile are 0.26.5. Production remains Developer-confirmed v0.26.4; deployed provenance and independent production verification are unconfirmed. Earlier preparation statuses below are historical.
+
+Admin Project Setup exposes supported Project-owned settings, always-visible details, one Save Changes action and matching New/Edit forms. Typed changed-key merges preserve unrelated content; stamped, row-locked saves detect supported stale workspace/measurement changes. Dependencies and schema are unchanged; existing Developer lockfile edits are preserved.
+
+See [release notes](docs/releases/v0.26.5.md) and [configuration plan](docs/plans/project-configuration-authority.md) for checks and manual limitations. No local servers, live writes, Git writes or deployment are included.
+
+Preserve Project content, ownership, Scene restoration, typed allowlists, changed-key merges and configuration conflict stamps. Retain failed/pending drafts. Do not fabricate workspace snapshots for new Projects. Keep Developer servers untouched and changes unstaged.
+
+## Current production and Project configuration development
+
+October 15: Developer confirms v0.26.4 — ThreeD Design released and manually verified; repository baseline is main `54ede874`, not independently verified deployed provenance. Subsequent authorized work adds [Admin Project Setup/Configurations](docs/plans/project-configuration-authority.md) locally, with version/schema unchanged. Preserve existing Project authority, changed-key config merges, typed allowlists, row-locked saved-workspace/units conflict stamps, pending/failed drafts and Scene restoration. Setup/Modules tab changes must retain configuration drafts. Older snapshot clients without a stamp and geographic calibration are not covered by the new configuration conflict check. No separate defaults store or broad raw-config writes. Remaining legacy Design stages are outside this increment.
+
+Focused offline configuration/Design/Character/style-boundary tasks passed; runtime/browser/authenticated persistence acceptance remains manual. Full CI/build was not rerun for this increment. No servers, live writes, migrations/seeds, Git writes or deployment; leave changes unstaged and preserve Developer edits. Earlier release-preparation/production labels below are historical.
+
+## Historical release preparation: v0.26.4
 
 October 15: prepare the Developer-accepted checkpoint as **[v0.26.4 — ThreeD Simulations: Admin workflows and Results](docs/releases/v0.26.4.md)**. Package/root lockfile are 0.26.4; dependencies/schema unchanged. Main baseline a6e9e441 is the v0.26.3 repository checkpoint, not independently verified deployed provenance. Production remains Developer-confirmed v0.26.3. Earlier development/preparation versions below are historical and superseded. Release checks and manual limits belong in the release record; do not claim authenticated browser or production checks from offline fixtures.
 

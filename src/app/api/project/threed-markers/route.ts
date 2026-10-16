@@ -1,5 +1,6 @@
 import { parseMeasurementUnits, MeasurementUnitsError } from '@/libraries/services/project/measurement-units';
 import { parseProjectArchitecture, ProjectArchitectureError } from '@/libraries/services/threed/design/project-architecture';
+import { assertProjectConfigurationCurrent, ProjectConfigurationConflict, ProjectConfigurationError } from '@/libraries/services/project/configuration';
 import { saveProjectDesignProjection, ProjectDesignProjectionError } from '@/libraries/services/threed/design/project-design-projection';
 import { retryDisconnectedRead } from '@/libraries/db/read-retry';
 import { databaseConnectionDiagnostic } from '@/libraries/db/connection-diagnostics';
@@ -477,6 +478,12 @@ async function saveSnapshot(request: NextRequest) {
       await tx.execute(
         sql`select pg_advisory_xact_lock(hashtext(${`project-threed-markers:${projectId}`}))`,
       );
+      if (requestBody.expectedConfiguration !== undefined) {
+        const [locked] = await tx.select({ config: project.config }).from(project)
+          .where(and(eq(project.id, projectId), eq(project.userId, userId))).limit(1).for('update');
+        if (!locked) throw new ProjectConfigurationConflict();
+        assertProjectConfigurationCurrent(locked.config, requestBody.expectedConfiguration);
+      }
       const plantingRows = rows.filter(row => row.markerType === 'plantings');
       const sources = plantingRows.length ? await tx.select({id:threedPlantings.id,bedId:threedPlantings.bedId}).from(threedPlantings)
         .where(and(eq(threedPlantings.userId,userId),inArray(threedPlantings.id,plantingRows.map(row=>row.sourceAssetId)))) : [];
@@ -585,6 +592,8 @@ async function saveSnapshot(request: NextRequest) {
     });
   } catch (error) {
     if (error instanceof MeasurementUnitsError) return NextResponse.json({success:false,error:error.message},{status:400});
+    if (error instanceof ProjectConfigurationConflict) return NextResponse.json({ success: false, error: error.message }, { status: 409 });
+    if (error instanceof ProjectConfigurationError) return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     if (error instanceof ProjectDesignProjectionError) return NextResponse.json({ success: false, error: error.message }, { status: 503 });
     if (error instanceof CharacterPhysicsInputError) return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     if (error instanceof ProjectArchitectureError) return NextResponse.json({ success: false, error: error.message }, { status: 400 });

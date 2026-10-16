@@ -10,6 +10,7 @@ function load(file, deps = {}) {
 const root = 'src/libraries/services/threed/design/';
 const sceneUnits = load('src/libraries/services/threed/scene-units.ts');
 const measurementUnits = load('src/libraries/services/project/measurement-units.ts', {'../threed/scene-units':sceneUnits});
+const configuration = load('src/libraries/services/project/configuration.ts', {'./measurement-units':measurementUnits,'../threed/markers/project-view-state-core':{parseThreeDProjectViewState:value=>value}});
 const document = load(root+'document.ts', {'../scene-units':sceneUnits}), history = load(root+'history.ts', {'./document':document});
 const workspace = load(root+'workspace-state.ts');
 const architecture = load(root+'project-architecture.ts', {'./document':document,'./history':history,'./workspace-state':workspace});
@@ -194,11 +195,11 @@ orm.sql=(strings,...values)=>({strings:[...strings],values});
 let signedIn=true,owned=true,fail=false,missingUpdate=false,workspaceWriteFault=null,writes=0,conditions=[],assignments=[{moduleId:7,assetType:'threed_models',assetId:20}];
 let stored={config:{unrelated:{keep:true}},markers:[]};
 const db={select(){const q={};const chain={from(table){q.table=table;return chain;},innerJoin(){return chain;},limit(){return chain;},where(condition){conditions.push(condition);return chain;},then(resolve,reject){return Promise.resolve(q.table===tables.project?(owned?[{id:15,userId:'owner',metersPerSceneUnit:'.3048'}]:[]):assignments).then(resolve,reject);}};return chain;},
- async transaction(fn){writes++;const pending=structuredClone(stored);const tx={execute:async()=>{},insert(){return{values(rows){pending.markers=structuredClone(rows);return{onConflictDoUpdate(){return{returning:async()=>rows};}}}};},delete(){return{where:async()=>{}};},update(){return{set(values){const delta=JSON.parse(values.config.values[1]);return{where(){return{returning:async()=>{if(fail)throw Error('mock transaction failure');if(missingUpdate)return [];pending.config={...pending.config,...delta};const returned=structuredClone(pending.config);if(workspaceWriteFault==='missing')delete returned.threeDViewState;if(workspaceWriteFault==='reordered')returned.threeDViewState=Object.fromEntries(Object.entries(returned.threeDViewState).reverse());if(workspaceWriteFault==='stale')returned.threeDViewState={...returned.threeDViewState,panelHeight:33};return [{config:returned}];}};}};}};}};
+ async transaction(fn){writes++;const pending=structuredClone(stored);const tx={select:()=>({from:()=>({where:()=>({limit:()=>({for:async()=>[{config:pending.config}]})})})}),execute:async()=>{},insert(){return{values(rows){pending.markers=structuredClone(rows);return{onConflictDoUpdate(){return{returning:async()=>rows};}}}};},delete(){return{where:async()=>{}};},update(){return{set(values){const delta=JSON.parse(values.config.values[1]);return{where(){return{returning:async()=>{if(fail)throw Error('mock transaction failure');if(missingUpdate)return [];pending.config={...pending.config,...delta};const returned=structuredClone(pending.config);if(workspaceWriteFault==='missing')delete returned.threeDViewState;if(workspaceWriteFault==='reordered')returned.threeDViewState=Object.fromEntries(Object.entries(returned.threeDViewState).reverse());if(workspaceWriteFault==='stale')returned.threeDViewState={...returned.threeDViewState,panelHeight:33};return [{config:returned}];}};}};}};}};
  const result=await fn(tx);stored=pending;return result;}};
 class MarkerError extends Error{};class ViewError extends Error{};class PlantingError extends Error{};
 const scope={...tables,...orm,db,Buffer,Date,console:{error(){}},NextResponse:{json:(body,options)=>({body,status:options?.status??200})},
- ...measurementUnits,
+ ...measurementUnits, ...configuration,
  // Projection storage has its own focused validator; this fixture isolates the Project roundtrip.
  saveProjectDesignProjection:async()=>{},ProjectDesignProjectionError:class extends Error{},CharacterPhysicsInputError:class extends Error{},
  auth:async()=>signedIn?{user:{id:'owner'}}:null,MAX_REQUEST_BYTES:1048576,
@@ -231,7 +232,7 @@ const get=vm.runInNewContext(compile(functionSource(mapRoute,'GET')+'\nGET;'),{.
 let clientLoadSource;
 function findLoad(node){if(ts.isVariableDeclaration(node)&&node.name.getText(sceneAst)==='loadData')clientLoadSource=node.initializer.arguments[0].getText(sceneAst);ts.forEachChild(node,findLoad);}findLoad(sceneAst);
 async function hydrateDashboard(loaded, drafts, projectId='15'){
- const context={selectedProjectId:projectId,architectureDrafts:drafts,hydrateArchitectureDraft:architecture.hydrateArchitectureDraft,
+ const context={projectConfigurationRef:{current:null},selectedProjectId:projectId,architectureDrafts:drafts,hydrateArchitectureDraft:architecture.hydrateArchitectureDraft,
  defaultDesignWorkspace:workspace.defaultDesignWorkspace,
  loadProjectSession:async(id,receive)=>receive({status:'loaded',session:loaded}),URL,window:{location:{href:'http://local/dashboard/scene?view=design'}},
  lastProjectThreeDViewStateRef:{current:null},lastProjectMapViewStateRef:{current:null},showToastRef:{current:()=>{}},Date,
@@ -250,7 +251,7 @@ findClientSave(sceneAst);assert(clientSaveSource);
 async function checkClientSave(model,view) {
  let finish, transportCount=0, body, feedback;
  const drafts={current:new Map([['15',draft]])};
-const context={selectedProjectId:'15',canEditProject:true,loading:false,savingProjectMarkers:false,projectSaveBusy:{current:false},saveRequestRef:{current:0},architectureDrafts:drafts,acknowledgeArchitecture:architecture.acknowledgeArchitecture,parseProjectArchitecture:architecture.parseProjectArchitecture,
+const context={projectConfigurationRef:{current:{projectId:'15',stamp:{savedAt:null,measurementUnits:'imperial'}}},selectedProjectId:'15',canEditProject:true,loading:false,savingProjectMarkers:false,projectSaveBusy:{current:false},saveRequestRef:{current:0},architectureDrafts:drafts,acknowledgeArchitecture:architecture.acknowledgeArchitecture,parseProjectArchitecture:architecture.parseProjectArchitecture,
  projectMarkerSnapshotProviderRef:{current:()=>[model]},showToastRef:{current:()=>{}},setSavingProjectMarkers:()=>{},setArchitectureSaveError:value=>feedback=value,
  projectThreeDViewStateProviderRef:{current:null},lastProjectThreeDViewStateRef:{current:null},projectMapViewStateProviderRef:{current:null},lastProjectMapViewStateRef:{current:null},initialProjectViewState:null,
  PROJECT_VIEW_STATE_VERSION:3,viewMode:'design',panelHeight:50,cameraMode:'stationary',groundMapInspector:null,groupInspector:null,sensorInspector:null,defaultDesignWorkspace:()=>({}),selectedMarker:null,isProjectAssetsOpen:false,isModelLibraryOpen:false,projectAssetSearch:'',projectAssetType:'all',isProjectSetupOpen:false,overlayPositions:{},scenarioPanelState:{},isScenariosOpen:false,
@@ -277,6 +278,7 @@ const context={selectedProjectId:'15',canEditProject:true,loading:false,savingPr
  // Latest editor state -> actual client Save -> PUT transaction -> GET -> session -> actual Dashboard hydration.
  drafts.current.set('15',{...draft,workspace:{...workspace.defaultDesignWorkspace(),plan:{x:-321,y:224,scale:73},selectedEntityId:'door',split:62,sections:{'design:properties':false}}});
  context.overlayPositions={details:{x:0.7,y:0.2}};
+ context.projectConfigurationRef.current={projectId:'15',stamp:configuration.projectConfigurationStamp(stored.config)};
  context.fetch=async(url,options)=>{body=JSON.parse(options.body);const result=await save(request(body));return {ok:result.status===200,status:result.status,json:async()=>result.body};};
  await callback();assert.equal(feedback,'');assert(!architecture.architectureIsDirty(drafts.current.get('15')));
  const response=await get({url:'http://local/api/map/threed?projectId=15'});assert.equal(response.status,200);
@@ -310,6 +312,10 @@ async function run(){
  assert.equal(JSON.stringify(saved.body.data.architecture),JSON.stringify(captured),'Save response must describe the returned stored Project row.');
  assert(JSON.stringify(conditions).includes('project.userId'));assert(JSON.stringify(conditions).includes('owner'));
  assert.deepEqual(stored.config.unrelated,{keep:true});assert.equal(stored.markers[0].markerId,model.markerId);assert.deepEqual(stored.markers[0].data,model.data);assert.deepEqual(stored.markers[0].metadata,model.metadata);
+ const guardedBefore=JSON.stringify(stored),stamp=configuration.projectConfigurationStamp(stored.config);
+ assert.equal((await save(request({...input,expectedConfiguration:{...stamp,savedAt:null}}))).status,409,'Stale Scene cannot overwrite Admin workspace changes.');
+ assert.equal((await save(request({...input,expectedConfiguration:{...stamp,measurementUnits:'metric'}}))).status,409,'Stale Scene cannot overwrite Admin measurement changes.');
+ assert.equal(JSON.stringify(stored),guardedBefore,'Conflict rolls back before marker/content writes.');
  const reopened=session.buildThreeDProjectSession({success:true,total:1,data:{models:[{id:20,filePath:'saved.glb',positionX:10,positionY:0,positionZ:5}]},markerSnapshot:stored.markers,projectContext:{canEdit:true,projectName:'Existing Project',metersPerSceneUnit:.3048,architecture:stored.config.threeDArchitecture,viewState:stored.config.threeDViewState}},'15');
  assert(reopened.success);assert.equal(reopened.session.data.threed.raw.models.length,1);assert.equal(reopened.session.architecture.document.openings[0].wallId,'w0');assert.equal(reopened.session.metersPerSceneUnit,.3048);
  assert(!architecture.architectureIsDirty(architecture.projectArchitectureDraft(reopened.session.architecture)));

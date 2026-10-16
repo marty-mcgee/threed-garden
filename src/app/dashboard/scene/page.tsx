@@ -1,6 +1,7 @@
 // dashboard/scene/page
 'use client';
 import { useProjectPageTitle } from '@/components/layout/AppPageTitle';
+import type { ProjectConfigurationStamp } from '@/libraries/services/project/configuration';
 import { useWorkspaceSaveFeedback } from '@/components/map/hooks/useWorkspaceSaveFeedback';
 import { ProjectOverlayLayoutContext } from '@/components/map/panels/ProjectOverlayLayout';
 import type { SceneResourceIssue } from '@/components/threed/shared/SceneResourceStatus';
@@ -618,6 +619,7 @@ function UnifiedMapPageInner() {
   const lastProjectMapViewStateRef = useRef<ReturnType<ProjectMapViewStateProvider> | undefined>(undefined);
   const [initialProjectViewState, setInitialProjectViewState] =
     useState<ThreeDProjectViewState | null>(null);
+  const projectConfigurationRef = useRef<{ projectId: string; stamp: ProjectConfigurationStamp } | null>(null);
   const runtimeMarkerPositionResolverRef =
     useRef<ThreeDRuntimeMarkerPositionResolver | null>(null);
 
@@ -1037,6 +1039,8 @@ function UnifiedMapPageInner() {
     try {
       const markers = provider();
       const viewState = captureProjectWorkspace();
+      const configuration = projectConfigurationRef.current;
+      if (configuration?.projectId !== selectedProjectId) throw new Error('Project settings are still loading. Wait before saving.');
       const response = await fetch('/api/project/threed-markers', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -1045,6 +1049,7 @@ function UnifiedMapPageInner() {
           markers,
           viewState,
           architecture,
+          expectedConfiguration: configuration.stamp,
         }),
       });
       const result = await response.json().catch(() => null);
@@ -1060,6 +1065,7 @@ function UnifiedMapPageInner() {
       setData(current => applyThreeDProjectClientTransaction(current, {
         markers: {upsert: result.data.markers as ProjectThreeDMarkerRecord[]},
       }));
+      projectConfigurationRef.current = { projectId: selectedProjectId, stamp: { savedAt: viewState.savedAt, measurementUnits: viewState.design?.measurementUnits ?? configuration.stamp.measurementUnits } };
       const current = architectureDrafts.current.get(selectedProjectId)!;
       architectureDrafts.current.set(selectedProjectId, acknowledgeArchitecture(current, result.data.architecture, viewState.design)); renderArchitecture(value => value + 1);
       workspaceFeedback.acknowledge(viewState);
@@ -1448,6 +1454,7 @@ function UnifiedMapPageInner() {
     await loadProjectSession(selectedProjectId, (outcome) => {
       try {
       if (outcome.status === 'default') {
+        projectConfigurationRef.current = null;
         setInitialProjectViewState(null);
         setScenarioPanelState(emptyProjectScenarioPanelState());
         setScenarioStartRequest(null);
@@ -1460,6 +1467,7 @@ function UnifiedMapPageInner() {
 
       if (outcome.status === 'loaded') {
         const { session } = outcome;
+        projectConfigurationRef.current = { projectId: String(selectedProjectId), stamp: { savedAt: session.savedViewState?.savedAt ?? null, measurementUnits: session.measurementUnits ?? 'imperial' } };
         setProjectAccess({ projectId: String(selectedProjectId), canEdit: session.canEdit });
         const cachedArchitecture = architectureDrafts.current.get(String(selectedProjectId));
         architectureDrafts.current.set(String(selectedProjectId), hydrateArchitectureDraft(cachedArchitecture, session.architecture, { ...(session.savedViewState?.design ?? defaultDesignWorkspace()), measurementUnits: session.measurementUnits ?? 'imperial' }));

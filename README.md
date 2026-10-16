@@ -1,3 +1,13 @@
+## v0.26.5 ? ThreeD Projects: Admin Setup and unified configuration
+
+Release validation passed October 16: all 76 offline CI tasks, fresh TypeScript (tsc --noEmit --incremental false), version/Developer-lock preservation and source/config parity checks, checkpoint documentation links, whitespace checks, and guarded production build (145/145 pages, exit 0). The isolated copy reused matching Next.js 16.4.2 dependencies; the Developer installation/server was untouched. No clean install was performed against the edited lockfile. Differences from the reused dependency lock are optional Linux/esbuild and WASI metadata. CI's initial sandbox run hit the known Windows tsx userInfo ENOMEM restriction; the unchanged guarded rerun outside that restriction passed. The build emitted a non-failing nested-lockfile workspace-root warning. No agent browser/authenticated persistence or production check is claimed.
+
+Prepared locally October 16, 2026 on main at 54ede874 plus accepted working changes. Package/root lockfile are 0.26.5. Production remains Developer-confirmed v0.26.4; deployed provenance and independent production verification are unconfirmed. Earlier preparation statuses below are historical.
+
+Admin Project Setup exposes supported Project-owned settings, always-visible details, one Save Changes action and matching New/Edit forms. Typed changed-key merges preserve unrelated content; stamped, row-locked saves detect supported stale workspace/measurement changes. Dependencies and schema are unchanged; existing Developer lockfile edits are preserved.
+
+See [release notes](docs/releases/v0.26.5.md) and [configuration plan](docs/plans/project-configuration-authority.md) for checks and manual limitations. No local servers, live writes, Git writes or deployment are included.
+
 ![ThreeD Design workspace with the recovered house, Project Assets, Model guidance, and linked 2D plan](docs/images/v0.25.3/design-workspace.png)
 
 ## v0.26.4 — ThreeD Simulations: Admin workflows and Results

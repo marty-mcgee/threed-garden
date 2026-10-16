@@ -1,3 +1,7 @@
+## Prepared checkpoint: [v0.26.5 ? ThreeD Projects: Admin Setup and unified configuration](v0.26.5.md)
+
+Local preparation; production remains Developer-confirmed v0.26.4. See release notes for evidence and limits. Older status entries below are historical.
+
 ## Prepared checkpoint: [v0.26.4 — ThreeD Simulations: Admin workflows and Results](v0.26.4.md)
 
 October 15, 2026: local package/root lockfile 0.26.4, based on main a6e9e441 plus accepted working changes. Includes Admin Simulation management, read-only Results, Scene feedback and related Admin conventions. Production remains Developer-confirmed [v0.26.3](v0.26.3.md); exact deployed SHA and independent production verification remain unconfirmed. See release notes for executed checks and manual limits. No commit, tag, push, publication or deployment is included. Earlier status entries below are historical.

@@ -1,4 +1,5 @@
 import { parseMeasurementUnits, MeasurementUnitsError } from '@/libraries/services/project/measurement-units';
+import { projectConfigurationPatch, ProjectConfigurationError, ProjectConfigurationConflict } from '@/libraries/services/project/configuration';
 // app/api/project/route.ts - Updated to filter by user
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -212,14 +213,23 @@ export async function PATCH(request: NextRequest) {
         });
 
     const result = await db.transaction(async (tx) => {
+      let configurationPatch: Record<string, unknown> | undefined;
+      if (body.configuration !== undefined) {
+        if (body.measurementUnits !== undefined || coordinateCalibration !== undefined) throw new ProjectConfigurationError('Save configuration and coordinate calibration separately.');
+        const [locked] = await tx.select({ config: project.config }).from(project)
+          .where(and(eq(project.id, parseInt(id)), eq(project.userId, userId))).limit(1).for('update');
+        if (!locked) throw new ProjectConfigurationConflict();
+        configurationPatch = projectConfigurationPatch(locked.config, body.configuration);
+      }
       const [updatedProject] = await tx
         .update(project)
         .set({
-          name: name || existing.name,
-          description: description !== undefined ? description : existing.description,
-          isPublic: isPublic !== undefined ? isPublic : existing.isPublic,
-          isActive: isActive !== undefined ? isActive : existing.isActive,
+          ...(name ? { name } : {}),
+          ...(description !== undefined ? { description } : {}),
+          ...(isPublic !== undefined ? { isPublic } : {}),
+          ...(isActive !== undefined ? { isActive } : {}),
           ...(body.measurementUnits === undefined ? {} : { config: sql`coalesce(${project.config}, '{}'::jsonb) || ${JSON.stringify({ measurementUnits: parseMeasurementUnits(body.measurementUnits) })}::jsonb` }),
+          ...(configurationPatch ? { config: sql`coalesce(${project.config}, '{}'::jsonb) || ${JSON.stringify(configurationPatch)}::jsonb` } : {}),
           ...(calibration ? {
             originLatitude: calibration.latitude.toFixed(7),
             originLongitude: calibration.longitude.toFixed(7),
@@ -304,6 +314,8 @@ export async function PATCH(request: NextRequest) {
     if (error instanceof ThreeDMapCoordinateError) {
       return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     }
+    if (error instanceof ProjectConfigurationConflict) return NextResponse.json({ success: false, error: error.message }, { status: 409 });
+    if (error instanceof ProjectConfigurationError) return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     console.error('Error updating project:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to update project' },

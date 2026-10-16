@@ -20,6 +20,7 @@ const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
   'threed-designs': [node('validate-threed-designs.cjs')],
+  'project-configurations': [node('validate-project-measurement-units.cjs'), node('validate-project-configurations-ui.cjs')],
   'legacy-design-recovery': [node('validate-legacy-recovery-geometry.cjs'), node('validate-legacy-recovery-files.cjs'), node('validate-legacy-recovery-apply.cjs')],
   'threed-home-design': [node('validate-threed-home-design.cjs'), node('validate-design-sloped-walls.cjs')],
   'threed-home-design-browser': [node('validate-threed-home-design-browser.cjs')],
@@ -158,6 +159,7 @@ const tasks = {
 
 const ci = [
   'threed-designs',
+  'project-configurations',
   'legacy-design-recovery',
   'drizzle-workflow',
   'threed-character-introduction',

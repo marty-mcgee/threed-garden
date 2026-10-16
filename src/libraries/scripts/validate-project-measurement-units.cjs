@@ -59,7 +59,7 @@ assert.equal(JSON.stringify(room),original);
 let current = {id:17,userId:'owner',name:'Project',config:{...legacy,unrelated:{retained:true}},metersPerSceneUnit:'0.3048'};
 let authenticated = true, owned = true, fail = false, writes = 0;
 const copy = x=>JSON.parse(JSON.stringify(x));
-const tx = {update:()=>({set:patch=>({where:()=>({returning:async()=>{
+const tx = {select:()=>({from:()=>({where:()=>({limit:()=>({for:async()=>owned?[copy(current)]:[]})})})}),update:()=>({set:patch=>({where:()=>({returning:async()=>{
   if(fail) throw new Error('mock failure');
   const config = patch.config ? {...current.config,...JSON.parse(patch.config.values.find(v=>typeof v==='string'))} : current.config;
   current={...current,...patch,config}; writes++; return [current];
@@ -79,8 +79,10 @@ const route = load('src/app/api/project/route.ts', {
 });
 const request = body=>({url:'https://offline.invalid/api/project?id=17',json:async()=>body});
 (async()=>{
-  const created = await route.POST(request({name:'New',measurementUnits:'metric'}));
+  const created = await route.POST(request({name:'New',description:'New Setup',isActive:false,isPublic:true,measurementUnits:'metric'}));
   assert.equal(created.status,200); assert.equal(created.body.data.config.measurementUnits,'metric');
+  assert.equal(created.body.data.userId,'owner');assert.equal(created.body.data.isActive,false);assert.equal(created.body.data.isPublic,true);assert.equal(created.body.data.description,'New Setup');
+  assert(!('threeDViewState' in created.body.data.config));assert(!('threeDArchitecture' in created.body.data.config));
   const saved = await route.PATCH(request({measurementUnits:'imperial'}));
   assert.equal(saved.status,200); assert.equal(current.config.measurementUnits,'imperial');
   assert.equal(current.config.unrelated.retained,true);
@@ -88,6 +90,40 @@ const request = body=>({url:'https://offline.invalid/api/project?id=17',json:asy
   assert.equal(current.metersPerSceneUnit,'0.3048');
   await route.PATCH(request({description:'Only description'}));
   assert.equal(current.config.measurementUnits,'imperial');
+  fail=false;
+  const previousConfigTestState=copy(current);
+  const configuration=load('src/libraries/services/project/configuration.ts');
+  const savedView={version:1,savedAt:'2026-10-15T12:00:00.000Z',viewMode:'design',panelHeight:45,cameraMode:'stationary',
+    overlayPositions:{details:{x:.7,y:.2}}, workspace:{selectedMarkerId:'models-ball',panel:'assets',assetSearch:'ball',assetType:'models'},
+    threeD:{cameraPosition:{x:10,y:8,z:10},cameraTarget:{x:0,y:0,z:0},cameraFov:55,activeLayers:['models','designs'],availableLayers:['models','designs'],environment:'park',autoRotate:false,showGrid:false,showGizmo:false,viewPresets:[{id:'wide',name:'Wide',position:{x:10,y:8,z:10},target:{x:0,y:0,z:0},layers:['models'],createdAt:'2026-10-15T12:00:00.000Z'}]}};
+  current.config={measurementUnits:'imperial',threeDViewState:savedView,threeDArchitecture:{version:1,document:room},unrelated:{retained:true}};
+  const baseline=copy(current.config),expected=configuration.projectConfigurationStamp(baseline);
+  const edited=await route.PATCH(request({name:'Unified Project Save',description:'Details and configuration together',isPublic:true,isActive:false,configuration:{expected,changes:{measurementUnits:'metric',viewMode:'combined',threeD:{showGrid:true,environment:'studio'}}}}));
+  assert.equal(edited.status,200);assert.equal(current.config.measurementUnits,'metric');assert.equal(current.config.threeDViewState.viewMode,'combined');
+  assert.equal(current.name,'Unified Project Save');assert.equal(current.description,'Details and configuration together');assert.equal(current.isPublic,true);assert.equal(current.isActive,false);
+  assert.equal(current.config.threeDViewState.threeD.showGrid,true);assert.equal(current.config.threeDViewState.threeD.environment,'studio');
+  assert.deepEqual(copy(current.config.threeDArchitecture),baseline.threeDArchitecture);
+  assert.deepEqual(copy(current.config.threeDViewState.threeD.cameraPosition),savedView.threeD.cameraPosition);
+  assert.deepEqual(copy(current.config.threeDViewState.threeD.viewPresets),savedView.threeD.viewPresets);
+  assert.deepEqual(copy(current.config.threeDViewState.workspace),savedView.workspace);
+  assert.deepEqual(copy(current.config.threeDViewState.overlayPositions),savedView.overlayPositions);
+  assert.equal(current.config.unrelated.retained,true);assert.equal(current.metersPerSceneUnit,'0.3048');
+  const savedState=copy(current),countAfter=writes;
+  assert.equal((await route.PATCH(request({name:'Must not save on conflict',configuration:{expected,changes:{viewMode:'2d'}}}))).status,409);
+  for(const changes of [{viewMode:'bad'},{threeD:{cameraPosition:{x:0,y:0,z:0}}},{threeD:{ground:{enabled:true,size:0,height:0}}},{threeD:{sunlight:{azimuth:0,elevation:95}}},{threeD:{activeLayers:['unknown']}},{privateOwner:'someone'},{threeD:null}]) {
+    const rejected=await route.PATCH(request({configuration:{expected:configuration.projectConfigurationStamp(current.config),changes}}));
+    assert.equal(rejected.status,400);
+  }
+  assert.equal(writes,countAfter);assert.deepEqual(copy(current),savedState);
+  owned=false;assert.equal((await route.PATCH(request({configuration:{expected,changes:{measurementUnits:'metric'}}}))).status,404);owned=true;
+  authenticated=false;assert.equal((await route.PATCH(request({configuration:{expected,changes:{measurementUnits:'metric'}}}))).status,401);authenticated=true;
+  fail=true;assert.equal((await route.PATCH(request({configuration:{expected:configuration.projectConfigurationStamp(current.config),changes:{measurementUnits:'imperial'}}}))).status,500);fail=false;
+  assert.deepEqual(copy(current),savedState);
+  const empty={unrelated:true};const patch=configuration.projectConfigurationPatch(empty,{expected:configuration.projectConfigurationStamp(empty),changes:{measurementUnits:'metric'}});
+  assert.deepEqual(copy(patch),{measurementUnits:'metric'});
+  assert.throws(()=>configuration.projectConfigurationPatch(empty,{expected:configuration.projectConfigurationStamp(empty),changes:{viewMode:'design'}}),/Save Project once/);
+  console.log('PASS: actual Admin configuration PATCH, owner/auth/row lock boundaries, validation, stale-write conflicts, failure and architecture/camera/cards/presets/unrelated-config preservation. Mocked DB only.');
+  current=previousConfigTestState;
   const count = writes;
   assert.equal((await route.PATCH(request({measurementUnits:'yards'}))).status,400);
   assert.equal((await route.POST(request({name:'Invalid',measurementUnits:null}))).status,400);
