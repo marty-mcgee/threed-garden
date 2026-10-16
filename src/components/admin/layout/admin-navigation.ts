@@ -62,7 +62,7 @@ export const navSections: NavSection[] = [
         ],
         children: [
           { title: 'All Models', href: '/admin/threed/models', icon: Package },
-          { title: 'Create Model', href: '/admin/threed/models/new', icon: Cuboid },
+          { title: 'Create Model', href: '/admin/threed/models/new', icon: Plus },
           { title: 'Model Builder', href: '/admin/threed/models/builder', icon: Hammer },
           { title: 'Files', href: '/admin/threed/model-files', icon: FolderOpen },
           { title: 'Categories', href: '/admin/threed/model-categories', icon: FolderTree },
@@ -89,7 +89,7 @@ export const navSections: NavSection[] = [
         ],
         children: [
           { title: 'All Simulations', href: '/admin/threed/simulations', icon: FlaskConical },
-          { title: 'Create Simulation', href: '/admin/threed/simulations/new', icon: Clapperboard },
+          { title: 'Create Simulation', href: '/admin/threed/simulations/new', icon: Plus },
           { title: 'Simulation Results', href: '/admin/threed/simulation-results', icon: ClipboardList },
         ]
       },
