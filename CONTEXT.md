@@ -1,3 +1,35 @@
+## v0.26.6 - Admin Sidebar: Navigation and persistent toggles
+
+Developer accepted the manual entity-focused menu taxonomy and intends to release this checkpoint. Package/root lockfile are now 0.26.6. Production remains Developer-confirmed v0.26.5 until release completion is confirmed. See [release notes](docs/releases/v0.26.6.md). Preserve manual labels/order, user-scoped browser toggles, specific active matching and mobile drawer visibility. No commit, tag, push or deployment was performed. Older statuses below are historical.
+
+## Developer manual taxonomy - October 16
+
+The Developer requested analysis and preservation of manual menu edits. The current menu inventory resides in src/components/admin/layout/admin-navigation.ts; AdminSidebar.tsx renders that inventory and owns browser toggle interaction. Do not attribute the earlier component extraction or persistent-toggle implementation to these new manual edits.
+
+Observed changes relative to the restored menu: Models now begins All Models, Create Model, Model Builder, followed by Files, Categories, Textures, Animations, Animation Categories, Animation Slots and Assembly Groups. Create Model links to the existing /admin/threed/models/new route. Simulations is now an expandable entity menu containing All Simulations, Create Simulation and Simulation Results; Results is moved beneath Simulations rather than duplicated as a ThreeD sibling. Existing Scenarios remains a distinct direct destination.
+
+Desired taxonomy expressed by these edits: retain Dashboard, Projects, ThreeD, Traffic, Multimedia and Settings as primary domains. Keep ThreeD entity/module destinations directly discoverable; use focused entity submenus for their list/create workflows and closely related resources. Models retains its resource/animation submenu; Simulations owns its definitions/create entry and captured Results. Avoid reintroducing the rejected broad Design/Scene, Characters/Animation or Garden/Automation umbrella groups. Treat this as navigation taxonomy, not a change to schema ownership, authorization or runtime modules. Preserve current labels and ordering.
+
+The manual additions integrate with current longest-specific-route matching, active ancestry and persisted submenu keys (/admin/threed/models and /admin/threed/simulations). relatedPaths remains declared metadata but activeAdminHref currently derives matches from actual leaf destinations. No functional issue is inferred from that unused metadata. Persistence remains user-scoped browser storage, not cross-device settings.
+
+Analysis checks: admin-sidebar and shadcn-ui-boundary passed (two tasks), including destination existence/uniqueness and mocked sidebar behavior. No navigation code was changed during this review. Rendered/browser verification, fresh TypeScript and full CI/build were not rerun for this documentation-only pass. Version and servers remain untouched.
+
+## Sidebar structure correction - October 16
+
+Developer withdrew the five new ThreeD groups after reviewing them. The previous menu hierarchy, labels and order are restored, including the existing Models submenu and direct ThreeD module entries. Persistent user-scoped browser section/submenu toggles, most-specific active-link matching, accessible navigation and mobile drawer visibility fixes remain. Removed group preference keys are ignored by the allowlist. Earlier grouped-structure descriptions below are historical and superseded by this correction.
+
+Focused admin-sidebar and shadcn-ui-boundary checks passed after restoration. Browser appearance remains manual. Version remains 0.26.5; changes are unstaged and local servers remain untouched.
+
+## v0.26.6 Admin sidebar implementation - local
+
+Grouped ThreeD navigation into Design/Scene, Models/Resources, Characters/Animation, Simulations and Garden/Automation, preserving every existing sidebar route and module preference. Explicit section/subgroup open/closed choices persist per signed-in user in this browser (not across devices), synchronize across tabs and override route defaults. Blocked browser storage falls back to session choices. Most-specific active links and mobile drawer visibility are corrected; collapsed section icons expand their navigation. Existing shared Button/theme and desktop widths remain. See [plan and source inventory](docs/plans/v0.26.6.md).
+
+Offline admin-sidebar and shadcn-ui-boundary tasks passed, including actual component callback checks with mocked React/session/storage. Existing route-set parity against HEAD, fresh TypeScript (tsc --noEmit --incremental false) and final whitespace checks passed. Browser/keyboard/theme/narrow-screen appearance remains manual; no new authenticated persistence, full CI/build or production verification. Production/package stay v0.26.5; no servers, live writes, schema/dependency changes, Git writes or deployment. Changes remain unstaged.
+
+## Next focus: v0.26.6 - Admin sidebar navigation
+
+Developer requested sidebar/menu structure and grouping cleanup. [Plan](docs/plans/v0.26.6.md) records inspected owners, proposed groups and acceptance boundaries. This pass documents scope only; production/package remain v0.26.5. Existing App styling, routes, module preferences and authorization must be preserved. No runtime checks or implementation are claimed.
+
 ## Current production: [v0.26.5 — ThreeD Projects: Admin Setup and unified configuration](docs/releases/v0.26.5.md)
 
 October 16, 2026: Developer confirmed this release is in production. Package/root lockfile remain 0.26.5. Exact deployed commit and independent production verification remain unconfirmed. Prior 76-task offline CI, TypeScript and guarded build results are pre-release evidence; this confirmation does not establish new browser or authenticated Save/reopen checks. Earlier preparation-only and production-version statements below are historical and superseded. This documentation-only update leaves application code, servers and live data untouched.

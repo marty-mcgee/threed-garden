@@ -1,3 +1,7 @@
+## v0.26.6 - Admin Sidebar: Navigation and persistent toggles
+
+Developer accepted the manual entity-focused menu taxonomy and intends to release this checkpoint. Package/root lockfile are now 0.26.6. Production remains Developer-confirmed v0.26.5 until release completion is confirmed. See [release notes](docs/releases/v0.26.6.md). Preserve manual labels/order, user-scoped browser toggles, specific active matching and mobile drawer visibility. No commit, tag, push or deployment was performed. Older statuses below are historical.
+
 ## Current production: [v0.26.5 — ThreeD Projects: Admin Setup and unified configuration](docs/releases/v0.26.5.md)
 
 October 16, 2026: Developer confirmed this release is in production. Package/root lockfile remain 0.26.5. Exact deployed commit and independent production verification remain unconfirmed. Prior 76-task offline CI, TypeScript and guarded build results are pre-release evidence; this confirmation does not establish new browser or authenticated Save/reopen checks. Earlier preparation-only and production-version statements below are historical and superseded. This documentation-only update leaves application code, servers and live data untouched.

@@ -1,3 +1,7 @@
+## Prepared checkpoint: [v0.26.6 - Admin Sidebar: Navigation and persistent toggles](v0.26.6.md)
+
+Developer intends to release; completion is not yet confirmed.
+
 ## Current production: [v0.26.5 — ThreeD Projects: Admin Setup and unified configuration](v0.26.5.md)
 
 October 16, 2026: Developer confirmed this release is in production. Package/root lockfile remain 0.26.5. Exact deployed commit and independent production verification remain unconfirmed. Prior 76-task offline CI, TypeScript and guarded build results are pre-release evidence; this confirmation does not establish new browser or authenticated Save/reopen checks. Earlier preparation-only and production-version statements below are historical and superseded. This documentation-only update leaves application code, servers and live data untouched.

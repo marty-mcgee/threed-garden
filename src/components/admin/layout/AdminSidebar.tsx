@@ -1,507 +1,117 @@
-// components/admin/layout/AdminSidebar.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import { 
-  LayoutDashboard, 
-  FolderOpen, 
-  FolderTree,
-  Box, 
-  Cuboid,
-  Car, 
-  Music,
-  MicVocal,
-  DiscAlbum,
-  ChevronLeft,
-  ChevronRight,
-  ChevronUp,
-  ChevronDown,
-  Home,
-  Sprout,
-  Package,
-  Boxes,
-  User,
-  AlertTriangle,
-  FileText,
-  Route,
-  Flame,
-  Radio,
-  Music2,
-  Clapperboard,
-  Image,
-  Link2,
-  Plus,
-  Settings,
-  CheckSquare,
-  CheckCircle,
-  Edit,
-  Trash2,
-  Loader2,
-  ListTodo,
-  MoreHorizontal,
-  Search,
-  Filter,
-  Clock,
-  X,
-  Bean,
-  Carrot,
-  Droplets,
-  Drone,
-  Building2,
-  Grid3x2,
-  TrafficCone,
-  Camera,
-  Layers,
-  MapPin,
-  BookOpen,
-  FlaskConical,
-  ClipboardList,
-  Hammer,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { ChevronLeft, ChevronRight, ChevronDown, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useWorkspaceSettings } from '@/components/settings/WorkspaceSettingsProvider';
-import type { WorkspaceModule } from '@/libraries/config/workspace-settings';
-import { cn } from '@/libraries/utils';
 import { SignOutButton } from '@/components/auth/SignOutButton';
-
-interface NavItem {
-  title: string;
-  href: string;
-  icon: LucideIcon;
-  exact?: boolean; // ✅ If true, only match exact path (not children)
-  relatedPaths?: string[];
-  children?: Array<{
-    exact?: boolean;
-    title: string;
-    href: string;
-    icon: LucideIcon;
-  }>;
-}
-
-interface NavSection {
-  title: string;
-  module?: WorkspaceModule;
-  icon: LucideIcon;
-  items: NavItem[];
-}
-
-// ✅ Complete navigation with exact matching for root paths
-const navSections: NavSection[] = [
-  {
-    title: 'Dashboard',
-    icon: LayoutDashboard,
-    items: [
-      { title: 'Overview', href: '/admin', icon: LayoutDashboard, exact: true },
-    ],
-  },
-  {
-    title: 'Projects',
-    icon: FolderOpen,
-    items: [
-      { title: 'All Projects', href: '/admin/projects', icon: FolderOpen, exact: false },
-      { title: 'Create New', href: '/admin/projects/new', icon: Plus, exact: true },
-    ],
-  },
-  {
-    title: 'ThreeD',
-    module: 'threed',
-    icon: Box,
-    items: [
-      { title: 'Overview', href: '/admin/threed', icon: Carrot, exact: true },
-      {
-        title: 'Models',
-        href: '/admin/threed/models',
-        icon: Package,
-        exact: false,
-        relatedPaths: [
-          '/admin/threed/assembly-groups',
-          '/admin/threed/model-categories',
-          '/admin/threed/model-files',
-          '/admin/threed/model-textures',
-          '/admin/threed/animations',
-          '/admin/threed/animation-slots',
-          '/admin/threed/animation-categories',
-        ],
-        children: [
-          { title: 'Models', href: '/admin/threed/models', icon: Package },
-          { title: 'Model Builder', href: '/admin/threed/models/builder', icon: Hammer },
-          { title: 'Files', href: '/admin/threed/model-files', icon: FolderOpen },
-          { title: 'Categories', href: '/admin/threed/model-categories', icon: FolderTree },
-          { title: 'Textures', href: '/admin/threed/model-textures', icon: Image },
-          { title: 'Animations', href: '/admin/threed/animations', icon: Clapperboard },
-          { title: 'Animation Categories', href: '/admin/threed/animation-categories', icon: FolderTree },
-          { title: 'Animation Slots', href: '/admin/threed/animation-slots', icon: Clapperboard },
-          { title: 'Assembly Groups', href: '/admin/threed/assembly-groups', icon: Boxes },
-        ],
-      },
-      { title: 'Designs', href: '/admin/threed/designs', icon: Building2 },
-      { title: 'Characters', href: '/admin/threed/characters', icon: User, exact: false },
-      { title: 'Plants', href: '/admin/threed/plants', icon: Sprout, exact: false },
-      { title: 'Beds', href: '/admin/threed/beds', icon: Cuboid, exact: false },
-      { title: 'Plantings', href: '/admin/threed/plantings', icon: Bean, exact: false },
-      { title: 'Scenarios', href: '/admin/threed/scenarios', icon: BookOpen, exact: false },
-      { title: 'Simulations', href: '/admin/threed/simulations', icon: FlaskConical, exact: false },
-      { title: 'Simulation Results', href: '/admin/threed/simulation-results', icon: ClipboardList, exact: false },
-      { title: 'Layers', href: '/admin/threed/layers', icon: Layers, exact: false },
-      { title: 'Tasks', href: '/admin/threed/tasks', icon: ListTodo, exact: false },
-      { title: 'Waterings', href: '/admin/threed/watering-schedules', icon: Droplets, exact: false },
-      { title: 'Harvests', href: '/admin/threed/harvests', icon: Carrot, exact: false },
-      { title: 'FarmBots', href: '/admin/threed/farmbots', icon: Drone, exact: false },
-    ],
-  },
-  {
-    title: 'Traffic',
-    module: 'traffic',
-    icon: Car,
-    items: [
-      { title: 'Overview', href: '/admin/traffic', icon: Car, exact: true },
-      { title: 'CHP-CAD Incidents', href: '/admin/traffic/chp-cad', icon: AlertTriangle, exact: false },
-      { title: 'CHP Cases', href: '/admin/traffic/chp-cases', icon: FileText, exact: false },
-      { title: 'CHP Centers', href: '/admin/traffic/chp-centers', icon: Building2, exact: false },
-      { title: 'Caltrans Closures', href: '/admin/traffic/caltrans', icon: TrafficCone, exact: false },
-      { title: 'Caltrans Districts', href: '/admin/traffic/caltrans-districts', icon: Grid3x2, exact: false },
-      { title: 'Caltrans CCTV', href: '/admin/traffic/caltrans-cctv', icon: Camera, exact: false },
-      { title: 'CalFire Incidents', href: '/admin/traffic/calfire', icon: Flame, exact: false },
-      { title: 'Bay Area 511', href: '/admin/traffic/bay-area-511', icon: Radio, exact: false },
-    ],
-  },
-  {
-    title: 'Multimedia',
-    module: 'multimedia',
-    icon: Music,
-    items: [
-      { title: 'Overview', href: '/admin/multimedia', icon: Music, exact: true },
-      { title: 'Albums', href: '/admin/multimedia/albums', icon: DiscAlbum, exact: false },
-      { title: 'Tracks', href: '/admin/multimedia/tracks', icon: Music2, exact: false },
-      { title: 'Speech', href: '/admin/multimedia/speech', icon: MicVocal, exact: false, children: [
-        { title: 'All Speeches', href: '/admin/multimedia/speech', icon: MicVocal, exact: true },
-        { title: 'New Speech', href: '/admin/multimedia/speech/new', icon: MicVocal, exact: true },
-      ] },
-      { title: 'Media', href: '/admin/multimedia/media', icon: Image, exact: false },
-      { title: 'Links', href: '/admin/multimedia/links', icon: Link2, exact: false },
-    ],
-  },
-  {
-    title: 'Settings',
-    icon: Settings,
-    items: [
-      { title: 'App Settings', href: '/admin/settings', icon: Settings, exact: true },
-    ],
-  },
-];
-
-function getActiveNavItemHref(pathname: string): string | null {
-  const matchingItems = navSections
-    .flatMap((section) => section.items)
-    .filter((item) => {
-      if (item.exact) {
-        return pathname === item.href;
-      }
-
-      return pathname === item.href
-        || pathname.startsWith(`${item.href}/`)
-        || item.relatedPaths?.some((path) => pathname === path || pathname.startsWith(`${path}/`));
-    })
-    .sort((a, b) => b.href.length - a.href.length);
-
-  return matchingItems[0]?.href ?? null;
-}
+import { cn } from '@/libraries/utils';
+import { activeAdminHref, navSections, readSidebarToggles } from './admin-navigation';
 
 interface AdminSidebarProps {
   isCollapsed: boolean;
   onToggle: () => void;
+  isMobile?: boolean;
+  isOpen?: boolean;
 }
 
-export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
-  const [mounted, setMounted] = useState(false);
+export function AdminSidebar({ isCollapsed, onToggle, isMobile = false, isOpen = true }: AdminSidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
-  const activeItemHref = getActiveNavItemHref(pathname);
+  const { data: session } = useSession();
+  const owner = session?.user?.id;
+  const storageKey = owner ? `threed:admin-sidebar:v1:${owner}` : null;
+  const [stored, setStored] = useState<{ key: string | null; toggles: Record<string, boolean> } | null>(null);
   const { preferences } = useWorkspaceSettings();
+  const activeHref = activeAdminHref(pathname);
+  const collapsed = !isMobile && isCollapsed;
   const visibleSections = navSections.filter(section => !section.module || preferences.modules[section.module]);
+  const ready = stored !== null && stored.key === storageKey;
+  const toggles = ready ? stored.toggles : {};
 
-  // ✅ Determine which section should be expanded based on current path
-  const getExpandedSections = () => {
-    const expanded: Record<string, boolean> = {};
-    
-    navSections.forEach((section) => {
-      const hasActiveChild = section.items.some((item) => item.href === activeItemHref);
-      
-      if (hasActiveChild) {
-        expanded[section.title] = true;
-      }
-    });
-    
-    // ✅ Always expand Dashboard by default if nothing else is active
-    if (Object.keys(expanded).length === 0) {
-      expanded['Dashboard'] = true;
-    }
-    
-    return expanded;
-  };
-
-  const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>(() => {
-    // ✅ Initialize with correct expanded state based on current path
-    if (typeof window !== 'undefined') {
-      return getExpandedSections();
-    }
-    return { 'Dashboard': true };
-  });
-
-  const [submenuState, setSubmenuState] = useState<{
-    pathname: string;
-    expanded: Record<string, boolean>;
-  }>({ pathname, expanded: {} });
-
-  // ✅ Update expanded sections when pathname changes
   useEffect(() => {
-    setMounted(true);
-    setExpandedSections(getExpandedSections());
-  }, [pathname]);
+    let toggles = {};
+    try { if (storageKey) toggles = readSidebarToggles(localStorage.getItem(storageKey)); } catch { /* Storage is optional. */ }
+    setStored({ key: storageKey, toggles });
+    const sync = (event: StorageEvent) => {
+      if (storageKey && (event.key === storageKey || event.key === null)) {
+        setStored({ key: storageKey, toggles: readSidebarToggles(event.newValue) });
+      }
+    };
+    window.addEventListener('storage', sync);
+    return () => window.removeEventListener('storage', sync);
+  }, [storageKey]);
 
-  const toggleSection = (title: string) => {
-    setExpandedSections((prev) => ({
-      ...prev,
-      [title]: !prev[title],
-    }));
-  };
-
-  // ✅ Check if a nav item is active
-  const isItemActive = (item: NavItem) => {
-    return item.href === activeItemHref;
-  };
-
-  // ✅ Check if a section has any active child
-  const hasActiveChild = (section: NavSection) => {
-    return section.items.some((item) => isItemActive(item));
-  };
-
-  // Server-side placeholder
-  if (!mounted) {
-    return (
-      <aside 
-        className={cn(
-          "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-border dark:border-white/10 bg-background/90 dark:bg-[#111A28]/95 backdrop-blur-xl transition-all duration-300",
-          isCollapsed ? "w-16" : "w-64"
-        )}
-      >
-        <div className="flex h-12 items-center justify-between border-b px-3">
-          {!isCollapsed && <span className="text-lg font-bold">ThreeD Garden</span>}
-          <Button variant="ghost" size="icon" className="ml-auto">
-            {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </Button>
-        </div>
-        <div className="flex-1 space-y-1 overflow-y-auto px-2 py-2">
-          {visibleSections.map((section) => (
-            <div key={section.title}>
-              <div className="h-8 w-full rounded-md bg-muted/20 animate-pulse mb-1" />
-              <div className="space-y-1 pl-4">
-                {section.items.map((_, idx) => (
-                  <div key={idx} className="h-7 w-3/4 rounded-md bg-muted/10 animate-pulse" />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="border-t p-2 space-y-1">
-          <div className="h-9 w-full rounded-md bg-muted/20 animate-pulse" />
-          <div className="h-9 w-full rounded-md bg-muted/20 animate-pulse" />
-        </div>
-      </aside>
-    );
+  function toggle(key: string, current: boolean) {
+    const next = { ...toggles, [key]: !current };
+    setStored({ key: storageKey, toggles: next });
+    try { if (storageKey) localStorage.setItem(storageKey, JSON.stringify(next)); } catch { /* Retain session choices when storage is unavailable. */ }
   }
 
   return (
-    <aside 
-      className={cn(
-        "fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-border dark:border-white/10 bg-background/90 dark:bg-[#111A28]/95 backdrop-blur-xl transition-all duration-300",
-        isCollapsed ? "w-16" : "w-64"
-      )}
-    >
-      {/* Logo / Brand */}
+    <aside aria-label="Admin sidebar" hidden={isMobile && !isOpen} className={cn(
+      'fixed left-0 top-0 z-50 flex h-dvh flex-col border-r border-border bg-background/90 backdrop-blur-xl dark:border-white/10 dark:bg-[#111A28]/95',
+      collapsed ? 'w-16' : 'w-64', isMobile && !isOpen && 'hidden',
+    )}>
       <div className="flex h-12 shrink-0 items-center justify-between border-b px-3">
-        {!isCollapsed && (
-          <span className="text-lg font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            ThreeD Garden
-          </span>
-        )}
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={onToggle}
-          className="ml-auto hover:bg-accent"
-        >
-          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        {!collapsed && <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-lg font-bold text-transparent">ThreeD Garden</span>}
+        <Button variant="ghost" size="icon" onClick={onToggle} aria-label={isMobile ? 'Close Admin navigation' : collapsed ? 'Expand Admin navigation' : 'Collapse Admin navigation'} className="ml-auto">
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
       </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto py-2 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted">
-        <ul className="space-y-1 px-2">
-          {visibleSections.map((section) => {
-            const isExpanded = expandedSections[section.title] || false;
-            const SectionIcon = section.icon;
-            const sectionHasActive = hasActiveChild(section);
-
-            // Collapsed mode - show only icons
-            if (isCollapsed) {
-              return (
-                <li key={section.title} className="relative group">
-                  <Button
-                    variant={sectionHasActive ? 'default' : 'ghost'}
-                    className={cn(
-                      "h-9 w-full justify-center px-0",
-                      sectionHasActive && "bg-primary text-primary-foreground shadow-md"
-                    )}
-                    onClick={() => {
-                      if (section.items.length > 0) {
-                        router.push(section.items[0].href);
-                      }
-                    }}
-                  >
-                    <SectionIcon className="h-4 w-4 shrink-0" />
-                  </Button>
-                  <div className="absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded-md shadow-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
-                    {section.title}
-                  </div>
-                </li>
-              );
-            }
-
-            // Expanded mode
-            return (
-              <li key={section.title}>
-                <Button
-                  variant="ghost"
-                  className={cn(
-                    "h-9 w-full justify-between gap-3 px-3",
-                    sectionHasActive && "bg-primary/10 text-primary font-medium"
-                  )}
-                  onClick={() => toggleSection(section.title)}
-                >
-                  <span className="flex items-center gap-3">
-                    <SectionIcon className={cn(
-                      "h-4 w-4 shrink-0",
-                      sectionHasActive && "text-primary"
-                    )} />
-                    <span>{section.title}</span>
-                  </span>
-                  {isExpanded ? (
-                    <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-                  )}
-                </Button>
-
-                {isExpanded && (
-                  <ul className="ml-5 mt-1 space-y-0.5 border-l border-border dark:border-white/10 pl-2">
-                    {section.items.map((item) => {
-                      const Icon = item.icon;
-                      const active = isItemActive(item);
-                      const submenuExpanded = (submenuState.pathname === pathname
-                        ? submenuState.expanded[item.href]
-                        : undefined) ?? active;
-                      return (
-                        <li key={item.href}>
-                          <Button
-                            variant={active ? 'default' : 'ghost'}
-                            className={cn(
-                              "h-8 w-full justify-start gap-3 px-3 text-sm",
-                              active 
-                                ? "bg-primary text-primary-foreground shadow-md" 
-                                : "hover:bg-accent/50"
-                            )}
-                            aria-expanded={item.children ? submenuExpanded : undefined}
-                            onClick={() => {
-                              if (item.children) {
-                                setSubmenuState((previous) => ({
-                                  pathname,
-                                  expanded: {
-                                    ...(previous.pathname === pathname ? previous.expanded : {}),
-                                    [item.href]: !submenuExpanded,
-                                  },
-                                }));
-                              } else {
-                                router.push(item.href);
-                              }
-                            }}
-                          >
-                            <Icon className={cn(
-                              "h-4 w-4 shrink-0",
-                              active && "text-primary-foreground"
-                            )} />
-                            <span>{item.title}</span>
-                            {item.children ? (
-                              submenuExpanded
-                                ? <ChevronDown className="ml-auto h-4 w-4 shrink-0" />
-                                : <ChevronRight className="ml-auto h-4 w-4 shrink-0" />
-                            ) : active && (
-                              <ChevronRight aria-hidden="true" className="ml-auto h-4 w-4 shrink-0 text-primary-foreground/60" />
-                            )}
-                          </Button>
-                          {item.children && submenuExpanded && (
-                            <ul className="ml-5 mt-0.5 space-y-0.5 border-l border-border dark:border-white/10 pl-2">
-                              {item.children.map((child) => {
-                                const ChildIcon = child.icon;
-                                const childActive = pathname === child.href || (!child.exact && pathname.startsWith(`${child.href}/`));
-                                return (
-                                  <li key={child.href}>
-                                    <Button
-                                      variant="ghost"
-                                      className={cn(
-                                        "h-7 w-full justify-start gap-3 px-3 text-xs",
-                                        childActive
-                                          ? "bg-primary/20 text-primary"
-                                          : "text-muted-foreground hover:bg-accent/40 hover:text-foreground",
-                                      )}
-                                      onClick={() => router.push(child.href)}
-                                    >
-                                      <ChildIcon className="h-4 w-4 shrink-0" />
-                                      <span>{child.title}</span>
-                                      {childActive && <ChevronRight aria-hidden="true" className="ml-auto h-4 w-4 shrink-0 text-primary" />}
-                                    </Button>
-                                  </li>
-                                );
-                              })}
-                            </ul>
-                          )}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-              </li>
-            );
+      <nav aria-label="Admin navigation" className="min-h-0 flex-1 overflow-y-auto py-2">
+        {ready && <ul className="space-y-1 px-2">
+          {visibleSections.map(section => {
+            const Icon = section.icon;
+            const active = section.items.some(item => item.children ? item.children.some(child => child.href === activeHref) : item.href === activeHref);
+            const open = toggles[section.title] ?? active;
+            if (collapsed) return <li key={section.title}>
+              <Button variant={active ? 'default' : 'ghost'} className="h-9 w-full px-0" title={section.title} aria-label={'Open ' + section.title + ' navigation'} onClick={() => { if (!open) toggle(section.title, false); onToggle(); }}>
+                <Icon className="h-4 w-4" />
+              </Button>
+            </li>;
+            return <li key={section.title}>
+              <Button variant="ghost" aria-expanded={open} onClick={() => toggle(section.title, open)} className={cn('h-9 w-full justify-between gap-2 px-3', active && 'bg-primary/10 font-medium text-primary')}>
+                <span className="flex min-w-0 items-center gap-2"><Icon className="h-4 w-4 shrink-0" /><span>{section.title}</span></span>
+                {open ? <ChevronDown className="h-4 w-4 shrink-0" /> : <ChevronRight className="h-4 w-4 shrink-0" />}
+              </Button>
+              {open && <ul className="ml-3 mt-1 space-y-0.5 border-l border-border pl-2 dark:border-white/10">
+                {section.items.map(item => {
+                  const ItemIcon = item.icon;
+                  const itemActive = item.children ? item.children.some(child => child.href === activeHref) : item.href === activeHref;
+                  const groupOpen = toggles[item.href] ?? itemActive;
+                  const content = <><ItemIcon className="h-4 w-4 shrink-0" /><span className="min-w-0 whitespace-normal text-left">{item.title}</span></>;
+                  return <li key={item.href}>
+                    {item.children ? <>
+                      <Button variant="ghost" aria-expanded={groupOpen} onClick={() => toggle(item.href, groupOpen)} className={cn('h-auto min-h-8 w-full justify-start gap-2 px-2 py-1.5 text-sm', itemActive && 'bg-primary/10 text-primary')}>
+                        {content}{groupOpen ? <ChevronDown className="ml-auto h-3 w-3 shrink-0" /> : <ChevronRight className="ml-auto h-3 w-3 shrink-0" />}
+                      </Button>
+                      {groupOpen && <ul className="ml-2 space-y-0.5 border-l border-border pl-1 dark:border-white/10">
+                        {item.children.map(child => {
+                          const ChildIcon = child.icon;
+                          const selected = child.href === activeHref;
+                          return <li key={child.href}><Button asChild variant="ghost" className={cn('h-auto min-h-7 w-full justify-start gap-2 px-2 py-1 text-xs', selected ? 'bg-primary/20 text-primary' : 'text-muted-foreground hover:text-foreground')}>
+                            <Link href={child.href} aria-current={selected ? 'page' : undefined}><ChildIcon className="h-3.5 w-3.5 shrink-0" /><span className="whitespace-normal">{child.title}</span></Link>
+                          </Button></li>;
+                        })}
+                      </ul>}
+                    </> : <Button asChild variant={itemActive ? 'default' : 'ghost'} className="h-auto min-h-8 w-full justify-start gap-2 px-2 py-1.5 text-sm">
+                      <Link href={item.href} aria-current={itemActive ? 'page' : undefined}>{content}</Link>
+                    </Button>}
+                  </li>;
+                })}
+              </ul>}
+            </li>;
           })}
-        </ul>
+        </ul>}
       </nav>
-
-      {/* Bottom of Sidebar */}
-      <div className="border-t p-2 space-y-1 shrink-0">
-        <Button
-          variant="ghost"
-          className={cn(
-            "w-full justify-start gap-3 text-muted-foreground hover:text-foreground h-9",
-            isCollapsed && "justify-center px-0"
-          )}
-          onClick={() => router.push('/')}
-        >
-          <Home className="h-4 w-4 shrink-0" />
-          {!isCollapsed && <span>Go to Site</span>}
+      <div className="shrink-0 space-y-1 border-t p-2">
+        <Button asChild variant="ghost" className={cn('h-9 w-full justify-start gap-3 text-muted-foreground', collapsed && 'justify-center px-0')}>
+          <Link href="/" aria-label="Go to Site" title={collapsed ? 'Go to Site' : undefined}><Home className="h-4 w-4 shrink-0" />{!collapsed && <span>Go to Site</span>}</Link>
         </Button>
-        <div className={cn(isCollapsed ? "flex justify-center" : "")}>
-          <SignOutButton 
-            variant="ghost" 
-            size={isCollapsed ? "icon" : "default"} 
-            showLabel={!isCollapsed}
-            className={cn(
-              "w-full justify-start gap-3 h-9",
-              isCollapsed && "justify-center px-0"
-            )}
-          />
-        </div>
+        <SignOutButton variant="ghost" size={collapsed ? 'icon' : 'default'} showLabel={!collapsed} className={cn('h-9 w-full justify-start gap-3', collapsed && 'justify-center px-0')} />
       </div>
     </aside>
   );

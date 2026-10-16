@@ -80,7 +80,9 @@ export function AdminLayout({ children }: AdminLayoutProps) {
       {/* Sidebar */}
       <AdminSidebar 
         isCollapsed={isCollapsed} 
-        onToggle={toggleSidebar} 
+        onToggle={toggleSidebar}
+        isMobile={isMobile}
+        isOpen={isSidebarOpen}
       />
 
       {/* Mobile overlay */}
