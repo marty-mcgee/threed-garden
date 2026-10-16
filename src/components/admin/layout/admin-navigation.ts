@@ -1,4 +1,4 @@
-import { LayoutDashboard, FolderOpen, Plus, Box, Carrot, Package, Hammer, FolderTree, Image, Clapperboard, Boxes, Building2, Layers, User, FlaskConical, ClipboardList, BookOpen, Sprout, Cuboid, Bean, ListTodo, Droplets, Drone, Car, AlertTriangle, FileText, TrafficCone, Grid3x2, Camera, Flame, Radio, Music, DiscAlbum, Music2, MicVocal, Link2, Settings } from 'lucide-react';
+import { LayoutDashboard, FolderOpen, Plus, Star, Box, Carrot, Package, Hammer, FolderTree, Image, Clapperboard, Boxes, Building2, Layers, User, FlaskConical, ClipboardList, BookOpen, Sprout, Cuboid, Bean, ListTodo, Droplets, Drone, Car, AlertTriangle, FileText, TrafficCone, Grid3x2, Camera, Flame, Radio, Music, DiscAlbum, Music2, MicVocal, Link2, Settings } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { WorkspaceModule } from '@/libraries/config/workspace-settings';
 
@@ -29,14 +29,14 @@ export const navSections: NavSection[] = [
     title: 'Dashboard',
     icon: LayoutDashboard,
     items: [
-      { title: 'Overview', href: '/admin', icon: LayoutDashboard, exact: true },
+      { title: 'Overview', href: '/admin', icon: Star, exact: true },
     ],
   },
   {
     title: 'Projects',
     icon: FolderOpen,
     items: [
-      { title: 'All Projects', href: '/admin/projects', icon: FolderOpen, exact: false },
+      { title: 'All Projects', href: '/admin/projects', icon: Star, exact: false },
       { title: 'Create New', href: '/admin/projects/new', icon: Plus, exact: true },
     ],
   },
@@ -61,7 +61,7 @@ export const navSections: NavSection[] = [
           '/admin/threed/animation-categories',
         ],
         children: [
-          { title: 'All Models', href: '/admin/threed/models', icon: Package },
+          { title: 'All Models', href: '/admin/threed/models', icon: Star },
           { title: 'Create Model', href: '/admin/threed/models/new', icon: Plus },
           { title: 'Model Builder', href: '/admin/threed/models/builder', icon: Hammer },
           { title: 'Files', href: '/admin/threed/model-files', icon: FolderOpen },
@@ -88,7 +88,7 @@ export const navSections: NavSection[] = [
           '/admin/threed/simulation-results',
         ],
         children: [
-          { title: 'All Simulations', href: '/admin/threed/simulations', icon: FlaskConical },
+          { title: 'All Simulations', href: '/admin/threed/simulations', icon: Star },
           { title: 'Create Simulation', href: '/admin/threed/simulations/new', icon: Plus },
           { title: 'Simulation Results', href: '/admin/threed/simulation-results', icon: ClipboardList },
         ]
@@ -125,8 +125,8 @@ export const navSections: NavSection[] = [
       { title: 'Albums', href: '/admin/multimedia/albums', icon: DiscAlbum, exact: false },
       { title: 'Tracks', href: '/admin/multimedia/tracks', icon: Music2, exact: false },
       { title: 'Speech', href: '/admin/multimedia/speech', icon: MicVocal, exact: false, children: [
-        { title: 'All Speeches', href: '/admin/multimedia/speech', icon: MicVocal, exact: false },
-        { title: 'New Speech', href: '/admin/multimedia/speech/new', icon: MicVocal, exact: true },
+        { title: 'All Speeches', href: '/admin/multimedia/speech', icon: Star, exact: false },
+        { title: 'New Speech', href: '/admin/multimedia/speech/new', icon: Plus, exact: true },
       ] },
       { title: 'Media', href: '/admin/multimedia/media', icon: Image, exact: false },
       { title: 'Links', href: '/admin/multimedia/links', icon: Link2, exact: false },
