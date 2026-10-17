@@ -19,6 +19,7 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  'repository-maintenance': [node('validate-repository-maintenance.cjs'), node('validate-farmbot-status-summary.cjs')],
   'design-appearance-top-view': [node('validate-design-appearance-top-view.cjs'), node('validate-model-top-view-compatibility.cjs')],
   'admin-sidebar': [node('validate-admin-sidebar.cjs')],
   'threed-designs': [node('validate-threed-designs.cjs')],
@@ -160,6 +161,7 @@ const tasks = {
 };
 
 const ci = [
+  'repository-maintenance',
   'threed-designs',
   'project-configurations',
   'admin-sidebar',

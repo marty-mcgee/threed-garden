@@ -7,13 +7,13 @@ const vm = require('node:vm');
 const ts = require('typescript');
 const THREE = require('three');
 
-const file = 'src/components/map/ThreeDScene.tsx';
+const file = 'src/components/map/presentation/SceneEnvironment.tsx';
 const source = ts.createSourceFile(file, fs.readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 const names = ['createGrassTexture', 'ProceduralDaylightBackground', 'InteractiveGround'];
 const declarations = names.map(name => {
   const node = source.statements.find(value => ts.isFunctionDeclaration(value) && value.name?.text === name);
   assert(node, `Actual Scene component/helper ${name} must exist`);
-  return node.getText(source);
+  return node.getText(source).replace(/^export\s+/, '');
 });
 const records = [];
 class ObservedCanvasTexture extends THREE.CanvasTexture {

@@ -1,3 +1,11 @@
+# Repository validation
+
+Use Node 24 and the npm version declared in package.json. Clean isolated installations use npm ci; preserve the dependency lock integrity check. Inspect scripts, scrub credentials, omit .env files, block live database/device/network access and leave Developer servers/active dependencies untouched.
+
+Run focused checks and fresh TypeScript, then the applicable CI group and guarded isolated npm production build. The repository-maintenance task validates maintained documentation paths/anchors, CI install/lock contracts and extracted FarmBot status presentation; threed-scene-resources exercises the active SceneEnvironment lifecycle. Both are included in CI. New run evidence belongs in the [maintenance record](../plans/repository-maintenance-2026-10-17.md) or matching [release record](../releases/README.md), not another prepended diary here. Avoid repeating unchanged full suites; recheck affected areas after later edits.
+
+Historical validation evidence and specialized checklists follow. Their old version numbers, server practices and release permissions do not override current [AGENTS.md](../../AGENTS.md).
+
 ## v0.26.4 release preparation - October 15, 2026
 
 Final checks passed: all 75 offline CI tasks, supplemental Animation Slots/Categories tasks (four scripts), fresh TypeScript, version/dependency consistency, five current release/plan links, whitespace and unchanged schema/API checks. Guarded isolated npm production build passed on Next16.4.2 with 145/145 pages and explicit exit 0. Final SHA-256 parity covers 994 source files, six authoritative package/config inputs and 73 tracked public assets; generated next-env was copied but excluded from final parity. Matching dependencies from the prior isolated release installation were reused, not newly installed. No .env copied; credentials scrubbed, dummy DB, network/4444 guard and offline fonts retained.

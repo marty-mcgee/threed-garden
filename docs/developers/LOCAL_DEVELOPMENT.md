@@ -2,10 +2,10 @@
 
 ## Setup
 
-Use Node.js 24.x and the npm version declared by `packageManager` in `package.json` (currently 11.6.2). `.nvmrc` selects Node 24; `package-lock.json` is the dependency lockfile and must be committed with dependency changes. Use `npm install` locally and in CI. CI explicitly installs the declared npm version before `npm install`, then checks that installation leaves the committed lockfile unchanged. Different npm versions can rewrite lockfile metadata even when installation succeeds.
+Use Node.js 24.x and the npm version declared by `packageManager` in `package.json` (currently 11.6.2). `.nvmrc` selects Node 24; `package-lock.json` is the dependency lockfile and must be committed with dependency changes. Use `npm ci` for clean local installations and CI. CI explicitly installs the declared npm version before `npm ci`, then checks that installation leaves the committed lockfile unchanged. Use `npm install` with the same npm version only when intentionally changing dependencies and review the resulting lockfile delta. Different npm versions can rewrite lockfile metadata even when installation succeeds.
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 

@@ -37,10 +37,11 @@ export function DetailsCardSection({
     >
       <summary className="cursor-pointer text-xs font-medium text-cyan-800 dark:text-cyan-100">
         <span className="inline-flex w-[calc(100%_-_1rem)] items-center justify-between gap-2 align-middle">
-          <span className="min-w-0">{title}</span>
-          {(help || summaryAside) && <span className="inline-flex shrink-0 items-center gap-1">
-            {summaryAside}
+          <span className="inline-flex min-w-0 items-center"><span>{title}</span>
             {help && <ModelFieldHelp label={titleText}>{help}</ModelFieldHelp>}
+          </span>
+          {summaryAside && <span className="inline-flex shrink-0 items-center gap-1">
+            {summaryAside}
           </span>}
         </span>
       </summary>

@@ -36,7 +36,7 @@ jobs:
           npm --version
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Verify dependency lockfile is unchanged
         run: git diff --exit-code -- package-lock.json

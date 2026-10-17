@@ -1,204 +1,157 @@
-## Production release confirmed: [v0.26.10 - ThreeD Project Models: DetailsCard simplification](v0.26.10.md)
-
-October 17, 2026: Developer confirms v0.26.10 released to production. This supersedes the earlier preparation-only status below. Package/root lockfile remain 0.26.10. Existing offline checks are pre-release evidence; the exact deployed commit and independent post-deployment verification are not established. The pending v0.26.9 level-visibility-subset Save/reopen check is not separately confirmed. This update records the Developer's report only; no agent Git writes, deployment, server operations or live data writes were performed.
-
-## Prepared checkpoint: [v0.26.10 - ThreeD Project Models: DetailsCard simplification](v0.26.10.md)
-
-October 17, 2026: local version 0.26.10; production remains Developer-confirmed v0.26.9. DetailsCard section headers are available by default after removing its Show/Hide Character settings button. Existing sections still expand and collapse. Dependencies and schema are unchanged.
-
-Fresh TypeScript and four focused checks passed; full CI/build and browser verification were not rerun. See release notes for validation and manual checks.
-
-Earlier release/status entries below are historical.
-
-## Prepared checkpoint: [v0.26.7 - ThreeD Simulations: Unified Admin editor](v0.26.7.md)
-
-Local preparation; deployment is not performed or independently verified.
-
-## Prepared checkpoint: [v0.26.6 - Admin Sidebar: Navigation and persistent toggles](v0.26.6.md)
-
-Developer intends to release; completion is not yet confirmed.
-
-## Current production: [v0.26.5 — ThreeD Projects: Admin Setup and unified configuration](v0.26.5.md)
-
-October 16, 2026: Developer confirmed this release is in production. Package/root lockfile remain 0.26.5. Exact deployed commit and independent production verification remain unconfirmed. Prior 76-task offline CI, TypeScript and guarded build results are pre-release evidence; this confirmation does not establish new browser or authenticated Save/reopen checks. Earlier preparation-only and production-version statements below are historical and superseded. This documentation-only update leaves application code, servers and live data untouched.
-
-## Prepared checkpoint: [v0.26.5 — ThreeD Projects: Admin Setup and unified configuration](v0.26.5.md)
-
-Local preparation; production remains Developer-confirmed v0.26.4. See release notes for evidence and limits. Older status entries below are historical.
-
-## Prepared checkpoint: [v0.26.4 — ThreeD Simulations: Admin workflows and Results](v0.26.4.md)
-
-October 15, 2026: local package/root lockfile 0.26.4, based on main a6e9e441 plus accepted working changes. Includes Admin Simulation management, read-only Results, Scene feedback and related Admin conventions. Production remains Developer-confirmed [v0.26.3](v0.26.3.md); exact deployed SHA and independent production verification remain unconfirmed. See release notes for executed checks and manual limits. No commit, tag, push, publication or deployment is included. Earlier status entries below are historical.
-
-## Historical prepared checkpoint: [v0.25.3 — ThreeD Designs: Legacy recovery and Model guidance](v0.25.3.md)
-
-October 14, 2026: package/root lockfile 0.25.3. The Developer accepted the browser checkpoint and requested production release preparation. Staged legacy JSON import, explicit scene-recovery automation and Model guidance/readiness improvements are included. [Release notes](v0.25.3.md) record actual checks, supplied screenshots and remaining limitations. Production remains Developer-confirmed [v0.25.2](v0.25.2.md); no commit, tag, push, publication or deployment is performed by this preparation. Earlier status entries below are historical.
-
-## Historical local release preparation: [v0.25.2 — ThreeD Garden: Design tools and texture linking](v0.25.2.md)
-
-Prepared October 13, 2026 on main; package/root lockfile are 0.25.2. Includes grouped Design tools, blank-space drag panning with separate Select/Pan tools, and explicit PNG replacements for FBX TGA requirements. The Developer accepted toolbar/panning behavior. Stable React Three Fiber 9.8.1 is restored; existing optional lockfile cleanup is preserved. See release notes for offline verification and remaining authenticated texture-link, Scene appearance, Save/reopen and touch checks. No database schema change or server operation; leave changes unstaged.
-
-Production remains **Developer-confirmed [v0.25.1 — App Styling (Blueprints + Customizations)](../plans/v0.25.1.md)**. Repository checkpoint `038021a4` is visible, not independent deployment evidence. v0.25.2 is prepared locally, not released. Historical production/development labels below are superseded.
-
-## Historical production: [v0.25.0 — ThreeD Garden: CSS polish and App Header consolidation](v0.25.0.md)
-
-Developer-confirmed released to production in chat. Repository checkpoint `89e42a23` is visible; exact deployed SHA and independent production verification remain unconfirmed. Local development is now **[v0.25.1 — App Styling (Blueprints + Customizations)](../plans/v0.25.1.md)**; package/root lockfile are 0.25.1. The Developer accepted the Home/Dashboard/Learn translucent surfaces, accents and green actions as its opening checkpoint. This work is unreleased; further refinements remain to be selected. Keep local dev servers untouched and changes unstaged. Earlier preparation records below are historical.
-
-## Historical local release preparation: [v0.25.0 — CSS polish and App Header consolidation](v0.25.0.md)
-
-The Developer accepted the focused header checkpoint and requested v0.25.0 directly, superseding the unreleased v0.24.7 target. Package/root lockfile are 0.25.0; dependencies/schema unchanged. Includes the Home brand link, left public menu, compact header spacing and Developer Home/menu copy refinements. No larger feature stage is included. Production remains Developer-confirmed v0.24.6; exact deployed SHA and independent production checks remain unconfirmed. See the release record for local verification and manual limitations. Preserve accepted editor/Project behavior and manual edits. Keep port 4444 servers untouched and all changes unstaged; no commit, tag, push or deployment. Earlier planning/status entries below are historical.
-
-## Historical v0.24.7 focus: [v0.24.7 — Styling and React polish](../plans/v0.24.7.md)
-
-Developer-approved scope: CSS styling and small React refinements only, as a stabilization step toward v0.25.0. Specific fixes and v0.25.0 features remain TBD. Preserve the accepted layouts, component/Canvas owners, Project persistence and manual edits. No major features, broad restructuring, dependency/schema changes or new styling system. This step documents the plan only; package/root lockfile remain 0.24.6 until checkpoint release preparation. Keep port 4444 dev servers untouched and changes unstaged.
-
-Production: **[v0.24.6 — ThreeD Garden: Home, Dashboard and Learn (Pages + Styling)](../releases/v0.24.6.md)**, Developer-confirmed in chat. Clean main checkpoint at inspection: 1337b913. Exact deployed SHA and independent post-deployment verification remain unconfirmed; prior local checks are not production verification. The earlier preparation/production labels below are historical and superseded.
-
-## Historical release preparation: [v0.24.6 — ThreeD Garden: Home, Dashboard and Learn](v0.24.6.md)
-
-Prepared October 12, 2026 on main; package and root lockfile metadata are 0.24.6. Includes the Developer-accepted Dashboard/Learn presentation, shared Home header/NextAuth controls and garden label cleanup fix. Production remains [v0.24.5](v0.24.5.md), Developer-confirmed in chat; exact deployed SHA and independent production verification remain unconfirmed. The release record separates local automated/browser evidence from remaining authenticated App checks. Dependencies/schema and Project save/load are unchanged. Preserve manual changes and leave port 4444 dev servers untouched. Leave changes unstaged; no commit, tag, push or deployment. Earlier production/preparation statements below are historical and superseded by this status.
-
-Current production: **[v0.24.2 — Workspace Feedback + Responsive Reliability](v0.24.2.md)**. Developer confirmed production release October 10, 2026. Package/root lockfile remain 0.24.2; dependencies and schema are unchanged. Prior local validation is pre-release evidence, not post-deployment verification. Exact deployed SHA and independent post-deployment checks remain unconfirmed. v0.24.0 authenticated Save/Reload remains Developer-accepted 100%. New-feedback authenticated smoke testing, physical-device touch and Builder-specific acceptance remain separately documented. This records release confirmation only; leave changes unstaged under the Manual Release Gate.
-
-# Releases
-
-Previous production: **[v0.24.1 — ThreeD Scene: UI/UX Improvements: App Layout + Page Headers](v0.24.1.md)**. Developer confirmed production release October 10, 2026. Package and both root lockfile version fields remain 0.24.1; dependencies and schema are unchanged. Prior local CI/build/browser checks are pre-release evidence, not post-deployment verification. Exact deployed SHA and independent post-deployment checks remain unconfirmed. v0.24.0 authenticated Save/Reload remains Developer-accepted 100%. This documentation update performs no Git write, deployment or live-system operation; leave changes unstaged.
-
-Previous production: **[v0.24.0 — ThreeD Designs: Project workspace and saved state](v0.24.0.md)**. Developer confirmed final `0.24.0` released to production October 10, 2026, following authenticated Save/Reload checks reported 100% passed. Released package/root lockfile were `0.24.0`; local preparation is now `0.24.1`. This supersedes earlier pending authenticated Save/Reload and RC-versioning statements below. Verification is Developer-reported, separate from agent automated checks. Production release is Developer-confirmed; exact deployed SHA and independent post-deployment checks remain unconfirmed. Leave changes unstaged; no Git write or deployment is authorized.
-
-Historical development: **[v0.24.0-delta — Cleanup toward release candidacy](../plans/v0.24.0-delta-cleanup.md)**. Package/root lockfile are `0.24.0-delta`; the delta planning checkpoint was Developer-confirmed released to production October 10, 2026. This is a prerelease planning baseline, not release-candidate acceptance. Delta is for existing bug fixes and acceptance, before a proposed `0.24.0-rc.1` and stable `0.24.0`. No new runtime fix or release readiness is claimed by this preparation. Earlier package/version statements below describe their historical checkpoints.
-
-Previous production: **[v0.24.0-centaur — ThreeD Designs: Workspace tools and state](v0.24.0-centaur.md)**, Developer-confirmed October 10, 2026. Package/root lockfile remain `0.24.0-centaur`. Includes canvas-local tools, staged JSON import, Project workspace snapshot support and compact colored Properties headers. Authenticated Save/reopen, post-deployment verification and exact deployed SHA remain unconfirmed. This records release confirmation only; no Git write or deployment is authorized. Earlier checkpoint statements below are historical.
-
-Previous release: [v0.24.1 — ThreeD Scene: UI/UX Improvements: App Layout + Page Headers](v0.24.1.md), Developer-confirmed in production.
-
-This directory records confirmed production checkpoints, not every development iteration. Prepared candidates are explicitly marked.
-
-Previous Developer-confirmed production: **[v0.24.0-beta — ThreeD Designs: Dashboard workspace](v0.24.0-beta.md)**, October 10, 2026. Layout accepted; authenticated architecture Save/reload, post-deployment checks and exact deployed SHA remain unconfirmed.
-
-Previous production: **[v0.24.0-alpha — ThreeD Designs: Project Scene integration](v0.24.0-alpha-project-design.md)**, October 9, 2026. Earlier release records retain their own validation limits.
-
-- [v0.24.0-beta — ThreeD Designs: Dashboard workspace](v0.24.0-beta.md) — production Developer-confirmed; beta checkpoint
-- [v0.24.0-alpha — ThreeD Designs: Project Scene integration](v0.24.0-alpha-project-design.md) — production Developer-confirmed
-- [v0.24.0-alpha — 3D Object Builder + Home Design Tools](v0.24.0-alpha.md) — earlier production checkpoint
-- [v0.23.2 — ThreeD Garden: Animation mappings and Simulation workflow](v0.23.2.md) — production Developer-confirmed
-- [v0.23.1 — ThreeD Garden: Project overlays and workspace polish](v0.23.1.md) — production Developer-confirmed
-
-- [v0.23.0 — ThreeD Garden](v0.23.0.md) — stable GitHub release
-
-- [v0.22.28 — ThreeD Simulations: Scenario separation and Scene launch](v0.22.28.md) — production Developer-confirmed
-- [v0.22.27 — ThreeD App: wire Drizzle database commands](v0.22.27.md) — production Developer-confirmed
-- [v0.22.10 — ThreeD Playable Soccer](v0.22.10.md) — production User-confirmed
-- [v0.22.9 — ThreeD Scenario Setup and Start](v0.22.9.md) — production User-confirmed
-- [v0.22.8 — Project Scenario Setup](v0.22.8.md) — production User-confirmed
-- [v0.22.7 — Reusable Model Lighting](v0.22.7.md) — production User-confirmed
-- v0.22.6 — ThreeD Traffic Module Import — production User-confirmed; see [the Traffic plan](../plans/v0.22.6-traffic.md)
-- [v0.22.5 — ThreeD App Module: Multimedia](v0.22.5.md) — Vercel production deployment and GitHub validation verified
-
-- [v0.22.4 — ThreeD Scenarios Preparations](v0.22.4.md) — Vercel production deployment verified
-- [v0.22.3 — ThreeD Modules Overview Polish](v0.22.3.md) — production User-confirmed
-- [v0.22.2 — ThreeD Scene: Public Loading + Theme Reliability](v0.22.2.md) — production User-confirmed
-
-- [v0.22.1 — ThreeD Garden: Interactive Home Page](v0.22.1.md) — production User-confirmed
-
-- [v0.22.0 — ThreeD Garden: Repository Handoff](v0.22.0.md) — production User-confirmed
-
-- [v0.21.1 — ThreeD Documentation + CI Reliability](v0.21.1.md) — production User-confirmed
-
-- [v0.21.0 — ThreeD Tooling: Node.js + npm](v0.21.0.md) — production User-confirmed
-
-- [v0.20.10 — ThreeD Admin: Model Editor + App Settings](v0.20.10.md) — production User-confirmed
-- [v0.20.9 — ThreeD Front-End: Scene UX + Model Reliability](v0.20.9.md) — production User-confirmed
-- [v0.20.8 — ThreeD Admin: Model Workspace Cleanup](v0.20.8.md) — production User-confirmed
-
-- [v0.20.0 — App Structure, Multimedia + Scene](v0.20.0.md) — production User-confirmed
-
-- [v0.19.43 — ThreeD App Legacy Code Cleanup: Project Toolbar](v0.19.43.md) — production User-confirmed
-
-- [v0.19.42 — ThreeD Ground Maps: Image Import + Scene Alignment](v0.19.42.md) — production User-confirmed
-
-- [v0.19.41 — ThreeD Models: Collision Modes + DetailsCard Blueprint](v0.19.41.md) — production User-confirmed
-
-- [v0.19.40 — Admin Settings: Personal Workspace Preferences](v0.19.40.md) — production User-confirmed
-
-- [v0.19.39 — ThreeD Characters: Models, Meshes + DetailsCard](v0.19.39.md) — production User-confirmed
-
-- [v0.19.38 — ThreeD Objects: Moving + Placement](v0.19.38.md) — production User-confirmed
-
-- [v0.19.37 — ThreeD Projects: Save + Restore State](v0.19.37.md) — production User-confirmed
-
-- [v0.19.36 — Dashboard Home: Project Discovery UI/UX](v0.19.36.md) — production User-confirmed
-
-- [v0.19.31 — ThreeD Dashboard: Character Animation Groups + Transparent Panels](v0.19.31.md) — production User-confirmed
-
-- [v0.19.30 — Movable Balls + Placement Refinements](v0.19.30.md) — production User-confirmed
-
-- [v0.19.29 — Proximity-Based Environment Collision](v0.19.29.md) — production User-confirmed
-
-- [v0.19.22 — ThreeD Model Files: Guided Setup + Default Shapes](v0.19.22.md) — production User-confirmed
-- [v0.19.21 — ThreeD Model Import + File Workspace Refinements](v0.19.21.md) — production User-confirmed
-- [v0.19.19 — Character Collisions + Interactions](v0.19.19.md) — production User-confirmed
-
-- [v0.19.18 — ThreeD Animation Presets + Character Navigation](v0.19.18.md) — production User-confirmed
-- [v0.19.17 — ThreeD UI Refinement + Scene Overlays](v0.19.17.md) — production User-confirmed
-
-- [v0.19.16 — Animations: Character and Model Assignment + Preview Interface](v0.19.16.md) — production User-confirmed
-
-- [v0.19.15 — ThreeD Admin Pages: UI Updates](v0.19.15.md) — production and manual build User-confirmed
-
-- [v0.19.14 — ThreeD Animations Library](v0.19.14.md) — production User-confirmed
-
-- [v0.19.13 — ThreeD Admin Sub-Module Workspace UI/UX Updates](v0.19.13.md) — production User-confirmed
-- [v0.19.12 — ThreeD Admin Model Workspace](v0.19.12.md) — production User-confirmed
-- [v0.19.11 — ThreeD Model Management](v0.19.11.md)
-- [v0.19.10c — ThreeD Model Bulk Importing](v0.19.10c.md)
-- [v0.19.10b — ThreeD Model Bulk Importing](v0.19.10b.md)
-- [v0.19.10a — ThreeD Model Bulk Importing](v0.19.10a.md)
-- [v0.19.9 — Guided ThreeD Project Creation and First-Run Experience](v0.19.9.md)
-- [v0.19.8d — ThreeD Model Library Import and Scene Presentation](v0.19.8d.md)
-- [v0.19.8c — ThreeD Model Importer and Reusable Texture Assignments](v0.19.8c.md)
-- [v0.19.8b — ThreeD Model Administration, Model File Management, Model Workspaces, Model Texture Dependencies](v0.19.8b.md)
-- [v0.19.8a — ThreeD Model Administration and File Management](v0.19.8a.md)
-- [v0.19.7b — ThreeD Dashboard Scene Coordinator Boundaries](v0.19.7b.md)
-- [v0.19.7a — ThreeD Dashboard Library Workspaces](v0.19.7a.md)
-- [v0.19.7 — ThreeD Dashboard Pages](v0.19.7.md)
-- [v0.19.6 — ThreeD Dashboard Project Templates and Onboarding](v0.19.6.md)
-- [v0.19.5c — ThreeD Project Guidance and Environment Presentation](v0.19.5c.md)
-- [v0.19.5b — ThreeD Scene Loading Presentation](v0.19.5b.md)
-- [v0.19.3c — ThreeD Character Environment Runtime](v0.19.3c.md)
-- [v0.19.3b — ThreeD Project Environment Models](v0.19.3b.md)
-- [v0.19.3a — ThreeD Model Taxonomy and Bundle Import](v0.19.3a.md)
-- [v0.19.2a — Visual ThreeD Model Library and Cross-Surface Placement](v0.19.2a.md)
-- [v0.19.1e — ThreeD Planting Placement Surface Continuity](v0.19.1e.md)
-- [v0.19.1d — ThreeD Shared-Surface Operation Authority](v0.19.1d.md)
-- [v0.19.1c — ThreeD Project Rendering Authority](v0.19.1c.md)
-- [v0.19.1a — ThreeD Project View State Persistence](v0.19.1a.md)
-- [v0.19.0d — Precision ThreeD Coordinate Calibration](v0.19.0d.md)
-- [v0.19.0c — Calibrated ThreeD Geographic Positioning](v0.19.0c.md)
-- [v0.19.0b — Shared ThreeD Model Repositioning](v0.19.0b.md)
-- [v0.19.0a — Shared ThreeD Model Library Placement](v0.19.0a.md)
-- [v0.18.9d — ThreeD Scene Navigation UX](v0.18.9d.md)
-- [v0.18.9c — ThreeD Project Header and DetailsCard UI](v0.18.9c.md)
-- [v0.18.9b — ThreeD Project Marker CRUD and Physics Synchronization](v0.18.9b.md)
-- [v0.18.9a — ThreeD Character Library and Snapshot Recovery](v0.18.9a.md)
-
-- [v0.18.7d — ThreeD Ecctrl Spawn Safety](v0.18.7d.md)
-- [v0.18.7c — ThreeD Layers Scene Contracts](v0.18.7c.md)
-- [v0.18.7b — ThreeD Bed Project Placement and Editing](v0.18.7b.md)
-- [v0.18.7a — ThreeD Model Library Project Placements](v0.18.7a.md)
-- [v0.18.6b — ThreeD Project Marker Snapshots](v0.18.6b.md)
-- [v0.18.6a — ThreeD Markers Action Target Module](v0.18.6a.md)
-- [v0.18.5b — ThreeD Target-Relative Character Navigation](v0.18.5b.md)
-- [v0.18.5a — ThreeD Character Orchestration Simulation](v0.18.5a.md)
-- [v0.18.4b — Dashboard Surface Cleanup](v0.18.4b.md)
-- [v0.18.4a — Admin and Dashboard UI Improvements](v0.18.4a.md)
-- [v0.18.3b — ThreeD MQTT Control Layer: Phase 4L-D–4L-K](v0.18.3b.md)
-- [v0.18.3a — ThreeD MQTT Control Layer: Phase 4A–4L-C](v0.18.3a.md)
-- [v0.18.2b — ThreeD MQTT Control Layer: Phase 3D–3F](v0.18.2b.md)
-- [v0.18.1b — ThreeD MQTT Control Layer](v0.18.1b.md)
-- [v0.18.1a — ThreeD MQTT Module: FarmBot Read-Only Adapter](v0.18.1a.md)
-- [v0.18.0 — ThreeD FarmBot Integration, Phase 1](v0.18.0.md)
-- [v0.17.3 — Documentation Foundation](v0.17.3.md)
-- [v0.17.2 — API and Type Safety Cleanup](v0.17.2.md)
-
-Add a release note only after the version is deployed and its production checks are confirmed.
+# ThreeD Garden release history
+
+Version-specific scope, checks, acceptance and production confirmations live in the corresponding release file. Preparation is not deployment; follow the evidence recorded in each file. [Current version/status](../../CONTEXT.md) is maintained separately from this index.
+
+[Preserved entry-point history](history/2026-10-17/README.md) retains former README, AGENTS, CONTEXT and documentation-hub narration, including superseded statuses and unique acceptance evidence. [Repository maintenance record](../plans/repository-maintenance-2026-10-17.md).
+
+## Release records
+
+ - [v0.26.11](v0.26.11.md)
+ - [v0.26.10](v0.26.10.md)
+ - [v0.26.9](v0.26.9.md)
+ - [v0.26.8](v0.26.8.md)
+ - [v0.26.7](v0.26.7.md)
+ - [v0.26.6](v0.26.6.md)
+ - [v0.26.5](v0.26.5.md)
+ - [v0.26.4](v0.26.4.md)
+ - [v0.26.3](v0.26.3.md)
+ - [v0.26.2](v0.26.2.md)
+ - [v0.26.1](v0.26.1.md)
+ - [v0.26.0](v0.26.0.md)
+ - [v0.25.4](v0.25.4.md)
+ - [v0.25.3](v0.25.3.md)
+ - [v0.25.2](v0.25.2.md)
+ - [v0.25.0](v0.25.0.md)
+ - [v0.24.6](v0.24.6.md)
+ - [v0.24.5](v0.24.5.md)
+ - [v0.24.4](v0.24.4.md)
+ - [v0.24.3](v0.24.3.md)
+ - [v0.24.2](v0.24.2.md)
+ - [v0.24.1](v0.24.1.md)
+ - [v0.24.0](v0.24.0.md)
+ - [v0.24.0-centaur](v0.24.0-centaur.md)
+ - [v0.24.0-beta](v0.24.0-beta.md)
+ - [v0.24.0-alpha](v0.24.0-alpha.md)
+ - [v0.24.0-alpha-project-design](v0.24.0-alpha-project-design.md)
+ - [v0.23.2](v0.23.2.md)
+ - [v0.23.1](v0.23.1.md)
+ - [v0.23.0](v0.23.0.md)
+ - [v0.23.0-rc.1](v0.23.0-rc.1.md)
+ - [v0.22.29](v0.22.29.md)
+ - [v0.22.28](v0.22.28.md)
+ - [v0.22.27](v0.22.27.md)
+ - [v0.22.26](v0.22.26.md)
+ - [v0.22.25](v0.22.25.md)
+ - [v0.22.24](v0.22.24.md)
+ - [v0.22.23](v0.22.23.md)
+ - [v0.22.22](v0.22.22.md)
+ - [v0.22.21](v0.22.21.md)
+ - [v0.22.20](v0.22.20.md)
+ - [v0.22.19](v0.22.19.md)
+ - [v0.22.18](v0.22.18.md)
+ - [v0.22.10](v0.22.10.md)
+ - [v0.22.9](v0.22.9.md)
+ - [v0.22.8](v0.22.8.md)
+ - [v0.22.7](v0.22.7.md)
+ - [v0.22.5](v0.22.5.md)
+ - [v0.22.4](v0.22.4.md)
+ - [v0.22.3](v0.22.3.md)
+ - [v0.22.2](v0.22.2.md)
+ - [v0.22.1](v0.22.1.md)
+ - [v0.22.0](v0.22.0.md)
+ - [v0.21.1](v0.21.1.md)
+ - [v0.21.0](v0.21.0.md)
+ - [v0.20.12](v0.20.12.md)
+ - [v0.20.11](v0.20.11.md)
+ - [v0.20.10](v0.20.10.md)
+ - [v0.20.9](v0.20.9.md)
+ - [v0.20.8](v0.20.8.md)
+ - [v0.20.7](v0.20.7.md)
+ - [v0.20.6](v0.20.6.md)
+ - [v0.20.5](v0.20.5.md)
+ - [v0.20.4](v0.20.4.md)
+ - [v0.20.3](v0.20.3.md)
+ - [v0.20.1](v0.20.1.md)
+ - [v0.20.0](v0.20.0.md)
+ - [v0.19.43](v0.19.43.md)
+ - [v0.19.42](v0.19.42.md)
+ - [v0.19.41](v0.19.41.md)
+ - [v0.19.40](v0.19.40.md)
+ - [v0.19.39](v0.19.39.md)
+ - [v0.19.38](v0.19.38.md)
+ - [v0.19.37](v0.19.37.md)
+ - [v0.19.36](v0.19.36.md)
+ - [v0.19.35](v0.19.35.md)
+ - [v0.19.34](v0.19.34.md)
+ - [v0.19.33](v0.19.33.md)
+ - [v0.19.32](v0.19.32.md)
+ - [v0.19.31](v0.19.31.md)
+ - [v0.19.30](v0.19.30.md)
+ - [v0.19.29](v0.19.29.md)
+ - [v0.19.28](v0.19.28.md)
+ - [v0.19.27](v0.19.27.md)
+ - [v0.19.26](v0.19.26.md)
+ - [v0.19.25](v0.19.25.md)
+ - [v0.19.24](v0.19.24.md)
+ - [v0.19.22](v0.19.22.md)
+ - [v0.19.21](v0.19.21.md)
+ - [v0.19.19](v0.19.19.md)
+ - [v0.19.18](v0.19.18.md)
+ - [v0.19.17](v0.19.17.md)
+ - [v0.19.16](v0.19.16.md)
+ - [v0.19.15](v0.19.15.md)
+ - [v0.19.14](v0.19.14.md)
+ - [v0.19.13](v0.19.13.md)
+ - [v0.19.12](v0.19.12.md)
+ - [v0.19.11](v0.19.11.md)
+ - [v0.19.10c](v0.19.10c.md)
+ - [v0.19.10b](v0.19.10b.md)
+ - [v0.19.10a](v0.19.10a.md)
+ - [v0.19.9](v0.19.9.md)
+ - [v0.19.8d](v0.19.8d.md)
+ - [v0.19.8c](v0.19.8c.md)
+ - [v0.19.8b](v0.19.8b.md)
+ - [v0.19.8a](v0.19.8a.md)
+ - [v0.19.7b](v0.19.7b.md)
+ - [v0.19.7a](v0.19.7a.md)
+ - [v0.19.7](v0.19.7.md)
+ - [v0.19.6](v0.19.6.md)
+ - [v0.19.5c](v0.19.5c.md)
+ - [v0.19.5b](v0.19.5b.md)
+ - [v0.19.4d](v0.19.4d.md)
+ - [v0.19.4c](v0.19.4c.md)
+ - [v0.19.4b](v0.19.4b.md)
+ - [v0.19.3c](v0.19.3c.md)
+ - [v0.19.3b](v0.19.3b.md)
+ - [v0.19.3a](v0.19.3a.md)
+ - [v0.19.2a](v0.19.2a.md)
+ - [v0.19.1e](v0.19.1e.md)
+ - [v0.19.1d](v0.19.1d.md)
+ - [v0.19.1c](v0.19.1c.md)
+ - [v0.19.1a](v0.19.1a.md)
+ - [v0.19.0d](v0.19.0d.md)
+ - [v0.19.0c](v0.19.0c.md)
+ - [v0.19.0b](v0.19.0b.md)
+ - [v0.19.0a](v0.19.0a.md)
+ - [v0.18.9d](v0.18.9d.md)
+ - [v0.18.9c](v0.18.9c.md)
+ - [v0.18.9b](v0.18.9b.md)
+ - [v0.18.9a](v0.18.9a.md)
+ - [v0.18.7d](v0.18.7d.md)
+ - [v0.18.7c](v0.18.7c.md)
+ - [v0.18.7b](v0.18.7b.md)
+ - [v0.18.7a](v0.18.7a.md)
+ - [v0.18.6b](v0.18.6b.md)
+ - [v0.18.6a](v0.18.6a.md)
+ - [v0.18.5b](v0.18.5b.md)
+ - [v0.18.5a](v0.18.5a.md)
+ - [v0.18.4b](v0.18.4b.md)
+ - [v0.18.4a](v0.18.4a.md)
+ - [v0.18.3b](v0.18.3b.md)
+ - [v0.18.3a](v0.18.3a.md)
+ - [v0.18.2b](v0.18.2b.md)
+ - [v0.18.1b](v0.18.1b.md)
+ - [v0.18.1a](v0.18.1a.md)
+ - [v0.18.0](v0.18.0.md)
+ - [v0.17.3](v0.17.3.md)
+ - [v0.17.2](v0.17.2.md)

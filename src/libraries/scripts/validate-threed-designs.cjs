@@ -1,5 +1,6 @@
 // Execute actual Project snapshot transaction, loader, editor state and geometry with mocked persistence.
 require('./validate-threed-design-plan-pointer.cjs');
+require('./validate-design-properties-status.cjs');
 require('./validate-threed-design-legacy-import.cjs');
 const assert = require('node:assert/strict'), fs = require('node:fs'), vm = require('node:vm'), ts = require('typescript');
 function load(file, deps = {}) {

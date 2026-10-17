@@ -544,3 +544,24 @@
   background: color-mix(in srgb, var(--foreground) 10%, transparent);
 }
 .threed-toolbar-menu-item svg { width: 0.875rem; height: 0.875rem; color: inherit; }
+
+/* Shared App question-mark help icons; retain the existing button hit area. */
+svg.lucide-circle-question-mark,
+svg.lucide-circle-help {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+/* Let the trigger supply the same 4px visual title gap in inline and flex headings. */
+:where(*):has(> .threed-field-help) { --threed-help-title-gap: 0px; }
+:is(.gap-1, .gap-x-1):has(> .threed-field-help) { --threed-help-title-gap: 0.25rem; }
+:is(.gap-1\.5, .gap-x-1\.5):has(> .threed-field-help) { --threed-help-title-gap: 0.375rem; }
+:is(.gap-2, .gap-x-2):has(> .threed-field-help) { --threed-help-title-gap: 0.5rem; }
+:is(.gap-3, .gap-x-3):has(> .threed-field-help) { --threed-help-title-gap: 0.75rem; }
+:is(.gap-4, .gap-x-4):has(> .threed-field-help) { --threed-help-title-gap: 1rem; }
+button.threed-field-help {
+  width: 1.25rem;
+  padding-inline: 0;
+  margin-inline-start: calc(-1 * var(--threed-help-title-gap, 0px));
+  vertical-align: middle;
+}

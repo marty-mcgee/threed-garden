@@ -13,7 +13,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useProjectOverlayPosition } from '../panels/ProjectOverlayLayout';
 import { useSession } from 'next-auth/react';
 import { hasModelLoadFailure, subscribeModelLoadFailures } from '@/libraries/services/threed/models/model-load-failures';
-import { Box, Radio, Crosshair, ExternalLink, Gamepad2, Loader2, Pause, ScanSearch, X } from 'lucide-react';
+import { Box, Radio, Crosshair, ExternalLink, Gamepad2, Pause, ScanSearch, X } from 'lucide-react';
 import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 import type { RuntimeMarker, ThreeDActionTarget } from '@/libraries/types/map';
 import type { ThreeDRuntimeMarkerPositionResolver } from '@/components/map/UnifiedMapView';
@@ -41,7 +41,8 @@ import { defaultKickCollisionPoints } from '@/libraries/services/threed/physics/
 import { PlantingInstanceEditor } from './PlantingInstanceEditor';
 import { DetailsCardSection } from './DetailsCardSection';
 import { sceneOwnerPose } from '@/libraries/services/threed/transforms/scene-transform-core';
-import { useFarmBotLiveState } from '@/components/map/hooks/useFarmBotLiveState';
+import { FarmBotMqttStatusSummary } from './FarmBotMqttStatusSummary';
+import { KvRow } from './DetailsCardRow';
 import {
   PhysicsSensorCuboidsEditor,
   type PhysicsSensorPlacementResult,
@@ -103,65 +104,6 @@ function ModelFileNotice({ type, data }: { type: string; data: Record<string, an
     </div>
   );
 }
-
-function KvRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex min-w-0 items-start gap-1.5">
-      <span className="text-[10px] text-foreground/40 shrink-0 w-[52px] text-right">{label}</span>
-      <span className="min-w-0 flex-1 break-words text-[11px] leading-relaxed text-foreground/80 [overflow-wrap:anywhere]">{value}</span>
-    </div>
-  );
-}
-
-function formatMqttDate(value: string | null): string {
-  return value ? new Date(value).toLocaleString() : 'Never';
-}
-
-
-function FarmBotMqttStatusSummary({
-  farmbotId,
-  projectId,
-}: {
-  farmbotId: number;
-  projectId: string | null;
-}) {
-  const { state: runtime, loading, error } = useFarmBotLiveState({
-    farmbotId,
-    projectId,
-  });
-
-  return (
-    <DetailsCardSection
-      title="Live FarmBot State"
-      summaryAside={loading ? (
-          <Loader2 className="h-3 w-3 animate-spin text-foreground/40" />
-        ) : runtime ? (
-          <div className="flex items-center gap-1">
-            <span className={`h-1.5 w-1.5 rounded-full ${runtime.condition === 'live' ? 'bg-emerald-400' : 'bg-amber-400'}`} />
-            <span className="text-[10px] capitalize text-foreground/70">{runtime.condition}</span>
-          </div>
-        ) : (
-          <span className="text-[10px] text-foreground/35">{error ? 'Unavailable' : 'No recorded status'}</span>
-        )}
-    >
-      {runtime && (
-        <div className="space-y-0.5">
-          <KvRow label="State" value={runtime.connectionState ?? 'Unavailable'} />
-          <KvRow label="Source" value="FarmBot MQTT" />
-          <KvRow label="Changed" value={formatMqttDate(runtime.stateChangedAt)} />
-          <KvRow label="Observed" value={formatMqttDate(runtime.observedAt)} />
-          <KvRow
-            label="Device"
-            value={runtime.position
-              ? `X:${runtime.position.x.toFixed(1)} Y:${runtime.position.y.toFixed(1)} Z:${runtime.position.z.toFixed(1)}`
-              : 'Position not recorded'}
-          />
-        </div>
-      )}
-    </DetailsCardSection>
-  );
-}
-
 
 export function DetailsCard({ metersPerSceneUnit, selectedSensorId, onSelectSensor, selected, projectId, projectMarkers, onSelectProjectMarker, leftOffsetRem = 0.75, onClose, sceneAvailable, controlledCharacterId, liveControlledCharacterPosition, liveCharacterRotation, onTakeControl, onReleaseControl, cameraMode, onCameraModeChange, onZoomCenter, actionTarget, orchestrationStatus, onSetActionTarget, onClearActionTarget, onFocusActionTarget, resolveRuntimeMarkerPosition, onUpdateModelInstance, updatingModelInstanceId, onDeleteModelInstance, deletingModelInstanceId, movingModelInstanceId, onMoveModelToggle, onUpdateBedInstance, updatingBedMarkerId, onDeleteBedInstance, deletingBedMarkerId, onUpdateFarmBotInstance, updatingFarmBotMarkerId, onDeleteFarmBotInstance, deletingFarmBotMarkerId, onUpdatePlantingInstance, updatingPlantingMarkerId, onDeletePlantingInstance, deletingPlantingMarkerId, movingPlantingMarkerId, onMovePlantingToggle, movingModuleMarkerId, onMoveModuleToggle, onUpdatePhysicsSensors, updatingPhysicsSensorMarkerId, placingPhysicsSensor, physicsSensorPlacementResult, onBeginPhysicsSensorPlacement, onCancelPhysicsSensorPlacement, onZoomToPhysicsSensor, onUpdateCharacterPosition, updatingCharacterMarkerId, onDeleteCharacterInstance, deletingCharacterMarkerId }: {
   selected: any;

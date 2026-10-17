@@ -17,10 +17,11 @@ import{validateDesign,newDesign}from'./src/libraries/services/threed/design/docu
 const doc=validateDesign({...newDesign(),nodes:[{id:'a',x:1,z:1},{id:'b',x:5,z:1}],walls:[{id:'wall',levelId:'ground',start:'a',end:'b',height:2.4,thickness:.15,elevation:0}]});
 function Fixture(){const[draft,setDraft]=React.useState(()=>projectArchitectureDraft({version:1,document:doc})),[preview,setPreview]=React.useState(null);
 const visibility=React.useCallback(()=>{},[]),change=React.useCallback(update=>setDraft(current=>reconcileArchitectureSelection(update(current))),[]);
+const[readOnly,setReadOnly]=React.useState(false);window.__readOnly=setReadOnly;
 window.__draft=draft;window.__preview=preview;
 return <ProjectDetailsSections.Provider value={{sections:draft.workspace.sections,change:(key,open)=>change(current=>({...current,workspace:{...current.workspace,sections:{...current.workspace.sections,[key]:open}}}))}}>
 <main data-testid="project-scene-workspace" className="relative h-dvh overflow-hidden"><div className="threed-project-toolbar h-9">Project fixture</div>
-<DesignWorkspace active split={30} onSplitChange={()=>{}} editor={<DesignEditor scene={{projectId:15,projectName:'Offline Project',draft,onChange:change,onSave:async()=>{},saving:false,onPreview:setPreview,onVisibility:visibility}}/>}><div>Existing Scene placeholder</div></DesignWorkspace></main></ProjectDetailsSections.Provider>}
+<DesignWorkspace active split={30} onSplitChange={()=>{}} editor={<DesignEditor canSave={!readOnly} scene={{projectId:15,projectName:'Offline Project',draft,onChange:change,onSave:async()=>{},saving:false,onPreview:setPreview,onVisibility:visibility}}/>}><div>Existing Scene placeholder</div></DesignWorkspace></main></ProjectDetailsSections.Provider>}
 window.__events=[];for(const name of ['pointerdown','pointermove','pointerup','pointercancel','gotpointercapture','lostpointercapture'])document.addEventListener(name,e=>{if(e.target.closest?.('[data-testid="home-plan"]'))window.__events.push({name,target:e.target.tagName,entity:e.target.closest?.('[data-entity]')?.getAttribute('data-entity'),buttons:e.buttons,x:e.clientX,y:e.clientY})});
 createRoot(document.getElementById('root')).render(<Fixture/>);`;
   const bundle = (await require('esbuild').build({stdin:{contents:source,resolveDir:root,loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',define:{'process.env.NODE_ENV':'"production"'},plugins:[{name:'offline-preview',setup(build){
@@ -45,6 +46,8 @@ createRoot(document.getElementById('root')).render(<Fixture/>);`;
     const call=(method,params={})=>send(method,params,sessionId);
     const evaluate=async expression=>{const result=await call('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true});assert(!result.exceptionDetails,JSON.stringify(result.exceptionDetails));return result.result.value;};
     await call('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+    await call('Emulation.setFocusEmulationEnabled',{enabled:true});
+    await call('Page.bringToFront');
     await call('Page.navigate',{url:require('node:url').pathToFileURL(fixture).href});
     for(let i=0;i<80&&!await evaluate('!!window.__draft');i++)await delay(100);
     assert(await evaluate('!!window.__draft'),'Fixture mounts');await delay(250);
@@ -61,6 +64,36 @@ createRoot(document.getElementById('root')).render(<Fixture/>);`;
     const capture=await call('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(temp,'pan.png'),Buffer.from(capture.data,'base64'));
     assert.equal(after.x,before.x+80,'Native background drag updates Project plan X');
     assert.equal(after.y,before.y+40,'Native background drag updates Project plan Y');
+    for (const width of [1440, 375]) {
+      await evaluate('document.activeElement?.blur()');
+      await call('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:false});
+      await evaluate(`document.querySelector('[data-testid="design-status-section"]').scrollIntoView({block:'nearest'})`);await delay(150);
+      assert.equal(await evaluate(`document.querySelectorAll('[data-testid="design-status-section"]').length`),1);
+      assert.equal(await evaluate(`document.querySelectorAll('[data-testid="design-save-status"]').length`),1);
+      assert.equal(await evaluate(`document.querySelector('[data-testid="design-status-section"]').closest('fieldset') === null`),true);
+      const helpGaps=await evaluate(`['Design Properties','Levels','Drawing navigation','Design status'].map(label=>{const button=document.querySelector('button[aria-label="'+label+' help"]'),parent=button.parentElement;const title=Array.from(parent.childNodes).find(node=>node.nodeType===Node.TEXT_NODE&&node.textContent.trim());const range=document.createRange();range.selectNodeContents(title);return {label,gap:button.querySelector('svg').getBoundingClientRect().left-range.getBoundingClientRect().right}})`);
+      for(const item of helpGaps)assert(Math.abs(item.gap-4)<1,item.label+': help icon gap is 4px');
+      const statusText=await evaluate(`document.querySelector('[data-testid="design-status-section"]').textContent`);
+      assert.match(statusText,/Status.*1 walls/);assert.doesNotMatch(statusText,/0\.0254|Save Project retains/);
+      await evaluate(`document.querySelector('button[aria-label="Design status help"]').focus({preventScroll:true})`);await delay(350);
+      if (!await evaluate(`document.querySelector('button[aria-label="Design status help"]').getAttribute('data-state') !== 'closed'`)) {
+        await call('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});
+        await call('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});await delay(250);
+      }
+      console.log('Tooltip state',await evaluate(`({width:${width},focus:document.activeElement?.getAttribute('aria-label'),state:document.querySelector('button[aria-label="Design status help"]').getAttribute('data-state'),tooltip:document.querySelector('[role="tooltip"]')?.textContent})`));
+      assert.match(await evaluate(`Array.from(document.querySelectorAll('[role="tooltip"]')).map(e=>e.textContent).join(' ')`),/1 in = 0\.0254 m.*Project coordinates/);
+      const tooltipRect=await evaluate(`(()=>{const r=document.querySelector('[data-radix-popper-content-wrapper]').getBoundingClientRect();return {x:r.x,right:r.right,y:r.y,bottom:r.bottom}})()`);
+      assert(tooltipRect.x>=0 && tooltipRect.right<=width+1,'Tooltip fits viewport width');
+      const helpCapture=await call('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(temp,'help-'+width+'.png'),Buffer.from(helpCapture.data,'base64'));
+      await call('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape'});await call('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape'});await delay(100);
+      assert.equal(await evaluate(`document.querySelectorAll('[role="tooltip"]').length`),0);
+      await evaluate(`document.querySelector('[data-testid="design-status-section"]').scrollIntoView({block:'end'})`);await delay(100);
+      const capture=await call('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(temp,'status-'+width+'.png'),Buffer.from(capture.data,'base64'));
+    }
+    await evaluate('window.__readOnly(true)');await delay(150);
+    assert.equal(await evaluate(`document.querySelector('button[aria-label="Design status help"]').disabled`),false);
+    assert.match(await evaluate(`document.querySelector('[data-testid="design-save-status"]').textContent`),/Sign in as the Project owner/);
+    console.log('PASS native Design Properties Status, desktop/narrow keyboard help/Escape and read-only access; actual React/App CSS, mocked Project.');
     console.log('PASS native DesignEditor/DesignWorkspace mouse panning; actual React and App CSS, mocked Project state and Scene. '+temp);
   } finally { await send('Browser.close').catch(()=>{}); child.kill(); }
 }
