@@ -196,7 +196,7 @@ interface ThreeDSceneProps {
   metersPerSceneUnit?: number;
   selectedArchitectureId?: string | null;
   onArchitectureSelect?: (id: string | null) => void;
-  architectureLevelId?: string;
+  architectureLevelId?: string | string[];
   architectureShowRoofs?: boolean;
 
   incidents: any[];

@@ -1,3 +1,7 @@
+## v0.26.9 - ThreeD Designs: Linked Levels and toolbar polish
+
+Local release preparation, October 17, 2026. Package/root lockfile 0.26.9; dependencies/schema unchanged. Developer accepted Project toolbar ordering, removed Model outline and linked Blueprint Levels controls. Named level visibility subsets now follow existing Project workspace Save, with legacy preference compatibility. See [release notes](docs/releases/v0.26.9.md). Production remains Developer-confirmed v0.26.8; no deployment or independent production check is claimed. New subset Save/reopen remains manual. Preserve manual edits and leave unstaged; no servers/live writes/Git/deployment operations.
+
 ## Production release confirmed - v0.26.8
 
 October 17, 2026: Developer confirms **v0.26.8 - ThreeD Designs: Transparency, top views and canvas tools** released to production. This supersedes earlier local-preparation/unreleased status for this version. Package/root lockfile remain 0.26.8. SQL application, Real Top-View Image Upload and Project Save/Re-open were separately Developer-confirmed. Prior 78-task offline CI, TypeScript and guarded build results remain pre-release evidence; no independent post-deployment verification or exact deployed commit is established. This documentation update performs no deployment, Git writes, live data or server operations.
@@ -377,3 +381,6 @@ Final v0.26.8 release validation: all 78 guarded offline CI tasks passed on the 
 ## Developer manual acceptance - October 17, 2026
 
 Developer confirms **Real Top-View Image Upload** and **Project Save/Re-open** passed for this v0.26.8 checkpoint. These confirmations supersede earlier pending entries for those two checks. SQL application was also Developer-confirmed. This is Developer-reported manual verification, separate from the passed agent offline checks; no independent production verification or deployment confirmation is inferred. Broader cross-device, narrow-screen and all-case visual coverage remain separate.
+
+
+Final v0.26.9 preparation: all 78 guarded offline CI tasks passed, fresh TypeScript passed, version metadata/source parity (1007 source files) and whitespace checks passed. Guarded isolated production build passed with exit 0 (145 pages), reused matching dependencies with no fresh install, scrubbed credentials/dummy DB/blocked network/offline fonts. Known nested-lockfile warning remains non-failing. Developer server and installation untouched. Automated boundaries are mocked; new level-subset authenticated Save/reopen and broader responsive coverage remain manual. No commit/tag/push/deploy.

@@ -10,6 +10,7 @@ export interface ProjectDesignWorkspaceState {
   levelId: string;
   selectedEntityId: string | null;
   showAllLevels: boolean;
+  visibleLevelIds?: string[];
   showRoofs: boolean;
   showMeasurements?: boolean;
   gridSnap: boolean;
@@ -34,6 +35,6 @@ export function parseDesignWorkspace(value: unknown): ProjectDesignWorkspaceStat
     levelId: boundedText(item.levelId, 200), selectedEntityId: item.selectedEntityId === null ? null : boundedText(item.selectedEntityId, 200),
     showMeasurements: item.showMeasurements === undefined ? false : boolean(item.showMeasurements),
     showAllLevels: boolean(item.showAllLevels), showRoofs: boolean(item.showRoofs), gridSnap: boolean(item.gridSnap),
-    split: finite(item.split, 10, 90), sections: result };
+    split: finite(item.split, 10, 90), sections: result, ...(item.visibleLevelIds === undefined ? {} : { visibleLevelIds: (() => { if (!Array.isArray(item.visibleLevelIds) || item.visibleLevelIds.length > 20) throw new DesignWorkspaceError(); return [...new Set(item.visibleLevelIds.map(id => boundedText(id, 200)))]; })() }) };
 }
 

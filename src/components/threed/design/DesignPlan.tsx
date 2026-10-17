@@ -6,7 +6,7 @@ import { Check, Focus, Maximize, RotateCcw, Ruler, type LucideIcon } from 'lucid
 import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem, ContextMenuSeparator } from '@/components/ui/context-menu';
 import { DesignAction } from './DesignAction';
 import { Button } from '@/components/ui/button';
-import { distance, insidePolygon, roofFrame, roofOpeningFootprint, INCH, levelDocument, mergeNodes, moveNodes, openingFootprint, openingMargin, roundMetres, screenToPlan, snapPoint, validateDesign, wallFrame,
+import { distance, insidePolygon, roofFrame, roofOpeningFootprint, INCH, levelDocument, visibleLevelsDocument, mergeNodes, moveNodes, openingFootprint, openingMargin, roundMetres, screenToPlan, snapPoint, validateDesign, wallFrame,
   type DesignDocument, type PlanPoint, type PlanView } from '@/libraries/services/threed/design/document';
 import { formatPlanLength, framePlan, gridFeet as planGridFeet, rulerTicks, RULER_SIZE, zoomPlan } from '@/libraries/services/threed/design/plan-navigation';
 import { entityPoints } from '@/libraries/services/threed/design/object-properties';
@@ -16,7 +16,7 @@ import { wallFootprint } from '@/libraries/services/threed/design/geometry';
 export type DesignTool = 'select' | 'wall' | 'floor' | 'roof' | 'door' | 'window' | 'cutout' | 'skylight' | 'pan';
 type DrawPoint = PlanPoint & { nodeId?: string };
 export interface DesignContextGroup { label: string; color: string; actions: { label: string; icon: LucideIcon; disabled?: boolean; active?: boolean; run: () => void }[] }
-interface Props { contextActions?: DesignContextGroup[]; showMeasurements?: boolean; onShowMeasurementsChange?: (show: boolean) => void; selectedModelId?: string | null; modelImages?: ModelPlanImage[]; metersPerSceneUnit?: number; onModelSelect?: (id: string) => void; measurementUnits?: 'imperial' | 'metric'; frameRequest?: { id: string; sequence: number } | null; drawingActions?: ReactNode; planView?: PlanView; onViewChange?: (view: PlanView) => void; toolbarHost?: HTMLDivElement | null; embedded?: boolean; active?: boolean; disabled?: boolean; document: DesignDocument; displayDocument?: DesignDocument; activeLevelId: string; selected: string | null; tool: DesignTool; gridSnap: boolean;
+interface Props { visibleLevelIds?: string[]; onToggleLevel?: (id: string) => void; contextActions?: DesignContextGroup[]; showMeasurements?: boolean; onShowMeasurementsChange?: (show: boolean) => void; selectedModelId?: string | null; modelImages?: ModelPlanImage[]; metersPerSceneUnit?: number; onModelSelect?: (id: string) => void; measurementUnits?: 'imperial' | 'metric'; frameRequest?: { id: string; sequence: number } | null; drawingActions?: ReactNode; planView?: PlanView; onViewChange?: (view: PlanView) => void; toolbarHost?: HTMLDivElement | null; embedded?: boolean; active?: boolean; disabled?: boolean; document: DesignDocument; displayDocument?: DesignDocument; activeLevelId: string; selected: string | null; tool: DesignTool; gridSnap: boolean;
   onSelect: (id: string | null) => void; onCommit: (doc: DesignDocument) => void;
   onPreview: (doc: DesignDocument | null) => void; onMessage: (text: string) => void;
   onDrawComplete: (id: string) => void; cancelToken: number }
@@ -39,11 +39,13 @@ function addShape(doc: DesignDocument, points: DrawPoint[], tool: 'wall' | 'floo
     floors: tool === 'floor' ? [...doc.floors, { id, levelId, vertices: ids, thickness: doc.defaults.floorThickness, elevation: 0 }] : doc.floors, roofs: tool === 'roof' ? [...doc.roofs, { id, levelId, vertices: ids, kind: 'gable', pitch: 6, direction: 0, thickness: 6 * INCH, elevation: doc.defaults.wallHeight }] : doc.roofs };
 }
 
-export function DesignPlan({ contextActions = [], showMeasurements, onShowMeasurementsChange, selectedModelId, modelImages = [], metersPerSceneUnit = 1, onModelSelect, measurementUnits = 'imperial', frameRequest, drawingActions, planView, onViewChange, toolbarHost, embedded = false, active: enabled = true, disabled = false, document: doc, displayDocument = doc, activeLevelId, selected, tool, gridSnap, onSelect, onCommit, onPreview, onMessage, onDrawComplete, cancelToken }: Props) {
+export function DesignPlan({ visibleLevelIds, onToggleLevel, contextActions = [], showMeasurements, onShowMeasurementsChange, selectedModelId, modelImages = [], metersPerSceneUnit = 1, onModelSelect, measurementUnits = 'imperial', frameRequest, drawingActions, planView, onViewChange, toolbarHost, embedded = false, active: enabled = true, disabled = false, document: doc, displayDocument = doc, activeLevelId, selected, tool, gridSnap, onSelect, onCommit, onPreview, onMessage, onDrawComplete, cancelToken }: Props) {
+  const shownLevels = visibleLevelIds ?? [activeLevelId];
+  const editingHidden = !shownLevels.includes(activeLevelId);
   const [localMeasurements, setLocalMeasurements] = useState(false);
   const measurementsVisible = showMeasurements ?? localMeasurements;
   const toggleMeasurements = () => { const next = !measurementsVisible; if (onShowMeasurementsChange) onShowMeasurementsChange(next); else setLocalMeasurements(next); };
-  const visible = levelDocument(displayDocument, activeLevelId), active = levelDocument(doc, activeLevelId);
+  const visible = visibleLevelsDocument(displayDocument, shownLevels), active = levelDocument(doc, activeLevelId);
   const svg = useRef<SVGSVGElement>(null), patternId = useId();
   const [localView, setLocalView] = useState<PlanView>({ x: 80, y: 80, scale: 45 });
   const view = planView ?? localView;
@@ -101,7 +103,7 @@ export function DesignPlan({ contextActions = [], showMeasurements, onShowMeasur
   }
   useEffect(() => {
     const key = (event: KeyboardEvent) => {
-      if (!enabled || disabled || event.key !== 'Enter' || (tool !== 'floor' && tool !== 'roof') || points.length < 3 || event.repeat
+      if (!enabled || disabled || editingHidden || event.key !== 'Enter' || (tool !== 'floor' && tool !== 'roof') || points.length < 3 || event.repeat
         || (event.target as Element)?.closest?.('input, textarea, select, button, [contenteditable="true"]')) return;
       event.preventDefault(); finishPolygon();
     };
@@ -136,9 +138,10 @@ export function DesignPlan({ contextActions = [], showMeasurements, onShowMeasur
     event.preventDefault(); svg.current?.focus();
     const point = pointer(event), target = (event.target as Element).closest('[data-entity]'), targetId = target?.getAttribute('data-entity') ?? null;
     // A transient drawing/placement preview is still blank canvas, not a saved object.
-    const entityId = targetId && [...doc.walls, ...doc.floors, ...doc.roofs, ...doc.openings, ...doc.roofOpenings].some(entity => entity.id === targetId) ? targetId : null;
-    const nodeId = (event.target as Element).getAttribute('data-node');
-    const explicitPan = tool === 'pan' || event.button === 1 || event.altKey;
+    const entityId = targetId && [...active.walls, ...active.floors, ...active.roofs, ...active.openings, ...active.roofOpenings].some(entity => entity.id === targetId) ? targetId : null;
+    const hitNodeId = (event.target as Element).getAttribute('data-node');
+    const nodeId = active.nodes.some(node => node.id === hitNodeId) ? hitNodeId : null;
+    const explicitPan = editingHidden || tool === 'pan' || event.button === 1 || event.altKey;
     if (explicitPan || (!entityId && !nodeId)) {
       gesture.current = { pointerId: event.pointerId, base: doc, latest: doc, point, screenStart: local(event), view, nodes: [], pan: true,
         pendingClick: explicitPan ? undefined : { shiftKey: event.shiftKey } };
@@ -187,7 +190,7 @@ export function DesignPlan({ contextActions = [], showMeasurements, onShowMeasur
     setView({ ...active.view, x: active.view.x + dx, y: active.view.y + dy });
   }
   function move(event: PointerEvent<SVGSVGElement>) {
-    if (!enabled || (disabled && !gesture.current?.pan)) return;
+    if (!enabled || ((disabled || editingHidden) && !gesture.current?.pan)) return;
     const active = gesture.current;
     if (!active) {
       if ((tool === 'wall' || tool === 'floor' || tool === 'roof') && points.length) setHover(snapped(pointer(event), [], event.shiftKey));
@@ -244,7 +247,7 @@ export function DesignPlan({ contextActions = [], showMeasurements, onShowMeasur
   const selectionPoints = selectedModelId ? modelPoints(modelImages.filter(image => image.id === selectedModelId)) : selectedWall ? wallFootprint(doc, selectedWall) : entityPoints(doc, selected);
   const xTicks = rulerTicks(view.x, view.scale, size.width, measurementUnits), zTicks = rulerTicks(view.y, view.scale, size.height, measurementUnits);
   function fitPlan(selection = false) {
-    const next = framePlan(selection ? selectionPoints : [...active.nodes, ...active.walls.flatMap(wall => wallFootprint(doc, wall)), ...modelPoints(modelImages)], size); if (next) setView(next);
+    const next = framePlan(selection ? selectionPoints : [...visible.nodes, ...visible.walls.flatMap(wall => wallFootprint(displayDocument, wall)), ...modelPoints(modelImages)], size); if (next) setView(next);
   }
   const framedRequest = useRef<typeof frameRequest>(null);
   useEffect(() => {
@@ -256,17 +259,18 @@ export function DesignPlan({ contextActions = [], showMeasurements, onShowMeasur
   }, [frameRequest, enabled, activeLevelId, size.width, size.height, doc, setView]);
   const viewGroup: DesignContextGroup = { label: 'Design plan navigation', color: 'text-cyan-700 dark:text-cyan-300', actions: [
     { label: measurementsVisible ? 'Hide Measurements' : 'Show Measurements', icon: Ruler, active: measurementsVisible, run: toggleMeasurements },
-    { label: 'Fit Plan', icon: Maximize, disabled: !active.nodes.length && !modelImages.length, run: () => fitPlan() },
+    { label: 'Fit Plan', icon: Maximize, disabled: !visible.nodes.length && !modelImages.length, run: () => fitPlan() },
     { label: 'Zoom to Selection', icon: Focus, disabled: !selectionPoints.length, run: () => fitPlan(true) },
     { label: 'Reset View', icon: RotateCcw, run: () => setView({ x: 80, y: 80, scale: 45 }) },
   ] };
   const viewActions = <div role="group" aria-label={viewGroup.label} className="flex shrink-0 items-center gap-1 rounded-md border border-border bg-muted/40 p-1 [&_svg]:text-cyan-700 dark:[&_svg]:text-cyan-300">{viewGroup.actions.map(action => <DesignAction key={action.label} label={action.label} disabled={action.disabled} aria-pressed={action.active} variant={action.active ? 'secondary' : 'outline'} onClick={action.run}><action.icon className="h-3.5 w-3.5" /></DesignAction>)}</div>;
   return <section aria-label="Design plan canvas" className={`relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#091423] ${embedded ? '' : 'rounded-lg border border-white/10'}`}>
-    {embedded && enabled && <div data-testid="design-canvas-tools" role="toolbar" aria-label="Design drawing and view tools" className="threed-workspace-panel threed-scene-panel-surface absolute z-10 flex max-w-[calc(100%-40px)] flex-wrap items-center gap-1 rounded-md border p-1 shadow-md" style={{ right: 8, top: RULER_SIZE + 8 }} onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}>{drawingActions}{viewActions}</div>}
+    {embedded && enabled && <div data-testid="design-canvas-tools" role="toolbar" aria-label="Design drawing and view tools" className="threed-workspace-panel threed-scene-panel-surface absolute z-10 flex max-w-[calc(100%-40px)] flex-nowrap items-center gap-1 overflow-x-auto [&>nav]:flex-nowrap [&>nav]:shrink-0 rounded-md border p-1 shadow-md" style={{ right: 8, top: RULER_SIZE + 8 }} onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}>{drawingActions}{viewActions}</div>}
     {!embedded && <div data-testid="design-plan-header" className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-white/10 px-3 py-2 text-xs">
       <span className="font-semibold">2D Plan · {doc.levels.find(level => level.id === activeLevelId)?.name} · X / Z · {measurementUnits === 'metric' ? `${Number((gridFeet * 12 * INCH).toFixed(4))} m` : `${gridFeet} ft`} grid</span>
       <div className="flex items-center gap-2"><span>{Number(view.scale.toFixed(2))} px/m</span>{viewActions}</div>
     </div>}
+    <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
     <ContextMenu><ContextMenuTrigger asChild><svg ref={svg} data-testid="home-plan" aria-label="ThreeD Design 2D plan" tabIndex={0} width="100%" height="100%" className="block min-h-0 w-full flex-1 touch-none select-none outline-none focus-visible:ring-2 focus-visible:ring-cyan-400" style={{ cursor: tool === 'pan' ? 'grab' : tool === 'select' ? 'default' : 'crosshair' }}
       onPointerDown={down} onPointerMove={move} onPointerUp={end} onPointerCancel={() => { gesture.current = null; setPoints([]); setHover(null); onPreview(null); onMessage('Gesture cancelled.'); }}
       onLostPointerCapture={() => { if (gesture.current) { gesture.current = null; onPreview(null); } }}
@@ -284,7 +288,7 @@ export function DesignPlan({ contextActions = [], showMeasurements, onShowMeasur
         {modelImages.map(image => {
           const [a,b,c] = image.corners.map(p => ({ x: p.x * metersPerSceneUnit, z: p.z * metersPerSceneUnit }));
           if (![a.x,a.z,b.x,b.z,c.x,c.z].every(Number.isFinite)) return null;
-          return <image key={image.id} href={image.url} x={0} y={0} width={1} height={1} preserveAspectRatio="none" transform={`matrix(${b.x-a.x} ${b.z-a.z} ${c.x-a.x} ${c.z-a.z} ${a.x} ${a.z})`} role="button" tabIndex={enabled && !disabled ? 0 : -1} aria-label={`Select Project Model ${image.id}`} onKeyDown={event => { if (!enabled || disabled || !['Enter', ' '].includes(event.key)) return; event.preventDefault(); event.stopPropagation(); onModelSelect?.(image.id); }} style={{ cursor: 'pointer', outline: selectedModelId === image.id ? `${2 / view.scale}px solid #22d3ee` : undefined }} onPointerDown={event => { if (!enabled || disabled || tool !== 'select' || event.button !== 0 || event.altKey) return; event.stopPropagation(); onModelSelect?.(image.id); }} />;
+          return <image key={image.id} href={image.url} x={0} y={0} width={1} height={1} preserveAspectRatio="none" transform={`matrix(${b.x-a.x} ${b.z-a.z} ${c.x-a.x} ${c.z-a.z} ${a.x} ${a.z})`} role="button" tabIndex={enabled && !disabled ? 0 : -1} aria-label={`Select Project Model ${image.id}`} onKeyDown={event => { if (!enabled || disabled || !['Enter', ' '].includes(event.key)) return; event.preventDefault(); event.stopPropagation(); onModelSelect?.(image.id); }} style={{ cursor: 'pointer' }} onPointerDown={event => { if (!enabled || disabled || editingHidden || tool !== 'select' || event.button !== 0 || event.altKey) return; event.stopPropagation(); onModelSelect?.(image.id); }} />;
         })}
         {visible.roofs.map(roof => { const points = roof.vertices.map(id => nodes.get(id)!); const center = points.reduce((sum, point) => ({ x: sum.x + point.x / points.length, z: sum.z + point.z / points.length }), { x: 0, z: 0 }); return <g key={roof.id} data-entity={roof.id} data-roof={roof.kind}><polygon points={polygon(points)} fill="#c084fc" fillOpacity={selected === roof.id ? .18 : .06} stroke="#c084fc" strokeWidth={3 / view.scale} pointerEvents="stroke" /><text x={center.x} y={center.z} fill="#e9d5ff" fontSize={12 / view.scale} textAnchor="middle" className="cursor-move">{roof.kind} roof</text></g>; })}
         {visible.walls.map(wall => <g key={wall.id}><polygon data-entity={wall.id} points={polygon(wallFootprint(displayDocument, wall))} fill={selected === wall.id ? '#36b8c8' : '#b4c8df'} stroke="#5b8baf" strokeWidth={1 / view.scale} /><line data-entity={wall.id} x1={nodes.get(wall.start)!.x} y1={nodes.get(wall.start)!.z} x2={nodes.get(wall.end)!.x} y2={nodes.get(wall.end)!.z} stroke="transparent" strokeWidth={Math.max(wall.thickness, 10 / view.scale)} />{measurementsVisible && <text data-measurement={wall.id} x={(nodes.get(wall.start)!.x + nodes.get(wall.end)!.x) / 2} y={(nodes.get(wall.start)!.z + nodes.get(wall.end)!.z) / 2 - .2} fill="#dde8f6" fontSize={11 / view.scale} textAnchor="middle" pointerEvents="none">{formatPlanLength(distance(nodes.get(wall.start)!, nodes.get(wall.end)!), measurementUnits)}</text>}</g>)}
@@ -324,7 +328,11 @@ export function DesignPlan({ contextActions = [], showMeasurements, onShowMeasur
         </ContextMenuItem>)}
       </div>)}
     </ContextMenuContent></ContextMenu>
-    {(tool === 'floor' || tool === 'roof') && <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-white/10 bg-[#111a28] px-3 py-2 text-xs" data-testid={`home-${tool}-draft`}>
+    {onToggleLevel && enabled && <nav aria-label="Design levels" className="threed-workspace-panel threed-scene-panel-surface absolute bottom-6 left-9 z-10 flex max-w-[calc(100%-44px)] items-center gap-1 overflow-x-auto rounded-md border p-1 shadow-md" onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}>
+      {[...doc.levels].sort((a,b) => a.elevation-b.elevation).map(level => <Button key={level.id} type="button" size="sm" variant="outline" className={`h-7 shrink-0 px-2 text-xs ${shownLevels.includes(level.id) ? 'border-cyan-600/60 bg-cyan-100 text-cyan-900 hover:bg-cyan-200 dark:border-cyan-400/60 dark:bg-cyan-400/20 dark:text-cyan-200 dark:hover:bg-cyan-400/30' : 'bg-transparent text-muted-foreground'}`} aria-pressed={shownLevels.includes(level.id)} onClick={() => onToggleLevel(level.id)}>{level.name}</Button>)}
+    </nav>}
+    </div>
+    {((tool === 'floor' || tool === 'roof') && !editingHidden) && <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-white/10 bg-[#111a28] px-3 py-2 pb-6 text-xs" data-testid={`home-${tool}-draft`}>
       <span>{points.length} corners. Choose at least 3; Enter or the first corner finishes. Escape cancels.</span>
       <div className="flex gap-2"><Button size="sm" variant="outline" disabled={!points.length} onClick={() => { setPoints([]); setHover(null); onPreview(null); onMessage('Draft cancelled. Completed geometry is retained.'); }}>Cancel Draft</Button><Button size="sm" disabled={points.length < 3} onClick={finishPolygon}>Finish {tool === 'roof' ? 'Roof' : 'Floor'}</Button></div>
     </div>}

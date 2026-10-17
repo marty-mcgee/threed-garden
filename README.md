@@ -1,3 +1,7 @@
+## v0.26.9 - ThreeD Designs: Linked Levels and toolbar polish
+
+Local release preparation, October 17, 2026. Package/root lockfile 0.26.9; dependencies/schema unchanged. Developer accepted Project toolbar ordering, removed Model outline and linked Blueprint Levels controls. Named level visibility subsets now follow existing Project workspace Save, with legacy preference compatibility. See [release notes](docs/releases/v0.26.9.md). Production remains Developer-confirmed v0.26.8; no deployment or independent production check is claimed. New subset Save/reopen remains manual. Preserve manual edits and leave unstaged; no servers/live writes/Git/deployment operations.
+
 ## Production release confirmed - v0.26.8
 
 October 17, 2026: Developer confirms **v0.26.8 - ThreeD Designs: Transparency, top views and canvas tools** released to production. This supersedes earlier local-preparation/unreleased status for this version. Package/root lockfile remain 0.26.8. SQL application, Real Top-View Image Upload and Project Save/Re-open were separately Developer-confirmed. Prior 78-task offline CI, TypeScript and guarded build results remain pre-release evidence; no independent post-deployment verification or exact deployed commit is established. This documentation update performs no deployment, Git writes, live data or server operations.
@@ -273,3 +277,6 @@ v0.26.8 release preparation checks passed: 78 offline CI tasks, fresh TypeScript
 
 
 **v0.26.8 manual acceptance (October 17, 2026):** Developer confirmed Real Top-View Image Upload and Project Save/Re-open passed. Earlier pending status for these checks is superseded; see [release notes](docs/releases/v0.26.8.md). This is manual acceptance, not independent production verification.
+
+
+v0.26.9 release checks passed: 78 offline CI tasks, fresh TypeScript and guarded production build. See [release record](docs/releases/v0.26.9.md) for manual limits.

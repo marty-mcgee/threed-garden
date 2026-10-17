@@ -65,7 +65,7 @@ interface UnifiedMapViewProps {
   metersPerSceneUnit?: number;
   selectedArchitectureId?: string | null;
   onArchitectureSelect?: (id: string | null) => void;
-  architectureLevelId?: string;
+  architectureLevelId?: string | string[];
   architectureShowRoofs?: boolean;
 
   /** Active Project identity; changing it starts a separate marker collection. */

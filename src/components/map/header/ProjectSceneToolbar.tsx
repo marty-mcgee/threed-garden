@@ -114,26 +114,11 @@ export function ProjectSceneToolbar({
       </div>
 
       {selectedProjectId && (
-        <DropdownMenu open={setupMenuOpen} onOpenChange={onSetupMenuOpenChange} modal={false}>
-          <DropdownMenuTrigger asChild>
-            <Button type="button" variant={setupMenuOpen ? 'secondary' : 'outline'} size="sm"
-              className="h-7 gap-1 px-2 text-xs" disabled={!presentationComplete || !hasThreeDModule}>
-              <Settings className="h-3.5 w-3.5" /> Setup
-              {setupMenuOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="threed-workspace-panel threed-toolbar-dropdown-surface z-[2000] w-56 space-y-0.5 rounded-lg border-foreground/10 p-1.5 text-foreground shadow-xl backdrop-blur-sm">
-            <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onOpenProjectTour}><ScanSearch className="h-3.5 w-3.5" /> Project Tour</DropdownMenuItem>
-            <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onOpenScenarios}><Layers className="h-3.5 w-3.5" /> Scenarios</DropdownMenuItem>
-            <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={() => window.dispatchEvent(new CustomEvent('threed:simulation-panel', { detail: { projectId: Number(selectedProjectId) } }))}><Layers className="h-3.5 w-3.5" /> Simulations</DropdownMenuItem>
-            {onResetOverlayPositions && <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onResetOverlayPositions}><ScanSearch className="h-3.5 w-3.5" /> Reset Overlay Positions</DropdownMenuItem>}
-            <DropdownMenuItem className="threed-toolbar-menu-item" asChild><a href="/dashboard/assembly-groups" target="_blank" rel="noopener noreferrer"><Boxes className="h-3.5 w-3.5" /> Assembly Groups</a></DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
-
-      {selectedProjectId && (
-        <div id="project-environment-controls-host" className="relative" hidden={viewMode === '2d'} />
+        <Button ref={projectAssetsTriggerRef} type="button" variant={projectAssetsOpen ? 'secondary' : 'outline'} size="sm" className="h-7 gap-1 px-2 text-xs" aria-expanded={projectAssetsOpen} aria-controls="project-assets-panel" aria-label="Project Assets" title="Browse and focus Project ThreeD Assets" onClick={onToggleProjectAssets}>
+          <ListTree className="h-3.5 w-3.5" />
+          <span className="hidden sm:inline">Assets</span>
+          <span className="text-[10px] text-muted-foreground">{projectAssetCount}</span>
+        </Button>
       )}
 
       {selectedProjectId && viewMode !== '2d' && (
@@ -175,15 +160,32 @@ export function ProjectSceneToolbar({
         </Button>
       )}
 
-      <SceneOperationStatus operation={activeOperation} viewMode={viewMode} onCancel={onCancelOperation} />
+      {selectedProjectId && (
+        <DropdownMenu open={setupMenuOpen} onOpenChange={onSetupMenuOpenChange} modal={false}>
+          <DropdownMenuTrigger asChild>
+            <Button type="button" variant={setupMenuOpen ? 'secondary' : 'outline'} size="sm"
+              className="h-7 gap-1 px-2 text-xs" disabled={!presentationComplete || !hasThreeDModule}>
+              <Settings className="h-3.5 w-3.5" /> Setup
+              {setupMenuOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="threed-workspace-panel threed-toolbar-dropdown-surface z-[2000] w-56 space-y-0.5 rounded-lg border-foreground/10 p-1.5 text-foreground shadow-xl backdrop-blur-sm">
+            <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onOpenProjectTour}><ScanSearch className="h-3.5 w-3.5" /> Project Tour</DropdownMenuItem>
+            <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onOpenScenarios}><Layers className="h-3.5 w-3.5" /> Scenarios</DropdownMenuItem>
+            <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={() => window.dispatchEvent(new CustomEvent('threed:simulation-panel', { detail: { projectId: Number(selectedProjectId) } }))}><Layers className="h-3.5 w-3.5" /> Simulations</DropdownMenuItem>
+            {onResetOverlayPositions && <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onResetOverlayPositions}><ScanSearch className="h-3.5 w-3.5" /> Reset Overlay Positions</DropdownMenuItem>}
+            <DropdownMenuItem className="threed-toolbar-menu-item" asChild><a href="/dashboard/assembly-groups" target="_blank" rel="noopener noreferrer"><Boxes className="h-3.5 w-3.5" /> Assembly Groups</a></DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )}
 
       {selectedProjectId && (
-        <Button ref={projectAssetsTriggerRef} type="button" variant={projectAssetsOpen ? 'secondary' : 'outline'} size="sm" className="h-7 gap-1 px-2 text-xs" aria-expanded={projectAssetsOpen} aria-controls="project-assets-panel" aria-label="Project Assets" title="Browse and focus Project ThreeD Assets" onClick={onToggleProjectAssets}>
-          <ListTree className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">Assets</span>
-          <span className="text-[10px] text-muted-foreground">{projectAssetCount}</span>
-        </Button>
+        <div id="project-environment-controls-host" className="relative" hidden={viewMode === '2d'} />
       )}
+
+      <SceneOperationStatus operation={activeOperation} viewMode={viewMode} onCancel={onCancelOperation} />
+
+
 
 
       {selectedProjectId && <span role="status" className="sr-only">{savingProject ? 'Saving Project' : workspaceSaveMessage}</span>}

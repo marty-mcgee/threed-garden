@@ -264,3 +264,21 @@ console.log('PASS: measurement labels default hidden, actual toolbar toggle and 
   const content=flatten(f.tree).find(node=>node.type==='ContextMenuContent');let stopped=false;content.props.onKeyDown({stopPropagation(){stopped=true;}});assert(stopped,'Menu keyboard events must not reach drawing shortcuts.');
 }
 console.log('PASS: Design context menu named/icon actions, active/disabled state, shared callbacks, measurements, right-button guard and keyboard isolation. Radix DOM positioning/focus remains browser verification.');
+
+{
+ let toggled=null;
+ const f=fixture({visibleLevelIds:[],onToggleLevel:id=>toggled=id});
+ const nav=()=>flatten(f.tree).find(node=>node.props?.['aria-label']==='Design levels');
+ const buttons=()=>flatten(nav()).filter(node=>node.type==='button');
+ assert.equal(buttons().length,f.props.document.levels.length);
+ assert(buttons().every(button=>!button.props['aria-pressed']));
+ assert(!flatten(f.tree).some(node=>node.props?.['data-entity']==='w0'));
+ buttons()[0].props.onClick();assert.equal(toggled,f.props.document.levels[0].id);
+ f.update({visibleLevelIds:f.props.document.levels.map(level=>level.id)});
+ assert(buttons().every(button=>button.props['aria-pressed']));
+ f.update({tool:'floor',cancelToken:1});f.update({tool:'select',cancelToken:2});assert(buttons().every(button=>button.props['aria-pressed']));
+ assert(flatten(f.tree).some(node=>node.props?.['data-entity']==='w0'));
+ assert(nav().props.className.includes('absolute'));assert(nav().props.className.includes('left-9'));assert(nav().props.className.includes('threed-scene-panel-surface'));
+ assert.equal(document.visibleLevelsDocument(f.props.document,[]).walls.length,0);
+}
+console.log('PASS: independent named level toggles, all-off/all-on geometry, stable visibility across tools and Blueprint bottom-left overlay.');

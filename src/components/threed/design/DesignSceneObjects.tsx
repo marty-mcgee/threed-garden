@@ -9,7 +9,7 @@ import { sceneUnitsPerMetre } from '@/libraries/services/threed/scene-units';
 /** Mount inside the existing Scene Canvas. Only this owner's generated resources are changed. */
 export function DesignSceneObjects({ document, projectId, metersPerSceneUnit, selected = null, onSelect, visibleLevelId, showRoofs = true, visible = true, transparent = false }: {
   document: DesignDocument; projectId: number; metersPerSceneUnit: number;
-  selected?: string | null; onSelect?: (id: string) => void; visibleLevelId?: string; showRoofs?: boolean; visible?: boolean; transparent?: boolean;
+  selected?: string | null; onSelect?: (id: string) => void; visibleLevelId?: string | string[]; showRoofs?: boolean; visible?: boolean; transparent?: boolean;
 }) {
   const host = useRef<Group>(null), cache = useRef<DesignGeometryCache | null>(null);
   useLayoutEffect(() => {

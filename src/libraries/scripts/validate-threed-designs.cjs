@@ -276,7 +276,7 @@ const context={projectConfigurationRef:{current:{projectId:'15',stamp:{savedAt:n
  const unconfirmed=callback();finish({ok:true,json:async()=>({success:true,data:{projectId:15,markers:[],markerCount:0}})});await unconfirmed;
  assert.match(feedback,/did not confirm/);assert(architecture.architectureIsDirty(drafts.current.get('15')));
  // Latest editor state -> actual client Save -> PUT transaction -> GET -> session -> actual Dashboard hydration.
- drafts.current.set('15',{...draft,workspace:{...workspace.defaultDesignWorkspace(),plan:{x:-321,y:224,scale:73},showMeasurements:true,selectedEntityId:'door',split:62,sections:{'design:properties':false}}});
+ drafts.current.set('15',{...draft,workspace:{...workspace.defaultDesignWorkspace(),plan:{x:-321,y:224,scale:73},showMeasurements:true,visibleLevelIds:[],selectedEntityId:'door',split:62,sections:{'design:properties':false}}});
  context.overlayPositions={details:{x:0.7,y:0.2}};
  context.projectConfigurationRef.current={projectId:'15',stamp:configuration.projectConfigurationStamp(stored.config)};
  context.fetch=async(url,options)=>{body=JSON.parse(options.body);const result=await save(request(body));return {ok:result.status===200,status:result.status,json:async()=>result.body};};

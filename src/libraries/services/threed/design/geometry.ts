@@ -202,7 +202,7 @@ export class DesignGeometryCache {
   private entries = new Map<string, { signature: string; mesh: Mesh<BufferGeometry, MeshStandardMaterial> }>();
   private openings = new Map<string, { signature: string; group: Group }>();
   private skylights = new Map<string, { signature: string; group: Group }>();
-  update(doc: DesignDocument, selected: string | null, visibleLevelId?: string, showRoofs = true, transparent = false) {
+  update(doc: DesignDocument, selected: string | null, visibleLevelId?: string | string[], showRoofs = true, transparent = false) {
     const desired = new Set<string>(), nodes = new Map(doc.nodes.map(node => [node.id, node]));
     const update = (id: string, points: PlanPoint[], height: number, bottom: number, floor: boolean, wall?: DesignWall, roof?: DesignRoof) => {
       if (polygonIssue(points)) return;
@@ -262,7 +262,7 @@ export class DesignGeometryCache {
     });
     // Visibility is a view choice, not deletion: retain mesh owners and GPU resources.
     const roofIds = new Set([...doc.roofs.map(roof => roof.id), ...doc.roofOpenings.map(opening => opening.id)]);
-    for (const child of this.group.children) child.visible = (!visibleLevelId || entityLevelId(doc, child.name) === visibleLevelId) && (showRoofs || !roofIds.has(child.name));
+    for (const child of this.group.children) child.visible = (visibleLevelId === undefined || (Array.isArray(visibleLevelId) ? visibleLevelId.includes(entityLevelId(doc, child.name)!) : entityLevelId(doc, child.name) === visibleLevelId)) && (showRoofs || !roofIds.has(child.name));
   }
   dispose() { for (const entry of this.entries.values()) { entry.mesh.geometry.dispose(); entry.mesh.material.dispose(); } for (const entry of this.openings.values()) disposeOpening(entry.group); for (const entry of this.skylights.values()) disposeOpening(entry.group); this.skylights.clear(); this.openings.clear(); this.entries.clear(); this.group.clear(); }
 }

@@ -261,3 +261,10 @@ export function snapPoint(point: PlanPoint, nodes: DesignNode[], pixelsPerMetre:
   const step = 6 * INCH;
   return { point: { x: roundMetres(grid ? Math.round(point.x / step) * step : point.x), z: roundMetres(grid ? Math.round(point.z / step) * step : point.z) }, nodeId: undefined };
 }
+
+/** Visibility projection only; the editable document remains unchanged. */
+export function visibleLevelsDocument(doc: DesignDocument, ids: readonly string[]): DesignDocument {
+  const levels = ids.map(id => levelDocument(doc, id));
+  const collect = <T extends { id: string }>(items: T[][]): T[] => [...new Map(items.flat().map(item => [item.id, item])).values()];
+  return { ...doc, nodes: collect(levels.map(level => level.nodes)), walls: collect(levels.map(level => level.walls)), floors: collect(levels.map(level => level.floors)), roofs: collect(levels.map(level => level.roofs)), openings: collect(levels.map(level => level.openings)), roofOpenings: collect(levels.map(level => level.roofOpenings)) };
+}

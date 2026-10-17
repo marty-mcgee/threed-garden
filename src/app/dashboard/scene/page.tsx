@@ -552,7 +552,7 @@ function UnifiedMapPageInner() {
   const [, renderArchitecture] = useState(0);
   const [architectureFrame, setArchitectureFrame] = useState<{ projectId: string; id: string; sequence: number } | null>(null);
   const [architecturePreview, setArchitecturePreview] = useState<DesignDocument | null>(null);
-  const [architectureVisibility, setArchitectureVisibility] = useState<{ levelId?: string; showRoofs: boolean }>({ showRoofs: true });
+  const [architectureVisibility, setArchitectureVisibility] = useState<{ levelId?: string | string[]; showRoofs: boolean }>({ showRoofs: true });
   const [architectureSaveError, setArchitectureSaveError] = useState('');
   const [metersPerSceneUnit, setMetersPerSceneUnit] = useState(0.3048);
   const projectSaveBusy = useRef(false);
@@ -571,7 +571,7 @@ function UnifiedMapPageInner() {
     if (selected && !entityLevelId(current.history.present, selected)) return;
     architectureDrafts.current.set(selectedProjectId, { ...current, selected, workspace: { ...(current.workspace ?? defaultDesignWorkspace()), selectedEntityId: selected, ...(selected ? { sections: { ...(current.workspace ?? defaultDesignWorkspace()).sections, [`threed:details:v1:design:${selectedProjectId}:selected-properties`]: true } } : {}) } }); renderArchitecture(value => value + 1);
   }, [selectedProjectId]);
-  const showArchitecture = useCallback((levelId: string | undefined, showRoofs: boolean) => setArchitectureVisibility(current => current.levelId === levelId && current.showRoofs === showRoofs ? current : { levelId, showRoofs }), []);
+  const showArchitecture = useCallback((levelId: string | string[] | undefined, showRoofs: boolean) => setArchitectureVisibility(current => current.levelId === levelId && current.showRoofs === showRoofs ? current : { levelId, showRoofs }), []);
   useEffect(() => { setArchitectureFrame(null); setArchitecturePreview(null); setArchitectureSaveError(''); projectSaveBusy.current = false; }, [selectedProjectId]);
   useEffect(() => {
     const unload = (event: BeforeUnloadEvent) => { if ([...architectureDrafts.current.values()].some(architectureIsDirty) || projectSaveBusy.current) { event.preventDefault(); event.returnValue = ''; } };
@@ -3187,7 +3187,7 @@ function UnifiedMapPageInner() {
                 onModelPlanImage={handleModelPlanImage}
                 selectedArchitectureId={architectureDraft.selected}
                 onArchitectureSelect={selectArchitecture}
-                architectureLevelId={viewMode === 'design' ? architectureVisibility.levelId : undefined}
+                architectureLevelId={designWorkspace.visibleLevelIds ?? (designWorkspace.showAllLevels ? undefined : designWorkspace.levelId)}
                 architectureShowRoofs={viewMode !== 'design' || architectureVisibility.showRoofs}
                 onResourceIssuesChange={handleResourceIssuesChange}
                 projectId={selectedProjectId ? Number(selectedProjectId) : null}
@@ -3256,7 +3256,7 @@ function UnifiedMapPageInner() {
                 metersPerSceneUnit={metersPerSceneUnit}
                 selectedArchitectureId={architectureDraft.selected}
                 onArchitectureSelect={selectArchitecture}
-                architectureLevelId={viewMode === 'design' ? architectureVisibility.levelId : undefined}
+                architectureLevelId={designWorkspace.visibleLevelIds ?? (designWorkspace.showAllLevels ? undefined : designWorkspace.levelId)}
                 architectureShowRoofs={viewMode !== 'design' || architectureVisibility.showRoofs}
                 onResourceIssuesChange={handleResourceIssuesChange}
                 projectId={selectedProjectId ? Number(selectedProjectId) : null}
