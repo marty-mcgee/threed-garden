@@ -1,3 +1,7 @@
+## Production release confirmed - v0.26.9
+
+October 17, 2026: Developer confirms **v0.26.9 - ThreeD Designs: Linked Levels and toolbar polish** released to production. This supersedes earlier local-preparation/unreleased status for this version. Package/root lockfile remain 0.26.9. Prior 78-task offline CI, fresh TypeScript and guarded build results remain pre-release evidence; no independent post-deployment check or exact deployed commit is established. Release confirmation does not separately confirm the pending level-visibility-subset Save/reopen check. This documentation update performs no server, live data, Git-write or deployment operations.
+
 ## v0.26.9 - ThreeD Designs: Linked Levels and toolbar polish
 
 Local release preparation, October 17, 2026. Package/root lockfile 0.26.9; dependencies/schema unchanged. Developer accepted Project toolbar ordering, removed Model outline and linked Blueprint Levels controls. Named level visibility subsets now follow existing Project workspace Save, with legacy preference compatibility. See [release notes](docs/releases/v0.26.9.md). Production remains Developer-confirmed v0.26.8; no deployment or independent production check is claimed. New subset Save/reopen remains manual. Preserve manual edits and leave unstaged; no servers/live writes/Git/deployment operations.
