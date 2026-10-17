@@ -1,3 +1,31 @@
+## v0.26.8 - ThreeD Designs: Transparency, top views and canvas tools
+
+Prepared locally October 17, 2026 on main at 7243155b plus accepted working changes. Package/root lockfile are 0.26.8; dependencies unchanged. This is release preparation, not deployment confirmation. See [release record](docs/releases/v0.26.8.md).
+
+Includes saved Design transparency, owned Model top-view PNG uploads and calibrated plan images, Environment measurement controls, adaptive Metric rulers, optional object measurements and a compact right-click Design tools menu. Developer accepted the context menu and condensed styling. Actual uploads, additive SQL application and authenticated Save/reopen for these new fields remain manual; older acceptance is not new verification. No servers, live writes or Git/deployment operations. Historical preparation records below are retained.
+
+## October 17 - Project Environment menu refinement
+
+Moved the Project toolbar measurement selector out of its Setup dropdown and into Environment, using the shared ProjectMeasurementUnits control and existing Project architecture-workspace callback through UnifiedMapView/ThreeDScene. Read-only disabling, Project dirty state and Save authority are unchanged. Existing Admin/Design/Setup-panel measurement controls retain their bindings. Renamed Show/Hide Design Object Transparency to Show/Hide Design Transparency and added the Blend icon. Removed North-Up View and Center View menu entries only; camera helpers and other navigation remain intact.
+
+Changed: ProjectSceneToolbar.tsx, ThreeDScene.tsx, UnifiedMapView.tsx and dashboard/scene/page.tsx. Focused project-configurations/style-boundary, workspace Save feedback, fresh TypeScript and whitespace checks passed. Browser appearance remains manual; no servers, live writes, schema/version changes or Git/deployment operations.
+
+## October 17 - Project load compatibility correction
+
+Developer reported Projects failing to load and suspects the pending database update. Source inspection found modelSelection expanded the new physical image_top_view_url column into Project Model queries while the additive SQL was still unapplied. That is a sufficient failure condition for an older database; no server stack or live schema inspection independently confirmed the production cause.
+
+The shared Model projection now reads the optional field through to_jsonb(threed_models) ->> 'image_top_view_url', yielding null if absent instead of referencing a missing column. Existing primary File authority and other Model fields are retained. New image persistence still requires the additive SQL; no live SQL was executed. This supersedes earlier statements that normal Project reads must wait for the column. The temporary whole-row JSON compatibility lookup may be replaced with the direct column after migration acceptance.
+
+Real Drizzle generated-SQL regression and focused Design/appearance suites passed offline. Browser reload and real database behavior remain manual. Local servers remain untouched.
+
+## v0.26.8 local implementation - Design appearance and top-view Models
+
+Verification: all 78 guarded offline CI tasks passed after extending the new-component and Save-provider mocks. Supplemental top-view attachment-selection ownership tests, final attachment metadata follow-up and fresh TypeScript passed separately after that CI run, including the final Model-versus-architecture selection precedence adjustment. Focused Design/Project/Model/style checks passed. No full production build, browser appearance, actual Blob upload or authenticated DB persistence was run for this increment. The additive schema SQL remains unapplied.
+
+See [implementation and source inventory](docs/plans/v0.26.8.md). Project-owned designTransparency is captured/validated through existing workspace Save and Admin configuration patches; retained architecture materials restore original appearance without geometry/physics changes. Nullable threed_models.image_top_view_url references owned top-view threed_model_files attachments. New bounded PNG uploads use Vercel Blob and remain a Model draft selection until Save. Loaded Model bounds drive calibrated 2D images, existing Project selection and plan framing; no duplicate Model/Design entities or extra loaders. Current asset authority clears stale image URLs.
+
+IMPORTANT: [additive column SQL](docs/releases/sql/v0.26.8-model-top-view.sql) is prepared but NOT applied. Apply/review separately before using/deploying schema-dependent Model reads. No agent DB/storage writes or browser/upload/persistence verification. Package remains 0.26.7; this is unreleased v0.26.8 work. User-scoped sidebar edits remain intact. Local servers are untouched; leave unstaged. No live schema operations, Git writes or deployment.
+
 ## v0.26.7 - ThreeD Simulations: Unified Admin editor
 
 Final preparation passed: all 77 offline CI tasks, four focused suites (eight scripts), fresh TypeScript, metadata consistency, source/config parity and whitespace checks. Guarded production build passed on isolated Next.js 16.4.2 (145/145 pages, exit 0). The existing matching isolated dependency installation was reused; no fresh dependency install is claimed. External network/dev-server access was blocked, credentials scrubbed and dummy database/offline fonts used. CI ran outside the Windows sandbox to avoid the previously confirmed tsx userInfo restriction. The build emitted the known non-failing nested-lockfile workspace-root warning. Next regenerated only the isolated next-env dev/build type paths; the Developer source copy was untouched. Runtime browser/authenticated persistence and production verification remain manual. No servers, live writes, Git writes or deployment.
@@ -779,3 +807,23 @@ Latest placement clarification: Dashboard/Admin now sits beside the ThreeD Garde
 
 
 DetailsCard position refinement: src/app/globals.css no longer transitions left on .threed-workspace-panel.threed-details-surface; background-color still fades. The existing useProjectOverlayPosition layout effect continues to measure before paint, so no hook or persistence change was needed. npm run typecheck and node src/libraries/scripts/validate-project-overlay-layout.cjs passed (mocked DOM: drag, bounds, resizing, cancellation, keyboard and reset). git diff --check passed. Actual authenticated Farmer Kate reload appearance remains for browser verification; no live writes were performed.
+
+October 17 tooltip follow-up: shared ProjectMeasurementUnits now places the units explanation in an accessible question-mark tooltip beside its label, with distinct select/help controls. Environment includes ?Retained by Save Project? in that tooltip and no longer displays either descriptive paragraph. Tooltip stacking is scoped above the Environment dropdown. Value, disabled state and Save callbacks are unchanged. Focused configuration/style checks passed; browser appearance remains manual.
+
+October 17 measurement labels: canvas-local Show/Hide Measurements (Ruler icon, tooltip and pressed state) defaults hidden. Optional design.showMeasurements follows existing Project workspace Save/load; legacy snapshots default false. Imperial object dimensions use compact feet/inches such as 2'6", with fractional-inch rounding/carry. Labels cover walls, floor/roof plan extents, opening width/height, roof apertures and measured Model footprints; rulers remain visible. Floor/roof labels describe plan bounds, not irregular edge lengths. Metric ruler precision independently follows major tick spacing (0/1/2 decimals). Focused actual toolbar/SVG, compact formatting, mocked Save roundtrip and configuration checks passed; browser placement/label overlap and real Save/reopen remain manual. No servers or live writes.
+
+Measurement follow-up: read-only viewers can toggle labels locally without changing Project content; owners retain the choice through workspace Save. Fresh TypeScript and whitespace checks passed.
+
+
+October 17 - 2D Design context menu: right-clicking the plan now opens a shared shadcn/ui (existing radix-ui dependency) themed, scroll-bounded menu. Drawing, history, JSON and navigation actions reuse the same typed callbacks as the toolbar, including measurement visibility and active/disabled states. The SVG remains the trigger with no extra layout wrapper; secondary clicks do not start gestures and menu keyboard/pointer events are isolated from drawing. Project Save and all persistence owners remain unchanged. Focused threed-designs and shadcn-ui-boundary validations, fresh guarded TypeScript and whitespace checks passed. Tests cover menu names/icons/states/callbacks and right-click guards with React/SVG doubles; actual Radix placement, dismissal and focus require browser verification. No server or live data operations.
+
+
+October 17 SQL status update: Developer confirms the new SQL has been applied. Earlier unapplied-column statements are historical and superseded by this report. No agent live schema inspection or SQL execution was performed; actual top-view upload/Save-reopen remains separately unverified.
+
+
+Final v0.26.8 release validation: all 78 guarded offline CI tasks passed on the final rerun. Fresh TypeScript, version metadata, source parity and whitespace checks passed; guarded isolated production build completed 145/145 pages with exit 0. The only post-build source change was the stale validation fixture correction (no runtime changes). SQL application is Developer-confirmed, not independently inspected. New top-view upload/persistence and browser Save/reopen remain manual. No servers, live writes, commit/tag/push/deployment. Files remain unstaged.
+
+
+## Developer manual acceptance - October 17, 2026
+
+Developer confirms **Real Top-View Image Upload** and **Project Save/Re-open** passed for this v0.26.8 checkpoint. These confirmations supersede earlier pending entries for those two checks. SQL application was also Developer-confirmed. This is Developer-reported manual verification, separate from the passed agent offline checks; no independent production verification or deployment confirmation is inferred. Broader cross-device, narrow-screen and all-case visual coverage remain separate.

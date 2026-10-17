@@ -7,7 +7,7 @@ export class ProjectConfigurationConflict extends Error {
 }
 export interface ProjectConfigurationStamp { savedAt: string | null; measurementUnits: MeasurementUnits }
 export type ProjectSceneConfiguration = Pick<ProjectThreeDViewState, 'environment' | 'autoRotate' | 'showGrid' | 'showGizmo'>
-  & Partial<Pick<ProjectThreeDViewState, 'showControls' | 'showSimulations' | 'sunlight' | 'ground' | 'activeLayers'>>;
+  & Partial<Pick<ProjectThreeDViewState, 'showControls' | 'showSimulations' | 'designTransparency' | 'sunlight' | 'ground' | 'activeLayers'>>;
 export interface ProjectConfigurationChanges {
   measurementUnits?: MeasurementUnits;
   viewMode?: ProjectViewMode;
@@ -51,7 +51,7 @@ export function projectConfigurationPatch(config: unknown, input: unknown, now =
     if ('cameraMode' in changes) next.cameraMode = changes.cameraMode;
     if ('threeD' in changes) {
       const scene = record(changes.threeD);
-      only(scene, ['environment', 'autoRotate', 'showGrid', 'showGizmo', 'showControls', 'showSimulations', 'sunlight', 'ground', 'activeLayers']);
+      only(scene, ['environment', 'autoRotate', 'showGrid', 'showGizmo', 'showControls', 'showSimulations', 'designTransparency', 'sunlight', 'ground', 'activeLayers']);
       if (!saved.threeD) throw new ProjectConfigurationError('Save a 3D Scene view before editing environment settings.');
       for (const field of ['sunlight', 'ground'] as const) if (field in scene) only(record(scene[field]), field === 'sunlight' ? ['azimuth', 'elevation'] : ['enabled', 'size', 'height']);
       next.threeD = { ...record(saved.threeD), ...scene };

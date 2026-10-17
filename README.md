@@ -1,3 +1,13 @@
+## v0.26.8 - ThreeD Designs: Transparency, top views and canvas tools
+
+Prepared locally October 17, 2026 on main at 7243155b plus accepted working changes. Package/root lockfile are 0.26.8; dependencies unchanged. This is release preparation, not deployment confirmation. See [release record](docs/releases/v0.26.8.md).
+
+Includes saved Design transparency, owned Model top-view PNG uploads and calibrated plan images, Environment measurement controls, adaptive Metric rulers, optional object measurements and a compact right-click Design tools menu. Developer accepted the context menu and condensed styling. Developer confirms the additive SQL is applied; actual uploads and authenticated Save/reopen for these new fields remain manual; older acceptance is not new verification. No servers, live writes or Git/deployment operations. Historical preparation records below are retained.
+
+## Development: v0.26.8 - Design appearance and Model top views
+
+Local, unreleased improvements add saved Project architecture transparency and Model-linked top-view PNGs in the Design plan. See [scope, schema prerequisite and checks](docs/plans/v0.26.8.md). The new database column is not yet applied; real upload/Save-reopen and visual verification remain manual.
+
 ## v0.26.7 - ThreeD Simulations: Unified Admin editor
 
 Final preparation passed: all 77 offline CI tasks, four focused suites (eight scripts), fresh TypeScript, metadata consistency, source/config parity and whitespace checks. Guarded production build passed on isolated Next.js 16.4.2 (145/145 pages, exit 0). The existing matching isolated dependency installation was reused; no fresh dependency install is claimed. External network/dev-server access was blocked, credentials scrubbed and dummy database/offline fonts used. CI ran outside the Windows sandbox to avoid the previously confirmed tsx userInfo restriction. The build emitted the known non-failing nested-lockfile workspace-root warning. Next regenerated only the isolated next-env dev/build type paths; the Developer source copy was untouched. Runtime browser/authenticated persistence and production verification remain manual. No servers, live writes, Git writes or deployment.
@@ -253,3 +263,9 @@ npm run next:start
 The original app and its history remain available on [📦 legacy-v0.17](https://github.com/marty-mcgee/threed-garden/tree/legacy-v0.17). See the [repository migration record](docs/plans/threed-garden-repository-migration.md) for provenance.
 
 [⚖️ MIT License](LICENSE)
+
+
+v0.26.8 release preparation checks passed: 78 offline CI tasks, fresh TypeScript and guarded isolated production build (145 pages). See [release notes](docs/releases/v0.26.8.md) for schema confirmation and remaining manual checks.
+
+
+**v0.26.8 manual acceptance (October 17, 2026):** Developer confirmed Real Top-View Image Upload and Project Save/Re-open passed. Earlier pending status for these checks is superseded; see [release notes](docs/releases/v0.26.8.md). This is manual acceptance, not independent production verification.

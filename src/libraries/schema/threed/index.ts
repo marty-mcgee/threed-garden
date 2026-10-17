@@ -376,6 +376,7 @@ export const threedModels = pgTable('threed_models', {
 
   modelName: varchar('model_name', { length: 255 }).notNull(),
   modelType: modelTypeEnum('model_type').notNull(),
+  imageTopViewUrl: text('image_top_view_url'),
   thumbnailUrl: text('thumbnail_url'),
   
   // Model properties

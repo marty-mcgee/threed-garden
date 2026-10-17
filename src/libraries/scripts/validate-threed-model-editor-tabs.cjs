@@ -125,7 +125,7 @@ async function editorChecks() {
     '@/components/ui/button': proxy, '@/components/ui/badge': proxy, '@/components/ui/table': proxy,
     '@/components/ui/dialog': proxy, '@/components/ui/dropdown-menu': proxy, '@/components/ui/input': proxy, '@/components/ui/tabs': proxy,
     './model-admin-form-core': form, './ThreeDModelEditorFields': { ...proxy, MODEL_TYPE_OPTIONS: [], MODEL_STATUS_OPTIONS: [], ThreeDModelEditorFields: 'fields', ThreeDModelPreviewImageFields: 'image-fields' },
-    './ModelPreviewBatchExport': proxy, './ModelPreviewImageExport': proxy, './ThreeDModelAssetPreview': proxy,
+    './ModelTopViewImage': proxy, './ModelPreviewBatchExport': proxy, './ModelPreviewImageExport': proxy, './ThreeDModelAssetPreview': proxy,
     './ModelFieldHelp': { ModelFieldHelp: 'help' },
     '@/libraries/services/threed/models/model-primary-upload-client': {
       async uploadThreeDPrimaryFile(file) {
@@ -152,6 +152,9 @@ async function editorChecks() {
   imageFields().props.setForm(current => ({ ...current, thumbnailUrl: 'https://fixture.invalid/draft.png' })); rt.render();
   assert.equal(fields().props.form.thumbnailUrl, 'https://fixture.invalid/draft.png');
   assert(!requests.some(request => request.options.method === 'PATCH'), 'Image URL draft is not saved automatically');
+  find(node => node.type === 'ModelTopViewImage').props.onChange('https://fixture.invalid/top.png'); rt.render();
+  assert.equal(fields().props.form.imageTopViewUrl, 'https://fixture.invalid/top.png');
+  assert(!requests.some(request => request.options.method === 'PATCH'), 'Top-view attachment selection stays in the Model draft until Save');
   const draftPreview = () => find(node => node.type === 'ThreeDModelAssetPreview');
   assert.equal(draftPreview().props.centerAtOrigin, true);
   assert.equal(draftPreview().props.preserveCameraOnEdit, true);

@@ -1,4 +1,5 @@
 'use client';
+import type { ModelPlanImage } from '@/libraries/services/threed/models/model-plan-image';
 import { ProjectMeasurementUnits } from '@/components/project/ProjectMeasurementUnits';
 import { DesignNameInput } from './DesignNameInput';
 
@@ -36,6 +37,10 @@ function Scalar({ label, value, onChange, max }: { label: string; value: number;
 }
 
 export interface DesignEditorProps {
+  modelImages?: ModelPlanImage[];
+  selectedModelId?: string | null;
+  metersPerSceneUnit?: number;
+  onModelSelect?: (id: string) => void;
   frameRequest?: { id: string; sequence: number } | null;
   toolbarHost?: HTMLDivElement | null;
   historyHost?: HTMLDivElement | null;
@@ -51,7 +56,7 @@ export interface DesignEditorProps {
     error?: string;
   };
 }
-export function DesignEditor({ frameRequest, active = true, canSave = true, scene, onActionsBusyChange }: DesignEditorProps = {}) {
+export function DesignEditor({ selectedModelId, modelImages, metersPerSceneUnit, onModelSelect, frameRequest, active = true, canSave = true, scene, onActionsBusyChange }: DesignEditorProps = {}) {
   const controlsHost = useRef<HTMLDivElement>(null);
   const [localDraft, setLocalDraft] = useState(() => projectArchitectureDraft());
   const draft = scene?.draft ?? localDraft, history = draft.history;
@@ -64,6 +69,7 @@ export function DesignEditor({ frameRequest, active = true, canSave = true, scen
   const setSelected = useCallback((selected: string | null) => updateDraft(draft => ({ ...draft, selected, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), selectedEntityId: selected } })), [updateDraft]);
   const saving = scene?.saving ?? false, loading = false;
   const [preview, setPreview] = useState<DesignDocument | null>(null);
+  const [readOnlyMeasurements, setReadOnlyMeasurements] = useState(draft.workspace?.showMeasurements ?? false);
   const [tool, setTool] = useState<DesignTool>('select'), [cancelToken, setCancelToken] = useState(0);
   const workspace = draft.workspace ?? defaultDesignWorkspace();
   const changeWorkspace = useCallback((patch: Partial<ProjectDesignWorkspaceState>) => updateDraft(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), ...patch } })), [updateDraft]);
@@ -165,23 +171,27 @@ export function DesignEditor({ frameRequest, active = true, canSave = true, scen
     const anchor = window.document.createElement('a'); anchor.href = url; anchor.download = 'threed-design.json'; anchor.click(); setTimeout(() => URL.revokeObjectURL(url), 30_000);
     setMessage('Editable JSON backup exported. Project save status is unchanged.');
   }
-  const drawingActions = <nav aria-label="ThreeD Design Action Tools" className={`flex min-w-0 max-w-full flex-wrap items-center gap-1 ${scene ? "[&_button]:h-7 [&_button]:w-7 [&_svg]:size-3.5" : ""}`}>
-    {([
+  const toolGroups = [
       { label: 'Selection and pan', color: 'text-cyan-700 dark:text-cyan-300', tools: [{ key: 'select', title: 'Select', icon: MousePointer2 }, { key: 'pan', title: 'Pan', icon: Move }] },
       { label: 'Structures', color: 'text-emerald-700 dark:text-emerald-300', tools: [{ key: 'wall', title: 'Wall', icon: PencilRuler }, { key: 'floor', title: 'Floor', icon: Pentagon }, { key: 'roof', title: 'Roof', icon: House }] },
       { label: 'Wall openings', color: 'text-amber-700 dark:text-amber-300', tools: [{ key: 'door', title: 'Door', icon: DoorOpen }, { key: 'window', title: 'Window', icon: PanelsTopLeft }] },
       { label: 'Roof openings', color: 'text-violet-700 dark:text-violet-300', tools: [{ key: 'skylight', title: 'Skylight', icon: SquareDashed }, { key: 'cutout', title: 'Roof Cutout', icon: Scissors }] },
-    ] as const).map(group => <div key={group.label} role="group" aria-label={group.label} className="flex shrink-0 items-center gap-1 rounded-md border border-border bg-muted/40 p-1">
-      {group.tools.map(item => <DesignAction key={item.key} label={item.title} disabled={!canSave || importing || loading} variant={tool === item.key ? (scene ? 'secondary' : 'default') : 'outline'} aria-pressed={tool === item.key} onClick={() => { cancel(); setTool(item.key); if (item.key === 'cutout' || item.key === 'skylight') { setShowRoofs(true); setMessage('Choose a host roof in the active plan. Hover to preview a 24 by 36 inch opening. Select the roof first when roofs overlap.'); } if (item.key === 'door' || item.key === 'window') setMessage(`Choose a host wall in the plan to place a ${item.title.toLowerCase()}. Hover to preview; Escape cancels.`); }}><item.icon className={`h-4 w-4 ${tool === item.key && !scene ? "" : group.color}`} aria-hidden="true" /></DesignAction>)}
+    ] as const;
+  const actionGroups = [
+    ...toolGroups.map(group => ({ label: group.label, color: group.color, actions: group.tools.map(item => ({ label: item.title, icon: item.icon, active: tool === item.key, disabled: !canSave || importing || loading, run: () => { cancel(); setTool(item.key); if (item.key === 'cutout' || item.key === 'skylight') { setShowRoofs(true); setMessage('Choose a host roof in the active plan. Hover to preview a 24 by 36 inch opening. Select the roof first when roofs overlap.'); } if (item.key === 'door' || item.key === 'window') setMessage(`Choose a host wall in the plan to place a ${item.title.toLowerCase()}. Hover to preview; Escape cancels.`); } })) })),
+    { label: 'Design history', color: 'text-sky-700 dark:text-sky-300', actions: [
+      { label: 'Undo', icon: Undo2, disabled: !canSave || !history.past.length || importing || loading, run: () => { cancel(); setHistory(undoDesign); setSelected(null); } },
+      { label: 'Redo', icon: Redo2, disabled: !canSave || !history.future.length || importing || loading, run: () => { cancel(); setHistory(redoDesign); setSelected(null); } },
+    ] },
+    { label: 'Design JSON files', color: 'text-teal-700 dark:text-teal-300', actions: [
+      { label: 'Import JSON', icon: importing ? Loader2 : Upload, disabled: !canSave || saving || importing || loading, run: () => setImporting(true) },
+      { label: 'Export JSON', icon: Download, disabled: importing || loading, run: exportFile },
+    ] },
+  ];
+  const drawingActions = <nav aria-label="ThreeD Design Action Tools" className={`flex min-w-0 max-w-full flex-wrap items-center gap-1 ${scene ? "[&_button]:h-7 [&_button]:w-7 [&_svg]:size-3.5" : ""}`}>
+    {actionGroups.map(group => <div key={group.label} role="group" aria-label={group.label} className="flex shrink-0 items-center gap-1 rounded-md border border-border bg-muted/40 p-1">
+      {group.actions.map(action => <DesignAction key={action.label} label={action.label} disabled={action.disabled} variant={'active' in action && action.active ? (scene ? 'secondary' : 'default') : 'outline'} aria-pressed={'active' in action ? action.active : undefined} onClick={action.run}><action.icon className={`h-4 w-4 ${'active' in action && action.active && !scene ? '' : group.color} ${action.label === 'Import JSON' && importing ? 'animate-spin' : ''}`} aria-hidden="true" /></DesignAction>)}
     </div>)}
-    <div role="group" aria-label="Design history" className="flex shrink-0 items-center gap-1 rounded-md border border-border bg-muted/40 p-1 [&_svg]:text-sky-700 dark:[&_svg]:text-sky-300">
-        <DesignAction label="Undo" disabled={!canSave || !history.past.length || importing || loading} onClick={() => { cancel(); setHistory(undoDesign); setSelected(null); }}><Undo2 className="h-4 w-4" /></DesignAction>
-        <DesignAction label="Redo" disabled={!canSave || !history.future.length || importing || loading} onClick={() => { cancel(); setHistory(redoDesign); setSelected(null); }}><Redo2 className="h-4 w-4" /></DesignAction>
-    </div>
-    <div role="group" aria-label="Design JSON files" className="flex shrink-0 items-center gap-1 rounded-md border border-border bg-muted/40 p-1 [&_svg]:text-teal-700 dark:[&_svg]:text-teal-300">
-        <DesignAction label="Import JSON" disabled={!canSave || saving || importing || loading} onClick={() => setImporting(true)}>{importing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}</DesignAction>
-        <DesignAction label="Export JSON" disabled={importing || loading} onClick={exportFile}><Download className="h-4 w-4" /></DesignAction>
-    </div>
   </nav>;
   const header =     <header className="flex shrink-0 flex-wrap items-center gap-2 border-b pb-2"><div className="flex min-w-0 flex-wrap items-center gap-2"><Building2 className="h-5 w-5 text-cyan-400" /><h1 className="text-base font-semibold">ThreeD Design</h1><DesignFieldHelp label="ThreeD Design">Draw architectural content in the active Project Scene. Save Project stores editable parameters and existing Scene objects together. Export JSON makes a portable architectural backup. Wall centers and floor corners share node IDs.</DesignFieldHelp><span className="text-xs text-muted-foreground">{scene?.projectName ?? 'Local tools preview'}</span></div>
 {drawingActions}</header>;
@@ -226,7 +236,7 @@ export function DesignEditor({ frameRequest, active = true, canSave = true, scen
       </aside>;
   const footer = <footer className="shrink-0 border-t pt-2 text-xs"><p role="status" aria-live="polite">{message}</p>{(error || scene?.error) && <p role="alert" className="mt-1 text-red-400">{error || scene?.error}</p>}<p className="mt-1 text-muted-foreground">{dirty ? 'Unsaved changes' : 'Saved Project architecture'} · 1 in = 0.0254 m · Project coordinates - Save Project retains these edits</p></footer>;
   const controls = <div ref={controlsHost} className="flex min-h-0 min-w-0 flex-col gap-2 overflow-auto overscroll-contain text-foreground [&_input]:min-w-0 [&_label]:min-w-0 [&_select]:max-w-full" data-testid="design-controls">{importStatus}<fieldset disabled={loading || importing || !canSave} className="min-w-0 border-0 p-0">{propertiesPanel}</fieldset>{footer}</div>;
-  const plan = <DesignPlan measurementUnits={units} frameRequest={frameRequest} embedded={Boolean(scene)} drawingActions={scene ? drawingActions : undefined} planView={workspace.plan} onViewChange={plan => changeWorkspace({ plan })} active={active} disabled={!canSave || importing} document={doc} displayDocument={displayed} activeLevelId={activeLevelId} selected={selected} tool={tool} gridSnap={gridSnap} onSelect={select} onCommit={commit} onPreview={previewUpdate} onMessage={setMessage} onDrawComplete={id => { setSelected(id); setTool('select'); }} cancelToken={cancelToken} />;
+  const plan = <DesignPlan contextActions={actionGroups} showMeasurements={canSave ? workspace.showMeasurements ?? false : readOnlyMeasurements} onShowMeasurementsChange={showMeasurements => { if (canSave) changeWorkspace({ showMeasurements }); else setReadOnlyMeasurements(showMeasurements); }} selectedModelId={selectedModelId} modelImages={modelImages} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={onModelSelect} measurementUnits={units} frameRequest={frameRequest} embedded={Boolean(scene)} drawingActions={scene ? drawingActions : undefined} planView={workspace.plan} onViewChange={plan => changeWorkspace({ plan })} active={active} disabled={!canSave || importing} document={doc} displayDocument={displayed} activeLevelId={activeLevelId} selected={selected} tool={tool} gridSnap={gridSnap} onSelect={select} onCommit={commit} onPreview={previewUpdate} onMessage={setMessage} onDrawComplete={id => { setSelected(id); setTool('select'); }} cancelToken={cancelToken} />;
   if (scene) return <div className="flex h-full min-h-0 min-w-0 overflow-hidden" data-testid="home-editor">
     {importDialog}
     <div data-testid="design-properties-panel" className="threed-workspace-panel threed-scene-panel-surface threed-scene-sidebar-size flex min-h-0 min-w-0 shrink-0 flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md"><DetailsSectionScope.Provider value={`design:${scene.projectId}`}><div className="mb-2 flex shrink-0 items-center gap-2 text-sm font-semibold"><Building2 className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />Design Properties<DesignFieldHelp label="Design Properties">Edit selected geometry and workspace settings. Save Project retains both.</DesignFieldHelp></div>{controls}</DetailsSectionScope.Provider></div>

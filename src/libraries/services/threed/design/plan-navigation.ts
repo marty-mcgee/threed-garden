@@ -16,9 +16,19 @@ export function framePlan(points: PlanPoint[], size: { width: number; height: nu
 /** CSS pixels match the SVG coordinates; SVG itself handles device pixel ratio. */
 export function rulerTicks(origin: number, scale: number, extent: number, units: 'imperial' | 'metric' = 'imperial') {
   const step = gridFeet(scale) * 12 * INCH, major = 2 ** Math.max(0, Math.ceil(Math.log2(64 / (step * scale))));
+  const labelSpacing = step * major;
+  const metricDecimals = labelSpacing >= 2 ? 0 : labelSpacing >= .5 ? 1 : 2;
   const first = Math.ceil((RULER_SIZE - origin) / (scale * step)), last = Math.floor((extent - origin) / (scale * step));
   return Array.from({ length: Math.max(0, Math.min(2000, last - first + 1)) }, (_, n) => {
     const index = first + n, world = index * step;
-    return { index, world, pixel: origin + world * scale, major: index % major === 0, label: units === 'metric' ? `${Number(world.toFixed(4))} m` : `${Number((world / (12 * INCH)).toFixed(3))} ft` };
+    return { index, world, pixel: origin + world * scale, major: index % major === 0, label: units === 'metric' ? `${Number(world.toFixed(metricDecimals))} m` : `${Number((world / (12 * INCH)).toFixed(3))} ft` };
   });
+}
+
+/** Compact object dimensions; preserve fractional inches without a 12-inch carry error. */
+export function formatPlanLength(metres: number, units: 'imperial' | 'metric'): string {
+  if (units === 'metric') return `${Number(metres.toFixed(3))} m`;
+  const inches = Math.round(Math.abs(metres / INCH) * 100) / 100;
+  const feet = Math.floor(inches / 12), remainder = Number((inches - feet * 12).toFixed(2));
+  return `${metres < 0 ? '-' : ''}${feet}'${remainder}"`;
 }

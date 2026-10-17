@@ -20,7 +20,7 @@ interface ModelFileRow {
   fileSize: number | null; loadOrder: number | null; role: 'primary' | 'supporting';
 }
 interface ModelChoice { id: number; modelName: string; modelType: string }
-const FILE_TYPE_LABELS: Record<string, string> = { model: 'Geometry', texture: 'Texture', binary: 'Binary buffer', other: 'Other', animation: 'Animation' };
+const FILE_TYPE_LABELS: Record<string, string> = { model: 'Geometry', texture: 'Texture', binary: 'Binary buffer', other: 'Other', animation: 'Animation', 'top-view': 'Top-view image' };
 const PAGE_SIZES = [25, 50, 100, 200];
 const LIST_KEYS = ['search', 'fileType', 'role', 'limit', 'offset', 'sort', 'direction'];
 const COMPACT_BUTTON = 'h-7 px-2 text-xs [@media(pointer:coarse)]:min-h-11';

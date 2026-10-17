@@ -202,7 +202,7 @@ export class DesignGeometryCache {
   private entries = new Map<string, { signature: string; mesh: Mesh<BufferGeometry, MeshStandardMaterial> }>();
   private openings = new Map<string, { signature: string; group: Group }>();
   private skylights = new Map<string, { signature: string; group: Group }>();
-  update(doc: DesignDocument, selected: string | null, visibleLevelId?: string, showRoofs = true) {
+  update(doc: DesignDocument, selected: string | null, visibleLevelId?: string, showRoofs = true, transparent = false) {
     const desired = new Set<string>(), nodes = new Map(doc.nodes.map(node => [node.id, node]));
     const update = (id: string, points: PlanPoint[], height: number, bottom: number, floor: boolean, wall?: DesignWall, roof?: DesignRoof) => {
       if (polygonIssue(points)) return;
@@ -248,6 +248,18 @@ export class DesignGeometryCache {
       entry!.group.traverse(object => { if (object instanceof Mesh) (object.material as MeshStandardMaterial).emissive.set(selected === opening.id ? '#125e69' : '#000000'); });
     }
     for (const [id, entry] of this.skylights) if (!skylightIds.has(id)) { this.group.remove(entry.group); disposeOpening(entry.group); this.skylights.delete(id); }
+    this.group.traverse(object => {
+      if (!(object instanceof Mesh)) return;
+      for (const material of Array.isArray(object.material) ? object.material : [object.material]) {
+        material.userData.designAppearance ??= { opacity: material.opacity, transparent: material.transparent, depthWrite: material.depthWrite };
+        const original = material.userData.designAppearance;
+        const nextTransparent = transparent || original.transparent;
+        if (material.transparent !== nextTransparent) material.needsUpdate = true;
+        material.transparent = nextTransparent;
+        material.opacity = transparent ? Math.min(original.opacity, .5) : original.opacity;
+        material.depthWrite = transparent ? false : original.depthWrite;
+      }
+    });
     // Visibility is a view choice, not deletion: retain mesh owners and GPU resources.
     const roofIds = new Set([...doc.roofs.map(roof => roof.id), ...doc.roofOpenings.map(opening => opening.id)]);
     for (const child of this.group.children) child.visible = (!visibleLevelId || entityLevelId(doc, child.name) === visibleLevelId) && (showRoofs || !roofIds.has(child.name));

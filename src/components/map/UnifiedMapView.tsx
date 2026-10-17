@@ -1,5 +1,6 @@
 // components/map/UnifiedMapView.tsx
 'use client';
+import type { ModelPlanImage } from '@/libraries/services/threed/models/model-plan-image';
 
 import { entityPoints } from '@/libraries/services/threed/design/object-properties';
 import type { DesignDocument } from '@/libraries/services/threed/design/document';
@@ -57,6 +58,9 @@ const ThreeDScene = dynamic(
 
 interface UnifiedMapViewProps {
   architectureFrameRequest?: { id: string; sequence: number } | null;
+  onModelPlanImage?: (projectId: number, markerId: string, image: ModelPlanImage | null) => void;
+  measurementUnits?: 'imperial' | 'metric';
+  onMeasurementUnitsChange?: (units: 'imperial' | 'metric') => void;
   architecture?: DesignDocument;
   metersPerSceneUnit?: number;
   selectedArchitectureId?: string | null;
@@ -203,7 +207,7 @@ function isSameRuntimeMarker(left: RuntimeMarker, right: RuntimeMarker): boolean
 }
 
 export function UnifiedMapView({
-  architectureFrameRequest, architecture, metersPerSceneUnit = 0.3048, selectedArchitectureId, onArchitectureSelect, architectureLevelId, architectureShowRoofs = true,
+  measurementUnits = 'imperial', onMeasurementUnitsChange, onModelPlanImage, architectureFrameRequest, architecture, metersPerSceneUnit = 0.3048, selectedArchitectureId, onArchitectureSelect, architectureLevelId, architectureShowRoofs = true,
 
   projectId,
   runtimeMarkerRegistry,
@@ -688,6 +692,9 @@ export function UnifiedMapView({
       }));
     return (
       <ThreeDScene
+        measurementUnits={measurementUnits}
+        onMeasurementUnitsChange={onMeasurementUnitsChange}
+        onModelPlanImage={onModelPlanImage}
         architecture={architecture}
         metersPerSceneUnit={metersPerSceneUnit}
         selectedArchitectureId={selectedArchitectureId}

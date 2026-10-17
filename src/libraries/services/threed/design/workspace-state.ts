@@ -11,6 +11,7 @@ export interface ProjectDesignWorkspaceState {
   selectedEntityId: string | null;
   showAllLevels: boolean;
   showRoofs: boolean;
+  showMeasurements?: boolean;
   gridSnap: boolean;
   split: number;
   sections: Record<string, boolean>;
@@ -18,7 +19,7 @@ export interface ProjectDesignWorkspaceState {
 export const defaultDesignWorkspace = (): ProjectDesignWorkspaceState => ({
   measurementUnits: 'imperial',
   plan: { x: 80, y: 80, scale: 45 }, levelId: 'ground', selectedEntityId: null,
-  showAllLevels: true, showRoofs: true, gridSnap: true, split: 45, sections: {},
+  showMeasurements: false, showAllLevels: true, showRoofs: true, gridSnap: true, split: 45, sections: {},
 });
 export function parseDesignWorkspace(value: unknown): ProjectDesignWorkspaceState {
   const item = record(value), plan = record(item?.plan), sections = record(item?.sections);
@@ -31,6 +32,7 @@ export function parseDesignWorkspace(value: unknown): ProjectDesignWorkspaceStat
   if (item.measurementUnits !== undefined && !['imperial', 'metric'].includes(String(item.measurementUnits))) throw new DesignWorkspaceError();
   return { measurementUnits: item.measurementUnits === 'metric' ? 'metric' : 'imperial', plan: { x: finite(plan.x, -1e7, 1e7), y: finite(plan.y, -1e7, 1e7), scale: finite(plan.scale, .05, 300) },
     levelId: boundedText(item.levelId, 200), selectedEntityId: item.selectedEntityId === null ? null : boundedText(item.selectedEntityId, 200),
+    showMeasurements: item.showMeasurements === undefined ? false : boolean(item.showMeasurements),
     showAllLevels: boolean(item.showAllLevels), showRoofs: boolean(item.showRoofs), gridSnap: boolean(item.gridSnap),
     split: finite(item.split, 10, 90), sections: result };
 }

@@ -98,10 +98,10 @@ const request = body=>({url:'https://offline.invalid/api/project?id=17',json:asy
     threeD:{cameraPosition:{x:10,y:8,z:10},cameraTarget:{x:0,y:0,z:0},cameraFov:55,activeLayers:['models','designs'],availableLayers:['models','designs'],environment:'park',autoRotate:false,showGrid:false,showGizmo:false,viewPresets:[{id:'wide',name:'Wide',position:{x:10,y:8,z:10},target:{x:0,y:0,z:0},layers:['models'],createdAt:'2026-10-15T12:00:00.000Z'}]}};
   current.config={measurementUnits:'imperial',threeDViewState:savedView,threeDArchitecture:{version:1,document:room},unrelated:{retained:true}};
   const baseline=copy(current.config),expected=configuration.projectConfigurationStamp(baseline);
-  const edited=await route.PATCH(request({name:'Unified Project Save',description:'Details and configuration together',isPublic:true,isActive:false,configuration:{expected,changes:{measurementUnits:'metric',viewMode:'combined',threeD:{showGrid:true,environment:'studio'}}}}));
+  const edited=await route.PATCH(request({name:'Unified Project Save',description:'Details and configuration together',isPublic:true,isActive:false,configuration:{expected,changes:{measurementUnits:'metric',viewMode:'combined',threeD:{showGrid:true,environment:'studio',designTransparency:true}}}}));
   assert.equal(edited.status,200);assert.equal(current.config.measurementUnits,'metric');assert.equal(current.config.threeDViewState.viewMode,'combined');
   assert.equal(current.name,'Unified Project Save');assert.equal(current.description,'Details and configuration together');assert.equal(current.isPublic,true);assert.equal(current.isActive,false);
-  assert.equal(current.config.threeDViewState.threeD.showGrid,true);assert.equal(current.config.threeDViewState.threeD.environment,'studio');
+  assert.equal(current.config.threeDViewState.threeD.showGrid,true);assert.equal(current.config.threeDViewState.threeD.designTransparency,true);assert.equal(current.config.threeDViewState.threeD.environment,'studio');
   assert.deepEqual(copy(current.config.threeDArchitecture),baseline.threeDArchitecture);
   assert.deepEqual(copy(current.config.threeDViewState.threeD.cameraPosition),savedView.threeD.cameraPosition);
   assert.deepEqual(copy(current.config.threeDViewState.threeD.viewPresets),savedView.threeD.viewPresets);
@@ -110,7 +110,7 @@ const request = body=>({url:'https://offline.invalid/api/project?id=17',json:asy
   assert.equal(current.config.unrelated.retained,true);assert.equal(current.metersPerSceneUnit,'0.3048');
   const savedState=copy(current),countAfter=writes;
   assert.equal((await route.PATCH(request({name:'Must not save on conflict',configuration:{expected,changes:{viewMode:'2d'}}}))).status,409);
-  for(const changes of [{viewMode:'bad'},{threeD:{cameraPosition:{x:0,y:0,z:0}}},{threeD:{ground:{enabled:true,size:0,height:0}}},{threeD:{sunlight:{azimuth:0,elevation:95}}},{threeD:{activeLayers:['unknown']}},{privateOwner:'someone'},{threeD:null}]) {
+  for(const changes of [{threeD:{designTransparency:'yes'}},{viewMode:'bad'},{threeD:{cameraPosition:{x:0,y:0,z:0}}},{threeD:{ground:{enabled:true,size:0,height:0}}},{threeD:{sunlight:{azimuth:0,elevation:95}}},{threeD:{activeLayers:['unknown']}},{privateOwner:'someone'},{threeD:null}]) {
     const rejected=await route.PATCH(request({configuration:{expected:configuration.projectConfigurationStamp(current.config),changes}}));
     assert.equal(rejected.status,400);
   }

@@ -107,7 +107,7 @@ for (const bad of [
 console.log('PASS: Scenario selection, Guide choices, started status and overlays round-trip with legacy and invalid-state handling');
 
 // Workspace preference validation is exercised through the actual server parser.
-const design = {plan:{x:-321,y:224,scale:73},levelId:'ground',selectedEntityId:'wall-1',showAllLevels:true,showRoofs:false,gridSnap:true,split:62,sections:{'details:wall-1':false}};
+const design = {plan:{x:-321,y:224,scale:73},levelId:'ground',selectedEntityId:'wall-1',showMeasurements:false,showAllLevels:true,showRoofs:false,gridSnap:true,split:62,sections:{'details:wall-1':false}};
 const preferences = {...saved,design,workspace:{...workspace,inspector:{kind:'sensor',id:'sensor-1'}},threeD:{...saved.threeD,cameraZoom:1.4,cameraFov:60}};
 const roundtrip = parseThreeDProjectViewState(JSON.parse(JSON.stringify(preferences)));
 assert.equal(JSON.stringify(roundtrip.design),JSON.stringify({measurementUnits:'imperial',...design}));assert.equal(roundtrip.threeD?.cameraZoom,1.4);assert.equal(roundtrip.threeD?.cameraFov,60);assert.equal(roundtrip.workspace?.inspector?.id,'sensor-1');

@@ -1,0 +1,12 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),ts=require('typescript');
+const orm=require('drizzle-orm'),pg=require('drizzle-orm/pg-core');
+const models=pg.pgTable('threed_models',{id:pg.integer('id'),userId:pg.text('user_id'),mainModelFileId:pg.integer('main_model_file_id'),imageTopViewUrl:pg.text('image_top_view_url')});
+const files=pg.pgTable('threed_model_files',{id:pg.integer('id')});
+const exportsObject={};vm.runInNewContext(ts.transpileModule(fs.readFileSync('src/libraries/services/threed/models/model-primary-file.ts','utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText,{exports:exportsObject,require(name){if(name==='drizzle-orm')return orm;if(name==='@/libraries/schema/threed')return{threedModels:models,threedModelFiles:files};throw Error(name);}});
+const selected=exportsObject.modelSelection();assert.equal(selected.id,models.id);
+const dialect=new pg.PgDialect();const query=dialect.sqlToQuery(orm.sql`select ${selected.imageTopViewUrl.sql} from ${models}`);
+assert(query.sql.includes('to_jsonb("threed_models")'));
+assert(query.sql.includes("->> 'image_top_view_url'"));
+assert(!query.sql.includes('"image_top_view_url"'),'The optional physical column must never be referenced in Project reads');
+assert(selected.filePath&&selected.fileSize,'Primary File authority remains intact');
+console.log('PASS: real Drizzle projection uses optional whole-row JSON lookup, preserving Project reads without a physical top-view column; no database connection.');

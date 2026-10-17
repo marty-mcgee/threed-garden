@@ -225,6 +225,7 @@ function serializeLibraryModel(model: ModelWithFiles, viewerUserId: string) {
     filePath: model.filePath,
     fileSize: model.fileSize,
     thumbnailUrl: model.thumbnailUrl,
+    imageTopViewUrl: model.imageTopViewUrl,
     usedByPlants: model.usedByPlants,
     usedByCharacters: model.usedByCharacters,
     scale: model.scale,
@@ -915,6 +916,15 @@ export async function PATCH(request: NextRequest) {
     const categoryIds = await validateOwnedCategoryIds(userId, requestedCategoryIds);
     if (categoryIds === null) {
       return NextResponse.json({ success: false, error: 'One or more Model categories are invalid' }, { status: 400 });
+    }
+    if (Object.prototype.hasOwnProperty.call(updates, 'imageTopViewUrl')) {
+      const url = updates.imageTopViewUrl;
+      if (url !== null && url !== '') {
+        if (typeof url !== 'string' || !/^https:\/\//i.test(url)) return NextResponse.json({ success: false, error: 'Select an attached top-view image' }, { status: 400 });
+        const [image] = await db.select({ id: threedModelFiles.id }).from(threedModelFiles).where(and(eq(threedModelFiles.modelId, parsedId), eq(threedModelFiles.userId, userId), eq(threedModelFiles.filePath, url), eq(threedModelFiles.fileType, 'top-view'))).limit(1);
+        if (!image) return NextResponse.json({ success: false, error: 'Top-view image must be attached to this owned Model' }, { status: 400 });
+      }
+      updates.imageTopViewUrl = url || null;
     }
     if (Object.prototype.hasOwnProperty.call(updates, 'thumbnailUrl')) {
       const normalizedThumbnailUrl = normalizeThumbnailUrl(updates.thumbnailUrl);

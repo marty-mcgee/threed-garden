@@ -19,6 +19,7 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  'design-appearance-top-view': [node('validate-design-appearance-top-view.cjs'), node('validate-model-top-view-compatibility.cjs')],
   'admin-sidebar': [node('validate-admin-sidebar.cjs')],
   'threed-designs': [node('validate-threed-designs.cjs')],
   'project-configurations': [node('validate-project-measurement-units.cjs'), node('validate-project-configurations-ui.cjs')],
@@ -162,6 +163,7 @@ const ci = [
   'threed-designs',
   'project-configurations',
   'admin-sidebar',
+  'design-appearance-top-view',
   'legacy-design-recovery',
   'drizzle-workflow',
   'threed-character-introduction',

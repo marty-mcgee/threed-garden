@@ -12,6 +12,7 @@ export function currentModelAssets(model: Record<string, unknown> | undefined) {
       ? { materialAssignments: model?.materialAssignments ?? [] } : {}),
     ...(!model || Array.isArray(model.textureFallbacks)
       ? { textureFallbacks: model?.textureFallbacks ?? [] } : {}),
+    imageTopViewUrl: typeof model?.imageTopViewUrl === 'string' ? model.imageTopViewUrl : null,
     fileSize: model?.fileSize ?? null,
     mainModelFileId: model?.mainModelFileId ?? null,
     modelType: model?.modelType,

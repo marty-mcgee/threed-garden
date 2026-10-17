@@ -9,6 +9,7 @@ export interface ThreeDModelAdminFormData {
   filePath: string;
   fileSize: string;
   thumbnailUrl: string;
+  imageTopViewUrl?: string;
   usedByPlants: boolean;
   usedByCharacters: boolean;
   scale: string;

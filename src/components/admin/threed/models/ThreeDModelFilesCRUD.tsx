@@ -149,9 +149,10 @@ const TYPE_LABELS: Record<string, string> = {
   texture: 'Textures',
   binary: 'Binary Buffers',
   other: 'Supportive Media',
+  'top-view': 'Top-view Images',
 };
 
-const TYPE_ORDER = ['model', 'texture', 'binary', 'other'] as const;
+const TYPE_ORDER = ['model', 'texture', 'binary', 'top-view', 'other'] as const;
 
 const IMAGE_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'gif', 'avif', 'bmp', 'tga']);
 
@@ -506,7 +507,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
   }, [files, filter, sort]);
 
   const groupedFiles = useMemo(() => {
-    const groups: Record<string, ModelFileRow[]> = { model: [], texture: [], binary: [], other: [] };
+    const groups: Record<string, ModelFileRow[]> = { model: [], texture: [], binary: [], 'top-view': [], other: [] };
     for (const f of filteredFiles) {
       const key = groups[f.fileType] ? f.fileType : 'other';
       groups[key].push(f);
@@ -516,7 +517,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
 
   const stats = useMemo(() => {
     const totalSize = files.reduce((sum, f) => sum + (f.fileSize ?? 0), 0);
-    const byType = { model: 0, texture: 0, binary: 0, other: 0 } as Record<string, number>;
+    const byType = { model: 0, texture: 0, binary: 0, 'top-view': 0, other: 0 } as Record<string, number>;
     for (const f of files) {
       const key = byType[f.fileType] !== undefined ? f.fileType : 'other';
       byType[key] += 1;

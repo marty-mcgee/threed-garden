@@ -21,7 +21,7 @@ import {
 
 import { SceneOperationStatus, type SceneOperationStatusValue } from '@/components/map/panels/SceneOperationStatus';
 import { Button } from '@/components/ui/button';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuLabel, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { MapViewMode } from '@/libraries/types/map';
 
@@ -63,7 +63,6 @@ interface ProjectSceneToolbarProps {
 }
 
 export function ProjectSceneToolbar({
-  measurementUnits = 'imperial', onMeasurementUnitsChange,
   designHistoryHostRef,
   saveDisabled = false,
   workspaceSaveMessage = 'Save ThreeD Project',
@@ -124,13 +123,6 @@ export function ProjectSceneToolbar({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="threed-workspace-panel threed-toolbar-dropdown-surface z-[2000] w-56 space-y-0.5 rounded-lg border-foreground/10 p-1.5 text-foreground shadow-xl backdrop-blur-sm">
-            <DropdownMenuLabel>Project measurement units</DropdownMenuLabel>
-            <DropdownMenuRadioGroup value={measurementUnits} onValueChange={value => onMeasurementUnitsChange?.(value as 'imperial' | 'metric')}>
-              <DropdownMenuRadioItem value="imperial" disabled={!onMeasurementUnitsChange}>Imperial (feet / inches)</DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="metric" disabled={!onMeasurementUnitsChange}>Metric (metres / centimetres)</DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-            <DropdownMenuLabel className="text-[10px] font-normal text-muted-foreground">Retained by Save Project</DropdownMenuLabel>
-            <DropdownMenuSeparator />
             <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onOpenProjectTour}><ScanSearch className="h-3.5 w-3.5" /> Project Tour</DropdownMenuItem>
             <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onOpenScenarios}><Layers className="h-3.5 w-3.5" /> Scenarios</DropdownMenuItem>
             <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={() => window.dispatchEvent(new CustomEvent('threed:simulation-panel', { detail: { projectId: Number(selectedProjectId) } }))}><Layers className="h-3.5 w-3.5" /> Simulations</DropdownMenuItem>

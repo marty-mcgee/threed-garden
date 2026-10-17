@@ -10,6 +10,7 @@ import { SensorGroupInspector } from '@/components/map/details/SensorGroupInspec
 
 import { useState, useEffect, useCallback, useMemo, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import type { ModelPlanImage } from '@/libraries/services/threed/models/model-plan-image';
 import { DesignWorkspace } from '@/components/threed/design/DesignWorkspace';
 import { ScenePanelDivider } from '@/components/map/panels/ScenePanelDivider';
 import { DesignEditor } from '@/components/threed/design/DesignEditor';
@@ -279,6 +280,16 @@ function UnifiedMapPageInner() {
   const [isSceneAddMenuOpen, setIsSceneAddMenuOpen] = useState(false);
   const [isAddShapeOpen, setIsAddShapeOpen] = useState(false);
   const [environmentControlsCloseRequest, setEnvironmentControlsCloseRequest] = useState(0);
+  const planImageProjectRef = useRef(selectedProjectId); planImageProjectRef.current = selectedProjectId;
+  const [planModelImages, setPlanModelImages] = useState<{ projectId: number; images: Record<string, ModelPlanImage> }>({ projectId: 0, images: {} });
+  const handleModelPlanImage = useCallback((projectId: number, markerId: string, image: ModelPlanImage | null) => {
+    if (String(projectId) !== planImageProjectRef.current) return;
+    setPlanModelImages(current => {
+      const images = current.projectId === projectId ? { ...current.images } : {};
+      if (image) images[markerId] = image; else delete images[markerId];
+      return { projectId, images };
+    });
+  }, []);
   const [libraryModels, setLibraryModels] = useState<ThreeDModelLibraryItem[]>([]);
   const [libraryCategorySlug, setLibraryCategorySlug] = useState('all');
   const [libraryModelSearch, setLibraryModelSearch] = useState('');
@@ -3161,7 +3172,7 @@ function UnifiedMapPageInner() {
         }}
       />
       {/* ✅ Map Container */}
-      <DesignWorkspace reserveToolbar={viewMode === '2d'} split={designWorkspace.split} onSplitChange={split => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), split } }))} assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor key={selectedProjectId} frameRequest={architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} active={viewMode === 'design'} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
+      <DesignWorkspace reserveToolbar={viewMode === '2d'} split={designWorkspace.split} onSplitChange={split => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), split } }))} assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor selectedModelId={!architectureDraft.selected && selectedMarker?.type === 'models' ? String(selectedMarker.id) : null} modelImages={planModelImages.projectId === Number(selectedProjectId) ? Object.values(planModelImages.images) : []} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={id => { const marker = projectRuntimeMarkers.find(marker => String(marker.id) === id); if (marker) selectProjectAsset(marker); }} key={selectedProjectId} frameRequest={architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} active={viewMode === 'design'} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
       <Card data-project-canvas className="h-full gap-0 rounded-none border-0 py-0 shadow-none">
         <CardContent className="h-full p-0 overflow-hidden">
           <div className="h-full">
@@ -3170,7 +3181,10 @@ function UnifiedMapPageInner() {
             <div ref={containerRef} className="relative flex h-full w-full flex-col">
               <div hidden={sceneViewMode === '2d'} className="min-h-0 flex-shrink-0" style={{ height: sceneViewMode === 'combined' ? panelHeight + '%' : '100%' }}>
               <UnifiedMapView architectureFrameRequest={viewMode === '2d' && architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} architecture={architecturePreview ?? architectureDraft.history.present}
+                measurementUnits={designWorkspace.measurementUnits ?? 'imperial'}
+                onMeasurementUnitsChange={canEditProject ? measurementUnits => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), measurementUnits } })) : undefined}
                 metersPerSceneUnit={metersPerSceneUnit}
+                onModelPlanImage={handleModelPlanImage}
                 selectedArchitectureId={architectureDraft.selected}
                 onArchitectureSelect={selectArchitecture}
                 architectureLevelId={viewMode === 'design' ? architectureVisibility.levelId : undefined}

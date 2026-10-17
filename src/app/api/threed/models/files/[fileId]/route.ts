@@ -86,6 +86,9 @@ export async function DELETE(
       candidate.id === ownedModel.mainModelFileId && candidate.fileType === 'model'
     )) ?? null;
 
+    if (ownedModel.imageTopViewUrl && ownedModel.imageTopViewUrl === file.filePath) {
+      return NextResponse.json({ success: false, error: 'Remove or replace the Model top-view image and Save Changes before deleting this File' }, { status: 409 });
+    }
     if (ownedModel.mainModelFileId === fileId) {
       return NextResponse.json({
         success: false,

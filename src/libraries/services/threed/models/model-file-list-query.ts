@@ -1,4 +1,4 @@
-export const MODEL_FILE_LIST_FILE_TYPES = ['model', 'texture', 'binary', 'other', 'animation'] as const;
+export const MODEL_FILE_LIST_FILE_TYPES = ['model', 'texture', 'binary', 'other', 'animation', 'top-view'] as const;
 export const MODEL_FILE_LIST_SORT_FIELDS = ['name', 'path', 'model', 'type', 'role', 'size', 'loadOrder'] as const;
 export type ModelFileListSortField = typeof MODEL_FILE_LIST_SORT_FIELDS[number];
 export interface ModelFileListQuery {

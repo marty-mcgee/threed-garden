@@ -147,11 +147,13 @@ const capture = vm.runInNewContext(ts.transpileModule(`const capture = ${provide
   { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText, {
   controlsRef: { current: null }, activeLayers: new Set(['models']), availableLayers: ['models'], envPreset: 'default-daylight',
   sunlight: undefined, extraGround: undefined, groundMap: undefined, autoRotate: false,
-  showGrid: false, showSimulations: false, showGizmoCube: true, showControls: false, physicsDebug: false,
+  showGrid: false, showSimulations: false, designTransparency: true, showGizmoCube: true, showControls: false, physicsDebug: false,
   projectId: 15, sensorCounterStateRef: sensorRef, activeScenario: null,
   scenarioInstructionVisible: false, showSensors: true, viewPresetsRef: { current: [] },
 });
+assert.equal(capture().designTransparency, true, 'Project Save captures the current Design appearance preference');
 const view = { version: 1, savedAt: '2026-09-29T12:00:00Z', viewMode: '3d', panelHeight: 50, cameraMode: 'stationary', threeD: capture() };
+assert.equal(parseThreeDProjectViewState(JSON.parse(JSON.stringify(view))).threeD?.designTransparency, true);
 assert.deepEqual(parseThreeDProjectViewState(JSON.parse(JSON.stringify(view))).threeD?.sensorState, savedSensors);
 sensorRef.current = resetSensorCounts(goalState);
 assert.deepEqual(JSON.parse(JSON.stringify(capture().sensorState.counts)), {}, 'Save provider reads current counts instead of a stale closure');

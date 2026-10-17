@@ -73,6 +73,7 @@ function fixture(overrides = {}) {
     'react': hooks, 'react/jsx-runtime': { jsx, jsxs: jsx, Fragment: 'fragment' },
     'react-dom': { createPortal: content => content },
     'lucide-react': { Focus: 'focus', Maximize: 'maximize', RotateCcw: 'reset' },
+    '@/components/ui/context-menu': Object.fromEntries(['ContextMenu','ContextMenuTrigger','ContextMenuContent','ContextMenuItem','ContextMenuLabel','ContextMenuSeparator'].map(name => [name, name])),
     './DesignAction': { DesignAction: 'action' }, '@/components/ui/button': { Button: 'button' }, '@/components/ui/separator': { Separator: 'separator' },
     '@/libraries/services/threed/design/document': document,
     '@/libraries/services/threed/design/plan-navigation': navigation,
@@ -218,3 +219,48 @@ for (const options of [{ active: false }, {}]) {
   assert.equal(f.calls.select.length, 0); assert.equal(f.calls.commit.length, 0); assert.equal(f.calls.view.length, 0); assert.equal(f.captures.size, 0);
 }
 console.log('PASS: actual DesignPlan blank-click/temporary-pan threshold, tool/selection/draft retention, final release movement, explicit/modifier pan, real object/corner edits, preview-only hits, cancellation and pointer/ruler guards. Offline React/SVG doubles; no browser or persistence.');
+
+// Existing Model instances render from measured Scene-unit corners without entering architecture history.
+{
+  let selectedModel = null, stopped = false;
+  const image = {id:'models-15',url:'https://fixture.invalid/top.png',corners:[{x:10,z:20},{x:12,z:20},{x:10,z:24}]};
+  const f = fixture({modelImages:[image],metersPerSceneUnit:.3048,onModelSelect:id=>{selectedModel=id;}});
+  const node = flatten(f.tree).find(node=>node.type==='image'); assert(node);
+  const matrix = node.props.transform.slice(7,-1).split(' ').map(Number);
+  for(const [i,value] of [.6096,0,0,1.2192,3.048,6.096].entries()) assert(Math.abs(matrix[i]-value)<1e-8);
+  node.props.onPointerDown({button:0,altKey:false,stopPropagation(){stopped=true;}});
+  assert.equal(selectedModel,'models-15');assert(stopped);assert.equal(f.calls.commit.length,0);assert.equal(f.calls.view.length,0);
+  selectedModel=null;node.props.onKeyDown({key:'Enter',stopPropagation(){},preventDefault(){}});assert.equal(selectedModel,'models-15');
+  f.update({disabled:true});selectedModel=null;flatten(f.tree).find(node=>node.type==='image').props.onPointerDown({button:0,altKey:false,stopPropagation(){}});assert.equal(selectedModel,null);
+  f.update({disabled:false,document:document.newDesign()});const fit=flatten(f.tree).find(node=>node.type==='action'&&node.props.label==='Fit Plan');assert.equal(fit.props.disabled,false);fit.props.onClick();assert(f.calls.view.length>0);
+}
+console.log('PASS: actual Model top-view SVG affine calibration, pointer/keyboard selection, busy guards, Fit Plan and no architecture history mutations.');
+
+{
+  assert.equal(navigation.formatPlanLength(.762,'imperial'), "2'6\"");
+  assert.equal(navigation.formatPlanLength(.3048-.000001,'imperial'), "1'0\"");
+  const f = fixture();
+  assert.equal(flatten(f.tree).filter(node=>node.props?.['data-measurement']).length,0);
+  flatten(f.tree).find(node=>node.type==='action'&&node.props.label==='Show Measurements').props.onClick();f.flush();
+  const wallLabel=flatten(f.tree).find(node=>node.props?.['data-measurement']==='w0');assert.equal(wallLabel.props.children,"10'0\"");
+  assert(flatten(f.tree).some(node=>node.props?.['data-measurement']==='floor'));
+  const toggle=flatten(f.tree).find(node=>node.type==='action'&&node.props.label==='Hide Measurements');assert.equal(toggle.props['aria-pressed'],true);toggle.props.onClick();f.flush();
+  assert.equal(flatten(f.tree).filter(node=>node.props?.['data-measurement']).length,0);assert.equal(f.calls.commit.length,0);
+  const metric=fixture({showMeasurements:true,measurementUnits:'metric'});assert.equal(flatten(metric.tree).find(node=>node.props?.['data-measurement']==='w0').props.children,'3.048 m');
+}
+console.log('PASS: measurement labels default hidden, actual toolbar toggle and active state, compact Imperial inches carry, Metric labels and no geometry/history mutations.');
+
+{
+  let chosen = 0;
+  const f = fixture({ contextActions: [{label:'Structures',color:'text-emerald-700',actions:[{label:'Wall',icon:'wall-icon',active:true,run:()=>chosen++},{label:'Undo',icon:'undo-icon',disabled:true,run:()=>{throw Error('Disabled action');}}]}] });
+  const items = () => flatten(f.tree).filter(node=>node.type==='ContextMenuItem');
+  assert.deepEqual(items().map(node=>flatten(node).find(child=>child.type==='span')?.props.children), ['Wall','Undo','Show Measurements','Fit Plan','Zoom to Selection','Reset View']);
+  assert(flatten(items()[0]).some(node=>node.type==='wall-icon'));
+  assert(flatten(items()[0]).some(node=>node.props?.children==='Selected'));
+  assert.equal(items()[1].props.disabled,true);
+  items()[0].props.onSelect(); assert.equal(chosen,1);
+  items()[2].props.onSelect();f.flush();assert(flatten(f.tree).some(node=>node.props?.['data-measurement']));
+  f.pointer('onPointerDown',350,210,{button:2});assert.equal(f.captures.size,0);assert.equal(f.calls.commit.length,0);
+  const content=flatten(f.tree).find(node=>node.type==='ContextMenuContent');let stopped=false;content.props.onKeyDown({stopPropagation(){stopped=true;}});assert(stopped,'Menu keyboard events must not reach drawing shortcuts.');
+}
+console.log('PASS: Design context menu named/icon actions, active/disabled state, shared callbacks, measurements, right-button guard and keyboard isolation. Radix DOM positioning/focus remains browser verification.');

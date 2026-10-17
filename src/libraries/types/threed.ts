@@ -97,6 +97,7 @@ export interface ThreeDPlant {
   perennial: boolean;
   imageUrl: string | null;
   thumbnailUrl: string | null;
+  imageTopViewUrl?: string | null;
   description: string | null;
   careInstructions: string | null;
   harvestInstructions: string | null;
@@ -169,6 +170,7 @@ export type ThreeDModelFileType =
   | 'binary'
   | 'animation'
   | 'other'
+  | 'top-view'
 
 export interface ThreeDModelFile {
   id: number

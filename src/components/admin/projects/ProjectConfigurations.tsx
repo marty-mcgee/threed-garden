@@ -17,7 +17,7 @@ function settings(config: unknown) {
     measurementUnits: projectConfigurationStamp(config).measurementUnits,
     viewMode: view?.viewMode ?? '3d' as ProjectViewMode, cameraMode: view?.cameraMode ?? 'stationary' as ProjectCameraMode,
     environment: scene?.environment ?? 'default-daylight', autoRotate: scene?.autoRotate ?? false,
-    showGrid: scene?.showGrid ?? false, showGizmo: scene?.showGizmo ?? false, showSimulations: scene?.showSimulations ?? true,
+    showGrid: scene?.showGrid ?? false, showGizmo: scene?.showGizmo ?? false, showSimulations: scene?.showSimulations ?? true, designTransparency: scene?.designTransparency ?? false,
     azimuth: String(scene?.sunlight?.azimuth ?? 0), elevation: String(scene?.sunlight?.elevation ?? 45),
     groundEnabled: scene?.ground?.enabled ?? false, groundSize: String(scene?.ground?.size ?? 200), groundHeight: String(scene?.ground?.height ?? -.1),
     activeLayers: scene?.activeLayers ?? [],
@@ -29,7 +29,7 @@ function changes(before: Settings, after: Settings): ProjectConfigurationChanges
   if (before.measurementUnits !== after.measurementUnits) result.measurementUnits = after.measurementUnits;
   if (before.viewMode !== after.viewMode) result.viewMode = after.viewMode;
   if (before.cameraMode !== after.cameraMode) result.cameraMode = after.cameraMode;
-  for (const key of ['environment', 'autoRotate', 'showGrid', 'showGizmo', 'showSimulations'] as const) if (before[key] !== after[key]) Object.assign(scene, { [key]: after[key] });
+  for (const key of ['environment', 'autoRotate', 'showGrid', 'showGizmo', 'showSimulations', 'designTransparency'] as const) if (before[key] !== after[key]) Object.assign(scene, { [key]: after[key] });
   if (before.azimuth !== after.azimuth || before.elevation !== after.elevation) scene.sunlight = { azimuth: Number(after.azimuth), elevation: Number(after.elevation) };
   if (before.groundEnabled !== after.groundEnabled || before.groundSize !== after.groundSize || before.groundHeight !== after.groundHeight) scene.ground = { enabled: after.groundEnabled, size: Number(after.groundSize), height: Number(after.groundHeight) };
   if (JSON.stringify([...before.activeLayers].sort()) !== JSON.stringify([...after.activeLayers].sort())) scene.activeLayers = after.activeLayers;
@@ -115,7 +115,7 @@ export function ProjectConfigurations({ project, disabled, onSaved, onCalibrate,
         </fieldset>
         <fieldset disabled={!scene} className="space-y-3 rounded-md border p-3"><legend className="px-1 text-sm font-semibold">Scene environment</legend>
           <label className="block space-y-1 text-sm">Environment<select aria-label="Scene environment" className={selectClass} value={draft.environment} onChange={e=>set('environment',e.target.value)}>{THREE_D_ENVIRONMENT_PRESETS.map(p=><option key={p.key} value={p.key}>{p.label}</option>)}</select></label>
-          <div className="flex flex-wrap gap-x-5 gap-y-2">{([['autoRotate','Auto-rotate'],['showGrid','Grid'],['showGizmo','Orientation gizmo'],['showSimulations','Simulations panel']] as const).map(([key,label])=><label key={key} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={draft[key]} onChange={e=>set(key,e.target.checked)} />{label}</label>)}</div>
+          <div className="flex flex-wrap gap-x-5 gap-y-2">{([['autoRotate','Auto-rotate'],['showGrid','Grid'],['showGizmo','Orientation gizmo'],['showSimulations','Simulations panel'],['designTransparency','Transparent Design objects']] as const).map(([key,label])=><label key={key} className="flex items-center gap-2 text-sm"><input type="checkbox" checked={draft[key]} onChange={e=>set(key,e.target.checked)} />{label}</label>)}</div>
           <div className="grid gap-3 sm:grid-cols-2">{([['azimuth','Sun direction (°)',0,360],['elevation','Sun elevation (°)',5,90],['groundSize','Ground size (Scene units)',10,2000],['groundHeight','Ground height (Scene units)',-1000,1000]] as const).map(([key,label,min,max])=><label key={key} className="space-y-1 text-sm">{label}<Input required type="number" step="any" min={min} max={max} value={draft[key]} onChange={e=>set(key,e.target.value)} /></label>)}</div>
           <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={draft.groundEnabled} onChange={e=>set('groundEnabled',e.target.checked)} />Extra ground plane</label>
           {!scene && <p className="text-xs text-muted-foreground">Save a 3D Scene view to configure its environment.</p>}

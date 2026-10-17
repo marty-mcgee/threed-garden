@@ -70,6 +70,7 @@ export interface ProjectThreeDViewState {
   showGizmo: boolean;
   showControls?: boolean;
   showSimulations?: boolean;
+  designTransparency?: boolean;
   physicsDebug?: boolean;
   scenarioRuntime?: ProjectScenarioRuntimeState;
   sensorState?: ProjectSensorSnapshot;
@@ -335,6 +336,7 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
       autoRotate: boolean(threeD.autoRotate),
       showGrid: boolean(threeD.showGrid),
       showGizmo: boolean(threeD.showGizmo),
+      ...(threeD.designTransparency === undefined ? {} : { designTransparency: boolean(threeD.designTransparency) }),
       ...(threeD.showSimulations === undefined ? {} : { showSimulations: boolean(threeD.showSimulations) }),
       ...(threeD.showControls === undefined ? {} : { showControls: boolean(threeD.showControls) }),
       ...(threeD.physicsDebug === undefined ? {} : { physicsDebug: boolean(threeD.physicsDebug) }),

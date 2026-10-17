@@ -1,5 +1,7 @@
 // components/map/ThreeDScene.tsx
 'use client';
+import { modelPlanImage, type ModelPlanImage } from '@/libraries/services/threed/models/model-plan-image';
+import { ProjectMeasurementUnits } from '@/components/project/ProjectMeasurementUnits';
 import { DesignSceneObjects } from '@/components/threed/design/DesignSceneObjects';
 import { DesignScenePhysics } from '@/components/threed/design/DesignScenePhysics';
 import type { DesignDocument } from '@/libraries/services/threed/design/document';
@@ -64,6 +66,7 @@ import {
 } from '@react-three/rapier';
 import * as THREE from 'three';
 import {
+  Blend,
   Settings,
   ChevronDown,
   ChevronUp,
@@ -186,6 +189,9 @@ function GroundMapImagePlane({ asset, transform }: { asset: ProjectGroundMapAsse
 }
 
 interface ThreeDSceneProps {
+  onModelPlanImage?: (projectId: number, markerId: string, image: ModelPlanImage | null) => void;
+  measurementUnits?: 'imperial' | 'metric';
+  onMeasurementUnitsChange?: (units: 'imperial' | 'metric') => void;
   architecture?: DesignDocument;
   metersPerSceneUnit?: number;
   selectedArchitectureId?: string | null;
@@ -1152,7 +1158,9 @@ function ProjectModelMarkerBody({
   characterSpawnPositions,
   projectId,
   onSensorPhysicsEvent,
+  onModelPlanImage,
 }: {
+  onModelPlanImage?: (projectId: number, markerId: string, image: ModelPlanImage | null) => void;
   marker: any;
   onLivePosition?: (position: { x: number; y: number; z: number }) => void;
   soccerKickActorPosition?: (request: SoccerKickRequest) => { x: number; y: number; z: number } | null;
@@ -1187,6 +1195,15 @@ function ProjectModelMarkerBody({
   const handleCollisionBoundsChange = useCallback((bounds: ModelCollisionBounds | null) => {
     setCollisionBounds(bounds);
   }, []);
+  useEffect(() => {
+    if (!projectId || !onModelPlanImage) return;
+    const url = marker.data?.imageTopViewUrl;
+    if (!collisionBounds || typeof url !== 'string' || !url.startsWith('https://') || !isLayerEnabled) {
+      onModelPlanImage(projectId, String(marker.id), null); return;
+    }
+    onModelPlanImage(projectId, String(marker.id), modelPlanImage(String(marker.id), url, collisionBounds, position, rotation));
+    return () => onModelPlanImage(projectId, String(marker.id), null);
+  }, [collisionBounds, marker.id, marker.data?.imageTopViewUrl, projectId, onModelPlanImage, isLayerEnabled, position[0], position[1], position[2], rotation[0], rotation[1], rotation[2]]);
   const handleModelVisualSettled = useCallback(() => setModelVisualSettled(true), []);
   const handleModelRuntimeError = useCallback((message: string | null) => {
     setModelLoadFailed(Boolean(message));
@@ -1636,7 +1653,7 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
 ));
 
 // ✅ ThreeD Marker Component
-const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, placementActive, onPlacementHover, onPlacementClick, actionTarget, soccerBallTargeted, controlledCharacterId, characterLayerEnabled, soccerKickActorPosition, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug, onModelRuntimeSettled, onCharacterRuntimeSettled, characterSpawnPositions, projectId, onSensorPhysicsEvent }: any) {
+const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, placementActive, onPlacementHover, onPlacementClick, actionTarget, soccerBallTargeted, controlledCharacterId, characterLayerEnabled, soccerKickActorPosition, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug, onModelRuntimeSettled, onCharacterRuntimeSettled, characterSpawnPositions, projectId, onSensorPhysicsEvent, onModelPlanImage }: any) {
   const [hovered, setHovered] = useState(false);
   const color = marker.color || getMarkerColor(marker.type);
   const size = isSelected ? 1.0 : 0.6;
@@ -1845,6 +1862,7 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
       onPlacementHover={onPlacementHover}
       onPlacementClick={onPlacementClick}
       onModelRuntimeSettled={onModelRuntimeSettled}
+      onModelPlanImage={onModelPlanImage}
       characterSpawnPositions={characterSpawnPositions}
       projectId={projectId}
       onSensorPhysicsEvent={onSensorPhysicsEvent}
@@ -2310,6 +2328,7 @@ function SceneModelDropTarget({
 }
 
 export function ThreeDScene({
+  measurementUnits = 'imperial', onMeasurementUnitsChange,
   architecture, metersPerSceneUnit = 0.3048, selectedArchitectureId, onArchitectureSelect, architectureLevelId, architectureShowRoofs = true,
 
   incidents,
@@ -2324,6 +2343,7 @@ export function ThreeDScene({
   autoRotate = false,
   onAutoRotateToggle,
   initialViewState,
+  onModelPlanImage,
   onViewStateProviderChange,
   projectId,
   geographicHeadingDegrees = 0,
@@ -2390,6 +2410,8 @@ export function ThreeDScene({
   const [showGrid, setShowGrid] = useState(false);
   const [showSensors, setShowSensors] = useState(false);
   const [showSimulations, setShowSimulations] = useState(true);
+  const [designTransparency, setDesignTransparency] = useState(initialViewState?.designTransparency ?? false);
+  useEffect(() => setDesignTransparency(initialViewState?.designTransparency ?? false), [projectId, initialViewState?.designTransparency]);
   const sensorsOverlay = useProjectOverlayPosition('sensors');
   const [activeScenario, setActiveScenario] = useState<ScenarioStartRequest | null>(null);
   const [scenarioInstructionVisible, setScenarioInstructionVisible] = useState(false);
@@ -3226,7 +3248,7 @@ export function ThreeDScene({
         groundMap,
         autoRotate: Boolean(autoRotate),
         showGrid,
-        showSimulations,
+        showSimulations, designTransparency,
         showGizmo: showGizmoCube,
         showControls,
         physicsDebug,
@@ -3251,7 +3273,7 @@ export function ThreeDScene({
       };
     });
     return () => onViewStateProviderChange(null);
-  }, [sunlight, extraGround, groundMap, activeLayers, activeScenario, autoRotate, availableLayers, controlsReady, envPreset, onViewStateProviderChange, physicsDebug, projectId, scenarioInstructionVisible, showControls, showGizmoCube, showGrid, showSensors, showSimulations, viewPresets]);
+  }, [sunlight, extraGround, groundMap, activeLayers, activeScenario, autoRotate, availableLayers, controlsReady, envPreset, onViewStateProviderChange, physicsDebug, projectId, scenarioInstructionVisible, showControls, showGizmoCube, showGrid, showSensors, showSimulations, designTransparency, viewPresets]);
 
   useEffect(() => {
     if (!controlsReady || !controlsRef.current || !initialViewState) return;
@@ -3656,6 +3678,7 @@ export function ThreeDScene({
         {showControls && scenePostProduction && (
           <div className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[3000] mt-1 max-h-[min(44rem,calc(100dvh-8rem))] w-56 space-y-0.5 overflow-y-auto rounded-lg border border-foreground/10 p-1.5 pb-2.5 shadow-xl backdrop-blur-sm [scrollbar-width:thin]">
             <div className="text-[10px] text-foreground/60 px-2 py-0.5">Environment</div>
+            <div className="border-b border-foreground/10 px-2 pb-2"><ProjectMeasurementUnits helpText="Display and input units only. Object sizes, calibration and physics stay unchanged. Retained by Save Project." value={measurementUnits} onChange={units => onMeasurementUnitsChange?.(units)} disabled={!onMeasurementUnitsChange} /></div>
             <Button
               type="button"
               variant="ghost"
@@ -3710,6 +3733,7 @@ export function ThreeDScene({
               <RotateCw className={`h-3.5 w-3.5 ${autoRotate ? 'animate-spin [animation-duration:4s]' : ''}`} />
               {autoRotate ? 'Pause Rotation' : 'Auto-Rotate'}
             </button>
+            <button onClick={() => setDesignTransparency(!designTransparency)} aria-pressed={designTransparency} className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-foreground/70 hover:bg-foreground/10 hover:text-foreground"><Blend aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />{designTransparency ? 'Hide' : 'Show'} Design Transparency</button>
             <button onClick={() => setShowGrid(!showGrid)} aria-pressed={showGrid} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showGrid ? 'bg-foreground/10 text-foreground' : 'text-foreground/70 hover:bg-foreground/10 hover:text-foreground'}`}>
               <Grid3X3 className="h-3.5 w-3.5" />
               {showGrid ? 'Hide Grid' : 'Show Grid'}
@@ -3741,24 +3765,6 @@ export function ThreeDScene({
               </button>
             )}
             <div className="border-t border-foreground/10 my-1" />
-            <button
-              onClick={showNorthUpView}
-              className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-foreground/70 transition-colors hover:bg-foreground/10 hover:text-foreground"
-            >
-              <Compass className="h-3.5 w-3.5" />
-              North-Up View
-            </button>
-            <button
-              onClick={() => {
-                setSelectedDetails(null);
-                if (controlsRef.current) zoomToPosition(centerX, centerZ);
-              }}
-              className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-foreground/70 transition-colors hover:bg-foreground/10 hover:text-foreground"
-            >
-              <Crosshair className="h-3.5 w-3.5" />
-              Center View
-            </button>
-            
             {/* ✅ Save View button */}
             <button
               onClick={() => setShowPresetDialog(true)}
@@ -3879,7 +3885,7 @@ export function ThreeDScene({
         gl={{ antialias: true, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0 }}
         shadows={{ type: THREE.PCFShadowMap }}
       >
-        {projectId && architecture && <DesignSceneObjects document={architecture} projectId={projectId} metersPerSceneUnit={metersPerSceneUnit} selected={selectedArchitectureId} onSelect={onArchitectureSelect} visibleLevelId={architectureLevelId} showRoofs={architectureShowRoofs} visible={activeLayers.has('designs')} />}
+        {projectId && architecture && <DesignSceneObjects transparent={designTransparency} document={architecture} projectId={projectId} metersPerSceneUnit={metersPerSceneUnit} selected={selectedArchitectureId} onSelect={onArchitectureSelect} visibleLevelId={architectureLevelId} showRoofs={architectureShowRoofs} visible={activeLayers.has('designs')} />}
         <SceneHoverTitlePosition markerId={hoveredSceneMarker ? String(hoveredSceneMarker.id) : undefined} point={hoveredSceneMarkerIdentity?.point} labelRef={hoverTitleRef} />
         <SceneFrameReadyNotifier
           key={presentationKey}
@@ -4198,6 +4204,7 @@ export function ThreeDScene({
                   livePositionsRef={livePositionsRef}
                   physicsDebug={physicsDebug}
                   onModelRuntimeSettled={handleModelRuntimeSettled}
+                  onModelPlanImage={onModelPlanImage}
                   onCharacterRuntimeSettled={handleCharacterRuntimeSettled}
                   characterSpawnPositions={characterSpawnPositions}
                   projectId={projectId}

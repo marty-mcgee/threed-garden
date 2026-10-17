@@ -1,3 +1,25 @@
+## v0.26.8 - ThreeD Designs: Transparency, top views and canvas tools
+
+Prepared locally October 17, 2026 on main at 7243155b plus accepted working changes. Package/root lockfile are 0.26.8; dependencies unchanged. This is release preparation, not deployment confirmation. See [release record](docs/releases/v0.26.8.md).
+
+Includes saved Design transparency, owned Model top-view PNG uploads and calibrated plan images, Environment measurement controls, adaptive Metric rulers, optional object measurements and a compact right-click Design tools menu. Developer accepted the context menu and condensed styling. Actual uploads, additive SQL application and authenticated Save/reopen for these new fields remain manual; older acceptance is not new verification. No servers, live writes or Git/deployment operations. Historical preparation records below are retained.
+
+## October 17 - Project load compatibility correction
+
+Developer reported Projects failing to load and suspects the pending database update. Source inspection found modelSelection expanded the new physical image_top_view_url column into Project Model queries while the additive SQL was still unapplied. That is a sufficient failure condition for an older database; no server stack or live schema inspection independently confirmed the production cause.
+
+The shared Model projection now reads the optional field through to_jsonb(threed_models) ->> 'image_top_view_url', yielding null if absent instead of referencing a missing column. Existing primary File authority and other Model fields are retained. New image persistence still requires the additive SQL; no live SQL was executed. This supersedes earlier statements that normal Project reads must wait for the column. The temporary whole-row JSON compatibility lookup may be replaced with the direct column after migration acceptance.
+
+Real Drizzle generated-SQL regression and focused Design/appearance suites passed offline. Browser reload and real database behavior remain manual. Local servers remain untouched.
+
+## v0.26.8 local implementation - Design appearance and top-view Models
+
+Verification: all 78 guarded offline CI tasks passed after extending the new-component and Save-provider mocks. Supplemental top-view attachment-selection ownership tests, final attachment metadata follow-up and fresh TypeScript passed separately after that CI run, including the final Model-versus-architecture selection precedence adjustment. Focused Design/Project/Model/style checks passed. No full production build, browser appearance, actual Blob upload or authenticated DB persistence was run for this increment. The additive schema SQL remains unapplied.
+
+See [implementation and source inventory](docs/plans/v0.26.8.md). Project-owned designTransparency is captured/validated through existing workspace Save and Admin configuration patches; retained architecture materials restore original appearance without geometry/physics changes. Nullable threed_models.image_top_view_url references owned top-view threed_model_files attachments. New bounded PNG uploads use Vercel Blob and remain a Model draft selection until Save. Loaded Model bounds drive calibrated 2D images, existing Project selection and plan framing; no duplicate Model/Design entities or extra loaders. Current asset authority clears stale image URLs.
+
+IMPORTANT: [additive column SQL](docs/releases/sql/v0.26.8-model-top-view.sql) is prepared but NOT applied. Apply/review separately before using/deploying schema-dependent Model reads. No agent DB/storage writes or browser/upload/persistence verification. Package remains 0.26.7; this is unreleased v0.26.8 work. User-scoped sidebar edits remain intact. Local servers are untouched; leave unstaged. No live schema operations, Git writes or deployment.
+
 ## v0.26.7 - ThreeD Simulations: Unified Admin editor
 
 Final preparation passed: all 77 offline CI tasks, four focused suites (eight scripts), fresh TypeScript, metadata consistency, source/config parity and whitespace checks. Guarded production build passed on isolated Next.js 16.4.2 (145/145 pages, exit 0). The existing matching isolated dependency installation was reused; no fresh dependency install is claimed. External network/dev-server access was blocked, credentials scrubbed and dummy database/offline fonts used. CI ran outside the Windows sandbox to avoid the previously confirmed tsx userInfo restriction. The build emitted the known non-failing nested-lockfile workspace-root warning. Next regenerated only the isolated next-env dev/build type paths; the Developer source copy was untouched. Runtime browser/authenticated persistence and production verification remain manual. No servers, live writes, Git writes or deployment.
@@ -340,3 +362,14 @@ as release-blocking.
 - Keep physical commands disabled until the server-side adapter has an allowlist, coordinate bounds, concurrency protection, audit records, and acknowledgement handling.
 - Do not send arbitrary CeleryScript, raw command names, coordinates, or pin operations supplied by a browser.
 - Emergency stop must not depend on character animation or the normal action-completion path.
+
+
+October 17 SQL status update: Developer confirms the new SQL has been applied. Earlier unapplied-column statements are historical and superseded by this report. No agent live schema inspection or SQL execution was performed; actual top-view upload/Save-reopen remains separately unverified.
+
+
+Final v0.26.8 release validation: all 78 guarded offline CI tasks passed on the final rerun. Fresh TypeScript, version metadata, source parity and whitespace checks passed; guarded isolated production build completed 145/145 pages with exit 0. The only post-build source change was the stale validation fixture correction (no runtime changes). SQL application is Developer-confirmed, not independently inspected. New top-view upload/persistence and browser Save/reopen remain manual. No servers, live writes, commit/tag/push/deployment. Files remain unstaged.
+
+
+## Developer manual acceptance - October 17, 2026
+
+Developer confirms **Real Top-View Image Upload** and **Project Save/Re-open** passed for this v0.26.8 checkpoint. These confirmations supersede earlier pending entries for those two checks. SQL application was also Developer-confirmed. This is Developer-reported manual verification, separate from the passed agent offline checks; no independent production verification or deployment confirmation is inferred. Broader cross-device, narrow-screen and all-case visual coverage remain separate.

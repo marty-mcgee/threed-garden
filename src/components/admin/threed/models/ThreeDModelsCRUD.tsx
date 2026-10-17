@@ -2,6 +2,7 @@
 // Full CRUD for the ThreeD `threed_models` library with relational file management
 // (model files, textures, and supportive media) backed by Vercel Blob storage.
 'use client';
+import { ModelTopViewImage } from './ModelTopViewImage';
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -84,6 +85,7 @@ interface Model {
   filePath: string;
   fileSize: number | null;
   thumbnailUrl: string | null;
+  imageTopViewUrl?: string | null;
   usedByPlants: boolean | null;
   usedByCharacters: boolean | null;
   scale: string;
@@ -542,6 +544,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
       filePath: model.filePath,
       fileSize: model.fileSize ? String(model.fileSize) : '',
       thumbnailUrl: model.thumbnailUrl || '',
+      imageTopViewUrl: model.imageTopViewUrl || '',
       usedByPlants: model.usedByPlants ?? false,
       usedByCharacters: model.usedByCharacters ?? false,
       scale: model.scale || '1.0',
@@ -660,6 +663,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
                         <ThreeDModelPreviewImageFields mode={view === 'create' ? 'create' : 'edit'} form={formData} setForm={setFormData}
                           isSubmitting={isSubmitting} uploadingPrimary={uploadingPrimary} uploadingThumbnail={uploadingThumbnail} onThumbnail={handleThumbnailUpload}
                           previewImageAction={importerPreviewModel && <ModelPreviewImageExport key={editingModel?.id ?? 'draft'} model={importerPreviewModel} useDraftModel onOpenChange={setExportOpen} dependencyCount={0} attachedDependencyCount={0} disabled={busy} onUseImageUrl={url => setFormData(current => ({ ...current, thumbnailUrl: url }))} />} />
+                        <ModelTopViewImage modelId={editingModel?.id} value={formData.imageTopViewUrl ?? ''} disabled={busy || !detailsReady} onBusyChange={setUploadingThumbnail} onChange={imageTopViewUrl => setFormData(current => ({ ...current, imageTopViewUrl }))} />
                       </fieldset>
                     </section>
                     <fieldset aria-label="Model details" tabIndex={0} disabled={busy || !detailsReady} className="min-h-0 min-w-0 rounded-lg border admin-editor-panel p-3 lg:overflow-y-auto [&_section]:rounded-md [&_section]:border [&_section]:p-3">
