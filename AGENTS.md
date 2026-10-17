@@ -1,3 +1,7 @@
+## Production release confirmed - v0.26.8
+
+October 17, 2026: Developer confirms **v0.26.8 - ThreeD Designs: Transparency, top views and canvas tools** released to production. This supersedes earlier local-preparation/unreleased status for this version. Package/root lockfile remain 0.26.8. SQL application, Real Top-View Image Upload and Project Save/Re-open were separately Developer-confirmed. Prior 78-task offline CI, TypeScript and guarded build results remain pre-release evidence; no independent post-deployment verification or exact deployed commit is established. This documentation update performs no deployment, Git writes, live data or server operations.
+
 ## v0.26.8 - ThreeD Designs: Transparency, top views and canvas tools
 
 Prepared locally October 17, 2026 on main at 7243155b plus accepted working changes. Package/root lockfile are 0.26.8; dependencies unchanged. This is release preparation, not deployment confirmation. See [release record](docs/releases/v0.26.8.md).
