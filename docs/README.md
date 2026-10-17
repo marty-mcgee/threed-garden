@@ -1,3 +1,7 @@
+## Production release confirmed: [v0.26.10 - ThreeD Project Models: DetailsCard simplification](releases/v0.26.10.md)
+
+October 17, 2026: Developer confirms v0.26.10 released to production. This supersedes the earlier preparation-only status below. Package/root lockfile remain 0.26.10. Existing offline checks are pre-release evidence; the exact deployed commit and independent post-deployment verification are not established. The pending v0.26.9 level-visibility-subset Save/reopen check is not separately confirmed. This update records the Developer's report only; no agent Git writes, deployment, server operations or live data writes were performed.
+
 ## Prepared checkpoint: [v0.26.10 - ThreeD Project Models: DetailsCard simplification](releases/v0.26.10.md)
 
 October 17, 2026: local version 0.26.10; production remains Developer-confirmed v0.26.9. DetailsCard section headers are available by default after removing its Show/Hide Character settings button. Existing sections still expand and collapse. Dependencies and schema are unchanged.
