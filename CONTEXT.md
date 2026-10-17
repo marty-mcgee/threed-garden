@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Package/root lockfile: **0.26.11**, the prepared manual-release checkpoint [Repository maintenance and Design Properties](docs/releases/v0.26.11.md). **[v0.26.10 - ThreeD Project Models: DetailsCard simplification](docs/releases/v0.26.10.md)** is Developer-confirmed released to production October 17, 2026. Exact deployed commit and independent post-deployment checks are not established. The repository maintenance baseline is clean main at `e8c8308927daf4e34639a18432e71cb1f3eb806f`; inspect Git again before future work. The Developer assigned the maintenance work to v0.26.11 and added the Design Properties tooltip/Status task.
+Package/root lockfile: **0.26.11**. **[v0.26.11 - ThreeD Garden: Repository maintenance and Design Properties](docs/releases/v0.26.11.md)** is Developer-confirmed released to production October 17, 2026. Exact deployed commit, subsequent GitHub validation result and independent post-deployment checks are not established. Inspect current Git state before future work; the maintenance baseline e8c83089 is repository history, not deployed provenance.
 
 Developer naming: **ThreeD > Project > Model > DetailsCard**. Use exact App names, verify ownership, state uncertainty and honor corrections. Provide concise commit titles only unless asked for a body; keep responses concise with **Next Steps:**. See [durable working preferences](docs/agents/README.md#developer-preferences) and [AGENTS.md](AGENTS.md).
 
@@ -17,11 +17,11 @@ Developer naming: **ThreeD > Project > Model > DetailsCard**. Use exact App name
 - Model/File source, attachments and preview boundaries are documented in [Model administration](docs/developers/THREED_MODEL_ADMIN.md); Character and runtime-marker contracts are in [Characters](docs/developers/THREED_CHARACTERS.md) and [Markers](docs/developers/THREED_MARKERS.md).
 - Simulation definitions use canonical Admin Edit routes; legacy detail/View routes redirect. Scenario plans, runtime Actions and immutable captured Results remain distinct. See [Simulations](docs/developers/THREED_SIMULATIONS.md).
 
-## Prepared v0.26.11 checkpoint
+## Released v0.26.11 checkpoint
 
-Repository maintenance, Design Properties Status/help and shared App tooltip sizing/spacing are accepted locally and prepared for manual release. Final fresh isolated TypeScript, all 79 guarded Linux CI tasks, metadata/link/whitespace checks and the guarded Next.js 16.4.2 build (145/145 pages, exit 0) passed after the final UI changes. Source/input parity passed. Matching previously clean-installed dependencies were reused; no new install is claimed for preparation. Native desktop/narrow help checks and earlier Windows checks are separate evidence. See [release record](docs/releases/v0.26.11.md) for exact gates, changed files and manual limits, and [maintenance record](docs/plans/repository-maintenance-2026-10-17.md) for preserved history/file sizes.
+Repository maintenance, Design Properties Status/help and shared App tooltip sizing/spacing are Developer-confirmed released. Final fresh isolated TypeScript, all 79 guarded Linux CI tasks, metadata/link/whitespace checks and the guarded Next.js 16.4.2 build (145/145 pages, exit 0) passed after the final UI changes. Source/input parity passed. Matching previously clean-installed dependencies were reused; no new install is claimed for preparation. Native desktop/narrow help checks and earlier Windows checks are separate evidence. See [release record](docs/releases/v0.26.11.md) for exact gates, changed files and manual limits, and [maintenance record](docs/plans/repository-maintenance-2026-10-17.md) for preserved history/file sizes.
 
-Production remains Developer-confirmed v0.26.10. The repaired GitHub workflow, authenticated acceptance and independent post-deployment verification are not newly confirmed. Developer servers/active installation are untouched, and changes remain unstaged. No live writes, Git writes or deployment occurred.
+Release confirmation is separate from the prior local checks. The subsequent GitHub result, authenticated acceptance and independent post-deployment verification are not newly confirmed. This documentation update leaves Developer servers/active installation untouched and performs no agent live writes, Git writes or deployment.
 
 ## Acceptance and known limitations
 
