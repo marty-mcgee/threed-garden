@@ -1,3 +1,22 @@
+## Developer working preferences - October 17, 2026
+
+Apply these rules on future requests, including release preparation:
+
+- Use exact existing ThreeD App names and the Developer-established ownership hierarchy. For this DetailsCard, the hierarchy is **ThreeD > Project > Model > DetailsCard**. Preserve the name **DetailsCard**.
+- Verify terminology and ownership before proposing a release title. A component's mount location, route, selected entity or removed button label alone does not establish its App owner. Do not invent a surface such as ?Characters settings panel? from a Character-specific control.
+- Treat the Developer's explicit naming corrections as authoritative. Distinguish source observations from assumptions; state uncertainty when ownership is unresolved instead of presenting guesses confidently or cycling through unsupported titles.
+- Release titles should name the established App owner and the concrete change. Use **v0.26.10 - ThreeD Project Models: DetailsCard simplification** consistently for this checkpoint.
+- When asked for a Git commit message, provide only the concise title unless a detailed body is explicitly requested. Do not add an unsolicited detailed commit description.
+- Keep responses concise and include **Next Steps:**. Apply requested documentation corrections across the documents already updated, preserving manual edits and historical release evidence.
+
+## Prepared checkpoint: [v0.26.10 - ThreeD Project Models: DetailsCard simplification](docs/releases/v0.26.10.md)
+
+October 17, 2026: local version 0.26.10; production remains Developer-confirmed v0.26.9. DetailsCard section headers are available by default after removing its Show/Hide Character settings button. Existing sections still expand and collapse. Dependencies and schema are unchanged.
+
+Fresh TypeScript and four focused Character/overlay scripts passed. The broader overlay suite remains incomplete after the known Windows tsx userInfo ENOMEM restriction. Full CI/build and browser verification were not rerun. See release notes for evidence and pending checks. Preserve manual edits, leave changes unstaged and keep Developer servers untouched. No live writes, migrations, seeds, Git writes or deployment.
+
+Earlier release/status entries below are historical.
+
 ## Production release confirmed - v0.26.9
 
 October 17, 2026: Developer confirms **v0.26.9 - ThreeD Designs: Linked Levels and toolbar polish** released to production. This supersedes earlier local-preparation/unreleased status for this version. Package/root lockfile remain 0.26.9. Prior 78-task offline CI, fresh TypeScript and guarded build results remain pre-release evidence; no independent post-deployment check or exact deployed commit is established. Release confirmation does not separately confirm the pending level-visibility-subset Save/reopen check. This documentation update performs no server, live data, Git-write or deployment operations.
@@ -863,3 +882,6 @@ October 17 Levels controls linkage: choosing Properties Active level now reveals
 
 
 Final v0.26.9 preparation: all 78 guarded offline CI tasks passed, fresh TypeScript passed, version metadata/source parity (1007 source files) and whitespace checks passed. Guarded isolated production build passed with exit 0 (145 pages), reused matching dependencies with no fresh install, scrubbed credentials/dummy DB/blocked network/offline fonts. Known nested-lockfile warning remains non-failing. Developer server and installation untouched. Automated boundaries are mocked; new level-subset authenticated Save/reopen and broader responsive coverage remain manual. No commit/tag/push/deploy.
+
+
+October 17 DetailsCard simplification: removed Character Show/Hide settings toolbar button, local toggle/reset state and CSS rule hiding data-character-settings-section. All supported section headers are now available by default, retaining existing section expansion controls, fields/actions and card scrolling. Screenshot was Character Gardener Marty; Model sections were already available. No Project/physics/storage behavior changed. Character introduction, workspace feedback, overlay positioning and saved-view checks passed. The broader overlay validation task stopped at the known Windows tsx userInfo ENOMEM before project-settings assertions; not a runtime regression or full suite pass. Browser acceptance remains manual. No servers/live writes/version/Git/deployment changes.

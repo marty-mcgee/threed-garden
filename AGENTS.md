@@ -1,3 +1,11 @@
+## Prepared checkpoint: [v0.26.10 - ThreeD Project Models: DetailsCard simplification](docs/releases/v0.26.10.md)
+
+October 17, 2026: local version 0.26.10; production remains Developer-confirmed v0.26.9. DetailsCard section headers are available by default after removing its Show/Hide Character settings button. Existing sections still expand and collapse. Dependencies and schema are unchanged.
+
+Fresh TypeScript and four focused Character/overlay scripts passed. The broader overlay suite remains incomplete after the known Windows tsx userInfo ENOMEM restriction. Full CI/build and browser verification were not rerun. See release notes for evidence and pending checks. Preserve manual edits, leave changes unstaged and keep Developer servers untouched. No live writes, migrations, seeds, Git writes or deployment.
+
+Earlier release/status entries below are historical.
+
 ## Production release confirmed - v0.26.9
 
 October 17, 2026: Developer confirms **v0.26.9 - ThreeD Designs: Linked Levels and toolbar polish** released to production. This supersedes earlier local-preparation/unreleased status for this version. Package/root lockfile remain 0.26.9. Prior 78-task offline CI, fresh TypeScript and guarded build results remain pre-release evidence; no independent post-deployment check or exact deployed commit is established. Release confirmation does not separately confirm the pending level-visibility-subset Save/reopen check. This documentation update performs no server, live data, Git-write or deployment operations.

@@ -1,3 +1,22 @@
+## Developer working preferences - October 17, 2026
+
+Apply these rules on future requests, including release preparation:
+
+- Use exact existing ThreeD App names and the Developer-established ownership hierarchy. For this DetailsCard, the hierarchy is **ThreeD > Project > Model > DetailsCard**. Preserve the name **DetailsCard**.
+- Verify terminology and ownership before proposing a release title. A component's mount location, route, selected entity or removed button label alone does not establish its App owner. Do not invent a surface such as ?Characters settings panel? from a Character-specific control.
+- Treat the Developer's explicit naming corrections as authoritative. Distinguish source observations from assumptions; state uncertainty when ownership is unresolved instead of presenting guesses confidently or cycling through unsupported titles.
+- Release titles should name the established App owner and the concrete change. Use **v0.26.10 - ThreeD Project Models: DetailsCard simplification** consistently for this checkpoint.
+- When asked for a Git commit message, provide only the concise title unless a detailed body is explicitly requested. Do not add an unsolicited detailed commit description.
+- Keep responses concise and include **Next Steps:**. Apply requested documentation corrections across the documents already updated, preserving manual edits and historical release evidence.
+
+## Prepared checkpoint: [v0.26.10 - ThreeD Project Models: DetailsCard simplification](../releases/v0.26.10.md)
+
+October 17, 2026: local version 0.26.10; production remains Developer-confirmed v0.26.9. DetailsCard section headers are available by default after removing its Show/Hide Character settings button. Existing sections still expand and collapse. Dependencies and schema are unchanged.
+
+Fresh TypeScript and four focused checks passed; full CI/build and browser verification were not rerun. See release notes for validation and manual checks.
+
+Earlier release/status entries below are historical.
+
 ## Local release preparation: [v0.25.2 — ThreeD Garden: Design tools and texture linking](../releases/v0.25.2.md)
 
 Prepared October 13, 2026 on main; package/root lockfile are 0.25.2. Includes grouped Design tools, blank-space drag panning with separate Select/Pan tools, and explicit PNG replacements for FBX TGA requirements. The Developer accepted toolbar/panning behavior. Stable React Three Fiber 9.8.1 is restored; existing optional lockfile cleanup is preserved. See release notes for offline verification and remaining authenticated texture-link, Scene appearance, Save/reopen and touch checks. No database schema change or server operation; leave changes unstaged.

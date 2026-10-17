@@ -1,3 +1,11 @@
+## Prepared checkpoint: [v0.26.10 - ThreeD Project Models: DetailsCard simplification](v0.26.10.md)
+
+October 17, 2026: local version 0.26.10; production remains Developer-confirmed v0.26.9. DetailsCard section headers are available by default after removing its Show/Hide Character settings button. Existing sections still expand and collapse. Dependencies and schema are unchanged.
+
+Fresh TypeScript and four focused checks passed; full CI/build and browser verification were not rerun. See release notes for validation and manual checks.
+
+Earlier release/status entries below are historical.
+
 ## Prepared checkpoint: [v0.26.7 - ThreeD Simulations: Unified Admin editor](v0.26.7.md)
 
 Local preparation; deployment is not performed or independently verified.

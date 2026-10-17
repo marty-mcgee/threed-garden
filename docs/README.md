@@ -1,3 +1,11 @@
+## Prepared checkpoint: [v0.26.10 - ThreeD Project Models: DetailsCard simplification](releases/v0.26.10.md)
+
+October 17, 2026: local version 0.26.10; production remains Developer-confirmed v0.26.9. DetailsCard section headers are available by default after removing its Show/Hide Character settings button. Existing sections still expand and collapse. Dependencies and schema are unchanged.
+
+Fresh TypeScript and four focused checks passed; full CI/build and browser verification were not rerun. See release notes for validation and manual checks.
+
+Earlier release/status entries below are historical.
+
 ## Release checkpoint: [v0.25.3 — ThreeD Designs: Legacy recovery and Model guidance](releases/v0.25.3.md)
 
 Prepared locally October 14, 2026; package/root lockfile are 0.25.3 with stable Fiber 9.8.1. Production remains Developer-confirmed v0.25.2. Includes staged legacy architecture JSON import, a separate explicit OBJ/MTL recovery CLI and clearer Model Library/DetailsCard guidance. No schema change or automatic import/recovery runs on deployment.
