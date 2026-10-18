@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Package/root lockfile: **0.26.11**. **[v0.26.11 - ThreeD Garden: Repository maintenance and Design Properties](docs/releases/v0.26.11.md)** is Developer-confirmed released to production October 17, 2026. Exact deployed commit, subsequent GitHub validation result and independent post-deployment checks are not established. Inspect current Git state before future work; the maintenance baseline e8c83089 is repository history, not deployed provenance.
+Package/root lockfile: **0.26.12**, prepared for manual release as **[v0.26.12 - ThreeD Garden: shadcn CLI upgrade](docs/releases/v0.26.12.md)**. **[v0.26.11 - ThreeD Garden: Repository maintenance and Design Properties](docs/releases/v0.26.11.md)** is Developer-confirmed released to production October 17, 2026. Exact deployed commit, subsequent GitHub validation result and independent post-deployment checks are not established. Inspect current Git state before future work; the maintenance baseline e8c83089 is repository history, not deployed provenance.
 
 Developer naming: **ThreeD > Project > Model > DetailsCard**. Use exact App names, verify ownership, state uncertainty and honor corrections. Provide concise commit titles only unless asked for a body; keep responses concise with **Next Steps:**. See [durable working preferences](docs/agents/README.md#developer-preferences) and [AGENTS.md](AGENTS.md).
 
@@ -22,6 +22,10 @@ Developer naming: **ThreeD > Project > Model > DetailsCard**. Use exact App name
 Repository maintenance, Design Properties Status/help and shared App tooltip sizing/spacing are Developer-confirmed released. Final fresh isolated TypeScript, all 79 guarded Linux CI tasks, metadata/link/whitespace checks and the guarded Next.js 16.4.2 build (145/145 pages, exit 0) passed after the final UI changes. Source/input parity passed. Matching previously clean-installed dependencies were reused; no new install is claimed for preparation. Native desktop/narrow help checks and earlier Windows checks are separate evidence. See [release record](docs/releases/v0.26.11.md) for exact gates, changed files and manual limits, and [maintenance record](docs/plans/repository-maintenance-2026-10-17.md) for preserved history/file sizes.
 
 Release confirmation is separate from the prior local checks. The subsequent GitHub result, authenticated acceptance and independent post-deployment verification are not newly confirmed. This documentation update leaves Developer servers/active installation untouched and performs no agent live writes, Git writes or deployment.
+
+## Prepared v0.26.12 checkpoint
+
+shadcn CLI is pinned to 4.22.0; App Zod 3.25.76 is explicit and existing Radix/UI/CSS owners are retained. Developer confirms successful npm ci, npm start and real-App Editor operation/appearance. This is local acceptance, not production confirmation or a claim that every Save/reopen/Character scenario was tested. Upgrade checks and native comparisons passed; final release gates are recorded in [v0.26.12](docs/releases/v0.26.12.md), with implementation detail in [the upgrade plan](docs/plans/shadcn-4-upgrade.md). Developer servers/installation remain agent-untouched. Changes stay unstaged for manual GitHub/Vercel release.
 
 ## Acceptance and known limitations
 

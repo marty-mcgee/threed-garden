@@ -52,6 +52,12 @@ See [release notes](../releases/v0.24.3.md) for manual steps. Do not rerun histo
 
 # Agent Validation Guide
 
+## Shared UI dependency upgrades
+
+Run `npm run validate -- shadcn-ui-boundary` against the matching clean installation; it verifies installed/locked shadcn and App Zod versions as well as existing Radix/configuration boundaries. Keep the App's direct Zod dependency separate from the CLI's own validation dependency.
+
+`npm run validate -- shadcn-ui-browser` is an optional Windows/installed-Edge check, excluded from portable `ci`/`all`. It exercises actual owned UI wrappers and App CSS through local files and a debugging pipe without starting a server: dialogs/focus, menus, selects, tabs/drafts, switches, sliders, help and disabled controls in both themes at 1440/375px. Its Tailwind source scan is explicitly limited to the same `src` tree for reproducible isolated-install comparisons. Artifacts remain in the printed OS temporary directory. Run it against baseline and candidate dependencies for an upgrade; it does not certify authenticated App flows, Scene rendering, uploads or production.
+
 ## v0.24.2 workspace feedback and responsive reliability
 
 TypeScript and 71 offline CI tasks passed. threed-overlay-layout now includes validate-workspace-save-feedback.cjs for actual hook hydration, camera/preferences, runtime exclusion, captured-only acknowledgment with latest callback closures, failure retention, Project isolation and actual toolbar status/tooltip/disabled-state checks. Existing Save callback fixtures invoke the shared builder. A focused sandbox check hit the known Windows tsx OS-profile restriction. First full CI identified an affected callback fixture; corrected before the successful full rerun. Native Design and isolated narrow card checks passed with mocked boundaries, including emulated touch at 640px. Guarded npm run build passed compilation/TypeScript and generated 143 pages using cached localhost fonts, an unreachable localhost DATABASE_URL and remote Node network blocking. No dev server was listening on port 4444. Version/dependency consistency, release source links and git diff --check passed. No authenticated App or production verification is claimed. Logs: OS temporary directory threed-v0242-ci.log, threed-v0242-build.log and threed-v0242-browser.log. Manual checks: docs/plans/v0.24.2.md.

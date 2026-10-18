@@ -8,7 +8,7 @@ Existing Developer-approved local screenshot from October 14, 2026; it illustrat
 
 [Demo](https://threedgarden.com/#garden-demo) · [Learn](https://threedgarden.com/learn) · [Getting started](docs/users/GETTING_STARTED.md) · [Documentation](docs/README.md)
 
-Current release: **[v0.26.11 - ThreeD Garden: Repository maintenance and Design Properties](docs/releases/v0.26.11.md)**. Developer-confirmed in production October 17, 2026. See [current context](CONTEXT.md) for evidence boundaries and local work.
+Prepared checkpoint: **[v0.26.12 - ThreeD Garden: shadcn CLI upgrade](docs/releases/v0.26.12.md)**. Production remains Developer-confirmed v0.26.11. See [current context](CONTEXT.md) for evidence boundaries and local work.
 
 ## Main capabilities
 

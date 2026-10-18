@@ -19,6 +19,7 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  'shadcn-ui-browser': [node('validate-shadcn-primitives-browser.cjs')],
   'repository-maintenance': [node('validate-repository-maintenance.cjs'), node('validate-farmbot-status-summary.cjs')],
   'design-appearance-top-view': [node('validate-design-appearance-top-view.cjs'), node('validate-model-top-view-compatibility.cjs')],
   'admin-sidebar': [node('validate-admin-sidebar.cjs')],
@@ -244,7 +245,7 @@ const ci = [
 
 const unavailableFixtures = ['threed-fbx-material-targets'];
 // Native Chromium/WebGL is optional and intentionally separate from portable CI/all.
-const runnableTasks = Object.keys(tasks).filter((name) => !unavailableFixtures.includes(name) && !['threed-model-builder-browser', 'threed-home-design-browser'].includes(name));
+const runnableTasks = Object.keys(tasks).filter((name) => !unavailableFixtures.includes(name) && !['threed-model-builder-browser', 'threed-home-design-browser', 'shadcn-ui-browser'].includes(name));
 
 const groups = {
   all: runnableTasks,
