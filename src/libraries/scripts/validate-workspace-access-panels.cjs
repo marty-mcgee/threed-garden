@@ -13,9 +13,11 @@ for(const name of names){
  vm.runInNewContext(ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText,{exports,require:key=>deps[key]??new Proxy({},{get:(_,key)=>String(key)})});
  const props={isOpen:true,projectModules:[],characters:[],farmBots:[],plants:[],beds:[],collections:[],visibleModels:[],placedFarmBotIds:new Set(),draft:{},placementDraft:{},placementScaleMultiplier:'1',viewMode:'design'};
  const host={};
- const floating=exports[name](props);
+ // Model Library now returns its Library surface beside a separate placement overlay.
+ const surface=result=>name==='ThreeDModelLibraryPanel'?result.props.children[0]:result;
+ const floating=surface(exports[name](props));
  assert.equal(floating.props.style,undefined);
- const docked=exports[name]({...props,dockHost:host});
+ const docked=surface(exports[name]({...props,dockHost:host}));
  assert.equal(docked.host,host);
  assert.equal(docked.child.props.style.height,'100%');
  assert.equal(docked.child.props.style.width,'100%');

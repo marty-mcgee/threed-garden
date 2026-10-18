@@ -1,0 +1,40 @@
+import assert from 'node:assert/strict';
+import type { PoolClient } from 'pg';
+// @ts-expect-error Native Node TypeScript requires the explicit extension.
+import { scanImages, planImages, applyChanges, type ModelRow } from './backfill-threed-model-images.ts';
+
+const pairs=await scanImages('public/home-design/objects','https://example.com/home-design/objects/');
+const chair=pairs.find(pair=>pair.asset==='armchair');
+assert(chair);
+assert(chair.thumbnail?.endsWith('/armchair.png'));
+assert(chair.topView?.endsWith('/armchair_top.png'));
+await assert.rejects(()=>scanImages('public/home-design/objects','file:///private'),/HTTPS/);
+const model: ModelRow={id:15,model_name:'Armchair',legacy_asset_name:'armchair',thumbnail_url:null,image_top_view_url:null,has_external_files:false};
+const plan=planImages([chair],[model]);
+assert.equal(plan.changes.length,1);
+const filled={...model,thumbnail_url:'https://existing/thumb.png',image_top_view_url:'https://existing/top.png'};
+assert.equal(planImages([chair],[filled]).changes.length,0);
+assert.equal(planImages([chair],[{...model,thumbnail_url:'keep'}]).changes[0].thumbnail,null);
+assert.equal(planImages([chair],[{...model,legacy_asset_name:null}]).unmatched.length,1);
+assert.equal(planImages([chair],[{...model,legacy_asset_name:null}],{armchair:15}).changes.length,1);
+assert.throws(()=>planImages([chair],[model,{...model,id:16}]),/Ambiguous/);
+assert.throws(()=>planImages([chair],[model],{armchair:99}),/not found/);
+const calls:{sql:string,params:unknown[]}[]=[];
+let attached=false,conflict=false;
+const client={query:async(sql:string,params:unknown[]=[])=>{
+  calls.push({sql,params});
+  if(sql.includes('FOR UPDATE'))return {rows:[conflict?filled:model],rowCount:1};
+  if(sql.includes('SELECT id FROM threed_model_files'))return {rows:attached?[{id:1}]:[],rowCount:attached?1:0};
+  return {rows:[],rowCount:1};
+}} as unknown as Pick<PoolClient,'query'>;
+await applyChanges(client,'owner',plan.changes);
+assert.equal(calls.filter(c=>c.sql.includes('INSERT INTO')).length,1);
+assert(calls.filter(c=>c.sql.includes('FOR UPDATE')||c.sql.includes('UPDATE threed_models')).every(c=>c.params[1]==='owner'));
+assert(calls.some(c=>c.sql.includes('INSERT INTO')&&c.params[0]==='owner'&&c.params[1]===15));
+assert(calls.some(c=>c.sql.includes('UPDATE threed_models')&&c.sql.includes("thumbnail_url IS NULL OR thumbnail_url=''")));
+calls.length=0;attached=true;await applyChanges(client,'owner',plan.changes);
+assert(!calls.some(c=>c.sql.includes('INSERT INTO')),'Existing top-view attachment is reused');
+calls.length=0;conflict=true;
+await assert.rejects(()=>applyChanges(client,'owner',plan.changes),/changed/);
+assert(!calls.some(c=>c.sql.includes('INSERT INTO')||c.sql.includes('UPDATE threed_models')));
+console.log(`PASS: offline inventory (${pairs.length} assets), exact/explicit matching, fill-only preservation, ambiguity rejection, owned attachment reuse/insert and stale-row refusal. Database calls mocked; no live access.`);

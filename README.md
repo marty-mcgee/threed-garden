@@ -8,7 +8,7 @@ Existing Developer-approved local screenshot from October 14, 2026; it illustrat
 
 [Demo](https://threedgarden.com/#garden-demo) · [Learn](https://threedgarden.com/learn) · [Getting started](docs/users/GETTING_STARTED.md) · [Documentation](docs/README.md)
 
-Prepared checkpoint: **[v0.26.12 - ThreeD Garden: shadcn CLI upgrade](docs/releases/v0.26.12.md)**. Production remains Developer-confirmed v0.26.11. See [current context](CONTEXT.md) for evidence boundaries and local work.
+Prepared checkpoint: **[v0.26.13 - ThreeD Project Models: Library placement overlay](docs/releases/v0.26.13.md)**. Production is Developer-confirmed v0.26.12. See [current context](CONTEXT.md) for evidence boundaries and local work.
 
 ## Main capabilities
 

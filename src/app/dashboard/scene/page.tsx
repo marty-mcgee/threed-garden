@@ -1595,12 +1595,25 @@ function UnifiedMapPageInner() {
       setPlacementModel(null);
       setPlacementScaleMultiplier('1');
       setPlacementModelRole('object');
-      if (projectSetupSessionProjectId === selectedProjectId) {
-        setIsModelLibraryOpen(false);
-        setIsScenariosOpen(false);
-        setIsSetupMenuOpen(false);
-        setIsProjectSetupOpen(true);
+      // Select the saved Project instance using the same runtime representation as Scene/Assets.
+      const placedMarker = data.threed.raw
+        ? buildThreeDRuntimeMarkerResult({ ...data.threed.raw, projectThreedMarkers: [createdMarker] })
+          .markers.find(marker => marker.id === createdMarker.markerId)
+        : null;
+      if (placedMarker) {
+        selectArchitecture(null);
+        groundMapInspector?.setOpen(false);
+        setSensorInspector(null);
+        setGroupInspector(null);
+        setSelectedIncident(null);
+        setSelectedMarker(placedMarker);
       }
+      setInspectedLibraryModelId(null);
+      setIsModelLibraryOpen(false);
+      setIsProjectAssetsOpen(true);
+      setIsScenariosOpen(false);
+      setIsSetupMenuOpen(false);
+      setIsProjectSetupOpen(false);
       showToastRef.current(`${placementModel.modelName} placed in the ThreeD Scene`, 'success');
     } catch (error) {
       console.error('Failed to place ThreeD Model Library item', {
@@ -1620,7 +1633,9 @@ function UnifiedMapPageInner() {
     placementScaleMultiplier,
     placementModelRole,
     placementThreedId,
-    projectSetupSessionProjectId,
+    data.threed.raw,
+    groundMapInspector?.setOpen,
+    selectArchitecture,
     selectedProjectId,
   ]);
 

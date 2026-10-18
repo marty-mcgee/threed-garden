@@ -120,6 +120,150 @@ export function ThreeDModelLibraryPanel({
       ? '2D Map'
       : '3D Scene';
 
+  // Keep placement outside the Library portal and its scroll owner.
+  const placementOverlay = (inspectedModel || placementModel) ? (
+    <section
+      className="threed-workspace-panel threed-scene-panel-surface threed-library-placement-overlay absolute top-[38px] z-[46] flex max-h-[calc(100%-46px)] w-72 max-w-[calc(100%-1rem)] flex-col overflow-hidden rounded-md border shadow-xl backdrop-blur-md"
+      aria-label="Place Asset in Project from Library"
+    >
+      <h2 className="shrink-0 border-b px-3 py-2 text-sm font-semibold">Place Asset in Project from Library</h2>
+      <div className="min-h-0 overflow-y-auto overscroll-contain p-2 [scrollbar-width:thin]">
+        {inspectedModel && (
+          <div className="mb-2 space-y-1 rounded border bg-muted/30 p-2 text-[10px]">
+            <div className="flex items-start justify-between gap-2">
+              <div className="min-w-0">
+                <div className="break-words text-xs font-medium [overflow-wrap:anywhere]">{inspectedModel.modelName}</div>
+                <div className="text-muted-foreground"><span className="uppercase">{inspectedModel.modelType}</span> · Model #{inspectedModel.id}</div>
+              </div>
+              <Button type="button" variant="ghost" size="icon" className="h-5 w-5 shrink-0" aria-label="Close Model metadata" title="Close Model metadata" onClick={() => onInspectModel(null)}>
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+            {(inspectedModel.libraryReadiness.primaryFileAvailable
+              || (inspectedModel.modelType === 'procedural' && !inspectedModel.filePath)) && (
+              <ThreeDModelLibraryPreview model={inspectedModel} />
+            )}
+            <div className="grid grid-cols-2 gap-x-2 text-muted-foreground">
+              <span>Saved base scale</span><span className="text-right text-foreground">{Number(inspectedModel.scale ?? 1)}</span>
+              <span>Y rotation</span><span className="text-right text-foreground">{Number(inspectedModel.rotationY ?? 0)}°</span>
+              <span>File size</span><span className="text-right text-foreground">{inspectedModel.fileSize ? `${(inspectedModel.fileSize / 1024 / 1024).toFixed(1)} MB` : '—'}</span>
+              <span>Color map assignments</span><span className="text-right text-foreground">{inspectedModel.libraryReadiness.textureAssignmentCount}</span>
+              <span>Supporting files</span><span className="text-right text-foreground">{inspectedModel.libraryReadiness.supportingFileCount} attached</span>
+            </div>
+            <div className="flex items-center justify-between gap-2 pt-1">
+              <span className="inline-flex items-center gap-1 text-muted-foreground">Placement setup<ModelFieldHelp label="Model placement setup">Ready means the required setup records are present. The preview checks whether files can actually load. OBJ materials can use solid colors from an MTL file without image assignments. Supporting files can include MTL libraries and images.</ModelFieldHelp></span>
+              <ModelReadinessBadge model={inspectedModel} />
+            </div>
+            <label className="block rounded border bg-background/60 p-1.5">
+              <span className="mb-1 flex items-center justify-between gap-2 text-muted-foreground">
+                <span>Placement scale</span>
+                <span>
+                  Effective: {placementScaleIsValid
+                    ? (Number(inspectedModel.scale ?? 1) * numericPlacementScale).toLocaleString(undefined, { maximumFractionDigits: 6 })
+                    : '—'}
+                </span>
+              </span>
+              <Input
+                type="number"
+                min="0.0001"
+                max="10000"
+                step="any"
+                value={placementScaleMultiplier}
+                disabled={placing}
+                onChange={(event) => onPlacementScaleMultiplierChange(event.target.value)}
+                className="h-7 px-2 text-xs"
+                aria-label="Model placement scale multiplier"
+              />
+              <span className={`mt-1 block text-[9px] ${placementScaleIsValid ? 'text-muted-foreground' : 'text-amber-300'}`}>
+                {placementScaleIsValid
+                  ? `Saved base ${Number(inspectedModel.scale ?? 1)} × placement ${numericPlacementScale}`
+                  : 'Enter a scale from 0.0001 to 10,000.'}
+              </span>
+            </label>
+            {inspectedModel.libraryReadiness.issues.length > 0 && (
+              <p className="pt-1 text-amber-300">
+                {inspectedModel.libraryReadiness.issues.includes('missing_primary_file')
+                  ? 'A usable primary Model file is required.'
+                  : inspectedModel.modelType.toLowerCase() === 'obj'
+                    ? 'Attach the OBJ material library (MTL) and any images it references, or configure a Texture source.'
+                    : 'Configure a reusable Texture or Model-owned Texture attachment before placement.'}
+              </p>
+            )}
+            {inspectedModel.categories?.length > 0 && (
+              <div className="flex flex-wrap gap-1 pt-1">
+                {inspectedModel.categories.map((category) => (
+                  <span key={category.id} className="rounded bg-muted px-1.5 py-0.5 text-[9px]">{category.name}</span>
+                ))}
+              </div>
+            )}
+            {inspectedModel.canManage && inspectedModel.libraryReadiness.status !== 'ready' && (
+              <Button asChild type="button" variant="outline" size="sm" className="mt-1 h-6 w-full text-[10px]">
+                <a href={`/admin/threed/models/${inspectedModel.id}?tab=files`} target="_blank" rel="noreferrer">
+                  Configure Model <ExternalLink className="ml-1 h-3 w-3" />
+                </a>
+              </Button>
+            )}
+            <div className="grid grid-cols-3 gap-2">
+              {(['x', 'y', 'z', 'rotationY'] as const).map(field => (
+                <label key={field} className="text-[10px]">
+                  {field === 'rotationY' ? 'Y rotation (°)' : `Position ${field.toUpperCase()}`}
+                  <Input type="number" step="any" className="h-7 px-2 text-xs" value={placementDraft[field]} disabled={placing}
+                    onChange={event => onPlacementDraftChange(field, event.target.value)} />
+                </label>
+              ))}
+            </div>
+            <label className="flex items-center justify-between gap-2 text-xs">
+              Environment / base map
+              <Switch checked={placementRole === 'environment'} disabled={placing} onCheckedChange={checked => onPlacementRoleChange(checked ? 'environment' : 'object')} />
+            </label>
+            <Button type="button" size="sm" className="h-7 w-full text-xs"
+              disabled={!selectedModuleId || placing || inspectedModel.libraryReadiness.status !== 'ready' || !placementScaleIsValid || !Object.values(placementDraft).every(value => value.trim() && Number.isFinite(Number(value)))}
+              onClick={() => onPlaceAtCoordinates(inspectedModel)}>Place at Coordinates</Button>
+            <Button type="button" size="sm" className="mt-1 h-6 w-full text-[10px]" disabled={!selectedModuleId || placing || inspectedModel.libraryReadiness.status !== 'ready' || !placementScaleIsValid} onClick={() => onBeginPlacement(inspectedModel)}>
+              Place Selected in {placementSurface}
+            </Button>
+          </div>
+        )}
+
+        {placementModel && (
+          <div className="mb-2 space-y-2 rounded border border-cyan-500/40 bg-cyan-500/10 p-2 text-xs">
+            <div className="flex flex-wrap items-center justify-between gap-2 [&>span]:min-w-0 [&>span]:break-words [&>span]:[overflow-wrap:anywhere]">
+              <span>
+                Placing <strong>{placementModel.modelName}</strong>
+                {placing ? '…' : ' — click a map or Scene destination'}
+              </span>
+              <Button type="button" variant="outline" size="sm" className="h-6 text-[10px]" disabled={placing} onClick={onCancelPlacement}>Cancel</Button>
+            </div>
+            <label className="grid grid-cols-[1fr_7rem] items-center gap-2">
+              <span>
+                Instance scale
+                <span className="ml-1 text-[10px] text-muted-foreground">(model base: {Number(placementModel.scale ?? 1)})</span>
+              </span>
+              <Input
+                type="number"
+                min="0.0001"
+                max="10000"
+                step="any"
+                value={placementScaleMultiplier}
+                disabled={placing}
+                onChange={(event) => onPlacementScaleMultiplierChange(event.target.value)}
+                className="h-7 px-2 text-xs"
+                aria-label="Model instance scale multiplier"
+              />
+            </label>
+            <label className="flex items-center justify-between gap-2 rounded border bg-background/60 px-2 py-1.5">
+              <span>
+                <span className="block text-xs">Project environment / base map</span>
+                <span className="block text-[10px] text-muted-foreground">Hides only the procedural grass and does not create a giant obstacle collider.</span>
+              </span>
+              <Switch checked={placementRole === 'environment'} disabled={placing} onCheckedChange={(checked) => onPlacementRoleChange(checked ? 'environment' : 'object')} />
+            </label>
+          </div>
+        )}
+      </div>
+    </section>
+  ) : null;
+
   const panel = (
     <div className="threed-workspace-panel threed-scene-panel-surface threed-scene-sidebar-size threed-model-library-panel absolute bottom-0 left-0 top-[38px] z-40 flex flex-col overflow-y-auto overscroll-contain [&>*]:shrink-0 rounded-md border p-3 shadow-xl backdrop-blur-md" role="region" aria-label="ThreeD Model Library" style={dockHost ? { position: 'relative', top: 0, left: 0, width: '100%', maxWidth: '100%', height: '100%' } : undefined}>
       <div className="mb-2 flex items-center justify-between gap-2">
@@ -183,139 +327,6 @@ export function ThreeDModelLibraryPanel({
           )}
         </span>
       </label>
-
-      {inspectedModel && (
-        <div className="mb-2 space-y-1 rounded border bg-muted/30 p-2 text-[10px]">
-          <div className="flex items-start justify-between gap-2">
-            <div className="min-w-0">
-              <div className="break-words text-xs font-medium [overflow-wrap:anywhere]">{inspectedModel.modelName}</div>
-              <div className="text-muted-foreground"><span className="uppercase">{inspectedModel.modelType}</span> · Model #{inspectedModel.id}</div>
-            </div>
-            <Button type="button" variant="ghost" size="icon" className="h-5 w-5 shrink-0" aria-label="Close Model metadata" title="Close Model metadata" onClick={() => onInspectModel(null)}>
-              <X className="h-3 w-3" />
-            </Button>
-          </div>
-          {(inspectedModel.libraryReadiness.primaryFileAvailable
-            || (inspectedModel.modelType === 'procedural' && !inspectedModel.filePath)) && (
-            <ThreeDModelLibraryPreview model={inspectedModel} />
-          )}
-          <div className="grid grid-cols-2 gap-x-2 text-muted-foreground">
-            <span>Saved base scale</span><span className="text-right text-foreground">{Number(inspectedModel.scale ?? 1)}</span>
-            <span>Y rotation</span><span className="text-right text-foreground">{Number(inspectedModel.rotationY ?? 0)}°</span>
-            <span>File size</span><span className="text-right text-foreground">{inspectedModel.fileSize ? `${(inspectedModel.fileSize / 1024 / 1024).toFixed(1)} MB` : '—'}</span>
-            <span>Color map assignments</span><span className="text-right text-foreground">{inspectedModel.libraryReadiness.textureAssignmentCount}</span>
-            <span>Supporting files</span><span className="text-right text-foreground">{inspectedModel.libraryReadiness.supportingFileCount} attached</span>
-          </div>
-          <div className="flex items-center justify-between gap-2 pt-1">
-            <span className="inline-flex items-center gap-1 text-muted-foreground">Placement setup<ModelFieldHelp label="Model placement setup">Ready means the required setup records are present. The preview checks whether files can actually load. OBJ materials can use solid colors from an MTL file without image assignments. Supporting files can include MTL libraries and images.</ModelFieldHelp></span>
-            <ModelReadinessBadge model={inspectedModel} />
-          </div>
-          <label className="block rounded border bg-background/60 p-1.5">
-            <span className="mb-1 flex items-center justify-between gap-2 text-muted-foreground">
-              <span>Placement scale</span>
-              <span>
-                Effective: {placementScaleIsValid
-                  ? (Number(inspectedModel.scale ?? 1) * numericPlacementScale).toLocaleString(undefined, { maximumFractionDigits: 6 })
-                  : '—'}
-              </span>
-            </span>
-            <Input
-              type="number"
-              min="0.0001"
-              max="10000"
-              step="any"
-              value={placementScaleMultiplier}
-              disabled={placing}
-              onChange={(event) => onPlacementScaleMultiplierChange(event.target.value)}
-              className="h-7 px-2 text-xs"
-              aria-label="Model placement scale multiplier"
-            />
-            <span className={`mt-1 block text-[9px] ${placementScaleIsValid ? 'text-muted-foreground' : 'text-amber-300'}`}>
-              {placementScaleIsValid
-                ? `Saved base ${Number(inspectedModel.scale ?? 1)} × placement ${numericPlacementScale}`
-                : 'Enter a scale from 0.0001 to 10,000.'}
-            </span>
-          </label>
-          {inspectedModel.libraryReadiness.issues.length > 0 && (
-            <p className="pt-1 text-amber-300">
-              {inspectedModel.libraryReadiness.issues.includes('missing_primary_file')
-                ? 'A usable primary Model file is required.'
-                : inspectedModel.modelType.toLowerCase() === 'obj'
-                  ? 'Attach the OBJ material library (MTL) and any images it references, or configure a Texture source.'
-                  : 'Configure a reusable Texture or Model-owned Texture attachment before placement.'}
-            </p>
-          )}
-          {inspectedModel.categories?.length > 0 && (
-            <div className="flex flex-wrap gap-1 pt-1">
-              {inspectedModel.categories.map((category) => (
-                <span key={category.id} className="rounded bg-muted px-1.5 py-0.5 text-[9px]">{category.name}</span>
-              ))}
-            </div>
-          )}
-          {inspectedModel.canManage && inspectedModel.libraryReadiness.status !== 'ready' && (
-            <Button asChild type="button" variant="outline" size="sm" className="mt-1 h-6 w-full text-[10px]">
-              <a href={`/admin/threed/models/${inspectedModel.id}?tab=files`} target="_blank" rel="noreferrer">
-                Configure Model <ExternalLink className="ml-1 h-3 w-3" />
-              </a>
-            </Button>
-          )}
-          <div className="grid grid-cols-3 gap-2">
-            {(['x', 'y', 'z', 'rotationY'] as const).map(field => (
-              <label key={field} className="text-[10px]">
-                {field === 'rotationY' ? 'Y rotation (°)' : `Position ${field.toUpperCase()}`}
-                <Input type="number" step="any" className="h-7 px-2 text-xs" value={placementDraft[field]} disabled={placing}
-                  onChange={event => onPlacementDraftChange(field, event.target.value)} />
-              </label>
-            ))}
-          </div>
-          <label className="flex items-center justify-between gap-2 text-xs">
-            Environment / base map
-            <Switch checked={placementRole === 'environment'} disabled={placing} onCheckedChange={checked => onPlacementRoleChange(checked ? 'environment' : 'object')} />
-          </label>
-          <Button type="button" size="sm" className="h-7 w-full text-xs"
-            disabled={!selectedModuleId || placing || inspectedModel.libraryReadiness.status !== 'ready' || !placementScaleIsValid || !Object.values(placementDraft).every(value => value.trim() && Number.isFinite(Number(value)))}
-            onClick={() => onPlaceAtCoordinates(inspectedModel)}>Place at Coordinates</Button>
-          <Button type="button" size="sm" className="mt-1 h-6 w-full text-[10px]" disabled={!selectedModuleId || placing || inspectedModel.libraryReadiness.status !== 'ready' || !placementScaleIsValid} onClick={() => onBeginPlacement(inspectedModel)}>
-            Place Selected in {placementSurface}
-          </Button>
-        </div>
-      )}
-
-      {placementModel && (
-        <div className="mb-2 space-y-2 rounded border border-cyan-500/40 bg-cyan-500/10 p-2 text-xs">
-          <div className="flex flex-wrap items-center justify-between gap-2 [&>span]:min-w-0 [&>span]:break-words [&>span]:[overflow-wrap:anywhere]">
-            <span>
-              Placing <strong>{placementModel.modelName}</strong>
-              {placing ? '…' : ' — click a map or Scene destination'}
-            </span>
-            <Button type="button" variant="outline" size="sm" className="h-6 text-[10px]" disabled={placing} onClick={onCancelPlacement}>Cancel</Button>
-          </div>
-          <label className="grid grid-cols-[1fr_7rem] items-center gap-2">
-            <span>
-              Instance scale
-              <span className="ml-1 text-[10px] text-muted-foreground">(model base: {Number(placementModel.scale ?? 1)})</span>
-            </span>
-            <Input
-              type="number"
-              min="0.0001"
-              max="10000"
-              step="any"
-              value={placementScaleMultiplier}
-              disabled={placing}
-              onChange={(event) => onPlacementScaleMultiplierChange(event.target.value)}
-              className="h-7 px-2 text-xs"
-              aria-label="Model instance scale multiplier"
-            />
-          </label>
-          <label className="flex items-center justify-between gap-2 rounded border bg-background/60 px-2 py-1.5">
-            <span>
-              <span className="block text-xs">Project environment / base map</span>
-              <span className="block text-[10px] text-muted-foreground">Hides only the procedural grass and does not create a giant obstacle collider.</span>
-            </span>
-            <Switch checked={placementRole === 'environment'} disabled={placing} onCheckedChange={(checked) => onPlacementRoleChange(checked ? 'environment' : 'object')} />
-          </label>
-        </div>
-      )}
 
       <div className="shrink-0 pr-1">
         {loading ? (
@@ -387,5 +398,10 @@ export function ThreeDModelLibraryPanel({
       </div>
     </div>
   );
-  return dockHost ? createPortal(panel, dockHost) : panel;
+  return (
+    <>
+      {dockHost ? createPortal(panel, dockHost) : panel}
+      {placementOverlay}
+    </>
+  );
 }

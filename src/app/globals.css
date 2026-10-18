@@ -508,6 +508,11 @@
   user-select: none;
 }
 
+/* Library placement is independent of the Assets/Library scroll container. */
+.threed-library-placement-overlay {
+  left: 18.5rem;
+}
+
 /* A focused inspector overlays Assets on narrow viewports; the Scene stays mounted. */
 @media (max-width: 700px) {
   .threed-inspector {
@@ -515,6 +520,10 @@
     width: min(22rem, calc(100vw - 1rem));
     max-width: calc(100vw - 1rem);
     z-index: 45;
+  }
+  .threed-library-placement-overlay {
+    left: 0.5rem;
+    width: min(22rem, calc(100% - 1rem));
   }
   .threed-model-library-panel {
     left: 0.5rem;

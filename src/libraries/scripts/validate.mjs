@@ -19,6 +19,7 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  'threed-model-image-backfill': [ts('validate-threed-model-image-backfill.mts')],
   'shadcn-ui-browser': [node('validate-shadcn-primitives-browser.cjs')],
   'repository-maintenance': [node('validate-repository-maintenance.cjs'), node('validate-farmbot-status-summary.cjs')],
   'design-appearance-top-view': [node('validate-design-appearance-top-view.cjs'), node('validate-model-top-view-compatibility.cjs')],
@@ -91,7 +92,7 @@ const tasks = {
   ],
   'threed-character-teleport': [node('validate-threed-character-teleport.cjs')],
   'threed-orchestration': [ts('validate-threed-orchestration.mts')],
-  'threed-library-placement': [ts('validate-threed-library-placement.mts')],
+  'threed-library-placement': [ts('validate-threed-library-placement.mts'), node('validate-model-library-placement-overlay.cjs')],
   'threed-scenarios': [ts('validate-threed-scenarios.mts')],
   'threed-scenario-admin': [node('validate-threed-scenario-admin.cjs'), node('validate-threed-scenario-editor.cjs')],
   'threed-simulation-schema': [node('validate-threed-simulation-schema.cjs')],
