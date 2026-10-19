@@ -4,6 +4,7 @@ Choose a guide for what you want to do. [Current project state](../CONTEXT.md) h
 
 ## Users
 
+- [Home help](help/home.md).
 - [Getting started](users/GETTING_STARTED.md), [Learn](https://threedgarden.com/learn) and [Dashboard](users/DASHBOARD_GUIDE.md).
 - [Admin guide](users/ADMIN_GUIDE.md), [ThreeD controls](users/THREED_CONTROLS.md) and [Ground Maps](users/THREED_GROUND_MAPS.md).
 - [Scenario help](help/threed-scenarios.md) and [Simulation help](help/threed-simulations.md).

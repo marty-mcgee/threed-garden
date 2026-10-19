@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { BookOpen, CircleHelp, Info, ListChecks, Rocket } from 'lucide-react';
-import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
+import { ArrowRight, BookOpen, CircleHelp, Info, ListChecks, Rocket } from 'lucide-react';
+import { LearnPreview } from '@/components/learn/LearnPreview';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -16,15 +16,31 @@ const guides = [
 ] as const;
 
 export default function LearnPage() {
-  return <main className="threed-workspace-panel threed-presentation m-2 min-w-0 space-y-5 rounded-lg border border-foreground/10 p-3 text-sm leading-relaxed">
-
-    <AdminWorkspaceHeader icon={BookOpen} title="Learn ThreeD" description="Guides to creating, editing and saving your ThreeD Projects." />
-    <p className="text-sm text-muted-foreground">Start small: open a Project, make one change, and check that you can reopen it.</p>
-    <nav aria-label="Guide topics" className="flex flex-wrap gap-2">
-      {[{ href: '#first-project', label: 'Getting started', Icon: Rocket }, { href: '#how-to', label: 'How-to guides', Icon: BookOpen }, { href: '#troubleshooting', label: 'Troubleshooting', Icon: CircleHelp }, { href: '#about', label: 'About ThreeD', Icon: Info }].map(({ href, label, Icon }) =>
-        <Button key={href} asChild variant="outline" size="sm" className="bg-background/50 hover:border-cyan-600/30 hover:bg-cyan-500/10 dark:bg-background/30 dark:hover:bg-cyan-500/10"><a href={href}><Icon aria-hidden="true" />{label}</a></Button>)}
-    </nav>
-    <Card id="first-project" className="threed-workspace-panel threed-presentation-surface threed-presentation-featured scroll-mt-16 gap-0 rounded-lg shadow-sm"><CardContent className="max-w-4xl space-y-3 p-4 sm:p-5"><h2 className="flex items-center gap-2 text-base font-semibold"><Rocket aria-hidden="true" className="size-4 text-emerald-600 dark:text-emerald-400" />Your first Project</h2>
+  return <main className="threed-presentation min-w-0 text-base leading-relaxed">
+    <section className="threed-workspace-panel threed-presentation-surface threed-presentation-featured border-b">
+      <div className="mx-auto grid max-w-7xl items-center gap-10 px-6 py-12 lg:grid-cols-[.85fr_1.15fr] lg:py-20">
+        <div className="text-center lg:text-left">
+          <span className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-600/20 bg-emerald-500/10 px-3 py-1 text-sm text-emerald-800 dark:text-emerald-200"><BookOpen aria-hidden="true" className="size-4" />Make room for your ideas</span>
+          <h1 className="mb-4 text-4xl font-bold tracking-tight lg:text-6xl">Learn ThreeD</h1>
+          <p className="mb-5 text-lg text-foreground/85 lg:text-xl">Guides to creating, editing and saving your ThreeD Projects.</p>
+          <p className="mx-auto mb-8 max-w-md text-base text-muted-foreground lg:mx-0">Start small: open a Project, make one change, and check that you can reopen it.</p>
+          <div className="flex flex-wrap justify-center gap-3 lg:justify-start">
+            <Button asChild variant="success" size="lg" className="h-auto min-h-14 rounded-xl px-7 py-4 text-base shadow-lg shadow-emerald-950/15 [&_svg]:size-5"><a href="#first-project"><Rocket aria-hidden="true" />Start here<ArrowRight aria-hidden="true" /></a></Button>
+            <Button asChild variant="outline" size="lg" className="h-auto min-h-14 whitespace-normal rounded-xl border-emerald-600/25 bg-emerald-500/5 px-7 py-4 text-base"><Link href="/#garden-demo">Explore the garden demo</Link></Button>
+          </div>
+        </div>
+        <LearnPreview />
+      </div>
+    </section>
+    <div className="mx-auto max-w-7xl space-y-14 px-6 py-8 sm:py-12">
+    <section aria-labelledby="learn-path-title" className="space-y-6">
+      <div className="text-center"><h2 id="learn-path-title" className="text-2xl font-bold sm:text-3xl">What would you like to do?</h2><p className="mt-2 text-muted-foreground">Start your first Project, pick a skill, or find a little help.</p></div>
+      <nav aria-label="Guide topics" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        {[{ href: '#first-project', label: 'Getting started', detail: 'Make your first Project', Icon: Rocket }, { href: '#how-to', label: 'How-to guides', detail: 'Choose something to create', Icon: BookOpen }, { href: '#troubleshooting', label: 'Troubleshooting', detail: 'Get help when you need it', Icon: CircleHelp }, { href: '#about', label: 'About ThreeD', detail: 'Discover what you can do', Icon: Info }].map(({ href, label, detail, Icon }) =>
+          <Button key={href} asChild variant="outline" className="h-auto min-h-32 justify-start whitespace-normal rounded-2xl border-emerald-600/25 bg-emerald-500/5 p-5 text-left hover:border-emerald-500/60 hover:bg-emerald-500/10 [&_svg]:size-6"><a href={href}><span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"><Icon aria-hidden="true" /></span><span className="min-w-0"><span className="block text-base font-semibold">{label}</span><span className="mt-1 block text-sm font-normal text-muted-foreground">{detail}</span></span></a></Button>)}
+      </nav>
+    </section>
+    <Card id="first-project" className="threed-workspace-panel threed-presentation-surface threed-presentation-featured mx-auto max-w-5xl scroll-mt-24 gap-0 rounded-2xl shadow-sm"><CardContent className="space-y-5 p-6 sm:p-10"><h2 className="flex items-center gap-2 text-2xl font-semibold"><Rocket aria-hidden="true" className="size-4 text-emerald-600 dark:text-emerald-400" />Your first Project</h2>
       <p>Public Projects are for exploring. To make and save changes, sign in and create your own Project.</p>
       <ol className="list-decimal space-y-2 pl-5">
         <li><Link className="underline" href="/dashboard/scene">Open the Project workspace</Link>. Use Select Project to browse authorized Projects. To create your own, sign in, choose New Project and the ThreeD Starter template, enter a name, then create it. The Project Tour helps with initial setup.</li>
@@ -34,21 +50,23 @@ export default function LearnPage() {
         <li>Return to Dashboard and open that Project again. Choose Design, select the wall from Architecture in Project Assets and confirm the saved height. You should still be able to edit it.</li>
       </ol>
       <p className="text-sm text-muted-foreground">No account yet? <Link href="/#garden-demo" className="underline">Try the garden demo</Link> for orbit and zoom, or browse public Projects from Dashboard. The illustrative demo does not save or support drawing.</p>
-      <Button asChild variant="success" className="shadow-sm shadow-emerald-950/15 focus-visible:ring-emerald-500/50"><Link href="/dashboard/scene"><Rocket aria-hidden="true" />Start a Project</Link></Button>
+      <Button asChild variant="success" size="lg" className="h-auto min-h-14 whitespace-normal rounded-xl px-7 py-4 text-base shadow-lg shadow-emerald-950/15 focus-visible:ring-emerald-500/50 [&_svg]:size-5"><Link href="/dashboard/scene"><Rocket aria-hidden="true" />Start a Project<ArrowRight aria-hidden="true" /></Link></Button>
     </CardContent></Card>
-    <section id="how-to" className="scroll-mt-16 space-y-3">
-      <h2 className="flex items-center gap-2 border-b pb-2 text-base font-semibold"><ListChecks aria-hidden="true" className="size-4 text-cyan-500" />How-to guides</h2>
-      <nav aria-label="Tasks" className="flex flex-wrap gap-2">{guides.map(guide => <Button key={guide.id} asChild variant="outline" size="sm" className="bg-background/50 hover:border-cyan-600/30 hover:bg-cyan-500/10 dark:bg-background/30 dark:hover:bg-cyan-500/10"><a href={`#${guide.id}`}><BookOpen aria-hidden="true" />{guide.title}</a></Button>)}</nav>
-      <div className="grid items-start gap-3 xl:grid-cols-2">
-        {guides.map(guide => <Card key={guide.id} id={guide.id} className="threed-workspace-panel threed-presentation-surface scroll-mt-16 gap-0 rounded-lg shadow-none"><CardContent className="space-y-3 p-4"><h3 className="flex items-center gap-2 border-b pb-2 text-sm font-semibold"><BookOpen aria-hidden="true" className="size-4 shrink-0 text-cyan-700 dark:text-cyan-300" />{guide.title}</h3><ol className="list-decimal space-y-2 pl-5">{guide.steps.map(step => <li key={step}>{step}</li>)}</ol><p className="rounded-md border border-emerald-600/15 bg-emerald-500/5 p-2 text-xs text-muted-foreground">Expected result: {guide.result}</p></CardContent></Card>)}
+    <section id="how-to" className="scroll-mt-24 space-y-6">
+      <h2 className="flex items-center justify-center gap-2 pb-2 text-2xl font-semibold tracking-tight"><ListChecks aria-hidden="true" className="size-4 text-cyan-500" />How-to guides</h2>
+      <p className="text-center text-muted-foreground">Pick a skill. Jump straight to the steps below.</p>
+      <nav aria-label="Tasks" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{guides.map(guide => <Button key={guide.id} asChild variant="outline" className="h-auto min-h-20 justify-start whitespace-normal rounded-xl border-cyan-600/25 bg-cyan-500/5 px-5 py-4 text-left text-base hover:border-cyan-500/60 hover:bg-cyan-500/10 [&_svg]:size-5"><a href={`#${guide.id}`}><BookOpen aria-hidden="true" className="shrink-0 text-cyan-700 dark:text-cyan-300" /><span className="flex-1">{guide.title}</span><ArrowRight aria-hidden="true" className="shrink-0" /></a></Button>)}</nav>
+      <div className="grid items-start gap-6 lg:grid-cols-2">
+        {guides.map(guide => <Card key={guide.id} id={guide.id} className="threed-workspace-panel threed-presentation-surface scroll-mt-24 gap-0 rounded-2xl shadow-none"><CardContent className="space-y-5 p-6 text-sm leading-7 sm:p-8"><h3 className="flex items-center gap-2 border-b pb-3 text-lg font-semibold"><BookOpen aria-hidden="true" className="size-4 shrink-0 text-cyan-700 dark:text-cyan-300" />{guide.title}</h3><ol className="list-decimal space-y-2 pl-5">{guide.steps.map(step => <li key={step}>{step}</li>)}</ol><p className="rounded-md border border-emerald-600/15 bg-emerald-500/5 p-2 text-xs text-muted-foreground">Expected result: {guide.result}</p></CardContent></Card>)}
       </div>
     </section>
-    <section id="troubleshooting" className="space-y-3 scroll-mt-16"><h2 className="flex items-center gap-2 border-b pb-2 text-base font-semibold"><CircleHelp aria-hidden="true" className="size-4 text-amber-500" />Troubleshooting</h2>
-      <details className="threed-workspace-panel threed-presentation-surface rounded-lg border p-3 open:border-amber-600/30"><summary className="cursor-pointer font-medium">I cannot edit or save</summary><p className="mt-2 max-w-4xl text-muted-foreground">Check that you are signed in and own the Project. A public Project belonging to someone else is for viewing. Create your own with New Project. If Save reports an error, retain the open page and retry; export architectural content as a backup when available.</p></details>
-      <details className="threed-workspace-panel threed-presentation-surface rounded-lg border p-3 open:border-amber-600/30"><summary className="cursor-pointer font-medium">My floor disappeared</summary><p className="mt-2 max-w-4xl text-muted-foreground">A floor is a draft until you finish it. Click at least three corners, then Finish Floor, Enter or the first corner. Escape cancels unfinished drawing.</p></details>
-      <details className="threed-workspace-panel threed-presentation-surface rounded-lg border p-3 open:border-amber-600/30"><summary className="cursor-pointer font-medium">I cannot find an object</summary><p className="mt-2 max-w-4xl text-muted-foreground">Clear the Project Assets search. Expand Architecture and choose the object, then Locate. Check its active level and the Designs visibility layer. In Design, try Fit Plan. A missing Model file may show a loading warning; retry loading before placing another copy.</p></details>
-      <details className="threed-workspace-panel threed-presentation-surface rounded-lg border p-3 open:border-amber-600/30"><summary className="cursor-pointer font-medium">An import or opening is rejected</summary><p className="mt-2 max-w-4xl text-muted-foreground">Read the validation message. Import expects an exported architectural backup. Doors and windows must fit inside their host wall without overlapping other openings. Cancel leaves your existing content in place.</p></details>
+    <section id="troubleshooting" className="mx-auto max-w-5xl space-y-4 scroll-mt-24"><h2 className="flex items-center justify-center gap-2 pb-2 text-2xl font-semibold tracking-tight"><CircleHelp aria-hidden="true" className="size-4 text-amber-500" />Troubleshooting</h2>
+      <details className="threed-workspace-panel threed-presentation-surface rounded-xl border p-5 open:border-amber-600/30"><summary className="cursor-pointer font-medium">I cannot edit or save</summary><p className="mt-2 max-w-4xl text-muted-foreground">Check that you are signed in and own the Project. A public Project belonging to someone else is for viewing. Create your own with New Project. If Save reports an error, retain the open page and retry; export architectural content as a backup when available.</p></details>
+      <details className="threed-workspace-panel threed-presentation-surface rounded-xl border p-5 open:border-amber-600/30"><summary className="cursor-pointer font-medium">My floor disappeared</summary><p className="mt-2 max-w-4xl text-muted-foreground">A floor is a draft until you finish it. Click at least three corners, then Finish Floor, Enter or the first corner. Escape cancels unfinished drawing.</p></details>
+      <details className="threed-workspace-panel threed-presentation-surface rounded-xl border p-5 open:border-amber-600/30"><summary className="cursor-pointer font-medium">I cannot find an object</summary><p className="mt-2 max-w-4xl text-muted-foreground">Clear the Project Assets search. Expand Architecture and choose the object, then Locate. Check its active level and the Designs visibility layer. In Design, try Fit Plan. A missing Model file may show a loading warning; retry loading before placing another copy.</p></details>
+      <details className="threed-workspace-panel threed-presentation-surface rounded-xl border p-5 open:border-amber-600/30"><summary className="cursor-pointer font-medium">An import or opening is rejected</summary><p className="mt-2 max-w-4xl text-muted-foreground">Read the validation message. Import expects an exported architectural backup. Doors and windows must fit inside their host wall without overlapping other openings. Cancel leaves your existing content in place.</p></details>
     </section>
-    <section id="about" className="threed-workspace-panel threed-presentation-surface max-w-4xl space-y-3 scroll-mt-16 rounded-lg border p-4"><h2 className="flex items-center gap-2 border-b pb-2 text-base font-semibold"><Info aria-hidden="true" className="size-4 text-violet-700 dark:text-violet-300" />About ThreeD</h2><p>ThreeD Garden brings spatial planning, garden layouts and interactive scenes into a Project workspace. Draw architectural forms, arrange available Models and inspect them from different views. It is an exploration and planning tool; these guides do not establish construction or engineering approval.</p><p>The source is available under the MIT License in the <a className="underline" href="https://github.com/marty-mcgee/threed-garden">ThreeD Garden repository</a>. Technical setup and architecture belong in the separate <a className="underline" href="https://github.com/marty-mcgee/threed-garden/tree/main/docs">developer documentation</a>.</p></section>
+    <section id="about" className="threed-workspace-panel threed-presentation-surface mx-auto max-w-5xl space-y-5 scroll-mt-24 rounded-2xl border p-6 sm:p-10"><h2 className="flex items-center justify-center gap-2 pb-2 text-2xl font-semibold tracking-tight"><Info aria-hidden="true" className="size-4 text-violet-700 dark:text-violet-300" />About ThreeD</h2><p>ThreeD Garden brings spatial planning, garden layouts and interactive scenes into a Project workspace. Draw architectural forms, arrange available Models and inspect them from different views. It is an exploration and planning tool; these guides do not establish construction or engineering approval.</p><p>The source is available under the MIT License in the <a className="underline" href="https://github.com/marty-mcgee/threed-garden">ThreeD Garden repository</a>. Technical setup and architecture belong in the separate <a className="underline" href="https://github.com/marty-mcgee/threed-garden/tree/main/docs">developer documentation</a>.</p></section>
+    </div>
   </main>;
 }

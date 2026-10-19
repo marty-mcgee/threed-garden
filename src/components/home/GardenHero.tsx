@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { Component, useEffect, useRef, useState, type ReactNode } from 'react';
-import { RotateCcw, ArrowUpRight } from 'lucide-react';
+import { BookOpen, RotateCcw, ArrowUpRight } from 'lucide-react';
 
 const GardenCanvas = dynamic(() => import('./GardenHeroCanvas'), { ssr: false, loading: () => null });
 
@@ -62,9 +62,9 @@ export default function GardenHero() {
 
   return (
     <section aria-label="Interactive garden preview" className="overflow-hidden rounded-3xl border border-emerald-200/20 bg-[#102b21] shadow-2xl shadow-black/30">
-      <div className="flex items-center justify-between gap-3 border-b border-white/10 px-5 py-4 text-xs text-emerald-100">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-5 py-4 text-xs text-emerald-100">
         <span className="font-semibold uppercase tracking-[.18em]">The garden studio</span>
-        <span className="rounded-full border border-emerald-300/20 px-2 py-1">Concept garden · 3D</span>
+        <Link href="/learn" className="ml-auto inline-flex min-h-11 items-center gap-2 rounded-xl border border-emerald-300/25 bg-emerald-500/10 px-4 py-3 text-sm font-semibold text-emerald-100 hover:bg-emerald-500/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-300"><BookOpen aria-hidden="true" className="size-4" />Learn ThreeD</Link>
       </div>
       <div ref={container} className="relative h-[340px] sm:h-[440px]" aria-label="Garden view. Drag to orbit; pinch or scroll to zoom.">
         {!ready || failed ? <GardenPoster /> : null}

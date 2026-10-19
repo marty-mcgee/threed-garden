@@ -20,14 +20,16 @@ export const ThreeDProjectLoadingPresentation=()=>null;`;
 async function main() {
   assert(browser, 'Install Edge to run this optional native check.');
   const source = `import React from 'react';import{createRoot}from'react-dom/client';
-import Dashboard from './src/app/dashboard/page';import Layout from './src/app/dashboard/layout';
+import Home from './src/app/page';import Dashboard from './src/app/dashboard/page';import Layout from './src/app/dashboard/layout';
 import Learn from './src/app/learn/page';import LearnLayout from './src/app/learn/layout';
-window.fetch=async url=>{if(!String(url).startsWith('/api/map/projects?'))throw Error('Unexpected fixture request: '+url);return {ok:true,json:async()=>({success:true,projects:[{id:123,name:'A long Project name for narrow-screen verification',slug:'long-project-slug-for-layout-verification',description:'Existing Project content',isPublic:true,assetCount:106,sceneAssetCount:44,moduleCounts:{threed:1,multimedia:1,traffic:1}}],pagination:{offset:0,total:1,limit:24}})}};
-function Fixture(){const[page,setPage]=React.useState('dashboard');window.__page=value=>{window.__path='/'+value;setPage(value)};window.__path='/'+page;return page==='learn'?<LearnLayout><Learn/></LearnLayout>:<Layout><Dashboard/></Layout>}
+window.fetch=async url=>{if(String(url).startsWith('/api/multimedia/albums?'))return {ok:true,json:async()=>[]};if(!String(url).startsWith('/api/map/projects?'))throw Error('Unexpected fixture request: '+url);return {ok:true,json:async()=>({success:true,projects:[{id:123,name:'A long Project name for narrow-screen verification',slug:'long-project-slug-for-layout-verification',description:'Existing Project content',isPublic:true,assetCount:106,sceneAssetCount:44,moduleCounts:{threed:1,multimedia:1,traffic:1}}],pagination:{offset:0,total:1,limit:24}})}};
+function Fixture(){const[page,setPage]=React.useState('dashboard');window.__page=value=>{window.__path='/'+value;setPage(value)};window.__path='/'+page;return page==='home'?<Home/>:page==='learn'?<LearnLayout><Learn/></LearnLayout>:<Layout><Dashboard/></Layout>}
 createRoot(document.getElementById('root')).render(<Fixture/>);`;
   const bundle = (await require('esbuild').build({stdin:{contents:source,resolveDir:root,loader:'tsx'},bundle:true,write:false,format:'iife',platform:'browser',define:{'process.env.NODE_ENV':'"production"'},plugins:[{name:'offline-boundaries',setup(build){
     build.onResolve({filter:/^(next\/link|next\/navigation|next-auth\/react|@\/components\/(themes\/provider|settings\/WorkspaceSettingsProvider|auth\/SignOutButton|map\/panels\/ProjectTemplateDialog|map\/presentation\/ThreeDProjectLoadingPresentation))$/},args=>({path:args.path,namespace:'mock'}));
     build.onLoad({filter:/.*/,namespace:'mock'},()=>({contents:mock,loader:'tsx',resolveDir:root}));
+    build.onResolve({filter:/^@\/components\/home\/GardenHero$/},args=>({path:args.path,namespace:'garden'}));
+    build.onLoad({filter:/.*/,namespace:'garden'},()=>({contents:'import React from "react";export default()=> <div style={{aspectRatio:"1.2"}}>Garden Canvas boundary</div>',loader:'tsx',resolveDir:root}));
     build.onResolve({filter:/^@\/components\/navigation\/NavDropdown$/},args=>({path:args.path,namespace:'menu'}));
     build.onLoad({filter:/.*/,namespace:'menu'},()=>({contents:'import React from "react";export default()=> <button aria-label="Navigation menu" className="size-8">Menu</button>',loader:'tsx',resolveDir:root}));
   }}],logLevel:'silent'})).outputFiles[0].text;
@@ -49,7 +51,7 @@ createRoot(document.getElementById('root')).render(<Fixture/>);`;
     await call('Page.navigate',{url:require('node:url').pathToFileURL(fixture).href});
     for(let i=0;i<100&&!await evaluate('!!window.__page');i++)await delay(100);
     assert(await evaluate('!!window.__page'),'Fixture mounted');
-    for(const page of ['dashboard','learn'])for(const theme of ['dark','light'])for(const width of [1440,640,375,320]){
+    for(const page of ['home','dashboard','learn'])for(const theme of ['dark','light'])for(const width of [1440,640,375,320]){
       await call('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false});
       await call('Emulation.setTouchEmulationEnabled',{enabled:width<=640});
       await evaluate(`document.documentElement.className=${JSON.stringify(theme)};window.__page(${JSON.stringify(page)})`);await delay(150);
@@ -57,7 +59,7 @@ createRoot(document.getElementById('root')).render(<Fixture/>);`;
       console.log(page,theme,width,JSON.stringify(metrics));assert(!metrics.overflow,'No page overflow: '+JSON.stringify(metrics));assert.equal(metrics.headerHeight,48);assert(metrics.title);
       const appearance=await evaluate(`(()=>{const panel=document.querySelector('.threed-workspace-panel'),h=document.querySelector('h1'),primary=[...document.querySelectorAll('[data-variant="success"]')][0];return {surface:getComputedStyle(panel).backgroundColor,heading:getComputedStyle(h).fontSize,primary:primary&&getComputedStyle(primary).backgroundColor}})()`);
       console.log('Workspace appearance',page,theme,JSON.stringify(appearance));
-      if(page==='learn')assert.equal(appearance.heading,'14px','Uses the existing compact workspace header');
+      if(page==='learn')assert.equal(appearance.heading,width>=1024?'60px':'36px','Uses the Home-scale Learn heading');
       assert(appearance.primary,'Existing green App action is present');
       const key=async key=>{const event={key,code:key,windowsVirtualKeyCode:key==='Enter'?13:9};await call('Input.dispatchKeyEvent',{type:'keyDown',...event,...(key==='Enter'?{text:'\r'}:{})});await call('Input.dispatchKeyEvent',{type:'keyUp',...event});};
       if(page==='dashboard'){

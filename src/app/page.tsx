@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import GardenHero from '@/components/home/GardenHero';
 import { MultimediaPlayer } from '@/components/multimedia/MultimediaPlayer';
 import { Button } from '@/components/ui/button';
 
+const largeActionClassName = 'h-auto min-h-14 whitespace-normal rounded-xl px-7 py-4 text-base [&_svg]:size-5';
 const greenOutlineClassName = 'border-emerald-700/25 bg-emerald-500/10 text-emerald-800 hover:bg-emerald-500/20 hover:text-emerald-950 dark:border-emerald-400/25 dark:bg-emerald-500/10 dark:text-emerald-200 dark:hover:bg-emerald-500/20 dark:hover:text-emerald-100';
 
 export default function HomePage() {
@@ -236,29 +238,27 @@ export default function HomePage() {
             <h1 className="mb-4 text-4xl font-bold tracking-tight text-foreground lg:text-6xl">
               ThreeD Garden
             </h1>
+
+
             <p className="mb-6 text-lg leading-relaxed text-foreground/85 lg:text-xl">
               Plan spaces, build interactive scenes, and explore your ideas in 3D.
             </p>
 
             <p className="mx-auto mb-8 max-w-md text-base leading-relaxed text-muted-foreground lg:mx-0">Draw a room, arrange a garden layout, or explore a scene with Models and Characters. Begin with a small Project and inspect it from different views.</p>
 
-            <div className="mb-5 flex flex-wrap justify-center gap-3 lg:justify-start">
-              <Button asChild variant="success" size="lg"><Link href="#garden-demo">Open Garden Demo</Link></Button>
-              <Button asChild variant="outline" size="lg" className={greenOutlineClassName}><Link href="/learn">Learn ThreeD Design</Link></Button>
-            </div>
             {/* Hero CTA Buttons - Horizontal layout */}
-            <div className="flex flex-wrap gap-3 justify-center lg:justify-start">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {features.map((feature, index) => {
                 const ButtonContent = (
                   <>
-                    <span>{feature.icon}</span>
-                    {feature.title}
+                    <span aria-hidden="true" className="text-2xl">{feature.icon}</span>
+                    <span className="flex-1">{feature.title}</span><ArrowRight aria-hidden="true" className="shrink-0" />
                   </>
                 );
 
                 if (feature.external) {
                   return (
-                    <Button key={index} asChild variant="outline" size="sm" className={greenOutlineClassName}>
+                    <Button key={index} asChild variant="outline" className={`h-auto min-h-16 justify-start whitespace-normal rounded-xl px-4 py-4 text-left text-base ${greenOutlineClassName}`}>
                       <a href={feature.href} target="_blank" rel="noopener noreferrer">
                         {ButtonContent}
                       </a>
@@ -267,7 +267,7 @@ export default function HomePage() {
                 }
 
                 return (
-                  <Button key={index} asChild variant="outline" size="sm" className={greenOutlineClassName}>
+                  <Button key={index} asChild variant="outline" className={`h-auto min-h-16 justify-start whitespace-normal rounded-xl px-4 py-4 text-left text-base ${greenOutlineClassName}`}>
                     <Link href={feature.href}>
                       {ButtonContent}
                     </Link>
@@ -277,7 +277,7 @@ export default function HomePage() {
             </div>
 
           </div>
-          <div id="garden-demo" className="min-w-0 scroll-mt-16"><GardenHero /><p className="mt-3 text-sm leading-relaxed text-muted-foreground">Illustrative garden: practice orbit and zoom without an account. To draw and save, open your own Project from Dashboard.</p></div>
+          <div id="garden-demo" className="min-w-0 scroll-mt-16"><GardenHero /></div>
         </div>
       </div>
 
@@ -300,22 +300,23 @@ export default function HomePage() {
       </div>
 
       {/* Features Grid */}
-      <div className="py-10">
+      <div className="py-12 sm:py-16">
         <div className="mx-auto w-full max-w-7xl px-6">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold mb-2">Explore ThreeD Garden</h2>
+            <h2 className="text-3xl font-bold mb-2">Explore ThreeD Garden</h2>
             <div className="w-12 h-0.5 bg-gradient-to-r from-green-800 to-emerald-600 mx-auto" />
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <p className="mb-8 text-center text-base text-muted-foreground">Choose where you want to go. Create, listen, explore or see how it works.</p>
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {features.map((feature, index) => (
-              <div key={index} className="threed-workspace-panel threed-presentation-surface flex flex-col rounded-xl border p-5">
-                <div className={`mb-4 flex h-10 w-10 items-center justify-center rounded-lg border text-xl ${feature.color}`}>{feature.icon}</div>
-                <h3 className="font-semibold mb-1">{feature.title}</h3>
+              <div key={index} className="threed-workspace-panel threed-presentation-surface flex flex-col rounded-2xl border p-6 sm:p-7">
+                <div className={`mb-5 flex h-14 w-14 items-center justify-center rounded-xl border text-3xl ${feature.color}`}>{feature.icon}</div>
+                <h3 className="mb-2 text-xl font-semibold">{feature.title}</h3>
                 <p className="mb-5 text-sm leading-relaxed text-muted-foreground">{feature.description}</p>
                 {feature.external ? (
-                  <Button asChild variant="outline" size="sm" className={`mt-auto self-start ${greenOutlineClassName}`}><a href={feature.href} target="_blank" rel="noopener noreferrer">Explore <span>↗</span></a></Button>
+                  <Button asChild variant="outline" className={`mt-auto min-h-12 w-full rounded-xl px-5 py-3 text-base ${greenOutlineClassName}`}><a href={feature.href} target="_blank" rel="noopener noreferrer">Explore <span>↗</span></a></Button>
                 ) : (
-                  <Button asChild variant="outline" size="sm" className={`mt-auto self-start ${greenOutlineClassName}`}><Link href={feature.href}>Explore <span>→</span></Link></Button>
+                  <Button asChild variant="outline" className={`mt-auto min-h-12 w-full rounded-xl px-5 py-3 text-base ${greenOutlineClassName}`}><Link href={feature.href}>Explore <span>→</span></Link></Button>
                 )}
               </div>
             ))}
@@ -385,11 +386,11 @@ export default function HomePage() {
       {/* Call to Action */}
       <div className="threed-workspace-panel threed-presentation-surface threed-presentation-featured border-y py-10">
         <div className="mx-auto w-full max-w-7xl px-6 text-center">
-          <h2 className="text-xl font-bold mb-2">Ready to Explore More?</h2>
+          <h2 className="text-3xl font-bold mb-3">Ready to Explore More?</h2>
           <p className="mb-5 text-sm leading-relaxed text-muted-foreground">Explore the 3D garden, discover the music library, or check out live traffic.</p>
           <div className="flex flex-wrap gap-3 justify-center">
-            <Button asChild variant="success"><Link href="/dashboard/multimedia"><span>🎵</span>Full Library</Link></Button>
-            <Button asChild variant="outline" className={greenOutlineClassName}><a href="https://github.com/marty-mcgee/threed-garden" target="_blank" rel="noopener noreferrer"><span>🐙</span>GitHub</a></Button>
+            <Button asChild variant="success" className={largeActionClassName}><Link href="/dashboard/multimedia"><span>🎵</span>Full Library</Link></Button>
+            <Button asChild variant="outline" className={`${largeActionClassName} ${greenOutlineClassName}`}><a href="https://github.com/marty-mcgee/threed-garden" target="_blank" rel="noopener noreferrer"><span>🐙</span>GitHub</a></Button>
           </div>
         </div>
       </div>

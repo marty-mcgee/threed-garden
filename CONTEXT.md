@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Package/root lockfile: **0.26.18**, prepared as **[v0.26.18 - ThreeD Multimedia: Loading skeletons](docs/releases/v0.26.18.md)** at the Developer's request. The loading presentation and exact +20px Player skeleton height offset are Developer-accepted. Fresh isolated TypeScript, all 85 offline CI tasks, guarded production build (150/150 pages), version/lock/documentation/whitespace checks and 1,130-input parity passed. Detailed evidence is recorded in the release file. Developer-confirmed production remains v0.26.17; exact deployed commit and independent post-deployment checks are not established. Changes remain unstaged.
+Package/root lockfile: **0.26.19**, release preparation for **[Learn ThreeD Page Updates + New Home Page Design](docs/releases/v0.26.19.md)**. Developer accepted the final Home/Learn presentation. Fresh isolated TypeScript, all 85 offline CI tasks, guarded production build (150/150 pages) and 1,131-input parity passed; changes remain unstaged. Production remains Developer-confirmed **v0.26.18 - ThreeD Multimedia: Loading skeletons**, including the accepted +20px Player skeleton offset. Exact deployed commit and independent post-deployment checks are not established.
 
 Developer naming: **ThreeD > Project > Model > DetailsCard**. Use exact App names, verify ownership, state uncertainty and honor corrections. Provide concise commit titles only unless asked for a body; keep responses concise with **Next Steps:**. See [durable working preferences](docs/agents/README.md#developer-preferences) and [AGENTS.md](AGENTS.md).
 
@@ -29,7 +29,9 @@ shadcn CLI is pinned to 4.22.0; App Zod 3.25.76 is explicit and existing Radix/U
 
 ## Acceptance and known limitations
 
-- Next v0.26.18: Dashboard Multimedia uses the existing shared Skeleton for initial page and selected-Album loading, matching the Player and Album grid. Accessible loading status and reduced-motion support are included. Scope and verification live in [v0.26.18](docs/releases/v0.26.18.md). Release preparation is now authorized; preserve the accepted +20px sizing.
+- Local v0.26.19 Learn presentation adopts Home-style spacing, hero and a static illustration while retaining existing instructions, links and public layout. Developer accepted the larger calls to action, descriptive topic cards and skill navigation tiles. Home now adopts matching larger actions and navigation cards, preserving its demo and featured playback. Native mocked browser layout/keyboard checks passed in both themes across desktop/mobile widths; final verification and Developer acceptance are recorded in [v0.26.19](docs/releases/v0.26.19.md). Package is prepared as 0.26.19; production remains 0.26.18.
+
+- v0.26.18: Dashboard Multimedia uses the existing shared Skeleton for initial page and selected-Album loading, matching the Player and Album grid. Accessible loading status and reduced-motion support are included. Scope and verification live in [v0.26.18](docs/releases/v0.26.18.md). Developer-confirmed released; preserve the accepted +20px sizing.
 
 - Root README replaced with the Developer-approved updated Downloads/3D Models/chatgpt/README.md, preserving its exact contents: ThreeD App title, audience guidance, first-session workflow, project ideas, ten module sections, one historical screenshot and consolidated current scope. The validator now recognizes the approved title and explicit HTML id/name anchors while retaining generated heading/missing-link checks. All 365 maintained paths/anchors and whitespace checks passed; exact source-copy comparison and positive/negative anchor checks passed. Documentation-only; no App behavior/version change, staging, commit or deployment.
 
