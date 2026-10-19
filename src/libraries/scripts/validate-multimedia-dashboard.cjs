@@ -6,6 +6,12 @@ const ts = require('typescript');
 // Execute the actual Dashboard component/effects with deferred network and audio.
 // This is an offline lifecycle fixture, not a browser or database test.
 let requests = [], slots = [], cursor = 0, effects = [], dirty = false, tree;
+const listeners = {};
+const browser = {
+ location: { search: '', origin: 'https://app.invalid' },
+ history: { pushState(_state,_title,url) { browser.location.search = new URL(url, browser.location.origin).search; }, replaceState(_state,_title,url) { browser.location.search = new URL(url, browser.location.origin).search; } },
+ scrollTo() {}, addEventListener(name, fn) { listeners[name] = fn; }, removeEventListener(name) { delete listeners[name]; },
+};
 const react = {
   useState(initial) {
     const i = cursor++;
@@ -42,7 +48,7 @@ function load(file, imports) {
   }).outputText, { exports, require: name => {
     if (name in imports) return imports[name];
     throw new Error(`Unexpected dependency ${name}`);
-  }, AbortController, Audio: AudioMock, window: { scrollTo() {}, addEventListener() {}, removeEventListener() {} }, console,
+  }, AbortController, URL, URLSearchParams, Audio: AudioMock, window: browser, console,
   fetch: (url, options) => new Promise((resolve, reject) => requests.push({ url, options, resolve, reject })),
   });
   return exports;
@@ -55,6 +61,7 @@ let Component = load('src/components/multimedia/MultimediaContent.tsx', {
   '@/components/ui/button': { Button: 'Button' }, './MediaGallery': { MediaGallery: 'MediaGallery' },
   '@/libraries/services/multimedia/dashboard': service,
 }).default;
+const DashboardComponent = Component;
 function render() {
   let limit = 20;
   do { dirty = false; cursor = 0; tree = Component(); const pending = effects; effects = []; pending.forEach(fn => fn()); } while (dirty && --limit);
@@ -135,6 +142,43 @@ async function respond(request, data, pagination) { request.resolve({ ok: true, 
   pending.resolve({ ok: true, json: async () => ({ success: true, data: details(1) }) });
   for (let i = 0; i < 8; i++) await Promise.resolve();
   assert.equal(dirty, false, 'unmounted requests cannot update state');
+  // Deep links load outside the first list page, do not autoplay, and survive list races.
+  for (const search of ['?albumId=x', '?albumId=1&trackId=0', '?trackId=2', '?albumId=1&trackNumber=10001', '?albumId=1&albumId=2', '?albumId=1&trackId=2&trackNumber=0']) {
+    assert.ok(service.readDashboardSelection(search).error);
+  }
+  assert.equal(service.readDashboardSelection('?albumId=28&trackNumber=0').trackNumber, 0);
+  assert.equal(service.readDashboardSelection('?albumId=28&trackNumber=-10000').trackNumber, -10000);
+  assert.equal(service.dashboardSelectionUrl(28, 99), '/dashboard/multimedia?albumId=28&trackId=99');
+  slots = []; effects = []; requests = []; dirty = false; Component = DashboardComponent;
+  browser.location.search = '?albumId=99&trackId=991'; render();
+  const linkedRequest = requests.find(r => /&id=99&/.test(r.url));
+  const listRequest = requests.find(r => /limit=50/.test(r.url));
+  assert.ok(linkedRequest);
+  const linkedAlbum = { ...details(99), tracks: [details(99).tracks[0], { ...details(99).tracks[0], id:991, trackNumber:-5 }] };
+  await respond(linkedRequest, linkedAlbum);
+  await respond(listRequest, [album(1)], { total:1 });
+  assert.equal(get('MultimediaPlayer').props.album.id,99);
+  assert.equal(get('MultimediaPlayer').props.track.id,991);
+  assert.equal(get('MultimediaPlayer').props.isPlaying,false);
+  get('MultimediaPlayer').props.onPrevious(); render();
+  assert.equal(browser.location.search,'?albumId=99&trackId=990');
+  browser.location.search='?albumId=99&trackNumber=-5'; listeners.popstate(); render();
+  await respond(requests.at(-1), linkedAlbum);
+  assert.equal(get('MultimediaPlayer').props.track.id,991);assert.equal(get('MultimediaPlayer').props.isPlaying,false);
+  browser.location.search='?albumId=99&trackId=123456'; listeners.popstate(); render();
+  await respond(requests.at(-1), linkedAlbum);
+  assert.equal(get('MultimediaPlayer'),undefined);assert.ok(nodes().some(n=>n.props?.role==='alert'));
+  browser.location.search='?albumId=99&trackNumber=0'; listeners.popstate(); render();
+  await respond(requests.at(-1), {...linkedAlbum, tracks: linkedAlbum.tracks.map(t=>({...t,trackNumber:0}))});
+  assert.equal(get('MultimediaPlayer'),undefined,'ambiguous numbers must not select an arbitrary Track');
+  browser.location.search=''; listeners.popstate(); render(); await respond(requests.at(-1),details(1));
+  assert.equal(get('MultimediaPlayer').props.album.id,1);
+  browser.location.search='?albumId=99'; listeners.popstate(); render();const abandoned=requests.at(-1);
+  get('AlbumGrid').props.onSelectAlbum(1);render();const clicked=requests.at(-1);
+  assert.equal(browser.location.search,'?albumId=1');assert.equal(abandoned.options.signal.aborted,true);
+  await respond(clicked,details(1));await respond(abandoned,linkedAlbum);
+  assert.equal(get('MultimediaPlayer').props.album.id,1);
+  for(const slot of slots)slot?.cleanup?.();assert.equal(listeners.popstate,undefined);
   slots = []; effects = []; dirty = false;
   const Gallery = load('src/components/multimedia/MediaGallery.tsx', {
     react, 'react/jsx-runtime': { jsx, jsxs: jsx },
@@ -162,6 +206,12 @@ async function respond(request, data, pagination) { request.resolve({ ok: true, 
   get('video').props.onPlay({ currentTarget: previewElement }); assert.equal(played, previewElement);
   assert.equal(get('video').props.controls, true); assert.equal(get('video').props.src, '/video.mp4');
   get('video').props.onError(); render(); assert.ok(nodes().some(n => n.props?.role === 'alert'));
+  let reloads = 0; previewElement.load = () => { reloads++; };
+  nodes().find(n => n.props?.children === 'Retry Media').props.onClick(); render();
+  assert.equal(reloads, 1, 'retry reloads the media from its original App source');
+  assert.equal(get('video').props.src, '/video.mp4');
+  assert.ok(!nodes().some(n => n.props?.role === 'alert'), 'retry clears the failed state');
+  get('video').props.onError(); render();
   previewItem = { ...previewItem, fileType: 'audio/mpeg', fileUrl: '/audio.mp3' }; render();
   assert.equal(get('audio').props.src, '/audio.mp3');
   assert.ok(!nodes().some(n => n.props?.role === 'alert'), 'new Media resets the previous error');

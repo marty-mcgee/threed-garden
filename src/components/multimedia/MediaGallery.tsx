@@ -63,9 +63,11 @@ export function MediaGallery({ media, className, onMediaPlay }: MediaGalleryProp
         <span className="text-xs text-muted-foreground">({media.length} items)</span>
       </div>
 
-      {playable.map(item => <AlbumMediaPreview key={item.id} item={item} onMediaPlay={onMediaPlay} />)}
+      {playable.length > 0 && <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {playable.map(item => <AlbumMediaPreview key={item.id} item={item} onMediaPlay={onMediaPlay} />)}
+      </div>}
       {!images.length && !playable.length && <p className="text-sm text-muted-foreground">No supported preview for this Media.</p>}
-      <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         {images.slice(0, 12).map((image, idx) => (
           <div
             key={image.id}
@@ -147,11 +149,18 @@ function AlbumMediaPreview({ item, onMediaPlay }: { item: MediaItem; onMediaPlay
     onPlay: (event: React.SyntheticEvent<HTMLMediaElement>) => onMediaPlay?.(event.currentTarget),
     onError: () => setFailed(true),
     'aria-label': item.fileName,
-    className: 'w-full max-h-80 rounded border',
+    className: cn('w-full min-w-0 rounded border', item.fileType.startsWith('video/') && 'aspect-video object-contain bg-black'),
   };
-  return <section className="space-y-2 rounded border p-3">
-    <h4 className="text-sm font-medium break-words">{item.fileName}</h4>
+  return <section className="min-w-0 space-y-2 rounded border p-2">
+    <h4 className="line-clamp-2 break-words text-xs font-medium" title={item.fileName}>{item.fileName}</h4>
     {item.fileType.startsWith('video/') ? <video {...props} playsInline ref={node => { element.current = node; }} /> : <audio {...props} ref={node => { element.current = node; }} />}
-    {failed && <p role="alert" className="text-sm text-destructive">This Media could not be played. Check file availability and browser format support.</p>}
+    {failed && <div className="space-y-2">
+      <p role="alert" className="text-sm text-destructive">This Media could not be played. Retry to reconnect, or check browser format support.</p>
+      <Button type="button" variant="outline" size="sm" onClick={() => {
+        setFailed(false);
+        // Restart from the App URL so authorization and the storage link refresh.
+        element.current?.load();
+      }}>Retry Media</Button>
+    </div>}
   </section>;
 }

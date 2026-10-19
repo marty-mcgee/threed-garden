@@ -6,7 +6,7 @@ import { AlbumGrid } from '@/components/multimedia/AlbumGrid';
 import { MultimediaPlayer } from '@/components/multimedia/MultimediaPlayer';
 import { Button } from '@/components/ui/button';
 import { MediaGallery } from './MediaGallery';
-import { LatestDashboardRequest, loadDashboardAlbum, loadDashboardAlbums, type DashboardAlbum, type DashboardTrack } from '@/libraries/services/multimedia/dashboard';
+import { LatestDashboardRequest, loadDashboardAlbum, loadDashboardAlbums, readDashboardSelection, dashboardSelectionUrl, type DashboardSelection, type DashboardAlbum, type DashboardTrack } from '@/libraries/services/multimedia/dashboard';
 
 export default function MultimediaContent() {
   const [albums, setAlbums] = useState<DashboardAlbum[]>([]);
@@ -23,6 +23,9 @@ export default function MultimediaContent() {
   const listRequests = useRef(new LatestDashboardRequest());
   const albumRequests = useRef(new LatestDashboardRequest());
   const selectedId = useRef<number | null>(null);
+  const linkedSelection = useRef(false);
+  const firstAlbum = useRef<DashboardAlbum | undefined>(undefined);
+  firstAlbum.current = albums[0];
 
   // Player state
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
@@ -47,8 +50,27 @@ export default function MultimediaContent() {
 
   // Fetch albums on load
   useEffect(() => {
+    const openLocation = () => {
+      const selection = readDashboardSelection(window.location.search);
+      linkedSelection.current = Boolean(selection.albumId || selection.error);
+      if (selection.error) {
+        albumRequests.current.cancel(); activeMedia.current?.pause();
+        setTracks([]); setSelectedAlbum(null); setIsPlaying(false); setLoadingAlbum(false);
+        setAlbumError(selection.error); selectedId.current = null;
+      } else if (selection.albumId) {
+        void selectAlbum(selection.albumId, false, selection);
+      } else if (firstAlbum.current) {
+        void selectAlbum(firstAlbum.current);
+      } else {
+        albumRequests.current.cancel(); activeMedia.current?.pause();
+        selectedId.current = null; setSelectedAlbum(null); setTracks([]);
+        setIsPlaying(false); setLoadingAlbum(false); setAlbumError('');
+      }
+    };
+    openLocation();
     void fetchAlbums(0);
-    return () => { listRequests.current.cancel(); albumRequests.current.cancel(); activeMedia.current?.pause(); };
+    window.addEventListener('popstate', openLocation);
+    return () => { window.removeEventListener('popstate', openLocation); listRequests.current.cancel(); albumRequests.current.cancel(); activeMedia.current?.pause(); };
   }, []);
 
   // Set up audio element
@@ -127,6 +149,7 @@ export default function MultimediaContent() {
         } else {
           const nextIndex = currentTrackIndex + 1;
           setCurrentTrackIndex(nextIndex);
+          if (selectedAlbum) window.history.replaceState(null, '', dashboardSelectionUrl(selectedAlbum.id, tracks[nextIndex].id));
           setIsPlaying(true);
         }
       };
@@ -161,7 +184,7 @@ export default function MultimediaContent() {
       setAlbums(previous => offset === 0 ? page.albums : [...previous, ...page.albums.filter(album => !previous.some(item => item.id === album.id))]);
       nextOffset.current = offset + page.albums.length;
       setHasMore(page.albums.length > 0 && nextOffset.current < page.total);
-      if (selectedId.current === null && page.albums.length) void selectAlbum(page.albums[0]);
+      if (!linkedSelection.current && selectedId.current === null && page.albums.length) void selectAlbum(page.albums[0]);
     } catch {
       if (request.current()) setListError('Unable to load Albums. Please retry.');
     } finally {
@@ -169,10 +192,11 @@ export default function MultimediaContent() {
     }
   };
 
-  const selectAlbum = async (album: DashboardAlbum, play = false) => {
+  const selectAlbum = async (album: DashboardAlbum | number, play = false, selection?: DashboardSelection) => {
+    const id = typeof album === 'number' ? album : album.id;
     const request = albumRequests.current.begin();
-    selectedId.current = album.id;
-    setSelectedAlbum({ ...album, tracks: [], links: [], media: [] });
+    selectedId.current = id;
+    setSelectedAlbum(typeof album === 'number' ? null : { ...album, tracks: [], links: [], media: [] });
     activeMedia.current?.pause();
     setPlaybackError('');
     setTracks([]);
@@ -184,10 +208,21 @@ export default function MultimediaContent() {
     setAlbumError('');
     setLoadingAlbum(true);
     try {
-      const details = await loadDashboardAlbum(album.id, request.signal);
+      const details = await loadDashboardAlbum(id, request.signal);
       if (!request.current()) return;
+      let index = 0;
+      if (selection?.trackId !== null && selection?.trackId !== undefined) index = details.tracks!.findIndex(track => track.id === selection.trackId);
+      else if (selection?.trackNumber !== null && selection?.trackNumber !== undefined) {
+        const matches = details.tracks!.map((track, index) => ({ track, index })).filter(item => item.track.trackNumber === selection.trackNumber);
+        index = matches.length === 1 ? matches[0].index : -1;
+      }
+      if (index < 0) {
+        setAlbumError('The requested Track is unavailable or its Track number is ambiguous.');
+        setSelectedAlbum(details); setTracks([]); return;
+      }
       setSelectedAlbum(details);
       setTracks(details.tracks || []);
+      setCurrentTrackIndex(index);
       setIsPlaying(play && Boolean(details.tracks?.length));
     } catch {
       if (request.current()) setAlbumError('Unable to load this Album. It may no longer be available.');
@@ -198,7 +233,7 @@ export default function MultimediaContent() {
 
   const handleSelectAlbum = (id: number) => {
     const album = albums.find(item => item.id === id);
-    if (album) void selectAlbum(album);
+    if (album) { window.history.pushState(null, '', dashboardSelectionUrl(id)); void selectAlbum(album); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -210,6 +245,7 @@ export default function MultimediaContent() {
     if (!tracks.length) return;
     const nextIndex = (currentTrackIndex + 1) % tracks.length;
     setCurrentTrackIndex(nextIndex);
+    if (selectedAlbum) window.history.pushState(null, '', dashboardSelectionUrl(selectedAlbum.id, tracks[nextIndex].id));
     setIsPlaying(true);
   };
   
@@ -217,6 +253,7 @@ export default function MultimediaContent() {
     if (!tracks.length) return;
     const prevIndex = currentTrackIndex === 0 ? tracks.length - 1 : currentTrackIndex - 1;
     setCurrentTrackIndex(prevIndex);
+    if (selectedAlbum) window.history.pushState(null, '', dashboardSelectionUrl(selectedAlbum.id, tracks[prevIndex].id));
     setIsPlaying(true);
   };
   
@@ -236,13 +273,15 @@ export default function MultimediaContent() {
   };
 
   const handleTrackSelect = (index: number) => {
+    if (!tracks[index] || !selectedAlbum) return;
+    window.history.pushState(null, '', dashboardSelectionUrl(selectedAlbum.id, tracks[index].id));
     setCurrentTrackIndex(index);
     setIsPlaying(true);
   };
 
   const handlePlayAlbum = (id: number) => {
     const album = albums.find(item => item.id === id);
-    if (album) void selectAlbum(album, true);
+    if (album) { window.history.pushState(null, '', dashboardSelectionUrl(id)); void selectAlbum(album, true); }
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -275,7 +314,7 @@ export default function MultimediaContent() {
           </div>
         )}
 
-        {albumError && <div role="alert" className="mb-4">{albumError} <Button variant="outline" onClick={() => selectedAlbum && void selectAlbum(selectedAlbum)}>Retry Album</Button></div>}
+        {albumError && <div role="alert" className="mb-4">{albumError} {selectedId.current && <Button variant="outline" onClick={() => { const selection = readDashboardSelection(window.location.search); void selectAlbum(selectedId.current!, false, selection.error ? undefined : selection); }}>Retry Album</Button>}</div>}
         {!loadingAlbum && !albumError && selectedAlbum && !currentTrack && (
           <section className="mb-6 space-y-3">
             <h2 className="text-xl font-semibold">{selectedAlbum.title}</h2>

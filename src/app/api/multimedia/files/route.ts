@@ -55,7 +55,9 @@ export async function GET(request: NextRequest) {
       return new NextResponse(null, { status: 404, headers });
     }
     const { client, bucket } = storage();
-    const url = await getSignedUrl(client, new GetObjectCommand({ Bucket: bucket, Key: key, ResponseContentDisposition: 'inline' }), { expiresIn: 60 });
+    // Browsers reuse this redirect target for later playback/seek byte ranges.
+    // A one-minute URL can expire after metadata loads but before Play.
+    const url = await getSignedUrl(client, new GetObjectCommand({ Bucket: bucket, Key: key, ResponseContentDisposition: 'inline' }), { expiresIn: 3600 });
     return new NextResponse(null, { status: 307, headers: { ...headers, Location: url } });
   } catch { return new NextResponse(null, { status: 503, headers }); }
 }

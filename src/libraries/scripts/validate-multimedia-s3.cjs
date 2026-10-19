@@ -3,7 +3,7 @@ function load(path, context) { const exports = {}; vm.runInNewContext(ts.transpi
 const policy = load('src/libraries/services/multimedia/upload-policy.ts', {});
 assert.equal(policy.uploadPolicy('video.mp4', 100 * 1024 * 1024, 'media').contentType, 'video/mp4');
 for (const args of [['x.svg', 1, 'image'], ['x.mp4', 1, 'audio'], ['x.png', 21 * 1024 * 1024, 'media'], ['x.wav', 513 * 1024 * 1024, 'audio']]) assert.throws(() => policy.uploadPolicy(...args));
-let clientConfig, signedIn = true, calls = [], head = { ContentLength: 100, ContentType: 'audio/mpeg' };
+let clientConfig, signedIn = true, calls = [], signOptions = [], head = { ContentLength: 100, ContentType: 'audio/mpeg' };
 class Command { constructor(input) { this.input = input; } }
 class Response { constructor(body, options) { this.body = body; this.options = options; } static json(body, options) { return new Response(body, options); } }
 const mocks = {
@@ -11,7 +11,7 @@ const mocks = {
  '@/libraries/services/multimedia/upload-policy': policy,
  '@/libraries/services/multimedia/file-access': { isPublicMediaKey: async () => false },
  '@aws-sdk/client-s3': { S3Client: class { constructor(config) { clientConfig = config; } async send(command) { calls.push(command.input); return head; } }, PutObjectCommand: Command, HeadObjectCommand: Command, GetObjectCommand: Command },
- '@aws-sdk/s3-request-presigner': { getSignedUrl: async (_, command) => { calls.push(command.input); return 'https://s3.example/signed'; } },
+ '@aws-sdk/s3-request-presigner': { getSignedUrl: async (_, command, options) => { calls.push(command.input); signOptions.push(options); return 'https://s3.example/signed'; } },
 };
 const api = load('src/app/api/multimedia/files/route.ts', { process: { env: { AWS_REGION: 'fixture', S3_BUCKET_NAME: 'fixture' } }, crypto: { randomUUID: () => 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' }, require: name => { assert.ok(name in mocks,name); return mocks[name]; } });
 const post = body => api.POST({ json: async () => body });
@@ -30,6 +30,7 @@ const post = body => api.POST({ json: async () => body });
  head.ContentLength = 99; assert.equal((await post({ ...draft, action:'complete', key })).options.status,409);
  assert.equal((await api.GET({ nextUrl: new URL('http://app/api/multimedia/files?key=other') })).options.status,404);
  const read = await api.GET({ nextUrl: new URL('http://app'+complete.body.fileUrl) }); assert.equal(read.options.status,307); assert.equal(read.options.headers['Cache-Control'],'private, no-store');
+ assert.equal(signOptions.at(-1).expiresIn,3600,'Playback redirect remains usable for delayed byte-range reads');
  const sdk = require('@aws-sdk/client-s3');
  const signer = require('@aws-sdk/s3-request-presigner');
  const client = new sdk.S3Client({ ...clientConfig, credentials: { accessKeyId: 'fixture', secretAccessKey: 'fixture' } });

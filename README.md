@@ -10,6 +10,8 @@ Existing Developer-approved local screenshot from October 14, 2026; it illustrat
 
 Developer-confirmed production release: **[v0.26.16 - ThreeD Multimedia: Ownership and Blueprint pages](docs/releases/v0.26.16.md)**. See [current context](CONTEXT.md) for evidence boundaries and local work.
 
+Prepared release checkpoint: **[v0.26.17 - ThreeD Multimedia: Player layout and direct links](docs/releases/v0.26.17.md)**. Preparation and production confirmation are recorded separately.
+
 ## Main capabilities
 
 - Compose Project Models, Beds, Plantings, Characters and FarmBots in linked maps and 3D scenes, with Layers and explicit Project Save.

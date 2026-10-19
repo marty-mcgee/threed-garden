@@ -115,7 +115,7 @@ export function MultimediaPlayer({
           <div className="space-y-3">
             {/* Album Art */}
             {mediaPreview || <div className="flex justify-center">
-              <div className="w-56 h-56 lg:w-64 lg:h-64 rounded-lg overflow-hidden shadow-2xl bg-muted">
+              <div className="aspect-square w-full max-w-72 lg:max-w-[26rem] rounded-lg overflow-hidden shadow-2xl bg-muted">
                 <img 
                   src={album.coverArt} 
                   alt={album.title}
@@ -192,7 +192,7 @@ export function MultimediaPlayer({
           </div>
 
           {/* RIGHT COLUMN - Waveform + Tabs (Track List, Links, Media Gallery) */}
-          <div className="space-y-4">
+          <div className="min-w-0 space-y-4">
             {/* Waveform Visualization */}
             {!mediaPreview && <WaveformVisualizer
               audioUrl={track.fileUrl}
@@ -231,7 +231,7 @@ export function MultimediaPlayer({
 
               {/* Track List Tab */}
               <TabsContent value="tracks" className="mt-4">
-                <ScrollArea className="h-64 lg:h-72">
+                <ScrollArea className="h-96 lg:h-[28rem]">
                   <div className="space-y-1 pr-2">
                     {tracks.map((t, idx) => {
                       const isCurrentTrack = track.id === t.id;
@@ -287,7 +287,7 @@ export function MultimediaPlayer({
 
               {/* Links Tab */}
               <TabsContent value="links" className="mt-4">
-                <ScrollArea className="h-64 lg:h-72">
+                <ScrollArea className="h-96 lg:h-[28rem]">
                   {album.links && album.links.length > 0 ? (
                     <div className="space-y-2 pr-2">
                       {album.links.map((link) => (
@@ -323,7 +323,7 @@ export function MultimediaPlayer({
 
               {/* Media Gallery Tab */}
               <TabsContent value="media" className="mt-4">
-                <ScrollArea className="h-64 lg:h-72">
+                <ScrollArea className="h-96 lg:h-[28rem]">
                   {album.media && album.media.length > 0 ? (
                     <MediaGallery media={album.media} albumId={album.id} onMediaPlay={onMediaPlay} />
                   ) : (

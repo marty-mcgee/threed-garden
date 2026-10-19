@@ -13,6 +13,27 @@ export interface DashboardAlbum {
   tracks?: DashboardTrack[]; links?: DashboardLink[]; media?: DashboardMedia[];
 }
 
+export interface DashboardSelection { albumId: number | null; trackId: number | null; trackNumber: number | null; error: string }
+export function readDashboardSelection(search: string): DashboardSelection {
+  const params = new URLSearchParams(search);
+  const positive = (key: string) => {
+    const value = params.get(key);
+    return value !== null && /^[1-9]\d*$/.test(value) && Number.isSafeInteger(Number(value)) ? Number(value) : null;
+  };
+  const albumId = positive('albumId'), trackId = positive('trackId');
+  const number = params.get('trackNumber');
+  const trackNumber = number !== null && /^-?\d+$/.test(number) && Number.isInteger(Number(number)) && Math.abs(Number(number)) <= 10000 ? Number(number) : null;
+  const invalid = ['albumId', 'trackId', 'trackNumber'].some(key => params.getAll(key).length > 1) ||
+    (params.has('albumId') && albumId === null) || (params.has('trackId') && trackId === null) ||
+    (params.has('trackNumber') && trackNumber === null) || ((params.has('trackId') || params.has('trackNumber')) && albumId === null) ||
+    (params.has('trackId') && params.has('trackNumber'));
+  return { albumId, trackId, trackNumber, error: invalid ? 'This Album or Track link is invalid.' : '' };
+}
+
+export function dashboardSelectionUrl(albumId: number, trackId?: number) {
+  return `/dashboard/multimedia?albumId=${albumId}${trackId === undefined ? '' : `&trackId=${trackId}`}`;
+}
+
 // Abort saves work; identity also rejects late responses from transports that ignore abort.
 export class LatestDashboardRequest {
   private controller?: AbortController;
