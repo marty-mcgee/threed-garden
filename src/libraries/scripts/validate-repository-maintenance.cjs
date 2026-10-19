@@ -33,8 +33,10 @@ for (const file of files) {
   }
 }
 const readme = fs.readFileSync('README.md', 'utf8');
-assert.match(readme, /^# ThreeD Garden\n/);
-assert(readme.indexOf('![ThreeD Garden') < readme.indexOf('## Main capabilities'), 'Approved product image precedes capabilities');
+assert.match(readme, /^# 🥕 ThreeD Garden\n/);
+const productImage = readme.indexOf('![ThreeD Garden');
+const capabilities = readme.indexOf('## ✨ What can you create?');
+assert(productImage >= 0 && capabilities > productImage, 'Approved product image precedes capabilities');
 const homepage = fs.readFileSync('src/app/page.tsx', 'utf8');
 assert.match(homepage, /id="garden-demo"/, 'Demo link corresponds to the existing Home anchor');
 assert(fs.existsSync('src/app/learn/page.tsx'), 'Learn route exists');
