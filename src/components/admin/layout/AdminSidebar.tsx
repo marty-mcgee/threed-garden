@@ -56,7 +56,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobile = false, isOpen =
       collapsed ? 'w-16' : 'w-64', isMobile && !isOpen && 'hidden',
     )}>
       <div className="flex h-12 shrink-0 items-center justify-between border-b px-3">
-        {!collapsed && <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-lg font-bold text-transparent">ThreeD Garden</span>}
+        {!collapsed && <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-lg font-bold text-transparent">ThreeD Design</span>}
         <Button variant="ghost" size="icon" onClick={onToggle} aria-label={isMobile ? 'Close Admin navigation' : collapsed ? 'Expand Admin navigation' : 'Collapse Admin navigation'} className="ml-auto">
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>

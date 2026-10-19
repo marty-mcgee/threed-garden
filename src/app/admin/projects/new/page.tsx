@@ -51,7 +51,7 @@ export default function NewProjectPage() {
         <ProjectConfigurations project={{ id: null, config: { measurementUnits: 'imperial' }, metersPerSceneUnit: String(DEFAULT_THREED_METERS_PER_SCENE_UNIT), headingDegrees: '0', originLatitude: null, originLongitude: null }}
           disabled={loading} detailsDirty={Boolean(formData.name || formData.description || formData.isPublic || !formData.isActive)}
           onSave={createProject} onReset={() => setFormData(emptyDetails())} onSaved={() => {}} onCalibrate={() => {}}
-          details={<Card><CardContent className="space-y-3 p-4"><h2 className="text-base font-semibold">Project details and access</h2><ProjectDetailsFields value={formData} onChange={setFormData} disabled={loading} idPrefix="new-project" /><p className="text-xs text-muted-foreground">Create the Project to add modules/assets and calibrate coordinates. No Models, Designs or Scene snapshots are created by this form.</p></CardContent></Card>} />
+          details={<Card className="min-w-0 gap-0 overflow-hidden border-t-2 border-t-emerald-500/60"><CardContent className="space-y-3 p-5"><h2 className="flex items-center gap-2 text-lg font-semibold"><FolderOpen aria-hidden="true" className="size-5 shrink-0 text-emerald-600 dark:text-emerald-400" />Project details and access</h2><p className="text-sm text-muted-foreground">Name your Project and choose who can view it.</p><ProjectDetailsFields value={formData} onChange={setFormData} disabled={loading} idPrefix="new-project" /><p className="text-xs text-muted-foreground">Create the Project to add modules/assets and calibrate coordinates. No Models, Designs or Scene snapshots are created by this form.</p></CardContent></Card>} />
       </TabsContent>
     </Tabs>
   </div>;

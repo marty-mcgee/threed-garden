@@ -11,7 +11,7 @@ import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import {
-  Plus, Box, Car, Music, Trash2, X, Loader2,
+  CircleHelp, Plus, Box, Car, Music, Trash2, X, Loader2,
   CheckCircle, XCircle, MoreHorizontal, ChevronDown, ChevronRight,
   FolderOpen, Layers, Sprout, Package, User, AlertTriangle, Music2,
   Image, Link2, FileText, Route, Flame, Radio, MapPin
@@ -20,6 +20,7 @@ import type { LucideIcon } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -263,6 +264,7 @@ export default function ProjectDetailPage() {
     multimedia: [],
   });
   const [loading, setLoading] = useState(true);
+  const [projectHelpOpen, setProjectHelpOpen] = useState(false);
   const [projectTab, setProjectTab] = useState('setup');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showNewModuleDialog, setShowNewModuleDialog] = useState(false);
@@ -764,15 +766,14 @@ export default function ProjectDetailPage() {
             {project.isPublic && (
               <Badge variant="outline">Public</Badge>
             )}
+            <TooltipProvider delayDuration={200}><Tooltip open={projectHelpOpen} onOpenChange={setProjectHelpOpen}>
+              <TooltipTrigger asChild><Button type="button" variant="ghost" size="icon" className="threed-field-help h-6 w-6 shrink-0 text-muted-foreground" aria-label="Project information" onClick={() => setProjectHelpOpen(open => !open)}><CircleHelp aria-hidden="true" className="h-3.5 w-3.5" /></Button></TooltipTrigger>
+              <TooltipContent className="space-y-2 break-words font-normal">
+                <p>{project.description || 'No description provided'}</p>
+                <dl className="space-y-1"><div><dt className="inline font-semibold">ID: </dt><dd className="inline">{project.id}</dd></div><div><dt className="inline font-semibold">Slug: </dt><dd className="inline">{project.slug}</dd></div><div><dt className="inline font-semibold">Created: </dt><dd className="inline">{formatDate(project.createdAt)}</dd></div></dl>
+              </TooltipContent>
+            </Tooltip></TooltipProvider>
           </h1>
-          <p className="text-muted-foreground mt-1">
-            {project.description || 'No description provided'}
-          </p>
-          <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-            <span>ID: {project.id}</span>
-            <span>Slug: {project.slug}</span>
-            <span>Created: {formatDate(project.createdAt)}</span>
-          </div>
         </div>
         <Button variant="outline" asChild>
           <Link href="/admin/projects"><FolderOpen aria-hidden="true" className="w-4 h-4 mr-2" />All Projects</Link>
@@ -782,22 +783,24 @@ export default function ProjectDetailPage() {
       <Tabs value={projectTab} onValueChange={setProjectTab} className="space-y-4">
         <TabsList><TabsTrigger value="setup">Setup</TabsTrigger><TabsTrigger value="modules">Modules and assets</TabsTrigger></TabsList>
         <TabsContent value="setup" forceMount className="space-y-4 data-[state=inactive]:hidden">
-      <ProjectWeatherSettings key={`weather-${project.id}`} projectId={project.id} disabled={isSubmitting} />
       {/* Project details are always available on the Setup tab. */}
       <ProjectConfigurations key={project.id} project={project} disabled={isSubmitting}
         detailsDirty={formData.name !== project.name || formData.description !== (project.description || '') || formData.isPublic !== (project.isPublic === true) || formData.isActive !== (project.isActive !== false)}
         onSave={updateProject} onReset={() => restoreProjectDetails(project)}
         onSaved={config => setProject(current => current?.id === project.id ? { ...current, config } : current)}
-        onCalibrate={() => { requestAnimationFrame(() => document.getElementById('calibration-pointALocalX')?.focus()); }}
+        onCalibrate={() => { const panel = document.getElementById('project-coordinate-calibration'); if (panel instanceof HTMLDetailsElement) panel.open = true; requestAnimationFrame(() => document.getElementById('calibration-pointALocalX')?.focus()); }}
+        rightColumnFooter={<ProjectWeatherSettings key={`weather-${project.id}`} projectId={project.id} disabled={isSubmitting} compact />}
         details={
-        <Card>
-          <CardContent className="p-4">
-            <h2 className="mb-3 text-base font-semibold">Project details and access</h2>
+        <Card className="min-w-0 gap-0 overflow-hidden border-t-2 border-t-emerald-500/60">
+          <CardContent className="p-5">
+            <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold"><FolderOpen aria-hidden="true" className="size-5 shrink-0 text-emerald-600 dark:text-emerald-400" />Project details and access</h2>
+            <p className="mb-4 text-sm text-muted-foreground">Name your Project and choose who can view it.</p>
             <div className="space-y-3">
               <ProjectDetailsFields value={formData} onChange={setFormData} disabled={isSubmitting} idPrefix="edit" />
-              <div className="space-y-3 rounded-md border p-3">
+              <details id="project-coordinate-calibration" className="rounded-xl border bg-muted/20 p-4">
+                <summary className="cursor-pointer text-sm font-semibold"><MapPin aria-hidden="true" className="mr-2 inline size-4 text-amber-600 dark:text-amber-400" />Project Coordinate Calibration<span className="ml-2 text-xs font-normal text-muted-foreground">Advanced</span></summary>
+                <div className="mt-3 space-y-3">
                 <div>
-                  <h3 className="text-sm font-semibold">Project Coordinate Calibration</h3>
                   <p className="text-xs text-muted-foreground">
                     Enter two matching local X/Z and GPS latitude/longitude points. Calibration
                     preserves local marker positions and refreshes saved marker GPS metadata.
@@ -858,7 +861,8 @@ export default function ProjectDetailPage() {
                     <span>Endpoint residual: {calibrationDiagnostics.referenceErrorMeters.toFixed(4)} m</span>
                   </div>
                 )}
-              </div>
+                </div>
+              </details>
             </div>
           </CardContent>
         </Card>} />
@@ -867,7 +871,7 @@ export default function ProjectDetailPage() {
       {/* Modules Section */}
       <div className="flex flex-wrap justify-between items-center gap-2">
         <div>
-          <h2 className="text-xl font-bold">Project Modules</h2>
+          <h2 className="flex items-center gap-2 text-xl font-bold"><Layers aria-hidden="true" className="size-5 shrink-0 text-cyan-600 dark:text-cyan-400" />Project Modules</h2>
           <p className="text-sm text-muted-foreground">
             {allModules.length} module{allModules.length !== 1 ? 's' : ''} associated with this project
           </p>

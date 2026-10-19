@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Package/root lockfile: **0.26.19**, Developer-confirmed released to production as **[v0.26.19 - Learn ThreeD Page Updates + New Home Page Design](docs/releases/v0.26.19.md)**. Developer accepted the final Home/Learn presentation. Prior preparation passed fresh isolated TypeScript, all 85 offline CI tasks, guarded production build (150/150 pages) and 1,131-input parity. Exact deployed commit and independent post-deployment checks are not established. This documentation update remains unstaged.
+Package/root lockfile: **0.26.20**, release preparation for **[ThreeD Projects: Admin page layout](docs/releases/v0.26.20.md)**. Developer accepted the New/Edit presentation. Fresh isolated TypeScript, all 85 offline CI tasks, guarded production build (150/150 pages), version/documentation/whitespace checks and 1,131-input parity passed; changes remain unstaged. Production remains Developer-confirmed **v0.26.19 - Learn ThreeD Page Updates + New Home Page Design**. Exact deployed commit and independent post-deployment checks are not established.
 
 Developer naming: **ThreeD > Project > Model > DetailsCard**. Use exact App names, verify ownership, state uncertainty and honor corrections. Provide concise commit titles only unless asked for a body; keep responses concise with **Next Steps:**. See [durable working preferences](docs/agents/README.md#developer-preferences) and [AGENTS.md](AGENTS.md).
 
@@ -28,6 +28,8 @@ Release confirmation is separate from the prior local checks. The subsequent Git
 shadcn CLI is pinned to 4.22.0; App Zod 3.25.76 is explicit and existing Radix/UI/CSS owners are retained. Developer confirms successful npm ci, npm start and real-App Editor operation/appearance. Local acceptance and the later Developer production confirmation are separate; neither certifies every Save/reopen/Character scenario. Upgrade checks and native comparisons passed; final release gates are recorded in [v0.26.12](docs/releases/v0.26.12.md), with implementation detail in [the upgrade plan](docs/plans/shadcn-4-upgrade.md). Developer servers/installation remain agent-untouched. Current work stays unstaged for manual GitHub/Vercel release.
 
 ## Acceptance and known limitations
+
+- Project New/Edit layout: matching two-column cards, colored icons, collapsed advanced calibration, header information tooltip, compact Weather at the bottom of the right column and full-width Project actions last. Developer accepted the final presentation. Existing Save/draft and Weather checks passed with mocked boundaries; see [v0.26.20](docs/releases/v0.26.20.md) for verification and pending visual acceptance.
 
 - Local v0.26.19 Learn presentation adopts Home-style spacing, hero and a static illustration while retaining existing instructions, links and public layout. Developer accepted the larger calls to action, descriptive topic cards and skill navigation tiles. Home now adopts matching larger actions and navigation cards, preserving its demo and featured playback. Native mocked browser layout/keyboard checks passed in both themes across desktop/mobile widths; final verification and Developer acceptance are recorded in [v0.26.19](docs/releases/v0.26.19.md). Developer-confirmed released as 0.26.19.
 

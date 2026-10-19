@@ -15,7 +15,7 @@ interface Settings {
 }
 const fields = (settings: Settings) => ({ latitude: settings.location ? String(settings.location.latitude) : '', longitude: settings.location ? String(settings.location.longitude) : '' });
 
-export function ProjectWeatherSettings({ projectId, disabled = false }: { projectId: number; disabled?: boolean }) {
+export function ProjectWeatherSettings({ projectId, disabled = false, compact = false }: { projectId: number; disabled?: boolean; compact?: boolean }) {
   const [saved, setSaved] = useState<Settings | null>(null);
   const [draft, setDraft] = useState({ latitude: '', longitude: '' });
   const [busy, setBusy] = useState(false), [error, setError] = useState(''), [message, setMessage] = useState('');
@@ -71,14 +71,14 @@ export function ProjectWeatherSettings({ projectId, disabled = false }: { projec
     document.addEventListener('click', navigate, true);
     return () => { window.removeEventListener('beforeunload', warn); document.removeEventListener('click', navigate, true); };
   }, [dirty, busy]);
-  return <section id="weather-settings" aria-labelledby="weather-settings-title" className="scroll-mt-4 space-y-3 rounded-lg border bg-card p-4">
-    <h2 id="weather-settings-title" className="flex items-center gap-2 text-base font-semibold"><CloudSun className="h-4 w-4" />Weather Settings</h2>
-    <p className="text-xs text-muted-foreground">Coordinates are filled from the existing Weather source when this Project has no saved location. You can override them here. Scene calibration is preserved.</p>
+  return <section id="weather-settings" aria-labelledby="weather-settings-title" onKeyDown={event => { if (event.key === 'Enter' && event.target instanceof HTMLInputElement) event.preventDefault(); }} className={compact ? "scroll-mt-4 space-y-2 rounded-xl border bg-card p-4" : "scroll-mt-4 space-y-3 rounded-lg border bg-card p-4"}>
+    <h2 id="weather-settings-title" className="flex items-center gap-2 text-base font-semibold"><CloudSun aria-hidden="true" className="h-4 w-4 shrink-0 text-sky-600 dark:text-sky-400" />Weather Settings</h2>
+    {!compact && <p className="text-xs text-muted-foreground">Coordinates are filled from the existing Weather source when this Project has no saved location. You can override them here. Scene calibration is preserved.</p>}
     {busy && <p role="status" className="text-xs">{saved ? 'Saving Weather Settings…' : 'Loading Weather Settings…'}</p>}
     {error && <p role="alert" className="text-xs text-destructive">{error}</p>}
     {saved && <>
       <p className="text-xs">OpenWeatherMap: {saved.providerConfigured ? 'Configured' : 'Not configured'}. {saved.location ? `Current Weather location: ${saved.location.latitude}, ${saved.location.longitude}.` : 'No Weather location configured.'}</p>
-      {saved.locationSource === 'module' && <p className="text-xs text-muted-foreground">Using the existing ThreeD Weather module location. Save only if you want a Project-specific override.</p>}
+      {!compact && saved.locationSource === 'module' && <p className="text-xs text-muted-foreground">Using the existing ThreeD Weather module location. Save only if you want a Project-specific override.</p>}
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="space-y-1 text-xs">Weather latitude<Input aria-label="Weather latitude" type="number" step="any" min="-90" max="90" disabled={disabled || busy} value={draft.latitude} onChange={event => { setDraft(current => ({ ...current, latitude: event.target.value })); setMessage(''); }} /></label>
         <label className="space-y-1 text-xs">Weather longitude<Input aria-label="Weather longitude" type="number" step="any" min="-180" max="180" disabled={disabled || busy} value={draft.longitude} onChange={event => { setDraft(current => ({ ...current, longitude: event.target.value })); setMessage(''); }} /></label>
@@ -87,9 +87,10 @@ export function ProjectWeatherSettings({ projectId, disabled = false }: { projec
       <div className="flex flex-wrap gap-2">
         <Button type="button" size="sm" disabled={disabled || busy || !dirty || (!empty && !location)} onClick={() => void request(true, saved.setting)}>Save Weather Settings</Button>
         <Button type="button" variant="outline" size="sm" disabled={busy || !dirty} onClick={() => { setDraft(fields(saved!)); setError(''); setMessage(''); }}>Discard</Button>
+    <Button type="button" variant="outline" size="sm" disabled={busy} onClick={() => { if (!dirty || window.confirm('Discard unsaved Weather Settings and reload?')) void request(false); }}>Reload Settings</Button>
       </div>
     </>}
-    <Button type="button" variant="outline" size="sm" disabled={busy} onClick={() => { if (!dirty || window.confirm('Discard unsaved Weather Settings and reload?')) void request(false); }}>Reload Settings</Button>
+    {!saved && <Button type="button" variant="outline" size="sm" disabled={busy} onClick={() => void request(false)}>Reload Settings</Button>}
     {message && <p role="status" className="text-xs">{message}</p>}
   </section>;
 }
