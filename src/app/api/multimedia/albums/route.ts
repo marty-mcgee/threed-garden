@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
 import { multimediaAlbums, multimediaTracks, multimediaLinks, multimediaMedia } from '@/libraries/schema/multimedia';
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { eq, and, asc, desc, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/libraries/db/sequence';
 
 // ============================================
@@ -186,8 +186,13 @@ export async function GET(request: NextRequest) {
       .from(multimediaAlbums)
       .where(albumListCondition);
 
+    // Dashboard grid and next-Album playback consume this public response order.
+    const albumOrder = scope === 'public'
+      ? [sql`${multimediaAlbums.sortOrder} ASC NULLS LAST`, asc(multimediaAlbums.id)]
+      : [desc(multimediaAlbums.createdAt)];
+
     const albums = await query
-      .orderBy(desc(multimediaAlbums.createdAt))
+      .orderBy(...albumOrder)
       .limit(limit)
       .offset(offset);
 

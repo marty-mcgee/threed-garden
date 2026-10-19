@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Package/root lockfile: **0.26.14**, prepared for manual release as **[v0.26.14 - ThreeD Weather: Project overlay and existing data integration](docs/releases/v0.26.14.md)**. Developer accepted the Weather checkpoint and requested release preparation. Production remains Developer-confirmed **v0.26.13**; exact deployed commit and independent post-deployment checks are not established. Fresh isolated TypeScript, all 80 offline CI tasks, guarded production build (146/146 pages), version/link/whitespace checks and source parity passed. Changes remain unstaged; no deployment is implied.
+Package/root lockfile: **0.26.15**, prepared as **[v0.26.15 - ThreeD Multimedia: Album Sort Order](docs/releases/v0.26.15.md)** for manual release. Developer accepted the existing Album Sort Order connection to Dashboard Multimedia. Fresh isolated TypeScript, all 80 offline CI tasks, guarded production build (146/146 pages), version/link/whitespace checks and source parity passed. Production remains Developer-confirmed **[v0.26.14](docs/releases/v0.26.14.md)**; exact deployed commit and independent post-deployment checks are not established. Changes remain unstaged; preparation performs no commit, push or deployment.
 
 Developer naming: **ThreeD > Project > Model > DetailsCard**. Use exact App names, verify ownership, state uncertainty and honor corrections. Provide concise commit titles only unless asked for a body; keep responses concise with **Next Steps:**. See [durable working preferences](docs/agents/README.md#developer-preferences) and [AGENTS.md](AGENTS.md).
 
@@ -28,6 +28,8 @@ Release confirmation is separate from the prior local checks. The subsequent Git
 shadcn CLI is pinned to 4.22.0; App Zod 3.25.76 is explicit and existing Radix/UI/CSS owners are retained. Developer confirms successful npm ci, npm start and real-App Editor operation/appearance. Local acceptance and the later Developer production confirmation are separate; neither certifies every Save/reopen/Character scenario. Upgrade checks and native comparisons passed; final release gates are recorded in [v0.26.12](docs/releases/v0.26.12.md), with implementation detail in [the upgrade plan](docs/plans/shadcn-4-upgrade.md). Developer servers/installation remain agent-untouched. Current work stays unstaged for manual GitHub/Vercel release.
 
 ## Acceptance and known limitations
+
+- v0.26.15 Developer-accepted checkpoint: existing Album Sort Order controls the Dashboard Multimedia public Album list, preserving owner/Admin and Track ordering. Scope, checks and release status live in [the release record](docs/releases/v0.26.15.md).
 
 - ThreeD Weather checkpoint is Developer-accepted: Project overlay and Admin Weather Settings reuse the existing provider and source coordinates automatically, preserving explicit overrides/calibration and owner/Project isolation. Approved metadata contracts, prior mocked checks, transient Settings read failure and acceptance limits are preserved in the [Weather plan](docs/plans/project-weather-overlay.md); final release gates belong to [v0.26.14](docs/releases/v0.26.14.md). Scene effects remain Phase 2.
 
