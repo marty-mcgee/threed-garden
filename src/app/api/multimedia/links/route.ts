@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
 import { multimediaLinks } from '@/libraries/schema/multimedia';
-import { eq, and, desc, sql } from 'drizzle-orm';
+import { eq, and, asc, sql } from 'drizzle-orm';
+import { ownedParents } from '@/libraries/services/multimedia/authority';
 import { ensureTableSequence } from '@/libraries/db/sequence';
 
 // ============================================
@@ -103,8 +104,8 @@ export async function GET(request: NextRequest) {
 
     // ✅ Order by display order
     const links = await query.orderBy(
-      desc(multimediaLinks.displayOrder),
-      desc(multimediaLinks.createdAt)
+      sql`${multimediaLinks.displayOrder} ASC NULLS LAST`,
+      asc(multimediaLinks.id)
     );
 
     return NextResponse.json({
@@ -136,6 +137,9 @@ export async function POST(request: NextRequest) {
 
     const userId = session.user.id;
     const body = await request.json();
+    if (body.displayOrder != null && (!Number.isInteger(body.displayOrder) || body.displayOrder < -10000 || body.displayOrder > 10000)) {
+      return NextResponse.json({ success: false, error: 'Sort Order must be an integer from -10000 to 10000.' }, { status: 400 });
+    }
 
     const {
       title,
@@ -165,32 +169,36 @@ export async function POST(request: NextRequest) {
     }
 
     // ✅ Ensure sequence
-    await ensureTableSequence('multimedia_links');
+    return await db.transaction(async (tx) => {
+      const parents = await ownedParents(userId, albumId, trackId, tx);
+      if (!parents) return NextResponse.json({ success: false, error: 'Invalid or unavailable Album/Track association' }, { status: 400 });
+      await ensureTableSequence('multimedia_links');
 
-    // ✅ Create the link
-    const [newLink] = await db
-      .insert(multimediaLinks)
-      .values({
-        userId,
-        title,
-        url,
-        type: type || 'external',
-        icon: icon || null,
-        description: description || null,
-        status: status || 'active',
-        displayOrder: displayOrder || 0,
-        albumId: albumId ? parseInt(albumId) : null,
-        trackId: trackId ? parseInt(trackId) : null,
-        metadata: {},
-      })
-      .returning();
+      // ✅ Create the link
+      const [newLink] = await tx
+        .insert(multimediaLinks)
+        .values({
+          userId,
+          title,
+          url,
+          type: type || 'external',
+          icon: icon || null,
+          description: description || null,
+          status: status || 'active',
+          displayOrder: displayOrder ?? 0,
+          albumId: parents.albumId,
+          trackId: parents.trackId,
+          metadata: {},
+        })
+        .returning();
 
-    console.log('[Links] Created link:', newLink.id, newLink.title);
+      console.log('[Links] Created link:', newLink.id, newLink.title);
 
-    return NextResponse.json({
-      success: true,
-      data: newLink,
-      message: 'Link created successfully',
+      return NextResponse.json({
+        success: true,
+        data: newLink,
+        message: 'Link created successfully',
+      });
     });
   } catch (error) {
     console.error('[Links] POST error:', error);
@@ -234,56 +242,63 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
+    if (body.displayOrder != null && (!Number.isInteger(body.displayOrder) || body.displayOrder < -10000 || body.displayOrder > 10000)) {
+      return NextResponse.json({ success: false, error: 'Sort Order must be an integer from -10000 to 10000.' }, { status: 400 });
+    }
     const { title, url, type, icon, description, status, displayOrder, albumId, trackId } = body;
 
     // ✅ Check if link exists and belongs to user
-    const [existing] = await db
-      .select()
-      .from(multimediaLinks)
-      .where(
-        and(
-          eq(multimediaLinks.id, parsedId),
-          eq(multimediaLinks.userId, userId)
+    return await db.transaction(async (tx) => {
+      const [existing] = await tx
+        .select()
+        .from(multimediaLinks)
+        .where(
+          and(
+            eq(multimediaLinks.id, parsedId),
+            eq(multimediaLinks.userId, userId)
+          )
         )
-      )
-      .limit(1);
+        .limit(1).for('update');
 
-    if (!existing) {
-      return NextResponse.json(
-        { success: false, error: 'Link not found' },
-        { status: 404 }
-      );
-    }
+      if (!existing) {
+        return NextResponse.json(
+          { success: false, error: 'Link not found' },
+          { status: 404 }
+        );
+      }
 
-    // ✅ Update the link
-    const [updated] = await db
-      .update(multimediaLinks)
-      .set({
-        title: title || existing.title,
-        url: url || existing.url,
-        type: type || existing.type,
-        icon: icon !== undefined ? icon : existing.icon,
-        description: description !== undefined ? description : existing.description,
-        status: status || existing.status,
-        displayOrder: displayOrder !== undefined ? displayOrder : existing.displayOrder,
-        albumId: albumId !== undefined ? (albumId ? parseInt(albumId) : null) : existing.albumId,
-        trackId: trackId !== undefined ? (trackId ? parseInt(trackId) : null) : existing.trackId,
-        updatedAt: new Date(),
-      })
-      .where(
-        and(
-          eq(multimediaLinks.id, parsedId),
-          eq(multimediaLinks.userId, userId)
+      // ✅ Update the link
+      const parents = await ownedParents(userId, albumId === undefined ? existing.albumId : albumId, trackId === undefined ? existing.trackId : trackId, tx);
+      if (!parents) return NextResponse.json({ success: false, error: 'Invalid or unavailable Album/Track association' }, { status: 400 });
+      const [updated] = await tx
+        .update(multimediaLinks)
+        .set({
+          title: title || existing.title,
+          url: url || existing.url,
+          type: type || existing.type,
+          icon: icon !== undefined ? icon : existing.icon,
+          description: description !== undefined ? description : existing.description,
+          status: status || existing.status,
+          displayOrder: displayOrder !== undefined ? displayOrder : existing.displayOrder,
+          albumId: parents.albumId,
+          trackId: parents.trackId,
+          updatedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(multimediaLinks.id, parsedId),
+            eq(multimediaLinks.userId, userId)
+          )
         )
-      )
-      .returning();
+        .returning();
 
-    console.log('[Links] Updated link:', updated.id, updated.title);
+      console.log('[Links] Updated link:', updated.id, updated.title);
 
-    return NextResponse.json({
-      success: true,
-      data: updated,
-      message: 'Link updated successfully',
+      return NextResponse.json({
+        success: true,
+        data: updated,
+        message: 'Link updated successfully',
+      });
     });
   } catch (error) {
     console.error('[Links] PUT error:', error);

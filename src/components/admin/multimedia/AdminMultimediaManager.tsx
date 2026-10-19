@@ -32,7 +32,7 @@ interface Track {
   lyrics: string | null;
 }
 
-export function AdminMusicManager() {
+export function AdminMultimediaManager() {
   const { showToast, ToastComponent } = useToast();
   const [albums, setAlbums] = useState<Album[]>([]);
   const [tracks, setTracks] = useState<Track[]>([]);
@@ -53,7 +53,7 @@ export function AdminMusicManager() {
   const [trackForm, setTrackForm] = useState({
     title: '',
     duration: '',
-    trackNumber: '',
+    trackNumber: '0',
     fileUrl: '',
     lyrics: '',
   });
@@ -158,7 +158,7 @@ export function AdminMusicManager() {
         albumId: selectedAlbum.id,
         title: trackForm.title,
         duration: trackForm.duration ? parseInt(trackForm.duration) : null,
-        trackNumber: trackForm.trackNumber ? parseInt(trackForm.trackNumber) : null,
+        trackNumber: trackForm.trackNumber ? Number(trackForm.trackNumber) : null,
         fileUrl: trackForm.fileUrl,
         lyrics: trackForm.lyrics || null,
       }),
@@ -205,7 +205,7 @@ export function AdminMusicManager() {
     setTrackForm({
       title: '',
       duration: '',
-      trackNumber: '',
+      trackNumber: '0',
       fileUrl: '',
       lyrics: '',
     });
@@ -393,10 +393,10 @@ export function AdminMusicManager() {
                         />
                       </div>
                       <div>
-                        <Label>Track Number</Label>
+                        <Label>Sort Order</Label>
                         <Input
                           type="number"
-                          value={trackForm.trackNumber}
+                          min={-10000} max={10000} step={1} value={trackForm.trackNumber}
                           onChange={(e) => setTrackForm({ ...trackForm, trackNumber: e.target.value })}
                         />
                       </div>
@@ -440,7 +440,7 @@ export function AdminMusicManager() {
                       <Music className="h-4 w-4 text-muted-foreground" />
                       <div>
                         <p className="font-medium">
-                          {track.trackNumber && `${track.trackNumber}. `}{track.title}
+                          {track.trackNumber != null && `${track.trackNumber}. `}{track.title}
                         </p>
                         <p className="text-xs text-muted-foreground">
                           {track.duration ? `${Math.floor(track.duration / 60)}:${(track.duration % 60).toString().padStart(2, '0')}` : '--:--'} • {track.fileUrl}

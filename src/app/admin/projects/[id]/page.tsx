@@ -29,10 +29,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 
 // ✅ Import all CRUD Components
-import { MusicAlbumCRUD } from '@/components/admin/multimedia/albums/MusicAlbumCRUD';
-import { MusicTracksCRUD } from '@/components/admin/multimedia/tracks/MusicTracksCRUD';
-import { MusicMediaCRUD } from '@/components/admin/multimedia/media/MusicMediaCRUD';
-import { MusicLinksCRUD } from '@/components/admin/multimedia/links/MusicLinksCRUD';
+import { MultimediaAlbumCRUD } from '@/components/admin/multimedia/albums/MultimediaAlbumCRUD';
+import { MultimediaTracksCRUD } from '@/components/admin/multimedia/tracks/MultimediaTracksCRUD';
+import { MultimediaMediaCRUD } from '@/components/admin/multimedia/media/MultimediaMediaCRUD';
+import { MultimediaLinksCRUD } from '@/components/admin/multimedia/links/MultimediaLinksCRUD';
 
 import { ThreeDPlantsCRUD } from '@/components/admin/threed/plants/ThreeDPlantsCRUD';
 import { ThreeDPlantingsCRUD } from '@/components/admin/threed/plantings/ThreeDPlantingsCRUD';
@@ -192,10 +192,10 @@ const moduleConfig: Record<ModuleType, {
     label: 'Music',
     borderColor: 'border-purple-200',
     crudComponents: [
-      { id: 'albums', label: 'Albums', component: MusicAlbumCRUD, icon: Music },
-      { id: 'tracks', label: 'Tracks', component: MusicTracksCRUD, icon: Music2 },
-      { id: 'media', label: 'Media', component: MusicMediaCRUD, icon: Image },
-      { id: 'links', label: 'Links', component: MusicLinksCRUD, icon: Link2 },
+      { id: 'albums', label: 'Albums', component: MultimediaAlbumCRUD, icon: Music },
+      { id: 'tracks', label: 'Tracks', component: MultimediaTracksCRUD, icon: Music2 },
+      { id: 'media', label: 'Media', component: MultimediaMediaCRUD, icon: Image },
+      { id: 'links', label: 'Links', component: MultimediaLinksCRUD, icon: Link2 },
     ],
   },
 };

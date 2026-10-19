@@ -70,7 +70,11 @@ export function MediaManager({ albumId, albumTitle, onMediaChange }: MediaManage
 
   const handleSetPrimary = async (id: number) => {
     try {
-      const response = await fetch(`/api/multimedia/media/${id}/primary`, { method: 'PATCH' });
+      const response = await fetch(`/api/multimedia/media?id=${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isPrimary: true }),
+      });
       if (response.ok) {
         showToast('Primary media updated', 'success');
         fetchMedia();

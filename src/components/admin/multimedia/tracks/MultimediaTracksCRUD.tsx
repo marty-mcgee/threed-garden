@@ -1,8 +1,10 @@
-// components/admin/multimedia/tracks/MusicTracksCRUD.tsx
+// components/admin/multimedia/tracks/MultimediaTracksCRUD.tsx
 'use client';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
-import { useMusicRecords, MusicRecordsSearch, MusicRecordsTable, MusicStatus } from '@/components/admin/multimedia/shared/MusicRecordsWorkspace';
-import { MusicWorkspaceHeader } from '@/components/admin/multimedia/shared/MusicWorkspaceHeader';
+import { useMultimediaRecords, MultimediaRecordsSearch, MultimediaRecordsTable, MultimediaStatus } from '@/components/admin/multimedia/shared/MultimediaRecordsWorkspace';
+import { MultimediaWorkspaceHeader } from '@/components/admin/multimedia/shared/MultimediaWorkspaceHeader';
 
 import { S3Upload } from '@/components/admin/multimedia/shared/S3Upload';
 import { useState, useEffect } from 'react';
@@ -47,13 +49,14 @@ interface Track {
   updatedAt: string;
 }
 
-interface MusicTracksCRUDProps {
+interface MultimediaTracksCRUDProps {
   pageHeader?: boolean;
   onModuleUpdate?: () => void;
 }
 
-export function MusicTracksCRUD({ onModuleUpdate, pageHeader = false }: MusicTracksCRUDProps) {
-  const workspace = useMusicRecords('tracks', pageHeader);
+export function MultimediaTracksCRUD({ onModuleUpdate, pageHeader = false }: MultimediaTracksCRUDProps) {
+  const router = useRouter();
+  const workspace = useMultimediaRecords('tracks', pageHeader);
   const { showToast, ToastComponent } = useToast();
   const [previewingTrack, setPreviewingTrack] = useState<Track | null>(null);
   const [previewError, setPreviewError] = useState(false);
@@ -68,7 +71,7 @@ export function MusicTracksCRUD({ onModuleUpdate, pageHeader = false }: MusicTra
   const [formData, setFormData] = useState({
     title: '',
     duration: 180,
-    trackNumber: 1,
+    trackNumber: 0 as number | null,
     fileUrl: '',
     status: 'active',
     lyrics: '',
@@ -130,7 +133,7 @@ export function MusicTracksCRUD({ onModuleUpdate, pageHeader = false }: MusicTra
       if (formData.duration && formData.duration > 0) {
         payload.duration = formData.duration;
       }
-      if (formData.trackNumber && formData.trackNumber > 0) {
+      if (formData.trackNumber !== undefined) {
         payload.trackNumber = formData.trackNumber;
       }
       if (formData.lyrics && formData.lyrics.trim()) {
@@ -153,7 +156,7 @@ export function MusicTracksCRUD({ onModuleUpdate, pageHeader = false }: MusicTra
         setFormData({
           title: '',
           duration: 180,
-          trackNumber: 1,
+          trackNumber: 0,
           fileUrl: '',
           status: 'active',
           lyrics: '',
@@ -186,7 +189,7 @@ export function MusicTracksCRUD({ onModuleUpdate, pageHeader = false }: MusicTra
       if (formData.duration && formData.duration > 0) {
         payload.duration = formData.duration;
       }
-      if (formData.trackNumber && formData.trackNumber > 0) {
+      if (formData.trackNumber !== undefined) {
         payload.trackNumber = formData.trackNumber;
       }
       if (formData.lyrics && formData.lyrics.trim()) {
@@ -295,7 +298,7 @@ export function MusicTracksCRUD({ onModuleUpdate, pageHeader = false }: MusicTra
     setFormData({
       title: track.title,
       duration: track.duration || 180,
-      trackNumber: track.trackNumber || 1,
+      trackNumber: track.trackNumber ?? null,
       fileUrl: track.fileUrl || '',
       status: track.status || 'active',
       lyrics: track.lyrics || '',
@@ -319,7 +322,7 @@ export function MusicTracksCRUD({ onModuleUpdate, pageHeader = false }: MusicTra
   }
 
   return (
-    <div className={pageHeader ? "flex h-full min-h-0 flex-col gap-2" : "space-y-2"}>
+    <div className={pageHeader ? "flex h-full min-h-0 min-w-0 flex-col gap-2 overflow-hidden text-xs [&_button]:text-xs" : "space-y-2"}>
       {ToastComponent}
       <Dialog open={!!previewingTrack} onOpenChange={open => { if (!open) setPreviewingTrack(null); }}>
         <DialogContent>
@@ -330,7 +333,7 @@ export function MusicTracksCRUD({ onModuleUpdate, pageHeader = false }: MusicTra
       </Dialog>
 
       <fieldset className="min-w-0 shrink-0" disabled={pageHeader && workspace.busy}>
-      <MusicWorkspaceHeader pageHeader={pageHeader} icon={Music2} title="Tracks" count={pageHeader ? workspace.total : tracks.length} search={pageHeader ? <MusicRecordsSearch workspace={workspace} /> : undefined}>
+      <MultimediaWorkspaceHeader pageHeader={pageHeader} icon={Music2} title="Tracks" count={pageHeader ? workspace.total : tracks.length} search={pageHeader ? <MultimediaRecordsSearch workspace={workspace} /> : undefined}>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
             <Button size="sm" className="h-7 px-2 text-xs">
@@ -385,13 +388,13 @@ export function MusicTracksCRUD({ onModuleUpdate, pageHeader = false }: MusicTra
                   />
                 </div>
                 <div>
-                  <Label htmlFor="trackNumber">Track #</Label>
+                  <Label htmlFor="trackNumber">Sort Order</Label>
                   <Input
                     id="trackNumber"
-                    type="number"
-                    placeholder="1"
-                    value={formData.trackNumber}
-                    onChange={(e) => setFormData({ ...formData, trackNumber: parseInt(e.target.value) || 1 })}
+                    type="number" min={-10000} max={10000} step={1}
+                    placeholder="0"
+                    value={formData.trackNumber ?? ''}
+                    onChange={(e) => setFormData({ ...formData, trackNumber: e.target.value === '' ? null : Number(e.target.value) })}
                     disabled={isSubmitting || uploadBusy}
                   />
                 </div>
@@ -450,10 +453,10 @@ export function MusicTracksCRUD({ onModuleUpdate, pageHeader = false }: MusicTra
             </div>
           </DialogContent>
         </Dialog>
-      </MusicWorkspaceHeader>
+      </MultimediaWorkspaceHeader>
       </fieldset>
 
-      {pageHeader ? <MusicRecordsTable label="Tracks" workspace={workspace} columns={[{ field: 'title', label: 'Title', render: row => <span className="inline-flex items-center gap-2"><Music2 className="h-4 w-4 shrink-0 text-blue-500" />{String(row.title)}</span> }, { field: 'id', label: 'ID' }, { field: 'albumId', label: 'Album' }, { field: 'duration', label: 'Duration', render: row => formatDuration(row.duration as number | null) }, { field: 'fileType', label: 'Type' }, { field: 'status', label: 'Status', render: row => <MusicStatus value={row.status} /> }]} actions={row => renderActions(row as unknown as (typeof tracks)[number])} /> : tracks.length === 0 ? (
+      {pageHeader ? <MultimediaRecordsTable label="Tracks" workspace={workspace} columns={[{ field: 'title', label: 'Title', render: row => <span className="inline-flex items-center gap-2"><Music2 className="h-4 w-4 shrink-0 text-blue-500" /><Link className="underline" href={`/admin/multimedia/tracks/${row.id}`}>{String(row.title)}</Link></span> }, { field: 'id', label: 'ID' }, { field: 'trackNumber', label: 'Sort Order' }, { field: 'albumId', label: 'Album' }, { field: 'duration', label: 'Duration', render: row => formatDuration(row.duration as number | null) }, { field: 'fileType', label: 'Type' }, { field: 'status', label: 'Status', render: row => <MultimediaStatus value={row.status} /> }]} actions={row => renderActions(row as unknown as (typeof tracks)[number])} /> : tracks.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <Music2 className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No tracks yet</p>
@@ -472,7 +475,7 @@ export function MusicTracksCRUD({ onModuleUpdate, pageHeader = false }: MusicTra
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="w-8 text-xs py-1">#</TableHead>
+                <TableHead className="w-8 text-xs py-1">Sort Order</TableHead>
                 <TableHead className="text-xs py-1">Title</TableHead>
                 <TableHead className="hidden sm:table-cell text-xs py-1">Duration</TableHead>
                 <TableHead className="hidden md:table-cell text-xs py-1">Status</TableHead>
@@ -484,7 +487,7 @@ export function MusicTracksCRUD({ onModuleUpdate, pageHeader = false }: MusicTra
               {tracks.map((track) => (
                 <TableRow key={track.id} className="hover:bg-muted/50">
                   <TableCell className="text-center text-muted-foreground py-1 text-sm">
-                    {track.trackNumber || '—'}
+                    {track.trackNumber ?? '—'}
                   </TableCell>
                   <TableCell className="py-1 text-sm font-medium">
                     {track.title}
@@ -564,12 +567,12 @@ export function MusicTracksCRUD({ onModuleUpdate, pageHeader = false }: MusicTra
                 />
               </div>
               <div>
-                <Label htmlFor="edit-trackNumber">Track #</Label>
+                <Label htmlFor="edit-trackNumber">Sort Order</Label>
                 <Input
                   id="edit-trackNumber"
-                  type="number"
-                  value={formData.trackNumber}
-                  onChange={(e) => setFormData({ ...formData, trackNumber: parseInt(e.target.value) || 1 })}
+                  type="number" min={-10000} max={10000} step={1}
+                  value={formData.trackNumber ?? ''}
+                  onChange={(e) => setFormData({ ...formData, trackNumber: e.target.value === '' ? null : Number(e.target.value) })}
                   disabled={isSubmitting || uploadBusy}
                 />
               </div>

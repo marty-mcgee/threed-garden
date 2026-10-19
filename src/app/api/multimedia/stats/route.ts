@@ -1,3 +1,4 @@
+import { publicAlbumScope, publicTrackScope } from '@/libraries/services/multimedia/authority';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/libraries/db/client';
 import { multimediaAlbums, multimediaTracks } from '@/libraries/schema';
@@ -9,7 +10,7 @@ export async function GET(request: NextRequest) {
     const albumStats = await db.select({
       total: sql<number>`count(*)`,
       published: sql<number>`sum(case when status = 'published' then 1 else 0 end)`,
-    }).from(multimediaAlbums).where(eq(multimediaAlbums.isPublic, true));
+    }).from(multimediaAlbums).where(publicAlbumScope());
 
     const trackStats = await db.select({
       total: sql<number>`count(*)`,
@@ -17,7 +18,7 @@ export async function GET(request: NextRequest) {
     }).from(multimediaTracks).innerJoin(
       multimediaAlbums,
       eq(multimediaTracks.albumId, multimediaAlbums.id)
-    ).where(eq(multimediaAlbums.isPublic, true));
+    ).where(publicTrackScope());
 
     return NextResponse.json({
       totalAlbums: Number(albumStats[0]?.total || 0),

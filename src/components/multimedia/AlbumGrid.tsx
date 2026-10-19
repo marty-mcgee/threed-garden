@@ -2,15 +2,8 @@
 
 import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Music, Clock, Play, Heart, MoreVertical } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
+import { Music, Clock, Play } from 'lucide-react';
 import { cn } from '@/libraries/utils';
 
 interface Track {
@@ -58,21 +51,21 @@ export function AlbumGrid({ albums, onSelectAlbum, selectedAlbumId, onPlayAlbum 
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-4">
       {albums.map((album) => (
         <Card
           key={album.id}
           className={cn(
             "group relative overflow-hidden transition-all duration-300 cursor-pointer",
-            "hover:shadow-xl hover:scale-105",
-            selectedAlbumId === album.id && "ring-2 ring-primary shadow-lg"
+            "border bg-transparent hover:bg-muted/30",
+            selectedAlbumId === album.id && "ring-2 ring-primary"
           )}
           onMouseEnter={() => setHoveredAlbumId(album.id)}
           onMouseLeave={() => setHoveredAlbumId(null)}
           onClick={() => onSelectAlbum(album.id)}
         >
           {/* Album Cover with Overlay */}
-          <div className="relative aspect-square overflow-hidden bg-gradient-to-br from-purple-500 to-pink-500">
+          <div className="relative aspect-square overflow-hidden bg-muted">
             <img
               src={album.coverArt}
               alt={album.title}
@@ -91,7 +84,7 @@ export function AlbumGrid({ albums, onSelectAlbum, selectedAlbumId, onPlayAlbum 
             <div className={cn(
               "absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent",
               "transition-opacity duration-300",
-              hoveredAlbumId === album.id ? "opacity-100" : "opacity-0"
+              hoveredAlbumId === album.id ? "opacity-100" : "opacity-0 group-focus-within:opacity-100 [@media(hover:none)]:opacity-100"
             )}>
               <div className="absolute bottom-4 left-4 right-4">
                 <Button
@@ -108,48 +101,17 @@ export function AlbumGrid({ albums, onSelectAlbum, selectedAlbumId, onPlayAlbum 
               </div>
             </div>
 
-            {/* Play Button on Hover */}
-            {/* <Button
-              size="icon"
-              className={cn(
-                "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2",
-                "rounded-full w-16 h-16 transition-all duration-300",
-                hoveredAlbumId === album.id ? "opacity-100 scale-100" : "opacity-0 scale-75"
-              )}
-              onClick={(e) => {
-                e.stopPropagation();
-                onPlayAlbum?.(album.id);
-              }}
-            >
-              <Play className="h-8 w-8" />
-            </Button> */}
+
           </div>
 
           {/* Album Info */}
           <CardContent className="p-4">
             <div className="flex items-start justify-between mb-2">
               <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-lg truncate">{album.title}</h3>
+                <h3 className="font-semibold text-sm truncate">{album.title}</h3>
                 <p className="text-sm text-muted-foreground truncate">{album.artist}</p>
               </div>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
-                  <Button variant="ghost" size="icon" className="h-8 w-8">
-                    <MoreVertical className="h-4 w-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                    Add to Playlist
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                    Share Album
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                    View Details
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <Button variant="outline" size="sm" onClick={event => { event.stopPropagation(); onSelectAlbum(album.id); }}>Details</Button>
             </div>
 
             {/* Album Details */}
@@ -179,8 +141,8 @@ export function AlbumGrid({ albums, onSelectAlbum, selectedAlbumId, onPlayAlbum 
                 {album.tracks.slice(0, 3).map((track) => (
                   <div key={track.id} className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2 truncate">
-                      <span className="text-muted-foreground w-6">
-                        {track.trackNumber}.
+                      <span className="text-muted-foreground w-12 shrink-0 font-mono">
+                        {track.trackNumber ?? '—'}
                       </span>
                       <span className="truncate">{track.title}</span>
                     </div>

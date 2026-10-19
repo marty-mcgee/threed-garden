@@ -1,12 +1,15 @@
+import { ownedParents } from '@/libraries/services/multimedia/authority';
 // app/api/multimedia/tracks/route.ts - WITH DEBUG LOGGING
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
-import { multimediaTracks, multimediaAlbums, multimediaMedia } from '@/libraries/schema/multimedia';
+import { multimediaTracks, multimediaAlbums, multimediaMedia, multimediaLinks } from '@/libraries/schema/multimedia';
 import { multimediaSpeechVersions } from '@/libraries/schema/multimedia';
-import { eq, ne, and, desc, sql } from 'drizzle-orm';
+import { eq, ne, and, or, isNull, asc, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/libraries/db/sequence';
 import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
+import { publicRecord, ownsFileReference } from '@/libraries/services/multimedia/access';
+import { publicTrackScope } from '@/libraries/services/multimedia/authority';
 import { ownsMediaKey } from '@/libraries/services/multimedia/upload-policy';
 
 // ============================================
@@ -45,16 +48,7 @@ export async function GET(request: NextRequest) {
 
     const trackAccessCondition = scope === 'owner'
       ? eq(multimediaTracks.userId, userId!)
-      : and(
-          eq(multimediaTracks.status, 'active'),
-          sql`EXISTS (
-            SELECT 1
-            FROM ${multimediaAlbums}
-            WHERE ${multimediaAlbums.id} = ${multimediaTracks.albumId}
-            AND ${multimediaAlbums.isPublic} = true
-            AND ${multimediaAlbums.status} = 'published'
-          )`
-        );
+      : publicTrackScope();
 
     // ✅ DEBUG: Log everything
     // console.log('========================================');
@@ -95,7 +89,7 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        data: track,
+        data: scope === 'public' ? publicRecord('track', track) : track,
       });
     }
 
@@ -126,14 +120,14 @@ export async function GET(request: NextRequest) {
             trackAccessCondition
           )
         )
-        .orderBy(multimediaTracks.trackNumber);
+        .orderBy(sql`${multimediaTracks.trackNumber} ASC NULLS LAST`, asc(multimediaTracks.id));
 
       console.log(`✅ Found ${tracks.length} tracks for album ${albumIdNum}`);
       console.log(`📝 Track album IDs:`, tracks.map(t => `[${t.id}: albumId=${t.albumId}]`).join(', '));
 
       return NextResponse.json({
         success: true,
-        data: tracks,
+        data: scope === 'public' ? tracks.map(track => publicRecord('track', track)) : tracks,
       });
     }
 
@@ -146,13 +140,13 @@ export async function GET(request: NextRequest) {
       .select()
       .from(multimediaTracks)
       .where(trackAccessCondition)
-      .orderBy(desc(multimediaTracks.createdAt));
+      .orderBy(sql`${multimediaTracks.trackNumber} ASC NULLS LAST`, asc(multimediaTracks.id));
 
     console.log(`📚 Found ${allTracks.length} total tracks`);
 
     return NextResponse.json({
       success: true,
-      data: allTracks,
+      data: scope === 'public' ? allTracks.map(track => publicRecord('track', track)) : allTracks,
     });
   } catch (error) {
     console.error('Error fetching tracks:', error);
@@ -177,6 +171,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+    if (body.trackNumber != null && (!Number.isInteger(body.trackNumber) || body.trackNumber < -10000 || body.trackNumber > 10000)) {
+      return NextResponse.json({ success: false, error: 'Sort Order must be an integer from -10000 to 10000.' }, { status: 400 });
+    }
+    if (body?.fileUrl !== undefined && !ownsFileReference(session.user.id, body.fileUrl)) return NextResponse.json({ success: false, error: 'File reference is not owned by this User' }, { status: 400 });
     console.log('📝 POST /api/multimedia/tracks - Request body:', body);
 
     const {
@@ -235,7 +233,7 @@ export async function POST(request: NextRequest) {
         albumId: parsedAlbumId,
         title,
         duration: duration || null,
-        trackNumber: trackNumber || null,
+        trackNumber: trackNumber ?? 0,
         fileUrl,
         fileType,
         fileSize: fileSize || null,
@@ -293,6 +291,10 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
+    if (body.trackNumber != null && (!Number.isInteger(body.trackNumber) || body.trackNumber < -10000 || body.trackNumber > 10000)) {
+      return NextResponse.json({ success: false, error: 'Sort Order must be an integer from -10000 to 10000.' }, { status: 400 });
+    }
+    if (body?.fileUrl !== undefined && !ownsFileReference(session.user.id, body.fileUrl)) return NextResponse.json({ success: false, error: 'File reference is not owned by this User' }, { status: 400 });
     console.log('📝 PUT /api/multimedia/tracks - Request body:', body);
 
     const {
@@ -309,83 +311,99 @@ export async function PUT(request: NextRequest) {
 
     const userId = session.user.id;
 
-    const [existing] = await db
-      .select()
-      .from(multimediaTracks)
-      .where(
-        and(
-          eq(multimediaTracks.id, parsedId),
-          eq(multimediaTracks.userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (!existing) {
-      return NextResponse.json(
-        { success: false, error: 'Track not found' },
-        { status: 404 }
-      );
-    }
-
-    let parsedAlbumId: number | undefined;
-    if (albumId !== undefined) {
-      const requestedAlbumId = Number(albumId);
-      if (!Number.isInteger(requestedAlbumId) || requestedAlbumId <= 0) {
-        return NextResponse.json(
-          { success: false, error: 'Invalid Album ID' },
-          { status: 400 }
-        );
-      }
-      parsedAlbumId = requestedAlbumId;
-
-      const [album] = await db
+    return await db.transaction(async (tx) => {
+      const [existing] = await tx
         .select()
-        .from(multimediaAlbums)
+        .from(multimediaTracks)
         .where(
           and(
-            eq(multimediaAlbums.id, parsedAlbumId),
-            eq(multimediaAlbums.userId, userId)
+            eq(multimediaTracks.id, parsedId),
+            eq(multimediaTracks.userId, userId)
           )
         )
-        .limit(1);
+        .limit(1).for('update');
 
-      if (!album) {
+      if (!existing) {
         return NextResponse.json(
-          { success: false, error: 'Album not found' },
+          { success: false, error: 'Track not found' },
           { status: 404 }
         );
       }
-    }
 
-    const [updatedTrack] = await db
-      .update(multimediaTracks)
-      .set({
-        title: title || existing.title,
-        duration: duration !== undefined ? duration : existing.duration,
-        trackNumber: trackNumber !== undefined ? trackNumber : existing.trackNumber,
-        fileUrl: fileUrl || existing.fileUrl,
-        fileType: fileType || existing.fileType,
-        fileSize: fileSize !== undefined ? fileSize : existing.fileSize,
-        status: status || existing.status,
-        lyrics: lyrics !== undefined ? lyrics : existing.lyrics,
-        albumId: parsedAlbumId !== undefined ? parsedAlbumId : existing.albumId,
-        metadata: metadata !== undefined ? metadata : existing.metadata,
-        updatedAt: new Date(),
-      })
-      .where(
-        and(
-          eq(multimediaTracks.id, parsedId),
-          eq(multimediaTracks.userId, userId)
+      if (!await ownedParents(userId, existing.albumId, null, tx)) return NextResponse.json({ success: false, error: 'Album not found' }, { status: 404 });
+      let parsedAlbumId: number | undefined;
+      if (albumId !== undefined) {
+        const requestedAlbumId = Number(albumId);
+        if (!Number.isInteger(requestedAlbumId) || requestedAlbumId <= 0) {
+          return NextResponse.json(
+            { success: false, error: 'Invalid Album ID' },
+            { status: 400 }
+          );
+        }
+        parsedAlbumId = requestedAlbumId;
+
+        const [album] = await tx
+          .select()
+          .from(multimediaAlbums)
+          .where(
+            and(
+              eq(multimediaAlbums.id, parsedAlbumId),
+              eq(multimediaAlbums.userId, userId)
+            )
+          )
+          .limit(1);
+
+        if (!album) {
+          return NextResponse.json(
+            { success: false, error: 'Album not found' },
+            { status: 404 }
+          );
+        }
+      }
+
+      if (parsedAlbumId !== undefined && parsedAlbumId !== existing.albumId) {
+        const [conflict] = await tx.select({ id: multimediaLinks.id }).from(multimediaLinks)
+          .where(and(eq(multimediaLinks.trackId, parsedId), or(
+            ne(multimediaLinks.albumId, parsedAlbumId),
+            ne(multimediaLinks.userId, userId),
+            isNull(multimediaLinks.userId),
+          ))).limit(1);
+        if (conflict) return NextResponse.json({
+          success: false,
+          error: 'This Track has Links with conflicting Album associations. Clear or correct those associations before moving the Track.',
+        }, { status: 409 });
+      }
+
+      const [updatedTrack] = await tx
+        .update(multimediaTracks)
+        .set({
+          title: title || existing.title,
+          duration: duration !== undefined ? duration : existing.duration,
+          trackNumber: trackNumber !== undefined ? trackNumber : existing.trackNumber,
+          fileUrl: fileUrl || existing.fileUrl,
+          fileType: fileType || existing.fileType,
+          fileSize: fileSize !== undefined ? fileSize : existing.fileSize,
+          status: status || existing.status,
+          lyrics: lyrics !== undefined ? lyrics : existing.lyrics,
+          albumId: parsedAlbumId !== undefined ? parsedAlbumId : existing.albumId,
+          metadata: metadata !== undefined ? metadata : existing.metadata,
+          updatedAt: new Date(),
+        })
+        .where(
+          and(
+            eq(multimediaTracks.id, parsedId),
+            eq(multimediaTracks.userId, userId)
+          )
         )
-      )
-      .returning();
+        .returning();
 
-    console.log('✅ Track updated:', updatedTrack);
+      console.log('✅ Track updated:', updatedTrack);
 
-    return NextResponse.json({
-      success: true,
-      data: updatedTrack,
-      message: 'Track updated successfully',
+      return NextResponse.json({
+        success: true,
+        data: updatedTrack,
+        message: 'Track updated successfully',
+      });
     });
   } catch (error) {
     console.error('Error updating track:', error);
@@ -425,6 +443,10 @@ export async function DELETE(request: NextRequest) {
     const [track] = await db.select().from(multimediaTracks)
       .where(and(eq(multimediaTracks.id, trackId), eq(multimediaTracks.userId, userId))).limit(1);
     if (!track) return NextResponse.json({ success: false, error: 'Track not found' }, { status: 404 });
+
+    const [foreignLink] = await db.select({ id: multimediaLinks.id }).from(multimediaLinks)
+      .where(and(eq(multimediaLinks.trackId, trackId), or(isNull(multimediaLinks.userId), ne(multimediaLinks.userId, userId)))).limit(1);
+    if (foreignLink) return NextResponse.json({ success: false, error: 'Track has Links with unresolved ownership. No records deleted.' }, { status: 409 });
 
     let fileCleanup = 'unmanaged';
     if (track.fileUrl.startsWith('/api/multimedia/files?key=')) {

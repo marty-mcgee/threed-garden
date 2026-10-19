@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
       
       for (let i = 1; i <= trackCount; i++) {
         await db.insert(multimediaTracks).values({
+          userId: session.user.id,
           albumId: album.id,
           title: `Track ${i}`,
           duration: 180 + (i * 10),

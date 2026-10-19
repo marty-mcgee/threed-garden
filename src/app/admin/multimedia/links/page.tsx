@@ -1,5 +1,5 @@
-import { MusicLinksCRUD } from '@/components/admin/multimedia/links/MusicLinksCRUD';
+import { MultimediaLinksCRUD } from '@/components/admin/multimedia/links/MultimediaLinksCRUD';
 
 export default function LinksManagementPage() {
-  return <MusicLinksCRUD pageHeader />;
+  return <MultimediaLinksCRUD pageHeader />;
 }

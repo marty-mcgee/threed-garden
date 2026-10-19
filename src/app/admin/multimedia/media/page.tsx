@@ -1,5 +1,5 @@
-import { MusicMediaCRUD } from '@/components/admin/multimedia/media/MusicMediaCRUD';
+import { MultimediaMediaCRUD } from '@/components/admin/multimedia/media/MultimediaMediaCRUD';
 
 export default function MediaManagementPage() {
-  return <MusicMediaCRUD pageHeader />;
+  return <MultimediaMediaCRUD pageHeader />;
 }

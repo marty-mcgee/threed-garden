@@ -19,6 +19,11 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  'multimedia-dashboard': [node('validate-multimedia-dashboard.cjs')],
+  'multimedia-parent-moves': [node('validate-multimedia-parent-moves.cjs')],
+  'multimedia-order-display': [node('validate-multimedia-order-display.cjs')],
+  'multimedia-editor': [node('validate-multimedia-editor.cjs')],
+  'multimedia-authority': [node('validate-multimedia-authority.cjs')],
   'project-weather': [node('validate-project-weather.cjs')],
   'threed-model-image-backfill': [ts('validate-threed-model-image-backfill.mts')],
   'shadcn-ui-browser': [node('validate-shadcn-primitives-browser.cjs')],
@@ -164,6 +169,11 @@ const tasks = {
 };
 
 const ci = [
+  'multimedia-dashboard',
+  'multimedia-parent-moves',
+  'multimedia-order-display',
+  'multimedia-editor',
+  'multimedia-authority',
   'project-weather',
   'repository-maintenance',
   'threed-designs',

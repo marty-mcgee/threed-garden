@@ -30,7 +30,7 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
       if (record.archivedAt) throw new Failure('Restore Speech before creating a Track.', 409);
       const [album] = await tx.select().from(multimediaAlbums).where(and(eq(multimediaAlbums.id, body.albumId), eq(multimediaAlbums.userId, userId))).for('share');
       if (!album) throw new Failure('Album not found.', 404);
-      const [track] = await tx.insert(multimediaTracks).values({ userId, albumId: album.id, title: body.title.trim(), fileUrl: `/api/multimedia/files?key=${encodeURIComponent(version.storageKey)}`, fileType: version.mimeType, fileSize: version.fileSize, status: 'active', lyrics: version.text, metadata: { source: 'fish-audio', speechId: id, speechVersionNumber: version.versionNumber, voiceId: version.voiceId, model: version.model } }).returning({ id: multimediaTracks.id });
+      const [track] = await tx.insert(multimediaTracks).values({ userId, albumId: album.id, title: body.title.trim(), trackNumber: 0, fileUrl: `/api/multimedia/files?key=${encodeURIComponent(version.storageKey)}`, fileType: version.mimeType, fileSize: version.fileSize, status: 'active', lyrics: version.text, metadata: { source: 'fish-audio', speechId: id, speechVersionNumber: version.versionNumber, voiceId: version.voiceId, model: version.model } }).returning({ id: multimediaTracks.id });
       await tx.update(versions).set({ trackId: track.id }).where(eq(versions.id, version.id));
       return { trackId: track.id, reused: false };
     });

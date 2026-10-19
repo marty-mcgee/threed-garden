@@ -1,5 +1,5 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),ts=require('typescript');
-const source=fs.readFileSync('src/components/admin/multimedia/shared/MusicRecordsWorkspace.tsx','utf8');
+const source=fs.readFileSync('src/components/admin/multimedia/shared/MultimediaRecordsWorkspace.tsx','utf8');
 const start=source.indexOf('  async function removeSelected()');
 const end=source.indexOf('\n  return { rows',start);
 let calls=[],notice='',error='',refreshed=0,confirmed=true;

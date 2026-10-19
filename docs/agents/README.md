@@ -4,6 +4,9 @@ Read [AGENTS.md](../../AGENTS.md) and [CONTEXT.md](../../CONTEXT.md) fully befor
 
 ## Developer preferences
 
+- Preserve working legacy ThreeD Multimedia (Music) Admin pages, in-place CRUD dialogs, players and test features. Data/ownership restructuring and Blueprint styling do not authorize replacing or deleting those workflows. Keep newer editors additive unless the Developer explicitly approves replacement; verify feature parity before changing entry points.
+
+- Multimedia ordering uses **Sort Order** consistently in the UI: signed integer ranks -10000 through 0 through 10000, neutral default 0, ascending within existing parent relationships. The Developer equates Sort Order, Display Order and an entity's positional number (X #). Reuse existing `sortOrder`, `displayOrder` and `trackNumber` fields; record IDs remain identities, not ordering fields.
 - Use exact established App names and ownership. For this DetailsCard: **ThreeD > Project > Model > DetailsCard**. Preserve **DetailsCard**.
 - Verify ownership before release naming. Mount locations, routes, selected entities and removed controls alone do not establish the owner; do not invent a Characters settings panel.
 - Honor explicit Developer corrections. Distinguish verified observations from assumptions and state uncertainty instead of offering confident guesses.

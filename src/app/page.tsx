@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { AppHeader } from '@/components/layout/AppHeader';
 import GardenHero from '@/components/home/GardenHero';
-import { MusicPlayer } from '@/components/multimedia/MusicPlayer';
+import { MultimediaPlayer } from '@/components/multimedia/MultimediaPlayer';
 import { Button } from '@/components/ui/button';
 
 const greenOutlineClassName = 'border-emerald-700/25 bg-emerald-500/10 text-emerald-800 hover:bg-emerald-500/20 hover:text-emerald-950 dark:border-emerald-400/25 dark:bg-emerald-500/10 dark:text-emerald-200 dark:hover:bg-emerald-500/20 dark:hover:text-emerald-100';
@@ -348,7 +348,7 @@ export default function HomePage() {
               <h2 className="mb-1 text-2xl font-bold text-foreground">{selectedAlbum.title}</h2>
               <p className="text-sm text-muted-foreground">{selectedAlbum.artist}</p>
             </div>
-            <MusicPlayer
+            <MultimediaPlayer
               track={currentTrack}
               album={selectedAlbum}
               tracks={tracks}

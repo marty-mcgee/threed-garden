@@ -3,7 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
 import { multimediaAlbums, multimediaTracks, multimediaLinks, multimediaMedia } from '@/libraries/schema/multimedia';
-import { eq, and, asc, desc, sql } from 'drizzle-orm';
+import { eq, and, asc, sql, or, ne, isNull } from 'drizzle-orm';
+import { publicRecord, ownsFileReference, positiveId } from '@/libraries/services/multimedia/access';
+import { publicAlbumScope, publicTrackScope } from '@/libraries/services/multimedia/authority';
 import { ensureTableSequence } from '@/libraries/db/sequence';
 
 // ============================================
@@ -50,10 +52,7 @@ export async function GET(request: NextRequest) {
 
     const albumAccessCondition = scope === 'owner'
       ? eq(multimediaAlbums.userId, userId!)
-      : and(
-          eq(multimediaAlbums.isPublic, true),
-          eq(multimediaAlbums.status, 'published')
-        );
+      : publicAlbumScope();
 
     console.log('[API] 🔍 Request params:', { id, includeTracks, includeLinks, includeMedia, scope, status, limit, offset });
 
@@ -105,11 +104,11 @@ export async function GET(request: NextRequest) {
               eq(multimediaTracks.albumId, album.id),
               scope === 'owner'
                 ? eq(multimediaTracks.userId, userId!)
-                : eq(multimediaTracks.status, 'active')
+                : and(eq(multimediaTracks.userId, album.userId!), publicTrackScope())
             )
           );
 
-        const tracks = await tracksQuery.orderBy(multimediaTracks.trackNumber);
+        const tracks = await tracksQuery.orderBy(sql`${multimediaTracks.trackNumber} ASC NULLS LAST`, asc(multimediaTracks.id));
         console.log('[API] 🎵 Found', tracks.length, 'tracks for album:', album.id);
         response.tracks = tracks;
       }
@@ -125,11 +124,11 @@ export async function GET(request: NextRequest) {
               eq(multimediaLinks.albumId, album.id),
               scope === 'owner'
                 ? eq(multimediaLinks.userId, userId!)
-                : eq(multimediaLinks.status, 'active')
+                : and(eq(multimediaLinks.userId, album.userId!), eq(multimediaLinks.status, 'active'), sql`(${multimediaLinks.trackId} IS NULL OR EXISTS (SELECT 1 FROM ${multimediaTracks} WHERE ${multimediaTracks.id} = ${multimediaLinks.trackId} AND ${multimediaTracks.albumId} = ${multimediaLinks.albumId} AND ${multimediaTracks.userId} = ${multimediaLinks.userId} AND ${multimediaTracks.status} = 'active'))`)
             )
           );
 
-        const links = await linksQuery.orderBy(multimediaLinks.displayOrder);
+        const links = await linksQuery.orderBy(sql`${multimediaLinks.displayOrder} ASC NULLS LAST`, asc(multimediaLinks.id));
         console.log('[API] 🔗 Found', links.length, 'links');
         response.links = links;
       }
@@ -145,7 +144,7 @@ export async function GET(request: NextRequest) {
               eq(multimediaMedia.albumId, album.id),
               scope === 'owner'
                 ? eq(multimediaMedia.userId, userId!)
-                : eq(multimediaMedia.isPrimary, true)
+                : eq(multimediaMedia.userId, album.userId!)
             )
           );
 
@@ -156,7 +155,7 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        data: response,
+        data: scope === 'public' ? publicRecord('album', response) : response,
       });
     }
 
@@ -187,9 +186,7 @@ export async function GET(request: NextRequest) {
       .where(albumListCondition);
 
     // Dashboard grid and next-Album playback consume this public response order.
-    const albumOrder = scope === 'public'
-      ? [sql`${multimediaAlbums.sortOrder} ASC NULLS LAST`, asc(multimediaAlbums.id)]
-      : [desc(multimediaAlbums.createdAt)];
+    const albumOrder = [sql`${multimediaAlbums.sortOrder} ASC NULLS LAST`, asc(multimediaAlbums.id)];
 
     const albums = await query
       .orderBy(...albumOrder)
@@ -214,11 +211,11 @@ export async function GET(request: NextRequest) {
                   eq(multimediaTracks.albumId, album.id),
                   scope === 'owner'
                     ? eq(multimediaTracks.userId, userId!)
-                    : eq(multimediaTracks.status, 'active')
+                    : and(eq(multimediaTracks.userId, album.userId!), publicTrackScope())
                 )
               );
 
-            const tracks = await tracksQuery.orderBy(multimediaTracks.trackNumber);
+            const tracks = await tracksQuery.orderBy(sql`${multimediaTracks.trackNumber} ASC NULLS LAST`, asc(multimediaTracks.id));
             result.tracks = tracks || [];
           }
 
@@ -232,11 +229,11 @@ export async function GET(request: NextRequest) {
                   eq(multimediaLinks.albumId, album.id),
                   scope === 'owner'
                     ? eq(multimediaLinks.userId, userId!)
-                    : eq(multimediaLinks.status, 'active')
+                    : and(eq(multimediaLinks.userId, album.userId!), eq(multimediaLinks.status, 'active'), sql`(${multimediaLinks.trackId} IS NULL OR EXISTS (SELECT 1 FROM ${multimediaTracks} WHERE ${multimediaTracks.id} = ${multimediaLinks.trackId} AND ${multimediaTracks.albumId} = ${multimediaLinks.albumId} AND ${multimediaTracks.userId} = ${multimediaLinks.userId} AND ${multimediaTracks.status} = 'active'))`)
                 )
               );
 
-            const links = await linksQuery.orderBy(multimediaLinks.displayOrder);
+            const links = await linksQuery.orderBy(sql`${multimediaLinks.displayOrder} ASC NULLS LAST`, asc(multimediaLinks.id));
             result.links = links || [];
           }
 
@@ -250,7 +247,7 @@ export async function GET(request: NextRequest) {
                   eq(multimediaMedia.albumId, album.id),
                   scope === 'owner'
                     ? eq(multimediaMedia.userId, userId!)
-                    : eq(multimediaMedia.isPrimary, true)
+                    : eq(multimediaMedia.userId, album.userId!)
                 )
               );
 
@@ -264,14 +261,14 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        data: albumsWithData,
+        data: scope === 'public' ? albumsWithData.map(album => publicRecord('album', album)) : albumsWithData,
         pagination: { limit, offset, total: countResult[0]?.count || 0 },
       });
     }
 
     return NextResponse.json({
       success: true,
-      data: albums,
+      data: scope === 'public' ? albums.map(album => publicRecord('album', album)) : albums,
       pagination: { limit, offset, total: countResult[0]?.count || 0 },
     });
   } catch (error) {
@@ -297,6 +294,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+    if (body.sortOrder != null && (!Number.isInteger(body.sortOrder) || body.sortOrder < -10000 || body.sortOrder > 10000)) {
+      return NextResponse.json({ success: false, error: 'Sort Order must be an integer from -10000 to 10000.' }, { status: 400 });
+    }
+    if (body?.coverArt !== undefined && !ownsFileReference(session.user.id, body.coverArt)) return NextResponse.json({ success: false, error: 'File reference is not owned by this User' }, { status: 400 });
     console.log('📝 POST /api/multimedia/albums - Request body:', body);
 
     const { 
@@ -346,7 +347,7 @@ export async function POST(request: NextRequest) {
         description: description || null,
         status: status || 'draft',
         isPublic: isPublic || false,
-        sortOrder: sortOrder || 0,
+        sortOrder: sortOrder ?? 0,
       })
       .returning();
 
@@ -390,6 +391,10 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
+    if (body.sortOrder != null && (!Number.isInteger(body.sortOrder) || body.sortOrder < -10000 || body.sortOrder > 10000)) {
+      return NextResponse.json({ success: false, error: 'Sort Order must be an integer from -10000 to 10000.' }, { status: 400 });
+    }
+    if (body?.coverArt !== undefined && !ownsFileReference(session.user.id, body.coverArt)) return NextResponse.json({ success: false, error: 'File reference is not owned by this User' }, { status: 400 });
     console.log('📝 PUT /api/multimedia/albums - Request body:', body);
 
     const { 
@@ -485,15 +490,27 @@ export async function DELETE(request: NextRequest) {
 
     const userId = session.user.id;
 
-    const [deleted] = await db
-      .delete(multimediaAlbums)
-      .where(
-        and(
-          eq(multimediaAlbums.id, parseInt(id)),
-          eq(multimediaAlbums.userId, userId)
-        )
-      )
-      .returning();
+    const albumId = positiveId(id);
+    if (!albumId) return NextResponse.json({ success: false, error: 'Invalid Album ID' }, { status: 400 });
+    const outcome = await db.transaction(async tx => {
+      const [album] = await tx.select().from(multimediaAlbums)
+        .where(and(eq(multimediaAlbums.id, albumId), eq(multimediaAlbums.userId, userId))).for('update');
+      if (!album) return { deleted: null, conflict: false };
+      for (const child of [multimediaTracks, multimediaMedia, multimediaLinks]) {
+        const [foreign] = await tx.select({ id: child.id }).from(child)
+          .where(and(eq(child.albumId, albumId), or(isNull(child.userId), ne(child.userId, userId)))).limit(1);
+        if (foreign) return { deleted: null, conflict: true };
+      }
+      const [foreignTrackLink] = await tx.select({ id: multimediaLinks.id }).from(multimediaLinks)
+        .where(and(or(isNull(multimediaLinks.userId), ne(multimediaLinks.userId, userId)), sql`EXISTS (
+          SELECT 1 FROM ${multimediaTracks} WHERE ${multimediaTracks.id} = ${multimediaLinks.trackId}
+          AND ${multimediaTracks.albumId} = ${albumId})`)).limit(1);
+      if (foreignTrackLink) return { deleted: null, conflict: true };
+      const [deleted] = await tx.delete(multimediaAlbums).where(and(eq(multimediaAlbums.id, albumId), eq(multimediaAlbums.userId, userId))).returning();
+      return { deleted, conflict: false };
+    });
+    if (outcome.conflict) return NextResponse.json({ success: false, error: 'Album contains content with unresolved ownership. No records deleted.' }, { status: 409 });
+    const { deleted } = outcome;
 
     if (!deleted) {
       return NextResponse.json(

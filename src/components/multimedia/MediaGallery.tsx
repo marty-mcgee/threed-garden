@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { useState, useEffect, useRef } from 'react';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Image as ImageIcon } from 'lucide-react';
 import { cn } from '@/libraries/utils';
@@ -18,16 +18,15 @@ interface MediaGalleryProps {
   media: MediaItem[];
   albumId?: number;
   className?: string;
+  onMediaPlay?: (element: HTMLMediaElement) => void;
 }
 
-export function MediaGallery({ media, className }: MediaGalleryProps) {
+export function MediaGallery({ media, className, onMediaPlay }: MediaGalleryProps) {
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
   const [isZoomed, setIsZoomed] = useState(false);
 
-  if (!media || media.length === 0) return null;
-
-  const images = media.filter(item => item.fileType.startsWith('image/'));
-  if (images.length === 0) return null;
+  const playable = (media || []).filter(item => item.fileType?.startsWith('video/') || item.fileType?.startsWith('audio/'));
+  const images = (media || []).filter(item => item.fileType?.startsWith('image/')).sort((a, b) => Number(Boolean(b.isPrimary)) - Number(Boolean(a.isPrimary)));
 
   const handlePrev = () => {
     setSelectedPhotoIndex((prev) => 
@@ -51,28 +50,29 @@ export function MediaGallery({ media, className }: MediaGalleryProps) {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedPhotoIndex]);
+  }, [selectedPhotoIndex, images.length]);
 
-  const sortedImages = [...images].sort((a, b) => {
-    if (a.isPrimary && !b.isPrimary) return -1;
-    if (!a.isPrimary && b.isPrimary) return 1;
-    return 0;
-  });
+  useEffect(() => { setSelectedPhotoIndex(null); setIsZoomed(false); }, [media]);
+  if (!media?.length) return null;
 
   return (
     <div className={cn("space-y-3", className)}>
       <div className="flex items-center gap-2">
-        <ImageIcon className="h-4 w-4 text-gray-400" />
+        <ImageIcon className="h-4 w-4 text-muted-foreground" />
         <h3 className="text-sm font-semibold">Media Gallery</h3>
-        <span className="text-xs text-gray-400">({images.length} images)</span>
+        <span className="text-xs text-muted-foreground">({media.length} items)</span>
       </div>
 
+      {playable.map(item => <AlbumMediaPreview key={item.id} item={item} onMediaPlay={onMediaPlay} />)}
+      {!images.length && !playable.length && <p className="text-sm text-muted-foreground">No supported preview for this Media.</p>}
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-        {sortedImages.slice(0, 12).map((image, idx) => (
+        {images.slice(0, 12).map((image, idx) => (
           <div
             key={image.id}
+            role="button" tabIndex={0} aria-label={`Open ${image.fileName}`}
+            onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); setSelectedPhotoIndex(idx); } }}
             onClick={() => setSelectedPhotoIndex(idx)}
-            className="group relative aspect-square rounded-lg overflow-hidden cursor-pointer bg-gray-800 hover:opacity-90 transition-opacity"
+            className="group relative aspect-square rounded-lg overflow-hidden cursor-pointer bg-muted hover:opacity-90 transition-opacity"
           >
             <img src={image.fileUrl} alt={image.fileName} className="w-full h-full object-cover" />
             {image.isPrimary && (
@@ -83,31 +83,32 @@ export function MediaGallery({ media, className }: MediaGalleryProps) {
           </div>
         ))}
         {images.length > 12 && (
-          <div className="aspect-square rounded-lg bg-gray-800 flex items-center justify-center cursor-pointer hover:bg-gray-700 transition-colors">
-            <span className="text-xs text-gray-400">+{images.length - 12} more</span>
-          </div>
+          <button type="button" onClick={() => setSelectedPhotoIndex(12)} className="aspect-square rounded-lg bg-muted flex items-center justify-center cursor-pointer hover:bg-accent transition-colors">
+            <span className="text-xs text-muted-foreground">+{images.length - 12} more</span>
+          </button>
         )}
       </div>
 
       <Dialog open={selectedPhotoIndex !== null} onOpenChange={() => setSelectedPhotoIndex(null)}>
         <DialogContent className="max-w-[90vw] max-h-[90vh] p-0 bg-black/95 border-none">
-          {selectedPhotoIndex !== null && (
+          <DialogTitle className="sr-only">Album image preview</DialogTitle>
+          {selectedPhotoIndex !== null && images[selectedPhotoIndex] && (
             <div className="relative w-full h-full flex flex-col">
               <div className="absolute top-4 right-4 z-10 flex gap-2">
-                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" onClick={() => setIsZoomed(!isZoomed)}>
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" aria-label={isZoomed ? 'Zoom out' : 'Zoom in'} onClick={() => setIsZoomed(!isZoomed)}>
                   {isZoomed ? <ZoomOut className="h-5 w-5" /> : <ZoomIn className="h-5 w-5" />}
                 </Button>
-                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" onClick={() => setSelectedPhotoIndex(null)}>
+                <Button variant="ghost" size="icon" className="text-white hover:bg-white/20" aria-label="Close image preview" onClick={() => setSelectedPhotoIndex(null)}>
                   <X className="h-5 w-5" />
                 </Button>
               </div>
 
               {images.length > 1 && (
                 <>
-                  <Button variant="ghost" size="icon" className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 z-10" onClick={handlePrev}>
+                  <Button variant="ghost" size="icon" className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 z-10" aria-label="Previous image" onClick={handlePrev}>
                     <ChevronLeft className="h-8 w-8" />
                   </Button>
-                  <Button variant="ghost" size="icon" className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 z-10" onClick={handleNext}>
+                  <Button variant="ghost" size="icon" className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 z-10" aria-label="Next image" onClick={handleNext}>
                     <ChevronRight className="h-8 w-8" />
                   </Button>
                 </>
@@ -124,7 +125,7 @@ export function MediaGallery({ media, className }: MediaGalleryProps) {
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
                 <h3 className="text-white font-semibold">{images[selectedPhotoIndex].fileName}</h3>
                 {images[selectedPhotoIndex].isPrimary && <p className="text-blue-400 text-xs mt-1">Primary Album Cover</p>}
-                <p className="text-gray-400 text-xs mt-2">{selectedPhotoIndex + 1} of {images.length}</p>
+                <p className="text-muted-foreground text-xs mt-2">{selectedPhotoIndex + 1} of {images.length}</p>
               </div>
             </div>
           )}
@@ -132,4 +133,25 @@ export function MediaGallery({ media, className }: MediaGalleryProps) {
       </Dialog>
     </div>
   );
+}
+function AlbumMediaPreview({ item, onMediaPlay }: { item: MediaItem; onMediaPlay?: (element: HTMLMediaElement) => void }) {
+  const element = useRef<HTMLMediaElement | null>(null);
+  const [failed, setFailed] = useState(false);
+  useEffect(() => {
+    setFailed(false);
+    const current = element.current;
+    return () => { current?.pause(); };
+  }, [item.fileUrl]);
+  const props = {
+    src: item.fileUrl, controls: true, preload: 'metadata' as const,
+    onPlay: (event: React.SyntheticEvent<HTMLMediaElement>) => onMediaPlay?.(event.currentTarget),
+    onError: () => setFailed(true),
+    'aria-label': item.fileName,
+    className: 'w-full max-h-80 rounded border',
+  };
+  return <section className="space-y-2 rounded border p-3">
+    <h4 className="text-sm font-medium break-words">{item.fileName}</h4>
+    {item.fileType.startsWith('video/') ? <video {...props} playsInline ref={node => { element.current = node; }} /> : <audio {...props} ref={node => { element.current = node; }} />}
+    {failed && <p role="alert" className="text-sm text-destructive">This Media could not be played. Check file availability and browser format support.</p>}
+  </section>;
 }

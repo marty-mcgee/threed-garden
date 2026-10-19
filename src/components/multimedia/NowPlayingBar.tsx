@@ -2,7 +2,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useMusicPlayer } from '@/libraries/stores/music-player-store';
+import { useMultimediaPlayer } from '@/libraries/stores/multimedia-player-store';
 // import { WaveformVisualizer } from '@/components/multimedia/WaveformVisualizer';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -37,7 +37,7 @@ export function NowPlayingBar({ className }: NowPlayingBarProps) {
     toggleMute,
     nextTrack,
     previousTrack,
-  } = useMusicPlayer();
+  } = useMultimediaPlayer();
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [showQueue, setShowQueue] = useState(false);
@@ -49,7 +49,7 @@ export function NowPlayingBar({ className }: NowPlayingBarProps) {
   useEffect(() => {
     console.log('[NowPlayingBar] Current track:', currentTrack?.title || 'None');
     console.log('[NowPlayingBar] Is playing:', isPlaying);
-    console.log('[NowPlayingBar] Queue length:', useMusicPlayer.getState().queue.length);
+    console.log('[NowPlayingBar] Queue length:', useMultimediaPlayer.getState().queue.length);
   }, [currentTrack, isPlaying]);
 
   // Initialize audio element - only once
@@ -373,7 +373,7 @@ export function NowPlayingBar({ className }: NowPlayingBarProps) {
 
 // Queue Panel Component
 function QueuePanel({ onClose }: { onClose: () => void }) {
-  const { queue, currentIndex, currentTrack, playTrack, removeFromQueue, clearQueue } = useMusicPlayer();
+  const { queue, currentIndex, currentTrack, playTrack, removeFromQueue, clearQueue } = useMultimediaPlayer();
 
   return (
     <div className="absolute bottom-full left-0 right-0 max-h-[60vh] overflow-y-auto border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-lg rounded-t-lg">

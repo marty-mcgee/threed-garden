@@ -23,8 +23,15 @@ const version={id:6,status:'ready',storageKey:'owner/speech.mp3',fileSize:3,mime
  queue=[[{id:5}],[{...version,status:'failed'}]];assert.equal((await run()).status,409);
  queue=[[{id:5}],[version],[]];assert.equal((await run()).status,404);assert.equal(writes.length,0);
  queue=[[{id:5}],[version],[{id:2}]];assert.equal((await run()).status,201);
+ assert.equal(writes[0].t,tracks);assert.equal(writes[0].v.trackNumber,0);
  assert.equal(writes[0].v.fileUrl,'/api/multimedia/files?key=owner%2Fspeech.mp3');assert.equal(writes[1].v.trackId,10);
- queue=[[{id:5}],[{...version,trackId:10}],[{id:10}]];assert.equal((await run()).body.reused,true);assert.equal(writes.length,2);
+ for(const trackNumber of [-10000,0,10000,null]) {
+  const existingTrack={id:10,trackNumber};
+  queue=[[{id:5}],[{...version,trackId:10}],[existingTrack]];
+  const response=await run();
+  assert.equal(response.status,200);assert.equal(response.body.reused,true);assert.equal(response.body.trackId,10);
+  assert.equal(existingTrack.trackNumber,trackNumber);assert.equal(writes.length,2,'Reusing an existing Track must not change its Sort Order.');
+ }
  assert.ok(JSON.stringify(scopes).includes('albums.userId'));assert.ok(JSON.stringify(scopes).includes('speech.userId'));
- console.log('PASS: Speech Track publishing owner checks, ready-only creation, Album validation, stored URL reuse and repeat-request reuse (offline).');
+ console.log('PASS: Speech Track publishing owner checks, ready-only creation, Album validation, default Sort Order 0, stored URL reuse and repeat requests preserving existing ranks (offline).');
 })().catch(e=>{console.error(e);process.exitCode=1});

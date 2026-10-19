@@ -1,10 +1,63 @@
+import { ownsFileReference, positiveId } from '@/libraries/services/multimedia/access';
 // app/api/multimedia/media/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/libraries/auth';
-import { db } from '@/libraries/db/client';
+import { db, type Transaction } from '@/libraries/db/client';
 import { multimediaAlbums, multimediaMedia } from '@/libraries/schema/multimedia';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, and, desc, asc, inArray } from 'drizzle-orm';
 import { ensureTableSequence } from '@/libraries/db/sequence';
+
+// Serialize all primary writers on their owned Album rows before locking Media.
+// Sorting both parent IDs also gives opposite-direction moves the same lock order.
+async function lockMediaAlbums(tx: Transaction, userId: string, ids: number[]) {
+  const uniqueIds = [...new Set(ids)].sort((a, b) => a - b);
+  const rows = await tx.select({ id: multimediaAlbums.id }).from(multimediaAlbums)
+    .where(and(inArray(multimediaAlbums.id, uniqueIds), eq(multimediaAlbums.userId, userId)))
+    .orderBy(asc(multimediaAlbums.id)).for('update');
+  return rows.length === uniqueIds.length;
+}
+
+type MediaChanges = Partial<Pick<typeof multimediaMedia.$inferInsert,
+  'fileName' | 'fileUrl' | 'fileType' | 'fileSize' | 'isPrimary' | 'albumId'>>;
+
+async function updateOwnedMedia(userId: string, id: number, changes: MediaChanges) {
+  if (changes.isPrimary !== undefined && typeof changes.isPrimary !== 'boolean') {
+    return NextResponse.json({ success: false, error: 'Primary Media must be true or false' }, { status: 400 });
+  }
+  const targetId = changes.albumId === undefined ? undefined : positiveId(changes.albumId);
+  if (targetId === null) return NextResponse.json({ success: false, error: 'Invalid album ID' }, { status: 400 });
+  const [snapshot] = await db.select().from(multimediaMedia)
+    .where(and(eq(multimediaMedia.id, id), eq(multimediaMedia.userId, userId))).limit(1);
+  if (!snapshot) return NextResponse.json({ success: false, error: 'Media not found' }, { status: 404 });
+
+  return db.transaction(async (tx) => {
+    if (!await lockMediaAlbums(tx, userId, [snapshot.albumId, targetId ?? snapshot.albumId])) {
+      return NextResponse.json({ success: false, error: 'Album not found' }, { status: 404 });
+    }
+    const [existing] = await tx.select().from(multimediaMedia)
+      .where(and(eq(multimediaMedia.id, id), eq(multimediaMedia.userId, userId)))
+      .limit(1).for('update');
+    if (!existing) return NextResponse.json({ success: false, error: 'Media not found' }, { status: 404 });
+    if (existing.albumId !== snapshot.albumId) {
+      return NextResponse.json({ success: false, error: 'This Media moved to another Album. Reload before saving.' }, { status: 409 });
+    }
+    const albumId = targetId ?? existing.albumId;
+    const isPrimary = changes.isPrimary === undefined ? existing.isPrimary : changes.isPrimary;
+    if (isPrimary && (changes.isPrimary === true || albumId !== existing.albumId)) {
+      await tx.update(multimediaMedia).set({ isPrimary: false })
+        .where(and(eq(multimediaMedia.albumId, albumId), eq(multimediaMedia.userId, userId), eq(multimediaMedia.isPrimary, true)));
+    }
+    const [updated] = await tx.update(multimediaMedia).set({
+      fileName: changes.fileName || existing.fileName,
+      fileUrl: changes.fileUrl || existing.fileUrl,
+      fileType: changes.fileType || existing.fileType,
+      fileSize: changes.fileSize === undefined ? existing.fileSize : changes.fileSize,
+      isPrimary, albumId, updatedAt: new Date(),
+    }).where(and(eq(multimediaMedia.id, id), eq(multimediaMedia.userId, userId))).returning();
+    if (!updated) throw new Error('Media update did not return a record');
+    return NextResponse.json({ success: true, data: updated, message: 'Media updated successfully' });
+  });
+}
 
 // ============================================
 // GET /api/multimedia/media
@@ -122,6 +175,7 @@ export async function POST(request: NextRequest) {
 
     const userId = session.user.id;
     const body = await request.json();
+    if (body?.fileUrl !== undefined && !ownsFileReference(session.user.id, body.fileUrl)) return NextResponse.json({ success: false, error: 'File reference is not owned by this User' }, { status: 400 });
 
     const { fileName, fileUrl, fileType, fileSize, isPrimary, albumId } = body;
 
@@ -154,69 +208,58 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const parsedAlbumId = Number(albumId);
-    if (!Number.isInteger(parsedAlbumId) || parsedAlbumId <= 0) {
+    const parsedAlbumId = positiveId(albumId);
+    if (!parsedAlbumId) {
       return NextResponse.json(
         { success: false, error: 'Invalid album ID' },
         { status: 400 }
       );
     }
 
-    const [album] = await db
-      .select({ id: multimediaAlbums.id })
-      .from(multimediaAlbums)
-      .where(
-        and(
-          eq(multimediaAlbums.id, parsedAlbumId),
-          eq(multimediaAlbums.userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (!album) {
-      return NextResponse.json(
-        { success: false, error: 'Album not found' },
-        { status: 404 }
-      );
+    if (isPrimary !== undefined && typeof isPrimary !== 'boolean') {
+      return NextResponse.json({ success: false, error: 'Primary Media must be true or false' }, { status: 400 });
     }
+    return await db.transaction(async (tx) => {
+      if (!await lockMediaAlbums(tx, userId, [parsedAlbumId])) {
+        return NextResponse.json({ success: false, error: 'Album not found' }, { status: 404 });
+      }
+      await ensureTableSequence('multimedia_media');
 
-    // ✅ Ensure sequence
-    await ensureTableSequence('multimedia_media');
+      // ✅ If this media is set as primary, unset other primary media for this album
+      if (isPrimary) {
+        await tx
+          .update(multimediaMedia)
+          .set({ isPrimary: false })
+          .where(
+            and(
+              eq(multimediaMedia.albumId, parsedAlbumId),
+              eq(multimediaMedia.userId, userId)
+            )
+          );
+      }
 
-    // ✅ If this media is set as primary, unset other primary media for this album
-    if (isPrimary) {
-      await db
-        .update(multimediaMedia)
-        .set({ isPrimary: false })
-        .where(
-          and(
-            eq(multimediaMedia.albumId, parsedAlbumId),
-            eq(multimediaMedia.userId, userId)
-          )
-        );
-    }
+      // ✅ Create the media
+      const [newMedia] = await tx
+        .insert(multimediaMedia)
+        .values({
+          userId,
+          fileName,
+          fileUrl,
+          fileType,
+          fileSize: fileSize || null,
+          isPrimary: isPrimary ?? false,
+          albumId: parsedAlbumId,
+          metadata: {},
+        })
+        .returning();
 
-    // ✅ Create the media
-    const [newMedia] = await db
-      .insert(multimediaMedia)
-      .values({
-        userId,
-        fileName,
-        fileUrl,
-        fileType,
-        fileSize: fileSize || null,
-        isPrimary: isPrimary || false,
-        albumId: parsedAlbumId,
-        metadata: {},
-      })
-      .returning();
+      console.log('[Media] Created media:', newMedia.id, newMedia.fileName);
 
-    console.log('[Media] Created media:', newMedia.id, newMedia.fileName);
-
-    return NextResponse.json({
-      success: true,
-      data: newMedia,
-      message: 'Media created successfully',
+      return NextResponse.json({
+        success: true,
+        data: newMedia,
+        message: 'Media created successfully',
+      });
     });
   } catch (error) {
     console.error('[Media] POST error:', error);
@@ -260,99 +303,9 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
+    if (body?.fileUrl !== undefined && !ownsFileReference(session.user.id, body.fileUrl)) return NextResponse.json({ success: false, error: 'File reference is not owned by this User' }, { status: 400 });
     const { fileName, fileUrl, fileType, fileSize, isPrimary, albumId } = body;
-
-    // ✅ Check if media exists and belongs to user
-    const [existing] = await db
-      .select()
-      .from(multimediaMedia)
-      .where(
-        and(
-          eq(multimediaMedia.id, parsedId),
-          eq(multimediaMedia.userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (!existing) {
-      return NextResponse.json(
-        { success: false, error: 'Media not found' },
-        { status: 404 }
-      );
-    }
-
-    let parsedAlbumId: number | undefined;
-    if (albumId !== undefined) {
-      const requestedAlbumId = Number(albumId);
-      if (!Number.isInteger(requestedAlbumId) || requestedAlbumId <= 0) {
-        return NextResponse.json(
-          { success: false, error: 'Invalid album ID' },
-          { status: 400 }
-        );
-      }
-      parsedAlbumId = requestedAlbumId;
-
-      const [album] = await db
-        .select({ id: multimediaAlbums.id })
-        .from(multimediaAlbums)
-        .where(
-          and(
-            eq(multimediaAlbums.id, parsedAlbumId),
-            eq(multimediaAlbums.userId, userId)
-          )
-        )
-        .limit(1);
-
-      if (!album) {
-        return NextResponse.json(
-          { success: false, error: 'Album not found' },
-          { status: 404 }
-        );
-      }
-    }
-
-    // ✅ If this media is set as primary, unset other primary media for this album
-    if (isPrimary) {
-      const primaryAlbumId = parsedAlbumId ?? existing.albumId;
-      await db
-        .update(multimediaMedia)
-        .set({ isPrimary: false })
-        .where(
-          and(
-            eq(multimediaMedia.albumId, primaryAlbumId),
-            eq(multimediaMedia.userId, userId),
-            eq(multimediaMedia.isPrimary, true)
-          )
-        );
-    }
-
-    // ✅ Update the media
-    const [updated] = await db
-      .update(multimediaMedia)
-      .set({
-        fileName: fileName || existing.fileName,
-        fileUrl: fileUrl || existing.fileUrl,
-        fileType: fileType || existing.fileType,
-        fileSize: fileSize !== undefined ? fileSize : existing.fileSize,
-        isPrimary: isPrimary !== undefined ? isPrimary : existing.isPrimary,
-        albumId: parsedAlbumId ?? existing.albumId,
-        updatedAt: new Date(),
-      })
-      .where(
-        and(
-          eq(multimediaMedia.id, parsedId),
-          eq(multimediaMedia.userId, userId)
-        )
-      )
-      .returning();
-
-    console.log('[Media] Updated media:', updated.id, updated.fileName);
-
-    return NextResponse.json({
-      success: true,
-      data: updated,
-      message: 'Media updated successfully',
-    });
+    return await updateOwnedMedia(userId, parsedId, { fileName, fileUrl, fileType, fileSize, isPrimary, albumId });
   } catch (error) {
     console.error('[Media] PUT error:', error);
     return NextResponse.json(
@@ -474,63 +427,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // ✅ Check if media exists and belongs to user
-    const [media] = await db
-      .select()
-      .from(multimediaMedia)
-      .where(
-        and(
-          eq(multimediaMedia.id, parsedId),
-          eq(multimediaMedia.userId, userId)
-        )
-      )
-      .limit(1);
-
-    if (!media) {
-      return NextResponse.json(
-        { success: false, error: 'Media not found' },
-        { status: 404 }
-      );
-    }
-
-    // ✅ If media doesn't have an album, can't set as primary
-    if (!media.albumId) {
-      return NextResponse.json(
-        { success: false, error: 'Media must be linked to an album to be primary' },
-        { status: 400 }
-      );
-    }
-
-    // ✅ Unset all primary media for this album
-    await db
-      .update(multimediaMedia)
-      .set({ isPrimary: false })
-      .where(
-        and(
-          eq(multimediaMedia.albumId, media.albumId),
-          eq(multimediaMedia.userId, userId),
-          eq(multimediaMedia.isPrimary, true)
-        )
-      );
-
-    // ✅ Set this media as primary
-    const [updated] = await db
-      .update(multimediaMedia)
-      .set({ isPrimary: true, updatedAt: new Date() })
-      .where(
-        and(
-          eq(multimediaMedia.id, parsedId),
-          eq(multimediaMedia.userId, userId)
-        )
-      )
-      .returning();
-
-    console.log('[Media] Set primary media:', updated.id, updated.fileName);
-
-    return NextResponse.json({
-      success: true,
-      data: updated,
-      message: 'Primary media updated successfully',
-    });
+    return await updateOwnedMedia(userId, parsedId, { isPrimary: true });
   } catch (error) {
     console.error('[Media] PATCH error:', error);
     return NextResponse.json(

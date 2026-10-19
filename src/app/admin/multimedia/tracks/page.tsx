@@ -1,5 +1,5 @@
-import { MusicTracksCRUD } from '@/components/admin/multimedia/tracks/MusicTracksCRUD';
+import { MultimediaTracksCRUD } from '@/components/admin/multimedia/tracks/MultimediaTracksCRUD';
 
 export default function TracksManagementPage() {
-  return <MusicTracksCRUD pageHeader />;
+  return <MultimediaTracksCRUD pageHeader />;
 }

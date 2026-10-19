@@ -67,7 +67,7 @@ export function LinkForm({
     icon: '',
     description: '',
     status: MusicLinkStatus.ACTIVE,
-    displayOrder: 0,
+    displayOrder: 0 as number | null,
   });
 
   useEffect(() => {
@@ -79,7 +79,7 @@ export function LinkForm({
         icon: existingLink.icon || '',
         description: existingLink.description || '',
         status: existingLink.status,
-        displayOrder: existingLink.displayOrder || 0,
+        displayOrder: existingLink.displayOrder ?? null,
       });
     }
   }, [existingLink]);
@@ -252,13 +252,13 @@ export function LinkForm({
             </div>
 
             <div>
-              <Label htmlFor="displayOrder">Display Order</Label>
+              <Label htmlFor="displayOrder">Sort Order</Label>
               <Input
                 id="displayOrder"
-                type="number"
+                type="number" min={-10000} max={10000} step={1}
                 placeholder="0"
-                value={formData.displayOrder}
-                onChange={(e) => setFormData({ ...formData, displayOrder: parseInt(e.target.value) || 0 })}
+                value={formData.displayOrder ?? ''}
+                onChange={(e) => setFormData({ ...formData, displayOrder: e.target.value === '' ? null : Number(e.target.value) })}
                 disabled={isSubmitting}
               />
             </div>

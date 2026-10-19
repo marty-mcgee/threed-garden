@@ -1,8 +1,10 @@
-// components/admin/multimedia/media/MusicMediaCRUD.tsx
+// components/admin/multimedia/media/MultimediaMediaCRUD.tsx
 'use client';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
-import { useMusicRecords, MusicRecordsSearch, MusicRecordsTable, MusicStatus } from '@/components/admin/multimedia/shared/MusicRecordsWorkspace';
-import { MusicWorkspaceHeader } from '@/components/admin/multimedia/shared/MusicWorkspaceHeader';
+import { useMultimediaRecords, MultimediaRecordsSearch, MultimediaRecordsTable, MultimediaStatus } from '@/components/admin/multimedia/shared/MultimediaRecordsWorkspace';
+import { MultimediaWorkspaceHeader } from '@/components/admin/multimedia/shared/MultimediaWorkspaceHeader';
 
 import { S3Upload } from '@/components/admin/multimedia/shared/S3Upload';
 import { useState, useEffect } from 'react';
@@ -42,14 +44,15 @@ interface Media {
   updatedAt: string;
 }
 
-interface MusicMediaCRUDProps {
+interface MultimediaMediaCRUDProps {
   pageHeader?: boolean;
   onModuleUpdate?: () => void;
 }
 
 // ✅ Named export - matches the import in page.tsx
-export function MusicMediaCRUD({ onModuleUpdate, pageHeader = false }: MusicMediaCRUDProps) {
-  const workspace = useMusicRecords('media', pageHeader);
+export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: MultimediaMediaCRUDProps) {
+  const router = useRouter();
+  const workspace = useMultimediaRecords('media', pageHeader);
   const { showToast, ToastComponent } = useToast();
   const [media, setMedia] = useState<Media[]>([]);
   const [loading, setLoading] = useState(true);
@@ -288,11 +291,11 @@ export function MusicMediaCRUD({ onModuleUpdate, pageHeader = false }: MusicMedi
   }
 
   return (
-    <div className={pageHeader ? "flex h-full min-h-0 flex-col gap-2" : "space-y-2"}>
+    <div className={pageHeader ? "flex h-full min-h-0 min-w-0 flex-col gap-2 overflow-hidden text-xs [&_button]:text-xs" : "space-y-2"}>
       {ToastComponent}
 
       <fieldset className="min-w-0 shrink-0" disabled={pageHeader && workspace.busy}>
-      <MusicWorkspaceHeader pageHeader={pageHeader} icon={Image} title="Media" count={pageHeader ? workspace.total : mediaList.length} search={pageHeader ? <MusicRecordsSearch workspace={workspace} /> : undefined}>
+      <MultimediaWorkspaceHeader pageHeader={pageHeader} icon={Image} title="Media" count={pageHeader ? workspace.total : mediaList.length} search={pageHeader ? <MultimediaRecordsSearch workspace={workspace} /> : undefined}>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
             <Button size="sm" className="h-7 px-2 text-xs">
@@ -399,10 +402,10 @@ export function MusicMediaCRUD({ onModuleUpdate, pageHeader = false }: MusicMedi
             </div>
           </DialogContent>
         </Dialog>
-      </MusicWorkspaceHeader>
+      </MultimediaWorkspaceHeader>
       </fieldset>
 
-      {pageHeader ? <MusicRecordsTable label="Media" workspace={workspace} columns={[{ field: 'fileName', label: 'File Name', render: row => <span className="inline-flex items-center gap-2"><Image className="h-4 w-4 shrink-0 text-blue-500" />{String(row.fileName)}</span> }, { field: 'id', label: 'ID' }, { field: 'albumId', label: 'Album' }, { field: 'fileType', label: 'Type' }, { field: 'fileSize', label: 'Size', render: row => formatFileSize(row.fileSize as number | null) }, { field: 'isPrimary', label: 'Primary', render: row => <MusicStatus value={row.isPrimary} /> }]} actions={row => renderActions(row as unknown as (typeof mediaList)[number])} /> : mediaList.length === 0 ? (
+      {pageHeader ? <MultimediaRecordsTable label="Media" workspace={workspace} columns={[{ field: 'fileName', label: 'File Name', render: row => <span className="inline-flex items-center gap-2"><Image className="h-4 w-4 shrink-0 text-blue-500" /><Link className="underline" href={`/admin/multimedia/media/${row.id}`}>{String(row.fileName)}</Link></span> }, { field: 'id', label: 'ID' }, { field: 'albumId', label: 'Album' }, { field: 'fileType', label: 'Type' }, { field: 'fileSize', label: 'Size', render: row => formatFileSize(row.fileSize as number | null) }, { field: 'isPrimary', label: 'Primary', render: row => <MultimediaStatus value={row.isPrimary} /> }]} actions={row => renderActions(row as unknown as (typeof mediaList)[number])} /> : mediaList.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <Image className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No media files yet</p>

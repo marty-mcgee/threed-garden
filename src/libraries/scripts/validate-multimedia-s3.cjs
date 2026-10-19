@@ -9,6 +9,7 @@ class Response { constructor(body, options) { this.body = body; this.options = o
 const mocks = {
  'next/server': { NextResponse: Response }, '@/libraries/auth': { auth: async () => signedIn ? { user: { id: 'owner' } } : null },
  '@/libraries/services/multimedia/upload-policy': policy,
+ '@/libraries/services/multimedia/file-access': { isPublicMediaKey: async () => false },
  '@aws-sdk/client-s3': { S3Client: class { constructor(config) { clientConfig = config; } async send(command) { calls.push(command.input); return head; } }, PutObjectCommand: Command, HeadObjectCommand: Command, GetObjectCommand: Command },
  '@aws-sdk/s3-request-presigner': { getSignedUrl: async (_, command) => { calls.push(command.input); return 'https://s3.example/signed'; } },
 };

@@ -8,7 +8,9 @@ Existing Developer-approved local screenshot from October 14, 2026; it illustrat
 
 [Demo](https://threedgarden.com/#garden-demo) · [Learn](https://threedgarden.com/learn) · [Getting started](docs/users/GETTING_STARTED.md) · [Documentation](docs/README.md)
 
-Prepared checkpoint: **[v0.26.15 - ThreeD Multimedia: Album Sort Order](docs/releases/v0.26.15.md)**. Production remains Developer-confirmed v0.26.14. See [current context](CONTEXT.md) for evidence boundaries and local work.
+Developer-confirmed production release: **[v0.26.15 - ThreeD Multimedia: Album Sort Order](docs/releases/v0.26.15.md)**. See [current context](CONTEXT.md) for evidence boundaries and local work.
+
+Prepared release checkpoint: **[v0.26.16 - ThreeD Multimedia: Ownership and Blueprint pages](docs/releases/v0.26.16.md)**. Preparation and production confirmation are recorded separately.
 
 ## Main capabilities
 

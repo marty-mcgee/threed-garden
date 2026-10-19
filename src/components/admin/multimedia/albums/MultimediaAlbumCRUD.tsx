@@ -1,4 +1,4 @@
-// components/admin/multimedia/albums/MusicAlbumCRUD.tsx
+// components/admin/multimedia/albums/MultimediaAlbumCRUD.tsx
 'use client';
 
 import { S3Upload } from '@/components/admin/multimedia/shared/S3Upload';
@@ -29,11 +29,11 @@ import { LinksManager } from '../links/LinksManager';
 import { MediaManager } from '../media/MediaManager';
 import { MusicAlbum, MusicLink, MusicMedia } from '@/libraries/types/multimedia';
 
-interface MusicAlbumCRUDProps {
+interface MultimediaAlbumCRUDProps {
   onModuleUpdate?: () => void;
 }
 
-export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
+export function MultimediaAlbumCRUD({ onModuleUpdate }: MultimediaAlbumCRUDProps) {
   const { showToast, ToastComponent } = useToast();
   const [albums, setAlbums] = useState<MusicAlbum[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,6 +50,7 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
     description: '',
     status: 'draft',
     isPublic: false,
+    sortOrder: 0 as number | null,
   });
 
   useEffect(() => {
@@ -102,6 +103,7 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
           description: '',
           status: 'draft',
           isPublic: false,
+          sortOrder: 0 as number | null,
         });
         await fetchAlbums();
         if (onModuleUpdate) onModuleUpdate();
@@ -183,6 +185,7 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
       description: album.description || '',
       status: album.status || 'draft',
       isPublic: album.isPublic || false,
+      sortOrder: album.sortOrder ?? null,
     });
   };
 
@@ -253,6 +256,10 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
                 />
               </div>
               <div>
+                <Label htmlFor="album-create-sortOrder">Sort Order</Label>
+                <Input id="album-create-sortOrder" type="number" min={-10000} max={10000} step={1} value={formData.sortOrder ?? ''} onChange={event => setFormData({ ...formData, sortOrder: event.target.value === '' ? null : Number(event.target.value) })} disabled={isSubmitting || uploadBusy} />
+              </div>
+              <div>
                 <Label htmlFor="releaseYear">Release Year</Label>
                 <Input
                   id="releaseYear"
@@ -319,6 +326,7 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
             <TableHeader>
               <TableRow>
                 <TableHead className="text-xs py-1">Title</TableHead>
+                <TableHead className="text-xs py-1">Sort Order</TableHead>
                 <TableHead className="hidden sm:table-cell text-xs py-1">Artist</TableHead>
                 <TableHead className="hidden md:table-cell text-xs py-1">Tracks</TableHead>
                 <TableHead className="text-center text-xs py-1">Status</TableHead>
@@ -348,6 +356,7 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
                       </span>
                     )}
                   </TableCell>
+                  <TableCell className="py-1.5 text-xs">{album.sortOrder ?? '?'}</TableCell>
                   <TableCell className="hidden sm:table-cell py-1.5 text-sm text-muted-foreground">
                     {album.artist}
                   </TableCell>
@@ -464,7 +473,7 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-12 text-xs">#</TableHead>
+                      <TableHead className="w-12 text-xs">Sort Order</TableHead>
                       <TableHead className="text-xs">Title</TableHead>
                       <TableHead className="text-right text-xs">Duration</TableHead>
                       <TableHead className="text-center text-xs">Status</TableHead>
@@ -576,6 +585,10 @@ export function MusicAlbumCRUD({ onModuleUpdate }: MusicAlbumCRUDProps) {
                 onChange={(e) => setFormData({ ...formData, coverArt: e.target.value })}
                 disabled={isSubmitting || uploadBusy}
               />
+            </div>
+            <div>
+              <Label htmlFor="album-edit-sortOrder">Sort Order</Label>
+              <Input id="album-edit-sortOrder" type="number" min={-10000} max={10000} step={1} value={formData.sortOrder ?? ''} onChange={event => setFormData({ ...formData, sortOrder: event.target.value === '' ? null : Number(event.target.value) })} disabled={isSubmitting || uploadBusy} />
             </div>
             <div>
               <Label>Release Year</Label>

@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
 import { multimediaAlbums, multimediaTracks, multimediaLinks, multimediaPlaybackHistory } from '@/libraries/schema';
-import { eq, desc, sql } from 'drizzle-orm';
+import { and, or, eq, desc, sql } from 'drizzle-orm';
+import { publicTrackScope } from '@/libraries/services/multimedia/authority';
 
 export async function GET() {
   try {
@@ -24,10 +25,7 @@ export async function GET() {
       total: sql<number>`count(*)`,
       totalPlays: sql<number>`sum(play_count)`,
       avgDuration: sql<number>`avg(duration)`,
-    }).from(multimediaTracks).innerJoin(
-      multimediaAlbums,
-      eq(multimediaTracks.albumId, multimediaAlbums.id)
-    ).where(eq(multimediaAlbums.userId, session.user.id));
+    }).from(multimediaTracks).where(eq(multimediaTracks.userId, session.user.id));
 
     // Get link stats
     const linkStats = await db.select({
@@ -46,7 +44,9 @@ export async function GET() {
     .from(multimediaPlaybackHistory)
     .innerJoin(multimediaTracks, eq(multimediaPlaybackHistory.trackId, multimediaTracks.id))
     .innerJoin(multimediaAlbums, eq(multimediaPlaybackHistory.albumId, multimediaAlbums.id))
-    .where(eq(multimediaPlaybackHistory.userId, session.user.id))
+    .where(and(eq(multimediaPlaybackHistory.userId, session.user.id),
+      eq(multimediaPlaybackHistory.albumId, multimediaTracks.albumId),
+      or(and(eq(multimediaTracks.userId, session.user.id), eq(multimediaAlbums.userId, session.user.id)), publicTrackScope())))
     .orderBy(desc(multimediaPlaybackHistory.playedAt))
     .limit(10);
 
@@ -59,7 +59,7 @@ export async function GET() {
     })
     .from(multimediaTracks)
     .innerJoin(multimediaAlbums, eq(multimediaTracks.albumId, multimediaAlbums.id))
-    .where(eq(multimediaAlbums.userId, session.user.id))
+    .where(and(eq(multimediaTracks.userId, session.user.id), eq(multimediaAlbums.userId, session.user.id)))
     .orderBy(desc(multimediaTracks.playCount))
     .limit(5);
 

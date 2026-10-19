@@ -1,4 +1,4 @@
-// src/libraries/stores/music-player-store.ts
+// src/libraries/stores/multimedia-player-store.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -81,7 +81,7 @@ function debounce<T extends (...args: any[]) => void>(
   };
 }
 
-export const useMusicPlayer = create<PlayerState>()(
+export const useMultimediaPlayer = create<PlayerState>()(
   persist<PlayerState, [], [], PersistedPlayerState>(
     (set, get) => {
       console.log('🔵 [Store] Zustand store initialized');

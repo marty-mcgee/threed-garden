@@ -1,8 +1,10 @@
-// components/admin/multimedia/links/MusicLinksCRUD.tsx
+// components/admin/multimedia/links/MultimediaLinksCRUD.tsx
 'use client';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
-import { useMusicRecords, MusicRecordsSearch, MusicRecordsTable, MusicStatus } from '@/components/admin/multimedia/shared/MusicRecordsWorkspace';
-import { MusicWorkspaceHeader } from '@/components/admin/multimedia/shared/MusicWorkspaceHeader';
+import { useMultimediaRecords, MultimediaRecordsSearch, MultimediaRecordsTable, MultimediaStatus } from '@/components/admin/multimedia/shared/MultimediaRecordsWorkspace';
+import { MultimediaWorkspaceHeader } from '@/components/admin/multimedia/shared/MultimediaWorkspaceHeader';
 
 import { useState, useEffect } from 'react';
 import { 
@@ -33,14 +35,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/components/ui/toast';
 import { MusicLink } from '@/libraries/types/multimedia';
 
-interface MusicLinksCRUDProps {
+interface MultimediaLinksCRUDProps {
   pageHeader?: boolean;
+  albumId?: number;
   onModuleUpdate?: () => void;
 }
 
 // ✅ Export named - matches import in page.tsx
-export function MusicLinksCRUD({ onModuleUpdate, pageHeader = false }: MusicLinksCRUDProps) {
-  const workspace = useMusicRecords('links', pageHeader);
+export function MultimediaLinksCRUD({ onModuleUpdate, albumId, pageHeader = false }: MultimediaLinksCRUDProps) {
+  const router = useRouter();
+  const workspace = useMultimediaRecords('links', pageHeader, { albumId });
   const { showToast, ToastComponent } = useToast();
   const [links, setLinks] = useState<MusicLink[]>([]);
   const [albums, setAlbums] = useState<{ id: number; title: string }[]>([]);
@@ -55,8 +59,8 @@ export function MusicLinksCRUD({ onModuleUpdate, pageHeader = false }: MusicLink
     icon: '',
     description: '',
     status: 'active',
-    displayOrder: 0,
-    albumId: '',
+    displayOrder: 0 as number | null,
+    albumId: albumId ? String(albumId) : '',
     trackId: '',
   });
 
@@ -89,13 +93,13 @@ export function MusicLinksCRUD({ onModuleUpdate, pageHeader = false }: MusicLink
   useEffect(() => {
     fetchLinks();
     fetchAlbums();
-  }, []);
+  }, [albumId]);
 
   const fetchLinks = async () => {
     if (pageHeader) { workspace.reload(); return; }
     setLoading(true);
     try {
-      const response = await fetch('/api/multimedia/links');
+      const response = await fetch(`/api/multimedia/links?scope=owner${albumId ? `&albumId=${albumId}` : ''}`);
       const data = await response.json();
       if (data.success) {
         setLinks(Array.isArray(data.data) ? data.data : []);
@@ -139,7 +143,7 @@ export function MusicLinksCRUD({ onModuleUpdate, pageHeader = false }: MusicLink
         icon: formData.icon || null,
         description: formData.description || null,
         status: formData.status || 'active',
-        displayOrder: formData.displayOrder || 0,
+        displayOrder: formData.displayOrder,
       };
 
       // ✅ Include albumId and trackId if provided
@@ -185,7 +189,7 @@ export function MusicLinksCRUD({ onModuleUpdate, pageHeader = false }: MusicLink
         icon: formData.icon || null,
         description: formData.description || null,
         status: formData.status || 'active',
-        displayOrder: formData.displayOrder || 0,
+        displayOrder: formData.displayOrder,
       };
 
       // ✅ Include albumId and trackId if provided
@@ -254,7 +258,7 @@ export function MusicLinksCRUD({ onModuleUpdate, pageHeader = false }: MusicLink
       description: '',
       status: 'active',
       displayOrder: 0,
-      albumId: '',
+      albumId: albumId ? String(albumId) : '',
       trackId: '',
     });
   };
@@ -268,7 +272,7 @@ export function MusicLinksCRUD({ onModuleUpdate, pageHeader = false }: MusicLink
       icon: link.icon || '',
       description: link.description || '',
       status: link.status || 'active',
-      displayOrder: link.displayOrder || 0,
+      displayOrder: link.displayOrder ?? null,
       albumId: link.albumId ? String(link.albumId) : '',
       trackId: link.trackId ? String(link.trackId) : '',
     });
@@ -344,12 +348,12 @@ export function MusicLinksCRUD({ onModuleUpdate, pageHeader = false }: MusicLink
   const linkList = Array.isArray(links) ? links : [];
 
   return (
-    <div className={pageHeader ? "flex h-full min-h-0 flex-col gap-2" : "space-y-2"}>
+    <div className={pageHeader ? "flex h-full min-h-0 min-w-0 flex-col gap-2 overflow-hidden text-xs [&_button]:text-xs" : "space-y-2"}>
       {ToastComponent}
 
       {/* Header */}
       <fieldset className="min-w-0 shrink-0" disabled={pageHeader && workspace.busy}>
-      <MusicWorkspaceHeader pageHeader={pageHeader} icon={Link2} title="Links" count={pageHeader ? workspace.total : linkList.length} search={pageHeader ? <MusicRecordsSearch workspace={workspace} /> : undefined}>
+      <MultimediaWorkspaceHeader pageHeader={pageHeader} icon={Link2} title="Links" count={pageHeader ? workspace.total : linkList.length} search={pageHeader ? <MultimediaRecordsSearch workspace={workspace} /> : undefined}>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
             <Button size="sm" className="h-7 px-2 text-xs">
@@ -463,7 +467,7 @@ export function MusicLinksCRUD({ onModuleUpdate, pageHeader = false }: MusicLink
                 />
               </div>
 
-              {/* Status & Display Order */}
+              {/* Status & Sort Order */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="status">Status</Label>
@@ -484,13 +488,13 @@ export function MusicLinksCRUD({ onModuleUpdate, pageHeader = false }: MusicLink
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="displayOrder">Display Order</Label>
+                  <Label htmlFor="displayOrder">Sort Order</Label>
                   <Input
                     id="displayOrder"
-                    type="number"
+                    type="number" min={-10000} max={10000} step={1}
                     placeholder="0"
-                    value={formData.displayOrder}
-                    onChange={(e) => setFormData({ ...formData, displayOrder: parseInt(e.target.value) || 0 })}
+                    value={formData.displayOrder ?? ''}
+                    onChange={(e) => setFormData({ ...formData, displayOrder: e.target.value === '' ? null : Number(e.target.value) })}
                     disabled={isSubmitting}
                   />
                 </div>
@@ -509,11 +513,11 @@ export function MusicLinksCRUD({ onModuleUpdate, pageHeader = false }: MusicLink
             </div>
           </DialogContent>
         </Dialog>
-      </MusicWorkspaceHeader>
+      </MultimediaWorkspaceHeader>
       </fieldset>
 
       {/* Links Table */}
-      {pageHeader ? <MusicRecordsTable label="Links" workspace={workspace} columns={[{ field: 'title', label: 'Title', render: row => <span className="inline-flex items-center gap-2"><Link2 className="h-4 w-4 shrink-0 text-blue-500" />{String(row.title)}</span> }, { field: 'id', label: 'ID' }, { field: 'type', label: 'Type' }, { field: 'albumId', label: 'Album' }, { field: 'status', label: 'Status', render: row => <MusicStatus value={row.status} /> }]} actions={row => renderActions(row as unknown as (typeof linkList)[number])} /> : linkList.length === 0 ? (
+      {pageHeader ? <MultimediaRecordsTable label="Links" workspace={workspace} columns={[{ field: 'title', label: 'Title', render: row => <span className="inline-flex items-center gap-2"><Link2 className="h-4 w-4 shrink-0 text-blue-500" /><Link className="underline" href={`/admin/multimedia/links/${row.id}`}>{String(row.title)}</Link></span> }, { field: 'id', label: 'ID' }, { field: 'displayOrder', label: 'Sort Order' }, { field: 'type', label: 'Type' }, { field: 'albumId', label: 'Album' }, { field: 'status', label: 'Status', render: row => <MultimediaStatus value={row.status} /> }]} actions={row => renderActions(row as unknown as (typeof linkList)[number])} /> : linkList.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <Link2 className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No links yet</p>
@@ -690,12 +694,12 @@ export function MusicLinksCRUD({ onModuleUpdate, pageHeader = false }: MusicLink
                 </Select>
               </div>
               <div>
-                <Label htmlFor="edit-displayOrder">Display Order</Label>
+                <Label htmlFor="edit-displayOrder">Sort Order</Label>
                 <Input
                   id="edit-displayOrder"
-                  type="number"
-                  value={formData.displayOrder}
-                  onChange={(e) => setFormData({ ...formData, displayOrder: parseInt(e.target.value) || 0 })}
+                  type="number" min={-10000} max={10000} step={1}
+                  value={formData.displayOrder ?? ''}
+                  onChange={(e) => setFormData({ ...formData, displayOrder: e.target.value === '' ? null : Number(e.target.value) })}
                   disabled={isSubmitting}
                 />
               </div>

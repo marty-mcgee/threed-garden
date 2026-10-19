@@ -1,29 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { multimediaPoller } from '@/libraries/services/multimedia/MultimediaPoller';
+﻿import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-  try {
-    // Verify cron secret
-    const authHeader = request.headers.get('authorization');
-    const cronSecret = process.env.CRON_SECRET;
-    
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    
-    // Trigger poll
-    const result = await multimediaPoller.poll();
-    
-    return NextResponse.json({
-      success: true,
-      result,
-      timestamp: new Date().toISOString(),
-    });
-  } catch (error) {
-    console.error('Cron poll error:', error);
-    return NextResponse.json({ error: 'Poll failed' }, { status: 500 });
+  const secret = process.env.CRON_SECRET;
+  if (!secret || request.headers.get('authorization') !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+  // Legacy discovery has no User assignment. Never create unowned content.
+  return NextResponse.json({ error: 'Shared Multimedia sync requires an owner-scoped implementation.' }, { status: 503 });
 }
-
-// To enable cron job, add to your Vercel cron.json or use a scheduler
-// This endpoint can be called by a cron job every 5 minutes

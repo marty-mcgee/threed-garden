@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, type ReactNode } from 'react';
 import { Slider } from '@/components/ui/slider';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -48,7 +48,9 @@ interface Album {
   media?: MediaItem[];
 }
 
-interface MusicPlayerProps {
+interface MultimediaPlayerProps {
+  mediaPreview?: ReactNode;
+  onMediaPlay?: (element: HTMLMediaElement) => void;
   track: Track;
   album: Album;
   tracks: Track[];
@@ -67,7 +69,8 @@ interface MusicPlayerProps {
   formatTime: (time: number) => string;
 }
 
-export function MusicPlayer({
+export function MultimediaPlayer({
+  mediaPreview, onMediaPlay,
   track,
   album,
   tracks,
@@ -84,7 +87,7 @@ export function MusicPlayer({
   onVolumeChange,
   onToggleMute,
   formatTime,
-}: MusicPlayerProps) {
+}: MultimediaPlayerProps) {
   const [activeTab, setActiveTab] = useState('tracks');
 
   // Reset to Track List tab when album changes
@@ -103,16 +106,16 @@ export function MusicPlayer({
   };
 
   return (
-    <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white shadow-xl rounded-lg">
-      <div className="p-6">
+    <div className="rounded-lg border bg-transparent text-foreground">
+      <div className="p-4">
         {/* 2-Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           
           {/* LEFT COLUMN - Album Art & Player Controls */}
           <div className="space-y-3">
             {/* Album Art */}
-            <div className="flex justify-center">
-              <div className="w-56 h-56 lg:w-64 lg:h-64 rounded-lg overflow-hidden shadow-2xl bg-gray-800">
+            {mediaPreview || <div className="flex justify-center">
+              <div className="w-56 h-56 lg:w-64 lg:h-64 rounded-lg overflow-hidden shadow-2xl bg-muted">
                 <img 
                   src={album.coverArt} 
                   alt={album.title}
@@ -122,37 +125,37 @@ export function MusicPlayer({
                   }}
                 />
               </div>
-            </div>
+            </div>}
 
             {/* Track Info */}
             <div className="text-center">
-              <p className="text-xs uppercase tracking-wider text-gray-400">Now Playing</p>
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">Now Playing</p>
               <h2 className="text-lg font-bold mt-1 truncate px-2">{track.title}</h2>
-              <p className="text-gray-400 text-sm truncate">{album.artist}</p>
+              <p className="text-muted-foreground text-sm truncate">{album.artist}</p>
               {album.releaseYear && (
-                <p className="text-gray-500 text-xs mt-1">Released: {album.releaseYear}</p>
+                <p className="text-muted-foreground text-xs mt-1">Released: {album.releaseYear}</p>
               )}
             </div>
 
             {/* Playback Controls */}
             <div className="flex items-center justify-center gap-2">
               <button 
-                onClick={onPrevious}
-                className="p-2 hover:bg-white/10 rounded-full transition-all"
+                aria-label="Previous Track" onClick={onPrevious}
+                className="p-2 hover:bg-muted/50 rounded-full transition-all"
               >
                 <SkipBack className="w-5 h-5" />
               </button>
               
               <button 
-                onClick={onPlayPause}
-                className="p-3 bg-white text-gray-900 rounded-full hover:scale-105 transition-transform"
+                aria-label={isPlaying ? 'Pause' : 'Play'} onClick={onPlayPause}
+                className="p-3 bg-primary text-primary-foreground rounded-full hover:scale-105 transition-transform"
               >
                 {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-0.5" />}
               </button>
               
               <button 
-                onClick={onNext}
-                className="p-2 hover:bg-white/10 rounded-full transition-all"
+                aria-label="Next Track" onClick={onNext}
+                className="p-2 hover:bg-muted/50 rounded-full transition-all"
               >
                 <SkipForward className="w-5 h-5" />
               </button>
@@ -161,25 +164,25 @@ export function MusicPlayer({
             {/* Progress Bar */}
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-400">{formatTime(currentTime)}</span>
+                <span className="text-xs text-muted-foreground">{formatTime(currentTime)}</span>
                 <Slider
-                  value={[currentTime]}
+                  aria-label="Playback position" value={[currentTime]}
                   max={duration || 0}
                   step={1}
                   onValueChange={onSeek}
                   className="flex-1 cursor-pointer h-1"
                 />
-                <span className="text-xs text-gray-400">{formatTime(duration)}</span>
+                <span className="text-xs text-muted-foreground">{formatTime(duration)}</span>
               </div>
             </div>
 
             {/* Volume Control */}
             <div className="flex items-center justify-center gap-2">
-              <button onClick={onToggleMute} className="p-1 hover:text-gray-300">
+              <button aria-label={isMuted ? 'Unmute' : 'Mute'} onClick={onToggleMute} className="p-1 hover:text-foreground">
                 {isMuted || volume === 0 ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
               </button>
               <Slider
-                value={[isMuted ? 0 : volume]}
+                aria-label="Volume" value={[isMuted ? 0 : volume]}
                 max={1}
                 step={0.01}
                 onValueChange={onVolumeChange}
@@ -191,36 +194,36 @@ export function MusicPlayer({
           {/* RIGHT COLUMN - Waveform + Tabs (Track List, Links, Media Gallery) */}
           <div className="space-y-4">
             {/* Waveform Visualization */}
-            <WaveformVisualizer
+            {!mediaPreview && <WaveformVisualizer
               audioUrl={track.fileUrl}
               isPlaying={isPlaying}
               currentTime={currentTime}
               duration={duration}
               height={100}
               className="w-full"
-            />
+            />}
 
             {/* Tabs for Track List, Links, and Media Gallery */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-3 bg-gray-800/50">
-                <TabsTrigger value="tracks" className="data-[state=active]:bg-gray-700 gap-2">
+              <TabsList className="grid w-full grid-cols-3 bg-muted/50">
+                <TabsTrigger value="tracks" className="data-[state=active]:bg-muted gap-2">
                   <ListMusic className="h-4 w-4" />
                   Track List
-                  <Badge variant="secondary" className="ml-1 bg-gray-600">
+                  <Badge variant="secondary" className="ml-1 bg-transparent border">
                     {tracks.length}
                   </Badge>
                 </TabsTrigger>
-                <TabsTrigger value="links" className="data-[state=active]:bg-gray-700 gap-2">
+                <TabsTrigger value="links" className="data-[state=active]:bg-muted gap-2">
                   <ExternalLink className="h-4 w-4" />
                   Links
-                  <Badge variant="secondary" className="ml-1 bg-gray-600">
+                  <Badge variant="secondary" className="ml-1 bg-transparent border">
                     {album.links?.length || 0}
                   </Badge>
                 </TabsTrigger>
-                <TabsTrigger value="media" className="data-[state=active]:bg-gray-700 gap-2">
+                <TabsTrigger value="media" className="data-[state=active]:bg-muted gap-2">
                   <ImageIcon className="h-4 w-4" />
                   Media
-                  <Badge variant="secondary" className="ml-1 bg-gray-600">
+                  <Badge variant="secondary" className="ml-1 bg-transparent border">
                     {album.media?.length || 0}
                   </Badge>
                 </TabsTrigger>
@@ -235,42 +238,44 @@ export function MusicPlayer({
                       return (
                         <div
                           key={t.id}
+                          role="button" tabIndex={0} aria-label={`Play ${t.title}`}
+                          onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); onTrackSelect(idx); } }}
                           onClick={() => onTrackSelect(idx)}
                           className={cn(
                             "flex items-center justify-between p-2 rounded-lg cursor-pointer transition-all group",
                             isCurrentTrack
-                              ? "bg-white/20 border-l-2 border-white"
-                              : "hover:bg-white/10"
+                              ? "bg-accent border-l-2 border-primary"
+                              : "hover:bg-muted/50"
                           )}
                         >
                           <div className="flex items-center gap-3 flex-1 min-w-0">
-                            <div className="w-7 text-center">
+                            <div className="w-12 shrink-0 text-center">
                               <span className={cn(
                                 "text-xs font-mono",
-                                isCurrentTrack && "font-bold text-white"
+                                isCurrentTrack && "font-bold text-foreground"
                               )}>
-                                {t.trackNumber || idx + 1}
+                                {t.trackNumber ?? '—'}
                               </span>
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className={cn(
                                 "truncate text-sm",
-                                isCurrentTrack && "font-semibold text-white"
+                                isCurrentTrack && "font-semibold text-foreground"
                               )}>
                                 {t.title}
                               </p>
                             </div>
-                            <div className="text-xs text-gray-400">
+                            <div className="text-xs text-muted-foreground">
                               {formatTime(t.duration || 0)}
                             </div>
                           </div>
                           {isCurrentTrack && isPlaying && (
                             <div className="flex gap-0.5 ml-2">
-                              <div className="w-0.5 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                              <div className="w-0.5 h-3 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                              <div className="w-0.5 h-4 bg-white rounded-full animate-bounce"></div>
-                              <div className="w-0.5 h-3 bg-white rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                              <div className="w-0.5 h-2 bg-white rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                              <div className="w-0.5 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                              <div className="w-0.5 h-3 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                              <div className="w-0.5 h-4 bg-primary rounded-full animate-bounce"></div>
+                              <div className="w-0.5 h-3 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                              <div className="w-0.5 h-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]"></div>
                             </div>
                           )}
                         </div>
@@ -291,15 +296,15 @@ export function MusicPlayer({
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-3 p-3 bg-white/10 hover:bg-white/20 rounded-lg transition-all group"
+                          className="flex items-center gap-3 p-3 bg-muted/50 hover:bg-accent rounded-lg transition-all group"
                         >
-                          <div className="p-2 bg-white/10 rounded-full">
+                          <div className="p-2 bg-muted/50 rounded-full">
                             {getLinkIcon(link.type)}
                           </div>
                           <div className="flex-1">
                             <p className="font-medium text-sm">{link.title}</p>
                             {link.description && (
-                              <p className="text-xs text-gray-400">{link.description}</p>
+                              <p className="text-xs text-muted-foreground">{link.description}</p>
                             )}
                           </div>
                           <ExternalLink className="h-4 w-4 opacity-50 group-hover:opacity-100" />
@@ -308,9 +313,9 @@ export function MusicPlayer({
                     </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center h-64 text-center">
-                      <ExternalLink className="h-12 w-12 text-gray-500 mb-3" />
-                      <p className="text-gray-400">No links available for this album</p>
-                      <p className="text-xs text-gray-500 mt-1">Check back later for updates</p>
+                      <ExternalLink className="h-12 w-12 text-muted-foreground mb-3" />
+                      <p className="text-muted-foreground">No links available for this album</p>
+                      <p className="text-xs text-muted-foreground mt-1">Check back later for updates</p>
                     </div>
                   )}
                 </ScrollArea>
@@ -320,12 +325,12 @@ export function MusicPlayer({
               <TabsContent value="media" className="mt-4">
                 <ScrollArea className="h-64 lg:h-72">
                   {album.media && album.media.length > 0 ? (
-                    <MediaGallery media={album.media} albumId={album.id} />
+                    <MediaGallery media={album.media} albumId={album.id} onMediaPlay={onMediaPlay} />
                   ) : (
                     <div className="flex flex-col items-center justify-center h-64 text-center">
-                      <ImageIcon className="h-12 w-12 text-gray-500 mb-3" />
-                      <p className="text-gray-400">No media available for this album</p>
-                      <p className="text-xs text-gray-500 mt-1">Check back later for photos</p>
+                      <ImageIcon className="h-12 w-12 text-muted-foreground mb-3" />
+                      <p className="text-muted-foreground">No media available for this album</p>
+                      <p className="text-xs text-muted-foreground mt-1">Check back later for Media</p>
                     </div>
                   )}
                 </ScrollArea>

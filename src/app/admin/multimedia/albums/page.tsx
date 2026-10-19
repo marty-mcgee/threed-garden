@@ -1,7 +1,9 @@
 // app/admin/multimedia/albums/page.tsx
 'use client';
+import Link from 'next/link';
+import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 
-import { useMusicRecords, MusicRecordsSearch, MusicRecordsTable, MusicStatus } from '@/components/admin/multimedia/shared/MusicRecordsWorkspace';
+import { useMultimediaRecords, MultimediaRecordsSearch, MultimediaRecordsTable, MultimediaStatus } from '@/components/admin/multimedia/shared/MultimediaRecordsWorkspace';
 import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -39,7 +41,7 @@ interface Track {
 export default function AlbumsManagementPage() {
   const router = useRouter();
   const { showToast, ToastComponent } = useToast();
-  const workspace = useMusicRecords('albums', true);
+  const workspace = useMultimediaRecords('albums', true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingAlbum, setEditingAlbum] = useState<Album | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -76,7 +78,7 @@ export default function AlbumsManagementPage() {
         description: formData.description || null,
         status: formData.status,
         isPublic: formData.isPublic,
-        sortOrder: parseInt(formData.sortOrder) || 0,
+        sortOrder: formData.sortOrder === '' ? null : Number(formData.sortOrder),
       };
 
       const response = await fetch(url, {
@@ -129,7 +131,7 @@ export default function AlbumsManagementPage() {
       description: '',
       status: 'draft',
       isPublic: false,
-      sortOrder: workspace.total.toString(),
+      sortOrder: '0',
     });
     setEditingAlbum(null);
   };
@@ -144,7 +146,7 @@ export default function AlbumsManagementPage() {
       description: album.description || '',
       status: album.status || 'draft',
       isPublic: album.isPublic || false,
-      sortOrder: album.sortOrder?.toString() || '0',
+      sortOrder: album.sortOrder?.toString() ?? '',
     });
     setIsDialogOpen(true);
   };
@@ -159,29 +161,27 @@ export default function AlbumsManagementPage() {
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-2">
+    <div className="flex h-full min-h-0 min-w-0 flex-col gap-2 overflow-hidden text-xs [&_button]:text-xs">
       {ToastComponent}
 
       {/* Header */}
       <fieldset className="min-w-0 shrink-0" disabled={workspace.busy}>
       <AdminWorkspaceHeader icon={Music} title="Albums" description="Manage Multimedia albums">
-        <Badge variant="secondary" className="text-xs">{workspace.total}</Badge>
-        <MusicRecordsSearch workspace={workspace} />
-        <Button size="sm" className="ml-auto h-7 px-2 text-xs" onClick={() => {
-          resetForm();
-          setIsDialogOpen(true);
-        }}>
+        <ModelFieldHelp label="Albums">Manage your Multimedia Albums. Sort Order controls the public library order; only published public Albums expose eligible content to visitors.</ModelFieldHelp>
+        <span className="rounded border px-1.5 py-0.5 text-xs">{workspace.total}</span>
+        <MultimediaRecordsSearch workspace={workspace} />
+        <Button size="sm" className="ml-auto h-7 px-2 text-xs" onClick={() => { resetForm(); setIsDialogOpen(true); }}>
           <Plus className="h-4 w-4 mr-2" />
           New Album
         </Button>
       </AdminWorkspaceHeader>
       </fieldset>
 
-      <MusicRecordsTable workspace={workspace} label="Albums" columns={[
-        { field: 'title', label: 'Title', render: row => <span className="inline-flex items-center gap-2"><Music className="h-4 w-4 text-blue-500" />{String(row.title)}</span> },
-        { field: 'id', label: 'ID' }, { field: 'artist', label: 'Artist' }, { field: 'releaseYear', label: 'Year' },
-        { field: 'status', label: 'Status', render: row => <MusicStatus value={row.status} /> },
-        { field: 'isPublic', label: 'Public', render: row => <MusicStatus value={row.isPublic} /> },
+      <MultimediaRecordsTable workspace={workspace} label="Albums" columns={[
+        { field: 'title', label: 'Title', render: row => <span className="inline-flex items-center gap-2"><Music className="h-4 w-4 text-blue-500" /><Link className="underline" href={`/admin/multimedia/albums/${row.id}`}>{String(row.title)}</Link></span> },
+        { field: 'id', label: 'ID' }, { field: 'sortOrder', label: 'Sort Order' }, { field: 'artist', label: 'Artist' }, { field: 'releaseYear', label: 'Year' },
+        { field: 'status', label: 'Status', render: row => <MultimediaStatus value={row.status} /> },
+        { field: 'isPublic', label: 'Public', render: row => <MultimediaStatus value={row.isPublic} /> },
       ]} actions={row => <div className="flex justify-end gap-1">
         <Button size="sm" variant="ghost" className="h-7 px-2" aria-label={`View Album ${row.title}`} onClick={() => router.push(`/admin/multimedia/albums/${row.id}`)}><Eye className="h-4 w-4" /></Button>
         <Button size="sm" variant="ghost" className="h-7 px-2" aria-label={`Edit Album ${row.title}`} onClick={() => openEdit(row as unknown as Album)}><Edit className="h-4 w-4" /></Button>
@@ -241,7 +241,7 @@ export default function AlbumsManagementPage() {
               <div>
                 <Label htmlFor="sortOrder">Sort Order</Label>
                 <Input
-                  id="sortOrder"
+                  id="sortOrder" min={-10000} max={10000} step={1}
                   type="number"
                   value={formData.sortOrder}
                   onChange={(e) => setFormData({ ...formData, sortOrder: e.target.value })}

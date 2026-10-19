@@ -3,6 +3,7 @@ import { auth } from '@/libraries/auth';
 import { S3Client, PutObjectCommand, HeadObjectCommand, GetObjectCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { ownerPrefix, ownsMediaKey, uploadPolicy } from '@/libraries/services/multimedia/upload-policy';
+import { isPublicMediaKey } from '@/libraries/services/multimedia/file-access';
 
 const headers = { 'Cache-Control': 'private, no-store' };
 function storage() {
@@ -47,12 +48,14 @@ export async function POST(request: NextRequest) {
 }
 export async function GET(request: NextRequest) {
   const session = await auth();
-  if (!session?.user?.id) return new NextResponse(null, { status: 401, headers });
   const key = request.nextUrl.searchParams.get('key') || '';
-  if (!ownsMediaKey(session.user.id, key)) return new NextResponse(null, { status: 404, headers });
+  if (!key || key.length > 1024) return new NextResponse(null, { status: 404, headers });
   try {
+    if (!(session?.user?.id && ownsMediaKey(session.user.id, key)) && !await isPublicMediaKey(key)) {
+      return new NextResponse(null, { status: 404, headers });
+    }
     const { client, bucket } = storage();
-    const url = await getSignedUrl(client, new GetObjectCommand({ Bucket: bucket, Key: key, ResponseContentDisposition: 'inline' }), { expiresIn: 900 });
+    const url = await getSignedUrl(client, new GetObjectCommand({ Bucket: bucket, Key: key, ResponseContentDisposition: 'inline' }), { expiresIn: 60 });
     return new NextResponse(null, { status: 307, headers: { ...headers, Location: url } });
   } catch { return new NextResponse(null, { status: 503, headers }); }
 }
