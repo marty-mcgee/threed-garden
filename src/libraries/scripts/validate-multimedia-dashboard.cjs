@@ -59,6 +59,7 @@ let Component = load('src/components/multimedia/MultimediaContent.tsx', {
   '@/components/multimedia/AlbumGrid': { AlbumGrid: 'AlbumGrid' },
   '@/components/multimedia/MultimediaPlayer': { MultimediaPlayer: 'MultimediaPlayer' },
   '@/components/ui/button': { Button: 'Button' }, './MediaGallery': { MediaGallery: 'MediaGallery' },
+  './MultimediaLoading': { MultimediaPageSkeleton: 'MultimediaPageSkeleton', MultimediaPlayerSkeleton: 'MultimediaPlayerSkeleton' },
   '@/libraries/services/multimedia/dashboard': service,
 }).default;
 const DashboardComponent = Component;
@@ -80,12 +81,15 @@ const details = id => ({ ...album(id), tracks: [{ id: id * 10, title: 'Track', t
 async function respond(request, data, pagination) { request.resolve({ ok: true, json: async () => ({ success: true, data, pagination }) }); await settle(); }
 (async () => {
   render(); assert.equal(requests.length, 1);
+  assert.ok(get('MultimediaPageSkeleton'), 'initial load presents the page skeleton');
   assert.match(requests[0].url, /scope=public.*limit=50&offset=0/);
   await respond(requests[0], Array.from({ length: 50 }, (_, i) => album(i + 1)), { total: 52 });
   assert.equal(get('AlbumGrid').props.albums.length, 50);
   assert.equal(requests.length, 2, 'one selected-detail request, no client Track fan-out');
+  assert.ok(get('MultimediaPlayerSkeleton'), 'Album details load within the retained library');
   assert.match(requests[1].url, /includeTracks=true&includeLinks=true&includeMedia=true/);
   await respond(requests[1], details(1));
+  assert.equal(get('MultimediaPlayerSkeleton'),undefined,'resolved Album removes its loading placeholder');
   assert.equal(get('MultimediaPlayer').props.album.links.length, 1);
   assert.equal(get('MultimediaPlayer').props.album.media.length, 1);
   assert.equal(get('MultimediaPlayer').props.tracks[0].trackNumber, 0);

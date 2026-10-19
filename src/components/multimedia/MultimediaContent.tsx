@@ -6,6 +6,7 @@ import { AlbumGrid } from '@/components/multimedia/AlbumGrid';
 import { MultimediaPlayer } from '@/components/multimedia/MultimediaPlayer';
 import { Button } from '@/components/ui/button';
 import { MediaGallery } from './MediaGallery';
+import { MultimediaPageSkeleton, MultimediaPlayerSkeleton } from './MultimediaLoading';
 import { LatestDashboardRequest, loadDashboardAlbum, loadDashboardAlbums, readDashboardSelection, dashboardSelectionUrl, type DashboardSelection, type DashboardAlbum, type DashboardTrack } from '@/libraries/services/multimedia/dashboard';
 
 export default function MultimediaContent() {
@@ -293,14 +294,7 @@ export default function MultimediaContent() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading music...</p>
-        </div>
-      </div>
-    );
+    return <MultimediaPageSkeleton />;
   }
 
   return (
@@ -308,11 +302,7 @@ export default function MultimediaContent() {
       <div className="w-full px-4 py-4">
         <header className="mb-4 flex min-h-9 flex-wrap items-center gap-2 border-b pb-2"><h1 className="text-sm font-semibold">Multimedia</h1><span className="rounded border px-1.5 py-0.5 text-xs">{albums.length} Albums loaded</span></header>
 
-        {loadingAlbum && (
-          <div className="mb-4 p-2 bg-muted/50 rounded-lg text-center text-sm text-muted-foreground">
-            Loading album...
-          </div>
-        )}
+        {loadingAlbum && <MultimediaPlayerSkeleton />}
 
         {albumError && <div role="alert" className="mb-4">{albumError} {selectedId.current && <Button variant="outline" onClick={() => { const selection = readDashboardSelection(window.location.search); void selectAlbum(selectedId.current!, false, selection.error ? undefined : selection); }}>Retry Album</Button>}</div>}
         {!loadingAlbum && !albumError && selectedAlbum && !currentTrack && (
