@@ -6,7 +6,7 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
- - [v0.26.17 (prepared; production confirmation pending)](v0.26.17.md)
+ - [v0.26.17 (Developer-confirmed production release)](v0.26.17.md)
  - [v0.26.16 (Developer-confirmed production release)](v0.26.16.md)
  - [v0.26.15](v0.26.15.md)
  - [v0.26.14](v0.26.14.md)
