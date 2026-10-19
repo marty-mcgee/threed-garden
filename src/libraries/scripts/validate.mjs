@@ -19,6 +19,7 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  'project-weather': [node('validate-project-weather.cjs')],
   'threed-model-image-backfill': [ts('validate-threed-model-image-backfill.mts')],
   'shadcn-ui-browser': [node('validate-shadcn-primitives-browser.cjs')],
   'repository-maintenance': [node('validate-repository-maintenance.cjs'), node('validate-farmbot-status-summary.cjs')],
@@ -163,6 +164,7 @@ const tasks = {
 };
 
 const ci = [
+  'project-weather',
   'repository-maintenance',
   'threed-designs',
   'project-configurations',

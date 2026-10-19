@@ -1,20 +1,7 @@
-// src/app/api/threed/weather/poll/route.ts
 import { NextResponse } from 'next/server';
-import { WeatherPoller } from '@/libraries/services/threed/WeatherPoller';
 
-export const maxDuration = 300;
-export const dynamic = 'force-dynamic';
-
-export async function GET() {
-  console.log(`Starting weather poll...`);
-  
-  const poller = new WeatherPoller();
-  const result = await poller.pollCurrentWeather();
-  
-  return NextResponse.json({
-    success: result.success,
-    message: result.success ? 'Weather poll completed' : 'Poll failed',
-    stats: result.stats,
-    timestamp: new Date().toISOString()
-  });
-}
+/** Refresh is an authenticated, same-origin POST at the Project boundary. */
+const retired = () => NextResponse.json({ success: false, error: 'Update Weather from the Project Scene.' },
+  { status: 405, headers: { 'Cache-Control': 'private, no-store' } });
+export const GET = retired;
+export const POST = retired;

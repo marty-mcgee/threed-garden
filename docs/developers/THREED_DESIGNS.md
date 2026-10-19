@@ -88,7 +88,7 @@ The `Unsaved Project architecture` message in Dashboard `scene/page.tsx` means `
 
 ## Entry points and legacy candidate
 
-/admin/threed/designs and /dashboard/designs choose an existing Project and open /dashboard/scene?projectId=<id>&view=design. A valid projectId opens that Project directly. The old Admin Home Design bookmark redirects to Designs. No entry creates an independent document or Scene.
+/admin/threed/designs retains its existing Project picker. Designs is internal to Projects; Dashboard navigation has no separate Designs entry. The legacy /dashboard/designs URL redirects to /dashboard, or directly to /dashboard/scene?projectId=<id>&view=design when a valid projectId is supplied. The old Admin Home Design bookmark redirects to Designs. No entry creates an independent document or Scene.
 
 The superseded threedDesigns schema mapping and owner-only GET recovery API remain to avoid destructive cleanup of possible candidate records. **POST/PATCH /api/threed/designs return 410; the active editor never calls them.** Legacy designId is not adopted as an access or overwrite target. Recovery, if needed, requires explicit source export/import into an owned Project. Prior SQL is a superseded review reference, not an activation requirement. Removing a possibly deployed table is outside this change; no database state has been inspected or altered.
 

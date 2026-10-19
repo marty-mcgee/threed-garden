@@ -2,6 +2,7 @@
 
 'use client';
 
+import { ProjectWeatherSettings } from '@/components/admin/projects/ProjectWeatherSettings';
 import { ProjectConfigurations } from '@/components/admin/projects/ProjectConfigurations';
 import { ProjectDetailsFields } from '@/components/admin/projects/ProjectDetailsFields';
 import type { ProjectConfigurationRequest } from '@/libraries/services/project/configuration';
@@ -781,6 +782,7 @@ export default function ProjectDetailPage() {
       <Tabs value={projectTab} onValueChange={setProjectTab} className="space-y-4">
         <TabsList><TabsTrigger value="setup">Setup</TabsTrigger><TabsTrigger value="modules">Modules and assets</TabsTrigger></TabsList>
         <TabsContent value="setup" forceMount className="space-y-4 data-[state=inactive]:hidden">
+      <ProjectWeatherSettings key={`weather-${project.id}`} projectId={project.id} disabled={isSubmitting} />
       {/* Project details are always available on the Setup tab. */}
       <ProjectConfigurations key={project.id} project={project} disabled={isSubmitting}
         detailsDirty={formData.name !== project.name || formData.description !== (project.description || '') || formData.isPublic !== (project.isPublic === true) || formData.isActive !== (project.isActive !== false)}

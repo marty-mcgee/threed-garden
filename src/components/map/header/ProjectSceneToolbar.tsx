@@ -3,6 +3,7 @@
 import type { Ref, RefObject } from 'react';
 import {
   Box,
+  CloudSun,
   PencilRuler,
   Boxes,
   ChevronDown,
@@ -26,6 +27,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import type { MapViewMode } from '@/libraries/types/map';
 
 interface ProjectSceneToolbarProps {
+  weatherOpen?: boolean;
+  onToggleWeather?: () => void;
+  weatherTriggerRef?: RefObject<HTMLButtonElement | null>;
   measurementUnits?: 'imperial' | 'metric';
   onMeasurementUnitsChange?: (units: 'imperial' | 'metric') => void;
   designHistoryHostRef?: Ref<HTMLDivElement>;
@@ -63,6 +67,9 @@ interface ProjectSceneToolbarProps {
 }
 
 export function ProjectSceneToolbar({
+  weatherOpen = false,
+  onToggleWeather,
+  weatherTriggerRef,
   designHistoryHostRef,
   saveDisabled = false,
   workspaceSaveMessage = 'Save ThreeD Project',
@@ -182,6 +189,8 @@ export function ProjectSceneToolbar({
       {selectedProjectId && (
         <div id="project-environment-controls-host" className="relative" hidden={viewMode === '2d'} />
       )}
+
+      {selectedProjectId && onToggleWeather && <Button ref={weatherTriggerRef} type="button" variant={weatherOpen ? 'secondary' : 'outline'} size="sm" className="h-7 gap-1 px-2 text-xs" aria-expanded={weatherOpen} aria-controls="project-weather-overlay" onClick={onToggleWeather} title="Project Weather"><CloudSun className="h-3.5 w-3.5" /><span className="hidden sm:inline">Weather</span></Button>}
 
       <SceneOperationStatus operation={activeOperation} viewMode={viewMode} onCancel={onCancelOperation} />
 

@@ -3,6 +3,7 @@
 import { useProjectPageTitle } from '@/components/layout/AppPageTitle';
 import type { ProjectConfigurationStamp } from '@/libraries/services/project/configuration';
 import { useWorkspaceSaveFeedback } from '@/components/map/hooks/useWorkspaceSaveFeedback';
+import { ProjectWeatherOverlay } from '@/components/map/panels/ProjectWeatherOverlay';
 import { ProjectOverlayLayoutContext } from '@/components/map/panels/ProjectOverlayLayout';
 import type { SceneResourceIssue } from '@/components/threed/shared/SceneResourceStatus';
 import { GroundMapInspectorWorkspace, GroundMapInspector, useGroundMapInspector } from '@/components/map/details/GroundMapInspectorWorkspace';
@@ -217,6 +218,8 @@ function UnifiedMapPageInner() {
   }, []);
   
   // ✅ State
+  const [weatherProjectId, setWeatherProjectId] = useState<string | null>(null);
+  const weatherTriggerRef = useRef<HTMLButtonElement | null>(null);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(projectIdParam);
   const canEditProject = projectAccess?.projectId === String(selectedProjectId) && projectAccess.canEdit;
   const {
@@ -1203,6 +1206,7 @@ function UnifiedMapPageInner() {
     setControlledCharacterId(null);
     setMovingModelInstance(null);
     setCameraMode('stationary');
+    setWeatherProjectId(null);
     setSelectedProjectId(projectId);
     setIsProjectSummaryOpen(false);
     setIsDefaultView(false);
@@ -2781,6 +2785,8 @@ function UnifiedMapPageInner() {
         }}
       />
 
+      {canEditProject && !loading && selectedProjectId && weatherProjectId === selectedProjectId && <ProjectWeatherOverlay key={selectedProjectId} projectId={selectedProjectId} onClose={() => { setWeatherProjectId(null); weatherTriggerRef.current?.focus(); }} />}
+
       {/* Project controls overlay the persistent Scene canvas. */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-50">
       <div inert={viewMode !== 'design' && viewMode !== '2d' && !isThreeDPresentationComplete}
@@ -2839,6 +2845,9 @@ function UnifiedMapPageInner() {
         />
         
         <ProjectSceneToolbar
+          weatherOpen={weatherProjectId === selectedProjectId}
+          weatherTriggerRef={weatherTriggerRef}
+          onToggleWeather={() => setWeatherProjectId(current => current === selectedProjectId ? null : selectedProjectId)}
           measurementUnits={designWorkspace.measurementUnits ?? 'imperial'}
           onMeasurementUnitsChange={canEditProject ? measurementUnits => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), measurementUnits } })) : undefined}
           workspaceSaveMessage={architectureSaveError ? `Save failed: ${architectureSaveError}` : architectureIsDirty(architectureDraft) || workspaceFeedback.dirty ? 'Unsaved architecture or workspace; Save Project to keep changes' : 'Workspace unchanged since loading or last Save'}

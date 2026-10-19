@@ -1,4 +1,6 @@
 // src/libraries/services/threed/WeatherPoller.ts
+import { THREED_WEATHER_LOCATION } from './project-weather-core';
+import { fetchWeatherObservation } from './weather-provider';
 import { db } from '@/libraries/db/client';
 import { threedWeatherLogs } from '@/libraries/schema';
 import { desc, sql } from 'drizzle-orm';
@@ -19,43 +21,18 @@ export class WeatherPoller {
   }
   
   // Fetch current weather for your garden location
-  async fetchCurrentWeather(lat: number = 39.3, lon: number = -123.5): Promise<any> {
-    if (!this.apiKey) {
-      console.error('Cannot fetch weather: No API key');
-      return null;
-    }
-    
+  async fetchCurrentWeather(lat: number = THREED_WEATHER_LOCATION.latitude, lon: number = THREED_WEATHER_LOCATION.longitude): Promise<any> {
     try {
-      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=imperial&appid=${this.apiKey}`;
-      console.log(`[${new Date().toISOString()}] Fetching current weather...`);
-      
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      // Transform OpenWeatherMap data to your schema
-      return {
-        temperature: data.main?.temp || null,
-        humidity: data.main?.humidity || null,
-        windSpeed: data.wind?.speed || null,
-        rainfallInches: data.rain?.['1h'] ? data.rain['1h'] / 25.4 : 0, // mm to inches
-        recordedAt: new Date(),
-        source: 'openweathermap',
-        rawData: data,
-      };
-      
-    } catch (error) {
-      console.error('Weather API error:', error);
+      const { reading, rawData } = await fetchWeatherObservation({ latitude: lat, longitude: lon });
+      return { ...reading, rawData };
+    } catch {
+      console.error('Current Weather could not be fetched.');
       return null;
     }
   }
   
   // Fetch forecast data
-  async fetchForecast(lat: number = 39.3, lon: number = -123.5): Promise<any[]> {
+  async fetchForecast(lat: number = THREED_WEATHER_LOCATION.latitude, lon: number = THREED_WEATHER_LOCATION.longitude): Promise<any[]> {
     if (!this.apiKey) {
       console.error('Cannot fetch forecast: No API key');
       return [];

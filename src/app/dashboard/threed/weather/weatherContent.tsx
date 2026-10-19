@@ -97,21 +97,8 @@ export default function WeatherContent() {
 
   const pollWeather = async () => {
     setIsPolling(true);
-    try {
-      const response = await fetch('/api/threed/weather/poll');
-      const data = await response.json();
-      if (data.success) {
-        await fetchWeather();
-        await fetchStats();
-        showToast(`Weather data updated! ${data.stats?.temperature || ''}°F`, 'success');
-      } else {
-        showToast('Weather poll failed', 'error');
-      }
-    } catch (err) {
-      showToast('Weather poll failed', 'error');
-    } finally {
-      setIsPolling(false);
-    }
+    try { await Promise.all([fetchWeather(), fetchStats()]); }
+    finally { setIsPolling(false); }
   };
 
   useEffect(() => { 
@@ -162,7 +149,7 @@ export default function WeatherContent() {
       
       <div className="flex flex-wrap justify-between items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Weather Logs</h1>
+          <h1 className="text-2xl font-bold text-foreground">Your Weather Logs</h1>
           <p className="text-sm text-muted-foreground">
             {totalRecords} total records • {currentPageData.length} on this page
           </p>
@@ -171,7 +158,7 @@ export default function WeatherContent() {
         <div className="flex flex-wrap gap-2">
           <Button size="sm" onClick={pollWeather} disabled={isPolling}>
             <RefreshCw className={`w-3.5 h-3.5 mr-1.5 ${isPolling ? 'animate-spin' : ''}`} />
-            {isPolling ? 'Fetching...' : 'Update Weather'}
+            {isPolling ? 'Loading...' : 'Reload Weather Logs'}
           </Button>
         </div>
       </div>
