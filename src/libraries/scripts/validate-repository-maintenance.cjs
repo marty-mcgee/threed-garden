@@ -10,12 +10,14 @@ const files = ['README.md', 'AGENTS.md', 'CONTEXT.md', 'docs/README.md',
   'docs/releases/history/2026-10-17/README.md'];
 function headingIds(text) {
   const counts = new Map();
-  return new Set([...text.matchAll(/^#{1,6}\s+(.+)$/gm)].map(([, heading]) => {
+  const headings = [...text.matchAll(/^#{1,6}\s+(.+)$/gm)].map(([, heading]) => {
     const id = heading.toLowerCase().replace(/[^\p{L}\p{N}\s_-]/gu, '').replace(/ /g, '-');
     const count = counts.get(id) || 0;
     counts.set(id, count + 1);
     return count ? `${id}-${count}` : id;
-  }));
+  });
+  const explicit = [...text.matchAll(/<a\b[^>]*\b(?:id|name)\s*=\s*["']([^"']+)["'][^>]*>/gi)].map(([, id]) => id);
+  return new Set([...headings, ...explicit]);
 }
 let links = 0;
 for (const file of files) {
@@ -33,7 +35,7 @@ for (const file of files) {
   }
 }
 const readme = fs.readFileSync('README.md', 'utf8');
-assert.match(readme, /^# 🥕 ThreeD Garden\n/);
+assert.match(readme, /^# 🥕 ThreeD App\n/);
 const productImage = readme.indexOf('![ThreeD Garden');
 const capabilities = readme.indexOf('## ✨ What can you create?');
 assert(productImage >= 0 && capabilities > productImage, 'Approved product image precedes capabilities');

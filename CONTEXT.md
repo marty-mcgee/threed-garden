@@ -29,7 +29,7 @@ shadcn CLI is pinned to 4.22.0; App Zod 3.25.76 is explicit and existing Radix/U
 
 ## Acceptance and known limitations
 
-- Root README expanded from the Developer-supplied Downloads/README.md: colored icons/badges, two existing inspected repository screenshots, ten feature sections and setup/documentation links. Retained the v0.26.17 production reference and Developer server boundary; normalized emoji heading anchors. Updated the existing documentation presentation check for the approved expanded format. All 355 maintained paths/anchors and whitespace checks passed. Documentation-only; no fresh screenshots, App behavior/version change, Git write or deployment.
+- Root README replaced with the Developer-approved updated Downloads/3D Models/chatgpt/README.md, preserving its exact contents: ThreeD App title, audience guidance, first-session workflow, project ideas, ten module sections, one historical screenshot and consolidated current scope. The validator now recognizes the approved title and explicit HTML id/name anchors while retaining generated heading/missing-link checks. All 365 maintained paths/anchors and whitespace checks passed; exact source-copy comparison and positive/negative anchor checks passed. Documentation-only; no App behavior/version change, staging, commit or deployment.
 
 - v0.26.17 Multimedia links: direct Album/Track URLs, unique Track-number lookup, address updates, Back/Forward restoration without autoplay are implemented; Copy Album/Track buttons were subsequently removed at the Developer's request. Existing public reads and request guards remain authoritative. Offline edge cases and native browser history passed with mocked APIs; detailed evidence is in the v0.26.17 record.
 
