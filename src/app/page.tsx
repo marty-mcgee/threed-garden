@@ -166,7 +166,7 @@ export default function HomePage() {
       icon: "🌱",
       title: "ThreeD Garden",
       description: "Interactive 3D garden using real Physics, with FarmBot integration",
-      href: "/dashboard/scene?projectId=8",
+      href: "/dashboard/scene?projectId=17&view=design",
       // href: "https://threed-garden-neon.vercel.app/", 
       color: "border-emerald-500/20 bg-emerald-500/10",
       external: false
