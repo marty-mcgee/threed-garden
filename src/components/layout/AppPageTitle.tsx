@@ -17,7 +17,7 @@ export function useProjectPageTitle(id: string | null, name: string | undefined)
 }
 
 const labels: Record<string, string> = {
-  threed: 'ThreeD Design',
+  threed: 'ThreeD Garden',
   learn: 'Learn ThreeD',
   auth: 'Account',
   logs: 'System Logs',
@@ -46,7 +46,7 @@ export function getAppPageTitle(pathname: string | null): string {
       return labels[segment] ?? segment.replace(/^_/, '').split('-')
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     });
-  return ['ThreeD Design', ...titles].join(' - ');
+  return ['ThreeD Garden', ...titles].join(' - ');
 }
 
 /** One title owner for server rendering and client-side route transitions. */

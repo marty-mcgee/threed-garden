@@ -200,14 +200,14 @@ export default function HomePage() {
 
   const techStack = [
     { name: "TypeScript", url: "https://www.typescriptlang.org" },
-    { name: "Postgres", url: "https://www.postgresql.org/about" },
-    // { name: "Neon", url: "https://neon.tech" },
-    { name: "Drizzle ORM", url: "https://orm.drizzle.team" },
-    { name: "Next.js", url: "https://nextjs.org" },
     { name: "React", url: "https://react.org" },
+    { name: "Next.js", url: "https://nextjs.org" },
     { name: "Three.js", url: "https://threejs.org" },
     { name: "React-Three", url: "https://r3f.docs.pmnd.rs/next" },
-    { name: "ThreeD Design", url: "https://threed.design" },
+    // { name: "ThreeD Design", url: "https://threed.design" },
+    { name: "Postgres", url: "https://www.postgresql.org/about" },
+    { name: "Neon", url: "https://neon.tech" },
+    { name: "Drizzle ORM", url: "https://orm.drizzle.team" },
     { name: "AWS S3", url: "https://aws.amazon.com/s3" },
     { name: "Vercel", url: "https://vercel.com" },
   ];
@@ -232,7 +232,7 @@ export default function HomePage() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                🥕 Interactive 3D Gardens
+                🥕 Interactive 3D Designs
               </a>
             </div>
             <h1 className="mb-4 text-4xl font-bold tracking-tight text-foreground lg:text-6xl">

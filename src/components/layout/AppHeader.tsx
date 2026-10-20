@@ -60,12 +60,12 @@ export function AppHeader({ surface }: { surface: 'dashboard' | 'admin' }) {
         <div className="flex min-w-0 items-center gap-2">
           <NavDropdown />
           {surface === 'dashboard' && (
-            <Link href="/" aria-label="ThreeD Design" className="flex w-fit min-w-0 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <Link href="/" aria-label="ThreeD Garden" className="flex w-fit min-w-0 items-center gap-2 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
               <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-green-600 shadow-sm">
                 <Carrot className="size-4 text-white" />
               </span>
               <span className="hidden min-w-0 sm:block">
-                <span className="block truncate text-sm font-semibold leading-4 text-foreground">ThreeD Design</span>
+                <span className="block truncate text-sm font-semibold leading-4 text-foreground">ThreeD Garden</span>
               </span>
             </Link>
           )}
