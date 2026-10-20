@@ -291,7 +291,7 @@ See the [validation guide](docs/agents/VALIDATION.md) for task-specific and isol
 
 ## 🤝 Contribute and follow development
 
-Developer-confirmed production release: **[v0.26.19 - Learn ThreeD Page Updates + New Home Page Design](docs/releases/v0.26.19.md)**. Prepared checkpoint: **[v0.26.20 - ThreeD Projects: Admin page layout](docs/releases/v0.26.20.md)**. See [release history](docs/releases/README.md) for checkpoint details and [current context](CONTEXT.md) for current scope, acceptance, and known limitations.
+Developer-confirmed production release: **[v0.26.20 - ThreeD Projects: Admin page layout](docs/releases/v0.26.20.md)**. See [release history](docs/releases/README.md) for checkpoint details and [current context](CONTEXT.md) for current scope, acceptance, and known limitations.
 
 Have a reproducible bug or a focused feature idea? [Open an issue](https://github.com/marty-mcgee/threed-garden/issues). Before contributing, review the [contribution workflow](docs/agents/TASK_CHECKLISTS.md), existing ownership boundaries, and applicable checks.
 

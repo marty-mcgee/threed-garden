@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Package/root lockfile: **0.26.20**, release preparation for **[ThreeD Projects: Admin page layout](docs/releases/v0.26.20.md)**. Developer accepted the New/Edit presentation. Fresh isolated TypeScript, all 85 offline CI tasks, guarded production build (150/150 pages), version/documentation/whitespace checks and 1,131-input parity passed; changes remain unstaged. Production remains Developer-confirmed **v0.26.19 - Learn ThreeD Page Updates + New Home Page Design**. Exact deployed commit and independent post-deployment checks are not established.
+Package/root lockfile: **0.26.20**, Developer-confirmed released to production as **[v0.26.20 - ThreeD Projects: Admin page layout](docs/releases/v0.26.20.md)**. Developer accepted the New/Edit presentation. Prior preparation passed fresh isolated TypeScript, all 85 offline CI tasks, guarded production build (150/150 pages), version/documentation/whitespace checks and 1,131-input parity. Exact deployed commit and independent post-deployment checks are not established. This documentation update remains unstaged.
 
 Developer naming: **ThreeD > Project > Model > DetailsCard**. Use exact App names, verify ownership, state uncertainty and honor corrections. Provide concise commit titles only unless asked for a body; keep responses concise with **Next Steps:**. See [durable working preferences](docs/agents/README.md#developer-preferences) and [AGENTS.md](AGENTS.md).
 
