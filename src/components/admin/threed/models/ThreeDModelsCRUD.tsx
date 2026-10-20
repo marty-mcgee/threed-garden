@@ -703,7 +703,6 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
             </div>
           </TabsContent>
           {view === 'edit' && editingModel && <TabsContent value="files" forceMount hidden={tabs.tab !== 'files'} className="min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-lg border p-4 data-[state=inactive]:hidden">
-            <p className="mb-3 text-xs text-muted-foreground">Files and appearance changes save separately. Saved uploads remain saved when you leave Edit Model.</p>
             <ThreeDModelFilesCRUD key={editingModel.id} initialModelId={editingModel.id} embedded active={tabs.tab === 'files'} onBusyChange={reportFilesBusy} />
           </TabsContent>}
         </Tabs>

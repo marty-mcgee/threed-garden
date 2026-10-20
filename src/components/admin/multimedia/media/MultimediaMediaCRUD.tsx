@@ -37,6 +37,8 @@ interface Media {
   fileType: string;
   fileSize: number | null;
   isPrimary: boolean;
+  isPublic: boolean;
+  isActive: boolean;
   metadata: any;
   albumId: number;
   userId: string;
@@ -67,6 +69,8 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
     fileType: 'image/jpeg',
     fileSize: 0,
     isPrimary: false,
+    isPublic: false,
+    isActive: true,
     albumId: '',
   });
 
@@ -121,6 +125,8 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
         fileUrl: formData.fileUrl,
         fileType: formData.fileType,
         isPrimary: formData.isPrimary,
+        isPublic: formData.isPublic,
+        isActive: formData.isActive,
         albumId: parseInt(formData.albumId),
       };
 
@@ -143,6 +149,8 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
           fileType: 'image/jpeg',
           fileSize: 0,
           isPrimary: false,
+    isPublic: false,
+    isActive: true,
           albumId: '',
         });
         await fetchMedia();
@@ -172,6 +180,8 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
         fileUrl: formData.fileUrl,
         fileType: formData.fileType,
         isPrimary: formData.isPrimary,
+        isPublic: formData.isPublic,
+        isActive: formData.isActive,
         albumId: parseInt(formData.albumId),
       };
 
@@ -266,6 +276,8 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
       fileType: media.fileType || 'image/jpeg',
       fileSize: media.fileSize || 0,
       isPrimary: media.isPrimary || false,
+      isPublic: media.isPublic === true,
+      isActive: media.isActive === true,
       albumId: String(media.albumId),
     });
   };
@@ -380,7 +392,8 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
                   disabled={isSubmitting || uploadBusy}
                 />
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-4">{(['isPublic', 'isActive'] as const).map(key => <div key={key} className="flex items-center gap-2"><Switch id={"isPrimary" + '-' + key} checked={formData[key]} onCheckedChange={checked => setFormData(current => ({ ...current, [key]: checked }))} disabled={isSubmitting || uploadBusy} /><Label htmlFor={"isPrimary" + '-' + key}>{key === 'isPublic' ? 'Public' : 'Active'}</Label></div>)}</div>
+            <div className="flex items-center gap-2">
                 <Switch
                   id="isPrimary"
                   checked={formData.isPrimary}
@@ -405,7 +418,7 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
       </MultimediaWorkspaceHeader>
       </fieldset>
 
-      {pageHeader ? <MultimediaRecordsTable label="Media" workspace={workspace} columns={[{ field: 'fileName', label: 'File Name', render: row => <span className="inline-flex items-center gap-2"><Image className="h-4 w-4 shrink-0 text-blue-500" /><Link className="underline" href={`/admin/multimedia/media/${row.id}`}>{String(row.fileName)}</Link></span> }, { field: 'id', label: 'ID' }, { field: 'albumId', label: 'Album' }, { field: 'fileType', label: 'Type' }, { field: 'fileSize', label: 'Size', render: row => formatFileSize(row.fileSize as number | null) }, { field: 'isPrimary', label: 'Primary', render: row => <MultimediaStatus value={row.isPrimary} /> }]} actions={row => renderActions(row as unknown as (typeof mediaList)[number])} /> : mediaList.length === 0 ? (
+      {pageHeader ? <MultimediaRecordsTable label="Media" workspace={workspace} columns={[{ field: 'fileName', label: 'File Name', render: row => <span className="inline-flex items-center gap-2"><Image className="h-4 w-4 shrink-0 text-blue-500" /><Link className="underline" href={`/admin/multimedia/media/${row.id}`}>{String(row.fileName)}</Link></span> }, { field: 'id', label: 'ID' }, { field: 'albumId', label: 'Album' }, { field: 'fileType', label: 'Type' }, { field: 'fileSize', label: 'Size', render: row => formatFileSize(row.fileSize as number | null) }, { field: 'isPublic', label: 'Public', render: row => <MultimediaStatus value={row.isPublic} /> }, { field: 'isActive', label: 'Active', render: row => <MultimediaStatus value={row.isActive} /> }, { field: 'isPrimary', label: 'Primary', render: row => <MultimediaStatus value={row.isPrimary} /> }]} actions={row => renderActions(row as unknown as (typeof mediaList)[number])} /> : mediaList.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <Image className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No media files yet</p>
@@ -436,6 +449,7 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
                 <TableRow key={item.id} className="hover:bg-muted/50">
                   <TableCell className="py-1 text-sm font-medium">
                     {item.fileName}
+                    <span className="ml-2 inline-flex gap-1"><Badge variant="outline" className="text-[10px]">{item.isPublic ? 'Public' : 'Private'}</Badge><Badge variant="outline" className="text-[10px]">{item.isActive ? 'Active' : 'Inactive'}</Badge></span>
                     {item.albumId && (
                       <Badge variant="outline" className="ml-2 text-[10px]">
                         Album Media
@@ -540,6 +554,7 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
                 disabled={isSubmitting || uploadBusy}
               />
             </div>
+            <div className="flex flex-wrap items-center gap-4">{(['isPublic', 'isActive'] as const).map(key => <div key={key} className="flex items-center gap-2"><Switch id={"edit-isPrimary" + '-' + key} checked={formData[key]} onCheckedChange={checked => setFormData(current => ({ ...current, [key]: checked }))} disabled={isSubmitting || uploadBusy} /><Label htmlFor={"edit-isPrimary" + '-' + key}>{key === 'isPublic' ? 'Public' : 'Active'}</Label></div>)}</div>
             <div className="flex items-center gap-2">
               <Switch
                 id="edit-isPrimary"

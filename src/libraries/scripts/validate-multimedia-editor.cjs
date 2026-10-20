@@ -93,3 +93,6 @@ function componentFunction(file, name) {
  assert.ok(source.includes('scope=owner'));assert.ok(source.includes('admin-editor-panel'));assert.ok(source.includes('admin-editor-actions'));assert.ok(source.includes('beforeunload'));assert.ok(source.includes("document.addEventListener('click'"));
  console.log('PASS: actual editor save handlers, allowlisted changed-key drafts, numeric/URL validation, duplicate and uncertain-save guards, owned parent lookup/cancellation, strict route boundaries and Blueprint hooks (mocked network).');
 })().catch(error=>{console.error(error);process.exitCode=1});
+
+const newMediaDraft=editor.multimediaDraft('media');assert.equal(newMediaDraft.isPublic,false);assert.equal(newMediaDraft.isActive,true);
+const hiddenMedia=editor.multimediaDraft('media',{id:1,isPublic:false,isActive:false});assert.equal(hiddenMedia.isPublic,false);assert.equal(hiddenMedia.isActive,false);

@@ -93,7 +93,7 @@ async function verifyEditor() {
     './ThreeDModelAssetPreview': { ThreeDModelAssetPreview: 'canvas' },
     './ThreeDModelImportPreview': { ThreeDModelImportPreview: 'candidate-canvas' },
     './model-preview-requirements': { modelForPreview: value => value },
-    './ModelResourceInventory': { ModelResourceInventory: 'inventory' },
+    './ModelFieldHelp': { ModelFieldHelp: 'help' }, './ModelResourceInventory': { ModelResourceInventory: 'inventory' },
     './ModelFileDependencyInspector': { ModelFileDependencyInspector: 'inspector' },
   }, { fetch: async (url, options) => {
     requests.push({ url, options });

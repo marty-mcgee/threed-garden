@@ -226,7 +226,7 @@ async function filesChecks() {
     'react-dom': { createPortal() { throw Error('Embedded workspace must not mount a Model picker'); } },
     'lucide-react': proxy, '@/components/ui/button': proxy, '@/components/ui/badge': proxy,
     '@/components/ui/input': proxy, '@/components/ui/label': proxy, '@/components/ui/select': proxy, '@/components/ui/dialog': proxy,
-    '@/components/ui/toast': { useToast: () => toast }, './ModelResourceInventory': proxy,
+    '@/components/ui/toast': { useToast: () => toast }, './ModelFieldHelp': { ModelFieldHelp: 'help' }, './ModelResourceInventory': proxy,
     './ThreeDModelAssetPreview': proxy, './ModelPreviewImageExport': proxy,
     './model-preview-requirements': { modelForPreview: value => value },
     '@/libraries/services/threed/models/model-fallback-core': fallback,

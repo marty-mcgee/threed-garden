@@ -54,7 +54,7 @@ interface ThreeDModelAssetPreviewProps {
   splitMaterialInspector?: boolean;
   requiredFiles?: ReactNode;
   primaryFileControls?: ReactNode;
-  savedFilesStatus?: { ready: boolean; message: string; readyLabel?: string };
+  savedFilesStatus?: { ready: boolean; message: string; readyLabel?: string; suppressReminder?: boolean };
   textureLibrary?: ThreeDModelTextureLibraryItem[];
   onSaveMaterialAssignment?: (assignment: { targetKeys: string[]; channel: ThreeDModelMaterialChannel; textureFileId?: number; textureId?: number }) => Promise<void>;
 }
@@ -639,7 +639,7 @@ export function ThreeDModelAssetPreview({
       {requiredFiles}
       {((showMaterialInspector && model) || splitMaterialInspector) && (
         <section className="rounded-lg border bg-muted/20 p-3">
-          <details open={materialInspectorReadOnly || undefined}>
+          <details open={splitMaterialInspector || materialInspectorReadOnly || undefined}>
             <summary className="cursor-pointer text-xs font-medium">
               {materialInspectorReadOnly ? 'Materials' : '3. Individual materials (advanced)'}
             </summary>
@@ -802,7 +802,7 @@ export function ThreeDModelAssetPreview({
           </details>
         </section>
       )}
-      {savedFilesStatus && (
+      {savedFilesStatus && (!savedFilesStatus.suppressReminder || savingMaterialAssignment || materialAssignmentError || hasUnsavedPreview || loading) && (
         <div role="status" className={`rounded-lg border p-3 text-xs ${savedFilesStatus.ready && !loading && !savingMaterialAssignment && !materialAssignmentError && !hasUnsavedPreview ? 'border-emerald-500/40 bg-emerald-500/10' : 'border-amber-500/40 bg-amber-500/10'}`}>
           <p className="font-semibold">{savingMaterialAssignment ? 'Saving appearance…' : materialAssignmentError ? 'Needs attention above' : hasUnsavedPreview ? 'Preview changes — review before saving' : loading ? 'Loading preview…' : savedFilesStatus.ready ? savedFilesStatus.readyLabel ?? 'Saved files ready' : 'Needs attention above'}</p>
           <p className="mt-1 text-muted-foreground">{materialAssignmentError || (hasUnsavedPreview ? 'The canvas includes a temporary Texture preview. Save the intended assignment above to keep it.' : savedFilesStatus.message)}</p>

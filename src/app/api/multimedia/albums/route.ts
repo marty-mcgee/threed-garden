@@ -5,7 +5,7 @@ import { db } from '@/libraries/db/client';
 import { multimediaAlbums, multimediaTracks, multimediaLinks, multimediaMedia } from '@/libraries/schema/multimedia';
 import { eq, and, asc, sql, or, ne, isNull } from 'drizzle-orm';
 import { publicRecord, ownsFileReference, positiveId } from '@/libraries/services/multimedia/access';
-import { publicAlbumScope, publicTrackScope } from '@/libraries/services/multimedia/authority';
+import { publicAlbumScope, publicTrackScope, publicMediaScope } from '@/libraries/services/multimedia/authority';
 import { ensureTableSequence } from '@/libraries/db/sequence';
 
 // ============================================
@@ -144,7 +144,7 @@ export async function GET(request: NextRequest) {
               eq(multimediaMedia.albumId, album.id),
               scope === 'owner'
                 ? eq(multimediaMedia.userId, userId!)
-                : eq(multimediaMedia.userId, album.userId!)
+                : and(eq(multimediaMedia.userId, album.userId!), publicMediaScope())
             )
           );
 
@@ -247,7 +247,7 @@ export async function GET(request: NextRequest) {
                   eq(multimediaMedia.albumId, album.id),
                   scope === 'owner'
                     ? eq(multimediaMedia.userId, userId!)
-                    : eq(multimediaMedia.userId, album.userId!)
+                    : and(eq(multimediaMedia.userId, album.userId!), publicMediaScope())
                 )
               );
 

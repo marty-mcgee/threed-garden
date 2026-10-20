@@ -13,6 +13,7 @@ import { modelForPreview } from './model-preview-requirements';
 
 import { MODEL_FALLBACK_SHAPES, readModelFallbackShape, setModelFallbackShape, type ModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
 import Link from 'next/link';
+import { ModelFieldHelp } from './ModelFieldHelp';
 import { ModelResourceInventory } from './ModelResourceInventory';
 import { createPortal } from 'react-dom';
 import {
@@ -919,7 +920,6 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
         </div>
       )}
 
-      {modelDetail && previewModel && <ModelResourceInventory model={{ ...previewModel, mainModelFileId }} audit={dependencyAudit} loading={loadingDependencies} error={dependencyError} textureLibrary={textureLibrary} />}
 
       <div className="grid items-start gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(400px,0.85fr)] ">
           <ThreeDModelAssetPreview
@@ -931,6 +931,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
             model={previewModel}
             attachedDependencyCount={dependencyAudit?.requirements.filter((item) => item.satisfied).length ?? 0}
             dependencyCount={dependencyAudit?.requirements.length ?? 0}
+            headerHelp={<ModelFieldHelp label="Saved Model Preview">Files and appearance changes save separately; saved uploads remain saved when you leave Edit Model. Uses saved files and material assignments. A visible shape does not confirm that every texture or dependency loaded successfully. Public Project access is checked separately.</ModelFieldHelp>}
             title={troubleshooting ? "Owner Troubleshooting Preview" : "Saved Model Preview"}
             description={troubleshooting ? "Owner library matches are temporary. Link required files below to save them." : "Uses saved files and material assignments. Public Project access is checked separately."}
             headerMeta={activeModel ? (
@@ -980,6 +981,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
             splitMaterialInspector
             primaryFileControls={(
               <div className="my-3 space-y-2 border-b pb-3">
+                <details className="rounded border p-2" open><summary className="cursor-pointer text-xs font-medium">Default Shape / Mesh (fallback)</summary>
                 <label htmlFor="default-model-shape" className="block text-xs">Default Shape / Mesh</label>
                 <div className="flex flex-wrap gap-2">
                   <select id="default-model-shape" className="h-8 min-w-0 flex-1 rounded border bg-background px-2 text-xs"
@@ -1007,6 +1009,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
                       } finally { setSavingShape(false); }
                     }}>{savingShape ? 'Saving…' : 'Save shape'}</Button>
                 </div>
+                </details>
                 <label htmlFor="primary-model-file" className="block text-xs">Primary Model file</label>
                 <select id="primary-model-file" className="h-8 w-full min-w-0 rounded border bg-background px-2 text-xs"
                   value={primaryChoice?.modelId === modelId ? primaryChoice.fileId : String(mainModelFileId ?? '')}
@@ -1041,7 +1044,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
       <section className="rounded-lg border bg-muted/20 p-3" aria-labelledby="model-dependencies-title">
         <div className="flex flex-wrap items-center gap-2">
           <Link2 className="h-4 w-4 text-cyan-400" />
-          <h2 id="model-dependencies-title" className="text-xs font-semibold">2. Required files</h2>
+          <h2 id="model-dependencies-title" className="flex items-center gap-1 text-xs font-semibold">2. Required files<ModelFieldHelp label="Required files">Saved references are counted after inspection refreshes. Missing references are not attachments. Upload the exact requested filename, or link an eligible shared Texture. Saved does not confirm successful loading; review the preview after repair.</ModelFieldHelp></h2>
           {loadingDependencies && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
           {dependencyAudit?.status === 'analyzed' && dependencyAudit.requirements.length > 0 && (
             <Badge variant={trulyMissingCount ? 'destructive' : 'secondary'} className="text-[10px]">
@@ -1049,6 +1052,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
             </Badge>
           )}
         </div>
+        {trulyMissingCount > 0 && <p role="status" className="mt-2 text-xs text-amber-700 dark:text-amber-400">Preview may be incomplete: {trulyMissingCount} required file(s) still need to be saved.</p>}
         {sharedRequirementTextures.size > 0 && (
           <p className="mt-2 text-[11px] text-cyan-400">
             {sharedRequirementTextures.size} Texture(s) found, but not assigned. Link below to save.
@@ -1111,7 +1115,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
                     </Button>
                   )}
                   {!requirement.satisfied && !sharedTexture && (
-                    <Button type="button" variant="outline" size="sm" className="h-7 px-2 text-[10px]" onClick={() => requestRequirementUpload(requirement)}>
+                    <Button type="button" variant="outline" size="sm" className="min-h-10 border-amber-500/30 bg-amber-500/10 px-3 text-xs hover:bg-amber-500/20 dark:border-amber-500/30 dark:bg-amber-500/10 dark:hover:bg-amber-500/20" disabled={uploading || linkingTexture !== null} onClick={() => requestRequirementUpload(requirement)}>
                       <Upload className="mr-1 h-3 w-3" />
                       Upload needed file
                     </Button>
@@ -1121,11 +1125,86 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
             })}
           </div>
         ) : null}
+      </section>
+            )}
+            savedFilesStatus={{
+              suppressReminder: missingRequirements.length > 0 && !loadingFiles && !loadingModels && !loadingDependencies && !uploading && linkingTexture === null && primaryFileId === null && deletingId === null && !error && !dependencyError && !savingShape && !(shapeChoice?.modelId === modelId && shapeChoice.shape !== readModelFallbackShape(modelDetail?.metadata)) && !uploadQueue.some(item => item.status === 'error'),
+              ready: Boolean(!savingShape && !(shapeChoice?.modelId === modelId && shapeChoice.shape !== readModelFallbackShape(modelDetail?.metadata)) && modelId && !loadingModels && !loadingFiles && !loadingDependencies && !uploading && linkingTexture === null && primaryFileId === null && deletingId === null && !error && !dependencyError && (dependencyAudit?.status === 'analyzed' || dependencyAudit?.status === 'not_required') && missingRequirements.length === 0 && !uploadQueue.some(item => item.status === 'error')),
+              readyLabel: dependencyAudit?.status === 'not_required' ? 'Procedural Model ready' : undefined,
+              message: savingShape ? 'Saving default shape…' : shapeChoice?.modelId === modelId && shapeChoice.shape !== readModelFallbackShape(modelDetail?.metadata) ? 'Save the Default Shape / Mesh in Step 1.' : !modelId ? 'Select a Model above.'
+                : uploading || linkingTexture !== null || primaryFileId !== null || deletingId !== null ? 'Saving file changes…'
+                : loadingModels || loadingFiles || loadingDependencies ? 'Checking saved files…'
+                : error || dependencyError ? 'Unable to verify saved files. Review Required files and Files and attachments.'
+                : uploadQueue.some(item => item.status === 'error') ? 'An upload failed. Review the upload results in Files and attachments.'
+                : dependencyAudit?.status === 'not_required' ? 'The saved shape is ready; no Model file or supporting files are required.'
+                : mainModelFileId === null || dependencyAudit?.status === 'missing_primary' ? 'Choose a primary Model file in Step 1.'
+                : dependencyAudit?.status !== 'analyzed' ? 'Saved files could not be verified. Review Required files.'
+                : missingRequirements.length ? `${missingRequirements.length} required file(s) still need to be saved in step 2.`
+                : 'Required files are saved. Review the preview to confirm the appearance.',
+            }}
+            textureLibrary={textureLibrary}
+            onSaveMaterialAssignment={saveMaterialAssignment}
+          />
+
+
+      </div>
+
+
+      <details open id="model-file-management" className="rounded-lg border bg-muted/10" aria-labelledby="model-file-management-title">
+        <summary className="cursor-pointer px-3 py-2 text-xs font-medium" id="model-file-management-title">
+          Model files and attachments <span className="text-muted-foreground">({stats.count}){loadingFiles ? ' · Loading…' : error ? ' · Unable to load files — expand to retry' : ''}</span>
+        </summary>
+        <div className="space-y-3 border-t p-3">
+      {/* Toolbar: search / sort / view */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative flex-1 min-w-[180px]">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+          <Input
+            placeholder="Filter files by name, path, or type..."
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            className="pl-7 h-8 text-xs"
+          />
+        </div>
+        <Select value={sort} onValueChange={(v) => setSort(v as SortMode)}>
+          <SelectTrigger className="w-[170px] h-8 text-xs">
+            <SelectValue placeholder="Sort" />
+          </SelectTrigger>
+          <SelectContent>
+            {SORT_OPTIONS.map((s) => (
+              <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <div className="flex items-center gap-1 rounded border p-0.5">
+          <Button
+            variant={view === 'list' ? 'secondary' : 'ghost'}
+            size="icon"
+            className="h-7 w-7"
+            title="List view"
+            onClick={() => setView('list')}
+          >
+            <LayoutList className="w-4 h-4" />
+          </Button>
+          <Button
+            variant={view === 'grid' ? 'secondary' : 'ghost'}
+            size="icon"
+            className="h-7 w-7"
+            title="Grid view"
+            onClick={() => setView('grid')}
+          >
+            <LayoutGrid className="w-4 h-4" />
+          </Button>
+        </div>
+        <Button asChild variant="outline" size="sm" className="h-8 text-xs"><Link href={`/admin/threed/models/${modelId}/files/new`}>Add File record</Link></Button>
+
+      </div>
+
       {/* Logical dependency directory; the server owns the physical storage key. */}
-      <details id="model-texture-importer" className="mt-3 scroll-mt-4 border-t border-border/70 pt-3">
+      <details open id="model-texture-importer" className="scroll-mt-4 rounded-lg border bg-muted/10 p-3">
         <summary className="cursor-pointer text-xs font-semibold">Upload supporting files</summary>
 
-        <details className="mt-2 rounded border bg-background/25 p-2 text-[11px]">
+        <details open className="mt-2 rounded border bg-background/25 p-2 text-[11px]">
           <summary className="cursor-pointer select-none text-muted-foreground">
             Attachment directory: <span className="font-mono text-cyan-500/90">{normalizedAttachmentDirectory || '<directory>'}/</span>
           </summary>
@@ -1201,80 +1280,6 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
           ))}
         </div>
       )}
-      </section>
-            )}
-            savedFilesStatus={{
-              ready: Boolean(!savingShape && !(shapeChoice?.modelId === modelId && shapeChoice.shape !== readModelFallbackShape(modelDetail?.metadata)) && modelId && !loadingModels && !loadingFiles && !loadingDependencies && !uploading && linkingTexture === null && primaryFileId === null && deletingId === null && !error && !dependencyError && (dependencyAudit?.status === 'analyzed' || dependencyAudit?.status === 'not_required') && missingRequirements.length === 0 && !uploadQueue.some(item => item.status === 'error')),
-              readyLabel: dependencyAudit?.status === 'not_required' ? 'Procedural Model ready' : undefined,
-              message: savingShape ? 'Saving default shape…' : shapeChoice?.modelId === modelId && shapeChoice.shape !== readModelFallbackShape(modelDetail?.metadata) ? 'Save the Default Shape / Mesh in Step 1.' : !modelId ? 'Select a Model above.'
-                : uploading || linkingTexture !== null || primaryFileId !== null || deletingId !== null ? 'Saving file changes…'
-                : loadingModels || loadingFiles || loadingDependencies ? 'Checking saved files…'
-                : error || dependencyError ? 'Unable to verify saved files. Review the sections above.'
-                : uploadQueue.some(item => item.status === 'error') ? 'An upload failed. Review the upload results above.'
-                : dependencyAudit?.status === 'not_required' ? 'The saved shape is ready; no Model file or supporting files are required.'
-                : mainModelFileId === null || dependencyAudit?.status === 'missing_primary' ? 'Choose a primary Model file in Step 1.'
-                : dependencyAudit?.status !== 'analyzed' ? 'Saved files could not be verified. Review Required files.'
-                : missingRequirements.length ? `${missingRequirements.length} required file(s) still need to be saved in step 2.`
-                : 'Required files are saved. Review the preview to confirm the appearance.',
-            }}
-            textureLibrary={textureLibrary}
-            onSaveMaterialAssignment={saveMaterialAssignment}
-          />
-
-
-      </div>
-
-      <details className="rounded-lg border bg-muted/10" aria-labelledby="model-file-management-title">
-        <summary className="cursor-pointer px-3 py-2 text-xs font-medium" id="model-file-management-title">
-          Model files and attachments <span className="text-muted-foreground">({stats.count}){loadingFiles ? ' · Loading…' : error ? ' · Unable to load files — expand to retry' : ''}</span>
-        </summary>
-        <div className="space-y-3 border-t p-3">
-      {/* Toolbar: search / sort / view */}
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="relative flex-1 min-w-[180px]">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-          <Input
-            placeholder="Filter files by name, path, or type..."
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-            className="pl-7 h-8 text-xs"
-          />
-        </div>
-        <Select value={sort} onValueChange={(v) => setSort(v as SortMode)}>
-          <SelectTrigger className="w-[170px] h-8 text-xs">
-            <SelectValue placeholder="Sort" />
-          </SelectTrigger>
-          <SelectContent>
-            {SORT_OPTIONS.map((s) => (
-              <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <div className="flex items-center gap-1 rounded border p-0.5">
-          <Button
-            variant={view === 'list' ? 'secondary' : 'ghost'}
-            size="icon"
-            className="h-7 w-7"
-            title="List view"
-            onClick={() => setView('list')}
-          >
-            <LayoutList className="w-4 h-4" />
-          </Button>
-          <Button
-            variant={view === 'grid' ? 'secondary' : 'ghost'}
-            size="icon"
-            className="h-7 w-7"
-            title="Grid view"
-            onClick={() => setView('grid')}
-          >
-            <LayoutGrid className="w-4 h-4" />
-          </Button>
-        </div>
-        <Button type="button" size="sm" className="h-8 text-xs" onClick={requestUpload} disabled={!modelId || uploading || !!directoryProblem}>
-          {uploading ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Upload className="mr-1 h-3.5 w-3.5" />}
-          Upload files
-        </Button>
-      </div>
 
       {/* Files content */}
       {!modelId ? (
@@ -1327,6 +1332,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
           })}
         </div>
       )}
+      {modelDetail && previewModel && <details open className="rounded-lg border bg-muted/10"><summary className="cursor-pointer px-3 py-2 text-xs font-medium">Linked Texture and embedded resources</summary><div className="p-3 pt-0"><ModelResourceInventory model={{ ...previewModel, mainModelFileId }} audit={dependencyAudit} loading={loadingDependencies} error={dependencyError} textureLibrary={textureLibrary} supplementalOnly /></div></details>}
         </div>
       </details>
 

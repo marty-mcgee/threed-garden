@@ -5,7 +5,7 @@ const tables = {
  multimediaAlbums: table('albums', ['id','userId','title','artist','coverArt','releaseYear','description','sortOrder','status','isPublic','createdAt']),
  multimediaTracks: table('tracks', ['id','userId','albumId','title','duration','trackNumber','fileUrl','fileType','status','playCount','createdAt']),
  multimediaLinks: table('links', ['id','userId','albumId','trackId','title','url','status','displayOrder','createdAt']),
- multimediaMedia: table('media', ['id','userId','albumId','fileUrl','isPrimary']),
+ multimediaMedia: table('media', ['id','userId','albumId','fileUrl','isPrimary','isPublic','isActive']),
  multimediaPlaybackHistory: table('history', ['id','userId','albumId','trackId']), multimediaSpeechVersions: table('versions', ['id']),
 };
 let userId = 'alice', queue = [], queries = [], writes = [], signed = [], txCount = 0, failUpdate = false;
@@ -133,7 +133,7 @@ const key='threed/users/alice/multimedia/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa/so
   assert.equal(returned.media.length,3);assert.equal(returned.media[0].isPrimary,false);
   assert.equal(returned.media[0].userId,undefined);assert.equal(returned.media[0].metadata,undefined);
   const mediaScope=queries.find(q=>q.includes('"media"."albumId"'));
-  assert.ok(mediaScope.includes('"media"."userId"'));assert.ok(!mediaScope.includes('isPrimary'));
+  assert.ok(mediaScope.includes('"media"."userId"'));assert.ok(!mediaScope.includes('isPrimary'));assert.ok(mediaScope.includes('isPublic') && mediaScope.includes('isActive'));
   assert.ok(queries.some(q=>q.includes('"albums"."isPublic"')&&q.includes('"albums"."status"')));
  }
  userId=undefined;queries=[];queue=[[],[],[{userId:'alice'}]];signed=[];
@@ -142,7 +142,7 @@ const key='threed/users/alice/multimedia/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa/so
  const fileScope=queries.at(-1);
  assert.ok(fileScope.includes('"media"."fileUrl"')&&fileScope.includes('"media"."userId" = "albums"."userId"'));
  assert.ok(fileScope.includes('"albums"."isPublic"')&&fileScope.includes('"albums"."status"'));
- assert.ok(!fileScope.includes('isPrimary'));
+ assert.ok(!fileScope.includes('isPrimary'));assert.ok(fileScope.includes('isPublic') && fileScope.includes('isActive'));
  queue=[[],[],[{userId:'bob'}]];assert.equal(await fileAccess.isPublicMediaKey(key),false);
  userId=undefined;queue=[[{userId:'alice'}]];signed=[];result=await files.GET(request('key='+encodeURIComponent(key)));assert.equal(result.status,307);assert.equal(signed[0].Key,key);
  for(const viewer of [undefined,'bob']){userId=viewer;queue=[[],[],[]];signed=[];result=await files.GET(request('key='+encodeURIComponent(key)));assert.equal(result.status,404);assert.equal(signed.length,0);}

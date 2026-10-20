@@ -159,6 +159,7 @@ export function MediaManager({ albumId, albumTitle, onMediaChange }: MediaManage
                     </div>
                   )}
                   
+                  <div className="absolute bottom-2 left-2 flex gap-1"><Badge variant="secondary" className="text-[10px]">{item.isPublic ? 'Public' : 'Private'}</Badge><Badge variant="secondary" className="text-[10px]">{item.isActive ? 'Active' : 'Inactive'}</Badge></div>
                   {item.isPrimary && (
                     <Badge className="absolute top-2 left-2 text-[10px]">
                       Primary

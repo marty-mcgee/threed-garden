@@ -108,6 +108,8 @@ export const multimediaMedia = pgTable('multimedia_media', {
   fileType: text('file_type').notNull(),
   fileSize: integer('file_size'),
   isPrimary: boolean('is_primary').default(true),
+  isPublic: boolean('is_public').notNull().default(true),
+  isActive: boolean('is_active').notNull().default(true),
   metadata: jsonb('metadata'),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow().$onUpdateFn(() => new Date()).notNull(),

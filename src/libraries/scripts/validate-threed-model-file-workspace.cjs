@@ -61,7 +61,7 @@ function text(value) {
   return value && typeof value === 'object' ? text(value.props?.children) : String(value ?? '');
 }
 const inventory = load('src/components/admin/threed/models/ModelResourceInventory.tsx', { 'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'link' },
-  'lucide-react': { Plus: 'icon' }, '@/components/ui/button': { Button: 'button' }, '@/components/ui/badge': { Badge: 'badge' } });
+  './ModelFieldHelp': { ModelFieldHelp: 'help' }, 'lucide-react': { Plus: 'icon' }, '@/components/ui/button': { Button: 'button' }, '@/components/ui/badge': { Badge: 'badge' } });
 const companion = load('src/libraries/services/threed/models/model-companion-core.ts', { './model-obj-core.ts': {} });
 const encode = object => new TextEncoder().encode(JSON.stringify(object));
 let state = [], cursor = 0, refs = [], refCursor = 0, requests = [], navigation = [], failUpload = false, failPatch = false;
@@ -224,6 +224,16 @@ async function verifyEditor() {
   const selectedInventory = inventory.ModelResourceInventory({ ...props, selectedFileId: 2 });
   assert.equal(nodes(selectedInventory).find(node => node.type === 'link' && node.props['aria-current'] === 'page').props.href, '/admin/threed/models/7/files/2');
   assert(text(selectedInventory).includes('Primary geometry dependencies'));
+  const dependencySummary = inventory.ModelResourceInventory({ ...props, summarizeDependencies: true });
+  assert(text(dependencySummary).includes('unresolved reference(s)'));
+  assert(nodes(dependencySummary).some(node => node.type === 'a' && node.props.href === '#model-dependencies-title'));
+  const supplemental = inventory.ModelResourceInventory({ ...props, supplementalOnly: true });
+  assert(text(supplemental).includes('Linked Texture records'));
+  assert(text(supplemental).includes('2 embedded image'));
+  assert(!text(supplemental).includes('Supporting attachments'));
+  assert(!text(supplemental).includes('Primary geometry'));
+  assert(!nodes(supplemental).some(node => node.type === 'link'));
+
   const geometryInventory = inventory.ModelResourceInventory({ ...props, model: { ...model, files: [...model.files, { id: 81, fileName: 'alternate.fbx', fileType: 'model' }] }, selectedFileId: 81 });
   assert(/Other geometry files \(\s*1\s*\)/.test(text(geometryInventory)));
   assert(/Supporting attachments \(\s*1\s*\)/.test(text(geometryInventory)), 'Alternate geometry is not presented as an image/buffer supporting attachment');

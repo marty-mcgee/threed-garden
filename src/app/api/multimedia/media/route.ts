@@ -18,12 +18,13 @@ async function lockMediaAlbums(tx: Transaction, userId: string, ids: number[]) {
 }
 
 type MediaChanges = Partial<Pick<typeof multimediaMedia.$inferInsert,
-  'fileName' | 'fileUrl' | 'fileType' | 'fileSize' | 'isPrimary' | 'albumId'>>;
+  'fileName' | 'fileUrl' | 'fileType' | 'fileSize' | 'isPrimary' | 'isPublic' | 'isActive' | 'albumId'>>;
 
 async function updateOwnedMedia(userId: string, id: number, changes: MediaChanges) {
   if (changes.isPrimary !== undefined && typeof changes.isPrimary !== 'boolean') {
     return NextResponse.json({ success: false, error: 'Primary Media must be true or false' }, { status: 400 });
   }
+  for (const key of ['isPublic', 'isActive'] as const) if (changes[key] !== undefined && typeof changes[key] !== 'boolean') return NextResponse.json({ success: false, error: key + ' must be true or false' }, { status: 400 });
   const targetId = changes.albumId === undefined ? undefined : positiveId(changes.albumId);
   if (targetId === null) return NextResponse.json({ success: false, error: 'Invalid album ID' }, { status: 400 });
   const [snapshot] = await db.select().from(multimediaMedia)
@@ -52,6 +53,7 @@ async function updateOwnedMedia(userId: string, id: number, changes: MediaChange
       fileUrl: changes.fileUrl || existing.fileUrl,
       fileType: changes.fileType || existing.fileType,
       fileSize: changes.fileSize === undefined ? existing.fileSize : changes.fileSize,
+      isPublic: changes.isPublic ?? existing.isPublic, isActive: changes.isActive ?? existing.isActive,
       isPrimary, albumId, updatedAt: new Date(),
     }).where(and(eq(multimediaMedia.id, id), eq(multimediaMedia.userId, userId))).returning();
     if (!updated) throw new Error('Media update did not return a record');
@@ -177,7 +179,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     if (body?.fileUrl !== undefined && !ownsFileReference(session.user.id, body.fileUrl)) return NextResponse.json({ success: false, error: 'File reference is not owned by this User' }, { status: 400 });
 
-    const { fileName, fileUrl, fileType, fileSize, isPrimary, albumId } = body;
+    const { fileName, fileUrl, fileType, fileSize, isPrimary, isPublic, isActive, albumId } = body;
 
     // ✅ Validate required fields
     if (!fileName) {
@@ -216,6 +218,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    for (const [key, value] of Object.entries({ isPublic, isActive })) if (value !== undefined && typeof value !== 'boolean') return NextResponse.json({ success: false, error: key + ' must be true or false' }, { status: 400 });
     if (isPrimary !== undefined && typeof isPrimary !== 'boolean') {
       return NextResponse.json({ success: false, error: 'Primary Media must be true or false' }, { status: 400 });
     }
@@ -248,6 +251,8 @@ export async function POST(request: NextRequest) {
           fileType,
           fileSize: fileSize || null,
           isPrimary: isPrimary ?? false,
+          isPublic: isPublic ?? false,
+          isActive: isActive ?? true,
           albumId: parsedAlbumId,
           metadata: {},
         })
@@ -304,8 +309,8 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json();
     if (body?.fileUrl !== undefined && !ownsFileReference(session.user.id, body.fileUrl)) return NextResponse.json({ success: false, error: 'File reference is not owned by this User' }, { status: 400 });
-    const { fileName, fileUrl, fileType, fileSize, isPrimary, albumId } = body;
-    return await updateOwnedMedia(userId, parsedId, { fileName, fileUrl, fileType, fileSize, isPrimary, albumId });
+    const { fileName, fileUrl, fileType, fileSize, isPrimary, isPublic, isActive, albumId } = body;
+    return await updateOwnedMedia(userId, parsedId, { fileName, fileUrl, fileType, fileSize, isPrimary, isPublic, isActive, albumId });
   } catch (error) {
     console.error('[Media] PUT error:', error);
     return NextResponse.json(

@@ -133,6 +133,8 @@ export interface MusicMedia {
   fileType: string;
   fileSize: number | null;
   isPrimary: boolean;
+  isPublic: boolean;
+  isActive: boolean;
   albumId: number | null;
   userId: string;
   metadata: MusicMediaMetadata | null;

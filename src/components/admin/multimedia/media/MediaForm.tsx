@@ -63,6 +63,8 @@ export function MediaForm({
     fileType: 'image/jpeg',
     fileSize: 0,
     isPrimary: false,
+    isPublic: false,
+    isActive: true,
   });
 
   useEffect(() => {
@@ -73,6 +75,8 @@ export function MediaForm({
         fileType: existingMedia.fileType || 'image/jpeg',
         fileSize: existingMedia.fileSize || 0,
         isPrimary: existingMedia.isPrimary || false,
+        isPublic: existingMedia.isPublic === true,
+        isActive: existingMedia.isActive === true,
       });
       setPreviewUrl(existingMedia.fileUrl);
     }
@@ -85,6 +89,8 @@ export function MediaForm({
       fileType: 'image/jpeg',
       fileSize: 0,
       isPrimary: false,
+    isPublic: false,
+    isActive: true,
     });
     setPreviewUrl(null);
   };
@@ -234,6 +240,7 @@ export function MediaForm({
               />
             </div>
 
+            <div className="flex flex-wrap items-center gap-4">{(['isPublic', 'isActive'] as const).map(key => <div key={key} className="flex items-center gap-2"><Switch id={"isPrimary" + '-' + key} checked={formData[key]} onCheckedChange={checked => setFormData(current => ({ ...current, [key]: checked }))} disabled={isSubmitting || uploadBusy} /><Label htmlFor={"isPrimary" + '-' + key}>{key === 'isPublic' ? 'Public' : 'Active'}</Label></div>)}</div>
             <div className="flex items-center gap-2">
               <Switch
                 id="isPrimary"

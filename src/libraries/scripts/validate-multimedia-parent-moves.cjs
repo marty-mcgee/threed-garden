@@ -165,10 +165,18 @@ function assertTrackLock(mode) { assert.ok(events.some(e => e.table === 'tracks'
   assert.equal((await mediaRoute.PUT(request(10, { isPrimary: true }))).status, 409); assertNoWrites();
   assert.equal(state.media[0].albumId, 2);
   reset(); assert.equal((await mediaRoute.PUT(request(10, { isPrimary: 'false' }))).status, 400); assertNoWrites();
+  reset(); state.media[0].isPublic=true; state.media[0].isActive=true;
+  assert.equal((await mediaRoute.PUT(request(10, {isPublic:false,isActive:false}))).status,200);
+  assert.equal(state.media[0].isPublic,false); assert.equal(state.media[0].isActive,false);
+  assert.equal((await mediaRoute.PUT(request(10, {fileName:'Hidden media renamed'}))).status,200);
+  assert.equal(state.media[0].isPublic,false); assert.equal(state.media[0].isActive,false);
+  for(const key of ['isPublic','isActive']) { reset(); assert.equal((await mediaRoute.PUT(request(10, {[key]:'false'}))).status,400);assertNoWrites(); }
   const newMedia = { fileName: 'New primary', fileUrl: 'https://example.invalid/image.png', fileType: 'image/png', albumId: 2, isPrimary: true };
   reset(); assert.equal((await mediaRoute.POST(request('', newMedia))).status, 200);
   assert.equal(state.media.filter(row => row.albumId === 2 && row.isPrimary).length, 1);
   assert.equal(state.media.at(-1).fileName, newMedia.fileName);
+  assert.equal(state.media.at(-1).isPublic,false);assert.equal(state.media.at(-1).isActive,true);
+  for(const key of ['isPublic','isActive']) { reset(); assert.equal((await mediaRoute.POST(request('', {...newMedia,[key]:null}))).status,400);assertNoWrites(); }
   reset(); const beforeInsert = structuredClone(state); failWriteAt = 2;
   assert.equal((await mediaRoute.POST(request('', newMedia))).status, 500); assert.deepEqual(state, beforeInsert);
   reset(); assert.equal((await mediaRoute.POST(request('', { ...newMedia, albumId: 3 }))).status, 404); assertNoWrites();

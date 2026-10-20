@@ -1,9 +1,10 @@
 import { and, eq, isNotNull, sql } from 'drizzle-orm';
 import { db, type Transaction } from '@/libraries/db/client';
-import { multimediaAlbums as albums, multimediaTracks as tracks } from '@/libraries/schema/multimedia';
+import { multimediaAlbums as albums, multimediaTracks as tracks, multimediaMedia as media } from '@/libraries/schema/multimedia';
 import { positiveId } from './access';
 
 export const publicAlbumScope = () => and(isNotNull(albums.userId), eq(albums.isPublic, true), eq(albums.status, 'published'));
+export const publicMediaScope = () => and(eq(media.isPublic, true), eq(media.isActive, true));
 export const publicTrackScope = () => and(eq(tracks.status, 'active'), sql`EXISTS (
   SELECT 1 FROM ${albums} WHERE ${albums.id} = ${tracks.albumId}
   AND ${albums.userId} = ${tracks.userId} AND ${albums.isPublic} = true AND ${albums.status} = 'published'

@@ -19,6 +19,7 @@ export const multimediaEditors: Record<MultimediaKind, { title: string; fields: 
     { key: 'fileName', label: 'File name', required: true }, { key: 'fileUrl', label: 'File URL', required: true },
     { key: 'fileType', label: 'File type', required: true }, { key: 'fileSize', label: 'File size (bytes)', type: 'number' },
     { key: 'isPrimary', label: 'Primary Media', type: 'boolean' },
+    { key: 'isPublic', label: 'Public', type: 'boolean' }, { key: 'isActive', label: 'Active', type: 'boolean' },
   ] },
   links: { title: 'Link', fields: [
     { key: 'title', label: 'Title', required: true }, { key: 'url', label: 'URL', required: true },
@@ -33,7 +34,7 @@ export function multimediaDraft(kind: MultimediaKind, record?: MultimediaRecord)
   const defaults: MultimediaDraft = { status: kind === 'albums' ? 'draft' : 'active', type: 'external', trackNumber: '0', sortOrder: '0', displayOrder: '0', fileType: kind === 'tracks' ? 'audio/mpeg' : 'image/jpeg' };
   const draft: MultimediaDraft = {};
   for (const field of multimediaEditors[kind].fields) {
-    draft[field.key] = field.type === 'boolean' ? Boolean(record?.[field.key]) : String(record?.[field.key] ?? (record && field.label === 'Sort Order' ? '' : defaults[field.key]) ?? '');
+    draft[field.key] = field.type === 'boolean' ? Boolean(record?.[field.key] ?? (kind === 'media' && field.key === 'isActive')) : String(record?.[field.key] ?? (record && field.label === 'Sort Order' ? '' : defaults[field.key]) ?? '');
   }
   if (kind !== 'albums') draft.albumId = String(record?.albumId ?? '');
   if (kind === 'links') draft.trackId = String(record?.trackId ?? '');
