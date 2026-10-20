@@ -19,6 +19,7 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  'admin-overview': [node('validate-admin-overview.cjs'), node('validate-admin-overview-review.cjs')],
   'multimedia-dashboard': [node('validate-multimedia-dashboard.cjs')],
   'multimedia-parent-moves': [node('validate-multimedia-parent-moves.cjs')],
   'multimedia-order-display': [node('validate-multimedia-order-display.cjs')],
@@ -169,6 +170,7 @@ const tasks = {
 };
 
 const ci = [
+  'admin-overview',
   'multimedia-dashboard',
   'multimedia-parent-moves',
   'multimedia-order-display',

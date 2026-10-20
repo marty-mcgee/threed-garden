@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Package/root lockfile: **0.26.20**, Developer-confirmed released to production as **[v0.26.20 - ThreeD Projects: Admin page layout](docs/releases/v0.26.20.md)**. Developer accepted the New/Edit presentation. Prior preparation passed fresh isolated TypeScript, all 85 offline CI tasks, guarded production build (150/150 pages), version/documentation/whitespace checks and 1,131-input parity. Exact deployed commit and independent post-deployment checks are not established. This documentation update remains unstaged.
+Package/root lockfile: **0.26.21**, prepared for **[ThreeD Admin: Overview and setup tallies](docs/releases/v0.26.21.md)**. Developer accepted the final presentation, six stats, tooltips, Updated sorting, creation actions and Projects/Characters/Models order. Final fresh isolated TypeScript, all 86 offline CI tasks, guarded production build (150/150 pages), version/documentation/whitespace checks and 1,133-input parity passed after all follow-ups. Changes remain unstaged. Production remains Developer-confirmed **v0.26.20 - ThreeD Projects: Admin page layout**. Exact deployed commit and independent post-deployment checks are not established.
 
 Developer naming: **ThreeD > Project > Model > DetailsCard**. Use exact App names, verify ownership, state uncertainty and honor corrections. Provide concise commit titles only unless asked for a body; keep responses concise with **Next Steps:**. See [durable working preferences](docs/agents/README.md#developer-preferences) and [AGENTS.md](AGENTS.md).
 
@@ -28,6 +28,8 @@ Release confirmation is separate from the prior local checks. The subsequent Git
 shadcn CLI is pinned to 4.22.0; App Zod 3.25.76 is explicit and existing Radix/UI/CSS owners are retained. Developer confirms successful npm ci, npm start and real-App Editor operation/appearance. Local acceptance and the later Developer production confirmation are separate; neither certifies every Save/reopen/Character scenario. Upgrade checks and native comparisons passed; final release gates are recorded in [v0.26.12](docs/releases/v0.26.12.md), with implementation detail in [the upgrade plan](docs/plans/shadcn-4-upgrade.md). Developer servers/installation remain agent-untouched. Current work stays unstaged for manual GitHub/Vercel release.
 
 ## Acceptance and known limitations
+
+- Local v0.26.21 Admin Overview: compact cards/actions, correct New Project routes, keyboard-accessible Project links and visible error/retry with aborted/account-scoped response handling. Owner-scoped setup-review and saved Project activity tallies are added, including effective Animation inheritance/overrides and unfinalized-run distinction. Fresh isolated TypeScript and mocked lifecycle/query-compilation checks passed; see [v0.26.21](docs/releases/v0.26.21.md) for final verification and pending visual acceptance. Package is prepared as 0.26.21; production remains 0.26.20.
 
 - Project New/Edit layout: matching two-column cards, colored icons, collapsed advanced calibration, header information tooltip, compact Weather at the bottom of the right column and full-width Project actions last. Developer accepted the final presentation. Existing Save/draft and Weather checks passed with mocked boundaries; see [v0.26.20](docs/releases/v0.26.20.md) for verification and pending visual acceptance.
 
