@@ -193,12 +193,12 @@ async function respond(request, data, pagination) { request.resolve({ ok: true, 
   }).MediaGallery;
   let media = [];
   Component = () => Gallery({ media }); render(); const hookCount = cursor;
-  media = Array.from({ length: 14 }, (_, id) => ({ id, fileName: 'Image ' + id, fileUrl: '/' + id + '.png', fileType: 'image/png', isPrimary: id === 13 }));
+  media = Array.from({ length: 14 }, (_, id) => ({ id, sortOrder: id === 12 ? -1 : 0, fileName: 'Image ' + id, fileUrl: '/' + id + '.png', fileType: 'image/png', isPrimary: id === 13 }));
   render(); assert.equal(cursor, hookCount, 'empty/nonempty Gallery uses the same hooks');
   const thumbnail = nodes().find(n => n.type === 'div' && n.props.onClick);
   thumbnail.props.onClick(); render();
   const dialog = get('DialogContent');
-  assert.equal(nodes(dialog).find(n => n.type === 'img').props.src, '/13.png', 'primary thumbnail opens the matching sorted image');
+  assert.equal(nodes(dialog).find(n => n.type === 'img').props.src, '/12.png', 'ranked thumbnail opens the matching sorted image ahead of Primary');
   nodes().find(n => n.type === 'button').props.onClick(); render();
   assert.equal(nodes(get('DialogContent')).find(n => n.type === 'img').props.src, '/11.png', 'more button opens the first image after the preview');
   media = []; render(); assert.equal(tree, null); assert.equal(cursor, hookCount);

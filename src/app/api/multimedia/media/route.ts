@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/libraries/auth';
 import { db, type Transaction } from '@/libraries/db/client';
 import { multimediaAlbums, multimediaMedia } from '@/libraries/schema/multimedia';
-import { eq, and, desc, asc, inArray } from 'drizzle-orm';
+import { eq, and, sql, asc, inArray } from 'drizzle-orm';
 import { ensureTableSequence } from '@/libraries/db/sequence';
 
 // Serialize all primary writers on their owned Album rows before locking Media.
@@ -18,13 +18,14 @@ async function lockMediaAlbums(tx: Transaction, userId: string, ids: number[]) {
 }
 
 type MediaChanges = Partial<Pick<typeof multimediaMedia.$inferInsert,
-  'fileName' | 'fileUrl' | 'fileType' | 'fileSize' | 'isPrimary' | 'isPublic' | 'isActive' | 'albumId'>>;
+  'fileName' | 'fileUrl' | 'fileType' | 'fileSize' | 'isPrimary' | 'isPublic' | 'isActive' | 'sortOrder' | 'albumId'>>;
 
 async function updateOwnedMedia(userId: string, id: number, changes: MediaChanges) {
   if (changes.isPrimary !== undefined && typeof changes.isPrimary !== 'boolean') {
     return NextResponse.json({ success: false, error: 'Primary Media must be true or false' }, { status: 400 });
   }
   for (const key of ['isPublic', 'isActive'] as const) if (changes[key] !== undefined && typeof changes[key] !== 'boolean') return NextResponse.json({ success: false, error: key + ' must be true or false' }, { status: 400 });
+  if (changes.sortOrder != null && (!Number.isInteger(changes.sortOrder) || changes.sortOrder < -10000 || changes.sortOrder > 10000)) return NextResponse.json({ success: false, error: 'Sort Order must be an integer from -10000 to 10000' }, { status: 400 });
   const targetId = changes.albumId === undefined ? undefined : positiveId(changes.albumId);
   if (targetId === null) return NextResponse.json({ success: false, error: 'Invalid album ID' }, { status: 400 });
   const [snapshot] = await db.select().from(multimediaMedia)
@@ -54,6 +55,7 @@ async function updateOwnedMedia(userId: string, id: number, changes: MediaChange
       fileType: changes.fileType || existing.fileType,
       fileSize: changes.fileSize === undefined ? existing.fileSize : changes.fileSize,
       isPublic: changes.isPublic ?? existing.isPublic, isActive: changes.isActive ?? existing.isActive,
+      sortOrder: changes.sortOrder === undefined ? existing.sortOrder : changes.sortOrder,
       isPrimary, albumId, updatedAt: new Date(),
     }).where(and(eq(multimediaMedia.id, id), eq(multimediaMedia.userId, userId))).returning();
     if (!updated) throw new Error('Media update did not return a record');
@@ -132,7 +134,7 @@ export async function GET(request: NextRequest) {
             eq(multimediaMedia.userId, userId)
           )
         )
-        .orderBy(desc(multimediaMedia.isPrimary), desc(multimediaMedia.createdAt));
+        .orderBy(sql`${multimediaMedia.sortOrder} ASC NULLS LAST`, asc(multimediaMedia.id));
 
       return NextResponse.json({
         success: true,
@@ -146,7 +148,7 @@ export async function GET(request: NextRequest) {
       .select()
       .from(multimediaMedia)
       .where(eq(multimediaMedia.userId, userId))
-      .orderBy(desc(multimediaMedia.createdAt));
+      .orderBy(sql`${multimediaMedia.sortOrder} ASC NULLS LAST`, asc(multimediaMedia.id));
 
     return NextResponse.json({
       success: true,
@@ -179,7 +181,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     if (body?.fileUrl !== undefined && !ownsFileReference(session.user.id, body.fileUrl)) return NextResponse.json({ success: false, error: 'File reference is not owned by this User' }, { status: 400 });
 
-    const { fileName, fileUrl, fileType, fileSize, isPrimary, isPublic, isActive, albumId } = body;
+    const { fileName, fileUrl, fileType, fileSize, isPrimary, isPublic, isActive, sortOrder, albumId } = body;
+    if (sortOrder != null && (!Number.isInteger(sortOrder) || sortOrder < -10000 || sortOrder > 10000)) return NextResponse.json({ success: false, error: 'Sort Order must be an integer from -10000 to 10000' }, { status: 400 });
 
     // ✅ Validate required fields
     if (!fileName) {
@@ -250,6 +253,7 @@ export async function POST(request: NextRequest) {
           fileUrl,
           fileType,
           fileSize: fileSize || null,
+          sortOrder: sortOrder ?? 0,
           isPrimary: isPrimary ?? false,
           isPublic: isPublic ?? false,
           isActive: isActive ?? true,
@@ -309,8 +313,8 @@ export async function PUT(request: NextRequest) {
 
     const body = await request.json();
     if (body?.fileUrl !== undefined && !ownsFileReference(session.user.id, body.fileUrl)) return NextResponse.json({ success: false, error: 'File reference is not owned by this User' }, { status: 400 });
-    const { fileName, fileUrl, fileType, fileSize, isPrimary, isPublic, isActive, albumId } = body;
-    return await updateOwnedMedia(userId, parsedId, { fileName, fileUrl, fileType, fileSize, isPrimary, isPublic, isActive, albumId });
+    const { fileName, fileUrl, fileType, fileSize, isPrimary, isPublic, isActive, sortOrder, albumId } = body;
+    return await updateOwnedMedia(userId, parsedId, { fileName, fileUrl, fileType, fileSize, isPrimary, isPublic, isActive, sortOrder, albumId });
   } catch (error) {
     console.error('[Media] PUT error:', error);
     return NextResponse.json(

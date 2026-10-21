@@ -91,3 +91,18 @@ for (const sequence of [tracks, [...tracks].reverse()]) {
 }
 
 console.log('PASS: actual Dashboard Player and Album preview rendering preserves negative/zero/positive/null Sort Order, supplied sequence, ID keys and playback selection (offline React rendering, mocked UI/hover).');
+
+// Render the actual gallery: Primary is a badge, never a rank override.
+{
+ const {exports}=component('src/components/multimedia/MediaGallery.tsx');
+ const items=[{id:5,sortOrder:null,isPrimary:true},{id:4,sortOrder:10000},{id:3,sortOrder:0},{id:2,sortOrder:0},{id:1,sortOrder:-10000}].map(m=>({...m,fileName:'Image '+m.id,fileType:'image/png',fileUrl:'https://example.invalid/'+m.id+'.png'}));
+ const original=JSON.stringify(items);
+ const $=parseHtml(renderToStaticMarkup(React.createElement(exports.MediaGallery,{media:items})));
+ assert.deepEqual($('[role="button"]').map((_,e)=>$(e).attr('aria-label')).get(),[1,2,3,4,5].map(id=>'Open Image '+id));
+ assert.equal(JSON.stringify(items),original);
+ const rendered=component('src/components/multimedia/MultimediaPlayer.tsx');
+ const links=[{id:2,title:'First link',url:'https://example.invalid/first',displayOrder:-1},{id:1,title:'Second link',url:'https://example.invalid/second',displayOrder:0}];
+ const html=renderToStaticMarkup(React.createElement(rendered.exports.MultimediaPlayer,{album:{...album,links},track:tracks[0],tracks,isPlaying:false,currentTime:0,duration:60,volume:1,isMuted:false,formatTime:()=> '1:00',onPlayPause:noop,onNext:noop,onPrevious:noop,onSeek:noop,onVolumeChange:noop,onToggleMute:noop,onTrackSelect:noop}));
+ assert(html.indexOf('First link')<html.indexOf('Second link'));
+ console.log('PASS: Media gallery ranks -10000/0/10000/null, ID ties, Primary badge independence and supplied Link order (offline React).');
+}

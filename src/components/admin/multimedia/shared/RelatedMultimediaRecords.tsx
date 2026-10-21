@@ -23,7 +23,7 @@ export function RelatedMultimediaRecords({ kind, albumId, trackId, disabled, onB
     <MultimediaRecordsTable workspace={workspace} label={title} columns={[
       { field: kind === 'media' ? 'fileName' : 'title', label: 'Name', render: row => <Link className="underline" href={`/admin/multimedia/${kind}/${row.id}`}>{String(row[kind === 'media' ? 'fileName' : 'title'])}</Link> },
       { field: 'id', label: 'ID' },
-      ...(kind === 'tracks' ? [{ field: 'trackNumber', label: 'Sort Order' }] : kind === 'links' ? [{ field: 'displayOrder', label: 'Sort Order' }] : []),
+      ...(kind === 'tracks' ? [{ field: 'trackNumber', label: 'Sort Order' }] : kind === 'links' ? [{ field: 'displayOrder', label: 'Sort Order' }] : [{ field: 'sortOrder', label: 'Sort Order' }]),
       ...(kind === 'media' ? [{ field: 'fileType', label: 'Type' }, { field: 'isPrimary', label: 'Primary', render: (row: { [key: string]: unknown }) => <MultimediaStatus value={row.isPrimary} /> }] : [{ field: 'status', label: 'Status', render: (row: { [key: string]: unknown }) => <MultimediaStatus value={row.status} /> }]),
     ]} actions={row => <Button type="button" variant="outline" size="sm" asChild><Link href={`/admin/multimedia/${kind}/${row.id}`}>Open</Link></Button>} />
   </fieldset>;

@@ -148,7 +148,7 @@ export async function GET(request: NextRequest) {
             )
           );
 
-        const media = await mediaQuery;
+        const media = await mediaQuery.orderBy(sql`${multimediaMedia.sortOrder} ASC NULLS LAST`, asc(multimediaMedia.id));
         console.log('[API] 🖼️ Found', media.length, 'media items');
         response.media = media;
       }
@@ -251,7 +251,7 @@ export async function GET(request: NextRequest) {
                 )
               );
 
-            const media = await mediaQuery;
+            const media = await mediaQuery.orderBy(sql`${multimediaMedia.sortOrder} ASC NULLS LAST`, asc(multimediaMedia.id));
             result.media = media || [];
           }
 

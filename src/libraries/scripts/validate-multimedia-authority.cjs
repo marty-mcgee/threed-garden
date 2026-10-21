@@ -5,7 +5,7 @@ const tables = {
  multimediaAlbums: table('albums', ['id','userId','title','artist','coverArt','releaseYear','description','sortOrder','status','isPublic','createdAt']),
  multimediaTracks: table('tracks', ['id','userId','albumId','title','duration','trackNumber','fileUrl','fileType','status','playCount','createdAt']),
  multimediaLinks: table('links', ['id','userId','albumId','trackId','title','url','status','displayOrder','createdAt']),
- multimediaMedia: table('media', ['id','userId','albumId','fileUrl','isPrimary','isPublic','isActive']),
+ multimediaMedia: table('media', ['sortOrder','id','userId','albumId','fileUrl','isPrimary','isPublic','isActive']),
  multimediaPlaybackHistory: table('history', ['id','userId','albumId','trackId']), multimediaSpeechVersions: table('versions', ['id']),
 };
 let userId = 'alice', queue = [], queries = [], writes = [], signed = [], txCount = 0, failUpdate = false;
@@ -124,12 +124,14 @@ const key='threed/users/alice/multimedia/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa/so
  queue=[[]];assert.equal((await media.PUT(request('id=2',{fileName:'edit'}))).status,404);
  // Anonymous exact-public-object delivery; a foreign or unreferenced key never reaches signing.
  // Primary is a presentation flag, not Album Media publication permission.
- const galleryItems=[false,false,true].map((isPrimary,index)=>({id:30+index,albumId:1,userId:'alice',isPrimary,fileUrl:'/api/multimedia/files?key='+encodeURIComponent(key),metadata:{secret:true}}));
+ const galleryItems=[false,false,true].map((isPrimary,index)=>({sortOrder:index-1,id:30+index,albumId:1,userId:'alice',isPrimary,fileUrl:'/api/multimedia/files?key='+encodeURIComponent(key),metadata:{secret:true}}));
  for(const list of [false,true]) {
   userId=undefined;queries=[];queue=list?[[{count:1}],[album],galleryItems]:[[album],galleryItems];
   result=await albums.GET(request('scope=public&includeMedia=true'+(list?'':'&id=1')));
   assert.equal(result.status,200);
   const returned=list?result.body.data[0]:result.body.data;
+  assert.ok(queries.some(q=>q.includes('sortOrder')&&q.includes('ASC NULLS LAST')&&q.includes('"media"."id" asc')));
+  assert.equal(returned.media[0].sortOrder,-1);
   assert.equal(returned.media.length,3);assert.equal(returned.media[0].isPrimary,false);
   assert.equal(returned.media[0].userId,undefined);assert.equal(returned.media[0].metadata,undefined);
   const mediaScope=queries.find(q=>q.includes('"media"."albumId"'));

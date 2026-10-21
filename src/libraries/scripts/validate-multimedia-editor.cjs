@@ -53,7 +53,7 @@ function componentFunction(file, name) {
   const record={id:2,title:'Title',artist:'Artist',coverArt:'https://example.invalid/cover.jpg',albumId:1,trackId:null,url:'https://example.invalid',fileName:'Clip',fileUrl:'https://example.invalid/clip.mp4',fileType:'video/mp4',metadata:{private:true}};
   const original=editor.multimediaDraft(kind,record),changed={...original,[kind==='media'?'fileName':'title']:'Changed'};
   const payload=editor.multimediaPayload(kind,changed,original);assert.deepEqual(Object.keys(payload),[kind==='media'?'fileName':'title']);assert.equal(payload.metadata,undefined);
-  const rank = kind==='albums'?'sortOrder':kind==='tracks'?'trackNumber':kind==='links'?'displayOrder':null;
+  const rank = (kind==='albums'||kind==='media')?'sortOrder':kind==='tracks'?'trackNumber':kind==='links'?'displayOrder':null;
   if(rank){
     for(const value of [-10000,0,10000]){const payload=editor.multimediaPayload(kind,{...original,[rank]:String(value)},original);assert.equal(payload[rank],value);assert.deepEqual(Object.keys(payload),[rank]);}
     for(const value of [-10001,10001,1.5]) assert.throws(()=>editor.multimediaPayload(kind,{...original,[rank]:String(value)},original));

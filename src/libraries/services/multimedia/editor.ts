@@ -16,6 +16,7 @@ export const multimediaEditors: Record<MultimediaKind, { title: string; fields: 
     { key: 'status', label: 'Status', type: 'select', choices: ['active', 'inactive', 'processing'] }, { key: 'lyrics', label: 'Lyrics / transcript', type: 'textarea' },
   ] },
   media: { title: 'Media', fields: [
+    { key: 'sortOrder', label: 'Sort Order', type: 'number', min: -10000, max: 10000 },
     { key: 'fileName', label: 'File name', required: true }, { key: 'fileUrl', label: 'File URL', required: true },
     { key: 'fileType', label: 'File type', required: true }, { key: 'fileSize', label: 'File size (bytes)', type: 'number' },
     { key: 'isPrimary', label: 'Primary Media', type: 'boolean' },

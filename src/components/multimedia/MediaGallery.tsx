@@ -7,6 +7,7 @@ import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Image as ImageIcon } fro
 import { cn } from '@/libraries/utils';
 
 interface MediaItem {
+  sortOrder?: number | null;
   id: number;
   fileName: string;
   fileUrl: string;
@@ -25,8 +26,13 @@ export function MediaGallery({ media, className, onMediaPlay }: MediaGalleryProp
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState<number | null>(null);
   const [isZoomed, setIsZoomed] = useState(false);
 
-  const playable = (media || []).filter(item => item.fileType?.startsWith('video/') || item.fileType?.startsWith('audio/'));
-  const images = (media || []).filter(item => item.fileType?.startsWith('image/')).sort((a, b) => Number(Boolean(b.isPrimary)) - Number(Boolean(a.isPrimary)));
+  const ordered = [...(media || [])].sort((a, b) => {
+    if (a.sortOrder == null) return b.sortOrder == null ? a.id - b.id : 1;
+    if (b.sortOrder == null) return -1;
+    return a.sortOrder - b.sortOrder || a.id - b.id;
+  });
+  const playable = ordered.filter(item => item.fileType?.startsWith('video/') || item.fileType?.startsWith('audio/'));
+  const images = ordered.filter(item => item.fileType?.startsWith('image/'));
 
   const handlePrev = () => {
     setSelectedPhotoIndex((prev) => 

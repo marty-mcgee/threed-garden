@@ -107,6 +107,7 @@ export const multimediaMedia = pgTable('multimedia_media', {
   fileUrl: text('file_url').notNull(),
   fileType: text('file_type').notNull(),
   fileSize: integer('file_size'),
+  sortOrder: integer('sort_order').default(0),
   isPrimary: boolean('is_primary').default(true),
   isPublic: boolean('is_public').notNull().default(true),
   isActive: boolean('is_active').notNull().default(true),

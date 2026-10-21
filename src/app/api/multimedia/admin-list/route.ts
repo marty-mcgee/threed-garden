@@ -9,7 +9,7 @@ const tables = { albums: multimediaAlbums, tracks: multimediaTracks, media: mult
 const fields = {
   albums: ['id', 'title', 'artist', 'releaseYear', 'status', 'isPublic', 'sortOrder'],
   tracks: ['id', 'title', 'albumId', 'duration', 'fileType', 'status', 'trackNumber'],
-  media: ['id', 'fileName', 'albumId', 'fileType', 'fileSize', 'isPrimary', 'isPublic', 'isActive'],
+  media: ['sortOrder', 'id', 'fileName', 'albumId', 'fileType', 'fileSize', 'isPrimary', 'isPublic', 'isActive'],
   links: ['id', 'title', 'albumId', 'type', 'status', 'displayOrder'],
 };
 export async function GET(request: NextRequest) {

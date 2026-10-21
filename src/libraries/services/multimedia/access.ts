@@ -29,7 +29,7 @@ export function ownsFileReference(userId: string, value: unknown) {
 const fields = {
   album: ['id', 'title', 'artist', 'coverArt', 'releaseYear', 'description', 'sortOrder', 'status', 'isPublic'],
   track: ['id', 'albumId', 'title', 'duration', 'trackNumber', 'fileUrl', 'fileType', 'status'],
-  media: ['id', 'albumId', 'fileName', 'fileUrl', 'fileType', 'isPrimary', 'isPublic', 'isActive'],
+  media: ['sortOrder', 'id', 'albumId', 'fileName', 'fileUrl', 'fileType', 'isPrimary', 'isPublic', 'isActive'],
   link: ['id', 'albumId', 'trackId', 'title', 'url', 'type', 'icon', 'description', 'displayOrder', 'status'],
 } as const;
 

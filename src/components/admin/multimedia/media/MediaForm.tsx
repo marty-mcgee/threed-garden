@@ -62,6 +62,7 @@ export function MediaForm({
     fileUrl: '',
     fileType: 'image/jpeg',
     fileSize: 0,
+    sortOrder: 0 as number | null,
     isPrimary: false,
     isPublic: false,
     isActive: true,
@@ -74,6 +75,7 @@ export function MediaForm({
         fileUrl: existingMedia.fileUrl,
         fileType: existingMedia.fileType || 'image/jpeg',
         fileSize: existingMedia.fileSize || 0,
+        sortOrder: existingMedia.sortOrder ?? null,
         isPrimary: existingMedia.isPrimary || false,
         isPublic: existingMedia.isPublic === true,
         isActive: existingMedia.isActive === true,
@@ -88,7 +90,8 @@ export function MediaForm({
       fileUrl: '',
       fileType: 'image/jpeg',
       fileSize: 0,
-      isPrimary: false,
+      sortOrder: 0 as number | null,
+    isPrimary: false,
     isPublic: false,
     isActive: true,
     });
@@ -240,7 +243,8 @@ export function MediaForm({
               />
             </div>
 
-            <div className="flex flex-wrap items-center gap-4">{(['isPublic', 'isActive'] as const).map(key => <div key={key} className="flex items-center gap-2"><Switch id={"isPrimary" + '-' + key} checked={formData[key]} onCheckedChange={checked => setFormData(current => ({ ...current, [key]: checked }))} disabled={isSubmitting || uploadBusy} /><Label htmlFor={"isPrimary" + '-' + key}>{key === 'isPublic' ? 'Public' : 'Active'}</Label></div>)}</div>
+            <div><Label htmlFor="media-sort-order-0">Sort Order</Label><Input id="media-sort-order-0" type="number" min={-10000} max={10000} step={1} value={formData.sortOrder ?? ''} onChange={event => setFormData({ ...formData, sortOrder: event.target.value === '' ? null : Number(event.target.value) })} disabled={isSubmitting || uploadBusy} /></div>
+              <div className="flex flex-wrap items-center gap-4">{(['isPublic', 'isActive'] as const).map(key => <div key={key} className="flex items-center gap-2"><Switch id={"isPrimary" + '-' + key} checked={formData[key]} onCheckedChange={checked => setFormData(current => ({ ...current, [key]: checked }))} disabled={isSubmitting || uploadBusy} /><Label htmlFor={"isPrimary" + '-' + key}>{key === 'isPublic' ? 'Public' : 'Active'}</Label></div>)}</div>
             <div className="flex items-center gap-2">
               <Switch
                 id="isPrimary"

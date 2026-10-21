@@ -127,6 +127,7 @@ export interface MusicLinkMetadata {
 
 
 export interface MusicMedia {
+  sortOrder: number | null;
   id: number;
   fileName: string;
   fileUrl: string;

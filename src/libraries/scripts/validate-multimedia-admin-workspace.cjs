@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),ts=require('typescript');
 let signedIn=true,calls=[];
 const table=(name,fields)=>Object.fromEntries(['id','userId',...fields].map(f=>[f,`${name}.${f}`]));
-const tables={multimediaAlbums:table('albums',['title','artist','releaseYear','status','isPublic','sortOrder']),multimediaTracks:table('tracks',['title','albumId','duration','fileType','status','trackNumber']),multimediaMedia:table('media',['fileName','albumId','fileType','fileSize','isPrimary']),multimediaLinks:table('links',['title','albumId','trackId','type','status','displayOrder'])};
+const tables={multimediaAlbums:table('albums',['title','artist','releaseYear','status','isPublic','sortOrder']),multimediaTracks:table('tracks',['title','albumId','duration','fileType','status','trackNumber']),multimediaMedia:table('media',['sortOrder','fileName','albumId','fileType','fileSize','isPrimary']),multimediaLinks:table('links',['title','albumId','trackId','type','status','displayOrder'])};
 const db={select:()=>{const q={from(t){calls.push(['from',t.id]);return q},where(v){calls.push(['where',v]);return q},orderBy(...v){calls.push(['order',...v]);return q},limit(v){calls.push(['limit',v]);return q},offset(v){calls.push(['offset',v]);return Promise.resolve([])},then(resolve){resolve([{total:0}])}};return q}};
 const ordering={};vm.runInNewContext(ts.transpileModule(fs.readFileSync('src/libraries/services/multimedia/ordering.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{exports:ordering});
 const out={};vm.runInNewContext(ts.transpileModule(fs.readFileSync('src/app/api/multimedia/admin-list/route.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,{exports:out,require:name=>{
@@ -27,9 +27,9 @@ const get=query=>out.GET({nextUrl:new URL('https://app/api/multimedia/admin-list
  const scopes=calls.filter(c=>c[0]==='where');assert.equal(scopes.length,2);assert.deepEqual(scopes[0],scopes[1]);assert.ok(JSON.stringify(scopes).includes(`${kind}.userId`));assert.ok(JSON.stringify(scopes).includes('owner'));
  assert.ok(JSON.stringify(calls.find(c=>c[0]==='order')).includes(`${kind}.${sort}`));assert.ok(JSON.stringify(calls).includes('["offset",50]'));
  }
- for(const [kind,field] of [['albums','sortOrder'],['tracks','trackNumber'],['links','displayOrder'],['media','id']]) {
-  calls=[];assert.equal((await get('kind='+kind)).status,200);const order=calls.find(c=>c[0]==='order');assert.ok(JSON.stringify(order).includes(kind+'.'+field));assert.ok(JSON.stringify(order).includes(kind==='media'?'DESC':'ASC'));assert.ok(JSON.stringify(order).includes('NULLS LAST'));assert.equal(order[2],kind+'.id');
-  if(kind!=='media')for(const direction of ['asc','desc']){calls=[];assert.equal((await get('kind='+kind+'&sort='+field+'&direction='+direction+'&limit=25&offset=25')).status,200);assert.ok(JSON.stringify(calls.find(c=>c[0]==='order')).includes(direction.toUpperCase()));const scopes=calls.filter(c=>c[0]==='where');assert.deepEqual(scopes[0],scopes[1]);}
+ for(const [kind,field] of [['albums','sortOrder'],['tracks','trackNumber'],['links','displayOrder'],['media','sortOrder']]) {
+  calls=[];assert.equal((await get('kind='+kind)).status,200);const order=calls.find(c=>c[0]==='order');assert.ok(JSON.stringify(order).includes(kind+'.'+field));assert.ok(JSON.stringify(order).includes('ASC'));assert.ok(JSON.stringify(order).includes('NULLS LAST'));assert.equal(order[2],kind+'.id');
+  for(const direction of ['asc','desc']){calls=[];assert.equal((await get('kind='+kind+'&sort='+field+'&direction='+direction+'&limit=25&offset=25')).status,200);assert.ok(JSON.stringify(calls.find(c=>c[0]==='order')).includes(direction.toUpperCase()));const scopes=calls.filter(c=>c[0]==='where');assert.deepEqual(scopes[0],scopes[1]);}
  }
  console.log('PASS: Multimedia Admin list auth, module/sort allowlists, shared row/count owner-search scopes and paging (offline).');
 })().catch(error=>{console.error(error);process.exitCode=1});
