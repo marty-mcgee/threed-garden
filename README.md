@@ -291,7 +291,7 @@ See the [validation guide](docs/agents/VALIDATION.md) for task-specific and isol
 
 ## 🤝 Contribute and follow development
 
-Developer-confirmed production release: **[v0.27.0 - ThreeD Models](docs/releases/v0.27.0.md)**. See [release history](docs/releases/README.md) for checkpoint details and [current context](CONTEXT.md) for current scope, acceptance, and known limitations.
+Developer-confirmed production release: **[v0.27.1 - ThreeD Multimedia: Media and Links Sort Order](docs/releases/v0.27.1.md)**. See [release history](docs/releases/README.md) for checkpoint details and [current context](CONTEXT.md) for current scope, acceptance, and known limitations.
 
 Have a reproducible bug or a focused feature idea? [Open an issue](https://github.com/marty-mcgee/threed-garden/issues). Before contributing, review the [contribution workflow](docs/agents/TASK_CHECKLISTS.md), existing ownership boundaries, and applicable checks.
 
@@ -308,4 +308,4 @@ Application code is licensed under the [MIT License](LICENSE). Third-party Model
 
 For Model maintenance tools, see [texture recovery](docs/developers/THREED_LEGACY_TEXTURE_RECOVERY.md), [Category taxonomy](docs/developers/THREED_MODEL_TAXONOMY.md) and [Renaming Models](docs/developers/THREED_MODEL_RENAMING.md). See the [v0.27.0 release record](docs/releases/v0.27.0.md) for scope and verification.
 
-Prepared checkpoint: [v0.27.1 - ThreeD Multimedia: Media and Links Sort Order](docs/releases/v0.27.1.md). Developer confirmed the Media schema change is working; production confirmation remains pending.
+Media and Links display ordering is covered in the [v0.27.1 release record](docs/releases/v0.27.1.md), including the Developer-confirmed schema application and production release.
