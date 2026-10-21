@@ -13,6 +13,7 @@ Choose a guide for what you want to do. [Current project state](../CONTEXT.md) h
 
 - [Local development](developers/LOCAL_DEVELOPMENT.md), [architecture](developers/ARCHITECTURE.md), [data model](developers/DATA_MODEL.md), [API guide](developers/API_GUIDE.md) and [deployment](developers/DEPLOYMENT.md).
 - [Project Designs](developers/THREED_DESIGNS.md), [Model administration](developers/THREED_MODEL_ADMIN.md), [Model runtime API](developers/THREED_MODEL_RUNTIME_API.md) and [Model Builder](developers/THREED_MODEL_BUILDER.md).
+- [Model texture recovery](developers/THREED_LEGACY_TEXTURE_RECOVERY.md), [Category taxonomy](developers/THREED_MODEL_TAXONOMY.md) and [Renaming Models](developers/THREED_MODEL_RENAMING.md).
 - [Characters](developers/THREED_CHARACTERS.md), [Runtime Markers](developers/THREED_MARKERS.md), [Animations Library](developers/THREED_ANIMATIONS_LIBRARY.md) and [Simulations](developers/THREED_SIMULATIONS.md).
 - [FarmBot integration](developers/FARMBOT_INTEGRATION.md), [MQTT adapter](developers/FARMBOT_MQTT_WORKER.md) and [Project configuration authority](plans/project-configuration-authority.md).
 

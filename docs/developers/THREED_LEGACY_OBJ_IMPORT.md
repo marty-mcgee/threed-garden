@@ -56,3 +56,7 @@ API readback and final read-only before/after verification passed: all 284 targe
 Private before snapshots, exact target/duplicate audit, fresh blocked-asset scan, authenticated mutation receipts, per-run defaults and verification are preserved under `reference/imports/legacy-obj-reconcile-2026-10-17` (summary: `obj-reconcile-summary.md`), with original execution copies in `.next/obj-reconcile-*`. Earlier import evidence remains unchanged. The agent-owned browser was closed after execution; no App server was started/stopped. This is a scoped data operation, not a change to global App import defaults, a code deployment or new release version.
 
 The Developer explicitly requested activation/publication of the matching Models, including the 99 imports with deferred textures. Those missing textures remain unresolved; active/public flags do not establish visual readiness or repair. Review/repair their appearance as needed. Correct/supply the listed invalid/missing resources before importing the 93 blocked assets; do not repeat completed creates/uploads.
+
+## Missing texture recovery
+
+For a separate local audit and flat-directory download tool, see [legacy texture recovery](THREED_LEGACY_TEXTURE_RECOVERY.md). It uses the object-specific old-server URL pattern and does not recreate Models or update their attachments.

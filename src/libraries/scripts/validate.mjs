@@ -19,6 +19,10 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  'legacy-texture-download': [node('validate-legacy-texture-download.cjs')],
+  'model-taxonomy': [node('validate-model-taxonomy.cjs')],
+  'model-renaming': [node('validate-model-renaming.cjs')],
+  'obj-model-names': [node('validate-obj-model-names.cjs')],
   'admin-overview': [node('validate-admin-overview.cjs'), node('validate-admin-overview-review.cjs')],
   'multimedia-dashboard': [node('validate-multimedia-dashboard.cjs')],
   'multimedia-parent-moves': [node('validate-multimedia-parent-moves.cjs')],
@@ -234,6 +238,10 @@ const ci = [
   'threed-model-bulk-preview',
   'threed-browser-fbx-textures',
   'threed-obj-bundle',
+  'legacy-texture-download',
+  'model-taxonomy',
+  'model-renaming',
+  'obj-model-names',
   'threed-bulk-saved-texture',
   'threed-model-blob-paths',
   'threed-library-placement',

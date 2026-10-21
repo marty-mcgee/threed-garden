@@ -305,3 +305,5 @@ The [legacy-v0.17 branch](https://github.com/marty-mcgee/threed-garden/tree/lega
 ## ⚖ License
 
 Application code is licensed under the [MIT License](LICENSE). Third-party Models, textures, audio, video, and other assets may carry separate licenses; check their individual terms before reuse.
+
+For Model maintenance tools, see [texture recovery](docs/developers/THREED_LEGACY_TEXTURE_RECOVERY.md), [Category taxonomy](docs/developers/THREED_MODEL_TAXONOMY.md) and [Renaming Models](docs/developers/THREED_MODEL_RENAMING.md). The next prepared checkpoint is [v0.27.0](docs/releases/v0.27.0.md); preparation is separate from production confirmation.
