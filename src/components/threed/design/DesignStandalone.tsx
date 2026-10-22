@@ -1,4 +1,5 @@
 'use client';
+import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
@@ -9,7 +10,7 @@ import { Button } from '@/components/ui/button';
 export function DesignStandalone() {
   const query = useSearchParams(), router = useRouter();
   const projectId = query.get('projectId');
-  const [offset, setOffset] = useState(0), [total, setTotal] = useState(0);
+  const [offset, setOffset] = useAdminListQueryState('/admin/threed/designs', 'offset', 0), [total, setTotal] = useState(0);
   const [projects, setProjects] = useState<{ id: number; name: string }[]>([]), [error, setError] = useState('');
   useEffect(() => {
     if (projectId && /^[1-9]\d*$/.test(projectId) && Number.isSafeInteger(Number(projectId))) {

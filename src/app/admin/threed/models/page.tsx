@@ -6,5 +6,5 @@ export default async function ModelsPage({ searchParams }: { searchParams: Promi
   if (typeof id === 'string' && /^[1-9]\d*$/.test(id) && Number.isSafeInteger(Number(id))) {
     redirect('/admin/threed/models/' + id);
   }
-  return <ThreeDModelsCRUD scrollRecords />;
+  return <ThreeDModelsCRUD scrollRecords syncListUrl />;
 }

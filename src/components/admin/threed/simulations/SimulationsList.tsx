@@ -1,4 +1,5 @@
 'use client';
+import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -15,9 +16,9 @@ type Sort = 'name' | 'slug' | 'project' | 'revision' | 'active';
 export function SimulationsList({ initialProjectId }: { initialProjectId?: number } = {}) {
   const router = useRouter(), { showToast, ToastComponent } = useToast(), lock = useRef(false);
   const [rows, setRows] = useState<Row[]>([]), [total, setTotal] = useState(0), [loading, setLoading] = useState(true), [error, setError] = useState('');
-  const [projects, setProjects] = useState<{ id: number; name: string }[]>([]), [projectId, setProjectId] = useState(initialProjectId ? String(initialProjectId) : '');
-  const [availability, setAvailability] = useState('');
-  const [search, setSearch] = useState(''), [page, setPage] = useState(0), [limit, setLimit] = useState(50), [sort, setSort] = useState<Sort>('name'), [direction, setDirection] = useState('asc');
+  const [projects, setProjects] = useState<{ id: number; name: string }[]>([]), [projectId, setProjectId] = useAdminListQueryState('/admin/threed/simulations', 'projectId', initialProjectId ? String(initialProjectId) : '', {enabled: true, urlDefault: ''});
+  const [availability, setAvailability] = useAdminListQueryState('/admin/threed/simulations', 'isActive', '', {enabled: true, values: ['', 'true', 'false']});
+  const [search, setSearch] = useAdminListQueryState('/admin/threed/simulations', 'search', '', {enabled: true}), [page, setPage] = useAdminListQueryState('/admin/threed/simulations', 'page', 0, {enabled: true}), [limit, setLimit] = useAdminListQueryState('/admin/threed/simulations', 'limit', 50, {enabled: true}), [sort, setSort] = useAdminListQueryState<Sort>('/admin/threed/simulations', 'sort', 'name', {enabled: true, values: ["name","slug","project","revision","active"]}), [direction, setDirection] = useAdminListQueryState('/admin/threed/simulations', 'direction', 'asc', {enabled: true, values: ['asc','desc']});
   const [selected, setSelected] = useState<Set<number>>(new Set()), [busy, setBusy] = useState(false), [refresh, setRefresh] = useState(0);
   useEffect(() => {
     if (!busy) return;
@@ -45,7 +46,7 @@ export function SimulationsList({ initialProjectId }: { initialProjectId?: numbe
         const result = await response.json(); if (!response.ok || !result.success || !Array.isArray(result.data)) throw new Error(result.error || 'Simulations unavailable.');
         if (controller.signal.aborted) return;
         const total = Number(result.pagination?.total ?? 0);
-        if (page > 0 && page * limit >= total) { setPage(Math.max(0, Math.ceil(total / limit) - 1)); return; }
+        if (page > 0 && page * limit >= total) { setPage(() => Math.max(0, Math.ceil(total / limit) - 1), {replace: true}); return; }
         setRows(result.data); setTotal(total);
       } catch (e) { if (!controller.signal.aborted) { setRows([]); setTotal(0); setError(e instanceof Error ? e.message : 'Simulations unavailable.'); } }
       finally { if (!controller.signal.aborted) setLoading(false); }

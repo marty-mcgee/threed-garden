@@ -12,6 +12,7 @@ function load(file, deps = {}, globals = {}) {
     module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX,
   } }).outputText, { exports, console, URL, URLSearchParams, Buffer, Date, AbortController, Blob,
     setTimeout, clearTimeout, ...globals, require(name) {
+      if (name === '@/components/admin/shared/use-admin-list-query-state') return { useAdminListQueryState: (_route, _key, initial) => deps.react.useState(initial) };
       if (name in deps) return deps[name];
       assert(name.startsWith('.'), `Unexpected dependency: ${name}`);
       return load(path.resolve(path.dirname(file), name.endsWith('.ts') ? name : `${name}.ts`), deps, globals);

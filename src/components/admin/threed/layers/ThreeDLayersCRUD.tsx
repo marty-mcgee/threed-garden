@@ -1,4 +1,5 @@
 'use client';
+import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useState, useEffect } from 'react';
 import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
@@ -149,12 +150,12 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollReco
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingLayer, setEditingLayer] = useState<Layer | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useAdminListQueryState('/admin/threed/layers', 'search', '', {enabled: scrollRecords});
 
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(25);
+  const [page, setPage] = useAdminListQueryState('/admin/threed/layers', 'page', 0, {enabled: scrollRecords});
+  const [pageSize, setPageSize] = useAdminListQueryState('/admin/threed/layers', 'limit', 25, {enabled: scrollRecords});
   const [total, setTotal] = useState(0);
-  const [sort, setSort] = useState({ key: 'name', direction: 'asc' });
+  const [sort, setSort] = useAdminListQueryState('/admin/threed/layers', 'sort', { key: 'name', direction: 'asc' }, {enabled: scrollRecords, values: ["name","layerId","type","visible","locked","active"]});
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
   const [bulkNotice, setBulkNotice] = useState('');
@@ -193,7 +194,7 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollReco
         if (!response.ok || !data.success) throw new Error(data.error || 'Failed to fetch Layers');
         if (controller.signal.aborted) return;
         setLayers(data.data); setTotal(Number(data.pagination.total));
-        if (page > 0 && page * pageSize >= data.pagination.total) setPage(Math.max(0, Math.ceil(data.pagination.total / pageSize) - 1));
+        if (page > 0 && page * pageSize >= data.pagination.total) setPage(() => Math.max(0, Math.ceil(data.pagination.total / pageSize) - 1), {replace: true});
       } catch (error) {
         if (!controller.signal.aborted) { setLoadError(error instanceof Error ? error.message : 'Failed to fetch Layers'); setLayers([]); }
       } finally { if (!controller.signal.aborted) setLoading(false); }

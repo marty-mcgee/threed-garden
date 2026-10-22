@@ -110,6 +110,9 @@ function matches(expression, row) {
     const regex = String(args[1]).split('').map(character => character === '%' ? '.*' : character === '_' ? '.' : character.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('');
     return new RegExp(`^${regex}$`, 'is').test(matches(args[0], row) ?? '');
   }
+  if (pattern.startsWith('not exists (')) return !(row.materialAssignments ?? []).some(item => item.modelId === row.id && item.userId === row.userId);
+  if (pattern === "nullif(trim(?), '') is null")return !String(matches(args[0],row) ?? '').trim();
+  if (pattern === "nullif(trim(to_jsonb(?)->>'image_top_view_url'), '') is null")return !String(row.imageTopViewUrl ?? '').trim();
   if (pattern.startsWith('exists (')) {
     assert.equal(pattern, 'exists ( select 1 from ? inner join ? on ? = ? where ? = ? and ? = ? and ? = true )');
     assert.equal(args[6], 'threedModelCategories.slug');
@@ -125,11 +128,12 @@ async function searchOwnershipChecks() {
     threedModels: pgTable('fixture_models', {
       id: integer('id'), userId: text('user_id'), modelName: text('model_name'), modelType: text('model_type'),
       isActive: boolean('is_active'), status: text('status'), usedByCharacters: boolean('used_by_characters'),
-      isPublic: boolean('is_public'), isLibraryItem: boolean('is_library_item'),
+      isPublic: boolean('is_public'), isLibraryItem: boolean('is_library_item'), thumbnailUrl: text('thumbnail_url'),
     }),
     threedModelCategoryAssignments: pgTable('fixture_assignments', { modelId: integer('model_id'), categoryId: integer('category_id') }),
     threedModelCategories: pgTable('fixture_categories', { id: integer('id'), slug: text('slug'), isActive: boolean('is_active') }),
   };
+  actualSchema.threedModelMaterialAssignments = pgTable('fixture_material_assignments', {modelId:integer('model_id'),userId:text('user_id')});
   let captures = [];
   const compilerDB = { select(selection) {
     const query = { selection }, chain = {};
@@ -193,6 +197,24 @@ async function searchOwnershipChecks() {
       }
     }
   }
+  for(const filter of ['missingTextures','missingThumbnail','missingTopView']) {
+    const rows = [
+      {id:1,...base,modelName:'Needs review',modelType:'obj',thumbnailUrl:' ',imageTopViewUrl:null,materialAssignments:[]},
+      {id:2,...base,modelName:'Complete',modelType:'obj',thumbnailUrl:'https://image',imageTopViewUrl:'https://top',materialAssignments:[{modelId:2,userId:'owner'}]},
+      {id:3,...base,userId:'foreign',modelName:'Foreign',modelType:'obj',materialAssignments:[]},
+      {id:4,...base,modelName:'Wrong owner assignment',modelType:'obj',materialAssignments:[{modelId:4,userId:'foreign'}]},
+    ];
+    fixtureRows=rows;const response=await run(filter+'=true',[[],[],[]]);fixtureRows=null;
+    assert.deepEqual(response.body.data.map(m=>m.id),[1,4]);assert.equal(queries[0].where[0],queries[1].where[0]);
+    captures=[];const compiledResponse=await compilerExports.GET({url:'http://fixture.invalid/api/threed/models?'+filter+'=true&search=table&category=props'});assert.equal(compiledResponse.status,200);
+    const q=new PgDialect().sqlToQuery(captures[0].where[0]);assert(q.params.includes('owner'));assert(q.params.includes('props'));assert.equal(captures[0].where[0],captures[1].where[0]);
+    if(filter==='missingTextures'){assert(q.sql.includes('not exists'));assert(q.sql.includes('"fixture_material_assignments"."user_id" = "fixture_models"."user_id"'));}
+    if(filter==='missingThumbnail')assert(q.sql.includes(`nullif(trim("fixture_models"."thumbnail_url"), '') is null`));
+    if(filter==='missingTopView')assert(q.sql.includes(`to_jsonb("fixture_models")->>'image_top_view_url'`));
+    assert.equal((await run(filter+'=maybe',[])).status,400);
+  }
+  fixtureRows=[{id:1,...base,thumbnailUrl:'',imageTopViewUrl:null,materialAssignments:[]},{id:2,...base,thumbnailUrl:'yes',imageTopViewUrl:null,materialAssignments:[]}];
+  const combined=await run('missingThumbnail=true&missingTopView=true&missingTextures=true',[[],[],[]]);fixtureRows=null;assert.deepEqual(combined.body.data.map(m=>m.id),[1]);
   // Preserve wildcard matching and owned inactive records when no eligibility filter is requested.
   await run('search=N_ed%&view=selector', [[{ count: 0 }], []]);
   assert.equal(matches(queries[0].where[0], { ...base, modelName: 'Needle', modelType: 'obj', isActive: false }), true);

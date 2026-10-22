@@ -1,6 +1,6 @@
 import { retryDisconnectedRead } from '@/libraries/db/read-retry';
 import { databaseConnectionDiagnostic } from '@/libraries/db/connection-diagnostics';
-import { parseModelListQuery } from '@/libraries/services/threed/models/model-list-query';
+import { parseModelListQuery, parseModelMissingFilters } from '@/libraries/services/threed/models/model-list-query';
 import { modelSelection } from '@/libraries/services/threed/models/model-primary-file';
 // app/api/threed/models/route.ts
 import { NextRequest, NextResponse } from 'next/server';
@@ -295,7 +295,8 @@ export async function GET(request: NextRequest) {
     const scope = searchParams.get('scope');
     const category = searchParams.get('category')?.trim().toLowerCase();
     let listQuery;
-    try { listQuery = parseModelListQuery(searchParams); }
+    let missingFilters;
+    try { listQuery = parseModelListQuery(searchParams); missingFilters = parseModelMissingFilters(searchParams); }
     catch (error) { return NextResponse.json({ success: false, error: error instanceof Error ? error.message : 'Invalid pagination' }, { status: 400 }); }
     const { limit, offset, sort, direction } = listQuery;
 
@@ -410,6 +411,14 @@ export async function GET(request: NextRequest) {
           and ${threedModelCategories.isActive} = true
       )`);
     }
+
+    if (missingFilters.missingTextures) conditions.push(sql`not exists (
+      select 1 from ${threedModelMaterialAssignments}
+      where ${threedModelMaterialAssignments.modelId} = ${threedModels.id}
+        and ${threedModelMaterialAssignments.userId} = ${threedModels.userId}
+    )`);
+    if (missingFilters.missingThumbnail) conditions.push(sql`nullif(trim(${threedModels.thumbnailUrl}), '') is null`);
+    if (missingFilters.missingTopView) conditions.push(sql`nullif(trim(to_jsonb(${threedModels})->>'image_top_view_url'), '') is null`);
 
     const where = and(...conditions);
 

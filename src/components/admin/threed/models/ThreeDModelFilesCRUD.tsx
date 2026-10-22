@@ -957,6 +957,13 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
                 dependencyCount={dependencyAudit?.requirements.length ?? 0}
                 attachedDependencyCount={dependencyAudit?.requirements.filter(item => item.satisfied).length ?? 0}
               />}
+              {previewModel && !loadingFiles && <ModelPreviewImageExport
+                key={previewModel.id + '-top-view'} imageTarget="top-view"
+                onOpenChange={open => { setExportOpen(open); if (!open) { void loadFiles(Number(modelId)); void loadDependencies(Number(modelId)); } }}
+                model={previewModel}
+                dependencyCount={dependencyAudit?.requirements.length ?? 0}
+                attachedDependencyCount={dependencyAudit?.requirements.filter(item => item.satisfied).length ?? 0}
+              />}
               <Button type="button" variant="ghost" size="sm" className="h-7 text-xs" onClick={() => setHelpOpen(true)}>Help</Button>
               <Button
                 type="button"

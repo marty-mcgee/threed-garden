@@ -1,4 +1,5 @@
 'use client';
+import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useEffect, useState, useRef } from 'react';
 import { Clapperboard, Upload, ArrowUpDown, ArrowUp, ArrowDown, ToggleLeft, ToggleRight, Images, Box, Check, X, Pencil, Trash2, ExternalLink, FlaskConical } from 'lucide-react';
@@ -21,18 +22,18 @@ async function request(url: string, init?: RequestInit) {
 
 // The library owns this workspace. No Model/Character selection or target API is required.
 export function ThreeDAnimationsWorkspace({ initialCategoryId }: { initialCategoryId?: number } = {}) {
-  const [category, setCategory] = useState(initialCategoryId ? String(initialCategoryId) : '');
+  const [category, setCategory] = useAdminListQueryState('/admin/threed/animations', 'categoryId', initialCategoryId ? String(initialCategoryId) : '', {enabled: true, urlDefault: ''});
   const [categoryRefresh, setCategoryRefresh] = useState(0);
   const { categories, error: categoryError } = useAnimationCategories(categoryRefresh);
   const [categoryEditing, setCategoryEditing] = useState<Animation | null>(null);
   const [rows, setRows] = useState<Animation[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(25);
-  const [sort, setSort] = useState({ key: 'name', direction: 'asc' });
+  const [page, setPage] = useAdminListQueryState('/admin/threed/animations', 'page', 0, {enabled: true});
+  const [pageSize, setPageSize] = useAdminListQueryState('/admin/threed/animations', 'limit', 25, {enabled: true});
+  const [sort, setSort] = useAdminListQueryState('/admin/threed/animations', 'sort', { key: 'name', direction: 'asc' }, {enabled: true, values: ["name","fileName","type","duration","active","references","size"]});
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const uploadRef = useRef<HTMLInputElement>(null);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useAdminListQueryState('/admin/threed/animations', 'search', '', {enabled: true});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [refresh, setRefresh] = useState(0);
@@ -49,7 +50,7 @@ export function ThreeDAnimationsWorkspace({ initialCategoryId }: { initialCatego
         .then(result => {
           if (controller.signal.aborted) return;
           setRows(result.data); setTotal(result.pagination.total);
-          if (page > 0 && page * pageSize >= result.pagination.total) setPage(Math.max(0, Math.ceil(result.pagination.total / pageSize) - 1));
+          if (page > 0 && page * pageSize >= result.pagination.total) setPage(() => Math.max(0, Math.ceil(result.pagination.total / pageSize) - 1), {replace: true});
         }).catch(err => { if (!controller.signal.aborted) { setRows([]); setTotal(0); setError(err instanceof Error ? err.message : 'Library unavailable'); } })
         .finally(() => { if (!controller.signal.aborted) setLoading(false); });
     }, 200);

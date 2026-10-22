@@ -61,3 +61,6 @@ export async function applySyntyModelNames(plan:ModelRenamePlan,request:typeof f
 
 // @ts-expect-error Standalone Node type stripping requires explicit .ts suffix.
 export {planObjModelNames,applyObjModelNames} from './obj-model-names-core.ts';
+
+// @ts-expect-error Standalone Node type stripping requires explicit .ts suffix.
+export {planObjTitleNames,applyObjTitleNames} from './obj-model-title-names-core.ts';

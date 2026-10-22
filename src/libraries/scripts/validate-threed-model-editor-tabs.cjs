@@ -117,7 +117,11 @@ async function editorChecks() {
     'next/navigation': { useSearchParams: () => b.window.location.searchParams } }, { window: b.window });
   const lighting = load('src/libraries/services/threed/models/model-lighting-core.ts', {});
   const form = load('src/components/admin/threed/models/model-admin-form-core.ts', { '../../../../libraries/services/threed/models/model-lighting-core.ts': lighting, '../../../../libraries/services/threed/models/model-source-core.ts': sourceCore });
+  const listQuery = load('src/libraries/services/threed/models/model-list-query.ts', {});
+  const listState = load('src/components/admin/threed/models/use-model-list-state.ts', {react:rt.react,'next/navigation':{useSearchParams:()=>b.window.location.searchParams},'@/libraries/services/threed/models/model-list-query':listQuery}, {window:b.window,URLSearchParams});
+  const categoryTree = load('src/components/admin/threed/models/category-tree-core.ts', {});
   const module = load('src/components/admin/threed/models/ThreeDModelsCRUD.tsx', {
+    './use-model-list-state':listState,'./category-tree-core':categoryTree,
     react: rt.react, 'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'link' },
     'next/navigation': { useRouter: () => ({ push() {} }) }, 'lucide-react': proxy,
     '@/components/admin/threed/animations/CharacterAnimationAssignments': proxy,

@@ -10,7 +10,7 @@ const text = value => Array.isArray(value) ? value.map(text).join('') : value &&
 function load(file, deps = {}, globals = {}) {
   const exports = {};
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText,
-    { exports, console, Error, URLSearchParams, AbortController, ...globals, require(name) { assert(name in deps, name); return deps[name]; } });
+    { exports, console, Error, URLSearchParams, AbortController, ...globals, require(name) { if (name === '@/components/admin/shared/use-admin-list-query-state') return {useAdminListQueryState: (_route, _key, initial) => deps.react.useState(initial)}; assert(name in deps, name); return deps[name]; } });
   return exports;
 }
 const formCore = load('src/components/admin/threed/characters/character-admin-form-core.ts');

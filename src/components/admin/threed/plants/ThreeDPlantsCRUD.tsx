@@ -1,5 +1,6 @@
 // components/admin/threed/plants/ThreeDPlantsCRUD.tsx
 'use client';
+import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useState, useEffect } from 'react';
 import {
@@ -188,11 +189,11 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingPlant, setEditingPlant] = useState<Plant | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(25);
+  const [searchQuery, setSearchQuery] = useAdminListQueryState('/admin/threed/plants', 'search', '', {enabled: scrollRecords});
+  const [page, setPage] = useAdminListQueryState('/admin/threed/plants', 'page', 0, {enabled: scrollRecords});
+  const [pageSize, setPageSize] = useAdminListQueryState('/admin/threed/plants', 'limit', 25, {enabled: scrollRecords});
   const [total, setTotal] = useState(0);
-  const [sort, setSort] = useState({ key: 'name', direction: 'asc' });
+  const [sort, setSort] = useAdminListQueryState('/admin/threed/plants', 'sort', { key: 'name', direction: 'asc' }, {enabled: scrollRecords, values: ["name","plantId","type","maturity","status","active"]});
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
   const [bulkNotice, setBulkNotice] = useState('');
@@ -249,7 +250,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
         if (!response.ok || !data.success) throw new Error(data.error || 'Failed to fetch Plants');
         if (controller.signal.aborted) return;
         setPlants(data.data); setTotal(Number(data.pagination.total));
-        if (page > 0 && page * pageSize >= data.pagination.total) setPage(Math.max(0, Math.ceil(data.pagination.total / pageSize) - 1));
+        if (page > 0 && page * pageSize >= data.pagination.total) setPage(() => Math.max(0, Math.ceil(data.pagination.total / pageSize) - 1), {replace: true});
       } catch (error) {
         if (!controller.signal.aborted) { setLoadError(error instanceof Error ? error.message : 'Failed to fetch Plants'); setPlants([]); }
       } finally { if (!controller.signal.aborted) setLoading(false); }

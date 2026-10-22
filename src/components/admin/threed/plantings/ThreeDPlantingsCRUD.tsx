@@ -1,5 +1,6 @@
 // components/admin/threed/plantings/ThreeDPlantingsCRUD.tsx
 'use client';
+import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useState, useEffect } from 'react';
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
@@ -176,13 +177,13 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingPlanting, setEditingPlanting] = useState<Planting | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useAdminListQueryState('/admin/threed/plantings', 'search', '', {enabled: scrollRecords});
   const [loadError, setLoadError] = useState('');
 
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(25);
+  const [page, setPage] = useAdminListQueryState('/admin/threed/plantings', 'page', 0, {enabled: scrollRecords});
+  const [pageSize, setPageSize] = useAdminListQueryState('/admin/threed/plantings', 'limit', 25, {enabled: scrollRecords});
   const [total, setTotal] = useState(0);
-  const [sort, setSort] = useState({ key: 'plantingId', direction: 'asc' });
+  const [sort, setSort] = useAdminListQueryState('/admin/threed/plantings', 'sort', { key: 'plantingId', direction: 'asc' }, {enabled: scrollRecords, values: ["plant","bed","plantingId","position","growth","status","active"]});
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
   const [bulkNotice, setBulkNotice] = useState('');
@@ -233,7 +234,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
         if (!response.ok || !data.success) throw new Error(data.error || 'Failed to fetch Plantings');
         if (controller.signal.aborted) return;
         setPlantings(data.data); setTotal(Number(data.pagination.total));
-        if (page > 0 && page * pageSize >= data.pagination.total) setPage(Math.max(0, Math.ceil(data.pagination.total / pageSize) - 1));
+        if (page > 0 && page * pageSize >= data.pagination.total) setPage(() => Math.max(0, Math.ceil(data.pagination.total / pageSize) - 1), {replace: true});
       } catch (error) {
         if (!controller.signal.aborted) { setLoadError(error instanceof Error ? error.message : 'Failed to fetch Plantings'); setPlantings([]); }
       } finally { if (!controller.signal.aborted) setLoading(false); }

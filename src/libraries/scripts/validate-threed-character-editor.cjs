@@ -16,7 +16,7 @@ visit(ast);
 function load(file, mocks = {}, extra = {}) {
   const exports = {};
   vm.runInNewContext(compile(fs.readFileSync(file, 'utf8')), { exports, console, URL, URLSearchParams, Number, AbortController, ...extra,
-    require(name) { assert.ok(name in mocks, name); return mocks[name]; } });
+    require(name) { if (name === '@/components/admin/shared/use-admin-list-query-state') return { useAdminListQueryState: (_route, _key, initial) => mocks.react.useState(initial) }; assert.ok(name in mocks, name); return mocks[name]; } });
   return exports;
 }
 const { validateCharacterDraft } = load('src/components/admin/threed/characters/character-admin-form-core.ts');

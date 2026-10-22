@@ -1,5 +1,6 @@
 // components/admin/threed/harvests/ThreeDHarvestsCRUD.tsx
 'use client';
+import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useState, useEffect } from 'react';
 import {
@@ -110,13 +111,13 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingHarvest, setEditingHarvest] = useState<Harvest | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filterProject, setFilterProject] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useAdminListQueryState('/admin/threed/harvests', 'search', '', {enabled: scrollRecords});
+  const [filterProject, setFilterProject] = useAdminListQueryState<string>('/admin/threed/harvests', 'projectId', 'all', {enabled: scrollRecords});
 
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(25);
+  const [page, setPage] = useAdminListQueryState('/admin/threed/harvests', 'page', 0, {enabled: scrollRecords});
+  const [pageSize, setPageSize] = useAdminListQueryState('/admin/threed/harvests', 'limit', 25, {enabled: scrollRecords});
   const [total, setTotal] = useState(0);
-  const [sort, setSort] = useState({ key: 'date', direction: 'desc' });
+  const [sort, setSort] = useAdminListQueryState('/admin/threed/harvests', 'sort', { key: 'date', direction: 'desc' }, {enabled: scrollRecords, values: ["harvestId","plant","id","quantity","weight","date","active"]});
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
   const [bulkNotice, setBulkNotice] = useState('');
@@ -159,7 +160,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
         if (!response.ok || !data.success) throw new Error(data.error || 'Failed to fetch Harvests');
         if (controller.signal.aborted) return;
         setHarvests(data.data); setTotal(Number(data.pagination.total));
-        if (page > 0 && page * pageSize >= data.pagination.total) setPage(Math.max(0, Math.ceil(data.pagination.total / pageSize) - 1));
+        if (page > 0 && page * pageSize >= data.pagination.total) setPage(() => Math.max(0, Math.ceil(data.pagination.total / pageSize) - 1), {replace: true});
       } catch (error) {
         if (!controller.signal.aborted) { setLoadError(true); setHarvests([]); }
       } finally { if (!controller.signal.aborted) setLoading(false); }

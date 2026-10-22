@@ -1,4 +1,5 @@
 'use client';
+import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, ChevronRight, GripVertical } from 'lucide-react';
@@ -44,14 +45,14 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
   const [categories, setCategories] = useState<ThreeDModelCategoryOption[]>([]);
   const [editing, setEditing] = useState<ThreeDModelCategoryOption | null>(null);
   const [form, setForm] = useState<CategoryForm>(EMPTY_FORM);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [open, setOpen] = useState(false);
   const [collapsed, setCollapsed] = useState<Set<number>>(new Set());
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(50);
-  const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<{ field: CategorySortField; direction: 'asc' | 'desc' }>({ field: 'order', direction: 'asc' });
+  const [page, setPage] = useAdminListQueryState('/admin/threed/model-categories', 'page', 0, {enabled: true});
+  const [pageSize, setPageSize] = useAdminListQueryState('/admin/threed/model-categories', 'limit', 50, {enabled: true});
+  const [search, setSearch] = useAdminListQueryState('/admin/threed/model-categories', 'search', '', {enabled: true});
+  const [sort, setSort] = useAdminListQueryState<{ field: CategorySortField; direction: 'asc' | 'desc' }>('/admin/threed/model-categories', 'sort', { field: 'order', direction: 'asc' }, {enabled: true, values: ["name","slug","order","active","parent"]});
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [deleting, setDeleting] = useState(false);
   const [listError, setListError] = useState('');
@@ -83,7 +84,7 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
   const treeRows = useMemo(() => flattenCategoryTree(tree.slice(page * pageSize, (page + 1) * pageSize), search.trim() ? new Set<number>() : collapsed, category => category.id), [tree, page, pageSize, search, collapsed]);
   const rows = treeRows.map(row => row.category);
   useEffect(() => { setSelected(new Set()); }, [page, pageSize, search, sort, collapsed, revision]);
-  useEffect(() => { setPage(value => Math.min(value, Math.max(0, Math.ceil(total / pageSize) - 1))); }, [total, pageSize]);
+  useEffect(() => { if (!loading && !listError) setPage(value => Math.min(value, Math.max(0, Math.ceil(total / pageSize) - 1)), {replace: true}); }, [loading, listError, total, pageSize, page]);
 
   async function moveCategory(sourceId: number, targetId: number, after: boolean) {
     setDragging(null); setDropTarget(null);

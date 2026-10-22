@@ -1,4 +1,5 @@
 'use client';
+import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -52,15 +53,15 @@ export function ThreeDScenariosCRUD({ projectId, compact = false, view = 'list',
   const [modulesError, setModulesError] = useState('');
   const [assetSnapshot, setAssetSnapshot] = useState<{ projectId: string; assets: AssignedAsset[] | null } | null>(null);
   const [projectError, setProjectError] = useState('');
-  const [projectFilter, setProjectFilter] = useState(projectId ?? '');
-  const [activeFilter, setActiveFilter] = useState('');
+  const [projectFilter, setProjectFilter] = useAdminListQueryState('/admin/threed/scenarios', 'projectId', projectId ?? '', {enabled: view === 'list', urlDefault: ''});
+  const [activeFilter, setActiveFilter] = useAdminListQueryState('/admin/threed/scenarios', 'isActive', '', {enabled: view === 'list', values: ['', 'true', 'false']});
   const [rows, setRows] = useState<Scenario[]>([]);
   const [total, setTotal] = useState(0);
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(25);
-  const [search, setSearch] = useState('');
-  const [sort, setSort] = useState<SortKey>('name');
-  const [direction, setDirection] = useState<'asc' | 'desc'>('asc');
+  const [page, setPage] = useAdminListQueryState('/admin/threed/scenarios', 'page', 0, {enabled: view === 'list'});
+  const [pageSize, setPageSize] = useAdminListQueryState('/admin/threed/scenarios', 'limit', 25, {enabled: view === 'list'});
+  const [search, setSearch] = useAdminListQueryState('/admin/threed/scenarios', 'search', '', {enabled: view === 'list'});
+  const [sort, setSort] = useAdminListQueryState<SortKey>('/admin/threed/scenarios', 'sort', 'name', {enabled: view === 'list', values: ["name","slug","project","active","createdAt"]});
+  const [direction, setDirection] = useAdminListQueryState<'asc' | 'desc'>('/admin/threed/scenarios', 'direction', 'asc', {enabled: view === 'list', values: ['asc','desc']});
   const [revision, setRevision] = useState(0);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
@@ -229,7 +230,7 @@ export function ThreeDScenariosCRUD({ projectId, compact = false, view = 'list',
         if (!response.ok || !result.success) throw new Error(result.error || 'Could not load Scenarios.');
         if (controller.signal.aborted) return;
         const nextTotal = Number(result.pagination?.total ?? 0);
-        if (page > 0 && page * pageSize >= nextTotal) { setPage(Math.max(0, Math.ceil(nextTotal / pageSize) - 1)); return; }
+        if (page > 0 && page * pageSize >= nextTotal) { setPage(() => Math.max(0, Math.ceil(nextTotal / pageSize) - 1), {replace: true}); return; }
         setRows(result.data); setTotal(nextTotal); setSelected(new Set());
       } catch (error) {
         if (!controller.signal.aborted) { setRows([]); setTotal(0); setSelected(new Set()); setLoadError(error instanceof Error ? error.message : 'Could not load Scenarios.'); }

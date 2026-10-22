@@ -1,4 +1,5 @@
 'use client';
+import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { ArrowLeft, ArrowUp, ArrowDown, ArrowUpDown, Check, X, Images, FolderTree, FolderOpen, Clapperboard, ExternalLink, Loader2, Pencil, ToggleLeft, ToggleRight, Trash2, Upload } from 'lucide-react';
@@ -33,16 +34,16 @@ export function ThreeDModelTexturesCRUD() {
   const { showToast, ToastComponent } = useToast();
   const inputRef = useRef<HTMLInputElement>(null);
   const [textures, setTextures] = useState<ModelTextureRow[]>([]);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useAdminListQueryState('/admin/threed/model-textures', 'search', '', {enabled: true});
   const [loading, setLoading] = useState(true);
   const [workingId, setWorkingId] = useState<number | 'upload' | 'delete' | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingName, setEditingName] = useState('');
 
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(50);
+  const [page, setPage] = useAdminListQueryState('/admin/threed/model-textures', 'page', 0, {enabled: true});
+  const [pageSize, setPageSize] = useAdminListQueryState('/admin/threed/model-textures', 'limit', 50, {enabled: true});
   const [total, setTotal] = useState(0);
-  const [sort, setSort] = useState<{ field: TextureSortField; direction: 'asc' | 'desc' }>({ field: 'name', direction: 'asc' });
+  const [sort, setSort] = useAdminListQueryState<{ field: TextureSortField; direction: 'asc' | 'desc' }>('/admin/threed/model-textures', 'sort', { field: 'name', direction: 'asc' }, {enabled: true, values: ["name","fileName","type","active","references","size"]});
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [report, setReport] = useState('');
   const [error, setError] = useState('');

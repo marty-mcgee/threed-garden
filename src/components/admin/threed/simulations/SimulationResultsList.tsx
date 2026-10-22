@@ -1,4 +1,5 @@
 'use client';
+import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -12,11 +13,11 @@ import { ModelFieldHelp } from '../models/ModelFieldHelp';
 type Row = { id: number; runId: string; name: string; projectId: number; simulationId: number | null; simulationRevision: number; status: string; createdAt: string; clientEndedAt: string | null };
 const statuses = ['running', 'completed', 'failed', 'cancelled', 'timed-out'];
 export function SimulationResultsList({ projectId: initialProjectId, simulationId: initialSimulationId }: { projectId?: number; simulationId?: number }) {
-  const [projectId, setProjectId] = useState(String(initialProjectId ?? ''));
-  const [simulationId, setSimulationId] = useState(String(initialSimulationId ?? ''));
+  const [projectId, setProjectId] = useAdminListQueryState('/admin/threed/simulation-results', 'projectId', String(initialProjectId ?? ''), {enabled: true, urlDefault: ''});
+  const [simulationId, setSimulationId] = useAdminListQueryState('/admin/threed/simulation-results', 'simulationId', String(initialSimulationId ?? ''), {enabled: true, urlDefault: ''});
   const [projects, setProjects] = useState<{ id: number; name: string }[]>([]);
   const [projectError, setProjectError] = useState('');
-  const [status, setStatus] = useState(''), [page, setPage] = useState(0), [limit, setLimit] = useState(25), [refresh, setRefresh] = useState(0);
+  const [status, setStatus] = useAdminListQueryState('/admin/threed/simulation-results', 'status', '', {enabled: true}), [page, setPage] = useAdminListQueryState('/admin/threed/simulation-results', 'page', 0, {enabled: true}), [limit, setLimit] = useAdminListQueryState('/admin/threed/simulation-results', 'limit', 25, {enabled: true}), [refresh, setRefresh] = useState(0);
   const [rows, setRows] = useState<Row[]>([]), [total, setTotal] = useState(0), [loading, setLoading] = useState(true), [error, setError] = useState('');
   const invalidId = !!simulationId && (!/^[1-9]\d*$/.test(simulationId) || !Number.isSafeInteger(Number(simulationId)) || Number(simulationId) > 2_147_483_647);
   useEffect(() => {
@@ -43,7 +44,7 @@ export function SimulationResultsList({ projectId: initialProjectId, simulationI
         if (!response.ok || !result.success || !Array.isArray(result.data)) throw new Error(result.error || 'Simulation Results unavailable.');
         if (abort.signal.aborted) return;
         const count = Number(result.pagination.total);
-        if (page && page * limit >= count) { setPage(Math.max(0, Math.ceil(count / limit) - 1)); return; }
+        if (page && page * limit >= count) { setPage(() => Math.max(0, Math.ceil(count / limit) - 1), {replace: true}); return; }
         setRows(result.data); setTotal(count);
       } catch (cause) { if (!abort.signal.aborted) setError(cause instanceof Error ? cause.message : 'Simulation Results unavailable.'); }
       finally { if (!abort.signal.aborted) setLoading(false); }

@@ -1,4 +1,5 @@
 'use client';
+import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowDown, ArrowUp, ArrowUpDown, Check, Clapperboard, Box, Users, Pencil, Plus, Trash2, X, FlaskConical } from 'lucide-react';
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
@@ -20,15 +21,15 @@ async function request(url: string, init?: RequestInit) {
 }
 export function ThreeDAnimationSlotsWorkspace({ initialCategoryId }: { initialCategoryId?: number } = {}) {
   const [rows, setRows] = useState<Slot[]>([]), [loading, setLoading] = useState(true), [error, setError] = useState('');
-  const [search, setSearch] = useState(''), [page, setPage] = useState(0), [pageSize, setPageSize] = useState(25);
-  const [sort, setSort] = useState<{ key: SortKey; direction: 'asc' | 'desc' }>({ key: 'name', direction: 'asc' });
+  const [search, setSearch] = useAdminListQueryState('/admin/threed/animation-slots', 'search', '', {enabled: true}), [page, setPage] = useAdminListQueryState('/admin/threed/animation-slots', 'page', 0, {enabled: true}), [pageSize, setPageSize] = useAdminListQueryState('/admin/threed/animation-slots', 'limit', 25, {enabled: true});
+  const [sort, setSort] = useAdminListQueryState<{ key: SortKey; direction: 'asc' | 'desc' }>('/admin/threed/animation-slots', 'sort', { key: 'name', direction: 'asc' }, {enabled: true, values: ["name","categoryName","isActive","references"]});
   const [selected, setSelected] = useState<Set<number>>(new Set()), [draft, setDraft] = useState<Draft | null>(null);
   const [busy, setBusy] = useState(false), [refresh, setRefresh] = useState(0), [notice, setNotice] = useState(''), [operationError, setOperationError] = useState('');
   const [categoryRefresh, setCategoryRefresh] = useState(0);
   const { categories, error: categoryError } = useAnimationCategories(categoryRefresh);
   const [newCategory, setNewCategory] = useState<string | null>(null);
-  const [categoryFilter, setCategoryFilter] = useState(initialCategoryId ? String(initialCategoryId) : '');
-  const [availability, setAvailability] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useAdminListQueryState('/admin/threed/animation-slots', 'categoryId', initialCategoryId ? String(initialCategoryId) : '', {enabled: true, urlDefault: ''});
+  const [availability, setAvailability] = useAdminListQueryState('/admin/threed/animation-slots', 'availability', 'all', {enabled: true, values: ['all','active','inactive']});
   async function createCategory() {
     if (!newCategory?.trim() || busy) return;
     setBusy(true); setOperationError('');
@@ -55,7 +56,7 @@ export function ThreeDAnimationSlotsWorkspace({ initialCategoryId }: { initialCa
     });
   }, [rows, search, sort, categoryFilter, availability]);
   const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  useEffect(() => { setPage(value => Math.min(value, pages - 1)); setSelected(new Set()); }, [pages, page, pageSize, search, sort, categoryFilter, availability]);
+  useEffect(() => { if (!loading && !error) setPage(value => Math.min(value, pages - 1), {replace: true}); setSelected(new Set()); }, [loading, error, pages, page, pageSize, search, sort, categoryFilter, availability]);
   const visible = filtered.slice(page * pageSize, (page + 1) * pageSize), deletable = visible.filter(slot => references(slot) === 0);
   async function save() {
     if (!draft || busy) return;

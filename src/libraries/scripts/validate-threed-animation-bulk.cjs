@@ -19,7 +19,8 @@ vm.runInNewContext(ts.transpileModule(fs.readFileSync('src/components/admin/thre
     if (file.name === 'Interrupted.fbx') throw new Error('Connection interrupted');
     return { ok: true, json: async () => ({ success: true, clipCount: 2 }) };
   },
-  require(name) {
+  require: function fixtureRequire(name) {
+    if (name === '@/components/admin/shared/use-admin-list-query-state') return {useAdminListQueryState: (_route, _key, initial) => fixtureRequire('react').useState(initial)};
     if (name === './AnimationCategories') return { useAnimationCategories: () => ({ categories: [], error: '' }) };
     if (name === 'react') return {
       useEffect() {}, useRef: () => ({ current: null }),

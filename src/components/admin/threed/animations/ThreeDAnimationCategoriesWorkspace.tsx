@@ -1,4 +1,5 @@
 'use client';
+import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 import { useEffect, useMemo, useState } from 'react';
 import { ArrowDown, ArrowUp, ArrowUpDown, FolderTree, Clapperboard, Box, Users, Pencil, Plus, Trash2, FlaskConical } from 'lucide-react';
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
@@ -18,8 +19,8 @@ async function request(url: string, init?: RequestInit) {
 }
 export function ThreeDAnimationCategoriesWorkspace() {
   const [rows, setRows] = useState<Category[]>([]), [loading, setLoading] = useState(true), [error, setError] = useState('');
-  const [search, setSearch] = useState(''), [page, setPage] = useState(0), [pageSize, setPageSize] = useState(25);
-  const [sort, setSort] = useState<{ key: SortKey; direction: 'asc' | 'desc' }>({ key: 'name', direction: 'asc' });
+  const [search, setSearch] = useAdminListQueryState('/admin/threed/animation-categories', 'search', '', {enabled: true}), [page, setPage] = useAdminListQueryState('/admin/threed/animation-categories', 'page', 0, {enabled: true}), [pageSize, setPageSize] = useAdminListQueryState('/admin/threed/animation-categories', 'limit', 25, {enabled: true});
+  const [sort, setSort] = useAdminListQueryState<{ key: SortKey; direction: 'asc' | 'desc' }>('/admin/threed/animation-categories', 'sort', { key: 'name', direction: 'asc' }, {enabled: true, values: ["name","references"]});
   const [selected, setSelected] = useState<Set<number>>(new Set()), [draft, setDraft] = useState<Draft | null>(null);
   const [busy, setBusy] = useState(false), [refresh, setRefresh] = useState(0), [notice, setNotice] = useState(''), [operationError, setOperationError] = useState('');
   useEffect(() => {
@@ -39,7 +40,7 @@ export function ThreeDAnimationCategoriesWorkspace() {
     });
   }, [rows, search, sort]);
   const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  useEffect(() => { setPage(value => Math.min(value, pages - 1)); setSelected(new Set()); }, [pages, page, pageSize, search, sort]);
+  useEffect(() => { if (!loading && !error) setPage(value => Math.min(value, pages - 1), {replace: true}); setSelected(new Set()); }, [loading, error, pages, page, pageSize, search, sort]);
   const visible = filtered.slice(page * pageSize, (page + 1) * pageSize), deletable = visible.filter(category => references(category) === 0);
   async function save() {
     if (!draft || busy) return;

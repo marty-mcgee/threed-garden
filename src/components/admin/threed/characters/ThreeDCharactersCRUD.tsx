@@ -1,5 +1,6 @@
 // components/admin/threed/characters/ThreeDCharactersCRUD.tsx
 'use client';
+import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { ThreeDModelAssetPreview, MODEL_WORKSPACE_PERSPECTIVE } from '@/components/admin/threed/models/ThreeDModelAssetPreview';
 import { modelForPreview } from '@/components/admin/threed/models/model-preview-requirements';
@@ -253,14 +254,14 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
   const [loadError, setLoadError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingCharacter, setEditingCharacter] = useState<Character | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [typeFilter, setTypeFilter] = useState('');
-  const [statusFilter, setStatusFilter] = useState('');
-  const [activeFilter, setActiveFilter] = useState('');
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(25);
+  const [searchQuery, setSearchQuery] = useAdminListQueryState('/admin/threed/characters', 'search', '', {enabled: scrollRecords && view === 'list'});
+  const [typeFilter, setTypeFilter] = useAdminListQueryState('/admin/threed/characters', 'type', '', {enabled: scrollRecords && view === 'list'});
+  const [statusFilter, setStatusFilter] = useAdminListQueryState('/admin/threed/characters', 'status', '', {enabled: scrollRecords && view === 'list'});
+  const [activeFilter, setActiveFilter] = useAdminListQueryState('/admin/threed/characters', 'isActive', '', {enabled: scrollRecords && view === 'list', values: ['', 'true', 'false']});
+  const [page, setPage] = useAdminListQueryState('/admin/threed/characters', 'page', 0, {enabled: scrollRecords && view === 'list'});
+  const [pageSize, setPageSize] = useAdminListQueryState('/admin/threed/characters', 'limit', 25, {enabled: scrollRecords && view === 'list'});
   const [total, setTotal] = useState(0);
-  const [sort, setSort] = useState({ key: 'name', direction: 'asc' });
+  const [sort, setSort] = useAdminListQueryState('/admin/threed/characters', 'sort', { key: 'name', direction: 'asc' }, {enabled: scrollRecords && view === 'list', values: ["name","characterId","type","position","status","active"]});
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
   const [bulkNotice, setBulkNotice] = useState('');
@@ -328,7 +329,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
         if (!response.ok || !data.success) throw new Error(data.error || 'Failed to fetch Characters');
         if (controller.signal.aborted) return;
         setCharacters(data.data); setTotal(Number(data.pagination.total));
-        if (page > 0 && page * pageSize >= data.pagination.total) setPage(Math.max(0, Math.ceil(data.pagination.total / pageSize) - 1));
+        if (page > 0 && page * pageSize >= data.pagination.total) setPage(() => Math.max(0, Math.ceil(data.pagination.total / pageSize) - 1), {replace: true});
       } catch (error) {
         if (!controller.signal.aborted) { setLoadError(error instanceof Error ? error.message : 'Failed to fetch Characters'); setCharacters([]); setTotal(0); }
       } finally { if (!controller.signal.aborted) setLoading(false); }

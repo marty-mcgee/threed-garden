@@ -2,7 +2,7 @@
 
 import { Suspense, useCallback, useEffect, useId, useRef, useState, type ChangeEvent, type ComponentRef, type ReactNode } from 'react';
 import { modelPreviewEvents } from './model-preview-events';
-import { Vector3, type Group } from 'three';
+import { Vector3, type Box3, type OrthographicCamera, type Group } from 'three';
 import { useThree, type RootState } from '@react-three/fiber';
 import { SafeCanvas as Canvas } from '@/components/threed/shared/SafeCanvas';
 import { Bounds, Grid, OrbitControls, useBounds } from '@react-three/drei';
@@ -23,7 +23,22 @@ import { mergeThreeDModelMaterialAssignments, readThreeDModelMaterialOverrides, 
 export interface PreviewPerspective { direction: [number, number, number]; distanceScale: number }
 export const MODEL_WORKSPACE_PERSPECTIVE: PreviewPerspective = { direction: [4, 2, 6], distanceScale: 1 };
 
+/** Exact X/Z footprint framing; image up is negative Z, without perspective or padding. */
+export function frameTopViewCamera(camera: OrthographicCamera, box: Box3) {
+  const center = box.getCenter(new Vector3());
+  const size = box.getSize(new Vector3());
+  const width = Math.max(size.x, 0.0001), depth = Math.max(size.z, 0.0001);
+  const distance = Math.max(width, depth, size.y, 1) * 2;
+  camera.left = -width / 2; camera.right = width / 2;
+  camera.top = depth / 2; camera.bottom = -depth / 2;
+  camera.zoom = 1; camera.near = 0.01; camera.far = distance + size.y + distance;
+  camera.up.set(0, 0, -1);
+  camera.position.set(center.x, box.max.y + distance, center.z);
+  camera.lookAt(center); camera.updateProjectionMatrix(); camera.updateMatrixWorld(true);
+}
+
 interface ThreeDModelAssetPreviewProps {
+  topViewCapture?: boolean;
   model: ModelData | null;
   active?: boolean;
   onBusyChange?: (busy: boolean) => void;
@@ -70,6 +85,7 @@ export interface ThreeDModelTextureLibraryItem {
 
 function PreviewModel({
   model,
+  topViewCapture = false,
   onSettled,
   preserveCameraOnEdit = false,
   fitRevision = 0,
@@ -84,6 +100,7 @@ function PreviewModel({
   materialPreviewSelectionId,
 }: {
   model: ModelData;
+  topViewCapture?: boolean;
   preserveCameraOnEdit?: boolean;
   fitRevision?: number;
   resetRevision?: number;
@@ -121,7 +138,13 @@ function PreviewModel({
       onFitDistance?.(distance);
       if (preserveCameraOnEdit && fittedRevision.current === revision) return;
       fittedRevision.current = revision;
-      if (perspective) {
+      if (topViewCapture) {
+        const { camera, controls, invalidate } = getState();
+        if (!(camera as OrthographicCamera).isOrthographicCamera) return;
+        frameTopViewCamera(camera as OrthographicCamera, bounds.getSize().box);
+        const orbit = controls as { target?: Vector3; update?: () => void } | null;
+        orbit?.target?.copy(center); orbit?.update?.(); invalidate(); onCameraReady?.();
+      } else if (perspective) {
         const position = new Vector3(...perspective.direction).normalize().multiplyScalar(distance * perspective.distanceScale).add(center);
         // Apply the reviewed perspective synchronously. Bounds.moveTo animates
         // across render frames even at maxDuration=0, which can race capture.
@@ -136,7 +159,7 @@ function PreviewModel({
         onCameraReady?.();
       } else bounds.fit();
     });
-  }, [bounds, perspective, onFitDistance, getState, onCameraReady, preserveCameraOnEdit, revision, centerAtOrigin]);
+  }, [bounds, topViewCapture, perspective, onFitDistance, getState, onCameraReady, preserveCameraOnEdit, revision, centerAtOrigin]);
 
   useEffect(() => {
     if (resetRevision > 0) handleBounds(lastBounds.current);
@@ -223,6 +246,7 @@ function MaterialSlotRow({
 
 export function ThreeDModelAssetPreview({
   model,
+  topViewCapture = false,
   active = true,
   onBusyChange,
   preserveCameraOnEdit = false,
@@ -280,7 +304,7 @@ export function ThreeDModelAssetPreview({
   const modelKey = model
     ? `${model.id}:${model.filePath}:${model.files?.map((file) => `${file.relativePath}:${file.filePath}`).join('|') ?? ''}`
     : null;
-  const cameraKey = `${modelKey}:${resetKey}:${JSON.stringify(perspective)}`;
+  const cameraKey = `${modelKey}:${resetKey}:${topViewCapture}:${JSON.stringify(perspective)}`;
   const [fittedCameraKey, setFittedCameraKey] = useState<string | null>(null);
   const handleCameraReady = useCallback(() => setFittedCameraKey(cameraKey), [cameraKey]);
   const loading = Boolean(modelKey && settledKey !== modelKey);
@@ -395,7 +419,7 @@ export function ThreeDModelAssetPreview({
   const assignedTextureCoverage = Boolean(materialInventory?.slots.length && !materialInventory.omittedSlotCount
     && materialInventory.slots.every(slot => assignedTargets.has(slot.id) && slot.textures.some(texture => texture.property === 'map' && texture.ready)));
   const missingFiles = Math.max(0, dependencyCount - attachedDependencyCount - (assignedTextureCoverage ? unresolvedTextureCount : 0));
-  const captureReady = (!perspective || fittedCameraKey === cameraKey) && !loading && !runtimeError && Boolean(model?.modelType === 'procedural' && !model.filePath || model?.filePath && materialInventory?.slots.length)
+  const captureReady = (!(perspective || topViewCapture) || fittedCameraKey === cameraKey) && !loading && !runtimeError && Boolean(model?.modelType === 'procedural' && !model.filePath || model?.filePath && materialInventory?.slots.length)
     && !materialInventory?.slots.some(slot => slot.textures.some(texture => !texture.ready))
     && missingFiles === 0;
 
@@ -460,7 +484,7 @@ export function ThreeDModelAssetPreview({
             Select a Model to preview its available assets.
           </div>
         ) : (
-          <Canvas events={modelPreviewEvents} onCreated={state => { rendererRef.current = state; if (onCaptureImage) state.gl.setClearColor(0x000000, 0); }} gl={{ alpha: true }} key={modelKey} camera={{ position: captureCamera, fov: 45 }} dpr={[1, 1.5]}>
+          <Canvas orthographic={topViewCapture} events={modelPreviewEvents} onCreated={state => { rendererRef.current = state; if (onCaptureImage) state.gl.setClearColor(0x000000, 0); }} gl={{ alpha: true }} key={modelKey} camera={topViewCapture ? { position: [0, 1, 0], up: [0, 0, -1], manual: true } : { position: captureCamera, fov: 45 }} dpr={[1, 1.5]}>
             {!onCaptureImage && <color attach="background" args={['#071426']} />}
             <ambientLight intensity={1.4} />
             <directionalLight position={[5, 8, 5]} intensity={2.4} />
@@ -478,9 +502,10 @@ export function ThreeDModelAssetPreview({
               infiniteGrid
             />}
             <Suspense fallback={null}>
-              <Bounds fit={!perspective && !preserveCameraOnEdit} clip margin={1.25} maxDuration={autoCapture || fixedCaptureCamera ? 0 : 1}>
+              <Bounds fit={!topViewCapture && !perspective && !preserveCameraOnEdit} clip margin={1.25} maxDuration={autoCapture || fixedCaptureCamera ? 0 : 1}>
                 <PreviewModel
                   model={model}
+                  topViewCapture={topViewCapture}
                   preserveCameraOnEdit={preserveCameraOnEdit}
                   fitRevision={fitRevision}
                   resetRevision={resetKey}
@@ -496,14 +521,14 @@ export function ThreeDModelAssetPreview({
                 />
               </Bounds>
             </Suspense>
-            <OrbitControls ref={orbitRef} makeDefault enabled={!autoCapture && !fixedCaptureCamera} enablePan={!onPerspectiveChange} enableDamping={!onPerspectiveChange} dampingFactor={0.08}
+            {!topViewCapture && <OrbitControls ref={orbitRef} makeDefault enabled={!topViewCapture && !autoCapture && !fixedCaptureCamera} enablePan={!onPerspectiveChange} enableDamping={!onPerspectiveChange} dampingFactor={0.08}
               onEnd={() => {
                 const controls = orbitRef.current;
                 if (!onPerspectiveChange || !controls) return;
                 const offset = controls.object.position.clone().sub(controls.target);
                 onPerspectiveChange({ direction: offset.clone().normalize().toArray() as [number, number, number], distanceScale: offset.length() / fitDistance.current });
               }}
-            />
+            />}
           </Canvas>
         )}
         {loading && (

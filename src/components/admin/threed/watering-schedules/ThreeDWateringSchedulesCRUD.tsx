@@ -1,4 +1,5 @@
 'use client';
+import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useEffect, useState } from 'react';
 import { Check, Droplets, RefreshCw, Sprout, X } from 'lucide-react';
@@ -21,11 +22,11 @@ const measurement = (value: number | null, unit: string) => value === null ? 'â€
 
 // Compatibility with Project-admin hosts; this workspace does not mutate records.
 export function ThreeDWateringSchedulesCRUD({ threedId, scrollRecords = false }: { threedId?: number; onModuleUpdate?: () => void; scrollRecords?: boolean }) {
-  const [view, setView] = useState<View>('schedules');
+  const [view, setView] = useAdminListQueryState<View>('/admin/threed/watering-schedules', 'view', 'schedules', {enabled: scrollRecords, values: ['schedules','history']});
   const [rows, setRows] = useState<Row[]>([]);
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(25);
-  const [search, setSearch] = useState('');
+  const [page, setPage] = useAdminListQueryState('/admin/threed/watering-schedules', 'page', 0, {enabled: scrollRecords});
+  const [pageSize, setPageSize] = useAdminListQueryState('/admin/threed/watering-schedules', 'limit', 25, {enabled: scrollRecords});
+  const [search, setSearch] = useAdminListQueryState('/admin/threed/watering-schedules', 'search', '', {enabled: scrollRecords});
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -43,7 +44,7 @@ export function ThreeDWateringSchedulesCRUD({ threedId, scrollRecords = false }:
         if (!response.ok || !result.success) throw new Error(result.error || 'Unable to load Waterings');
         if (controller.signal.aborted) return;
         setRows(result.data); setTotal(Number(result.pagination.total));
-        if (page > 0 && page * pageSize >= result.pagination.total) setPage(Math.max(0, Math.ceil(result.pagination.total / pageSize) - 1));
+        if (page > 0 && page * pageSize >= result.pagination.total) setPage(() => Math.max(0, Math.ceil(result.pagination.total / pageSize) - 1), {replace: true});
       } catch (failure) {
         if (!controller.signal.aborted) { setError(failure instanceof Error ? failure.message : 'Unable to load Waterings'); setRows([]); }
       } finally { if (!controller.signal.aborted) setLoading(false); }

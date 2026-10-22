@@ -1,5 +1,6 @@
 // components/admin/threed/tasks/ThreeDTasksCRUD.tsx
 'use client';
+import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useState, useEffect, useRef } from 'react';
 import {
@@ -93,11 +94,11 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingTask, setEditingTask] = useState<ThreeDTask | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sort, setSort] = useState('title');
-  const [direction, setDirection] = useState<'asc' | 'desc'>('asc');
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(25);
+  const [searchQuery, setSearchQuery] = useAdminListQueryState('/admin/threed/tasks', 'search', '', {enabled: scrollRecords});
+  const [sort, setSort] = useAdminListQueryState('/admin/threed/tasks', 'sort', 'title', {enabled: scrollRecords, values: ["title","type","priority","status","dueDate","assignedTo","isActive"]});
+  const [direction, setDirection] = useAdminListQueryState<'asc' | 'desc'>('/admin/threed/tasks', 'direction', 'asc', {enabled: scrollRecords, values: ['asc','desc']});
+  const [page, setPage] = useAdminListQueryState('/admin/threed/tasks', 'page', 1, {enabled: scrollRecords});
+  const [pageSize, setPageSize] = useAdminListQueryState('/admin/threed/tasks', 'limit', 25, {enabled: scrollRecords});
   const [total, setTotal] = useState(0);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
@@ -162,7 +163,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
         const count = Number(data.pagination?.total ?? 0);
         setSelected(new Set());
         setTotal(count);
-        if (page > Math.max(1, Math.ceil(count / pageSize))) setPage(Math.max(1, Math.ceil(count / pageSize)));
+        if (page > Math.max(1, Math.ceil(count / pageSize))) setPage(() => Math.max(1, Math.ceil(count / pageSize)), {replace: true});
         setTasks(Array.isArray(data.data) ? data.data : []);
       } else {
         showToast(data.error || 'Failed to fetch tasks', 'error');

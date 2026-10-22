@@ -121,7 +121,7 @@ vm.runInNewContext(code('src/app/api/map/threed/route.ts'), {
       if (name.startsWith('@/libraries/schema/')) return schema;
       if (name === 'drizzle-orm') return orm;
       if (name.endsWith('/model-primary-file')) return { modelSelection: () => ({}) };
-      if (name.endsWith('/model-list-query')) return { parseModelListQuery: () => ({limit:50,offset:0}) };
+      if (name.endsWith('/model-list-query')) return { parseModelListQuery: () => ({limit:50,offset:0}), parseModelMissingFilters: () => ({}) };
       // Mutation-only imports are not used by GET.
       return {};
     },

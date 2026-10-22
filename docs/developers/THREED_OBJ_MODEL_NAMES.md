@@ -42,3 +42,5 @@ Private evidence is retained under `reference/imports/obj-model-names-2026-10-21
 Verification: fresh targeted strict TypeScript compilation passed; `npm run validate -- obj-model-names` passed mocked formatting, scope, acronym/punctuation/numeric handling, duplicate/length, owner/stale-plan and journal/name-only-write checks. Live execution independently verified the saved records. No full App CI/build, rendered-page acceptance, schema change, package version change, server start/stop, Git write or deployment is claimed.
 
 The reusable [Renaming Models helper](THREED_MODEL_RENAMING.md) also exposes this rule as obj-design and provides the separate leading-SM to Synty rule. Completed OBJ receipts remain historical and must not be replayed.
+
+On October 22, 2026, the Developer replaced sentence case with Title Case for the existing Design: OBJ Models. See the [Title Case correction](THREED_MODEL_RENAMING.md#october-22-2026-title-case-correction). The sentence-case execution above is historical; preserve its original receipts and do not replay it over the corrected names.

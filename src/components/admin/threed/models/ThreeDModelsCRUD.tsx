@@ -2,6 +2,9 @@
 // Full CRUD for the ThreeD `threed_models` library with relational file management
 // (model files, textures, and supportive media) backed by Vercel Blob storage.
 'use client';
+import { useModelListState } from './use-model-list-state';
+import { buildCategoryTree, flattenCategoryTree } from './category-tree-core';
+import type { ModelListSortField } from '@/libraries/services/threed/models/model-list-query';
 import { ModelTopViewImage } from './ModelTopViewImage';
 
 import Link from 'next/link';
@@ -146,7 +149,7 @@ const formatFileSize = (bytes: number | null): string =>
         ? `${(bytes / 1024).toFixed(1)} KB`
         : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 
-type ModelSortField = 'name' | 'category' | 'options' | 'type' | 'status' | 'active' | 'size';
+type ModelSortField = ModelListSortField;
 const modelOptions = (model: Model) => [
   model.isDefault && 'Default', model.isPublic && 'Public', model.isLibraryItem && 'Library',
   model.usedByPlants && 'Plants', model.usedByCharacters && 'Characters',
@@ -154,28 +157,29 @@ const modelOptions = (model: Model) => [
 // ============================================
 // COMPONENT
 // ============================================
-type ThreeDModelsCRUDProps = { onModuleUpdate?: () => void; scrollRecords?: boolean; linkedModelId?: number | null; view?: "list" | "create" | "edit" };
+type ThreeDModelsCRUDProps = { onModuleUpdate?: () => void; scrollRecords?: boolean; syncListUrl?: boolean; linkedModelId?: number | null; view?: "list" | "create" | "edit" };
 
 export function ThreeDModelsCRUD(props: ThreeDModelsCRUDProps) {
   return <Suspense fallback={<p role="status">Loading Models…</p>}><ThreeDModelsCRUDContent {...props} /></Suspense>;
 }
 
-function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linkedModelId = null, view = "list" }: ThreeDModelsCRUDProps) {
+function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncListUrl = false, linkedModelId = null, view = "list" }: ThreeDModelsCRUDProps) {
   const router = useRouter();
   const { showToast, ToastComponent } = useToast();
   const [models, setModels] = useState<Model[]>([]);
-  const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(50);
+  const { state: listState, update: updateList, reset: resetList } = useModelListState(syncListUrl && view === 'list');
+  const { page, pageSize, search: searchQuery, category, modelType, status, isActive, missingTextures, missingThumbnail, missingTopView } = listState;
+  const sort = { field: listState.sort, direction: listState.direction };
+  const setPage = (value: number | ((current: number) => number)) => updateList({page: typeof value === 'function' ? value(page) : value});
   const [total, setTotal] = useState(0);
   const listRequest = useRef(0);
   const listAbort = useRef<AbortController | null>(null);
   const [loading, setLoading] = useState(true);
+  const [listError, setListError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [animationModel, setAnimationModel] = useState<Model | null>(null);
   const [editingModel, setEditingModel] = useState<Model | null>(null);
   const [linkedModelError, setLinkedModelError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [sort, setSort] = useState<{ field: ModelSortField; direction: 'asc' | 'desc' }>({ field: 'name', direction: 'asc' });
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [deleting, setDeleting] = useState(false);
   const deleteLock = useRef(false);
@@ -264,7 +268,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
     void fetchModels();
     return () => { ++listRequest.current; listAbort.current?.abort(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [view, page, pageSize, searchQuery, sort.field, sort.direction]);
+  }, [view, page, pageSize, searchQuery, sort.field, sort.direction, category, modelType, status, isActive, missingTextures, missingThumbnail, missingTopView]);
 
   async function fetchCategories() {
     try {
@@ -278,6 +282,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
   }
 
   async function fetchModels(_showLoading = true) {
+    setListError('');
     const requestId = ++listRequest.current;
     listAbort.current?.abort();
     const controller = new AbortController();
@@ -286,6 +291,8 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
     try {
       const params = new URLSearchParams({ limit: String(pageSize), offset: String(page * pageSize),
         search: searchQuery, sort: sort.field, direction: sort.direction });
+      for (const [key,value] of Object.entries({category,modelType,status,isActive}))if(value)params.set(key,value);
+      for (const [key,value] of Object.entries({missingTextures,missingThumbnail,missingTopView}))if(value)params.set(key,'true');
       const response = await fetch(`/api/threed/models?${params}`, { cache: 'no-store', signal: controller.signal });
       const data = await response.json();
       if (requestId !== listRequest.current) return;
@@ -293,11 +300,13 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
       const count = Number(data.pagination?.total ?? 0);
       setTotal(count);
       const lastPage = Math.max(0, Math.ceil(count / pageSize) - 1);
-      if (page > lastPage) { setPage(lastPage); return; }
+      if (page > lastPage) { updateList({page:lastPage}, true); return; }
       setModels(Array.isArray(data.data) ? data.data : []);
     } catch (error) {
       if (requestId !== listRequest.current || controller.signal.aborted) return;
-      showToast(error instanceof Error ? error.message : 'Failed to fetch models', 'error');
+      const message = error instanceof Error ? error.message : 'Failed to fetch models';
+      setListError(message);
+      showToast(message, 'error');
       setModels([]);
       setTotal(0);
     } finally {
@@ -309,6 +318,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
     setSelectedIds((current) => new Set([...current].filter((id) => models.some((model) => model.id === id))));
   }, [models]);
 
+  const categoryChoices = useMemo(() => flattenCategoryTree(buildCategoryTree(categories.filter(item => item.isActive), '', {field:'order', direction:'asc'}), new Set<number>(), item => item.id), [categories]);
   const filteredModels = models;
   const selectedModels = models.filter((model) => selectedIds.has(model.id));
   const allVisibleSelected = filteredModels.length > 0 && filteredModels.every((model) => selectedIds.has(model.id));
@@ -318,7 +328,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
     const active = sort.field === field;
     const Icon = active ? sort.direction === 'asc' ? ArrowUp : ArrowDown : ArrowUpDown;
     return <TableHead className="text-xs py-1" aria-sort={active ? sort.direction === 'asc' ? 'ascending' : 'descending' : 'none'}>
-      <button type="button" className="flex items-center gap-1 py-1 whitespace-nowrap" disabled={deleting || loading} onClick={() => { setPage(0); setSelectedIds(new Set()); setSort((current) => ({ field, direction: current.field === field && current.direction === 'asc' ? 'desc' : 'asc' })); }}>
+      <button type="button" className="flex items-center gap-1 py-1 whitespace-nowrap" disabled={deleting || loading} onClick={() => { setSelectedIds(new Set()); updateList({ page: 0, sort: field, direction: sort.field === field && sort.direction === 'asc' ? 'desc' : 'asc' }); }}>
         {label}<Icon aria-hidden="true" className="h-3 w-3" />
       </button>
     </TableHead>;
@@ -663,7 +673,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
                         <ThreeDModelPreviewImageFields mode={view === 'create' ? 'create' : 'edit'} form={formData} setForm={setFormData}
                           isSubmitting={isSubmitting} uploadingPrimary={uploadingPrimary} uploadingThumbnail={uploadingThumbnail} onThumbnail={handleThumbnailUpload}
                           previewImageAction={importerPreviewModel && <ModelPreviewImageExport key={editingModel?.id ?? 'draft'} model={importerPreviewModel} useDraftModel onOpenChange={setExportOpen} dependencyCount={0} attachedDependencyCount={0} disabled={busy} onUseImageUrl={url => setFormData(current => ({ ...current, thumbnailUrl: url }))} />} />
-                        <ModelTopViewImage modelId={editingModel?.id} value={formData.imageTopViewUrl ?? ''} disabled={busy || !detailsReady} onBusyChange={setUploadingThumbnail} onChange={imageTopViewUrl => setFormData(current => ({ ...current, imageTopViewUrl }))} />
+                        <ModelTopViewImage exportAction={editingModel && importerPreviewModel && <ModelPreviewImageExport key={editingModel.id + '-top-view'} imageTarget="top-view" model={importerPreviewModel} useDraftModel onOpenChange={setExportOpen} dependencyCount={0} attachedDependencyCount={0} disabled={busy || !detailsReady} onUseImageUrl={url => setFormData(current => ({ ...current, imageTopViewUrl: url }))} />} modelId={editingModel?.id} value={formData.imageTopViewUrl ?? ''} disabled={busy || !detailsReady} onBusyChange={setUploadingThumbnail} onChange={imageTopViewUrl => setFormData(current => ({ ...current, imageTopViewUrl }))} />
                       </fieldset>
                     </section>
                     <fieldset aria-label="Model details" tabIndex={0} disabled={busy || !detailsReady} className="min-h-0 min-w-0 rounded-lg border admin-editor-panel p-3 lg:overflow-y-auto [&_section]:rounded-md [&_section]:border [&_section]:p-3">
@@ -734,7 +744,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
             aria-label="Search Models"
             placeholder="Search by name or type..."
             value={searchQuery}
-            onChange={(event) => { setPage(0); setSearchQuery(event.target.value); setSelectedIds(new Set()); }}
+            onChange={(event) => { updateList({ page: 0, search: event.target.value }, true); setSelectedIds(new Set()); }}
             className="h-7 pl-7 text-xs"
           />
         </div>
@@ -751,6 +761,21 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
       </AdminWorkspaceHeader>
       </fieldset>
 
+      <fieldset disabled={deleting} className="flex shrink-0 flex-wrap items-center gap-2 rounded-lg border p-2 text-xs" aria-label="Model filters">
+        <label className="flex items-center gap-1">Category <select aria-label="Filter Models by Category" className="h-7 max-w-64 rounded border bg-background px-2" value={category} onChange={e => updateList({page:0,category:e.target.value})}>
+          <option value="">All Categories</option>
+          {category && !categoryChoices.some(item => item.category.slug === category) && <option value={category}>{category}</option>}
+          {categoryChoices.map(({category: item, depth}) => <option key={item.id} value={item.slug}>{'-- '.repeat(depth)}{item.name}</option>)}
+        </select></label>
+        <label className="flex items-center gap-1">Type <select aria-label="Filter Models by Type" className="h-7 rounded border bg-background px-2" value={modelType} onChange={e => updateList({page:0,modelType:e.target.value})}><option value="">All Types</option>{MODEL_TYPE_OPTIONS.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
+        <label className="flex items-center gap-1">Status <select aria-label="Filter Models by Status" className="h-7 rounded border bg-background px-2" value={status} onChange={e => updateList({page:0,status:e.target.value})}><option value="">All Statuses</option>{MODEL_STATUS_OPTIONS.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}</select></label>
+        <label className="flex items-center gap-1">Active <select aria-label="Filter Models by Active flag" className="h-7 rounded border bg-background px-2" value={isActive} onChange={e => updateList({page:0,isActive:e.target.value})}><option value="">All</option><option value="true">Active</option><option value="false">Inactive</option></select></label>
+        {([['missingTextures','Missing Texture assignments'],['missingThumbnail','Missing thumbnail'],['missingTopView','Missing Top View image']] as const).map(([key,label]) => <label key={key} className="flex items-center gap-1 rounded border px-2 py-1"><input type="checkbox" checked={listState[key]} onChange={e => updateList({page:0,[key]:e.target.checked})} />{label}</label>)}
+        <ModelFieldHelp label="Model filters">Filters combine. Category matches assigned active Categories. Missing Texture assignments matches the Overview tally; embedded textures and material colors may still render correctly. The Models page URL retains search, filters, sort and pagination for sharing and Back/Forward.</ModelFieldHelp>
+        <Button type="button" variant="ghost" size="sm" className="h-7 text-xs" onClick={resetList}>Clear filters</Button>
+      </fieldset>
+
+      {listError && <div role="alert" className="text-sm text-destructive">{listError} <Button type="button" variant="outline" size="sm" onClick={() => void fetchModels()}>Retry Models</Button></div>}
       {deleteReport && <p role="status" className="text-sm">{deleteReport}</p>}
       {deleteFailures.length > 0 && <ul className="list-inside list-disc text-sm text-destructive" aria-label="Model deletion results">{deleteFailures.map((failure) => <li key={failure}>{failure}</li>)}</ul>}
 
@@ -769,7 +794,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, linked
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <label>Per page <select aria-label="Models per page" className="rounded border bg-background p-1" value={pageSize} disabled={deleting || loading}
-            onChange={(event) => { setPage(0); setPageSize(Number(event.target.value)); setSelectedIds(new Set()); }}>
+            onChange={(event) => { updateList({ page: 0, pageSize: Number(event.target.value) }); setSelectedIds(new Set()); }}>
             {[25, 50, 100, 200].map((size) => <option key={size} value={size}>{size}</option>)}
           </select></label>
           <Button variant="outline" size="sm" className="text-xs" disabled={loading || deleting || page === 0} onClick={() => setPage(0)}>First</Button>
