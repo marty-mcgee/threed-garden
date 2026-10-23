@@ -2,11 +2,15 @@
 
 ## Current checkpoint
 
-Package/root lockfile and Developer-confirmed production baseline: **[v0.27.2 - ThreeD Models: Editor layout and embedded images](docs/releases/v0.27.2.md)**, released October 23, 2026. Preparation passed fresh isolated TypeScript, all 91 offline CI tasks, guarded production build and 1,575-input parity. Developer accepted the editor visual refinements; live embedded-image registration verification remains separately pending. Repository HEAD observed after confirmation: `b89eb709`; exact deployed commit and independent post-deployment checks are not established. Preserve completed data journals; do not replay operations.
+Package/root lockfile: **0.27.3**, prepared [ThreeD Models: Files and Materials](docs/releases/v0.27.3.md). Developer accepted the consolidated editor layout.
+
+Developer-confirmed production baseline: **[v0.27.2 - ThreeD Models: Editor layout and embedded images](docs/releases/v0.27.2.md)**, released October 23, 2026. Preparation passed fresh isolated TypeScript, all 91 offline CI tasks, guarded production build and 1,575-input parity. Developer accepted the editor visual refinements; live embedded-image registration verification remains separately pending. Repository HEAD observed after confirmation: `b89eb709`; exact deployed commit and independent post-deployment checks are not established. Preserve completed data journals; do not replay operations.
 
 The October 22 checkpoint is Developer-confirmed released at the requested **0.27.1**. Scope: ThreeD Admin shared filtering, Model Top View image export and retained Design OBJ Title Case helper work. Final fresh isolated TypeScript, all 90 offline CI tasks, guarded production build and 1,564-input parity passed. Production confirmation is Developer evidence; exact deployed commit and independent post-deployment checks remain unverified. See [additional checkpoint](docs/releases/v0.27.1.md#october-22-additional-checkpoint--threed-admin-filtering-and-model-top-view-export).
 
 Developer naming: **ThreeD > Project > Model > DetailsCard**. Use exact App names, verify ownership, state uncertainty and honor corrections. Provide concise commit titles only unless asked for a body; keep responses concise with **Next Steps:**. See [durable working preferences](docs/agents/README.md#developer-preferences) and [AGENTS.md](AGENTS.md).
+
+Unreleased Model Files and Materials work is tracked in [v0.27.3](docs/releases/v0.27.3.md). Thumbnail saves register owned Files transactionally; older saved references have an explicit Attach saved thumbnail action. Files now consolidates dependency repair and attachment roles; Materials consolidates per-slot and bulk Texture assignment controls. Focused offline checks passed; Developer accepted the layout. Live persistence checks remain pending. Fresh isolated TypeScript, all 92 offline CI tasks, guarded build and 1,579-input parity passed. No deployment is claimed.
 
 ## Architecture and source locations
 

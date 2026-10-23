@@ -1,3 +1,4 @@
+import { attachModelThumbnail } from '@/libraries/services/threed/models/model-thumbnail-attachment';
 import { retryDisconnectedRead } from '@/libraries/db/read-retry';
 import { databaseConnectionDiagnostic } from '@/libraries/db/connection-diagnostics';
 import { parseModelListQuery, parseModelMissingFilters } from '@/libraries/services/threed/models/model-list-query';
@@ -121,6 +122,10 @@ async function updateModelAndCategories(
   primaryFile?: PendingPrimaryModelFile,
 ) {
   return db.transaction(async (tx) => {
+    if (updates.thumbnailUrl) {
+      const attachment = await attachModelThumbnail(tx, userId, modelId, updates.thumbnailUrl);
+      if (attachment) updates.hasExternalFiles = true;
+    }
     if (primaryFile) {
       const [createdFile] = await tx.insert(threedModelFiles).values({
         userId,
@@ -689,6 +694,9 @@ export async function POST(request: NextRequest) {
             loadOrder: file.loadOrder || 0,
           });
         }
+      }
+      if (normalizedThumbnailUrl) {
+        await attachModelThumbnail(tx, userId, createdModel.id, normalizedThumbnailUrl);
       }
       return completedModel;
     });

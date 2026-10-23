@@ -541,3 +541,13 @@ Inspection is bounded to 32 MiB saved geometry; registration supports PNG/JPEG/W
 Details and Files share a top-aligned responsive preview and the same two-column proportions. Details keeps Thumbnail and Top View controls side by side beneath the preview; both expose Image location, a preview and upload/export/remove actions. Top View location is read-only and uses the owned attachment workflow. Save/Cancel stays visible in its green action row.
 
 Files keeps Model files and attachments directly below its preview. Upload supporting files and Linked Texture and embedded resources start collapsed; explicit gallery navigation expands its ancestor disclosures. The preview mode selector replaces its static title; File Type is in the Edit Model header and dependencies follow Details/Files. Texture-channel guidance lives in the question-mark tooltip. A stationary full-width status area displays the existing preview owner's loading, ready, temporary-preview or error state. Status remains an inspection aid, not proof of correct rendering or automatic Model activation.
+
+## Thumbnail attachment consistency
+
+Thumbnail selection remains `threed_models.thumbnail_url`. On create or an explicit thumbnail Save, the same transaction reuses or registers an owned `threed_model_files` reference (`other`, shown under Preview images). Upload and Details export remain drafts until Save; clearing/changing the selection retains older attachments.
+
+Files offers **Attach saved thumbnail** when the saved URL has no matching attachment. Its owner-scoped POST `/api/threed/models/[id]/thumbnail-attachment` reads the saved URL under a Model row lock, reuses exact URL matches, and never fetches/uploads remote bytes. Registration supports HTTPS PNG/JPG/WebP URLs fitting the existing 500-character File path column. Longer legacy thumbnail URLs still save normally but cannot be attached through this action. No schema or automatic GET/backfill writes are added.
+
+Scope, evidence and pending acceptance: [v0.27.3 checkpoint](../releases/v0.27.3.md).
+
+The Model Files workspace places dependency status and missing-reference repair actions in the attachment manager. Saved required Files carry role badges; material libraries and preview images have separate display groups without new schema types. Geometry controls remain on the right above a unified Materials section: select a slot and channel, preview a Texture, then save to that material or all supported slots. The previous duplicate bulk Texture picker is removed; its bulk-save capability remains in Materials.

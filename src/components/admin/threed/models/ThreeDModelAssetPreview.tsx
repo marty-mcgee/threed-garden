@@ -312,7 +312,6 @@ export function ThreeDModelAssetPreview({
   useEffect(() => { onBusyChange?.(savingMaterialAssignment || capturing); }, [savingMaterialAssignment, capturing, onBusyChange]);
   useEffect(() => { if (active) setSettledKey(null); }, [active]);
   const [materialAssignmentError, setMaterialAssignmentError] = useState<string | null>(null);
-  const [quickTextureId, setQuickTextureId] = useState('');
   const [materialChannel, setMaterialChannel] = useState<ThreeDModelMaterialChannel>('baseColor');
   const materialTextureInputRef = useRef<HTMLInputElement>(null);
   const modelKey = model
@@ -348,16 +347,14 @@ export function ThreeDModelAssetPreview({
     return (attachment?.filePath || assignment.textureRelativePath) === materialPreviewOverride.textureUrl;
   };
   const hasUnsavedPreview = Boolean(materialPreviewOverride && (
-    quickTextureId
-      ? !assignableSlots.length || assignableSlots.some(slot => !previewMatchesSavedSlot(slot.id))
-      : !previewMatchesSavedSlot(materialPreviewOverride.targetKey)
+    !previewMatchesSavedSlot(materialPreviewOverride.targetKey)
   ));
 
   useEffect(() => {
     setSelectedMaterialSlotId(null);
     setMaterialPreviewOverride(null);
     setMaterialAssignmentError(null);
-    setQuickTextureId('');
+
     setMaterialChannel('baseColor');
   }, [modelKey]);
 
@@ -585,12 +582,7 @@ export function ThreeDModelAssetPreview({
       {((showMaterialInspector && model) || splitMaterialInspector) && (
         <section className={`${splitMaterialInspector ? 'rounded-lg border bg-muted/20' : 'border-t bg-background/35'} p-3`} aria-labelledby="model-texture-assignment-title">
           <div className="flex flex-wrap items-center gap-2">
-            <h3 id="model-texture-assignment-title" className="text-xs font-semibold">{materialInspectorReadOnly ? 'Saved appearance' : 'Model file + global appearance'}</h3>
-            {materialInventory && (
-              <span className="text-[10px] text-muted-foreground">
-                {materialInventory.materialSlotCount} material slots
-              </span>
-            )}
+            <h3 id="model-texture-assignment-title" className="text-xs font-semibold">{materialInspectorReadOnly ? 'Saved appearance' : 'Geometry'}</h3>
             {!materialInspectorReadOnly && <input
               ref={materialTextureInputRef}
               type="file"
@@ -601,89 +593,9 @@ export function ThreeDModelAssetPreview({
           </div>
           {primaryFileControls}
           {materialInspectorReadOnly && model && <div className="mt-2 space-y-2 text-xs"><p className="text-muted-foreground">{assignedTargets.size ? `${assignedTargets.size} saved Base Color assignment(s) on the parent Model.` : 'No saved Base Color assignments on the parent Model.'} Loaded image maps are shown in Materials below.</p><Button asChild variant="outline" size="sm" className="h-7 text-xs"><a href={`/admin/threed/models/${model.id}?tab=files`}>Edit Model appearance</a></Button></div>}
-          {!materialInspectorReadOnly && showMaterialInspector && model && materialInventory && materialInventory.slots.length > 0 && (
-            <div className="mt-2 space-y-2">
-              <div className="flex flex-wrap items-center gap-2">
-                <label htmlFor="model-appearance-channel" className="text-xs">Texture channel</label>
-                <select id="model-appearance-channel" aria-label="Texture channel" className="h-8 rounded border bg-background px-2 text-xs" value={materialChannel}
-                  disabled={savingMaterialAssignment} onChange={event => {
-                    const channel = event.target.value as ThreeDModelMaterialChannel;
-                    setMaterialChannel(channel); setQuickTextureId(''); setMaterialAssignmentError(null);
-                    if (selectedMaterialSlot) selectMaterialSlot(selectedMaterialSlot, channel);
-                    else setMaterialPreviewOverride(null);
-                  }}>
-                  {THREED_MODEL_MATERIAL_CHANNELS.map(channel => <option key={channel} value={channel}>{THREED_MODEL_MATERIAL_CHANNEL_LABELS[channel]}</option>)}
-                </select>
-                <ModelFieldHelp label="Texture channel">Embedded maps stay in the Model file. These saved image assignments override only the selected channel. A packed ORM image can be reused for Occlusion (R), Roughness (G), and Metallic (B).</ModelFieldHelp>
-                <label htmlFor="model-appearance-texture" className="w-full text-xs">{channelLabel} Texture</label>
-                {textureLibrary.length > 0 ? (
-                  <>
-                    <select
-                      id="model-appearance-texture"
-                      aria-label="Select existing Model Texture"
-                      className="h-8 w-full min-w-0 rounded border bg-background px-2 text-xs"
-                      value={quickTextureId}
-                      onChange={(event) => {
-                        setQuickTextureId(event.target.value);
-                        const texture = textureLibrary.find((item) => item.id === Number(event.target.value));
-                        const firstSlot = assignableSlots[0];
-                        if (texture && firstSlot) {
-                          setSelectedMaterialSlotId(firstSlot.id);
-                          setMaterialPreviewOverride({
-                            targetKey: firstSlot.id,
-                            channel: materialChannel,
-                            textureUrl: texture.filePath,
-                            fileName: texture.fileName,
-                          });
-                        }
-                      }}
-                    >
-                      <option value="">Choose a saved Texture…</option>
-                      {textureLibrary.filter((texture) => texture.id > 0).map((texture) => (
-                        <option key={texture.id} value={texture.id}>
-                          {texture.textureName} — {texture.fileName}
-                        </option>
-                      ))}
-                    </select>
-                    <Button
-                      type="button"
-                      size="sm"
-                      className="h-8 shrink-0 text-xs"
-                      disabled={!quickTextureId || !assignableSlots.length || savingMaterialAssignment || materialInventory.omittedSlotCount > 0 || !onSaveMaterialAssignment}
-                      onClick={async () => {
-                        if (!quickTextureId || !onSaveMaterialAssignment) return;
-                        setSavingMaterialAssignment(true);
-                        setMaterialAssignmentError(null);
-                        try {
-                          await onSaveMaterialAssignment({
-                            targetKeys: assignableSlots.map((slot) => slot.id),
-                            channel: materialChannel,
-                            textureId: Number(quickTextureId),
-                          });
-                        } catch (saveError) {
-                          setMaterialAssignmentError(saveError instanceof Error ? saveError.message : 'Failed to assign Model Texture');
-                        } finally {
-                          setSavingMaterialAssignment(false);
-                        }
-                      }}
-                    >
-                      {savingMaterialAssignment ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Check className="mr-1 h-3.5 w-3.5" />}
-                      {savingMaterialAssignment ? 'Saving…' : materialChannel === 'baseColor' ? 'Save Texture to all materials' : `Save ${channelLabel} to ${assignableSlots.length} supported materials`}
-                    </Button>
-                  </>
-                ) : (
-                  <Button asChild type="button" size="sm" variant="outline" className="h-8 text-xs">
-                    <a href="/admin/threed/model-textures">Open Model Textures</a>
-                  </Button>
-                )}
-              </div>
-
-
-            </div>
-          )}
           {(!showMaterialInspector || !model) && <p className="mt-2 text-xs text-muted-foreground">{materialInspectorNotice || 'Select a Model to configure its appearance.'}</p>}
           {showMaterialInspector && model && !materialInventory && <p className="mt-2 text-xs text-muted-foreground">Loading material settings…</p>}
-          {materialAssignmentError && <p className="mt-2 text-[10px] text-destructive">{materialAssignmentError}</p>}
+
         </section>
       )}
       {requiredFiles}
@@ -691,8 +603,29 @@ export function ThreeDModelAssetPreview({
         <section className="rounded-lg border bg-muted/20 p-3">
           <details className="model-individual-materials" open={splitMaterialInspector || materialInspectorReadOnly || undefined}>
             <summary className="cursor-pointer text-xs font-medium">
-              {materialInspectorReadOnly ? 'Materials' : 'Individual materials (advanced)'}
+              Materials
+            {materialInventory && (
+              <span className="ml-2 text-[10px] text-muted-foreground">
+                {materialInventory.materialSlotCount} material slots
+              </span>
+            )}
             </summary>
+            {!materialInspectorReadOnly && <div className="mt-3 flex flex-wrap items-center gap-2">
+                <label htmlFor="model-appearance-channel" className="text-xs">Texture channel</label>
+                <select id="model-appearance-channel" aria-label="Texture channel" className="h-8 rounded border bg-background px-2 text-xs" value={materialChannel}
+                  disabled={savingMaterialAssignment} onChange={event => {
+                    const channel = event.target.value as ThreeDModelMaterialChannel;
+                    setMaterialChannel(channel); setMaterialAssignmentError(null);
+                    if (selectedMaterialSlot) selectMaterialSlot(selectedMaterialSlot, channel);
+                    else setMaterialPreviewOverride(null);
+                  }}>
+                  {THREED_MODEL_MATERIAL_CHANNELS.map(channel => <option key={channel} value={channel}>{THREED_MODEL_MATERIAL_CHANNEL_LABELS[channel]}</option>)}
+                </select>
+                <ModelFieldHelp label="Texture channel">Embedded maps stay in the Model file. These saved image assignments override only the selected channel. A packed ORM image can be reused for Occlusion (R), Roughness (G), and Metallic (B).</ModelFieldHelp>
+
+              <p className="w-full text-xs text-muted-foreground">Optional appearance overrides. Select a material below, then preview a Texture and save to that material or all supported materials.</p>
+            </div>}
+          {materialAssignmentError && <p className="mt-2 text-[10px] text-destructive">{materialAssignmentError}</p>}
             {materialInspectorLinks && <div className="mt-2">{materialInspectorLinks}</div>}
             {(!showMaterialInspector || !model) ? <p className="mt-2 text-xs text-muted-foreground">{materialInspectorNotice || 'Select a Model to inspect its materials.'}</p> : <>
             {!materialInspectorReadOnly && <div className="mt-2 flex justify-start">
@@ -722,7 +655,7 @@ export function ThreeDModelAssetPreview({
           {!materialInspectorReadOnly && selectedMaterialSlot && (availableTextureAttachments.length > 0 || textureLibrary.length > 0) && (
             <div className="mt-2 flex items-center gap-2 rounded border border-cyan-500/20 bg-cyan-500/5 p-2">
               <label htmlFor="model-material-attachment" className="shrink-0 text-[10px] font-medium">
-                Select Existing Model Texture
+                Texture
               </label>
               <select
                 id="model-material-attachment"
@@ -787,7 +720,7 @@ export function ThreeDModelAssetPreview({
                   }}
                 >
                   {savingMaterialAssignment ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Check className="mr-1 h-3 w-3" />}
-                  Save assignment
+                  Save to selected material
                 </Button>
               )}
               {onSaveMaterialAssignment && (

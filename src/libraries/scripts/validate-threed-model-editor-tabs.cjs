@@ -220,7 +220,7 @@ async function redirects() {
 }
 async function filesChecks() {
   const rt = runtime(), requests = [], busy = [];
-  let active = true, resolveSave, saved = { id: 7, userId: 'owner', modelName: 'Oak', modelType: 'procedural', filePath: '', metadata: { fallbackShape: 'sphere' }, mainModelFileId: null, files: [] };
+  let active = true, resolveSave, resolveAttachment, saved = { id: 7, userId: 'owner', modelName: 'Oak', modelType: 'procedural', filePath: '', metadata: { fallbackShape: 'sphere' }, mainModelFileId: null, files: [] };
   const fallback = load('src/libraries/services/threed/models/model-fallback-core.ts', {});
   const toast = { showToast() {}, ToastComponent: null };
   const reportBusy = value => busy.push(value);
@@ -242,6 +242,11 @@ async function filesChecks() {
     if (options.method === 'PATCH') {
       await new Promise(resolve => { resolveSave = resolve; });
       saved = { ...saved, ...JSON.parse(options.body) }; data = saved;
+    } else if (url === '/api/threed/models/7/thumbnail-attachment') {
+      assert.equal(options.method, 'POST'); assert.equal(options.body, undefined, 'Reconcile the saved server reference, not a browser URL');
+      await new Promise(resolve => { resolveAttachment = resolve; });
+      saved = { ...saved, files: [{ id: 91, fileName: 'model-7-thumbnail.png', relativePath: 'previews/thumbnail.png', fileType: 'other', filePath: saved.thumbnailUrl, fileSize: null, loadOrder: 0 }] };
+      data = saved.files[0];
     } else if (url.includes('view=selector')) data = [{ id: 7, modelName: 'Oak', modelType: 'procedural' }];
     else if (url.includes('requirements')) data = { status: 'not_required', requirements: [] };
     else if (url === '/api/threed/model-textures') data = [];
@@ -276,6 +281,16 @@ async function filesChecks() {
   assert(reads.every(item => item.options.cache === 'no-store'));
   preview().props.onBusyChange(true); rt.render(); assert.equal(busy.at(-1), true, 'Appearance operations participate in the guard');
   preview().props.onBusyChange(false); rt.render(); assert.equal(busy.at(-1), false);
+  saved = { ...saved, thumbnailUrl: 'https://fixture.invalid/thumbnail.png' };
+  active = false; rt.render(); active = true; rt.render(); await rt.flush();
+  const attach = find(node => node.type === 'Button' && text(node) === 'Attach saved thumbnail');
+  assert(attach, 'Existing saved thumbnail offers explicit reconciliation');
+  attach.props.onClick(); attach.props.onClick(); rt.render(); await rt.flush();
+  assert.equal(requests.filter(item => item.options.method === 'POST').length, 1, 'Double click submits once');
+  assert.equal(busy.at(-1), true, 'Attachment locks parent navigation');
+  resolveAttachment(); await rt.flush();
+  assert.equal(busy.at(-1), false);
+  assert(!find(node => node.type === 'Button' && text(node) === 'Attach saved thumbnail'), 'Success refreshes attachments and removes repair action');
 }
 
 function previewChecks() {
