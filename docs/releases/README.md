@@ -6,6 +6,8 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
+ - [v0.27.4 - App directory cleanup (prepared for production release)](v0.27.4.md)
+
  - [v0.27.3 - ThreeD Models: Files and Materials (Developer-confirmed production release)](v0.27.3.md)
 
  - [v0.27.2 - ThreeD Models: Editor layout and embedded images (Developer-confirmed production release)](v0.27.2.md)

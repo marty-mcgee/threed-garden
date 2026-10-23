@@ -60,3 +60,11 @@ Run `npm run validate -- farmbot-command-policy` for Phase 3 semantic intent or 
 The read-only worker runs separately with `npm run farmbot:mqtt-worker`. Its private `THREED_MQTT_*` configuration is documented in [FarmBot Adapter for ThreeD MQTT Services](FARMBOT_MQTT_WORKER.md). Use distinct App-to-worker and worker-to-App signing keys. The old global FarmBot environment-token workflow is not the v0.18.1b integration path.
 
 The complete policy and manual ThreeD checklist are in [Agent Validation](../agents/VALIDATION.md).
+
+## Local artifacts and compiler boundaries
+
+Retained `reference/`, `public/home-design/` and `public/assets-archive/` content is excluded from TypeScript checking as well as Git. `next-env.d.ts` is the Next-generated declaration; the redundant tracked `next-dev.d.ts` has been retired and is excluded/ignored. Keep the existing Next generated route-type includes. Root `test-results/` and `playwright-report/` are ignored generated outputs.
+
+Ignoring a directory does not authorize deletion: preserve recovery journals, original assets and local Drizzle snapshots. Active `.next` outputs belong to the Developer server. Review exact artifact paths before cleanup; see the [v0.27.4 proposal](../releases/v0.27.4.md).
+
+Local editor/agent settings (`.claude/`, `.cursor/`, `.vscode/`, `.codex/`, `.mcp.json`, `opencode.json`) are ignored and are not distributed in new checkouts. Configure these locally as needed. Shared `.github/`, `.nvmrc`, `components.json` and `skills-lock.json` remain versioned. Ignoring/untracking local configuration does not remove earlier Git history.

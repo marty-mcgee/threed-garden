@@ -2,7 +2,9 @@
 
 ## Current checkpoint
 
-Package/root lockfile and Developer-confirmed production baseline: **[v0.27.3 - ThreeD Models: Files and Materials](docs/releases/v0.27.3.md)**, released October 23, 2026. Preparation passed fresh isolated TypeScript, all 92 offline CI tasks, guarded build and 1,579-input parity. Observed repository HEAD: `609234a0`; exact deployed commit and independent post-deployment checks are not established.
+Package/root lock: **0.27.4**, prepared [App directory cleanup](docs/releases/v0.27.4.md). Fresh isolated TypeScript, all 92 offline CI tasks, guarded production build and 1,580-input parity passed; production remains 0.27.3.
+
+Developer-confirmed production baseline: **[v0.27.3 - ThreeD Models: Files and Materials](docs/releases/v0.27.3.md)**, released October 23, 2026. Preparation passed fresh isolated TypeScript, all 92 offline CI tasks, guarded build and 1,579-input parity. Observed repository HEAD: `609234a0`; exact deployed commit and independent post-deployment checks are not established.
 
 Previous Developer-confirmed production release: **[v0.27.2 - ThreeD Models: Editor layout and embedded images](docs/releases/v0.27.2.md)**, released October 23, 2026. Preparation passed fresh isolated TypeScript, all 91 offline CI tasks, guarded production build and 1,575-input parity. Developer accepted the editor visual refinements; live embedded-image registration verification remains separately pending. Repository HEAD observed after confirmation: `b89eb709`; exact deployed commit and independent post-deployment checks are not established. Preserve completed data journals; do not replay operations.
 
@@ -11,6 +13,8 @@ The October 22 checkpoint is Developer-confirmed released at the requested **0.2
 Developer naming: **ThreeD > Project > Model > DetailsCard**. Use exact App names, verify ownership, state uncertainty and honor corrections. Provide concise commit titles only unless asked for a body; keep responses concise with **Next Steps:**. See [durable working preferences](docs/agents/README.md#developer-preferences) and [AGENTS.md](AGENTS.md).
 
 Released Model Files and Materials work is tracked in [v0.27.3](docs/releases/v0.27.3.md). Thumbnail saves register owned Files transactionally; older saved references have an explicit Attach saved thumbnail action. Files now consolidates dependency repair and attachment roles; Materials consolidates per-slot and bulk Texture assignment controls. Focused offline checks passed; Developer accepted the layout. Live persistence checks remain pending. Fresh isolated TypeScript, all 92 offline CI tasks, guarded build and 1,579-input parity passed. Production release is Developer-confirmed; live persistence checks remain separately pending.
+
+Local [v0.27.4 directory cleanup](docs/releases/v0.27.4.md) excludes retained archives from TypeScript, retires the duplicate next-dev.d.ts declaration and adds scoped generated-output ignore rules. Both explicitly approved cleanup batches are complete after manifest/path/size verification: 14,760 files and 3,849,738,168 logical bytes removed. All six excluded dependency links, source/assets, surrounding evidence/helpers and active server outputs were preserved; no directories removed. Package is 0.27.4 for release preparation. Six approved local editor/MCP entries are now ignored and untracked with local contents preserved; those index removals are staged, while other cleanup edits remain unstaged.
 
 ## Architecture and source locations
 
