@@ -6,7 +6,7 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
- - [v0.27.2 - ThreeD Models: Editor layout and embedded images (prepared for production release)](v0.27.2.md)
+ - [v0.27.2 - ThreeD Models: Editor layout and embedded images (Developer-confirmed production release)](v0.27.2.md)
 
  - [v0.27.1 - ThreeD Admin: Shared filtering and Model Top View export (Developer-confirmed production release)](v0.27.1.md)
 
