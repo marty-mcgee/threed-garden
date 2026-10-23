@@ -1,3 +1,0 @@
-[mcp_servers.neon]
-type = "http"
-url = "https://mcp.neon.tech/mcp"
