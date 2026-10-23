@@ -1,12 +1,14 @@
 'use client';
 
 import { Suspense, useCallback, useEffect, useId, useRef, useState, type ChangeEvent, type ComponentRef, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
+import { ModelFieldHelp } from './ModelFieldHelp';
 import { modelPreviewEvents } from './model-preview-events';
 import { Vector3, type Box3, type OrthographicCamera, type Group } from 'three';
 import { useThree, type RootState } from '@react-three/fiber';
 import { SafeCanvas as Canvas } from '@/components/threed/shared/SafeCanvas';
 import { Bounds, Grid, OrbitControls, useBounds } from '@react-three/drei';
-import { Box, Check, ImageOff, Loader2, Palette, RotateCcw, Upload } from 'lucide-react';
+import { Box, Check, ImageOff, Loader2, RotateCcw, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   ModelMarker3D,
@@ -60,12 +62,18 @@ interface ThreeDModelAssetPreviewProps {
   title?: string;
   description?: string;
   headerMeta?: ReactNode;
+  titleControl?: ReactNode;
+  statusContainer?: HTMLElement | null;
   headerHelp?: ReactNode;
   headerActions?: ReactNode;
   canvasClassName?: string;
+  belowPreview?: ReactNode;
+  showViewControls?: boolean;
+  showDependencyCount?: boolean;
   showMaterialInspector?: boolean;
   materialInspectorReadOnly?: boolean;
   materialInspectorNotice?: string;
+  materialInspectorLinks?: ReactNode;
   splitMaterialInspector?: boolean;
   requiredFiles?: ReactNode;
   primaryFileControls?: ReactNode;
@@ -267,12 +275,18 @@ export function ThreeDModelAssetPreview({
   title = 'Model preview',
   description = 'Uses the primary Model file and all currently available attachments.',
   headerMeta,
+  titleControl,
+  statusContainer,
   headerHelp,
   headerActions,
   canvasClassName = 'h-[320px]',
+  belowPreview,
+  showViewControls = true,
+  showDependencyCount = true,
   showMaterialInspector = false,
   materialInspectorReadOnly = false,
   materialInspectorNotice,
+  materialInspectorLinks,
   splitMaterialInspector = false,
   requiredFiles,
   primaryFileControls,
@@ -442,28 +456,37 @@ export function ThreeDModelAssetPreview({
     if (autoCapture && runtimeError) onCaptureError?.(runtimeError);
   }, [autoCapture, runtimeError, onCaptureError]);
 
+  const statusContent = savedFilesStatus && (statusContainer || !savedFilesStatus.suppressReminder || savingMaterialAssignment || materialAssignmentError || hasUnsavedPreview || loading) && (
+        <div role="status" className={`rounded-lg border p-3 text-xs ${savedFilesStatus.ready && !loading && !savingMaterialAssignment && !materialAssignmentError && !hasUnsavedPreview ? 'border-emerald-500/40 bg-emerald-500/10' : 'border-amber-500/40 bg-amber-500/10'}`}>
+          <p className="font-semibold">{savingMaterialAssignment ? 'Saving appearance…' : materialAssignmentError ? 'Needs attention above' : hasUnsavedPreview ? 'Preview changes — review before saving' : loading ? 'Loading preview…' : savedFilesStatus.ready ? savedFilesStatus.readyLabel ?? 'Saved files ready' : 'Needs attention above'}</p>
+          <p className="mt-1 text-muted-foreground">{materialAssignmentError || (hasUnsavedPreview ? 'The canvas includes a temporary Texture preview. Save the intended assignment above to keep it.' : savedFilesStatus.message)}</p>
+        </div>
+      );
+
   return (
     <div className={splitMaterialInspector ? 'contents' : undefined}>
-    <section className={`order-1 overflow-hidden rounded-lg border bg-muted/20 ${splitMaterialInspector ? 'lg:sticky lg:top-2 lg:col-start-1 lg:row-start-1' : ''}`} aria-labelledby={previewTitleId}>
+    <div className={splitMaterialInspector ? "min-w-0 self-start space-y-3 lg:col-start-1 lg:row-start-1" : "contents"}>
+    <section className="overflow-hidden rounded-lg border bg-muted/20" aria-labelledby={previewTitleId}>
       <div className="flex min-h-10 items-center gap-2 border-b px-3 py-2">
         <Box className="h-4 w-4 text-blue-400" />
         <div className="min-w-0 flex-1">
           <div className="flex min-w-0 items-center gap-1">
-            <h2 id={previewTitleId} className="truncate text-xs font-semibold">{title}</h2>
+            <h2 id={previewTitleId} className={titleControl ? "sr-only" : "truncate text-xs font-semibold"}>{title}</h2>
+            {titleControl}
             {headerHelp}
           </div>
           <p className="sr-only">{description}</p>
         </div>
         {headerMeta}
-        {dependencyCount > 0 && (
+        {showDependencyCount && dependencyCount > 0 && (
           <span className="text-[10px] text-muted-foreground">
             {dependencyCount - missingFiles}/{dependencyCount} dependencies
           </span>
         )}
         {headerActions}
-        {preserveCameraOnEdit && <Button type="button" variant="ghost" size="sm" disabled={!model || loading}
+        {showViewControls && preserveCameraOnEdit && <Button type="button" variant="ghost" size="sm" disabled={!model || loading}
           onClick={() => setFitRevision(value => value + 1)}>Fit</Button>}
-        <Button
+        {showViewControls && <Button
           type="button"
           variant="ghost"
           size="icon"
@@ -474,7 +497,7 @@ export function ThreeDModelAssetPreview({
           onClick={() => { setResetKey((value) => value + 1); }}
         >
           <RotateCcw className="h-3.5 w-3.5" />
-        </Button>
+        </Button>}
       </div>
       {materialInspectorReadOnly && <p className="border-t bg-card px-3 py-2 text-xs text-muted-foreground">{description}</p>}
 
@@ -556,12 +579,13 @@ export function ThreeDModelAssetPreview({
         {(captureError || runtimeError) && <p role="alert" className="text-xs text-red-400">{captureError || runtimeError}</p>}
       </div>}
     </section>
+    {belowPreview}
+    </div>
       <div className={splitMaterialInspector ? 'min-w-0 space-y-3 lg:col-start-2 lg:row-start-1' : undefined}>
       {((showMaterialInspector && model) || splitMaterialInspector) && (
         <section className={`${splitMaterialInspector ? 'rounded-lg border bg-muted/20' : 'border-t bg-background/35'} p-3`} aria-labelledby="model-texture-assignment-title">
           <div className="flex flex-wrap items-center gap-2">
-            <Palette className="h-4 w-4 text-cyan-400" />
-            <h3 id="model-texture-assignment-title" className="text-xs font-semibold">{materialInspectorReadOnly ? 'Saved appearance' : '1. Model file + global appearance'}</h3>
+            <h3 id="model-texture-assignment-title" className="text-xs font-semibold">{materialInspectorReadOnly ? 'Saved appearance' : 'Model file + global appearance'}</h3>
             {materialInventory && (
               <span className="text-[10px] text-muted-foreground">
                 {materialInventory.materialSlotCount} material slots
@@ -590,6 +614,7 @@ export function ThreeDModelAssetPreview({
                   }}>
                   {THREED_MODEL_MATERIAL_CHANNELS.map(channel => <option key={channel} value={channel}>{THREED_MODEL_MATERIAL_CHANNEL_LABELS[channel]}</option>)}
                 </select>
+                <ModelFieldHelp label="Texture channel">Embedded maps stay in the Model file. These saved image assignments override only the selected channel. A packed ORM image can be reused for Occlusion (R), Roughness (G), and Metallic (B).</ModelFieldHelp>
                 <label htmlFor="model-appearance-texture" className="w-full text-xs">{channelLabel} Texture</label>
                 {textureLibrary.length > 0 ? (
                   <>
@@ -652,7 +677,7 @@ export function ThreeDModelAssetPreview({
                   </Button>
                 )}
               </div>
-              <p className="text-[10px] text-muted-foreground">Embedded maps stay in the Model file. These saved image assignments override only the selected channel. A packed ORM image can be reused for Occlusion (R), Roughness (G), and Metallic (B).</p>
+
 
             </div>
           )}
@@ -664,12 +689,13 @@ export function ThreeDModelAssetPreview({
       {requiredFiles}
       {((showMaterialInspector && model) || splitMaterialInspector) && (
         <section className="rounded-lg border bg-muted/20 p-3">
-          <details open={splitMaterialInspector || materialInspectorReadOnly || undefined}>
+          <details className="model-individual-materials" open={splitMaterialInspector || materialInspectorReadOnly || undefined}>
             <summary className="cursor-pointer text-xs font-medium">
-              {materialInspectorReadOnly ? 'Materials' : '3. Individual materials (advanced)'}
+              {materialInspectorReadOnly ? 'Materials' : 'Individual materials (advanced)'}
             </summary>
+            {materialInspectorLinks && <div className="mt-2">{materialInspectorLinks}</div>}
             {(!showMaterialInspector || !model) ? <p className="mt-2 text-xs text-muted-foreground">{materialInspectorNotice || 'Select a Model to inspect its materials.'}</p> : <>
-            {!materialInspectorReadOnly && <div className="mt-2 flex justify-end">
+            {!materialInspectorReadOnly && <div className="mt-2 flex justify-start">
               <Button
                 type="button"
                 size="sm"
@@ -827,12 +853,7 @@ export function ThreeDModelAssetPreview({
           </details>
         </section>
       )}
-      {savedFilesStatus && (!savedFilesStatus.suppressReminder || savingMaterialAssignment || materialAssignmentError || hasUnsavedPreview || loading) && (
-        <div role="status" className={`rounded-lg border p-3 text-xs ${savedFilesStatus.ready && !loading && !savingMaterialAssignment && !materialAssignmentError && !hasUnsavedPreview ? 'border-emerald-500/40 bg-emerald-500/10' : 'border-amber-500/40 bg-amber-500/10'}`}>
-          <p className="font-semibold">{savingMaterialAssignment ? 'Saving appearance…' : materialAssignmentError ? 'Needs attention above' : hasUnsavedPreview ? 'Preview changes — review before saving' : loading ? 'Loading preview…' : savedFilesStatus.ready ? savedFilesStatus.readyLabel ?? 'Saved files ready' : 'Needs attention above'}</p>
-          <p className="mt-1 text-muted-foreground">{materialAssignmentError || (hasUnsavedPreview ? 'The canvas includes a temporary Texture preview. Save the intended assignment above to keep it.' : savedFilesStatus.message)}</p>
-        </div>
-      )}
+      {statusContainer ? (active && createPortal(statusContent, statusContainer)) : statusContent}
       </div>
     </div>
   );

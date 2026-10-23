@@ -140,7 +140,7 @@ const states = [];
 let stateCursor = 0;
 const uiContext = vm.createContext({
   exports: {}, Vector3, modelPreviewEvents() {}, Canvas: 'canvas', Bounds: 'bounds', OrbitControls: 'orbit', Grid: 'grid', Suspense: 'suspense',
-  Button: 'button', Box: 'icon', Check: 'icon', ImageOff: 'icon', Loader2: 'icon', Palette: 'icon', RotateCcw: 'icon', Upload: 'icon',
+  ModelFieldHelp: 'help', createPortal: (children) => children, Button: 'button', Box: 'icon', Check: 'icon', ImageOff: 'icon', Loader2: 'icon', Palette: 'icon', RotateCcw: 'icon', Upload: 'icon',
   require(name) { assert.equal(name, 'react/jsx-runtime'); return { jsx, jsxs: jsx }; },
   readThreeDModelMaterialOverrides: () => ({ assignments: [] }),
   ...require('../services/threed/models/model-material-override-core.ts'),

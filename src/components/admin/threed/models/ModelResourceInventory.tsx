@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import type { ModelData } from '@/components/threed/markers/ModelMarker3D';
+import type { ReactNode } from 'react';
 
 export interface ModelResourceAudit {
   status: 'analyzed' | 'missing_primary' | 'not_required' | 'not_supported';
@@ -11,7 +12,7 @@ export interface ModelResourceAudit {
   embeddedResources?: { status: 'inspected' | 'not_inspected'; buffers: number; images: number };
 }
 
-export function ModelResourceInventory({ model, audit, loading, error, textureLibrary = [], selectedFileId, summarizeDependencies = false, supplementalOnly = false }: {
+export function ModelResourceInventory({ model, audit, loading, error, textureLibrary = [], selectedFileId, summarizeDependencies = false, supplementalOnly = false, embeddedGallery }: {
   model: ModelData & { mainModelFileId: number | null };
   audit: ModelResourceAudit | null;
   loading: boolean;
@@ -20,6 +21,7 @@ export function ModelResourceInventory({ model, audit, loading, error, textureLi
   selectedFileId?: number;
   summarizeDependencies?: boolean;
   supplementalOnly?: boolean;
+  embeddedGallery?: ReactNode;
 }) {
   const primary = model.files?.find(file => file.id === model.mainModelFileId && file.fileType === 'model');
   const alternateGeometry = model.files?.filter(file => file !== primary && file.fileType === 'model') ?? [];
@@ -52,7 +54,7 @@ export function ModelResourceInventory({ model, audit, loading, error, textureLi
         {loading ? 'Inspecting saved geometry…' : embedded?.status === 'inspected'
           ? `${embedded.buffers} embedded buffer(s) · ${embedded.images} embedded image(s), declared inside the geometry File`
           : audit?.status === 'not_required' ? 'Not required for procedural geometry' : 'Embedded inventory unavailable for this format or inspection result'}
-      </p><p className="text-muted-foreground">Embedded resources are part of primary geometry, not separate saved attachments. Images in external buffers are excluded from embedded counts.</p></details>
+      </p><p className="text-muted-foreground">Embedded resources are part of primary geometry, not separate saved attachments. Images in external buffers are excluded from embedded counts.</p>{embeddedGallery}</details>
     </div>
     {!supplementalOnly && <div className="space-y-1.5 border-t pt-3"><h3 className="font-semibold">Primary geometry dependencies</h3>
       {loading ? <p role="status">Checking dependencies…</p> : error ? <p role="alert">{error}</p>

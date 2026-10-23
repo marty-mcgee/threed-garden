@@ -527,3 +527,17 @@ Model Files retains its original specialized customization layout at the User's 
 ## Model list query load
 
 Paginated Model GET responses batch category, file and material-assignment reads by the authorized page IDs. A nonempty page uses five database calls, independent of its row count. The Model Files header uses `view=selector` for identity-only paginated choices (two calls per page) and cancels unfinished catalog requests when leaving the workspace. Existing full-list response fields and single-Model file customization remain available. `validate:threed-model-list-api` checks the actual handler using a database double; live timeout resolution still requires manual navigation verification.
+
+## Embedded image inspection and reuse
+
+In Model Files, expand Linked Texture and embedded resources to browse saved GLB/GLTF image resources. Geometry selection here inspects a File without changing the Model primary. The gallery shows source material/channel relationships, rather than guessing runtime material-slot IDs or changing appearance. External resources remain separate and are not fetched.
+
+Download an image or select images for a ZIP containing the original bytes. Save selected as Textures is an explicit reviewed action: supported images become owned reusable Textures and linked Model Files sharing one stored Blob. Existing copies are reused; primary geometry, embedded bytes and material assignments remain intact. Registering images does not mark them as assigned or prove rendering success. Use the existing appearance controls when an assignment change is intended.
+
+Inspection is bounded to 32 MiB saved geometry; registration supports PNG/JPEG/WebP up to 4 MiB with supported encoded dimensions. KTX2/AVIF have download-only inspection. See [current scope and validation](../releases/v0.27.2.md).
+
+## Model editor layout
+
+Details and Files share a top-aligned responsive preview and the same two-column proportions. Details keeps Thumbnail and Top View controls side by side beneath the preview; both expose Image location, a preview and upload/export/remove actions. Top View location is read-only and uses the owned attachment workflow. Save/Cancel stays visible in its green action row.
+
+Files keeps Model files and attachments directly below its preview. Upload supporting files and Linked Texture and embedded resources start collapsed; explicit gallery navigation expands its ancestor disclosures. The preview mode selector replaces its static title; File Type is in the Edit Model header and dependencies follow Details/Files. Texture-channel guidance lives in the question-mark tooltip. A stationary full-width status area displays the existing preview owner's loading, ready, temporary-preview or error state. Status remains an inspection aid, not proof of correct rendering or automatic Model activation.

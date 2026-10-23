@@ -163,8 +163,7 @@ async function editorChecks() {
   assert.equal(draftPreview().props.centerAtOrigin, true);
   assert.equal(draftPreview().props.preserveCameraOnEdit, true);
   assert(draftPreview().props.perspective, 'Details opts into the workspace initial perspective');
-  assert(find(node => node.type === 'fieldset' && node.props['aria-label'] === 'Model details').props.className.includes('lg:overflow-y-auto'));
-  assert(find(node => node.type === 'section' && node.props['aria-label'] === 'Model draft preview').props.className.includes('lg:overflow-y-auto'));
+  assert(find(node => node.type === 'div' && node.props.className?.includes('overflow-y-auto overscroll-contain py-1 pr-1')), 'Details retains a shared scroll surface for both columns');
   const edit = updates => { fields().props.setForm(current => ({ ...current, ...updates })); rt.render(); };
   edit({ scale: '0.37' });
   assert.equal(Number(draftPreview().props.model.scale), 0.37, 'Unsaved custom scale reaches the actual preview');
@@ -231,7 +230,7 @@ async function filesChecks() {
     'lucide-react': proxy, '@/components/ui/button': proxy, '@/components/ui/badge': proxy,
     '@/components/ui/input': proxy, '@/components/ui/label': proxy, '@/components/ui/select': proxy, '@/components/ui/dialog': proxy,
     '@/components/ui/toast': { useToast: () => toast }, './ModelFieldHelp': { ModelFieldHelp: 'help' }, './ModelResourceInventory': proxy,
-    './ThreeDModelAssetPreview': proxy, './ModelPreviewImageExport': proxy,
+    './ThreeDModelAssetPreview': proxy, './ModelPreviewImageExport': proxy, './ModelEmbeddedImages': proxy,
     './model-preview-requirements': { modelForPreview: value => value },
     '@/libraries/services/threed/models/model-fallback-core': fallback,
     '@/libraries/services/threed/models/model-saved-texture-fallback': { withSavedFbxTextures: (_, files) => files },
@@ -255,7 +254,7 @@ async function filesChecks() {
   assert.equal(preview().props.centerAtOrigin, true);
   assert.equal(preview().props.preserveCameraOnEdit, true);
   assert(preview().props.perspective, 'Files keeps the same workspace framing as Details');
-  const find = predicate => [...nodes(rt.value), ...nodes(preview().props.primaryFileControls), ...nodes(preview().props.requiredFiles)].find(predicate);
+  const find = predicate => [...nodes(rt.value), ...nodes(preview().props.primaryFileControls), ...nodes(preview().props.requiredFiles), ...nodes(preview().props.belowPreview)].find(predicate);
   assert(!text(rt.value).includes('Open Model record'), 'Embedded workspace omits duplicate parent navigation');
   find(node => node.props?.id === 'default-model-shape').props.onChange({ target: { value: 'box' } });
   find(node => node.props?.id === 'model-files-directory').props.onChange({ target: { value: 'custom/textures' } });
@@ -282,7 +281,7 @@ async function filesChecks() {
 function previewChecks() {
   const rt = runtime();
   const preview = load('src/components/admin/threed/models/ThreeDModelAssetPreview.tsx', {
-    react: rt.react, 'react/jsx-runtime': { jsx, jsxs: jsx }, './model-preview-events': {}, three: proxy,
+    react: rt.react, 'react/jsx-runtime': { jsx, jsxs: jsx }, 'react-dom': { createPortal: children => children }, './ModelFieldHelp': { ModelFieldHelp: 'help' }, './model-preview-events': {}, three: proxy,
     '@react-three/fiber': { Canvas: 'canvas' }, '@react-three/drei': proxy, 'lucide-react': proxy,
     '@/components/threed/shared/SafeCanvas': { SafeCanvas: 'canvas' },
     '@/components/ui/button': proxy, '@/components/threed/markers/ModelMarker3D': proxy,

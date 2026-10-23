@@ -15,6 +15,7 @@ import { MODEL_FALLBACK_SHAPES, readModelFallbackShape, setModelFallbackShape, t
 import Link from 'next/link';
 import { ModelFieldHelp } from './ModelFieldHelp';
 import { ModelResourceInventory } from './ModelResourceInventory';
+import { ModelEmbeddedImages } from './ModelEmbeddedImages';
 import { createPortal } from 'react-dom';
 import {
   useState,
@@ -101,6 +102,8 @@ interface Model {
 
 interface ThreeDModelFilesCRUDProps {
   selectorContainer?: HTMLElement | null;
+  headerContainer?: HTMLElement | null;
+  statusContainer?: HTMLElement | null;
   onSelectModel?: (id: number) => void;
   initialModelId?: number | null;
   embedded?: boolean;
@@ -238,7 +241,7 @@ function FileCardThumbnail({ file, className }: { file: ModelFileRow; className:
 // ============================================
 // COMPONENT
 // ============================================
-export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer, onSelectModel, embedded = false, active = true, onBusyChange }: ThreeDModelFilesCRUDProps) {
+export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer, headerContainer, statusContainer, onSelectModel, embedded = false, active = true, onBusyChange }: ThreeDModelFilesCRUDProps) {
   const { showToast, ToastComponent } = useToast();
 
   const [models, setModels] = useState<Array<Pick<Model, 'id' | 'modelName' | 'modelType'>>>([]);
@@ -321,9 +324,10 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
   const trulyMissingCount = missingRequirements.length;
 
   const [previewBusy, setPreviewBusy] = useState(false);
+  const [embeddedImagesBusy, setEmbeddedImagesBusy] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const uploading = uploadQueue.some((u) => u.status === 'uploading');
-  const operationBusy = uploading || savingShape || primaryFileId !== null || deletingId !== null || linkingTexture !== null || previewBusy || exportOpen || (active && loadingFiles);
+  const operationBusy = uploading || savingShape || primaryFileId !== null || deletingId !== null || linkingTexture !== null || previewBusy || embeddedImagesBusy || exportOpen || (active && loadingFiles);
   useEffect(() => { onBusyChange?.(operationBusy); }, [onBusyChange, operationBusy]);
   const normalizedAttachmentDirectory = normalizeAttachmentDirectory(attachmentDirectory);
   const directoryProblem = attachmentDirectoryProblem(attachmentDirectory);
@@ -426,6 +430,10 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
     }
     setTextureLibrary(Array.isArray(result.data) ? result.data : []);
   }, []);
+
+  const refreshEmbeddedImages = useCallback(async () => {
+    await Promise.all([loadFiles(Number(modelId)), loadTextureLibrary(), loadDependencies(Number(modelId))]);
+  }, [modelId, loadFiles, loadTextureLibrary, loadDependencies]);
 
   useEffect(() => {
     void loadTextureLibrary().catch((loadError) => {
@@ -875,289 +883,8 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
   // ============================================
   // RENDER
   // ============================================
-  return (
-    <div className="space-y-3" onClickCapture={event => {
-      if (operationBusy && event.target instanceof Element && event.target.closest('a')?.getAttribute('href')?.startsWith('/admin/')) event.preventDefault();
-    }}>
-      {ToastComponent}
-      {selectorContainer && createPortal(
-        <select
-          aria-label="Select Model to manage files"
-          className="h-7 w-72 max-w-full rounded-md border bg-background px-2 text-xs"
-          value={modelId}
-          disabled={savingShape || loadingModels || uploading || primaryFileId !== null || deletingId !== null || linkingTexture !== null}
-          onChange={(event) => {
-            const id = Number(event.target.value);
-            if (id > 0) {
-              if (onSelectModel) onSelectModel(id);
-              else setModelId(String(id));
-            }
-          }}
-        >
-          <option value="" disabled>{loadingModels ? 'Loading Models…' : 'Select Model…'}</option>
-          {modelId && !models.some((model) => String(model.id) === modelId) && <option value={modelId}>{modelDetail?.modelName ?? `Model #${modelId}`}</option>}
-          {models.map((model) => <option key={model.id} value={model.id}>{model.modelName} · {model.modelType.toUpperCase()} · #{model.id}</option>)}
-        </select>, selectorContainer)}
-
-      {!embedded && activeModel && (
-        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-muted/20 px-3 py-2 text-xs">
-          <div className="flex min-w-0 flex-wrap items-center gap-2">
-            <span className="text-muted-foreground">Model record</span>
-            <span className="max-w-64 truncate font-semibold" title={activeModel.modelName}>{activeModel.modelName}</span>
-            <Badge variant="outline" className="text-[10px]">{activeModel.modelType}</Badge>
-            <span className="text-muted-foreground">#{activeModel.id}</span>
-            <span aria-hidden="true" className="text-muted-foreground">→</span>
-            <span className="font-medium">Files and appearance</span>
-          </div>
-          <Link
-            href={`/admin/threed/models/${activeModel.id}`}
-            aria-label={`Open Model record ${activeModel.modelName}`}
-            className="inline-flex min-h-7 items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-2 font-medium text-foreground no-underline hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@media(pointer:coarse)]:min-h-11"
-          >
-            <ExternalLink aria-hidden="true" className="h-3.5 w-3.5" />
-            Open Model record
-          </Link>
-        </div>
-      )}
-
-
-      <div className="grid items-start gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(400px,0.85fr)] ">
-          <ThreeDModelAssetPreview
-            preserveCameraOnEdit
-            centerAtOrigin
-            perspective={MODEL_WORKSPACE_PERSPECTIVE}
-            active={active && !exportOpen}
-            onBusyChange={setPreviewBusy}
-            model={previewModel}
-            attachedDependencyCount={dependencyAudit?.requirements.filter((item) => item.satisfied).length ?? 0}
-            dependencyCount={dependencyAudit?.requirements.length ?? 0}
-            headerHelp={<ModelFieldHelp label="Saved Model Preview">Files and appearance changes save separately; saved uploads remain saved when you leave Edit Model. Uses saved files and material assignments. A visible shape does not confirm that every texture or dependency loaded successfully. Public Project access is checked separately.</ModelFieldHelp>}
-            title={troubleshooting ? "Owner Troubleshooting Preview" : "Saved Model Preview"}
-            description={troubleshooting ? "Owner library matches are temporary. Link required files below to save them." : "Uses saved files and material assignments. Public Project access is checked separately."}
-            headerMeta={activeModel ? (
-              <div className="flex min-w-0 items-center gap-2 border-l pl-3">
-                <FileIcon type="model" />
-                <span className="max-w-48 truncate text-xs font-medium" title={activeModel.modelName}>{activeModel.modelName}</span>
-                <Badge variant="outline" className="text-[10px]">{activeModel.modelType}</Badge>
-                <span className="whitespace-nowrap text-[10px] text-muted-foreground">Model #{activeModel.id}</span>
-              </div>
-            ) : null}
-            headerActions={selectedModel ? (
-              <>
-              <select aria-label="Model preview mode" className="h-7 rounded border bg-background px-2 text-xs"
-                value={troubleshooting ? 'owner' : 'saved'}
-                onChange={event => setTroubleshootingModelId(event.target.value === 'owner' ? modelId : null)}>
-                <option value="saved">Saved Model Preview</option>
-                <option value="owner">Owner Troubleshooting Preview</option>
-              </select>
-              {previewModel && !loadingFiles && <ModelPreviewImageExport
-                key={previewModel.id}
-                onOpenChange={setExportOpen}
-                model={previewModel}
-                dependencyCount={dependencyAudit?.requirements.length ?? 0}
-                attachedDependencyCount={dependencyAudit?.requirements.filter(item => item.satisfied).length ?? 0}
-              />}
-              {previewModel && !loadingFiles && <ModelPreviewImageExport
-                key={previewModel.id + '-top-view'} imageTarget="top-view"
-                onOpenChange={open => { setExportOpen(open); if (!open) { void loadFiles(Number(modelId)); void loadDependencies(Number(modelId)); } }}
-                model={previewModel}
-                dependencyCount={dependencyAudit?.requirements.length ?? 0}
-                attachedDependencyCount={dependencyAudit?.requirements.filter(item => item.satisfied).length ?? 0}
-              />}
-              <Button type="button" variant="ghost" size="sm" className="h-7 text-xs" onClick={() => setHelpOpen(true)}>Help</Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7"
-                title="Refresh Model Files"
-                onClick={() => {
-                  loadFiles(Number(modelId));
-                  loadModels();
-                  loadDependencies(Number(modelId));
-                }}
-                disabled={!modelId || loadingFiles || loadingModels}
-              >
-                <RefreshCw className={`h-3.5 w-3.5 ${loadingFiles || loadingModels ? 'animate-spin' : ''}`} />
-              </Button>
-              </>
-            ) : null}
-            canvasClassName="h-[clamp(16rem,42dvh,30rem)]"
-            showMaterialInspector={mainModelFileId !== null && ['fbx', 'obj', 'glb', 'gltf'].includes(previewModel?.modelType.toLowerCase() ?? '')}
-            materialInspectorNotice={!modelId ? 'Select a Model to configure its appearance.' : mainModelFileId === null ? 'Choose and save a primary Model file above to enable appearance settings.' : 'Material editing is available for FBX, OBJ, GLB and GLTF Models.'}
-            splitMaterialInspector
-            primaryFileControls={(
-              <div className="my-3 space-y-2 border-b pb-3">
-                <details className="rounded border p-2" open><summary className="cursor-pointer text-xs font-medium">Default Shape / Mesh (fallback)</summary>
-                <label htmlFor="default-model-shape" className="block text-xs">Default Shape / Mesh</label>
-                <div className="flex flex-wrap gap-2">
-                  <select id="default-model-shape" className="h-8 min-w-0 flex-1 rounded border bg-background px-2 text-xs"
-                    value={shapeChoice?.modelId === modelId ? shapeChoice.shape : readModelFallbackShape(modelDetail?.metadata)}
-                    disabled={!modelDetail || loadingFiles || savingShape}
-                    onChange={event => setShapeChoice({ modelId, shape: event.target.value as ModelFallbackShape })}>
-                    {MODEL_FALLBACK_SHAPES.map(shape => <option key={shape} value={shape}>{shape[0].toUpperCase() + shape.slice(1)}</option>)}
-                  </select>
-                  <Button type="button" size="sm" className="text-xs" disabled={!modelDetail || loadingFiles || savingShape || uploading || primaryFileId !== null || linkingTexture !== null || shapeChoice?.modelId !== modelId || shapeChoice.shape === readModelFallbackShape(modelDetail?.metadata)}
-                    onClick={async () => {
-                      if (!modelDetail || shapeChoice?.modelId !== modelId) return;
-                      setSavingShape(true);
-                      try {
-                        const metadata = JSON.parse(setModelFallbackShape(JSON.stringify(modelDetail.metadata ?? {}), shapeChoice.shape));
-                        const response = await fetch(`/api/threed/models?id=${modelId}`, {
-                          method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ metadata }),
-                        });
-                        const result = await response.json();
-                        if (!response.ok || !result.success) throw new Error(result.error || 'Failed to save default shape');
-                        await loadFiles(Number(modelId));
-                        await loadModels();
-                        showToast('Default shape saved', 'success');
-                      } catch (error) {
-                        showToast(error instanceof Error ? error.message : 'Failed to save default shape', 'error');
-                      } finally { setSavingShape(false); }
-                    }}>{savingShape ? 'Saving…' : 'Save shape'}</Button>
-                </div>
-                </details>
-                <label htmlFor="primary-model-file" className="block text-xs">Primary Model file</label>
-                <select id="primary-model-file" className="h-8 w-full min-w-0 rounded border bg-background px-2 text-xs"
-                  value={primaryChoice?.modelId === modelId ? primaryChoice.fileId : String(mainModelFileId ?? '')}
-                  disabled={!modelId || loadingFiles || uploading || primaryFileId !== null || deletingId !== null}
-                  onChange={event => setPrimaryChoice({ modelId, fileId: event.target.value })}>
-                  <option value="">Choose a Model file…</option>
-                  {files.filter(file => file.fileType === 'model').map(file => (
-                    <option key={file.id} value={file.id} disabled={Boolean(primaryFileProblem(file))}>{file.fileName}{primaryFileProblem(file) ? ` — ${primaryFileProblem(file)}` : file.id === mainModelFileId ? ' — primary' : ''}</option>
-                  ))}
-                </select>
-                <div className="flex flex-wrap gap-2">
-                  <Button type="button" size="sm" className="text-xs"
-                    disabled={!modelId || loadingFiles || uploading || primaryFileId !== null || deletingId !== null || !chosenPrimaryFile || chosenPrimaryFile.fileType !== 'model' || Boolean(primaryFileProblem(chosenPrimaryFile)) || chosenPrimaryFile.id === mainModelFileId}
-                    onClick={() => {
-                      if (chosenPrimaryFile) void handleSetPrimary(chosenPrimaryFile);
-                    }}>{primaryFileId !== null ? 'Saving primary file…' : 'Save primary file'}</Button>
-                  <label className="relative inline-flex cursor-pointer items-center rounded-md border px-3 py-1 text-xs focus-within:ring-2 focus-within:ring-ring">
-                    Upload Model file
-                    <input aria-label="Upload primary Model file" type="file" accept=".fbx,.glb,.gltf,.obj,.usdz" className="absolute inset-0 w-full cursor-pointer opacity-0"
-                      disabled={!modelId || uploading || primaryFileId !== null || deletingId !== null}
-                      onChange={event => {
-                        const file = event.target.files?.[0];
-                        if (file && ['fbx', 'glb', 'gltf', 'obj', 'usdz'].includes(extensionOf(file.name))) void handleUpload([file], 'models', 'model');
-                        else if (file) showToast('Choose an FBX, GLB, GLTF, OBJ or USDZ Model file.', 'error');
-                        event.target.value = '';
-                      }} />
-                  </label>
-                </div>
-              </div>
-            )}
-            requiredFiles={(
-      <section className="rounded-lg border bg-muted/20 p-3" aria-labelledby="model-dependencies-title">
-        <div className="flex flex-wrap items-center gap-2">
-          <Link2 className="h-4 w-4 text-cyan-400" />
-          <h2 id="model-dependencies-title" className="flex items-center gap-1 text-xs font-semibold">2. Required files<ModelFieldHelp label="Required files">Saved references are counted after inspection refreshes. Missing references are not attachments. Upload the exact requested filename, or link an eligible shared Texture. Saved does not confirm successful loading; review the preview after repair.</ModelFieldHelp></h2>
-          {loadingDependencies && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
-          {dependencyAudit?.status === 'analyzed' && dependencyAudit.requirements.length > 0 && (
-            <Badge variant={trulyMissingCount ? 'destructive' : 'secondary'} className="text-[10px]">
-              {dependencyAudit.requirements.filter((item) => item.satisfied).length}/{dependencyAudit.requirements.length} saved
-            </Badge>
-          )}
-        </div>
-        {trulyMissingCount > 0 && <p role="status" className="mt-2 text-xs text-amber-700 dark:text-amber-400">Preview may be incomplete: {trulyMissingCount} required file(s) still need to be saved.</p>}
-        {sharedRequirementTextures.size > 0 && (
-          <p className="mt-2 text-[11px] text-cyan-400">
-            {sharedRequirementTextures.size} Texture(s) found, but not assigned. Link below to save.
-          </p>
-        )}
-
-        {dependencyError ? (
-          <p className="mt-2 text-[11px] text-amber-400">{dependencyError}</p>
-        ) : dependencyAudit?.status === 'not_required' ? (
-          <p className="mt-2 text-[11px] text-muted-foreground">This procedural shape needs no Model file or supporting files.</p>
-        ) : dependencyAudit?.status === 'missing_primary' ? (
-          <p className="mt-2 text-[11px] text-muted-foreground">Choose a primary Model file in Step 1 to check its required files.</p>
-        ) : dependencyAudit?.status === 'not_supported' ? (
-          <p className="mt-2 text-[11px] text-muted-foreground">Dependency inspection supports FBX, GLB, GLTF and OBJ primary files.</p>
-        ) : dependencyAudit?.status === 'analyzed' && dependencyAudit.requirements.length === 0 ? (
-          <p className="mt-2 text-[11px] text-muted-foreground">{selectedModel?.modelType.toLowerCase() === 'fbx' ? 'No external texture filenames detected.' : 'No external files required.'}</p>
-        ) : dependencyAudit?.status === 'analyzed' ? (
-          <div className="mt-2 grid gap-2">
-            {dependencyAudit.requirements.map((requirement) => {
-              const sharedTexture = sharedRequirementTextures.get(requirement.relativePath);
-              return (
-                <div key={`${requirement.kind}:${requirement.relativePath}`} className="flex min-w-0 flex-wrap items-center gap-2 rounded border bg-background/30 px-2 py-2">
-                  {requirement.satisfied
-                    ? <Check className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
-                    : sharedTexture ? <Link2 className="h-3.5 w-3.5 shrink-0 text-cyan-400" />
-                    : <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-400" />}
-                  <div className="min-w-[12rem] flex-1">
-                    <p className="break-all font-mono text-[11px]" title={requirement.relativePath}>{requirement.relativePath}</p>
-                    <p className="text-[10px] text-muted-foreground">
-                      {requirement.satisfied ? `Saved reference: ${requirement.matchedRelativePath}` : sharedTexture ? 'Found, but not assigned — link to save' : `Missing ${requirement.kind}`}
-                    </p>
-                  </div>
-                  {!requirement.satisfied && requirement.kind === 'texture' && selectedModel?.modelType.toLowerCase() === 'fbx' && (
-                    <div className="flex w-full flex-wrap items-center gap-2">
-                      <select aria-label={`Shared Texture for ${requirement.relativePath}`} className="min-w-0 flex-1 rounded border bg-background p-2 text-xs"
-                        disabled={linkingTexture !== null || uploading}
-                        value={requirementTextureChoices[`${modelId}:${requirement.relativePath}`] ?? ''}
-                        onChange={event => setRequirementTextureChoices(previous => ({ ...previous, [`${modelId}:${requirement.relativePath}`]: event.target.value }))}>
-                        <option value="">Choose a shared Texture to satisfy this requirement…</option>
-                        {textureLibrary.filter(texture => texture.isActive && canLinkThreeDTextureRequirement(requirement.fileName, texture)).map(texture => (
-                          <option key={texture.id} value={texture.id}>{texture.fileName}{/\.tga$/i.test(requirement.fileName) && /\.png$/i.test(texture.fileName) ? ' (PNG replacement for TGA)' : ''}</option>
-                        ))}
-                      </select>
-                      <Button type="button" variant="outline" size="sm" className="text-xs" disabled={linkingTexture !== null || uploading || !requirementTextureChoices[`${modelId}:${requirement.relativePath}`]}
-                        onClick={() => {
-                          const texture = textureLibrary.find(item => item.id === Number(requirementTextureChoices[`${modelId}:${requirement.relativePath}`]));
-                          if (texture) void saveSharedRequirement(requirement, texture);
-                        }}>Link to requirement</Button>
-                      {/\.tga$/i.test(requirement.fileName) && (
-                        <p className="w-full text-[10px] text-muted-foreground">Choose a PNG converted from this TGA, preserving transparency. Linking keeps the original dependency name.</p>
-                      )}
-                    </div>
-                  )}
-                  {!requirement.satisfied && sharedTexture && (
-                    <Button type="button" variant="outline" size="sm" className="h-7 shrink-0 px-2 text-[10px]"
-                      disabled={linkingTexture !== null || uploading}
-                      onClick={() => void saveSharedRequirement(requirement, sharedTexture)}>
-                      {linkingTexture === requirement.relativePath ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Link2 className="mr-1 h-3 w-3" />}
-                      Link shared Texture
-                    </Button>
-                  )}
-                  {!requirement.satisfied && !sharedTexture && (
-                    <Button type="button" variant="outline" size="sm" className="min-h-10 border-amber-500/30 bg-amber-500/10 px-3 text-xs hover:bg-amber-500/20 dark:border-amber-500/30 dark:bg-amber-500/10 dark:hover:bg-amber-500/20" disabled={uploading || linkingTexture !== null} onClick={() => requestRequirementUpload(requirement)}>
-                      <Upload className="mr-1 h-3 w-3" />
-                      Upload needed file
-                    </Button>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        ) : null}
-      </section>
-            )}
-            savedFilesStatus={{
-              suppressReminder: missingRequirements.length > 0 && !loadingFiles && !loadingModels && !loadingDependencies && !uploading && linkingTexture === null && primaryFileId === null && deletingId === null && !error && !dependencyError && !savingShape && !(shapeChoice?.modelId === modelId && shapeChoice.shape !== readModelFallbackShape(modelDetail?.metadata)) && !uploadQueue.some(item => item.status === 'error'),
-              ready: Boolean(!savingShape && !(shapeChoice?.modelId === modelId && shapeChoice.shape !== readModelFallbackShape(modelDetail?.metadata)) && modelId && !loadingModels && !loadingFiles && !loadingDependencies && !uploading && linkingTexture === null && primaryFileId === null && deletingId === null && !error && !dependencyError && (dependencyAudit?.status === 'analyzed' || dependencyAudit?.status === 'not_required') && missingRequirements.length === 0 && !uploadQueue.some(item => item.status === 'error')),
-              readyLabel: dependencyAudit?.status === 'not_required' ? 'Procedural Model ready' : undefined,
-              message: savingShape ? 'Saving default shape…' : shapeChoice?.modelId === modelId && shapeChoice.shape !== readModelFallbackShape(modelDetail?.metadata) ? 'Save the Default Shape / Mesh in Step 1.' : !modelId ? 'Select a Model above.'
-                : uploading || linkingTexture !== null || primaryFileId !== null || deletingId !== null ? 'Saving file changes…'
-                : loadingModels || loadingFiles || loadingDependencies ? 'Checking saved files…'
-                : error || dependencyError ? 'Unable to verify saved files. Review Required files and Files and attachments.'
-                : uploadQueue.some(item => item.status === 'error') ? 'An upload failed. Review the upload results in Files and attachments.'
-                : dependencyAudit?.status === 'not_required' ? 'The saved shape is ready; no Model file or supporting files are required.'
-                : mainModelFileId === null || dependencyAudit?.status === 'missing_primary' ? 'Choose a primary Model file in Step 1.'
-                : dependencyAudit?.status !== 'analyzed' ? 'Saved files could not be verified. Review Required files.'
-                : missingRequirements.length ? `${missingRequirements.length} required file(s) still need to be saved in step 2.`
-                : 'Required files are saved. Review the preview to confirm the appearance.',
-            }}
-            textureLibrary={textureLibrary}
-            onSaveMaterialAssignment={saveMaterialAssignment}
-          />
-
-
-      </div>
-
-
-      <details open id="model-file-management" className="rounded-lg border bg-muted/10" aria-labelledby="model-file-management-title">
+  const fileManagement = (
+<details open id="model-file-management" className="rounded-lg border bg-muted/10" aria-labelledby="model-file-management-title">
         <summary className="cursor-pointer px-3 py-2 text-xs font-medium" id="model-file-management-title">
           Model files and attachments <span className="text-muted-foreground">({stats.count}){loadingFiles ? ' · Loading…' : error ? ' · Unable to load files — expand to retry' : ''}</span>
         </summary>
@@ -1208,7 +935,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
       </div>
 
       {/* Logical dependency directory; the server owns the physical storage key. */}
-      <details open id="model-texture-importer" className="scroll-mt-4 rounded-lg border bg-muted/10 p-3">
+      <details id="model-texture-importer" className="scroll-mt-4 rounded-lg border bg-muted/10 p-3">
         <summary className="cursor-pointer text-xs font-semibold">Upload supporting files</summary>
 
         <details open className="mt-2 rounded border bg-background/25 p-2 text-[11px]">
@@ -1317,7 +1044,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
           </Button>
         </div>
       ) : view === 'grid' ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+        <div className="grid grid-cols-2 xl:grid-cols-3 gap-2">
           {filteredFiles.map(renderGridCard)}
         </div>
       ) : (
@@ -1339,9 +1066,305 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
           })}
         </div>
       )}
-      {modelDetail && previewModel && <details open className="rounded-lg border bg-muted/10"><summary className="cursor-pointer px-3 py-2 text-xs font-medium">Linked Texture and embedded resources</summary><div className="p-3 pt-0"><ModelResourceInventory model={{ ...previewModel, mainModelFileId }} audit={dependencyAudit} loading={loadingDependencies} error={dependencyError} textureLibrary={textureLibrary} supplementalOnly /></div></details>}
+      {modelDetail && previewModel && <details className="rounded-lg border bg-muted/10"><summary className="cursor-pointer px-3 py-2 text-xs font-medium">Linked Texture and embedded resources</summary><div className="p-3 pt-0"><ModelResourceInventory model={{ ...previewModel, mainModelFileId }} audit={dependencyAudit} loading={loadingDependencies} error={dependencyError} textureLibrary={textureLibrary} supplementalOnly embeddedGallery={<ModelEmbeddedImages modelId={modelDetail.id} primaryFileId={mainModelFileId} geometryFiles={files.filter(file => file.fileType === 'model')} disabled={operationBusy} onBusyChange={setEmbeddedImagesBusy} onRegistered={refreshEmbeddedImages} />} /></div></details>}
         </div>
       </details>
+  );
+
+  return (
+    <div className="model-files-workspace space-y-3" onClickCapture={event => {
+      if (operationBusy && event.target instanceof Element && event.target.closest('a')?.getAttribute('href')?.startsWith('/admin/')) event.preventDefault();
+    }}>
+      {ToastComponent}
+      {headerContainer && active && createPortal(<>
+        {dependencyAudit && dependencyAudit.requirements.length > 0 && <span className="whitespace-nowrap">{dependencyAudit.requirements.filter(item => item.satisfied).length}/{dependencyAudit.requirements.length} dependencies</span>}
+      </>, headerContainer)}
+      <fieldset disabled={embeddedImagesBusy} className="contents">
+      {selectorContainer && createPortal(
+        <select
+          aria-label="Select Model to manage files"
+          className="h-7 w-72 max-w-full rounded-md border bg-background px-2 text-xs"
+          value={modelId}
+          disabled={embeddedImagesBusy || savingShape || loadingModels || uploading || primaryFileId !== null || deletingId !== null || linkingTexture !== null}
+          onChange={(event) => {
+            const id = Number(event.target.value);
+            if (id > 0) {
+              if (onSelectModel) onSelectModel(id);
+              else setModelId(String(id));
+            }
+          }}
+        >
+          <option value="" disabled>{loadingModels ? 'Loading Models…' : 'Select Model…'}</option>
+          {modelId && !models.some((model) => String(model.id) === modelId) && <option value={modelId}>{modelDetail?.modelName ?? `Model #${modelId}`}</option>}
+          {models.map((model) => <option key={model.id} value={model.id}>{model.modelName} · {model.modelType.toUpperCase()} · #{model.id}</option>)}
+        </select>, selectorContainer)}
+
+      {!embedded && activeModel && (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-muted/20 px-3 py-2 text-xs">
+          <div className="flex min-w-0 flex-wrap items-center gap-2">
+            <span className="text-muted-foreground">Model record</span>
+            <span className="max-w-64 truncate font-semibold" title={activeModel.modelName}>{activeModel.modelName}</span>
+            <Badge variant="outline" className="text-[10px]">{activeModel.modelType}</Badge>
+            <span className="text-muted-foreground">#{activeModel.id}</span>
+            <span aria-hidden="true" className="text-muted-foreground">→</span>
+            <span className="font-medium">Files and appearance</span>
+          </div>
+          <Link
+            href={`/admin/threed/models/${activeModel.id}`}
+            aria-label={`Open Model record ${activeModel.modelName}`}
+            className="inline-flex min-h-7 items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-2 font-medium text-foreground no-underline hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@media(pointer:coarse)]:min-h-11"
+          >
+            <ExternalLink aria-hidden="true" className="h-3.5 w-3.5" />
+            Open Model record
+          </Link>
+        </div>
+      )}
+
+
+      <div className="grid items-start gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(400px,0.85fr)] ">
+          <ThreeDModelAssetPreview
+            preserveCameraOnEdit
+            centerAtOrigin
+            perspective={MODEL_WORKSPACE_PERSPECTIVE}
+            active={active && !exportOpen}
+            onBusyChange={setPreviewBusy}
+            model={previewModel}
+            attachedDependencyCount={dependencyAudit?.requirements.filter((item) => item.satisfied).length ?? 0}
+            dependencyCount={dependencyAudit?.requirements.length ?? 0}
+            headerHelp={<ModelFieldHelp label="Saved Model Preview">Files and appearance changes save separately; saved uploads remain saved when you leave Edit Model. Uses saved files and material assignments. A visible shape does not confirm that every texture or dependency loaded successfully. Public Project access is checked separately.</ModelFieldHelp>}
+            title={troubleshooting ? "Owner Troubleshooting Preview" : "Saved Model Preview"}
+            description={troubleshooting ? "Owner library matches are temporary. Link required files below to save them." : "Uses saved files and material assignments. Public Project access is checked separately."}
+            headerMeta={!headerContainer && activeModel ? (
+              <div className="flex min-w-0 items-center gap-2 border-l pl-3">
+                <FileIcon type="model" />
+                <span className="max-w-48 truncate text-xs font-medium" title={activeModel.modelName}>{activeModel.modelName}</span>
+                <Badge variant="outline" className="text-[10px]">{activeModel.modelType}</Badge>
+                <span className="whitespace-nowrap text-[10px] text-muted-foreground">Model #{activeModel.id}</span>
+              </div>
+            ) : null}
+            statusContainer={statusContainer}
+            titleControl={selectedModel ? (<select aria-label="Model preview mode" className="h-7 rounded border bg-background px-2 text-xs"
+                value={troubleshooting ? 'owner' : 'saved'}
+                onChange={event => setTroubleshootingModelId(event.target.value === 'owner' ? modelId : null)}>
+                <option value="saved">Saved Model Preview</option>
+                <option value="owner">Owner Troubleshooting Preview</option>
+              </select>) : undefined}
+            headerActions={selectedModel ? (
+              <>
+
+              {previewModel && !loadingFiles && <ModelPreviewImageExport
+                key={previewModel.id}
+                onOpenChange={setExportOpen}
+                model={previewModel}
+                dependencyCount={dependencyAudit?.requirements.length ?? 0}
+                attachedDependencyCount={dependencyAudit?.requirements.filter(item => item.satisfied).length ?? 0}
+              />}
+              {previewModel && !loadingFiles && <ModelPreviewImageExport
+                key={previewModel.id + '-top-view'} imageTarget="top-view"
+                onOpenChange={open => { setExportOpen(open); if (!open) { void loadFiles(Number(modelId)); void loadDependencies(Number(modelId)); } }}
+                model={previewModel}
+                dependencyCount={dependencyAudit?.requirements.length ?? 0}
+                attachedDependencyCount={dependencyAudit?.requirements.filter(item => item.satisfied).length ?? 0}
+              />}
+              <Button type="button" variant="ghost" size="sm" className="h-7 text-xs" onClick={() => setHelpOpen(true)}>Help</Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                title="Refresh Model Files"
+                onClick={() => {
+                  loadFiles(Number(modelId));
+                  loadModels();
+                  loadDependencies(Number(modelId));
+                }}
+                disabled={!modelId || loadingFiles || loadingModels}
+              >
+                <RefreshCw className={`h-3.5 w-3.5 ${loadingFiles || loadingModels ? 'animate-spin' : ''}`} />
+              </Button>
+              </>
+            ) : null}
+            canvasClassName="h-[clamp(20rem,54dvh,40rem)]"
+            belowPreview={fileManagement}
+            showViewControls={false}
+            showDependencyCount={!headerContainer}
+            showMaterialInspector={mainModelFileId !== null && ['fbx', 'obj', 'glb', 'gltf'].includes(previewModel?.modelType.toLowerCase() ?? '')}
+            materialInspectorLinks={mainModelFileId !== null && /^(glb|gltf)$/i.test(previewModel?.modelType ?? '') ? <a className="text-xs text-primary underline" href="#model-embedded-images" onClick={() => {
+              let element: HTMLElement | null = document.getElementById('model-embedded-images');
+              while (element) { if (element instanceof HTMLDetailsElement) element.open = true; element = element.parentElement; }
+            }}>Browse embedded images and source materials</a> : undefined}
+            materialInspectorNotice={!modelId ? 'Select a Model to configure its appearance.' : mainModelFileId === null ? 'Choose and save a primary Model file above to enable appearance settings.' : 'Material editing is available for FBX, OBJ, GLB and GLTF Models.'}
+            splitMaterialInspector
+            primaryFileControls={(
+              <div className="my-3 space-y-2 border-b pb-3">
+                <div className="space-y-2">
+                <label htmlFor="default-model-shape" className="block text-xs">Default Shape / Mesh</label>
+                <div className="space-y-2">
+                  <select id="default-model-shape" className="h-8 w-full min-w-0 rounded border bg-background px-2 text-xs"
+                    value={shapeChoice?.modelId === modelId ? shapeChoice.shape : readModelFallbackShape(modelDetail?.metadata)}
+                    disabled={!modelDetail || loadingFiles || savingShape}
+                    onChange={event => setShapeChoice({ modelId, shape: event.target.value as ModelFallbackShape })}>
+                    {MODEL_FALLBACK_SHAPES.map(shape => <option key={shape} value={shape}>{shape[0].toUpperCase() + shape.slice(1)}</option>)}
+                  </select>
+                  <Button type="button" size="sm" className="text-xs" disabled={!modelDetail || loadingFiles || savingShape || uploading || primaryFileId !== null || linkingTexture !== null || shapeChoice?.modelId !== modelId || shapeChoice.shape === readModelFallbackShape(modelDetail?.metadata)}
+                    onClick={async () => {
+                      if (!modelDetail || shapeChoice?.modelId !== modelId) return;
+                      setSavingShape(true);
+                      try {
+                        const metadata = JSON.parse(setModelFallbackShape(JSON.stringify(modelDetail.metadata ?? {}), shapeChoice.shape));
+                        const response = await fetch(`/api/threed/models?id=${modelId}`, {
+                          method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ metadata }),
+                        });
+                        const result = await response.json();
+                        if (!response.ok || !result.success) throw new Error(result.error || 'Failed to save default shape');
+                        await loadFiles(Number(modelId));
+                        await loadModels();
+                        showToast('Default shape saved', 'success');
+                      } catch (error) {
+                        showToast(error instanceof Error ? error.message : 'Failed to save default shape', 'error');
+                      } finally { setSavingShape(false); }
+                    }}>{savingShape ? 'Saving…' : 'Save shape'}</Button>
+                </div>
+                </div>
+                <label htmlFor="primary-model-file" className="block text-xs">Primary Model file</label>
+                <select id="primary-model-file" className="h-8 w-full min-w-0 rounded border bg-background px-2 text-xs"
+                  value={primaryChoice?.modelId === modelId ? primaryChoice.fileId : String(mainModelFileId ?? '')}
+                  disabled={!modelId || loadingFiles || uploading || primaryFileId !== null || deletingId !== null}
+                  onChange={event => setPrimaryChoice({ modelId, fileId: event.target.value })}>
+                  <option value="">Choose a Model file…</option>
+                  {files.filter(file => file.fileType === 'model').map(file => (
+                    <option key={file.id} value={file.id} disabled={Boolean(primaryFileProblem(file))}>{file.fileName}{primaryFileProblem(file) ? ` — ${primaryFileProblem(file)}` : file.id === mainModelFileId ? ' — primary' : ''}</option>
+                  ))}
+                </select>
+                <div className="flex flex-wrap gap-2">
+                  <Button type="button" size="sm" className="text-xs"
+                    disabled={!modelId || loadingFiles || uploading || primaryFileId !== null || deletingId !== null || !chosenPrimaryFile || chosenPrimaryFile.fileType !== 'model' || Boolean(primaryFileProblem(chosenPrimaryFile)) || chosenPrimaryFile.id === mainModelFileId}
+                    onClick={() => {
+                      if (chosenPrimaryFile) void handleSetPrimary(chosenPrimaryFile);
+                    }}>{primaryFileId !== null ? 'Saving primary file…' : 'Save primary file'}</Button>
+                  <label className="relative inline-flex cursor-pointer items-center rounded-md border px-3 py-1 text-xs focus-within:ring-2 focus-within:ring-ring">
+                    Upload Model file
+                    <input aria-label="Upload primary Model file" type="file" accept=".fbx,.glb,.gltf,.obj,.usdz" className="absolute inset-0 w-full cursor-pointer opacity-0"
+                      disabled={!modelId || uploading || primaryFileId !== null || deletingId !== null}
+                      onChange={event => {
+                        const file = event.target.files?.[0];
+                        if (file && ['fbx', 'glb', 'gltf', 'obj', 'usdz'].includes(extensionOf(file.name))) void handleUpload([file], 'models', 'model');
+                        else if (file) showToast('Choose an FBX, GLB, GLTF, OBJ or USDZ Model file.', 'error');
+                        event.target.value = '';
+                      }} />
+                  </label>
+                </div>
+              </div>
+            )}
+            requiredFiles={(
+      <section className="rounded-lg border bg-muted/20 p-3" aria-labelledby="model-dependencies-title">
+        <div className="flex flex-wrap items-center gap-2">
+          <h2 id="model-dependencies-title" className="flex items-center gap-1 text-xs font-semibold">Required files<ModelFieldHelp label="Required files">Saved references are counted after inspection refreshes. Missing references are not attachments. Upload the exact requested filename, or link an eligible shared Texture. Saved does not confirm successful loading; review the preview after repair.</ModelFieldHelp></h2>
+          {loadingDependencies && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
+          {dependencyAudit?.status === 'analyzed' && dependencyAudit.requirements.length > 0 && (
+            <Badge variant={trulyMissingCount ? 'destructive' : 'secondary'} className="text-[10px]">
+              {dependencyAudit.requirements.filter((item) => item.satisfied).length}/{dependencyAudit.requirements.length} saved
+            </Badge>
+          )}
+        </div>
+        {trulyMissingCount > 0 && <p role="status" className="mt-2 text-xs text-amber-700 dark:text-amber-400">Preview may be incomplete: {trulyMissingCount} required file(s) still need to be saved.</p>}
+        {sharedRequirementTextures.size > 0 && (
+          <p className="mt-2 text-[11px] text-cyan-400">
+            {sharedRequirementTextures.size} Texture(s) found, but not assigned. Link below to save.
+          </p>
+        )}
+
+        {dependencyError ? (
+          <p className="mt-2 text-[11px] text-amber-400">{dependencyError}</p>
+        ) : dependencyAudit?.status === 'not_required' ? (
+          <p className="mt-2 text-[11px] text-muted-foreground">This procedural shape needs no Model file or supporting files.</p>
+        ) : dependencyAudit?.status === 'missing_primary' ? (
+          <p className="mt-2 text-[11px] text-muted-foreground">Choose a primary Model file in Step 1 to check its required files.</p>
+        ) : dependencyAudit?.status === 'not_supported' ? (
+          <p className="mt-2 text-[11px] text-muted-foreground">Dependency inspection supports FBX, GLB, GLTF and OBJ primary files.</p>
+        ) : dependencyAudit?.status === 'analyzed' && dependencyAudit.requirements.length === 0 ? (
+          <p className="mt-2 text-[11px] text-muted-foreground">{selectedModel?.modelType.toLowerCase() === 'fbx' ? 'No external texture filenames detected.' : 'No external files required.'}</p>
+        ) : dependencyAudit?.status === 'analyzed' ? (
+          <div className="mt-2 grid gap-2">
+            {dependencyAudit.requirements.map((requirement) => {
+              const sharedTexture = sharedRequirementTextures.get(requirement.relativePath);
+              return (
+                <div key={`${requirement.kind}:${requirement.relativePath}`} className="flex min-w-0 flex-wrap items-center gap-2 rounded border bg-background/30 px-2 py-2">
+                  {requirement.satisfied
+                    ? <Check className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
+                    : sharedTexture ? <Link2 className="h-3.5 w-3.5 shrink-0 text-cyan-400" />
+                    : <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-400" />}
+                  <div className="min-w-[12rem] flex-1">
+                    <p className="break-all font-mono text-[11px]" title={requirement.relativePath}>{requirement.relativePath}</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      {requirement.satisfied ? `Saved reference: ${requirement.matchedRelativePath}` : sharedTexture ? 'Found, but not assigned — link to save' : `Missing ${requirement.kind}`}
+                    </p>
+                  </div>
+                  {!requirement.satisfied && requirement.kind === 'texture' && selectedModel?.modelType.toLowerCase() === 'fbx' && (
+                    <div className="flex w-full flex-wrap items-center gap-2">
+                      <select aria-label={`Shared Texture for ${requirement.relativePath}`} className="min-w-0 flex-1 rounded border bg-background p-2 text-xs"
+                        disabled={linkingTexture !== null || uploading}
+                        value={requirementTextureChoices[`${modelId}:${requirement.relativePath}`] ?? ''}
+                        onChange={event => setRequirementTextureChoices(previous => ({ ...previous, [`${modelId}:${requirement.relativePath}`]: event.target.value }))}>
+                        <option value="">Choose a shared Texture to satisfy this requirement…</option>
+                        {textureLibrary.filter(texture => texture.isActive && canLinkThreeDTextureRequirement(requirement.fileName, texture)).map(texture => (
+                          <option key={texture.id} value={texture.id}>{texture.fileName}{/\.tga$/i.test(requirement.fileName) && /\.png$/i.test(texture.fileName) ? ' (PNG replacement for TGA)' : ''}</option>
+                        ))}
+                      </select>
+                      <Button type="button" variant="outline" size="sm" className="text-xs" disabled={linkingTexture !== null || uploading || !requirementTextureChoices[`${modelId}:${requirement.relativePath}`]}
+                        onClick={() => {
+                          const texture = textureLibrary.find(item => item.id === Number(requirementTextureChoices[`${modelId}:${requirement.relativePath}`]));
+                          if (texture) void saveSharedRequirement(requirement, texture);
+                        }}>Link to requirement</Button>
+                      {/\.tga$/i.test(requirement.fileName) && (
+                        <p className="w-full text-[10px] text-muted-foreground">Choose a PNG converted from this TGA, preserving transparency. Linking keeps the original dependency name.</p>
+                      )}
+                    </div>
+                  )}
+                  {!requirement.satisfied && sharedTexture && (
+                    <Button type="button" variant="outline" size="sm" className="h-7 shrink-0 px-2 text-[10px]"
+                      disabled={linkingTexture !== null || uploading}
+                      onClick={() => void saveSharedRequirement(requirement, sharedTexture)}>
+                      {linkingTexture === requirement.relativePath ? <Loader2 className="mr-1 h-3 w-3 animate-spin" /> : <Link2 className="mr-1 h-3 w-3" />}
+                      Link shared Texture
+                    </Button>
+                  )}
+                  {!requirement.satisfied && !sharedTexture && (
+                    <Button type="button" variant="outline" size="sm" className="min-h-10 border-amber-500/30 bg-amber-500/10 px-3 text-xs hover:bg-amber-500/20 dark:border-amber-500/30 dark:bg-amber-500/10 dark:hover:bg-amber-500/20" disabled={uploading || linkingTexture !== null} onClick={() => requestRequirementUpload(requirement)}>
+                      <Upload className="mr-1 h-3 w-3" />
+                      Upload needed file
+                    </Button>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
+      </section>
+            )}
+            savedFilesStatus={{
+              suppressReminder: missingRequirements.length > 0 && !loadingFiles && !loadingModels && !loadingDependencies && !uploading && linkingTexture === null && primaryFileId === null && deletingId === null && !error && !dependencyError && !savingShape && !(shapeChoice?.modelId === modelId && shapeChoice.shape !== readModelFallbackShape(modelDetail?.metadata)) && !uploadQueue.some(item => item.status === 'error'),
+              ready: Boolean(!savingShape && !(shapeChoice?.modelId === modelId && shapeChoice.shape !== readModelFallbackShape(modelDetail?.metadata)) && modelId && !loadingModels && !loadingFiles && !loadingDependencies && !uploading && linkingTexture === null && primaryFileId === null && deletingId === null && !error && !dependencyError && (dependencyAudit?.status === 'analyzed' || dependencyAudit?.status === 'not_required') && missingRequirements.length === 0 && !uploadQueue.some(item => item.status === 'error')),
+              readyLabel: dependencyAudit?.status === 'not_required' ? 'Procedural Model ready' : undefined,
+              message: savingShape ? 'Saving default shape…' : shapeChoice?.modelId === modelId && shapeChoice.shape !== readModelFallbackShape(modelDetail?.metadata) ? 'Save the Default Shape / Mesh under Model file + global appearance.' : !modelId ? 'Select a Model above.'
+                : uploading || linkingTexture !== null || primaryFileId !== null || deletingId !== null ? 'Saving file changes…'
+                : loadingModels || loadingFiles || loadingDependencies ? 'Checking saved files…'
+                : error || dependencyError ? 'Unable to verify saved files. Review Required files and Files and attachments.'
+                : uploadQueue.some(item => item.status === 'error') ? 'An upload failed. Review the upload results in Files and attachments.'
+                : dependencyAudit?.status === 'not_required' ? 'The saved shape is ready; no Model file or supporting files are required.'
+                : mainModelFileId === null || dependencyAudit?.status === 'missing_primary' ? 'Choose a primary Model file in Step 1.'
+                : dependencyAudit?.status !== 'analyzed' ? 'Saved files could not be verified. Review Required files.'
+                : missingRequirements.length ? `${missingRequirements.length} required file(s) still need to be saved under Required files.`
+                : 'Required files are saved. Review the preview to confirm the appearance.',
+            }}
+            textureLibrary={textureLibrary}
+            onSaveMaterialAssignment={saveMaterialAssignment}
+          />
+
+
+      </div>
+
+
 
       <Dialog open={helpOpen} onOpenChange={setHelpOpen}>
         <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-xl">
@@ -1350,10 +1373,10 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
             <DialogDescription>How to prepare and customize a Model.</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 text-sm">
-            <div><h3 className="font-semibold">1. Model file + global appearance</h3><p>Default Shape / Mesh is used when a Model file is unavailable. Save shape refreshes the preview; a loaded Model file keeps its own mesh. Upload a Model file if needed, then select it and click Save primary file. Selecting a Base Color Texture previews one material; Save Texture to all materials applies it across the Model.</p></div>
+            <div><h3 className="font-semibold">Model file + global appearance</h3><p>Default Shape / Mesh is used when a Model file is unavailable. Save shape refreshes the preview; a loaded Model file keeps its own mesh. Upload a Model file if needed, then select it and click Save primary file. Selecting a Base Color Texture previews one material; Save Texture to all materials applies it across the Model.</p></div>
             <div><h3 className="font-semibold">2. Required files</h3><p>Link a shared Texture or upload the requested file. Linking reuses the saved file without another upload. For OBJ, attach the required MTL libraries first to discover their textures.</p></div>
             <div><h3 className="font-semibold">Supporting uploads</h3><p>Add local textures, material libraries or binary buffers. The attachment directory should match the Model’s references; storage is managed automatically. Files without URLs cannot be used as the primary Model.</p></div>
-            <div><h3 className="font-semibold">3. Individual materials</h3><p>Expand this section to test or assign a Texture to a specific material. Temporary previews are not saved automatically.</p></div>
+            <div><h3 className="font-semibold">Individual materials</h3><p>Expand this section to test or assign a Texture to a specific material. Temporary previews are not saved automatically.</p></div>
             <div><h3 className="font-semibold">Saved-file status</h3><p>Saved files ready confirms the saved dependency check. Review the preview for visual correctness; this status does not activate the Model. Appearance assignments and missing-file resolution are separate actions.</p></div>
           </div>
         </DialogContent>
@@ -1384,6 +1407,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </fieldset>
     </div>
   );
 }

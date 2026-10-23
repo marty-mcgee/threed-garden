@@ -291,6 +291,8 @@ See the [validation guide](docs/agents/VALIDATION.md) for task-specific and isol
 
 ## 🤝 Contribute and follow development
 
+Prepared checkpoint: **[v0.27.2 - ThreeD Models: Editor layout and embedded images](docs/releases/v0.27.2.md)**.
+
 Developer-confirmed production release: **[v0.27.1 - ThreeD Admin: Shared filtering and Model Top View export](docs/releases/v0.27.1.md)**. See [release history](docs/releases/README.md) for checkpoint details and [current context](CONTEXT.md) for current scope, acceptance, and known limitations.
 
 Have a reproducible bug or a focused feature idea? [Open an issue](https://github.com/marty-mcgee/threed-garden/issues). Before contributing, review the [contribution workflow](docs/agents/TASK_CHECKLISTS.md), existing ownership boundaries, and applicable checks.

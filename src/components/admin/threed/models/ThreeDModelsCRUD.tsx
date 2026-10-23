@@ -202,6 +202,8 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
   const [formData, setFormData] = useState<ThreeDModelAdminFormData>(createEmptyThreeDModelAdminForm);
   const [savedForm, setSavedForm] = useState('');
   const [filesBusy, setFilesBusy] = useState(false);
+  const [filesStatusContainer, setFilesStatusContainer] = useState<HTMLDivElement | null>(null);
+  const [filesHeaderContainer, setFilesHeaderContainer] = useState<HTMLSpanElement | null>(null);
   const [exportOpen, setExportOpen] = useState(false);
   const [detailsReady, setDetailsReady] = useState(true);
   const [refreshingDetails, setRefreshingDetails] = useState(false);
@@ -634,13 +636,15 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
   if (view !== "list") {
     const busy = isSubmitting || uploadingPrimary || uploadingThumbnail || filesBusy || exportOpen || refreshingDetails || tabs.transitioning;
     return (
-      <div className="flex h-full min-h-0 min-w-0 flex-col gap-2">
+      <div className="model-editor-surface flex h-full min-h-0 min-w-0 flex-col gap-2">
         {ToastComponent}
         <Tabs value={view === 'edit' ? tabs.tab : 'details'} onValueChange={value => tabs.requestTab(value === 'files' ? 'files' : 'details')} activationMode="manual" className="min-h-0 flex-1">
         <AdminWorkspaceHeader className="shrink-0" icon={Box} title={view === "create" ? "Add Model" : "Edit Model"}
           description={view === "create" ? "Create a reusable ThreeD Model" : "Model #" + linkedModelId + " · Reusable Model details"}>
           {editingModel && <span className="min-w-0 truncate text-xs text-muted-foreground" title={editingModel.modelName}>{editingModel.modelName} <Badge variant="outline">Model #{editingModel.id}</Badge></span>}
-          {view === 'edit' && <TabsList className="ml-auto" aria-label="Model workspace"><TabsTrigger value="details" disabled={busy || !editingModel}>Details</TabsTrigger><TabsTrigger value="files" disabled={busy || !editingModel}>Files</TabsTrigger></TabsList>}
+          {<Badge variant="outline" className="text-[10px]">{tabs.tab === 'files' ? editingModel?.modelType : formData.modelType || 'Choose a type'}</Badge>}
+          {view === 'edit' && <TabsList className="shrink-0" aria-label="Model workspace"><TabsTrigger value="details" disabled={busy || !editingModel}>Details</TabsTrigger><TabsTrigger value="files" disabled={busy || !editingModel}>Files</TabsTrigger></TabsList>}
+          {view === 'edit' && <span ref={setFilesHeaderContainer} className={tabs.tab === 'files' ? "inline-flex items-center gap-2 text-[10px] text-muted-foreground" : "hidden"} />}
         </AdminWorkspaceHeader>
         {primaryUploadNotice && <div role="status" className="flex items-center gap-2 rounded border p-2 text-xs">
           <span>{primaryUploadNotice}</span>{uploadingPrimary && primaryCanCancel && <Button type="button" variant="outline" size="sm" onClick={() => primaryUploadAbort.current?.abort()}>Cancel upload</Button>}
@@ -648,12 +652,12 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
 
           {tabs.notice && <p role="status" className="text-sm text-muted-foreground">{tabs.notice}</p>}
           <TabsContent value="details" forceMount hidden={view === 'edit' && tabs.tab !== 'details'} className="min-h-0 min-w-0 flex flex-1 flex-col gap-2 data-[state=inactive]:hidden">
-            <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain lg:overflow-hidden">
+            <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain py-1 pr-1">
               {linkedModelError ? <p role="alert" className="text-destructive">{linkedModelError}</p>
                 : view === "edit" && !editingModel ? <p role="status">Loading Model…</p>
                 : (
-                  <div className="grid min-h-0 min-w-0 gap-3 lg:h-full lg:grid-cols-2">
-                    <section aria-label="Model draft preview" tabIndex={0} className="min-h-0 min-w-0 lg:overflow-y-auto lg:pr-1">
+                  <div className="grid min-h-0 min-w-0 items-start gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(400px,0.85fr)]">
+                    <section aria-label="Model draft preview" tabIndex={0} className="model-details-preview min-w-0 self-start">
                       <ThreeDModelAssetPreview
                         active={(view !== 'edit' || tabs.tab === 'details') && !exportOpen}
                         model={importerPreviewModel}
@@ -662,21 +666,21 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
                         preserveCameraOnEdit
                         centerAtOrigin
                         perspective={MODEL_WORKSPACE_PERSPECTIVE}
-                        title="Draft Model Canvas"
+                        title="Preview Canvas"
                         headerHelp={<ModelFieldHelp label="Model Canvas Preview">{formData.modelType && formData.modelType !== 'procedural' && !formData.filePath.trim()
                           ? 'Recovery geometry only: choose a Model file to preview its geometry. Choose the recovery shape under Geometry.'
                           : 'Previewing unsaved shape, transform, and file lighting changes. Save to apply them to the reusable Model.'}</ModelFieldHelp>}
-                        headerMeta={<Badge variant="outline">{formData.modelType || 'Choose a type'}</Badge>}
-                        canvasClassName="h-[clamp(16rem,42dvh,30rem)]"
+                        showViewControls={false}
+                        canvasClassName="h-[clamp(20rem,54dvh,40rem)]"
                       />
-                      <fieldset aria-label="Library preview image" disabled={busy || !detailsReady} className="mt-3 min-w-0 rounded-lg border admin-editor-panel p-3">
+                      <fieldset aria-label="Library preview image" disabled={busy || !detailsReady} className="mt-3 grid min-w-0 grid-cols-1 items-start gap-3 rounded-lg border admin-editor-panel p-3 sm:grid-cols-2 [&>section]:m-0 [&>section]:min-w-0 [&>section]:rounded-md [&>section]:border-0 [&>section]:p-2">
                         <ThreeDModelPreviewImageFields mode={view === 'create' ? 'create' : 'edit'} form={formData} setForm={setFormData}
                           isSubmitting={isSubmitting} uploadingPrimary={uploadingPrimary} uploadingThumbnail={uploadingThumbnail} onThumbnail={handleThumbnailUpload}
                           previewImageAction={importerPreviewModel && <ModelPreviewImageExport key={editingModel?.id ?? 'draft'} model={importerPreviewModel} useDraftModel onOpenChange={setExportOpen} dependencyCount={0} attachedDependencyCount={0} disabled={busy} onUseImageUrl={url => setFormData(current => ({ ...current, thumbnailUrl: url }))} />} />
                         <ModelTopViewImage exportAction={editingModel && importerPreviewModel && <ModelPreviewImageExport key={editingModel.id + '-top-view'} imageTarget="top-view" model={importerPreviewModel} useDraftModel onOpenChange={setExportOpen} dependencyCount={0} attachedDependencyCount={0} disabled={busy || !detailsReady} onUseImageUrl={url => setFormData(current => ({ ...current, imageTopViewUrl: url }))} />} modelId={editingModel?.id} value={formData.imageTopViewUrl ?? ''} disabled={busy || !detailsReady} onBusyChange={setUploadingThumbnail} onChange={imageTopViewUrl => setFormData(current => ({ ...current, imageTopViewUrl }))} />
                       </fieldset>
                     </section>
-                    <fieldset aria-label="Model details" tabIndex={0} disabled={busy || !detailsReady} className="min-h-0 min-w-0 rounded-lg border admin-editor-panel p-3 lg:overflow-y-auto [&_section]:rounded-md [&_section]:border [&_section]:p-3">
+                    <fieldset aria-label="Model details" tabIndex={0} disabled={busy || !detailsReady} className="model-details-fields min-w-0 self-start [&>div]:space-y-3 [&_section]:rounded-lg [&_section]:border [&_section]:p-3">
                       {view === 'create' && formData.modelType === 'obj' && (
                         <p className="mb-4 rounded-md border p-3 text-sm">Attach MTL files and referenced images in Model Files after creation. Use Bulk Import Models to prepare a complete OBJ bundle before uploading.</p>
                       )}
@@ -699,7 +703,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
                   </div>
                 )}
             </div>
-            <div className="shrink-0 space-y-2 rounded-lg border admin-editor-panel p-2">
+            <div className="model-save-actions shrink-0 space-y-2 rounded-lg border p-2">
               {refreshingDetails && <p role="status" className="text-sm text-muted-foreground">Reloading saved Model…</p>}
               {detailsRefreshError && <div className="space-y-2"><p role="alert" className="text-sm text-destructive">{detailsRefreshError}</p><Button variant="outline" disabled={busy} onClick={() => void refreshDetails()}>Retry Model refresh</Button></div>}
               {formError && <p role="alert" className="text-sm text-destructive">{formError}</p>}
@@ -712,8 +716,11 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
               </div>
             </div>
           </TabsContent>
-          {view === 'edit' && editingModel && <TabsContent value="files" forceMount hidden={tabs.tab !== 'files'} className="min-h-0 flex-1 overflow-y-auto overscroll-contain rounded-lg border p-4 data-[state=inactive]:hidden">
-            <ThreeDModelFilesCRUD key={editingModel.id} initialModelId={editingModel.id} embedded active={tabs.tab === 'files'} onBusyChange={reportFilesBusy} />
+          {view === 'edit' && editingModel && <TabsContent value="files" forceMount hidden={tabs.tab !== 'files'} className="min-h-0 flex flex-1 flex-col gap-2 data-[state=inactive]:hidden">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain py-1 pr-1">
+            <ThreeDModelFilesCRUD key={editingModel.id} initialModelId={editingModel.id} headerContainer={filesHeaderContainer} statusContainer={filesStatusContainer} embedded active={tabs.tab === 'files'} onBusyChange={reportFilesBusy} />
+            </div>
+            <div ref={setFilesStatusContainer} className="shrink-0" />
           </TabsContent>}
         </Tabs>
         <Dialog open={tabs.pending !== null} onOpenChange={open => { if (!open && !busy) void tabs.resolve('stay'); }}>

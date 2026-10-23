@@ -574,3 +574,45 @@ button.threed-field-help {
   margin-inline-start: calc(-1 * var(--threed-help-title-gap, 0px));
   vertical-align: middle;
 }
+
+/* Model editor hierarchy: soft surfaces instead of repeated outer frames. */
+.model-editor-surface {
+  --model-panel-fill: rgb(0 0 0 / 0.025);
+  --model-inset-fill: rgb(0 0 0 / 0.025);
+  --model-panel-border: rgb(0 0 0 / 0.08);
+  --model-inset-border: rgb(0 0 0 / 0.06);
+}
+.dark .model-editor-surface {
+  --model-panel-fill: rgb(255 255 255 / 0.025);
+  --model-inset-fill: rgb(255 255 255 / 0.035);
+  --model-panel-border: rgb(255 255 255 / 0.08);
+  --model-inset-border: rgb(255 255 255 / 0.06);
+}
+.model-editor-surface .model-files-workspace section,
+.model-editor-surface #model-file-management,
+.model-editor-surface fieldset.admin-editor-panel {
+  background-color: var(--model-panel-fill);
+  border-color: var(--model-panel-border);
+}
+.model-editor-surface .model-files-workspace section details:not(.model-individual-materials),
+.model-editor-surface #model-file-management details,
+.model-editor-surface fieldset.admin-editor-panel section {
+  background-color: var(--model-inset-fill);
+  border-color: var(--model-inset-border);
+}
+
+/* Details uses the same panel levels and column geometry as Files. */
+.model-editor-surface .model-details-preview > div > div > section,
+.model-editor-surface .model-details-fields > div > :is(div.rounded-md, section, details) {
+  background-color: var(--model-panel-fill);
+  border-color: var(--model-panel-border);
+}
+.model-editor-surface .model-details-fields > div > :is(div.rounded-md, section, details) :is(section, details) {
+  background-color: var(--model-inset-fill);
+  border-color: var(--model-inset-border);
+}
+
+.model-editor-surface .model-save-actions {
+  background-color: rgb(16 185 129 / 0.08);
+  border-color: rgb(16 185 129 / 0.2);
+}
