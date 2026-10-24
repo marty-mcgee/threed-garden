@@ -2,6 +2,8 @@
 
 ## Current checkpoint
 
+Prepared **[v0.27.7 - ThreeD Design: Roof labels](docs/releases/v0.27.7.md)**. Developer accepted removal of descriptive Roof-kind text from the 2D Design canvas. Geometry and editing remain. Fresh isolated TypeScript, all 92 offline CI tasks, guarded production build and 1,585-input parity passed. Package/root lock are 0.27.7; changes remain unstaged and deployment is not confirmed.
+
 Developer-confirmed production baseline: **[v0.27.6 - ThreeD Projects: Save snapshot fix](docs/releases/v0.27.6.md)**. Developer confirmed Project #17 saves and accepted the requested reopen/layout/appearance check. Snapshot serialization omits oversized catalog Model metadata and derived asset collections while retaining instance state, Project Save transaction and JSON limits. Fresh isolated TypeScript, all 92 offline CI tasks, guarded production build and 1,584-input parity passed. Package/root lock are 0.27.6; Developer confirmed production release on October 24, 2026. Observed repository HEAD: `6dce8aef`; exact deployed commit and independent post-deployment verification are not established.
 
 Previous Developer-confirmed production release: **[v0.27.5 - ThreeD Designs: Admin overview](docs/releases/v0.27.5.md)**, released October 24, 2026. Shared Admin presentation, URL-backed filters/sorting and owner-scoped Project architectural summaries retain existing Project editing/Save authority. Developer accepted the final presentation. Preparation passed fresh isolated TypeScript, all 92 offline CI tasks, guarded production build and 1,583-input parity. Package/root lock are 0.27.5. Observed repository HEAD: `096eff96`; exact deployed commit and independent post-deployment verification are not established.
