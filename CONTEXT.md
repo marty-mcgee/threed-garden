@@ -2,9 +2,9 @@
 
 ## Current checkpoint
 
-Prepared **[v0.27.5 - ThreeD Designs: Admin overview](docs/releases/v0.27.5.md)**: shared Admin presentation, URL-backed filters/sorting and owner-scoped Project architectural summaries. Existing Project editing/Save remains authoritative. Developer accepted the final presentation. Fresh isolated TypeScript, all 92 offline CI tasks, guarded production build and 1,583-input parity passed. Package/root lock are 0.27.5; changes remain unstaged and deployment is not confirmed.
+Developer-confirmed production baseline: **[v0.27.5 - ThreeD Designs: Admin overview](docs/releases/v0.27.5.md)**, released October 24, 2026. Shared Admin presentation, URL-backed filters/sorting and owner-scoped Project architectural summaries retain existing Project editing/Save authority. Developer accepted the final presentation. Preparation passed fresh isolated TypeScript, all 92 offline CI tasks, guarded production build and 1,583-input parity. Package/root lock are 0.27.5. Observed repository HEAD: `096eff96`; exact deployed commit and independent post-deployment verification are not established.
 
-Package/root lock and Developer-confirmed production baseline: **[v0.27.4 - App directory cleanup](docs/releases/v0.27.4.md)**, released October 23, 2026. Preparation passed fresh isolated TypeScript, all 92 offline CI tasks, guarded build and 1,580-input parity. Observed repository HEAD: `d59bc035`; exact deployed commit and independent post-deployment verification are not established.
+Previous Developer-confirmed production release: **[v0.27.4 - App directory cleanup](docs/releases/v0.27.4.md)**, released October 23, 2026. Preparation passed fresh isolated TypeScript, all 92 offline CI tasks, guarded build and 1,580-input parity. Observed repository HEAD: `d59bc035`; exact deployed commit and independent post-deployment verification are not established.
 
 Previous Developer-confirmed production release: **[v0.27.3 - ThreeD Models: Files and Materials](docs/releases/v0.27.3.md)**, released October 23, 2026. Preparation passed fresh isolated TypeScript, all 92 offline CI tasks, guarded build and 1,579-input parity. Observed repository HEAD: `609234a0`; exact deployed commit and independent post-deployment checks are not established.
 
