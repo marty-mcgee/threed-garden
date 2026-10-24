@@ -6,7 +6,7 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
- - [v0.27.6 - ThreeD Projects: Save snapshot fix (prepared for production release)](v0.27.6.md)
+ - [v0.27.6 - ThreeD Projects: Save snapshot fix (Developer-confirmed production release)](v0.27.6.md)
 
  - [v0.27.5 - ThreeD Designs: Admin overview (Developer-confirmed production release)](v0.27.5.md)
 
