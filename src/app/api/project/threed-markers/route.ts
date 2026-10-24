@@ -442,10 +442,12 @@ async function saveSnapshot(request: NextRequest) {
       moduleIdsByIdentity.set(identity, moduleIds);
     }
 
-    const rows = markers.map((marker) => {
+    const rows = markers.map((marker, index) => {
       const moduleIds = moduleIdsByIdentity.get(`${marker.moduleType}:${marker.assetId}`);
       if (!moduleIds || moduleIds.size !== 1) {
-        throw new ProjectMarkerSnapshotError('invalid_snapshot');
+        const error = new ProjectMarkerSnapshotError('invalid_snapshot');
+        error.detail = `Marker ${index + 1}: ${moduleIds?.size ? 'multiple active ThreeD Module assignments' : 'no active ThreeD Module assignment'}. Review this Project’s asset assignments.`;
+        throw error;
       }
       const [threedId] = moduleIds;
       const geographic = getMarkerGeographicValues(marker.position, ownedProject);
@@ -602,11 +604,14 @@ async function saveSnapshot(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
+          code: error instanceof ProjectMarkerSnapshotError ? error.code : 'invalid_view_state',
           error: error instanceof ProjectViewStateError
             ? 'Invalid ThreeD Project view state'
             : error instanceof ProjectMarkerSnapshotError && error.code === 'overlapping_characters'
               ? 'Characters are too close to reload safely. Move them apart, then save again.'
-              : 'Invalid ThreeD Project marker snapshot',
+              : error instanceof ProjectMarkerSnapshotError && error.detail
+                ? `Invalid ThreeD Project marker snapshot. ${error.detail}`
+                : 'Invalid ThreeD Project marker snapshot',
         },
         {
           status: error instanceof ProjectMarkerSnapshotError && error.code === 'too_many_markers'

@@ -29,10 +29,37 @@ function callback(file, name, context) {
   return vm.runInNewContext(compile(`(${arrow.getText(source)});`), context);
 }
 const registryRef = { current: registry };
+const modelAssets = {};
+vm.runInNewContext(compile(read('src/libraries/services/threed/models/model-snapshot-assets.ts')), { exports: modelAssets,
+  require(name) { assert.equal(name, './model-lighting-core.ts'); return { readModelLightBoost: () => 1 }; },
+});
 const snapshot = callback('src/components/map/UnifiedMapView.tsx', 'getProjectMarkerSnapshot', {
   runtimeMarkerRegistryRef: registryRef,
   runtimeMarkers: [{ id: 'characters-11', type: 'characters', name: 'Farmer', data: { id: 11 } }],
 });
+const derived = { metadata: { importInventory: 'x'.repeat(176255) }, files: [{ name: 'large.obj', metadata: 'x'.repeat(40000) }], materialAssignments: [{ channel: 'baseColor' }], textureFallbacks: [{ file: 'texture.png' }] };
+const modelData = { ...derived, id: 77, modelId: 20, rotationX: 0.4, rotationYInstance: 1.2, rotationZ: 0.7, scaleMultiplier: 2, custom: { retained: true } };
+const modelSnapshot = callback('src/components/map/UnifiedMapView.tsx', 'getProjectMarkerSnapshot', {
+  modelMarkerSnapshotData: modelAssets.modelMarkerSnapshotData,
+  runtimeMarkerRegistryRef: { current: { resolve: () => ({ identity: { moduleType: 'models', assetId: 77 }, currentPosition: { x: 1, y: 2, z: 3 }, positionSource: 'runtime' }) } },
+  runtimeMarkers: [{ id: 'models-instance-77', type: 'models', name: 'Large Model', data: modelData, metadata: { collisionMode: 'fixed' } }],
+})();
+assert.equal(modelSnapshot[0].assetId, 20);
+assert.equal(modelSnapshot[0].data.files, undefined);
+assert.equal(modelSnapshot[0].data.materialAssignments, undefined);
+assert.equal(modelSnapshot[0].data.textureFallbacks, undefined);
+assert.equal(modelSnapshot[0].data.metadata, undefined);
+assert.equal(modelSnapshot[0].data.scaleMultiplier, 2);
+assert.equal(modelSnapshot[0].data.rotationYInstance, 1.2);
+assert.equal(modelSnapshot[0].data.custom.retained, true);
+assert.equal(modelSnapshot[0].metadata.collisionMode, 'fixed');
+assert.equal(modelData.files, derived.files, 'Saving must not mutate the live render resources');
+const restoredAssets = modelAssets.currentModelAssets(derived);
+assert.equal(restoredAssets.files, derived.files);
+assert.equal(restoredAssets.materialAssignments, derived.materialAssignments);
+assert.equal(restoredAssets.textureFallbacks, derived.textureFallbacks);
+assert.equal(modelAssets.refreshModelMarkerData(modelSnapshot[0].data, 20, derived).metadata, derived.metadata, 'Catalog metadata returns from current Model authority');
+console.log('PASS: actual Project Model snapshot excludes derived asset collections, preserves instance state and leaves current render resources available for rehydration');
 const requests = [];
 const base = {
   console, projectRuntimeMarkerRegistryRef: registryRef,

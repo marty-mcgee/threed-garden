@@ -1319,6 +1319,10 @@ const validSavedSnapshot = parseProjectThreeDMarkerSnapshot([{
   data: { status: 'active' },
   metadata: { source: 'sub-module' },
 }]);
+assert.throws(() => parseProjectThreeDMarkerSnapshot([{ ...validSavedSnapshot[0], data: { large: 'x'.repeat(32769) } }]),
+  (error: unknown) => error instanceof ProjectMarkerSnapshotError && error.detail?.includes('Marker 1: data') === true && error.detail.includes('exceeds the 32 KiB limit'));
+assert.throws(() => parseProjectThreeDMarkerSnapshot([{ ...validSavedSnapshot[0], label: '' }]),
+  (error: unknown) => error instanceof ProjectMarkerSnapshotError && error.detail?.includes('Marker 1: label') === true);
 assert.equal(validSavedSnapshot[0].moduleType, 'characters');
 assert.equal(validSavedSnapshot[0].markerId, 'characters-9');
 assert.equal(validSavedSnapshot[0].name, 'Farmer');
@@ -1914,7 +1918,16 @@ for (const filePath of ['https://fixture.test/primary/current.fbx', 'https://fix
 console.log('PASS: repeated Character position responses retain current primary URLs and clear missing files without replacing unrelated owners');
 
 // @ts-expect-error Native Node TypeScript imports use explicit extensions.
-const { refreshModelMarkerData, currentPlantingModelId } = await import('../services/threed/models/model-snapshot-assets.ts');
+const { refreshModelMarkerData, currentPlantingModelId, modelMarkerSnapshotData } = await import('../services/threed/models/model-snapshot-assets.ts');
+const largeModel = { metadata: { inventory: 'x'.repeat(176255) }, files: [{ name: 'primary.obj' }], materialAssignments: [], textureFallbacks: [] };
+const loadedInstance = refreshModelMarkerData({ rotationX: 0.4, rotationYInstance: 1.2, rotationZ: 0.7, scaleMultiplier: 2 }, 12, largeModel);
+const compactSnapshot = parseProjectThreeDMarkerSnapshot([{ ...validSavedSnapshot[0], moduleType: 'models', assetId: 12,
+  data: JSON.parse(JSON.stringify(modelMarkerSnapshotData(loadedInstance))), metadata: { collisionMode: 'box', placementRole: 'object' } }])[0];
+assert.equal(compactSnapshot.data.scaleMultiplier, 2);
+assert.equal(compactSnapshot.data.rotationYInstance, 1.2);
+assert.equal(compactSnapshot.metadata.collisionMode, 'box');
+assert.equal(refreshModelMarkerData(compactSnapshot.data, 12, largeModel).metadata, largeModel.metadata);
+assert.equal(loadedInstance.metadata, largeModel.metadata, 'Snapshot compaction leaves live Model metadata intact');
 const freshModels = new Map([[12, { id: 12, filePath: 'https://fixture.test/current.fbx', files: [] }]]);
 for (const markerType of ['models', 'plantings'] as const) {
   const staleData = { filePath: 'https://fixture.test/deleted.fbx', model: { filePath: 'https://fixture.test/deleted.fbx' }, scaleMultiplier: 2 };

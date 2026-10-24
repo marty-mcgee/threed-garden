@@ -1,6 +1,12 @@
 // @ts-expect-error Native Node TypeScript validation requires the explicit extension.
 import { readModelLightBoost } from './model-lighting-core.ts';
 
+/** Catalog metadata/assets are rehydrated from current Model records; instance metadata is marker.metadata. */
+export function modelMarkerSnapshotData(data: Record<string, unknown>): Record<string, unknown> {
+  const { metadata: _catalogMetadata, files: _files, materialAssignments: _materials, textureFallbacks: _textures, ...instance } = data;
+  return instance;
+}
+
 /** Saved instance settings may survive; stored asset URLs must come from current records. */
 export function currentModelAssets(model: Record<string, unknown> | undefined) {
   const metadata = model?.metadata && typeof model.metadata === 'object' && !Array.isArray(model.metadata)

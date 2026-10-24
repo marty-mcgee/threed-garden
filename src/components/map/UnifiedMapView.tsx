@@ -24,6 +24,7 @@ import {
   createThreeDRuntimeMarkerRegistrations,
 } from '@/libraries/services/threed/markers/runtime-marker-builder';
 import { ThreeDRuntimeMarkerRegistry } from '@/libraries/services/threed/markers/runtime-marker-core';
+import { modelMarkerSnapshotData } from '@/libraries/services/threed/models/model-snapshot-assets';
 import type { ProjectThreeDMarkerSnapshotInput } from '@/libraries/services/threed/markers/project-marker-snapshot-core';
 import type { ThreeDModelLibraryItem } from '@/libraries/types/threed';
 import type {
@@ -420,7 +421,9 @@ export function UnifiedMapView({
         label: marker.label,
         isVisible: marker.isVisible,
         isActive: marker.isActive,
-        data: marker.type === 'characters' && registered.liveRotation !== null
+        data: marker.type === 'models'
+          ? modelMarkerSnapshotData(marker.data ?? {})
+          : marker.type === 'characters' && registered.liveRotation !== null
           ? { ...marker.data, rotation: registered.liveRotation }
           : marker.data,
         metadata: marker.metadata,

@@ -38,6 +38,7 @@ export type ProjectMarkerSnapshotErrorCode =
 
 export class ProjectMarkerSnapshotError extends Error {
   readonly code: ProjectMarkerSnapshotErrorCode;
+  detail?: string;
 
   constructor(code: ProjectMarkerSnapshotErrorCode) {
     super(code);
@@ -114,7 +115,13 @@ function requireSafeJsonRecord(value: unknown): Record<string, unknown> {
   }
   assertSafeJsonValue(value, new Set());
   if (new TextEncoder().encode(JSON.stringify(value)).byteLength > MAX_PROJECT_MARKER_SNAPSHOT_JSON_BYTES) {
-    throw new ProjectMarkerSnapshotError('invalid_snapshot');
+    const error = new ProjectMarkerSnapshotError('invalid_snapshot');
+    const largest = Object.entries(value).map(([key, child]) => ({ key, bytes: new TextEncoder().encode(JSON.stringify(child)).byteLength }))
+      .sort((a, b) => b.bytes - a.bytes)[0];
+    const knownField = largest && ['metadata', 'model', 'config', 'files', 'materialAssignments', 'textureFallbacks', 'animations', 'sceneAnimationMapping', 'animationMapping'].includes(largest.key)
+      ? ` Largest field: ${largest.key} (${largest.bytes} bytes).` : '';
+    error.detail = `JSON exceeds the 32 KiB limit.${knownField}`;
+    throw error;
   }
   return value;
 }
@@ -131,53 +138,63 @@ export function parseProjectThreeDMarkerSnapshot(
 
   const markerIds = new Set<string>();
   const nonModelSourceIdentities = new Set<string>();
-  const parsed = value.map((candidate): ProjectThreeDMarkerSnapshotInput => {
-    if (!isRecord(candidate)) {
-      throw new ProjectMarkerSnapshotError('invalid_snapshot');
-    }
-    const moduleType = typeof candidate.moduleType === 'string'
-      ? normalizeThreeDRuntimeMarkerModuleType(candidate.moduleType)
-      : null;
-    const assetId = Number(candidate.assetId);
-    if (!moduleType || !Number.isSafeInteger(assetId) || assetId <= 0) {
-      throw new ProjectMarkerSnapshotError('invalid_snapshot');
-    }
+  const parsed = value.map((candidate, index): ProjectThreeDMarkerSnapshotInput => {
+    let field = 'identity';
+    try {
+      if (!isRecord(candidate)) {
+        throw new ProjectMarkerSnapshotError('invalid_snapshot');
+      }
+      const moduleType = typeof candidate.moduleType === 'string'
+        ? normalizeThreeDRuntimeMarkerModuleType(candidate.moduleType)
+        : null;
+      const assetId = Number(candidate.assetId);
+      if (!moduleType || !Number.isSafeInteger(assetId) || assetId <= 0) {
+        throw new ProjectMarkerSnapshotError('invalid_snapshot');
+      }
 
-    const markerId = requireShortText(candidate.markerId, 250);
-    if (markerIds.has(markerId)) {
-      throw new ProjectMarkerSnapshotError('duplicate_marker');
-    }
-    markerIds.add(markerId);
+      field = 'markerId';
+      const markerId = requireShortText(candidate.markerId, 250);
+      if (markerIds.has(markerId)) {
+        throw new ProjectMarkerSnapshotError('duplicate_marker');
+      }
+      markerIds.add(markerId);
 
-    const sourceIdentity = `${moduleType}:${assetId}`;
-    if (moduleType !== 'models' && nonModelSourceIdentities.has(sourceIdentity)) {
-      throw new ProjectMarkerSnapshotError('duplicate_marker');
-    }
-    if (moduleType !== 'models') nonModelSourceIdentities.add(sourceIdentity);
+      const sourceIdentity = `${moduleType}:${assetId}`;
+      if (moduleType !== 'models' && nonModelSourceIdentities.has(sourceIdentity)) {
+        throw new ProjectMarkerSnapshotError('duplicate_marker');
+      }
+      if (moduleType !== 'models') nonModelSourceIdentities.add(sourceIdentity);
 
-    const positionSource = candidate.positionSource ?? 'asset';
-    if (positionSource !== 'asset' && positionSource !== 'runtime') {
-      throw new ProjectMarkerSnapshotError('invalid_snapshot');
-    }
-    if (typeof candidate.isVisible !== 'boolean' || typeof candidate.isActive !== 'boolean') {
-      throw new ProjectMarkerSnapshotError('invalid_snapshot');
-    }
+      field = 'positionSource';
+      const positionSource = candidate.positionSource ?? 'asset';
+      if (positionSource !== 'asset' && positionSource !== 'runtime') {
+        throw new ProjectMarkerSnapshotError('invalid_snapshot');
+      }
+      field = 'visibility/active flags';
+      if (typeof candidate.isVisible !== 'boolean' || typeof candidate.isActive !== 'boolean') {
+        throw new ProjectMarkerSnapshotError('invalid_snapshot');
+      }
 
-    return {
-      markerId,
-      moduleType,
-      assetId,
-      name: requireShortText(candidate.name, 250),
-      position: requirePosition(candidate.position),
-      positionSource,
-      color: requireShortText(candidate.color, 100),
-      icon: requireShortText(candidate.icon, 100),
-      label: requireShortText(candidate.label, 250),
-      isVisible: candidate.isVisible,
-      isActive: candidate.isActive,
-      data: requireSafeJsonRecord(candidate.data ?? {}),
-      metadata: requireSafeJsonRecord(candidate.metadata ?? {}),
-    };
+      const read = <T>(key: string, parse: () => T): T => { field = key; return parse(); };
+      return {
+        markerId,
+        moduleType,
+        assetId,
+        name: read('name (1–250 characters)', () => requireShortText(candidate.name, 250)),
+        position: read('position', () => requirePosition(candidate.position)),
+        positionSource,
+        color: read('color (1–100 characters)', () => requireShortText(candidate.color, 100)),
+        icon: read('icon (1–100 characters)', () => requireShortText(candidate.icon, 100)),
+        label: read('label (1–250 characters)', () => requireShortText(candidate.label, 250)),
+        isVisible: candidate.isVisible,
+        isActive: candidate.isActive,
+        data: read('data (safe JSON, maximum 32 KiB)', () => requireSafeJsonRecord(candidate.data ?? {})),
+        metadata: read('metadata (safe JSON, maximum 32 KiB)', () => requireSafeJsonRecord(candidate.metadata ?? {})),
+      };
+    } catch (error) {
+      if (error instanceof ProjectMarkerSnapshotError) error.detail = `Marker ${index + 1}: ${field}.${error.detail ? ` ${error.detail}` : ''}`;
+      throw error;
+    }
   });
   const characters = parsed.filter(marker => marker.moduleType === 'characters' && marker.data.isMovable === true);
   for (let i = 0; i < characters.length; i++) {
