@@ -20,7 +20,7 @@ const bindings=[];
 for(const path of [...walkFiles('src/components/admin/threed'), 'src/components/threed/design/DesignStandalone.tsx'].filter(p=>p.endsWith('.tsx'))){const a=ts.createSourceFile(path,fs.readFileSync(path,'utf8'),99,true,4);function visit(n){if(ts.isCallExpression(n)&&n.expression.getText(a)==='useAdminListQueryState')bindings.push({path,args:n.arguments.map(arg=>arg.getText(a))});ts.forEachChild(n,visit)}visit(a)}
 const evalArg=text=>vm.runInNewContext('('+text+')',{scrollRecords:true,view:'list',projectId:'8',initialProjectId:8,initialSimulationId:3,initialCategoryId:2,String});
 (async()=>{
- assert.equal(bindings.length,84,'Every approved list field and Designs paging remains connected');
+ assert.equal(bindings.length,89,'Every approved list field and Designs search/filter/sort/paging remains connected');
  for(const binding of bindings){const args=binding.args.map(evalArg),[route,key,initial,options]=args;const f=fixture('http://fixture'+route+'?unrelated=keep#records');
   const desired=typeof initial==='number' ? (key==='limit'?100:key==='page'?initial+2:100) : typeof initial==='object'?{...initial,direction:initial.direction==='asc'?'desc':'asc'}:key==='direction'?'desc':options?.values?.find(v=>v!==initial)??'sample';
   f.render(...args)[1](desired);await tick();assert.deepEqual(JSON.parse(JSON.stringify(f.render(...args)[0])),JSON.parse(JSON.stringify(desired)),binding.path+' '+key);

@@ -35,7 +35,7 @@ const tasks = {
   'repository-maintenance': [node('validate-repository-maintenance.cjs'), node('validate-farmbot-status-summary.cjs')],
   'design-appearance-top-view': [node('validate-model-top-view-export.cjs'), node('validate-design-appearance-top-view.cjs'), node('validate-model-top-view-compatibility.cjs')],
   'admin-sidebar': [node('validate-admin-sidebar.cjs')],
-  'threed-designs': [node('validate-threed-designs.cjs')],
+  'threed-designs': [node('validate-threed-designs.cjs'), node('validate-admin-designs.cjs')],
   'project-configurations': [node('validate-project-measurement-units.cjs'), node('validate-project-configurations-ui.cjs')],
   'legacy-design-recovery': [node('validate-legacy-recovery-geometry.cjs'), node('validate-legacy-recovery-files.cjs'), node('validate-legacy-recovery-apply.cjs')],
   'threed-home-design': [node('validate-threed-home-design.cjs'), node('validate-design-sloped-walls.cjs')],

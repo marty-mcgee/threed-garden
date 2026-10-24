@@ -38,6 +38,12 @@ Inspection found an existing JSONB project.config column and an owner-scoped Pro
 | Existing instances | project_threed_markers; src/libraries/services/threed/markers/runtime-marker-core.ts and runtime-marker-builder.ts | Stable marker IDs, transforms and live-position snapshot authority remain. Architecture is not fabricated as Model assets or duplicate markers. |
 | Models/resources | src/libraries/schema/threed/index.ts; src/components/threed/markers/ModelMarker3D.tsx; existing Model/File/Texture loaders | Primary File authority, saved material assignments, resource references and runtime owners remain separate and unchanged. |
 
+## Admin Designs overview
+
+`/admin/threed/designs` lists owned Projects through the read-only `/api/admin/designs` endpoint. It uses the shared Admin header, table and URL query state for search, status/visibility/content filters, name/updated sorting and paging. Saved architecture counts summarize walls, floors, roofs and wall/roof openings from Project configuration; they do not certify document validity. Updated refers to the Project timestamp. Inactive Projects remain discoverable with explicit status badges/filtering.
+
+Open Design navigates to `/dashboard/scene?projectId=…&view=design`; Edit Project opens the existing Admin Project editor. A valid `projectId` bookmark still redirects directly into Design mode. This overview does not create or modify legacy `threed_designs` records. Project Save remains the architectural write boundary.
+
 ## Lifecycle, units and geometry
 
 ### Exact persistence mapping
