@@ -6,7 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, ListMusic, ExternalLink, Music, ShoppingBag, Youtube, Instagram, Globe, Image as ImageIcon } from 'lucide-react';
+import { Play, Pause, SkipForward, SkipBack, Volume2, VolumeX, ListMusic, ExternalLink, Music, ShoppingBag, Youtube, Instagram, Globe, FileText, Image as ImageIcon } from 'lucide-react';
 import { WaveformVisualizer } from './WaveformVisualizer';
 import { MediaGallery } from './MediaGallery';
 import { cn } from '@/libraries/utils';
@@ -51,6 +51,7 @@ interface Album {
 
 interface MultimediaPlayerProps {
   mediaPreview?: ReactNode;
+  lyricsPanel?: ReactNode;
   onMediaPlay?: (element: HTMLMediaElement) => void;
   track: Track;
   album: Album;
@@ -71,7 +72,7 @@ interface MultimediaPlayerProps {
 }
 
 export function MultimediaPlayer({
-  mediaPreview, onMediaPlay,
+  mediaPreview, onMediaPlay, lyricsPanel,
   track,
   album,
   tracks,
@@ -192,7 +193,7 @@ export function MultimediaPlayer({
             </div>
           </div>
 
-          {/* RIGHT COLUMN - Waveform + Tabs (Track List, Links, Media Gallery) */}
+          {/* RIGHT COLUMN - Waveform + content tabs */}
           <div className="min-w-0 space-y-4">
             {/* Waveform Visualization */}
             {!mediaPreview && <WaveformVisualizer
@@ -204,9 +205,9 @@ export function MultimediaPlayer({
               className="w-full"
             />}
 
-            {/* Tabs for Track List, Links, and Media Gallery */}
+            {/* Each caller provides the Lyrics panel for its public or owner scope. */}
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-3 bg-muted/50">
+              <TabsList className={cn('grid w-full bg-muted/50', lyricsPanel ? 'auto-rows-8 grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 group-data-[orientation=horizontal]/tabs:h-auto' : 'grid-cols-3')}>
                 <TabsTrigger value="tracks" className="data-[state=active]:bg-muted gap-2">
                   <ListMusic className="h-4 w-4" />
                   Track List
@@ -228,7 +229,19 @@ export function MultimediaPlayer({
                     {album.media?.length || 0}
                   </Badge>
                 </TabsTrigger>
+                {lyricsPanel && (
+                  <TabsTrigger value="lyrics" className="data-[state=active]:bg-muted gap-2">
+                    <FileText className="h-4 w-4" />
+                    Lyrics
+                  </TabsTrigger>
+                )}
               </TabsList>
+
+              {lyricsPanel && (
+                <TabsContent value="lyrics" className="mt-4">
+                  {lyricsPanel}
+                </TabsContent>
+              )}
 
               {/* Track List Tab */}
               <TabsContent value="tracks" className="mt-4">

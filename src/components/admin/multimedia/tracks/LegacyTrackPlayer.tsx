@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { MultimediaPlayer } from '@/components/multimedia/MultimediaPlayer';
+import { TrackLyrics } from '@/components/admin/multimedia/lyrics/TrackLyrics';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, Music } from 'lucide-react';
@@ -230,6 +231,7 @@ export default function TrackPage() {
         {currentTrack && album && (
           <MultimediaPlayer
             track={currentTrack}
+            lyricsPanel={<TrackLyrics trackId={currentTrack.id} trackTitle={currentTrack.title} />}
             album={album}
             tracks={tracks}
             isPlaying={isPlaying}

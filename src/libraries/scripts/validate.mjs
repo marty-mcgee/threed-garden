@@ -28,6 +28,7 @@ const tasks = {
   'multimedia-parent-moves': [node('validate-multimedia-parent-moves.cjs')],
   'multimedia-order-display': [node('validate-multimedia-order-display.cjs')],
   'multimedia-editor': [node('validate-multimedia-editor.cjs')],
+  'multimedia-lyrics': [node('validate-multimedia-lyrics.cjs'), node('validate-multimedia-lyrics-ui.cjs'), node('validate-track-lyrics.cjs'), node('validate-public-lyrics.cjs')],
   'multimedia-authority': [node('validate-multimedia-authority.cjs')],
   'project-weather': [node('validate-project-weather.cjs')],
   'threed-model-image-backfill': [ts('validate-threed-model-image-backfill.mts')],
@@ -176,6 +177,7 @@ const tasks = {
 };
 
 const ci = [
+  'multimedia-lyrics',
   'admin-overview',
   'multimedia-dashboard',
   'multimedia-parent-moves',

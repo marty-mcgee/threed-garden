@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
-import { multimediaAlbums, multimediaTracks, multimediaMedia, multimediaLinks } from '@/libraries/schema/multimedia';
+import { multimediaAlbums, multimediaTracks, multimediaMedia, multimediaLinks, multimediaLyrics } from '@/libraries/schema/multimedia';
 import { and, eq, sql, count } from 'drizzle-orm';
 import { multimediaOrdering } from '@/libraries/services/multimedia/ordering';
 
-const tables = { albums: multimediaAlbums, tracks: multimediaTracks, media: multimediaMedia, links: multimediaLinks };
+const tables = { albums: multimediaAlbums, tracks: multimediaTracks, media: multimediaMedia, links: multimediaLinks, lyrics: multimediaLyrics };
 const fields = {
   albums: ['id', 'title', 'artist', 'releaseYear', 'status', 'isPublic', 'sortOrder'],
   tracks: ['id', 'title', 'albumId', 'duration', 'fileType', 'status', 'trackNumber'],
   media: ['sortOrder', 'id', 'fileName', 'albumId', 'fileType', 'fileSize', 'isPrimary', 'isPublic', 'isActive'],
   links: ['id', 'title', 'albumId', 'type', 'status', 'displayOrder'],
+  lyrics: ['id', 'title', 'sortOrder', 'isActive', 'updatedAt'],
 };
 export async function GET(request: NextRequest) {
   const session = await auth();
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
   const search = (params.get('search') ?? '').trim();
   const albumValue = params.get('albumId'), trackValue = params.get('trackId');
   const validId = (value: string) => /^[1-9]\d*$/.test(value) && Number.isSafeInteger(Number(value));
-  if ((albumValue !== null && (!validId(albumValue) || key === 'albums')) ||
+  if ((albumValue !== null && (!validId(albumValue) || key === 'albums' || key === 'lyrics')) ||
       (trackValue !== null && (!validId(trackValue) || key !== 'links'))) return NextResponse.json({ error: 'Invalid parent filter.' }, { status: 400 });
   if (!fields[key].includes(sort) || !['asc', 'desc'].includes(direction) || !Number.isInteger(limit) || limit < 1 || limit > 200 || !Number.isSafeInteger(offset) || offset < 0 || offset > 2147483647 || search.length > 255) return NextResponse.json({ error: 'Invalid list options.' }, { status: 400 });
   // All identifiers come from the module allowlist, never SQL supplied by the caller.
@@ -38,6 +39,15 @@ export async function GET(request: NextRequest) {
     trackValue ? eq(multimediaLinks.trackId, Number(trackValue)) : undefined,
     search ? sql`${name} ILIKE ${`%${search.replace(/[\\%_]/g, '\\$&')}%`}` : undefined);
   try {
+    if (key === 'lyrics') {
+      const table = multimediaLyrics;
+      const [data, totals] = await Promise.all([
+        db.select({ id: table.id, title: table.title, sortOrder: table.sortOrder, isActive: table.isActive, updatedAt: table.updatedAt }).from(table).where(scope)
+          .orderBy(sql`${column} ${direction === 'asc' ? sql`ASC` : sql`DESC`} NULLS LAST`, table.id).limit(limit).offset(offset),
+        db.select({ total: count() }).from(table).where(scope),
+      ]);
+      return NextResponse.json({ data, total: totals[0]?.total ?? 0 }, { headers: { 'Cache-Control': 'private, no-store' } });
+    }
     const [data, totals] = await Promise.all([
       db.select().from(table).where(scope).orderBy(sql`${column} ${direction === 'asc' ? sql`ASC` : sql`DESC`} NULLS LAST`, table.id).limit(limit).offset(offset),
       db.select({ total: count() }).from(table).where(scope),

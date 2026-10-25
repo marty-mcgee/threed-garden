@@ -58,6 +58,8 @@ let Component = load('src/components/multimedia/MultimediaContent.tsx', {
   react, 'react/jsx-runtime': { jsx, jsxs: jsx },
   '@/components/multimedia/AlbumGrid': { AlbumGrid: 'AlbumGrid' },
   '@/components/multimedia/MultimediaPlayer': { MultimediaPlayer: 'MultimediaPlayer' },
+  '@/components/multimedia/AlbumLyrics': { AlbumLyrics: 'AlbumLyrics' },
+  '@/components/ui/tabs': { Tabs: 'Tabs', TabsContent: 'TabsContent', TabsList: 'TabsList', TabsTrigger: 'TabsTrigger' },
   '@/components/ui/button': { Button: 'Button' }, './MediaGallery': { MediaGallery: 'MediaGallery' },
   './MultimediaLoading': { MultimediaPageSkeleton: 'MultimediaPageSkeleton', MultimediaPlayerSkeleton: 'MultimediaPlayerSkeleton' },
   '@/libraries/services/multimedia/dashboard': service,
@@ -93,12 +95,15 @@ async function respond(request, data, pagination) { request.resolve({ ok: true, 
   assert.equal(get('MultimediaPlayer').props.album.links.length, 1);
   assert.equal(get('MultimediaPlayer').props.album.media.length, 1);
   assert.equal(get('MultimediaPlayer').props.tracks[0].trackNumber, 0);
+  assert.equal(get('MultimediaPlayer').props.lyricsPanel.type, 'AlbumLyrics', 'public player receives the public Lyrics panel');
+  assert.equal(get('MultimediaPlayer').props.lyricsPanel.props.albumId, 1);
   get('AlbumGrid').props.onPlayAlbum(2); render(); const old = requests.at(-1);
   assert.equal(AudioMock.instance.src, ''); assert.equal(get('MultimediaPlayer'), undefined);
   get('AlbumGrid').props.onSelectAlbum(3); render(); const latest = requests.at(-1);
   assert.equal(old.options.signal.aborted, true);
   await respond(latest, details(3)); await respond(old, details(2));
   assert.equal(get('MultimediaPlayer').props.album.id, 3); assert.equal(get('MultimediaPlayer').props.isPlaying, false);
+  assert.equal(get('MultimediaPlayer').props.lyricsPanel.props.albumId, 3, 'Lyrics scope follows the resolved Album, not stale selection');
   button('Load more Albums').props.onClick(); render();
   assert.match(requests.at(-1).url, /offset=50$/);
   requests.at(-1).reject(new Error('offline failure')); await settle();
@@ -114,6 +119,8 @@ async function respond(request, data, pagination) { request.resolve({ ok: true, 
   await respond(requests.at(-1), { ...details(52), tracks: [] });
   assert.equal(get('MediaGallery').props.media.length, 1, 'Trackless Album still exposes eligible Media');
   assert.ok(nodes().some(n => n.type === 'a' && n.props.children === 'Link'));
+  assert.ok(nodes().some(n => n.type === 'TabsTrigger' && n.props.value === 'lyrics'), 'Trackless Album exposes a Lyrics tab');
+  assert.equal(get('AlbumLyrics').props.albumId, 52, 'direct Album Lyrics does not require a Track');
   const oldAudio = AudioMock.instance;
   get('AlbumGrid').props.onSelectAlbum(2); render();
   await respond(requests.at(-1), { ...details(2), tracks: [{ ...details(2).tracks[0], fileType: 'video/mp4' }] });

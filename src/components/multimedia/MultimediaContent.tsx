@@ -4,7 +4,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { AlbumGrid } from '@/components/multimedia/AlbumGrid';
 import { MultimediaPlayer } from '@/components/multimedia/MultimediaPlayer';
+import { AlbumLyrics } from '@/components/multimedia/AlbumLyrics';
 import { Button } from '@/components/ui/button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MediaGallery } from './MediaGallery';
 import { MultimediaPageSkeleton, MultimediaPlayerSkeleton } from './MultimediaLoading';
 import { LatestDashboardRequest, loadDashboardAlbum, loadDashboardAlbums, readDashboardSelection, dashboardSelectionUrl, type DashboardSelection, type DashboardAlbum, type DashboardTrack } from '@/libraries/services/multimedia/dashboard';
@@ -309,9 +311,22 @@ export default function MultimediaContent() {
           <section className="mb-6 space-y-3">
             <h2 className="text-xl font-semibold">{selectedAlbum.title}</h2>
             <p>No active Tracks available for this Album.</p>
-            <h3>Links</h3>
-            {selectedAlbum.links?.length ? selectedAlbum.links.map(link => <a className="block underline" key={link.id} href={link.url} target="_blank" rel="noopener noreferrer">{link.title}</a>) : <p>No Links available.</p>}
-            {selectedAlbum.media?.length ? <MediaGallery key={selectedAlbum.id} media={selectedAlbum.media} onMediaPlay={onMediaPlay} /> : <p>No Media available.</p>}
+            <Tabs key={selectedAlbum.id} defaultValue="links">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="links">Links</TabsTrigger>
+                <TabsTrigger value="media">Media</TabsTrigger>
+                <TabsTrigger value="lyrics">Lyrics</TabsTrigger>
+              </TabsList>
+              <TabsContent value="links" className="space-y-3">
+                {selectedAlbum.links?.length ? selectedAlbum.links.map(link => <a className="block underline" key={link.id} href={link.url} target="_blank" rel="noopener noreferrer">{link.title}</a>) : <p>No Links available.</p>}
+              </TabsContent>
+              <TabsContent value="media">
+                {selectedAlbum.media?.length ? <MediaGallery key={selectedAlbum.id} media={selectedAlbum.media} onMediaPlay={onMediaPlay} /> : <p>No Media available.</p>}
+              </TabsContent>
+              <TabsContent value="lyrics">
+                <AlbumLyrics albumId={selectedAlbum.id} albumTitle={selectedAlbum.title} />
+              </TabsContent>
+            </Tabs>
           </section>
         )}
 
@@ -320,6 +335,7 @@ export default function MultimediaContent() {
             {playbackError && <p role="alert" className="mb-2 text-sm text-destructive">{playbackError}</p>}
             <MultimediaPlayer
               key={selectedAlbum.id}
+              lyricsPanel={<AlbumLyrics albumId={selectedAlbum.id} albumTitle={selectedAlbum.title} />}
               mediaPreview={isVideo ? <video ref={videoRef} controls playsInline preload="metadata" aria-label={currentTrack.title} className="aspect-video w-full rounded border bg-black" /> : undefined}
               onMediaPlay={onMediaPlay}
               track={currentTrack}

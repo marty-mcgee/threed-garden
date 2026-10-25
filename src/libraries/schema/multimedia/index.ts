@@ -141,6 +141,47 @@ export const multimediaTracks = pgTable('multimedia_tracks', {
   statusIdx: index('multimedia_tracks_status_idx').on(table.status),
 }));
 
+// Autonomous Lyrics records; optional parent associations live only in junction tables.
+export const multimediaLyrics = pgTable('multimedia_lyrics', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  title: text('title').notNull(),
+  content: text('content').notNull().default(''),
+  sortOrder: integer('sort_order').notNull().default(0),
+  isActive: boolean('is_active').notNull().default(true),
+  metadata: jsonb('metadata').notNull().default({}),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, table => [
+  index('multimedia_lyrics_owner_idx').on(table.userId),
+  check('multimedia_lyrics_sort_range', sql`${table.sortOrder} BETWEEN -10000 AND 10000`),
+]);
+
+export const multimediaLyricsProjects = pgTable('multimedia_lyrics_projects', {
+  id: serial('id').primaryKey(),
+  lyricsId: integer('lyrics_id').notNull().references(() => multimediaLyrics.id, { onDelete: 'cascade' }),
+  projectId: integer('project_id').notNull().references(() => project.id, { onDelete: 'cascade' }),
+}, table => [
+  unique('multimedia_lyrics_projects_pair').on(table.lyricsId, table.projectId),
+  index('multimedia_lyrics_projects_parent_idx').on(table.projectId),
+]);
+export const multimediaLyricsAlbums = pgTable('multimedia_lyrics_albums', {
+  id: serial('id').primaryKey(),
+  lyricsId: integer('lyrics_id').notNull().references(() => multimediaLyrics.id, { onDelete: 'cascade' }),
+  albumId: integer('album_id').notNull().references(() => multimediaAlbums.id, { onDelete: 'cascade' }),
+}, table => [
+  unique('multimedia_lyrics_albums_pair').on(table.lyricsId, table.albumId),
+  index('multimedia_lyrics_albums_parent_idx').on(table.albumId),
+]);
+export const multimediaLyricsTracks = pgTable('multimedia_lyrics_tracks', {
+  id: serial('id').primaryKey(),
+  lyricsId: integer('lyrics_id').notNull().references(() => multimediaLyrics.id, { onDelete: 'cascade' }),
+  trackId: integer('track_id').notNull().references(() => multimediaTracks.id, { onDelete: 'cascade' }),
+}, table => [
+  unique('multimedia_lyrics_tracks_pair').on(table.lyricsId, table.trackId),
+  index('multimedia_lyrics_tracks_parent_idx').on(table.trackId),
+]);
+
 // ✅ SIMPLIFIED: multimedia_links - no junction table needed
 export const multimediaLinks = pgTable('multimedia_links', {
   id: serial('id').primaryKey(),

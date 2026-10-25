@@ -124,6 +124,7 @@ export const navSections: NavSection[] = [
       { title: 'Overview', href: '/admin/multimedia', icon: Music, exact: true },
       { title: 'Albums', href: '/admin/multimedia/albums', icon: DiscAlbum, exact: false },
       { title: 'Tracks', href: '/admin/multimedia/tracks', icon: Music2, exact: false },
+      { title: 'Lyrics', href: '/admin/multimedia/lyrics', icon: FileText, exact: false },
       { title: 'Speech', href: '/admin/multimedia/speech', icon: MicVocal, exact: false, children: [
         { title: 'All Speeches', href: '/admin/multimedia/speech', icon: Star, exact: false },
         { title: 'New Speech', href: '/admin/multimedia/speech/new', icon: Plus, exact: true },

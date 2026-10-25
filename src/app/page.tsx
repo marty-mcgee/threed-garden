@@ -6,6 +6,7 @@ import { ArrowRight } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import GardenHero from '@/components/home/GardenHero';
 import { MultimediaPlayer } from '@/components/multimedia/MultimediaPlayer';
+import { AlbumLyrics } from '@/components/multimedia/AlbumLyrics';
 import { Button } from '@/components/ui/button';
 
 const largeActionClassName = 'h-auto min-h-14 whitespace-normal rounded-xl px-7 py-4 text-base [&_svg]:size-5';
@@ -350,6 +351,7 @@ export default function HomePage() {
               <p className="text-sm text-muted-foreground">{selectedAlbum.artist}</p>
             </div>
             <MultimediaPlayer
+              lyricsPanel={<AlbumLyrics albumId={selectedAlbum.id} albumTitle={selectedAlbum.title} />}
               track={currentTrack}
               album={selectedAlbum}
               tracks={tracks}
