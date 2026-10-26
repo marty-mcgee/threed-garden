@@ -1,5 +1,6 @@
 // components/admin/threed/plantings/ThreeDPlantingsCRUD.tsx
 'use client';
+import { AdminRelationshipBadge } from '@/components/admin/shared/AdminRelationshipBadge';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useState, useEffect } from 'react';
@@ -918,7 +919,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
                       <Bean aria-hidden="true" className="w-3.5 h-3.5 text-[#a87950]" />
-                      {planting.plant?.commonName || 'Unknown'}
+                      <AdminRelationshipBadge kind="plant" id={planting.plantId} label={planting.plant?.commonName} />
                       {!planting.isActive && (
                         <Badge variant="secondary" className="text-[10px]">Inactive</Badge>
                       )}

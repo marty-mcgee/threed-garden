@@ -1,4 +1,5 @@
 'use client';
+import { AdminRelationshipBadge } from '@/components/admin/shared/AdminRelationshipBadge';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useEffect, useState } from 'react';
@@ -87,8 +88,8 @@ export function SimulationResultsList({ projectId: initialProjectId, simulationI
     <div className="min-h-0 flex-1 overflow-auto rounded-md border"><Table className="min-w-[800px] [&_td]:py-2 [&_td]:text-xs [&_th]:text-xs">
       <TableHeader className="sticky top-0 z-10 bg-background"><TableRow>{['Result', 'Simulation snapshot', 'Project', 'Revision', 'Status', 'Recorded', 'Details'].map(label => <TableHead key={label}>{label}</TableHead>)}</TableRow></TableHeader>
       <TableBody>{loading ? <TableRow><TableCell colSpan={7}>Loading Results...</TableCell></TableRow> : error ? <TableRow><TableCell colSpan={7} role="alert" className="text-destructive">{error} <Button variant="outline" size="sm" onClick={() => setRefresh(value => value + 1)}>Retry</Button></TableCell></TableRow> : !rows.length ? <TableRow><TableCell colSpan={7}>{invalidId ? 'Correct the Simulation ID above.' : 'No saved Results match these filters. Owner runs capture Results from the Project Scene.'}</TableCell></TableRow> : rows.map(row => <TableRow key={row.runId}>
-        <TableCell>#{row.id}</TableCell><TableCell className="font-medium">{row.name}<span className="block text-muted-foreground">{row.simulationId ? `Simulation #${row.simulationId}` : 'Definition deleted; snapshot retained'}</span></TableCell>
-        <TableCell>{projects.find(project => project.id === row.projectId)?.name ?? `Project #${row.projectId}`}</TableCell><TableCell>{row.simulationRevision}</TableCell>
+        <TableCell>#{row.id}</TableCell><TableCell className="font-medium">{row.name}<span className="block text-muted-foreground">{row.simulationId ? <AdminRelationshipBadge kind="simulation" id={row.simulationId} /> : 'Definition deleted; snapshot retained'}</span></TableCell>
+        <TableCell><AdminRelationshipBadge kind="project" id={row.projectId} label={projects.find(project => project.id === row.projectId)?.name} /></TableCell><TableCell>{row.simulationRevision}</TableCell>
         <TableCell className={row.status === 'completed' ? 'text-emerald-700 dark:text-emerald-300' : row.status === 'running' ? 'text-amber-700 dark:text-amber-300' : row.status === 'cancelled' ? 'text-muted-foreground' : 'text-destructive'}>{row.status === 'running' ? 'Awaiting final report' : row.status}</TableCell>
         <TableCell>{new Date(row.createdAt).toLocaleString()}</TableCell>
         <TableCell><Button asChild variant="outline" size="sm"><Link href={`/admin/threed/simulation-results/${row.runId}`} aria-label={`View Result #${row.id}`}><Eye className="h-3.5 w-3.5" /> View</Link></Button></TableCell>

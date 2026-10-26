@@ -40,6 +40,7 @@ function fixture(props, list = false) {
     return Response.json({ success: true, data });
   };
   const deps = { react: rt.react, 'react/jsx-runtime': { jsx, jsxs: jsx }, 'lucide-react': proxy, 'next/navigation': { useRouter: () => ({ push: url => navigation.push(url), replace: url => navigation.push(url) }) },
+    '@/components/admin/shared/AdminRelationshipBadge': proxy,
     '@/components/admin/layout/AdminWorkspaceHeader': proxy, '@/components/ui/button': proxy, '@/components/ui/badge': proxy, '@/components/ui/input': proxy, '@/components/ui/label': proxy, '@/components/ui/textarea': proxy, '@/components/ui/switch': proxy, '@/components/ui/table': proxy,
     '../models/ModelFieldHelp': proxy, '@/libraries/services/threed/simulations/simulation-input': input, './SimulationPreview': { SimulationPreview: 'SimulationPreview' }, './SimulationDefinitionEditor': { ...definitionModule, SimulationDefinitionEditor: 'SimulationDefinitionEditor', emptySimulationChoices: definitionModule.emptySimulationChoices },
     '@/components/ui/toast': { useToast: () => ({ showToast: (...args) => notifications.push(args), ToastComponent: null }) },

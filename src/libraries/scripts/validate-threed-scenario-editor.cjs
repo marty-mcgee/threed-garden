@@ -46,6 +46,7 @@ function fixture(props, initialProjectFailure = false) {
     return Response.json({ success: true, data });
   };
   const mocks = {
+    '@/components/admin/shared/AdminRelationshipBadge': proxy,
     react: rt.react, 'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/navigation': { useRouter: () => router }, 'next/link': { default: 'Link' }, 'lucide-react': proxy,
     '@/components/admin/layout/AdminWorkspaceHeader': proxy, '@/components/ui/button': proxy, '@/components/ui/input': proxy, '@/components/ui/label': proxy, '@/components/ui/textarea': proxy,
     '@/components/ui/table': proxy, '@/components/ui/switch': proxy, '../models/ModelFieldHelp': proxy, './ScenarioEditorSurface': proxy, './ScenarioContinuationDialog': proxy,

@@ -1,8 +1,10 @@
 'use client';
 import { useRef, useState } from 'react';
+import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { FileText, Plus, SquarePen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,6 +17,13 @@ import { LYRICS_CONTENT_LIMIT } from '@/libraries/services/multimedia/lyrics-inp
 
 type Form = { title: string; content: string; sortOrder: string; isActive: boolean; metadata: string; projects: LyricsAssignment[]; albums: LyricsAssignment[]; tracks: LyricsAssignment[] };
 const blank = (): Form => ({ title: '', content: '', sortOrder: '0', isActive: true, metadata: '{}', projects: [], albums: [], tracks: [] });
+function assignmentBadges(value: unknown, kind: LyricsAssignmentKind) {
+  const assignments = value as LyricsAssignment[] | undefined;
+  const basePath = kind === 'projects' ? '/admin/projects' : `/admin/multimedia/${kind}`;
+  return <div className="flex max-w-xs flex-wrap gap-1">{assignments?.length
+    ? assignments.map(item => <Badge key={item.id} asChild variant="secondary" className="max-w-full whitespace-normal break-words text-[10px] hover:underline"><Link href={`${basePath}/${item.id}`}>{item.title}</Link></Badge>)
+    : '—'}</div>;
+}
 function LyricsWorkspace() {
   const records = useMultimediaRecords('lyrics', true);
   const [open, setOpen] = useState(false), [id, setId] = useState<number | null>(null), [form, setForm] = useState<Form>(blank);
@@ -71,6 +80,9 @@ function LyricsWorkspace() {
     {notice && <p role="status" className="text-xs text-green-600 dark:text-green-400">{notice}</p>}
     <MultimediaRecordsTable workspace={workspace} label="Lyrics" columns={[
       { field: 'title', label: 'Title', render: row => <span className="inline-flex items-center gap-2"><FileText aria-hidden="true" className="h-3.5 w-3.5 text-blue-500" />{String(row.title)} <span className="text-muted-foreground">#{row.id}</span></span> },
+      { field: 'albums', label: 'Albums', sortable: false, render: row => assignmentBadges(row.albums, 'albums') },
+      { field: 'tracks', label: 'Tracks', sortable: false, render: row => assignmentBadges(row.tracks, 'tracks') },
+      { field: 'projects', label: 'Projects', sortable: false, render: row => assignmentBadges(row.projects, 'projects') },
       { field: 'sortOrder', label: 'Sort Order' }, { field: 'isActive', label: 'Active', render: row => <MultimediaStatus value={row.isActive} /> },
       { field: 'updatedAt', label: 'Updated', render: row => row.updatedAt ? new Date(String(row.updatedAt)).toLocaleDateString() : '—' },
     ]} actions={row => <Button variant="ghost" size="sm" className="h-7 px-2 text-xs" disabled={workspace.busy} onClick={() => void edit(row.id)}><SquarePen className="mr-1 h-3.5 w-3.5" />Edit</Button>} />

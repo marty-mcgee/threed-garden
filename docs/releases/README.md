@@ -6,6 +6,8 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
+ - [v0.27.9 - Admin: Relationship links (prepared for production release)](v0.27.9.md)
+
  - [v0.27.8 - Multimedia: Lyrics (Developer-confirmed production release)](v0.27.8.md)
 
  - [v0.27.7 - ThreeD Design: Roof labels (prepared for production release)](v0.27.7.md)

@@ -1,5 +1,6 @@
 // components/admin/threed/harvests/ThreeDHarvestsCRUD.tsx
 'use client';
+import { AdminRelationshipBadge } from '@/components/admin/shared/AdminRelationshipBadge';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useState, useEffect } from 'react';
@@ -694,7 +695,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                       )}
                     </div>
                   </TableCell>
-                  <TableCell className="py-1 text-sm">{harvest.plant?.commonName || 'Unknown'}</TableCell>
+                  <TableCell className="py-1 text-sm"><AdminRelationshipBadge kind="plant" id={harvest.plantId} label={harvest.plant?.commonName} /></TableCell>
                   <TableCell className="py-1 text-xs font-mono text-muted-foreground">{harvest.id}</TableCell>
                   <TableCell className="py-1 text-sm text-muted-foreground">
                     {harvest.quantity} {harvest.unit}

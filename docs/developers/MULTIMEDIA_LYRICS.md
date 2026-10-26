@@ -2,7 +2,11 @@
 
 ## Admin workflow
 
+Assignment badges link to their existing Admin record routes: Albums at `/admin/multimedia/albums/[id]`, Tracks at `/admin/multimedia/tracks/[id]`, and Projects at `/admin/projects/[id]`. They retain compact styling with hover and keyboard-focus feedback.
+
 Open **Admin > Multimedia > Lyrics** at `/admin/multimedia/lyrics`. The compact shared Multimedia workspace provides search, sortable columns, paging, Add/Edit dialogs and selected-record deletion.
+
+The list includes **Albums**, **Tracks** and **Projects** columns after Title. Each directly assigned record appears as a compact secondary badge, matching Model Category presentation; multiple names wrap, and unassigned cells show a dash. These three association columns are display-only; Title, Sort Order, Active and Updated retain sorting. Owned assignments remain visible in Admin even when their parent is private or inactive. Edit the Lyrics record to change assignments.
 
 A Lyrics record is autonomous: Title is required; Lyrics text may be empty while drafting. Sort Order defaults to 0 and accepts integers from -10000 to 10000. Active is independent of associations. Optional JSON metadata is stored on the Lyrics record; it is owner-managed and is not publicly serialized.
 
@@ -37,7 +41,7 @@ Both junction foreign keys cascade **junction rows**. Deleting a Project, Album 
 
 `/api/multimedia/lyrics` supports owner-only detail reads, paged owned assignment options, POST, PUT and DELETE. Writes validate all selected parents under share locks and lock an existing owned Lyrics row before replacing associations in one transaction. Invalid or foreign assignments cause no partial commit. Ownership is enforced in the App service; the junction foreign keys enforce existence, not cross-table User equality.
 
-The shared `/api/multimedia/admin-list?kind=lyrics` returns only list summary fields; it omits content and metadata. Default order is ascending Sort Order with ID tie-breaking. Existing Track `lyrics` text, public Album/Track responses and playback behavior are preserved. Public Lyrics uses the separate read endpoint above. No automatic import or synchronization is included.
+The shared `/api/multimedia/admin-list?kind=lyrics` returns list summary fields and `albums`, `tracks` and `projects` arrays of `{ id, title }`; it omits content and metadata. Association names are ordered by title/name, then ID. Three batched reads enrich only the current page and check ownership of both Lyrics and parent; empty pages skip these reads. Default Lyrics order is ascending Sort Order with ID tie-breaking. Existing Track `lyrics` text, public Album/Track responses and playback behavior are preserved. Public Lyrics uses the separate read endpoint above. No automatic import or synchronization is included.
 
 ## Schema application and rollback
 
@@ -54,6 +58,8 @@ For the shown pending-create state, [Lyrics-only creation SQL](sql/multimedia-ly
 Rollback requires reverting the Lyrics code/navigation first. If removal of the new data is explicitly authorized after backup, remove the three junction tables before the standalone Lyrics table; retain every existing table and the legacy `multimedia_tracks.lyrics` column. No rollback was performed.
 
 ## Verification
+
+Assignment columns and linked Admin relationships are included in [v0.27.9 - Admin: Relationship links](../releases/v0.27.9.md), with fresh isolated TypeScript, all 93 offline CI tasks and a guarded production build. No additional schema update is required for these list enhancements.
 
 `npm run validate -- multimedia-lyrics multimedia-admin-workspace admin-sidebar` exercises actual schema metadata, owner/parent guards, transactional assignment replacement/failure, input bounds, list query behavior, actual dialog callbacks and sidebar routing with mocked persistence/UI. Lyrics checks also cover the Track-linked read's owner/active/order/projection bounds and the actual player panel's selection, cancellation, paging, retry and plain-text display. These checks do not certify live foreign-key application or browser interaction. Full checkpoint evidence is tracked in [v0.27.8](../releases/v0.27.8.md).
 

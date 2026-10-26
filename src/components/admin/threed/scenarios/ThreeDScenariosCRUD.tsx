@@ -1,4 +1,5 @@
 'use client';
+import { AdminRelationshipBadge } from '@/components/admin/shared/AdminRelationshipBadge';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useEffect, useRef, useState } from 'react';
@@ -376,7 +377,7 @@ export function ThreeDScenariosCRUD({ projectId, compact = false, view = 'list',
           </TableCell></TableRow>}
           {!loading && !loadError && rows.map(row => <TableRow key={row.id}>
             <TableCell><input type="checkbox" aria-label={`Select ${row.name}`} checked={selected.has(row.id)} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(row.id); else next.delete(row.id); return next; })} /></TableCell>
-            <TableCell className="font-medium">{row.name}<span className="ml-1 text-[10px] text-muted-foreground">#{row.id}</span></TableCell><TableCell>{row.slug}</TableCell><TableCell>{row.projectName}</TableCell><TableCell>{row.threedName}</TableCell>
+            <TableCell className="font-medium">{row.name}<span className="ml-1 text-[10px] text-muted-foreground">#{row.id}</span></TableCell><TableCell>{row.slug}</TableCell><TableCell><AdminRelationshipBadge kind="project" id={row.projectId} label={row.projectName} /></TableCell><TableCell>{row.threedName}</TableCell>
             <TableCell>{row.isActive ? <span className="inline-flex items-center gap-1 text-green-700 dark:text-green-300"><Check className="h-3.5 w-3.5" /> Active</span> : <span className="inline-flex items-center gap-1 text-muted-foreground"><X className="h-3.5 w-3.5" /> Inactive</span>}</TableCell>
             <TableCell>{new Date(row.createdAt).toLocaleDateString()}</TableCell>
             <TableCell className="whitespace-nowrap text-right"><Button variant="ghost" size="icon" className="h-8 w-8" title="View Scenario" onClick={() => router.push(`/admin/threed/scenarios/${row.id}/view`)} aria-label={`View ${row.name}`}><Eye className="h-4 w-4 text-violet-500" /></Button><Button variant="ghost" size="icon" className="h-8 w-8" title="Edit Scenario" onClick={() => openEdit(row)} aria-label={`Edit ${row.name}`}><Pencil className="h-4 w-4 text-blue-500" /></Button><Button variant="ghost" size="icon" className="h-8 w-8 text-red-500" title="Delete Scenario" disabled={busy} onClick={() => void remove([row.id])} aria-label={`Delete ${row.name}`}><Trash2 className="h-3.5 w-3.5" /></Button></TableCell>

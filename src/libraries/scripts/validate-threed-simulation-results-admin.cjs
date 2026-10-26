@@ -70,6 +70,7 @@ function fixture(component, initialProps = {}) {
     } }));
   };
   const deps = { react: rt.react, 'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'Link' }, 'lucide-react': proxy,
+    '@/components/admin/shared/AdminRelationshipBadge': proxy,
     '@/components/admin/layout/AdminWorkspaceHeader': proxy, '@/components/ui/button': proxy,
     '@/components/ui/input': proxy, '@/components/ui/table': proxy, '../models/ModelFieldHelp': proxy,
     '@/libraries/services/threed/simulations/simulation-input': input };
