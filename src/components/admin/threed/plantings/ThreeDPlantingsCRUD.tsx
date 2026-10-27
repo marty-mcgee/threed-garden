@@ -1,5 +1,6 @@
 // components/admin/threed/plantings/ThreeDPlantingsCRUD.tsx
 'use client';
+import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { AdminRelationshipBadge } from '@/components/admin/shared/AdminRelationshipBadge';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
@@ -543,7 +544,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
   return (
     <div className={scrollRecords ? 'flex h-full min-h-0 flex-col gap-2' : 'space-y-2'}>
       {ToastComponent}
-      <AdminWorkspaceHeader icon={Bean} title="Plantings" description="Manage plants in beds with growth tracking and harvest planning" className="shrink-0 [&>a]:text-[11px] [&>div:first-child>svg]:text-[#a87950]">
+      <AdminWorkspaceHeader iconColor="brown" icon={Bean} title="Plantings" description="Manage plants in beds with growth tracking and harvest planning" className="shrink-0 [&>a]:text-[11px]">
         <Badge variant="secondary" className="text-xs">{loading || loadError ? '—' : total}</Badge>
         <Input aria-label="Search Plantings" placeholder="Search Plantings by ID, Plant, Bed or notes…" disabled={bulkBusy} value={searchQuery} onChange={event => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -918,7 +919,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
                   <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${planting.plantingId}`} checked={selected.has(planting.id)} disabled={bulkBusy || loading} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(planting.id); else next.delete(planting.id); return next; })} /></TableCell>
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
-                      <Bean aria-hidden="true" className="w-3.5 h-3.5 text-[#a87950]" />
+                      <ModuleIcon moduleKey="plantings" className="w-3.5 h-3.5" />
                       <AdminRelationshipBadge kind="plant" id={planting.plantId} label={planting.plant?.commonName} />
                       {!planting.isActive && (
                         <Badge variant="secondary" className="text-[10px]">Inactive</Badge>

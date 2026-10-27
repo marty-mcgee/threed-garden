@@ -1,5 +1,6 @@
 // components/admin/threed/farmbots/ThreeDFarmbotsCRUD.tsx
 'use client';
+import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { Fragment, useState, useEffect } from 'react';
@@ -977,7 +978,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
   return (
     <div className={scrollRecords ? 'flex h-full min-h-0 flex-col gap-2' : 'space-y-2'}>
       {ToastComponent}
-      <AdminWorkspaceHeader icon={Bot} title="FarmBots" description="Manage FarmBot devices and connections" className="shrink-0 [&>a]:text-[11px] [&>div:first-child>svg]:text-slate-500">
+      <AdminWorkspaceHeader iconColor="slate" icon={Bot} title="FarmBots" description="Manage FarmBot devices and connections" className="shrink-0 [&>a]:text-[11px]">
         <Badge variant="secondary" className="text-xs">{loading || loadError ? '—' : total}</Badge>
         <Input aria-label="Search FarmBots" placeholder="Search FarmBots by name, asset code, device ID or notes…" disabled={listBusy} value={searchQuery} onChange={event => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -1231,7 +1232,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                   <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${farmbot.name}`} checked={selected.has(farmbot.id)} disabled={listBusy || loading} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(farmbot.id); else next.delete(farmbot.id); return next; })} /></TableCell>
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
-                      <Bot className="w-3.5 h-3.5 text-slate-500" />
+                      <ModuleIcon moduleKey="farmbots" className="w-3.5 h-3.5" />
                       {farmbot.name}
                       {farmbot.credentialConfigured && (
                         <Badge variant="secondary" className="text-[10px]">Credential stored</Badge>

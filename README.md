@@ -185,6 +185,37 @@ Build a garden context using Plants, Beds, Plantings, and related records, then 
 
 **Physical FarmBot commands remain disabled.** Read-only connectivity and simulated Actions do not authorize movement, watering, or other hardware commands.
 
+The existing **Users** Module now includes an active-Super-Admin-only account list and role editor at `/admin/users`. Role writes require the manually reviewed [User role audit SQL](docs/developers/sql/user-role-audit-create.sql); see [Users and roles](docs/users/SETTINGS.md#users-and-roles) for scope and safeguards.
+
+Global settings and User role management now require Super Admin. Existing content ownership stays unchanged. Installing developers use the [first-Super-Admin bootstrap](docs/developers/SUPER_ADMIN_BOOTSTRAP.md). Legacy account conversion remains a later stage.
+
+### A) Global Module settings
+
+Module colors and Lucide icons are shared by every user. Only active accounts with **user.role = super_admin** can save them through **Save Module appearance**. A collapsible tree groups controls under Users, Projects, ThreeD, Multimedia and Traffic. Nested groups and individual Modules start closed; expand a Module to edit its color and icon. Unsaved indicators remain visible on collapsed parent groups, and Save actions stay outside the tree. Connected Admin headers, navigation identities and fixed record icons use these settings; status indicators and individual Layer colors stay independent.
+
+| Group | Configurable Modules |
+| --- | --- |
+| Users | Users |
+| Projects | Projects |
+| ThreeD | ThreeD, Models, Model Files, Model Categories, Textures, Model Builder, Assembly Groups, Animations, Animation Slots, Animation Categories, Designs, Characters, Plants, Beds, Plantings, Scenarios, Simulations, Simulation Results, Layers, Tasks, Waterings, Harvests, FarmBots |
+| Multimedia | Multimedia, Albums, Tracks, Lyrics, Media, Links, Speech |
+| Traffic | Traffic, CHP-CAD Incidents, CHP Cases, CHP Centers, Caltrans Closures, Caltrans Districts, Caltrans CCTV, CalFire Incidents, Bay Area 511 |
+
+Global controls offer previews, Save, Discard, Restore defaults and Reload. Defaults remain a draft until saved. Conflicting saves are rejected and failed drafts remain available. Other sessions receive saved styles when the App reloads. Existing database tables support these settings; no schema migration is needed.
+
+### B) Personal settings and sidebar behavior
+
+| Scope | Settings and behavior |
+| --- | --- |
+| Account-saved | Theme; ThreeD, Multimedia and Traffic navigation visibility; Weather, Garden Analytics, CHP Live, CHP Historical, Caltrans, Bay Area 511 and CalFire Dashboard link visibility. |
+| Browser-local | Scene panel, Project Header and button colors/opacity; Model PNG export width/height defaults. These are not global or guaranteed account-isolated settings. |
+| Account-keyed in this browser | Admin sidebar section/subgroup expansion and the six main Settings disclosures, with optional storage fallback and cross-tab synchronization. |
+| Existing navigation behavior | Labels/order, active-route highlighting, mobile/collapsed navigation and personal visibility filtering remain. Hiding navigation does not revoke access, delete data or stop services. |
+
+The six main Settings sections remember open/closed choices per signed-in user in this browser, with cross-tab synchronization. First-visit defaults: Module colors and icons, Appearance, Model Preview Images, Module Navigation and Dashboard Menu Links open; Scene Appearance closed. About these Settings and nested Module groups remain closed by default. Collapsing retains edits; disclosure changes save automatically without Save Changes. Personal Save Changes, Discard and Refresh remain available in the bottom action bar.
+
+Personal **Save Changes**, Discard, Refresh and Restore Defaults are separate from global Module controls. Model preview export defaults have their own browser-local save button.
+
 **Learn more:** [Admin guide](docs/users/ADMIN_GUIDE.md) · [FarmBot integration](docs/developers/FARMBOT_INTEGRATION.md) · [Read-only MQTT worker](docs/developers/FARMBOT_MQTT_WORKER.md)
 
 <a id="multimedia"></a>
@@ -228,7 +259,7 @@ Manage reusable content in **Admin**, then work with assigned content in **Dashb
 - Use supported Save/Discard feedback and validation.
 - Adjust personal appearance and navigation preferences through workspace Settings.
 
-**Learn more:** [Admin guide](docs/users/ADMIN_GUIDE.md) · [Personal settings](docs/users/SETTINGS.md)
+**Learn more:** [Admin guide](docs/users/ADMIN_GUIDE.md) · [Global and personal settings](docs/users/SETTINGS.md)
 
 <a id="current-scope"></a>
 ## 🔎 Current scope

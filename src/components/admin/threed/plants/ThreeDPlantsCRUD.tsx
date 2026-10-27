@@ -1,5 +1,6 @@
 // components/admin/threed/plants/ThreeDPlantsCRUD.tsx
 'use client';
+import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useState, useEffect } from 'react';
@@ -545,7 +546,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
     <div className={scrollRecords ? 'flex h-full min-h-0 flex-col gap-2' : 'space-y-2'}>
       {ToastComponent}
 
-      <AdminWorkspaceHeader icon={Sprout} title="Plants" description="Manage reusable Plants, Models and care instructions" className="shrink-0 [&>a]:text-[11px]">
+      <AdminWorkspaceHeader iconColor="green" icon={Sprout} title="Plants" description="Manage reusable Plants, Models and care instructions" className="shrink-0 [&>a]:text-[11px]">
         <Badge variant="secondary" className="text-xs">{loading || loadError ? '—' : total}</Badge>
         <Input aria-label="Search Plants" placeholder="Search Plants…" disabled={bulkBusy} value={searchQuery} onChange={event => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -1067,7 +1068,7 @@ export function ThreeDPlantsCRUD({ onModuleUpdate, scrollRecords = false }: { on
                   <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${plant.commonName}`} checked={selected.has(plant.id)} disabled={bulkBusy || loading} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(plant.id); else next.delete(plant.id); return next; })} /></TableCell>
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
-                      <Sprout aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-green-500" />
+                      <ModuleIcon moduleKey="plants" className="h-3.5 w-3.5 shrink-0" />
                       {plant.commonName}
                       {!plant.isActive && (
                         <Badge variant="secondary" className="text-[10px]">Inactive</Badge>

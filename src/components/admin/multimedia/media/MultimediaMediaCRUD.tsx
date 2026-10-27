@@ -1,5 +1,6 @@
 // components/admin/multimedia/media/MultimediaMediaCRUD.tsx
 'use client';
+import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { AdminRelationshipBadge } from '@/components/admin/shared/AdminRelationshipBadge';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -314,7 +315,7 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
       {ToastComponent}
 
       <fieldset className="min-w-0 shrink-0" disabled={pageHeader && workspace.busy}>
-      <MultimediaWorkspaceHeader pageHeader={pageHeader} icon={Image} title="Media" count={pageHeader ? workspace.total : mediaList.length} search={pageHeader ? <MultimediaRecordsSearch workspace={workspace} /> : undefined}>
+      <MultimediaWorkspaceHeader moduleKey="media" pageHeader={pageHeader} icon={Image} title="Media" count={pageHeader ? workspace.total : mediaList.length} search={pageHeader ? <MultimediaRecordsSearch workspace={workspace} /> : undefined}>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
             <Button size="sm" className="h-7 px-2 text-xs">
@@ -426,7 +427,7 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
       </MultimediaWorkspaceHeader>
       </fieldset>
 
-      {pageHeader ? <MultimediaRecordsTable label="Media" workspace={workspace} columns={[{ field: 'fileName', label: 'File Name', render: row => <span className="inline-flex items-center gap-2"><Image className="h-4 w-4 shrink-0 text-blue-500" /><Link className="underline" href={`/admin/multimedia/media/${row.id}`}>{String(row.fileName)}</Link></span> }, { field: 'id', label: 'ID' }, { field: 'sortOrder', label: 'Sort Order' }, { field: 'albumId', label: 'Album', render: row => <AdminRelationshipBadge kind="album" id={row.albumId} /> }, { field: 'fileType', label: 'Type' }, { field: 'fileSize', label: 'Size', render: row => formatFileSize(row.fileSize as number | null) }, { field: 'isPublic', label: 'Public', render: row => <MultimediaStatus value={row.isPublic} /> }, { field: 'isActive', label: 'Active', render: row => <MultimediaStatus value={row.isActive} /> }, { field: 'isPrimary', label: 'Primary', render: row => <MultimediaStatus value={row.isPrimary} /> }]} actions={row => renderActions(row as unknown as (typeof mediaList)[number])} /> : mediaList.length === 0 ? (
+      {pageHeader ? <MultimediaRecordsTable label="Media" workspace={workspace} columns={[{ field: 'fileName', label: 'File Name', render: row => <span className="inline-flex items-center gap-2"><ModuleIcon moduleKey="media" className="h-4 w-4 shrink-0" /><Link className="underline" href={`/admin/multimedia/media/${row.id}`}>{String(row.fileName)}</Link></span> }, { field: 'id', label: 'ID' }, { field: 'sortOrder', label: 'Sort Order' }, { field: 'albumId', label: 'Album', render: row => <AdminRelationshipBadge kind="album" id={row.albumId} /> }, { field: 'fileType', label: 'Type' }, { field: 'fileSize', label: 'Size', render: row => formatFileSize(row.fileSize as number | null) }, { field: 'isPublic', label: 'Public', render: row => <MultimediaStatus value={row.isPublic} /> }, { field: 'isActive', label: 'Active', render: row => <MultimediaStatus value={row.isActive} /> }, { field: 'isPrimary', label: 'Primary', render: row => <MultimediaStatus value={row.isPrimary} /> }]} actions={row => renderActions(row as unknown as (typeof mediaList)[number])} /> : mediaList.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <Image className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No media files yet</p>

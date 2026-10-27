@@ -125,6 +125,7 @@ async function editorChecks() {
     react: rt.react, 'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'link' },
     'next/navigation': { useRouter: () => ({ push() {} }) }, 'lucide-react': proxy,
     '@/components/admin/threed/animations/CharacterAnimationAssignments': proxy,
+    '@/components/settings/ModuleAppearanceProvider': {ModuleIcon:'module-icon'},
     '@/components/admin/layout/AdminWorkspaceHeader': proxy, '@/components/ui/toast': { useToast: () => ({ showToast: () => {}, ToastComponent: null }) },
     '@/components/ui/button': proxy, '@/components/ui/badge': proxy, '@/components/ui/table': proxy,
     '@/components/ui/dialog': proxy, '@/components/ui/dropdown-menu': proxy, '@/components/ui/input': proxy, '@/components/ui/tabs': proxy,

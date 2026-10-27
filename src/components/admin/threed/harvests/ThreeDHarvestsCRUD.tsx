@@ -1,5 +1,6 @@
 // components/admin/threed/harvests/ThreeDHarvestsCRUD.tsx
 'use client';
+import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { AdminRelationshipBadge } from '@/components/admin/shared/AdminRelationshipBadge';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
@@ -430,7 +431,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
   return (
     <div className={scrollRecords ? 'flex h-full min-h-0 flex-col gap-2' : 'space-y-2'}>
       {ToastComponent}
-      <AdminWorkspaceHeader icon={Package} title="Harvests" description="Log and manage harvest records from your garden" className="shrink-0 [&>a]:text-[11px] [&>div:first-child>svg]:text-orange-500">
+      <AdminWorkspaceHeader iconColor="orange" icon={Package} title="Harvests" description="Log and manage harvest records from your garden" className="shrink-0 [&>a]:text-[11px]">
         <Badge variant="secondary" className="text-xs">{loading || loadError ? '—' : total}</Badge>
         <Input aria-label="Search Harvests" placeholder="Search Harvests..." value={searchQuery}
           disabled={bulkBusy} onChange={(event) => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
@@ -686,7 +687,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                   <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${harvest.harvestId}`} checked={selected.has(harvest.id)} disabled={bulkBusy || loading} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(harvest.id); else next.delete(harvest.id); return next; })} /></TableCell>
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
-                      <Package className="h-3.5 w-3.5 shrink-0 text-orange-500" />
+                      <ModuleIcon moduleKey="harvests" className="h-3.5 w-3.5 shrink-0" />
                       {harvest.harvestId}
                       {harvest.source === 'world-action' && (
                         <Badge variant="outline" className="text-[10px] text-purple-600">

@@ -1,3 +1,5 @@
+'use client';
+
 import { Boxes, Package } from 'lucide-react';
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
 

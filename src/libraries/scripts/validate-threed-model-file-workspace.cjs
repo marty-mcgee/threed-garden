@@ -74,7 +74,8 @@ const editorModule = load('src/components/admin/threed/models/ThreeDModelFileEdi
   },
   'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'link' },
   'next/navigation': { useRouter: () => ({ push: value => navigation.push(value) }) },
-  'lucide-react': { FolderOpen: 'icon' }, '@/components/admin/layout/AdminWorkspaceHeader': { AdminWorkspaceHeader: 'header' },
+  'lucide-react': { FolderOpen: 'icon' }, '@/components/settings/ModuleAppearanceProvider': {ModuleIcon:'module-icon'},
+    '@/components/admin/layout/AdminWorkspaceHeader': { AdminWorkspaceHeader: 'header' },
   '@/components/ui/button': { Button: 'button' }, '@/components/ui/input': { Input: 'input' }, '@/components/ui/label': { Label: 'label' },
   '@/components/ui/badge': { Badge: 'badge' },
   '@/libraries/services/threed/models/model-file-edit-core': edit,
@@ -100,7 +101,8 @@ const legacy = load('src/app/admin/threed/model-files/page.tsx', {
   react: { Suspense: 'suspense', useState: initial => [initial, () => {}], useEffect: callback => callback() },
   'next/navigation': { useSearchParams: () => new URLSearchParams(legacyQuery), useRouter: () => ({ replace: value => redirects.push(value), push: value => redirects.push(value) }) },
   'lucide-react': new Proxy({}, { get: (_, key) => key }),
-  '@/components/admin/layout/AdminWorkspaceHeader': { AdminWorkspaceHeader: 'header', AdminWorkspaceLink: 'link' },
+  '@/components/settings/ModuleAppearanceProvider': {ModuleIcon:'module-icon'},
+    '@/components/admin/layout/AdminWorkspaceHeader': { AdminWorkspaceHeader: 'header', AdminWorkspaceLink: 'link' },
   '@/components/admin/threed/models/ThreeDModelFilesTable': { ThreeDModelFilesTable: 'file-table' },
 });
 function verifyLegacyNavigation() {

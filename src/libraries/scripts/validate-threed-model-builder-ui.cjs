@@ -76,7 +76,8 @@ function fixture() {
   };
   const deps = {
     react: rt.react,'react/jsx-runtime': { jsx,jsxs: jsx },'next/link': { default: 'Link' },'lucide-react': proxy,
-    '@/components/ui/button': proxy,'@/components/ui/input': proxy,'@/components/admin/layout/AdminWorkspaceHeader': proxy,
+    '@/components/ui/button': proxy,'@/components/ui/input': proxy,'@/components/settings/ModuleAppearanceProvider': {ModuleIcon:'module-icon'},
+    '@/components/admin/layout/AdminWorkspaceHeader': proxy,
     '../ModelFieldHelp': proxy,'../ThreeDModelAssetPreview': { ThreeDModelAssetPreview: 'ThreeDModelAssetPreview' },'../ModelPreviewImageExport': { ModelPreviewImageExport: 'ModelPreviewImageExport' },
     '../model-gltf-bundle-inspection': { loadBulkGltfBundle: async () => { const lease = { scene: {},disposed: false,dispose() { this.disposed = true; } }; leases.push(lease); return lease; } },
     '@/libraries/services/threed/models/model-material-inventory-core': { createThreeDModelMaterialInventory: () => ({ meshCount: 2,omittedSlotCount: 0,unavailableTextureSlotCount: 0,slots: [0,1].map(i => ({ materialName: 'roof',id: `mesh:${i}:material:0` })) }) },

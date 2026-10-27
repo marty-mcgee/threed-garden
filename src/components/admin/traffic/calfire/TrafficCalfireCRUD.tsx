@@ -1,6 +1,7 @@
 // components/admin/traffic/calfire/TrafficCalfireCRUD.tsx
 'use client';
 
+import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useState, useEffect } from 'react';
 import {
   Plus,
@@ -525,7 +526,7 @@ export function TrafficCalfireCRUD({ onModuleUpdate }: TrafficCalfireCRUDProps) 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Flame className="w-4 h-4 text-orange-400" />
+          <ModuleIcon moduleKey="calfire" />
           <span className="text-sm font-medium">CalFire Incidents</span>
           <Badge variant="secondary" className="text-xs">
             {filteredIncidents.length}

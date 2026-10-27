@@ -2,6 +2,7 @@
 // Full CRUD for the ThreeD `threed_models` library with relational file management
 // (model files, textures, and supportive media) backed by Vercel Blob storage.
 'use client';
+import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useModelListState } from './use-model-list-state';
 import { buildCategoryTree, flattenCategoryTree } from './category-tree-core';
 import type { ModelListSortField } from '@/libraries/services/threed/models/model-list-query';
@@ -639,7 +640,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
       <div className="model-editor-surface flex h-full min-h-0 min-w-0 flex-col gap-2">
         {ToastComponent}
         <Tabs value={view === 'edit' ? tabs.tab : 'details'} onValueChange={value => tabs.requestTab(value === 'files' ? 'files' : 'details')} activationMode="manual" className="min-h-0 flex-1">
-        <AdminWorkspaceHeader className="shrink-0" icon={Box} title={view === "create" ? "Add Model" : "Edit Model"}
+        <AdminWorkspaceHeader iconColor="blue" className="shrink-0" icon={Box} title={view === "create" ? "Add Model" : "Edit Model"}
           description={view === "create" ? "Create a reusable ThreeD Model" : "Model #" + linkedModelId + " · Reusable Model details"}>
           {editingModel && <span className="min-w-0 truncate text-xs text-muted-foreground" title={editingModel.modelName}>{editingModel.modelName} <Badge variant="outline">Model #{editingModel.id}</Badge></span>}
           {<Badge variant="outline" className="text-[10px]">{tabs.tab === 'files' ? editingModel?.modelType : formData.modelType || 'Choose a type'}</Badge>}
@@ -739,7 +740,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
       {ToastComponent}
 
       <fieldset disabled={deleting} className="min-w-0 shrink-0">
-      <AdminWorkspaceHeader
+      <AdminWorkspaceHeader iconColor="blue"
         icon={Box}
         title="Models"
         description="Import and manage reusable ThreeD Models"
@@ -852,7 +853,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
                     <TableCell className="w-8 px-2 py-1 text-center"><input type="checkbox" aria-label={`Bulk Edit ${model.modelName} (#${model.id})`} checked={selectedIds.has(model.id)} disabled={deleting || loading}
                       onChange={(event) => { const checked = event.target.checked; setSelectedIds((current) => { const next = new Set(current); if (checked) next.add(model.id); else next.delete(model.id); return next; }); }} /></TableCell>
                     <TableCell className="py-1 text-sm font-medium">
-                      <div className="flex items-center gap-2"><Box className="w-3.5 h-3.5 shrink-0 text-blue-500" />{model.modelName}<Link href={`/admin/threed/models/${model.id}`} className="text-xs font-normal text-muted-foreground underline-offset-2 hover:text-foreground hover:underline" aria-label={`Open Model #${model.id} details`}>#{model.id}</Link></div>
+                      <div className="flex items-center gap-2"><ModuleIcon moduleKey="models" className="w-3.5 h-3.5 shrink-0" />{model.modelName}<Link href={`/admin/threed/models/${model.id}`} className="text-xs font-normal text-muted-foreground underline-offset-2 hover:text-foreground hover:underline" aria-label={`Open Model #${model.id} details`}>#{model.id}</Link></div>
                     </TableCell>
                     <TableCell className="py-1">
                       <Badge variant="outline" className="text-[10px]">{getOptionLabel(MODEL_TYPE_OPTIONS, model.modelType)}</Badge>

@@ -39,6 +39,8 @@ const preferences={modules:{threed:true,traffic:true,multimedia:true}};
 const {AdminSidebar}=load('src/components/admin/layout/AdminSidebar.tsx',{
   react,'react/jsx-runtime':{jsx,jsxs:jsx},'next/link':{default:'link'},'next/navigation':{usePathname:()=>pathname},
   'next-auth/react':{useSession:()=>({data:{user:{id:owner}}})},'lucide-react':icons,
+  '@/components/settings/ModuleAppearanceProvider':{ModuleIcon:'module-icon',useModuleAppearance:()=>({canEdit:false})},
+  '@/libraries/config/module-appearance':{moduleKeys:[],moduleDefinitions:{}},
   '@/components/ui/button':{Button:'button'},'@/components/settings/WorkspaceSettingsProvider':{useWorkspaceSettings:()=>({preferences})},
   '@/components/auth/SignOutButton':{SignOutButton:'signout'},'@/libraries/utils':{cn:(...values)=>values.filter(Boolean).join(' ')},'./admin-navigation':nav,
 },{localStorage:storage,window:{addEventListener:(key,fn)=>listeners.set(key,fn),removeEventListener(){}}});
@@ -47,7 +49,7 @@ function render(){cursor=0;const tree=AdminSidebar(props);const pending=effectsT
 function all(node,predicate){if(Array.isArray(node))return node.flatMap(n=>all(n,predicate));if(!node||typeof node!=='object')return[];return [...(predicate(node)?[node]:[]),...all(node.props?.children,predicate)];}
 const text=node=>typeof node==='string'?node:Array.isArray(node)?node.map(text).join(''):node&&typeof node==='object'?text(node.props?.children):'';
 function button(tree,label){return all(tree,n=>n.type==='button'&&text(n)===label)[0];}
-let tree=render();assert.equal(button(tree,'ThreeD').props['aria-expanded'],true);
+let tree=render();assert(button(tree,'Users'));assert.equal(button(tree,'ThreeD').props['aria-expanded'],true);
 button(tree,'ThreeD').props.onClick();tree=render();assert.equal(button(tree,'ThreeD').props['aria-expanded'],false);
 pathname='/admin/threed/models/builder';tree=render();assert.equal(button(tree,'ThreeD').props['aria-expanded'],false);
 states=[];effects=[];tree=render();assert.equal(button(tree,'ThreeD').props['aria-expanded'],false); // reload

@@ -1,5 +1,6 @@
 // components/admin/multimedia/links/MultimediaLinksCRUD.tsx
 'use client';
+import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { AdminRelationshipBadge } from '@/components/admin/shared/AdminRelationshipBadge';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -354,7 +355,7 @@ export function MultimediaLinksCRUD({ onModuleUpdate, albumId, pageHeader = fals
 
       {/* Header */}
       <fieldset className="min-w-0 shrink-0" disabled={pageHeader && workspace.busy}>
-      <MultimediaWorkspaceHeader pageHeader={pageHeader} icon={Link2} title="Links" count={pageHeader ? workspace.total : linkList.length} search={pageHeader ? <MultimediaRecordsSearch workspace={workspace} /> : undefined}>
+      <MultimediaWorkspaceHeader moduleKey="links" pageHeader={pageHeader} icon={Link2} title="Links" count={pageHeader ? workspace.total : linkList.length} search={pageHeader ? <MultimediaRecordsSearch workspace={workspace} /> : undefined}>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
             <Button size="sm" className="h-7 px-2 text-xs">
@@ -518,7 +519,7 @@ export function MultimediaLinksCRUD({ onModuleUpdate, albumId, pageHeader = fals
       </fieldset>
 
       {/* Links Table */}
-      {pageHeader ? <MultimediaRecordsTable label="Links" workspace={workspace} columns={[{ field: 'title', label: 'Title', render: row => <span className="inline-flex items-center gap-2"><Link2 className="h-4 w-4 shrink-0 text-blue-500" /><Link className="underline" href={`/admin/multimedia/links/${row.id}`}>{String(row.title)}</Link></span> }, { field: 'id', label: 'ID' }, { field: 'displayOrder', label: 'Sort Order' }, { field: 'type', label: 'Type' }, { field: 'albumId', label: 'Album', render: row => <AdminRelationshipBadge kind="album" id={row.albumId} /> }, { field: 'trackId', label: 'Track', sortable: false, render: row => <AdminRelationshipBadge kind="track" id={row.trackId} /> }, { field: 'status', label: 'Status', render: row => <MultimediaStatus value={row.status} /> }]} actions={row => renderActions(row as unknown as (typeof linkList)[number])} /> : linkList.length === 0 ? (
+      {pageHeader ? <MultimediaRecordsTable label="Links" workspace={workspace} columns={[{ field: 'title', label: 'Title', render: row => <span className="inline-flex items-center gap-2"><ModuleIcon moduleKey="links" className="h-4 w-4 shrink-0" /><Link className="underline" href={`/admin/multimedia/links/${row.id}`}>{String(row.title)}</Link></span> }, { field: 'id', label: 'ID' }, { field: 'displayOrder', label: 'Sort Order' }, { field: 'type', label: 'Type' }, { field: 'albumId', label: 'Album', render: row => <AdminRelationshipBadge kind="album" id={row.albumId} /> }, { field: 'trackId', label: 'Track', sortable: false, render: row => <AdminRelationshipBadge kind="track" id={row.trackId} /> }, { field: 'status', label: 'Status', render: row => <MultimediaStatus value={row.status} /> }]} actions={row => renderActions(row as unknown as (typeof linkList)[number])} /> : linkList.length === 0 ? (
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <Link2 className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No links yet</p>

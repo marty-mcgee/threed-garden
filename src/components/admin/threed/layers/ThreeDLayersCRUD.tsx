@@ -514,7 +514,7 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollReco
 
   return (
     <div className={scrollRecords ? 'flex h-full min-h-0 flex-col gap-2' : 'space-y-2'}>
-      <AdminWorkspaceHeader icon={Layers} title="Layers" description="Manage Map 2D and ThreeD Layers" className="shrink-0 [&>div:first-child>svg]:text-cyan-500">
+      <AdminWorkspaceHeader iconColor="cyan" icon={Layers} title="Layers" description="Manage Map 2D and ThreeD Layers" className="shrink-0">
         <Badge variant="secondary" className="text-xs">{loading || loadError ? '—' : total}</Badge>
         <Input aria-label="Search Layers" placeholder="Search Layers by name, ID or description…" disabled={bulkBusy} value={searchQuery} onChange={event => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>

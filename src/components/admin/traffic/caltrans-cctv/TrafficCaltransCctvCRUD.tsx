@@ -1,6 +1,7 @@
 // components/admin/traffic/caltrans-cctv/TrafficCaltransCctvCRUD.tsx
 'use client';
 
+import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useState, useEffect } from 'react';
 import {
   Plus,
@@ -507,7 +508,7 @@ export function TrafficCaltransCctvCRUD({ onModuleUpdate }: TrafficCaltransCctvC
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Camera className="w-4 h-4 text-blue-400" />
+          <ModuleIcon moduleKey="caltransCctv" />
           <span className="text-sm font-medium">Caltrans CCTV Cameras</span>
           <Badge variant="secondary" className="text-xs">
             {filteredCameras.length}

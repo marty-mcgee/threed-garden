@@ -1,6 +1,7 @@
 // components/admin/traffic/caltrans-districts/TrafficCaltransDistrictsCRUD.tsx
 'use client';
 
+import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useState, useEffect } from 'react';
 import {
   Plus,
@@ -423,7 +424,7 @@ export function TrafficCaltransDistrictsCRUD({ onModuleUpdate, onDistrictSelect 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Grid3x2 className="w-4 h-4 text-orange-400" />
+          <ModuleIcon moduleKey="caltransDistricts" />
           <span className="text-sm font-medium">Caltrans Districts</span>
           <Badge variant="secondary" className="text-xs">
             {filteredDistricts.length}

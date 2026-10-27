@@ -1,6 +1,7 @@
 // components/admin/traffic/bay-area-511/TrafficBayArea511CRUD.tsx
 'use client';
 
+import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useState, useEffect } from 'react';
 import {
   Plus,
@@ -477,7 +478,7 @@ export function TrafficBayArea511CRUD({ onModuleUpdate }: TrafficBayArea511CRUDP
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 text-blue-500" />
+          <ModuleIcon moduleKey="bayArea511" />
           <span className="text-sm font-medium">Bay Area 511 Events</span>
           <Badge variant="secondary" className="text-xs">
             {filteredEvents.length}
@@ -820,7 +821,7 @@ export function TrafficBayArea511CRUD({ onModuleUpdate }: TrafficBayArea511CRUDP
                 <TableRow key={event.id} className="hover:bg-muted/50">
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
-                      <AlertCircle className="w-3.5 h-3.5 text-blue-500" />
+                      <ModuleIcon moduleKey="bayArea511" className="w-3.5 h-3.5" />
                       {event.title}
                       {!event.isActive && (
                         <Badge variant="secondary" className="text-[10px]">Inactive</Badge>

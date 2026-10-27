@@ -1,4 +1,4 @@
-import { LayoutDashboard, FolderOpen, Plus, Star, Box, Carrot, Package, Hammer, FolderTree, Image, Clapperboard, Boxes, Building2, Layers, User, FlaskConical, ClipboardList, BookOpen, Sprout, Cuboid, Bean, ListTodo, Droplets, Drone, Car, AlertTriangle, FileText, TrafficCone, Grid3x2, Camera, Flame, Radio, Music, DiscAlbum, Music2, MicVocal, Link2, Settings } from 'lucide-react';
+import { Users, LayoutDashboard, FolderOpen, Plus, Star, Box, Carrot, Package, Hammer, FolderTree, Image, Clapperboard, Boxes, Building2, Layers, User, FlaskConical, ClipboardList, BookOpen, Sprout, Cuboid, Bean, ListTodo, Droplets, Drone, Car, AlertTriangle, FileText, TrafficCone, Grid3x2, Camera, Flame, Radio, Music, DiscAlbum, Music2, MicVocal, Link2, Settings } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { WorkspaceModule } from '@/libraries/config/workspace-settings';
 
@@ -31,6 +31,11 @@ export const navSections: NavSection[] = [
     items: [
       { title: 'Overview', href: '/admin', icon: Star, exact: true },
     ],
+  },
+  {
+    title: 'Users',
+    icon: Users,
+    items: [{title:'All Users',href:'/admin/users',icon:Users}],
   },
   {
     title: 'Projects',

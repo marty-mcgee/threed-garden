@@ -44,6 +44,7 @@ function fixture(view = 'list') {
     './use-character-page-guard': { useCharacterPageGuard: () => () => {} },
     './character-admin-form-core': formCore,
     '@/components/admin/layout/AdminWorkspaceHeader': proxy,
+    '@/components/settings/ModuleAppearanceProvider': proxy,
     '@/components/admin/threed/models/ModelFileList': proxy,
     '@/components/admin/threed/animations/CharacterAnimationAssignments': proxy,
     '@/components/ui/toast': { useToast: () => ({ showToast() {}, ToastComponent: null }) },

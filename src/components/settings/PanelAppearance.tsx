@@ -1,5 +1,6 @@
 'use client';
 
+import { SettingsSection } from '@/components/settings/SettingsSection';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { PanelsTopLeft, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -79,8 +80,7 @@ export function PanelAppearanceSettings({ value, onChange: update, disabled = fa
     { name: 'Dark theme', surface: 'darkSurface', button: 'darkControl', text: 'darkControlText' },
   ] as const;
 
-  return <fieldset className="rounded-md border p-3" disabled={disabled}>
-    <legend className="px-1 text-xs font-semibold"><span className="inline-flex items-center gap-1.5"><PanelsTopLeft aria-hidden="true" className="h-3.5 w-3.5 text-cyan-500" />Scene Appearance <span className="font-normal text-muted-foreground">· This browser</span></span></legend>
+  return <SettingsSection section="scene" className="admin-editor-panel rounded-md border border-border/60"><summary className="cursor-pointer rounded-md px-3 py-2 text-xs font-semibold hover:bg-muted/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@media(pointer:coarse)]:min-h-11"><span className="inline-flex items-center gap-1.5"><PanelsTopLeft aria-hidden="true" className="h-3.5 w-3.5 text-cyan-500" />Scene Appearance <span className="font-normal text-muted-foreground">· This browser</span></span></summary><fieldset className="min-w-0 px-3 pb-3" disabled={disabled} aria-label="Scene Appearance">
     <p className="mb-3 text-xs text-muted-foreground">Previews update as you edit. Use Save Changes to apply your choices to the Scene in this browser.</p>
     <div className="grid items-start gap-4 lg:grid-cols-2">
       <div className="min-w-0 space-y-3">
@@ -139,5 +139,5 @@ export function PanelAppearanceSettings({ value, onChange: update, disabled = fa
       </div>
     </div>
     <Button type="button" variant="outline" size="sm" className="mt-3 h-8 gap-1.5 text-xs [@media(pointer:coarse)]:min-h-11" onClick={() => update(defaults)}><RotateCcw aria-hidden="true" className="h-3.5 w-3.5 text-cyan-500" />Reset Defaults</Button>
-  </fieldset>;
+  </fieldset></SettingsSection>;
 }

@@ -1,5 +1,6 @@
 // components/admin/threed/characters/ThreeDCharactersCRUD.tsx
 'use client';
+import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 import { useState, useEffect, useMemo, useRef } from 'react';
 import { ThreeDModelAssetPreview, MODEL_WORKSPACE_PERSPECTIVE } from '@/components/admin/threed/models/ThreeDModelAssetPreview';
@@ -644,7 +645,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
   );
   if (view !== 'list') return <div className="flex h-full min-h-0 min-w-0 flex-col gap-2">
     {ToastComponent}
-    <AdminWorkspaceHeader icon={Users} title={view === 'create' ? 'Add Character' : view === 'animations' ? 'Character Animations & Actions' : 'Edit Character'} description="Reusable Character workspace">
+    <AdminWorkspaceHeader iconColor="purple" icon={Users} title={view === 'create' ? 'Add Character' : view === 'animations' ? 'Character Animations & Actions' : 'Edit Character'} description="Reusable Character workspace">
       {editingCharacter && <Badge variant="outline">#{editingCharacter.id} / {editingCharacter.name}</Badge>}
       <nav className="flex flex-wrap gap-2 lg:ml-auto" aria-label="Character workspace">
         <Button asChild variant="outline" size="sm" className="h-7 text-xs"><a href="/admin/threed/characters">Characters</a></Button>
@@ -1150,7 +1151,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
   return (
     <div className={scrollRecords ? 'flex h-full min-h-0 flex-col gap-2' : 'space-y-2'}>
       {ToastComponent}
-      <AdminWorkspaceHeader icon={Users} title="Characters" description="Manage your 3D characters and creatures" className="shrink-0 [&>a]:text-[11px] [&>div:first-child>svg]:text-purple-500">
+      <AdminWorkspaceHeader iconColor="purple" icon={Users} title="Characters" description="Manage your 3D characters and creatures" className="shrink-0 [&>a]:text-[11px]">
         <Badge variant="secondary" className="text-xs">{loading || loadError ? '—' : total}</Badge>
         <Input aria-label="Search Characters" placeholder="Search Characters by name, ID or description…" disabled={bulkBusy} value={searchQuery} onChange={event => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
 <Button asChild size="sm" disabled={bulkBusy} onClick={event => { if (bulkBusy) event.preventDefault(); }} className="h-7 px-2 text-[11px]"><a href="/admin/threed/characters/new"><Plus className="mr-1 h-3 w-3" />Add Character</a></Button>
@@ -1198,7 +1199,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
                   <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${character.name}`} checked={selected.has(character.id)} disabled={bulkBusy || loading} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(character.id); else next.delete(character.id); return next; })} /></TableCell>
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
-                      <Users className="w-3.5 h-3.5 text-purple-500" />
+                      <ModuleIcon moduleKey="characters" className="w-3.5 h-3.5" />
                       {character.name}
                     </div>
                   </TableCell>

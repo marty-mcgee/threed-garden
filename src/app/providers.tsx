@@ -2,6 +2,7 @@
 'use client';
 
 import { PanelAppearanceProvider } from '@/components/settings/PanelAppearance';
+import { ModuleAppearanceProvider } from '@/components/settings/ModuleAppearanceProvider';
 import { SessionProvider } from 'next-auth/react';
 import { WorkspaceSettingsProvider } from '@/components/settings/WorkspaceSettingsProvider';
 import {
@@ -22,7 +23,7 @@ export function Providers({
   return (
     <ThemeProvider initialTheme={initialTheme} initialResolvedTheme={initialResolvedTheme}>
       <SessionProvider>
-        <WorkspaceSettingsProvider><PanelAppearanceProvider>{children}</PanelAppearanceProvider></WorkspaceSettingsProvider>
+        <ModuleAppearanceProvider><WorkspaceSettingsProvider><PanelAppearanceProvider>{children}</PanelAppearanceProvider></WorkspaceSettingsProvider></ModuleAppearanceProvider>
       </SessionProvider>
     </ThemeProvider>
   );

@@ -84,6 +84,7 @@ async function verifyEditor() {
     'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'link' },
     'next/navigation': { useRouter: () => ({ push: value => navigation.push(value) }) },
     'lucide-react': { FolderOpen: 'icon' },
+    '@/components/settings/ModuleAppearanceProvider': {ModuleIcon:'module-icon'},
     '@/components/admin/layout/AdminWorkspaceHeader': { AdminWorkspaceHeader: 'header' },
     '@/components/ui/button': { Button: 'button' }, '@/components/ui/input': { Input: 'input' }, '@/components/ui/label': { Label: 'label' },
     '@/components/ui/badge': { Badge: 'badge' },

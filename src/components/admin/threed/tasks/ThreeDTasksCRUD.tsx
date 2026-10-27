@@ -467,7 +467,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
       {ToastComponent}
 
       {/* Header */}
-      <AdminWorkspaceHeader icon={ListTodo} title="Tasks" description="Manage garden tasks and to-do items for your 3D garden" className="shrink-0">
+      <AdminWorkspaceHeader iconColor="muted" icon={ListTodo} title="Tasks" description="Manage garden tasks and to-do items for your 3D garden" className="shrink-0">
         <Badge variant="secondary" className="text-xs">{total}</Badge>
         <div className="relative min-w-0 w-full flex-auto sm:w-auto sm:min-w-48 sm:flex-1">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />

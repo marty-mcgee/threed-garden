@@ -4,7 +4,7 @@ const element = (type, props) => ({ type, props });
 function load(file, modules, globals = {}) {
   const exports = {};
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX } }).outputText, {
-    exports, Error, require: key => modules[key] ?? require(key), ...globals,
+    exports, Error, require: key => key === '@/components/settings/SettingsSection' ? {SettingsSection:'settings-section'} : modules[key] ?? require(key), ...globals,
   });
   return exports;
 }
@@ -100,6 +100,7 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
     '@/components/settings/ModelPreviewSettings': load('src/components/settings/ModelPreviewSettings.tsx', { react: formHarness.react, 'react/jsx-runtime': { jsx: element, jsxs: element }, '@/components/ui/button': { Button: 'Button' } }),
     '@/components/settings/PanelAppearance': { ...panelAppearance, usePanelAppearance: () => panelState },
     '@/components/ui/button': { Button: 'Button' }, '@/components/ui/switch': { Switch: 'Switch' },
+    '@/components/settings/ModuleAppearanceSettings': { ModuleAppearanceSettings: 'module-settings' },
     '@/components/settings/WorkspaceSettingsProvider': { useWorkspaceSettings: () => context },
     '@/libraries/config/workspace-settings': contract,
   }, { window: { addEventListener() {}, removeEventListener() {}, confirm: () => confirmResult } });

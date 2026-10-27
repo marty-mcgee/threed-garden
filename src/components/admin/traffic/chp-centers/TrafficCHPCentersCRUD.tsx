@@ -1,6 +1,7 @@
 // components/admin/traffic/chp-centers/TrafficCHPCentersCRUD.tsx
 'use client';
 
+import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useState, useEffect } from 'react';
 import {
   Plus,
@@ -442,7 +443,7 @@ export function TrafficCHPCentersCRUD({ onModuleUpdate, onCenterSelect }: Traffi
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Building2 className="w-4 h-4 text-blue-500" />
+          <ModuleIcon moduleKey="chpCenters" />
           <span className="text-sm font-medium">CHP Centers</span>
           <Badge variant="secondary" className="text-xs">
             {filteredCenters.length}
@@ -747,7 +748,7 @@ export function TrafficCHPCentersCRUD({ onModuleUpdate, onCenterSelect }: Traffi
                   </TableCell>
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
-                      <Building2 className="w-3.5 h-3.5 text-blue-500" />
+                      <ModuleIcon moduleKey="chpCenters" className="w-3.5 h-3.5" />
                       {center.name}
                       {center.city && (
                         <span className="text-[10px] text-muted-foreground hidden xl:inline">

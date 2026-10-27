@@ -1,4 +1,5 @@
 'use client';
+import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useRef, useState } from 'react';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
@@ -73,13 +74,13 @@ function LyricsWorkspace() {
     finally { saving.current = false; setBusy(false); }
   }
   return <div className="flex h-full min-h-0 flex-col gap-2">
-    <MultimediaWorkspaceHeader pageHeader icon={FileText} title="Lyrics" count={records.total} search={<MultimediaRecordsSearch workspace={workspace} />}>
+    <MultimediaWorkspaceHeader moduleKey="lyrics" pageHeader icon={FileText} title="Lyrics" count={records.total} search={<MultimediaRecordsSearch workspace={workspace} />}>
       <Button variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={workspace.busy} onClick={records.reload}>Refresh</Button>
       <Button size="sm" className="h-7 px-2 text-xs" disabled={workspace.busy} onClick={() => void edit(null)}><Plus className="mr-1 h-3.5 w-3.5" />Add Lyrics</Button>
     </MultimediaWorkspaceHeader>
     {notice && <p role="status" className="text-xs text-green-600 dark:text-green-400">{notice}</p>}
     <MultimediaRecordsTable workspace={workspace} label="Lyrics" columns={[
-      { field: 'title', label: 'Title', render: row => <span className="inline-flex items-center gap-2"><FileText aria-hidden="true" className="h-3.5 w-3.5 text-blue-500" />{String(row.title)} <span className="text-muted-foreground">#{row.id}</span></span> },
+      { field: 'title', label: 'Title', render: row => <span className="inline-flex items-center gap-2"><ModuleIcon moduleKey="lyrics" className="h-3.5 w-3.5" />{String(row.title)} <span className="text-muted-foreground">#{row.id}</span></span> },
       { field: 'albums', label: 'Albums', sortable: false, render: row => assignmentBadges(row.albums, 'albums') },
       { field: 'tracks', label: 'Tracks', sortable: false, render: row => assignmentBadges(row.tracks, 'tracks') },
       { field: 'projects', label: 'Projects', sortable: false, render: row => assignmentBadges(row.projects, 'projects') },

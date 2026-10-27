@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
+import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { Plus, Edit, Trash2, Eye, Music, Loader2 } from 'lucide-react';
 import { useToast } from '@/components/ui/toast';
 
@@ -166,7 +167,7 @@ export default function AlbumsManagementPage() {
 
       {/* Header */}
       <fieldset className="min-w-0 shrink-0" disabled={workspace.busy}>
-      <AdminWorkspaceHeader icon={Music} title="Albums" description="Manage Multimedia albums">
+      <AdminWorkspaceHeader iconColor="blue" icon={Music} title="Albums" description="Manage Multimedia albums">
         <ModelFieldHelp label="Albums">Manage your Multimedia Albums. Sort Order controls the public library order; only published public Albums expose eligible content to visitors.</ModelFieldHelp>
         <span className="rounded border px-1.5 py-0.5 text-xs">{workspace.total}</span>
         <MultimediaRecordsSearch workspace={workspace} />
@@ -178,7 +179,7 @@ export default function AlbumsManagementPage() {
       </fieldset>
 
       <MultimediaRecordsTable workspace={workspace} label="Albums" columns={[
-        { field: 'title', label: 'Title', render: row => <span className="inline-flex items-center gap-2"><Music className="h-4 w-4 text-blue-500" /><Link className="underline" href={`/admin/multimedia/albums/${row.id}`}>{String(row.title)}</Link></span> },
+        { field: 'title', label: 'Title', render: row => <span className="inline-flex items-center gap-2"><ModuleIcon moduleKey="albums" /><Link className="underline" href={`/admin/multimedia/albums/${row.id}`}>{String(row.title)}</Link></span> },
         { field: 'id', label: 'ID' }, { field: 'sortOrder', label: 'Sort Order' }, { field: 'artist', label: 'Artist' }, { field: 'releaseYear', label: 'Year' },
         { field: 'status', label: 'Status', render: row => <MultimediaStatus value={row.status} /> },
         { field: 'isPublic', label: 'Public', render: row => <MultimediaStatus value={row.isPublic} /> },

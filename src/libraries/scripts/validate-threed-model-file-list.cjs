@@ -348,6 +348,7 @@ function tableHarness(initialLocation = '') {
     react, 'react/jsx-runtime': { jsx, jsxs: jsx }, 'next/link': { default: 'link' },
     'next/navigation': { useRouter: () => router, useSearchParams: () => location },
     'lucide-react': new Proxy({}, { get: (_, field) => `icon-${String(field)}` }),
+    '@/components/settings/ModuleAppearanceProvider': {ModuleIcon:'module-icon'},
     '@/components/admin/layout/AdminWorkspaceHeader': { AdminWorkspaceHeader: 'workspace-header', AdminWorkspaceLink: 'link' },
     '@/components/ui/button': { Button: 'button' }, '@/components/ui/input': { Input: 'input' }, '@/components/ui/label': { Label: 'label' },
     '@/components/ui/badge': { Badge: 'badge' },

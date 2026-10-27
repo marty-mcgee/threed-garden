@@ -1,5 +1,7 @@
 'use client';
 
+import { SettingsSection } from '@/components/settings/SettingsSection';
+import { ModuleAppearanceSettings } from '@/components/settings/ModuleAppearanceSettings';
 import { ModelPreviewSettings } from '@/components/settings/ModelPreviewSettings';
 import { PanelAppearanceSettings, usePanelAppearance, type PanelAppearance } from '@/components/settings/PanelAppearance';
 import { useEffect, useState } from 'react';
@@ -74,31 +76,26 @@ export function SettingsManager() {
         <span role="status" aria-live="polite" className={`rounded-full border px-2 py-0.5 text-[11px] ${error ? 'border-destructive/30 text-destructive' : dirty ? 'border-amber-500/30 text-amber-600 dark:text-amber-400' : 'border-emerald-500/20 text-emerald-600 dark:text-emerald-400'}`}>
           {saving ? 'Saving…' : loading ? 'Loading…' : error ? 'Unavailable' : dirty ? 'Unsaved changes' : snapshot?.revision ? 'Saved' : 'Defaults'}
         </span>
-        <div className="ml-auto flex flex-wrap gap-1.5">
-          <Button size="sm" className={control} disabled={unavailable || !dirty} onClick={handleSave}><Save aria-hidden="true" className="h-3.5 w-3.5" />Save Changes</Button>
-          <Button variant="outline" size="sm" className={control} disabled={saving || !dirty} onClick={() => { setDraft(snapshot?.preferences ?? null); setOpacityDraft(panelAppearance?.value ?? null); setMessage(null); }}><RotateCcw aria-hidden="true" className="h-3.5 w-3.5 text-amber-500" />Discard</Button>
-          <Button variant="outline" size="sm" className={control} disabled={loading || saving} onClick={handleRefresh}><RefreshCw aria-hidden="true" className="h-3.5 w-3.5 text-sky-500" />Refresh</Button>
-        </div>
       </AdminWorkspaceHeader>
+      <div className="min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pr-1 pb-2">
+      <ModuleAppearanceSettings />
       {(error || message) && <p role="alert" className="rounded-md border border-destructive/40 p-2 text-sm text-destructive">{error || message}</p>}
       {loading && !draft && <p role="status" className="p-2 text-sm text-muted-foreground">Loading your Settings…</p>}
-      {draft && <div className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain pr-1 pb-2">
+      {draft && <div className="space-y-2">
         {opacityDraft && <PanelAppearanceSettings value={opacityDraft} onChange={setOpacityDraft} disabled={unavailable || !panelAppearance?.ready} />}
-        <div className="grid items-start gap-3 lg:grid-cols-2">
-          <div className="min-w-0 space-y-3">
-            <fieldset disabled={unavailable} className="rounded-md border p-3">
-          <legend className="px-1 text-xs font-semibold"><span className="inline-flex items-center gap-1.5"><Palette aria-hidden="true" className="h-3.5 w-3.5 text-violet-500" />Appearance</span></legend>
+        <div className="space-y-2">
+          <div className="space-y-2">
+            <SettingsSection section="appearance" className="admin-editor-panel rounded-md border border-border/60"><summary className="cursor-pointer rounded-md px-3 py-2 text-xs font-semibold hover:bg-muted/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@media(pointer:coarse)]:min-h-11"><span className="inline-flex items-center gap-1.5"><Palette aria-hidden="true" className="h-3.5 w-3.5 text-violet-500" />Appearance</span></summary><fieldset disabled={unavailable} className="min-w-0 px-3 pb-3">
           <div className="flex flex-wrap items-center gap-3">
             <label htmlFor="workspace-theme" className="text-xs">Theme</label>
             <select id="workspace-theme" value={draft.theme} onChange={event => setDraft({ ...draft, theme: event.target.value as WorkspaceSettings['theme'] })} className="h-8 rounded-md border bg-background px-2 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring [@media(pointer:coarse)]:min-h-11">
               <option value="browser">Use browser preference</option><option value="dark">Dark</option><option value="light">Light</option><option value="system">Follow device</option>
             </select>
           </div>
-        </fieldset>
+        </fieldset></SettingsSection>
             <ModelPreviewSettings />
           </div>
-          <fieldset disabled={unavailable} className="min-w-0 rounded-md border p-3">
-          <legend className="px-1 text-xs font-semibold"><span className="inline-flex items-center gap-1.5"><PanelsTopLeft aria-hidden="true" className="h-3.5 w-3.5 text-blue-500" />Module Navigation</span></legend>
+          <SettingsSection section="navigation" className="admin-editor-panel rounded-md border border-border/60"><summary className="cursor-pointer rounded-md px-3 py-2 text-xs font-semibold hover:bg-muted/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@media(pointer:coarse)]:min-h-11"><span className="inline-flex items-center gap-1.5"><PanelsTopLeft aria-hidden="true" className="h-3.5 w-3.5 text-blue-500" />Module Navigation</span></summary><fieldset disabled={unavailable} className="min-w-0 px-3 pb-3">
           <p className="mb-2 text-xs text-muted-foreground">Show in the Admin sidebar, Dashboard menu and Dashboard quick links.</p>
           <div className="grid gap-2 sm:grid-cols-3">
             {workspaceModules.map(module => <label key={module} htmlFor={`workspace-${module}`} className="flex min-h-9 items-center justify-between gap-2 rounded-md border bg-muted/20 px-2.5 py-1.5 text-xs transition-colors hover:bg-muted/40 [@media(pointer:coarse)]:min-h-11">
@@ -106,10 +103,9 @@ export function SettingsManager() {
               <Switch id={`workspace-${module}`} checked={draft.modules[module]} onCheckedChange={checked => setDraft({ ...draft, modules: { ...draft.modules, [module]: checked } })} />
             </label>)}
           </div>
-          </fieldset>
+          </fieldset></SettingsSection>
         </div>
-        <fieldset disabled={unavailable} className="rounded-md border p-3">
-          <legend className="px-1 text-xs font-semibold"><span className="inline-flex items-center gap-1.5"><Link2 aria-hidden="true" className="h-3.5 w-3.5 text-emerald-500" />Dashboard Menu Links</span></legend>
+        <SettingsSection section="links" className="admin-editor-panel rounded-md border border-border/60"><summary className="cursor-pointer rounded-md px-3 py-2 text-xs font-semibold hover:bg-muted/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@media(pointer:coarse)]:min-h-11"><span className="inline-flex items-center gap-1.5"><Link2 aria-hidden="true" className="h-3.5 w-3.5 text-emerald-500" />Dashboard Menu Links</span></summary><fieldset disabled={unavailable} className="min-w-0 px-3 pb-3">
           <div className="grid gap-3 sm:grid-cols-2">
             {(['threed', 'traffic'] as const).map(module => <div key={module}>
               <h2 className="mb-1 text-xs font-medium text-muted-foreground">{workspaceModuleLabels[module]}</h2>
@@ -121,7 +117,7 @@ export function SettingsManager() {
               </div>
             </div>)}
           </div>
-        </fieldset>
+        </fieldset></SettingsSection>
         <div className="flex flex-wrap items-start justify-between gap-2">
           <details className="min-w-0 flex-1 rounded-md border p-2 text-xs text-muted-foreground">
             <summary className="cursor-pointer text-foreground"><span className="inline-flex items-center gap-1.5"><Info aria-hidden="true" className="h-3.5 w-3.5 text-sky-500" />About these Settings</span></summary>
@@ -134,6 +130,12 @@ export function SettingsManager() {
           <Button variant="outline" size="sm" className={control} disabled={unavailable} onClick={() => { setDraft(defaultWorkspaceSettings()); setMessage(null); }}><RotateCcw aria-hidden="true" className="h-3.5 w-3.5 text-amber-500" />Restore Defaults</Button>
         </div>
       </div>}
+      </div>
+      <div className="admin-editor-actions rounded-md border border-emerald-500/20 bg-emerald-500/5 p-2" aria-label="Personal Settings actions">
+        <Button size="sm" className={control} disabled={unavailable || !dirty} onClick={handleSave}><Save aria-hidden="true" className="h-3.5 w-3.5" />Save Changes</Button>
+        <Button variant="outline" size="sm" className={control} disabled={saving || !dirty} onClick={() => { setDraft(snapshot?.preferences ?? null); setOpacityDraft(panelAppearance?.value ?? null); setMessage(null); }}><RotateCcw aria-hidden="true" className="h-3.5 w-3.5 text-amber-500" />Discard</Button>
+        <Button variant="outline" size="sm" className={control} disabled={loading || saving} onClick={handleRefresh}><RefreshCw aria-hidden="true" className="h-3.5 w-3.5 text-sky-500" />Refresh</Button>
+      </div>
     </div>
   );
 }

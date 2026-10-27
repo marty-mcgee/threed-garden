@@ -13,6 +13,10 @@ function load(file) {
   const Link = ({ children, ...props }) => React.createElement('a', props, children);
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(path.join(root, file), 'utf8'), { compilerOptions: { jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText, {
     exports, require(name) {
+      if (name === 'next/navigation') return {usePathname:()=>'/admin/threed'};
+      if (name === '@/components/settings/ModuleAppearanceProvider') return {useModuleAppearance:()=>null};
+      if (name === '@/components/settings/module-icons') return {moduleIcons:{}};
+      if (name === '@/libraries/config/module-appearance') return {moduleForPath:()=>undefined,moduleColors:{green:'text-green-500'}};
       if (name === 'next/link') return { default: Link };
       if (name === '@/components/learn/LearnPreview') return load('src/components/learn/LearnPreview.tsx');
       if (name === '@/components/admin/layout/AdminWorkspaceHeader') return load('src/components/admin/layout/AdminWorkspaceHeader.tsx');

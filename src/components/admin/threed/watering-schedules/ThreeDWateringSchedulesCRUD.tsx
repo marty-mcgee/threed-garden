@@ -1,4 +1,5 @@
 'use client';
+import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useEffect, useState } from 'react';
@@ -56,7 +57,7 @@ export function ThreeDWateringSchedulesCRUD({ threedId, scrollRecords = false }:
     : ['History ID', 'Executed', 'Status', 'Duration', 'Volume', 'Targets', 'Schedule', 'Executed by', 'Reason'];
   const targets = (row: Row) => [row.plantingId ? `Planting #${row.plantingId}` : '', row.plantId ? `Plant #${row.plantId}` : '', row.farmbotId ? `FarmBot #${row.farmbotId}` : '', 'bedId' in row && row.bedId ? `Bed #${row.bedId}` : ''].filter(Boolean).join(' · ') || '—';
   return <div className={scrollRecords ? 'flex h-full min-h-0 flex-col gap-2' : 'space-y-2'}>
-    <AdminWorkspaceHeader icon={Droplets} title="Waterings" description="Browse watering schedules and recorded watering history" className="shrink-0 [&>a]:text-[11px]">
+    <AdminWorkspaceHeader iconColor="blue" icon={Droplets} title="Waterings" description="Browse watering schedules and recorded watering history" className="shrink-0 [&>a]:text-[11px]">
       <Badge variant="secondary" className="text-xs">{loading || error ? '—' : total}</Badge>
       <Input aria-label={`Search watering ${view}`} placeholder={view === 'schedules' ? 'Search Schedule ID or notes…' : 'Search History ID, status or reason…'} value={search} onChange={event => { reset(); setSearch(event.target.value); }} className="h-7 w-full min-w-0 flex-auto text-xs sm:w-auto sm:min-w-48 sm:flex-1" />
       <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={loading} onClick={() => setRevision(value => value + 1)}><RefreshCw className="h-3 w-3" />Refresh</Button>
@@ -81,7 +82,7 @@ export function ThreeDWateringSchedulesCRUD({ threedId, scrollRecords = false }:
             const cells = 'frequency' in row
               ? [row.scheduleId, row.frequency, dateLabel(row.nextWatering), dateLabel(row.lastWatering), measurement(row.durationMs, 'ms'), measurement(row.volumeMl, 'mL'), targets(row), row.isActive ? <Check aria-label="Active" className="h-4 w-4 text-green-500" /> : <X aria-label="Inactive" className="h-4 w-4 text-gray-500" />, row.notes || '—']
               : [row.historyId, dateLabel(row.executedAt), <span className={row.status === 'success' ? 'text-green-500' : row.status === 'failed' ? 'text-red-500' : 'text-yellow-500'}>{row.status}</span>, measurement(row.durationMs, 'ms'), measurement(row.volumeMl, 'mL'), targets(row), row.scheduleId ? `#${row.scheduleId}` : '—', row.executedBy || '—', [row.skipReason, row.errorMessage].filter(Boolean).join(' · ') || '—'];
-            return <TableRow key={`${view}-${row.id}`}>{cells.map((cell, index) => <TableCell key={headings[index]} className="py-1 text-xs">{index === 0 ? <span className="flex items-center gap-2"><Droplets className="h-3.5 w-3.5 shrink-0 text-blue-500" />{cell}</span> : cell}</TableCell>)}</TableRow>;
+            return <TableRow key={`${view}-${row.id}`}>{cells.map((cell, index) => <TableCell key={headings[index]} className="py-1 text-xs">{index === 0 ? <span className="flex items-center gap-2"><ModuleIcon moduleKey="waterings" className="h-3.5 w-3.5 shrink-0" />{cell}</span> : cell}</TableCell>)}</TableRow>;
           })}
         </TableBody>
       </Table>
