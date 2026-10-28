@@ -6,7 +6,7 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
- - [Unreleased - Users CRUD, account defaults and sign-in](unreleased.md)
+ - [v0.28.1 - Users: Account Management and Sign-In (Developer-confirmed production release)](v0.28.1.md)
 
  - [v0.28.0 - App Settings and Super Admin (Developer-confirmed production release)](v0.28.0.md)
 
