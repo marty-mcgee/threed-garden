@@ -1,0 +1,3 @@
+-- WITHDRAWN: use Admin > Users > Edit role > Admin > Save Changes.
+-- App code owns new-account defaults. No SQL role/default migration is needed.
+-- This file intentionally contains no executable statements.

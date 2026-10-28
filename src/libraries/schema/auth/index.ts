@@ -32,6 +32,7 @@ export const User = pgTable('user', {
   timezone: text('timezone').default('UTC'),
   role: text('role').default('user'),
   isActive: boolean('is_active').default(true),
+  isDeleted: boolean('is_deleted').notNull(),
   
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),

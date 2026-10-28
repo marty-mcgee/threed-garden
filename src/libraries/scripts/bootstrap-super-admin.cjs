@@ -22,11 +22,12 @@ async function bootstrap(client, userId, apply = false) {
     const existing = await client.query("SELECT id FROM public.\"user\" WHERE role = 'super_admin' LIMIT 1");
     if (existing.rows.length) throw new BootstrapError('A Super Admin already exists. Bootstrap is closed, including for inactive Super Admins.');
     const target = await client.query(
-      'SELECT id, role, is_active FROM public."user" WHERE id = $1' + (apply ? ' FOR UPDATE' : ''), [userId],
+      'SELECT id, role, is_active, is_deleted FROM public."user" WHERE id = $1' + (apply ? ' FOR UPDATE' : ''), [userId],
     );
     const account = target.rows[0];
     if (!account) throw new BootstrapError('No User matches that ID. No account was created.');
     if (account.is_active !== true) throw new BootstrapError('The selected User must already be active.');
+    if (account.is_deleted !== false) throw new BootstrapError('A deleted User cannot become Super Admin.');
     if (!['user', 'admin'].includes(account.role)) throw new BootstrapError('The selected User has an unrecognized role. Review it before bootstrap.');
     if (apply) {
       await client.query('UPDATE public."user" SET role = $1, updated_at = now() WHERE id = $2', ['super_admin', userId]);

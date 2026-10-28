@@ -10,13 +10,14 @@ import {
 import Credentials from 'next-auth/providers/credentials';
 import { eq, and } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
+import { withAccountDefaults } from './account-defaults';
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: DrizzleAdapter(db, {
+  adapter: withAccountDefaults(DrizzleAdapter(db, {
     usersTable: User,
     accountsTable: UserAccounts,
     verificationTokensTable: UserVerifications,
-  }),
+  })),
   providers: [
     Credentials({
       name: 'credentials',
@@ -36,7 +37,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             .where(eq(User.email, credentials.email as string))
             .limit(1);
 
-          if (!user || !user[0]) {
+          if (!user || !user[0] || user[0].isDeleted !== false) {
             return null;
           }
 
@@ -87,6 +88,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.id = user.id;
       }
+      // JWT cookies outlive account edits. Recheck the DB on every session read,
+      // including flags changed by an external SQL editor. Fail closed on missing rows.
+      if (typeof token.id !== 'string') return null;
+      const [account] = await db.select({ isDeleted: User.isDeleted, name: User.name, email: User.email })
+        .from(User).where(eq(User.id, token.id)).limit(1);
+      if (!account || account.isDeleted !== false) return null;
+      token.name = account.name;
+      token.email = account.email;
       return token;
     },
     async session({ session, token }) {

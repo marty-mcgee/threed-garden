@@ -11,8 +11,8 @@ export class ModuleAppearanceForbidden extends Error {}
 export class ModuleAppearanceConflict extends Error {}
 
 export async function canManageModuleAppearance(userId: string): Promise<boolean> {
-  const [actor] = await db.select({ role: User.role, active: User.isActive }).from(User).where(eq(User.id, userId));
-  return actor?.role === 'super_admin' && actor.active === true;
+  const [actor] = await db.select({ role: User.role, active: User.isActive, deleted: User.isDeleted }).from(User).where(eq(User.id, userId));
+  return actor?.role === 'super_admin' && actor.active === true && actor.deleted === false;
 }
 
 export async function readModuleAppearance(): Promise<ModuleAppearanceSnapshot> {
@@ -26,8 +26,8 @@ export async function saveModuleAppearance(userId: string, input: ModuleAppearan
   const submitted = moduleAppearanceSnapshotSchema.parse(input);
   return db.transaction(async tx => {
     // Check current database authority inside the write transaction, not a stale JWT.
-    const [actor] = await tx.select({ role: User.role, active: User.isActive }).from(User).where(eq(User.id, userId)).for('share');
-    if (actor?.role !== 'super_admin' || actor.active !== true) throw new ModuleAppearanceForbidden();
+    const [actor] = await tx.select({ role: User.role, active: User.isActive, deleted: User.isDeleted }).from(User).where(eq(User.id, userId)).for('share');
+    if (actor?.role !== 'super_admin' || actor.active !== true || actor.deleted !== false) throw new ModuleAppearanceForbidden();
     await tx.insert(settings).values({key:KEY,scope:'system',type:'json',label:'Module colors and icons',group:'appearance',isSensitive:false,value:defaultModuleAppearance(),defaultValue:defaultModuleAppearance()}).onConflictDoNothing({target:settings.key});
     const [row] = await tx.select().from(settings).where(eq(settings.key,KEY)).for('update');
     if (!row || row.scope !== 'system' || row.isSensitive !== false || row.type !== 'json') throw new Error('Invalid Module appearance definition');

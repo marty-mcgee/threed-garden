@@ -185,9 +185,9 @@ Build a garden context using Plants, Beds, Plantings, and related records, then 
 
 **Physical FarmBot commands remain disabled.** Read-only connectivity and simulated Actions do not authorize movement, watering, or other hardware commands.
 
-The existing **Users** Module now includes an active-Super-Admin-only account list and role editor at `/admin/users`. Role writes require the manually reviewed [User role audit SQL](docs/developers/sql/user-role-audit-create.sql); see [Users and roles](docs/users/SETTINGS.md#users-and-roles) for scope and safeguards.
+The existing **Users** Module now includes a Super-Admin-only account list, Add New User, profile/role editing and confirmed soft deletion at `/admin/users`. Users CRUD requires the manually applied [soft-delete field SQL](docs/developers/sql/user-soft-delete.sql). Role writes require the manually reviewed [User role audit SQL](docs/developers/sql/user-role-audit-create.sql); see [Users and roles](docs/users/SETTINGS.md#users-and-roles) for scope and safeguards.
 
-Global settings and User role management now require Super Admin. Existing content ownership stays unchanged. Installing developers use the [first-Super-Admin bootstrap](docs/developers/SUPER_ADMIN_BOOTSTRAP.md). Legacy account conversion remains a later stage.
+Global settings and User role management now require Super Admin. Existing content ownership stays unchanged. Installing developers use the [first-Super-Admin bootstrap](docs/developers/SUPER_ADMIN_BOOTSTRAP.md). Legacy accounts can be changed to Admin through the Users role editor. NextAuth handles authentication and sessions; deleted accounts are denied at each session check.
 
 ### A) Global Module settings
 

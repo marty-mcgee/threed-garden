@@ -16,6 +16,7 @@ export const auditedRoleSchema = z.enum(['user', 'admin', 'super_admin']);
 export function isActiveSuperAdmin(account: {
   role: string | null;
   isActive: boolean | null;
+  isDeleted: boolean;
 } | null | undefined): boolean {
-  return account?.role === 'super_admin' && account.isActive === true;
+  return account?.role === 'super_admin' && account.isActive === true && account.isDeleted === false;
 }

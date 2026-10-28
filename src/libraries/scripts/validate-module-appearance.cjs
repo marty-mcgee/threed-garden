@@ -20,7 +20,7 @@ const schema=load('src/libraries/schema/settings/index.ts',{'../auth':authSchema
 const {settings,settingsAuditLogs:audits}=schema;
 const {User}=authSchema;
 const dialect=new pg.PgDialect();
-let data={row:null,audits:[]},actor={role:'super_admin',active:true},failAudit=false,session=null,queue=Promise.resolve(),locks=0;
+let data={row:null,audits:[]},actor={role:'super_admin',active:true,deleted:false},failAudit=false,session=null,queue=Promise.resolve(),locks=0;
 const clone=v=>JSON.parse(JSON.stringify(v));
 function select(){let table,condition;const chain={from(t){table=t;return chain;},where(c){condition=c;return chain;},for(kind){assert(['share','update'].includes(kind));locks++;return chain;},then(resolve,reject){return Promise.resolve().then(()=>{const query=dialect.sqlToQuery(condition);if(table===User){assert.equal(query.params[0],'admin-id');return actor?[actor]:[];}assert.equal(table,settings);assert.equal(query.params[0],'app.module-appearance.v1');return data.row?[data.row]:[];}).then(resolve,reject);}};return chain;}
 function insert(table){let value;const chain={values(v){value=clone(v);return chain;},onConflictDoNothing(){return chain;},then(resolve,reject){return Promise.resolve().then(()=>{if(table===settings){data.row??={id:1,...value};}else{assert.equal(table,audits);if(failAudit)throw Error('private diagnostic');data.audits.push(value);}}).then(resolve,reject);}};return chain;}
@@ -43,8 +43,8 @@ const request=(body,origin='https://example.test')=>new Request('https://example
  session={user:{id:'admin-id'}};
  assert.equal((await route.PUT(request(initial,'https://evil.test'))).status,403);
  assert.equal((await route.PUT(request({...initial,userId:'other'}))).status,400);
- for(const invalid of [null,{role:'admin',active:true},{role:'user',active:true},{role:'super_admin',active:false},{role:'super_admin',active:null}]){actor=invalid;assert.equal((await route.PUT(request(initial))).status,403);assert.equal(data.row,null);}
- actor={role:'super_admin',active:true};
+ for(const invalid of [null,{role:'super_admin',active:true,deleted:true},{role:'admin',active:true},{role:'user',active:true},{role:'super_admin',active:false},{role:'super_admin',active:null}]){actor=invalid;assert.equal((await route.PUT(request(initial))).status,403);assert.equal(data.row,null);}
+ actor={role:'super_admin',active:true,deleted:false};
  const changed=clone(initial);changed.styles.models={icon:'Leaf',color:'violet'};
  res=await route.PUT(request(changed));assert.equal(res.status,200);const saved=await res.json();assert(saved.revision);assert.equal(data.audits.length,1);assert(locks>0);
  session=null;res=await route.GET();assert.match(res.headers.get('cache-control'),/no-store/);const publicRead=await res.json();assert.equal(publicRead.snapshot.styles.models.icon,'Leaf');assert.equal(publicRead.canEdit,false);

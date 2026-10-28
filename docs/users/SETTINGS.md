@@ -51,10 +51,13 @@ No new schema is introduced by this workspace. It uses the existing Settings def
 
 ### Users and roles
 
-**Staged transition:** Admin manages owned content; Super Admin manages global settings and User roles. The global checks now require Super Admin. See the [manual bootstrap procedure](../developers/SUPER_ADMIN_BOOTSTRAP.md); legacy account conversion remains pending.
+Open **Admin > Users**. An active, non-deleted **Super Admin** can view accounts, search/filter them, and use **Add New User**, **Edit**, and **Delete User**. Ordinary Admins manage their own content; they cannot manage other accounts.
 
-The existing **Users** Module is available at **Admin > Users** (/admin/users) to active Super Admins. Search existing accounts by name/email, filter by role, and open **Edit role**. Save Changes updates only the role; Discard retains the saved role. Account activity is read-only. New registration, invitations, account deletion and password management are outside this scope.
+- **Add New User:** enter name, email and an initial password. The App creates an Admin account; securely share its credentials. No invitation email is sent. Your current Super Admin session stays signed in.
+- **Edit:** change name, email or role, then Save Changes. Discard restores saved values. Activity is read-only. Role changes are audited and the last active Super Admin cannot be demoted.
+- **Delete User:** type the saved email to confirm soft deletion. The App retains the record and blocks login/session access. You cannot delete yourself or a User who owns Module content.
+- **Deleted Users filter:** view retained deleted accounts. Their email addresses stay reserved and their fields are read-only. This stage has no Restore action.
 
-Role management requires the existing User role audit table plus the reviewed [Super Admin audit compatibility SQL](../developers/sql/user-role-audit-super-admin.sql). Role/audit changes commit together; failed writes retain the draft. Stale revisions and demotion of the last active Super Admin are rejected. Self-demotion with another active Super Admin returns to Admin Overview. Role checks use current database state, not cached session roles. Other Admin pages retain existing access policies.
+The [User soft-delete SQL](../developers/sql/user-soft-delete.sql) must be applied manually before this code is used. Role writes also require the existing role-audit table and [Super Admin audit compatibility SQL](../developers/sql/user-role-audit-super-admin.sql). No full schema push is needed. See [developer workflow](../developers/SUPER_ADMIN_BOOTSTRAP.md#users-crud-and-deletion).
 
-Users styling is global alongside the other Modules. Existing 40-Module settings load with the Users default added; strict saves include all 41 Modules. Personal sidebar expansion remains user-scoped.
+Users styling remains global alongside the other Modules; personal sidebar expansion remains user-scoped.

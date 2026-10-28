@@ -2,7 +2,7 @@ const assert=require('node:assert/strict');
 const {bootstrap,parseArguments}=require('./bootstrap-super-admin.cjs');
 const clone=value=>JSON.parse(JSON.stringify(value));
 let rows,audits,failAudit,tail;
-function reset(){rows=[{id:'a',role:'admin',is_active:true},{id:'b',role:'user',is_active:true}];audits=[];failAudit=false;tail=Promise.resolve();}
+function reset(){rows=[{id:'a',role:'admin',is_active:true,is_deleted:false},{id:'b',role:'user',is_active:true,is_deleted:false}];audits=[];failAudit=false;tail=Promise.resolve();}
 function client(){let before,release,readonly=false;return {async query(sql,params=[]){
  if(sql.startsWith('BEGIN')){readonly=sql.includes('READ ONLY');return {};}
  if(sql.includes('lock_timeout'))return {};
@@ -22,6 +22,7 @@ function client(){let before,release,readonly=false;return {async query(sql,para
  reset();await bootstrap(client(),'a');assert.equal(rows[0].role,'admin');assert.equal(audits.length,0);
  await assert.rejects(()=>bootstrap(client(),'missing',true),/No User/);
  rows[0].is_active=false;await assert.rejects(()=>bootstrap(client(),'a',true),/active/);rows[0].is_active=true;
+ rows[0].is_deleted=true;await assert.rejects(()=>bootstrap(client(),'a',true),/deleted/);rows[0].is_deleted=false;
  rows[0].role=null;await assert.rejects(()=>bootstrap(client(),'a',true),/unrecognized/);rows[0].role='admin';
  failAudit=true;await assert.rejects(()=>bootstrap(client(),'a',true),/audit unavailable/);assert.equal(rows[0].role,'admin');assert.equal(audits.length,0);failAudit=false;
  const results=await Promise.allSettled([bootstrap(client(),'a',true),bootstrap(client(),'b',true)]);assert.equal(results.filter(result=>result.status==='fulfilled').length,1);assert.equal(rows.filter(row=>row.role==='super_admin').length,1);assert.equal(audits.length,1);assert.deepEqual(audits[0],['a','admin','super_admin']);

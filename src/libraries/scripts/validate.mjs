@@ -55,7 +55,8 @@ const tasks = {
   'shadcn-ui-boundary': [node('validate-shadcn-ui-boundary.mjs')],
   'dashboard-project-discovery': [node('validate-dashboard-project-discovery.cjs')],
   'dashboard-scene-route': [ts('validate-dashboard-scene-route.mts')],
-  'users-admin': [node('validate-super-admin-bootstrap.cjs'),node('validate-user-roles.cjs'),node('validate-users-admin.cjs'),node('validate-users-admin-ui.cjs')],
+  'signup': [node('validate-signup.cjs'),node('validate-signup-ui.cjs'),node('validate-signin-ui.cjs')],
+  'users-admin': [node('validate-super-admin-bootstrap.cjs'),node('validate-user-roles.cjs'),node('validate-users-admin.cjs'),node('validate-users-admin-ui.cjs'),node('validate-user-access.cjs')],
   'module-appearance': [node('validate-module-appearance.cjs'),node('validate-module-appearance-ui.cjs')],
   'workspace-settings': [
     node('validate-workspace-settings.cjs'),
@@ -207,6 +208,7 @@ const ci = [
   'workspace-settings',
   'module-appearance',
   'users-admin',
+  'signup',
   'threed-texture-list',
   'threed-watering-list',
   'threed-harvest-list',

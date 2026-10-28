@@ -1,7 +1,7 @@
 // app/auth/sign-up/page.tsx
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +12,8 @@ import Link from 'next/link';
 
 export default function SignUpPage() {
   const router = useRouter();
+  const submitting = useRef(false);
+  const [created, setCreated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
@@ -23,6 +25,7 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting.current || created) return;
     setError(null);
     setLoading(true);
 
@@ -38,27 +41,40 @@ export default function SignUpPage() {
       return;
     }
 
+    submitting.current = true;
+    let accountCreated = false;
     try {
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: formData.name, email: formData.email, password: formData.password }),
+      });
+      if (!response.ok) {
+        const body = await response.json();
+        setError(body.error || 'Failed to create account');
+        return;
+      }
+      accountCreated = true;
+      setCreated(true);
       const result = await signIn('credentials', {
-        email: formData.email,
+        email: formData.email.trim().toLowerCase(),
         password: formData.password,
-        name: formData.name,
-        action: 'signup',
         redirect: false,
       });
 
-      if (result?.error) {
-        setError(result.error || 'Failed to create account');
+      if (!result || result.error || !result.ok) {
+        setError('Your account was created. Please use Sign in below to continue.');
         setLoading(false);
         return;
       }
 
       router.push('/admin');
       router.refresh();
-    } catch (error) {
-      console.error('Sign up error:', error);
-      setError('Failed to create account');
+    } catch {
+      setError(accountCreated ? 'Your account was created. Please use Sign in below to continue.' : 'Failed to create account');
     } finally {
+      submitting.current = false;
+      setFormData((previous) => ({ ...previous, password: '', confirmPassword: '' }));
       setLoading(false);
     }
   };
@@ -71,7 +87,7 @@ export default function SignUpPage() {
         </CardHeader>
         <CardContent>
           {error && (
-            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
+            <div role="alert" className="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
               {error}
             </div>
           )}
@@ -80,17 +96,21 @@ export default function SignUpPage() {
               <Label htmlFor="name">Name</Label>
               <Input
                 id="name"
+                maxLength={100}
+                autoComplete="name"
                 placeholder="Your name"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
-                disabled={loading}
+                disabled={loading || created}
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
+                maxLength={254}
+                autoComplete="email"
                 type="email"
                 placeholder="you@example.com"
                 value={formData.email}
@@ -104,6 +124,7 @@ export default function SignUpPage() {
               <Input
                 id="password"
                 type="password"
+                autoComplete="new-password"
                 placeholder="••••••••"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -124,7 +145,7 @@ export default function SignUpPage() {
                 disabled={loading}
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button type="submit" className="w-full" disabled={loading || created}>
               {loading ? 'Creating account...' : 'Sign Up'}
             </Button>
           </form>
