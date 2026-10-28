@@ -46,3 +46,7 @@ Learn uses the shared Module appearance registry with `/admin/learn` and public 
 Run `npm run validate -- learn module-appearance admin-sidebar repository-maintenance`, fresh TypeScript and the applicable release gates. Learn checks use mocked persistence/network and exercise authorization, published-only reads, stale revisions, import idempotence, editor/list behavior and Markdown safety. They do not apply SQL or seed live data.
 
 For an App rollback, retain the Learn table and its content; stop exposing the new editorial routes until a compatible version is restored. Do not drop populated tables as part of a code rollback. The scoped SQL includes its own transaction boundary. Current scope, results and pending acceptance belong to [v0.29.0](../releases/v0.29.0.md) and the [implementation contract](../plans/threed-module-learn.md).
+
+### Surface destinations and management routes
+
+`src/libraries/config/module-appearance.ts` keeps appearance metadata in `moduleDefinitions`, header destinations in `workspaceSurfaces`, and Module management destinations in `moduleManagementRoutes`. The Learn surface uses `/learn`; Learn management uses `/admin/learn`. Both refer to the same `learn` appearance key. Dashboard and Admin are surfaces, with no invented `/admin/dashboard` management route. The header reads `workspaceSurfaces`; Settings grouping reads management routes. Saved settings contain icon/color values and a revision, not these route definitions.

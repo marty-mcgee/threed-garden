@@ -60,9 +60,9 @@ export function ModuleAppearanceProvider({children}:{children:ReactNode}) {
 
 export function useModuleAppearance() { return useContext(Context); }
 
-export function ModuleIcon({moduleKey,className='h-4 w-4'}:{moduleKey:ModuleKey;className?:string}) {
+export function ModuleIcon({moduleKey,className='h-4 w-4',inheritColor=false}:{moduleKey:ModuleKey;className?:string;inheritColor?:boolean}) {
   const context=useModuleAppearance();
   const style=(context?.snapshot??defaults).styles[moduleKey];
   const Icon=moduleIcons[style.icon];
-  return <Icon aria-hidden="true" className={`${className} ${moduleColors[style.color]}`} />;
+  return <Icon aria-hidden="true" className={`${className} ${inheritColor ? 'text-inherit' : moduleColors[style.color]}`} />;
 }

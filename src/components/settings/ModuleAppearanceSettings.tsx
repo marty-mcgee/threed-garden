@@ -4,17 +4,19 @@ import { SettingsSection } from '@/components/settings/SettingsSection';
 import { useEffect, useState } from 'react';
 import { Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { defaultModuleAppearance, moduleColors, moduleDefinitions, moduleKeys, moduleIconNames, type ModuleAppearanceSnapshot, type ModuleStyle } from '@/libraries/config/module-appearance';
+import { defaultModuleAppearance, moduleColors, moduleDefinitions, moduleManagementRoutes, moduleKeys, moduleIconNames, type ModuleAppearanceSnapshot, type ModuleStyle } from '@/libraries/config/module-appearance';
 import { useModuleAppearance } from './ModuleAppearanceProvider';
 import { moduleIcons } from './module-icons';
 
 const moduleGroups = [
-  { key: 'users', label: 'Users', path: '/admin/users' },
-  { key: 'projects', label: 'Projects', path: '/admin/projects' },
-  { key: 'threed', label: 'ThreeD', path: '/admin/threed' },
-  { key: 'multimedia', label: 'Multimedia', path: '/admin/multimedia' },
-  { key: 'traffic', label: 'Traffic', path: '/admin/traffic' },
-  { key: 'learn', label: 'Learn', path: '/admin/learn' },
+  { key: 'users', label: 'Users' },
+  { key: 'projects', label: 'Projects' },
+  { key: 'threed', label: 'ThreeD' },
+  { key: 'multimedia', label: 'Multimedia' },
+  { key: 'traffic', label: 'Traffic' },
+  { key: 'learn', label: 'Learn' },
+  { key: 'dashboard', label: 'Dashboard' },
+  { key: 'admin', label: 'Admin' },
 ] as const;
 const compactControl = 'h-7 min-w-0 w-full rounded-md border border-input bg-background px-2 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 [@media(pointer:coarse)]:min-h-11';
 const compactAction = 'h-7 gap-1.5 px-2 text-xs [@media(pointer:coarse)]:min-h-11';
@@ -41,7 +43,8 @@ export function ModuleAppearanceSettings() {
     {context.loaded&&!context.canEdit&&<p className="text-xs text-muted-foreground">Read only: an active Super Admin account is required to edit.</p>}
     <fieldset disabled={disabled} className="min-w-0 space-y-1.5">
       {draft&&moduleGroups.map(group=>{
-        const keys = moduleKeys.filter(key => moduleDefinitions[key].route === group.path || moduleDefinitions[key].route.startsWith(group.path + '/'));
+        const groupRoute = moduleManagementRoutes[group.key];
+        const keys = moduleKeys.filter(key => key === group.key || (groupRoute && moduleManagementRoutes[key]?.startsWith(groupRoute + '/')));
         const GroupIcon = moduleIcons[draft.styles[group.key].icon];
         const changed = keys.filter(key => JSON.stringify(draft.styles[key]) !== JSON.stringify(context.snapshot.styles[key])).length;
         return <details key={group.key} className="admin-editor-panel min-w-0 rounded-md border border-border/60">

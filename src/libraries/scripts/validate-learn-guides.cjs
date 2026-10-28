@@ -84,7 +84,7 @@ assert.deepEqual(manualStarters, plain(starters.starterLearnGuides), 'SQL import
 const manualControl = manualImport.replace(manualPayload[0], '$learn_starters$DATA$learn_starters$::jsonb;').replace(/^--.*$/gm, '');
 assert.match(manualControl, /^\s*BEGIN;\s*SET LOCAL lock_timeout = '5s';\s*SET LOCAL search_path = public;/);
 assert.match(manualControl, /END;\s*\$learn_import\$;\s*COMMIT;\s*$/);
-assert.match(manualControl, /v_super_admin_user_id text := 'REPLACE_WITH_SUPER_ADMIN_USER_ID';/);
+assert.match(manualControl, /v_super_admin_user_id text := '[^'\r\n]+';/, 'Manual import declares a placeholder or Developer-configured actor ID; runtime authority checks below remain required');
 assert.match(manualControl, /IF v_super_admin_user_id IS NULL\s+OR btrim\(v_super_admin_user_id\) = ''\s+OR v_super_admin_user_id LIKE 'REPLACE_WITH_%' THEN\s+RAISE EXCEPTION/);
 assert.match(manualControl, /IF to_regclass\('public.learn_guides'\) IS NULL THEN\s+RAISE EXCEPTION/);
 assert.match(manualControl, /PERFORM 1 FROM "public"\."user"\s+WHERE "id" = v_super_admin_user_id\s+AND "role" = 'super_admin'\s+AND "is_active" IS TRUE\s+AND "is_deleted" IS FALSE\s+FOR SHARE;\s+IF NOT FOUND THEN\s+RAISE EXCEPTION/);

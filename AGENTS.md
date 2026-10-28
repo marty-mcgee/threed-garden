@@ -4,6 +4,7 @@ Read this file and [CONTEXT.md](CONTEXT.md) fully before editing. Inspect the cu
 
 ## Developer preferences
 
+- Prefer unquoted JavaScript/TypeScript property keys when valid identifiers; preserve quoted string values and keys that require quotes. Format objects with one property per line and configuration arrays with one entry per line for readability. Preserve existing values and ordering; apply this style to code being written or edited without unrelated formatting sweeps. JSON keys must remain quoted.
 - Use exact existing App names. The Developer-established hierarchy for this DetailsCard is **ThreeD > Project > Model > DetailsCard**. Keep the name **DetailsCard**.
 - Verify terminology and ownership before proposing release titles. Mount location, route, selected entity and button labels alone do not establish App ownership. Do not invent a Characters settings panel.
 - Treat explicit naming corrections as authoritative. State uncertainty and distinguish observations from assumptions; do not cycle through confident guesses.

@@ -15,13 +15,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted/20">
+    <div className={isScenePage ? "min-h-screen bg-gradient-to-br from-background to-muted/20" : "flex min-h-dvh flex-col bg-gradient-to-br from-background to-muted/20"}>
       <AppHeader surface="dashboard" />
 
       {/* Main Content */}
-      <div className={isScenePage ? "relative w-full p-0" : "w-full px-0 md:px-0.5 lg:px-1 py-0"}>
+      <div className={isScenePage ? "relative w-full p-0" : "flex w-full flex-1 flex-col px-0 md:px-0.5 lg:px-1 py-0"}>
         {/* Page Content */}
-        <div className="bg-background/50 backdrop-blur-sm">
+        <div className={isScenePage ? "bg-background/50 backdrop-blur-sm" : "flex-1 bg-background/50 backdrop-blur-sm"}>
           {isClientMounted ? children : (
             <ThreeDProjectLoadingPresentation
               progress={5}
@@ -32,7 +32,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
         
         {/* Footer */}
-        <footer className={isScenePage ? "pointer-events-none absolute inset-x-0 bottom-0 z-40 bg-transparent px-2 py-1 text-right text-[10px] text-foreground [text-shadow:0_0_3px_var(--background)]" : "px-2 py-1.5 text-right text-xs text-muted-foreground"}>
+        <footer className={isScenePage ? "pointer-events-none absolute inset-x-0 bottom-0 z-40 bg-transparent px-2 py-1 text-right text-[10px] text-foreground [text-shadow:0_0_3px_var(--background)]" : "bg-transparent px-2 py-1.5 text-right text-xs text-muted-foreground"}>
           <p className={isScenePage ? "text-inherit" : "text-gray-600"}>
             Built by Marty McGee w TypeScript, React, Next.js, Neon Postgres, Drizzle ORM, Radix-UI, Three.js, React-Three, Rapier Physics
             @ <a href="https://github.com/marty-mcgee/threed-garden" target="_blank" className={isScenePage ? "pointer-events-auto text-inherit underline" : "text-gray-600"}>github</a>

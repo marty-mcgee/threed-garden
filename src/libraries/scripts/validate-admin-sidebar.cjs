@@ -23,7 +23,7 @@ const {ModuleIcon} = load('src/components/settings/ModuleAppearanceProvider.tsx'
 });
 for (const section of nav.navSections) {
   for (const item of [...section.items,...section.items.flatMap(item=>item.children??[])]) {
-    const key = item.href === '/learn' ? 'learn' : contract.moduleKeys.find(key=>contract.moduleDefinitions[key].route===item.href);
+    const key = contract.moduleKeys.find(key=>contract.moduleManagementRoutes[key]===item.href) ?? contract.workspaceSurfaces.find(surface=>surface.moduleKey==='learn'&&surface.href===item.href)?.moduleKey;
     if (key) { assert.equal(item.moduleKey,key,item.href); assert.equal(item.icon,undefined,item.href); }
     else assert(item.icon,item.href);
   }
@@ -143,3 +143,26 @@ const learnIcon=all(learnLinks[0],n=>n.type===ModuleIcon)[0];assert.equal(learnI
 assert.equal(ModuleIcon(learnIcon.props).type,'Star');assert(ModuleIcon(learnIcon.props).props.className.includes('text-violet-500'));
 pathname='/learn-extra';menu=NavDropdown();assert.equal(all(menu,n=>n.type==='link'&&n.props.href==='/learn')[0].props['aria-current'],undefined);
 console.log('PASS: Saved module icons/colors, explicit module ownership, collapsed icons, utility icons, Admin route inventory, specific active matching, persistent section/subgroup choices, account isolation, optional storage, storage events, module filtering and mobile visibility.');
+
+// Surface buttons resolve all three saved identities through the actual ModuleIcon.
+const surface=load('src/components/layout/WorkspaceSurfaceNav.tsx',{
+ '@/libraries/config/module-appearance':contract,
+ 'react/jsx-runtime':{jsx,jsxs:jsx},'next/link':{default:'link'},'next/navigation':{usePathname:()=>pathname},
+ '@/components/ui/button':{Button:'button'},'@/components/settings/ModuleAppearanceProvider':{ModuleIcon},
+ '@/libraries/utils':{cn:(...values)=>values.filter(Boolean).join(' ')},
+});
+appearance.styles.dashboard={icon:'Sun',color:'amber'};
+appearance.styles.admin={icon:'Leaf',color:'cyan'};
+for(const [path,active] of [['/dashboard/scene','Dashboard'],['/admin/learn','Admin'],['/learn/guides/draw-room','Learn'],['/dashboard-extra',null],['/administrator',null],['/learning',null]]) {
+ pathname=path;const view=surface.WorkspaceSurfaceNav();const links=all(view,n=>n.type==='link');
+ assert.deepEqual(links.map(n=>n.props['aria-label']),['Dashboard','Admin','Learn']);
+ assert.deepEqual(links.filter(n=>n.props['aria-current']==='page').map(n=>n.props['aria-label']),active?[active]:[]);
+ for(const [index,key] of ['dashboard','admin','learn'].entries()) {
+  const node=all(links[index],n=>n.type===ModuleIcon)[0];assert.equal(node.props.moduleKey,key);
+  const icon=ModuleIcon(node.props);assert.equal(icon.type,appearance.styles[key].icon);
+  assert.equal(node.props.inheritColor,true);
+  assert(icon.props.className.includes('text-inherit'));
+  assert(!icon.props.className.includes(contract.moduleColors[appearance.styles[key].color]));
+ }
+}
+console.log('PASS: Dashboard/Admin/Learn shared surface buttons use saved Module icons with inherited neutral color and consistent exact-or-descendant active states.');

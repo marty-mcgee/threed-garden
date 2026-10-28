@@ -4,9 +4,9 @@ Open **Admin > Settings > App Settings** (`/admin/settings`). Global Module appe
 
 ### A) Global Module settings
 
-The current App defines 42 configurable Module identities, including Learn.
+The current App defines 44 configurable appearance identities, including Learn and the Dashboard/Admin surfaces.
 
-Module colors and Lucide icons are shared by every user. Only active, non-deleted **Super Admin** accounts can save them through **Save Module appearance**; other Users can view the saved appearance. A collapsible tree groups controls under Users, Projects, ThreeD, Multimedia, Traffic and Learn. Nested groups and individual Modules start closed; expand a Module to edit its color and icon. Unsaved indicators remain visible on collapsed parent groups, and Save actions stay outside the tree. Connected Admin headers, navigation identities and fixed record icons use these settings; status indicators and individual Layer colors stay independent.
+Module colors and Lucide icons are shared by every user. Only active, non-deleted **Super Admin** accounts can save them through **Save Module appearance**; other Users can view the saved appearance. A collapsible tree groups controls under Users, Projects, ThreeD, Multimedia, Traffic, Learn, Dashboard and Admin. Nested groups and individual Modules start closed; expand a Module to edit its color and icon. Unsaved indicators remain visible on collapsed parent groups, and Save actions stay outside the tree. Connected Admin headers, navigation identities and fixed record icons use these settings; status indicators and individual Layer colors stay independent.
 
 To change a Module, expand **Module colors and icons**, its group and the Module itself. Choose a color and icon, review the preview, then select **Save Module appearance**. Sidebar creation links keep their Plus icons and ordinary navigation styling; green creation buttons on Admin pages are separate from Module appearance.
 
@@ -18,8 +18,12 @@ To change a Module, expand **Module colors and icons**, its group and the Module
 | Multimedia | Multimedia, Albums, Tracks, Lyrics, Media, Links, Speech |
 | Traffic | Traffic, CHP-CAD Incidents, CHP Cases, CHP Centers, Caltrans Closures, Caltrans Districts, Caltrans CCTV, CalFire Incidents, Bay Area 511 |
 | Learn | Learn |
+| Dashboard | Dashboard surface |
+| Admin | Admin surface |
 
 Global controls offer **Save Module appearance**, **Discard**, **Restore defaults** and **Reload**. Defaults remain a draft until saved. Conflicting saves are rejected and failed drafts remain available. Other sessions receive saved styles when the App reloads.
+
+The header's **Dashboard | Admin | Learn** buttons use the saved icon shapes, but inherit their neutral gray/foreground text color for consistent appearance. Header colors are controlled by `text-muted-foreground`, `hover:text-foreground` and active `text-foreground` in `src/components/layout/WorkspaceSurfaceNav.tsx`; Module colors still apply elsewhere. Dashboard defaults to **Radio** and Admin to **Settings**, both in the muted color. Existing saved Module settings are preserved when these surface controls are introduced.
 
 **Learn** defaults to the green **BookOpen** icon. Its saved identity appears in the Admin sidebar, App navigation menu, Home and Dashboard Learn links, and Learn page introduction. Open **Learn > Learn ThreeD** from Admin or **Learn ThreeD** from the App menu. The guides at `/learn` remain public; Learn does not need a Project assignment and remains available alongside Projects and Settings when optional content navigation is hidden.
 

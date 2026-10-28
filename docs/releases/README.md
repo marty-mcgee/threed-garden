@@ -6,6 +6,8 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
+ - [v0.29.1 - App: Header Surface Navigation, Module Appearance and Dashboard Footer (prepared for production release)](v0.29.1.md)
+
  - [v0.29.0 - ThreeD Module Learn: Admin CRUD, Publishing and Markdown Guides (Developer-confirmed production release)](v0.29.0.md)
 
  - [v0.28.3 - Admin: Sidebar Module Hierarchy Cleanup; App Styling Rules; Add User Navigation; Highlight CRUD Actions; (Developer-confirmed production release)](v0.28.3.md)
