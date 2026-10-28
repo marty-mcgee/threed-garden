@@ -14,9 +14,40 @@ The application is developed in the **ThreeD Garden** repository and is availabl
 
 **[🎮 Explore the demo](https://threedgarden.com/#garden-demo)** · **[📚 Learn ThreeD](https://threedgarden.com/learn)** · **[🚀 Create your first Project](docs/users/GETTING_STARTED.md)** · **[💻 Run locally](#run-locally)**
 
+[Latest features](#latest-features) · [Why build with ThreeD App?](#why-build-with-threed-app) · [Structural basics](#structural-basics) · [Modules](#modules)
+
+## Latest features
+
+Current production release: **[v0.28.3](docs/releases/v0.28.3.md)**. Recent releases bring a more consistent Admin experience, account management, shared App styling, and richer content workflows:
+
+- **Clearer Admin navigation and creation buttons.** An explicit Module hierarchy, **Add User** navigation, consistent **Add + entity** sidebar labels, and distinct current-page highlighting make common tasks easier to find. Creation buttons across Admin Module pages use green styling; sidebar links retain their ordinary navigation styling.
+- **App Settings for Module identity.** Super Admins choose shared colors and Lucide icons for 41 Modules. Connected Admin headers, sidebar items, and fixed record icons use those saved settings. Personal appearance, navigation visibility, and per-user sidebar expansion remain separate preferences.
+- **Users and account management.** Sign up and sign in through the App's NextAuth integration. Ordinary accounts manage their own content as Admins; Super Admins manage Users and global Settings. Users CRUD supports creation, profile/role editing, and soft deletion that retains records while blocking account access.
+- **Lyrics and connected Multimedia.** Create independent Lyrics records, associate them with owned Projects, Albums, and Tracks, and display eligible Lyrics in the Admin Track player, Dashboard Albums, and Home featured player. Linked relationship badges make related records easier to navigate.
+- **Improved Model workflows.** Organize Files and Materials in the Model editor, inspect embedded GLB/GLTF images, register selected images as reusable assets, and export Model top-view PNGs for the Design plan. URL-backed filters help return to the same Admin asset list.
+- **Project-centered Design.** Inspect architectural summaries in Admin, edit supported plans in the Project workspace, and save architecture, placements, and supported view state through Project Save/load.
+
+See [release history](docs/releases/README.md) for detailed scope and validation, and [current context](CONTEXT.md) for implementation status and remaining acceptance work.
+
 ![ThreeD Garden architectural workspace with Models, Project Assets, and a linked 2D plan](docs/images/v0.25.3/design-workspace.png)
 
 *Architectural content and reusable Models share a Project workspace. This repository screenshot documents an earlier interface checkpoint; current controls may differ.*
+
+## Why build with ThreeD App?
+
+ThreeD App gives developers a working application around an interactive 3D workspace: authenticated accounts, editable content, database schemas, APIs, asset management, and reusable interface components. It is a useful starting point for a spatial planning tool, interactive learning experience, asset catalog, or domain-specific visualization.
+
+| Developer need | What the repository provides |
+| --- | --- |
+| Build a product around 3D content | A Next.js application with Admin CRUD, Project workflows, reusable Models, and a browser Scene, ready to study and adapt together. |
+| Keep plans, maps, and 3D views connected | A Project-owned workspace with shared assets, selection, architecture, and explicit Save/load across supported views. |
+| Extend a domain without guessing where code belongs | TypeScript contracts, Drizzle schemas, server services, API routes, and domain components organized under established owners. |
+| Reuse interaction and presentation patterns | shadcn/ui components, theme support, configurable Module icons/colors, green creation buttons, and existing loading, error, draft, and Save/Discard flows. |
+| Add behavior to reusable assets | Model/File/Texture relationships, animation libraries, separate Character controllers, and supported Simulation Actions and Results. |
+| Check changes before involving live systems | A focused validation runner and offline fixtures for ownership, persistence boundaries, UI state, assets, and Scene behavior. |
+| Customize and distribute the application | MIT-licensed application code. Third-party assets retain their own licenses. |
+
+Start with one existing Module as a reference, follow its schema-to-service-to-UI path, and extend the smallest relevant boundary. The [architecture guide](docs/developers/ARCHITECTURE.md), [data model](docs/developers/DATA_MODEL.md), and [API guide](docs/developers/API_GUIDE.md) provide deeper context.
 
 ## 👥 Who is ThreeD for?
 
@@ -39,7 +70,7 @@ These are starting points for exploring the App, rather than claims of establish
 | 🧩 Organize and reuse 3D assets | **Models** — Files, Textures, Categories, and previews |
 | 🚶 Explore an animated world | **Characters** — animation mappings, movement, and supported Actions |
 | ⚽ Run an interactive example | **Simulations** — supported Actions, Sensors, and captured Results |
-| 🎵 Browse and play content | **Multimedia** — Albums, Tracks, Media, Links, and Speech |
+| 🎵 Browse and play content | **Multimedia** — Albums, Tracks, Lyrics, Media, Links, and Speech |
 
 <a id="try-threed"></a>
 ## 🎮 Try ThreeD
@@ -68,6 +99,59 @@ Creation, editing, and saving require the appropriate access. Public viewing and
 
 These are suggested uses of the existing modules. The workspace screenshot above shows an earlier interface checkpoint, not a newly verified customer delivery.
 
+## Structural basics
+
+**A Project is the workspace boundary.** Reusable Models, Characters, garden records, and other content are managed in their Modules, then assigned or placed in Projects. Design architecture belongs to its Project. A catalog Model and a placed Model instance have separate identities.
+
+| Surface or layer | Responsibility |
+| --- | --- |
+| **Home and Learn** | Public introduction, demo, featured content, and guided workflows. |
+| **Admin** | Create and manage records, configure Projects, prepare assets, and administer authorized account/settings operations. |
+| **Dashboard** | Open Projects, use the Scene and maps, browse Multimedia, and explore configured data. The main Scene route is `/dashboard/scene`. |
+| **API and services** | Validate requests, enforce authentication and ownership, and coordinate persistence and integrations. |
+| **Database and storage** | Drizzle defines relational data in Postgres; existing Blob/S3 integrations handle their respective assets and media. |
+
+### Repository layout
+
+```text
+src/
+  app/
+    admin/             Admin pages and layouts
+    dashboard/         Project workspace and discovery pages
+    api/               Server API routes
+    auth/              Sign-in and signup pages
+    learn/             Guided learning pages
+  components/
+    admin/             Module CRUD and shared Admin presentation
+    map/               Active Scene, maps, and DetailsCard
+    threed/            Specialized ThreeD and Design components
+    multimedia/        Shared content and playback components
+    settings/          Global and personal Settings providers/UI
+    ui/                Shared shadcn/ui components
+  libraries/
+    auth/              NextAuth and App account creation
+    schema/            Drizzle schemas and relationships
+    services/          Domain logic and integration boundaries
+    db/                Database client
+    config/            Typed configuration and Module definitions
+    stores/            Shared client state
+    types/             Shared TypeScript contracts
+    scripts/           Validation, import, and maintenance tools
+public/                Public static assets
+docs/                  User guides, developer contracts, and releases
+```
+
+### Where to extend the App
+
+- **Add or evolve a Module:** begin with its schema under `src/libraries/schema`, follow the corresponding services and API routes, then connect its Admin and Dashboard consumers. Preserve server-side ownership checks and review database changes separately.
+- **Change Admin presentation:** reuse [AdminWorkspaceHeader](src/components/admin/layout/AdminWorkspaceHeader.tsx), the [navigation configuration](src/components/admin/layout/admin-navigation.ts), [Module appearance definitions](src/libraries/config/module-appearance.ts), and the shared [Button](src/components/ui/button.tsx). Creation buttons use the green `success` variant; sidebar entries use ordinary navigation styling.
+- **Extend the Project workspace:** start with the [Scene page](src/app/dashboard/scene/page.tsx), [UnifiedMapView](src/components/map/UnifiedMapView.tsx), and [ThreeDScene](src/components/map/ThreeDScene.tsx). Use the existing Project snapshot transaction for supported Save/load changes.
+- **Add an integration:** follow its domain service boundary. The provider-neutral ThreeD MQTT layer and separate FarmBot adapter illustrate how transport and provider behavior stay separate.
+- **Validate a change:** inspect `src/libraries/scripts/validate.mjs`, run the relevant focused tasks, and use the [validation guide](docs/agents/VALIDATION.md) for broader checks.
+
+The active Scene keeps one Canvas/Rapier world during normal editing, with stable Runtime Marker owners. GardenCharacter and EcctrlCharacter retain separate movement paths. Those boundaries let UI and data work evolve while preserving the owners of rendering, physics, and animation resources.
+
+<a id="modules"></a>
 ## 🧭 Explore the modules
 
 [🌍 Projects](#projects) · [📐 Design](#design) · [🧩 Models](#models) · [🏗 Builder](#builder) · [🚶 Characters](#characters) · [⚽ Simulations](#simulations) · [🌱 Garden and FarmBot](#garden) · [🎵 Multimedia](#multimedia) · [🚦 Traffic](#traffic) · [⚙ Admin](#admin)
@@ -116,6 +200,7 @@ Keep reusable **Models** separate from the instances placed in your Projects.
 - Assign reusable **Textures**, including supported base-color, normal, roughness, metallic, occlusion, and emissive channels.
 - Use preview Fit/Reset and supported transparent PNG captures.
 - Add owned Model top-view PNGs for calibrated representation in the Design plan.
+- Inspect embedded GLB/GLTF images and explicitly register selected images as owned Texture/File assets.
 - Inspect a reusable asset in the Library, then place an instance into a Project.
 
 Check file readiness and previews before placing imported assets. Compatibility depends on source geometry, rigs, materials, and available dependencies.
@@ -185,37 +270,6 @@ Build a garden context using Plants, Beds, Plantings, and related records, then 
 
 **Physical FarmBot commands remain disabled.** Read-only connectivity and simulated Actions do not authorize movement, watering, or other hardware commands.
 
-The existing **Users** Module now includes a Super-Admin-only account list, Add New User, profile/role editing and confirmed soft deletion at `/admin/users`. Users CRUD requires the manually applied [soft-delete field SQL](docs/developers/sql/user-soft-delete.sql). Role writes require the manually reviewed [User role audit SQL](docs/developers/sql/user-role-audit-create.sql); see [Users and roles](docs/users/SETTINGS.md#users-and-roles) for scope and safeguards.
-
-Global settings and User role management now require Super Admin. Existing content ownership stays unchanged. Installing developers use the [first-Super-Admin bootstrap](docs/developers/SUPER_ADMIN_BOOTSTRAP.md). Legacy accounts can be changed to Admin through the Users role editor. NextAuth handles authentication and sessions; deleted accounts are denied at each session check.
-
-### A) Global Module settings
-
-Module colors and Lucide icons are shared by every user. Only active accounts with **user.role = super_admin** can save them through **Save Module appearance**. A collapsible tree groups controls under Users, Projects, ThreeD, Multimedia and Traffic. Nested groups and individual Modules start closed; expand a Module to edit its color and icon. Unsaved indicators remain visible on collapsed parent groups, and Save actions stay outside the tree. Connected Admin headers, navigation identities and fixed record icons use these settings; status indicators and individual Layer colors stay independent.
-
-| Group | Configurable Modules |
-| --- | --- |
-| Users | Users |
-| Projects | Projects |
-| ThreeD | ThreeD, Models, Model Files, Model Categories, Textures, Model Builder, Assembly Groups, Animations, Animation Slots, Animation Categories, Designs, Characters, Plants, Beds, Plantings, Scenarios, Simulations, Simulation Results, Layers, Tasks, Waterings, Harvests, FarmBots |
-| Multimedia | Multimedia, Albums, Tracks, Lyrics, Media, Links, Speech |
-| Traffic | Traffic, CHP-CAD Incidents, CHP Cases, CHP Centers, Caltrans Closures, Caltrans Districts, Caltrans CCTV, CalFire Incidents, Bay Area 511 |
-
-Global controls offer previews, Save, Discard, Restore defaults and Reload. Defaults remain a draft until saved. Conflicting saves are rejected and failed drafts remain available. Other sessions receive saved styles when the App reloads. Existing database tables support these settings; no schema migration is needed.
-
-### B) Personal settings and sidebar behavior
-
-| Scope | Settings and behavior |
-| --- | --- |
-| Account-saved | Theme; ThreeD, Multimedia and Traffic navigation visibility; Weather, Garden Analytics, CHP Live, CHP Historical, Caltrans, Bay Area 511 and CalFire Dashboard link visibility. |
-| Browser-local | Scene panel, Project Header and button colors/opacity; Model PNG export width/height defaults. These are not global or guaranteed account-isolated settings. |
-| Account-keyed in this browser | Admin sidebar section/subgroup expansion and the six main Settings disclosures, with optional storage fallback and cross-tab synchronization. |
-| Existing navigation behavior | Labels/order, active-route highlighting, mobile/collapsed navigation and personal visibility filtering remain. Hiding navigation does not revoke access, delete data or stop services. |
-
-The six main Settings sections remember open/closed choices per signed-in user in this browser, with cross-tab synchronization. First-visit defaults: Module colors and icons, Appearance, Model Preview Images, Module Navigation and Dashboard Menu Links open; Scene Appearance closed. About these Settings and nested Module groups remain closed by default. Collapsing retains edits; disclosure changes save automatically without Save Changes. Personal Save Changes, Discard and Refresh remain available in the bottom action bar.
-
-Personal **Save Changes**, Discard, Refresh and Restore Defaults are separate from global Module controls. Model preview export defaults have their own browser-local save button.
-
 **Learn more:** [Admin guide](docs/users/ADMIN_GUIDE.md) · [FarmBot integration](docs/developers/FARMBOT_INTEGRATION.md) · [Read-only MQTT worker](docs/developers/FARMBOT_MQTT_WORKER.md)
 
 <a id="multimedia"></a>
@@ -225,6 +279,7 @@ Browse a content library and use the shared Dashboard Player for supported audio
 
 - **Albums:** organize collections, artwork, and related content.
 - **Tracks:** browse ordered content and open direct Album/Track URLs.
+- **Lyrics:** manage independent records with optional Project, Album, and Track associations; show eligible Lyrics alongside public playback and owned Track details.
 - **Media:** view supported audio/video attachments with responsive cards and retry feedback.
 - **Links:** associate related destinations with content.
 - **Speech:** manage supported Speech content and publishing workflows.
@@ -232,7 +287,7 @@ Browse a content library and use the shared Dashboard Player for supported audio
 
 Admin provides content management; Dashboard provides discovery and playback. File visibility and delivery follow existing authorization. Playback depends on browser codec support and media availability.
 
-**Learn more:** [Dashboard Multimedia](docs/users/DASHBOARD_GUIDE.md) · [Latest Multimedia checkpoint](docs/releases/v0.26.17.md)
+**Learn more:** [Dashboard Multimedia](docs/users/DASHBOARD_GUIDE.md) · [Lyrics workflow](docs/developers/MULTIMEDIA_LYRICS.md) · [Multimedia administration](docs/users/ADMIN_GUIDE.md)
 
 <a id="traffic"></a>
 ## 🚦 Traffic and Geographic Information
@@ -251,13 +306,25 @@ Coverage and freshness depend on the upstream providers and configured integrati
 <a id="admin"></a>
 ## ⚙ Administration and Workspace Settings
 
-Manage reusable content in **Admin**, then work with assigned content in **Dashboard**.
+Manage reusable content in **Admin**, then work with assigned content in **Dashboard**. Shared headers, compact forms, related-record links, filters, and Save/Discard flows provide a consistent foundation across Modules.
 
-- Configure Projects and enabled modules.
-- Activate an asset, then assign it to the Projects where it should appear.
-- Manage module records through their established forms and related lists.
-- Use supported Save/Discard feedback and validation.
-- Adjust personal appearance and navigation preferences through workspace Settings.
+- **Content administration:** configure Projects, manage reusable records, activate eligible assets, and assign them to their intended Projects.
+- **Users:** Super Admins can add accounts, edit profiles and roles, and soft-delete eligible accounts. Self-deletion, removal of the last active Super Admin, and deletion of Users who own content are blocked. Deleted accounts retain their records and cannot authenticate or use a session.
+- **Authentication:** NextAuth owns authentication and sessions; ThreeD App owns new-account defaults. Ordinary Users are Admins of their own content. Super Admin authority covers global Settings and Users management; it does not grant blanket ownership of other Users' private content.
+- **App styling rules:** creation action buttons are green, while sidebar creation links retain ordinary navigation styling. The current page has a distinct highlight. Module identity colors and icons remain configurable through App Settings.
+
+### Global and personal Settings
+
+| Scope | What it controls |
+| --- | --- |
+| **Global Module appearance** | Shared colors and Lucide icons for Users, Projects, ThreeD and its sub-Modules, Multimedia, and Traffic. Only active Super Admins can save these changes. Connected headers, navigation, and record icons consume the saved values. |
+| **Account preferences** | Theme, main Module visibility, and supported Dashboard menu links. Hiding a navigation item changes presentation, not authorization. |
+| **Per-user browser preferences** | Admin sidebar expansion and the main Settings disclosure sections, with cross-tab synchronization. |
+| **Browser-local appearance** | Scene panels, Project Header/button appearance, and Model preview export dimensions. These have their own persistence scope. |
+
+Global appearance controls provide previews, Save, Discard, Restore defaults, and Reload. Conflicting saves are rejected and failed drafts remain available. Other sessions receive saved styles when the App reloads. Status indicators and individual Layer colors retain their own meaning.
+
+For a new installation, follow the [Super Admin bootstrap guide](docs/developers/SUPER_ADMIN_BOOTSTRAP.md) and review the [Users release prerequisites](docs/releases/v0.28.1.md). Existing installations must check their applied schema state before using the accompanying SQL.
 
 **Learn more:** [Admin guide](docs/users/ADMIN_GUIDE.md) · [Global and personal settings](docs/users/SETTINGS.md)
 
@@ -308,12 +375,12 @@ npm ci
 npm run dev
 ```
 
-Open [localhost:4444](http://localhost:4444). The main Scene route is `/dashboard/scene`. Coding agents must leave Developer servers and their active installation untouched; see [AGENTS.md](AGENTS.md).
+Open [localhost:4444](http://localhost:4444). The main Scene route is `/dashboard/scene`. `npm start` is also a development-server command; use `npm run next:start` to serve an existing production build. Coding agents must leave Developer servers and their active installation untouched; see [AGENTS.md](AGENTS.md).
 
 ### Checks and production build
 
 ```bash
-npm run typecheck
+npm run typecheck -- --incremental false
 npm run validate -- ci
 npm run build
 ```
@@ -322,7 +389,7 @@ See the [validation guide](docs/agents/VALIDATION.md) for task-specific and isol
 
 ## 🤝 Contribute and follow development
 
-Prepared checkpoint: **[v0.27.7 - ThreeD Design: Roof labels](docs/releases/v0.27.7.md)**. Latest Developer-confirmed production release: **[v0.27.6 - ThreeD Projects: Save snapshot fix](docs/releases/v0.27.6.md)**. See [release history](docs/releases/README.md) for checkpoint details and [current context](CONTEXT.md) for current scope, acceptance, and known limitations.
+The latest production release is [v0.28.3](docs/releases/v0.28.3.md). See [release history](docs/releases/README.md) for version-specific scope and checks, and [current context](CONTEXT.md) for active work and known limitations.
 
 Have a reproducible bug or a focused feature idea? [Open an issue](https://github.com/marty-mcgee/threed-garden/issues). Before contributing, review the [contribution workflow](docs/agents/TASK_CHECKLISTS.md), existing ownership boundaries, and applicable checks.
 
@@ -336,7 +403,3 @@ The [legacy-v0.17 branch](https://github.com/marty-mcgee/threed-garden/tree/lega
 ## ⚖ License
 
 Application code is licensed under the [MIT License](LICENSE). Third-party Models, textures, audio, video, and other assets may carry separate licenses; check their individual terms before reuse.
-
-For Model maintenance tools, see [texture recovery](docs/developers/THREED_LEGACY_TEXTURE_RECOVERY.md), [Category taxonomy](docs/developers/THREED_MODEL_TAXONOMY.md) and [Renaming Models](docs/developers/THREED_MODEL_RENAMING.md). See the [v0.27.0 release record](docs/releases/v0.27.0.md) for scope and verification.
-
-Media and Links display ordering is covered in the [v0.27.1 release record](docs/releases/v0.27.1.md), including the Developer-confirmed schema application and production release.
