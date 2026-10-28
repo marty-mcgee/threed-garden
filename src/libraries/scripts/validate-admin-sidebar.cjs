@@ -11,6 +11,22 @@ function load(file, dependencies, globals = {}) {
 }
 const icons = new Proxy({}, { get: (_, name) => name });
 const nav = load('src/components/admin/layout/admin-navigation.ts', { 'lucide-react': icons });
+const contract = load('src/libraries/config/module-appearance.ts', {zod: require('zod')});
+const appearance = contract.defaultModuleAppearance();
+appearance.styles.models = {icon:'Leaf',color:'rose'};
+const {ModuleIcon} = load('src/components/settings/ModuleAppearanceProvider.tsx', {
+  react: {createContext:()=>({}),useContext:()=>({snapshot:appearance})},
+  'react/jsx-runtime':{jsx:(type,props)=>({type,props})},
+  'next-auth/react':{}, '@/libraries/config/module-appearance':contract,
+  './module-icons':{moduleIcons:icons},
+});
+for (const section of nav.navSections) {
+  for (const item of [...section.items,...section.items.flatMap(item=>item.children??[])]) {
+    const key = contract.moduleKeys.find(key=>contract.moduleDefinitions[key].route===item.href);
+    if (key) { assert.equal(item.moduleKey,key,item.href); assert.equal(item.icon,undefined,item.href); }
+    else assert(item.icon,item.href);
+  }
+}
 const destinations = nav.navSections.flatMap(section => section.items.flatMap(item => item.children ?? [item]));
 assert.equal(new Set(destinations.map(item => item.href)).size, destinations.length);
 for (const item of destinations) {
@@ -39,8 +55,7 @@ const preferences={modules:{threed:true,traffic:true,multimedia:true}};
 const {AdminSidebar}=load('src/components/admin/layout/AdminSidebar.tsx',{
   react,'react/jsx-runtime':{jsx,jsxs:jsx},'next/link':{default:'link'},'next/navigation':{usePathname:()=>pathname},
   'next-auth/react':{useSession:()=>({data:{user:{id:owner}}})},'lucide-react':icons,
-  '@/components/settings/ModuleAppearanceProvider':{ModuleIcon:'module-icon',useModuleAppearance:()=>({canEdit:false})},
-  '@/libraries/config/module-appearance':{moduleKeys:[],moduleDefinitions:{}},
+  '@/components/settings/ModuleAppearanceProvider':{ModuleIcon},
   '@/components/ui/button':{Button:'button'},'@/components/settings/WorkspaceSettingsProvider':{useWorkspaceSettings:()=>({preferences})},
   '@/components/auth/SignOutButton':{SignOutButton:'signout'},'@/libraries/utils':{cn:(...values)=>values.filter(Boolean).join(' ')},'./admin-navigation':nav,
 },{localStorage:storage,window:{addEventListener:(key,fn)=>listeners.set(key,fn),removeEventListener(){}}});
@@ -49,7 +64,18 @@ function render(){cursor=0;const tree=AdminSidebar(props);const pending=effectsT
 function all(node,predicate){if(Array.isArray(node))return node.flatMap(n=>all(n,predicate));if(!node||typeof node!=='object')return[];return [...(predicate(node)?[node]:[]),...all(node.props?.children,predicate)];}
 const text=node=>typeof node==='string'?node:Array.isArray(node)?node.map(text).join(''):node&&typeof node==='object'?text(node.props?.children):'';
 function button(tree,label){return all(tree,n=>n.type==='button'&&text(n)===label)[0];}
-let tree=render();assert(button(tree,'Users'));assert.equal(button(tree,'ThreeD').props['aria-expanded'],true);
+let tree=render();
+function renderedIcons(tree) {
+  return all(tree,n=>typeof n.type==='function'&&n.type.name==='NavigationModuleIcon').map(node=>{
+    const icon=node.type(node.props);
+    return icon?.type===ModuleIcon?ModuleIcon(icon.props):icon;
+  });
+}
+assert(renderedIcons(tree).some(icon=>icon?.type==='Leaf'&&icon.props.className.includes('text-rose-500')));
+appearance.styles.models={icon:'Drone',color:'cyan'};
+assert(renderedIcons(render()).some(icon=>icon?.type==='Drone'&&icon.props.className.includes('text-cyan-500')));
+assert(renderedIcons(tree).some(icon=>icon?.type==='Plus')); // Create remains a utility action.
+assert(button(tree,'Users'));assert.equal(button(tree,'ThreeD').props['aria-expanded'],true);
 button(tree,'ThreeD').props.onClick();tree=render();assert.equal(button(tree,'ThreeD').props['aria-expanded'],false);
 pathname='/admin/threed/models/builder';tree=render();assert.equal(button(tree,'ThreeD').props['aria-expanded'],false);
 states=[];effects=[];tree=render();assert.equal(button(tree,'ThreeD').props['aria-expanded'],false); // reload
@@ -62,4 +88,5 @@ listeners.get('storage')({key:'threed:admin-sidebar:v1:alice',newValue:'{"ThreeD
 preferences.modules.threed=false;tree=render();assert.equal(button(tree,'ThreeD'),undefined);preferences.modules.threed=true;
 props.isMobile=true;props.isOpen=false;tree=render();assert.equal(tree.props.hidden,true);props.isOpen=true;tree=render();assert.equal(tree.props.hidden,false);
 props.isMobile=false;props.isCollapsed=true;tree=render();assert(all(tree,n=>n.props?.['aria-label']==='Open ThreeD navigation').length===1);
-console.log('PASS: Admin route inventory, specific active matching, persistent section/subgroup choices, account isolation, optional storage, storage events, module filtering and mobile visibility.');
+assert(renderedIcons(tree).some(icon=>icon?.type===appearance.styles.threed.icon&&icon.props.className.includes(contract.moduleColors[appearance.styles.threed.color])));
+console.log('PASS: Saved module icons/colors, explicit module ownership, collapsed icons, utility icons, Admin route inventory, specific active matching, persistent section/subgroup choices, account isolation, optional storage, storage events, module filtering and mobile visibility.');

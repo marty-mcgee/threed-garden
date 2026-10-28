@@ -7,16 +7,15 @@ import { useSession } from 'next-auth/react';
 import { ChevronLeft, ChevronRight, ChevronDown, Home } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
-import { moduleDefinitions, moduleKeys } from '@/libraries/config/module-appearance';
+import type { ModuleKey } from '@/libraries/config/module-appearance';
 import { Button } from '@/components/ui/button';
 import { useWorkspaceSettings } from '@/components/settings/WorkspaceSettingsProvider';
 import { SignOutButton } from '@/components/auth/SignOutButton';
 import { cn } from '@/libraries/utils';
 import { activeAdminHref, navSections, readSidebarToggles } from './admin-navigation';
 
-function NavigationModuleIcon({href,fallback:Fallback,className}:{href:string;fallback:LucideIcon;className:string}) {
-  const key=moduleKeys.find(key=>moduleDefinitions[key].route===href);
-  return key?<ModuleIcon moduleKey={key} className={className}/>:<Fallback className={className}/>;
+function NavigationModuleIcon({moduleKey,fallback:Fallback,className}:{moduleKey?:ModuleKey;fallback?:LucideIcon;className:string}) {
+  return moduleKey ? <ModuleIcon moduleKey={moduleKey} className={className}/> : Fallback ? <Fallback className={className}/> : null;
 }
 
 interface AdminSidebarProps {
@@ -77,12 +76,12 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobile = false, isOpen =
             const open = toggles[section.title] ?? active;
             if (collapsed) return <li key={section.title}>
               <Button variant={active ? 'default' : 'ghost'} className="h-9 w-full px-0" title={section.title} aria-label={'Open ' + section.title + ' navigation'} onClick={() => { if (!open) toggle(section.title, false); onToggle(); }}>
-                <NavigationModuleIcon href={section.items[0]?.href ?? ''} fallback={Icon} className="h-4 w-4" />
+                <NavigationModuleIcon moduleKey={section.moduleKey} fallback={Icon} className="h-4 w-4" />
               </Button>
             </li>;
             return <li key={section.title}>
               <Button variant="ghost" aria-expanded={open} onClick={() => toggle(section.title, open)} className={cn('h-9 w-full justify-between gap-2 px-3', active && 'bg-primary/10 font-medium text-primary')}>
-                <span className="flex min-w-0 items-center gap-2"><NavigationModuleIcon href={section.items[0]?.href ?? ''} fallback={Icon} className="h-4 w-4 shrink-0" /><span>{section.title}</span></span>
+                <span className="flex min-w-0 items-center gap-2"><NavigationModuleIcon moduleKey={section.moduleKey} fallback={Icon} className="h-4 w-4 shrink-0" /><span>{section.title}</span></span>
                 {open ? <ChevronDown className="h-4 w-4 shrink-0" /> : <ChevronRight className="h-4 w-4 shrink-0" />}
               </Button>
               {open && <ul className="ml-3 mt-1 space-y-0.5 border-l border-border pl-2 dark:border-white/10">
@@ -90,7 +89,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobile = false, isOpen =
                   const ItemIcon = item.icon;
                   const itemActive = item.children ? item.children.some(child => child.href === activeHref) : item.href === activeHref;
                   const groupOpen = toggles[item.href] ?? itemActive;
-                  const content = <><NavigationModuleIcon href={item.href} fallback={ItemIcon} className="h-4 w-4 shrink-0" /><span className="min-w-0 whitespace-normal text-left">{item.title}</span></>;
+                  const content = <><NavigationModuleIcon moduleKey={item.moduleKey} fallback={ItemIcon} className="h-4 w-4 shrink-0" /><span className="min-w-0 whitespace-normal text-left">{item.title}</span></>;
                   return <li key={item.href}>
                     {item.children ? <>
                       <Button variant="ghost" aria-expanded={groupOpen} onClick={() => toggle(item.href, groupOpen)} className={cn('h-auto min-h-8 w-full justify-start gap-2 px-2 py-1.5 text-sm', itemActive && 'bg-primary/10 text-primary')}>
@@ -101,7 +100,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobile = false, isOpen =
                           const ChildIcon = child.icon;
                           const selected = child.href === activeHref;
                           return <li key={child.href}><Button asChild variant="ghost" className={cn('h-auto min-h-7 w-full justify-start gap-2 px-2 py-1 text-xs', selected ? 'bg-primary/20 text-primary' : 'text-muted-foreground hover:text-foreground')}>
-                            <Link href={child.href} aria-current={selected ? 'page' : undefined}><NavigationModuleIcon href={child.href} fallback={ChildIcon} className="h-3.5 w-3.5 shrink-0" /><span className="whitespace-normal">{child.title}</span></Link>
+                            <Link href={child.href} aria-current={selected ? 'page' : undefined}><NavigationModuleIcon moduleKey={child.moduleKey} fallback={ChildIcon} className="h-3.5 w-3.5 shrink-0" /><span className="whitespace-normal">{child.title}</span></Link>
                           </Button></li>;
                         })}
                       </ul>}
