@@ -106,7 +106,7 @@ export function SaveSpeechTrack({ speech, disabled, onBusyChange }: {
     </div>}
     {albumError && <div role="alert" className="text-xs text-red-500">{albumError} <Button variant="ghost" size="sm" onClick={() => setReload(reload + 1)}>Retry</Button></div>}
     {!loading && !albumError && total === 0 && <Link href="/admin/multimedia/albums" className="text-xs underline">Create an Album first</Link>}
-    <Button size="sm" onClick={save} disabled={disabled || busy || saved || uncertain || loading || !!albumError || !albumId || !title.trim()}>{saved ? 'Saved' : busy ? 'Saving…' : 'Save as Track'}</Button>
+    <Button variant="success" size="sm" onClick={save} disabled={disabled || busy || saved || uncertain || loading || !!albumError || !albumId || !title.trim()}>{saved ? 'Saved' : busy ? 'Saving…' : 'Save as Track'}</Button>
     {status && <p role="status" className={`text-xs ${saved ? 'text-emerald-500' : 'text-muted-foreground'}`}>{status}</p>}
     {error && <p role="alert" className="text-sm text-red-500">{error}</p>}
     {(saved || uncertain) && <Link href="/admin/multimedia/tracks" className="block text-sm underline">Open Music Tracks</Link>}

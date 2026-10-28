@@ -76,7 +76,7 @@ function LyricsWorkspace() {
   return <div className="flex h-full min-h-0 flex-col gap-2">
     <MultimediaWorkspaceHeader moduleKey="lyrics" pageHeader icon={FileText} title="Lyrics" count={records.total} search={<MultimediaRecordsSearch workspace={workspace} />}>
       <Button variant="outline" size="sm" className="h-7 px-2 text-xs" disabled={workspace.busy} onClick={records.reload}>Refresh</Button>
-      <Button size="sm" className="h-7 px-2 text-xs" disabled={workspace.busy} onClick={() => void edit(null)}><Plus className="mr-1 h-3.5 w-3.5" />Add Lyrics</Button>
+      <Button variant="success" size="sm" className="h-7 px-2 text-xs" disabled={workspace.busy} onClick={() => void edit(null)}><Plus className="mr-1 h-3.5 w-3.5" />Add Lyrics</Button>
     </MultimediaWorkspaceHeader>
     {notice && <p role="status" className="text-xs text-green-600 dark:text-green-400">{notice}</p>}
     <MultimediaRecordsTable workspace={workspace} label="Lyrics" columns={[

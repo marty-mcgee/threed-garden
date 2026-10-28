@@ -242,11 +242,11 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
           </CardHeader>
           <CardContent className="space-y-2">
             <Button
-              className="min-h-12 w-full justify-start gap-2 rounded-lg border-emerald-500/25 bg-emerald-500/5 px-3 py-2 text-sm font-medium hover:bg-emerald-500/10 dark:border-emerald-500/25 dark:bg-emerald-500/5 dark:hover:bg-emerald-500/10"
-              variant="outline"
+              className="min-h-12 w-full justify-start gap-2 rounded-lg px-3 py-2 text-sm font-medium"
+              variant="success"
               onClick={() => router.push('/admin/projects/new')}
             >
-              <FolderOpen aria-hidden="true" className="size-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <FolderOpen aria-hidden="true" className="size-4 shrink-0" />
               Create a New Project
               <ArrowRight className="w-4 h-4 ml-auto" />
             </Button>
@@ -342,7 +342,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
               { label: 'Missing Texture assignments', count: data.review.models.withoutTextureAssignments, href: '/admin/threed/models?missingTextures=true' },
               { label: 'Missing Image Top View', count: data.review.models.withoutTopView, href: '/admin/threed/models?missingTopView=true' },
               { label: 'Missing a thumbnail', count: data.review.models.withoutThumbnail, href: '/admin/threed/models?missingThumbnail=true' }] },
-          ].map(group => <Card key={group.title} className="min-w-0 gap-3 rounded-xl"><CardHeader className="pb-0"><CardTitle className="flex items-center gap-2 text-base"><group.Icon aria-hidden="true" className={`size-5 shrink-0 ${group.iconColor}`} />{group.title}<OverviewHelp label={group.title}>{group.note}</OverviewHelp></CardTitle></CardHeader><CardContent className="space-y-3">{group.createHref && <Link href={group.createHref} className="flex min-h-12 items-center gap-2 rounded-lg border border-violet-500/25 bg-violet-500/5 px-3 py-2 text-sm font-medium hover:bg-violet-500/10 focus-visible:outline-2 focus-visible:outline-ring"><Plus aria-hidden="true" className="size-4 shrink-0 text-violet-600 dark:text-violet-400" />Create a New Character<ArrowRight aria-hidden="true" className="ml-auto size-4 shrink-0" /></Link>}<div className="space-y-2">{group.rows.map(row => <Link key={row.label} href={row.href} className="flex min-h-12 items-center justify-between gap-3 rounded-lg border px-3 py-2 text-sm hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-ring"><span>{row.label}</span><Badge variant="secondary">{row.count}</Badge></Link>)}</div></CardContent></Card>)}
+          ].map(group => <Card key={group.title} className="min-w-0 gap-3 rounded-xl"><CardHeader className="pb-0"><CardTitle className="flex items-center gap-2 text-base"><group.Icon aria-hidden="true" className={`size-5 shrink-0 ${group.iconColor}`} />{group.title}<OverviewHelp label={group.title}>{group.note}</OverviewHelp></CardTitle></CardHeader><CardContent className="space-y-3">{group.createHref && <Button asChild variant="success" className="flex min-h-12 w-full justify-start gap-2 whitespace-normal rounded-lg px-3 py-2 text-sm font-medium"><Link href={group.createHref}><Plus aria-hidden="true" className="size-4 shrink-0" />Create a New Character<ArrowRight aria-hidden="true" className="ml-auto size-4 shrink-0" /></Link></Button>}<div className="space-y-2">{group.rows.map(row => <Link key={row.label} href={row.href} className="flex min-h-12 items-center justify-between gap-3 rounded-lg border px-3 py-2 text-sm hover:bg-muted/50 focus-visible:outline-2 focus-visible:outline-ring"><span>{row.label}</span><Badge variant="secondary">{row.count}</Badge></Link>)}</div></CardContent></Card>)}
         </div>
       </section>}
 
@@ -369,7 +369,7 @@ export function AdminDashboard({ data }: AdminDashboardProps) {
               <FolderOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
               <p className="text-sm font-medium">No projects yet</p>
               <p className="text-xs">Create your first project to get started</p>
-              <Button
+              <Button variant="success"
                 className="mt-4"
                 size="sm"
                 onClick={() => router.push('/admin/projects/new')}

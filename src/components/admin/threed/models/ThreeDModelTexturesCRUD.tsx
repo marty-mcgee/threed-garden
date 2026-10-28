@@ -162,7 +162,7 @@ export function ThreeDModelTexturesCRUD() {
         <AdminWorkspaceHeader icon={Images} title="Model Textures" description="Manage reusable Texture files and their Model references">
           <span className="rounded bg-muted px-2 text-xs">{total}</span>
           <Input aria-label="Search Model Textures" value={search} onChange={(event) => { setPage(0); setSelected(new Set()); setSearch(event.target.value); }} placeholder="Search name, filename or type…" className="h-7 min-w-48 flex-1 text-xs" />
-          <Button size="sm" className="h-7 text-xs" onClick={() => inputRef.current?.click()}>{workingId === 'upload' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}Upload Texture</Button>
+          <Button variant="success" size="sm" className="h-7 text-xs" onClick={() => inputRef.current?.click()}>{workingId === 'upload' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}Upload Texture</Button>
           <AdminWorkspaceLink href="/admin/threed/models" icon={ArrowLeft}>Models</AdminWorkspaceLink>
           <AdminWorkspaceLink href="/admin/threed/model-categories" icon={FolderTree}>Model Categories</AdminWorkspaceLink>
           <AdminWorkspaceLink href="/admin/threed/model-animations" icon={Clapperboard}>Model Animations</AdminWorkspaceLink>

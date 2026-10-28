@@ -1154,7 +1154,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
       <AdminWorkspaceHeader iconColor="purple" icon={Users} title="Characters" description="Manage your 3D characters and creatures" className="shrink-0 [&>a]:text-[11px]">
         <Badge variant="secondary" className="text-xs">{loading || loadError ? '—' : total}</Badge>
         <Input aria-label="Search Characters" placeholder="Search Characters by name, ID or description…" disabled={bulkBusy} value={searchQuery} onChange={event => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
-<Button asChild size="sm" disabled={bulkBusy} onClick={event => { if (bulkBusy) event.preventDefault(); }} className="h-7 px-2 text-[11px]"><a href="/admin/threed/characters/new"><Plus className="mr-1 h-3 w-3" />Add Character</a></Button>
+<Button variant="success" asChild size="sm" disabled={bulkBusy} onClick={event => { if (bulkBusy) event.preventDefault(); }} className="h-7 px-2 text-[11px]"><a href="/admin/threed/characters/new"><Plus className="mr-1 h-3 w-3" />Add Character</a></Button>
         <AdminWorkspaceLink href="/admin/threed/models" icon={Box}>Models</AdminWorkspaceLink>
         <AdminWorkspaceLink href="/admin/threed/animations" icon={Clapperboard}>Animations</AdminWorkspaceLink>
         <AdminWorkspaceLink href="/admin/threed/animation-slots" icon={Clapperboard}>Animation Slots</AdminWorkspaceLink>

@@ -486,7 +486,7 @@ export function TrafficBayArea511CRUD({ onModuleUpdate }: TrafficBayArea511CRUDP
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm" className="h-7 px-2 text-xs">
+            <Button variant="success" size="sm" className="h-7 px-2 text-xs">
               <Plus className="w-3 h-3 mr-1" />
               Add Event
             </Button>
@@ -707,7 +707,7 @@ export function TrafficBayArea511CRUD({ onModuleUpdate }: TrafficBayArea511CRUDP
                 </div>
               </div>
 
-              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting}>
+              <Button variant="success" onClick={handleCreate} className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -794,7 +794,7 @@ export function TrafficBayArea511CRUD({ onModuleUpdate }: TrafficBayArea511CRUDP
           <AlertCircle className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No Bay Area 511 events found</p>
           <Button
-            variant="outline"
+            variant="success"
             size="sm"
             className="mt-2 h-7 px-2 text-xs"
             onClick={() => setShowCreateDialog(true)}

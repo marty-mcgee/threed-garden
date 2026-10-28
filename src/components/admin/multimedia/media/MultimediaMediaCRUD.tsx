@@ -318,7 +318,7 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
       <MultimediaWorkspaceHeader moduleKey="media" pageHeader={pageHeader} icon={Image} title="Media" count={pageHeader ? workspace.total : mediaList.length} search={pageHeader ? <MultimediaRecordsSearch workspace={workspace} /> : undefined}>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm" className="h-7 px-2 text-xs">
+            <Button variant="success" size="sm" className="h-7 px-2 text-xs">
               <Plus className="w-3 h-3 mr-1" />
               Add Media
             </Button>
@@ -411,7 +411,7 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
                 />
                 <Label htmlFor="isPrimary">Primary Media</Label>
               </div>
-              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting || uploadBusy}>
+              <Button variant="success" onClick={handleCreate} className="w-full" disabled={isSubmitting || uploadBusy}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -432,7 +432,7 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
           <Image className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No media files yet</p>
           <Button 
-            variant="outline" 
+            variant="success"
             size="sm" 
             className="mt-2 h-7 px-2 text-xs"
             onClick={() => setShowCreateDialog(true)}

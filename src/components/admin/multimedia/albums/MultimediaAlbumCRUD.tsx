@@ -214,7 +214,7 @@ export function MultimediaAlbumCRUD({ onModuleUpdate }: MultimediaAlbumCRUDProps
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm" className="h-8 gap-1">
+            <Button variant="success" size="sm" className="h-8 gap-1">
               <Plus className="w-3.5 h-3.5" />
               Add Album
             </Button>
@@ -290,7 +290,7 @@ export function MultimediaAlbumCRUD({ onModuleUpdate }: MultimediaAlbumCRUDProps
                 />
                 <Label htmlFor="isPublic">Make public</Label>
               </div>
-              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting || uploadBusy}>
+              <Button variant="success" onClick={handleCreate} className="w-full" disabled={isSubmitting || uploadBusy}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -311,7 +311,7 @@ export function MultimediaAlbumCRUD({ onModuleUpdate }: MultimediaAlbumCRUDProps
           <Music className="w-12 h-12 mx-auto mb-3 opacity-50" />
           <p>No albums yet</p>
           <Button 
-            variant="outline" 
+            variant="success"
             size="sm" 
             className="mt-2"
             onClick={() => setShowCreateDialog(true)}

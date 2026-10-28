@@ -134,7 +134,7 @@ export function ThreeDAnimationsWorkspace({ initialCategoryId }: { initialCatego
       <select aria-label="Filter Animations by category" className="h-7 min-w-40 rounded border bg-background px-2 text-xs" disabled={busy || !!categoryError} value={category} onChange={e => { setCategory(e.target.value); setPage(0); }}><option value="">All categories</option>{category && !categories.some(c => String(c.id) === category) && <option value={category}>Category #{category}</option>}{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
       <AdminWorkspaceLink href="/admin/threed/animation-slots" icon={Clapperboard}>Animation Slots</AdminWorkspaceLink>
       <AdminWorkspaceLink href="/admin/threed/animation-categories" icon={Clapperboard}>Animation Categories</AdminWorkspaceLink>
-      <Button size="sm" className="h-7 text-xs" disabled={busy} onClick={() => uploadRef.current?.click()}><Upload className="mr-1 h-3 w-3" />Upload Animations</Button>
+      <Button variant="success" size="sm" className="h-7 text-xs" disabled={busy} onClick={() => uploadRef.current?.click()}><Upload className="mr-1 h-3 w-3" />Upload Animations</Button>
       <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading} onClick={() => { setRefresh(value => value + 1); setCategoryRefresh(value => value + 1); }}>Refresh</Button>
       <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || (!search && !category)} onClick={() => { setSearch(''); setCategory(''); setPage(0); setSelected(new Set()); }}>Reset filters</Button>
       <AdminWorkspaceLink href="/admin/threed/simulations" icon={FlaskConical}>Simulations</AdminWorkspaceLink>

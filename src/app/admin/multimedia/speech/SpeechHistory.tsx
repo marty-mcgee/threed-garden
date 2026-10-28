@@ -52,7 +52,7 @@ export function SpeechHistory({ id, onClose, onChange }: { id: number; onClose: 
   }
   return <Dialog open onOpenChange={open => { if (!open && !busy) onClose(); }}><DialogContent className="w-[calc(100vw-2rem)] sm:max-w-3xl max-h-[90dvh] overflow-y-auto">
     <DialogHeader><DialogTitle>{record?.title ?? 'Speech'} — Versions</DialogTitle></DialogHeader>
-    <div className="flex flex-wrap items-center gap-2"><Button disabled={busy || loading || uncertain || !record || !!record.archivedAt} onClick={() => action()}>{busy ? 'Working…' : 'Generate new version'}</Button><Button variant="outline" disabled={busy || loading} onClick={() => { setError(''); void load(); }}>Refresh history</Button></div>
+    <div className="flex flex-wrap items-center gap-2"><Button variant="success" disabled={busy || loading || uncertain || !record || !!record.archivedAt} onClick={() => action()}>{busy ? 'Working…' : 'Generate new version'}</Button><Button variant="outline" disabled={busy || loading} onClick={() => { setError(''); void load(); }}>Refresh history</Button></div>
     <p className="text-xs text-muted-foreground">Uses the saved draft. Preview a ready version, then choose Accept. Generating keeps your accepted audio.</p>
     {error && <p role="alert" className="text-sm text-red-500">{error}</p>}
     {!loading && !versions.length && <p className="text-sm text-muted-foreground">No generated versions yet.</p>}

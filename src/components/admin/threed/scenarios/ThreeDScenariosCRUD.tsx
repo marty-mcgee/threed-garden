@@ -326,7 +326,7 @@ export function ThreeDScenariosCRUD({ projectId, compact = false, view = 'list',
     {compact ? <section aria-label="Saved Scenario outlines" className="space-y-2">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="flex items-center gap-2 text-xs font-semibold"><span className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-500/15 text-sky-700 dark:text-sky-300"><BookOpen aria-hidden="true" className="h-4 w-4" /></span> Saved Scenarios <span className="rounded-full bg-foreground/10 px-1.5 py-0.5 text-[10px] text-muted-foreground">{total}</span></h3>
-        <Button size="sm" variant="outline" className="h-7 gap-1 text-xs" disabled={!projects.some(project => String(project.id) === projectFilter)} onClick={openCreate}><Plus aria-hidden="true" className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-300" /> New Scenario</Button>
+        <Button size="sm" variant="success" className="h-7 gap-1 text-xs" disabled={!projects.some(project => String(project.id) === projectFilter)} onClick={openCreate}><Plus aria-hidden="true" className="h-3.5 w-3.5" /> New Scenario</Button>
       </div>
       <Input aria-label="Search saved Scenarios" placeholder="Search outlines" className="h-8 bg-background/50 text-xs" maxLength={120} value={search} onChange={event => { setSearch(event.target.value); resetList(); }} />
       {visibleProjectError && <p role="alert" className="text-xs text-destructive">{visibleProjectError}</p>}

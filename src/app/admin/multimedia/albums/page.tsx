@@ -171,7 +171,7 @@ export default function AlbumsManagementPage() {
         <ModelFieldHelp label="Albums">Manage your Multimedia Albums. Sort Order controls the public library order; only published public Albums expose eligible content to visitors.</ModelFieldHelp>
         <span className="rounded border px-1.5 py-0.5 text-xs">{workspace.total}</span>
         <MultimediaRecordsSearch workspace={workspace} />
-        <Button size="sm" className="ml-auto h-7 px-2 text-xs" onClick={() => { resetForm(); setIsDialogOpen(true); }}>
+        <Button variant="success" size="sm" className="ml-auto h-7 px-2 text-xs" onClick={() => { resetForm(); setIsDialogOpen(true); }}>
           <Plus className="h-4 w-4 mr-2" />
           New Album
         </Button>
@@ -290,7 +290,7 @@ export default function AlbumsManagementPage() {
               </div>
             </div>
             <div className="flex gap-2 pt-4">
-              <Button type="submit" disabled={isSubmitting}>
+              <Button variant={editingAlbum ? "default" : "success"} type="submit" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />

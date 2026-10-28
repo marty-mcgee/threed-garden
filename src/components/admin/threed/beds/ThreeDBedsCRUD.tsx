@@ -450,7 +450,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
         <Input aria-label="Search Beds" placeholder="Search Beds…" disabled={bulkBusy} value={searchQuery} onChange={event => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm" disabled={bulkBusy} className="h-7 px-2 text-[11px]">
+            <Button variant="success" size="sm" disabled={bulkBusy} className="h-7 px-2 text-[11px]">
               <Plus className="w-3 h-3 mr-1" />
               Add Bed
             </Button>
@@ -761,7 +761,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
                 </div>
               </div>
 
-              <Button onClick={handleCreate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
+              <Button variant="success" onClick={handleCreate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />

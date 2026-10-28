@@ -152,7 +152,7 @@ export function LinkForm({
       }}>
         <DialogTrigger asChild>
           {trigger || (
-            <Button size="sm" className="gap-1">
+            <Button variant={existingLink ? "default" : "success"} size="sm" className="gap-1">
               <Plus className="w-3.5 h-3.5" />
               {existingLink ? 'Edit Link' : 'Add Link'}
             </Button>
@@ -275,7 +275,7 @@ export function LinkForm({
             )}
 
             <div className="flex gap-2 pt-2">
-              <Button type="submit" className="flex-1" disabled={isSubmitting}>
+              <Button variant={existingLink ? "default" : "success"} type="submit" className="flex-1" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />

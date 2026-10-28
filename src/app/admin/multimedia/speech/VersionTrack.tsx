@@ -37,11 +37,11 @@ export function VersionTrack({ speechId, versionNumber, defaultTitle, trackId, d
   }
   if (trackId || savedId) return <Link className="text-xs text-green-500 underline" href="/admin/multimedia/tracks">Track #{trackId || savedId} saved · View Tracks</Link>;
   return <div className="space-y-2">
-    {!open ? <Button size="sm" variant="outline" disabled={disabled} onClick={() => setOpen(true)}>Save as Track</Button> : <>
+    {!open ? <Button size="sm" variant="success" disabled={disabled} onClick={() => setOpen(true)}>Save as Track</Button> : <>
       <input aria-label="Track title" className="h-8 w-full rounded border bg-background px-2 text-sm" maxLength={255} value={title} disabled={busy || disabled} onChange={event => setTitle(event.target.value)} />
       <select aria-label="Track Album" className="h-8 w-full rounded border bg-background px-2 text-sm" value={albumId} disabled={busy || disabled || loading} onChange={event => setAlbumId(event.target.value)}><option value="">Choose Album…</option>{albums.map(album => <option key={album.id} value={album.id}>{album.title}</option>)}</select>
       {total > 50 && <div className="flex gap-2"><Button size="sm" variant="outline" disabled={busy || loading || !page} onClick={() => { setPage(page - 1); setAlbumId(''); }}>Previous Albums</Button><Button size="sm" variant="outline" disabled={busy || loading || (page + 1) * 50 >= total} onClick={() => { setPage(page + 1); setAlbumId(''); }}>Next Albums</Button></div>}
-      <Button size="sm" disabled={busy || disabled || loading || !albumId || !title.trim()} onClick={save}>{busy ? 'Saving…' : 'Save Track'}</Button>
+      <Button size="sm" variant="success" disabled={busy || disabled || loading || !albumId || !title.trim()} onClick={save}>{busy ? 'Saving…' : 'Save Track'}</Button>
       {error && <p role="alert" className="text-xs text-red-500">{error} <button className="underline" onClick={() => setRetry(value => value + 1)}>Reload Albums</button></p>}
     </>}
   </div>;

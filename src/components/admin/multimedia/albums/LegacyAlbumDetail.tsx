@@ -289,7 +289,7 @@ export default function AlbumDetailPage() {
                 <CardHeader>
                   <div className="flex justify-between items-center">
                     <CardTitle>Track List</CardTitle>
-                    <Button size="sm" onClick={() => {
+                    <Button variant="success" size="sm" onClick={() => {
                       resetForm();
                       setIsDialogOpen(true);
                     }}>
@@ -304,7 +304,7 @@ export default function AlbumDetailPage() {
                       <Music className="w-12 h-12 mx-auto mb-3 opacity-50" />
                       <p>No tracks yet</p>
                       <Button 
-                        variant="outline" 
+                        variant="success"
                         size="sm" 
                         className="mt-2"
                         onClick={() => {
@@ -449,7 +449,7 @@ export default function AlbumDetailPage() {
               </select>
             </div>
             <div className="flex gap-2 pt-4">
-              <Button type="submit" disabled={isSubmitting}>
+              <Button variant={editingTrack ? "default" : "success"} type="submit" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />

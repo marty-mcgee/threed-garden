@@ -106,7 +106,7 @@ export function UsersWorkspace({userId,createNew=false}:{userId?:string;createNe
     <Input aria-label="Search Users" className="h-7 w-full text-xs sm:w-60" placeholder="Search name or email..." value={search} maxLength={100} onChange={event=>{setSearch(event.target.value);setPage(1);}} />
     <select aria-label="Filter by role" className={selectStyle} value={filter} onChange={event=>{setFilter(event.target.value);setPage(1);}}><option value="all">All roles</option><option value="admin">Admin</option><option value="super_admin">Super Admin</option><option value="user">Legacy User</option></select>
     <select aria-label="Filter by account" className={selectStyle} value={accountFilter} onChange={event=>{setAccountFilter(event.target.value);setPage(1);}}><option value="current">Current Users</option><option value="deleted">Deleted Users</option><option value="all">All Users</option></select>
-    {!loading&&!error&&<Button asChild className={actionStyle+' border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'} variant="outline"><Link href="/admin/users/new"><Plus aria-hidden="true" className="h-3 w-3" />Add New User</Link></Button>}
+    {!loading&&!error&&<Button asChild className={actionStyle} variant="success"><Link href="/admin/users/new"><Plus aria-hidden="true" className="h-3 w-3" />Add User</Link></Button>}
     <Button className={actionStyle+' ml-auto'} variant="outline" disabled={loading} onClick={()=>setRefresh(value=>value+1)}><RefreshCw aria-hidden="true" className="h-3 w-3" />Refresh</Button>
    </>}
    {editing&&<Button className={actionStyle+' ml-auto'} variant="outline" asChild><Link href="/admin/users">All Users</Link></Button>}
@@ -139,7 +139,7 @@ export function UsersWorkspace({userId,createNew=false}:{userId?:string;createNe
     </section>}
    </div>
    <div className="admin-editor-actions mt-auto rounded-md border border-emerald-500/20 bg-emerald-500/5 p-2">
-    <Button className={actionStyle} disabled={saving||!dirty||!name.trim()||!email.trim()||!!record?.isDeleted||createNew&&password.length<8} onClick={()=>void save()}>{saving?'Saving...':createNew?'Create User':'Save Changes'}</Button>
+    <Button variant={!createNew ? "default" : "success"} className={actionStyle} disabled={saving||!dirty||!name.trim()||!email.trim()||!!record?.isDeleted||createNew&&password.length<8} onClick={()=>void save()}>{saving?'Saving...':createNew?'Create User':'Save Changes'}</Button>
     <Button className={actionStyle} variant="outline" disabled={saving||!dirty} onClick={()=>{setRole(record?.role??'admin');setName(record?.name??'');setEmail(record?.email??'');setPassword('');setError('');}}>Discard</Button>
     <Button className={actionStyle} variant="outline" disabled={saving} onClick={()=>{if(!dirty||window.confirm('Discard your draft and reload this User?'))setRefresh(value=>value+1);}}>Reload</Button>
     <span className="text-xs text-muted-foreground">{dirty?'Unsaved changes':'No pending changes'}</span>

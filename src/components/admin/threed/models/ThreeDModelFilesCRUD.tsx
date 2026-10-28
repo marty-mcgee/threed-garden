@@ -1054,7 +1054,7 @@ export function ThreeDModelFilesCRUD({ initialModelId = null, selectorContainer,
             <LayoutGrid className="w-4 h-4" />
           </Button>
         </div>
-        <Button asChild variant="outline" size="sm" className="h-8 text-xs"><Link href={`/admin/threed/models/${modelId}/files/new`}>Add File record</Link></Button>
+        <Button asChild variant="success" size="sm" className="h-8 text-xs"><Link href={`/admin/threed/models/${modelId}/files/new`}>Add File record</Link></Button>
 
       </div>
 

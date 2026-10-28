@@ -33,7 +33,7 @@ export function AnimationPresets({ target, targetId, assignments, inherited, dir
       <fieldset disabled={busy || disabled || dirty} className="space-y-2">
         <div className="flex flex-wrap gap-2">
           <Input aria-label="Preset name" value={name} maxLength={120} onChange={e => setName(e.target.value)} className="h-8 max-w-xs text-xs" />
-          <Button size="sm" disabled={!rows.length || !name.trim()} onClick={() => void run(async () => { const saved = await request('/api/threed/animation-presets', 'POST', { name, entries: rows }); await refresh(); setSelected(String(saved.id)); setMessage('Preset saved.'); })}>Save Mappings as Preset</Button>
+          <Button variant="success" size="sm" disabled={!rows.length || !name.trim()} onClick={() => void run(async () => { const saved = await request('/api/threed/animation-presets', 'POST', { name, entries: rows }); await refresh(); setSelected(String(saved.id)); setMessage('Preset saved.'); })}>Save Mappings as Preset</Button>
         </div>
         <div className="flex flex-wrap gap-2">
           <select aria-label="Animation preset" className="h-8 min-w-48 rounded border bg-background px-2" value={selected} onChange={e => { setSelected(e.target.value); setName(presets.find(p => p.id === Number(e.target.value))?.name ?? 'Farmer Actions'); setReview(null); }}><option value="">Choose preset…</option>{presets.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}</select>

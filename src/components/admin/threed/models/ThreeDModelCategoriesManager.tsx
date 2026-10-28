@@ -204,7 +204,7 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
           </ModelFieldHelp>
           <span className="rounded bg-muted px-2 text-xs">{categories.length}</span>
           <Input aria-label="Search categories" placeholder="Search name, slug or description…" value={search} className="h-7 min-w-48 flex-1 text-xs" onChange={(event) => { setPage(0); setSelected(new Set()); setSearch(event.target.value); }} />
-          <Button size="sm" className="h-7 text-xs" onClick={beginCreate}><Plus className="h-3 w-3" />Add Category</Button>
+          <Button variant="success" size="sm" className="h-7 text-xs" onClick={beginCreate}><Plus className="h-3 w-3" />Add Category</Button>
           <AdminWorkspaceLink href="/admin/threed/models" icon={ArrowLeft}>Models</AdminWorkspaceLink>
           <AdminWorkspaceLink href="/admin/threed/animation-categories" icon={FolderTree}>Animation Categories</AdminWorkspaceLink>
           <AdminWorkspaceLink href="/admin/threed/animations" icon={Clapperboard}>Animations Library</AdminWorkspaceLink>
@@ -303,7 +303,7 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
                 <Switch aria-label="Category active" disabled={saving} checked={form.isActive} onCheckedChange={(isActive) => setForm({ ...form, isActive })} />
                 <Label>Active</Label>
               </div>
-              <Button type="button" className="h-8 w-full text-xs sm:col-span-2 sm:w-auto sm:justify-self-end" disabled={saving} onClick={() => void saveCategory()}>
+              <Button variant={editing ? "default" : "success"} type="button" className="h-8 w-full text-xs sm:col-span-2 sm:w-auto sm:justify-self-end" disabled={saving} onClick={() => void saveCategory()}>
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{editing ? 'Update Category' : 'Create Category'}
               </Button>
           </div>

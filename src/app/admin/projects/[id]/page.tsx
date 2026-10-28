@@ -877,12 +877,12 @@ export default function ProjectDetailPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Button size="sm" variant="outline" onClick={() => router.push(`/admin/threed/scenarios?projectId=${projectId}&create=1`)}>
+          <Button size="sm" variant="success" onClick={() => router.push(`/admin/threed/scenarios?projectId=${projectId}&create=1`)}>
             Set up Scenario
           </Button>
         <Dialog open={showNewModuleDialog} onOpenChange={setShowNewModuleDialog}>
           <DialogTrigger asChild>
-            <Button size="sm">
+            <Button variant="success" size="sm">
               <Plus className="w-4 h-4 mr-1" />
               Add Module
             </Button>
@@ -924,7 +924,7 @@ export default function ProjectDetailPage() {
                   disabled={isSubmitting}
                 />
               </div>
-              <Button onClick={createModule} className="w-full" disabled={isSubmitting}>
+              <Button variant="success" onClick={createModule} className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -949,7 +949,7 @@ export default function ProjectDetailPage() {
             <p className="text-sm text-muted-foreground mb-3">
               Create your first module to start managing assets for this project.
             </p>
-            <Button size="sm" onClick={() => setShowNewModuleDialog(true)}>
+            <Button variant="success" size="sm" onClick={() => setShowNewModuleDialog(true)}>
               <Plus className="w-4 h-4 mr-1" />
               Create Module
             </Button>

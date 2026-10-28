@@ -263,19 +263,19 @@ export default function AdminMusicDashboard() {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <Button asChild className="justify-start">
+            <Button variant="success" asChild className="justify-start">
               <Link href="/admin/multimedia/albums">
                 <Album className="h-4 w-4 mr-2" />
                 Create New Album
               </Link>
             </Button>
-            <Button asChild variant="outline" className="justify-start">
+            <Button asChild variant="success" className="justify-start">
               <Link href="/admin/multimedia/tracks">
                 <Music className="h-4 w-4 mr-2" />
                 Add New Track
               </Link>
             </Button>
-            <Button asChild variant="outline" className="justify-start">
+            <Button asChild variant="success" className="justify-start">
               <Link href="/admin/multimedia/links">
                 <LinkIcon className="h-4 w-4 mr-2" />
                 Add New Link

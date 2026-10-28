@@ -223,7 +223,7 @@ export function ThreeDModelFilesTable() {
         </Select></div>
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <Button size="sm" className={COMPACT_BUTTON} onClick={() => { setAddModelId(''); setAddOpen(true); }}><Plus aria-hidden="true" className="size-3" />Add File</Button>
+        <Button variant="success" size="sm" className={COMPACT_BUTTON} onClick={() => { setAddModelId(''); setAddOpen(true); }}><Plus aria-hidden="true" className="size-3" />Add File</Button>
         <Button type="button" variant="outline" size="sm" className={COMPACT_BUTTON} disabled={loading || !!locationError} onClick={refresh}><RefreshCw aria-hidden="true" className="size-3" />Refresh</Button>
       </div>
       <div className="flex flex-wrap items-center gap-2">

@@ -38,6 +38,9 @@ for (const [route, expected] of [
   ['/admin/threed/models/15', '/admin/threed/models'],
   ['/admin/threed/simulation-results/4', '/admin/threed/simulation-results'],
   ['/admin/threed/simulations/4/view', '/admin/threed/simulations'],
+  ['/admin/users', '/admin/users'],
+  ['/admin/users/new', '/admin/users/new'],
+  ['/admin/users/example-id', '/admin/users'],
   ['/admin/projects/new', '/admin/projects/new'],
   ['/admin/projects/16', '/admin/projects'],
   ['/admin/multimedia/speech/3', '/admin/multimedia/speech'],
@@ -89,4 +92,24 @@ preferences.modules.threed=false;tree=render();assert.equal(button(tree,'ThreeD'
 props.isMobile=true;props.isOpen=false;tree=render();assert.equal(tree.props.hidden,true);props.isOpen=true;tree=render();assert.equal(tree.props.hidden,false);
 props.isMobile=false;props.isCollapsed=true;tree=render();assert(all(tree,n=>n.props?.['aria-label']==='Open ThreeD navigation').length===1);
 assert(renderedIcons(tree).some(icon=>icon?.type===appearance.styles.threed.icon&&icon.props.className.includes(contract.moduleColors[appearance.styles.threed.color])));
+props.isCollapsed=false;pathname='/admin/users/new';owner='new-user-menu-check';tree=render();
+const addUser=all(tree,n=>n.type==='link'&&text(n)==='Add User')[0];
+assert.equal(addUser.props.href,'/admin/users/new');assert.equal(addUser.props['aria-current'],'page');
+assert.equal(all(tree,n=>n.type==='link'&&text(n)==='All Users')[0].props['aria-current'],undefined);
+assert.equal(button(tree,'Users').props['aria-expanded'],true);
+assert.equal(nav.navSections.find(section=>section.title==='Users').items[1].icon,'Plus');
+const creationItems=nav.navSections.flatMap(section=>section.items.flatMap(item=>[item,...(item.children??[])])).filter(item=>item.action==='create');
+assert.equal(creationItems.map(item=>item.title).join(','),'Add User,Add Project,Add Model,Add Simulation,Add Speech');
+for(const item of creationItems)assert.equal(nav.activeAdminHref(item.href),item.href);
+const selectedButton=all(tree,n=>n.type==='button'&&text(n)==='Add User')[0];
+assert.equal(selectedButton.props.variant,'secondary');assert(selectedButton.props.className.includes('ring-primary/40'));
+pathname='/admin/users';tree=render();
+assert.equal(all(tree,n=>n.type==='button'&&text(n)==='Add User')[0].props.variant,'ghost');
+assert.equal(all(tree,n=>n.type==='link'&&text(n)==='Add User')[0].props['aria-current'],undefined);
+button(tree,'ThreeD').props.onClick();tree=render();
+if(button(tree,'Models').props['aria-expanded']!==true){button(tree,'Models').props.onClick();tree=render();}
+assert.equal(all(tree,n=>n.type==='button'&&text(n)==='Add Model')[0].props.variant,'ghost');
+pathname='/admin/threed/models/new';tree=render();
+assert.equal(all(tree,n=>n.type==='link'&&text(n)==='Add Model')[0].props['aria-current'],'page');
+assert.equal(all(tree,n=>n.type==='button'&&text(n)==='Add Model')[0].props.variant,'secondary');
 console.log('PASS: Saved module icons/colors, explicit module ownership, collapsed icons, utility icons, Admin route inventory, specific active matching, persistent section/subgroup choices, account isolation, optional storage, storage events, module filtering and mobile visibility.');

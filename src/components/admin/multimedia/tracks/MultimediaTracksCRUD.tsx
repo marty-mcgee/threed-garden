@@ -338,7 +338,7 @@ export function MultimediaTracksCRUD({ onModuleUpdate, pageHeader = false }: Mul
       <MultimediaWorkspaceHeader moduleKey="tracks" pageHeader={pageHeader} icon={Music2} title="Tracks" count={pageHeader ? workspace.total : tracks.length} search={pageHeader ? <MultimediaRecordsSearch workspace={workspace} /> : undefined}>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm" className="h-7 px-2 text-xs">
+            <Button variant="success" size="sm" className="h-7 px-2 text-xs">
               <Plus className="w-3 h-3 mr-1" />
               Add Track
             </Button>
@@ -442,7 +442,7 @@ export function MultimediaTracksCRUD({ onModuleUpdate, pageHeader = false }: Mul
                   disabled={isSubmitting || uploadBusy}
                 />
               </div>
-              <Button onClick={handleCreate} className="w-full" disabled={isSubmitting || uploadBusy}>
+              <Button variant="success" onClick={handleCreate} className="w-full" disabled={isSubmitting || uploadBusy}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -463,7 +463,7 @@ export function MultimediaTracksCRUD({ onModuleUpdate, pageHeader = false }: Mul
           <Music2 className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No tracks yet</p>
           <Button 
-            variant="outline" 
+            variant="success"
             size="sm" 
             className="mt-2 h-7 px-2 text-xs"
             onClick={() => setShowCreateDialog(true)}

@@ -67,7 +67,7 @@ export function ThreeDAnimationCategoriesWorkspace() {
     <AdminWorkspaceHeader iconColor="blue" icon={FolderTree} title="Animation Categories" description="Shared Categories for animation clips and Action Slots">
       <span className="rounded bg-muted px-2 text-xs">{error ? '—' : filtered.length}</span>
       <Input aria-label="Search Animation Categories" placeholder="Search Categories by name…" value={search} disabled={busy} onChange={event => { setSearch(event.target.value); setPage(0); }} className="h-7 min-w-48 flex-1 text-xs" />
-      <Button size="sm" className="h-7 text-xs" disabled={busy || loading || !!draft || !!error} onClick={() => { setOperationError(''); setNotice(''); setDraft({ name: '' }); }}><Plus className="mr-1 h-3 w-3" />Add Category</Button>
+      <Button variant="success" size="sm" className="h-7 text-xs" disabled={busy || loading || !!draft || !!error} onClick={() => { setOperationError(''); setNotice(''); setDraft({ name: '' }); }}><Plus className="mr-1 h-3 w-3" />Add Category</Button>
       <AdminWorkspaceLink href="/admin/threed/model-categories" icon={FolderTree}>Model Categories</AdminWorkspaceLink>
       <AdminWorkspaceLink href="/admin/threed/animation-slots" icon={Clapperboard}>Animation Slots</AdminWorkspaceLink>
       <AdminWorkspaceLink href="/admin/threed/animations" icon={Clapperboard}>Animations Library</AdminWorkspaceLink>

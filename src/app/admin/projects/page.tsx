@@ -189,7 +189,7 @@ export default function AdminProjectsPage() {
               Manage your projects and their modules
             </p>
           </div>
-          <Button onClick={() => router.push('/admin/projects/new')}>
+          <Button variant="success" onClick={() => router.push('/admin/projects/new')}>
             <Plus className="w-4 h-4 mr-2" />
             New Project
           </Button>
@@ -201,7 +201,7 @@ export default function AdminProjectsPage() {
             <p className="text-muted-foreground mb-4">
               Create your first project to start managing assets.
             </p>
-            <Button onClick={() => router.push('/admin/projects/new')}>
+            <Button variant="success" onClick={() => router.push('/admin/projects/new')}>
               <Plus className="w-4 h-4 mr-2" />
               Create Project
             </Button>
@@ -223,7 +223,7 @@ export default function AdminProjectsPage() {
             Manage your projects and their modules
           </p>
         </div>
-        <Button onClick={() => router.push('/admin/projects/new')}>
+        <Button variant="success" onClick={() => router.push('/admin/projects/new')}>
           <Plus className="w-4 h-4 mr-2" />
           New Project
         </Button>

@@ -17,7 +17,7 @@ export function RelatedMultimediaRecords({ kind, albumId, trackId, disabled, onB
   const title = kind === 'media' ? 'Media' : kind === 'tracks' ? 'Tracks' : 'Links';
   return <fieldset disabled={disabled} className="flex min-h-80 min-w-0 flex-col gap-2 rounded-md border p-3">
     <div className="flex flex-wrap items-center gap-2"><h2 className="text-xs font-semibold">{title} ({workspace.total})</h2><MultimediaRecordsSearch workspace={workspace} />
-      <Button type="button" asChild size="sm"><Link href={`/admin/multimedia/${kind}/new?${query}`}>Add {kind === 'tracks' ? 'Track' : kind === 'links' ? 'Link' : 'Media'}</Link></Button>
+      <Button variant="success" type="button" asChild size="sm"><Link href={`/admin/multimedia/${kind}/new?${query}`}>Add {kind === 'tracks' ? 'Track' : kind === 'links' ? 'Link' : 'Media'}</Link></Button>
       <Button type="button" variant="outline" size="sm" onClick={workspace.retry} disabled={workspace.loading || workspace.busy}>Refresh</Button>
     </div>
     <MultimediaRecordsTable workspace={workspace} label={title} columns={[

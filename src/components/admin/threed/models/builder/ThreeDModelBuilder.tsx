@@ -281,7 +281,7 @@ export function ThreeDModelBuilder() {
       <p role="status" aria-live="polite" className="text-xs text-muted-foreground">{draftChanged && prepared ? 'Parameters changed. Generate Preview again before downloading or saving.' : message}</p>
       {uploadProgress !== null && <progress aria-label="Model upload progress" className="h-1 w-full" max={100} value={uploadProgress} />}
       <div className="flex flex-wrap items-center gap-2">
-        <Button type="button" disabled={!prepared || draftChanged || busy || captureOpen || complete || Boolean(prepared.progress.uncertain) || Boolean(prepared.pendingPrimaryCleanup) || !name.trim()} onClick={save}>
+        <Button variant="success" type="button" disabled={!prepared || draftChanged || busy || captureOpen || complete || Boolean(prepared.progress.uncertain) || Boolean(prepared.pendingPrimaryCleanup) || !name.trim()} onClick={save}>
           {busy ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Save className="mr-1 h-4 w-4" />}{complete ? 'Model Saved' : prepared?.progress.modelId ? 'Resume Save' : 'Save as New Model'}
         </Button>
         {busy && <Button type="button" variant="outline" onClick={() => active.current?.abort()}>Stop</Button>}

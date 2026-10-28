@@ -233,7 +233,7 @@ export function AdminMultimediaManager() {
         <h2 className="text-2xl font-bold">Music Library Manager</h2>
         <Dialog open={isAlbumDialogOpen} onOpenChange={setIsAlbumDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={resetAlbumForm}>
+            <Button variant="success" onClick={resetAlbumForm}>
               <Plus className="h-4 w-4 mr-2" />
               New Album
             </Button>
@@ -305,7 +305,7 @@ export function AdminMultimediaManager() {
                   Make album public
                 </label>
               </div>
-              <Button type="submit">{editingAlbum ? 'Update' : 'Create'} Album</Button>
+              <Button variant={editingAlbum ? "default" : "success"} type="submit">{editingAlbum ? 'Update' : 'Create'} Album</Button>
             </form>
           </DialogContent>
         </Dialog>
@@ -374,7 +374,7 @@ export function AdminMultimediaManager() {
               {selectedAlbum && (
                 <Dialog open={isTrackDialogOpen} onOpenChange={setIsTrackDialogOpen}>
                   <DialogTrigger asChild>
-                    <Button size="sm" onClick={resetTrackForm}>
+                    <Button variant="success" size="sm" onClick={resetTrackForm}>
                       <Plus className="h-4 w-4 mr-2" />
                       Add Track
                     </Button>
@@ -424,7 +424,7 @@ export function AdminMultimediaManager() {
                           onChange={(e) => setTrackForm({ ...trackForm, lyrics: e.target.value })}
                         />
                       </div>
-                      <Button type="submit">Add Track</Button>
+                      <Button variant="success" type="submit">Add Track</Button>
                     </form>
                   </DialogContent>
                 </Dialog>

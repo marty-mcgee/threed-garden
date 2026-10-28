@@ -8,9 +8,11 @@ export interface NavItem {
   href: string;
   icon?: LucideIcon;
   moduleKey?: ModuleKey;
+  action?: 'create';
   exact?: boolean; // ✅ If true, only match exact path (not children)
   relatedPaths?: string[];
   children?: Array<{
+    action?: 'create';
     exact?: boolean;
     title: string;
     href: string;
@@ -45,7 +47,8 @@ export const navSections: NavSection[] = [
         title: 'All Users', 
         href:'/admin/users', 
         moduleKey: 'users',
-      }
+      },
+      { title: 'Add User', href: '/admin/users/new', icon: Plus, action: 'create', exact: true },
     ],
   },
   {
@@ -53,7 +56,7 @@ export const navSections: NavSection[] = [
     moduleKey: 'projects',
     items: [
       { title: 'All Projects', href: '/admin/projects', moduleKey: 'projects', exact: false },
-      { title: 'Create New', href: '/admin/projects/new', icon: Plus, exact: true },
+      { title: 'Add Project', href: '/admin/projects/new', icon: Plus, action: 'create', exact: true },
     ],
   },
   {
@@ -78,7 +81,7 @@ export const navSections: NavSection[] = [
         ],
         children: [
           { title: 'All Models', href: '/admin/threed/models', moduleKey: 'models' },
-          { title: 'Create Model', href: '/admin/threed/models/new', icon: Plus },
+          { title: 'Add Model', href: '/admin/threed/models/new', icon: Plus, action: 'create', exact: true },
           { title: 'Model Builder', href: '/admin/threed/models/builder', moduleKey: 'modelBuilder' },
           { title: 'Files', href: '/admin/threed/model-files', moduleKey: 'modelFiles' },
           { title: 'Categories', href: '/admin/threed/model-categories', moduleKey: 'modelCategories' },
@@ -105,7 +108,7 @@ export const navSections: NavSection[] = [
         ],
         children: [
           { title: 'All Simulations', href: '/admin/threed/simulations', moduleKey: 'simulations' },
-          { title: 'Create Simulation', href: '/admin/threed/simulations/new', icon: Plus },
+          { title: 'Add Simulation', href: '/admin/threed/simulations/new', icon: Plus, action: 'create', exact: true },
           { title: 'Simulation Results', href: '/admin/threed/simulation-results', moduleKey: 'simulationResults' },
         ]
       },
@@ -143,7 +146,7 @@ export const navSections: NavSection[] = [
       { title: 'Lyrics', href: '/admin/multimedia/lyrics', moduleKey: 'lyrics', exact: false },
       { title: 'Speech', href: '/admin/multimedia/speech', moduleKey: 'speech', exact: false, children: [
         { title: 'All Speeches', href: '/admin/multimedia/speech', moduleKey: 'speech', exact: false },
-        { title: 'New Speech', href: '/admin/multimedia/speech/new', icon: Plus, exact: true },
+        { title: 'Add Speech', href: '/admin/multimedia/speech/new', icon: Plus, action: 'create', exact: true },
       ] },
       { title: 'Media', href: '/admin/multimedia/media', moduleKey: 'media', exact: false },
       { title: 'Links', href: '/admin/multimedia/links', moduleKey: 'links', exact: false },

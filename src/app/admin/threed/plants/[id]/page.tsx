@@ -240,7 +240,7 @@ export default function PlantDetailPage() {
             <Button className="w-full" variant="outline">
               Add to Planting
             </Button>
-            <Button className="w-full" variant="outline">
+            <Button className="w-full" variant="success">
               Create Task
             </Button>
             <Button className="w-full" variant="outline">

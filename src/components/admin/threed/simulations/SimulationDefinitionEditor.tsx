@@ -47,7 +47,7 @@ export function SimulationDefinitionEditor({ value, onChange, choices, readOnly 
   return <>
     <section className="admin-editor-panel space-y-2 rounded-lg border p-3">
       <div className="flex items-center gap-1"><h2 className="text-xs font-semibold">Actions ({value.steps.length})</h2><ModelFieldHelp label="Simulation Actions">The Soccer Scene runner supports Run to target ball, followed by Kick ball through foot contact. Use the same movable Character and ball for both Actions. A blocked or interrupted approach always stops; Continue applies to failed kicks. Other Actions remain definition-only. Saving never executes Actions.</ModelFieldHelp>
-        {!readOnly && <Button type="button" variant="outline" size="sm" className="ml-auto h-7 text-xs" disabled={value.steps.length >= MAX_SIMULATION_STEPS} onClick={() => onChange({ ...value, steps: [...value.steps, { id: crypto.randomUUID(), action: 'point', actorMarkerId: '', targetMarkerId: '', timeoutMs: 30000, onFailure: 'stop' }] })}><Plus className="h-3.5 w-3.5" /> Add Action</Button>}
+        {!readOnly && <Button type="button" variant="success" size="sm" className="ml-auto h-7 text-xs" disabled={value.steps.length >= MAX_SIMULATION_STEPS} onClick={() => onChange({ ...value, steps: [...value.steps, { id: crypto.randomUUID(), action: 'point', actorMarkerId: '', targetMarkerId: '', timeoutMs: 30000, onFailure: 'stop' }] })}><Plus className="h-3.5 w-3.5" /> Add Action</Button>}
       </div>
       {!value.steps.length && <p className="text-xs text-muted-foreground">Add an Action and choose its Character and target. An inactive Simulation can be saved without Actions.</p>}
       {value.steps.map((step, index) => {
@@ -76,7 +76,7 @@ export function SimulationDefinitionEditor({ value, onChange, choices, readOnly 
     </section>
     <section className="admin-editor-panel space-y-2 rounded-lg border p-3">
       <div className="flex items-center gap-1"><h2 className="text-xs font-semibold">Target Sensors ({value.observations.length} groups)</h2><ModelFieldHelp label="Simulation observations">Choose Project groups and optionally specific Sensors. Reports include run-window counts and selected Sensor readings; they do not prove an Action caused a goal. Saving does not collect readings or reset shared counters.</ModelFieldHelp>
-        {!readOnly && <Button variant="outline" size="sm" className="ml-auto h-7 text-xs" disabled={value.observations.length >= MAX_SIMULATION_OBSERVATIONS} onClick={() => onChange({ ...value, observations: [...value.observations, { id: crypto.randomUUID(), kind: 'sensor-group', sensorGroupId: '' }] })}><Plus className="h-3.5 w-3.5" /> Add observation</Button>}
+        {!readOnly && <Button variant="success" size="sm" className="ml-auto h-7 text-xs" disabled={value.observations.length >= MAX_SIMULATION_OBSERVATIONS} onClick={() => onChange({ ...value, observations: [...value.observations, { id: crypto.randomUUID(), kind: 'sensor-group', sensorGroupId: '' }] })}><Plus className="h-3.5 w-3.5" /> Add observation</Button>}
       </div>
       {!value.observations.length && <p className="text-xs text-muted-foreground">Optional: observe Sensor Groups during a run. Actions can run without observations.</p>}
       {!choices.groups.length && <p className="text-xs text-muted-foreground">Create Sensor Groups in the Project Scene, save the Project, then reload choices.</p>}

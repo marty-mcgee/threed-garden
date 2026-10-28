@@ -75,7 +75,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobile = false, isOpen =
             const active = section.items.some(item => item.children ? item.children.some(child => child.href === activeHref) : item.href === activeHref);
             const open = toggles[section.title] ?? active;
             if (collapsed) return <li key={section.title}>
-              <Button variant={active ? 'default' : 'ghost'} className="h-9 w-full px-0" title={section.title} aria-label={'Open ' + section.title + ' navigation'} onClick={() => { if (!open) toggle(section.title, false); onToggle(); }}>
+              <Button variant={active ? 'secondary' : 'ghost'} className={cn('h-9 w-full px-0', active && 'ring-1 ring-primary/40')} title={section.title} aria-label={'Open ' + section.title + ' navigation'} onClick={() => { if (!open) toggle(section.title, false); onToggle(); }}>
                 <NavigationModuleIcon moduleKey={section.moduleKey} fallback={Icon} className="h-4 w-4" />
               </Button>
             </li>;
@@ -99,12 +99,12 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobile = false, isOpen =
                         {item.children.map(child => {
                           const ChildIcon = child.icon;
                           const selected = child.href === activeHref;
-                          return <li key={child.href}><Button asChild variant="ghost" className={cn('h-auto min-h-7 w-full justify-start gap-2 px-2 py-1 text-xs', selected ? 'bg-primary/20 text-primary' : 'text-muted-foreground hover:text-foreground')}>
+                          return <li key={child.href}><Button asChild variant={selected ? 'secondary' : 'ghost'} className={cn('h-auto min-h-7 w-full justify-start gap-2 px-2 py-1 text-xs', selected ? 'bg-primary/20 font-medium text-primary ring-1 ring-primary/40' : 'text-muted-foreground hover:text-foreground')}>
                             <Link href={child.href} aria-current={selected ? 'page' : undefined}><NavigationModuleIcon moduleKey={child.moduleKey} fallback={ChildIcon} className="h-3.5 w-3.5 shrink-0" /><span className="whitespace-normal">{child.title}</span></Link>
                           </Button></li>;
                         })}
                       </ul>}
-                    </> : <Button asChild variant={itemActive ? 'default' : 'ghost'} className="h-auto min-h-8 w-full justify-start gap-2 px-2 py-1.5 text-sm">
+                    </> : <Button asChild variant={itemActive ? 'secondary' : 'ghost'} className={cn('h-auto min-h-8 w-full justify-start gap-2 px-2 py-1.5 text-sm', itemActive && 'bg-primary/20 font-medium text-primary ring-1 ring-primary/40')}>
                       <Link href={item.href} aria-current={itemActive ? 'page' : undefined}>{content}</Link>
                     </Button>}
                   </li>;

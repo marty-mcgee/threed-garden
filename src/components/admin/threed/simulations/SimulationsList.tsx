@@ -89,7 +89,7 @@ export function SimulationsList({ initialProjectId }: { initialProjectId?: numbe
         <Button variant="ghost" size="sm" className="h-7" disabled={!filtered} onClick={clearFilters}>Reset filters</Button>
         <AdminWorkspaceLink href={resultsHref} icon={ListChecks}>Results</AdminWorkspaceLink>
         <AdminWorkspaceLink href="/admin/threed/scenarios" icon={BookOpen}>Scenarios</AdminWorkspaceLink>
-        <Button size="sm" className="h-7 text-xs" onClick={() => router.push(`/admin/threed/simulations/new${projectId ? `?projectId=${projectId}` : ''}`)}><Plus className="h-3.5 w-3.5" /> Add Simulation</Button>
+        <Button variant="success" size="sm" className="h-7 text-xs" onClick={() => router.push(`/admin/threed/simulations/new${projectId ? `?projectId=${projectId}` : ''}`)}><Plus className="h-3.5 w-3.5" /> Add Simulation</Button>
       </AdminWorkspaceHeader>
       <p className="text-xs text-muted-foreground">Active makes a saved definition available in its Project. Scene execution currently supports Run to target ball and Kick ball with one Character and one ball; readiness is checked in the Scene. Other Actions can be authored and previewed.</p>
       <nav aria-label="Simulations pagination" className="flex flex-wrap items-center justify-between gap-2">

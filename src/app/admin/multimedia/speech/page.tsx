@@ -102,7 +102,7 @@ export default function SpeechPage() {
     <AdminWorkspaceHeader icon={MicVocal} title="All Speeches" description="Manage saved Multimedia Speech records" className="shrink-0">
       <Input aria-label="Search Speech" placeholder="Search Speech…" value={search} onChange={event => { setSearch(event.target.value); setPage(0); }} className="h-8 min-w-40 flex-1 text-xs" disabled={busy} maxLength={255} />
       <Button size="sm" variant="outline" className="h-8 text-xs" disabled={busy} onClick={() => { setArchived(!archived); setPage(0); }}>{archived ? 'Show active' : 'Show archived'}</Button>
-      <Button size="sm" asChild><Link href="/admin/multimedia/speech/new">New Speech</Link></Button>
+      <Button variant="success" size="sm" asChild><Link href="/admin/multimedia/speech/new">New Speech</Link></Button>
     </AdminWorkspaceHeader>
     {notice && <p role="status" className="text-sm text-green-500">{notice}</p>}
     {error && <p role="alert" className="text-sm text-red-500">{error} <button className="underline" onClick={() => { setError(''); setRefresh(value => value + 1); }}>Retry</button></p>}

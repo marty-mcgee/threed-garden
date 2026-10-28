@@ -109,8 +109,8 @@ export default function NewSpeechPage() {
         <input id="speech-voice" value={voiceId} onChange={event => setVoiceId(event.target.value)} disabled={busy} className="h-9 w-full rounded border bg-background px-2 text-sm" placeholder="Paste a voice ID" />
         <a href="https://fish.audio/discovery" target="_blank" rel="noreferrer" className="text-xs underline">Browse Fish Audio voices</a>
         <div className="flex flex-wrap items-center gap-3">
-          <Button size="sm" variant="outline" onClick={() => saveOrGenerate(false)} disabled={busy || uncertain || !title.trim()}>Save Speech</Button>
-          <Button size="sm" onClick={() => saveOrGenerate(true)} disabled={!configured || busy || uncertain || !title.trim() || !text.trim() || !/^[a-f\d]{32}$/i.test(voiceId.trim())}>{busy ? 'Working…' : 'Generate speech'}</Button>
+          <Button size="sm" variant="success" onClick={() => saveOrGenerate(false)} disabled={busy || uncertain || !title.trim()}>Save Speech</Button>
+          <Button variant="success" size="sm" onClick={() => saveOrGenerate(true)} disabled={!configured || busy || uncertain || !title.trim() || !text.trim() || !/^[a-f\d]{32}$/i.test(voiceId.trim())}>{busy ? 'Working…' : 'Generate speech'}</Button>
           <span className="text-xs text-muted-foreground">Model: s2.1-pro-free</span>
         </div>
         {configured === false && <p role="status" className="text-sm text-muted-foreground">Fish Audio connection needs setup.</p>}

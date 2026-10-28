@@ -762,7 +762,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
             // Keep the bulk queue mounted while refreshing saved Model summaries.
             await fetchModels(false);
           }} />}
-          <Button asChild size="sm" className="h-7 px-2 text-xs">
+          <Button variant="success" asChild size="sm" className="h-7 px-2 text-xs">
             <Link href="/admin/threed/models/new"><Plus className="mr-1 h-3 w-3" /> Add Model</Link>
           </Button>
         </div>
@@ -817,7 +817,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
         <div className="text-center py-4 text-muted-foreground text-sm border rounded-lg">
           <Box className="w-8 h-8 mx-auto mb-2 opacity-50" />
           <p>No Models found</p>
-          <Button variant="outline" size="sm" className="mt-2 h-7 px-2 text-xs" onClick={() => router.push("/admin/threed/models/new")}>
+          <Button variant="success" size="sm" className="mt-2 h-7 px-2 text-xs" onClick={() => router.push("/admin/threed/models/new")}>
             <Plus className="w-3 h-3 mr-1" /> Create your first model
           </Button>
         </div>

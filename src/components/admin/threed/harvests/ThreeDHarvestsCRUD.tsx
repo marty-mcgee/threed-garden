@@ -446,7 +446,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
         </Select>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button size="sm" className="h-7 px-2 text-[11px]" disabled={bulkBusy}>
+            <Button variant="success" size="sm" className="h-7 px-2 text-[11px]" disabled={bulkBusy}>
               <Plus className="w-3 h-3 mr-1" />
               Add Harvest
             </Button>
@@ -630,7 +630,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                 </div>
               </div>
 
-              <Button onClick={handleCreate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
+              <Button variant="success" onClick={handleCreate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
