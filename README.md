@@ -18,7 +18,7 @@ The application is developed in the **ThreeD Garden** repository and is availabl
 
 ## Latest features
 
-Current production release: **[v0.28.3](docs/releases/v0.28.3.md)**. Recent releases bring a more consistent Admin experience, account management, shared App styling, and richer content workflows:
+Current production release: **[v0.29.0](docs/releases/v0.29.0.md)**. Recent releases bring a more consistent Admin experience, account management, shared App styling, and richer content workflows:
 
 - **Clearer Admin navigation and creation buttons.** An explicit Module hierarchy, **Add User** navigation, consistent **Add + entity** sidebar labels, and distinct current-page highlighting make common tasks easier to find. Creation buttons across Admin Module pages use green styling; sidebar links retain their ordinary navigation styling.
 - **App Settings for Module identity.** Super Admins choose shared colors and Lucide icons for App Modules. Connected Admin headers, sidebar items, and fixed record icons use those saved settings. Personal appearance, navigation visibility, and per-user sidebar expansion remain separate preferences.
@@ -308,7 +308,7 @@ Coverage and freshness depend on the upstream providers and configured integrati
 
 **ThreeD Module Learn** provides public, task-based guides for Projects, Design, Models, Characters, Simulations, Multimedia, Users and Settings. Its v0.29.0 implementation adds shared Markdown records, Super Admin CRUD, preview and explicit publishing. Import Starter Guides adds the fourteen existing how-tos as editable database records without overwriting existing slugs. Each starter links to the fuller Markdown documentation.
 
-Super Admins use **Learn > All Guides** and **Add Guide** to manage content. Public visitors use **Learn ThreeD** from the App menu to read Active and Published guides. Learn has its own Module icon/color in App Settings and needs no Project assignment. See [Learn setup and authoring](docs/developers/THREED_LEARN.md) for the scoped SQL prerequisite and import workflow; [v0.29.0 preparation](docs/releases/v0.29.0.md) tracks validation and release status.
+Super Admins use **Learn > All Guides** and **Add Guide** to manage content. Public visitors use **Learn ThreeD** from the App menu to read Active and Published guides. Learn has its own Module icon/color in App Settings and needs no Project assignment. See [Learn setup and authoring](docs/developers/THREED_LEARN.md) for the scoped SQL prerequisite and import workflow; [v0.29.0 release record](docs/releases/v0.29.0.md) tracks validation and release status.
 
 **Learn more:** [Getting Started](docs/users/GETTING_STARTED.md) · [Documentation index](docs/README.md) · [App Settings](docs/users/SETTINGS.md)
 
@@ -398,7 +398,7 @@ See the [validation guide](docs/agents/VALIDATION.md) for task-specific and isol
 
 ## 🤝 Contribute and follow development
 
-The latest production release is [v0.28.3](docs/releases/v0.28.3.md). See [release history](docs/releases/README.md) for version-specific scope and checks, and [current context](CONTEXT.md) for active work and known limitations.
+The latest production release is [v0.29.0](docs/releases/v0.29.0.md). See [release history](docs/releases/README.md) for version-specific scope and checks, and [current context](CONTEXT.md) for active work and known limitations.
 
 Have a reproducible bug or a focused feature idea? [Open an issue](https://github.com/marty-mcgee/threed-garden/issues). Before contributing, review the [contribution workflow](docs/agents/TASK_CHECKLISTS.md), existing ownership boundaries, and applicable checks.
 
