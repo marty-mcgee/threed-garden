@@ -1,10 +1,10 @@
 # Data Model
 
-Schemas are grouped by domain under `src/libraries/schema`: auth, project, settings, multimedia, ThreeD, and traffic.
+Schemas are grouped by domain under `src/libraries/schema`: auth, project, settings, multimedia, ThreeD, traffic and Learn.
 
 ## Ownership and project scope
 
-Domain records carry a `userId` for ownership. Modules and their child records remain independently manageable, while project membership is expressed through junction data:
+Owner-managed domain records carry a `userId`. Learn is an explicit shared-content exception: `learn_guides` uses creator/editor attribution, current Super Admin editorial authority and Active + Published public visibility, with no Project assignment. See [Learn schema and import](THREED_LEARN.md). Other Modules and their child records remain independently manageable, while project membership is expressed through junction data:
 
 - `project_threed`
 - `project_traffic`

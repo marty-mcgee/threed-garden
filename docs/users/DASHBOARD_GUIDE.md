@@ -1,61 +1,104 @@
 # Dashboard Guide
 
-## Legacy plans and Model guidance (v0.25.3 checkpoint)
+Dashboard helps you find available Projects and open their workspaces. **Learn ThreeD** at `/learn` offers guided tasks; [Getting Started](GETTING_STARTED.md) covers your first Project.
 
-[v0.25.3](../releases/v0.25.3.md) is prepared locally; production remains Developer-confirmed v0.25.2. The older checkpoint notes below are historical. Design drawing/view tools currently sit at the **upper-right inside the 2D canvas**, with Project-wide Import/Export/Save in the Project toolbar.
+## Open or create a Project
 
-To import supported legacy Home Design JSON, open a Project in Design mode, choose **Import JSON**, select the file and review converted counts and omissions. Choose Merge or Replace architectural content only. A partial import requires acknowledgement; Cancel and invalid files leave the Project unchanged. Imported architecture receives fresh IDs and uses the existing Project Save. The dialog imports supported architecture, not catalog OBJ/MTL Models or their boolean cutout masks. Full catalog recovery is a separate explicit [operator workflow](../plans/legacy-design-json-import.md).
+At `/dashboard`, use **Create Project** to start from a template, or open an existing Project. The Project list is ordered newest-created first, not by recent activity.
 
-Use **Project Assets** to select an existing Model instance. The **Model Library** browses reusable Models: Inspect previews one; Place adds another instance. No collection and No thumbnail describe Library metadata, not an absent Scene placement or loading failure. Color-only OBJ materials can use a saved MTL without image Texture assignments. Placement setup summarizes saved records; preview/loading still checks actual dependencies.
+The ThreeD workspace is `/dashboard/scene`. Use **Select Project** when no Project is open, or the current Project name to open its menu. That menu includes **Choose Project**, **New Project**, **Save ThreeD Project**, **Project Assets**, **Project Tour** and **Project Settings & Admin**.
 
-The Model DetailsCard's Project placement, Object or environment, Collisions & movement, Whole-model entry counter, Physics Sensors and Model information sections have question-mark help. Focus or click help for guidance; expand the header to edit supported fields. Native architectural objects use **Design Properties**. See the [accepted workspace screenshot](../images/v0.25.3/design-workspace.png) and [remaining architecture capabilities](../plans/design-architecture-capabilities.md).
+Sign in and create your own Project to edit and save. Other people's public Projects are for authorized exploration. Private records and assets retain their ownership checks.
 
-## Home, Dashboard and Learn (v0.24.6 checkpoint)
+## Find your way around
 
-The locally prepared [v0.24.6 checkpoint](../releases/v0.24.6.md) adds public `/learn` guides and matches Home to the existing App header: Carrot logo/title, right-side navigation/theme controls and the NextAuth account menu. `/dashboard` emphasizes **Create Project**, with **Learn ThreeD** beside it and available Projects below. Creation uses the existing sign-in/template flow; choose an existing Project's Open action to continue it. Projects are sorted newest-created first, not by recent activity.
+| Control | Purpose |
+| --- | --- |
+| **3D, Design, 2D, Combined** | Switch views of the same Project. Design includes the editable architectural plan; 2D is the geographic Map. |
+| **Assets** | Open Project Assets to select instances already in this Project. |
+| **Add** | Place Shapes, Models, Characters, FarmBots, Beds or Plantings using their available workflows. In 2D-only mode, use **Add Model** for Map placement. |
+| **Setup → Project Tour** | Review initial Project guidance. |
+| **Setup → Scenarios / Simulations** | Open plan guidance or supported Action runs. |
+| **Environment** | Adjust Scene presentation, Ground Map, camera and Layers. |
+| **Weather** | View the Project's Weather overlay. |
+| **Save** | Save the complete supported ThreeD Project snapshot. |
 
-Learn covers a first Project, drawing a room, adding Models, properties, View Modes, Save/reopen and architectural JSON backups. Open it from App navigation or the Project menu; Project help opens separately to retain drafts. Guides are public, while creation, editing and saving retain their existing access requirements. Production remains Developer-confirmed v0.24.5; historical status/acceptance notes below retain their original evidence.
+Hover or focus an icon to read its tooltip. An active placement/repositioning operation appears in the header; its X cancels that operation. **Setup → Reset Overlay Positions** restores overlay placement when panels are difficult to find.
 
-Current production: **[v0.24.0 — ThreeD Designs: Project workspace and saved state](../releases/v0.24.0.md)**. Developer confirmed final `0.24.0` released to production October 10, 2026, following authenticated Save/Reload checks reported 100% passed. Package/root lockfile are `0.24.0`. This supersedes earlier pending authenticated Save/Reload and RC-versioning statements below. Verification is Developer-reported, separate from agent automated checks. Production release is Developer-confirmed; exact deployed SHA and independent post-deployment checks remain unconfirmed. Leave changes unstaged; no Git write or deployment is authorized.
+Modules must be enabled for the Project, and assets must meet their module's activity, assignment and access requirements. An Active Library record does not appear in every Project automatically.
 
-Current production: **[v0.24.0-centaur — ThreeD Designs: Workspace tools and state](../releases/v0.24.0-centaur.md)**, Developer-confirmed October 10, 2026. Package/root lockfile remain `0.24.0-centaur`. Includes canvas-local tools, staged JSON import, Project workspace snapshot support and compact colored Properties headers. Authenticated Save/reopen, post-deployment verification and exact deployed SHA remain unconfirmed. This records release confirmation only; no Git write or deployment is authorized. Earlier checkpoint statements below are historical.
+<a id="threed-design-beta"></a>
 
-The Dashboard at `/dashboard` presents project-scoped Multimedia, ThreeD Garden, and Traffic data. Choose a project before evaluating its assets.
+## Draw and edit in Design
 
-ThreeD visualization is centered on `/dashboard/scene`; the former `/dashboard/threed` entry redirects there. ThreeD record creation and editing belong in `/admin/threed`, rather than duplicate Dashboard CRUD pages.
+1. Open your Project and choose **Design**. Project Assets and Design Properties occupy the left side; the Scene is above the plan on the right. Drag the horizontal divider to resize the rows.
+2. Use the tools at the **upper-right inside the 2D canvas**. **Wall** places connected wall segments; **Floor** completes a polygon after at least three corners. Finish Floor, Enter or the first corner finishes it; Escape cancels the draft.
+3. Place **Door** or **Window** on a wall with enough space. **Roof** supports Flat, Shed and Gable forms; **Skylight** and **Roof Cutout** place supported openings on a host roof.
+4. Select an architectural object in either view or under **Project Assets → Architecture**, then edit its supported **Design Properties**. Drawing defaults affect new geometry; selected-object Properties edit existing geometry.
+5. Choose **Design settings → Project measurement units**. Imperial uses inch inputs and foot rulers; Metric uses centimetre inputs and metre rulers. Rotation uses degrees. Changing units does not resize objects.
+6. Use **Undo** or **Redo** to review an edit, then **Save ThreeD Project**.
 
-Multimedia uses one Dashboard page at `/dashboard/multimedia`, combining the album library, track lists, and player. Album, Track, Media, Link, and Speech management belongs in `/admin/multimedia`.
+Named levels control architectural elevation and visibility. Position, dimensions, rotation and flips appear only where supported; invalid host/opening changes are rejected together. Architecture remains part of the Project, with no separate Design Save.
 
-Traffic uses `/dashboard/traffic` as its combined map and list overview. Its compact source buttons show or hide CHP Incidents, CHP Historical, Caltrans, CalFire, and Bay Area 511.org records without leaving the page. The incident list appears below the map; selecting a list record focuses its map marker, while selecting a marker highlights and reveals its list record. Each provider is loaded independently, so an unavailable source is reported without hiding data returned by the other sources. The provider-specific Dashboard pages remain available for focused review.
+Drag blank plan space to pan without changing tools. Pan, Alt-drag and middle-drag also work over objects; wheel zoom follows the pointer. **Fit Plan**, **Zoom to Selection** and **Reset View** help recover your view. See [ThreeD controls](THREED_CONTROLS.md#2d-design-tools-and-navigation) for shortcuts.
 
-On the Dashboard Map, the compact Project name control at the upper left expands to show item
-counts, update freshness, the Project selector, and the Admin Details link.
+## Place and inspect Models
 
-Expected behavior:
+Choose **Add → Models** to open the **ThreeD Model Library**. Filter by collection, readiness or name. **Inspect** opens a preview; **Place** adds an instance to the Project. Follow its placement controls, or use **Place at Coordinates** when available.
 
-- Only modules enabled for the project are available.
-- Only active assets assigned to the project are loaded.
-- User-owned data, including Multimedia albums, is not exposed to other users.
-- ThreeD markers are generated at runtime from the project's available assets.
+Use **Project Assets** to select an existing instance. Its **DetailsCard** offers the supported placement, object/environment, collision, Sensor and Model information controls. Help icons explain each section. Native architectural objects use **Design Properties** instead.
 
-The Dashboard is primarily a visualization surface. Authenticated ThreeD world actions are a deliberate exception: supported actions persist their result only after the associated one-shot animation completes.
+**No collection** and **No thumbnail** describe Library metadata, not missing Scene objects. **Ready** means required setup records are present; actual file loading and the preview still determine whether geometry and materials display. OBJ materials can use solid colors from an MTL file without image Texture assignments.
 
-For character movement and world-action testing, see [ThreeD controls](THREED_CONTROLS.md).
+Manage reusable Model Files, required dependencies, Materials and preview images in Admin. Model **Top View Image** provides the plan representation; a Library thumbnail serves a different purpose. See the [Admin guide](ADMIN_GUIDE.md) and [Model administration details](../developers/THREED_MODEL_ADMIN.md#model-editor-layout).
 
-## ThreeD Design beta
+## Save and reopen
 
-In the released [v0.24.0-beta checkpoint](../releases/v0.24.0-beta.md), open an existing Project at `/dashboard/scene` and choose **Design** in the Project toolbar. This edits architectural content in that Project's Scene; switching between 3D, 2D, Combined and Design retains the same Project.
+Choose **Save ThreeD Project** in the Project menu or the Save icon at the right of the toolbar. A green ring and yellow dot indicate unsaved workspace changes. Wait for **ThreeD Project saved** before leaving.
 
-The accepted layout has Project Assets above Design Properties on the left and the 3D Scene above the 2D Plan on the right. Open Assets using its existing toolbar control. Drag the horizontal divider to resize the rows; Properties scrolls internally. In the prepared centaur checkpoint, Drawing/Fit/Frame/Reset icons sit inside the upper-left Plan, clear of its rulers; Undo/Redo/import/export sit beside the existing Project Save on the right. Hover or focus an icon for its Tooltip. No additional Plan header or separate Design Save is needed.
+Save retains supported Scene content, architecture and workspace preferences together. Camera or inspector changes can be captured by explicit Save without independently changing the unsaved badge. Edits made while a Save is pending may still need another Save.
 
-Draw connected walls, close a floor, add hosted doors/windows, manage named levels and create Flat/Shed/Gable roofs with cutouts/skylights. Select architectural geometry in either view to show its supported properties. Length inputs use inches; X/Z rulers show feet. Position, dimensions, elevation, rotation and geometry flips appear only where applicable; drawing defaults are separate from selected-object settings. Invalid host/opening edits are rejected together and Undo/Redo preserves history.
+If saving fails, keep the page open and read the error before retrying. Reopen the same Project and inspect your change: a saved architectural object should remain editable. Architectural Export JSON can preserve that part of your work, but is not a complete Project backup.
 
-Use Pan, middle-drag or Alt-drag; wheel zoom anchors to the pointer. Fit Plan frames the active level, Zoom to Selection uses the selected geometry, and Reset View restores the original Plan view. Endpoint/grid snapping, Shift axis constraints, Escape cancellation, Delete/Backspace and Undo/Redo shortcuts are supported; text inputs retain their normal editing keys.
+## Import or export architectural content
 
-Export JSON for architectural portability. Before Import, explicitly choose **Merge architectural content** or **Replace architectural content only**. Imports validate first and assign fresh IDs; replacement affects architecture only, preserving unrelated Models and Scene content. Imported edits use Project Save.
+**Export JSON** downloads supported editable architecture. **Import JSON** opens a dialog that validates the file before changing the Project:
 
-Import JSON opens a dialog: choose a file, select merge or architecture-only replacement, review validation and press Import. Cancel leaves the Project unchanged. Compact Properties sections have colored icons and help tooltips. Project Save captures Design preferences, supported active DetailsCard references and camera settings alongside architecture. Design preferences/sections mark the draft dirty; camera/inspector-only changes require explicit Save without independently changing that badge.
+1. Select the Design JSON or supported legacy plan.
+2. Choose **Merge architectural content** or **Replace architectural content only**.
+3. Review converted counts, validation messages and any omitted content. If shown, acknowledge **Import supported architecture only**.
+4. Select **Import**, inspect the result and **Save ThreeD Project**.
 
-**Persistence verification limit:** the Developer accepted the layout, and automated mocked Save/load checks passed. Real authenticated architecture Save/reload remains unverified after an earlier disappearing-content report. Do not rely solely on a Save success message. For acceptance, draw a room/floor/door beside an existing Model, Save, reload, and confirm both remain and the room is still editable with no unsaved warning. No new schema script is needed. See [storage/source details and limitations](../developers/THREED_DESIGNS.md).
+Merge adds architecture with fresh IDs; replacement changes architecture only and retains unrelated Models and Scene content. Cancel and invalid files leave existing content unchanged. Import is undoable.
 
-In v0.18.1b, an active FarmBot assigned to the selected Project appears as a runtime ThreeD marker. Its DetailsCard can show the authenticated read-only MQTT connection state, freshness, recent status/message times, device position, and token expiry. The same marker can be used as an animation-only action target. Dashboard status does not expose credentials, broker/session identities, event history, worker controls, MQTT publishing, or physical FarmBot operation.
+A legacy plan import does not restore catalog Models, their assets or every old drawing feature. Review its omission list rather than assuming a full conversion. See [Design storage and import details](../developers/THREED_DESIGNS.md) and [architecture capability boundaries](../plans/design-architecture-capabilities.md).
+
+## Characters, Scenarios and Simulations
+
+Movable Characters expose **Take Control** and **Release Control** in their DetailsCard. Use the [Character controls](THREED_CONTROLS.md#characters) guide for movement, compatible Animation assignments and supported target interactions.
+
+A **Scenario** is a plan: **Setup → Scenarios → Open Scenario** displays setup guidance. A **Simulation** executes supported Actions and collects Results: open **Setup → Simulations**, choose a saved definition and use **Run Simulation**. A Scenario is not required.
+
+The current Scene runner supports Run to target ball and Kick ball with one Character and one ball. Owner runs save Results; public visitor runs remain local. **Retry result save** saves the same attempt without rerunning Actions. Read the [Scenario guide](../help/threed-scenarios.md) and [Simulation guide](../help/threed-simulations.md) before preparing a run.
+
+## Ground Maps and FarmBots
+
+Use **Environment → Ground Map · Edit settings** to upload and align a flat reference image, then Save Project. It does not generate terrain or buildings. [Ground Map instructions](THREED_GROUND_MAPS.md) explain image limits, alignment and attribution.
+
+An assigned FarmBot's DetailsCard can display **Live FarmBot State**, including connection state, observation times and device position when available. FarmBot target actions animate a Character only. These views do not operate physical equipment or publish commands.
+
+## Other Dashboard modules
+
+**Multimedia** at `/dashboard/multimedia` combines eligible public Albums, Tracks and playback. Available Media, Links and Lyrics follow their saved relationships and visibility. Manage your records in **Admin → Multimedia**.
+
+**Traffic** at `/dashboard/traffic` combines a map and list. Source controls show or hide provider records. Selecting a list record focuses its marker; selecting a marker reveals its list record. Providers load independently, so one unavailable source does not hide the others.
+
+## When something is missing
+
+- **An object:** clear Project Assets search, check its module/assignment and activity, then inspect Layers. For architecture, check the active level and use Locate or Fit Plan.
+- **A Model's appearance:** inspect loading errors and Required files in Admin; placing another copy does not repair a missing dependency.
+- **A Character Action:** check the active Action Slot, assignment, compatible rig and loaded clip; Take Control does not assign animations.
+- **A Simulation:** save an active supported definition with valid Project participants, then Refresh Simulations.
+- **Permission to save:** confirm you are signed in and own the Project.
+
+Release history and verification evidence belong in [release records](../releases/README.md). The previous Dashboard guide is preserved in [documentation history](../releases/history/2026-10-27/README.md).

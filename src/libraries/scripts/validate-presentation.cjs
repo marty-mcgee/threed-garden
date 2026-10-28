@@ -14,11 +14,12 @@ function load(file) {
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(path.join(root, file), 'utf8'), { compilerOptions: { jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText, {
     exports, require(name) {
       if (name === 'next/navigation') return {usePathname:()=>'/admin/threed'};
-      if (name === '@/components/settings/ModuleAppearanceProvider') return {useModuleAppearance:()=>null};
+      if (name === '@/components/settings/ModuleAppearanceProvider') return {useModuleAppearance:()=>null,ModuleIcon:({moduleKey,...props})=>React.createElement('svg',{'data-module':moduleKey,...props})};
       if (name === '@/components/settings/module-icons') return {moduleIcons:{}};
       if (name === '@/libraries/config/module-appearance') return {moduleForPath:()=>undefined,moduleColors:{green:'text-green-500'}};
       if (name === 'next/link') return { default: Link };
       if (name === '@/components/learn/LearnPreview') return load('src/components/learn/LearnPreview.tsx');
+      if (name === '@/components/learn/LearnGuideLibrary') return { LearnGuideLibrary: () => React.createElement('div', {'data-learn-library': true}, 'Published guide library') };
       if (name === '@/components/admin/layout/AdminWorkspaceHeader') return load('src/components/admin/layout/AdminWorkspaceHeader.tsx');
       if (name === '@/libraries/utils') return { cn: (...values) => require('tailwind-merge').twMerge(require('clsx').clsx(...values)) };
       if (name.includes('/ui/card')) return { Card: block, CardContent: block };
@@ -55,9 +56,12 @@ assert.match(learnLayout, /import DashboardLayout from/); assert.doesNotMatch(le
 const dashboardLayout=fs.readFileSync(path.join(root,'src/app/dashboard/layout.tsx'),'utf8');
 assert.doesNotMatch(dashboardLayout,/redirect\(|useSession\(/);
 const learn = renderToStaticMarkup(React.createElement(load('src/app/learn/page.tsx').default));
-for (const id of ['first-project', 'how-to', 'draw-room', 'add-model', 'object-properties', 'view-modes', 'save-reopen', 'design-json', 'troubleshooting', 'about']) assert.match(learn, new RegExp(`id="${id}"`));
+for (const id of ['first-project', 'how-to', 'troubleshooting', 'about']) assert.match(learn, new RegExp(`id="${id}"`));
 assert.match(learn, /Public Projects are for exploring/);
-assert.match(learn, /Replacement replaces architectural content only/);
+assert.match(learn, /data-module="learn"/);
+assert.match(learn, /data-learn-library="true"/);
+const starters = fs.readFileSync(path.join(root, 'src/libraries/data/learn/starter-guides.ts'), 'utf8');
+for (const anchor of ['draw-room', 'add-model', 'view-modes']) assert(starters.includes(`"slug": "${anchor}"`), `Legacy guide ${anchor} is retained as explicit starter content`);
 // Check every static internal link from these pages and the revised landing page.
 const files = ['src/components/home/DashboardWelcome.tsx', 'src/app/learn/page.tsx', 'src/app/page.tsx'];
 for (const file of files) {

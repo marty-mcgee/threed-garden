@@ -1,6 +1,6 @@
 {
   "name": "threed-garden",
-  "version": "0.28.3",
+  "version": "0.29.0",
   "private": true,
   "packageManager": "npm@11.6.2",
   "scripts": {
@@ -54,6 +54,8 @@
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-leaflet": "^5.0.0",
+    "react-markdown": "10.1.0",
+    "remark-gfm": "4.0.1",
     "shadcn": "4.22.0",
     "three": "^0.186.1",
     "tsx": "4.22.4",

@@ -1,9 +1,10 @@
 # Architecture
 
-The application is a Next.js App Router project with two surfaces:
+The application is a Next.js App Router project with these primary surfaces:
 
 - `src/app/admin` provides authenticated CRUD and project-assignment workflows.
 - `src/app/dashboard` provides project-scoped visualization and interaction.
+- `src/app/learn` provides public Markdown guides. Its shared collection is managed by Super Admins at `/admin/learn`; [ThreeD Module Learn](THREED_LEARN.md) documents publishing, persistence and starter import.
 
 The normal data flow is:
 

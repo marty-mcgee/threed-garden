@@ -14,6 +14,7 @@ const moduleGroups = [
   { key: 'threed', label: 'ThreeD', path: '/admin/threed' },
   { key: 'multimedia', label: 'Multimedia', path: '/admin/multimedia' },
   { key: 'traffic', label: 'Traffic', path: '/admin/traffic' },
+  { key: 'learn', label: 'Learn', path: '/admin/learn' },
 ] as const;
 const compactControl = 'h-7 min-w-0 w-full rounded-md border border-input bg-background px-2 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 [@media(pointer:coarse)]:min-h-11';
 const compactAction = 'h-7 gap-1.5 px-2 text-xs [@media(pointer:coarse)]:min-h-11';

@@ -21,7 +21,7 @@ The application is developed in the **ThreeD Garden** repository and is availabl
 Current production release: **[v0.28.3](docs/releases/v0.28.3.md)**. Recent releases bring a more consistent Admin experience, account management, shared App styling, and richer content workflows:
 
 - **Clearer Admin navigation and creation buttons.** An explicit Module hierarchy, **Add User** navigation, consistent **Add + entity** sidebar labels, and distinct current-page highlighting make common tasks easier to find. Creation buttons across Admin Module pages use green styling; sidebar links retain their ordinary navigation styling.
-- **App Settings for Module identity.** Super Admins choose shared colors and Lucide icons for 41 Modules. Connected Admin headers, sidebar items, and fixed record icons use those saved settings. Personal appearance, navigation visibility, and per-user sidebar expansion remain separate preferences.
+- **App Settings for Module identity.** Super Admins choose shared colors and Lucide icons for App Modules. Connected Admin headers, sidebar items, and fixed record icons use those saved settings. Personal appearance, navigation visibility, and per-user sidebar expansion remain separate preferences.
 - **Users and account management.** Sign up and sign in through the App's NextAuth integration. Ordinary accounts manage their own content as Admins; Super Admins manage Users and global Settings. Users CRUD supports creation, profile/role editing, and soft deletion that retains records while blocking account access.
 - **Lyrics and connected Multimedia.** Create independent Lyrics records, associate them with owned Projects, Albums, and Tracks, and display eligible Lyrics in the Admin Track player, Dashboard Albums, and Home featured player. Linked relationship badges make related records easier to navigate.
 - **Improved Model workflows.** Organize Files and Materials in the Model editor, inspect embedded GLB/GLTF images, register selected images as reusable assets, and export Model top-view PNGs for the Design plan. URL-backed filters help return to the same Admin asset list.
@@ -143,7 +143,7 @@ docs/                  User guides, developer contracts, and releases
 
 ### Where to extend the App
 
-- **Add or evolve a Module:** begin with its schema under `src/libraries/schema`, follow the corresponding services and API routes, then connect its Admin and Dashboard consumers. Preserve server-side ownership checks and review database changes separately.
+- **Add or evolve a Module:** for record-owning Modules, begin with the schema under `src/libraries/schema`, follow the services and API routes, then connect Admin and Dashboard consumers. ThreeD Module Learn demonstrates shared Super Admin content with public reading, while other Modules retain their established ownership. Connect route, navigation and Module appearance identity as well. Preserve server-side ownership checks and review database changes separately.
 - **Change Admin presentation:** reuse [AdminWorkspaceHeader](src/components/admin/layout/AdminWorkspaceHeader.tsx), the [navigation configuration](src/components/admin/layout/admin-navigation.ts), [Module appearance definitions](src/libraries/config/module-appearance.ts), and the shared [Button](src/components/ui/button.tsx). Creation buttons use the green `success` variant; sidebar entries use ordinary navigation styling.
 - **Extend the Project workspace:** start with the [Scene page](src/app/dashboard/scene/page.tsx), [UnifiedMapView](src/components/map/UnifiedMapView.tsx), and [ThreeDScene](src/components/map/ThreeDScene.tsx). Use the existing Project snapshot transaction for supported Save/load changes.
 - **Add an integration:** follow its domain service boundary. The provider-neutral ThreeD MQTT layer and separate FarmBot adapter illustrate how transport and provider behavior stay separate.
@@ -154,7 +154,7 @@ The active Scene keeps one Canvas/Rapier world during normal editing, with stabl
 <a id="modules"></a>
 ## 🧭 Explore the modules
 
-[🌍 Projects](#projects) · [📐 Design](#design) · [🧩 Models](#models) · [🏗 Builder](#builder) · [🚶 Characters](#characters) · [⚽ Simulations](#simulations) · [🌱 Garden and FarmBot](#garden) · [🎵 Multimedia](#multimedia) · [🚦 Traffic](#traffic) · [⚙ Admin](#admin)
+[🌍 Projects](#projects) · [📐 Design](#design) · [🧩 Models](#models) · [🏗 Builder](#builder) · [🚶 Characters](#characters) · [⚽ Simulations](#simulations) · [🌱 Garden and FarmBot](#garden) · [🎵 Multimedia](#multimedia) · [🚦 Traffic](#traffic) · [📚 Learn](#learn) · [⚙ Admin](#admin)
 
 <a id="projects"></a>
 ## 🌍 Projects, Scenes, and Maps
@@ -303,6 +303,15 @@ Coverage and freshness depend on the upstream providers and configured integrati
 
 **Learn more:** [Dashboard guide](docs/users/DASHBOARD_GUIDE.md)
 
+<a id="learn"></a>
+## 📚 Learn
+
+**ThreeD Module Learn** provides public, task-based guides for Projects, Design, Models, Characters, Simulations, Multimedia, Users and Settings. Its v0.29.0 implementation adds shared Markdown records, Super Admin CRUD, preview and explicit publishing. Import Starter Guides adds the fourteen existing how-tos as editable database records without overwriting existing slugs. Each starter links to the fuller Markdown documentation.
+
+Super Admins use **Learn > All Guides** and **Add Guide** to manage content. Public visitors use **Learn ThreeD** from the App menu to read Active and Published guides. Learn has its own Module icon/color in App Settings and needs no Project assignment. See [Learn setup and authoring](docs/developers/THREED_LEARN.md) for the scoped SQL prerequisite and import workflow; [v0.29.0 preparation](docs/releases/v0.29.0.md) tracks validation and release status.
+
+**Learn more:** [Getting Started](docs/users/GETTING_STARTED.md) · [Documentation index](docs/README.md) · [App Settings](docs/users/SETTINGS.md)
+
 <a id="admin"></a>
 ## ⚙ Administration and Workspace Settings
 
@@ -317,7 +326,7 @@ Manage reusable content in **Admin**, then work with assigned content in **Dashb
 
 | Scope | What it controls |
 | --- | --- |
-| **Global Module appearance** | Shared colors and Lucide icons for Users, Projects, ThreeD and its sub-Modules, Multimedia, and Traffic. Only active Super Admins can save these changes. Connected headers, navigation, and record icons consume the saved values. |
+| **Global Module appearance** | Shared colors and Lucide icons for Users, Projects, ThreeD and its sub-Modules, Multimedia, Traffic, and Learn. Only active Super Admins can save these changes. Connected headers, navigation, and record icons consume the saved values. |
 | **Account preferences** | Theme, main Module visibility, and supported Dashboard menu links. Hiding a navigation item changes presentation, not authorization. |
 | **Per-user browser preferences** | Admin sidebar expansion and the main Settings disclosure sections, with cross-tab synchronization. |
 | **Browser-local appearance** | Scene panels, Project Header/button appearance, and Model preview export dimensions. These have their own persistence scope. |

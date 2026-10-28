@@ -6,6 +6,7 @@ API routes live under `src/app/api`. The maintained domain families include:
 - `/api/multimedia` for owner-scoped Multimedia CRUD, playback, uploads, and Speech behavior.
 - `/api/threed` for ThreeD CRUD and world actions.
 - `/api/traffic` for Traffic CRUD and integrations.
+- `/api/learn/guides` for Super Admin management of shared guides and explicit starter import; `/api/learn/public/guides` for published-only summary/detail reads. See [Learn API boundaries](THREED_LEARN.md#source-and-api-boundaries).
 - `/api/map` for project-scoped Dashboard loading.
 
 ## Access conventions

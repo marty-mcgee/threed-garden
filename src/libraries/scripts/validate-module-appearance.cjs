@@ -32,10 +32,51 @@ const request=(body,origin='https://example.test')=>new Request('https://example
 (async()=>{
  const initial=contract.defaultModuleAppearance();
  assert(contract.moduleAppearanceSnapshotSchema.safeParse(initial).success);
- const legacy=clone(initial);delete legacy.styles.users;
- assert.equal(contract.readStoredModuleAppearance(legacy).styles.users.icon,'Users');
- assert(!contract.moduleAppearanceSnapshotSchema.safeParse(legacy).success);
+ assert.equal(contract.moduleKeys.length,42);
+ assert.deepEqual(clone(contract.moduleDefinitions.learn),{label:'Learn',icon:'BookOpen',color:'green',route:'/admin/learn'});
+ assert.deepEqual(clone(initial.styles.learn),{icon:'BookOpen',color:'green'});
+ const previous=clone(initial);
+ previous.revision='50f2b3ba-b36e-450b-9c98-72afacbcc912';
+ // Distinct saved choices exercise preservation of every existing Module, including Users.
+ contract.moduleKeys.forEach((key,index)=>{previous.styles[key]={icon:contract.moduleIconNames[index%contract.moduleIconNames.length],color:Object.keys(contract.moduleColors)[index%Object.keys(contract.moduleColors).length]};});
+ delete previous.styles.learn;
+ const legacy=clone(previous);delete legacy.styles.users;
+ const snapshots=[previous,legacy];
+ for(const stored of snapshots){
+  const before=clone(stored),read=contract.readStoredModuleAppearance(stored);
+  const expected={...clone(stored),styles:{...clone(stored.styles),learn:clone(initial.styles.learn)}};
+  if(!('users' in stored.styles))expected.styles.users=clone(initial.styles.users);
+  assert.deepEqual(clone(read),expected);
+  assert.deepEqual(stored,before,'compatibility reads must not mutate stored snapshots');
+  assert(!contract.moduleAppearanceSnapshotSchema.safeParse(stored).success,'legacy snapshots are read-only compatibility, not accepted writes');
+ }
+ const current=clone(contract.readStoredModuleAppearance(previous));current.styles.learn={icon:'Star',color:'amber'};
+ assert.deepEqual(clone(contract.readStoredModuleAppearance(current)),current,'current Learn choices and revision must survive reads');
+ assert.equal(contract.readStoredModuleAppearance({...previous,revision:null}).revision,null);
+ const missingUsers=clone(current);delete missingUsers.styles.users;
+ const malformed=[
+  null,missingUsers,
+  {...previous,userId:'admin-id'},
+  {...previous,revision:'not-a-revision'},
+  {...previous,styles:{...previous.styles,unknown:initial.styles.models}},
+  {...legacy,styles:{...legacy.styles,learn:initial.styles.learn}},
+  {...previous,styles:{...previous.styles,learn:null}},
+  {...previous,styles:{...previous.styles,models:{icon:'script',color:'blue'}}},
+  {...legacy,styles:{...legacy.styles,models:{icon:'Box',color:'blue arbitrary-css'}}},
+  {...previous,styles:{...previous.styles,users:{icon:'Users',color:'blue',extra:true}}},
+ ];
+ for(const bad of malformed)assert.throws(()=>contract.readStoredModuleAppearance(bad),'unknown and malformed stored values must not fall back to defaults');
+ for(const stored of [...snapshots,current])for(const key of contract.moduleKeys.filter(key=>key!=='users'&&key!=='learn')){
+  const incomplete=clone(stored);delete incomplete.styles[key];
+  assert.throws(()=>contract.readStoredModuleAppearance(incomplete),`missing ${key} must be rejected`);
+ }
  for(const bad of [{...initial,userId:'admin-id'},{...initial,styles:{...initial.styles,models:{icon:'script',color:'blue'}}},{...initial,styles:{...initial.styles,models:{icon:'Box',color:'blue arbitrary-css'}}}]) assert(!contract.moduleAppearanceSnapshotSchema.safeParse(bad).success);
+ assert.equal(contract.moduleForPath('/learn'),'learn');
+ assert.equal(contract.moduleForPath('/learn/topics'),'learn');
+ assert.equal(contract.moduleForPath('/learning'),undefined);
+ assert.equal(contract.moduleForPath('/admin/learn'),'learn');
+ assert.equal(contract.moduleForPath('/admin/learn/new'),'learn');
+ assert.equal(contract.moduleForPath('/admin/learning'),undefined);
  assert.equal(contract.moduleForPath('/admin/threed/models/5'),'models');
  assert.equal(contract.moduleForPath('/admin/threed/models-extra'),'threed');
  let res=await route.GET();assert.equal(res.status,200);assert.equal((await res.json()).canEdit,false);
@@ -52,5 +93,35 @@ const request=(body,origin='https://example.test')=>new Request('https://example
  const results=await Promise.all([service.saveModuleAppearance('admin-id',saved).then(()=>true,()=>false),service.saveModuleAppearance('admin-id',saved).then(()=>true,()=>false)]);assert.deepEqual(results,[true,false]);
  const before=clone(data);failAudit=true;res=await route.PUT(request(data.row.value));assert.equal(res.status,503);assert(!JSON.stringify(await res.json()).includes('private diagnostic'));assert.deepEqual(data,before);failAudit=false;
  data.row.isSensitive=true;assert.equal((await route.GET()).status,503);assert.equal((await route.PUT(request(saved))).status,503);
- console.log('PASS Module appearance: strict choices, public global reads, active-Super-Admin writes, origin, conflicts, audit rollback and redaction (mock persistence).');
+ // Reading an existing installation upgrades the response only. Its first explicit save
+ // persists all 42 styles with the original conflict stamp and the ordinary atomic audit.
+ for(const stored of snapshots){
+  data={row:{id:1,key:'app.module-appearance.v1',scope:'system',type:'json',isSensitive:false,value:clone(stored)},audits:[]};
+  const original=clone(data);session=null;
+  res=await route.GET();assert.equal(res.status,200);assert.match(res.headers.get('cache-control'),/no-store/);
+  const read=await res.json();assert.equal(read.canEdit,false);
+  assert.deepEqual(read.snapshot,clone(contract.readStoredModuleAppearance(stored)));
+  assert.deepEqual(data,original,'public compatibility reads must not write or audit');
+  session={user:{id:'admin-id'}};
+  assert.equal((await route.PUT(request(stored))).status,400);
+  await assert.rejects(()=>service.saveModuleAppearance('admin-id',stored));
+  assert.equal((await route.PUT(request({...read.snapshot,revision:null}))).status,409);
+  assert.deepEqual(data,original,'invalid or stale saves must preserve legacy data');
+  const submitted=clone(read.snapshot);submitted.styles.learn={icon:'Star',color:'amber'};
+  res=await route.PUT(request(submitted));assert.equal(res.status,200);const migrated=await res.json();
+  assert.notEqual(migrated.revision,stored.revision);assert(contract.moduleAppearanceSnapshotSchema.safeParse(migrated).success);
+  assert.deepEqual(migrated.styles,submitted.styles);
+  for(const [key,style] of Object.entries(stored.styles))assert.deepEqual(migrated.styles[key],style,`saving Learn must retain ${key}`);
+  assert.deepEqual(data.row.value,migrated);assert.equal(data.audits.length,1);
+  assert.deepEqual(data.audits[0].oldValue,read.snapshot);assert.deepEqual(data.audits[0].newValue,migrated);
+  const persisted=clone(data);assert.equal((await route.PUT(request(submitted))).status,409);assert.deepEqual(data,persisted);
+  session=null;res=await route.GET();assert.equal(res.status,200);assert.deepEqual((await res.json()).snapshot,migrated);
+ }
+ for(const bad of [missingUsers,{...previous,styles:{...previous.styles,unknown:initial.styles.models}}]){
+  data.row.value=clone(bad);const original=clone(data);
+  assert.equal((await route.GET()).status,503);
+  session={user:{id:'admin-id'}};assert.equal((await route.PUT(request(current))).status,503);
+  assert.deepEqual(data,original,'malformed stored snapshots must not be overwritten');session=null;
+ }
+ console.log('PASS Module appearance: strict 42-Module writes; exact 41/40-Module read compatibility; Learn defaults/routes; saved-style/revision preservation; public reads, active-Super-Admin writes, conflicts and audit rollback (mock persistence).');
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -1,39 +1,69 @@
 # ThreeD Simulations
 
-Kick previews now respond to animated foot contact: the target Sphere rolls away locally and remains visible after the timeline completes. A missed target or unsupported foot animation reports guidance. Stop restores the saved preview positions; replay starts from those positions. Project Scene physics, Sensors and saved Results remain separate from this preview.
+A **Simulation** runs supported Actions through a Project's participating ThreeD modules and collects their responses. A **Scenario** is a separate plan: **Open Scenario** displays guidance; **Run Simulation** executes Actions. You can run a Simulation without opening a Scenario.
 
-In a Project, choose **Setup → Simulations** to reopen or hide the controls. **Close Simulations** hides them and stops an active attempt. Owners can choose **Create Simulation** to use the front-end editor with the same form and Preview Canvas as Admin. Walk/Run previews approach the selected target; Stop restores saved positions. Preview movement is local; run in the Project Scene for physics, Sensor readings and Results.
+## Prepare a definition
 
-**Scenario** means a plan: use **Open Scenario** to view its setup and guidance. **Simulation** means Actions and Results: use **Run Simulation** to execute Actions through participating ThreeD modules and collect their responses.
+1. Open **Admin → ThreeD → Simulations** and choose **Add Simulation**. From a Project's **Setup → Simulations** controls, **Create Simulation** opens the same Admin creation workflow with the available Project context.
+2. Choose an owned Project and its assigned ThreeD module, then enter a name and slug.
+3. Choose saved Project participants. For Soccer, use the same movable Character and target ball for **Run to target ball** and **Kick ball (foot contact)**.
+4. In **Actions**, set order, timeouts and Stop/Continue behavior. A blocked or interrupted approach always stops; Continue applies to failed kicks.
+5. Optionally, in **Target Sensors**, choose Project Sensor Groups to observe. Keep **All Sensors in this group** selected, or choose individual Sensors. Actions can run without observations.
+6. Save the definition. Enable **Active** when it has valid Actions and is ready to offer in the Scene launcher.
 
-Released [v0.22.28](../releases/v0.22.28.md) removes Scenario links from Simulation definitions and Results. You can run a Simulation without opening a Scenario. The [corrected design](../plans/v0.22.28-independent-simulations.md) also calls for independent definitions with Project/modules chosen for each run; that broader refactor remains pending. Current forms still bind a definition to its Project/module.
+Place and save the required instances in the Project before selecting them in a definition. Missing Character, ball, group or Sensor references must be resolved before saving. Project/module bindings are locked after creation.
 
-## Current implementation
+An inactive empty draft can be saved. With **Active** on and no Actions, Save explains that an Action is required. Saving a definition never executes Actions, collects readings or resets counts.
 
-Local v0.22.29 adds an **Admin Preview Canvas** on Add/Edit/View. Choose participants and targets in the form to see their saved Project positions; click an **Action Timeline** step to highlight its connection. **Play Timeline** plays one mapped animation cycle per Action in order, and **Stop preview** cancels it. Missing sources or animation mappings explain why Play is unavailable. Orbit/zoom, Fit and Reset change the camera. Generic targets without a Model renderer appear as labeled target markers.
+The Scene runner currently supports **Run to target ball** and **Kick ball** with one Character and one ball. Other Action types can exist in definitions but are not listed as runnable in this launcher. Broader Action execution and cross-Project definitions remain outside the current workflow.
 
-Expand **Animations & Actions** to preview existing loaded compatible clips and open the Character assignment editor or Animation Library. This preview does not move the Project Character, kick a physical ball, collect Sensors or save Results; use **Run Simulation** in the Project for those actions. Draft edits stop preview playback. See the [implementation and browser checklist](../plans/v0.22.29-simulation-admin-preview.md).
+## Preview before running
 
-Open **Admin → ThreeD → Simulations** to plan Actions and Sensor Group observations for a Project. The list supports search, Project filtering, sorting, pagination and selected deletion. Use the colored View/Edit/Delete icons for an individual Simulation.
+The editor's **Preview Canvas** shows the selected participants at their saved Project positions. Select an **Action Timeline** step to highlight its connection, then **Play Timeline** to preview compatible mapped animations. **Stop preview** cancels playback and restores saved preview positions; Fit and Reset change only the camera.
 
-**Add Simulation** opens a dedicated page. Choose an owned Project and assigned ThreeD module, then enter a name and slug. There is no Scenario selector. You can save an inactive empty draft. If **Active** is on with no Actions, Save stays disabled and explains how to continue: add an Action, or turn Active off to save a draft. Current Project/module bindings are locked after creation.
+Walk/Run previews approach their selected target. Supported kick previews react to animated foot contact: the Sphere moves locally and stays visible when the timeline finishes. A missed target or unsupported foot animation reports guidance. Replay starts from the saved preview positions.
 
-For Soccer, choose the saved movable Character and target ball once in **Soccer participants**. Both Run-to-ball and Kick-ball Actions use those choices. Other Actions retain their own Character/target choices. In **Actions**, choose a timeout and Stop/Continue behavior and use Up/Down to change order. Planting Actions require Planting targets. If choices are missing, place/save those instances in the Project first.
+Expand **Animation Clip Previews** to inspect compatible loaded clips and reach the Character's **Animations & Actions** editor or Animation Library. Missing sources, mappings or incompatible rigs explain unavailable playback. Local preview clip choices do not change saved mappings or the definition; draft edits stop preview playback.
 
-In **Target Sensors**, select Project Sensor Groups. Keep **All Sensors in this group** selected, or uncheck it to choose individual Sensors. Existing group-wide observations keep working. Missing Character/ball/group/Sensor choices must be resolved before saving. Saving does not execute Actions, collect readings or reset counters. Active controls definition availability and requires an Action. Other Action types and metadata collectors remain separate future work.
+Preview movement remains inside this Canvas. It does not change the Project Scene, collect its Sensor readings or save Results. Use **Run Simulation** in the actual Project for those operations.
 
-Save keeps you on Edit; Cancel asks before discarding changes. Errors retain your draft. A revision conflict means another edit was saved first: review your draft and use Reload when ready to discard it and load the current record. View is read-only. Selected deletion affects the currently selected page records; partial failures appear through Toast and the refreshed list.
+## Run in the Project
 
-The v0.22.28 controls use **Open Scenario**, **Run Simulation**, **Stop Simulation** and **Refresh Simulations**. The Scenario chooser no longer filters the Simulation launcher. A gray Run button explains missing choices or unfinished placement/editing, and Refresh updates choices without running Actions or reloading the Scene. Preflight and result-save errors remain visible with details closed. Broader Project/module-independent definitions remain separate future work.
+1. Open the Project at `/dashboard/scene`, then **Setup → Simulations**.
+2. Select an available saved Simulation. Use **Refresh Simulations** after changing a definition; refresh does not run Actions or reload the Scene.
+3. Read any disabled-state guidance. Finish placement or editing and resolve missing participants, mappings or Sensors.
+4. Choose **Run Simulation**. Read the current Action and completion, failure, cancellation or timeout feedback.
+5. Use **Stop Simulation** to cancel pending work. **Close Simulations** also stops an active attempt and hides the controls; reopen them through Setup.
 
-The approved public/private contract remains: authorized public visitors run locally in their browser; owner runs save database Results. The independent redesign must explicitly determine which definitions visitors may access. Publishing a Project must not expose the owner's unrelated private Simulation catalog, Admin pages or result history.
+The runner checks current saved references, ownership/module membership and revision before execution. A changed definition needs review before running again. Missing rigs, mappings or required references block the run.
 
-The first runner supports **Run to target ball** and **Kick ball (foot contact)**, using the same saved Character and ball for all steps. A blocked/interrupted approach always stops; Continue applies to failed kicks. Missing rig/mapping or references block execution. The run rechecks saved ownership/module membership and revision; changed definitions require review before running again.
+Opening or changing a Scenario does not prepare or interrupt a Simulation. Saving or restoring a Project or definition never starts a run automatically.
 
-For the Project owner, Simulation details reports **Result #… saved** after completion, failure, cancellation or timeout is persisted. If a save fails, use **Retry result save**; it saves that same attempt without running Actions again. An abruptly closed browser may leave an unfinished record. Result-backed runs require the v0.22.27 result-table schema; the Developer applies it with `npm run db:generate` followed by `npm run db:push`. The App explains when it is missing.
+## Review Results
 
-Sensor summaries cover only the run window, stop when the run ends and do not reset shared counts. A successful kick does not certify a goal; later goal entries remain visible in Physics Sensors. Only the Simulation's requested observation groups and Sensors are required. Opening/changing a Scenario does not prepare or interrupt a Simulation. Saving/restoring a Project or definition never automatically starts a run.
+For the Project owner, a run record is captured before Actions execute and the attempt is finalized after completion, failure, cancellation or timeout. **Result #… saved. View report** opens its report when persistence succeeds.
 
-Character control and animation actions remain visible in the compact Scene inspector. Use its **Show Character settings** icon for position, physics, Model and default settings. Enable **Physics Debug** when you need Sensor/collider outlines; counters continue working while outlines are hidden.
+If saving fails, read the visible error and use **Retry result save**. This saves the same attempt without rerunning Actions. Closing the browser abruptly can leave an unfinished record; it must not be interpreted as a completed run.
 
-See [independent Simulation design](../plans/v0.22.28-independent-simulations.md), [superseded launch investigation](../plans/v0.22.28-scene-simulation-launch.md), [result analysis and API notes](../developers/THREED_SIMULATIONS.md), [v0.22.27 implementation/activation checklist](../plans/v0.22.27-simulation-results-preparation.md), [Soccer milestone record](../plans/v0.22.26-soccer-scenario-simulation.md) and [definition Admin foundation](../plans/v0.22.25-simulation-admin.md).
+Use **Admin → ThreeD → Simulations → Results**, or the **View saved Results** row action, to review captured reports. Results are immutable and read-only; editing the definition does not rewrite past Results.
+
+Authorized public visitors run locally in their browser without writing database Results. Public Project access does not expose the owner's unrelated private definitions, Admin workspace or result history.
+
+## Understand Sensor observations
+
+Sensor summaries cover the run window and stop when the run ends. They do not reset shared counts. Only the definition's requested groups and Sensors are required.
+
+A successful kick does not certify a goal or prove an Action caused a Sensor event. Later ball entries may remain visible in Physics Sensors after a run has finished. Enable **Physics Debug** when you need collider/Sensor outlines; counts continue while outlines are hidden.
+
+## Edit, retry or troubleshoot
+
+- **No available Simulation:** save a supported definition with Active enabled, valid participants and the current Project/module binding, then refresh the launcher.
+- **Unavailable animation:** check the Character's active Action Slot and compatible assigned clip. Library import alone does not create the assignment.
+- **Revision conflict:** retain or review your draft, then use Reload only when ready to discard it and load the current saved version.
+- **Save error:** errors retain the definition draft. For a failed Result save, use its dedicated retry rather than starting another run.
+- **Missing storage support:** report the displayed error to the App operator. Database setup is not a learner action.
+- **Delete:** selected deletion applies to selected page records; review partial-failure feedback. Results remain separate from definition editing.
+
+Definitions open at their canonical Admin Edit pages; old detail/View links redirect there. Cancel asks before discarding changes; successful Save keeps you on Edit.
+
+See [Character controls](../users/THREED_CONTROLS.md#characters), [Scenario guidance](threed-scenarios.md) and [Simulation implementation and result analysis](../developers/THREED_SIMULATIONS.md). Historical plans and release verification belong in the linked developer documentation and [release records](../releases/README.md).

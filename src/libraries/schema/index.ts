@@ -12,5 +12,6 @@ export * from './threed';
 export * from './traffic';
 
 export * from './multimedia';
+export * from './learn';
 
 export * from './auth/user-role-audit';

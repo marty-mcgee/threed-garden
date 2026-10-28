@@ -9,6 +9,7 @@ export interface NavItem {
   icon?: LucideIcon;
   moduleKey?: ModuleKey;
   action?: 'create';
+  documentNavigation?: boolean;
   exact?: boolean; // ✅ If true, only match exact path (not children)
   relatedPaths?: string[];
   children?: Array<{
@@ -150,6 +151,15 @@ export const navSections: NavSection[] = [
       ] },
       { title: 'Media', href: '/admin/multimedia/media', moduleKey: 'media', exact: false },
       { title: 'Links', href: '/admin/multimedia/links', moduleKey: 'links', exact: false },
+    ],
+  },
+  {
+    title: 'Learn',
+    moduleKey: 'learn',
+    items: [
+      { title: 'All Guides', href: '/admin/learn', moduleKey: 'learn', documentNavigation: true },
+      { title: 'Add Guide', href: '/admin/learn/new', icon: Plus, action: 'create', exact: true, documentNavigation: true },
+      { title: 'Learn ThreeD', href: '/learn', moduleKey: 'learn', exact: true },
     ],
   },
   {

@@ -19,6 +19,7 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  learn: [node('validate-learn-guides.cjs'), node('validate-learn-admin-ui.cjs'), node('validate-learn-public.cjs')],
   'legacy-texture-download': [node('validate-legacy-texture-download.cjs')],
   'model-taxonomy': [node('validate-model-taxonomy.cjs')],
   'model-renaming': [node('validate-model-renaming.cjs'), node('validate-obj-title-names.cjs')],
@@ -193,6 +194,7 @@ const ci = [
   'threed-designs',
   'project-configurations',
   'admin-sidebar',
+  'learn',
   'design-appearance-top-view',
   'legacy-design-recovery',
   'drizzle-workflow',

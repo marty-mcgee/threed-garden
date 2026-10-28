@@ -5,30 +5,34 @@ ThreeD Ground Maps let a Project owner use a PNG, JPG or WebP map screenshot as 
 ## Open Ground Map controls
 
 1. Open `/dashboard/scene` and choose a Project with an active ThreeD module.
-2. In 3D or Combined view, select **Environment** in the Project Toolbar.
-3. Expand **Ground Map**.
+2. In 3D, Design or Combined view, select **Environment** in the Project Toolbar.
+3. Select **Ground Map · Edit settings** to open its inspector.
 
-**Project Tour** is the separate setup and Help workflow. **Environment** contains the live Scene presentation controls.
+**Setup → Project Tour** is the separate setup and Help workflow. **Environment** contains the live Scene presentation controls.
 
 ## Upload an image
+
+Before uploading, enter the image provider in **Source** and any required credit in **Attribution**. These values are stored with the upload. The attribution is displayed over the Scene while that uploaded image is visible. The User remains responsible for the source provider's screenshot, attribution and reuse terms.
 
 Select **Upload Ground Map Image**, then choose a PNG, JPG or static WebP file. The maximum file size is 16 MB and the decoded image may contain at most 16,777,216 pixels. A successful upload becomes the Project's current Ground Map asset and preserves its original aspect ratio for the initial Scene dimensions.
 
 The upload is private to the authenticated Project owner. Replacing an image registers the replacement before removing the previous Blob. Removing the Ground Map image returns the Project to Procedural ground.
 
-When the image comes from a mapping service, enter its provider in **Source** and the required credit in **Attribution**. The attribution is displayed over the Scene while that uploaded image is visible. The User remains responsible for the source provider's screenshot, attribution and reuse terms.
+To change saved Source or Attribution, enter the corrected values before **Replace Ground Map Image**. Typing them after an upload and choosing Project Save does not update the image's saved credit.
 
 ## Align the Ground Map
 
 Choose **Uploaded Image** under **Ground Visual**, then adjust:
 
-- **Width** and **Length** for the real-world Scene footprint.
-- **Center X** and **Center Z** to move the image beneath existing Project assets.
-- **Height** to avoid visual overlap with another ground surface.
-- **Rotation** to align image north and Project axes.
+- **Width (Scene units)** and **Length (Scene units)** for the image footprint.
+- **Center X (Scene units)** and **Center Z (Scene units)** to move the image beneath existing Project assets.
+- **Elevation (Scene units)** to avoid visual overlap with another ground surface.
+- **Rotation (degrees)** to align image north and Project axes.
 - **Opacity** to compare the image with ThreeD objects while aligning it.
 
 **Align North-Up + Center** centers the image on the current Project origin and applies the Project's established geographic heading. Numeric fields remain authoritative for fine adjustment.
+
+These controls explicitly use Scene units. The Imperial/Metric preference for Design inputs does not change the Ground Map's physical calibration or move existing objects.
 
 Use **Procedural** to show the normal generated ground or **Hidden** to hide the ground visual. These display modes retain a fixed flat physics and placement surface so Characters and placement tools continue to work.
 

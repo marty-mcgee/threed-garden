@@ -5,11 +5,14 @@ Choose a guide for what you want to do. [Current project state](../CONTEXT.md) h
 ## Users
 
 - [Home help](help/home.md).
-- [Getting started](users/GETTING_STARTED.md), [Learn](https://threedgarden.com/learn) and [Dashboard](users/DASHBOARD_GUIDE.md).
+- [Learn ThreeD](https://threedgarden.com/learn) provides short guided tasks; [Getting started](users/GETTING_STARTED.md) and the [Dashboard guide](users/DASHBOARD_GUIDE.md) cover the first Project, Design, Models and Save/reopen in more detail.
 - [Admin guide](users/ADMIN_GUIDE.md), [ThreeD controls](users/THREED_CONTROLS.md) and [Ground Maps](users/THREED_GROUND_MAPS.md).
+- [App Settings and Users](users/SETTINGS.md): global Module colors/icons, personal preferences and Super Admin account management.
 - [Scenario help](help/threed-scenarios.md) and [Simulation help](help/threed-simulations.md).
 
 ## Developers
+
+- [ThreeD Module Learn](developers/THREED_LEARN.md): shared guide CRUD, starter-record import, Markdown publishing and the scoped database prerequisite.
 
 - [Local development](developers/LOCAL_DEVELOPMENT.md), [architecture](developers/ARCHITECTURE.md), [data model](developers/DATA_MODEL.md), [API guide](developers/API_GUIDE.md) and [deployment](developers/DEPLOYMENT.md).
 - [Project Designs](developers/THREED_DESIGNS.md), [Model administration](developers/THREED_MODEL_ADMIN.md), [Model runtime API](developers/THREED_MODEL_RUNTIME_API.md) and [Model Builder](developers/THREED_MODEL_BUILDER.md).
@@ -25,6 +28,6 @@ Choose a guide for what you want to do. [Current project state](../CONTEXT.md) h
 
 ## History
 
-[Release index](releases/README.md) · [Preserved entry-point history](releases/history/2026-10-17/README.md) · [Repository migration](plans/threed-garden-repository-migration.md) · [Legacy integration assessment](developers/LEGACY_THREED_INTEGRATION.md)
+[Release index](releases/README.md) · [Preserved entry-point history](releases/history/2026-10-17/README.md) · [User guide history](releases/history/2026-10-27/README.md) · [Repository migration](plans/threed-garden-repository-migration.md) · [Legacy integration assessment](developers/LEGACY_THREED_INTEGRATION.md)
 
 Use implementation and schemas to resolve factual differences, then correct the affected guide. Record new release evidence once in its release record rather than duplicating diaries across navigation pages.

@@ -1,41 +1,76 @@
 # ThreeD Scene Scenarios
 
-For v0.22.24, Admin Add/Edit/View uses dedicated pages: `/admin/threed/scenarios/new`, `/admin/threed/scenarios/[id]` and `/admin/threed/scenarios/[id]/view`. Compact typography and colored icon actions follow the Admin Blueprint. The Project's compact Scenario workspace retains its guided form. Scenario bindings remain within their current Project; cross-Project application is a theoretical future capability only. Help sits beside the title; save/delete feedback uses Toast.
+A **Scenario** is a plan for a Project's setup and exploration. **Open Scenario** displays that plan and its guidance. A **Simulation** separately runs supported Actions and collects Results; it does not require an open Scenario. See the [Simulation guide](threed-simulations.md).
 
-Scenarios describe structures and setup. The local v0.22.26 **ThreeD Simulations** candidate adds explicit Soccer Run/Stop through the existing Character and ball owners, with per-step responses and Sensor Group summaries. See the [Simulation guide](threed-simulations.md) and [design and extension points](../plans/threed-simulations-design.md). Broader Actions, result persistence and cross-Project reuse remain separate work.
+## Create or edit a plan
 
-To create or edit a Scenario, open **Admin → ThreeD → Scenarios**, or use **Set up Scenario** from that Project in **Admin → Projects**. Choose a starting idea or **Start from scratch**, select an assigned ThreeD module, then save the name, purpose, setup choices, and slug. Starting ideas suggest editable text; they do not add Scene assets or configure sensors. The Admin workspace retains the Scenario management list. The Scene uses a focused **Templates (Choose a Scenario)** chooser to load an existing active Scenario for the Project. Definitions do not create Scene objects or configure sensors automatically.
+1. Open **Admin → ThreeD → Scenarios**, or **Set up Scenario** from an owned Project in Admin.
+2. Choose a starting idea or **Start from scratch**, then select the Project's assigned ThreeD module.
+3. Enter the name, purpose and slug. Choose the saved setup: Soccer or Farming, an assigned field/environment Model and, for Soccer, a Sensor Group.
+4. Save the Scenario. Use **View** to review it or **Edit Scenario** to change it.
 
-After saving, a Scenario detail view shows the Project’s current active ThreeD asset inventory with compact colored icons. Choose **View** on any saved outline to reopen it, or **Edit Scenario** to change the plan. The **?** beside **Current Project inventory** explains the counts and scope. The green button at the left opens the Project workspace to add or review its assets; its label reflects the available inventory. Counts describe Project assignments, not assets saved to that Scenario or proof of working interaction.
+Starting ideas suggest editable text. Saving a Scenario does not add Scene objects, configure Sensors, move assets or execute Actions. Bindings remain within the Scenario's Project; cross-Project reuse is not implemented.
 
-For the setup checklist, open **Setup → Scenarios** in the Scene. The Setup Guide’s **Templates (Choose a Scenario)** button opens **Load Scenario**, a chooser of active Scenario outlines already saved for this Project. Selecting one loads its saved setup into the Guide for the current Scene session; it does not start a new Scenario or apply asset settings. Clear the selected outline with the adjacent button.
+The detail view shows the Project's current active ThreeD asset inventory. Its counts describe Project assignments, not assets stored inside the Scenario or proof of working interaction. Use the Project workspace action to place and review assets.
 
-Choose a reference Scenario, then choose an assigned Model as its field or environment. The selections are saved on the Scenario when you save its Admin form. Setup Guide changes are kept with the Project when you choose **Save ThreeD Project**.
+## Open a saved Scenario in the Scene
+
+1. Open the Project at `/dashboard/scene`.
+2. Choose **Setup → Scenarios**, then **Choose Scenario**. The chooser lists active saved Scenarios for this Project.
+3. Review the loaded **Scenario type**, **Field Model** or **Environment Model**, and **Sensor Group** where applicable.
+4. Resolve missing or inactive references. The Setup checks describe available assignments; check actual placement and interaction separately.
+5. When setup is ready, choose **Open Scenario**.
+
+**Change Scenario** selects another plan; **Clear selected Scenario** clears the current choice. Older Scenarios without saved setup need **Edit Scenario** before their Model/group choices can be restored.
+
+Opening a Scenario displays guidance in the current view. Soccer also opens **Physics Sensors** for its selected group. Farming prompts exploration of the environment, Beds and Plantings. Opening does not execute a Simulation, move assets, reset counts or issue FarmBot commands.
+
+Setup Guide changes are kept with the Project by **Save ThreeD Project**. Editing the saved Scenario definition uses its Admin form; selecting a plan in the Scene is not an automatic rewrite of that definition.
 
 ## Soccer
 
-Choose a Project Sensor Group. The checklist looks for an active movable-ball Model and at least two generic ball-entry counters in that group. Sensor names are yours to choose. Edit placement and group membership through Project Assets. Use **Environment → Show Sensors** to inspect counts and reset them.
+Choose a Project Sensor Group. The setup checklist looks for an active movable-ball Model and at least two generic ball-entry counters in that group. Sensor names are yours to choose. Edit placement and group membership through **Project Assets**; use **Environment → Show Sensors** to inspect counts.
 
-“Ready” means an assignment check passed; verify sensor placement and actual ball entry separately.
+“Ready” means the assignment checks passed. Verify actual Sensor placement and ball entry separately.
 
-Each Sensor has a **Direction** setting in **Sensor Settings**. **Bi-directional** accepts entries from either side (for example, doorway Model traffic) and remains the default for existing sensors. For goals, choose **Uni-directional**, select **+Z → −Z**, **−Z → +Z**, **+X → −X**, or **−X → +X**, and **Save Sensor**. **Direction axes → Scene X/Z coordinates** is the default: +X → −X means the ball’s displayed X coordinate decreases, even when the sensor is rotated. Choose **Rotate direction with sensor** only when you want the accepted direction to turn with the sensor. The cyan arrow on the selected owner or in Physics Debug should point into the goal; reverse the direction as needed. One-way entries require movement in the selected direction. The body’s centre may already have crossed the sensor when the physics entry callback arrives. A body must fully leave before another entry can count. Direction does not change the Detect filter: Character doorway detection is not added by this setting.
+### Directional Sensor counts
 
-For a manual kick, select a movable Character and choose **Take Control**. Select the placed ball Model and choose **Use as Action Target**. Approach with WASD, reopen the Character DetailsCard, and choose **Kick selected ball** under Animations. The button requires a loaded, active foot-kick mapping for that Character. The selected ball receives one bounded physical kick only after its one-shot animation finishes and the Character remains in range. Multiple balls made from the same Model remain separate targets. The Sensor counter changes only when a ball enters a goal; a kick itself does not score.
+Each Sensor has a **Direction** setting in **Sensor Settings**:
 
-## Farming
+- **Bi-directional** accepts entries from either side and is the default for existing Sensors.
+- **Uni-directional** accepts the chosen **+Z → −Z**, **−Z → +Z**, **+X → −X** or **−X → +X** direction.
+- **Direction axes → Scene X/Z coordinates** keeps direction tied to Scene axes even when the Sensor rotates.
+- **Rotate direction with sensor** turns the accepted direction with that Sensor.
 
-The checklist looks for active Beds, Plantings and FarmBots. Select a FarmBot to read its recorded observation. Live, stale, disconnected and unavailable are equipment observation conditions, separate from asset setup. Guidance sends no equipment commands and does not change Scene positions.
+Choose the appropriate settings and **Save Sensor**. The cyan direction arrow on the selected owner or in Physics Debug should point into the goal. Reverse the direction if needed.
 
-Closing guidance stops its observation polling. Its choices remain available when reopened, and **Save ThreeD Project** keeps them for the next load. Project Assets remains independently available.
+The body's centre may already have crossed the Sensor when the entry callback arrives. A body must fully leave before another entry counts. Direction does not change the Detect filter; this setting does not add Character doorway detection.
 
-Implementation and browser checklist: [v0.20.5 plan](../plans/v0.20.5.md).
+### Try a manual ball interaction
 
-**Setup → Project Tour** opens the separate getting-started overlay. Opening either overlay closes the other. Setup, Environment and Add to Scene dropdowns do not hide Project Assets or the selected DetailsCard.
+1. Select a movable Character and choose **Take Control**.
+2. Select the placed ball Model and **Use as Action Target**.
+3. Approach with WASD, then reopen the Character's DetailsCard.
+4. Use a compatible loaded foot-kick action, or **Kick selected ball** when available.
 
-Saved Scenario setup can include a Soccer or Farming type, a Project Model, and (for Soccer) a Sensor Group. Loading a configured Scenario fills the Setup Guide; readiness checks still reflect the current Project assets. Older outlines have no saved setup until edited. If a saved Model or group is later removed, the guide shows the missing reference so you can choose a replacement.
+Mapped foot-kick actions move the targeted ball on animated foot contact. The separate **Kick selected ball** button applies an assisted kick after its animation. The Character, mapping, range and exact ball target must remain valid. Multiple balls made from the same Model are separate instances.
 
-When a loaded Scenario meets every setup check, choose **Start Scenario**. This closes the Scenarios panel and opens the 3D Scene with an instruction card. Soccer also opens **Physics Sensors** on the selected Sensor Group so you can move the ball into a goal and watch entry counts. The counter reset control resets all current counts, including groups not shown by the Scenario. Farming shows a prompt to explore the environment, Beds, and Plantings; its optional FarmBot observation remains in the Setup Guide. Starting does not move assets, reset counts, issue FarmBot commands, or prove that collisions work. Soccer's instruction text can be dismissed while its Simulation controls remain available to the Project editor.
+A kick does not itself score. The Sensor counter changes only after a qualifying ball entry. Use a [Simulation](threed-simulations.md) when you want a supported sequence with run-window observations and Results.
 
-Scenario instructions and Physics Sensors sit below the Scene toolbar. They move beside open Project Assets or inspectors and wrap when space is limited. Project Assets dims the instruction card while keeping sensor counts visible. A central setup panel or Scene menu dims both cards; dimmed controls cannot receive clicks or keyboard focus. Closing the higher-priority panel restores full opacity without resetting counts.
+## Farming and FarmBot observations
 
-**Save ThreeD Project** keeps the selected Scenario, Setup Guide choices, started status, and whether the Scenario instructions, Physics Sensors, and Scenarios panel are open. They return when that Project is loaded. It also saves current Physics Sensor counts, including **Goal Target: Score** and **Goal Target: Protect**, and restores them on load. A ball saved inside a sensor does not count again merely because the Project reloads; leaving and re-entering counts normally. **Reset All Counts** clears current counts; save the Project afterward to keep that reset. Unsaved changes to counts are lost on reload. Older saves without sensor state start at zero. **Environment → Show Physics Debug** shows the active Rapier collider wireframes together with the focused Sensor guides.
+The checklist looks for active Beds, Plantings and FarmBots. Select a FarmBot to read its recorded observation. Live, stale, disconnected and unavailable are observation conditions, separate from asset setup or physical readiness.
+
+Guidance sends no equipment commands and does not change Scene positions. FarmBot Character-target actions are animation-only. Closing guidance stops its observation polling; its choices remain available when reopened.
+
+## Keep guidance and counts
+
+**Save ThreeD Project** keeps the selected Scenario, Setup Guide choices, opened-plan status and supported panel visibility. It also captures current Physics Sensor counts, including **Goal Target: Score** and **Goal Target: Protect**.
+
+A ball saved inside a Sensor does not count again merely because the Project reloads; leaving and re-entering counts normally. **Reset All Counts** clears current counts, including groups outside the selected Scenario. Save the Project afterward to keep that reset. Unsaved count changes are lost on reload; older snapshots without Sensor state start at zero.
+
+**Environment → Show Physics Debug** displays active collider wireframes and focused Sensor guides. Counts can continue while those outlines are hidden.
+
+**Setup → Project Tour** opens separate getting-started guidance. Opening it closes the Scenarios panel, and opening Scenarios closes the Tour. Project Assets remains independently available. Instruction and Sensor overlays adjust around open panels; dimmed controls cannot receive input until the higher-priority panel closes.
+
+Related details: [ThreeD controls](../users/THREED_CONTROLS.md), [Physics Sensors and Sensor Groups](../developers/THREED_PHYSICS_SENSORS.md), and the [Scenario implementation record](../plans/v0.20.5.md).

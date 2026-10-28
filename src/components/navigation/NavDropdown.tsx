@@ -2,9 +2,11 @@
 'use client';
 
 import { useWorkspaceSettings } from '@/components/settings/WorkspaceSettingsProvider';
+import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
+import type { ModuleKey } from '@/libraries/config/module-appearance';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BookOpen, Check, FolderOpen, Home } from 'lucide-react';
+import { BookOpen, Check, FolderOpen, Home, type LucideIcon } from 'lucide-react';
 import { cn } from '@/libraries/utils';
 import { buildNavigationClient } from '@/libraries/config/navigation.client';
 import {
@@ -22,10 +24,10 @@ export default function NavDropdown() {
   const { preferences } = useWorkspaceSettings();
   const sections = buildNavigationClient(preferences);
 
-  const primaryLinks = [
+  const primaryLinks: Array<{ path: string; name: string; icon: LucideIcon; moduleKey?: ModuleKey }> = [
     { path: '/', name: 'Home', icon: Home },
     { path: '/dashboard', name: 'ThreeD Projects', icon: FolderOpen },
-    { path: '/learn', name: 'Learn ThreeD', icon: BookOpen },
+    { path: '/learn', name: 'Learn ThreeD', icon: BookOpen, moduleKey: 'learn' },
   ];
   const activePath = [...primaryLinks, ...sections.flatMap(section => section.items)]
     .filter(item => pathname === item.path || (item.path !== '/' && item.path !== '/dashboard' && pathname?.startsWith(item.path + '/')))
@@ -65,7 +67,7 @@ export default function NavDropdown() {
         {primaryLinks.map(item => (
           <DropdownMenuItem key={item.path} asChild>
             <Link href={item.path} aria-current={isActive(item.path) ? 'page' : undefined} className={cn('min-h-10 cursor-pointer gap-3 rounded-md px-3 py-2', isActive(item.path) && 'bg-green-500/10 font-medium text-green-700 dark:text-green-300')}>
-              <item.icon className="size-4 text-green-600 dark:text-green-400" aria-hidden="true" />
+              {item.moduleKey ? <ModuleIcon moduleKey={item.moduleKey} className="size-4" /> : <item.icon className="size-4 text-green-600 dark:text-green-400" aria-hidden="true" />}
               <span className="flex-1">{item.name}</span>
               {isActive(item.path) && <Check className="size-4 text-green-600 dark:text-green-400" aria-hidden="true" />}
             </Link>

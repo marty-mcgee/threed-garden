@@ -87,6 +87,8 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobile = false, isOpen =
               {open && <ul className="ml-3 mt-1 space-y-0.5 border-l border-border pl-2 dark:border-white/10">
                 {section.items.map(item => {
                   const ItemIcon = item.icon;
+                  // Learn editors use document transitions so Back/Forward retains unload protection.
+                  const ItemLink = item.documentNavigation ? 'a' : Link;
                   const itemActive = item.children ? item.children.some(child => child.href === activeHref) : item.href === activeHref;
                   const groupOpen = toggles[item.href] ?? itemActive;
                   const content = <><NavigationModuleIcon moduleKey={item.moduleKey} fallback={ItemIcon} className="h-4 w-4 shrink-0" /><span className="min-w-0 whitespace-normal text-left">{item.title}</span></>;
@@ -105,7 +107,7 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobile = false, isOpen =
                         })}
                       </ul>}
                     </> : <Button asChild variant={itemActive ? 'secondary' : 'ghost'} className={cn('h-auto min-h-8 w-full justify-start gap-2 px-2 py-1.5 text-sm', itemActive && 'bg-primary/20 font-medium text-primary ring-1 ring-primary/40')}>
-                      <Link href={item.href} aria-current={itemActive ? 'page' : undefined}>{content}</Link>
+                      <ItemLink href={item.href} aria-current={itemActive ? 'page' : undefined}>{content}</ItemLink>
                     </Button>}
                   </li>;
                 })}

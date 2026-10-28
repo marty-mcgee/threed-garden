@@ -230,7 +230,8 @@ export const moduleDefinitions = {
     "color": "green",
     "route": "/admin/traffic"
   },
-  users: {label:"Users",icon:"Users",color:"blue",route:"/admin/users"}
+  users: {label:"Users",icon:"Users",color:"blue",route:"/admin/users"},
+  learn: {label:"Learn",icon:"BookOpen",color:"green",route:"/admin/learn"}
 } as const;
 export type ModuleKey = keyof typeof moduleDefinitions;
 export const moduleKeys = Object.keys(moduleDefinitions) as ModuleKey[];
@@ -244,11 +245,19 @@ export function defaultModuleAppearance(): ModuleAppearanceSnapshot {
  return {styles:Object.fromEntries(moduleKeys.map(key=>[key,{color:moduleDefinitions[key].color,icon:moduleDefinitions[key].icon}])) as ModuleAppearanceSnapshot['styles'],revision:null};
 }
 export function moduleForPath(path: string): ModuleKey | undefined {
+ if (path === '/learn' || path.startsWith('/learn/')) return 'learn';
  return [...moduleKeys].sort((a,b)=>moduleDefinitions[b].route.length-moduleDefinitions[a].route.length).find(key=>path===moduleDefinitions[key].route || path.startsWith(moduleDefinitions[key].route+'/'));
 }
 
-// Read compatibility only: existing 40-Module snapshots predate Users styling.
+// Read compatibility only: 41-Module snapshots predate Learn; 40 predate Users too.
+// Each historical shape is complete and strict. Writes require all current Modules.
 export function readStoredModuleAppearance(value:unknown):ModuleAppearanceSnapshot {
- const legacy=z.object({styles:moduleAppearanceSchema.omit({users:true}),revision:z.string().uuid().nullable()}).strict().safeParse(value);
- return moduleAppearanceSnapshotSchema.parse(legacy.success?{...legacy.data,styles:{...legacy.data.styles,users:defaultModuleAppearance().styles.users}}:value);
+ const previous=moduleAppearanceSnapshotSchema.extend({styles:moduleAppearanceSchema.omit({learn:true})}).safeParse(value);
+ if(previous.success) return moduleAppearanceSnapshotSchema.parse({...previous.data,styles:{...previous.data.styles,learn:defaultModuleAppearance().styles.learn}});
+ const legacy=moduleAppearanceSnapshotSchema.extend({styles:moduleAppearanceSchema.omit({users:true,learn:true})}).safeParse(value);
+ if(legacy.success) {
+  const defaults=defaultModuleAppearance().styles;
+  return moduleAppearanceSnapshotSchema.parse({...legacy.data,styles:{...legacy.data.styles,users:defaults.users,learn:defaults.learn}});
+ }
+ return moduleAppearanceSnapshotSchema.parse(value);
 }

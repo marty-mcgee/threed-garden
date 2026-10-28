@@ -14,6 +14,7 @@ const nav = load('src/components/admin/layout/admin-navigation.ts', { 'lucide-re
 const contract = load('src/libraries/config/module-appearance.ts', {zod: require('zod')});
 const appearance = contract.defaultModuleAppearance();
 appearance.styles.models = {icon:'Leaf',color:'rose'};
+appearance.styles.learn = {icon:'Star',color:'violet'};
 const {ModuleIcon} = load('src/components/settings/ModuleAppearanceProvider.tsx', {
   react: {createContext:()=>({}),useContext:()=>({snapshot:appearance})},
   'react/jsx-runtime':{jsx:(type,props)=>({type,props})},
@@ -22,7 +23,7 @@ const {ModuleIcon} = load('src/components/settings/ModuleAppearanceProvider.tsx'
 });
 for (const section of nav.navSections) {
   for (const item of [...section.items,...section.items.flatMap(item=>item.children??[])]) {
-    const key = contract.moduleKeys.find(key=>contract.moduleDefinitions[key].route===item.href);
+    const key = item.href === '/learn' ? 'learn' : contract.moduleKeys.find(key=>contract.moduleDefinitions[key].route===item.href);
     if (key) { assert.equal(item.moduleKey,key,item.href); assert.equal(item.icon,undefined,item.href); }
     else assert(item.icon,item.href);
   }
@@ -45,6 +46,10 @@ for (const [route, expected] of [
   ['/admin/projects/16', '/admin/projects'],
   ['/admin/multimedia/speech/3', '/admin/multimedia/speech'],
   ['/admin/threed/models-extra', null],
+  ['/learn', '/learn'],
+  ['/admin/learn/new', '/admin/learn/new'],
+  ['/admin/learn/4', '/admin/learn'],
+  ['/learn-extra', null],
 ]) assert.equal(nav.activeAdminHref(route), expected);
 for (const value of ['broken', 'null', '[]', '{"ThreeD":"yes","unknown":true}']) assert.equal(Object.keys(nav.readSidebarToggles(value)).length, 0);
 assert.equal(nav.readSidebarToggles('{"ThreeD":false,"/admin/threed/models":true}').ThreeD, false);
@@ -99,7 +104,7 @@ assert.equal(all(tree,n=>n.type==='link'&&text(n)==='All Users')[0].props['aria-
 assert.equal(button(tree,'Users').props['aria-expanded'],true);
 assert.equal(nav.navSections.find(section=>section.title==='Users').items[1].icon,'Plus');
 const creationItems=nav.navSections.flatMap(section=>section.items.flatMap(item=>[item,...(item.children??[])])).filter(item=>item.action==='create');
-assert.equal(creationItems.map(item=>item.title).join(','),'Add User,Add Project,Add Model,Add Simulation,Add Speech');
+assert.equal(creationItems.map(item=>item.title).join(','),'Add User,Add Project,Add Model,Add Simulation,Add Speech,Add Guide');
 for(const item of creationItems)assert.equal(nav.activeAdminHref(item.href),item.href);
 const selectedButton=all(tree,n=>n.type==='button'&&text(n)==='Add User')[0];
 assert.equal(selectedButton.props.variant,'secondary');assert(selectedButton.props.className.includes('ring-primary/40'));
@@ -112,4 +117,29 @@ assert.equal(all(tree,n=>n.type==='button'&&text(n)==='Add Model')[0].props.vari
 pathname='/admin/threed/models/new';tree=render();
 assert.equal(all(tree,n=>n.type==='link'&&text(n)==='Add Model')[0].props['aria-current'],'page');
 assert.equal(all(tree,n=>n.type==='button'&&text(n)==='Add Model')[0].props.variant,'secondary');
+pathname='/learn';owner='learn-menu-check';tree=render();
+assert.equal(all(tree,n=>n.type==='a'&&text(n)==='All Guides')[0].props.href,'/admin/learn');
+assert.equal(all(tree,n=>n.type==='a'&&text(n)==='Add Guide')[0].props.href,'/admin/learn/new');
+assert.equal(button(tree,'Learn').props['aria-expanded'],true);
+assert.equal(all(tree,n=>n.type==='link'&&text(n)==='Learn ThreeD')[0].props.href,'/learn');
+assert(renderedIcons(tree).some(icon=>icon?.type==='Star'&&icon.props.className.includes('text-violet-500')));
+button(tree,'Learn').props.onClick();tree=render();assert.equal(button(tree,'Learn').props['aria-expanded'],false);
+states=[];effects=[];tree=render();assert.equal(button(tree,'Learn').props['aria-expanded'],false);
+props.isCollapsed=true;tree=render();assert(all(tree,n=>n.props?.['aria-label']==='Open Learn navigation').length===1);
+
+// The public App menu keeps a single Learn destination with the same saved identity.
+const {default:NavDropdown}=load('src/components/navigation/NavDropdown.tsx',{
+  'react/jsx-runtime':{jsx,jsxs:jsx},'next/link':{default:'link'},'next/navigation':{usePathname:()=>pathname},'lucide-react':icons,
+  '@/components/settings/ModuleAppearanceProvider':{ModuleIcon},
+  '@/components/settings/WorkspaceSettingsProvider':{useWorkspaceSettings:()=>({preferences})},
+  '@/libraries/config/navigation.client':{buildNavigationClient:()=>[]},
+  '@/components/ui/button':{Button:'button'},
+  '@/components/ui/dropdown-menu':new Proxy({},{get:(_,key)=>key}),
+  '@/libraries/utils':{cn:(...values)=>values.filter(Boolean).join(' ')},
+});
+let menu=NavDropdown();
+const learnLinks=all(menu,n=>n.type==='link'&&n.props.href==='/learn');assert.equal(learnLinks.length,1);assert.equal(learnLinks[0].props['aria-current'],'page');
+const learnIcon=all(learnLinks[0],n=>n.type===ModuleIcon)[0];assert.equal(learnIcon.props.moduleKey,'learn');
+assert.equal(ModuleIcon(learnIcon.props).type,'Star');assert(ModuleIcon(learnIcon.props).props.className.includes('text-violet-500'));
+pathname='/learn-extra';menu=NavDropdown();assert.equal(all(menu,n=>n.type==='link'&&n.props.href==='/learn')[0].props['aria-current'],undefined);
 console.log('PASS: Saved module icons/colors, explicit module ownership, collapsed icons, utility icons, Admin route inventory, specific active matching, persistent section/subgroup choices, account isolation, optional storage, storage events, module filtering and mobile visibility.');
