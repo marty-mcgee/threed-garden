@@ -35,7 +35,13 @@ export const navSections: NavSection[] = [
   {
     title: 'Users',
     icon: Users,
-    items: [{title:'All Users',href:'/admin/users',icon:Users}],
+    items: [
+      {
+        title: 'All Users', 
+        href:'/admin/users', 
+        icon: Users,
+      }
+    ],
   },
   {
     title: 'Projects',
