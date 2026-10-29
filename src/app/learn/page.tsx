@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight, BookOpen, CircleHelp, Info, ListChecks, Rocket } from 'lucide-react';
 import { LearnPreview } from '@/components/learn/LearnPreview';
+import { WhyThreeDApp } from '@/components/home/WhyThreeDApp';
 import { LearnGuideLibrary } from '@/components/learn/LearnGuideLibrary';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { Button } from '@/components/ui/button';
@@ -28,6 +29,7 @@ export default function LearnPage() {
       </div>
     </section>
     <div className="mx-auto max-w-7xl space-y-14 px-6 py-8 sm:py-12">
+    <WhyThreeDApp />
     <section aria-labelledby="learn-path-title" className="space-y-6">
       <div className="text-center"><h2 id="learn-path-title" className="text-2xl font-bold sm:text-3xl">What would you like to do?</h2><p className="mt-2 text-muted-foreground">Start your first Project, pick a skill, or find a little help.</p></div>
       <nav aria-label="Guide topics" className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

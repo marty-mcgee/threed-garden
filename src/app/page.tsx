@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import GardenHero from '@/components/home/GardenHero';
+import { WhyThreeDApp } from '@/components/home/WhyThreeDApp';
 import { MultimediaPlayer } from '@/components/multimedia/MultimediaPlayer';
 import { AlbumLyrics } from '@/components/multimedia/AlbumLyrics';
 import { Button } from '@/components/ui/button';
@@ -280,6 +281,10 @@ export default function HomePage() {
           </div>
           <div id="garden-demo" className="min-w-0 scroll-mt-16"><GardenHero /></div>
         </div>
+      </div>
+
+      <div className="mx-auto max-w-7xl px-6 py-8 sm:py-12">
+        <WhyThreeDApp />
       </div>
 
       {/* Tech Stack */}
