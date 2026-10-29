@@ -570,6 +570,7 @@ function UnifiedMapPageInner() {
     architectureDrafts.current.set(selectedProjectId, reconcileArchitectureSelection(update(current))); renderArchitecture(value => value + 1);
   }, [selectedProjectId, canEditProject, loading]);
   const selectArchitecture = useCallback((selected: string | null) => {
+    if (typeof window !== 'undefined' && !window.dispatchEvent(new Event('threed:design:model-selection', { cancelable: true }))) return false;
     if (!selectedProjectId) return;
     const current = architectureDrafts.current.get(selectedProjectId)!;
     if (selected && !entityLevelId(current.history.present, selected)) return;
@@ -1977,7 +1978,7 @@ function UnifiedMapPageInner() {
 
   const handleMoveModelInstance = useCallback(async (
     instanceId: number,
-    position: { x: number; y: number; z: number },
+    position: { x: number; y: number; z: number; scaleMultiplier?: number },
   ): Promise<boolean> => {
     if (updatingModelInstanceId != null || deletingModelInstanceId != null) return false;
     setUpdatingModelInstanceId(instanceId);
@@ -1989,12 +1990,15 @@ function UnifiedMapPageInner() {
           positionX: position.x,
           positionY: position.y,
           positionZ: position.z,
+          ...(position.scaleMultiplier !== undefined ? { scaleMultiplier: position.scaleMultiplier } : {}),
         }),
       });
       const result = await response.json().catch(() => null);
       if (!response.ok || !result?.success) {
         throw new Error(result?.error || `Model position update failed (${response.status})`);
       }
+
+      if (position.scaleMultiplier !== undefined && planImageProjectRef.current !== selectedProjectId) return false;
 
       notifyModelPlacement(result.data as ProjectThreeDMarkerRecord, Number(selectedProjectId));
       setData((current) => applyThreeDProjectClientTransaction(current, {
@@ -2731,8 +2735,36 @@ function UnifiedMapPageInner() {
   }, []);
   const dismissProjectAssets = useCallback(() => closeProjectAssets(true), [closeProjectAssets]);
 
+  const designModelSaveBusy = useRef(false);
+  const saveDesignModel = async (id: string, transform: import('@/components/threed/design/DesignModelProperties').DesignModelTransform) => {
+    const marker = projectRuntimeMarkers.find(item => String(item.id) === id && item.type === 'models');
+    const instanceId = Number(marker?.data?.id);
+    const saved = data.threed.raw?.projectThreedMarkers?.find(item => item.id === instanceId);
+    if (designModelSaveBusy.current || !canEditProject || loading || !saved || saved.markerId !== id || marker?.metadata?.source !== 'project-marker') return false;
+    if (![transform.positionX, transform.positionY, transform.positionZ].every(value => Number.isFinite(value) && Math.abs(value) <= 1000000)
+      || !Number.isFinite(transform.scaleMultiplier) || transform.scaleMultiplier < .0001 || transform.scaleMultiplier > 10000) return false;
+    designModelSaveBusy.current = true;
+    try {
+      return await handleMoveModelInstance(instanceId, {
+        x: transform.positionX,
+        y: transform.positionY,
+        z: transform.positionZ,
+        scaleMultiplier: transform.scaleMultiplier,
+      });
+    } finally { designModelSaveBusy.current = false; }
+  };
+
+  const designModel = !architectureDraft.selected && selectedMarker?.type === 'models' && selectedMarker.metadata?.source === 'project-marker' ? {
+    id: String(selectedMarker.id),
+    name: String(selectedMarker.name ?? 'Model'),
+    positionX: Number(selectedMarker.position?.x ?? selectedMarker.data?.positionX ?? 0),
+    positionY: Number(selectedMarker.position?.y ?? selectedMarker.data?.positionY ?? 0),
+    positionZ: Number(selectedMarker.position?.z ?? selectedMarker.data?.positionZ ?? 0),
+    scaleMultiplier: Number(selectedMarker.data?.scaleMultiplier ?? 1),
+  } : null;
+
   const selectProjectAsset = useCallback((marker: RuntimeMarker) => {
-    selectArchitecture(null);
+    if (selectArchitecture(null) === false) return;
     groundMapInspector?.setOpen(false);
     setSensorInspector(null);
     setGroupInspector(null);
@@ -3203,7 +3235,7 @@ function UnifiedMapPageInner() {
         }}
       />
       {/* ✅ Map Container */}
-      <DesignWorkspace reserveToolbar={viewMode === '2d'} split={designWorkspace.split} onSplitChange={split => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), split } }))} assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor selectedModelId={!architectureDraft.selected && selectedMarker?.type === 'models' ? String(selectedMarker.id) : null} modelImages={planModelImages.projectId === Number(selectedProjectId) ? Object.values(planModelImages.images) : []} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={id => { const marker = projectRuntimeMarkers.find(marker => String(marker.id) === id); if (marker) selectProjectAsset(marker); }} key={selectedProjectId} frameRequest={architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} active={viewMode === 'design'} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSelect: selectArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
+      <DesignWorkspace reserveToolbar={viewMode === '2d'} split={designWorkspace.split} onSplitChange={split => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), split } }))} assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor selectedModel={designModel} onSaveModel={saveDesignModel} modelBusy={updatingModelInstanceId != null || deletingModelInstanceId != null} selectedModelId={!architectureDraft.selected && selectedMarker?.type === 'models' ? String(selectedMarker.id) : null} modelImages={planModelImages.projectId === Number(selectedProjectId) ? Object.values(planModelImages.images) : []} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={id => { const marker = projectRuntimeMarkers.find(marker => String(marker.id) === id); if (marker) selectProjectAsset(marker); }} key={selectedProjectId} frameRequest={architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} active={viewMode === 'design'} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSelect: selectArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
       <Card data-project-canvas className="h-full gap-0 rounded-none border-0 py-0 shadow-none">
         <CardContent className="h-full p-0 overflow-hidden">
           <div className="h-full">

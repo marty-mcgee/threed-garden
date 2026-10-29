@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
- - [v0.29.2-alpha - App: Multimedia Integration and Learn Data Structure Checkpoint (experimental checkpoint preparation)](v0.29.2-alpha.md)
+ - [v0.29.2 - ThreeD Design: Model Properties, Movement and Resizing (Developer-accepted; prepared with documented CI discrepancies)](v0.29.2.md)
+
+ - [v0.29.2-alpha - App: Multimedia Integration and Learn Data Structure Checkpoint (Developer-confirmed production alpha)](v0.29.2-alpha.md)
 
  - [v0.30.0 - ThreeD Multimedia Integration (implementation under review against existing App architecture)](v0.30.0.md)
 

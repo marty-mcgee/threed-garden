@@ -1,4 +1,5 @@
 'use client';
+import type { DesignModelSelection, SaveDesignModel } from './DesignModelProperties';
 
 import { useEffect, useId, useRef, useState, type PointerEvent, type ReactNode, type SetStateAction, useCallback } from 'react';
 import { createPortal } from 'react-dom';
@@ -16,7 +17,7 @@ import { wallFootprint } from '@/libraries/services/threed/design/geometry';
 export type DesignTool = 'select' | 'wall' | 'floor' | 'roof' | 'door' | 'window' | 'cutout' | 'skylight' | 'pan';
 type DrawPoint = PlanPoint & { nodeId?: string };
 export interface DesignContextGroup { label: string; color: string; actions: { label: string; icon: LucideIcon; disabled?: boolean; active?: boolean; run: () => void }[] }
-interface Props { visibleLevelIds?: string[]; onToggleLevel?: (id: string) => void; contextActions?: DesignContextGroup[]; showMeasurements?: boolean; onShowMeasurementsChange?: (show: boolean) => void; selectedModelId?: string | null; modelImages?: ModelPlanImage[]; metersPerSceneUnit?: number; onModelSelect?: (id: string) => void; measurementUnits?: 'imperial' | 'metric'; frameRequest?: { id: string; sequence: number } | null; drawingActions?: ReactNode; planView?: PlanView; onViewChange?: (view: PlanView) => void; toolbarHost?: HTMLDivElement | null; embedded?: boolean; active?: boolean; disabled?: boolean; document: DesignDocument; displayDocument?: DesignDocument; activeLevelId: string; selected: string | null; tool: DesignTool; gridSnap: boolean;
+interface Props { selectedModel?: DesignModelSelection | null; onSaveModel?: SaveDesignModel; modelBusy?: boolean; visibleLevelIds?: string[]; onToggleLevel?: (id: string) => void; contextActions?: DesignContextGroup[]; showMeasurements?: boolean; onShowMeasurementsChange?: (show: boolean) => void; selectedModelId?: string | null; modelImages?: ModelPlanImage[]; metersPerSceneUnit?: number; onModelSelect?: (id: string) => void; measurementUnits?: 'imperial' | 'metric'; frameRequest?: { id: string; sequence: number } | null; drawingActions?: ReactNode; planView?: PlanView; onViewChange?: (view: PlanView) => void; toolbarHost?: HTMLDivElement | null; embedded?: boolean; active?: boolean; disabled?: boolean; document: DesignDocument; displayDocument?: DesignDocument; activeLevelId: string; selected: string | null; tool: DesignTool; gridSnap: boolean;
   onSelect: (id: string | null) => void; onCommit: (doc: DesignDocument) => void;
   onPreview: (doc: DesignDocument | null) => void; onMessage: (text: string) => void;
   onDrawComplete: (id: string) => void; cancelToken: number }
@@ -39,7 +40,7 @@ function addShape(doc: DesignDocument, points: DrawPoint[], tool: 'wall' | 'floo
     floors: tool === 'floor' ? [...doc.floors, { id, levelId, vertices: ids, thickness: doc.defaults.floorThickness, elevation: 0 }] : doc.floors, roofs: tool === 'roof' ? [...doc.roofs, { id, levelId, vertices: ids, kind: 'gable', pitch: 6, direction: 0, thickness: 6 * INCH, elevation: doc.defaults.wallHeight }] : doc.roofs };
 }
 
-export function DesignPlan({ visibleLevelIds, onToggleLevel, contextActions = [], showMeasurements, onShowMeasurementsChange, selectedModelId, modelImages = [], metersPerSceneUnit = 1, onModelSelect, measurementUnits = 'imperial', frameRequest, drawingActions, planView, onViewChange, toolbarHost, embedded = false, active: enabled = true, disabled = false, document: doc, displayDocument = doc, activeLevelId, selected, tool, gridSnap, onSelect, onCommit, onPreview, onMessage, onDrawComplete, cancelToken }: Props) {
+export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visibleLevelIds, onToggleLevel, contextActions = [], showMeasurements, onShowMeasurementsChange, selectedModelId, modelImages = [], metersPerSceneUnit = 1, onModelSelect, measurementUnits = 'imperial', frameRequest, drawingActions, planView, onViewChange, toolbarHost, embedded = false, active: enabled = true, disabled = false, document: doc, displayDocument = doc, activeLevelId, selected, tool, gridSnap, onSelect, onCommit, onPreview, onMessage, onDrawComplete, cancelToken }: Props) {
   const shownLevels = visibleLevelIds ?? [activeLevelId];
   const editingHidden = !shownLevels.includes(activeLevelId);
   const [localMeasurements, setLocalMeasurements] = useState(false);
@@ -60,6 +61,29 @@ export function DesignPlan({ visibleLevelIds, onToggleLevel, contextActions = []
   const [points, setPoints] = useState<DrawPoint[]>([]), [hover, setHover] = useState<DrawPoint | null>(null);
   const [draftOpeningId] = useState(makeId);
   const gesture = useRef<Gesture | null>(null);
+  const modelGesture = useRef<{ pointerId: number; start: PlanPoint; model: DesignModelSelection; resize: boolean; factor: number; dx: number; dz: number } | null>(null);
+  const modelSaving = useRef(false);
+  const [modelPreview, setModelPreview] = useState<{ id: string; x: number; z: number; factor: number; dx: number; dz: number } | null>(null);
+  const displayedImages = modelImages.map(image => image.id === modelPreview?.id ? { ...image, corners: image.corners.map(point => ({
+    x: modelPreview.x + (point.x - modelPreview.x) * modelPreview.factor + modelPreview.dx,
+    z: modelPreview.z + (point.z - modelPreview.z) * modelPreview.factor + modelPreview.dz,
+  })) as ModelPlanImage['corners'] } : image);
+  const cancelModel = () => {
+    const current = modelGesture.current;
+    modelGesture.current = null;
+    setModelPreview(null);
+    if (current && svg.current?.hasPointerCapture(current.pointerId)) svg.current.releasePointerCapture(current.pointerId);
+  };
+  useEffect(() => { cancelModel(); }, [selectedModelId, cancelToken, tool, enabled, disabled]);
+  function startModel(event: PointerEvent<SVGElement>, id: string, resize = false) {
+    if (!enabled || disabled || modelBusy || modelSaving.current || editingHidden || tool !== 'select' || event.button !== 0 || event.altKey) return;
+    event.preventDefault(); event.stopPropagation();
+    if (!selectedModel || selectedModel.id !== id || !onSaveModel) { onModelSelect?.(id); return; }
+    if (!window.dispatchEvent(new Event('threed:design:model-selection', { cancelable: true }))) return;
+    svg.current?.focus();
+    modelGesture.current = { pointerId: event.pointerId, start: pointer(event), model: { ...selectedModel }, resize, factor: 1, dx: 0, dz: 0 };
+    svg.current?.setPointerCapture(event.pointerId);
+  }
   const nodes = new Map(visible.nodes.map(node => [node.id, node]));
   const wall = doc.walls.find(entity => entity.id === selected), floor = doc.floors.find(entity => entity.id === selected);
   const handles = (wall ? [wall.start, wall.end] : floor?.vertices ?? doc.roofs.find(entity => entity.id === selected)?.vertices ?? []).filter(key => nodes.has(key));
@@ -190,6 +214,21 @@ export function DesignPlan({ visibleLevelIds, onToggleLevel, contextActions = []
     setView({ ...active.view, x: active.view.x + dx, y: active.view.y + dy });
   }
   function move(event: PointerEvent<SVGSVGElement>) {
+    const modelDrag = modelGesture.current;
+    if (modelDrag && modelDrag.pointerId === event.pointerId) {
+      const here = pointer(event), model = modelDrag.model;
+      if (modelDrag.resize) {
+        const origin = { x: model.positionX * metersPerSceneUnit, z: model.positionZ * metersPerSceneUnit };
+        const before = distance(modelDrag.start, origin);
+        if (before > .000001) modelDrag.factor = Math.max(.0001 / model.scaleMultiplier, Math.min(10000 / model.scaleMultiplier, distance(here, origin) / before));
+      } else {
+        const snap = (value: number) => gridSnap ? Math.round(value / (6 * INCH)) * (6 * INCH) : value;
+        modelDrag.dx = snap(here.x - modelDrag.start.x) / metersPerSceneUnit;
+        modelDrag.dz = snap(here.z - modelDrag.start.z) / metersPerSceneUnit;
+      }
+      setModelPreview({ id: model.id, x: model.positionX, z: model.positionZ, factor: modelDrag.factor, dx: modelDrag.dx, dz: modelDrag.dz });
+      return;
+    }
     if (!enabled || ((disabled || editingHidden) && !gesture.current?.pan)) return;
     const active = gesture.current;
     if (!active) {
@@ -230,6 +269,23 @@ export function DesignPlan({ visibleLevelIds, onToggleLevel, contextActions = []
     catch (error) { active.merge = undefined; onMessage((error as Error).message); }
   }
   function end(event: PointerEvent<SVGSVGElement>) {
+    const modelDrag = modelGesture.current;
+    if (modelDrag && modelDrag.pointerId === event.pointerId) {
+      modelGesture.current = null;
+      if (svg.current?.hasPointerCapture(event.pointerId)) svg.current.releasePointerCapture(event.pointerId);
+      if (onSaveModel && (modelDrag.dx !== 0 || modelDrag.dz !== 0 || modelDrag.factor !== 1)) {
+        modelSaving.current = true;
+        void onSaveModel(modelDrag.model.id, {
+          positionX: modelDrag.model.positionX + modelDrag.dx,
+          positionY: modelDrag.model.positionY,
+          positionZ: modelDrag.model.positionZ + modelDrag.dz,
+          scaleMultiplier: modelDrag.model.scaleMultiplier * modelDrag.factor,
+        }).then(saved => onMessage(saved ? 'Model placement saved.' : 'Model update failed. Saved placement retained.'))
+          .catch(() => onMessage('Model update failed. Saved placement retained.'))
+          .finally(() => { modelSaving.current = false; setModelPreview(null); });
+      } else setModelPreview(null);
+      return;
+    }
     const active = gesture.current; if (!active || event.pointerId !== active.pointerId) return;
     if (active.pan) panGesture(active, local(event));
     gesture.current = null;
@@ -272,7 +328,7 @@ export function DesignPlan({ visibleLevelIds, onToggleLevel, contextActions = []
     </div>}
     <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
     <ContextMenu><ContextMenuTrigger asChild><svg ref={svg} data-testid="home-plan" aria-label="ThreeD Design 2D plan" tabIndex={0} width="100%" height="100%" className="block min-h-0 w-full flex-1 touch-none select-none outline-none focus-visible:ring-2 focus-visible:ring-cyan-400" style={{ cursor: tool === 'pan' ? 'grab' : tool === 'select' ? 'default' : 'crosshair' }}
-      onPointerDown={down} onPointerMove={move} onPointerUp={end} onPointerCancel={() => { gesture.current = null; setPoints([]); setHover(null); onPreview(null); onMessage('Gesture cancelled.'); }}
+      onPointerDown={down} onPointerMove={move} onPointerUp={end} onPointerCancel={() => { cancelModel(); gesture.current = null; setPoints([]); setHover(null); onPreview(null); onMessage('Gesture cancelled.'); }}
       onLostPointerCapture={() => { if (gesture.current) { gesture.current = null; onPreview(null); } }}
       onPointerLeave={() => { if (!gesture.current && (tool === 'door' || tool === 'window' || tool === 'cutout' || tool === 'skylight')) onPreview(null); }}
       >
@@ -285,12 +341,12 @@ export function DesignPlan({ visibleLevelIds, onToggleLevel, contextActions = []
           {active.nodes.some(node => Math.abs(node.z - hover.z) < .000001) && <line y1={hover.z} y2={hover.z} x1={(RULER_SIZE - view.x) / view.scale} x2={(size.width - view.x) / view.scale}/>}
         </g>}
         {visible.floors.map(floor => <polygon key={floor.id} data-entity={floor.id} points={polygon(floor.vertices.map(id => nodes.get(id)!))} fill={selected === floor.id ? '#177986' : '#405a76'} fillOpacity=".55" stroke="#7694b8" strokeWidth={1 / view.scale} />)}
-        {modelImages.map(image => {
+        {displayedImages.map(image => {
           const [a,b,c] = image.corners.map(p => ({ x: p.x * metersPerSceneUnit, z: p.z * metersPerSceneUnit }));
           if (![a.x,a.z,b.x,b.z,c.x,c.z].every(Number.isFinite)) return null;
-          return <image key={image.id} href={image.url} x={0} y={0} width={1} height={1} preserveAspectRatio="none" transform={`matrix(${b.x-a.x} ${b.z-a.z} ${c.x-a.x} ${c.z-a.z} ${a.x} ${a.z})`} role="button" tabIndex={enabled && !disabled ? 0 : -1} aria-label={`Select Project Model ${image.id}`} onKeyDown={event => { if (!enabled || disabled || !['Enter', ' '].includes(event.key)) return; event.preventDefault(); event.stopPropagation(); onModelSelect?.(image.id); }} style={{ cursor: 'pointer' }} onPointerDown={event => { if (!enabled || disabled || editingHidden || tool !== 'select' || event.button !== 0 || event.altKey) return; event.stopPropagation(); onModelSelect?.(image.id); }} />;
+          return <image key={image.id} href={image.url} x={0} y={0} width={1} height={1} preserveAspectRatio="none" transform={`matrix(${b.x-a.x} ${b.z-a.z} ${c.x-a.x} ${c.z-a.z} ${a.x} ${a.z})`} role="button" tabIndex={enabled && !disabled ? 0 : -1} aria-label={`Select Project Model ${image.id}`} onKeyDown={event => { if (!enabled || disabled || !['Enter', ' '].includes(event.key)) return; event.preventDefault(); event.stopPropagation(); onModelSelect?.(image.id); }} style={{ cursor: 'pointer' }} onPointerDown={event => startModel(event, image.id)} />;
         })}
-        {modelImages.filter(image => image.id === selectedModelId).map(image => {
+        {displayedImages.filter(image => image.id === selectedModelId).map(image => {
           const [a, b, c] = image.corners;
           const corners = [a, b, {
             x: b.x + c.x - a.x,
@@ -300,8 +356,10 @@ export function DesignPlan({ visibleLevelIds, onToggleLevel, contextActions = []
               x: point.x * metersPerSceneUnit,
               z: point.z * metersPerSceneUnit,
             }));
-          return <polygon key={`selected-${image.id}`} data-selected-model={image.id} points={polygon(corners)}
-            fill="none" stroke="#22d3ee" strokeWidth={2 / view.scale} pointerEvents="none" />;
+          return <g key={`selected-${image.id}`}><polygon data-selected-model={image.id} points={polygon(corners)}
+            fill="none" stroke="#22d3ee" strokeWidth={2 / view.scale} pointerEvents="none" />
+            {selectedModel?.id === image.id && onSaveModel && !disabled && !modelBusy && <circle data-model-resize={image.id} cx={corners[2].x} cy={corners[2].z} r={6 / view.scale} fill="#facc15" stroke="#101827" strokeWidth={1 / view.scale} style={{ cursor: 'nwse-resize' }} onPointerDown={event => startModel(event, image.id, true)} />}
+          </g>;
         })}
         {visible.roofs.map(roof => { const points = roof.vertices.map(id => nodes.get(id)!); return <g key={roof.id} data-entity={roof.id} data-roof={roof.kind}><polygon points={polygon(points)} fill="#c084fc" fillOpacity={selected === roof.id ? .18 : .06} stroke="#c084fc" strokeWidth={3 / view.scale} pointerEvents="stroke" /></g>; })}
         {visible.walls.map(wall => <g key={wall.id}><polygon data-entity={wall.id} points={polygon(wallFootprint(displayDocument, wall))} fill={selected === wall.id ? '#36b8c8' : '#b4c8df'} stroke="#5b8baf" strokeWidth={1 / view.scale} /><line data-entity={wall.id} x1={nodes.get(wall.start)!.x} y1={nodes.get(wall.start)!.z} x2={nodes.get(wall.end)!.x} y2={nodes.get(wall.end)!.z} stroke="transparent" strokeWidth={Math.max(wall.thickness, 10 / view.scale)} />{measurementsVisible && <text data-measurement={wall.id} x={(nodes.get(wall.start)!.x + nodes.get(wall.end)!.x) / 2} y={(nodes.get(wall.start)!.z + nodes.get(wall.end)!.z) / 2 - .2} fill="#dde8f6" fontSize={11 / view.scale} textAnchor="middle" pointerEvents="none">{formatPlanLength(distance(nodes.get(wall.start)!, nodes.get(wall.end)!), measurementUnits)}</text>}</g>)}

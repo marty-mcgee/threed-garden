@@ -228,7 +228,7 @@ console.log('PASS: actual DesignPlan blank-click/temporary-pan threshold, tool/s
   const node = flatten(f.tree).find(node=>node.type==='image'); assert(node);
   const matrix = node.props.transform.slice(7,-1).split(' ').map(Number);
   for(const [i,value] of [.6096,0,0,1.2192,3.048,6.096].entries()) assert(Math.abs(matrix[i]-value)<1e-8);
-  node.props.onPointerDown({button:0,altKey:false,stopPropagation(){stopped=true;}});
+  node.props.onPointerDown({button:0,altKey:false,preventDefault(){},stopPropagation(){stopped=true;}});
   assert.equal(selectedModel,'models-15');assert(stopped);assert.equal(f.calls.commit.length,0);assert.equal(f.calls.view.length,0);
   f.update({selectedModelId:'models-15'});
   let highlight=flatten(f.tree).find(node=>node.props?.['data-selected-model']==='models-15');

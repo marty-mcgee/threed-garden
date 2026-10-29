@@ -1,4 +1,5 @@
 'use client';
+import { DesignModelProperties, type DesignModelSelection, type SaveDesignModel } from './DesignModelProperties';
 import type { ModelPlanImage } from '@/libraries/services/threed/models/model-plan-image';
 import { ProjectMeasurementUnits } from '@/components/project/ProjectMeasurementUnits';
 import { DesignNameInput } from './DesignNameInput';
@@ -37,6 +38,9 @@ function Scalar({ label, value, onChange, max }: { label: string; value: number;
 }
 
 export interface DesignEditorProps {
+  selectedModel?: DesignModelSelection | null;
+  onSaveModel?: SaveDesignModel;
+  modelBusy?: boolean;
   modelImages?: ModelPlanImage[];
   selectedModelId?: string | null;
   metersPerSceneUnit?: number;
@@ -57,7 +61,7 @@ export interface DesignEditorProps {
     error?: string;
   };
 }
-export function DesignEditor({ selectedModelId, modelImages, metersPerSceneUnit, onModelSelect, frameRequest, active = true, canSave = true, scene, onActionsBusyChange }: DesignEditorProps = {}) {
+export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, selectedModelId, modelImages, metersPerSceneUnit, onModelSelect, frameRequest, active = true, canSave = true, scene, onActionsBusyChange }: DesignEditorProps = {}) {
   const controlsHost = useRef<HTMLDivElement>(null);
   const [localDraft, setLocalDraft] = useState(() => projectArchitectureDraft());
   const draft = scene?.draft ?? localDraft, history = draft.history;
@@ -87,6 +91,12 @@ export function DesignEditor({ selectedModelId, modelImages, metersPerSceneUnit,
   const [tool, setTool] = useState<DesignTool>('select'), [cancelToken, setCancelToken] = useState(0);
   const workspace = draft.workspace ?? defaultDesignWorkspace();
   const changeWorkspace = useCallback((patch: Partial<ProjectDesignWorkspaceState>) => updateDraft(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), ...patch } })), [updateDraft]);
+  useEffect(() => {
+    if (selectedModel && scene) updateDraft(current => {
+      const state = current.workspace ?? defaultDesignWorkspace();
+      return { ...current, workspace: { ...state, sections: { ...state.sections, [`threed:details:v1:design:${scene.projectId}:selected-properties`]: true } } };
+    });
+  }, [selectedModel?.id, scene?.projectId, updateDraft]);
   const units = workspace.measurementUnits ?? 'imperial';
   const displayLength = (value: number) => units === 'metric' ? `${Number(value.toFixed(4))} m` : formatLength(value);
   const gridSnap = workspace.gridSnap, showRoofs = workspace.showRoofs, levelChoice = workspace.levelId, showAllLevels = workspace.showAllLevels;
@@ -232,7 +242,8 @@ export function DesignEditor({ selectedModelId, modelImages, metersPerSceneUnit,
         <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={gridSnap} onChange={event => setGridSnap(event.target.checked)} />Snap to 6 in grid + endpoints</label>
 
         </PersistentDetails><PersistentDetails storageId="defaults" className="rounded-md border border-foreground/10 p-1"><summary className="cursor-pointer px-1 py-0.5 text-xs font-semibold"><PencilRuler aria-hidden="true" className="mr-1 inline-block h-3.5 w-3.5 align-middle text-amber-600 dark:text-amber-400" />Drawing defaults<DesignFieldHelp label="Drawing defaults">Defaults apply to new geometry. Select an existing object to edit its properties.</DesignFieldHelp></summary><div className="grid grid-cols-2 gap-2">{([{ field: 'wallHeight', label: 'Wall height' }, { field: 'wallThickness', label: 'Wall thickness' }, { field: 'floorThickness', label: 'Floor thickness' }, { field: 'doorHeight', label: 'Door height' }, { field: 'doorWidth', label: 'Door width' }, { field: 'windowHeight', label: 'Window height' }, { field: 'windowWidth', label: 'Window width' }, { field: 'windowSill', label: 'Window sill' }] as const).map(item => <Dimension units={units} key={item.field} label={item.label} value={doc.defaults[item.field]} onChange={value => commit({ ...doc, defaults: { ...doc.defaults, [item.field]: value } })} />)}</div></PersistentDetails>
-        <PersistentDetails storageId="selected-properties" open data-testid="design-selected-properties" className={`${scene ? 'order-first' : ''} space-y-2 rounded-md border border-foreground/10 p-1`}><summary className="cursor-pointer px-1 py-0.5 text-xs font-semibold"><SlidersHorizontal aria-hidden="true" className="mr-1 inline-block h-3.5 w-3.5 align-middle text-emerald-600 dark:text-emerald-400" />{wall ? 'Selected Wall' : floor ? 'Selected Floor' : roof ? 'Selected Roof' : roofOpening ? `Selected ${roofOpening.kind === 'skylight' ? 'Skylight' : 'Roof Cutout'}` : opening ? `Selected ${opening.kind === 'door' ? 'Door' : 'Window'}` : 'Properties'}<DesignFieldHelp label="Object properties">Select in either view. Drag objects or corners to edit geometry. Hosted openings move along their host.</DesignFieldHelp></summary>
+        <PersistentDetails storageId="selected-properties" open data-testid="design-selected-properties" className={`${scene ? 'order-first' : ''} space-y-2 rounded-md border border-foreground/10 p-1`}><summary className="cursor-pointer px-1 py-0.5 text-xs font-semibold"><SlidersHorizontal aria-hidden="true" className="mr-1 inline-block h-3.5 w-3.5 align-middle text-emerald-600 dark:text-emerald-400" />{selectedModel ? 'Selected Model' : wall ? 'Selected Wall' : floor ? 'Selected Floor' : roof ? 'Selected Roof' : roofOpening ? `Selected ${roofOpening.kind === 'skylight' ? 'Skylight' : 'Roof Cutout'}` : opening ? `Selected ${opening.kind === 'door' ? 'Door' : 'Window'}` : 'Properties'}<DesignFieldHelp label="Object properties">Select in either view. Drag objects or corners to edit geometry. Hosted openings move along their host.</DesignFieldHelp></summary>
+          {selectedModel && onSaveModel && <DesignModelProperties key={selectedModel.id} model={selectedModel} save={onSaveModel} metersPerSceneUnit={metersPerSceneUnit ?? 1} busy={modelBusy} />}
           {(wall || floor || roof) && properties && <div className="space-y-2">
             <p className="break-all text-xs text-muted-foreground">ID: {selected} / Level: {displayed.levels.find(level => level.id === entityLevelId(displayed, selected!))?.name}</p>
             <DesignFieldHelp label="Object transforms">Position is the footprint center in Project metres, entered in the selected display units. Rotation is the first edge from +X toward +Z. Width/depth are world-axis extents. Shared corners also move connected entities; invalid host/opening changes reject together. Flip mirrors geometry, not a door handing flag.</DesignFieldHelp>
@@ -261,7 +272,7 @@ export function DesignEditor({ selectedModelId, modelImages, metersPerSceneUnit,
     {(error || scene?.error) && <p role="alert" className="text-red-400">{error || scene?.error}</p>}
   </section>;
   const controls = <div ref={controlsHost} className="flex min-h-0 min-w-0 flex-col gap-2 overflow-auto overscroll-contain text-foreground [&_input]:min-w-0 [&_label]:min-w-0 [&_select]:max-w-full" data-testid="design-controls"><fieldset disabled={loading || importing || !canSave} className="min-w-0 border-0 p-0">{propertiesPanel}</fieldset>{statusPanel}</div>;
-  const plan = <DesignPlan visibleLevelIds={visibleLevelIds} onToggleLevel={toggleLevel} contextActions={actionGroups} showMeasurements={canSave ? workspace.showMeasurements ?? false : readOnlyMeasurements} onShowMeasurementsChange={showMeasurements => { if (canSave) changeWorkspace({ showMeasurements }); else setReadOnlyMeasurements(showMeasurements); }} selectedModelId={selectedModelId} modelImages={modelImages} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={onModelSelect} measurementUnits={units} frameRequest={frameRequest} embedded={Boolean(scene)} drawingActions={scene ? drawingActions : undefined} planView={workspace.plan} onViewChange={plan => changeWorkspace({ plan })} active={active} disabled={!canSave || importing} document={doc} displayDocument={displayed} activeLevelId={activeLevelId} selected={selected} tool={tool} gridSnap={gridSnap} onSelect={select} onCommit={commit} onPreview={previewUpdate} onMessage={setMessage} onDrawComplete={id => { setSelected(id); setTool('select'); }} cancelToken={cancelToken} />;
+  const plan = <DesignPlan selectedModel={selectedModel} onSaveModel={onSaveModel} modelBusy={modelBusy} visibleLevelIds={visibleLevelIds} onToggleLevel={toggleLevel} contextActions={actionGroups} showMeasurements={canSave ? workspace.showMeasurements ?? false : readOnlyMeasurements} onShowMeasurementsChange={showMeasurements => { if (canSave) changeWorkspace({ showMeasurements }); else setReadOnlyMeasurements(showMeasurements); }} selectedModelId={selectedModelId} modelImages={modelImages} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={onModelSelect} measurementUnits={units} frameRequest={frameRequest} embedded={Boolean(scene)} drawingActions={scene ? drawingActions : undefined} planView={workspace.plan} onViewChange={plan => changeWorkspace({ plan })} active={active} disabled={!canSave || importing} document={doc} displayDocument={displayed} activeLevelId={activeLevelId} selected={selected} tool={tool} gridSnap={gridSnap} onSelect={select} onCommit={commit} onPreview={previewUpdate} onMessage={setMessage} onDrawComplete={id => { setSelected(id); setTool('select'); }} cancelToken={cancelToken} />;
   if (scene) return <div className="flex h-full min-h-0 min-w-0 overflow-hidden" data-testid="home-editor">
     {importDialog}
     <div data-testid="design-properties-panel" className="threed-workspace-panel threed-scene-panel-surface threed-scene-sidebar-size flex min-h-0 min-w-0 shrink-0 flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md"><DetailsSectionScope.Provider value={`design:${scene.projectId}`}><div className="mb-2 flex shrink-0 items-center gap-2 text-sm font-semibold"><Building2 className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />Design Properties<DesignFieldHelp label="Design Properties">Edit selected geometry and workspace settings. Save Project retains both.</DesignFieldHelp></div>{controls}</DetailsSectionScope.Provider></div>

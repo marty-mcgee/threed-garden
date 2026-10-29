@@ -5,6 +5,9 @@ const os = require('node:os');
 const assert = require('node:assert/strict');
 const { spawn } = require('node:child_process');
 const root = path.resolve(__dirname, '../../..');
+// Diagnostic comparison: remove only the Design fixture's media provider,
+// keeping the same editor, section owner, inputs and assertions.
+const isolateDesign = process.argv.includes('--design-without-multimedia');
 const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'threed-multimedia-browser-'));
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const browser = ['C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', 'C:/Program Files/Microsoft/Edge/Application/msedge.exe'].find(fs.existsSync);
@@ -66,15 +69,21 @@ return <SceneMultimediaProvider projectId={project}><main className="mx-auto max
 <MultimediaSimulationControls context={{...scene,projectId:project}} subscribeSensors={fn=>{listeners.add(fn);return()=>listeners.delete(fn)}} launch={{simulation,kickMappings:[],saveResults:true,request,stopRequest,onStatus}}/>
 </main></SceneMultimediaProvider>};
 function DesignFixture(){
+ const [model,setModel]=useState({id:'tree-instance',name:'Tree',positionX:16,positionY:2,positionZ:7,scaleMultiplier:1});
+ const [modelSelected,setModelSelected]=useState(false);
+ window.__model=model;window.__modelSaves=window.__modelSaves||0;
+ const saveModel=async(id,value)=>{if(id!==model.id)throw Error('Wrong instance');window.__modelSaves++;if(window.__failModel)return false;setModel(current=>({...current,...value}));return true};
+ const images=[{id:model.id,url:'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="20" height="20"%3E%3Crect width="20" height="20" fill="green"/%3E%3C/svg%3E',corners:[{x:model.positionX-model.scaleMultiplier,z:model.positionZ-model.scaleMultiplier},{x:model.positionX+model.scaleMultiplier,z:model.positionZ-model.scaleMultiplier},{x:model.positionX-model.scaleMultiplier,z:model.positionZ+model.scaleMultiplier}]}];
  const [draft,setDraft]=useState(()=>{const d=newDesign();d.nodes=[{id:'a',x:0,z:0},{id:'b',x:3,z:0}];d.walls=[{id:'wall',levelId:'ground',start:'a',end:'b',height:2.4,thickness:.15,elevation:0}];return projectArchitectureDraft({version:1,document:d})});
  const cache=React.useRef(null);if(!cache.current)cache.current=new DesignGeometryCache();
  React.useEffect(()=>{cache.current.update(draft.history.present,draft.selected);window.__designGeometry=cache.current.group},[draft]);
  React.useEffect(()=>()=>cache.current.dispose(),[]);window.__designDraft=draft;
  const visibility=useCallback(()=>{},[]),preview=useCallback(()=>{},[]);
  const select=useCallback(selected=>setDraft(current=>({...current,selected,workspace:{...current.workspace,selectedEntityId:selected,sections:{...current.workspace.sections,...(selected?{'threed:details:v1:design:7:selected-properties':true}:{})}}})),[]);
- return <SceneMultimediaProvider projectId={7}><ProjectDetailsSections.Provider value={{sections:draft.workspace.sections,change:(key,open)=>setDraft(current=>({...current,workspace:{...current.workspace,sections:{...current.workspace.sections,[key]:open}}}))}}>
- <div data-testid="project-scene-workspace" style={{height:'90vh',position:'relative'}}><DesignWorkspace active={true} editor={<DesignEditor scene={{projectId:7,projectName:'Local Design',draft,onChange:setDraft,onSelect:select,onSave:()=>{},saving:false,onPreview:preview,onVisibility:visibility}}/>}><div className="h-full">Scene placeholder; Canvas is outside this input test.</div></DesignWorkspace></div>
- </ProjectDetailsSections.Provider></SceneMultimediaProvider>;
+ const DesignProvider=${isolateDesign ? 'React.Fragment' : 'SceneMultimediaProvider'};
+ return <DesignProvider ${isolateDesign ? '' : 'projectId={7}'}><ProjectDetailsSections.Provider value={{sections:draft.workspace.sections,change:(key,open)=>setDraft(current=>({...current,workspace:{...current.workspace,sections:{...current.workspace.sections,[key]:open}}}))}}>
+ <div data-testid="project-scene-workspace" style={{height:'90vh',position:'relative'}}><DesignWorkspace active={true} editor={<DesignEditor selectedModel={modelSelected?model:null} selectedModelId={modelSelected?model.id:null} modelImages={images} metersPerSceneUnit={.3048} onSaveModel={saveModel} onModelSelect={()=>{setModelSelected(true);setDraft(current=>({...current,selected:null}))}} scene={{projectId:7,projectName:'Local Design',draft,onChange:setDraft,onSelect:select,onSave:()=>{},saving:false,onPreview:preview,onVisibility:visibility}}/>}><div className="h-full">Scene placeholder; Canvas is outside this input test.</div></DesignWorkspace></div>
+ </ProjectDetailsSections.Provider></DesignProvider>;
 }
 function App(){const[design,setDesign]=useState(false);window.__showDesign=()=>setDesign(true);return design?<DesignFixture/>:<Fixture/>}
 createRoot(document.getElementById('root')).render(<App/>);
@@ -186,6 +195,8 @@ createRoot(document.getElementById('root')).render(<App/>);
         const summary = `document.querySelector('[data-testid="design-selected-properties"]>summary')`;
         await evaluate(`${summary}.click()`);
         await waitFor(`!document.querySelector('[data-testid="design-selected-properties"]').open`);
+        // Native details changes before its queued toggle event updates React state.
+        await waitFor(`window.__designDraft.workspace.sections['threed:details:v1:design:7:selected-properties']===false`);
         assert.equal(await evaluate(`window.__designDraft.workspace.sections['threed:details:v1:design:7:selected-properties']`), false);
         const point = await evaluate(`(()=>{const s=document.querySelector('[data-testid="home-plan"]'),r=s.getBoundingClientRect(),g=[...s.children].find(e=>e.hasAttribute('transform')),m=g.transform.baseVal.consolidate().matrix;return{x:r.x+m.e+1.5*m.a,y:r.y+m.f}})()`);
         await call('Input.dispatchMouseEvent', { type: 'mousePressed', ...point, button: 'left', clickCount: 1 });
@@ -202,9 +213,37 @@ createRoot(document.getElementById('root')).render(<App/>);
         await waitFor(`JSON.stringify(window.__designDraft.history.present.nodes)!==${JSON.stringify(beforeNodes)}`);
         assert.notEqual(await evaluate(`JSON.stringify(Array.from(window.__designGeometry.getObjectByName('wall').geometry.attributes.position.array))`), beforeGeometry, 'Plan dragging updates the same Three wall geometry');
         assert.deepEqual(await evaluate('window.__errors'), []);
+        const modelPoint = async selector => evaluate(`(()=>{const e=document.querySelector(${JSON.stringify(selector)}),r=e.getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()`);
+        const pick=await modelPoint('image[aria-label="Select Project Model tree-instance"]');
+        await call('Input.dispatchMouseEvent',{type:'mousePressed',...pick,button:'left',clickCount:1});
+        await call('Input.dispatchMouseEvent',{type:'mouseReleased',...pick,button:'left',clickCount:1});
+        await waitFor(`!!document.querySelector('[aria-label="Model uniform scale"]')&&document.querySelector('[data-testid="design-selected-properties"]').open`);
+        assert.equal(await evaluate(`Number(document.querySelector('[aria-label="Model position X (m)"]').value)`),16*.3048);
+        const modelBefore=await evaluate('({...window.__model})');
+        await call('Input.dispatchMouseEvent',{type:'mousePressed',...pick,button:'left',clickCount:1});
+        await call('Input.dispatchMouseEvent',{type:'mouseMoved',x:pick.x+25,y:pick.y+15,button:'left',buttons:1});
+        assert.equal(await evaluate('window.__modelSaves'),0,'No persistence during pointer move');
+        await call('Input.dispatchMouseEvent',{type:'mouseReleased',x:pick.x+25,y:pick.y+15,button:'left',clickCount:1});
+        await waitFor('window.__modelSaves===1&&window.__model.positionX!==16');
+        assert.equal(await evaluate('window.__model.positionY'),modelBefore.positionY,'Preserve height');
+        const corner=await modelPoint('[data-model-resize="tree-instance"]');
+        await call('Input.dispatchMouseEvent',{type:'mousePressed',...corner,button:'left',clickCount:1});
+        await call('Input.dispatchMouseEvent',{type:'mouseMoved',x:corner.x+15,y:corner.y+15,button:'left',buttons:1});
+        await call('Input.dispatchMouseEvent',{type:'mouseReleased',x:corner.x+15,y:corner.y+15,button:'left',clickCount:1});
+        await waitFor('window.__modelSaves===2&&window.__model.scaleMultiplier>1');
+        await evaluate(`window.__failModel=true;(()=>{const input=document.querySelector('[aria-label="Model uniform scale"]');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,'3');input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+        await waitFor(`!${button('Save Model')}.disabled`);
+        await evaluate(`${button('Save Model')}.click()`);
+        await waitFor('window.__modelSaves===3&&document.body.innerText.includes("Your values are retained")');
+        assert.equal(await evaluate(`document.querySelector('[aria-label="Model uniform scale"]').value`),'3');
+        assert.equal(await evaluate(`(()=>{const original=window.confirm;window.confirm=()=>false;try{return window.dispatchEvent(new Event('threed:design:model-selection',{cancelable:true}))}finally{window.confirm=original}})()`),false,'Declining discard preserves the selected Model draft');
+        await evaluate(`window.__failModel=false;${button('Save Model')}.click()`);
+        await waitFor('window.__modelSaves===4&&window.__model.scaleMultiplier===3');
+        console.log('PASS Model plan: image selection opens Properties, metre conversion, pointer drag and proportional resize save once, preserve height, and failed field edits retain draft for retry. Mock persistence.');
         console.log('PASS native Design sections: real Project-controlled collapse/reopen, plan wall selection reopens Properties, numeric Height and pointer dragging update the same document and actual Three geometry. No Canvas/GPU or persistence claimed.');
       }
     }
+    console.log('Design provider isolation: ' + (isolateDesign ? 'Multimedia provider absent' : 'Multimedia provider present'));
     console.log('Artifacts: ' + temp);
   } finally { await send('Browser.close').catch(() => {}); child.kill(); }
 }
