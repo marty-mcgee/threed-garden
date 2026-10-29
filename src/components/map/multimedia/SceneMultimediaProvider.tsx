@@ -104,7 +104,15 @@ export function SceneMultimediaProvider({ projectId, children }: {
       markerId: current.state.markerId,
       albumId: current.state.albumId,
       action,
-    }, crypto.randomUUID()).catch(() => {});
+    }, crypto.randomUUID()).catch(error => {
+      if (currentScope.current !== scope) return;
+      if (error instanceof Error && (error.name === 'AbortError' || error.message === 'Multimedia Action cancelled.')) return;
+      setView(previous => ({
+        ...previous,
+        scope,
+        error: previous.error || (error instanceof Error ? error.message : 'Multimedia Action failed.'),
+      }));
+    });
   };
   return <Context.Provider value={{
     ...current,
@@ -117,18 +125,18 @@ export function SceneMultimediaProvider({ projectId, children }: {
     {children}
     <aside hidden={!current.state && !current.error} className="threed-workspace-panel fixed right-4 bottom-12 z-40 w-[min(340px,calc(100vw-2rem))] space-y-2 rounded-lg border p-3 text-xs shadow-lg" aria-label="Project Multimedia player">
       <p className="font-semibold">{current.state?.albumTitle || 'Project Multimedia'}</p>
-      {current.state && <p>{current.state.track.title} · {current.state.playing ? 'Playing' : 'Paused'}</p>}
+      {current.state && <p role="status">{current.state.track.title} · <span className="capitalize">{current.state.status}</span></p>}
       <video ref={mediaRef} hidden={!video} controls playsInline preload="none" className="max-h-48 w-full rounded" aria-label="Scene Multimedia"
-        onPlay={() => player.mediaChanged()} onPause={() => player.mediaChanged()} onEnded={() => player.mediaChanged()}
+        onPlay={() => player.mediaChanged()} onPause={() => player.mediaChanged()} onEnded={() => player.mediaChanged('', true)}
         onError={() => { if (mediaRef.current?.getAttribute('src')) player.mediaChanged('Media could not be loaded. Select the Track and retry Play.'); }} />
       {current.state && <div className="flex flex-wrap gap-1">
         <Button size="xs" variant="outline" disabled={current.busy} onClick={() => act(current.state!.playing ? 'pauseMultimedia' : 'playMultimedia')}>{current.state.playing ? 'Pause' : 'Play'}</Button>
         <Button size="xs" variant="outline" disabled={current.busy} onClick={() => act('stopMultimedia')}>Stop</Button>
         <Button size="xs" variant="outline" disabled={current.busy} onClick={() => act('rewindMultimedia')}>Rewind</Button>
         <Button size="xs" variant="outline" disabled={current.busy} onClick={() => act('nextTrack')}>Next Track</Button>
-        <Button size="xs" variant="ghost" onClick={() => player.clear()}>Close player</Button>
       </div>}
       {current.error && <p role="alert">{current.error}</p>}
+      <Button size="xs" variant="ghost" onClick={() => player.clear()}>Close player</Button>
     </aside>
   </Context.Provider>;
 }

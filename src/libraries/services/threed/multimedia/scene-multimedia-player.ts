@@ -31,6 +31,7 @@ export type ScenePlaybackState = {
   track: SceneMultimediaTrack;
   offset: number;
   playing: boolean;
+  status: 'loading' | 'playing' | 'paused' | 'stopped' | 'ended' | 'error';
 };
 type Media = Pick<HTMLMediaElement, 'src' | 'currentTime' | 'paused' | 'play' | 'pause' | 'load' | 'removeAttribute'>;
 type Port = {
@@ -95,6 +96,7 @@ export class SceneMultimediaPlayer {
     if (command.action !== 'playMultimedia' && (this.state?.markerId !== command.markerId || this.state.albumId !== command.albumId)) throw Error('Start playback on this object and Album first.');
     this.commands.forEach(listener => listener(command, requestId));
     const wasPlaying = this.state?.playing === true;
+    const retryFailed = this.state?.status === 'error';
     this.cancel();
     const operation = {
       id: requestId,
@@ -148,11 +150,23 @@ export class SceneMultimediaPlayer {
       if (command.action === 'stopMultimedia' || command.action === 'rewindMultimedia') media.currentTime = 0;
       if (command.action === 'rewindMultimedia' && wasPlaying) { await media.play(); current(); }
       if (command.action === 'playMultimedia' || command.action === 'nextTrack') {
-        if (!same || this.state!.track.id !== track.id || media.src !== new URL(track.fileUrl, typeof location === 'undefined' ? 'https://threed.invalid' : location.href).href) {
+        if (retryFailed || !same || this.state!.track.id !== track.id || media.src !== new URL(track.fileUrl, typeof location === 'undefined' ? 'https://threed.invalid' : location.href).href) {
           media.pause();
           media.src = track.fileUrl;
           media.load();
         }
+        // Retain the requested Track even if the browser refuses playback.
+        // Retry must address this Track, not the previously playing one.
+        this.state = {
+          markerId: command.markerId,
+          albumId: command.albumId,
+          albumTitle: data.albums.find(album => album.id === command.albumId)?.title ?? '',
+          track,
+          offset: data.offset,
+          playing: false,
+          status: 'loading',
+        };
+        this.publish();
         await media.play();
         current();
         if (media.paused) throw Error('Playback did not start. Click Play to enable Scene audio.');
@@ -164,13 +178,15 @@ export class SceneMultimediaPlayer {
         track,
         offset: data.offset,
         playing: !media.paused,
+        status: command.action === 'stopMultimedia' ? 'stopped' : media.paused ? 'paused' : 'playing',
       };
     } catch (error) {
       if (this.pending === operation && !operation.abort.signal.aborted) {
         this.port.media()?.pause();
         if (this.state) this.state = {
           ...this.state,
-          playing: false
+          playing: false,
+          status: 'error',
         };
         this.error = error instanceof Error && error.name === 'NotAllowedError' ? 'Click Play to enable Scene audio.' : error instanceof Error ? error.message : 'Playback failed.';
       }
@@ -189,15 +205,21 @@ export class SceneMultimediaPlayer {
     this.port.media()?.pause();
     if (this.state) this.state = {
       ...this.state,
-      playing: false
+      playing: false,
+      status: this.state.status === 'ended' || this.state.status === 'stopped' ? this.state.status : 'paused',
     };
     this.publish();
   }
 
-  mediaChanged(error = '') {
+  mediaChanged(error = '', ended = false) {
+    // A command owns intermediate pause/load/play events until it settles.
+    if (this.pending && !error) return;
+    const paused = this.port.media()?.paused ?? true;
+    const retainedStatus = this.state && ['stopped', 'ended', 'error'].includes(this.state.status) ? this.state.status : 'paused';
     if (this.state) this.state = {
       ...this.state,
-      playing: !(this.port.media()?.paused ?? true)
+      playing: !error && !ended && !paused,
+      status: error ? 'error' : ended ? 'ended' : paused ? retainedStatus : 'playing',
     };
     if (error) this.error = error;
     this.publish();

@@ -62,6 +62,7 @@ export function SceneMultimediaDetails({ markerId, controlledCharacterId }: {
   };
   const ready = !!data && !!albumId && !!data.tracks.length && (!withCharacter || !!actorMarkerId) && !context.busy;
   const same = context.state?.markerId === markerId && context.state.albumId === albumId;
+  const selectedAlbum = data?.albums.find(album => album.id === albumId);
   const act = async (action: MultimediaAction) => {
     setMessage('');
     try {
@@ -85,6 +86,14 @@ export function SceneMultimediaDetails({ markerId, controlledCharacterId }: {
         <option value="">Choose an Album</option>{data.albums.map(album => <option key={album.id} value={album.id}>{album.title} — {album.artist}</option>)}
       </select></label>}
       {albumId && data && <>
+        {selectedAlbum && <div className="flex items-start gap-2 rounded border border-foreground/10 p-2" aria-label="Selected Album information">
+          {selectedAlbum.coverArt && <img key={selectedAlbum.coverArt} src={selectedAlbum.coverArt} alt={`${selectedAlbum.title} cover`} className="size-16 shrink-0 rounded object-cover" onError={event => { event.currentTarget.hidden = true; }} />}
+          <div className="min-w-0 break-words">
+            <p className="font-semibold">{selectedAlbum.title}</p>
+            <p className="text-muted-foreground">{selectedAlbum.artist}</p>
+          </div>
+        </div>}
+        {same && context.state && <p role="status">{context.state.track.title} · <span className="capitalize">{context.state.status}</span></p>}
         {!data.tracks.length && <p>No playable active Tracks on this page.</p>}
         {!!data.tracks.length && <label className="block">Track<select aria-label="Scene Track" className="mt-1 block w-full rounded border bg-background p-1" value={trackId ?? data.tracks[0].id} onChange={event => setTrackId(Number(event.target.value))}>{data.tracks.map(track => <option key={track.id} value={track.id}>{track.trackNumber ?? '—'}. {track.title}</option>)}</select></label>}
         <div className="flex gap-1">{offset > 0 && <Button size="xs" variant="ghost" onClick={() => { setOffset(Math.max(0, offset - 50)); setTrackId(null); }}>Previous Tracks</Button>}{data.hasMore && <Button size="xs" variant="ghost" onClick={() => { setOffset(offset + 50); setTrackId(null); }}>More Tracks</Button>}</div>
