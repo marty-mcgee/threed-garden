@@ -6,6 +6,10 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
+ - [v0.29.2-alpha - App: Multimedia Integration and Learn Data Structure Checkpoint (experimental checkpoint preparation)](v0.29.2-alpha.md)
+
+ - [v0.30.0 - ThreeD Multimedia Integration (implementation under review against existing App architecture)](v0.30.0.md)
+
  - [v0.29.1 - App: Header Surface Navigation, Module Appearance and Dashboard Footer (Developer-confirmed production release)](v0.29.1.md)
 
  - [v0.29.0 - ThreeD Module Learn: Admin CRUD, Publishing and Markdown Guides (Developer-confirmed production release)](v0.29.0.md)

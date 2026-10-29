@@ -1,6 +1,7 @@
 // app/admin/threed/plants/[id]/page.tsx
 'use client';
 
+import { EntityAlbumsSection } from '@/components/admin/threed/multimedia/EntityAlbumsSection';
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -130,6 +131,7 @@ export default function PlantDetailPage() {
     <div className="space-y-6">
       {ToastComponent}
 
+
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="sm" onClick={() => router.push('/admin/threed/plants')}>
@@ -249,6 +251,7 @@ export default function PlantDetailPage() {
           </CardContent>
         </Card>
       </div>
+      <EntityAlbumsSection moduleType="plant" entityId={plant.id} entityName={plant.commonName} />
     </div>
   );
 }

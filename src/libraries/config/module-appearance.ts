@@ -116,21 +116,6 @@ export const moduleDefinitions = {
     icon: "Users",
     color: "purple"
   },
-  plants: {
-    label: "Plants",
-    icon: "Sprout",
-    color: "green"
-  },
-  beds: {
-    label: "Beds",
-    icon: "Cuboid",
-    color: "amber"
-  },
-  plantings: {
-    label: "Plantings",
-    icon: "Bean",
-    color: "brown"
-  },
   scenarios: {
     label: "Scenarios",
     icon: "BookOpen",
@@ -151,10 +136,20 @@ export const moduleDefinitions = {
     icon: "Layers",
     color: "cyan"
   },
-  tasks: {
-    label: "Tasks",
-    icon: "ListTodo",
-    color: "muted"
+  plants: {
+    label: "Plants",
+    icon: "Sprout",
+    color: "green"
+  },
+  plantings: {
+    label: "Plantings",
+    icon: "Bean",
+    color: "brown"
+  },
+  beds: {
+    label: "Beds",
+    icon: "Cuboid",
+    color: "amber"
   },
   waterings: {
     label: "Waterings",
@@ -170,6 +165,11 @@ export const moduleDefinitions = {
     label: "FarmBots",
     icon: "Bot",
     color: "slate"
+  },
+  tasks: {
+    label: "Tasks",
+    icon: "ListTodo",
+    color: "muted"
   },
   multimedia: {
     label: "Multimedia",

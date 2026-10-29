@@ -230,6 +230,12 @@ console.log('PASS: actual DesignPlan blank-click/temporary-pan threshold, tool/s
   for(const [i,value] of [.6096,0,0,1.2192,3.048,6.096].entries()) assert(Math.abs(matrix[i]-value)<1e-8);
   node.props.onPointerDown({button:0,altKey:false,stopPropagation(){stopped=true;}});
   assert.equal(selectedModel,'models-15');assert(stopped);assert.equal(f.calls.commit.length,0);assert.equal(f.calls.view.length,0);
+  f.update({selectedModelId:'models-15'});
+  let highlight=flatten(f.tree).find(node=>node.props?.['data-selected-model']==='models-15');
+  assert(highlight,'The selected placed Model has a visible 2D footprint');
+  assert.equal(highlight.props.pointerEvents,'none','Highlight cannot intercept picking');
+  f.update({selectedModelId:null});
+  assert(!flatten(f.tree).some(node=>node.props?.['data-selected-model']),'Deselecting removes the footprint');
   selectedModel=null;node.props.onKeyDown({key:'Enter',stopPropagation(){},preventDefault(){}});assert.equal(selectedModel,'models-15');
   f.update({disabled:true});selectedModel=null;flatten(f.tree).find(node=>node.type==='image').props.onPointerDown({button:0,altKey:false,stopPropagation(){}});assert.equal(selectedModel,null);
   f.update({disabled:false,document:document.newDesign()});const fit=flatten(f.tree).find(node=>node.type==='action'&&node.props.label==='Fit Plan');assert.equal(fit.props.disabled,false);fit.props.onClick();assert(f.calls.view.length>0);

@@ -1,4 +1,5 @@
 'use client';
+import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -42,6 +43,7 @@ export function AnimationPresets({ target, targetId, assignments, inherited, dir
           <Button size="sm" variant="outline" disabled={!current || !rows.length} onClick={() => { if (current && confirm(`Replace the saved entries in “${current.name}” with these saved mappings?`)) void run(async () => { await request('/api/threed/animation-presets', 'PUT', { id: current.id, revision: current.revision, name: name.trim() || current.name, description: current.description, entries: rows }); await refresh(); setMessage('Preset updated. Previously applied assignments are unchanged.'); }); }}>Update selected preset</Button>
           <Button size="sm" variant="outline" disabled={!current} onClick={() => { if (current && confirm(`Delete preset “${current.name}”? Applied assignments remain.`)) void run(async () => { await request(`/api/threed/animation-presets?id=${current.id}&revision=${current.revision}`, 'DELETE'); await refresh(); setSelected(''); }); }}>Delete preset</Button>
         </div>
+        {current && <EntityAlbumsSection key={current.id} moduleType="animation_preset" entityId={current.id} entityName={current.name} disabled={busy || disabled || dirty} />}
         {review && <div className="max-h-64 overflow-auto rounded border p-2">
           <table className="w-full text-left"><thead><tr><th>Action</th><th>Current mapping</th><th>Preset mapping</th><th>Result</th></tr></thead><tbody>{review.review.map(row => {
             const clipName = (id: number | null) => review.animations.find(c => c.id === id)?.name || `Unavailable clip #${id}`;

@@ -1,6 +1,7 @@
 import type { SoccerKickMapping, SoccerSceneContext } from './soccer-simulation-scene';
 import { captureSoccerSimulation, type SoccerSimulation } from './soccer-simulation-runner';
 import { isProjectModelMovableBall } from '../models/project-model-instance-core';
+import { captureMultimediaSimulation, isMultimediaSimulation, multimediaSimulationParticipants } from './multimedia-simulation';
 
 export type SimulationLaunch = { simulation: SoccerSimulation; kickMappings: SoccerKickMapping[] };
 export type SimulationLaunchSummary = { id: number; name: string };
@@ -8,6 +9,10 @@ export type SimulationLaunchSummary = { id: number; name: string };
 /** Never substitute another Character or ball for a saved participant. */
 export function simulationLaunchParticipants(launch: SimulationLaunch, scene: SoccerSceneContext) {
   if (!scene.allowed || !scene.ready || scene.busy) throw new Error('Finish placement or editing and wait for the Scene before running.');
+  if (isMultimediaSimulation(launch.simulation.definition)) {
+    const simulation = captureMultimediaSimulation(launch.simulation, { projectId: scene.projectId!, threedId: launch.simulation.threedId });
+    return multimediaSimulationParticipants(simulation, scene);
+  }
   const simulation = captureSoccerSimulation(launch.simulation, { projectId: scene.projectId!, threedId: launch.simulation.threedId });
   const first = simulation.definition.steps[0];
   const visible = (id: string, type: string) => scene.markers.find(marker => marker.id === id && marker.type === type

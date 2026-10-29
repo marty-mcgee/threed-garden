@@ -1,4 +1,5 @@
 'use client';
+import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useState, useEffect } from 'react';
@@ -1045,6 +1046,7 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollReco
               )}
             </Button>
           </div>
+          {editingLayer && <EntityAlbumsSection key={editingLayer.id} moduleType="layer" entityId={editingLayer.id} disabled={isSubmitting} />}
         </DialogContent>
       </Dialog>
     </div>

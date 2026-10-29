@@ -13,6 +13,7 @@ import type { SimulationChoices } from './SimulationDefinitionEditor';
 import { loadSimulationPreviewAssets, type SimulationPreviewAsset } from './simulation-preview-data';
 import { SimulationPreviewTimeline, simulationPreviewAction, simulationPreviewChoices, simulationPreviewStepChoices, type PreviewTimelineState } from './simulation-preview-timeline';
 import type { SimulationPreviewCameraTools } from './SimulationPreviewCanvas';
+import { isMultimediaAction } from '@/libraries/services/threed/multimedia/scene-multimedia-contract';
 
 const PreviewCanvas = dynamic(() => import('./SimulationPreviewCanvas'), { ssr: false, loading: () => <p role="status" className="p-3 text-xs">Loading Canvas…</p> });
 export function SimulationPreview({ definition, choices, context, loading, error, busy }: {
@@ -97,6 +98,7 @@ export function SimulationPreview({ definition, choices, context, loading, error
     return '';
   };
   const stepProblem = (item: SimulationDefinition['steps'][number]) => {
+    if (isMultimediaAction(item.action)) return 'Multimedia commands execute in the Project Scene. This animation preview does not play Album Tracks.';
     const asset = assets.find(asset => asset.marker.markerId === item.actorMarkerId);
     const clip = timelineClip(item);
     const action = item.action === 'runToTarget' ? 'run' : item.action;

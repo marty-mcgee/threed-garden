@@ -1,4 +1,5 @@
 'use client';
+import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -307,7 +308,8 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
                 {saving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}{editing ? 'Update Category' : 'Create Category'}
               </Button>
           </div>
-        </DialogContent>
+        {editing?.id && <EntityAlbumsSection key={editing.id} moduleType="model_category" entityId={editing.id} entityName={editing.name} disabled={saving} />}
+      </DialogContent>
       </Dialog>
     </div>
   );

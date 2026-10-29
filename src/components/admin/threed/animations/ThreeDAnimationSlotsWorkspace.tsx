@@ -1,4 +1,5 @@
 'use client';
+import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 import { useEffect, useMemo, useState } from 'react';
@@ -113,6 +114,7 @@ export function ThreeDAnimationSlotsWorkspace({ initialCategoryId }: { initialCa
       </fieldset><p className="mt-2 text-xs text-muted-foreground">Assign clips in Character/Model Animations & Preview. Disabling retains mappings; renaming preserves slot identity.</p>
       {operationError && <p role="alert" className="text-sm text-destructive">{operationError}</p>}
     </form>}
+      {draft?.id && <EntityAlbumsSection key={draft.id} moduleType="animation_slot" entityId={draft.id} entityName={draft.name} disabled={busy} />}
       </DialogContent>
     </Dialog>
     <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">

@@ -116,12 +116,12 @@ export function AdminSidebar({ isCollapsed, onToggle, isMobile = false, isOpen =
           })}
         </ul>}
       </nav>
-      <div className="shrink-0 space-y-1 border-t p-2">
+      {/* <div className="shrink-0 space-y-1 border-t p-2">
         <Button asChild variant="ghost" className={cn('h-9 w-full justify-start gap-3 text-muted-foreground', collapsed && 'justify-center px-0')}>
           <Link href="/" aria-label="Go to Site" title={collapsed ? 'Go to Site' : undefined}><Home className="h-4 w-4 shrink-0" />{!collapsed && <span>Go to Site</span>}</Link>
         </Button>
         <SignOutButton variant="ghost" size={collapsed ? 'icon' : 'default'} showLabel={!collapsed} className={cn('h-9 w-full justify-start gap-3', collapsed && 'justify-center px-0')} />
-      </div>
+      </div> */}
     </aside>
   );
 }

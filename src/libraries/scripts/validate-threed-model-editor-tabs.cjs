@@ -14,7 +14,7 @@ function load(file, mocks, globals = {}) {
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: {
     module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX,
   } }).outputText, { exports, console, URL, AbortController, AbortSignal, FormData, ...globals,
-    require(name) { assert(name in mocks, `Unexpected import ${file}: ${name}`); return mocks[name]; },
+    require(name) { if (name === '../multimedia/EntityAlbumsSection') return { EntityAlbumsSection: 'EntityAlbumsSection' };  assert(name in mocks, `Unexpected import ${file}: ${name}`); return mocks[name]; },
   });
   return exports;
 }

@@ -1,4 +1,5 @@
 'use client';
+import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { AdminRelationshipBadge } from '@/components/admin/shared/AdminRelationshipBadge';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
@@ -433,6 +434,7 @@ export function ThreeDScenariosCRUD({ projectId, compact = false, view = 'list',
         {!formError && saveBlockedReason && <p className="text-xs text-muted-foreground">{saveBlockedReason}</p>}
         <div className="admin-editor-actions border-t pt-3"><Button size="sm" variant="success" disabled={busy || !!saveBlockedReason || (!!editing && !dirty)} onClick={() => void save()}>{busy ? 'Saving…' : 'Save Changes'}</Button><Button size="sm" variant="outline" disabled={busy} onClick={closeEditor}>Cancel</Button><span role="status" className="text-xs text-muted-foreground">{busy ? 'Saving Scenario…' : dirty ? 'Unsaved changes' : editing ? 'No unsaved changes' : 'New Scenario'}</span></div>
       </div>}
+      {editing && <EntityAlbumsSection key={editing.id} moduleType="scenario" entityId={editing.id} entityName={editing.name} disabled={busy} />}
       {choosingPurpose && <div className="admin-editor-actions"><Button variant="outline" onClick={closeEditor}>Cancel</Button></div>}
     </ScenarioEditorSurface>}
   </div>;

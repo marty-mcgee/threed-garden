@@ -3,6 +3,11 @@ function load(file, deps = {}, globals = {}) {
   const exports = {};
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText,
     { exports, console, URL, URLSearchParams, Buffer, Date, AbortSignal, TextEncoder, crypto: require('node:crypto'), ...globals, require(name) {
+      if (name.endsWith('scene-multimedia-contract')) return require('../services/threed/multimedia/scene-multimedia-contract.ts');
+      if (name.endsWith('SimulationMultimediaFields')) return { SimulationMultimediaFields: 'SimulationMultimediaFields' };
+      if (name.endsWith('MultimediaSimulationControls')) return { MultimediaSimulationControls: 'MultimediaSimulationControls' };
+      if (name.endsWith('scene-multimedia-read')) return { readSceneMultimedia: async () => { throw Error('Legacy fixture must not read Multimedia'); }, SceneMultimediaReadError: class extends Error {} };
+
       if (name in deps) return deps[name]; assert(name.startsWith('.'), name); return load(path.resolve(path.dirname(file), name.endsWith('.ts') ? name : name + '.ts'), deps, globals);
     } }); return exports;
 }

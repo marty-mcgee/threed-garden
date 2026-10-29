@@ -154,7 +154,7 @@ export function ProjectSimulationLauncher({ context, saveResults, onPrepare, sub
       {total > 25 && <span className="mt-1 flex items-center justify-between"><Button variant="ghost" size="sm" disabled={!page || preparing || busy || loading} onClick={() => setPage(value => value - 1)}>Previous</Button>Page {page + 1} of {Math.ceil(total / 25)}<Button variant="ghost" size="sm" disabled={(page + 1) * 25 >= total || preparing || busy || loading} onClick={() => setPage(value => value + 1)}>Next</Button></span>}
     </label>}
     {total === 1 && selectedRow && <p className="text-left text-xs font-medium">{selectedRow.name}</p>}
-    <p className="text-left text-[11px] text-muted-foreground">Scene runs support Run to target ball and Kick ball with one Character and one ball. Other saved Actions are not listed here.</p>
+    <p className="text-left text-[11px] text-muted-foreground">Scene runs support Run/Kick with one Character and ball, or Multimedia commands with one Character and target object. Other saved Actions are not listed here.</p>
     <Button className="h-8 w-full bg-emerald-600 px-3 text-xs font-semibold text-white hover:bg-emerald-500 disabled:bg-muted/60 disabled:text-muted-foreground"
       aria-busy={preparing || busy}
       aria-describedby="simulation-launch-status" disabled={!preparing && !busy && !!disabledReason} onClick={() => preparing || busy ? stop() : void start()}>

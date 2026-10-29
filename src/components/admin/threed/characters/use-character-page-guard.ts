@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react';
 
 /** Page links use document navigation so browser Back/Forward shares beforeunload protection. */
-export function useCharacterPageGuard(enabled: boolean, dirty: boolean, busy: boolean) {
+export function useCharacterPageGuard(enabled: boolean, dirty: boolean, busy: boolean, workspace = 'Character') {
   const current = useRef({ dirty, busy });
   current.current = { dirty, busy };
   useEffect(() => {
@@ -16,7 +16,7 @@ export function useCharacterPageGuard(enabled: boolean, dirty: boolean, busy: bo
       if (!(anchor instanceof HTMLAnchorElement) || anchor.target === '_blank' || anchor.hasAttribute('download')) return;
       if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
       if (anchor.href === window.location.href) { event.preventDefault(); event.stopImmediatePropagation(); return; }
-      if (current.current.busy || (current.current.dirty && !window.confirm('Discard unsaved changes and leave this Character workspace?'))) {
+      if (current.current.busy || (current.current.dirty && !window.confirm(`Discard unsaved changes and leave this ${workspace} workspace?`))) {
         event.preventDefault(); event.stopImmediatePropagation(); return;
       }
       // Use one guarded document transition even for surrounding Next navigation links.
@@ -27,6 +27,6 @@ export function useCharacterPageGuard(enabled: boolean, dirty: boolean, busy: bo
     window.addEventListener('beforeunload', unload);
     document.addEventListener('click', navigate, true);
     return () => { window.removeEventListener('beforeunload', unload); document.removeEventListener('click', navigate, true); };
-  }, [enabled]);
+  }, [enabled, workspace]);
   return () => { current.current = { dirty: false, busy: false }; };
 }

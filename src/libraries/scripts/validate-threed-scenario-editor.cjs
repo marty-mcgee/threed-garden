@@ -8,7 +8,7 @@ const proxy = new Proxy({}, { get: (_, key) => String(key) });
 function load(file, mocks, globals = {}) {
   const exports = {};
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText, {
-    exports, AbortController, console, ...globals, require(name) { if (name === '@/components/admin/shared/use-admin-list-query-state') return { useAdminListQueryState: (_route, _key, initial) => mocks.react.useState(initial) }; assert(name in mocks, name); return mocks[name]; },
+    exports, AbortController, console, ...globals, require(name) { if (name === '../multimedia/EntityAlbumsSection') return { EntityAlbumsSection: 'EntityAlbumsSection' };  if (name === '@/components/admin/shared/use-admin-list-query-state') return { useAdminListQueryState: (_route, _key, initial) => mocks.react.useState(initial) }; assert(name in mocks, name); return mocks[name]; },
   });
   return exports;
 }
@@ -58,7 +58,7 @@ function fixture(props, initialProjectFailure = false) {
     HTMLAnchorElement: Anchor,
     window: { location: { search: '', assign: url => navigation.push(url) }, confirm: () => confirmation, addEventListener: (name, fn) => listeners.set(name, fn), removeEventListener: name => listeners.delete(name) },
     document: { visibilityState: 'visible', addEventListener: (name, fn) => documentListeners.set(name, fn), removeEventListener: name => documentListeners.delete(name) },
-    require(name) { if (name === '@/components/admin/shared/use-admin-list-query-state') return { useAdminListQueryState: (_route, _key, initial) => mocks.react.useState(initial) }; assert(name in mocks, name); return mocks[name]; },
+    require(name) { if (name === '../multimedia/EntityAlbumsSection') return { EntityAlbumsSection: 'EntityAlbumsSection' };  if (name === '@/components/admin/shared/use-admin-list-query-state') return { useAdminListQueryState: (_route, _key, initial) => mocks.react.useState(initial) }; assert(name in mocks, name); return mocks[name]; },
   });
   rt.mount(() => exports.ThreeDScenariosCRUD(props));
   return { rt, requests, navigation, notifications, listeners, record, find: predicate => nodes(rt.value).find(predicate), confirm(value) { confirmation = value; }, fail(value) { fail = value; }, failList(value) { failList = value; }, failProjects(value) { failProjects = value; }, failModules(value) { failModules = value; }, clickLink() {

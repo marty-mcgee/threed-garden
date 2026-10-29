@@ -1,10 +1,11 @@
 import { parseSimulationDefinition, type SimulationDefinition, type SimulationStep } from './simulation-input';
+import { isMultimediaAction } from '../multimedia/scene-multimedia-contract';
 
 /** First Scene execution capability. Definitions and outcomes remain separate. */
 export type SoccerSimulation = { id: number; revision: number; name: string; projectId: number; threedId: number;
   isActive: boolean; definition: SimulationDefinition };
 export type SimulationReply = { requestId: string; actorMarkerId?: string; targetMarkerId?: string; projectId?: number;
-  kind: 'navigation' | 'kick'; success: boolean; reason?: string };
+  kind: 'navigation' | 'kick' | 'multimedia'; success: boolean; reason?: string };
 export type SimulationOutcome = { stepId: string; action: string; requestId: string; startedAt: number; endedAt: number;
   status: 'completed' | 'failed' | 'cancelled' | 'timed-out'; reason?: string };
 export type SimulationRunState = { runId: string; simulationId: number; revision: number; phase: 'running' | 'completed' | 'failed' | 'cancelled' | 'timed-out';
@@ -21,6 +22,7 @@ export function captureSoccerSimulation(value: SoccerSimulation, binding: { proj
 }
 
 type Port = {
+  capture?: typeof captureSoccerSimulation;
   requestId: () => string; now: () => number;
   schedule: (fn: () => void, ms: number) => unknown; clear: (timer: unknown) => void;
   subscribe: (listener: (reply: SimulationReply) => void) => () => void;
@@ -40,7 +42,7 @@ export class SoccerSimulationRunner {
   get running() { return this.state?.phase === 'running'; }
   start(simulation: SoccerSimulation, runId = this.port.requestId()) {
     if (this.running) throw new Error('A Simulation is already running.');
-    this.simulation = captureSoccerSimulation(simulation, simulation);
+    this.simulation = (this.port.capture ?? captureSoccerSimulation)(simulation, simulation);
     this.state = { runId, simulationId: simulation.id, revision: simulation.revision, phase: 'running', stepIndex: 0, outcomes: [] };
     this.unsubscribe = this.port.subscribe(reply => this.receive(reply));
     this.next();
@@ -73,6 +75,8 @@ export class SoccerSimulationRunner {
     if (!this.running || !pending || !simulation || reply.requestId !== pending.requestId) return;
     if (pending.step.action === 'runToTarget') {
       if (reply.kind !== 'navigation' || reply.actorMarkerId !== pending.step.actorMarkerId || reply.targetMarkerId !== pending.step.targetMarkerId) return;
+    } else if (isMultimediaAction(pending.step.action)) {
+      if (reply.kind !== 'multimedia' || reply.projectId !== simulation.projectId || reply.actorMarkerId !== pending.step.actorMarkerId || reply.targetMarkerId !== pending.step.targetMarkerId) return;
     } else if (reply.kind !== 'kick' || reply.projectId !== simulation.projectId || reply.targetMarkerId !== pending.step.targetMarkerId) return;
     const step = pending.step;
     this.finishPending(reply.success ? 'completed' : 'failed', reply.reason, !reply.success);
@@ -82,7 +86,7 @@ export class SoccerSimulationRunner {
   private advanceFailure(step: SimulationStep, phase: 'failed' | 'timed-out', reason?: string) {
     if (!this.running) return;
     // A cancelled/blocked navigation is a lifecycle failure; it never advances to a kick.
-    if (step.onFailure === 'continue' && step.action === 'kickBall') { this.state!.stepIndex++; this.next(); }
+    if (step.onFailure === 'continue' && (step.action === 'kickBall' || isMultimediaAction(step.action))) { this.state!.stepIndex++; this.next(); }
     else this.finish(phase, reason);
   }
   private finishPending(status: SimulationOutcome['status'], reason?: string, cancel = false) {

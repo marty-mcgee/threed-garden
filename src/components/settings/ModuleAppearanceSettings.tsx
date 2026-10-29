@@ -21,7 +21,7 @@ const moduleGroups = [
 const compactControl = 'h-7 min-w-0 w-full rounded-md border border-input bg-background px-2 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50 [@media(pointer:coarse)]:min-h-11';
 const compactAction = 'h-7 gap-1.5 px-2 text-xs [@media(pointer:coarse)]:min-h-11';
 
-export function ModuleAppearanceSettings() {
+export function useModuleAppearanceEditor() {
   const context=useModuleAppearance();
   const [draft,setDraft]=useState<ModuleAppearanceSnapshot|null>(null);
   const [message,setMessage]=useState<string|null>(null);
@@ -32,12 +32,42 @@ export function ModuleAppearanceSettings() {
     const warn=(event:BeforeUnloadEvent)=>{event.preventDefault();event.returnValue='';};
     window.addEventListener('beforeunload',warn);return()=>window.removeEventListener('beforeunload',warn);
   },[dirty]);
-  if(!context)return null;
-  const disabled=context.busy||!context.loaded||!context.canEdit||!!context.error;
+  const disabled = !context || context.busy || !context.loaded || !context.canEdit || !!context.error;
+  const save = async () => {
+    if (!context || !draft || disabled || !dirty) return;
+    setMessage(null);
+    try {
+      await context.save(draft);
+      setMessage('Module appearance saved for all users.');
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'Save failed.');
+      throw error;
+    }
+  };
+  const discard = () => {
+    setDraft(context?.loaded ? context.snapshot : null);
+    setMessage(null);
+  };
+  return {
+    context,
+    draft,
+    setDraft,
+    message,
+    setMessage,
+    dirty,
+    disabled,
+    save,
+    discard,
+  };
+}
+
+export function ModuleAppearanceSettings({ editor }: { editor: ReturnType<typeof useModuleAppearanceEditor> }) {
+  const { context, draft, setDraft, message, setMessage, dirty, disabled } = editor;
+  if (!context) return null;
   return <SettingsSection section="modules" className="admin-editor-panel rounded-md border border-border/60">
     <summary className="cursor-pointer rounded-md px-3 py-2 text-xs font-semibold hover:bg-muted/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@media(pointer:coarse)]:min-h-11"><span className="inline-flex items-center gap-1.5 align-middle"><Palette aria-hidden="true" className="h-3.5 w-3.5 text-pink-500" />Module colors and icons <span className="font-normal text-muted-foreground">Global App Settings</span>{dirty && <span className="text-amber-600 dark:text-amber-400">Unsaved</span>}{context.error && <span className="text-destructive">Unavailable</span>}</span></summary>
     <div className="space-y-2 px-3 pb-3">
-    <p className="text-xs text-muted-foreground">Shared by every user. Only active Super Admin accounts can save changes. Personal navigation visibility stays unchanged.</p>
+    <p className="text-xs text-muted-foreground">Shared by every user. Only active Super Admin accounts can save changes. Use Save Changes at the bottom of this page or Save Module appearance below. Personal navigation visibility stays unchanged.</p>
     {context.error && <p role="alert" className="text-sm text-destructive">{context.error}</p>}
     {!context.loaded&&!context.error&&<p role="status" className="text-sm">Loading Module appearance…</p>}
     {context.loaded&&!context.canEdit&&<p className="text-xs text-muted-foreground">Read only: an active Super Admin account is required to edit.</p>}
@@ -73,9 +103,9 @@ export function ModuleAppearanceSettings() {
       })}
     </fieldset>
     <div className="admin-editor-actions border-t pt-2">
-      <Button type="button" size="sm" className={compactAction} disabled={disabled||!dirty} onClick={async()=>{if(!draft)return;try{await context.save(draft);setMessage('Module appearance saved for all users.');}catch(error){setMessage(error instanceof Error?error.message:'Save failed.');}}}>Save Module appearance</Button>
-      <Button type="button" size="sm" className={compactAction} variant="outline" disabled={disabled||!dirty} onClick={()=>{setDraft(context.snapshot);setMessage(null);}}>Discard</Button>
-      <Button type="button" size="sm" className={compactAction} variant="outline" disabled={disabled} onClick={()=>setDraft({...defaultModuleAppearance(),revision:context.snapshot.revision})}>Restore defaults</Button>
+      <Button type="button" size="sm" className={compactAction} disabled={disabled||!dirty} onClick={()=>editor.save().catch(()=>{})}>Save Module Appearance</Button>
+      <Button type="button" size="sm" className={compactAction} variant="outline" disabled={disabled||!dirty} onClick={editor.discard}>Discard</Button>
+      <Button type="button" size="sm" className={compactAction} variant="outline" disabled={disabled} onClick={()=>setDraft({...defaultModuleAppearance(),revision:context.snapshot.revision})}>Restore Defaults</Button>
       <Button type="button" size="sm" className={compactAction} variant="outline" disabled={context.busy} onClick={()=>{if(!dirty||window.confirm('Discard unsaved Module appearance changes and reload?'))void context.reload();}}>Reload</Button>
     </div>
     {message&&<p role="status" className="text-sm">{message}</p>}

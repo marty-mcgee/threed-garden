@@ -4,6 +4,7 @@ Read this file and [CONTEXT.md](CONTEXT.md) fully before editing. Inspect the cu
 
 ## Developer preferences
 
+- Follow the App's established [Schema-First, Top-Down Module architecture](docs/plans/app-module-architecture.md): ThreeD, Multimedia, Traffic and Learn are the four peer Top Modules, connected through many-to-many relationships. Use existing schema identities, ownership and relationship contracts to guide services/API, UI and runtime behavior. Keep Top Modules, saved Module instances, sub-modules and records distinct. Review recent changes against this architecture; do not make a new design, schema map or migration a prerequisite. Earlier conflicting planning assumptions are superseded.
 - Prefer unquoted JavaScript/TypeScript property keys when valid identifiers; preserve quoted string values and keys that require quotes. Format objects with one property per line and configuration arrays with one entry per line for readability. Preserve existing values and ordering; apply this style to code being written or edited without unrelated formatting sweeps. JSON keys must remain quoted.
 - Use exact existing App names. The Developer-established hierarchy for this DetailsCard is **ThreeD > Project > Model > DetailsCard**. Keep the name **DetailsCard**.
 - Verify terminology and ownership before proposing release titles. Mount location, route, selected entity and button labels alone do not establish App ownership. Do not invent a Characters settings panel.

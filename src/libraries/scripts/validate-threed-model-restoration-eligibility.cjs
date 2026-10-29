@@ -24,6 +24,7 @@ function load(file, mocks = {}, globals = {}) {
     AbortController, DOMException, performance, setTimeout, clearTimeout, Buffer,
     ...globals,
     require(name) {
+      if (name === '../multimedia/EntityAlbumsSection') return { EntityAlbumsSection: 'EntityAlbumsSection' };
       if (name in mocks) return mocks[name];
       if (name === 'node:crypto' || name === 'crypto') return crypto;
       if (name === 'server-only') return {};

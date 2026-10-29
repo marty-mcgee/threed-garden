@@ -5,6 +5,7 @@ import type { ThreeDActionCollisionPointId } from '../physics/action-collision-c
 import type { SensorMember } from '../physics/sensor-counter-core';
 import type { SoccerSimulation } from './soccer-simulation-runner';
 import type { SimulationObservation } from './simulation-input';
+import { isMultimediaSimulation, multimediaSimulationReadiness } from './multimedia-simulation';
 
 export type SoccerSceneContext = {
   projectId?: number; allowed: boolean; ready: boolean; busy: boolean;
@@ -18,6 +19,7 @@ export type SoccerSceneContext = {
 export type SoccerKickMapping = { action: string; points: readonly ThreeDActionCollisionPointId[] };
 
 export function soccerSimulationReadiness(simulation: SoccerSimulation, scene: SoccerSceneContext, kick: SoccerKickMapping | null): string | null {
+  if (isMultimediaSimulation(simulation.definition)) return multimediaSimulationReadiness(simulation, scene);
   if (!scene.allowed || !scene.ready || scene.busy) return 'Wait for the Scene to be ready and finish placement or editing.';
   if (scene.projectId !== simulation.projectId) return 'Open this Simulation\u2019s Project before running.';
   const active = (marker: RuntimeMarker) => marker.isActive !== false && marker.isVisible !== false

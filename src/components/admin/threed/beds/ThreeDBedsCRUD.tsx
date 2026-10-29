@@ -1,5 +1,6 @@
 // components/admin/threed/beds/ThreeDBedsCRUD.tsx
 'use client';
+import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
@@ -1156,6 +1157,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
               )}
             </Button>
           </div>
+          {editingBed && <EntityAlbumsSection key={editingBed.id} moduleType="bed" entityId={editingBed.id} disabled={isSubmitting} />}
         </DialogContent>
       </Dialog>
     </div>

@@ -1,4 +1,5 @@
 'use client';
+import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react';
@@ -218,6 +219,7 @@ export function ThreeDModelTexturesCRUD() {
       </div>
       <Dialog open={preview !== null} onOpenChange={(value) => { if (!value) setPreview(null); }}>
         <DialogContent className="max-h-[90dvh] overflow-auto sm:max-w-3xl"><DialogHeader><DialogTitle>{preview?.textureName}</DialogTitle></DialogHeader>
+          {preview && <EntityAlbumsSection key={preview.id} moduleType="texture" entityId={preview.id} entityName={preview.textureName} disabled={busy} />}
           {preview && <img src={preview.filePath} alt={preview.textureName} className="max-h-[70dvh] w-full object-contain" />}
         </DialogContent>
       </Dialog>

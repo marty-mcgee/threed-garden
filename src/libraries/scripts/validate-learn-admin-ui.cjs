@@ -10,7 +10,7 @@ function load(file, modules = {}, globals = {}) {
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: {
     target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX,
   } }).outputText, { exports, Error, URL, URLSearchParams, AbortController, AbortSignal, console,
-    require: key => modules[key] ?? require(key), ...globals }, { filename: file });
+    require: key => key === '@/components/admin/threed/multimedia/EntityAlbumsSection' ? { EntityAlbumsSection: 'EntityAlbumsSection' } : modules[key] ?? require(key), ...globals }, { filename: file });
   return exports;
 }
 function harness() {

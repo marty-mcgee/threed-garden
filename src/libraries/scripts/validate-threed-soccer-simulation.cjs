@@ -7,6 +7,11 @@ function load(file, deps = {}, globals = {}, cache = new Map()) {
   const exports = {}; cache.set(file, exports);
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText,
     { exports, console, Error, URLSearchParams, AbortController, AbortSignal, TextEncoder, Date, crypto: require('node:crypto'), ...globals, require(name) {
+      if (name.endsWith('scene-multimedia-contract')) return require('../services/threed/multimedia/scene-multimedia-contract.ts');
+      if (name.endsWith('SimulationMultimediaFields')) return { SimulationMultimediaFields: 'SimulationMultimediaFields' };
+      if (name.endsWith('MultimediaSimulationControls')) return { MultimediaSimulationControls: 'MultimediaSimulationControls' };
+      if (name.endsWith('scene-multimedia-read')) return { readSceneMultimedia: async () => { throw Error('Legacy fixture must not read Multimedia'); }, SceneMultimediaReadError: class extends Error {} };
+
       if (name in deps) return deps[name];
       const target = name.startsWith('@/') ? path.resolve('src', name.slice(2)) : name.startsWith('.') ? path.resolve(path.dirname(file), name) : null;
       assert(target, `Unexpected dependency: ${name}`); return load(target.endsWith('.ts') ? target : target + '.ts', deps, globals, cache);
@@ -151,7 +156,7 @@ function controlsFixture(launchMode = false) {
     setTimeout: (fn, ms) => { timers.set(++timerId, { fn, ms }); return timerId; }, clearTimeout: id => timers.delete(id),
     setInterval: (fn, ms) => { timers.set(++timerId, { fn, ms }); return timerId; }, clearInterval: id => timers.delete(id),
   });
-  rt.mount(() => ui.ProjectSimulationControls({ context: currentContext, launch: launchMode ? launch : undefined, subscribeSensors: fn => { sensorListener = fn; return () => { sensorListener = null; }; } }));
+  rt.mount(() => ui.SoccerProjectSimulationControls({ context: currentContext, launch: launchMode ? launch : undefined, subscribeSensors: fn => { sensorListener = fn; return () => { sensorListener = null; }; } }));
   const find = predicate => nodes(rt.tree).find(predicate), button = icon => find(node => node.type === 'Button' && nodes(node.props.children).some(child => child.type === icon));
   return { rt, events, requests, notices, statuses, timers, button, find, emit: (type, detail) => window.dispatchEvent(new Event(type, { detail })), sensor: event => sensorListener?.(event),
     request() { launch.request++; rt.render(); }, stop() { launch.stopRequest++; rt.render(); },

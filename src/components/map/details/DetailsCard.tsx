@@ -1,6 +1,7 @@
 'use client';
 import { DetailsSectionScope, PersistentDetails } from './PersistentDetails';
 import { DetailsCardActionsProvider, DetailsCardActionsSlot } from './DetailsCardActions';
+import { SceneMultimediaDetails } from '../multimedia/SceneMultimediaDetails';
 import { readPhysicsSensorCuboids } from '@/libraries/services/threed/physics/sensor-cuboid-core';
 import { readModelVolumeSensor } from '@/libraries/services/threed/physics/sensor-legacy-compat';
 
@@ -572,6 +573,9 @@ export function DetailsCard({ metersPerSceneUnit, selectedSensorId, onSelectSens
         </a>
         <DetailsCardActionsSlot />
       </div>
+
+      {projectId && ['models', 'model', 'characters', 'character', 'beds', 'bed', 'farmbots', 'farmbot', 'plantings', 'planting'].includes(normalizedType)
+        && <SceneMultimediaDetails key={`${projectId}:${selected.id}`} markerId={String(selected.id)} controlledCharacterId={controlledCharacterId} />}
 
       {/* GPS coordinates (incidents) */}
       {selected.lat != null && selected.lng != null && (

@@ -5,7 +5,12 @@ const ts = require('typescript');
 const load = (file, deps = {}, globals = {}) => {
   const exports = {};
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText,
-    { exports, console, URL, URLSearchParams, Buffer, Date, ...globals, require(name) { assert(name in deps, name); return deps[name]; } });
+    { exports, console, URL, URLSearchParams, Buffer, Date, ...globals, require(name) {
+      if (name.endsWith('scene-multimedia-contract')) return require('../services/threed/multimedia/scene-multimedia-contract.ts');
+      if (name.endsWith('SimulationMultimediaFields')) return { SimulationMultimediaFields: 'SimulationMultimediaFields' };
+      if (name.endsWith('MultimediaSimulationControls')) return { MultimediaSimulationControls: 'MultimediaSimulationControls' };
+      if (name.endsWith('scene-multimedia-read')) return { readSceneMultimedia: async () => { throw Error('Legacy fixture must not read Multimedia'); }, SceneMultimediaReadError: class extends Error {} };
+  assert(name in deps, name); return deps[name]; } });
   return exports;
 };
 const root = 'src/libraries/services/threed/';

@@ -1,5 +1,7 @@
 // components/map/ThreeDScene.tsx
 'use client';
+
+import { SceneMultimediaBridge } from './multimedia/SceneMultimediaBridge';
 import { modelPlanImage, type ModelPlanImage } from '@/libraries/services/threed/models/model-plan-image';
 import { ProjectMeasurementUnits } from '@/components/project/ProjectMeasurementUnits';
 import { DesignSceneObjects } from '@/components/threed/design/DesignSceneObjects';
@@ -3378,6 +3380,17 @@ export function ThreeDScene({
           {groundMapAsset.attribution || groundMapAsset.sourceProvider}
         </div>
       )}
+      {projectId && <SceneMultimediaBridge subscribe={subscribeSimulationSensors} context={{
+        projectId,
+        ready: sceneProductionStarted && !physicsFailed,
+        busy: !!placementLabel || transforming,
+        markers: sceneMarkers,
+        layers: activeLayers,
+        visibleMarkerIds,
+        controlledCharacterId,
+        settledCharacters: settledCharacterMarkerIds,
+        position: markerId => livePositionsRef.current.get(markerId),
+      }} />}
       {sceneProductionStarted && canRunSimulations && onSimulationParticipantsChange && <ProjectSimulationLauncher key={projectId} visible={showSimulations} onVisibleChange={setShowSimulations} saveResults={saveSimulationResults}
         subscribeSensors={subscribeSimulationSensors}
         context={{ projectId, allowed: canRunSimulations, ready: sceneProductionStarted && !physicsFailed,

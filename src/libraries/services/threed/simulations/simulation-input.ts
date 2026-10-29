@@ -1,15 +1,16 @@
 import { THREED_GENERIC_TARGET_ACTIONS, THREED_PLANTING_TARGET_ACTIONS } from '../orchestration/action-target-core';
+import { multimediaActions, isMultimediaAction, multimediaActionLabels, multimediaSelectionSchema, type MultimediaSelection } from '../multimedia/scene-multimedia-contract';
 
 export class SimulationInputError extends Error {}
 export const SOCCER_SIMULATION_ACTIONS = ['runToTarget', 'kickBall'] as const;
-export const SIMULATION_ACTIONS = [...SOCCER_SIMULATION_ACTIONS, ...THREED_GENERIC_TARGET_ACTIONS, ...THREED_PLANTING_TARGET_ACTIONS] as const;
-export const simulationActionLabel = (action: string) => action === 'runToTarget' ? 'Run to target ball' : action === 'kickBall' ? 'Kick ball (foot contact)' : action;
+export const SIMULATION_ACTIONS = [...SOCCER_SIMULATION_ACTIONS, ...multimediaActions, ...THREED_GENERIC_TARGET_ACTIONS, ...THREED_PLANTING_TARGET_ACTIONS] as const;
+export const simulationActionLabel = (action: string) => isMultimediaAction(action) ? multimediaActionLabels[action] : action === 'runToTarget' ? 'Run to target' : action === 'kickBall' ? 'Kick ball (foot contact)' : action;
 export const SIMULATION_PLANTING_ACTIONS = THREED_PLANTING_TARGET_ACTIONS;
 export const MAX_SIMULATION_STEPS = 50;
 export const MAX_SIMULATION_OBSERVATIONS = 32;
 export const MAX_SIMULATION_BYTES = 65_536;
 export type SimulationAction = typeof SIMULATION_ACTIONS[number];
-export type SimulationStep = { id: string; action: SimulationAction; actorMarkerId: string; targetMarkerId: string; timeoutMs: number; onFailure: 'stop' | 'continue' };
+export type SimulationStep = { id: string; action: SimulationAction; actorMarkerId: string; targetMarkerId: string; timeoutMs: number; onFailure: 'stop' | 'continue'; multimedia?: MultimediaSelection };
 export type SimulationSensorReference = { ownerMarkerId: number; id: string };
 export type SimulationObservation = { id: string; kind: 'sensor-group'; sensorGroupId: string; sensors?: SimulationSensorReference[] };
 export type SimulationDefinition = { version: 1; steps: SimulationStep[]; observations: SimulationObservation[] };
@@ -35,13 +36,18 @@ export function parseSimulationDefinition(value: unknown): SimulationDefinition 
   const stepIds = new Set<string>(), observationIds = new Set<string>(), groups = new Set<string>();
   let sensorCount = 0;
   const steps = d.steps.map((value): SimulationStep => {
-    const s = object(value, ['id', 'action', 'actorMarkerId', 'targetMarkerId', 'timeoutMs', 'onFailure']);
+    const s = object(value, ['id', 'action', 'actorMarkerId', 'targetMarkerId', 'timeoutMs', 'onFailure', 'multimedia']);
     const id = token(s.id, 'Action ID', 64);
     if (stepIds.has(id)) throw new SimulationInputError('Action IDs must be unique.'); stepIds.add(id);
     if (!SIMULATION_ACTIONS.includes(s.action as SimulationAction)) throw new SimulationInputError('Choose a supported targeted Action.');
     if (!Number.isInteger(s.timeoutMs) || Number(s.timeoutMs) < 1000 || Number(s.timeoutMs) > 300_000) throw new SimulationInputError('Action timeout must be 1,000–300,000 milliseconds.');
     if (s.onFailure !== 'stop' && s.onFailure !== 'continue') throw new SimulationInputError('Choose Stop or Continue on failure.');
-    return { id, action: s.action as SimulationAction, actorMarkerId: token(s.actorMarkerId, 'Character marker'), targetMarkerId: token(s.targetMarkerId, 'target marker'), timeoutMs: s.timeoutMs as number, onFailure: s.onFailure };
+    const media = isMultimediaAction(String(s.action)) ? multimediaSelectionSchema.safeParse(s.multimedia) : null;
+    if (media && !media.success) throw new SimulationInputError('Choose a related Project Album for the Multimedia Action.');
+    if (!media && s.multimedia !== undefined) throw new SimulationInputError('Multimedia fields belong only to Multimedia Actions.');
+    if (media?.success && s.action !== 'playMultimedia' && media.data.trackId !== undefined) throw new SimulationInputError('Select a Track only for Play Multimedia.');
+    return { id, action: s.action as SimulationAction, actorMarkerId: token(s.actorMarkerId, 'Character marker'), targetMarkerId: token(s.targetMarkerId, 'target marker'), timeoutMs: s.timeoutMs as number, onFailure: s.onFailure,
+      ...(media?.success ? { multimedia: media.data } : {}) };
   });
   const observations = d.observations.map(value => {
     const s = object(value, ['id', 'kind', 'sensorGroupId', 'sensors']);

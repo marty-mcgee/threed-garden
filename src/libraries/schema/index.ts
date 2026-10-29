@@ -15,3 +15,5 @@ export * from './multimedia';
 export * from './learn';
 
 export * from './auth/user-role-audit';
+
+export * from './threed/album-associations';

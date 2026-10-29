@@ -1,5 +1,6 @@
 // components/admin/threed/harvests/ThreeDHarvestsCRUD.tsx
 'use client';
+import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { AdminRelationshipBadge } from '@/components/admin/shared/AdminRelationshipBadge';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
@@ -885,6 +886,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
               )}
             </Button>
           </div>
+          {editingHarvest && <EntityAlbumsSection key={editingHarvest.id} moduleType="harvest" entityId={editingHarvest.id} disabled={isSubmitting} />}
         </DialogContent>
       </Dialog>
     </div>

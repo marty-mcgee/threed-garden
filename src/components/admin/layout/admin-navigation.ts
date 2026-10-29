@@ -95,9 +95,6 @@ export const navSections: NavSection[] = [
       },
       { title: 'Designs', href: '/admin/threed/designs', moduleKey: 'designs' },
       { title: 'Characters', href: '/admin/threed/characters', moduleKey: 'characters', exact: false },
-      { title: 'Plants', href: '/admin/threed/plants', moduleKey: 'plants', exact: false },
-      { title: 'Beds', href: '/admin/threed/beds', moduleKey: 'beds', exact: false },
-      { title: 'Plantings', href: '/admin/threed/plantings', moduleKey: 'plantings', exact: false },
       { title: 'Scenarios', href: '/admin/threed/scenarios', moduleKey: 'scenarios', exact: false },
       { 
         title: 'Simulations', 
@@ -114,10 +111,13 @@ export const navSections: NavSection[] = [
         ]
       },
       { title: 'Layers', href: '/admin/threed/layers', moduleKey: 'layers', exact: false },
-      { title: 'Tasks', href: '/admin/threed/tasks', moduleKey: 'tasks', exact: false },
+      { title: 'Plants', href: '/admin/threed/plants', moduleKey: 'plants', exact: false },
+      { title: 'Plantings', href: '/admin/threed/plantings', moduleKey: 'plantings', exact: false },
+      { title: 'Beds', href: '/admin/threed/beds', moduleKey: 'beds', exact: false },
       { title: 'Waterings', href: '/admin/threed/watering-schedules', moduleKey: 'waterings', exact: false },
       { title: 'Harvests', href: '/admin/threed/harvests', moduleKey: 'harvests', exact: false },
       { title: 'FarmBots', href: '/admin/threed/farmbots', moduleKey: 'farmbots', exact: false },
+      { title: 'Tasks', href: '/admin/threed/tasks', moduleKey: 'tasks', exact: false },
     ],
   },
   {
@@ -159,7 +159,6 @@ export const navSections: NavSection[] = [
     items: [
       { title: 'All Guides', href: '/admin/learn', moduleKey: 'learn', documentNavigation: true },
       { title: 'Add Guide', href: '/admin/learn/new', icon: Plus, action: 'create', exact: true, documentNavigation: true },
-      { title: 'Learn ThreeD', href: '/learn', moduleKey: 'learn', exact: true },
     ],
   },
   {

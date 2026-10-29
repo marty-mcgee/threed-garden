@@ -51,6 +51,11 @@ export default function LearnPage() {
       <h2 className="flex items-center justify-center gap-2 pb-2 text-2xl font-semibold tracking-tight"><ListChecks aria-hidden="true" className="size-4 text-cyan-500" />How-to guides</h2>
       <LearnGuideLibrary />
     </section>
+    <section className="threed-workspace-panel threed-presentation-surface mx-auto max-w-5xl space-y-4 rounded-2xl border p-6 sm:p-10" aria-labelledby="learn-data-structure-title">
+      <h2 id="learn-data-structure-title" className="text-2xl font-semibold">Understand the App’s data structure</h2>
+      <p className="text-muted-foreground">Explore ThreeD, Multimedia, Traffic and Learn, then follow their tables, fields and relationships through the shared Project structure.</p>
+      <Button asChild variant="outline"><Link href="/learn/data-structure">Explore Data Structure<ArrowRight aria-hidden="true" /></Link></Button>
+    </section>
     <section id="troubleshooting" className="mx-auto max-w-5xl space-y-4 scroll-mt-24"><h2 className="flex items-center justify-center gap-2 pb-2 text-2xl font-semibold tracking-tight"><CircleHelp aria-hidden="true" className="size-4 text-amber-500" />Troubleshooting</h2>
       <details className="threed-workspace-panel threed-presentation-surface rounded-xl border p-5 open:border-amber-600/30"><summary className="cursor-pointer font-medium">I cannot edit or save</summary><p className="mt-2 max-w-4xl text-muted-foreground">Check that you are signed in and own the Project. A public Project belonging to someone else is for viewing. Create your own with New Project. If Save reports an error, retain the open page and retry; export architectural content as a backup when available.</p></details>
       <details className="threed-workspace-panel threed-presentation-surface rounded-xl border p-5 open:border-amber-600/30"><summary className="cursor-pointer font-medium">My floor disappeared</summary><p className="mt-2 max-w-4xl text-muted-foreground">A floor is a draft until you finish it. Click at least three corners, then Finish Floor, Enter or the first corner. Escape cancels unfinished drawing.</p></details>

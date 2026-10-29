@@ -21,6 +21,8 @@ import { simulationActionLabel } from '@/libraries/services/threed/simulations/s
 import { simulationResultJournal, type SimulationRunStart } from '@/libraries/services/threed/simulations/simulation-result-journal';
 import type { SimulationResultReport } from '@/libraries/services/threed/simulations/simulation-result-input';
 import type { SimulationLaunch } from '@/libraries/services/threed/simulations/simulation-launch';
+import { isMultimediaSimulation } from '@/libraries/services/threed/simulations/multimedia-simulation';
+import { MultimediaSimulationControls } from '../multimedia/MultimediaSimulationControls';
 
 type Summary = Pick<SoccerSimulation, 'id' | 'name' | 'revision'>;
 type Props = { context: SoccerSceneContext; subscribeSensors: (listener: (event: Readonly<ThreeDPhysicsEventV1>) => void) => () => void;
@@ -34,6 +36,12 @@ async function read(url: string, signal: AbortSignal) {
 }
 
 export function ProjectSimulationControls({ context, subscribeSensors, launch }: Props) {
+  return launch && isMultimediaSimulation(launch.simulation.definition)
+    ? <MultimediaSimulationControls context={context} subscribeSensors={subscribeSensors} launch={launch} />
+    : <SoccerProjectSimulationControls context={context} subscribeSensors={subscribeSensors} launch={launch} />;
+}
+
+export function SoccerProjectSimulationControls({ context, subscribeSensors, launch }: Props) {
   const { showToast, ToastComponent } = useToast();
   const { slots } = useAnimationActionSlots(0, !launch);
   useSyncExternalStore(simulationResultJournal.subscribe, simulationResultJournal.snapshot, () => 0);

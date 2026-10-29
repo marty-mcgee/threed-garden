@@ -1,6 +1,7 @@
 'use client';
 
 import { ArchitectureAssetsSection } from './ArchitectureAssetsSection';
+import { ProjectMultimediaAssets } from './ProjectMultimediaAssets';
 import { formatProjectSceneLength } from '@/libraries/services/project/measurement-units';
 import { architectureAssets } from '@/libraries/services/threed/design/asset-inventory';
 import type { DesignDocument } from '@/libraries/services/threed/design/document';
@@ -156,6 +157,7 @@ export function ProjectAssetsPanel({
 
           {onOpenGroundMap && <Button type="button" variant="outline" className="mb-2 h-8 shrink-0 justify-start text-xs" aria-pressed={groundMapSelected} onClick={onOpenGroundMap}>Ground Map · Settings</Button>}
           <div className="min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pr-1">
+            <ProjectMultimediaAssets key={`${selectedProjectId}:${projectAssetSearch}`} projectId={selectedProjectId!} search={projectAssetSearch} />
             {visibleProjectAssets.length === 0 && visibleArchitecture.length === 0 ? (
               <p className="py-8 text-center text-xs text-muted-foreground">
                 {projectRuntimeMarkers.length === 0 && (!architecture || architecture.walls.length + architecture.floors.length + architecture.roofs.length + architecture.openings.length + architecture.roofOpenings.length === 0)

@@ -19,6 +19,13 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  'threed-multimedia': [node('validate-threed-multimedia.cjs')],
+  'threed-multimedia-browser': [node('validate-threed-multimedia-browser.cjs')],
+  'learn-data-structure': [
+    [...node('generate-schema-visualization.cjs'), '--check'],
+    node('validate-learn-data-structure.cjs'),
+  ],
+  'threed-albums': [node('validate-threed-albums.cjs'), node('validate-threed-albums-ui.cjs'), node('validate-threed-album-context.cjs')],
   learn: [node('validate-learn-guides.cjs'), node('validate-learn-admin-ui.cjs'), node('validate-learn-public.cjs')],
   'legacy-texture-download': [node('validate-legacy-texture-download.cjs')],
   'model-taxonomy': [node('validate-model-taxonomy.cjs')],
@@ -92,7 +99,7 @@ const tasks = {
   'threed-ground-map': [ts('validate-threed-ground-map.mts')],
   'threed-bed-planting-bounds': [ts('validate-threed-bed-planting-bounds.mts')],
   'threed-runtime-markers': [['node', '--import', 'tsx', `${scripts}/validate-threed-runtime-markers.mts`]],
-  'threed-overlay-layout': [node('validate-workspace-save-feedback.cjs'), node('validate-project-overlay-layout.cjs'), node('validate-scene-view-presets.cjs'), ['node', '--import', 'tsx', `${scripts}/validate-threed-project-settings.mts`]],
+  'threed-overlay-layout': [node('validate-scene-selection.cjs'), node('validate-workspace-save-feedback.cjs'), node('validate-project-overlay-layout.cjs'), node('validate-scene-view-presets.cjs'), ['node', '--import', 'tsx', `${scripts}/validate-threed-project-settings.mts`]],
   'threed-inspectors': [['node', '--import', 'tsx', `${scripts}/validate-threed-inspectors.mts`]],
   'threed-sensors': [['node', '--import', 'tsx', `${scripts}/validate-threed-sensors.mts`], node('validate-threed-sensor-groups.cjs')],
   'threed-physics-events': [['node', '--import', 'tsx', `${scripts}/validate-threed-physics-events.mts`]],
@@ -182,6 +189,8 @@ const tasks = {
 };
 
 const ci = [
+  'threed-multimedia',
+  'learn-data-structure',
   'multimedia-lyrics',
   'admin-overview',
   'multimedia-dashboard',
@@ -209,6 +218,7 @@ const ci = [
   'assets',
   'workspace-settings',
   'module-appearance',
+  'threed-albums',
   'users-admin',
   'signup',
   'threed-texture-list',
@@ -283,7 +293,7 @@ const ci = [
 
 const unavailableFixtures = ['threed-fbx-material-targets'];
 // Native Chromium/WebGL is optional and intentionally separate from portable CI/all.
-const runnableTasks = Object.keys(tasks).filter((name) => !unavailableFixtures.includes(name) && !['threed-model-builder-browser', 'threed-home-design-browser', 'shadcn-ui-browser'].includes(name));
+const runnableTasks = Object.keys(tasks).filter((name) => !unavailableFixtures.includes(name) && !['threed-model-builder-browser', 'threed-home-design-browser', 'shadcn-ui-browser', 'threed-multimedia-browser'].includes(name));
 
 const groups = {
   all: runnableTasks,

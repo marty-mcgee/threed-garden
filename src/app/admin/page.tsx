@@ -90,7 +90,7 @@ export default function AdminDashboardPage() {
   }, [status, userId, attempt]);
 
   if (status === 'unauthenticated') return null;
-  if (status === 'loading' || loading) return <div role="status" className="flex min-h-64 items-center justify-center gap-3 text-sm text-muted-foreground"><Loader2 aria-hidden="true" className="size-5 animate-spin motion-reduce:animate-none" />Loading Overview?</div>;
+  if (status === 'loading' || loading) return <div role="status" className="flex min-h-64 items-center justify-center gap-3 text-sm text-muted-foreground"><Loader2 aria-hidden="true" className="size-5 animate-spin motion-reduce:animate-none" />Loading Overview</div>;
   if (error) return <section className="rounded-xl border border-destructive/30 bg-card p-6"><h1 className="mb-3 text-xl font-semibold">Overview</h1><p role="alert" className="mb-4 flex items-center gap-2 text-sm text-destructive"><AlertTriangle aria-hidden="true" className="size-4 shrink-0" />{error}</p><Button type="button" variant="outline" onClick={() => { setLoading(true); setAttempt(value => value + 1); }}><RotateCcw aria-hidden="true" className="size-4" />Retry Overview</Button></section>;
   if (!dashboardData || dashboardData.user.id !== userId) return null;
   return <AdminDashboard data={dashboardData} />;

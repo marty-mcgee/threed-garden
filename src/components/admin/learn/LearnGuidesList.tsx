@@ -165,6 +165,8 @@ function LearnGuidesWorkspace() {
         </Table>}
       </div>
     </fieldset>
-    <footer className="shrink-0 border-t pt-2 text-xs text-muted-foreground" aria-live="polite">{busy ? 'Saving Learn changes…' : notice || 'Active and Published guides are visible to everyone. Unpublished or inactive guides stay in Admin.'}</footer>
+    {/* <footer className="shrink-0 border-t pt-2 text-xs text-muted-foreground" aria-live="polite">
+      {busy ? 'Saving Learn changes…' : notice || 'Active and Published guides are visible to everyone. Unpublished or inactive guides stay in Admin.'}
+    </footer> */}
   </div>;
 }

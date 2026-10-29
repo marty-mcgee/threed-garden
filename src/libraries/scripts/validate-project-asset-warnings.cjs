@@ -15,6 +15,7 @@ const mocks = {
     '../threed/scene-units': loadUnits('src/libraries/services/threed/scene-units.ts'),
   }),
   './ArchitectureAssetsSection': { ArchitectureAssetsSection: 'Architecture' },
+  './ProjectMultimediaAssets': { ProjectMultimediaAssets: 'Multimedia' },
   '@/libraries/services/threed/design/asset-inventory': { architectureAssets() { throw new Error('Model warnings fixture has no architecture document'); } },
   react: { useMemo: fn => fn(), useEffect() {}, useRef: () => ({ current: null }) },
   'react-dom': { createPortal: panel => panel },
@@ -44,6 +45,7 @@ function nodes(value) {
   return [value, ...nodes(value.props?.children)];
 }
 const rendered = nodes(exportsObject.ProjectAssetsPanel(props));
+assert.equal(rendered.filter(node => node.type === 'Multimedia' && node.props.projectId === '8').length, 1, 'Project Assets includes its Project-scoped Multimedia section');
 assert.equal(rendered.filter(node => node.type === 'button' && node.props.className?.includes('border-amber-400/60')).length, 2, 'Only assets using the affected reusable Model are highlighted');
 const links = rendered.filter(node => node.type === 'a');
 assert.equal(links.length, 3, 'Summary and both affected assets provide repair links');

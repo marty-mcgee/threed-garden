@@ -402,7 +402,7 @@ function findInventoryCallbacks(node){
  if(ts.isJsxAttribute(node)&&node.name.getText(sceneAst)==='onLocateArchitecture')locateSource=node.initializer.expression.getText(sceneAst);
  ts.forEachChild(node,findInventoryCallbacks);
 }findInventoryCallbacks(sceneAst);
-const selectionContext={selectedProjectId:'15',architectureDrafts:{current:new Map([['15',architecture.projectArchitectureDraft(captured)],['16',architecture.projectArchitectureDraft()]])},entityLevelId:document.entityLevelId,defaultDesignWorkspace:workspace.defaultDesignWorkspace,renderArchitecture:()=>{}};
+const selectionContext={selectedProjectId:'15',architectureDrafts:{current:new Map([['15',architecture.projectArchitectureDraft(captured)],['16',architecture.projectArchitectureDraft()]])},entityLevelId:document.entityLevelId,defaultDesignWorkspace:workspace.defaultDesignWorkspace,renderArchitecture:()=>{},setSelectedMarker:value=>assert.equal(value,null),setSelectedIncident:value=>assert.equal(value,null),setSensorInspector:value=>assert.equal(value,null),setGroupInspector:value=>assert.equal(value,null),groundMapInspector:{setOpen:value=>assert.equal(value,false)}};
 const selectFromAssets=vm.runInNewContext(compile('('+selectionSource+')'),selectionContext);
 selectFromAssets('door');assert.equal(selectionContext.architectureDrafts.current.get('15').selected,'door');assert(selectionContext.architectureDrafts.current.get('15').workspace.sections['threed:details:v1:design:15:selected-properties']);
 selectFromAssets('missing');assert.equal(selectionContext.architectureDrafts.current.get('15').selected,'door');

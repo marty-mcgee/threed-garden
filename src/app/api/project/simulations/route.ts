@@ -7,7 +7,8 @@ import { threed, threedSimulations, threedAnimationActionSlots,
   threedCharacters, threedModels, threedCharacterAnimationAssignments, threedModelAnimationAssignments } from '@/libraries/schema/threed';
 import { readableProject } from '@/libraries/services/project/read-access';
 import { simulationId, SimulationInputError } from '@/libraries/services/threed/simulations/simulation-input';
-import { captureSoccerSimulation } from '@/libraries/services/threed/simulations/soccer-simulation-runner';
+import { captureSceneSimulation as captureSoccerSimulation, isMultimediaSimulation } from '@/libraries/services/threed/simulations/multimedia-simulation';
+import { readSceneMultimedia, SceneMultimediaReadError } from '@/libraries/services/threed/multimedia/scene-multimedia-read';
 import { readSensorGroups, SensorGroupInputError } from '@/libraries/services/threed/physics/sensor-group-core';
 import { IMPORTED_SENSOR_GROUP } from '@/libraries/services/threed/physics/sensor-legacy-compat';
 import { defaultKickCollisionPoints } from '@/libraries/services/threed/physics/action-collision-core';
@@ -31,9 +32,13 @@ export async function GET(request: NextRequest) {
       eq(projectThreed.userId, owner), eq(projectThreed.isActive, true), eq(threed.userId, owner), eq(threed.isActive, true),
       sql`jsonb_array_length(${threedSimulations.definition}->'steps') > 0 AND NOT EXISTS (
         SELECT 1 FROM jsonb_array_elements(${threedSimulations.definition}->'steps') AS step
-        WHERE step->>'action' NOT IN ('runToTarget', 'kickBall')
+        WHERE step->>'action' NOT IN ('runToTarget', 'kickBall', 'playMultimedia', 'pauseMultimedia', 'stopMultimedia', 'rewindMultimedia', 'nextTrack')
           OR step->>'actorMarkerId' <> ${threedSimulations.definition}->'steps'->0->>'actorMarkerId'
-          OR step->>'targetMarkerId' <> ${threedSimulations.definition}->'steps'->0->>'targetMarkerId')`,
+          OR step->>'targetMarkerId' <> ${threedSimulations.definition}->'steps'->0->>'targetMarkerId')
+        AND NOT (
+          EXISTS (SELECT 1 FROM jsonb_array_elements(${threedSimulations.definition}->'steps') AS step WHERE step->>'action' = 'kickBall')
+          AND EXISTS (SELECT 1 FROM jsonb_array_elements(${threedSimulations.definition}->'steps') AS step WHERE step->>'action' IN ('playMultimedia', 'pauseMultimedia', 'stopMultimedia', 'rewindMultimedia', 'nextTrack'))
+        )`,
       single ? eq(threedSimulations.id, simulationId(params.get('id'), 'Simulation ID')) : undefined);
     const query = (fields: Parameters<typeof db.select>[0]) => db.select(fields).from(threedSimulations)
       .innerJoin(projectThreed, and(eq(projectThreed.projectId, threedSimulations.projectId), eq(projectThreed.threedId, threedSimulations.threedId)))
@@ -55,9 +60,24 @@ export async function GET(request: NextRequest) {
       .innerJoin(projectAssets, and(eq(projectAssets.assetId, projectThreedMarkers.sourceAssetId), eq(projectAssets.projectId, projectId),
         eq(projectAssets.moduleType, 'threed'), eq(projectAssets.moduleId, simulation.threedId), eq(projectAssets.userId, owner), eq(projectAssets.isActive, true),
         or(and(eq(projectThreedMarkers.markerType, 'characters'), eq(projectAssets.assetType, 'threed_characters')),
-          and(eq(projectThreedMarkers.markerType, 'models'), eq(projectAssets.assetType, 'threed_models')))))
+          and(eq(projectThreedMarkers.markerType, 'models'), eq(projectAssets.assetType, 'threed_models')),
+          and(eq(projectThreedMarkers.markerType, 'beds'), eq(projectAssets.assetType, 'threed_beds')),
+          and(eq(projectThreedMarkers.markerType, 'farmbots'), eq(projectAssets.assetType, 'threed_farmbots')),
+          and(eq(projectThreedMarkers.markerType, 'plantings'), eq(projectAssets.assetType, 'threed_plantings')))))
       .where(and(eq(projectThreedMarkers.userId, owner), eq(projectThreedMarkers.projectId, projectId), eq(projectThreedMarkers.threedId, simulation.threedId), eq(projectThreedMarkers.isActive, true)));
     const first = simulation.definition.steps[0];
+    if (isMultimediaSimulation(simulation.definition)) {
+      if (!markers.some(marker => marker.markerId === first.actorMarkerId && marker.markerType === 'characters' && (marker.data as { isMovable?: boolean })?.isMovable === true)
+        || !markers.some(marker => marker.markerId === first.targetMarkerId)) return reply({ success: false, error: 'Saved Multimedia participants are unavailable.' }, 409);
+      const groups = [IMPORTED_SENSOR_GROUP, ...readSensorGroups((accessible.metadata as { physicsSensorGroups?: unknown } | null)?.physicsSensorGroups ?? [])];
+      if (simulation.definition.observations.some(source => !groups.some(group => group.id === source.sensorGroupId))) return reply({ success: false, error: 'A saved observation group is unavailable.' }, 409);
+      const choices = new Map(simulation.definition.steps.filter(step => step.multimedia).map(step => [`${step.multimedia!.albumId}:${step.multimedia!.trackId ?? ''}`, step.multimedia!]));
+      for (const selection of choices.values()) {
+        const available = await readSceneMultimedia({ projectId, markerId: first.targetMarkerId, actorMarkerId: first.actorMarkerId, albumId: selection.albumId, trackId: selection.trackId ?? null, offset: 0 }, session?.user?.id);
+        if (selection.trackId && !available.tracks.some(track => track.id === selection.trackId)) return reply({ success: false, error: 'A Multimedia Track is unavailable.' }, 409);
+      }
+      return reply({ success: true, data: { simulation, kickMappings: [] } });
+    }
     if (!markers.some(marker => marker.markerId === first.actorMarkerId && marker.markerType === 'characters' && (marker.data as { isMovable?: boolean })?.isMovable === true)
       || !markers.some(marker => marker.markerId === first.targetMarkerId && marker.markerType === 'models' && isProjectModelMovableBall(marker.metadata))) return reply({ success: false, error: 'Saved Simulation participants are unavailable.' }, 409);
     const groups = [IMPORTED_SENSOR_GROUP, ...readSensorGroups((accessible.metadata as { physicsSensorGroups?: unknown } | null)?.physicsSensorGroups ?? [])];
@@ -75,6 +95,7 @@ export async function GET(request: NextRequest) {
     const kickMappings = slots.flatMap(slot => { const points = defaultKickCollisionPoints(slot.name); return points.length ? [{ action: slot.actionKey, points }] : []; });
     return reply({ success: true, data: { simulation, kickMappings } });
   } catch (cause) {
+    if (cause instanceof SceneMultimediaReadError) return reply({ success: false, error: 'Project Multimedia for this Simulation is unavailable.' }, cause.status);
     const invalid = cause instanceof SimulationInputError || cause instanceof SensorGroupInputError;
     return reply({ success: false, error: invalid ? cause.message : 'Project Simulation unavailable.' }, invalid ? 400 : 500);
   }

@@ -400,10 +400,10 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="bg-background/40 py-5">
         <div className="mx-auto w-full max-w-7xl px-6 text-center text-xs text-muted-foreground">
-          <p>ThreeD Garden · © 2026 Marty McGee. Built with Next.js, Neon, and 💚.</p>
+          <p>ThreeD Garden © 2026 Marty McGee · Built with Next.js, Neon, and 💚</p>
           <div className="mt-2 flex flex-wrap justify-center gap-3">
             <Link href="/dashboard/multimedia" className="hover:text-foreground transition-colors">Music</Link>
-            <Link href="/dashboard/threed" className="hover:text-foreground transition-colors">3D Garden</Link>
+            <Link href="/dashboard/threed" className="hover:text-foreground transition-colors">3D Design</Link>
             <Link href="/dashboard/traffic" className="hover:text-foreground transition-colors">Traffic</Link>
             <Link href="/learn" className="hover:text-foreground transition-colors">Learn ThreeD</Link>
             <a href="https://github.com/marty-mcgee/threed-garden" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">GitHub</a>

@@ -1,5 +1,7 @@
 # Architecture
 
+The App's established [Schema-First, Top-Down Module architecture](../plans/app-module-architecture.md) has four peer Top Modules: ThreeD, Multimedia, Traffic and Learn, connected through many-to-many relationships. Existing schema identity and ownership guide services/API and presentation. The plan documents this architecture and directs review of recent changes against it; it does not propose a replacement structure.
+
 The application is a Next.js App Router project with these primary surfaces:
 
 - `src/app/admin` provides authenticated CRUD and project-assignment workflows.

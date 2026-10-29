@@ -60,7 +60,7 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
  const form=load('src/components/settings/ModuleAppearanceSettings.tsx',{
  react:formHarness.react,'react/jsx-runtime':{jsx:element,jsxs:element},'@/components/ui/button':{Button:'button'},'@/libraries/config/module-appearance':contract,'./ModuleAppearanceProvider':{useModuleAppearance:()=>context},'./module-icons':{moduleIcons:new Proxy({},{get:(_,key)=>key})}
  },{window:{addEventListener:(key,fn)=>listeners.set(key,fn),removeEventListener:key=>listeners.delete(key),confirm:()=>confirmed}});
- const draw=()=>formHarness.render(()=>form.ModuleAppearanceSettings());let tree=draw();
+ const draw=()=>formHarness.render(()=>form.ModuleAppearanceSettings({editor:form.useModuleAppearanceEditor()}));let tree=draw();
  const iconControls=node=>Array.isArray(node)?node.flatMap(iconControls):node&&typeof node==='object'?[...(node.type==='select'&&node.props['aria-label']?.endsWith(' icon')?[node.props['aria-label']]:[]),...iconControls(node.props?.children)]:[];
  assert.equal(iconControls(tree).length,44);assert.equal(new Set(iconControls(tree)).size,44,'Every identity appears exactly once, including surface groups');
  for(const [label,icon] of [['Dashboard','Radio'],['Admin','Settings']]) {
@@ -73,7 +73,7 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
  find(tree,n=>n.type==='select'&&n.props['aria-label']==='Learn color').props.onChange({target:{value:'cyan'}});tree=draw();
  find(tree,n=>n.type==='select'&&n.props['aria-label']==='Models color').props.onChange({target:{value:'violet'}});tree=draw();assert(listeners.has('beforeunload'));
  let submitted;context={...context,save:async value=>{submitted=value;throw Error('Network failure');}};
- await find(draw(),n=>n.type==='button'&&text(n)==='Save Module appearance').props.onClick();tree=draw();assert.equal(submitted.styles.models.color,'violet');assert.equal(find(tree,n=>n.type==='select'&&n.props['aria-label']==='Models color').props.value,'violet');assert(text(tree).includes('Network failure'));
+ await find(draw(),n=>n.type==='button'&&text(n)==='Save Module Appearance').props.onClick();tree=draw();assert.equal(submitted.styles.models.color,'violet');assert.equal(find(tree,n=>n.type==='select'&&n.props['aria-label']==='Models color').props.value,'violet');assert(text(tree).includes('Network failure'));
  for(const key of ['dashboard','admin']) assert.deepEqual(JSON.parse(JSON.stringify(submitted.styles[key])),{icon:'Star',color:'violet'});
  assert.equal(submitted.styles.learn.icon,'Leaf');assert.equal(submitted.styles.learn.color,'cyan');assert.equal(find(tree,n=>n.type==='select'&&n.props['aria-label']==='Learn color').props.value,'cyan');
  console.log('PASS Module appearance UI: account isolation, permission gating, duplicate saves, conflicts, successful updates and failed-save draft retention (mock hooks/network).');

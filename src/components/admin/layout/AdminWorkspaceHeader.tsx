@@ -1,5 +1,6 @@
 'use client';
 
+import { ModuleAlbumsButton } from '../threed/multimedia/ModuleAlbumsButton';
 import { usePathname } from 'next/navigation';
 import { useModuleAppearance } from '@/components/settings/ModuleAppearanceProvider';
 import { moduleIcons } from '@/components/settings/module-icons';
@@ -41,6 +42,7 @@ export function AdminWorkspaceHeader({
       </div>
       <p className="sr-only">{description}</p>
       {children}
+      {key && pathname && !/\/(new|[0-9]+)(?:\/.*)?$/.test(pathname) && <ModuleAlbumsButton moduleKey={key} />}
     </header>
   );
 }

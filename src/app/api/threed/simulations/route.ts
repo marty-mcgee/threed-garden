@@ -11,6 +11,8 @@ import { IMPORTED_SENSOR_GROUP, readModelVolumeSensor } from '@/libraries/servic
 import { readPhysicsSensorCuboids } from '@/libraries/services/threed/physics/sensor-cuboid-core';
 import { isProjectModelMovableBall } from '@/libraries/services/threed/models/project-model-instance-core';
 import { simulationMarkerPreview } from '@/libraries/services/threed/simulations/simulation-preview-contract';
+import { isMultimediaAction } from '@/libraries/services/threed/multimedia/scene-multimedia-contract';
+import { readSceneMultimedia } from '@/libraries/services/threed/multimedia/scene-multimedia-read';
 
 const privateHeaders = { 'Cache-Control': 'private, no-store' };
 const reply = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: privateHeaders });
@@ -52,18 +54,28 @@ async function choices(client: Client, userId: string, projectId: number, threed
   });
   return { markers, groups, sensors };
 }
-function validateReferences(options: NonNullable<Awaited<ReturnType<typeof choices>>>, definition: SimulationDefinition) {
+async function validateReferences(options: NonNullable<Awaited<ReturnType<typeof choices>>>, definition: SimulationDefinition, projectId: number, userId: string) {
+  const multimedia = definition.steps.some(step => isMultimediaAction(step.action));
   for (const step of definition.steps) {
     if (!options.markers.some(row => row.markerId === step.actorMarkerId && row.markerType === 'characters')) throw new SimulationInputError('Choose an active Character marker from this Project module.');
     const target = options.markers.find(row => row.markerId === step.targetMarkerId);
     if (!target || (THREED_PLANTING_TARGET_ACTIONS.includes(step.action as typeof THREED_PLANTING_TARGET_ACTIONS[number]) && target.markerType !== 'plantings')) throw new SimulationInputError('Choose a compatible active target from this Project module.');
-    if (step.action === 'runToTarget' || step.action === 'kickBall') {
+    if (isMultimediaAction(step.action) || (multimedia && step.action === 'runToTarget')) {
+      if (!options.markers.some(row => row.markerId === step.actorMarkerId && row.movableCharacter)) throw new SimulationInputError('Multimedia Actions require a saved movable Character.');
+    } else if (step.action === 'runToTarget' || step.action === 'kickBall') {
       if (!options.markers.some(row => row.markerId === step.actorMarkerId && row.movableCharacter) || !target.movableBall) throw new SimulationInputError('Soccer Actions require a movable Character and movable ball from this Project module.');
     }
   }
   if (definition.observations.some(source => !options.groups.some(group => group.id === source.sensorGroupId))) throw new SimulationInputError('Choose a Sensor Group from this Project.');
   for (const source of definition.observations) {
     if (source.sensors?.some(sensor => !options.sensors.some(choice => choice.ownerMarkerId === sensor.ownerMarkerId && choice.id === sensor.id && choice.groupId === source.sensorGroupId))) throw new SimulationInputError('Choose Sensors assigned to the selected Project group.');
+  }
+  const media = new Map(definition.steps.filter(step => step.multimedia).map(step => [`${step.actorMarkerId}:${step.targetMarkerId}:${step.multimedia!.albumId}:${step.multimedia!.trackId ?? ''}`, step]));
+  for (const step of media.values()) {
+    try {
+      const data = await readSceneMultimedia({ projectId, markerId: step.targetMarkerId, actorMarkerId: step.actorMarkerId, albumId: step.multimedia!.albumId, trackId: step.multimedia!.trackId ?? null, offset: 0 }, userId);
+      if (step.multimedia!.trackId && !data.tracks.some(track => track.id === step.multimedia!.trackId)) throw Error('Track unavailable.');
+    } catch { throw new SimulationInputError('The selected Album or Track is not available for this target in the Project.'); }
   }
 }
 export async function GET(request: NextRequest) {
@@ -115,7 +127,7 @@ export async function POST(request: NextRequest) {
     const result = await db.transaction(async tx => {
       const options = await choices(tx, session.user!.id!, projectId, threedId);
       if (!options) return null;
-      validateReferences(options, fields.definition);
+      await validateReferences(options, fields.definition, projectId, session.user!.id!);
       const [created] = await tx.insert(threedSimulations).values({ ...fields, userId: session.user!.id!, projectId, threedId }).returning();
       return created;
     });
@@ -135,7 +147,7 @@ export async function PATCH(request: NextRequest) {
       if (existing.revision !== revision) return { status: 409, error: 'This Simulation changed. Reload before saving your changes.' };
       const options = await choices(tx, session.user!.id!, existing.projectId, existing.threedId);
       if (!options) return { status: 404, error: 'Project ThreeD module not found.' };
-      validateReferences(options, fields.definition);
+      await validateReferences(options, fields.definition, existing.projectId, session.user!.id!);
       const [updated] = await tx.update(threedSimulations).set({ ...fields, revision: existing.revision + 1, updatedAt: new Date() }).where(and(eq(threedSimulations.id, id), eq(threedSimulations.userId, session.user!.id!), eq(threedSimulations.revision, revision))).returning();
       return updated ? { status: 200, data: updated } : { status: 409, error: 'This Simulation changed. Reload before saving your changes.' };
     });

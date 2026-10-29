@@ -1,5 +1,6 @@
 'use client';
 
+import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, FlaskConical, ListChecks, Map, Pencil, RotateCcw } from 'lucide-react';
@@ -14,6 +15,7 @@ import { useToast } from '@/components/ui/toast';
 import { ModelFieldHelp } from '../models/ModelFieldHelp';
 import { SimulationDefinitionEditor, emptySimulationChoices, simulationReferenceIssue, type SimulationChoices } from './SimulationDefinitionEditor';
 import { SimulationPreview } from './SimulationPreview';
+import { isMultimediaAction } from '@/libraries/services/threed/multimedia/scene-multimedia-contract';
 import { emptySimulationDefinition, parseSimulationDefinition, simulationFields, SOCCER_SIMULATION_ACTIONS, type SimulationDefinition } from '@/libraries/services/threed/simulations/simulation-input';
 
 type Form = { projectId: string; threedId: string; name: string; slug: string; description: string; isActive: boolean; definition: SimulationDefinition };
@@ -47,7 +49,8 @@ export function SimulationEditor({ id, projectId, initialSoccerDraft, readOnly =
   const validationError = referenceError || definitionError;
   const slugInvalid = !!form.slug && !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(form.slug.trim());
   const activeWithoutActions = form.isActive && form.definition.steps.length === 0;
-  const sceneActionsOnly = form.definition.steps.every(step => SOCCER_SIMULATION_ACTIONS.some(action => action === step.action));
+  const mediaDefinition = form.definition.steps.some(step => isMultimediaAction(step.action));
+  const sceneActionsOnly = form.definition.steps.every(step => mediaDefinition ? isMultimediaAction(step.action) || step.action === 'runToTarget' : SOCCER_SIMULATION_ACTIONS.some(action => action === step.action));
   const firstStep = form.definition.steps[0];
   const sameParticipants = !firstStep || form.definition.steps.every(step => step.actorMarkerId === firstStep.actorMarkerId && step.targetMarkerId === firstStep.targetMarkerId);
   const saveBlockedReason = busy ? 'Saving Simulation…'
@@ -168,15 +171,16 @@ export function SimulationEditor({ id, projectId, initialSoccerDraft, readOnly =
           {activeWithoutActions && <p role="status" className="text-muted-foreground sm:col-span-2">Add an Action to save an active Simulation, or turn Active off to save a draft.</p>}
         </section>
         <section aria-label="Scene execution support" className="admin-editor-panel space-y-2 rounded-lg border p-3">
-          <div className="flex flex-wrap items-center gap-2"><h2 className="text-xs font-semibold">Scene execution</h2><Badge variant="outline">{form.isActive ? 'Active availability' : 'Inactive draft'}</Badge><Badge variant="outline" className={firstStep && sceneActionsOnly && sameParticipants ? 'text-emerald-700 dark:text-emerald-300' : 'text-muted-foreground'}>{!firstStep ? 'No Actions' : !sceneActionsOnly ? 'Definition / preview only' : !sameParticipants ? 'Multiple participant pairs' : 'Run / Kick supported'}</Badge></div>
-          <p className="text-xs text-muted-foreground">{!firstStep ? 'Add Actions to prepare a Scene run. Inactive drafts stay out of the Scene picker.' : !sceneActionsOnly ? 'This definition includes Actions the Scene runner does not execute. Save and animation preview remain available; use Run to target ball and Kick ball for Scene execution.' : !sameParticipants ? 'The Scene runner needs one Character and one target ball shared by every Action. Update participants to run this definition in the Scene.' : 'Scene execution checks the selected Character, movable ball, animation mappings and runtime readiness before starting. Active availability and a successful preview do not certify a run.'}</p>
+          <div className="flex flex-wrap items-center gap-2"><h2 className="text-xs font-semibold">Scene execution</h2><Badge variant="outline">{form.isActive ? 'Active availability' : 'Inactive draft'}</Badge><Badge variant="outline" className={firstStep && sceneActionsOnly && sameParticipants ? 'text-emerald-700 dark:text-emerald-300' : 'text-muted-foreground'}>{!firstStep ? 'No Actions' : !sceneActionsOnly ? 'Definition / preview only' : !sameParticipants ? 'Multiple participant pairs' : mediaDefinition ? 'Multimedia supported' : 'Run / Kick supported'}</Badge></div>
+          <p className="text-xs text-muted-foreground">{!firstStep ? 'Add Actions to prepare a Scene run. Inactive drafts stay out of the Scene picker.' : !sceneActionsOnly ? 'This definition includes Actions the Scene runner does not execute. Save and animation preview remain available; use Run/Kick or Multimedia commands for Scene execution.' : !sameParticipants ? 'The Scene runner needs one Character and one target shared by every Action. Update participants to run this definition in the Scene.' : 'Scene execution checks the saved participants, required media or animation mappings, and runtime readiness before starting. Active availability and a successful preview do not certify a run.'}</p>
         </section>
         <div className="flex flex-wrap items-center gap-2"><p className="text-xs text-muted-foreground">Participants and Sensors come from the saved Project.</p><Button type="button" variant="outline" size="sm" className="ml-auto h-7 text-xs" disabled={busy || choicesLoading || !form.projectId || !form.threedId} onClick={() => setChoicesReload(value => value + 1)}><RotateCcw className="h-3.5 w-3.5" />Reload choices</Button></div>
         {choicesLoading && <p role="status" className="text-muted-foreground">Loading Project choices…</p>}{choicesError && <p role="alert" className="text-destructive">{choicesError} Use Reload choices to try again; your draft is retained.</p>}
-        <fieldset disabled={choicesLoading || !!choicesError || !form.threedId}><SimulationDefinitionEditor value={form.definition} choices={choices} readOnly={readOnly} onChange={definition => setForm(value => ({ ...value, definition }))} /></fieldset>
+        <fieldset disabled={choicesLoading || !!choicesError || !form.threedId}><SimulationDefinitionEditor projectId={Number(form.projectId)} value={form.definition} choices={choices} readOnly={readOnly} onChange={definition => setForm(value => ({ ...value, definition }))} /></fieldset>
         {(error || validationError) && <p role="alert" className="text-destructive">{error || validationError}</p>}
 
       </fieldset>
+      {record && !readOnly && <EntityAlbumsSection key={record.id} moduleType="simulation" entityId={record.id} entityName={record.name} disabled={busy} />}
       </div>
       <div className="mb-3 min-h-0 xl:mb-0 xl:overflow-y-auto"><SimulationPreview definition={form.definition} choices={choices} context={`${form.projectId}:${form.threedId}:${reload}`} loading={choicesLoading} error={choicesError} busy={busy} /></div>
     </div>}

@@ -7,6 +7,11 @@ function load(file, mocks = {}, globals = {}, cache = new Map()) {
   const exports = {}; cache.set(file, exports);
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText,
     { exports, console, URL, URLSearchParams, AbortController, AbortSignal, Error, Date, TextEncoder, ...globals, require(name) {
+      if (name.endsWith('scene-multimedia-contract')) return require('../services/threed/multimedia/scene-multimedia-contract.ts');
+      if (name.endsWith('SimulationMultimediaFields')) return { SimulationMultimediaFields: 'SimulationMultimediaFields' };
+      if (name.endsWith('MultimediaSimulationControls')) return { MultimediaSimulationControls: 'MultimediaSimulationControls' };
+      if (name.endsWith('scene-multimedia-read')) return { readSceneMultimedia: async () => { throw Error('Legacy fixture must not read Multimedia'); }, SceneMultimediaReadError: class extends Error {} };
+
       if (name in mocks) return mocks[name];
       const target = name.startsWith('@/') ? path.resolve('src', name.slice(2)) : name.startsWith('.') ? path.resolve(path.dirname(file), name) : null;
       assert(target, name); return load(target.endsWith('.ts') ? target : fs.existsSync(target + '.tsx') ? target + '.tsx' : target + '.ts', mocks, globals, cache);

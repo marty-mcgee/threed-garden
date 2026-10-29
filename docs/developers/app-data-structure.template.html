@@ -1,0 +1,871 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>ThreeD App · Data Structure</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0b1119;
+      --panel: #121b27;
+      --panel-raised: #172332;
+      --text: #e8edf4;
+      --muted: #a4b3c6;
+      --line: #2c3b4d;
+      --accent: #7dd3b0;
+      --accent-bg: #153c33;
+      --fk: #90b5e4;
+      --application: #e7b767;
+      --orm: #c0a4e7;
+      --shadow: 0 12px 36px #00000020;
+    }
+    :root[data-theme="light"] {
+      color-scheme: light;
+      --bg: #f0f4f7;
+      --panel: #ffffff;
+      --panel-raised: #f5f8fb;
+      --text: #172538;
+      --muted: #52647b;
+      --line: #ccd7e3;
+      --accent: #12684e;
+      --accent-bg: #e0f3eb;
+      --fk: #315f99;
+      --application: #895d0b;
+      --orm: #7650a6;
+      --shadow: 0 12px 36px #18324d0a;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.5 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    button, input, select { font: inherit; }
+    button, select, input { color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 7px; }
+    button { cursor: pointer; padding: .5rem .8rem; }
+    button:hover, button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-bg); }
+    button:disabled { cursor: default; opacity: .45; }
+    button:disabled:hover { border-color: var(--line); background: var(--panel); }
+    a { color: var(--accent); text-underline-offset: 3px; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+    code, pre, .mono { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; }
+    code { font-size: .86em; overflow-wrap: anywhere; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { font-size: clamp(1.8rem, 3.5vw, 2.8rem); line-height: 1.12; letter-spacing: -.045em; margin-bottom: .8rem; }
+    h2 { font-size: 1.15rem; line-height: 1.3; letter-spacing: -.02em; }
+    h3 { font-size: .96rem; }
+    small, .muted { color: var(--muted); }
+    [hidden] { display: none !important; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    .skip-link { position: fixed; z-index: 10; top: -100px; left: 1rem; padding: .8rem; background: var(--panel); border: 2px solid var(--accent); }
+    .skip-link:focus { top: 1rem; }
+    .page { width: min(1680px, 100%); margin: auto; padding: 32px clamp(16px, 3vw, 44px) 48px; }
+    .topline, .toolbar, .section-heading, .detail-heading, .graph-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .topline { margin-bottom: 28px; }
+    .brand { font-size: .8rem; letter-spacing: .15em; text-transform: uppercase; font-weight: 750; }
+    .brand::before { content: ""; display: inline-block; width: 9px; height: 9px; margin-right: 10px; background: var(--accent); border-radius: 3px; transform: rotate(45deg); }
+    .topline .toolbar { justify-content: flex-end; }
+    .eyebrow { font-size: .7rem; text-transform: uppercase; letter-spacing: .13em; font-weight: 750; color: var(--muted); }
+    .intro { max-width: 900px; color: var(--muted); font-size: 1.03rem; margin-bottom: 18px; }
+    .evidence { display: flex; align-items: baseline; gap: 6px 18px; flex-wrap: wrap; color: var(--muted); font-size: .79rem; }
+    .evidence strong { color: var(--text); font-weight: 550; }
+    .stats { display: flex; gap: 10px 28px; flex-wrap: wrap; margin: 25px 0 26px; padding: 18px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+    .stat { display: flex; gap: 8px; align-items: baseline; }
+    .stat strong { font-size: 1.5rem; font-weight: 650; letter-spacing: -.04em; }
+    .stat span { color: var(--muted); font-size: .8rem; }
+    .architecture { margin-bottom: 28px; }
+    .architecture h2 { margin-bottom: 12px; }
+    .domain-cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .domain-card { display: block; text-align: left; padding: 17px 18px; background: var(--panel); border-top: 3px solid var(--domain-color); border-radius: 9px; box-shadow: var(--shadow); }
+    .domain-card strong { display: block; margin-bottom: 6px; font-size: 1.06rem; }
+    .domain-card .card-count { float: right; color: var(--muted); font-size: .74rem; font-weight: 450; }
+    .domain-card p { color: var(--muted); font-size: .78rem; margin: 0; }
+    .foundation { display: flex; gap: 8px 12px; align-items: center; flex-wrap: wrap; margin-top: 12px; padding: 12px 15px; background: var(--panel); border: 1px solid var(--line); border-radius: 9px; }
+    .foundation-label { font-size: .77rem; font-weight: 650; margin-right: 5px; }
+    .foundation button { font-size: .78rem; padding: .3rem .65rem; }
+    .foundation small { margin-left: auto; font-size: .73rem; }
+    .explorer { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 20px; align-items: start; }
+    .explorer > * { min-width: 0; }
+    .catalog { position: sticky; top: 16px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); overflow: hidden; }
+    .catalog-controls { padding: 16px; border-bottom: 1px solid var(--line); }
+    .catalog-controls h2 { margin-bottom: 14px; }
+    .field-label { display: block; font-size: .74rem; color: var(--muted); margin: 12px 0 5px; }
+    input[type="search"], select { width: 100%; min-height: 38px; padding: 7px 10px; }
+    input[type="search"] { background: var(--bg); }
+    .catalog-count { font-size: .73rem; color: var(--muted); margin: 12px 0 0; }
+    .catalog-list { max-height: calc(100vh - 285px); min-height: 190px; overflow-y: auto; padding: 8px; scrollbar-width: thin; }
+    .catalog-group { margin: 8px 0 15px; }
+    .catalog-group h3 { margin: 10px 8px 5px; font-size: .7rem; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+    .table-button { display: block; width: 100%; text-align: left; border: 1px solid transparent; background: transparent; padding: 7px 9px; font-size: .76rem; overflow-wrap: anywhere; }
+    .table-button[aria-current="true"] { color: var(--accent); border-color: var(--accent); background: var(--accent-bg); }
+    .table-button .count { float: right; margin-left: 7px; color: var(--muted); font: .68rem system-ui, sans-serif; }
+    .panel { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 21px; margin-bottom: 18px; min-width: 0; box-shadow: var(--shadow); }
+    .section-heading { margin-bottom: 14px; }
+    .section-heading h2 { margin: 0; }
+    .section-heading small { font-size: .78rem; }
+    .overview-intro { color: var(--muted); font-size: .86rem; }
+    .overview-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 15px; }
+    .overview-group { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    .overview-group h3 { display: flex; justify-content: space-between; gap: 10px; padding: 13px 14px; margin: 0; border-top: 3px solid var(--domain-color); background: var(--panel-raised); }
+    .overview-group h3 span { color: var(--muted); font-size: .75rem; font-weight: 400; }
+    .overview-group .table-button { border-radius: 0; padding: 8px 14px; border-bottom: 1px solid var(--line); }
+    .overview-group .table-button:last-child { border-bottom: 0; }
+    .detail-heading { margin-bottom: 12px; }
+    .detail-heading h2 { font-size: clamp(1.1rem, 2vw, 1.5rem); margin: 7px 0; overflow-wrap: anywhere; }
+    .detail-heading .toolbar button { font-size: .76rem; }
+    .badge { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 5px; padding: 2px 6px; font: .65rem/1.5 system-ui, sans-serif; color: var(--muted); white-space: nowrap; margin: 2px 4px 2px 0; }
+    .badge-primary { color: var(--accent); background: var(--accent-bg); border-color: var(--accent); }
+    .badge-warning { color: var(--application); border-color: var(--application); }
+    .metadata { font-size: .76rem; color: var(--muted); overflow-wrap: anywhere; }
+    .metadata a { color: var(--muted); }
+    .note { color: var(--muted); border-left: 3px solid var(--line); padding: 2px 0 2px 12px; margin: 12px 0 0; font-size: .81rem; }
+    .legend { display: flex; align-items: center; gap: 10px 18px; flex-wrap: wrap; padding: 11px 0; border-top: 1px solid var(--line); margin-top: 16px; }
+    .legend label { display: flex; align-items: center; gap: 6px; font-size: .75rem; }
+    input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; }
+    .line-key { display: inline-block; width: 22px; border-top: 2px solid var(--fk); }
+    .line-key.application { border-top-color: var(--application); border-top-style: dashed; }
+    .line-key.orm { border-top-color: var(--orm); border-top-style: dotted; }
+    .graph-toolbar { color: var(--muted); font-size: .73rem; margin-top: 12px; }
+    .graph-toolbar .toolbar { gap: 6px; }
+    .graph-toolbar button { padding: .3rem .6rem; font-size: .73rem; }
+    .graph-scroll { overflow-x: auto; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; margin-top: 12px; }
+    .graph-scroll svg { display: block; width: 100%; min-width: 760px; }
+    .graph-label { fill: var(--muted); font: 12px system-ui, sans-serif; letter-spacing: .04em; }
+    .graph-edge { fill: none; stroke: var(--fk); stroke-width: 1.6; opacity: .85; }
+    .graph-edge.application { stroke: var(--application); stroke-dasharray: 7 5; }
+    .graph-edge.orm { stroke: var(--orm); stroke-dasharray: 2 5; }
+    .graph-node rect { fill: var(--panel); stroke: var(--line); stroke-width: 1.2; }
+    .graph-node .node-accent { fill: var(--domain-color); stroke: none; }
+    .graph-node text { fill: var(--text); font: 11.5px ui-monospace, SFMono-Regular, Consolas, monospace; }
+    .graph-node .node-meta { fill: var(--muted); font: 10.5px system-ui, sans-serif; }
+    .graph-node.selected rect { fill: var(--accent-bg); stroke: var(--accent); }
+    .graph-node.selected .node-accent { fill: var(--accent); }
+    .graph-node:hover rect, .graph-node:focus rect { stroke: var(--accent); stroke-width: 2.5; }
+    .graph-node:focus { outline: none; }
+    .table-scroll { overflow: auto; border: 1px solid var(--line); border-radius: 8px; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: .78rem; }
+    th { color: var(--muted); font-size: .7rem; font-weight: 650; background: var(--panel-raised); }
+    th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+    tr:last-child td { border-bottom: 0; }
+    td code { font-size: .94em; }
+    td .property { display: block; margin-top: 3px; font-size: .67rem; color: var(--muted); }
+    .columns-table { min-width: 650px; }
+    .columns-table td:first-child { min-width: 175px; }
+    .columns-table td:last-child { max-width: 260px; }
+    .default-value { white-space: pre-wrap; overflow-wrap: anywhere; }
+    .relationship-list { display: grid; gap: 9px; }
+    .relationship { border: 1px solid var(--line); border-left: 3px solid var(--fk); border-radius: 7px; padding: 12px 14px; }
+    .relationship.application { border-left-color: var(--application); border-left-style: dashed; }
+    .relationship.orm { border-left-color: var(--orm); border-left-style: dotted; }
+    .relationship .endpoints { display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap; font-size: .8rem; }
+    .relationship .endpoints a { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .85em; }
+    .relationship p { margin: 6px 0 0; font-size: .75rem; color: var(--muted); overflow-wrap: anywhere; }
+    .relationship h3 { margin: 0 0 7px; font-size: .72rem; color: var(--muted); font-weight: 450; overflow-wrap: anywhere; }
+    .relationship-columns { color: var(--muted); font-size: .7rem; }
+    .two-columns { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .two-columns h3 { margin-bottom: 12px; }
+    .constraint { border: 1px solid var(--line); border-radius: 7px; padding: 12px; margin-bottom: 10px; }
+    .constraint h3 { margin: 0 0 7px; font: .76rem ui-monospace, SFMono-Regular, Consolas, monospace; overflow-wrap: anywhere; }
+    .constraint pre { margin: 8px 0 0; color: var(--muted); font-size: .71rem; line-height: 1.55; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .constraint p { margin: 6px 0 0; font-size: .75rem; color: var(--muted); }
+    details { margin: 10px 0; }
+    summary { cursor: pointer; font-size: .79rem; color: var(--muted); }
+    .enum-values { margin-top: 8px; font: .73rem/1.8 ui-monospace, SFMono-Regular, Consolas, monospace; overflow-wrap: anywhere; color: var(--muted); }
+    .empty { padding: 22px 12px; color: var(--muted); font-size: .85rem; text-align: center; }
+    .footnote { color: var(--muted); font-size: .74rem; margin: 22px 0 0; }
+    .footnote ul { padding-left: 18px; }
+    .error { border-color: var(--application); }
+    @media (max-width: 1100px) {
+      .explorer { grid-template-columns: 240px minmax(0, 1fr); gap: 15px; }
+      .overview-groups, .two-columns { grid-template-columns: 1fr; }
+      .panel { padding: 17px; }
+      .foundation small { width: 100%; margin: 0; }
+    }
+    @media (max-width: 760px) {
+      .page { padding-top: 20px; }
+      .topline { margin-bottom: 22px; }
+      .domain-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .domain-card { padding: 13px; }
+      .domain-card .card-count { float: none; display: block; margin-top: 3px; }
+      .explorer { grid-template-columns: minmax(0, 1fr); }
+      .catalog { position: static; }
+      .catalog-list { max-height: 235px; min-height: 0; }
+      .catalog-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; }
+      .catalog-controls h2, .catalog-count { grid-column: 1 / -1; margin: 0; }
+      .catalog-controls .field-label { margin-top: 3px; }
+      .stats { gap: 8px 18px; }
+      .stat strong { font-size: 1.25rem; }
+      .graph-scroll svg { min-width: 700px; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+    @media print {
+      :root { color-scheme: light; --bg: #fff; --panel: #fff; --panel-raised: #f4f4f4; --text: #111; --muted: #444; --line: #bbb; --accent: #174d3b; --accent-bg: #eff8f4; --fk: #315f99; --application: #895d0b; --orm: #7650a6; }
+      .page { padding: 0; }
+      .catalog, .topline button, .detail-heading .toolbar, .graph-toolbar button { display: none; }
+      .explorer { display: block; }
+      .panel { box-shadow: none; break-inside: avoid; }
+      .table-scroll, .graph-scroll { overflow: visible; }
+      .graph-scroll svg { min-width: 0; }
+      .columns-table { min-width: 0; }
+      .domain-cards { grid-template-columns: repeat(4, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to schema explorer</a>
+  <div class="page">
+    <header>
+      <div class="topline">
+        <span class="brand">ThreeD App</span>
+        <div class="toolbar">
+          <span class="badge">Local schema snapshot</span>
+          <button id="theme-toggle" type="button" aria-pressed="true">Dark theme</button>
+        </div>
+      </div>
+      <p class="eyebrow">Schema-first · Top-down · Existing structure</p>
+      <h1>Explore the App’s data structure.</h1>
+      <p class="intro">Four Top Modules, their records, and the shared foundations that connect them. Select any table to inspect its columns and follow its declared relationships.</p>
+      <div class="evidence" id="snapshot-metadata"></div>
+      <div class="stats" id="schema-stats" aria-label="Schema totals"></div>
+    </header>
+
+    <section class="architecture" aria-labelledby="architecture-title">
+      <h2 id="architecture-title">Four peer Top Modules</h2>
+      <div class="domain-cards" id="domain-cards"></div>
+      <div class="foundation" id="foundation-cards">
+        <span class="foundation-label">Shared foundations</span>
+      </div>
+    </section>
+
+    <div class="explorer">
+      <aside class="catalog" aria-label="Table catalog">
+        <div class="catalog-controls">
+          <h2>Table catalog</h2>
+          <div>
+            <label for="table-search" class="field-label">Find a table or column</label>
+            <input id="table-search" type="search" placeholder="e.g. model, album_id" autocomplete="off" spellcheck="false">
+          </div>
+          <div>
+            <label for="domain-filter" class="field-label">Owning domain</label>
+            <select id="domain-filter"><option value="all">All domains</option></select>
+          </div>
+          <p class="catalog-count" id="catalog-count" role="status" aria-live="polite"></p>
+        </div>
+        <nav class="catalog-list" id="catalog-list" aria-label="Schema tables"></nav>
+      </aside>
+
+      <main id="main-content" tabindex="-1">
+        <section id="overview" class="panel" aria-labelledby="overview-title">
+          <div class="section-heading">
+            <h2 id="overview-title">All tables, grouped by owner</h2>
+            <button type="button" id="clear-filters">Reset filters</button>
+          </div>
+          <p class="overview-intro">These groups express the established App hierarchy. They are not foreign-key edges. Open a table to see its actual connections; SQL foreign keys, application relationships, and ORM declarations are kept distinct.</p>
+          <div class="overview-groups" id="overview-groups"></div>
+          <details id="enums-section">
+            <summary id="enums-summary">Enum types</summary>
+            <div id="enum-list"></div>
+          </details>
+        </section>
+
+        <div id="table-detail" hidden>
+          <section class="panel" aria-labelledby="table-title">
+            <div class="detail-heading">
+              <div>
+                <span id="table-domain" class="eyebrow"></span>
+                <h2 id="table-title" tabindex="-1" class="mono"></h2>
+              </div>
+              <div class="toolbar"><button type="button" id="back-overview">All tables</button></div>
+            </div>
+            <div class="metadata" id="table-metadata"></div>
+            <div id="table-notes"></div>
+            <div class="legend" role="group" aria-label="Relationship visibility">
+              <label><input type="checkbox" id="show-foreign-key" checked><span class="line-key" aria-hidden="true"></span>SQL foreign keys</label>
+              <label><input type="checkbox" id="show-application"><span class="line-key application" aria-hidden="true"></span>Application / polymorphic</label>
+              <label><input type="checkbox" id="show-orm"><span class="line-key orm" aria-hidden="true"></span>ORM declarations</label>
+            </div>
+            <p class="metadata">Arrows point from the referencing table to the referenced table. Dashed and dotted links are not database foreign keys. Pending links are labeled explicitly.</p>
+            <div class="graph-toolbar">
+              <span id="graph-status" role="status"></span>
+              <div class="toolbar">
+                <button id="graph-previous" type="button" aria-label="Previous page of relationship neighbors">Previous neighbors</button>
+                <span id="graph-page"></span>
+                <button id="graph-next" type="button" aria-label="Next page of relationship neighbors">Next neighbors</button>
+              </div>
+            </div>
+            <div class="graph-scroll" id="focus-graph"></div>
+            <p class="metadata" style="margin: 9px 0 0">Select a connected table to follow it. All connections are listed below, including neighbors outside the catalog filter.</p>
+          </section>
+
+          <section class="panel" aria-labelledby="columns-title">
+            <div class="section-heading"><h2 id="columns-title">Columns</h2><small id="columns-count"></small></div>
+            <div class="table-scroll">
+              <table class="columns-table">
+                <caption class="sr-only" id="columns-caption">Selected table columns</caption>
+                <thead><tr><th scope="col">Column / property</th><th scope="col">Database type</th><th scope="col">Nullability</th><th scope="col">Keys</th><th scope="col">Declared default</th></tr></thead>
+                <tbody id="column-rows"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="relationships-title">
+            <div class="section-heading"><h2 id="relationships-title">Relationships</h2><small id="relationships-count"></small></div>
+            <div class="two-columns">
+              <div><h3>References from this table</h3><div class="relationship-list" id="outgoing-relationships"></div></div>
+              <div><h3>References to this table</h3><div class="relationship-list" id="incoming-relationships"></div></div>
+            </div>
+          </section>
+
+          <section class="panel" aria-labelledby="constraints-title">
+            <div class="section-heading"><h2 id="constraints-title">Keys, indexes and checks</h2><small>Declared in local source</small></div>
+            <div id="constraint-list"></div>
+          </section>
+        </div>
+
+        <section class="footnote" aria-label="Evidence and scope">
+          <p><strong>Evidence:</strong> this visualization describes the local Drizzle schema and the explicitly identified application relationships captured with it. It contains schema metadata, not database records. No live database was queried. A declaration does not establish that a migration has been applied or that an application workflow has been accepted.</p>
+          <details><summary>Snapshot notes and limitations</summary><ul id="snapshot-notes"></ul></details>
+          <p>Open this file directly in a browser. All data and presentation are included in the file; no network connection is required.</p>
+        </section>
+        <noscript><p class="panel error">JavaScript is needed to explore the embedded schema. This file makes no network requests.</p></noscript>
+        <p id="load-error" class="panel error" role="alert" hidden></p>
+      </main>
+    </div>
+  </div>
+
+  <script type="application/json" id="schema-data">__SCHEMA_JSON__</script>
+  <script>
+    (() => {
+      'use strict';
+
+      const byId = id => document.getElementById(id);
+      const prefersLight = typeof window.matchMedia === 'function' && window.matchMedia('(prefers-color-scheme: light)').matches;
+      document.documentElement.dataset.theme = prefersLight ? 'light' : 'dark';
+      byId('theme-toggle').setAttribute('aria-pressed', String(!prefersLight));
+      byId('theme-toggle').textContent = prefersLight ? 'Light theme' : 'Dark theme';
+      const element = (tag, className, text) => {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined && text !== null) node.textContent = String(text);
+        return node;
+      };
+      let schema;
+      try {
+        schema = JSON.parse(byId('schema-data').textContent);
+        if (!Array.isArray(schema.tables) || !Array.isArray(schema.edges) || !Array.isArray(schema.domains)) {
+          throw new Error('The snapshot is missing its tables, relationships or domains.');
+        }
+      } catch (error) {
+        byId('load-error').hidden = false;
+        byId('load-error').textContent = 'Schema data could not be loaded. Generate the completed HTML from this template before opening it. ' + error.message;
+        return;
+      }
+
+      const tables = new Map(schema.tables.map(table => [table.id, table]));
+      const domains = new Map(schema.domains.map(domain => [domain.id, domain]));
+      const state = {
+        domain: 'all',
+        search: '',
+        selected: null,
+        graphPage: 0,
+        kinds: new Set(['foreign-key'])
+      };
+      const pageSize = 6;
+      const domainColor = id => {
+        const value = domains.get(id)?.color;
+        return typeof value === 'string' && /^#[0-9a-f]{3,8}$/i.test(value) ? value : '#8295ad';
+      };
+      const domainLabel = id => domains.get(id)?.label || id;
+      const edgeLabel = kind => ({
+        'foreign-key': 'SQL foreign key',
+        application: 'Application relationship',
+        orm: 'ORM declaration'
+      })[kind] || kind;
+      const compactName = (name, max = 33) => name.length > max ? name.slice(0, max - 1) + '…' : name;
+      const tableHash = id => '#table=' + encodeURIComponent(id);
+      const sourceLink = (source, text, line) => {
+        const node = element('a', '', text + (line ? ':' + line : ''));
+        if (typeof source === 'string' && /^\.\.\/\.\.\/src\/[a-zA-Z0-9_./-]+$/.test(source)) {
+          node.href = source;
+        }
+        return node;
+      };
+      const badge = (text, warning = false) => element('span', warning ? 'badge badge-warning' : 'badge', text);
+
+      function matchingTables() {
+        const needle = state.search.trim().toLowerCase();
+        return schema.tables.filter(table => {
+          if (state.domain !== 'all' && table.domain !== state.domain) return false;
+          if (!needle) return true;
+          const terms = [table.name, table.exportName, ...table.columns.flatMap(column => [column.name, column.property])];
+          return terms.some(term => String(term).toLowerCase().includes(needle));
+        }).sort((a, b) => a.name.localeCompare(b.name));
+      }
+
+      function makeTableButton(table, showCount = false) {
+        const button = element('button', 'table-button mono');
+        button.type = 'button';
+        button.dataset.table = table.id;
+        button.setAttribute('aria-current', String(table.id === state.selected));
+        if (showCount) button.append(element('span', 'count', table.columns.length + ' cols'));
+        button.append(document.createTextNode(table.name));
+        return button;
+      }
+
+      function renderCatalog() {
+        const visible = matchingTables();
+        byId('catalog-count').textContent = visible.length + ' of ' + schema.tables.length + ' tables';
+        const catalog = byId('catalog-list');
+        const overview = byId('overview-groups');
+        catalog.replaceChildren();
+        overview.replaceChildren();
+        for (const domain of schema.domains) {
+          const groupTables = visible.filter(table => table.domain === domain.id);
+          if (!groupTables.length) continue;
+          const group = element('section', 'catalog-group');
+          group.append(element('h3', '', domain.label));
+          groupTables.forEach(table => group.append(makeTableButton(table)));
+          catalog.append(group);
+          const card = element('section', 'overview-group');
+          card.style.setProperty('--domain-color', domainColor(domain.id));
+          const title = element('h3', '', domain.label);
+          title.append(element('span', '', groupTables.length + (groupTables.length === 1 ? ' table' : ' tables')));
+          card.append(title);
+          groupTables.forEach(table => card.append(makeTableButton(table, true)));
+          overview.append(card);
+        }
+        if (!visible.length) {
+          catalog.append(element('p', 'empty', 'No tables match. Try another table or column name.'));
+          overview.append(element('p', 'empty', 'No tables match the current filters.'));
+        }
+        document.querySelectorAll('[data-domain]').forEach(button => {
+          button.setAttribute('aria-pressed', String(button.dataset.domain === state.domain));
+        });
+        renderEnums();
+      }
+
+      function renderEnums() {
+        const enums = (schema.enums || []).filter(item => {
+          return (state.domain === 'all' || item.domain === state.domain) &&
+            (!state.search || [item.name, ...item.values].some(value => value.toLowerCase().includes(state.search.toLowerCase())));
+        });
+        byId('enums-summary').textContent = 'Enum types (' + enums.length + ')';
+        const list = byId('enum-list');
+        list.replaceChildren();
+        for (const item of enums) {
+          const wrapper = element('div', 'constraint');
+          wrapper.append(element('h3', '', item.name));
+          wrapper.append(element('p', '', domainLabel(item.domain)));
+          wrapper.append(element('div', 'enum-values', item.values.join(' · ')));
+          if (item.source) wrapper.append(sourceLink(item.source, item.source, item.line));
+          list.append(wrapper);
+        }
+        if (!enums.length) list.append(element('p', 'empty', 'No enum types match these filters.'));
+      }
+
+      function visibleEdges() {
+        return schema.edges.filter(edge => state.kinds.has(edge.kind) && (edge.from === state.selected || edge.to === state.selected));
+      }
+
+      function tableAnchor(id) {
+        const anchor = element('a', '', tables.get(id)?.name || id);
+        if (tables.has(id)) {
+          anchor.href = tableHash(id);
+          anchor.dataset.table = id;
+        }
+        return anchor;
+      }
+
+      function renderRelationshipList(containerId, edges) {
+        const container = byId(containerId);
+        container.replaceChildren();
+        for (const edge of edges) {
+          const card = element('article', 'relationship ' + edge.kind);
+          const heading = element('h3', '', edge.label || edge.id);
+          card.append(heading);
+          const endpoints = element('div', 'endpoints');
+          endpoints.append(tableAnchor(edge.from));
+          endpoints.append(element('span', 'relationship-columns mono', '(' + (edge.fromColumns || []).join(', ') + ')'));
+          endpoints.append(element('span', '', '→'));
+          endpoints.append(tableAnchor(edge.to));
+          endpoints.append(element('span', 'relationship-columns mono', '(' + (edge.toColumns || []).join(', ') + ')'));
+          card.append(endpoints);
+          card.append(badge(edgeLabel(edge.kind)));
+          if (edge.status === 'pending') card.append(badge('Pending · not confirmed applied / approved', true));
+          else if (edge.status === 'incompatible') card.append(badge('Incompatible IDs · not a working relationship', true));
+          else if (edge.status && edge.status !== 'declared') card.append(badge(edge.status, true));
+          if (edge.onDelete) card.append(badge('Delete: ' + edge.onDelete));
+          if (edge.onUpdate) card.append(badge('Update: ' + edge.onUpdate));
+          if (edge.condition) card.append(element('p', 'mono', 'Condition: ' + edge.condition));
+          if (edge.note) card.append(element('p', '', edge.note));
+          container.append(card);
+        }
+        if (!edges.length) container.append(element('p', 'empty', 'No visible relationships in this direction.'));
+      }
+
+      function renderRelationships() {
+        const edges = visibleEdges();
+        renderRelationshipList('outgoing-relationships', edges.filter(edge => edge.from === state.selected));
+        renderRelationshipList('incoming-relationships', edges.filter(edge => edge.to === state.selected));
+        byId('relationships-count').textContent = edges.length + ' visible connections';
+        renderGraph(edges);
+      }
+
+      function svgElement(tag, attributes = {}, text) {
+        const node = document.createElementNS('http://www.w3.org/2000/svg', tag);
+        for (const [name, value] of Object.entries(attributes)) node.setAttribute(name, String(value));
+        if (text !== undefined) node.textContent = text;
+        return node;
+      }
+
+      function renderGraph(edges) {
+        const groupEdges = direction => {
+          const groups = new Map();
+          for (const edge of edges) {
+            if (edge.from === edge.to) continue;
+            if (direction === 'incoming' && edge.to !== state.selected) continue;
+            if (direction === 'outgoing' && edge.from !== state.selected) continue;
+            const id = direction === 'incoming' ? edge.from : edge.to;
+            if (!groups.has(id)) groups.set(id, []);
+            groups.get(id).push(edge);
+          }
+          return [...groups].sort((a, b) => a[0].localeCompare(b[0]));
+        };
+        const incoming = groupEdges('incoming');
+        const outgoing = groupEdges('outgoing');
+        const selfEdges = edges.filter(edge => edge.from === state.selected && edge.to === state.selected);
+        const totalPages = Math.max(1, Math.ceil(Math.max(incoming.length, outgoing.length) / pageSize));
+        state.graphPage = Math.min(state.graphPage, totalPages - 1);
+        const start = state.graphPage * pageSize;
+        const left = incoming.slice(start, start + pageSize);
+        const right = outgoing.slice(start, start + pageSize);
+        const rows = Math.max(left.length, right.length, 1);
+        const height = Math.max(selfEdges.length ? 320 : 260, rows * 76 + 100);
+        const centerY = height / 2 - 27;
+        const graph = svgElement('svg', {
+          viewBox: '0 0 1000 ' + height,
+          role: 'group',
+          'aria-labelledby': 'graph-title graph-description'
+        });
+        graph.append(svgElement('title', { id: 'graph-title' }, 'Relationships for ' + state.selected));
+        graph.append(svgElement('desc', { id: 'graph-description' }, 'Incoming references on the left; selected table in the center; outgoing references on the right. Select a table to inspect it. Complete relationship details follow this diagram.'));
+        const definitions = svgElement('defs');
+        for (const kind of ['foreign-key', 'application', 'orm']) {
+          const color = kind === 'foreign-key' ? 'var(--fk)' : kind === 'application' ? 'var(--application)' : 'var(--orm)';
+          const marker = svgElement('marker', {
+            id: 'arrow-' + kind,
+            markerWidth: 8,
+            markerHeight: 8,
+            refX: 7,
+            refY: 4,
+            orient: 'auto',
+            markerUnits: 'userSpaceOnUse'
+          });
+          marker.append(svgElement('path', {
+            d: 'M 0 0 L 8 4 L 0 8 Z',
+            fill: color
+          }));
+          definitions.append(marker);
+        }
+        graph.append(definitions);
+        graph.append(svgElement('text', { x: 20, y: 28, class: 'graph-label' }, 'REFERENCING TABLES'));
+        graph.append(svgElement('text', { x: 360, y: 28, class: 'graph-label' }, 'SELECTED TABLE'));
+        graph.append(svgElement('text', { x: 700, y: 28, class: 'graph-label' }, 'REFERENCED TABLES'));
+
+        const node = (id, x, y, connections, selected = false) => {
+          const table = tables.get(id);
+          const link = svgElement(selected || !table ? 'g' : 'a', {
+            class: 'graph-node' + (selected ? ' selected' : ''),
+            style: '--domain-color:' + domainColor(table?.domain)
+          });
+          if (!selected && table) {
+            link.setAttribute('href', tableHash(id));
+            link.setAttribute('data-table', id);
+            link.setAttribute('aria-label', 'Inspect ' + id);
+          }
+          link.append(svgElement('title', {}, id));
+          link.append(svgElement('rect', { x, y, width: 280, height: 56, rx: 7 }));
+          link.append(svgElement('rect', { x: x + 1, y: y + 11, width: 3, height: 34, rx: 1, class: 'node-accent' }));
+          link.append(svgElement('text', { x: x + 13, y: y + 23 }, compactName(id)));
+          const incompatible = connections.some(edge => edge.status === 'incompatible');
+          const pending = connections.some(edge => edge.status === 'pending');
+          const detail = selected
+            ? (table?.columns.length || 0) + ' columns · ' + edges.length + ' connections'
+            : domainLabel(table?.domain || 'External') + ' · ' + connections.length + ' link' + (connections.length === 1 ? '' : 's') + (incompatible ? ' · incompatible IDs' : pending ? ' · pending' : '');
+          link.append(svgElement('text', { x: x + 13, y: y + 42, class: 'node-meta' }, detail));
+          return link;
+        };
+        const connect = (x1, y1, x2, y2, connections) => {
+          const kinds = [...new Set(connections.map(edge => edge.kind))];
+          kinds.forEach((kind, index) => {
+            const offset = (index - (kinds.length - 1) / 2) * 7;
+            const path = svgElement('path', {
+              d: 'M ' + x1 + ' ' + (y1 + offset) + ' C ' + (x1 + 30) + ' ' + (y1 + offset) + ', ' + (x2 - 30) + ' ' + (y2 + offset) + ', ' + x2 + ' ' + (y2 + offset),
+              class: 'graph-edge ' + kind,
+              'marker-end': 'url(#arrow-' + kind + ')'
+            });
+            path.append(svgElement('title', {}, connections.filter(edge => edge.kind === kind).map(edge => edge.label || edge.id).join('; ')));
+            graph.append(path);
+          });
+        };
+        left.forEach(([id, connections], index) => {
+          const y = 60 + index * 76;
+          connect(300, y + 28, 360, centerY + 28, connections);
+          graph.append(node(id, 20, y, connections));
+        });
+        right.forEach(([id, connections], index) => {
+          const y = 60 + index * 76;
+          connect(640, centerY + 28, 700, y + 28, connections);
+          graph.append(node(id, 700, y, connections));
+        });
+        if (selfEdges.length) {
+          const selfKinds = [...new Set(selfEdges.map(edge => edge.kind))];
+          selfKinds.forEach((kind, index) => {
+            const connections = selfEdges.filter(edge => edge.kind === kind);
+            const bottom = centerY + 56;
+            const depth = 44 + index * 26;
+            const path = svgElement('path', {
+              d: 'M 440 ' + bottom + ' C 440 ' + (bottom + depth) + ', 560 ' + (bottom + depth) + ', 560 ' + bottom,
+              class: 'graph-edge ' + kind,
+              'marker-end': 'url(#arrow-' + kind + ')'
+            });
+            path.append(svgElement('title', {}, connections.map(edge => edge.label || edge.id).join('; ')));
+            graph.append(path);
+            graph.append(svgElement('text', {
+              x: 500,
+              y: bottom + depth + 4,
+              'text-anchor': 'middle',
+              class: 'graph-label'
+            }, connections.length + ' ' + edgeLabel(kind) + ' self-reference' + (connections.length === 1 ? '' : 's')));
+          });
+        }
+        graph.append(node(state.selected, 360, centerY, [], true));
+        if (!edges.length) graph.append(svgElement('text', { x: 500, y: centerY + 90, 'text-anchor': 'middle', class: 'graph-label' }, 'No connections for the selected relationship filters.'));
+        byId('focus-graph').replaceChildren(graph);
+        byId('graph-status').textContent = left.length + ' of ' + incoming.length + ' incoming neighbors · ' + right.length + ' of ' + outgoing.length + ' outgoing neighbors' + (selfEdges.length ? ' · ' + selfEdges.length + ' self-references' : '');
+        byId('graph-page').textContent = (state.graphPage + 1) + ' / ' + totalPages;
+        byId('graph-previous').disabled = state.graphPage === 0;
+        byId('graph-next').disabled = state.graphPage >= totalPages - 1;
+      }
+
+      function renderColumns(table) {
+        const body = byId('column-rows');
+        body.replaceChildren();
+        const primaryKey = new Set(table.primaryKey || []);
+        const foreignColumns = new Set(schema.edges.filter(edge => edge.kind === 'foreign-key' && edge.from === table.id).flatMap(edge => edge.fromColumns || []));
+        for (const column of table.columns) {
+          const row = element('tr');
+          const name = element('td');
+          name.append(element('code', '', column.name));
+          name.append(element('span', 'property mono', column.property));
+          const type = element('td');
+          type.append(element('code', '', column.type));
+          if (column.enumValues?.length) {
+            const values = element('details');
+            values.append(element('summary', '', column.enumValues.length + ' allowed values'));
+            values.append(element('div', 'enum-values', column.enumValues.join(' · ')));
+            type.append(values);
+          }
+          const nullable = element('td', '', column.notNull ? 'Required' : 'Nullable');
+          const keys = element('td');
+          if (column.primaryKey || primaryKey.has(column.name)) keys.append(element('span', 'badge badge-primary', 'PK'));
+          if (foreignColumns.has(column.name)) keys.append(badge('FK'));
+          if (column.unique) keys.append(badge('Unique'));
+          if (!keys.childNodes.length) keys.textContent = '—';
+          const defaultCell = element('td');
+          defaultCell.append(element('code', 'default-value', column.hasDefault ? (column.default ?? '(declared; expression unavailable)') : '—'));
+          row.append(name, type, nullable, keys, defaultCell);
+          body.append(row);
+        }
+        byId('columns-count').textContent = table.columns.length + ' columns';
+        byId('columns-caption').textContent = 'Columns declared for ' + table.name;
+      }
+
+      function renderConstraints(table) {
+        const list = byId('constraint-list');
+        list.replaceChildren();
+        const items = [];
+        if (table.primaryKey?.length) items.push({
+          name: 'Primary key',
+          kind: 'Primary key',
+          columns: table.primaryKey
+        });
+        for (const index of table.indexes || []) items.push({
+          ...index,
+          kind: index.unique ? 'Unique index' : 'Index'
+        });
+        for (const constraint of table.uniqueConstraints || []) items.push({
+          ...constraint,
+          kind: 'Unique constraint'
+        });
+        for (const check of table.checks || []) items.push({
+          ...check,
+          kind: 'Check constraint'
+        });
+        for (const item of items) {
+          const wrapper = element('div', 'constraint');
+          wrapper.append(element('h3', '', item.name));
+          wrapper.append(badge(item.kind));
+          if (item.columns?.length) wrapper.append(element('p', 'mono', item.columns.join(', ')));
+          if (item.expression) wrapper.append(element('pre', '', item.expression));
+          if (item.where) wrapper.append(element('pre', '', 'WHERE ' + item.where));
+          list.append(wrapper);
+        }
+        if (!items.length) list.append(element('p', 'empty', 'No additional keys, indexes or checks declared.'));
+      }
+
+      function renderDetail() {
+        const table = tables.get(state.selected);
+        byId('overview').hidden = !!table;
+        byId('table-detail').hidden = !table;
+        if (!table) return;
+        byId('table-title').textContent = table.name;
+        byId('table-domain').textContent = domainLabel(table.domain) + (domains.get(table.domain)?.kind === 'shared' ? ' · Shared foundation' : ' · Top Module');
+        const metadata = byId('table-metadata');
+        metadata.replaceChildren();
+        metadata.append(element('span', 'mono', table.exportName));
+        metadata.append(document.createTextNode(' · '));
+        metadata.append(sourceLink(table.source, table.sourcePath || table.source, table.line));
+        const notes = byId('table-notes');
+        notes.replaceChildren();
+        (table.notes || []).forEach(note => notes.append(element('p', 'note', note)));
+        renderColumns(table);
+        renderConstraints(table);
+        renderRelationships();
+      }
+
+      function readLocation(focus = false) {
+        const id = new URLSearchParams(location.hash.slice(1)).get('table');
+        state.selected = tables.has(id) ? id : null;
+        state.graphPage = 0;
+        renderCatalog();
+        renderDetail();
+        if (focus) {
+          const target = byId(state.selected ? 'table-title' : 'main-content');
+          target.focus({ preventScroll: true });
+          target.scrollIntoView({ block: 'start' });
+        }
+      }
+
+      function selectTable(id) {
+        if (!tables.has(id)) return;
+        if (location.hash === tableHash(id)) readLocation(true);
+        else location.hash = tableHash(id);
+      }
+
+      function showOverview() {
+        if (location.hash) location.hash = '';
+        else readLocation(true);
+      }
+
+      function setDomain(id) {
+        state.domain = domains.has(id) ? id : 'all';
+        byId('domain-filter').value = state.domain;
+        state.search = '';
+        byId('table-search').value = '';
+        renderCatalog();
+        showOverview();
+      }
+
+      function initialize() {
+        const metadata = byId('snapshot-metadata');
+        for (const [label, value] of [
+          ['App', schema.version],
+          ['Branch', schema.branch],
+          ['HEAD', schema.head],
+          ['Generated', schema.generatedAt]
+        ]) {
+          if (!value) continue;
+          const text = element('span', '', label + ' ');
+          text.append(element('strong', '', value));
+          metadata.append(text);
+        }
+        const stats = [
+          ['tables', 'Tables'],
+          ['columns', 'Columns'],
+          ['foreignKeys', 'SQL foreign keys'],
+          ['enums', 'Enum types'],
+          ['applicationLinks', 'Application links'],
+          ['ormRelations', 'ORM declarations']
+        ];
+        for (const [key, label] of stats) {
+          const item = element('div', 'stat');
+          item.append(element('strong', '', schema.summary?.[key] ?? 0));
+          item.append(element('span', '', label));
+          byId('schema-stats').append(item);
+        }
+        for (const domain of schema.domains) {
+          const count = schema.tables.filter(table => table.domain === domain.id).length;
+          const option = element('option', '', domain.label + ' (' + count + ')');
+          option.value = domain.id;
+          byId('domain-filter').append(option);
+          const button = element('button', domain.kind === 'top' ? 'domain-card' : '');
+          button.type = 'button';
+          button.dataset.domain = domain.id;
+          button.setAttribute('aria-pressed', 'false');
+          button.style.setProperty('--domain-color', domainColor(domain.id));
+          if (domain.kind === 'top') {
+            const title = element('strong', '', domain.label);
+            title.append(element('span', 'card-count', count + (count === 1 ? ' table' : ' tables')));
+            button.append(title);
+            button.append(element('p', '', domain.description));
+            byId('domain-cards').append(button);
+          } else {
+            button.textContent = domain.label + ' · ' + count;
+            byId('foundation-cards').append(button);
+          }
+        }
+        byId('foundation-cards').append(element('small', '', 'Infrastructure and shared ownership; separate from the four Top Modules.'));
+        (schema.notes || []).forEach(note => byId('snapshot-notes').append(element('li', '', note)));
+
+        document.addEventListener('click', event => {
+          const tableLink = event.target.closest('[data-table]');
+          if (tableLink && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey) {
+            event.preventDefault();
+            selectTable(tableLink.dataset.table);
+            return;
+          }
+          const domainButton = event.target.closest('[data-domain]');
+          if (domainButton) setDomain(domainButton.dataset.domain);
+        });
+        byId('table-search').addEventListener('input', event => {
+          state.search = event.target.value;
+          renderCatalog();
+        });
+        byId('domain-filter').addEventListener('change', event => {
+          state.domain = event.target.value;
+          renderCatalog();
+        });
+        byId('clear-filters').addEventListener('click', () => setDomain('all'));
+        byId('back-overview').addEventListener('click', showOverview);
+        for (const kind of ['foreign-key', 'application', 'orm']) {
+          byId('show-' + kind).addEventListener('change', event => {
+            if (event.target.checked) state.kinds.add(kind);
+            else state.kinds.delete(kind);
+            state.graphPage = 0;
+            if (state.selected) renderRelationships();
+          });
+        }
+        byId('graph-previous').addEventListener('click', () => {
+          state.graphPage = Math.max(0, state.graphPage - 1);
+          renderGraph(visibleEdges());
+        });
+        byId('graph-next').addEventListener('click', () => {
+          state.graphPage += 1;
+          renderGraph(visibleEdges());
+        });
+        byId('theme-toggle').addEventListener('click', () => {
+          const dark = document.documentElement.dataset.theme !== 'dark';
+          document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+          byId('theme-toggle').setAttribute('aria-pressed', String(dark));
+          byId('theme-toggle').textContent = dark ? 'Dark theme' : 'Light theme';
+        });
+        window.addEventListener('hashchange', () => readLocation(true));
+        readLocation();
+      }
+
+      initialize();
+    })();
+  </script>
+</body>
+</html>

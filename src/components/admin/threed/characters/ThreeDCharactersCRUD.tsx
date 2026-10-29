@@ -1,5 +1,6 @@
 // components/admin/threed/characters/ThreeDCharactersCRUD.tsx
 'use client';
+import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -659,6 +660,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
           <ThreeDModelAssetPreview model={previewModel} dependencyCount={0} attachedDependencyCount={0} preserveCameraOnEdit centerAtOrigin perspective={MODEL_WORKSPACE_PERSPECTIVE} title="Character Model Canvas" canvasClassName="h-[clamp(16rem,42dvh,30rem)]" headerHelp={<ModelFieldHelp label="Character Model Canvas">Geometry preview uses the saved Model and draft Character scale. Orbit, Fit and Reset change only the camera. Animation playback and rig compatibility are checked separately under Animations & Actions; Scene physics and world actions are not run here.</ModelFieldHelp>} />
           {modelLoading && <p role="status" className="text-xs">Loading selected Model...</p>}
           {modelError && <p role="alert" className="text-xs text-destructive">{modelError} The assigned relationship is retained.</p>}
+          {view === 'edit' && editingCharacter && <EntityAlbumsSection moduleType="character" entityId={editingCharacter.id} entityName={editingCharacter.name} disabled={isSubmitting || recordLoading} />}
           <CharacterRuntimeReadiness model={selectedModel} isMovable={formData.isMovable} />
           {view === 'create' && <p className="rounded-md border p-3 text-xs text-muted-foreground">Save the Character to configure Action assignments and preview animation clips.</p>}
         </section>

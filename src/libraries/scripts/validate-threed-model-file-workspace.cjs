@@ -9,7 +9,7 @@ const compile = file => ts.transpileModule(fs.readFileSync(file, 'utf8'), { comp
 function load(file, mocks, globals = {}) {
   const exports = {};
   vm.runInNewContext(compile(file), { exports, console, Date, URL, Uint8Array, TextDecoder, ...globals,
-    require(name) { assert(name in mocks, `Unexpected import: ${name}`); return mocks[name]; } });
+    require(name) { if (name === '../multimedia/EntityAlbumsSection') return { EntityAlbumsSection: 'EntityAlbumsSection' };  assert(name in mocks, `Unexpected import: ${name}`); return mocks[name]; } });
   return exports;
 }
 const edit = load('src/libraries/services/threed/models/model-file-edit-core.ts', {

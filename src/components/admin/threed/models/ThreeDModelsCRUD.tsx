@@ -2,6 +2,7 @@
 // Full CRUD for the ThreeD `threed_models` library with relational file management
 // (model files, textures, and supportive media) backed by Vercel Blob storage.
 'use client';
+import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useModelListState } from './use-model-list-state';
 import { buildCategoryTree, flattenCategoryTree } from './category-tree-core';
@@ -703,6 +704,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
                     </fieldset>
                   </div>
                 )}
+              {view === 'edit' && editingModel && <EntityAlbumsSection moduleType="model" entityId={editingModel.id} entityName={editingModel.modelName} disabled={isSubmitting || uploadingPrimary || uploadingThumbnail || filesBusy || exportOpen || refreshingDetails} />}
             </div>
             <div className="model-save-actions shrink-0 space-y-2 rounded-lg border p-2">
               {refreshingDetails && <p role="status" className="text-sm text-muted-foreground">Reloading saved Model…</p>}

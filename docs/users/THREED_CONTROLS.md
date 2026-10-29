@@ -70,3 +70,29 @@ These actions animate the character only. They do not call the ThreeD World Acti
 Use a movable EcctrlCharacter and approach the FarmBot with WASD. While the FarmBot remains the action target, `W` moves toward it, `S` moves away, and `A`/`D` strafe relative to that path regardless of camera mode, orbit, perspective, or zoom. Clearing the target restores ordinary camera-relative WASD. The DetailsCard reports the current distance and enables FarmBot interaction buttons only after the Character enters interaction range. GardenCharacter remains autonomous and does not automatically approach a FarmBot target.
 
 **Live FarmBot State** separately shows recorded connection state, observation times and device position when available. Live, stale, disconnected and unavailable describe observation conditions; they do not prove equipment readiness or authorize physical commands.
+
+## Related Multimedia Albums
+
+This describes the unreleased v0.30.0 checkpoint, following the [Schema-First, Top-Down Module Plan](../plans/app-module-architecture.md). Real-App verification remains pending. Learn guide associations are excluded; their retained SQL follow-up stays on hold.
+
+1. The current saved Model, Character, FarmBot, Bed, Simulation, Scenario, Planting and Plant editors expose **Multimedia Albums > Edit Albums**. The editor supplies the selected record identity; no Sub-Module choice is needed.
+2. Search for Albums and check the ones you want. Each Album appears once. Selected Albums stay visible during searches and paging. Expand **Order** only if you want to change Sort Order.
+3. Select **Save Album assignments**. Wait for the saved status. These assignments save separately from the record's Details. Unchecking an Album removes only its relationship. Discard restores the loaded selection; Reload fetches saved assignments and asks before discarding changes. Conflicts retain your draft.
+4. Optionally choose an active **Project / Multimedia module** immediately below the Album selection, then select **Add related Albums to Project**. Save Album changes first. This adds Project Assets without replacing existing assets; existing assignments and partial failures are reported, and retry is safe.
+5. Open the Project Scene and refresh **Project Assets > Multimedia** to see eligible Albums.
+
+Several other catalog editors use the same Album section, while some expose only a header or the general [Album manager](/admin/threed/album-associations). This is not complete saved-editor coverage. Designs displays Projects and its Multimedia entry follows Project management. Project architectural Designs retain their Project-owned editing and Save workflow. Assembly UUID associations require the separately reviewed manual identity SQL before use.
+
+Catalog relationships remain owner-scoped. Project additions retain existing Project and Album permission checks. Project/public visibility does not publish private Albums.
+
+Closing an Album editor with unsaved changes asks for confirmation; closing while saving is blocked. The parent editor stays open, preserving its own draft. Save new records before assigning Albums.
+
+### Play an Album from a Scene object
+
+1. Save the object's Album relationships and add the Album to the Project's active Multimedia assignment. Place the object and explicitly Save the Project.
+2. Select the object in the Scene and expand **DetailsCard > Multimedia**. Choose an Album and Track, then **Play Multimedia**. Only readable Albums assigned to both the object and Project appear. Models, Characters, Beds, FarmBots and Plantings have this Scene section.
+3. Use **Pause**, **Stop**, **Rewind** or **Next Track**. Rewind returns to zero; Next stays within the Album. Closing DetailsCard keeps the Project player; switching Projects or hiding the target's Layer stops it. If the browser blocks playback, click Play explicitly.
+4. To use a Character, Take Control of the saved Character, approach the object and enable **Use controlled Character**. For collision Play, configure the object's existing Sensor/contact participation, then **Enable collision playback**. Exit and re-enter to trigger again. Arming is local to this Scene session and does not create a collider or Sensor.
+5. A saved Simulation can use that exact Character/target pair, optional **Run to target**, and Multimedia Actions with a related Project Album. Run it in the Project Scene. Play completes when playback starts; consecutive Play/Pause steps execute immediately. Owner Results capture before commands; failed Result saves can be retried without replay. Public runs remain local.
+
+Live media, collision behavior and save/reopen still need Developer acceptance. See the [current checkpoint and verification outline](../releases/v0.30.0.md#october-29--authorized-integration-implementation).

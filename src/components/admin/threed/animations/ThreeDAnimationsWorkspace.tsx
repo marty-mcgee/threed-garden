@@ -1,4 +1,5 @@
 'use client';
+import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
@@ -152,6 +153,7 @@ export function ThreeDAnimationsWorkspace({ initialCategoryId }: { initialCatego
           </fieldset>
           {operationError && <p role="alert" className="text-xs text-destructive">{operationError}</p>}
         </form>}
+      {editing?.id && <EntityAlbumsSection key={editing.id} moduleType="animation" entityId={editing.id} entityName={editing.name} disabled={busy} />}
       </DialogContent>
     </Dialog>
     {!editing && operationError && <p role="alert" className="text-xs text-destructive">{operationError}</p>}

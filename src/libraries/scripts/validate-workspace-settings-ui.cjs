@@ -93,6 +93,34 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
     panelState.value = value;
     return true;
   } };
+  const moduleContract = load('src/libraries/config/module-appearance.ts', {});
+  let moduleWrites = 0;
+  let failModuleSave = false;
+  let moduleRefreshes = 0;
+  let moduleState = {
+    snapshot: moduleContract.defaultModuleAppearance(),
+    loaded: true,
+    canEdit: true,
+    busy: false,
+    error: null,
+    async save(value) {
+      moduleWrites++;
+      if (failModuleSave) throw new Error('Mock Module save failure');
+      moduleState = {
+        ...moduleState,
+        snapshot: JSON.parse(JSON.stringify(value)),
+      };
+    },
+    async reload() { moduleRefreshes++; },
+  };
+  const moduleEditor = load('src/components/settings/ModuleAppearanceSettings.tsx', {
+    react: formHarness.react,
+    'react/jsx-runtime': { jsx: element, jsxs: element },
+    '@/components/ui/button': { Button: 'Button' },
+    '@/libraries/config/module-appearance': moduleContract,
+    './ModuleAppearanceProvider': { useModuleAppearance: () => moduleState },
+    './module-icons': { moduleIcons: new Proxy({}, { get: (_, key) => key }) },
+  }, { window: { addEventListener() {}, removeEventListener() {}, confirm: () => confirmResult } });
   const form = load('src/components/admin/settings/SettingsManager.tsx', {
     react: formHarness.react, 'react/jsx-runtime': { jsx: element, jsxs: element },
     'lucide-react': new Proxy({}, { get: (_, key) => key }),
@@ -100,7 +128,7 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
     '@/components/settings/ModelPreviewSettings': load('src/components/settings/ModelPreviewSettings.tsx', { react: formHarness.react, 'react/jsx-runtime': { jsx: element, jsxs: element }, '@/components/ui/button': { Button: 'Button' } }),
     '@/components/settings/PanelAppearance': { ...panelAppearance, usePanelAppearance: () => panelState },
     '@/components/ui/button': { Button: 'Button' }, '@/components/ui/switch': { Switch: 'Switch' },
-    '@/components/settings/ModuleAppearanceSettings': { ModuleAppearanceSettings: 'module-settings' },
+    '@/components/settings/ModuleAppearanceSettings': { ...moduleEditor, ModuleAppearanceSettings: 'module-settings' },
     '@/components/settings/WorkspaceSettingsProvider': { useWorkspaceSettings: () => context },
     '@/libraries/config/workspace-settings': contract,
   }, { window: { addEventListener() {}, removeEventListener() {}, confirm: () => confirmResult } });
@@ -172,6 +200,50 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
   assert.equal(buttonPreview.props.style['--threed-dark-control-text'], '#132435', 'Preview uses manually chosen text color before Save');
   assert.equal(panelState.value.darkControlText, '#f8fafc', 'Preview does not save the draft');
   console.log('PASS Opacity Settings draft: explicit Save, Discard, Refresh confirmation, no write on edit and storage failure retention');
+
+  const moduleForm = tree => moduleEditor.ModuleAppearanceSettings(find(tree, node => node.type === 'module-settings').props);
+  tree = renderForm();
+  assert(button(tree, 'Save Changes').props.disabled);
+  const beforeModuleAccountWrites = saveCalls.length;
+  find(moduleForm(tree), node => node.type === 'select' && node.props['aria-label'] === 'Learn color').props.onChange({ target: { value: 'cyan' } });
+  tree = renderForm();
+  assert(!button(tree, 'Save Changes').props.disabled, 'Learn color alone enables the page Save Changes action');
+  assert.match(text(tree), /Unsaved changes/);
+  failModuleSave = true;
+  await button(tree, 'Save Changes').props.onClick();
+  tree = renderForm();
+  assert.equal(find(moduleForm(tree), node => node.type === 'select' && node.props['aria-label'] === 'Learn color').props.value, 'cyan');
+  assert(!button(tree, 'Save Changes').props.disabled, 'Failed Module save retains an actionable draft');
+  assert.match(text(find(tree, node => node.props?.role === 'alert')), /Mock Module save failure/);
+  moduleState = { ...moduleState, busy: true };
+  assert(button(renderForm(), 'Save Changes').props.disabled, 'In-flight Module writes disable shared Save');
+  moduleState = { ...moduleState, busy: false, canEdit: false };
+  assert(button(renderForm(), 'Save Changes').props.disabled, 'Shared Save retains Super Admin authority');
+  moduleState = { ...moduleState, canEdit: true };
+  failModuleSave = false;
+  await button(renderForm(), 'Save Changes').props.onClick();
+  tree = renderForm();
+  assert.equal(moduleState.snapshot.styles.learn.color, 'cyan');
+  assert(button(tree, 'Save Changes').props.disabled, 'Successful Module save clears page dirty state');
+  assert.equal(moduleWrites, 2);
+  assert.equal(saveCalls.length, beforeModuleAccountWrites, 'Module-only Save does not write personal preferences');
+  find(moduleForm(tree), node => node.type === 'select' && node.props['aria-label'] === 'Learn icon').props.onChange({ target: { value: 'Leaf' } });
+  tree = renderForm();
+  button(tree, 'Discard').props.onClick();
+  tree = renderForm();
+  assert.equal(find(moduleForm(tree), node => node.type === 'select' && node.props['aria-label'] === 'Learn icon').props.value, 'BookOpen');
+  assert(button(tree, 'Save Changes').props.disabled, 'Shared Discard resets Module drafts');
+  find(moduleForm(tree), node => node.type === 'select' && node.props['aria-label'] === 'Learn color').props.onChange({ target: { value: 'red' } });
+  tree = renderForm();
+  confirmResult = false;
+  const beforeRefresh = moduleRefreshes;
+  button(tree, 'Refresh').props.onClick();
+  assert.equal(moduleRefreshes, beforeRefresh, 'Refresh protects an unsaved Module-only draft');
+  confirmResult = true;
+  button(renderForm(), 'Refresh').props.onClick();
+  assert.equal(moduleRefreshes, beforeRefresh + 1);
+  button(renderForm(), 'Discard').props.onClick();
+  console.log('PASS Shared Settings Save: actual Learn color edits activate Save Changes, persist through the Module owner, retain failed drafts/permissions and honor Discard/Refresh.');
 
   let savedOpacity = null;
   const css = new Map();

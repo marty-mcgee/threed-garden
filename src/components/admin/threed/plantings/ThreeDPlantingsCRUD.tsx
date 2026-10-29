@@ -1,5 +1,6 @@
 // components/admin/threed/plantings/ThreeDPlantingsCRUD.tsx
 'use client';
+import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { AdminRelationshipBadge } from '@/components/admin/shared/AdminRelationshipBadge';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
@@ -1278,6 +1279,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
               )}
             </Button>
           </div>
+          {editingPlanting && <EntityAlbumsSection key={editingPlanting.id} moduleType="planting" entityId={editingPlanting.id} disabled={isSubmitting} />}
         </DialogContent>
       </Dialog>
     </div>

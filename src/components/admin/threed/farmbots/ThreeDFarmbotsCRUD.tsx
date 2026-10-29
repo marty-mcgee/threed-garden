@@ -1,5 +1,6 @@
 // components/admin/threed/farmbots/ThreeDFarmbotsCRUD.tsx
 'use client';
+import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
@@ -1493,6 +1494,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
               )}
             </Button>
           </div>
+          {editingFarmbot && <EntityAlbumsSection key={editingFarmbot.id} moduleType="farmbot" entityId={editingFarmbot.id} disabled={isSubmitting} />}
         </DialogContent>
       </Dialog>
 

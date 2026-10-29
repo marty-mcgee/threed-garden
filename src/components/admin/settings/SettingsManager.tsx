@@ -1,7 +1,7 @@
 'use client';
 
 import { SettingsSection } from '@/components/settings/SettingsSection';
-import { ModuleAppearanceSettings } from '@/components/settings/ModuleAppearanceSettings';
+import { ModuleAppearanceSettings, useModuleAppearanceEditor } from '@/components/settings/ModuleAppearanceSettings';
 import { ModelPreviewSettings } from '@/components/settings/ModelPreviewSettings';
 import { PanelAppearanceSettings, usePanelAppearance, type PanelAppearance } from '@/components/settings/PanelAppearance';
 import { useEffect, useState } from 'react';
@@ -32,6 +32,7 @@ function PreferenceIcon({ name }: { name: keyof typeof preferenceIcons }) {
 
 export function SettingsManager() {
   const { snapshot, loading, saving, error, refresh, save } = useWorkspaceSettings();
+  const moduleAppearance = useModuleAppearanceEditor();
   const panelAppearance = usePanelAppearance();
   const [opacityDraft, setOpacityDraft] = useState<PanelAppearance | null>(null);
   useEffect(() => { setOpacityDraft(panelAppearance?.value ?? null); }, [panelAppearance?.value]);
@@ -40,8 +41,11 @@ export function SettingsManager() {
   useEffect(() => { setDraft(snapshot?.preferences ?? null); setMessage(null); }, [snapshot]);
   const workspaceDirty = !!draft && !!snapshot && JSON.stringify(draft) !== JSON.stringify(snapshot.preferences);
   const opacityDirty = !!opacityDraft && !!panelAppearance && JSON.stringify(opacityDraft) !== JSON.stringify(panelAppearance.value);
-  const dirty = workspaceDirty || opacityDirty;
+  const dirty = workspaceDirty || opacityDirty || moduleAppearance.dirty;
   const unavailable = loading || saving || !snapshot || !!error;
+  const busy = saving || !!moduleAppearance.context?.busy;
+  const saveUnavailable = busy || ((workspaceDirty || opacityDirty) && unavailable)
+    || (moduleAppearance.dirty && moduleAppearance.disabled);
   const control = 'h-8 gap-1.5 text-xs [@media(pointer:coarse)]:min-h-11';
 
   useEffect(() => {
@@ -52,10 +56,11 @@ export function SettingsManager() {
   }, [dirty]);
 
   const handleSave = async () => {
-    if (!draft || !snapshot) return;
+    if (!dirty || saveUnavailable) return;
     setMessage(null);
     try {
-      if (workspaceDirty) await save(draft, snapshot.revision);
+      if (moduleAppearance.dirty) await moduleAppearance.save();
+      if (workspaceDirty && draft && snapshot) await save(draft, snapshot.revision);
       if (opacityDirty && opacityDraft && panelAppearance && !panelAppearance.update(opacityDraft)) {
         setMessage('Scene appearance could not be saved in this browser. Your changes are retained; please retry.');
       }
@@ -66,6 +71,7 @@ export function SettingsManager() {
     if (dirty && !window.confirm('Discard unsaved Settings and load the saved preferences?')) return;
     setMessage(null);
     setOpacityDraft(panelAppearance?.value ?? null);
+    if (moduleAppearance.context) void moduleAppearance.context.reload();
     void refresh();
   };
 
@@ -74,11 +80,11 @@ export function SettingsManager() {
       <AdminWorkspaceHeader icon={Settings} title="Settings" description="Your personal workspace appearance and navigation preferences.">
         <span className="text-xs text-muted-foreground">My workspace</span>
         <span role="status" aria-live="polite" className={`rounded-full border px-2 py-0.5 text-[11px] ${error ? 'border-destructive/30 text-destructive' : dirty ? 'border-amber-500/30 text-amber-600 dark:text-amber-400' : 'border-emerald-500/20 text-emerald-600 dark:text-emerald-400'}`}>
-          {saving ? 'Saving…' : loading ? 'Loading…' : error ? 'Unavailable' : dirty ? 'Unsaved changes' : snapshot?.revision ? 'Saved' : 'Defaults'}
+          {busy ? 'Saving…' : loading ? 'Loading…' : error ? 'Unavailable' : dirty ? 'Unsaved changes' : snapshot?.revision ? 'Saved' : 'Defaults'}
         </span>
       </AdminWorkspaceHeader>
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pr-1 pb-2">
-      <ModuleAppearanceSettings />
+      <ModuleAppearanceSettings editor={moduleAppearance} />
       {(error || message) && <p role="alert" className="rounded-md border border-destructive/40 p-2 text-sm text-destructive">{error || message}</p>}
       {loading && !draft && <p role="status" className="p-2 text-sm text-muted-foreground">Loading your Settings…</p>}
       {draft && <div className="space-y-2">
@@ -123,6 +129,7 @@ export function SettingsManager() {
             <summary className="cursor-pointer text-foreground"><span className="inline-flex items-center gap-1.5"><Info aria-hidden="true" className="h-3.5 w-3.5 text-sky-500" />About these Settings</span></summary>
             <div className="mt-2 space-y-2">
               <p>Save Changes stores theme and navigation preferences for your signed-in account, and Scene colors and opacity in this browser. Navigation updates immediately; your preferences return when you sign in or reload.</p>
+              <p>For Super Admins, Save Changes also saves edited Module colors and icons for every user.</p>
               <p>Hiding navigation does not remove Projects, deny route access or stop services. Settings and Project navigation stay available.</p>
               <p>A saved theme is applied on load and Save. The header theme button still changes this browser temporarily. Use browser preference leaves appearance to that browser; Follow device uses its light/dark setting.</p>
             </div>
@@ -131,10 +138,10 @@ export function SettingsManager() {
         </div>
       </div>}
       </div>
-      <div className="admin-editor-actions rounded-md border border-emerald-500/20 bg-emerald-500/5 p-2" aria-label="Personal Settings actions">
-        <Button size="sm" className={control} disabled={unavailable || !dirty} onClick={handleSave}><Save aria-hidden="true" className="h-3.5 w-3.5" />Save Changes</Button>
-        <Button variant="outline" size="sm" className={control} disabled={saving || !dirty} onClick={() => { setDraft(snapshot?.preferences ?? null); setOpacityDraft(panelAppearance?.value ?? null); setMessage(null); }}><RotateCcw aria-hidden="true" className="h-3.5 w-3.5 text-amber-500" />Discard</Button>
-        <Button variant="outline" size="sm" className={control} disabled={loading || saving} onClick={handleRefresh}><RefreshCw aria-hidden="true" className="h-3.5 w-3.5 text-sky-500" />Refresh</Button>
+      <div className="admin-editor-actions rounded-md border border-emerald-500/20 bg-emerald-500/5 p-2" aria-label="Settings actions">
+        <Button size="sm" className={control} disabled={saveUnavailable || !dirty} onClick={handleSave}><Save aria-hidden="true" className="h-3.5 w-3.5" />Save Changes</Button>
+        <Button variant="outline" size="sm" className={control} disabled={busy || !dirty} onClick={() => { setDraft(snapshot?.preferences ?? null); setOpacityDraft(panelAppearance?.value ?? null); moduleAppearance.discard(); setMessage(null); }}><RotateCcw aria-hidden="true" className="h-3.5 w-3.5 text-amber-500" />Discard</Button>
+        <Button variant="outline" size="sm" className={control} disabled={loading || busy} onClick={handleRefresh}><RefreshCw aria-hidden="true" className="h-3.5 w-3.5 text-sky-500" />Refresh</Button>
       </div>
     </div>
   );

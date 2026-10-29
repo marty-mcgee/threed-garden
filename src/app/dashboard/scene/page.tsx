@@ -35,6 +35,7 @@ import { useToast } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { DetailsCard } from '@/components/map/details/DetailsCard';
+import { SceneMultimediaProvider } from '@/components/map/multimedia/SceneMultimediaProvider';
 import { ProjectAssetsPanel } from '@/components/map/panels/ProjectAssetsPanel';
 import { ProjectSelectorDialog } from '@/components/map/panels/ProjectSelectorDialog';
 import { ProjectTemplateDialog } from '@/components/map/panels/ProjectTemplateDialog';
@@ -572,8 +573,13 @@ function UnifiedMapPageInner() {
     if (!selectedProjectId) return;
     const current = architectureDrafts.current.get(selectedProjectId)!;
     if (selected && !entityLevelId(current.history.present, selected)) return;
+    setSelectedMarker(null);
+    setSelectedIncident(null);
+    setSensorInspector(null);
+    setGroupInspector(null);
+    groundMapInspector?.setOpen(false);
     architectureDrafts.current.set(selectedProjectId, { ...current, selected, workspace: { ...(current.workspace ?? defaultDesignWorkspace()), selectedEntityId: selected, ...(selected ? { sections: { ...(current.workspace ?? defaultDesignWorkspace()).sections, [`threed:details:v1:design:${selectedProjectId}:selected-properties`]: true } } : {}) } }); renderArchitecture(value => value + 1);
-  }, [selectedProjectId]);
+  }, [selectedProjectId, groundMapInspector?.setOpen]);
   const showArchitecture = useCallback((levelId: string | string[] | undefined, showRoofs: boolean) => setArchitectureVisibility(current => current.levelId === levelId && current.showRoofs === showRoofs ? current : { levelId, showRoofs }), []);
   useEffect(() => { setArchitectureFrame(null); setArchitecturePreview(null); setArchitectureSaveError(''); projectSaveBusy.current = false; }, [selectedProjectId]);
   useEffect(() => {
@@ -2762,6 +2768,7 @@ function UnifiedMapPageInner() {
   const scenarioOverlaysObscured = isScenariosOpen || isProjectSetupOpen || isSetupMenuOpen || isSceneAddMenuOpen || isProjectSummaryOpen;
 
   return (
+    <SceneMultimediaProvider projectId={selectedProjectId}>
     <ProjectDetailsSections.Provider value={canEditProject ? { sections: designWorkspace.sections, change: (key, open) => changeArchitecture(draft => { const workspace = draft.workspace ?? defaultDesignWorkspace(); return { ...draft, workspace: { ...workspace, sections: { ...workspace.sections, [key]: open } } }; }) } : null}>
     <ProjectOverlayLayoutContext.Provider value={{ positions: overlayPositions, move: (id, position) => setOverlayPositions(current => ({ ...current, [id]: position })) }}>
     <div className="relative h-[calc(100dvh-48px)] min-h-0 bg-[var(--threed-surface-color)]" data-testid="project-scene-workspace">
@@ -3196,7 +3203,7 @@ function UnifiedMapPageInner() {
         }}
       />
       {/* ✅ Map Container */}
-      <DesignWorkspace reserveToolbar={viewMode === '2d'} split={designWorkspace.split} onSplitChange={split => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), split } }))} assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor selectedModelId={!architectureDraft.selected && selectedMarker?.type === 'models' ? String(selectedMarker.id) : null} modelImages={planModelImages.projectId === Number(selectedProjectId) ? Object.values(planModelImages.images) : []} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={id => { const marker = projectRuntimeMarkers.find(marker => String(marker.id) === id); if (marker) selectProjectAsset(marker); }} key={selectedProjectId} frameRequest={architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} active={viewMode === 'design'} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
+      <DesignWorkspace reserveToolbar={viewMode === '2d'} split={designWorkspace.split} onSplitChange={split => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), split } }))} assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor selectedModelId={!architectureDraft.selected && selectedMarker?.type === 'models' ? String(selectedMarker.id) : null} modelImages={planModelImages.projectId === Number(selectedProjectId) ? Object.values(planModelImages.images) : []} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={id => { const marker = projectRuntimeMarkers.find(marker => String(marker.id) === id); if (marker) selectProjectAsset(marker); }} key={selectedProjectId} frameRequest={architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} active={viewMode === 'design'} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSelect: selectArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
       <Card data-project-canvas className="h-full gap-0 rounded-none border-0 py-0 shadow-none">
         <CardContent className="h-full p-0 overflow-hidden">
           <div className="h-full">
@@ -3236,7 +3243,7 @@ function UnifiedMapPageInner() {
                 layers={layers}
                 viewMode="3d"
                 onIncidentSelect={(incident) => setSelectedIncident(incident)}
-                onMarkerSelect={(marker) => { groundMapInspector?.setOpen(false); setSensorInspector(null); setGroupInspector(null); setSelectedMarker(marker); }}
+                onMarkerSelect={marker => { if (marker) selectProjectAsset(marker); else selectArchitecture(null); }}
                 onFocusMarker={handleFocusMarker}
                 selectedIncident={selectedIncident}
                 selectedMarker={selectedMarker}
@@ -3290,7 +3297,7 @@ function UnifiedMapPageInner() {
                 layers={layers}
                 viewMode="2d"
                 onIncidentSelect={(incident) => setSelectedIncident(incident)}
-                onMarkerSelect={(marker) => { groundMapInspector?.setOpen(false); setSensorInspector(null); setGroupInspector(null); setSelectedMarker(marker); }}
+                onMarkerSelect={marker => { if (marker) selectProjectAsset(marker); else selectArchitecture(null); }}
                 onFocusMarker={handleFocusMarker}
                 selectedIncident={selectedIncident}
                 selectedMarker={selectedMarker}
@@ -3428,5 +3435,6 @@ function UnifiedMapPageInner() {
     </div>
     </ProjectOverlayLayoutContext.Provider>
     </ProjectDetailsSections.Provider>
+    </SceneMultimediaProvider>
   );
 }

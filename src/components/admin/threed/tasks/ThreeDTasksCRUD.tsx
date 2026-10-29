@@ -1,5 +1,6 @@
 // components/admin/threed/tasks/ThreeDTasksCRUD.tsx
 'use client';
+import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useState, useEffect, useRef } from 'react';
@@ -1219,6 +1220,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
               )}
             </Button>
           </div>
+          {editingTask && <EntityAlbumsSection key={editingTask.id} moduleType="task" entityId={editingTask.id} disabled={isSubmitting} />}
         </DialogContent>
       </Dialog>
     </div>

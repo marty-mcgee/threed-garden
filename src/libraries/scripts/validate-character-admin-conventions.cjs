@@ -41,6 +41,7 @@ function fixture(view = 'list') {
     '@/components/admin/threed/models/model-preview-requirements': { modelForPreview: value => value },
     '@/components/admin/threed/models/ModelFieldHelp': proxy,
     '@/libraries/services/threed/models/model-source-core': { readModelSource: () => 'character' },
+    '../multimedia/EntityAlbumsSection': proxy,
     './use-character-page-guard': { useCharacterPageGuard: () => () => {} },
     './character-admin-form-core': formCore,
     '@/components/admin/layout/AdminWorkspaceHeader': proxy,

@@ -50,6 +50,7 @@ export interface DesignEditorProps {
   scene?: {
     projectId: number; projectName: string; draft: ProjectArchitectureDraft;
     onChange: (update: (draft: ProjectArchitectureDraft) => ProjectArchitectureDraft) => void;
+    onSelect?: (selected: string | null) => void;
     onSave: () => Promise<void>; saving: boolean;
     onPreview: (document: DesignDocument | null) => void;
     onVisibility: (levelId: string | string[] | undefined, showRoofs: boolean) => void;
@@ -66,7 +67,20 @@ export function DesignEditor({ selectedModelId, modelImages, metersPerSceneUnit,
   }, []);
   const setHistory = useCallback((update: SetStateAction<DesignHistory>) => updateDraft(draft => ({ ...draft, history: typeof update === 'function' ? update(draft.history) : update })), [updateDraft]);
   const selected = draft.selected;
-  const setSelected = useCallback((selected: string | null) => updateDraft(draft => ({ ...draft, selected, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), selectedEntityId: selected } })), [updateDraft]);
+  const setSelected = useCallback((selected: string | null) => {
+    if (owner.current?.onSelect) {
+      owner.current.onSelect(selected);
+      return;
+    }
+    updateDraft(draft => ({
+      ...draft,
+      selected,
+      workspace: {
+        ...(draft.workspace ?? defaultDesignWorkspace()),
+        selectedEntityId: selected,
+      },
+    }));
+  }, [updateDraft]);
   const saving = scene?.saving ?? false, loading = false;
   const [preview, setPreview] = useState<DesignDocument | null>(null);
   const [readOnlyMeasurements, setReadOnlyMeasurements] = useState(draft.workspace?.showMeasurements ?? false);

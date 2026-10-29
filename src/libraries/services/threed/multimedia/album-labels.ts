@@ -1,0 +1,27 @@
+import type { AlbumModuleType } from './album-entity-registry';
+
+export const albumModuleLabels: Record<AlbumModuleType, string> = {
+  model: 'Models',
+  character: 'Characters',
+  plant: 'Plants',
+  planting: 'Plantings',
+  bed: 'Beds',
+  farmbot: 'FarmBots',
+  scenario: 'Scenarios',
+  simulation: 'Simulations',
+  design: 'Designs',
+  layer: 'Layers',
+  task: 'Tasks',
+  harvest: 'Harvests',
+  watering: 'Waterings',
+  model_file: 'Model Files',
+  model_category: 'Model Categories',
+  texture: 'Textures',
+  ground_map: 'Ground Maps',
+  animation: 'Animations',
+  animation_file: 'Animation Files',
+  animation_category: 'Animation Categories',
+  animation_slot: 'Animation Slots',
+  animation_preset: 'Animation Presets',
+  assembly: 'Assembly Groups',
+};

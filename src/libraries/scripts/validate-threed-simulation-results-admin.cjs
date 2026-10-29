@@ -12,6 +12,11 @@ function load(file, deps = {}, globals = {}) {
     module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX,
   } }).outputText, { exports, console, URL, URLSearchParams, Buffer, Date, AbortController, Blob,
     setTimeout, clearTimeout, ...globals, require(name) {
+      if (name.endsWith('scene-multimedia-contract')) return require('../services/threed/multimedia/scene-multimedia-contract.ts');
+      if (name.endsWith('SimulationMultimediaFields')) return { SimulationMultimediaFields: 'SimulationMultimediaFields' };
+      if (name.endsWith('MultimediaSimulationControls')) return { MultimediaSimulationControls: 'MultimediaSimulationControls' };
+      if (name.endsWith('scene-multimedia-read')) return { readSceneMultimedia: async () => { throw Error('Legacy fixture must not read Multimedia'); }, SceneMultimediaReadError: class extends Error {} };
+
       if (name === '@/components/admin/shared/use-admin-list-query-state') return { useAdminListQueryState: (_route, _key, initial) => deps.react.useState(initial) };
       if (name in deps) return deps[name];
       assert(name.startsWith('.'), `Unexpected dependency: ${name}`);
@@ -134,7 +139,7 @@ async function checkComponents() {
   assert(detail.text().includes('Captured run 2')); assert(!detail.text().includes('Captured run 1'));
   assert(detail.text().includes('The Simulation definition was deleted'));
   assert(!detail.find(node => node.props?.href === '/admin/threed/simulations/4'), 'Deleted live definition is not linked from historical snapshot ID');
-  assert(detail.text().includes('Run to target ball') && detail.text().includes('Left goal'));
+  assert(detail.text().includes('Run to target') && detail.text().includes('Left goal'));
   assert(detail.text().includes('Counter reset observed') && detail.text().includes('Event report limit reached'));
   assert(detail.text().includes('Read-only history'));
   detail.button('Export report').props.onClick(); detail.timers();
