@@ -6,7 +6,7 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
- - [v0.30.0-beta - App: Home and Learn Introduction (prepared with documented CI discrepancies)](v0.30.0-beta.md)
+ - [v0.30.0-beta - App: Home and Learn Introduction (Developer-confirmed production release)](v0.30.0-beta.md)
 
  - [v0.30.0-alpha - ThreeD: Multimedia Integration Checkpoint (Developer-confirmed production alpha)](v0.30.0-alpha.md)
 
