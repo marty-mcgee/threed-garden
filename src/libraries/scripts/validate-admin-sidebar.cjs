@@ -46,7 +46,9 @@ for (const [route, expected] of [
   ['/admin/projects/16', '/admin/projects'],
   ['/admin/multimedia/speech/3', '/admin/multimedia/speech'],
   ['/admin/threed/models-extra', null],
-  ['/learn', '/learn'],
+  ['/learn', null],
+  ['/learn/data-structure', null],
+  ['/learn/guides/first-project', null],
   ['/admin/learn/new', '/admin/learn/new'],
   ['/admin/learn/4', '/admin/learn'],
   ['/learn-extra', null],
@@ -117,17 +119,18 @@ assert.equal(all(tree,n=>n.type==='button'&&text(n)==='Add Model')[0].props.vari
 pathname='/admin/threed/models/new';tree=render();
 assert.equal(all(tree,n=>n.type==='link'&&text(n)==='Add Model')[0].props['aria-current'],'page');
 assert.equal(all(tree,n=>n.type==='button'&&text(n)==='Add Model')[0].props.variant,'secondary');
-pathname='/learn';owner='learn-menu-check';tree=render();
+pathname='/admin/learn';owner='learn-menu-check';tree=render();
 assert.equal(all(tree,n=>n.type==='a'&&text(n)==='All Guides')[0].props.href,'/admin/learn');
 assert.equal(all(tree,n=>n.type==='a'&&text(n)==='Add Guide')[0].props.href,'/admin/learn/new');
 assert.equal(button(tree,'Learn').props['aria-expanded'],true);
-assert.equal(all(tree,n=>n.type==='link'&&text(n)==='Learn ThreeD')[0].props.href,'/learn');
+assert.equal(all(tree,n=>n.props?.href==='/learn').length,0,'Public Learn is reached through the App surfaces, not the Admin sidebar');
 assert(renderedIcons(tree).some(icon=>icon?.type==='Star'&&icon.props.className.includes('text-violet-500')));
 button(tree,'Learn').props.onClick();tree=render();assert.equal(button(tree,'Learn').props['aria-expanded'],false);
 states=[];effects=[];tree=render();assert.equal(button(tree,'Learn').props['aria-expanded'],false);
 props.isCollapsed=true;tree=render();assert(all(tree,n=>n.props?.['aria-label']==='Open Learn navigation').length===1);
 
 // The public App menu keeps a single Learn destination with the same saved identity.
+pathname='/learn';
 const {default:NavDropdown}=load('src/components/navigation/NavDropdown.tsx',{
   'react/jsx-runtime':{jsx,jsxs:jsx},'next/link':{default:'link'},'next/navigation':{usePathname:()=>pathname},'lucide-react':icons,
   '@/components/settings/ModuleAppearanceProvider':{ModuleIcon},
