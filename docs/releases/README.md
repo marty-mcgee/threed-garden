@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
- - [v0.30.0-centaur - ThreeD: Project Multimedia Player and Presentation (prepared for production release)](v0.30.0-centaur.md)
+ - [v0.30.0 - ThreeD: Multimedia Integration (prepared for production release; centaur production smoke check complete)](v0.30.0.md)
+
+ - [v0.30.0-centaur - ThreeD: Project Multimedia Player and Presentation (Developer-confirmed production release)](v0.30.0-centaur.md)
 
  - [v0.30.0-beta - App: Home and Learn Introduction (Developer-confirmed production release)](v0.30.0-beta.md)
 
@@ -15,8 +17,6 @@ Version-specific scope, checks, acceptance and production confirmations live in 
  - [v0.29.2 - ThreeD Design: Model Properties, Movement and Resizing (Developer-confirmed production release)](v0.29.2.md)
 
  - [v0.29.2-alpha - App: Multimedia Integration and Learn Data Structure Checkpoint (Developer-confirmed production alpha)](v0.29.2-alpha.md)
-
- - [v0.30.0 - ThreeD Multimedia Integration (implementation under review against existing App architecture)](v0.30.0.md)
 
  - [v0.29.1 - App: Header Surface Navigation, Module Appearance and Dashboard Footer (Developer-confirmed production release)](v0.29.1.md)
 
