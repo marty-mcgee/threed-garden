@@ -19,6 +19,12 @@ let key = '15:loaded', ready = false, snapshot = { version: 1, savedAt: 'first',
 function render() { cursor = 0; effects = []; const currentSnapshot = snapshot; const capture = () => currentSnapshot; const result = exportsObject.useWorkspaceSaveFeedback(key, ready, capture); effects.forEach(fn => fn()); return result; }
 function sample() { for (const fn of [...timers.values()]) fn(); return render(); }
 assert.equal(render().dirty, false); ready = true; render(); assert.equal(sample().dirty, false, 'Hydrated workspace starts clean');
+snapshot = { ...snapshot, multimedia: { open: true, albumId: 28, trackId: 21 } }; render();
+assert.equal(sample().dirty, true, 'Multimedia selection and overlay changes participate in Project dirty feedback');
+render().acknowledge(snapshot); assert.equal(render().dirty, false);
+snapshot = { ...snapshot, multimedia: { ...snapshot.multimedia, trackId: 22 } }; render();
+assert.equal(sample().dirty, true, 'A new current Track needs an explicit Project Save');
+render().acknowledge(snapshot);
 snapshot = { ...snapshot, savedAt: 'later', threeD: { ...snapshot.threeD, sensorState: { count: 11 } } }; render(); assert.equal(sample().dirty, false, 'Time and runtime counts do not dirty workspace');
 snapshot = { ...snapshot, overlayPositions: { details: { x: 1, y: 0 } } }; render(); assert.equal(sample().dirty, true);
 const captured = structuredClone(snapshot); const pending = render();

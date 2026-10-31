@@ -5,6 +5,7 @@ import { db } from '@/libraries/db/client';
 import { multimedia } from '@/libraries/schema/multimedia';
 import { projectMultimedia } from '@/libraries/schema/project';
 import { eq, desc, and, sql } from 'drizzle-orm';
+import { randomUUID } from 'node:crypto';
 
 export async function GET(request: NextRequest) {
   try {
@@ -123,19 +124,26 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, description, config } = body; // ✅ Removed projectId
 
-    if (!name) {
+    if (typeof name !== 'string' || !name.trim()) {
       return NextResponse.json(
         { success: false, error: 'Missing required field: name' },
         { status: 400 }
       );
     }
 
+    // Module names can repeat; the existing schema requires a globally unique slug.
+    const normalizedName = name.trim();
+    const slugBase = normalizedName
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 64) || 'multimedia';
     const [newModule] = await db
       .insert(multimedia)
       .values({
-        name,
+        name: normalizedName,
         description: description || '',
-        slug: name.toLowerCase().replace(/\s+/g, '-'),
+        slug: `${slugBase}-${randomUUID()}`,
         userId: session.user.id,
         isActive: true,
         isPublic: false,
@@ -147,9 +155,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: newModule });
   } catch (error) {
-    console.error('Music API error:', error);
+    console.error('Multimedia module creation failed:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create Music module' },
+      { success: false, error: 'Failed to create Multimedia module' },
       { status: 500 }
     );
   }

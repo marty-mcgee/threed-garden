@@ -21,6 +21,7 @@ const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 const tasks = {
   'threed-multimedia': [node('validate-threed-multimedia.cjs')],
   'threed-multimedia-browser': [node('validate-threed-multimedia-browser.cjs')],
+  'threed-project-presentation-browser': [node('validate-project-presentation-browser.cjs')],
   'learn-data-structure': [
     [...node('generate-schema-visualization.cjs'), '--check'],
     node('validate-learn-data-structure.cjs'),
@@ -45,7 +46,7 @@ const tasks = {
   'design-appearance-top-view': [node('validate-model-top-view-export.cjs'), node('validate-design-appearance-top-view.cjs'), node('validate-model-top-view-compatibility.cjs')],
   'admin-sidebar': [node('validate-admin-sidebar.cjs')],
   'threed-designs': [node('validate-threed-designs.cjs'), node('validate-admin-designs.cjs')],
-  'project-configurations': [node('validate-project-measurement-units.cjs'), node('validate-project-configurations-ui.cjs')],
+  'project-configurations': [node('validate-project-measurement-units.cjs'), node('validate-project-configurations-ui.cjs'), node('validate-project-multimedia-create.cjs')],
   'legacy-design-recovery': [node('validate-legacy-recovery-geometry.cjs'), node('validate-legacy-recovery-files.cjs'), node('validate-legacy-recovery-apply.cjs')],
   'threed-home-design': [node('validate-threed-home-design.cjs'), node('validate-design-sloped-walls.cjs')],
   'threed-home-design-browser': [node('validate-threed-home-design-browser.cjs')],
@@ -99,7 +100,7 @@ const tasks = {
   'threed-ground-map': [ts('validate-threed-ground-map.mts')],
   'threed-bed-planting-bounds': [ts('validate-threed-bed-planting-bounds.mts')],
   'threed-runtime-markers': [['node', '--import', 'tsx', `${scripts}/validate-threed-runtime-markers.mts`]],
-  'threed-overlay-layout': [node('validate-scene-selection.cjs'), node('validate-workspace-save-feedback.cjs'), node('validate-project-overlay-layout.cjs'), node('validate-scene-view-presets.cjs'), ['node', '--import', 'tsx', `${scripts}/validate-threed-project-settings.mts`]],
+  'threed-overlay-layout': [node('validate-scene-selection.cjs'), node('validate-workspace-save-feedback.cjs'), node('validate-project-overlay-layout.cjs'), node('validate-project-presentation.cjs'), node('validate-scene-view-presets.cjs'), ['node', '--import', 'tsx', `${scripts}/validate-threed-project-settings.mts`]],
   'threed-inspectors': [['node', '--import', 'tsx', `${scripts}/validate-threed-inspectors.mts`]],
   'threed-sensors': [['node', '--import', 'tsx', `${scripts}/validate-threed-sensors.mts`], node('validate-threed-sensor-groups.cjs')],
   'threed-physics-events': [['node', '--import', 'tsx', `${scripts}/validate-threed-physics-events.mts`]],
@@ -293,7 +294,7 @@ const ci = [
 
 const unavailableFixtures = ['threed-fbx-material-targets'];
 // Native Chromium/WebGL is optional and intentionally separate from portable CI/all.
-const runnableTasks = Object.keys(tasks).filter((name) => !unavailableFixtures.includes(name) && !['threed-model-builder-browser', 'threed-home-design-browser', 'shadcn-ui-browser', 'threed-multimedia-browser'].includes(name));
+const runnableTasks = Object.keys(tasks).filter((name) => !unavailableFixtures.includes(name) && !['threed-model-builder-browser', 'threed-home-design-browser', 'shadcn-ui-browser', 'threed-multimedia-browser', 'threed-project-presentation-browser'].includes(name));
 
 const groups = {
   all: runnableTasks,

@@ -190,7 +190,7 @@ const moduleConfig: Record<ModuleType, {
   multimedia: {
     icon: Music,
     color: 'text-purple-600',
-    label: 'Music',
+    label: 'Multimedia',
     borderColor: 'border-purple-200',
     crudComponents: [
       { id: 'albums', label: 'Albums', component: MultimediaAlbumCRUD, icon: Music },
@@ -902,7 +902,7 @@ export default function ProjectDetailPage() {
                 >
                   <option value="threed">ThreeD</option>
                   <option value="traffic">Traffic</option>
-                  <option value="multimedia">Music</option>
+                  <option value="multimedia">Multimedia</option>
                 </select>
               </div>
               <div>

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { Button } from '@/components/ui/button';
+import { useSceneMultimedia } from '../multimedia/SceneMultimediaProvider';
 
 type Album = {
   id: number;
@@ -12,6 +13,8 @@ type Album = {
 };
 
 export function ProjectMultimediaAssets({ projectId, search }: { projectId: string; search: string }) {
+  const multimedia = useSceneMultimedia();
+  const projectMultimedia = multimedia?.projectId === Number(projectId) ? multimedia : null;
   const { data: session, status } = useSession();
   const scope = `${status}:${session?.user?.id ?? 'public'}:${projectId}:${search}`;
   const [page, setPage] = useState({
@@ -54,10 +57,21 @@ export function ProjectMultimediaAssets({ projectId, search }: { projectId: stri
       {!current && <p>Loading Albums…</p>}
       {current?.error && <p role="alert">{current.error}</p>}
       {current && !current.error && !current.albums.length && <p>No available Albums{search ? ' match this search' : ' assigned to this Project'}.</p>}
-      {current?.albums.map(album => <div key={album.id} className="rounded border border-foreground/10 p-2">
-        <p className="font-medium">{album.title}</p>
-        <p className="text-muted-foreground">{album.artist}</p>
-      </div>)}
+      {current?.albums.map(album => {
+        const selected = projectMultimedia?.selection.albumId === album.id;
+        const playback = projectMultimedia?.state?.markerId === null && projectMultimedia.state.albumId === album.id ? projectMultimedia.state : null;
+        return <Button key={album.id} type="button" variant={selected ? 'secondary' : 'outline'}
+          className="h-auto w-full justify-start whitespace-normal p-2 text-left text-xs"
+          aria-label={`Preview Album ${album.title}`} aria-pressed={selected}
+          disabled={!projectMultimedia?.canOpenPreview}
+          onClick={() => projectMultimedia?.previewAlbum(album.id)}>
+          <span className="min-w-0 break-words">
+            <span className="block font-medium">{album.title}{selected && <span className="ml-2 text-[10px] text-muted-foreground">Selected</span>}</span>
+            <span className="block text-muted-foreground">{album.artist}</span>
+            {playback && <span className="block text-muted-foreground" role="status">{playback.track.title} · <span className="capitalize">{playback.status}</span></span>}
+          </span>
+        </Button>;
+      })}
       <div className="flex gap-1">
         <Button size="xs" variant="ghost" onClick={() => setRetry(value => value + 1)}>Refresh</Button>
         {offset > 0 && <Button size="xs" variant="ghost" onClick={() => setPage({ scope, offset: Math.max(0, offset - 50) })}>Previous</Button>}

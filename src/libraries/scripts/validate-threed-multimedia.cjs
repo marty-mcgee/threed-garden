@@ -109,10 +109,13 @@ function scene() {
 }
 function playerFixture() {
   let currentScene = scene();
+  let projectId = 7;
   let latest, plays = 0, pauses = 0;
   let read = async query => response(query);
+  let projectRead = async query => response(query);
   let play = async () => { media.paused = false; plays++; };
   const requests = [];
+  const projectRequests = [];
   const media = {
     src: '',
     currentTime: 0,
@@ -123,6 +126,8 @@ function playerFixture() {
     removeAttribute() { this.src = ''; },
   };
   const player = new runtime.SceneMultimediaPlayer({
+    projectId: () => projectId,
+    readProject: (query, signal) => { projectRequests.push({ query, signal }); return projectRead(query, signal); },
     read: (query, signal) => { requests.push({ query, signal }); return read(query, signal); },
     media: () => media,
     scene: () => currentScene,
@@ -132,13 +137,124 @@ function playerFixture() {
     player,
     media,
     requests,
+    projectRequests,
     get latest() { return latest; },
     get plays() { return plays; },
     get pauses() { return pauses; },
     setRead(value) { read = value; },
+    setProjectRead(value) { projectRead = value; },
+    setProjectId(value) { projectId = value; },
     setPlay(value) { play = value; },
     setScene(value) { currentScene = value; },
   };
+}
+
+async function checkProjectPreview() {
+  let accessible = true, assigned = true, rank = 50;
+  const queries = [];
+  const db = {
+    select: fields => chain(fields),
+    selectDistinct: fields => chain(fields),
+    async execute(value) {
+      const query = dialect.sqlToQuery(value);
+      queries.push({ table: 'rank', ...query });
+      assert(query.params.includes('owner') && query.params.includes(28));
+      return { rows: [{ position: rank }] };
+    },
+  };
+  function chain(fields) {
+    const record = { fields, joins: [], offset: 0 };
+    const builder = {
+      from(table) { record.table = orm.getTableName(table); return this; },
+      innerJoin(table, condition) { record.joins.push({ table: orm.getTableName(table), ...dialect.sqlToQuery(condition) }); return this; },
+      where(condition) { Object.assign(record, dialect.sqlToQuery(condition)); return this; },
+      limit(value) { record.limit = value; return this; },
+      offset(value) { record.offset = value; return this; },
+      orderBy() { return this; },
+      then(resolve, reject) {
+        queries.push(record);
+        assert(['project_assets', 'multimedia_tracks'].includes(record.table), 'Project preview must not consult Model associations or markers');
+        const rows = record.table === 'project_assets' ? assigned ? [{ id: 28, title: 'TRADE', artist: 'Example', coverArt: '/art.png', userId: 'owner', metadata: { secret: true } }] : []
+          : [{ ...track(record.offset ? 71 : 21), userId: 'owner', metadata: { secret: true } }];
+        return Promise.resolve(rows).then(resolve, reject);
+      },
+    };
+    return builder;
+  }
+  const reader = load('src/libraries/services/project/multimedia-preview.ts', {
+    '@/libraries/db/client': { db },
+    './read-access': { readableProject: async id => accessible ? { id, userId: 'owner' } : null },
+    '@/libraries/schema/project': schema,
+    '@/libraries/schema/multimedia': schema,
+  });
+  const query = { projectId: 7, albumId: 28, trackId: null, offset: 0 };
+  const result = await reader.readProjectMultimediaPreview(query, 'guest');
+  assert.equal(result.tracks[0].id, 21);
+  assert(!('markerId' in result));
+  assert(!JSON.stringify(result).includes('secret') && !JSON.stringify(result).includes('userId'));
+  const album = queries.find(item => item.table === 'project_assets');
+  for (const value of [7, 'owner', 'multimedia', 'multimedia_albums', true, 28, 'published']) assert(album.params.includes(value), 'Missing Project/public Album predicate: ' + value);
+  for (const name of ['project_multimedia', 'multimedia']) assert(album.joins.some(join => join.table === name && join.params.includes(true) && join.params.includes('owner')));
+  const tracks = queries.find(item => item.table === 'multimedia_tracks');
+  assert(tracks.params.includes(28) && tracks.params.includes('owner') && tracks.params.includes('active'));
+  queries.length = 0;
+  const page = await reader.readProjectMultimediaPreview({ ...query, trackId: 71 }, 'owner');
+  assert.equal(page.offset, 50);
+  assert(!queries.find(item => item.table === 'project_assets').params.includes('published'), 'Owner may preview assigned draft Albums');
+  assigned = false;
+  await assert.rejects(reader.readProjectMultimediaPreview(query), error => error.status === 404);
+  assigned = true; accessible = false;
+  await assert.rejects(reader.readProjectMultimediaPreview(query), error => error.status === 404);
+  accessible = true; rank = NaN;
+  await assert.rejects(reader.readProjectMultimediaPreview({ ...query, trackId: 71 }), error => error.status === 404);
+  const api = load('src/app/api/project/multimedia-preview/route.ts', {
+    '@/libraries/auth': { auth: async () => null },
+    '@/libraries/services/project/multimedia-preview': reader,
+  });
+  assert.equal((await api.GET(new Request('https://fixture.invalid/api?projectId=7&albumId=-1'))).status, 400);
+  assigned = false;
+  const denied = await api.GET(new Request('https://fixture.invalid/api?projectId=7&albumId=28'));
+  assert.equal(denied.status, 404);
+  assert.equal(denied.headers.get('Cache-Control'), 'private, no-store');
+
+  const fixture = playerFixture();
+  fixture.setScene(null);
+  fixture.setProjectRead(query => query.trackId === 71 ? response({ ...query, offset: 50 }, [track(71)]) : response(query));
+  await fixture.player.restoreProject({ ...baseCommandWithoutMarker(), trackId: 71 }, 'restore-later-page');
+  assert.equal(fixture.latest.state.offset, 50, 'Saved Track restoration uses its revalidated page');
+  assert.equal(fixture.latest.state.track.id, 71);
+  assert.equal(fixture.plays, 0);
+  fixture.player.clear();
+  await fixture.player.restoreProject({ ...baseCommandWithoutMarker(), trackId: 22 }, 'restore-paused');
+  assert.equal(fixture.plays, 0, 'Restoration cannot autoplay');
+  assert.equal(fixture.latest.state.track.id, 22);
+  assert.equal(fixture.latest.state.status, 'paused');
+  await fixture.player.executeProject(baseCommandWithoutMarker(), 'project-play');
+  assert.equal(fixture.latest.state.markerId, null);
+  assert(fixture.latest.state.playing);
+  assert.equal(fixture.requests.length, 0, 'Project preview never reads object authority');
+  fixture.player.checkScene();
+  assert(fixture.latest.state.playing, 'Project preview is independent of Scene readiness/Layers');
+  await fixture.player.executeProject({ ...baseCommandWithoutMarker(), action: 'pauseMultimedia' }, 'project-pause');
+  assert(fixture.media.paused);
+  await assert.rejects(fixture.player.executeProject({ ...baseCommandWithoutMarker(), markerId: 'radio' }, 'forged-marker'));
+  fixture.setScene(scene());
+  await fixture.player.execute(baseCommand, 'object-play');
+  assert.equal(fixture.latest.state.markerId, 'radio');
+  await assert.rejects(fixture.player.executeProject({ ...baseCommandWithoutMarker(), action: 'stopMultimedia' }, 'wrong-binding'));
+  await fixture.player.executeProject(baseCommandWithoutMarker(), 'project-replace');
+  assert.equal(fixture.latest.state.markerId, null);
+  let resolve;
+  fixture.setProjectRead(query => new Promise(done => { resolve = () => done(response(query)); }));
+  const before = fixture.plays;
+  const pending = fixture.player.executeProject(baseCommandWithoutMarker(), 'stale-project');
+  fixture.setProjectId(8); resolve();
+  await assert.rejects(pending, /Project changed/);
+  assert.equal(fixture.plays, before, 'Late replies after a Project change cannot start playback');
+  console.log('PASS Project preview: saved Project Album authority/public gates without Model associations, safe DTOs/rank paging, single-engine object/Project switching and stale Project rejection (mock DB/media).');
+}
+function baseCommandWithoutMarker() {
+  return { projectId: 7, albumId: 28, action: 'playMultimedia' };
 }
 
 async function checkReadBoundary() {
@@ -383,6 +499,26 @@ function checkSimulation() {
   const participants = mediaSimulation.multimediaSimulationParticipants(captured, scene());
   assert.equal(participants.target.markerId, 'radio');
   assert.equal(participants.target.type, 'models');
+  const controlsFile = 'src/components/map/multimedia/MultimediaSimulationControls.tsx';
+  const controls = ts.createSourceFile(controlsFile, fs.readFileSync(controlsFile, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  let onCommand;
+  function visit(node) {
+    if (ts.isCallExpression(node) && node.expression.getText(controls) === 'player.subscribeCommands') onCommand = node.arguments[0].getText(controls);
+    ts.forEachChild(node, visit);
+  }
+  visit(controls);
+  assert(onCommand);
+  const interruptions = [];
+  const interrupt = vm.runInNewContext('(' + onCommand + ')', {
+    first: { targetMarkerId: 'radio' },
+    requestId: 'simulation-request',
+    instance: { stop: reason => interruptions.push(reason) },
+  });
+  interrupt({ markerId: 'radio' }, 'simulation-request');
+  interrupt({ markerId: 'other-radio' }, 'other-request');
+  assert.equal(interruptions.length, 0);
+  interrupt({ markerId: null }, 'project-preview');
+  assert.equal(interruptions.length, 1, 'Manual Project preview interrupts the Simulation before taking over the shared engine');
   console.log('PASS Multimedia Simulation: strict backwards-compatible payloads, immutable captures, real correlated runner dispatch/Stop/cleanup, wrong Project/actor replies rejected and exact Radio participants.');
 }
 
@@ -392,6 +528,7 @@ function checkSimulation() {
   assert.throws(() => contract.sceneMultimediaQuery(new URLSearchParams('projectId=7&markerId=radio&offset=-1')));
   assert.throws(() => contract.sceneMultimediaCommandSchema.parse({ ...baseCommand, url: 'arbitrary' }));
   await checkReadBoundary();
+  await checkProjectPreview();
   await checkPlayer();
   await checkCollision();
   checkSimulation();

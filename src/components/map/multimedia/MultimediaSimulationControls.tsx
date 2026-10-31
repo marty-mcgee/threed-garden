@@ -182,7 +182,7 @@ export function MultimediaSimulationControls({ context, subscribeSensors, launch
               && value?.target?.actionRequestId !== requestId) instance.stop('Another Character Action interrupted the Simulation.');
           };
           const unsubscribeCommands = player.subscribeCommands((command, id) => {
-            if (command.markerId === first.targetMarkerId && id !== requestId) instance.stop('Another Multimedia Action interrupted the Simulation.');
+            if ((command.markerId === null || command.markerId === first.targetMarkerId) && id !== requestId) instance.stop('Another Multimedia Action interrupted the Simulation.');
           });
           const unsubscribeSensors = subscribeSensors(event => {
             if (event.projectId !== captured.projectId || !event.sensor) return;

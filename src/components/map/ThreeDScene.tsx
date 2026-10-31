@@ -2474,7 +2474,8 @@ export function ThreeDScene({
   const scenePresentationReady = sceneFrameReady
     && controlsReady
     && allRequiredModelsSettled
-    && allRequiredCharactersSettled;
+    && allRequiredCharactersSettled
+    && !resourcesPending;
   const sceneProductionStarted = productionSceneKey === presentationKey;
   const scenePostProduction = postProductionSceneKey === presentationKey;
   const scenePresentationPhase: ThreeDScenePresentationPhase = !sceneProductionStarted
@@ -3422,16 +3423,16 @@ export function ThreeDScene({
           size="sm"
           className="h-7 gap-1 px-2 text-xs"
           aria-expanded={showControls}
-          title="Environment Controls"
+          title="Scene Controls"
         >
           <Settings className="w-3.5 h-3.5" />
-          <span>Environment</span>
+          <span>Scene</span>
           {showControls ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
         </Button>
 
         {showControls && scenePostProduction && (
           <div className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[3000] mt-1 max-h-[min(44rem,calc(100dvh-8rem))] w-56 space-y-0.5 overflow-y-auto rounded-lg border border-foreground/10 p-1.5 pb-2.5 shadow-xl backdrop-blur-sm [scrollbar-width:thin]">
-            <div className="text-[10px] text-foreground/60 px-2 py-0.5">Environment</div>
+            <div className="text-[10px] text-foreground/60 px-2 py-0.5">Scene</div>
             <div className="border-b border-foreground/10 px-2 pb-2"><ProjectMeasurementUnits helpText="Display and input units only. Object sizes, calibration and physics stay unchanged. Retained by Save Project." value={measurementUnits} onChange={units => onMeasurementUnitsChange?.(units)} disabled={!onMeasurementUnitsChange} /></div>
             <Button
               type="button"

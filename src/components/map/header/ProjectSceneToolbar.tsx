@@ -25,8 +25,12 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import type { MapViewMode } from '@/libraries/types/map';
+import { ProjectMultimediaToolbarButton } from '@/components/map/panels/ProjectMultimediaOverlay';
 
 interface ProjectSceneToolbarProps {
+  multimediaOpen?: boolean;
+  onToggleMultimedia?: () => void;
+  multimediaTriggerRef?: RefObject<HTMLButtonElement | null>;
   weatherOpen?: boolean;
   onToggleWeather?: () => void;
   weatherTriggerRef?: RefObject<HTMLButtonElement | null>;
@@ -67,6 +71,9 @@ interface ProjectSceneToolbarProps {
 }
 
 export function ProjectSceneToolbar({
+  multimediaOpen = false,
+  onToggleMultimedia,
+  multimediaTriggerRef,
   weatherOpen = false,
   onToggleWeather,
   weatherTriggerRef,
@@ -172,7 +179,7 @@ export function ProjectSceneToolbar({
           <DropdownMenuTrigger asChild>
             <Button type="button" variant={setupMenuOpen ? 'secondary' : 'outline'} size="sm"
               className="h-7 gap-1 px-2 text-xs" disabled={!presentationComplete || !hasThreeDModule}>
-              <Settings className="h-3.5 w-3.5" /> Setup
+              <Settings className="h-3.5 w-3.5" /> Tools
               {setupMenuOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
             </Button>
           </DropdownMenuTrigger>
@@ -191,6 +198,7 @@ export function ProjectSceneToolbar({
       )}
 
       {selectedProjectId && onToggleWeather && <Button ref={weatherTriggerRef} type="button" variant={weatherOpen ? 'secondary' : 'outline'} size="sm" className="h-7 gap-1 px-2 text-xs" aria-expanded={weatherOpen} aria-controls="project-weather-overlay" onClick={onToggleWeather} title="Project Weather"><CloudSun className="h-3.5 w-3.5" /><span className="hidden sm:inline">Weather</span></Button>}
+      {selectedProjectId && onToggleMultimedia && <ProjectMultimediaToolbarButton open={multimediaOpen} onClick={onToggleMultimedia} triggerRef={multimediaTriggerRef} />}
 
       <SceneOperationStatus operation={activeOperation} viewMode={viewMode} onCancel={onCancelOperation} />
 

@@ -1,7 +1,9 @@
 'use client';
 import { X } from 'lucide-react';
+import { useLayoutEffect } from 'react';
 import type { SceneResourceIssue } from '@/components/threed/shared/SceneResourceStatus';
 import { ThreeDProjectLoadingPresentation } from './ThreeDProjectLoadingPresentation';
+import { useProjectPresentationReporter } from './ProjectPresentationBoundary';
 
 interface SceneResourceFeedbackProps {
   physicsFailed: boolean;
@@ -18,6 +20,15 @@ interface SceneResourceFeedbackProps {
 
 /** DOM feedback outside Canvas; resource reporting and readiness remain Scene-owned. */
 export function SceneResourceFeedback({ physicsFailed, warningsDismissed, resourceFailed, visibleResourceIssues, onDismissWarnings, scenePostProduction, sceneLoadingProgress, sceneLoadingLabel, sceneProductionStarted, resourcesPending }: SceneResourceFeedbackProps) {
+  const reportPresentation = useProjectPresentationReporter();
+  useLayoutEffect(() => {
+    reportPresentation?.({
+      progress: sceneLoadingProgress,
+      label: sceneLoadingLabel,
+      complete: scenePostProduction,
+      failed: physicsFailed,
+    });
+  }, [reportPresentation, sceneLoadingProgress, sceneLoadingLabel, scenePostProduction, physicsFailed]);
   return <>
       {!physicsFailed && !warningsDismissed && (resourceFailed || visibleResourceIssues.length > 0) && (
         <aside aria-label="Scene file loading warnings" className="absolute bottom-4 left-4 z-40 max-w-sm max-h-[35%] overflow-auto rounded-lg border border-amber-600/40 bg-amber-50/95 dark:border-amber-400/40 dark:bg-slate-950/90 p-3 text-xs text-amber-950 dark:text-amber-100 shadow-lg">
@@ -31,7 +42,7 @@ export function SceneResourceFeedback({ physicsFailed, warningsDismissed, resour
           </ul> : <p className="mt-2">A Model or Ground Map is unavailable.</p>}
         </aside>
       )}
-      {!physicsFailed && !scenePostProduction && (
+      {!reportPresentation && !physicsFailed && !scenePostProduction && (
         <ThreeDProjectLoadingPresentation
           progress={sceneLoadingProgress}
           label={sceneLoadingLabel}

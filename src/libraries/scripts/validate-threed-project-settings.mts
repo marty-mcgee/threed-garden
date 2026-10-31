@@ -7,6 +7,19 @@ import { resolveCharacterPhysics } from '../services/threed/characters/character
 import { DEFAULT_THREE_D_ENVIRONMENT_PRESET_KEY } from '../services/threed/environment-presets.ts';
 const saved = {version:1, savedAt:new Date().toISOString(), viewMode:'3d', panelHeight:50, cameraMode:'orbit', threeD:{ cameraPosition:{x:1,y:2,z:3}, cameraTarget:{x:0,y:0,z:0}, activeLayers:['models'], environment:DEFAULT_THREE_D_ENVIRONMENT_PRESET_KEY, autoRotate:false, showGrid:false, showGizmo:true, sunlight:{azimuth:210,elevation:25}, ground:{enabled:true,size:300,height:-0.2}}};
 assert.deepEqual(parseThreeDProjectViewState(JSON.parse(JSON.stringify(saved))).threeD, saved.threeD);
+const multimedia = { open: true, albumId: 28, trackId: 71 };
+assert.deepEqual(parseThreeDProjectViewState(JSON.parse(JSON.stringify({ ...saved, multimedia }))).multimedia, multimedia);
+assert.equal(parseThreeDProjectViewState(saved).multimedia, undefined, 'Legacy workspaces remain valid');
+assert.deepEqual(parseThreeDProjectViewState({ ...saved, multimedia: { open: false, albumId: null, trackId: null } }).multimedia, { open: false, albumId: null, trackId: null });
+for (const bad of [
+  { ...multimedia, open: 'true' },
+  { ...multimedia, albumId: '28' },
+  { ...multimedia, trackId: 0 },
+  { ...multimedia, trackId: 2_147_483_648 },
+  { ...multimedia, albumId: null },
+  { ...multimedia, fileUrl: 'https://untrusted.invalid/track.mp3' },
+  { ...multimedia, playing: true },
+]) assert.throws(() => parseThreeDProjectViewState({ ...saved, multimedia: bad }));
 assert.deepEqual(parseThreeDProjectViewState({ ...saved, threeD: { ...saved.threeD, showLegend: true } }).threeD, saved.threeD, 'Legacy Legend preferences are ignored without changing supported workspace state');
 for (const viewMode of ['3d', '2d', 'combined', 'design']) {
   const restored = parseThreeDProjectViewState(JSON.parse(JSON.stringify({ ...saved, viewMode })));

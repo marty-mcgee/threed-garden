@@ -4,6 +4,7 @@ import { useProjectPageTitle } from '@/components/layout/AppPageTitle';
 import type { ProjectConfigurationStamp } from '@/libraries/services/project/configuration';
 import { useWorkspaceSaveFeedback } from '@/components/map/hooks/useWorkspaceSaveFeedback';
 import { ProjectWeatherOverlay } from '@/components/map/panels/ProjectWeatherOverlay';
+import { ProjectMultimediaOverlay, ProjectMultimediaToolbarButton } from '@/components/map/panels/ProjectMultimediaOverlay';
 import { ProjectOverlayLayoutContext } from '@/components/map/panels/ProjectOverlayLayout';
 import type { SceneResourceIssue } from '@/components/threed/shared/SceneResourceStatus';
 import { GroundMapInspectorWorkspace, GroundMapInspector, useGroundMapInspector } from '@/components/map/details/GroundMapInspectorWorkspace';
@@ -35,7 +36,7 @@ import { useToast } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { DetailsCard } from '@/components/map/details/DetailsCard';
-import { SceneMultimediaProvider } from '@/components/map/multimedia/SceneMultimediaProvider';
+import { SceneMultimediaProvider, type ProjectMultimediaSelection } from '@/components/map/multimedia/SceneMultimediaProvider';
 import { ProjectAssetsPanel } from '@/components/map/panels/ProjectAssetsPanel';
 import { ProjectSelectorDialog } from '@/components/map/panels/ProjectSelectorDialog';
 import { ProjectTemplateDialog } from '@/components/map/panels/ProjectTemplateDialog';
@@ -70,6 +71,7 @@ import type { ScenarioStartRequest } from '@/libraries/services/threed/scenario-
 import { THREED_SOCCER_KICK_RESULT_EVENT, type SoccerKickResult } from '@/libraries/services/threed/physics/soccer-kick-core';
 import { ProjectSetupPanel } from '@/components/map/panels/ProjectSetupPanel';
 import { ThreeDProjectLoadingPresentation } from '@/components/map/presentation/ThreeDProjectLoadingPresentation';
+import { ProjectPresentationBoundary } from '@/components/map/presentation/ProjectPresentationBoundary';
 import { getDefaultMapData, getDefaultLayers } from '@/libraries/services/map/DefaultMapData';
 import {
   UnifiedMapView,
@@ -221,6 +223,12 @@ function UnifiedMapPageInner() {
   // ✅ State
   const [weatherProjectId, setWeatherProjectId] = useState<string | null>(null);
   const weatherTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const [multimediaProjectId, setMultimediaProjectId] = useState<string | null>(null);
+  const multimediaTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const multimediaWorkspaceProviderRef = useRef<(() => ProjectMultimediaSelection) | null>(null);
+  const registerMultimediaWorkspace = useCallback((capture: (() => ProjectMultimediaSelection) | null) => {
+    multimediaWorkspaceProviderRef.current = capture;
+  }, []);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(projectIdParam);
   const canEditProject = projectAccess?.projectId === String(selectedProjectId) && projectAccess.canEdit;
   const {
@@ -1015,6 +1023,10 @@ function UnifiedMapPageInner() {
       return {
         version: PROJECT_VIEW_STATE_VERSION,
         savedAt: new Date().toISOString(),
+        multimedia: {
+          open: !!selectedProjectId && multimediaProjectId === selectedProjectId,
+          ...(multimediaWorkspaceProviderRef.current?.() ?? { albumId: null, trackId: null }),
+        },
         viewMode,
         design: architectureDrafts.current.get(selectedProjectId ?? '')?.workspace ?? defaultDesignWorkspace(),
         panelHeight,
@@ -1033,7 +1045,7 @@ function UnifiedMapPageInner() {
         overlayPositions,
         scenario: { ...scenarioPanelState, panelOpen: isScenariosOpen },
       };
-  }, [cameraMode, initialProjectViewState, panelHeight, selectedProjectId, viewMode, selectedMarker, sensorInspector, groupInspector, groundMapInspector?.open, isProjectAssetsOpen, isModelLibraryOpen, projectAssetSearch, projectAssetType, scenarioPanelState, isScenariosOpen, isProjectSetupOpen, overlayPositions]);
+  }, [cameraMode, initialProjectViewState, panelHeight, selectedProjectId, viewMode, selectedMarker, sensorInspector, groupInspector, groundMapInspector?.open, isProjectAssetsOpen, isModelLibraryOpen, projectAssetSearch, projectAssetType, scenarioPanelState, isScenariosOpen, isProjectSetupOpen, overlayPositions, multimediaProjectId]);
   const workspaceFeedback = useWorkspaceSaveFeedback(
     `${selectedProjectId}:${initialProjectViewState?.savedAt ?? 'new'}`,
     Boolean(selectedProjectId && canEditProject && !loading && (viewMode === '2d' || isThreeDPresentationComplete) && !sensorGroupsWorkspace?.loading),
@@ -1214,6 +1226,7 @@ function UnifiedMapPageInner() {
     setMovingModelInstance(null);
     setCameraMode('stationary');
     setWeatherProjectId(null);
+    setMultimediaProjectId(null);
     setSelectedProjectId(projectId);
     setIsProjectSummaryOpen(false);
     setIsDefaultView(false);
@@ -1495,6 +1508,8 @@ function UnifiedMapPageInner() {
         architectureDrafts.current.set(String(selectedProjectId), hydrateArchitectureDraft(cachedArchitecture, session.architecture, { ...(session.savedViewState?.design ?? defaultDesignWorkspace()), measurementUnits: session.measurementUnits ?? 'imperial' }));
         setMetersPerSceneUnit(session.metersPerSceneUnit); renderArchitecture(value => value + 1);
         setInitialProjectViewState(session.savedViewState);
+        setMultimediaProjectId(session.savedViewState?.multimedia?.open ? String(selectedProjectId) : null);
+        if (session.savedViewState?.multimedia?.open) setWeatherProjectId(null);
         setOverlayPositions(session.savedViewState?.overlayPositions ?? {});
         setScenarioPanelState(session.savedViewState?.scenario ?? emptyProjectScenarioPanelState());
         setScenarioStartRequest(null);
@@ -2800,10 +2815,10 @@ function UnifiedMapPageInner() {
   const scenarioOverlaysObscured = isScenariosOpen || isProjectSetupOpen || isSetupMenuOpen || isSceneAddMenuOpen || isProjectSummaryOpen;
 
   return (
-    <SceneMultimediaProvider projectId={selectedProjectId}>
+    <SceneMultimediaProvider projectId={selectedProjectId} initialWorkspace={initialProjectViewState?.multimedia} workspaceSavedAt={initialProjectViewState?.savedAt} onRegisterWorkspace={registerMultimediaWorkspace} onOpenProjectPreview={() => { setWeatherProjectId(null); setMultimediaProjectId(selectedProjectId); }}>
     <ProjectDetailsSections.Provider value={canEditProject ? { sections: designWorkspace.sections, change: (key, open) => changeArchitecture(draft => { const workspace = draft.workspace ?? defaultDesignWorkspace(); return { ...draft, workspace: { ...workspace, sections: { ...workspace.sections, [key]: open } } }; }) } : null}>
     <ProjectOverlayLayoutContext.Provider value={{ positions: overlayPositions, move: (id, position) => setOverlayPositions(current => ({ ...current, [id]: position })) }}>
-    <div className="relative h-[calc(100dvh-48px)] min-h-0 bg-[var(--threed-surface-color)]" data-testid="project-scene-workspace">
+    <ProjectPresentationBoundary projectId={selectedProjectId} mapOnly={viewMode === '2d'}>
       {ToastComponent}
 
       {/* Project Selector Dialog */}
@@ -2825,6 +2840,7 @@ function UnifiedMapPageInner() {
       />
 
       {canEditProject && !loading && selectedProjectId && weatherProjectId === selectedProjectId && <ProjectWeatherOverlay key={selectedProjectId} projectId={selectedProjectId} onClose={() => { setWeatherProjectId(null); weatherTriggerRef.current?.focus(); }} />}
+      {!loading && selectedProjectId && <ProjectMultimediaOverlay key={selectedProjectId} projectId={selectedProjectId} open={multimediaProjectId === selectedProjectId} onClose={() => { setMultimediaProjectId(null); multimediaTriggerRef.current?.focus(); }} />}
 
       {/* Project controls overlay the persistent Scene canvas. */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-50">
@@ -2884,9 +2900,12 @@ function UnifiedMapPageInner() {
         />
         
         <ProjectSceneToolbar
+          multimediaOpen={multimediaProjectId === selectedProjectId}
+          multimediaTriggerRef={multimediaTriggerRef}
+          onToggleMultimedia={() => { setWeatherProjectId(null); setMultimediaProjectId(current => current === selectedProjectId ? null : selectedProjectId); }}
           weatherOpen={weatherProjectId === selectedProjectId}
           weatherTriggerRef={weatherTriggerRef}
-          onToggleWeather={() => setWeatherProjectId(current => current === selectedProjectId ? null : selectedProjectId)}
+          onToggleWeather={() => { setMultimediaProjectId(null); setWeatherProjectId(current => current === selectedProjectId ? null : selectedProjectId); }}
           measurementUnits={designWorkspace.measurementUnits ?? 'imperial'}
           onMeasurementUnitsChange={canEditProject ? measurementUnits => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), measurementUnits } })) : undefined}
           workspaceSaveMessage={architectureSaveError ? `Save failed: ${architectureSaveError}` : architectureIsDirty(architectureDraft) || workspaceFeedback.dirty ? 'Unsaved architecture or workspace; Save Project to keep changes' : 'Workspace unchanged since loading or last Save'}
@@ -2964,7 +2983,7 @@ function UnifiedMapPageInner() {
           savingProject={savingProjectMarkers}
           onSaveProject={handleSaveThreeDProject}
         />
-        </> : <div className="px-3 py-2 text-sm">{projectInfo?.name ?? 'Public Project'} <span className="ml-2 text-xs opacity-60">Read-only view</span></div>}
+        </> : <div className="flex w-full flex-wrap items-center justify-between gap-2 px-3 py-2 text-sm"><span>{projectInfo?.name ?? 'Public Project'} <span className="ml-2 text-xs opacity-60">Read-only view</span></span>{selectedProjectId && <ProjectMultimediaToolbarButton open={multimediaProjectId === selectedProjectId} triggerRef={multimediaTriggerRef} onClick={() => setMultimediaProjectId(current => current === selectedProjectId ? null : selectedProjectId)} />}</div>}
 
       </div>
 
@@ -3464,7 +3483,7 @@ function UnifiedMapPageInner() {
       </div>
       </div>
       
-    </div>
+    </ProjectPresentationBoundary>
     </ProjectOverlayLayoutContext.Provider>
     </ProjectDetailsSections.Provider>
     </SceneMultimediaProvider>

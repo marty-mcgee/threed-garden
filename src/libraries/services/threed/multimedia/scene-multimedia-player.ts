@@ -1,6 +1,7 @@
 import type { RuntimeMarker } from '@/libraries/types/map';
 import type { ThreeDPhysicsEventV1 } from '../physics/physics-event-core';
 import { planThreeDInteractionApproach } from '../orchestration/interaction-core';
+import { projectMultimediaCommandSchema, type ProjectMultimediaCommand, type ProjectMultimediaPreview, type ProjectMultimediaPreviewQuery } from '@/libraries/services/project/multimedia-preview-contract';
 import {
   sceneMultimediaCommandSchema,
   type SceneMultimediaCommand,
@@ -25,7 +26,7 @@ export type MultimediaScene = {
   } | undefined;
 };
 export type ScenePlaybackState = {
-  markerId: string;
+  markerId: string | null;
   albumId: number;
   albumTitle: string;
   track: SceneMultimediaTrack;
@@ -36,10 +37,14 @@ export type ScenePlaybackState = {
 type Media = Pick<HTMLMediaElement, 'src' | 'currentTime' | 'paused' | 'play' | 'pause' | 'load' | 'removeAttribute'>;
 type Port = {
   read: (query: SceneMultimediaQuery, signal: AbortSignal) => Promise<SceneMultimediaResponse>;
+  readProject?: (query: ProjectMultimediaPreviewQuery, signal: AbortSignal) => Promise<ProjectMultimediaPreview>;
+  projectId?: () => number;
   media: () => Media | null;
   scene: () => MultimediaScene | null;
   update: (state: ScenePlaybackState | null, busy: boolean, error: string) => void;
 };
+type PlaybackCommand = Omit<SceneMultimediaCommand, 'markerId'> & { markerId: string | null };
+type PlaybackRead = (trackId: number | null, offset: number, signal: AbortSignal) => Promise<Pick<SceneMultimediaResponse, 'albums' | 'tracks' | 'offset' | 'hasMore'>>;
 
 export function multimediaParticipant(scene: MultimediaScene, markerId: string) {
   return scene.markers.find(marker => marker.id === markerId && marker.isActive !== false && marker.isVisible !== false
@@ -62,7 +67,7 @@ export class SceneMultimediaPlayer {
     last: number
   }>();
   private eventIds = new Set<string>();
-  private commands = new Set<(command: SceneMultimediaCommand, requestId: string) => void>();
+  private commands = new Set<(command: PlaybackCommand, requestId: string) => void>();
   constructor(private readonly port: Port) {}
 
   private publish() { this.port.update(this.state, !!this.pending, this.error); }
@@ -91,10 +96,43 @@ export class SceneMultimediaPlayer {
 
   async execute(input: SceneMultimediaCommand, requestId: string, signal?: AbortSignal, collision = false) {
     const command = sceneMultimediaCommandSchema.parse(input);
-    this.validate(command, collision);
+    return this.executePlayback(command, requestId, () => { this.validate(command, collision); }, (trackId, offset, abort) => this.port.read({
+      projectId: command.projectId,
+      markerId: command.markerId,
+      actorMarkerId: command.actorMarkerId,
+      albumId: command.albumId,
+      trackId,
+      offset,
+    }, abort), signal);
+  }
+
+  async executeProject(input: ProjectMultimediaCommand, requestId: string, signal?: AbortSignal) {
+    return this.projectPlayback(input, requestId, signal, false);
+  }
+
+  /** Restore a validated Project selection paused; never request browser playback. */
+  async restoreProject(input: ProjectMultimediaCommand, requestId: string, signal?: AbortSignal) {
+    if (input.action !== 'playMultimedia') throw Error('Restore requires a Track selection.');
+    return this.projectPlayback(input, requestId, signal, true);
+  }
+
+  private projectPlayback(input: ProjectMultimediaCommand, requestId: string, signal: AbortSignal | undefined, paused: boolean) {
+    const command = projectMultimediaCommandSchema.parse(input);
+    return this.executePlayback({ ...command, markerId: null }, requestId, () => {
+      if (!this.port.readProject || this.port.projectId?.() !== command.projectId) throw Error('Project changed or Multimedia is not ready.');
+    }, (trackId, offset, abort) => this.port.readProject!({
+      projectId: command.projectId,
+      albumId: command.albumId,
+      trackId,
+      offset,
+    }, abort), signal, paused);
+  }
+
+  private async executePlayback(command: PlaybackCommand, requestId: string, validate: () => void, read: PlaybackRead, signal?: AbortSignal, restorePaused = false) {
+    validate();
     if (signal?.aborted) throw Error('Multimedia Action cancelled.');
     if (command.action !== 'playMultimedia' && (this.state?.markerId !== command.markerId || this.state.albumId !== command.albumId)) throw Error('Start playback on this object and Album first.');
-    this.commands.forEach(listener => listener(command, requestId));
+    if (!restorePaused) this.commands.forEach(listener => listener(command, requestId));
     const wasPlaying = this.state?.playing === true;
     const retryFailed = this.state?.status === 'error';
     this.cancel();
@@ -110,37 +148,36 @@ export class SceneMultimediaPlayer {
     this.publish();
     const current = () => {
       if (operation.abort.signal.aborted || this.pending !== operation) throw Error('Multimedia Action cancelled.');
-      this.validate(command, collision);
+      validate();
     };
     try {
       const same = this.state?.markerId === command.markerId && this.state.albumId === command.albumId;
       if (command.action !== 'playMultimedia' && !same) throw Error('Start playback on this object and Album first.');
-      let data = await this.port.read({
-        projectId: command.projectId,
-        markerId: command.markerId,
-        actorMarkerId: command.actorMarkerId,
-        albumId: command.albumId,
-        trackId: command.trackId ?? (same ? this.state!.track.id : null),
-        offset: same ? this.state!.offset : 0,
-      }, operation.abort.signal);
+      let data = await read(command.trackId ?? (same ? this.state!.track.id : null), same ? this.state!.offset : 0, operation.abort.signal);
       current();
       const media = this.port.media();
       if (!media) throw Error('Scene playback is not ready.');
       let track = command.trackId ? data.tracks.find(item => item.id === command.trackId)
         : same ? data.tracks.find(item => item.id === this.state!.track.id) : data.tracks[0];
       if (!track) throw Error('No playable active Track is available.');
+      if (restorePaused) {
+        media.pause();
+        this.state = {
+          markerId: null,
+          albumId: command.albumId,
+          albumTitle: data.albums.find(album => album.id === command.albumId)?.title ?? '',
+          track,
+          offset: data.offset,
+          playing: false,
+          status: 'paused',
+        };
+        return;
+      }
       if (command.action === 'nextTrack') {
         const index = data.tracks.findIndex(item => item.id === track!.id);
         track = data.tracks[index + 1];
         if (!track && data.hasMore) {
-          data = await this.port.read({
-            projectId: command.projectId,
-            markerId: command.markerId,
-            actorMarkerId: command.actorMarkerId,
-            albumId: command.albumId,
-            trackId: null,
-            offset: data.offset + 50,
-          }, operation.abort.signal);
+          data = await read(null, data.offset + 50, operation.abort.signal);
           current();
           track = data.tracks[0];
         }
@@ -227,6 +264,7 @@ export class SceneMultimediaPlayer {
 
   checkScene() {
     if (!this.state) return;
+    if (this.state.markerId === null) return; // Project previews have no Scene participant or Layer owner.
     const scene = this.port.scene();
     if (!scene || !scene.ready || !multimediaParticipant(scene, this.state.markerId)) this.clear();
   }
@@ -246,7 +284,7 @@ export class SceneMultimediaPlayer {
   }
 
   isCollisionArmed(markerId: string) { return this.collisions.has(markerId); }
-  subscribeCommands(listener: (command: SceneMultimediaCommand, requestId: string) => void) {
+  subscribeCommands(listener: (command: PlaybackCommand, requestId: string) => void) {
     this.commands.add(listener);
     return () => { this.commands.delete(listener); };
   }

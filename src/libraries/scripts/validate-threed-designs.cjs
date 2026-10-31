@@ -129,6 +129,7 @@ calls.length = 0; allowTransition = true; changeMode('design');
 assert(calls.includes('cancel')); assert(calls.includes('threed:design:entered')); assert(calls.includes('design')); assert.deepEqual(calls.at(-1), ['mode', 'design']);
 const react = require('react');
 const toolbar = load('src/components/map/header/ProjectSceneToolbar.tsx', {
+  '@/components/map/panels/ProjectMultimediaOverlay': { ProjectMultimediaToolbarButton: 'multimedia-button' },
   'react/jsx-runtime': require('react/jsx-runtime'), 'lucide-react': new Proxy({}, { get: () => 'svg' }),
   '@/components/map/panels/SceneOperationStatus': { SceneOperationStatus: 'status' }, '@/components/ui/button': { Button: 'button' },
   '@/components/ui/dropdown-menu': { DropdownMenu: 'menu', DropdownMenuContent: 'menu-content', DropdownMenuItem: 'menu-item', DropdownMenuTrigger: 'menu-trigger' },
@@ -145,6 +146,11 @@ assert(elements.some(element => element.props['aria-label'] === 'Project Assets'
 assert(elements.some(element => element.type === 'menu'));
 assert(elements.some(element => element.type === 'button' && react.Children.toArray(element.props.children).includes('Add')));
 assert(elements.some(element => element.props['aria-label'] === 'Save ThreeD Project'), 'Design mode must use the existing Project Save control.');
+const previewToolbar = toolbar.ProjectSceneToolbar({ selectedProjectId: '15', viewMode: 'design', onViewModeChange() {}, presentationComplete: true, projectAssetCount: 0, multimediaOpen: true, onToggleMultimedia: () => calls.push('project-multimedia') });
+elements.length = 0; walk(previewToolbar);
+const multimediaButton = elements.find(element => element.type === 'multimedia-button');
+assert(multimediaButton && multimediaButton.props.open, 'Project Multimedia is reachable without Model selection');
+multimediaButton.props.onClick(); assert.equal(calls.at(-1), 'project-multimedia');
 
 // Execute the actual separator events with native-shaped pointer capture and keyboard doubles.
 const divider = load('src/components/map/panels/ScenePanelDivider.tsx', {'react': {useRef:()=>({current:null})}, 'react/jsx-runtime':require('react/jsx-runtime')});
@@ -232,13 +238,13 @@ const get=vm.runInNewContext(compile(functionSource(mapRoute,'GET')+'\nGET;'),{.
 });
 let clientLoadSource;
 function findLoad(node){if(ts.isVariableDeclaration(node)&&node.name.getText(sceneAst)==='loadData')clientLoadSource=node.initializer.arguments[0].getText(sceneAst);ts.forEachChild(node,findLoad);}findLoad(sceneAst);
-async function hydrateDashboard(loaded, drafts, projectId='15'){
+async function hydrateDashboard(loaded, drafts, projectId='15', observed={}){
  const context={projectConfigurationRef:{current:null},selectedProjectId:projectId,architectureDrafts:drafts,hydrateArchitectureDraft:architecture.hydrateArchitectureDraft,
  defaultDesignWorkspace:workspace.defaultDesignWorkspace,
  loadProjectSession:async(id,receive)=>receive({status:'loaded',session:loaded}),URL,window:{location:{href:'http://local/dashboard/scene?view=design'}},
  lastProjectThreeDViewStateRef:{current:null},lastProjectMapViewStateRef:{current:null},showToastRef:{current:()=>{}},Date,
  emptyProjectScenarioPanelState:()=>({})};
- for(const name of new Set(clientLoadSource.match(/\bset[A-Z]\w+|renderArchitecture/g)))context[name]=()=>{};
+ for(const name of new Set(clientLoadSource.match(/\bset[A-Z]\w+|renderArchitecture/g)))context[name]=value=>{observed[name]=value};
  await vm.runInNewContext(compile('('+clientLoadSource+')'),context)();
  return drafts.current.get(projectId);
 }
@@ -255,6 +261,7 @@ async function checkClientSave(model,view) {
 const context={projectConfigurationRef:{current:{projectId:'15',stamp:{savedAt:null,measurementUnits:'imperial'}}},selectedProjectId:'15',canEditProject:true,loading:false,savingProjectMarkers:false,projectSaveBusy:{current:false},saveRequestRef:{current:0},architectureDrafts:drafts,acknowledgeArchitecture:architecture.acknowledgeArchitecture,parseProjectArchitecture:architecture.parseProjectArchitecture,
  projectMarkerSnapshotProviderRef:{current:()=>[model]},showToastRef:{current:()=>{}},setSavingProjectMarkers:()=>{},setArchitectureSaveError:value=>feedback=value,
  projectThreeDViewStateProviderRef:{current:null},lastProjectThreeDViewStateRef:{current:null},projectMapViewStateProviderRef:{current:null},lastProjectMapViewStateRef:{current:null},initialProjectViewState:null,
+ multimediaProjectId:'15',multimediaWorkspaceProviderRef:{current:()=>({albumId:28,trackId:71})},
  PROJECT_VIEW_STATE_VERSION:3,viewMode:'design',panelHeight:50,cameraMode:'stationary',groundMapInspector:null,groupInspector:null,sensorInspector:null,defaultDesignWorkspace:()=>({}),selectedMarker:null,isProjectAssetsOpen:false,isModelLibraryOpen:false,projectAssetSearch:'',projectAssetType:'all',isProjectSetupOpen:false,overlayPositions:{},scenarioPanelState:{},isScenariosOpen:false,
  fetch:async(url,options)=>{assert.equal(url,'/api/project/threed-markers');assert.equal(options.method,'PUT');transportCount++;body=JSON.parse(options.body);return new Promise(resolve=>finish=resolve);},
  setData:()=>{},applyThreeDProjectClientTransaction:()=>{},renderArchitecture:()=>{},setLastUpdated:()=>{},Date,JSON,console:{error(){}}
@@ -264,6 +271,7 @@ const context={projectConfigurationRef:{current:{projectId:'15',stamp:{savedAt:n
  const callback=vm.runInNewContext(compile('('+clientSaveSource+')'),context);
  const pending=callback();await callback();assert.equal(transportCount,1,'Duplicate click must not start a second Project Save.');
  assert.equal(body.projectId,15);assert.equal(body.markers[0].data.filePath,model.data.filePath);assert.equal(body.architecture.document.openings[0].id,'door');
+ assert.deepEqual(body.viewState.multimedia,{open:true,albumId:28,trackId:71},'Project Save captures the provider selection and open overlay');
  drafts.current.set('15',newer);
  finish({ok:true,json:async()=>({success:true,data:{projectId:15,markers:[model],markerCount:1,architecture:captured}})});await pending;
  assert.equal(feedback,'');assert.equal(drafts.current.get('15').saved,JSON.stringify(source),'Successful Save must acknowledge the captured source.');
@@ -285,7 +293,9 @@ const context={projectConfigurationRef:{current:{projectId:'15',stamp:{savedAt:n
  const response=await get({url:'http://local/api/map/threed?projectId=15'});assert.equal(response.status,200);
  const loaded=session.buildThreeDProjectSession(response.body,'15');assert(loaded.success);assert.equal(loaded.session.savedViewState.design.showMeasurements,true);
  const fresh={current:new Map([['15',architecture.projectArchitectureDraft()]])};
- const restored=await hydrateDashboard(loaded.session,fresh);
+ const hydration={};const restored=await hydrateDashboard(loaded.session,fresh,'15',hydration);
+ assert.equal(JSON.stringify(loaded.session.savedViewState.multimedia),JSON.stringify({open:true,albumId:28,trackId:71}),'Multimedia state survives the actual mocked PUT/GET/session roundtrip');
+ assert.equal(hydration.setMultimediaProjectId,'15','Dashboard restores the saved open Multimedia overlay');
  assert.equal(JSON.stringify(inventory.architectureAssets(restored.history.present)),JSON.stringify(inventory.architectureAssets(source)),'Assets reconstruct from the actual mocked Project Save/GET/hydration roundtrip.');
  assert.equal(JSON.stringify(restored.history.present),JSON.stringify(source));assert(!architecture.architectureIsDirty(restored));
  assert.equal(loaded.session.data.threed.raw.models[0].filePath,'saved.glb');assert.equal(loaded.session.data.threed.raw.projectThreedMarkers[0].markerId,model.markerId);

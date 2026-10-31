@@ -89,6 +89,8 @@ const savePosition = (ok) => callback('src/app/dashboard/scene/page.tsx', 'handl
   registry.updateLiveRotation('characters', 11, 45);
   assert.equal(registry.updateLiveRotation('characters', 11, NaN), false);
   const projectSaveContext = {
+    multimediaProjectId: null,
+    multimediaWorkspaceProviderRef: { current: () => ({ albumId: null, trackId: null }) },
     projectConfigurationRef: { current: { projectId: '5', stamp: { savedAt: null, measurementUnits: 'imperial' } } },
     canEditProject: true, loading: false, projectSaveBusy: { current: false },
     parseProjectArchitecture: value => ({ version: value.version, document: architectureDocument.validateDesign(value.document) }),

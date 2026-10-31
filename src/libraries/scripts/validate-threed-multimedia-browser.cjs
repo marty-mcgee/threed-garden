@@ -20,6 +20,8 @@ import React,{useState,useCallback} from 'react';
 import{createRoot}from'react-dom/client';
 import{SceneMultimediaProvider}from'./src/components/map/multimedia/SceneMultimediaProvider';
 import{SceneMultimediaDetails}from'./src/components/map/multimedia/SceneMultimediaDetails';
+import{ProjectMultimediaOverlay,ProjectMultimediaToolbarButton}from'./src/components/map/panels/ProjectMultimediaOverlay';
+import{ProjectMultimediaAssets}from'./src/components/map/panels/ProjectMultimediaAssets';
 import{DetailsCard}from'./src/components/map/details/DetailsCard';
 import{DesignEditor}from'./src/components/threed/design/DesignEditor';
 import{DesignWorkspace}from'./src/components/threed/design/DesignWorkspace';
@@ -27,6 +29,7 @@ import{ProjectDetailsSections}from'./src/components/map/details/PersistentDetail
 import{projectArchitectureDraft}from'./src/libraries/services/threed/design/project-architecture';
 import{newDesign}from'./src/libraries/services/threed/design/document';
 import{DesignGeometryCache}from'./src/libraries/services/threed/design/geometry';
+import{parseThreeDProjectViewState}from'./src/libraries/services/threed/markers/project-view-state-core';
 import{SceneMultimediaBridge}from'./src/components/map/multimedia/SceneMultimediaBridge';
 import{MultimediaSimulationControls}from'./src/components/map/multimedia/MultimediaSimulationControls';
 window.__errors=[];window.addEventListener('error',e=>window.__errors.push(e.message));
@@ -51,6 +54,14 @@ window.__requests=[];window.fetch=async(url,init={})=>{
  const p=new URL(url,'https://fixture.invalid').searchParams;
  if(url==='/api/threed/animation-action-slots')return Response.json({success:true,data:[]});
  if(String(url).startsWith('/api/threed/models?'))return Response.json({success:true,data:{id:5,userId:'owner'}});
+ if(String(url).startsWith('/api/project/multimedia-albums')){
+ if(window.__failProjectAlbums)return Response.json({error:'Mock Album read failed'},{status:503});
+ const rows=Number(p.get('offset'))===50?[{id:30,title:'Later Album',artist:'Another artist'}]:[{id:28,title:'TRADE',artist:'Example artist'},{id:29,title:'Project Only',artist:'Project artist'}];
+ return Response.json({albums:rows.filter(album=>album.title.toLowerCase().includes((p.get('search')||'').toLowerCase())),hasMore:Number(p.get('offset'))===0&&!p.get('search')});
+ }
+ if(String(url).startsWith('/api/project/multimedia-preview')){
+ const albumId=Number(p.get('albumId'));return Response.json({projectId:Number(p.get('projectId')),albumId,albums:[{id:albumId,title:albumId===29?'Project Only':'TRADE',artist:'Project artist',coverArt:null}],tracks:[31,32].map(id=>({id,albumId,title:'Preview '+id,fileUrl:'https://media.invalid/'+id+'.mp3',fileType:'audio/mpeg',duration:30,trackNumber:id-30})),offset:Number(p.get('offset')||0),hasMore:false});
+ }
  if(String(url).startsWith('/api/project/multimedia-playback'))return Response.json({projectId:Number(p.get('projectId')),markerId:p.get('markerId'),sourceType:'model',sourceId:5,albums:[{id:28,title:'TRADE',artist:'Example artist',coverArt:null}],albumId:p.has('albumId')?Number(p.get('albumId')):null,tracks:p.has('albumId')?[21,22].map(id=>({id,albumId:28,title:'Track '+id,fileUrl:'https://media.invalid/'+id+'.mp3',fileType:'audio/mpeg',duration:30,trackNumber:id-20})):[],offset:Number(p.get('offset')||0),hasMore:false});
  if(String(url).startsWith('/api/project/simulations'))return Response.json({success:true,data:{simulation,kickMappings:[]}});
  if(url==='/api/threed/simulation-results'){
@@ -61,10 +72,13 @@ window.__requests=[];window.fetch=async(url,init={})=>{
  }
  throw Error('Unexpected network boundary '+url);
 };
-function Fixture(){const[project,setProject]=useState(7),[selected,setSelected]=useState('radio'),[request,setRequest]=useState(0),[stopRequest,setStop]=useState(0);
-window.__setProject=setProject;window.__select=setSelected;window.__run=()=>setRequest(v=>v+1);window.__stop=()=>setStop(v=>v+1);
+function Fixture(){const[project,setProject]=useState(7),[selected,setSelected]=useState('radio'),[request,setRequest]=useState(0),[stopRequest,setStop]=useState(0),[preview,setPreview]=useState(false),[sessionTick,setSessionTick]=useState(0),[savedPreview,setSavedPreview]=useState(null),[workspaceKey,setWorkspaceKey]=useState(0);const previewRef=React.useRef(null),workspaceCapture=React.useRef(null);window.__sessionChange=value=>{window.__session=value;setSavedPreview(null);setSessionTick(v=>v+1)};
+const registerWorkspace=useCallback(capture=>{workspaceCapture.current=capture},[]);
+window.__savePreview=()=>{window.__savedPreview=parseThreeDProjectViewState({version:1,savedAt:new Date().toISOString(),viewMode:'3d',panelHeight:50,cameraMode:'orbit',multimedia:{open:preview,...workspaceCapture.current()}}).multimedia};
+window.__reopenPreview=()=>{setSavedPreview(window.__savedPreview);setPreview(window.__savedPreview.open);setWorkspaceKey(value=>value+1)};
+window.__setProject=value=>{setSavedPreview(null);setProject(value)};window.__select=setSelected;window.__run=()=>setRequest(v=>v+1);window.__stop=()=>setStop(v=>v+1);
 const onStatus=useCallback((busy,state,error)=>{window.__simulation={busy,state,error}},[]);
-return <SceneMultimediaProvider projectId={project}><main className="mx-auto max-w-lg space-y-4 p-4"><h1 className="text-xl font-bold">Project · Design: Radio</h1><SceneMultimediaBridge context={{...scene,projectId:project}} subscribe={fn=>{listeners.add(fn);return()=>listeners.delete(fn)}}/>
+return <SceneMultimediaProvider key={workspaceKey} projectId={project} initialWorkspace={savedPreview||undefined} workspaceSavedAt={savedPreview?'fixture-saved':undefined} onRegisterWorkspace={registerWorkspace} onOpenProjectPreview={()=>setPreview(true)}><main className="relative mx-auto min-h-screen max-w-lg space-y-4 p-4"><h1 className="text-xl font-bold">Project · Design: Radio</h1><div data-testid="multimedia-assets"><ProjectMultimediaAssets projectId={String(project)} search=""/></div><ProjectMultimediaToolbarButton open={preview} onClick={()=>setPreview(value=>!value)} triggerRef={previewRef}/><ProjectMultimediaOverlay open={preview} key={project} projectId={String(project)} onClose={()=>{setPreview(false);previewRef.current?.focus()}}/><SceneMultimediaBridge context={{...scene,projectId:project}} subscribe={fn=>{listeners.add(fn);return()=>listeners.delete(fn)}}/>
 {selected&&<DetailsCard key={project+':'+selected} projectId={project} selected={markers.find(marker=>marker.id===selected)} controlledCharacterId={9} onClose={()=>setSelected(null)}/>}
 <MultimediaSimulationControls context={{...scene,projectId:project}} subscribeSensors={fn=>{listeners.add(fn);return()=>listeners.delete(fn)}} launch={{simulation,kickMappings:[],saveResults:true,request,stopRequest,onStatus}}/>
 </main></SceneMultimediaProvider>};
@@ -154,6 +168,8 @@ createRoot(document.getElementById('root')).render(<App/>);
       await evaluate(`${button('Play Multimedia')}.click()`);
       await waitFor('window.__counts.plays===1');
       await waitFor(`document.querySelector('[aria-label="Project Multimedia player"]').textContent.includes('Track 22')`);
+      await evaluate(`document.querySelector('button[aria-label="Project Multimedia"]').click();window.__mediaElement=document.querySelector('video');true`);
+      assert(await evaluate(`document.querySelector('video').closest('#project-multimedia-overlay')!==null`),'The single media element lives inside the menu');
       await evaluate(`window.__denyPlay=true;const retryTrack=document.querySelector('select[aria-label="Scene Track"]');retryTrack.value='21';retryTrack.dispatchEvent(new Event('change',{bubbles:true}));`);
       await evaluate(`${button('Play Multimedia')}.click()`);
       await waitFor(`document.querySelector('[aria-label="Project Multimedia player"]').textContent.includes('Click Play to enable Scene audio.')`);
@@ -172,8 +188,74 @@ createRoot(document.getElementById('root')).render(<App/>);
       await evaluate(`${button('Play')}.click()`);
       await waitFor('window.__counts.plays===4');
       assert.equal(await evaluate('document.querySelectorAll("video").length'), 1);
+      await evaluate(`document.querySelector('button[aria-label="Close Project Multimedia"]').click()`);
       await evaluate(`window.__select(null)`); await delay(100);
       assert.equal(await evaluate('document.querySelector("video").paused'), false, 'Closing DetailsCard preserves Project playback');
+      await evaluate(`document.querySelector('button[aria-label="Project Multimedia"]').click()`);
+      await waitFor(`!!document.querySelector('#project-multimedia-overlay button[aria-pressed="false"]')`);
+      assert.equal(await evaluate('window.__counts.plays'),4,'Opening the Project menu never autoplays');
+      await evaluate(`Array.from(document.querySelectorAll('#project-multimedia-overlay button')).find(b=>b.textContent==='More Albums').click()`);
+      await waitFor(`document.getElementById('project-multimedia-overlay').textContent.includes('Later Album')`);
+      await evaluate(`Array.from(document.querySelectorAll('#project-multimedia-overlay button')).find(b=>b.textContent==='Previous Albums').click()`);
+      await waitFor(`document.getElementById('project-multimedia-overlay').textContent.includes('Project Only')`);
+      await evaluate(`Array.from(document.querySelectorAll('#project-multimedia-overlay button')).find(b=>b.textContent.includes('Project Only')).click()`);
+      await waitFor(`!!document.querySelector('select[aria-label="Project Multimedia Track"]')`);
+      await evaluate(`const s=document.querySelector('select[aria-label="Project Multimedia Track"]');s.value='31';s.dispatchEvent(new Event('change',{bubbles:true}));`);
+      await evaluate(`Array.from(document.querySelectorAll('#project-multimedia-overlay button')).find(b=>b.textContent==='Play').click()`);
+      await waitFor('window.__counts.plays===5');
+      assert(await evaluate(`document.querySelector('[aria-label="Project Multimedia player"]').textContent.includes('Preview 31')`),'Project-only Album previews without a selected Model');
+      assert.equal(await evaluate('document.querySelectorAll("video").length'),1,'Object and Project playback share one media engine');
+      await waitFor(`Array.from(document.querySelectorAll('#project-multimedia-overlay button')).find(b=>b.textContent==='Pause')?.disabled===false`);
+      await evaluate(`Array.from(document.querySelectorAll('#project-multimedia-overlay button')).find(b=>b.textContent==='Next Track').click()`);
+      await waitFor(`window.__counts.plays===6&&document.querySelector('select[aria-label="Project Multimedia Track"]')?.value==='32'`);
+      await waitFor(`document.querySelector('button[aria-label="Preview Album Project Only"]')?.getAttribute('aria-pressed')==='true'&&document.querySelector('button[aria-label="Preview Album Project Only"]').textContent.includes('Preview 32')`);
+      await evaluate(`document.querySelector('button[aria-label="Close Project Multimedia"]').click();document.querySelector('button[aria-label="Preview Album TRADE"]').click()`);
+      await waitFor(`document.getElementById('project-multimedia-overlay')&&document.querySelector('button[aria-label="Preview Album TRADE"]').getAttribute('aria-pressed')==='true'`);
+      assert.equal(await evaluate('window.__counts.plays'),6,'Asset preview does not autoplay or replace current playback');
+      await evaluate(`Array.from(document.querySelectorAll('[aria-label="Project Multimedia player"] button')).find(b=>b.textContent==='Show current Album').click()`);
+      await waitFor(`document.querySelector('select[aria-label="Project Multimedia Track"]')?.value==='32'&&document.querySelector('button[aria-label="Preview Album Project Only"]').getAttribute('aria-pressed')==='true'`);
+      assert.equal(await evaluate('window.__counts.plays'),6,'Player preview synchronizes current Album/Track without replay');
+      await evaluate(`document.querySelector('button[aria-label="Close Project Multimedia"]').click();document.querySelector('button[aria-label="Preview Album Project Only"]').click()`);
+      await waitFor(`document.querySelector('select[aria-label="Project Multimedia Track"]')?.value==='32'`);
+      await evaluate('window.__savePreview()');
+      assert.deepEqual(await evaluate('window.__savedPreview'),{open:true,albumId:29,trackId:32},'Project snapshot captures overlay and selected/current Track');
+      await evaluate('window.__reopenPreview()');
+      await waitFor(`document.querySelector('select[aria-label="Project Multimedia Track"]')?.value==='32'&&document.querySelector('[aria-label="Project Multimedia player"]').textContent.includes('paused')`);
+      assert.equal(await evaluate('window.__counts.plays'),6,'Reopening the saved Project cannot autoplay');
+      assert.equal(await evaluate('document.querySelector("video").paused'),true);
+      await waitFor(`Array.from(document.querySelectorAll('#project-multimedia-overlay button')).find(b=>b.textContent==='Play')?.disabled===false`);
+      await evaluate(`Array.from(document.querySelectorAll('#project-multimedia-overlay button')).find(b=>b.textContent==='Play').click()`);
+      await waitFor('window.__counts.plays===7');
+      assert(await evaluate('document.documentElement.scrollWidth<=innerWidth'),'Project overlay does not overflow');
+      const previewCapture=await call('Page.captureScreenshot',{format:'png'});
+      fs.writeFileSync(path.join(temp,`project-preview-${theme}-${width}.png`),Buffer.from(previewCapture.data,'base64'));
+      await evaluate(`window.__mediaElement=document.querySelector('video');true`);
+      await call('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape'});
+      await waitFor(`document.getElementById('project-multimedia-overlay').hidden`);
+      assert(await evaluate(`document.activeElement===document.querySelector('button[aria-label="Project Multimedia"]')`),'Escape restores toolbar focus');
+      assert.equal(await evaluate('document.querySelector("video").paused'),false,'Closing the menu preserves the Project player');
+      assert(await evaluate(`window.__mediaElement===document.querySelector('video')`),'Closing/reopening the menu preserves the same media element');
+      assert.equal(await evaluate(`document.querySelectorAll('[aria-label="Project Multimedia player"]').length`),1,'There is one integrated player and no separate floating panel');
+      await evaluate('window.__savePreview();window.__reopenPreview()');
+      await waitFor(`document.getElementById('project-multimedia-overlay').hidden&&document.querySelector('video').paused`);
+      assert.deepEqual(await evaluate('window.__savedPreview'),{open:false,albumId:29,trackId:32},'Closed overlay and retained Track are saved together');
+      await evaluate(`window.__failProjectAlbums=true;document.querySelector('button[aria-label="Project Multimedia"]').click();Array.from(document.querySelectorAll('#project-multimedia-overlay button')).find(b=>b.textContent==='Refresh Albums').click()`);
+      await waitFor(`document.getElementById('project-multimedia-overlay').textContent.includes('Mock Album read failed')`);
+      await evaluate(`window.__failProjectAlbums=false;Array.from(document.querySelectorAll('#project-multimedia-overlay button')).find(b=>b.textContent==='Refresh Albums').click()`);
+      await waitFor(`!!Array.from(document.querySelectorAll('#project-multimedia-overlay button')).find(b=>b.textContent.includes('Project Only'))`);
+      await evaluate(`Array.from(document.querySelectorAll('#project-multimedia-overlay button')).find(b=>b.textContent.includes('Project Only')).click()`);
+      await waitFor(`!!document.querySelector('select[aria-label="Project Multimedia Track"]')`);
+      await evaluate(`window.__sessionChange({data:null,status:'unauthenticated'})`);
+      await waitFor(`!document.querySelector('select[aria-label="Project Multimedia Track"]')&&document.querySelector('video').paused`);
+      await waitFor(`!!Array.from(document.querySelectorAll('#project-multimedia-overlay button')).find(b=>b.textContent.includes('Project Only'))`);
+      await evaluate(`Array.from(document.querySelectorAll('#project-multimedia-overlay button')).find(b=>b.textContent.includes('Project Only')).click()`);
+      await waitFor(`!!document.querySelector('select[aria-label="Project Multimedia Track"]')`);
+      await evaluate(`Array.from(document.querySelectorAll('#project-multimedia-overlay button')).find(b=>b.textContent==='Play').click()`);
+      await waitFor('window.__counts.plays===8');
+      await evaluate(`window.__sessionChange({data:{user:{id:'owner'}},status:'authenticated'})`);
+      await waitFor(`!document.querySelector('select[aria-label="Project Multimedia Track"]')&&document.querySelector('video').paused`);
+      await evaluate(`document.querySelector('button[aria-label="Close Project Multimedia"]').click()`);
+      console.log(`PASS native Project preview ${theme}/${width}: Album paging, no-autoplay Track selection, Model-independent playback, single engine, Escape/focus, error retry and session reset/public browsing (mock HTTP/media).`);
       await evaluate(`window.__select('other')`); await waitFor(`!!document.querySelector('select[aria-label="Scene Album"]')`);
       assert.equal(await evaluate('document.querySelectorAll("video").length'), 1);
       await evaluate('window.__setProject(8)'); await waitFor('document.querySelector("video").paused');

@@ -308,7 +308,7 @@ export async function POST(request: NextRequest) {
 
         if (!module) {
           return NextResponse.json(
-            { success: false, error: 'Music module not found' },
+            { success: false, error: 'Multimedia module not found' },
             { status: 404 }
           );
         }

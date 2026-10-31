@@ -88,7 +88,14 @@ export interface ProjectMapViewState {
   zoom: number;
 }
 
+export interface ProjectMultimediaWorkspaceState {
+  open: boolean;
+  albumId: number | null;
+  trackId: number | null;
+}
+
 export interface ThreeDProjectViewState {
+  multimedia?: ProjectMultimediaWorkspaceState;
   design?: ProjectDesignWorkspaceState;
   projectTourOpen?: boolean;
   overlayPositions?: ProjectOverlayPositions;
@@ -281,6 +288,18 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
   };
 
   if (input.projectTourOpen !== undefined) result.projectTourOpen = boolean(input.projectTourOpen);
+  if (input.multimedia !== undefined) {
+    const multimedia = record(input.multimedia);
+    if (!multimedia || Object.keys(multimedia).some(key => !['open', 'albumId', 'trackId'].includes(key))) throw new ProjectViewStateError();
+    const albumId = multimedia.albumId === null ? null : scenarioBindingId(multimedia.albumId);
+    const trackId = multimedia.trackId === null ? null : scenarioBindingId(multimedia.trackId);
+    if (trackId !== null && albumId === null) throw new ProjectViewStateError();
+    result.multimedia = {
+      open: boolean(multimedia.open),
+      albumId,
+      trackId,
+    };
+  }
   if (input.design !== undefined) { try { result.design = parseDesignWorkspace(input.design); } catch { throw new ProjectViewStateError(); } }
   if (input.overlayPositions !== undefined) {
     const positions = record(input.overlayPositions);
