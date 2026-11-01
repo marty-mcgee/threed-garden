@@ -6,6 +6,8 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
+ - [v0.30.1 - ThreeD: Assembly Groups Visual Editor (prepared for production release)](v0.30.1.md)
+
  - [v0.30.0 - ThreeD: Project Multimedia Player and Presentation (Developer-confirmed production release)](v0.30.0.md)
 
  - [v0.30.0-centaur - ThreeD: Project Multimedia Player and Presentation (Developer-confirmed production release)](v0.30.0-centaur.md)

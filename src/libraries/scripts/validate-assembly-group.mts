@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import { Vector3, Matrix4 } from 'three';
 // @ts-expect-error Native Node validation needs the explicit extension.
 import { parseAssemblyDefinition, parseAssemblyPlacement, serializeAssemblyDefinition, resolveAssemblyComponents, AssemblyContractError } from '../services/threed/models/assembly-group-core.ts';
+// @ts-expect-error Native Node validation needs the explicit extension.
+import { assemblyComponentDraft, assemblyDraftTransform, assemblyTransformFields, assemblyUniformScale } from '../services/threed/models/assembly-editor-core.ts';
 const transform = (x = 0, y = 0, z = 0, scale = 1) => ({ position: { x, y, z }, rotation: { x: 0, y: 0, z: 0 }, scale });
 const definition = () => ({ formatVersion: 1, id: 'assembly-example', ownerId: 'owner-a', name: 'Assembly fixture', revision: 1, components: [
   { id: 'box', modelId: 1, label: 'Box', transform: transform() },
@@ -56,4 +58,28 @@ group('non-finite, string, excessive and non-positive transforms reject before c
   const tooMany = definition(); tooMany.components = Array.from({ length: 101 }, (_, i) => ({ ...tooMany.components[0], id: `component-${i}` }));
   assert.throws(() => parseAssemblyDefinition(tooMany), AssemblyContractError);
 });
-console.log(`PASS: ${groups} assembly contract groups (offline; no assets, database or renderer)`);
+group('editor and canvas retain identity, radians, elevated position and uniform scale through Save', () => {
+  const original = definition().components[0];
+  original.transform.rotation = { x: 0.7, y: -1.2, z: 2.4 };
+  original.transform.position = { x: -37.5, y: 19, z: 71.125 };
+  original.transform.scale = 0.0001;
+  const draft = assemblyComponentDraft(original);
+  assert.equal(draft.id, original.id);
+  assert.equal(draft.modelId, original.modelId);
+  const parsed = assemblyDraftTransform(draft);
+  close(Object.values(parsed.rotation), Object.values(original.transform.rotation));
+  assert.deepEqual(parsed.position, original.transform.position);
+  assert.equal(parsed.scale, original.transform.scale);
+  const next = { ...draft, ...assemblyTransformFields(transform(1, 27, -4, 2)) };
+  assert.equal(next.id, original.id);
+  assert.deepEqual(assemblyDraftTransform(next), transform(1, 27, -4, 2));
+  for (const change of [{ x: '' }, { y: 'NaN' }, { z: 'Infinity' }, { scale: '0' }, { scale: '-3' }, { rx: 'Infinity' }]) {
+    assert.throws(() => assemblyDraftTransform({ ...draft, ...change }), AssemblyContractError);
+  }
+  assert.equal(assemblyUniformScale({ x: 1, y: 3, z: 1 }, 'Y'), 3);
+  assert.equal(assemblyUniformScale({ x: 1, y: 1, z: 4 }, 'Z'), 4);
+  assert.equal(assemblyUniformScale({ x: 2, y: 2, z: 2 }, 'XYZ'), 2);
+  assert.equal(assemblyUniformScale({ x: -2, y: 1, z: 1 }, 'X'), 0.0001);
+  assert.equal(assemblyUniformScale({ x: 1, y: 1, z: 10001 }, 'Z'), 10000);
+});
+console.log(`PASS: ${groups} assembly contract/editor groups (offline; no assets or database)`);

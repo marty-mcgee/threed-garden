@@ -1,5 +1,5 @@
-import { AssemblyCompositionWorkspace } from '@/components/threed/assemblies/AssemblyCompositionWorkspace';
+import { redirect } from 'next/navigation';
 
 export default function AssemblyGroupsPage() {
-  return <AssemblyCompositionWorkspace />;
+  redirect('/admin/threed/assembly-groups');
 }

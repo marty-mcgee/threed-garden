@@ -107,6 +107,25 @@ function fixture(overrides = {}) {
   flush(); return api;
 }
 
+// Visible saved objects stay selectable when the active drawing level is different/hidden.
+{
+  const multilevel = document.validateDesign({ ...room, levels: [...room.levels, { id: 'upper', name: 'Upper', elevation: 3 }] });
+  const f = fixture({ document: multilevel, activeLevelId: 'upper', visibleLevelIds: ['ground'], selected: null });
+  f.click(130, 80, { entity: 'w0' });
+  assert.equal(f.props.selected, 'w0', 'A visible wall must activate even with a hidden active drawing level');
+  assert.equal(f.calls.commit.length, 0, 'Picking another level does not edit its geometry');
+  const allVisible = fixture({ document: multilevel, activeLevelId: 'upper', visibleLevelIds: ['ground', 'upper'], selected: null });
+  allVisible.click(130, 80, { entity: 'w0' });
+  assert.equal(allVisible.props.selected, 'w0', 'A visible object on another level is selectable even when the drawing level is visible too');
+  const hiddenObject = fixture({ document: multilevel, activeLevelId: 'upper', visibleLevelIds: ['upper'], selected: null });
+  hiddenObject.click(130, 80, { entity: 'w0' });
+  assert.equal(hiddenObject.props.selected, null, 'Hidden geometry cannot be activated through a stale hit');
+  let picked = null;
+  const models = fixture({ document: multilevel, activeLevelId: 'upper', visibleLevelIds: ['ground'], modelImages: [{ id: 'tree', url: 'fixture', corners: [{ x: 10, z: 20 }, { x: 12, z: 20 }, { x: 10, z: 24 }] }], onModelSelect: id => { picked = id; } });
+  flatten(models.tree).find(node => node.type === 'image').props.onPointerDown({ button: 0, altKey: false, preventDefault() {}, stopPropagation() {} });
+  assert.equal(picked, 'tree', 'Project Model selection is independent of the architecture drawing level');
+}
+
 // Select remains its own tool: background click deselects; drag pans without losing selection.
 {
   const f = fixture();

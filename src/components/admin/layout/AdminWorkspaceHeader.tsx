@@ -18,6 +18,7 @@ interface AdminWorkspaceHeaderProps {
   description: string;
   children?: ReactNode;
   className?: string;
+  showModuleAlbums?: boolean;
 }
 
 export function AdminWorkspaceHeader({
@@ -28,6 +29,7 @@ export function AdminWorkspaceHeader({
   description,
   children,
   className,
+  showModuleAlbums = true,
 }: AdminWorkspaceHeaderProps) {
   const pathname = usePathname();
   const appearance = useModuleAppearance();
@@ -42,7 +44,7 @@ export function AdminWorkspaceHeader({
       </div>
       <p className="sr-only">{description}</p>
       {children}
-      {key && pathname && !/\/(new|[0-9]+)(?:\/.*)?$/.test(pathname) && <ModuleAlbumsButton moduleKey={key} />}
+      {showModuleAlbums && key && pathname && !/\/(new|[0-9]+)(?:\/.*)?$/.test(pathname) && <ModuleAlbumsButton moduleKey={key} />}
     </header>
   );
 }

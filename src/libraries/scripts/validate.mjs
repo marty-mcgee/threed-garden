@@ -22,6 +22,7 @@ const tasks = {
   'threed-multimedia': [node('validate-threed-multimedia.cjs')],
   'threed-multimedia-browser': [node('validate-threed-multimedia-browser.cjs')],
   'threed-project-presentation-browser': [node('validate-project-presentation-browser.cjs')],
+  'threed-assembly-browser': [node('validate-assembly-workspace-browser.cjs')],
   'learn-data-structure': [
     [...node('generate-schema-visualization.cjs'), '--check'],
     node('validate-learn-data-structure.cjs'),
@@ -128,7 +129,10 @@ const tasks = {
   'threed-library-collections': [ts('validate-threed-library-collections.mts')],
   'threed-project-session': [['node', '--import', 'tsx', `${scripts}/validate-threed-project-session.mts`], node('validate-public-scene-api.cjs'), node('validate-project-asset-warnings.cjs'), ['node', '--import', 'tsx', `${scripts}/validate-scene-loading-policy.mts`]],
   'threed-mqtt': [['node', '--import', 'tsx', 'src/libraries/services/threed/mqtt/validate.mts']],
-  'threed-assembly-persistence': [['node', '--conditions=react-server', '--import', 'tsx', `${scripts}/validate-assembly-persistence.mts`]],
+  'threed-assembly-persistence': [
+    ['node', '--conditions=react-server', '--import', 'tsx', `${scripts}/validate-assembly-persistence.mts`],
+    ['node', '--conditions=react-server', '--import', 'tsx', `${scripts}/validate-assembly-workspace.mts`],
+  ],
   'threed-assembly-group': [ts('validate-assembly-group.mts')],
   'threed-model-import': [ts('validate-threed-model-import-contract.mts')],
   'threed-model-bulk-preparation': [ts('validate-threed-model-bulk-preparation.mts')],
@@ -278,6 +282,8 @@ const ci = [
   'threed-soccer-physics',
   'threed-soccer-kick',
   'threed-model-placement-physics',
+  'threed-assembly-group',
+  'threed-assembly-persistence',
   'threed-character-ball-contact',
   'threed-action-collision',
   'threed-scenario-admin',
@@ -294,7 +300,7 @@ const ci = [
 
 const unavailableFixtures = ['threed-fbx-material-targets'];
 // Native Chromium/WebGL is optional and intentionally separate from portable CI/all.
-const runnableTasks = Object.keys(tasks).filter((name) => !unavailableFixtures.includes(name) && !['threed-model-builder-browser', 'threed-home-design-browser', 'shadcn-ui-browser', 'threed-multimedia-browser', 'threed-project-presentation-browser'].includes(name));
+const runnableTasks = Object.keys(tasks).filter((name) => !unavailableFixtures.includes(name) && !['threed-model-builder-browser', 'threed-home-design-browser', 'shadcn-ui-browser', 'threed-multimedia-browser', 'threed-project-presentation-browser', 'threed-assembly-browser'].includes(name));
 
 const groups = {
   all: runnableTasks,

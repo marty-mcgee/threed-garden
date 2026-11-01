@@ -2912,7 +2912,6 @@ function UnifiedMapPageInner() {
           workspaceDirty={architectureIsDirty(architectureDraft) || workspaceFeedback.dirty}
           designHistoryHostRef={setDesignHistoryHost}
           saveDisabled={loading || !canEditProject || (viewMode === 'design' && designActionsBusy)}
-          onResetOverlayPositions={() => setOverlayPositions({})}
           selectedProjectId={selectedProjectId}
           viewMode={viewMode}
           onViewModeChange={(mode) => {
@@ -3060,9 +3059,6 @@ function UnifiedMapPageInner() {
       />
       <div id="project-setup-panel">
         <ProjectSetupPanel
-          measurementUnits={designWorkspace.measurementUnits ?? 'imperial'}
-          onMeasurementUnitsChange={measurementUnits => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), measurementUnits } }))}
-          metersPerSceneUnit={metersPerSceneUnit}
           isOpen={canEditProject && Boolean(selectedProjectId) && isThreeDPresentationComplete && isProjectSetupOpen}
           hasThreeDModule={projectThreeDModules.length > 0}
           hasEnvironment={projectEnvironmentMarkers.length > 0}

@@ -29,6 +29,22 @@ for (const section of nav.navSections) {
   }
 }
 const destinations = nav.navSections.flatMap(section => section.items.flatMap(item => item.children ?? [item]));
+// Assembly composition now belongs to the existing Admin surface, retaining old bookmarks.
+const assemblyRoute = '/admin/threed/assembly-groups';
+const assemblyPage = load('src/app/admin/threed/assembly-groups/page.tsx', {
+  '@/components/admin/threed/assemblies/AssemblyGroupsList': { AssemblyGroupsList: 'AssemblyList' },
+  'react/jsx-runtime': { jsx: (type, props) => ({ type, props }) },
+});
+assert.equal(assemblyPage.default().type, 'AssemblyList', 'Admin Assembly landing page hosts the records table');
+let redirectedTo;
+const oldAssemblyPage = load('src/app/dashboard/assembly-groups/page.tsx', {
+  'next/navigation': { redirect(path) { redirectedTo = path; throw new Error('redirect'); } },
+});
+assert.throws(() => oldAssemblyPage.default(), /redirect/);
+assert.equal(redirectedTo, assemblyRoute);
+assert(destinations.some(item => item.href === assemblyRoute && item.moduleKey === 'assemblyGroups'));
+assert.equal(nav.activeAdminHref(assemblyRoute + '/new'), assemblyRoute);
+assert.equal(nav.activeAdminHref(assemblyRoute + '/05b3b80c-0ed3-4123-8bc0-bf388e45cbef'), assemblyRoute);
 assert.equal(new Set(destinations.map(item => item.href)).size, destinations.length);
 for (const item of destinations) {
   assert.equal(nav.activeAdminHref(item.href), item.href);

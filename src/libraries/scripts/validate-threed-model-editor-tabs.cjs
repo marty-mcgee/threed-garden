@@ -318,6 +318,12 @@ function imageAndGeometryChecks() {
   helpRuntime.render();
   assert(prevented, 'Click-open is not cancelled by the Radix trigger default click close');
   assert(nodes(helpRuntime.value).find(node => node.type === 'Tooltip').props.open);
+  nodes(helpRuntime.value).find(node => node.type === 'Button').props.onPointerDown();
+  nodes(helpRuntime.value).find(node => node.type === 'Tooltip').props.onOpenChange(false); helpRuntime.render();
+  nodes(helpRuntime.value).find(node => node.type === 'Button').props.onClick({ detail: 1, preventDefault() {} }); helpRuntime.render();
+  assert.equal(nodes(helpRuntime.value).find(node => node.type === 'Tooltip').props.open, false, 'Pointer close must not reopen Help after the Radix pointer-down close');
+  nodes(helpRuntime.value).find(node => node.type === 'Button').props.onClick({ detail: 0, preventDefault() {} }); helpRuntime.render();
+  assert(nodes(helpRuntime.value).find(node => node.type === 'Tooltip').props.open, 'Keyboard click must still open Help');
   nodes(helpRuntime.value).find(node => node.type === 'Tooltip').props.onOpenChange(false); helpRuntime.render();
   assert.equal(nodes(helpRuntime.value).find(node => node.type === 'Tooltip').props.open, false);
   const fieldRuntime = runtime();

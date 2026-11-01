@@ -76,7 +76,7 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
   };
   useEffect(() => { cancelModel(); }, [selectedModelId, cancelToken, tool, enabled, disabled]);
   function startModel(event: PointerEvent<SVGElement>, id: string, resize = false) {
-    if (!enabled || disabled || modelBusy || modelSaving.current || editingHidden || tool !== 'select' || event.button !== 0 || event.altKey) return;
+    if (!enabled || disabled || modelBusy || modelSaving.current || tool !== 'select' || event.button !== 0 || event.altKey) return;
     event.preventDefault(); event.stopPropagation();
     if (!selectedModel || selectedModel.id !== id || !onSaveModel) { onModelSelect?.(id); return; }
     if (!window.dispatchEvent(new Event('threed:design:model-selection', { cancelable: true }))) return;
@@ -163,6 +163,15 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
     const point = pointer(event), target = (event.target as Element).closest('[data-entity]'), targetId = target?.getAttribute('data-entity') ?? null;
     // A transient drawing/placement preview is still blank canvas, not a saved object.
     const entityId = targetId && [...active.walls, ...active.floors, ...active.roofs, ...active.openings, ...active.roofOpenings].some(entity => entity.id === targetId) ? targetId : null;
+    // Rendered levels can differ from the drawing level. Activate a visible saved
+    // object first; the editor selects its level before a later editing gesture.
+    if (!entityId && targetId && tool === 'select' && event.button === 0 && !event.altKey) {
+      const selectable = visibleLevelsDocument(doc, shownLevels);
+      if ([...selectable.walls, ...selectable.floors, ...selectable.roofs, ...selectable.openings, ...selectable.roofOpenings].some(entity => entity.id === targetId)) {
+        onSelect(targetId);
+        return;
+      }
+    }
     const hitNodeId = (event.target as Element).getAttribute('data-node');
     const nodeId = active.nodes.some(node => node.id === hitNodeId) ? hitNodeId : null;
     const explicitPan = editingHidden || tool === 'pan' || event.button === 1 || event.altKey;
