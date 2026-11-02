@@ -6,7 +6,7 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
- - [v0.30.2 - ThreeD: Model Plan Views, Placement Locks and Project Toolbar (prepared for production release)](v0.30.2.md)
+ - [v0.30.2 - ThreeD: Model Plan Views, Placement Locks and Project Toolbar (Developer-confirmed production release)](v0.30.2.md)
 
  - [v0.30.1 - ThreeD: Assembly Groups Visual Editor (Developer-confirmed production release)](v0.30.1.md)
 

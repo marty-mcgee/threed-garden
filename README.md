@@ -29,9 +29,9 @@ Current production release: **[v0.29.0](docs/releases/v0.29.0.md)**. Recent rele
 
 See [release history](docs/releases/README.md) for detailed scope and validation, and [current context](CONTEXT.md) for implementation status and remaining acceptance work.
 
-![ThreeD Garden architectural workspace with Models, Project Assets, and a linked 2D plan](docs/images/v0.25.3/design-workspace.png)
+![ThreeD App Project workspace with the Model Library, locked Model DetailsCard, 3D Scene, and linked 2D Design plan](docs/images/v0.30.2/project-design-workspace.png)
 
-*Architectural content and reusable Models share a Project workspace. This repository screenshot documents an earlier interface checkpoint; current controls may differ.*
+*ThreeD App v0.30.2, captured November 2, 2026: browse reusable Models, inspect a locked placement, and work with a linked 3D Scene and 2D Design plan.*
 
 ## Why build with ThreeD App?
 
@@ -97,7 +97,7 @@ Creation, editing, and saving require the appropriate access. Public viewing and
 | ⚽ Interactive lesson | A compatible Character, ball, supported Simulation, and observations | [Physics and Simulations](#simulations) |
 | 🎵 Content collection | Albums, artwork, audio/video, and related Links | [Multimedia](#multimedia) |
 
-These are suggested uses of the existing modules. The workspace screenshot above shows an earlier interface checkpoint, not a newly verified customer delivery.
+These are suggested uses of the existing modules. The screenshots illustrate the App at their capture dates, not verified customer deliveries.
 
 ## Structural basics
 
@@ -185,6 +185,10 @@ Draw a flat plan and see its corresponding architecture in the Project's 3D Scen
 - **Project integration:** architectural entries in Project Assets, linked selection, and shared Project Save/load.
 
 Project measurement preferences support Imperial and Metric presentation. See [Current scope](#current-scope) for architectural boundaries.
+
+![ThreeD Garden architectural workspace with Models, Project Assets, and a linked 2D plan](docs/images/v0.25.3/design-workspace.png)
+
+*Architectural content and reusable Models share a Project workspace. This repository screenshot documents an earlier interface checkpoint; current controls may differ.*
 
 **Learn more:** [ThreeD Designs](docs/developers/THREED_DESIGNS.md) · [Architecture capabilities and planned extensions](docs/plans/design-architecture-capabilities.md)
 
@@ -350,6 +354,10 @@ ThreeD is actively developed. Use the [current context](CONTEXT.md) for acceptan
 - **Runtime:** 3D rendering depends on the browser and graphics hardware. Multimedia playback also depends on codec support and available files.
 - **Images:** README screenshots show the interface at their capture dates and may differ from current controls.
 
+![ThreeD Garden Project with Project Assets, a selected barn Model, Simulation controls, and a linked 2D Design plan](docs/images/v0.30.2/garden-project-workspace.png)
+
+*ThreeD App v0.30.2, captured November 2, 2026: the ThreeD Garden Project combines reusable Models, garden assets, and linked 3D and 2D Design views.*
+
 ## 📚 Learn and explore
 
 | For… | Start here |
@@ -405,7 +413,6 @@ Have a reproducible bug or a focused feature idea? [Open an issue](https://githu
 Designers, suppliers, educators, and developers can help shape future work by describing a concrete use case in [GitHub Discussions](https://github.com/marty-mcgee/threed-garden/discussions). Explain the outcome you need and the workflow you have tried; use Issues for reproducible bugs and focused feature requests. Keep confidential customer information out of public posts.
 
 <!-- Maintainer: Add a dedicated pilot inquiry link only after a contact channel and response owner are established. -->
-<!-- Maintainer: Replace the historical hero with a current approved app capture when available. Keep version/capture context accurate; do not present interface-review annotations as finished customer work. -->
 
 The [legacy-v0.17 branch](https://github.com/marty-mcgee/threed-garden/tree/legacy-v0.17) and [repository migration record](docs/plans/threed-garden-repository-migration.md) preserve the original project history.
 
