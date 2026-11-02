@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-11-01",
+  "generatedAt": "2026-11-02",
   "branch": "main",
-  "head": "791dd35f4173146f380fa50f91f910319eb657b1",
-  "version": "0.30.1",
+  "head": "0ddbc8360c9455de598faf090287d7498e04ed5f",
+  "version": "0.30.2",
   "summary": {
     "tables": 86,
     "columns": 1230,
@@ -23452,7 +23452,7 @@
     }
   ],
   "sourceHashes": {
-    "src/app/api/project/threed-markers/route.ts": "9f631433b7d6480ab12b8d1f23e9322dbc5f8e9a6516c326bee90947a360c3f7",
+    "src/app/api/project/threed-markers/route.ts": "daaa72b1404850970a7bf0e0fd31bcbffcbfba8b59c4283d5304453fdea38e4e",
     "src/libraries/project-assets/asset-registry.ts": "8f6a7c55e5f6ec8600354b956b36e492986830be35ef188f80e401af144c3cf9",
     "src/libraries/schema/auth/index.ts": "df98d02c496180eea94d986d92634deee72a10a2bb264cdc073775c1b72374b4",
     "src/libraries/schema/auth/user-role-audit.ts": "9e207990b630615acbe5f77622dbf586275f1777b401e83e46f29c518c3220e7",

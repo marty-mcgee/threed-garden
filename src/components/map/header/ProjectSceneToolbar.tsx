@@ -3,21 +3,24 @@
 import type { Ref, RefObject } from 'react';
 import {
   Box,
+  BookOpen,
   CloudSun,
   PencilRuler,
   Boxes,
   ChevronDown,
   ChevronUp,
+  FlaskConical,
   Layers,
   ListTree,
   Loader2,
   Plus,
   Save,
-  ScanSearch,
   Settings,
+  Sparkles,
   Sprout,
   Touchpad,
   User,
+  Wrench,
 } from 'lucide-react';
 
 import { SceneOperationStatus, type SceneOperationStatusValue } from '@/components/map/panels/SceneOperationStatus';
@@ -111,11 +114,11 @@ export function ProjectSceneToolbar({
   return (
     <div className="flex min-w-0 max-w-full flex-wrap items-center gap-1">
       <div role="group" aria-label="Scene view mode" className="threed-view-modes flex items-center gap-0 rounded-lg border p-0">
-        <Button variant={viewMode === '3d' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" aria-pressed={viewMode === '3d'} onClick={() => onViewModeChange('3d')} title="3D View">
-          <Box className="h-3.5 w-3.5" />
-        </Button>
         <Button variant={viewMode === 'design' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" aria-pressed={viewMode === 'design'} onClick={() => onViewModeChange('design')} title="ThreeD Design View" aria-label="ThreeD Design View">
           <PencilRuler className="h-3.5 w-3.5 text-cyan-400" />
+        </Button>
+        <Button variant={viewMode === '3d' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" aria-pressed={viewMode === '3d'} onClick={() => onViewModeChange('3d')} title="3D View">
+          <Box className="h-3.5 w-3.5" />
         </Button>
         <Button variant={viewMode === '2d' ? 'secondary' : 'ghost'} size="icon" className="h-7 w-7" aria-pressed={viewMode === '2d'} onClick={() => onViewModeChange('2d')} title="2D View">
           <Touchpad className="h-3.5 w-3.5" />
@@ -177,14 +180,14 @@ export function ProjectSceneToolbar({
           <DropdownMenuTrigger asChild>
             <Button type="button" variant={setupMenuOpen ? 'secondary' : 'outline'} size="sm"
               className="h-7 gap-1 px-2 text-xs" disabled={!presentationComplete || !hasThreeDModule}>
-              <Settings className="h-3.5 w-3.5" /> Tools
+              <Wrench className="h-3.5 w-3.5" /> Tools
               {setupMenuOpen ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="threed-workspace-panel threed-toolbar-dropdown-surface z-[2000] w-56 space-y-0.5 rounded-lg border-foreground/10 p-1.5 text-foreground shadow-xl backdrop-blur-sm">
-            <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onOpenProjectTour}><ScanSearch className="h-3.5 w-3.5" /> Project Tour</DropdownMenuItem>
-            <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onOpenScenarios}><Layers className="h-3.5 w-3.5" /> Scenarios</DropdownMenuItem>
-            <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={() => window.dispatchEvent(new CustomEvent('threed:simulation-panel', { detail: { projectId: Number(selectedProjectId) } }))}><Layers className="h-3.5 w-3.5" /> Simulations</DropdownMenuItem>
+            <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onOpenProjectTour}><Sparkles className="h-3.5 w-3.5" /> Project Tour</DropdownMenuItem>
+            <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onOpenScenarios}><BookOpen className="h-3.5 w-3.5" /> Scenarios</DropdownMenuItem>
+            <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={() => window.dispatchEvent(new CustomEvent('threed:simulation-panel', { detail: { projectId: Number(selectedProjectId) } }))}><FlaskConical className="h-3.5 w-3.5" /> Simulations</DropdownMenuItem>
             <DropdownMenuItem className="threed-toolbar-menu-item" asChild><a href="/admin/threed/assembly-groups" target="_blank" rel="noopener noreferrer"><Boxes className="h-3.5 w-3.5" /> Assembly Groups</a></DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

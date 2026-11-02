@@ -11,15 +11,52 @@ const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function main() {
   assert(browser, 'Edge is required for this optional native check');
   const source = "import React from 'react';import{createRoot}from'react-dom/client';\nimport{AssemblyCompositionWorkspace}from'./src/components/threed/assemblies/AssemblyCompositionWorkspace';\nimport{AssemblyGroupsList}from'./src/components/admin/threed/assemblies/AssemblyGroupsList';\nimport{ModuleAppearanceProvider}from'./src/components/settings/ModuleAppearanceProvider';\nimport{defaultModuleAppearance}from'./src/libraries/config/module-appearance';\nwindow.__errors=[];window.addEventListener('error',e=>window.__errors.push(e.message));window.__saved={};for(let i=1;i<=135;i++){const id=String(i).padStart(8,'0')+'-0000-4000-8000-000000000001';window.__saved[id]={formatVersion:1,id,ownerId:'owner-fixture',name:'Record '+String(i).padStart(3,'0'),revision:1,components:[{id:'part',modelId:12,label:'Part',transform:{position:{x:0,y:0,z:0},rotation:{x:0,y:0,z:0},scale:1}}]}}window.__deletes=0;window.__posts=0;window.confirm=()=>true;\nwindow.fetch=async(url,init={})=>{if(url==='/api/settings/module-appearance'){const snapshot=defaultModuleAppearance();snapshot.styles.assemblyGroups={icon:'Star',color:'amber'};return Response.json({snapshot,canEdit:false})}\nif(String(url).startsWith('/api/threed/models?')){if(init.method&&init.method!=='GET')throw Error('Preview must never write Models');const id=new URL(url,'https://fixture.invalid').searchParams.get('id');if(id){window.__modelReads=(window.__modelReads||0)+1;if(window.__failModelRead)return Response.json({success:false,error:'Unavailable Model'},{status:403})}return Response.json({success:true,data:id?{id:12,modelName:'FarmBot: Box',modelType:'procedural',filePath:'',scale:1,metadata:{activeSource:'shape',fallbackShape:'box'}}:[{id:12,modelName:'FarmBot: Box',modelType:'procedural'}],pagination:{total:1}})}\nif(String(url).startsWith('/api/threed/assembly-groups')){\nconst p=new URL(url,'https://fixture.invalid').searchParams,id=p.get('id');\nif(init.method==='DELETE'){window.__deletes++;if(window.__failDelete)return Response.json({success:false,error:'Delete conflict'},{status:409});delete window.__saved[id];return Response.json({success:true,data:{id}})}\nif(init.method==='POST'){window.__posts++;window.__payload=JSON.parse(init.body);if(window.__failSave)return Response.json({success:false,error:'Conflict: draft retained'},{status:409});const b=window.__payload,d={...b.definition,revision:b.expectedRevision+1};return new Promise(resolve=>{window.__releaseSave=()=>{window.__saved[d.id]=d;resolve(Response.json({success:true,data:d}))}})}\nif(id)return Response.json({success:true,data:window.__saved[id]});\nconst rows=Object.values(window.__saved).map(d=>({id:d.id,name:d.name,revision:d.revision,updatedAt:'2026-11-01T12:00:00Z'})).filter(d=>d.name.toLowerCase().includes((p.get('search')||'').toLowerCase()));const offset=Number(p.get('offset')||0),limit=Number(p.get('limit')||25);return Response.json({success:true,data:{items:rows.slice(offset,offset+limit),total:rows.length,offset,limit}})}\nthrow Error('Unexpected request '+url)};\nwindow.__downloads=[];URL.createObjectURL=blob=>{window.__downloads.push(blob);return 'blob:fixture'};URL.revokeObjectURL=()=>{};const originalClick=HTMLAnchorElement.prototype.click;HTMLAnchorElement.prototype.click=function(){if(!this.download)originalClick.call(this)};\nfunction Fixture(){const[path,setPath]=React.useState('/admin/threed/assembly-groups');window.__path=path;window.__navigate=setPath;const leaf=path.split('/').pop(),list=leaf==='assembly-groups';return <div className=\"flex h-dvh flex-col\"><header className=\"h-12 shrink-0\">Admin</header><main className=\"min-h-0 flex-1 overflow-hidden p-2\"><ModuleAppearanceProvider>{list?<AssemblyGroupsList/>:<AssemblyCompositionWorkspace key={path} recordId={leaf==='new'?undefined:leaf}/>}</ModuleAppearanceProvider></main><footer className=\"h-5 shrink-0\">Admin footer</footer></div>}\ncreateRoot(document.getElementById('root')).render(<Fixture/>);window.__mounted=true;";
+  const positions = new Float32Array([-2, 0, -1, 0, 0, -1, 0, 0, 1, -2, 0, 1, 0, 0, -1, 2, 0, -1, 2, 0, 1, 0, 0, 1]);
+  const indices = new Uint16Array([0, 1, 2, 0, 2, 3, 4, 5, 6, 4, 6, 7]);
+  const bytes = Buffer.concat([Buffer.from(positions.buffer), Buffer.from(indices.buffer)]);
+  const gltf = {
+    asset: { version: '2.0' },
+    buffers: [{ byteLength: bytes.length, uri: 'data:application/octet-stream;base64,' + bytes.toString('base64') }],
+    bufferViews: [{ buffer: 0, byteOffset: 0, byteLength: 96 }, { buffer: 0, byteOffset: 96, byteLength: 12 }, { buffer: 0, byteOffset: 108, byteLength: 12 }],
+    accessors: [{ bufferView: 0, componentType: 5126, count: 8, type: 'VEC3', min: [-2, 0, -1], max: [2, 0, 1] }, { bufferView: 1, componentType: 5123, count: 6, type: 'SCALAR' }, { bufferView: 2, componentType: 5123, count: 6, type: 'SCALAR' }],
+    materials: [{ doubleSided: true, pbrMetallicRoughness: { baseColorFactor: [1, 0, 0, 1], metallicFactor: 0 } }, { doubleSided: true, pbrMetallicRoughness: { baseColorFactor: [0, 0, 1, 1], metallicFactor: 0 } }],
+    meshes: [{ primitives: [{ attributes: { POSITION: 0 }, indices: 1, material: 0 }, { attributes: { POSITION: 0 }, indices: 2, material: 1 }] }],
+    nodes: [{ mesh: 0 }],
+    scenes: [{ nodes: [0] }],
+    scene: 0,
+  };
+  const modelUrl = 'data:model/gltf+json;base64,' + Buffer.from(JSON.stringify(gltf)).toString('base64');
+  const captureSource = `
+import { ModelMarker3D as CaptureMarker } from '@/components/threed/markers/ModelMarker3D';
+import { useCallback as captureCallback, useState as captureState } from 'react';
+const captureImported = { id: 0, modelName: 'Field', modelType: 'glb', filePath: ${JSON.stringify(modelUrl)}, scale: 1 };
+const captureShape = { id: 0, modelName: 'Rectangle', modelType: 'procedural', filePath: '', metadata: { activeSource: 'shape', fallbackShape: 'rectangle' } };
+window.__planImages = {}; window.__planCaptureCounts = {};
+function CaptureModels() {
+  const [scale, setScale] = captureState(1); window.__setCaptureScale = setScale;
+  const imported = captureCallback(image => { window.__planImages.imported = image; if (image) window.__planCaptureCounts.imported = (window.__planCaptureCounts.imported || 0) + 1; }, []);
+  const shape = captureCallback(image => { window.__planImages.shape = image; if (image) window.__planCaptureCounts.shape = (window.__planCaptureCounts.shape || 0) + 1; }, []);
+  return <group position={[10000,0,0]}>
+    <CaptureMarker model={captureImported} position={[0,0,0]} scale={scale} onPlanImageChange={imported}/>
+    <CaptureMarker model={captureShape} position={[0,0,0]} scale={scale} onPlanImageChange={shape}/>
+  </group>;
+}
+`;
+  const captureFixtureSource = 'const fixtureFetch = window.fetch.bind(window);\n' + source.replace("throw Error('Unexpected request '+url)", "if((typeof url==='string'?url:url.url)?.startsWith('data:'))return fixtureFetch(url,init);throw Error('Unexpected request '+url)");
   const canvasProbe = { name: 'canvas-probe', setup(build) {
+    build.onLoad({ filter: /[\\/]model-plan-capture\.ts$/ }, args => ({
+      contents: fs.readFileSync(args.path, 'utf8').replace('} catch {', '} catch (error) { window.__captureError = String(error);'),
+      loader: 'ts',
+      resolveDir: path.dirname(args.path),
+    }));
     build.onLoad({ filter: /[\\/]SafeCanvas\.tsx$/ }, args => ({
-      contents: fs.readFileSync(args.path, 'utf8').replace('<RenderGuard />', '<RenderGuard /><AssemblyProbe />') + '\nimport * as AssemblyThree from "three";window.__assemblyThree=AssemblyThree;function AssemblyProbe(){const state=useThree();useEffect(()=>{window.__assemblyState=state;},[state]);return null}',
+      contents: fs.readFileSync(args.path, 'utf8').replace('<RenderGuard />', '<RenderGuard /><AssemblyProbe />') + '\nimport * as AssemblyThree from "three";window.__assemblyThree=AssemblyThree;function AssemblyProbe(){const state=useThree();useEffect(()=>{window.__assemblyState=state;},[state]);return <CaptureModels/>}' + captureSource,
       loader: 'tsx',
       resolveDir: path.dirname(args.path),
     }));
   } };
   const bundle = (await require('esbuild').build({
-    stdin: { contents: source, resolveDir: root, loader: 'tsx' },
+    stdin: { contents: captureFixtureSource, resolveDir: root, loader: 'tsx' },
     bundle: true,
     write: false,
     format: 'iife',
@@ -31,7 +68,7 @@ async function main() {
   const cssPath = path.join(root, 'src/app/globals.css');
   const css = (await require('postcss')([require('@tailwindcss/postcss')({ base: root })]).process(fs.readFileSync(cssPath, 'utf8'), { from: cssPath })).css;
   const fixture = path.join(temp, 'fixture.html');
-  fs.writeFileSync(fixture, `<html class="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'"><style>${css}</style></head><body><div id="root"></div><script>${bundle.replace(/<\/script/gi, '<\\/script')}</script></body></html>`);
+  fs.writeFileSync(fixture, `<html class="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src data:"><style>${css}</style></head><body><div id="root"></div><script>${bundle.replace(/<\/script/gi, '<\\/script')}</script></body></html>`);
   const child = spawn(browser, ['--headless=new', '--no-first-run', '--no-default-browser-check', '--disable-background-networking', '--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--in-process-gpu', `--user-data-dir=${path.join(temp, 'profile')}`, '--remote-debugging-pipe'], { windowsHide: true, stdio: ['ignore', 'ignore', 'ignore', 'pipe', 'pipe'] });
   let next = 0;
   let buffer = '';
@@ -156,6 +193,31 @@ async function main() {
       assert(Math.abs(tools.viewportTop - tools.sectionTop) <= 1, 'Canvas must not retain an empty toolbar header strip');
       assert(tools.width <= tools.viewportWidth - 16 + 1, 'Tools must fit inside narrow viewports');
       if (width === 1440) {
+        try { await waitFor('!!window.__planImages?.imported?.url && !!window.__planImages?.shape?.url'); }
+        catch (error) { console.error(await evaluate('({images:Object.fromEntries(Object.entries(window.__planImages).map(([key,image])=>[key,Boolean(image?.url)])),error:window.__captureError,counts:window.__planCaptureCounts})')); throw error; }
+        const pixels = await evaluate(`(async () => {
+          const image = new Image(); image.src = window.__planImages.imported.url; await image.decode();
+          const canvas = document.createElement('canvas'); canvas.width = image.width; canvas.height = image.height;
+          const context = canvas.getContext('2d'); context.drawImage(image, 0, 0);
+          return {
+            width: image.width, height: image.height,
+            left: [...context.getImageData(image.width / 4, image.height / 2, 1, 1).data],
+            right: [...context.getImageData(image.width * 3 / 4, image.height / 2, 1, 1).data],
+            bounds: window.__planImages.imported.bounds,
+          };
+        })()`);
+        assert.equal(pixels.width, 512); assert.equal(pixels.height, 256);
+        assert(pixels.left[0] > pixels.left[2] + 100 && pixels.left[3] > 240, 'Generated field must retain its red left geometry');
+        assert(pixels.right[2] > pixels.right[0] + 100 && pixels.right[3] > 240, 'Generated field must retain its blue right geometry');
+        assert.equal(pixels.bounds.halfExtents[0], 2);
+        const png = await evaluate('window.__planImages.imported.url');
+        fs.writeFileSync(path.join(temp, 'generated-model-top-view.png'), Buffer.from(png.split(',')[1], 'base64'));
+        await evaluate('window.__captureCanvas=document.querySelector("canvas");window.__captureTextures=window.__assemblyState.gl.info.memory.textures;window.__setCaptureScale(2)');
+        await waitFor('window.__planCaptureCounts.imported===2 && window.__planCaptureCounts.shape===2');
+        assert.equal(await evaluate('window.__planImages.imported.bounds.halfExtents[0]'), 4);
+        assert(await evaluate('window.__captureCanvas===document.querySelector("canvas")'), 'Capture must retain the existing Canvas');
+        assert.equal(await evaluate('window.__assemblyState.gl.info.memory.textures'), await evaluate('window.__captureTextures'), 'Capture targets must be released after regeneration');
+        console.log('PASS native generated Model top views: actual GLTF/procedural Model owners, real PNG pixels/aspect/bounds, scale regeneration, retained Canvas and released targets; local resources only.');
         assert(Math.abs(sections.controls.y - sections.canvas.y) < 1, 'Canvas must start beside Assembly name');
         assert(sections.canvas.x >= sections.controls.right && sections.canvas.width > 1000, 'Canvas must occupy remaining width without a right inspector');
         assert(Math.abs(sections.controls.height - sections.canvas.height) < 1, 'Controls and Canvas must fill the same workspace height');

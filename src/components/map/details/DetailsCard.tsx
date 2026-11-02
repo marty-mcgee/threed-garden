@@ -36,7 +36,7 @@ import { BedInstanceEditor } from './BedInstanceEditor';
 import { CharacterNavigationControls } from './CharacterNavigationControls';
 import { CharacterInstancePositionEditor } from './CharacterInstancePositionEditor';
 import { ModelInstancePlacementEditor } from './ModelInstancePlacementEditor';
-import { isProjectModelMovableBall, resolveProjectModelCollisionMode } from '@/libraries/services/threed/models/project-model-instance-core';
+import { isProjectModelMovableBall, isProjectModelTransformLocked, resolveProjectModelCollisionMode, type UpdateProjectModelInstanceInput } from '@/libraries/services/threed/models/project-model-instance-core';
 import { isSoccerFootKickSlot, soccerKickInRange, THREED_SOCCER_KICK_REQUEST_EVENT, THREED_SOCCER_KICK_RESULT_EVENT, type SoccerKickResult } from '@/libraries/services/threed/physics/soccer-kick-core';
 import { defaultKickCollisionPoints } from '@/libraries/services/threed/physics/action-collision-core';
 import { PlantingInstanceEditor } from './PlantingInstanceEditor';
@@ -134,17 +134,7 @@ export function DetailsCard({ metersPerSceneUnit, selectedSensorId, onSelectSens
   onClearActionTarget?: () => void;
   onFocusActionTarget?: () => void;
   resolveRuntimeMarkerPosition?: ThreeDRuntimeMarkerPositionResolver;
-  onUpdateModelInstance?: (instanceId: number, input: {
-    metadata: Record<string, unknown>;
-    collisionMode: 'box' | 'triangle-surface';
-    instanceName: string;
-    scaleMultiplier: number;
-    rotationY: number;
-    positionX: number;
-    positionY: number;
-    positionZ: number;
-    placementRole: 'object' | 'environment';
-  }) => void;
+  onUpdateModelInstance?: (instanceId: number, input: UpdateProjectModelInstanceInput) => void;
   updatingModelInstanceId?: number | null;
   onDeleteModelInstance?: (instanceId: number, name: string) => void;
   deletingModelInstanceId?: number | null;
@@ -900,6 +890,7 @@ export function DetailsCard({ metersPerSceneUnit, selectedSensorId, onSelectSens
           initialMovableBall={selected.metadata?.physicsMode === 'ball'}
           initialBallPhysics={selected.metadata?.ballPhysics}
           initialVolumeSensor={readModelVolumeSensor(selected.metadata)}
+          initialTransformLocked={isProjectModelTransformLocked(selected.metadata)}
           initialName={String(d.instanceName || selected.name || '')}
           initialScaleMultiplier={Number(d.scaleMultiplier ?? 1)}
           initialRotationY={Number(d.rotationYInstance ?? 0)}

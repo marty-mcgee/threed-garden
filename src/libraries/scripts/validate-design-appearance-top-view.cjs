@@ -14,7 +14,72 @@ owner.update(doc,null,undefined,true,true);for(const entry of baseline){assert.e
 owner.update(doc,null,undefined,true,false);for(const entry of baseline){assert.equal(entry.mesh.geometry,entry.geometry);assert.equal(entry.material.opacity,entry.opacity);assert.equal(entry.material.transparent,entry.transparent);assert.equal(entry.material.depthWrite,entry.depthWrite);}owner.dispose();
 const P=load('src/libraries/services/threed/models/model-plan-image.ts');const near=(a,b)=>assert(Math.abs(a-b)<1e-6);
 let image=P.modelPlanImage('instance','https://fixture.invalid/top.png',{center:[1,0,2],halfExtents:[2,1,3]},[10,0,20],[0,0,0]);near(image.corners[0].x,9);near(image.corners[0].z,19);near(image.corners[1].x,13);near(image.corners[2].z,25);
-image=P.modelPlanImage('instance','https://fixture.invalid/top.png',{center:[0,0,0],halfExtents:[2,1,3]},[10,0,20],[0,Math.PI/2,0]);near(image.corners[0].x,7);near(image.corners[0].z,22);assert.equal(P.modelPlanImage('bad','javascript:bad',{center:[0,0,0],halfExtents:[1,1,1]},[0,0,0],[0,0,0]),null);
+image=P.modelPlanImage('instance','https://fixture.invalid/top.png',{center:[0,0,0],halfExtents:[2,1,3]},[10,0,20],[0,Math.PI/2,0]);near(image.corners[0].x,7);near(image.corners[0].z,22);
+for (const url of [undefined, null, '', 'javascript:bad']) {
+  const footprint = P.modelPlanImage('field', url, { center: [1, 0, 2], halfExtents: [2, 1, 3] }, [10, 0, 20], [0, 0, 0], 'Soccer Field');
+  assert(footprint, 'A visible Model with measured bounds must not disappear when its optional Top View image is absent');
+  assert.equal(footprint.url, null, 'Absent or unsafe images use a footprint without issuing an image request');
+  assert.equal(footprint.name, 'Soccer Field');
+  near(footprint.corners[0].x, 9);
+  near(footprint.corners[2].z, 25);
+}
+assert.equal(P.modelPlanImage('invalid', null, { center: [NaN, 0, 0], halfExtents: [1, 1, 1] }, [0, 0, 0], [0, 0, 0]), null);
+const edgeOn = P.modelPlanImage('rotated', 'https://fixture.invalid/top.png', { center: [0, 0, 0], halfExtents: [2, 1, 3] }, [10, 0, 20], [Math.PI / 2, 0, 0]);
+assert.equal(edgeOn.url, null);
+near(edgeOn.corners[1].x - edgeOn.corners[0].x, 4);
+near(edgeOn.corners[2].z - edgeOn.corners[0].z, 2);
+const generatedPng = 'data:image/png;base64,aGVsbG8=';
+const generatedBounds = { center: [0, 0, 0], halfExtents: [2, .1, 1] };
+assert.equal(P.modelPlanImage('generated', null, generatedBounds, [0, 0, 0], [0, 0, 0], 'Field', generatedPng).url, generatedPng);
+assert.equal(P.modelPlanImage('saved', 'https://fixture.invalid/saved.png', generatedBounds, [0, 0, 0], [0, 0, 0], 'Field', generatedPng).url, 'https://fixture.invalid/saved.png');
+assert.equal(P.modelPlanImage('unsafe', null, generatedBounds, [0, 0, 0], [0, 0, 0], 'Field', 'data:image/svg+xml,bad').url, null);
+
+// Execute the actual Scene report effect: optional images must not gate bounds,
+// while layer suspension, transform changes and unmount retain their cleanup.
+const sceneAst = ts.createSourceFile('scene.tsx', fs.readFileSync('src/components/map/ThreeDScene.tsx', 'utf8'), ts.ScriptTarget.Latest, true);
+let reportEffect;
+function findReport(node) {
+  if (ts.isCallExpression(node) && node.expression.getText(sceneAst) === 'useEffect'
+    && node.arguments[0]?.getText(sceneAst).includes('onModelPlanImage(projectId')) reportEffect = node.getText(sceneAst);
+  ts.forEachChild(node, findReport);
+}
+findReport(sceneAst);
+assert(reportEffect);
+const reports = [];
+const scope = {
+  projectId: 15,
+  marker: { id: 'models-field', name: 'Soccer Field', data: { imageTopViewUrl: null } },
+  collisionBounds: { center: [0, 0, 0], halfExtents: [30, .1, 20] },
+  modelPlanCapture: null,
+  position: [10, 0, 20],
+  rotation: [0, 0, 0],
+  isLayerEnabled: true,
+  modelPlanImage: P.modelPlanImage,
+  onModelPlanImage: (...args) => reports.push(args),
+  useEffect: callback => { scope.cleanup = callback(); },
+};
+vm.createContext(scope);
+const report = () => vm.runInContext(ts.transpileModule(reportEffect, { compilerOptions: { target: ts.ScriptTarget.ES2022 } }).outputText, scope);
+report();
+assert.equal(reports.at(-1)[0], 15);
+assert.equal(reports.at(-1)[2].id, 'models-field');
+assert.equal(reports.at(-1)[2].name, 'Soccer Field');
+scope.cleanup();
+assert.equal(reports.at(-1)[2], null);
+scope.modelPlanCapture = { bounds: generatedBounds, url: generatedPng };
+report();
+assert.equal(reports.at(-1)[2].url, generatedPng, 'The actual Model body forwards its generated capture through the existing Project callback');
+scope.modelPlanCapture = null;
+scope.position = [25, 0, 20];
+report();
+near(reports.at(-1)[2].corners[0].x, -5);
+scope.isLayerEnabled = false;
+report();
+assert.equal(reports.at(-1)[2], null);
+scope.isLayerEnabled = true;
+scope.collisionBounds = null;
+report();
+assert.equal(reports.at(-1)[2], null);
 const assets=load('src/libraries/services/threed/models/model-snapshot-assets.ts');assert.equal(assets.refreshModelMarkerData({imageTopViewUrl:'https://stale.invalid'},15,{imageTopViewUrl:'https://current.invalid'}).imageTopViewUrl,'https://current.invalid');assert.equal(assets.refreshModelMarkerData({imageTopViewUrl:'https://stale.invalid'},15,undefined).imageTopViewUrl,null);
 let authorized=true,owned=true,fail=false,uploads=0,deletes=0,inserts=[];
 const json=(body,options={})=>({status:options.status??200,body});

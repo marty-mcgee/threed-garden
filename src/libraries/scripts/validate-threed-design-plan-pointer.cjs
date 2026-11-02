@@ -80,7 +80,8 @@ function fixture(overrides = {}) {
     '@/libraries/services/threed/design/object-properties': properties,
     '@/libraries/services/threed/design/geometry': { wallFootprint },
   }, {
-    window: { addEventListener() {}, removeEventListener() {} },
+    Event,
+    window: { addEventListener() {}, removeEventListener() {}, dispatchEvent: () => true },
     ResizeObserver: class { observe() {} disconnect() {} },
   });
   function flush() {
@@ -260,6 +261,58 @@ console.log('PASS: actual DesignPlan blank-click/temporary-pan threshold, tool/s
   f.update({disabled:false,document:document.newDesign()});const fit=flatten(f.tree).find(node=>node.type==='action'&&node.props.label==='Fit Plan');assert.equal(fit.props.disabled,false);fit.props.onClick();assert(f.calls.view.length>0);
 }
 console.log('PASS: actual Model top-view SVG affine calibration, pointer/keyboard selection, busy guards, Fit Plan and no architecture history mutations.');
+
+{
+  const image = { id: 'field', name: 'Soccer Field', url: null, corners: [{ x: 0, z: 0 }, { x: 40, z: 0 }, { x: 0, z: 60 }] };
+  const small = { id: 'ball', name: 'Ball', url: null, corners: [{ x: 2, z: 2 }, { x: 3, z: 2 }, { x: 2, z: 3 }] };
+  let picked = null;
+  const f = fixture({ selected: null, modelImages: [small, image], onModelSelect: id => { picked = id; } });
+  const footprints = () => flatten(f.tree).filter(node => node.props?.['data-model-footprint']);
+  assert.deepEqual(footprints().map(node => node.props['data-model-footprint']), ['field', 'ball'], 'Large environments render behind smaller selectable Models');
+  assert(!flatten(f.tree).some(node => node.type === 'text' && node.props.children === 'Soccer Field'), 'Unselected labels must not overlap the plan');
+  footprints()[0].props.onPointerEnter();
+  f.flush();
+  assert(flatten(f.tree).some(node => node.type === 'text' && node.props.children === 'Soccer Field'), 'Hover reveals the name');
+  footprints()[0].props.onPointerLeave();
+  f.flush();
+  footprints()[0].props.onPointerDown({ button: 0, altKey: false, preventDefault() {}, stopPropagation() {} });
+  assert.equal(picked, 'field');
+  footprints()[1].props.onKeyDown({ key: 'Enter', preventDefault() {}, stopPropagation() {} });
+  assert.equal(picked, 'ball');
+  assert.equal(f.calls.commit.length, 0, 'Model selection never edits architecture history');
+  f.update({ modelImages: [{ ...small, url: 'https://fixture.invalid/missing.png' }] });
+  flatten(f.tree).find(node => node.type === 'image').props.onError();
+  f.flush();
+  assert.equal(footprints()[0].props['data-model-footprint'], 'ball', 'Image failure retains the same selectable Model');
+  f.update({ modelImages: [{ ...small, url: 'https://fixture.invalid/replaced.png' }] });
+  assert(flatten(f.tree).some(node => node.type === 'image'), 'A replacement image can load after failure');
+  f.update({ modelImages: [] });
+  assert.equal(footprints().length, 0, 'Removing an instance removes its plan counterpart');
+}
+console.log('PASS: missing/failed Top View footprints, stable identity, pointer/keyboard selection, replacement images, cleanup and environment stacking.');
+
+{
+  const model = { id: 'protected', name: 'Protected Model', positionX: 10, positionY: 2, positionZ: 10, scaleMultiplier: 1, locked: true };
+  let writes = 0;
+  const f = fixture({ selected: null, selectedModelId: model.id, selectedModel: model,
+    modelImages: [{ id: model.id, url: 'fixture', corners: [{ x: 9, z: 9 }, { x: 11, z: 9 }, { x: 9, z: 11 }] }],
+    onSaveModel: async () => { writes++; return true; } });
+  const image = () => flatten(f.tree).find(node => node.type === 'image');
+  image().props.onPointerDown({ button: 0, altKey: false, preventDefault() {}, stopPropagation() {} });
+  f.flush();
+  assert.equal(f.captures.size, 0);
+  assert(!flatten(f.tree).some(node => node.props?.['data-model-resize']));
+  assert(flatten(f.tree).some(node => node.props?.['data-selected-model'] === model.id));
+  f.update({ selectedModel: { ...model, locked: false } });
+  image().props.onPointerDown({ pointerId: 7, button: 0, altKey: false, clientX: 350, clientY: 210, preventDefault() {}, stopPropagation() {} });
+  f.flush();
+  assert(f.captures.has(7));
+  f.update({ selectedModel: { ...model, locked: true } });
+  assert.equal(f.captures.size, 0, 'Locking during a gesture cancels it');
+  f.pointer('onPointerUp', 450, 240);
+  assert.equal(writes, 0);
+}
+console.log('PASS: locked plan Models retain selection, suppress movement/resize handles and cancel pending gestures without writes.');
 
 {
   assert.equal(navigation.formatPlanLength(.762,'imperial'), "2'6\"");

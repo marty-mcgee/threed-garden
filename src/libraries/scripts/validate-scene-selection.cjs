@@ -140,6 +140,7 @@ console.log('PASS shared Scene selection: actual native/Project callbacks, exact
     updatingModelInstanceId: null,
     deletingModelInstanceId: null,
     designModelSaveBusy: { current: false },
+    isProjectModelCanvasLocked: metadata => metadata?.transformLocked === true || metadata?.placementRole === 'environment',
     projectRuntimeMarkers: [{ id: 'tree-instance', type: 'models', data: { id: 42 }, metadata: { source: 'project-marker' } }],
     data: { threed: { raw: { projectThreedMarkers: [record] } } },
     setUpdatingModelInstanceId() {},
@@ -156,10 +157,15 @@ console.log('PASS shared Scene selection: actual native/Project callbacks, exact
   const save = evaluate(declaration(page, 'saveDesignModel'), ctx);
   assert.equal(await save('tree-instance', transform), true);
   assert.equal(requests[0].url, '/api/project/threed-markers?id=42');
-  assert.deepEqual(requests[0].body, transform, 'Only position and scale are patched');
+  assert.deepEqual(requests[0].body, { canvasEdit: true, ...transform }, 'Only canvas intent, position and scale are patched');
   assert.equal(applied, 1);
   assert.equal(await save('another-instance', transform), false);
   assert.equal(await save('tree-instance', { ...transform, scaleMultiplier: -1 }), false);
+  record.metadata = { transformLocked: true };
+  assert.equal(await save('tree-instance', transform), false);
+  record.metadata = { placementRole: 'environment' };
+  assert.equal(await save('tree-instance', transform), false);
+  record.metadata = {};
   ctx.canEditProject = false;
   assert.equal(await save('tree-instance', transform), false);
   assert.equal(requests.length, 1, 'Rejected edits must not write');

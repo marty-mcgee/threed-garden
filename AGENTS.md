@@ -35,7 +35,7 @@ Use [agent guidance](docs/agents/README.md), [safe change areas](docs/agents/SAF
 - Keep one persistent Canvas/Rapier world, stable Runtime Marker `marker_id` keys and Sub-Module-owned bodies/resources. Marker CRUD patches the affected instance without reloading the Project or remounting unrelated markers.
 - Layers suspend the matching owner's presentation/input/physics/debug participation; do not filter persistent markers, rebuild colliders or change bounds. Architecture level visibility retains its existing collider behavior.
 - Preserve SafeCanvas document-local deferred/latched failure handling, original rendering quality and 4096 Scene shadows. No automatic retry or claimed GPU-crash prevention. Keep R3F consumers inside Canvas.
-- Preserve explicit mode order 3d, design, 2d, combined. Viewport-requiring placement/actions retain Design/Combined/3D and switch only from 2D-only mode. Retain Design Assets docking, overlay positioning and existing App CSS.
+- Preserve the Developer-requested view-button order design, 3d, 2d, combined. Viewport-requiring placement/actions retain Design/Combined/3D and switch only from 2D-only mode. Retain Design Assets docking, overlay positioning and existing App CSS.
 - ThreeDDesign has no active caller and is retained Developer work, not an approved replacement renderer. Do not wire it into routing, create another Scene copy or remove it without reviewing the retention record and obtaining applicable authorization.
 - Design edits preserve stable IDs, metre/Scene conversions, strict versioned imports, staged omission review, fresh imported IDs, atomic Undo transactions and geometry/resource owners. Catalog Models and native hosted openings remain distinct.
 

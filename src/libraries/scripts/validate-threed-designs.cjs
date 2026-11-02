@@ -201,11 +201,15 @@ const orm=Object.fromEntries(['and','eq','inArray','notInArray'].map(name=>[name
 orm.sql=(strings,...values)=>({strings:[...strings],values});
 let signedIn=true,owned=true,fail=false,missingUpdate=false,workspaceWriteFault=null,writes=0,conditions=[],assignments=[{moduleId:7,assetType:'threed_models',assetId:20}];
 let stored={config:{unrelated:{keep:true}},markers:[]};
+const modelPolicyNames = ['isProjectModelEnvironment', 'isProjectModelTransformLocked', 'isProjectModelCanvasLocked', 'isProjectModelMovableBall', 'ProjectModelTransformLockedError', 'assertProjectModelTransformUpdate', 'projectModelSnapshotLock'];
+const modelPolicyAst = ts.createSourceFile('model.ts', fs.readFileSync('src/libraries/services/threed/models/project-model-instance-core.ts', 'utf8'), ts.ScriptTarget.Latest, true);
+const modelPolicy = {};
+vm.runInNewContext(ts.transpileModule(modelPolicyAst.statements.filter(node => modelPolicyNames.includes(node.name?.text)).map(node => node.getText(modelPolicyAst)).join('\n'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText, { exports: modelPolicy });
 const db={select(){const q={};const chain={from(table){q.table=table;return chain;},innerJoin(){return chain;},limit(){return chain;},where(condition){conditions.push(condition);return chain;},then(resolve,reject){return Promise.resolve(q.table===tables.project?(owned?[{id:15,userId:'owner',metersPerSceneUnit:'.3048'}]:[]):assignments).then(resolve,reject);}};return chain;},
- async transaction(fn){writes++;const pending=structuredClone(stored);const tx={select:()=>({from:()=>({where:()=>({limit:()=>({for:async()=>[{config:pending.config}]})})})}),execute:async()=>{},insert(){return{values(rows){pending.markers=structuredClone(rows);return{onConflictDoUpdate(){return{returning:async()=>rows};}}}};},delete(){return{where:async()=>{}};},update(){return{set(values){const delta=JSON.parse(values.config.values[1]);return{where(){return{returning:async()=>{if(fail)throw Error('mock transaction failure');if(missingUpdate)return [];pending.config={...pending.config,...delta};const returned=structuredClone(pending.config);if(workspaceWriteFault==='missing')delete returned.threeDViewState;if(workspaceWriteFault==='reordered')returned.threeDViewState=Object.fromEntries(Object.entries(returned.threeDViewState).reverse());if(workspaceWriteFault==='stale')returned.threeDViewState={...returned.threeDViewState,panelHeight:33};return [{config:returned}];}};}};}};}};
+ async transaction(fn){writes++;const pending=structuredClone(stored);const tx={select(){let table;const query={from(value){table=value;return query;},where(){return query;},limit(){return query;},for:async()=>table===tables.projectThreedMarkers?pending.markers.filter(row=>row.markerType==='models'):[{config:pending.config}]};return query;},execute:async()=>{},insert(){return{values(rows){pending.markers=structuredClone(rows);return{onConflictDoUpdate(){return{returning:async()=>rows};}}}};},delete(){return{where:async()=>{}};},update(){return{set(values){const delta=JSON.parse(values.config.values[1]);return{where(){return{returning:async()=>{if(fail)throw Error('mock transaction failure');if(missingUpdate)return [];pending.config={...pending.config,...delta};const returned=structuredClone(pending.config);if(workspaceWriteFault==='missing')delete returned.threeDViewState;if(workspaceWriteFault==='reordered')returned.threeDViewState=Object.fromEntries(Object.entries(returned.threeDViewState).reverse());if(workspaceWriteFault==='stale')returned.threeDViewState={...returned.threeDViewState,panelHeight:33};return [{config:returned}];}};}};}};}};
  const result=await fn(tx);stored=pending;return result;}};
 class MarkerError extends Error{};class ViewError extends Error{};class PlantingError extends Error{};
-const scope={...tables,...orm,db,Buffer,Date,console:{error(){}},NextResponse:{json:(body,options)=>({body,status:options?.status??200})},
+const scope={...tables,...orm,...modelPolicy,db,Buffer,Date,console:{error(){}},NextResponse:{json:(body,options)=>({body,status:options?.status??200})},
  ...measurementUnits, ...configuration,
  // Projection storage has its own focused validator; this fixture isolates the Project roundtrip.
  saveProjectDesignProjection:async()=>{},ProjectDesignProjectionError:class extends Error{},CharacterPhysicsInputError:class extends Error{},
@@ -323,6 +327,19 @@ async function run(){
  assert.equal(JSON.stringify(saved.body.data.architecture),JSON.stringify(captured),'Save response must describe the returned stored Project row.');
  assert(JSON.stringify(conditions).includes('project.userId'));assert(JSON.stringify(conditions).includes('owner'));
  assert.deepEqual(stored.config.unrelated,{keep:true});assert.equal(stored.markers[0].markerId,model.markerId);assert.deepEqual(stored.markers[0].data,model.data);assert.deepEqual(stored.markers[0].metadata,model.metadata);
+ const beforeLockChecks=structuredClone(stored);
+ stored.markers[0].metadata.transformLocked=true;
+ assert.equal((await save(request(input))).status,200);
+ assert.equal(stored.markers[0].metadata.transformLocked,true,'Project Save cannot drop a persisted lock from stale metadata');
+ const lockedBefore=JSON.stringify(stored);
+ assert.equal((await save(request({...input,markers:[{...model,position:{...model.position,x:19}}]}))).status,409);
+ assert.equal(JSON.stringify(stored),lockedBefore,'Rejected locked edits preserve the complete Project transaction');
+ assert.equal((await save(request({...input,markers:[{...model,data:{...model.data,scaleMultiplier:2}}]}))).status,409);
+ stored.markers[0].metadata.physicsMode='ball';
+ assert.equal((await save(request({...input,markers:[{...model,position:{x:19,y:1,z:8},positionSource:'runtime',metadata:{...model.metadata,physicsMode:'ball'}}]}))).status,200);
+ assert.equal(stored.markers[0].positionX,'19.000','Locked ball runtime positions remain saveable');
+ assert.equal(stored.markers[0].metadata.transformLocked,true);
+ stored=beforeLockChecks;
  const guardedBefore=JSON.stringify(stored),stamp=configuration.projectConfigurationStamp(stored.config);
  assert.equal((await save(request({...input,expectedConfiguration:{...stamp,savedAt:null}}))).status,409,'Stale Scene cannot overwrite Admin workspace changes.');
  assert.equal((await save(request({...input,expectedConfiguration:{...stamp,measurementUnits:'metric'}}))).status,409,'Stale Scene cannot overwrite Admin measurement changes.');

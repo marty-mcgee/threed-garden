@@ -71,6 +71,9 @@ import {
   parseCreateProjectModelInstance,
   parseUpdateProjectModelInstance,
   ProjectModelInstanceInputError,
+  assertProjectModelTransformUpdate,
+  projectModelSnapshotLock,
+  ProjectModelTransformLockedError,
 } from '@/libraries/services/threed/models/project-model-instance-core';
 import type { ThreeDRuntimeMarkerModuleType } from '@/libraries/types/map';
 import { IMPORTED_SENSOR_GROUP, removeLegacyAttachedSensors } from '@/libraries/services/threed/physics/sensor-legacy-compat';
@@ -486,6 +489,17 @@ async function saveSnapshot(request: NextRequest) {
         if (!locked) throw new ProjectConfigurationConflict();
         assertProjectConfigurationCurrent(locked.config, requestBody.expectedConfiguration);
       }
+      if (rows.some(row => row.markerType === 'models')) {
+        const currentModels = await tx.select().from(projectThreedMarkers).where(and(
+          eq(projectThreedMarkers.projectId, projectId),
+          eq(projectThreedMarkers.userId, userId),
+          eq(projectThreedMarkers.markerType, 'models'),
+        )).for('update');
+        for (const row of rows) {
+          if (row.markerType !== 'models') continue;
+          row.metadata = projectModelSnapshotLock(currentModels.find(current => current.markerId === row.markerId), row);
+        }
+      }
       const plantingRows = rows.filter(row => row.markerType === 'plantings');
       const sources = plantingRows.length ? await tx.select({id:threedPlantings.id,bedId:threedPlantings.bedId}).from(threedPlantings)
         .where(and(eq(threedPlantings.userId,userId),inArray(threedPlantings.id,plantingRows.map(row=>row.sourceAssetId)))) : [];
@@ -594,6 +608,7 @@ async function saveSnapshot(request: NextRequest) {
     });
   } catch (error) {
     if (error instanceof MeasurementUnitsError) return NextResponse.json({success:false,error:error.message},{status:400});
+    if (error instanceof ProjectModelTransformLockedError) return NextResponse.json({ success: false, error: error.message }, { status: 409 });
     if (error instanceof ProjectConfigurationConflict) return NextResponse.json({ success: false, error: error.message }, { status: 409 });
     if (error instanceof ProjectConfigurationError) return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     if (error instanceof ProjectDesignProjectionError) return NextResponse.json({ success: false, error: error.message }, { status: 503 });
@@ -1592,46 +1607,58 @@ async function updateProjectMarker(request: NextRequest, id: number) {
     }
 
     const update = parseUpdateProjectModelInstance(body);
-    const values: Partial<typeof projectThreedMarkers.$inferInsert> = { updatedAt: new Date() };
-    if (update.instanceName !== undefined) {
-      values.name = update.instanceName || marker.name;
-      values.label = update.instanceName || marker.label;
-    }
-    if (update.positionX !== undefined) values.positionX = update.positionX.toFixed(3);
-    if (update.positionY !== undefined) values.positionY = update.positionY.toFixed(3);
-    if (update.positionZ !== undefined) values.positionZ = update.positionZ.toFixed(3);
-    if (
-      update.positionX !== undefined
-      || update.positionY !== undefined
-      || update.positionZ !== undefined
-    ) {
-      const geographic = getMarkerGeographicValues({
-        x: update.positionX ?? Number(marker.positionX),
-        y: update.positionY ?? Number(marker.positionY),
-        z: update.positionZ ?? Number(marker.positionZ),
-      }, ownedProject);
-      values.latitude = geographic.latitude;
-      values.longitude = geographic.longitude;
-      values.altitude = geographic.altitude;
-    }
-    if (update.isVisible !== undefined) values.isVisible = update.isVisible;
-    if (update.isActive !== undefined) values.isActive = update.isActive;
-    if (update.metadata !== undefined || update.placementRole !== undefined || update.collisionMode !== undefined) {
-      const currentMetadata = marker.metadata && typeof marker.metadata === 'object' && !Array.isArray(marker.metadata)
-        ? marker.metadata as Record<string, unknown>
-        : {};
-      values.metadata = {
-        ...currentMetadata,
-        ...(update.metadata ?? {}),
-        ...(update.placementRole !== undefined ? { placementRole: update.placementRole } : {}),
-        ...(update.collisionMode !== undefined ? { collisionMode: update.collisionMode } : {}),
-        source: 'project-marker',
-      };
-    }
     const updated = await db.transaction(async (tx) => {
-      const currentModel = await readCurrentMarkerModel(tx, ownerId, marker.sourceAssetId);
+      await tx.execute(sql`select pg_advisory_xact_lock(hashtext(${`project-threed-markers:${marker.projectId}`}))`);
+      const [current] = await tx.select().from(projectThreedMarkers).where(and(
+        eq(projectThreedMarkers.id, id),
+        eq(projectThreedMarkers.projectId, marker.projectId),
+        eq(projectThreedMarkers.userId, ownerId),
+        eq(projectThreedMarkers.markerType, 'models'),
+      )).limit(1).for('update');
+      if (!current) throw new ProjectModelInstanceInputError('Project Model is no longer available');
+      assertProjectModelTransformUpdate(current, update);
+      const currentData = current.data && typeof current.data === 'object' && !Array.isArray(current.data)
+        ? current.data as Record<string, unknown> : {};
+      const values: Partial<typeof projectThreedMarkers.$inferInsert> = { updatedAt: new Date() };
+      if (update.instanceName !== undefined) {
+        values.name = update.instanceName || current.name;
+        values.label = update.instanceName || current.label;
+      }
+      if (update.positionX !== undefined) values.positionX = update.positionX.toFixed(3);
+      if (update.positionY !== undefined) values.positionY = update.positionY.toFixed(3);
+      if (update.positionZ !== undefined) values.positionZ = update.positionZ.toFixed(3);
+      if (
+        update.positionX !== undefined
+        || update.positionY !== undefined
+        || update.positionZ !== undefined
+      ) {
+        const geographic = getMarkerGeographicValues({
+          x: update.positionX ?? Number(current.positionX),
+          y: update.positionY ?? Number(current.positionY),
+          z: update.positionZ ?? Number(current.positionZ),
+        }, ownedProject);
+        values.latitude = geographic.latitude;
+        values.longitude = geographic.longitude;
+        values.altitude = geographic.altitude;
+      }
+      if (update.isVisible !== undefined) values.isVisible = update.isVisible;
+      if (update.isActive !== undefined) values.isActive = update.isActive;
+      if (update.metadata !== undefined || update.placementRole !== undefined || update.collisionMode !== undefined || update.transformLocked !== undefined) {
+        const currentMetadata = current.metadata && typeof current.metadata === 'object' && !Array.isArray(current.metadata)
+          ? current.metadata as Record<string, unknown>
+          : {};
+        values.metadata = {
+          ...currentMetadata,
+          ...(update.metadata ?? {}),
+          ...(update.placementRole !== undefined ? { placementRole: update.placementRole } : {}),
+          ...(update.collisionMode !== undefined ? { collisionMode: update.collisionMode } : {}),
+          ...(update.transformLocked !== undefined ? { transformLocked: update.transformLocked } : {}),
+          source: 'project-marker',
+        };
+      }
+      const currentModel = await readCurrentMarkerModel(tx, ownerId, current.sourceAssetId);
       values.data = {
-        ...refreshModelMarkerData(currentData, marker.sourceAssetId, currentModel),
+        ...refreshModelMarkerData(currentData, current.sourceAssetId, currentModel),
         ...(update.rotationX !== undefined ? { rotationX: update.rotationX } : {}),
         ...(update.rotationY !== undefined ? { rotationYInstance: update.rotationY } : {}),
         ...(update.rotationZ !== undefined ? { rotationZ: update.rotationZ } : {}),
@@ -1647,6 +1674,7 @@ async function updateProjectMarker(request: NextRequest, id: number) {
     });
     return NextResponse.json({ success: true, data: updated });
   } catch (error) {
+    if (error instanceof ProjectModelTransformLockedError) return NextResponse.json({ success: false, error: error.message }, { status: 409 });
     if (
       error instanceof ProjectModelInstanceInputError
       || error instanceof CharacterPhysicsInputError

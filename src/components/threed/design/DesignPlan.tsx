@@ -64,21 +64,31 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
   const modelGesture = useRef<{ pointerId: number; start: PlanPoint; model: DesignModelSelection; resize: boolean; factor: number; dx: number; dz: number } | null>(null);
   const modelSaving = useRef(false);
   const [modelPreview, setModelPreview] = useState<{ id: string; x: number; z: number; factor: number; dx: number; dz: number } | null>(null);
+  const [failedModelImages, setFailedModelImages] = useState<Record<string, string>>({});
+  const [hoveredModelId, setHoveredModelId] = useState<string | null>(null);
   const displayedImages = modelImages.map(image => image.id === modelPreview?.id ? { ...image, corners: image.corners.map(point => ({
     x: modelPreview.x + (point.x - modelPreview.x) * modelPreview.factor + modelPreview.dx,
     z: modelPreview.z + (point.z - modelPreview.z) * modelPreview.factor + modelPreview.dz,
-  })) as ModelPlanImage['corners'] } : image);
+  })) as ModelPlanImage['corners'] } : image).sort((left, right) => {
+    const area = (image: ModelPlanImage) => {
+      const [a, b, c] = image.corners;
+      return Math.abs((b.x - a.x) * (c.z - a.z) - (b.z - a.z) * (c.x - a.x));
+    };
+    // Draw large environments first so their footprints cannot cover smaller Models.
+    return area(right) - area(left);
+  });
   const cancelModel = () => {
     const current = modelGesture.current;
     modelGesture.current = null;
     setModelPreview(null);
     if (current && svg.current?.hasPointerCapture(current.pointerId)) svg.current.releasePointerCapture(current.pointerId);
   };
-  useEffect(() => { cancelModel(); }, [selectedModelId, cancelToken, tool, enabled, disabled]);
+  useEffect(() => { cancelModel(); }, [selectedModelId, selectedModel?.locked, cancelToken, tool, enabled, disabled]);
   function startModel(event: PointerEvent<SVGElement>, id: string, resize = false) {
     if (!enabled || disabled || modelBusy || modelSaving.current || tool !== 'select' || event.button !== 0 || event.altKey) return;
     event.preventDefault(); event.stopPropagation();
     if (!selectedModel || selectedModel.id !== id || !onSaveModel) { onModelSelect?.(id); return; }
+    if (selectedModel.locked) { onMessage('Model placement is protected. Unlock it in DetailsCard before editing.'); return; }
     if (!window.dispatchEvent(new Event('threed:design:model-selection', { cancelable: true }))) return;
     svg.current?.focus();
     modelGesture.current = { pointerId: event.pointerId, start: pointer(event), model: { ...selectedModel }, resize, factor: 1, dx: 0, dz: 0 };
@@ -282,7 +292,7 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
     if (modelDrag && modelDrag.pointerId === event.pointerId) {
       modelGesture.current = null;
       if (svg.current?.hasPointerCapture(event.pointerId)) svg.current.releasePointerCapture(event.pointerId);
-      if (onSaveModel && (modelDrag.dx !== 0 || modelDrag.dz !== 0 || modelDrag.factor !== 1)) {
+      if (onSaveModel && !selectedModel?.locked && (modelDrag.dx !== 0 || modelDrag.dz !== 0 || modelDrag.factor !== 1)) {
         modelSaving.current = true;
         void onSaveModel(modelDrag.model.id, {
           positionX: modelDrag.model.positionX + modelDrag.dx,
@@ -353,7 +363,41 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
         {displayedImages.map(image => {
           const [a,b,c] = image.corners.map(p => ({ x: p.x * metersPerSceneUnit, z: p.z * metersPerSceneUnit }));
           if (![a.x,a.z,b.x,b.z,c.x,c.z].every(Number.isFinite)) return null;
-          return <image key={image.id} href={image.url} x={0} y={0} width={1} height={1} preserveAspectRatio="none" transform={`matrix(${b.x-a.x} ${b.z-a.z} ${c.x-a.x} ${c.z-a.z} ${a.x} ${a.z})`} role="button" tabIndex={enabled && !disabled ? 0 : -1} aria-label={`Select Project Model ${image.id}`} onKeyDown={event => { if (!enabled || disabled || !['Enter', ' '].includes(event.key)) return; event.preventDefault(); event.stopPropagation(); onModelSelect?.(image.id); }} style={{ cursor: 'pointer' }} onPointerDown={event => startModel(event, image.id)} />;
+          const imageAvailable = image.url !== null && failedModelImages[image.id] !== image.url;
+          const corners = [a, b, {
+            x: b.x + c.x - a.x,
+            z: b.z + c.z - a.z,
+          }, c];
+          const interaction = {
+            role: 'button',
+            tabIndex: enabled && !disabled ? 0 : -1,
+            'aria-label': `Select Project Model ${image.id}`,
+            onKeyDown: (event: React.KeyboardEvent<SVGElement>) => {
+              if (!enabled || disabled || !['Enter', ' '].includes(event.key)) return;
+              event.preventDefault();
+              event.stopPropagation();
+              onModelSelect?.(image.id);
+            },
+            onPointerDown: (event: PointerEvent<SVGElement>) => startModel(event, image.id),
+            onPointerEnter: () => setHoveredModelId(image.id),
+            onPointerLeave: () => setHoveredModelId(null),
+          };
+          return <g key={image.id} data-plan-model={image.id}>
+            <title>{image.name ?? `Model ${image.id}`}</title>
+            {imageAvailable ? <image {...interaction} href={image.url!} x={0} y={0} width={1} height={1} preserveAspectRatio="none"
+              transform={`matrix(${b.x-a.x} ${b.z-a.z} ${c.x-a.x} ${c.z-a.z} ${a.x} ${a.z})`} style={{ cursor: 'pointer' }}
+              onError={() => setFailedModelImages(current => ({
+                ...current,
+                [image.id]: image.url!,
+              }))} /> : <g>
+              <polygon {...interaction} data-model-footprint={image.id} points={polygon(corners)}
+                fill="#38bdf8" fillOpacity=".12" stroke="#7dd3fc" strokeWidth={1.5 / view.scale} style={{ cursor: 'pointer' }} />
+            </g>}
+            {(selectedModelId === image.id || hoveredModelId === image.id) && <text x={Math.min(...corners.map(point => point.x))} y={Math.min(...corners.map(point => point.z)) - 6 / view.scale}
+                fill="#e0f2fe" stroke="#091423" strokeWidth={3 / view.scale} paintOrder="stroke" fontSize={11 / view.scale} pointerEvents="none">
+                {image.name ?? `Model ${image.id}`}
+              </text>}
+          </g>;
         })}
         {displayedImages.filter(image => image.id === selectedModelId).map(image => {
           const [a, b, c] = image.corners;
@@ -367,7 +411,7 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
             }));
           return <g key={`selected-${image.id}`}><polygon data-selected-model={image.id} points={polygon(corners)}
             fill="none" stroke="#22d3ee" strokeWidth={2 / view.scale} pointerEvents="none" />
-            {selectedModel?.id === image.id && onSaveModel && !disabled && !modelBusy && <circle data-model-resize={image.id} cx={corners[2].x} cy={corners[2].z} r={6 / view.scale} fill="#facc15" stroke="#101827" strokeWidth={1 / view.scale} style={{ cursor: 'nwse-resize' }} onPointerDown={event => startModel(event, image.id, true)} />}
+            {selectedModel?.id === image.id && !selectedModel.locked && onSaveModel && !disabled && !modelBusy && <circle data-model-resize={image.id} cx={corners[2].x} cy={corners[2].z} r={6 / view.scale} fill="#facc15" stroke="#101827" strokeWidth={1 / view.scale} style={{ cursor: 'nwse-resize' }} onPointerDown={event => startModel(event, image.id, true)} />}
           </g>;
         })}
         {visible.roofs.map(roof => { const points = roof.vertices.map(id => nodes.get(id)!); return <g key={roof.id} data-entity={roof.id} data-roof={roof.kind}><polygon points={polygon(points)} fill="#c084fc" fillOpacity={selected === roof.id ? .18 : .06} stroke="#c084fc" strokeWidth={3 / view.scale} pointerEvents="stroke" /></g>; })}

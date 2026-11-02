@@ -1,6 +1,7 @@
 // components/map/LeafletMap-v0130b.tsx - v0.13.0-beta "Smart Dashboard"
 
 'use client';
+import { isProjectModelCanvasLocked } from '@/libraries/services/threed/models/project-model-instance-core';
 
 import { useEffect, useRef, memo } from 'react';
 import L from 'leaflet';
@@ -475,6 +476,7 @@ function LeafletMapComponent({
       const data = marker.metadata?.data || {};
       const modelInstanceId = Number(data.instanceId ?? data.projectMarkerId);
       const modelCanMove = marker.type === 'models'
+        && !isProjectModelCanvasLocked(marker.metadata)
         && Number.isSafeInteger(modelInstanceId)
         && modelInstanceId > 0
         && Boolean(onModelMoveRef.current);

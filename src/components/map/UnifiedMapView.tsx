@@ -1,5 +1,6 @@
 // components/map/UnifiedMapView.tsx
 'use client';
+import { isProjectModelCanvasLocked } from '@/libraries/services/threed/models/project-model-instance-core';
 import type { ModelPlanImage } from '@/libraries/services/threed/models/model-plan-image';
 
 import { entityPoints } from '@/libraries/services/threed/design/object-properties';
@@ -626,6 +627,7 @@ export function UnifiedMapView({
       || Number((marker.data as Record<string, unknown>)?.projectMarkerId) === instanceId
     ));
     const currentY = currentMarker?.position.y ?? 0;
+    if (!currentMarker || isProjectModelCanvasLocked(currentMarker.metadata)) return Promise.resolve(false);
     return onModelMove?.(
       instanceId,
       geographicOrigin

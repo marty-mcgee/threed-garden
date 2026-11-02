@@ -6,6 +6,7 @@ import { useSceneResourceStatus, useSceneResourceIssueReporter } from '@/compone
 import { indexEnvironmentRegions, type EnvironmentRegionIndex } from '@/libraries/services/threed/models/environment-region-index';
 import { buildEnvironmentSurfaceCollider, type EnvironmentSurfaceCollider } from '@/libraries/services/threed/models/environment-surface-collider';
 import { measureModelLocalBounds } from '@/libraries/services/threed/models/model-local-bounds';
+import { queueModelPlanCapture, type ModelPlanCapture } from '@/libraries/services/threed/models/model-plan-capture';
 import { reportModelLoadFailure } from '@/libraries/services/threed/models/model-load-failures';
 import { modelFallbackCollisionBounds, readModelFallbackShape, type ModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
 import { withSavedFbxTextures } from '@/libraries/services/threed/models/model-saved-texture-fallback';
@@ -116,6 +117,8 @@ interface ModelMarker3DProps {
   applyStoredScale?: boolean;
   /** Reports loaded, grounded geometry bounds for the marker-owned Rapier collider. */
   onCollisionBoundsChange?: (bounds: ModelCollisionBounds | null) => void;
+  /** Opt-in transient top-down presentation; never uploads or changes Model data. */
+  onPlanImageChange?: (image: ModelPlanCapture | null) => void;
   /** Reports bounded post-transform geometry diagnostics without creating physics. */
   onGeometryAuditChange?: (audit: ModelGeometryAudit | null) => void;
   /** Builds a bounded static surface candidate for a caller-owned fixed collider. */
@@ -367,7 +370,7 @@ function ModelFallback({ position, shape, scale = 1, solid = false }: {
 // ============================================
 // COMPONENT
 // ============================================
-export function ModelMarker3D({ model: savedModel, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange, onGeometryAuditChange, enableSurfaceCollider = false, onMaterialInventoryChange, materialPreviewOverride, materialPreviewSelectionId, onEnvironmentCollisionPreviewChange, onRuntimeSettled, onRuntimeError }: ModelMarker3DProps) {
+export function ModelMarker3D({ model: savedModel, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange, onPlanImageChange, onGeometryAuditChange, enableSurfaceCollider = false, onMaterialInventoryChange, materialPreviewOverride, materialPreviewSelectionId, onEnvironmentCollisionPreviewChange, onRuntimeSettled, onRuntimeError }: ModelMarker3DProps) {
   const model = useMemo(() => resolveActiveModelGeometry(savedModel), [savedModel]);
   const [labelHovered, setLabelHovered] = useState(false);
   const [labelPosition, setLabelPosition] = useState<[number, number, number]>([0, 1.5, 0]);
@@ -384,6 +387,31 @@ export function ModelMarker3D({ model: savedModel, position, name, scale = 1, an
   const RuntimeAdapter = resolveThreeDModelRuntimeAdapter(requestedRuntimeAdapterKey);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
   const visualGroupRef = useRef<THREE.Group | null>(null);
+  const fallbackGroupRef = useRef<THREE.Group | null>(null);
+  const planCaptureRef = useRef({
+    frames: 0,
+    queued: false,
+    cancel: null as (() => void) | null,
+  });
+  useEffect(() => {
+    const capture = planCaptureRef.current;
+    capture.frames = 0;
+    capture.queued = false;
+    onPlanImageChange?.(null);
+    return () => {
+      capture.cancel?.();
+      capture.cancel = null;
+      onPlanImageChange?.(null);
+    };
+  }, [loadedModel, loading, error, scale, position[0], position[1], position[2], fallbackShape, onPlanImageChange]);
+  useFrame(({ gl }) => {
+    const capture = planCaptureRef.current;
+    if (!onPlanImageChange || capture.queued || loading || error) return;
+    const root = loadedModel ? visualGroupRef.current : !hasModelFile && !fallback ? fallbackGroupRef.current : null;
+    if (!root?.parent || ++capture.frames < 2) return;
+    capture.queued = true;
+    capture.cancel = queueModelPlanCapture(gl, root, root.parent, onPlanImageChange);
+  });
   const collisionMeasurementRef = useRef({
     model: null as THREE.Group | null,
     scale: 0,
@@ -678,8 +706,9 @@ export function ModelMarker3D({ model: savedModel, position, name, scale = 1, an
     if (fallback) return <group scale={[scale, scale, scale]}>{fallback}</group>;
     // Imported units are irrelevant to this one-unit placeholder: tiny FBX scales
     // must not hide the only visible representation of the Project asset.
-    return <ModelFallback position={position} shape={fallbackShape}
+    const shape = <ModelFallback position={position} shape={fallbackShape}
       scale={hasModelFile ? 1 : scale} solid={!hasModelFile} />;
+    return onPlanImageChange ? <group ref={fallbackGroupRef}>{shape}</group> : shape;
   }
 
   return (

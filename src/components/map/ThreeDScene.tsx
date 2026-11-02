@@ -3,6 +3,7 @@
 
 import { SceneMultimediaBridge } from './multimedia/SceneMultimediaBridge';
 import { modelPlanImage, type ModelPlanImage } from '@/libraries/services/threed/models/model-plan-image';
+import type { ModelPlanCapture } from '@/libraries/services/threed/models/model-plan-capture';
 import { ProjectMeasurementUnits } from '@/components/project/ProjectMeasurementUnits';
 import { DesignSceneObjects } from '@/components/threed/design/DesignSceneObjects';
 import { DesignScenePhysics } from '@/components/threed/design/DesignScenePhysics';
@@ -1190,6 +1191,7 @@ function ProjectModelMarkerBody({
   const requestedCollisionMode = resolveProjectModelCollisionMode(marker.metadata, isEnvironment);
   const wantsSurfaceCollider = requestedCollisionMode === 'triangle-surface' && !isMovableBall;
   const [collisionBounds, setCollisionBounds] = useState<ModelCollisionBounds | null>(null);
+  const [modelPlanCapture, setModelPlanCapture] = useState<ModelPlanCapture | null>(null);
   const [regionsReady, setRegionsReady] = useState(false);
   const [geometryAudit, setGeometryAudit] = useState<ModelGeometryAudit | null>(null);
   const [collisionPreview, setCollisionPreview] = useState<ThreeDEnvironmentCollisionPreviewPlan | null>(null);
@@ -1201,12 +1203,13 @@ function ProjectModelMarkerBody({
   useEffect(() => {
     if (!projectId || !onModelPlanImage) return;
     const url = marker.data?.imageTopViewUrl;
-    if (!collisionBounds || typeof url !== 'string' || !url.startsWith('https://') || !isLayerEnabled) {
+    const planBounds = modelPlanCapture?.bounds ?? collisionBounds;
+    if (!planBounds || !isLayerEnabled) {
       onModelPlanImage(projectId, String(marker.id), null); return;
     }
-    onModelPlanImage(projectId, String(marker.id), modelPlanImage(String(marker.id), url, collisionBounds, position, rotation));
+    onModelPlanImage(projectId, String(marker.id), modelPlanImage(String(marker.id), url, planBounds, position, rotation, marker.name, modelPlanCapture?.url));
     return () => onModelPlanImage(projectId, String(marker.id), null);
-  }, [collisionBounds, marker.id, marker.data?.imageTopViewUrl, projectId, onModelPlanImage, isLayerEnabled, position[0], position[1], position[2], rotation[0], rotation[1], rotation[2]]);
+  }, [collisionBounds, modelPlanCapture, marker.id, marker.name, marker.data?.imageTopViewUrl, projectId, onModelPlanImage, isLayerEnabled, position[0], position[1], position[2], rotation[0], rotation[1], rotation[2]]);
   const handleModelVisualSettled = useCallback(() => setModelVisualSettled(true), []);
   const handleModelRuntimeError = useCallback((message: string | null) => {
     setModelLoadFailed(Boolean(message));
@@ -1479,6 +1482,7 @@ function ProjectModelMarkerBody({
           applyStoredScale={false}
           animationSpeed={marker.data?.animationSpeed || 1}
           onCollisionBoundsChange={handleCollisionBoundsChange}
+          onPlanImageChange={onModelPlanImage && !(typeof marker.data?.imageTopViewUrl === 'string' && marker.data.imageTopViewUrl.startsWith('https://')) ? setModelPlanCapture : undefined}
           enableSurfaceCollider={wantsSurfaceCollider}
           onGeometryAuditChange={wantsSurfaceCollider ? setGeometryAudit : undefined}
           onEnvironmentCollisionPreviewChange={isEnvironment && wantsSurfaceCollider ? setCollisionPreview : undefined}

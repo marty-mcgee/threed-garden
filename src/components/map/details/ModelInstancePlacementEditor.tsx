@@ -4,8 +4,8 @@ import { DetailsCardActions } from './DetailsCardActions';
 import type { ModelVolumeSensor } from '@/libraries/services/threed/physics/sensor-legacy-compat';
 import { BALL_PHYSICS_FIELDS, resolveBallPhysics, type BallPhysics } from '@/libraries/services/threed/models/ball-physics';
 import { useState } from 'react';
-import { Box, Crosshair, Loader2, Save, Trash2 } from 'lucide-react';
-import type { ProjectModelCollisionMode } from '@/libraries/services/threed/models/project-model-instance-core';
+import { Box, Crosshair, Loader2, Lock, Unlock, Save, Trash2 } from 'lucide-react';
+import type { ProjectModelCollisionMode, UpdateProjectModelInstanceInput } from '@/libraries/services/threed/models/project-model-instance-core';
 import { DetailsCardSection } from './DetailsCardSection';
 
 type ProjectModelPhysicsMode = ProjectModelCollisionMode | 'ball';
@@ -21,6 +21,7 @@ export function ModelInstancePlacementEditor({
   initialMovableBall = false,
   initialBallPhysics,
   initialVolumeSensor,
+  initialTransformLocked = false,
   baseModelScale,
   updating,
   deleting,
@@ -39,25 +40,12 @@ export function ModelInstancePlacementEditor({
   initialMovableBall?: boolean;
   initialBallPhysics?: unknown;
   initialVolumeSensor?: ModelVolumeSensor | null;
+  initialTransformLocked?: boolean;
   baseModelScale: number;
   updating: boolean;
   deleting: boolean;
   moveActive: boolean;
-  onSave: (input: {
-    metadata: {
-      physicsMode: 'ball' | 'fixed';
-      ballPhysics: BallPhysics;
-      physicsVolumeSensor: ModelVolumeSensor | false;
-    };
-    collisionMode: ProjectModelCollisionMode;
-    instanceName: string;
-    scaleMultiplier: number;
-    rotationY: number;
-    positionX: number;
-    positionY: number;
-    positionZ: number;
-    placementRole: 'object' | 'environment';
-  }) => void;
+  onSave: (input: UpdateProjectModelInstanceInput) => void;
   onDelete: (instanceId: number, name: string) => void;
   onMoveToggle: (instanceId: number, name: string) => void;
 }) {
@@ -92,6 +80,7 @@ export function ModelInstancePlacementEditor({
     && Number.isFinite(parsedRotationDegrees)
     && parsedPosition.every((value) => Number.isFinite(value) && Math.abs(value) <= 1_000_000);
   const busy = updating || deleting;
+  const canvasLocked = initialTransformLocked || initialPlacementRole === 'environment' || placementRole === 'environment';
   const dirty = instanceName.trim() !== initialName.trim()
     || parsedScale !== initialScaleMultiplier
     || parsedRotationDegrees !== Number((initialRotationY * 180 / Math.PI).toFixed(2))
@@ -106,12 +95,13 @@ export function ModelInstancePlacementEditor({
 
   return (
     <div className="contents">
-      <DetailsCardActions labels={['Save Model', moveActive ? 'Cancel Move' : 'Move Model', 'Delete Model']}>
+      <DetailsCardActions labels={['Save Model', initialTransformLocked ? 'Unlock Model' : 'Lock Model', moveActive ? 'Cancel Move' : 'Move Model', 'Delete Model']}>
         <button
           type="button"
           disabled={!valid || !dirty || busy}
           onClick={(event) => {
             event.stopPropagation();
+            if (!valid || !dirty || busy) return;
             onSave({
               metadata: {
                 physicsMode: physicsMode === 'ball' && placementRole !== 'environment' ? 'ball' : 'fixed',
@@ -122,11 +112,13 @@ export function ModelInstancePlacementEditor({
               },
               collisionMode: physicsMode === 'triangle-surface' ? 'triangle-surface' : 'box',
               instanceName: instanceName.trim(),
-              scaleMultiplier: parsedScale,
-              rotationY: parsedRotationDegrees * Math.PI / 180,
-              positionX: parsedPosition[0],
-              positionY: parsedPosition[1],
-              positionZ: parsedPosition[2],
+              ...(!initialTransformLocked ? {
+                scaleMultiplier: parsedScale,
+                rotationY: parsedRotationDegrees * Math.PI / 180,
+                positionX: parsedPosition[0],
+                positionY: parsedPosition[1],
+                positionZ: parsedPosition[2],
+              } : {}),
               placementRole,
             });
           }}
@@ -135,11 +127,23 @@ export function ModelInstancePlacementEditor({
           {updating ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
           Save Model
         </button>
+        <button type="button" disabled={busy} aria-pressed={initialTransformLocked}
+          onClick={event => {
+            event.stopPropagation();
+            if (busy) return;
+            if (dirty && !window.confirm('Discard unsaved Model placement changes before changing its lock?')) return;
+            onSave({ transformLocked: !initialTransformLocked });
+          }}
+          className="flex items-center justify-center gap-1.5 rounded px-2 py-1.5 text-[11px] font-medium disabled:cursor-not-allowed disabled:opacity-40">
+          {initialTransformLocked ? <Lock className="h-3.5 w-3.5 text-red-600 dark:text-red-400" /> : <Unlock className="h-3.5 w-3.5" />}
+          {initialTransformLocked ? 'Unlock Model' : 'Lock Model'}
+        </button>
         <button
           type="button"
-          disabled={busy}
+          disabled={busy || (canvasLocked && !moveActive)}
           onClick={(event) => {
             event.stopPropagation();
+            if (busy || (canvasLocked && !moveActive)) return;
             onMoveToggle(instanceId, instanceName.trim() || `Model instance #${instanceId}`);
           }}
           className="flex items-center justify-center gap-1 rounded bg-amber-600/30 px-1.5 py-1.5 text-[10px] font-medium text-amber-800 dark:text-amber-100 transition-colors hover:bg-amber-600/55 hover:text-white disabled:cursor-not-allowed disabled:bg-foreground/5 disabled:text-foreground/30"
@@ -166,7 +170,7 @@ export function ModelInstancePlacementEditor({
       </DetailsCardActions>
       <DetailsCardSection
         storageId="Project Model Instance"
-        help="Edit this placed copy's name, scale, position and rotation. Save Model applies these fields to this Project instance; the reusable Library Model is unchanged. Save Project keeps the workspace view and panel state."
+        help="Edit this placed copy's name, scale, position and rotation. Save Model applies these fields to this Project instance; the reusable Library Model is unchanged. Save Project keeps the workspace view and panel state. Lock Model protects position, rotation and scale from editor changes; Unlock Model restores editing. Runtime physics, Actions and Simulations remain active."
         title={<span className="inline-flex items-center gap-1.5">
           <Box className="h-3.5 w-3.5" />
           Project placement
@@ -194,7 +198,7 @@ export function ModelInstancePlacementEditor({
             max="10000"
             step="any"
             value={scaleMultiplier}
-            disabled={busy}
+            disabled={busy || initialTransformLocked}
             onChange={(event) => setScaleMultiplier(event.target.value)}
             className="h-7 w-full rounded border border-foreground/10 bg-foreground/5 px-2 text-[11px] text-foreground outline-none focus:border-foreground/30 disabled:opacity-50"
           />
@@ -205,7 +209,7 @@ export function ModelInstancePlacementEditor({
             type="number"
             step="1"
             value={rotationYDegrees}
-            disabled={busy}
+            disabled={busy || initialTransformLocked}
             onChange={(event) => setRotationYDegrees(event.target.value)}
             className="h-7 w-full rounded border border-foreground/10 bg-foreground/5 px-2 text-[11px] text-foreground outline-none focus:border-foreground/30 disabled:opacity-50"
           />
@@ -224,7 +228,7 @@ export function ModelInstancePlacementEditor({
               type="number"
               step="0.1"
               value={value as string}
-              disabled={busy}
+              disabled={busy || initialTransformLocked}
               onChange={(event) => (setter as (value: string) => void)(event.target.value)}
               className="h-7 w-full rounded border border-foreground/10 bg-foreground/5 px-1.5 text-[11px] text-foreground outline-none focus:border-foreground/30 disabled:opacity-50"
             />

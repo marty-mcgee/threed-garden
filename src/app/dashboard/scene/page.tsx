@@ -108,7 +108,7 @@ import {
   isMatchingThreeDActionTarget,
 } from '@/libraries/services/threed/orchestration/action-target-core';
 import { applyThreeDProjectClientTransaction } from '@/libraries/services/threed/markers/project-marker-client-state-core';
-import { THREED_MODEL_PLACEMENT_EVENT, type ThreeDModelPlacement } from '@/libraries/services/threed/models/project-model-instance-core';
+import { THREED_MODEL_PLACEMENT_EVENT, isProjectModelCanvasLocked, isProjectModelEnvironment, type ThreeDModelPlacement, type UpdateProjectModelInstanceInput } from '@/libraries/services/threed/models/project-model-instance-core';
 import { ProjectDetailsSections } from '@/components/map/details/PersistentDetails';
 import { SensorGroupsWorkspace, useSensorGroups } from '@/components/threed/physics/SensorGroupsWorkspace';
 import { SceneTransformWorkspace, useSceneTransform } from '@/components/threed/transform/SceneTransformWorkspace';
@@ -1925,22 +1925,14 @@ function UnifiedMapPageInner() {
 
   const handleUpdateModelInstance = useCallback(async (
     instanceId: number,
-    input: {
-      metadata: Record<string, unknown>;
-      collisionMode: 'box' | 'triangle-surface';
-      instanceName: string;
-      scaleMultiplier: number;
-      rotationY: number;
-      positionX: number;
-      positionY: number;
-      positionZ: number;
-      placementRole: 'object' | 'environment';
-    },
+    input: UpdateProjectModelInstanceInput,
   ) => {
-    if (updatingModelInstanceId != null || deletingModelInstanceId != null) return;
+    if (!canEditProject || loading || updatingModelInstanceId != null || deletingModelInstanceId != null) return;
+    if (input.transformLocked !== undefined && !window.dispatchEvent(new Event('threed:design:model-selection', { cancelable: true }))) return;
     const saved = data.threed.raw?.projectThreedMarkers?.find((record) => record.id === instanceId);
-    const placementChanged = !saved || Number(saved.positionX) !== input.positionX
-      || Number(saved.positionY) !== input.positionY || Number(saved.positionZ) !== input.positionZ;
+    if (!saved) return;
+    const placementChanged = (['positionX', 'positionY', 'positionZ'] as const)
+      .some(key => input[key] !== undefined && Number(saved[key]) !== input[key]);
     setUpdatingModelInstanceId(instanceId);
     try {
       const response = await fetch(
@@ -1955,6 +1947,8 @@ function UnifiedMapPageInner() {
       if (!response.ok || !result?.success) {
         throw new Error(result?.error || `Model placement update failed (${response.status})`);
       }
+      if (planImageProjectRef.current !== selectedProjectId) return;
+      if (isProjectModelCanvasLocked(result.data?.metadata)) setMovingModelInstance(current => current?.id === instanceId ? null : current);
 
       if (placementChanged) notifyModelPlacement(result.data as ProjectThreeDMarkerRecord, Number(selectedProjectId));
       setData((current) => applyThreeDProjectClientTransaction(current, {
@@ -1975,7 +1969,8 @@ function UnifiedMapPageInner() {
         : current);
       setOrchestrationStatus(null);
       showToastRef.current(
-        `${input.instanceName || 'Model placement'} updated`,
+        input.transformLocked === undefined ? `${input.instanceName || 'Model placement'} updated`
+          : input.transformLocked ? 'Model locked' : 'Model unlocked',
         'success',
       );
     } catch (error) {
@@ -1989,19 +1984,22 @@ function UnifiedMapPageInner() {
     } finally {
       setUpdatingModelInstanceId(null);
     }
-  }, [data.threed.raw, deletingModelInstanceId, updatingModelInstanceId, selectedProjectId]);
+  }, [canEditProject, loading, data.threed.raw, deletingModelInstanceId, updatingModelInstanceId, selectedProjectId]);
 
   const handleMoveModelInstance = useCallback(async (
     instanceId: number,
     position: { x: number; y: number; z: number; scaleMultiplier?: number },
   ): Promise<boolean> => {
-    if (updatingModelInstanceId != null || deletingModelInstanceId != null) return false;
+    if (!canEditProject || loading || updatingModelInstanceId != null || deletingModelInstanceId != null) return false;
+    const saved = data.threed.raw?.projectThreedMarkers?.find(record => record.id === instanceId);
+    if (!saved || isProjectModelCanvasLocked(saved.metadata)) return false;
     setUpdatingModelInstanceId(instanceId);
     try {
       const response = await fetch(`/api/project/threed-markers?id=${instanceId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          canvasEdit: true,
           positionX: position.x,
           positionY: position.y,
           positionZ: position.z,
@@ -2038,9 +2036,14 @@ function UnifiedMapPageInner() {
     } finally {
       setUpdatingModelInstanceId(null);
     }
-  }, [deletingModelInstanceId, updatingModelInstanceId, selectedProjectId]);
+  }, [canEditProject, loading, data.threed.raw, deletingModelInstanceId, updatingModelInstanceId, selectedProjectId]);
 
   const handleMoveModelToggle = useCallback((instanceId: number, name: string) => {
+    const saved = data.threed.raw?.projectThreedMarkers?.find(record => record.id === instanceId);
+    if (!saved || isProjectModelCanvasLocked(saved.metadata)) {
+      setMovingModelInstance(current => current?.id === instanceId ? null : current);
+      return;
+    }
     setMovingModelInstance((current) => (
       current?.id === instanceId ? null : { id: instanceId, name }
     ));
@@ -2049,7 +2052,7 @@ function UnifiedMapPageInner() {
     setPlacementFarmBot(null);
     setBedPlacementActive(false);
     setPlantingPlacementActive(false);
-  }, []);
+  }, [data.threed.raw]);
 
   const handleUpdateCharacterPosition = useCallback(async (
     markerId: number,
@@ -2756,6 +2759,7 @@ function UnifiedMapPageInner() {
     const instanceId = Number(marker?.data?.id);
     const saved = data.threed.raw?.projectThreedMarkers?.find(item => item.id === instanceId);
     if (designModelSaveBusy.current || !canEditProject || loading || !saved || saved.markerId !== id || marker?.metadata?.source !== 'project-marker') return false;
+    if (isProjectModelCanvasLocked(saved.metadata)) return false;
     if (![transform.positionX, transform.positionY, transform.positionZ].every(value => Number.isFinite(value) && Math.abs(value) <= 1000000)
       || !Number.isFinite(transform.scaleMultiplier) || transform.scaleMultiplier < .0001 || transform.scaleMultiplier > 10000) return false;
     designModelSaveBusy.current = true;
@@ -2772,6 +2776,8 @@ function UnifiedMapPageInner() {
   const designModel = !architectureDraft.selected && selectedMarker?.type === 'models' && selectedMarker.metadata?.source === 'project-marker' ? {
     id: String(selectedMarker.id),
     name: String(selectedMarker.name ?? 'Model'),
+    locked: isProjectModelCanvasLocked(selectedMarker.metadata),
+    environment: isProjectModelEnvironment(selectedMarker.metadata),
     positionX: Number(selectedMarker.position?.x ?? selectedMarker.data?.positionX ?? 0),
     positionY: Number(selectedMarker.position?.y ?? selectedMarker.data?.positionY ?? 0),
     positionZ: Number(selectedMarker.position?.z ?? selectedMarker.data?.positionZ ?? 0),

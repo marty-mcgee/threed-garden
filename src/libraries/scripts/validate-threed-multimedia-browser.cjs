@@ -29,6 +29,7 @@ import{ProjectDetailsSections}from'./src/components/map/details/PersistentDetail
 import{projectArchitectureDraft}from'./src/libraries/services/threed/design/project-architecture';
 import{newDesign}from'./src/libraries/services/threed/design/document';
 import{DesignGeometryCache}from'./src/libraries/services/threed/design/geometry';
+import{modelPlanImage}from'./src/libraries/services/threed/models/model-plan-image';
 import{parseThreeDProjectViewState}from'./src/libraries/services/threed/markers/project-view-state-core';
 import{SceneMultimediaBridge}from'./src/components/map/multimedia/SceneMultimediaBridge';
 import{MultimediaSimulationControls}from'./src/components/map/multimedia/MultimediaSimulationControls';
@@ -54,6 +55,12 @@ window.__requests=[];window.fetch=async(url,init={})=>{
  const p=new URL(url,'https://fixture.invalid').searchParams;
  if(url==='/api/threed/animation-action-slots')return Response.json({success:true,data:[]});
  if(String(url).startsWith('/api/threed/models?'))return Response.json({success:true,data:{id:5,userId:'owner'}});
+ if(String(url).startsWith('/api/project/threed-markers')&&init.method==='PATCH'){
+   const input=JSON.parse(init.body);window.__lockRequests=(window.__lockRequests||0)+1;
+   if(window.__failLock)return Response.json({error:'Mock lock save failed'},{status:503});
+   window.__storedModelLock=input.transformLocked??window.__storedModelLock??false;
+   return Response.json({success:true,data:{metadata:{transformLocked:window.__storedModelLock}}});
+ }
  if(String(url).startsWith('/api/project/multimedia-albums')){
  if(window.__failProjectAlbums)return Response.json({error:'Mock Album read failed'},{status:503});
  const rows=Number(p.get('offset'))===50?[{id:30,title:'Later Album',artist:'Another artist'}]:[{id:28,title:'TRADE',artist:'Example artist'},{id:29,title:'Project Only',artist:'Project artist'}];
@@ -85,9 +92,16 @@ return <SceneMultimediaProvider key={workspaceKey} projectId={project} initialWo
 function DesignFixture(){
  const [model,setModel]=useState({id:'tree-instance',name:'Tree',positionX:16,positionY:2,positionZ:7,scaleMultiplier:1});
  const [modelSelected,setModelSelected]=useState(false);
+ const [modelLocked,setModelLocked]=useState(false),[modelEnvironment,setModelEnvironment]=useState(false),[modelRevision,setModelRevision]=useState(0),[lockError,setLockError]=useState('');
+ window.__modelLocked=modelLocked;window.__setModelEnvironment=setModelEnvironment;
+ window.__reopenModel=()=>{setModelLocked(window.__storedModelLock||false);setModelRevision(value=>value+1)};
+ const updateModel=async(id,input)=>{const response=await fetch('/api/project/threed-markers?id='+id,{method:'PATCH',body:JSON.stringify(input)});const result=await response.json();if(!response.ok){setLockError(result.error);return}setLockError('');setModelLocked(result.data.metadata.transformLocked);setModelRevision(value=>value+1)};
+ const placedModel={id:model.id,type:'models',name:model.name,position:{x:model.positionX,y:model.positionY,z:model.positionZ},metadata:{source:'project-marker',transformLocked:modelLocked,placementRole:modelEnvironment?'environment':'object'},data:{id:42,instanceId:42,modelId:5,scaleMultiplier:model.scaleMultiplier,rotationYInstance:0,placementRevision:modelRevision,filePath:'fixture.glb'}};
+ const planModel={...model,locked:modelLocked||modelEnvironment,environment:modelEnvironment};
+ const [imageMode,setImageMode]=useState('image');window.__setPlanImageMode=setImageMode;
  window.__model=model;window.__modelSaves=window.__modelSaves||0;
- const saveModel=async(id,value)=>{if(id!==model.id)throw Error('Wrong instance');window.__modelSaves++;if(window.__failModel)return false;setModel(current=>({...current,...value}));return true};
- const images=[{id:model.id,url:'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="20" height="20"%3E%3Crect width="20" height="20" fill="green"/%3E%3C/svg%3E',corners:[{x:model.positionX-model.scaleMultiplier,z:model.positionZ-model.scaleMultiplier},{x:model.positionX+model.scaleMultiplier,z:model.positionZ-model.scaleMultiplier},{x:model.positionX-model.scaleMultiplier,z:model.positionZ+model.scaleMultiplier}]}];
+ const saveModel=async(id,value)=>{if(id!==model.id)throw Error('Wrong instance');window.__modelSaves++;if(window.__failModel)return false;setModel(current=>({...current,...value}));setModelRevision(value=>value+1);return true};
+ const images=[{id:model.id,name:model.name,url:imageMode==='none'?null:imageMode==='broken'?'data:image/png;base64,broken':'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="20" height="20"%3E%3Crect width="20" height="20" fill="green"/%3E%3C/svg%3E',corners:[{x:model.positionX-model.scaleMultiplier,z:model.positionZ-model.scaleMultiplier},{x:model.positionX+model.scaleMultiplier,z:model.positionZ-model.scaleMultiplier},{x:model.positionX-model.scaleMultiplier,z:model.positionZ+model.scaleMultiplier}]},modelPlanImage('field-instance',null,{center:[0,0,0],halfExtents:[100,.1,60]},[16,0,7],[0,0,0],'Soccer Field')];
  const [draft,setDraft]=useState(()=>{const d=newDesign();d.nodes=[{id:'a',x:0,z:0},{id:'b',x:3,z:0}];d.walls=[{id:'wall',levelId:'ground',start:'a',end:'b',height:2.4,thickness:.15,elevation:0}];return projectArchitectureDraft({version:1,document:d})});
  const cache=React.useRef(null);if(!cache.current)cache.current=new DesignGeometryCache();
  React.useEffect(()=>{cache.current.update(draft.history.present,draft.selected);window.__designGeometry=cache.current.group},[draft]);
@@ -96,7 +110,10 @@ function DesignFixture(){
  const select=useCallback(selected=>setDraft(current=>({...current,selected,workspace:{...current.workspace,selectedEntityId:selected,sections:{...current.workspace.sections,...(selected?{'threed:details:v1:design:7:selected-properties':true}:{})}}})),[]);
  const DesignProvider=${isolateDesign ? 'React.Fragment' : 'SceneMultimediaProvider'};
  return <DesignProvider ${isolateDesign ? '' : 'projectId={7}'}><ProjectDetailsSections.Provider value={{sections:draft.workspace.sections,change:(key,open)=>setDraft(current=>({...current,workspace:{...current.workspace,sections:{...current.workspace.sections,[key]:open}}}))}}>
- <div data-testid="project-scene-workspace" style={{height:'90vh',position:'relative'}}><DesignWorkspace active={true} editor={<DesignEditor selectedModel={modelSelected?model:null} selectedModelId={modelSelected?model.id:null} modelImages={images} metersPerSceneUnit={.3048} onSaveModel={saveModel} onModelSelect={()=>{setModelSelected(true);setDraft(current=>({...current,selected:null}))}} scene={{projectId:7,projectName:'Local Design',draft,onChange:setDraft,onSelect:select,onSave:()=>{},saving:false,onPreview:preview,onVisibility:visibility}}/>}><div className="h-full">Scene placeholder; Canvas is outside this input test.</div></DesignWorkspace></div>
+ <div data-testid="project-scene-workspace" style={{height:'90vh',position:'relative'}}><DesignWorkspace active={true} editor={<DesignEditor selectedModel={modelSelected?planModel:null} selectedModelId={modelSelected?model.id:null} modelImages={images} metersPerSceneUnit={.3048} onSaveModel={saveModel} onModelSelect={id=>{window.__lastPlanModel=id;setModelSelected(id===model.id);setDraft(current=>({...current,selected:null}))}} scene={{projectId:7,projectName:'Local Design',draft,onChange:setDraft,onSelect:select,onSave:()=>{},saving:false,onPreview:preview,onVisibility:visibility}}/>}><div className="h-full">Scene placeholder; Canvas is outside this input test.
+ {modelSelected&&<DetailsCard selected={placedModel} projectId="7" sceneAvailable={true} controlledCharacterId={null} liveControlledCharacterPosition={null} onTakeControl={()=>{}} onReleaseControl={()=>{}} onClose={()=>setModelSelected(false)} onUpdateModelInstance={updateModel} onDeleteModelInstance={()=>{}} onMoveModelToggle={()=>{window.__moveToggled=true}}/>}
+ {lockError&&<p role="alert">{lockError}</p>}
+ </div></DesignWorkspace></div>
  </ProjectDetailsSections.Provider></DesignProvider>;
 }
 function App(){const[design,setDesign]=useState(false);window.__showDesign=()=>setDesign(true);return design?<DesignFixture/>:<Fixture/>}
@@ -317,10 +334,14 @@ createRoot(document.getElementById('root')).render(<App/>);
         assert.deepEqual(await evaluate('window.__errors'), []);
         const modelPoint = async selector => evaluate(`(()=>{const e=document.querySelector(${JSON.stringify(selector)}),r=e.getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()`);
         await evaluate('window.__hideActiveLevel()');await waitFor("window.__designDraft.workspace.levelId==='upper'");
-        const pick=await modelPoint('image[aria-label="Select Project Model tree-instance"]');
+        await evaluate("window.__setPlanImageMode('none')");
+        await waitFor(`!!document.querySelector('[data-model-footprint="tree-instance"]')`);
+        assert(await evaluate(`!!document.querySelector('[data-model-footprint="field-instance"]')`), 'An environment without a Top View image remains in the plan');
+        const pick=await modelPoint('[data-model-footprint="tree-instance"]');
         await call('Input.dispatchMouseEvent',{type:'mousePressed',...pick,button:'left',clickCount:1});
         await call('Input.dispatchMouseEvent',{type:'mouseReleased',...pick,button:'left',clickCount:1});
         await waitFor(`!!document.querySelector('[aria-label="Model uniform scale"]')&&document.querySelector('[data-testid="design-selected-properties"]').open`);
+        assert.equal(await evaluate('window.__lastPlanModel'),'tree-instance','The field footprint cannot cover a smaller Model');
         assert.equal(await evaluate(`Number(document.querySelector('[aria-label="Model position X (m)"]').value)`),16*.3048);
         const modelBefore=await evaluate('({...window.__model})');
         await call('Input.dispatchMouseEvent',{type:'mousePressed',...pick,button:'left',clickCount:1});
@@ -342,7 +363,47 @@ createRoot(document.getElementById('root')).render(<App/>);
         assert.equal(await evaluate(`(()=>{const original=window.confirm;window.confirm=()=>false;try{return window.dispatchEvent(new Event('threed:design:model-selection',{cancelable:true}))}finally{window.confirm=original}})()`),false,'Declining discard preserves the selected Model draft');
         await evaluate(`window.__failModel=false;${button('Save Model')}.click()`);
         await waitFor('window.__modelSaves===4&&window.__model.scaleMultiplier===3');
-        console.log('PASS Model plan: image selection opens Properties, metre conversion, pointer drag and proportional resize save once, preserve height, and failed field edits retain draft for retry. Mock persistence.');
+        await evaluate("window.__setPlanImageMode('broken')");
+        await waitFor(`!!document.querySelector('[data-model-footprint="tree-instance"]')`);
+        assert(await evaluate(`!!document.querySelector('[data-selected-model="tree-instance"]')`), 'Image failure retains selection and resize handles');
+        await evaluate("window.__setPlanImageMode('image')");
+        await waitFor(`!!document.querySelector('image[aria-label="Select Project Model tree-instance"]')`);
+        assert.deepEqual(await evaluate('window.__errors'), []);
+        const planCapture = await call('Page.captureScreenshot', { format: 'png' });
+        fs.writeFileSync(path.join(temp, 'design-footprints-1440.png'), Buffer.from(planCapture.data, 'base64'));
+        const nativeButton = async label => {
+          const point=await modelPoint('button[aria-label="'+label+'"]');
+          await call('Input.dispatchMouseEvent',{type:'mousePressed',...point,button:'left',clickCount:1});
+          await call('Input.dispatchMouseEvent',{type:'mouseReleased',...point,button:'left',clickCount:1});
+        };
+        const unchanged=await evaluate('JSON.stringify(window.__model)');
+        await nativeButton('Lock Model');
+        await waitFor('window.__modelLocked===true');
+        assert(await evaluate(`document.querySelector('button[aria-label="Move Model"]').disabled`));
+        assert(await evaluate(`document.querySelector('input[aria-label="Model uniform scale"]').disabled`));
+        assert(!await evaluate(`!!document.querySelector('[data-model-resize="tree-instance"]')`));
+        const protectedPoint=await modelPoint('image[aria-label="Select Project Model tree-instance"]');
+        await call('Input.dispatchMouseEvent',{type:'mousePressed',...protectedPoint,button:'left',clickCount:1});
+        await call('Input.dispatchMouseEvent',{type:'mouseMoved',x:protectedPoint.x+35,y:protectedPoint.y+20,button:'left',buttons:1});
+        await call('Input.dispatchMouseEvent',{type:'mouseReleased',x:protectedPoint.x+35,y:protectedPoint.y+20,button:'left',clickCount:1});
+        assert.equal(await evaluate('JSON.stringify(window.__model)'),unchanged);
+        assert.equal(await evaluate('window.__modelSaves'),4,'Locked dragging must not save');
+        await evaluate('window.__reopenModel()');await waitFor(`!!document.querySelector('button[aria-label="Unlock Model"]')`);
+        await evaluate('window.__failLock=true');await nativeButton('Unlock Model');
+        await waitFor('document.body.innerText.includes("Mock lock save failed")');
+        assert.equal(await evaluate('window.__modelLocked'),true,'Failed Unlock retains the lock');
+        await evaluate('window.__failLock=false');await nativeButton('Unlock Model');await waitFor('window.__modelLocked===false');
+        await waitFor(`!!document.querySelector('[data-model-resize="tree-instance"]')`);
+        await evaluate('window.__setModelEnvironment(true)');await waitFor(`document.querySelector('input[aria-label="Model uniform scale"]').disabled`);
+        assert(!await evaluate(`!!document.querySelector('[data-model-resize="tree-instance"]')`));
+        const environmentPoint=await modelPoint('image[aria-label="Select Project Model tree-instance"]');
+        await call('Input.dispatchMouseEvent',{type:'mousePressed',...environmentPoint,button:'left',clickCount:1});
+        await call('Input.dispatchMouseEvent',{type:'mouseMoved',x:environmentPoint.x+35,y:environmentPoint.y+20,button:'left',buttons:1});
+        await call('Input.dispatchMouseEvent',{type:'mouseReleased',x:environmentPoint.x+35,y:environmentPoint.y+20,button:'left',clickCount:1});
+        assert.equal(await evaluate('window.__modelSaves'),4,'Environment dragging must not save');
+        await evaluate('window.__setModelEnvironment(false)');
+        console.log('PASS native Model Lock/Unlock: actual DetailsCard action, saved/reopened flag, disabled placement/Design fields and handles, protected drag, failed Unlock retention and Environment canvas protection (mock HTTP).');
+        console.log('PASS Model plan: missing/failed-image footprints, environment stacking, selection opens Properties, metre conversion, pointer drag and proportional resize save once, preserve height, replacement images and failed field edits retain draft for retry. Mock persistence.');
         console.log('PASS native Design sections: real Project-controlled collapse/reopen, plan wall selection reopens Properties, numeric Height and pointer dragging update the same document and actual Three geometry. No Canvas/GPU or persistence claimed.');
       }
     }

@@ -30,6 +30,76 @@ export function isProjectModelEnvironment(metadata: unknown): boolean {
     && (metadata as Record<string, unknown>).placementRole === 'environment';
 }
 
+export function isProjectModelTransformLocked(metadata: unknown): boolean {
+  return typeof metadata === 'object' && metadata !== null && !Array.isArray(metadata)
+    && (metadata as Record<string, unknown>).transformLocked === true;
+}
+
+/** Environment placement remains deliberate; direct canvas gestures cannot move it. */
+export function isProjectModelCanvasLocked(metadata: unknown): boolean {
+  return isProjectModelTransformLocked(metadata) || isProjectModelEnvironment(metadata);
+}
+
+export class ProjectModelTransformLockedError extends Error {
+  constructor() {
+    super('Model placement is locked. Unlock the Model before editing its position, rotation or size.');
+    this.name = 'ProjectModelTransformLockedError';
+  }
+}
+
+interface ModelPlacementState {
+  metadata?: unknown;
+  data?: unknown;
+  positionX?: unknown;
+  positionY?: unknown;
+  positionZ?: unknown;
+}
+
+/** Check the currently locked row, never a client's cached lock flag. */
+export function assertProjectModelTransformUpdate(current: ModelPlacementState, update: UpdateProjectModelInstanceInput, runtimePosition = false): void {
+  if (update.canvasEdit && isProjectModelCanvasLocked(current.metadata)) throw new ProjectModelTransformLockedError();
+  if (!isProjectModelTransformLocked(current.metadata)) return;
+  const data = current.data && typeof current.data === 'object' && !Array.isArray(current.data)
+    ? current.data as Record<string, unknown> : {};
+  const values = {
+    positionX: Number(current.positionX ?? 0),
+    positionY: Number(current.positionY ?? 0),
+    positionZ: Number(current.positionZ ?? 0),
+    rotationX: Number(data.rotationX ?? 0),
+    rotationY: Number(data.rotationYInstance ?? 0),
+    rotationZ: Number(data.rotationZ ?? 0),
+    scaleMultiplier: Number(data.scaleMultiplier ?? 1),
+  };
+  for (const key of Object.keys(values) as (keyof typeof values)[]) {
+    if (runtimePosition && key.startsWith('position')) continue;
+    const requested = update[key];
+    const tolerance = key.startsWith('position') ? .0005 : 1e-8;
+    if (requested !== undefined && Math.abs(requested - values[key]) > tolerance) throw new ProjectModelTransformLockedError();
+  }
+}
+
+/** Project Save preserves the server's lock and permits existing ball runtime positions. */
+export function projectModelSnapshotLock(current: ModelPlacementState | undefined, snapshot: ModelPlacementState & { positionSource?: unknown }): Record<string, unknown> {
+  const metadata = snapshot.metadata && typeof snapshot.metadata === 'object' && !Array.isArray(snapshot.metadata)
+    ? { ...snapshot.metadata as Record<string, unknown> } : {};
+  delete metadata.transformLocked;
+  if (!current) return metadata;
+  const data = snapshot.data && typeof snapshot.data === 'object' && !Array.isArray(snapshot.data)
+    ? snapshot.data as Record<string, unknown> : {};
+  assertProjectModelTransformUpdate(current, {
+    positionX: Number(snapshot.positionX),
+    positionY: Number(snapshot.positionY),
+    positionZ: Number(snapshot.positionZ),
+    rotationX: Number(data.rotationX ?? 0),
+    rotationY: Number(data.rotationYInstance ?? 0),
+    rotationZ: Number(data.rotationZ ?? 0),
+    scaleMultiplier: Number(data.scaleMultiplier ?? 1),
+  }, snapshot.positionSource === 'runtime' && isProjectModelMovableBall(current.metadata));
+  const currentMetadata = current.metadata as Record<string, unknown> | null;
+  if (typeof currentMetadata?.transformLocked === 'boolean') metadata.transformLocked = currentMetadata.transformLocked;
+  return metadata;
+}
+
 export function isProjectModelMovableBall(metadata: unknown): boolean {
   return !isProjectModelEnvironment(metadata)
     && typeof metadata === 'object'
@@ -147,6 +217,7 @@ function readOptionalMetadata(value: unknown): Record<string, unknown> | undefin
     throw new ProjectModelInstanceInputError('Invalid metadata');
   }
   const metadata = value as Record<string, unknown>;
+  readOptionalBoolean(metadata.transformLocked, 'transformLocked');
   if (metadata.physicsVolumeSensor !== undefined && metadata.physicsVolumeSensor !== false && !readModelVolumeSensor(metadata)) {
     throw new ProjectModelInstanceInputError('Invalid physicsVolumeSensor');
   }
@@ -220,6 +291,8 @@ export function parseCreateProjectModelInstance(value: unknown): CreateProjectMo
 }
 
 export interface UpdateProjectModelInstanceInput {
+  transformLocked?: boolean;
+  canvasEdit?: boolean;
   instanceName?: string | null;
   positionX?: number;
   positionY?: number;
@@ -239,6 +312,9 @@ export function parseUpdateProjectModelInstance(value: unknown): UpdateProjectMo
   const body = requireRecord(value);
   const update: UpdateProjectModelInstanceInput = {};
 
+  if ('transformLocked' in body) update.transformLocked = readOptionalBoolean(body.transformLocked, 'transformLocked');
+  if ('canvasEdit' in body) update.canvasEdit = readOptionalBoolean(body.canvasEdit, 'canvasEdit');
+
   if ('instanceName' in body) update.instanceName = readOptionalName(body.instanceName);
   if ('positionX' in body) update.positionX = readBoundedNumber(body.positionX, 'positionX', -MAX_POSITION, MAX_POSITION);
   if ('positionY' in body) update.positionY = readBoundedNumber(body.positionY, 'positionY', -MAX_POSITION, MAX_POSITION);
@@ -251,6 +327,9 @@ export function parseUpdateProjectModelInstance(value: unknown): UpdateProjectMo
   if ('isActive' in body) update.isActive = readOptionalBoolean(body.isActive, 'isActive');
   if ('metadata' in body) {
     update.metadata = readOptionalMetadata(body.metadata);
+    if (update.metadata && 'transformLocked' in update.metadata) {
+      throw new ProjectModelInstanceInputError('Use the Model Lock/Unlock control to change transformLocked');
+    }
     if (update.metadata && 'collisionMode' in update.metadata) {
       update.collisionMode = readOptionalCollisionMode(update.metadata.collisionMode);
     }

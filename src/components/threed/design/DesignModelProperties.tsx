@@ -14,6 +14,8 @@ export interface DesignModelTransform {
 export interface DesignModelSelection extends DesignModelTransform {
   id: string;
   name: string;
+  locked?: boolean;
+  environment?: boolean;
 }
 
 export type SaveDesignModel = (id: string, transform: DesignModelTransform) => Promise<boolean>;
@@ -63,10 +65,11 @@ export function DesignModelProperties({ model, save, metersPerSceneUnit, busy }:
     <div className="grid grid-cols-2 gap-2">
       {(['positionX', 'positionY', 'positionZ', 'scaleMultiplier'] as const).map(field => <label key={field}>
         {field === 'scaleMultiplier' ? 'Uniform scale' : `Position ${field.slice(-1)} (m)`}
-        <Input aria-label={field === 'scaleMultiplier' ? 'Model uniform scale' : `Model position ${field.slice(-1)} (m)`} type="number" step="any" disabled={busy || saving} value={draft[field]} onChange={event => setDraft(current => ({ ...current, [field]: event.target.value }))} />
+        <Input aria-label={field === 'scaleMultiplier' ? 'Model uniform scale' : `Model position ${field.slice(-1)} (m)`} type="number" step="any" disabled={model.locked || busy || saving} value={draft[field]} onChange={event => setDraft(current => ({ ...current, [field]: event.target.value }))} />
       </label>)}
     </div>
-    <Button size="xs" disabled={busy || saving || !dirty} onClick={async () => {
+    <Button size="xs" disabled={model.locked || busy || saving || !dirty} onClick={async () => {
+      if (model.locked || busy || saving) return;
       const values = Object.values(draft);
       if (values.some(value => !value.trim() || !Number.isFinite(Number(value))) || Number(draft.scaleMultiplier) < .0001 || Number(draft.scaleMultiplier) > 10000) { setError('Enter valid positions and a scale between 0.0001 and 10000.'); return; }
       setSaving(true);
@@ -83,6 +86,9 @@ export function DesignModelProperties({ model, save, metersPerSceneUnit, busy }:
       finally { setSaving(false); }
     }}>Save Model</Button>
     {error && <p role="alert">{error}</p>}
-    <p className="text-muted-foreground">Drag the image to move. Drag its corner to resize proportionally. Canvas edits save on release.</p>
+    <p className="text-muted-foreground">{model.locked
+      ? model.environment ? 'Environment Models are protected on the canvas. Use DetailsCard Project placement for deliberate edits.'
+        : 'Model placement is locked. Use Unlock Model in DetailsCard to edit its position or size.'
+      : 'Drag the Model to move. Drag its corner to resize proportionally. Canvas edits save on release.'}</p>
   </div>;
 }
