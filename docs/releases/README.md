@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
- - [v0.31.0 - App: Native TypeScript Validation and Zod Removal (prepared for production; deployment pending)](v0.31.0.md)
+ - [v0.31.1 - App: Next.js 16.4.4 Update (prepared for production release)](v0.31.1.md)
+
+ - [v0.31.0 - App: Native TypeScript Validation and Zod Removal (Developer-confirmed production release)](v0.31.0.md)
 
  - [v0.30.2 - ThreeD: Model Plan Views, Placement Locks and Project Toolbar (Developer-confirmed production release)](v0.30.2.md)
 
