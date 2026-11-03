@@ -6,7 +6,7 @@ import { User } from '@/libraries/schema/auth';
 import { learnGuides as guides } from '@/libraries/schema/learn';
 import { starterLearnGuides } from '@/libraries/data/learn/starter-guides';
 import type { LearnGuide, LearnGuidePage, LearnGuideRow, PublicLearnGuide, PublicLearnGuideRow } from './contracts';
-import { LearnError, learnGuideInputSchema, learnGuideUpdateSchema, learnId, learnRevision, learnSlugSchema, type LearnGuideQuery } from './input';
+import { LearnError, parseLearnGuideInput, parseLearnGuideUpdate, learnId, learnRevision, parseLearnSlug, type LearnGuideQuery } from './input';
 
 const rowFields = { id: guides.id, title: guides.title, slug: guides.slug, summary: guides.summary,
   sortOrder: guides.sortOrder, isActive: guides.isActive, isPublished: guides.isPublished,
@@ -54,7 +54,7 @@ export function learnGuideService(database: typeof appDatabase) {
     return editorialDates(row);
   }
   async function create(actorId: string, value: unknown): Promise<LearnGuide> {
-    const input = learnGuideInputSchema.parse(value);
+    const input = parseLearnGuideInput(value);
     return database.transaction(async tx => {
       await requireEditor(tx, actorId, true);
       const now = new Date();
@@ -63,7 +63,7 @@ export function learnGuideService(database: typeof appDatabase) {
     });
   }
   async function update(actorId: string, value: unknown): Promise<LearnGuide> {
-    const { id, revision, ...input } = learnGuideUpdateSchema.parse(value);
+    const { id, revision, ...input } = parseLearnGuideUpdate(value);
     return database.transaction(async tx => {
       await requireEditor(tx, actorId, true);
       const [existing] = await tx.select({ id: guides.id, revision: guides.revision }).from(guides).where(eq(guides.id, id)).limit(1).for('update');
@@ -90,7 +90,7 @@ export function learnGuideService(database: typeof appDatabase) {
   async function importStarters(actorId: string): Promise<{ imported: number; skipped: number }> {
     return database.transaction(async tx => {
       await requireEditor(tx, actorId, true);
-      const starters = starterLearnGuides.map(value => learnGuideInputSchema.parse(value));
+      const starters = starterLearnGuides.map(value => parseLearnGuideInput(value));
       if (new Set(starters.map(guide => guide.slug)).size !== starters.length) throw new Error('Duplicate starter guide slug');
       if (!starters.length) return { imported: 0, skipped: 0 };
       const now = new Date();
@@ -107,7 +107,7 @@ export function learnGuideService(database: typeof appDatabase) {
     return { data: rows.map(publicDates), pagination: { total: records, limit: query.limit, offset: query.offset } };
   }
   async function publicGet(slug: string): Promise<PublicLearnGuide> {
-    const validSlug = learnSlugSchema.parse(slug);
+    const validSlug = parseLearnSlug(slug);
     const [row] = await database.select({ ...publicFields, content: guides.content }).from(guides)
       .where(and(eq(guides.slug, validSlug), publicScope())).limit(1);
     if (!row) throw new LearnError(404, 'Learn guide not found.');

@@ -6,6 +6,8 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
+ - [v0.31.0 - App: Native TypeScript Validation and Zod Removal (prepared for production; deployment pending)](v0.31.0.md)
+
  - [v0.30.2 - ThreeD: Model Plan Views, Placement Locks and Project Toolbar (Developer-confirmed production release)](v0.30.2.md)
 
  - [v0.30.1 - ThreeD: Assembly Groups Visual Editor (Developer-confirmed production release)](v0.30.1.md)

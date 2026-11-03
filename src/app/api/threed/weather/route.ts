@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { and, desc, eq, sql } from 'drizzle-orm';
-import { z } from 'zod';
+import { tryParseInput } from '@/libraries/utils/input-validation';
+import { parseWeatherLogInput } from '@/libraries/services/threed/weather-log-input';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
 import { threedWeatherLogs } from '@/libraries/schema/threed';
@@ -8,13 +9,6 @@ import { weatherReadingColumns } from '@/libraries/services/threed/project-weath
 
 export const dynamic = 'force-dynamic';
 const respond = (body: unknown, status = 200) => NextResponse.json(body, { status, headers: { 'Cache-Control': 'private, no-store' } });
-const decimal = (min: number, max: number) => z.union([z.number(), z.string().min(1).transform(Number)]).pipe(z.number().finite().min(min).max(max)).transform(String).nullable().optional();
-const fields = z.object({
-  temperature: decimal(-150, 160), humidity: decimal(0, 100), rainfallInches: decimal(0, 999.99),
-  windSpeed: decimal(0, 500), soilMoisture: decimal(0, 100), sunlightHours: decimal(0, 24),
-  recordedAt: z.string().datetime().optional(), frostWarning: z.boolean().optional(),
-  heatWarning: z.boolean().optional(), droughtWarning: z.boolean().optional(), source: z.string().min(1).max(50).optional(),
-}).strict();
 
 export async function GET(request: Request) {
   try {
@@ -54,7 +48,7 @@ async function mutate(request: Request, method: 'POST' | 'PUT' | 'DELETE') {
       if (Number(request.headers.get('content-length') ?? 0) > 8192) return respond({ success: false, error: 'Request too large.' }, 413);
       const text = await request.text();
       if (text.length > 8192) return respond({ success: false, error: 'Request too large.' }, 413);
-      const parsed = fields.safeParse(JSON.parse(text));
+      const parsed = tryParseInput(parseWeatherLogInput, JSON.parse(text));
       if (!parsed.success || !Object.keys(parsed.data).length) return respond({ success: false, error: 'Invalid Weather fields.' }, 400);
       rows = method === 'POST'
         ? await db.insert(threedWeatherLogs).values({ ...parsed.data, userId: session.user.id }).returning(weatherReadingColumns)

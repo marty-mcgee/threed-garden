@@ -4,14 +4,13 @@ import { sql } from 'drizzle-orm';
 import { db } from '@/libraries/db/client';
 import { User, UserAccounts } from '@/libraries/schema/auth';
 import { defaultAccountRole } from '@/libraries/config/user-roles';
-import { signupSchema } from './signup-contract';
-import type { z } from 'zod';
+import { parseSignupInput, type SignupInput } from './signup-contract';
 
 export class RegistrationConflict extends Error {}
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
 // Shared by public signup and Super Admin creation. Caller owns the transaction.
-export async function insertCredentialsAccount(tx: Transaction, data: z.infer<typeof signupSchema>, password: string) {
+export async function insertCredentialsAccount(tx: Transaction, data: SignupInput, password: string) {
     // Serialize registrations for the same normalized email, including case variants.
     await tx.execute(sql`SELECT pg_advisory_xact_lock(hashtextextended(${data.email}, 740028))`);
     const existing = await tx.select({ id: User.id }).from(User)
@@ -28,7 +27,7 @@ export async function insertCredentialsAccount(tx: Transaction, data: z.infer<ty
 }
 
 export async function registerAccount(input: unknown) {
-  const data = signupSchema.parse(input);
+  const data = parseSignupInput(input);
   const password = await bcrypt.hash(data.password, 12);
   return db.transaction(tx => insertCredentialsAccount(tx, data, password));
 }

@@ -1,8 +1,9 @@
+import { tryParseInput } from '@/libraries/utils/input-validation';
 import { AlbumAssociationError } from '@/libraries/services/threed/multimedia/album-association-contract';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
 import { and, asc, eq, ilike, or, sql } from 'drizzle-orm';
-import { albumEntityKind } from '@/libraries/services/threed/multimedia/album-association-contract';
+import { parseAlbumEntityKind } from '@/libraries/services/threed/multimedia/album-association-contract';
 import { albumEntityTables } from '@/libraries/services/threed/multimedia/album-entity-registry';
 import { multimedia, multimediaAlbums } from '@/libraries/schema/multimedia';
 import { project, projectMultimedia } from '@/libraries/schema/project';
@@ -17,7 +18,7 @@ export async function GET(request: Request) {
   const scope = params.get('scope') ?? 'albums';
   const search = params.get('search')?.trim() ?? '';
   const rawOffset = params.get('offset') ?? '0';
-  if (params.has('moduleType') && !albumEntityKind.safeParse(params.get('moduleType')).success) {
+  if (params.has('moduleType') && !tryParseInput(parseAlbumEntityKind, params.get('moduleType')).success) {
     return Response.json({ error: 'Invalid Sub-Module' }, { status: 400, headers });
   }
   if (!['albums', 'projects', 'entities'].includes(scope) || search.length > 120 || !/^\d+$/.test(rawOffset) || Number(rawOffset) > 1_000_000) {
@@ -25,7 +26,7 @@ export async function GET(request: Request) {
   }
   try {
     if (scope === 'entities') {
-      const kind = albumEntityKind.safeParse(params.get('moduleType'));
+      const kind = tryParseInput(parseAlbumEntityKind, params.get('moduleType'));
       if (!kind.success) return Response.json({ error: 'Invalid Sub-Module' }, { status: 400, headers });
       const table = sql.identifier(albumEntityTables[kind.data]);
       // Return only a display label, never raw catalog metadata/configuration.

@@ -10,15 +10,18 @@ function load(file, modules, globals = {}) {
   const code = ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: {
     target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX,
   } }).outputText;
-  vm.runInNewContext(code, { exports, require: name => name in modules ? modules[name] : require(name), console, Request, Response, URL, ...globals });
+  vm.runInNewContext(code, { exports, require: name => name === '@/libraries/utils/input-validation' ? require('../utils/input-validation.ts') : name in modules ? modules[name] : require(name), console, Request, Response, URL, ...globals });
   return exports;
 }
 
 const signup=load('src/libraries/auth/signup-contract.ts',{}, {TextEncoder});
-const contracts=load('src/libraries/services/users/contracts.ts',{'@/libraries/auth/signup-contract':signup});
+const roles=load('src/libraries/config/user-roles.ts',{});
+const contracts=load('src/libraries/services/users/contracts.ts',{
+  '@/libraries/auth/signup-contract': signup,
+  '@/libraries/config/user-roles': roles,
+});
 const schema=load('src/libraries/schema/auth/index.ts',{});
 const audit=load('src/libraries/schema/auth/user-role-audit.ts',{});
-const roles=load('src/libraries/config/user-roles.ts',{});
 const dialect=new pg.PgDialect();
 let rows,accounts,audits,failAudit,failAccount,session,content,queue=Promise.resolve(),locks=0;
 const clone=v=>JSON.parse(JSON.stringify(v));

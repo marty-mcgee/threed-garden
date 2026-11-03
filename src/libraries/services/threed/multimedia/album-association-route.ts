@@ -1,5 +1,5 @@
 import { auth } from '@/libraries/auth';
-import { ZodError } from 'zod';
+import { InputValidationError } from '@/libraries/utils/input-validation';
 import { readEntityAlbums, saveEntityAlbums } from './album-associations';
 import { parseAlbumEntityId, AlbumAssociationError, type AlbumEntityKind } from './album-association-contract';
 
@@ -24,7 +24,7 @@ export function createAlbumAssociationHandlers(kind: AlbumEntityKind) {
       return Response.json(await readEntityAlbums(session.user.id, kind, entityId), { headers });
     } catch (error) {
       if (error instanceof AlbumAssociationError) return Response.json({ error: error.message }, { status: error.status, headers });
-      if (error instanceof ZodError || error instanceof SyntaxError) return Response.json({ error: 'Invalid Album assignments' }, { status: 400, headers });
+      if (error instanceof InputValidationError || error instanceof SyntaxError) return Response.json({ error: 'Invalid Album assignments' }, { status: 400, headers });
       return Response.json({ error: 'Unable to access Album assignments' }, { status: 500, headers });
     }
   }

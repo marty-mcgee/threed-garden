@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useSession } from 'next-auth/react';
-import { defaultModuleAppearance, moduleAppearanceSnapshotSchema, moduleColors, type ModuleAppearanceSnapshot, type ModuleKey } from '@/libraries/config/module-appearance';
+import { defaultModuleAppearance, parseModuleAppearanceSnapshot, moduleColors, type ModuleAppearanceSnapshot, type ModuleKey } from '@/libraries/config/module-appearance';
 import { moduleIcons } from './module-icons';
 
 const defaults = defaultModuleAppearance();
@@ -29,7 +29,7 @@ export function ModuleAppearanceProvider({children}:{children:ReactNode}) {
       const response = await fetch('/api/settings/module-appearance',{cache:'no-store'});
       if (!response.ok) throw new Error('Module appearance could not be loaded.');
       const body = await response.json();
-      const snapshot = moduleAppearanceSnapshotSchema.parse(body.snapshot);
+      const snapshot = parseModuleAppearanceSnapshot(body.snapshot);
       if (ticket !== sequence.current || identity.current !== owner) return;
       setState({snapshot,canEdit:body.canEdit === true,owner}); setError(null);
     } catch { if(ticket===sequence.current) setError('Module appearance could not be loaded. Reload to retry.'); }
@@ -47,9 +47,9 @@ export function ModuleAppearanceProvider({children}:{children:ReactNode}) {
     pending.current=true; setBusy(true);
     const ticket=++sequence.current;
     try {
-      const response=await fetch('/api/settings/module-appearance',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(moduleAppearanceSnapshotSchema.parse(value))});
+      const response=await fetch('/api/settings/module-appearance',{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(parseModuleAppearanceSnapshot(value))});
       if(!response.ok) throw new Error(response.status===409?'Settings changed elsewhere. Reload before saving again.':response.status===403?'An active Super Admin account is required.':'Module appearance could not be saved. Your draft is retained.');
-      const snapshot=moduleAppearanceSnapshotSchema.parse(await response.json());
+      const snapshot=parseModuleAppearanceSnapshot(await response.json());
       if(ticket!==sequence.current || identity.current!==owner) throw new Error('Your session changed. Reload Settings.');
       setState({snapshot,canEdit:true,owner}); setError(null);
     } finally {if(ticket===sequence.current){pending.current=false;setBusy(false);}}

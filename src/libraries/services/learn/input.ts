@@ -1,29 +1,68 @@
-import { z } from 'zod';
+import { InputValidationError, readBoolean, readGuid, readInteger, readStrictObject, readString } from '@/libraries/utils/input-validation';
 import { LEARN_CONTENT_LIMIT, LEARN_SEARCH_LIMIT, LEARN_SLUG_LIMIT, LEARN_SUMMARY_LIMIT, LEARN_TITLE_LIMIT, learnGuideSorts, type LearnGuideInput, type LearnGuideSort } from './contracts';
 
 export class LearnError extends Error {
   constructor(public readonly status: number, message: string) { super(message); }
 }
 
-export const learnSlugSchema = z.string().trim().min(1).max(LEARN_SLUG_LIMIT).regex(/^[a-z0-9]+(-[a-z0-9]+)*$/);
-export const learnGuideInputSchema = z.object({
-  title: z.string().trim().min(1).max(LEARN_TITLE_LIMIT),
-  slug: learnSlugSchema,
-  summary: z.string().trim().max(LEARN_SUMMARY_LIMIT).default(''),
-  content: z.string().max(LEARN_CONTENT_LIMIT).default(''),
-  sortOrder: z.number().int().min(-10000).max(10000).default(0),
-  isActive: z.boolean().default(true),
-  isPublished: z.boolean().default(false),
-}).strict();
-export const learnGuideUpdateSchema = learnGuideInputSchema.extend({ id: z.number().int().positive().max(2147483647), revision: z.string().uuid() });
-export const learnImportSchema = z.object({}).strict();
-export const parseLearnGuideInput = (value: unknown): LearnGuideInput => learnGuideInputSchema.parse(value);
+const guideFields = [
+  'title',
+  'slug',
+  'summary',
+  'content',
+  'sortOrder',
+  'isActive',
+  'isPublished',
+] as const;
+
+export function parseLearnSlug(value: unknown): string {
+  const slug = readString(value, 1, LEARN_SLUG_LIMIT, true);
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(slug)) throw new InputValidationError();
+  return slug;
+}
+
+function guideInput(input: Record<string, unknown>): LearnGuideInput {
+  return {
+    title: readString(input.title, 1, LEARN_TITLE_LIMIT, true),
+    slug: parseLearnSlug(input.slug),
+    summary: input.summary === undefined ? '' : readString(input.summary, 0, LEARN_SUMMARY_LIMIT, true),
+    content: input.content === undefined ? '' : readString(input.content, 0, LEARN_CONTENT_LIMIT),
+    sortOrder: input.sortOrder === undefined ? 0 : readInteger(input.sortOrder, -10000, 10000),
+    isActive: input.isActive === undefined ? true : readBoolean(input.isActive),
+    isPublished: input.isPublished === undefined ? false : readBoolean(input.isPublished),
+  };
+}
+
+export function parseLearnGuideInput(value: unknown): LearnGuideInput {
+  return guideInput(readStrictObject(value, guideFields));
+}
+
+export function parseLearnGuideUpdate(value: unknown): LearnGuideInput & {
+  id: number;
+  revision: string;
+} {
+  const input = readStrictObject(value, [
+    ...guideFields,
+    'id',
+    'revision',
+  ]);
+  return {
+    ...guideInput(input),
+    id: readInteger(input.id, 1, 2147483647),
+    revision: readGuid(input.revision),
+  };
+}
+
+export function parseLearnImport(value: unknown): Record<string, never> {
+  readStrictObject(value, []);
+  return {};
+}
 
 export function learnId(value: unknown): number {
   if (typeof value !== 'string' || !/^[1-9]\d*$/.test(value) || Number(value) > 2147483647) throw new LearnError(400, 'Invalid Learn guide ID.');
   return Number(value);
 }
-export function learnRevision(value: unknown): string { return z.string().uuid().parse(value); }
+export function learnRevision(value: unknown): string { return readGuid(value); }
 export function exactLearnQuery(params: URLSearchParams, allowed: readonly string[]) {
   for (const key of params.keys()) {
     if (!allowed.includes(key) || params.getAll(key).length !== 1) throw new LearnError(400, 'Invalid Learn query parameters.');

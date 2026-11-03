@@ -1,3 +1,4 @@
+const { tryParseInput } = require('../utils/input-validation.ts');
 // Offline: real contracts, service, routes and navigation; in-memory DB/HTTP adapters.
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -10,7 +11,7 @@ function load(file, modules, globals = {}) {
   const code = ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: {
     target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX,
   } }).outputText;
-  vm.runInNewContext(code, { exports, require: name => name in modules ? modules[name] : require(name), console, Request, Response, URL, ...globals });
+  vm.runInNewContext(code, { exports, require: name => name === '@/libraries/utils/input-validation' ? require('../utils/input-validation.ts') : name in modules ? modules[name] : require(name), console, Request, Response, URL, ...globals });
   return exports;
 }
 
@@ -31,7 +32,7 @@ const route=load('src/app/api/settings/module-appearance/route.ts',{'@/libraries
 const request=(body,origin='https://example.test')=>new Request('https://example.test/api/settings/module-appearance',{method:'PUT',headers:{origin,'Content-Type':'application/json'},body:JSON.stringify(body)});
 (async()=>{
  const initial=contract.defaultModuleAppearance();
- assert(contract.moduleAppearanceSnapshotSchema.safeParse(initial).success);
+ assert(tryParseInput(contract.parseModuleAppearanceSnapshot, initial).success);
  assert.equal(contract.moduleKeys.length,44);
  assert.deepEqual(clone(contract.workspaceSurfaces).map(({label,href,moduleKey})=>({label,href,moduleKey})),[
   {label:'Dashboard',href:'/dashboard',moduleKey:'dashboard'},
@@ -59,7 +60,7 @@ const request=(body,origin='https://example.test')=>new Request('https://example
   if(!('users' in stored.styles))expected.styles.users=clone(initial.styles.users);
   assert.deepEqual(clone(read),expected);
   assert.deepEqual(stored,before,'compatibility reads must not mutate stored snapshots');
-  assert(!contract.moduleAppearanceSnapshotSchema.safeParse(stored).success,'legacy snapshots are read-only compatibility, not accepted writes');
+  assert(!tryParseInput(contract.parseModuleAppearanceSnapshot, stored).success,'legacy snapshots are read-only compatibility, not accepted writes');
  }
  const current=clone(contract.readStoredModuleAppearance(previous));current.styles.learn={icon:'Star',color:'amber'};
  assert.deepEqual(clone(contract.readStoredModuleAppearance(current)),current,'current Learn choices and revision must survive reads');
@@ -83,7 +84,7 @@ const request=(body,origin='https://example.test')=>new Request('https://example
   const incomplete=clone(stored);delete incomplete.styles[key];
   assert.throws(()=>contract.readStoredModuleAppearance(incomplete),`missing ${key} must be rejected`);
  }
- for(const bad of [{...initial,userId:'admin-id'},{...initial,styles:{...initial.styles,models:{icon:'script',color:'blue'}}},{...initial,styles:{...initial.styles,models:{icon:'Box',color:'blue arbitrary-css'}}}]) assert(!contract.moduleAppearanceSnapshotSchema.safeParse(bad).success);
+ for(const bad of [{...initial,userId:'admin-id'},{...initial,styles:{...initial.styles,models:{icon:'script',color:'blue'}}},{...initial,styles:{...initial.styles,models:{icon:'Box',color:'blue arbitrary-css'}}}]) assert(!tryParseInput(contract.parseModuleAppearanceSnapshot, bad).success);
  assert.equal(contract.moduleForPath('/dashboard'),'dashboard');
  assert.equal(contract.moduleForPath('/admin'),'admin');
  assert.equal(contract.moduleForPath('/administrator'),undefined);
@@ -127,7 +128,7 @@ const request=(body,origin='https://example.test')=>new Request('https://example
   assert.deepEqual(data,original,'invalid or stale saves must preserve legacy data');
   const submitted=clone(read.snapshot);submitted.styles.dashboard={icon:'Star',color:'amber'};submitted.styles.admin={icon:'Leaf',color:'cyan'};
   res=await route.PUT(request(submitted));assert.equal(res.status,200);const migrated=await res.json();
-  assert.notEqual(migrated.revision,stored.revision);assert(contract.moduleAppearanceSnapshotSchema.safeParse(migrated).success);
+  assert.notEqual(migrated.revision,stored.revision);assert(tryParseInput(contract.parseModuleAppearanceSnapshot, migrated).success);
   assert.deepEqual(migrated.styles,submitted.styles);
   for(const [key,style] of Object.entries(stored.styles))assert.deepEqual(migrated.styles[key],style,`saving surface appearance must retain ${key}`);
   assert.deepEqual(data.row.value,migrated);assert.equal(data.audits.length,1);

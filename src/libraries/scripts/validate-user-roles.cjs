@@ -1,3 +1,4 @@
+const { tryParseInput } = require('../utils/input-validation.ts');
 // Offline: real contracts, service, routes and navigation; in-memory DB/HTTP adapters.
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -10,7 +11,7 @@ function load(file, modules, globals = {}) {
   const code = ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: {
     target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX,
   } }).outputText;
-  vm.runInNewContext(code, { exports, require: name => name in modules ? modules[name] : require(name), console, Request, Response, URL, ...globals });
+  vm.runInNewContext(code, { exports, require: name => name === '@/libraries/utils/input-validation' ? require('../utils/input-validation.ts') : name in modules ? modules[name] : require(name), console, Request, Response, URL, ...globals });
   return exports;
 }
 
@@ -26,10 +27,10 @@ wrapped.createUser({email:'example@test.invalid',role:'super_admin'});
 assert.equal(inserted.role,'admin');
 assert.equal(wrapped.getUser,source.getUser);
 wrapped.createUser({email:'example@test.invalid'});assert.equal(inserted.role,'admin');
-assert(roles.appRoleSchema.safeParse('admin').success);
-assert(roles.appRoleSchema.safeParse('super_admin').success);
-for(const role of ['user','Admin','superadmin','super_admin ',null,undefined])assert(!roles.appRoleSchema.safeParse(role).success);
-assert(roles.auditedRoleSchema.safeParse('user').success);
+assert(tryParseInput(roles.parseAppRole, 'admin').success);
+assert(tryParseInput(roles.parseAppRole, 'super_admin').success);
+for(const role of ['user','Admin','superadmin','super_admin ',null,undefined])assert(!tryParseInput(roles.parseAppRole, role).success);
+assert(tryParseInput(roles.parseAuditedRole, 'user').success);
 for(const role of ['user','admin','super_admin',null,'unknown'])for(const isActive of [true,false,null])assert.equal(roles.isActiveSuperAdmin({role,isActive,isDeleted:false}),role==='super_admin'&&isActive===true);
 assert.equal(roles.isActiveSuperAdmin(null),false);
 assert.equal(roles.isActiveSuperAdmin(undefined),false);

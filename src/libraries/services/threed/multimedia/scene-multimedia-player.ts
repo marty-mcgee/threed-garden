@@ -1,9 +1,9 @@
 import type { RuntimeMarker } from '@/libraries/types/map';
 import type { ThreeDPhysicsEventV1 } from '../physics/physics-event-core';
 import { planThreeDInteractionApproach } from '../orchestration/interaction-core';
-import { projectMultimediaCommandSchema, type ProjectMultimediaCommand, type ProjectMultimediaPreview, type ProjectMultimediaPreviewQuery } from '@/libraries/services/project/multimedia-preview-contract';
+import { parseProjectMultimediaCommand, type ProjectMultimediaCommand, type ProjectMultimediaPreview, type ProjectMultimediaPreviewQuery } from '@/libraries/services/project/multimedia-preview-contract';
 import {
-  sceneMultimediaCommandSchema,
+  parseSceneMultimediaCommand,
   type SceneMultimediaCommand,
   type SceneMultimediaQuery,
   type SceneMultimediaResponse,
@@ -95,7 +95,7 @@ export class SceneMultimediaPlayer {
   }
 
   async execute(input: SceneMultimediaCommand, requestId: string, signal?: AbortSignal, collision = false) {
-    const command = sceneMultimediaCommandSchema.parse(input);
+    const command = parseSceneMultimediaCommand(input);
     return this.executePlayback(command, requestId, () => { this.validate(command, collision); }, (trackId, offset, abort) => this.port.read({
       projectId: command.projectId,
       markerId: command.markerId,
@@ -117,7 +117,7 @@ export class SceneMultimediaPlayer {
   }
 
   private projectPlayback(input: ProjectMultimediaCommand, requestId: string, signal: AbortSignal | undefined, paused: boolean) {
-    const command = projectMultimediaCommandSchema.parse(input);
+    const command = parseProjectMultimediaCommand(input);
     return this.executePlayback({ ...command, markerId: null }, requestId, () => {
       if (!this.port.readProject || this.port.projectId?.() !== command.projectId) throw Error('Project changed or Multimedia is not ready.');
     }, (trackId, offset, abort) => this.port.readProject!({
@@ -271,7 +271,7 @@ export class SceneMultimediaPlayer {
 
   armCollision(command: SceneMultimediaCommand | null, markerId: string) {
     if (!command) { this.collisions.delete(markerId); this.publish(); return; }
-    const parsed = sceneMultimediaCommandSchema.parse(command);
+    const parsed = parseSceneMultimediaCommand(command);
     if (!parsed.actorMarkerId || parsed.action !== 'playMultimedia') throw Error('Choose the controlled Character for collision playback.');
     this.validate(parsed, true);
     if (!this.collisions.has(markerId) && this.collisions.size >= 32) throw Error('At most 32 objects can have collision playback in this session.');

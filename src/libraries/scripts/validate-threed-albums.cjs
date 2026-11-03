@@ -9,7 +9,7 @@ function load(file, modules = {}) {
   const exports = {};
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), {
     compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS },
-  }).outputText, { exports, require: name => name in modules ? modules[name] : require(name), Response, Request, URL, TextEncoder });
+  }).outputText, { exports, require: name => name === '@/libraries/utils/input-validation' ? require('../utils/input-validation.ts') : name in modules ? modules[name] : require(name), Response, Request, URL, TextEncoder });
   return exports;
 }
 const registry = load('src/libraries/services/threed/multimedia/album-entity-registry.ts');

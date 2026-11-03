@@ -13,6 +13,7 @@ function load(file) {
   const Link = ({ children, ...props }) => React.createElement('a', props, children);
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(path.join(root, file), 'utf8'), { compilerOptions: { jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText, {
     exports, require(name) {
+      if (name === '@/libraries/utils/input-validation') return require('../utils/input-validation.ts');
       if (name === 'next/navigation') return {usePathname:()=>'/admin/threed'};
       if (name === '@/components/settings/ModuleAppearanceProvider') return {useModuleAppearance:()=>null,ModuleIcon:({moduleKey,...props})=>React.createElement('svg',{'data-module':moduleKey,...props})};
       if (name === '@/components/settings/module-icons') return {moduleIcons:{}};

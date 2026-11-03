@@ -4,8 +4,8 @@ import { and, asc, count, eq, ilike, or, sql } from 'drizzle-orm';
 import { db } from '@/libraries/db/client';
 import { User } from '@/libraries/schema/auth';
 import { userRoleAudit } from '@/libraries/schema/auth/user-role-audit';
-import { userListQuerySchema, userRoleUpdateSchema, type AdminUserRecord } from './contracts';
-import { userCreateSchema, userProfileUpdateSchema, userDeleteSchema } from './contracts';
+import { parseUserListQuery, parseUserRoleUpdate, type AdminUserRecord } from './contracts';
+import { parseUserCreate, parseUserProfileUpdate, parseUserDelete } from './contracts';
 import { findUserContent } from './content';
 import bcrypt from 'bcryptjs';
 import { insertCredentialsAccount } from '@/libraries/auth/register';
@@ -26,7 +26,7 @@ export async function lockUsersAdmin(tx: Transaction, actorId: string) {
   if (actor?.role !== 'super_admin' || actor.active !== true || actor.deleted !== false) throw new UserAdminError(403, 'An active Super Admin account is required.');
 }
 export async function createAdminUser(actorId: string, input: unknown) {
-  const data = userCreateSchema.parse(input);
+  const data = parseUserCreate(input);
   await requireUsersAdmin(actorId);
   const password = await bcrypt.hash(data.password, 12);
   return db.transaction(async tx => {
@@ -37,7 +37,7 @@ export async function createAdminUser(actorId: string, input: unknown) {
   });
 }
 export async function updateAdminUser(actorId: string, targetId: string, input: unknown) {
-  const data = userProfileUpdateSchema.parse(input);
+  const data = parseUserProfileUpdate(input);
   await requireUsersAdmin(actorId);
   return db.transaction(async tx => {
     await lockUsersAdmin(tx, actorId);
@@ -63,7 +63,7 @@ export async function requireUsersAdmin(actorId: string) {
   if (actor?.role !== 'super_admin' || actor.active !== true || actor.deleted !== false) throw new UserAdminError(403,'An active Super Admin account is required.');
 }
 export async function listAdminUsers(actorId: string, input: unknown) {
-  const query = userListQuerySchema.parse(input);
+  const query = parseUserListQuery(input);
   await requireUsersAdmin(actorId);
   const search = query.search.replace(/[\\%_]/g, '\\$&');
   const where = and(query.status === 'all' ? undefined : eq(User.isDeleted, query.status === 'deleted'), query.role === 'all' ? undefined : eq(User.role,query.role), search ? or(ilike(User.name,`%${search}%`),ilike(User.email,`%${search}%`)) : undefined);
@@ -78,7 +78,7 @@ export async function readAdminUser(actorId: string, targetId: string) {
   return serialize(row);
 }
 export async function softDeleteAdminUser(actorId: string, targetId: string, input: unknown) {
-  const submitted = userDeleteSchema.parse(input);
+  const submitted = parseUserDelete(input);
   await requireUsersAdmin(actorId);
   return db.transaction(async tx => {
     await lockUsersAdmin(tx, actorId);
@@ -100,7 +100,7 @@ export async function softDeleteAdminUser(actorId: string, targetId: string, inp
   });
 }
 export async function updateAdminUserRole(actorId: string, targetId: string, input: unknown) {
-  const submitted = userRoleUpdateSchema.parse(input);
+  const submitted = parseUserRoleUpdate(input);
   await requireUsersAdmin(actorId);
   return db.transaction(async tx => {
     // Serialize all role changes before taking account locks. This protects the

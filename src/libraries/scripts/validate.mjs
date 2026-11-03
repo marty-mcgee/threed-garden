@@ -19,6 +19,7 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  'input-validation': [node('validate-input-validation.cjs')],
   'threed-multimedia': [node('validate-threed-multimedia.cjs')],
   'threed-multimedia-browser': [node('validate-threed-multimedia-browser.cjs')],
   'threed-project-presentation-browser': [node('validate-project-presentation-browser.cjs')],
@@ -220,6 +221,7 @@ const ci = [
   'drizzle-workflow',
   'threed-character-introduction',
   'application-foundations',
+  'input-validation',
   'theme-provider',
   'workspace-access-panels',
   'character-library-design',

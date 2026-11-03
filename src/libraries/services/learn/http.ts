@@ -1,4 +1,4 @@
-import { ZodError } from 'zod';
+import { InputValidationError } from '@/libraries/utils/input-validation';
 import { LearnError } from './input';
 
 export const learnResponse = (body: unknown, status = 200) => Response.json(body, { status, headers: { 'Cache-Control': 'private, no-store' } });
@@ -10,7 +10,7 @@ function duplicateSlug(error: unknown): boolean {
 }
 export function learnFailure(error: unknown) {
   if (error instanceof LearnError) return learnResponse({ success: false, error: error.message }, error.status);
-  if (error instanceof ZodError || error instanceof SyntaxError) return learnResponse({ success: false, error: 'Invalid Learn guide request.' }, 400);
+  if (error instanceof InputValidationError || error instanceof SyntaxError) return learnResponse({ success: false, error: 'Invalid Learn guide request.' }, 400);
   if (duplicateSlug(error)) return learnResponse({ success: false, error: 'A Learn guide already uses this slug.' }, 409);
   return learnResponse({ success: false, error: 'Learn guides are unavailable. Check the Learn schema prerequisite, then retry.' }, 503);
 }

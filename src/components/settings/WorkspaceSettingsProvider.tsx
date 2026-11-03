@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useSession } from 'next-auth/react';
 import { useTheme } from '@/components/themes/provider';
-import { defaultWorkspaceSettings, workspaceSnapshotSchema, type WorkspaceSettings, type WorkspaceSnapshot } from '@/libraries/config/workspace-settings';
+import { defaultWorkspaceSettings, parseWorkspaceSnapshot, type WorkspaceSettings, type WorkspaceSnapshot } from '@/libraries/config/workspace-settings';
 
 interface WorkspaceContext {
   preferences: WorkspaceSettings;
@@ -42,7 +42,7 @@ export function WorkspaceSettingsProvider({ children }: { children: ReactNode })
     try {
       const response = await fetch('/api/settings/workspace', { cache: 'no-store' });
       if (!response.ok) throw new Error('Settings could not be loaded. Please retry.');
-      const next = workspaceSnapshotSchema.parse(await response.json());
+      const next = parseWorkspaceSnapshot(await response.json());
       if (identity.current === userId && sequence.current === requestId) setStored({ owner: userId, snapshot: next });
     } catch {
       if (identity.current === userId && sequence.current === requestId) setFailure({ owner: userId, message: 'Settings could not be loaded. Please retry.' });
@@ -91,7 +91,7 @@ export function WorkspaceSettingsProvider({ children }: { children: ReactNode })
         if (response.status === 409) throw new Error('Settings changed in another window. Refresh before saving again.');
         throw new Error('Settings could not be saved. Your changes are still available to retry.');
       }
-      const saved = workspaceSnapshotSchema.parse(await response.json());
+      const saved = parseWorkspaceSnapshot(await response.json());
       if (identity.current !== userId || sequence.current !== requestId) throw new Error('Your session changed. Refresh Settings.');
       setStored({ owner: userId, snapshot: saved });
       setFailure(null);

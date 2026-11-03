@@ -1,28 +1,48 @@
 import { createHash } from 'node:crypto';
-import { z } from 'zod';
+import { InputValidationError, readArray, readChoice, readGuid, readInteger, readRevision, readStrictObject } from '@/libraries/utils/input-validation';
 
 import { albumEntityTables, type AlbumModuleType } from './album-entity-registry';
 
-export const albumEntityKind = z.enum(Object.keys(albumEntityTables) as [AlbumModuleType, ...AlbumModuleType[]]);
-export type AlbumEntityKind = z.infer<typeof albumEntityKind>;
-export const albumEntityId = z.number().int().positive().max(2_147_483_647);
+const albumKinds = Object.keys(albumEntityTables) as AlbumModuleType[];
+export type AlbumEntityKind = AlbumModuleType;
+export const parseAlbumEntityKind = (value: unknown): AlbumEntityKind => readChoice(value, albumKinds);
+export const parseAlbumNumericId = (value: unknown): number => readInteger(value, 1, 2_147_483_647);
 export type AlbumEntityId = number | string;
 
 export function parseAlbumEntityId(kind: AlbumEntityKind, value: unknown): AlbumEntityId {
-  if (kind === 'assembly') return z.string().uuid().parse(value).toLowerCase();
-  return albumEntityId.parse(typeof value === 'string' && /^[1-9]\d*$/.test(value) ? Number(value) : value);
+  if (kind === 'assembly') return readGuid(value).toLowerCase();
+  return parseAlbumNumericId(typeof value === 'string' && /^[1-9]\d*$/.test(value) ? Number(value) : value);
 }
-export const albumAssignment = z.object({
-  albumId: albumEntityId,
-  sortOrder: z.number().int().min(-10000).max(10000).default(0),
-}).strict();
-export const albumReplacement = z.object({
-  expectedRevision: z.string().regex(/^[a-f0-9]{64}$/),
-  assignments: z.array(albumAssignment).max(100),
-}).strict().refine(value => new Set(value.assignments.map(item => item.albumId)).size === value.assignments.length, {
-  message: 'Album assignments must be unique.',
-});
-export type AlbumAssignment = z.infer<typeof albumAssignment>;
+export interface AlbumAssignment {
+  albumId: number;
+  sortOrder: number;
+}
+
+export function parseAlbumAssignment(value: unknown): AlbumAssignment {
+  const input = readStrictObject(value, [
+    'albumId',
+    'sortOrder',
+  ]);
+  return {
+    albumId: parseAlbumNumericId(input.albumId),
+    sortOrder: input.sortOrder === undefined ? 0 : readInteger(input.sortOrder, -10000, 10000),
+  };
+}
+
+export function parseAlbumReplacement(value: unknown) {
+  const input = readStrictObject(value, [
+    'expectedRevision',
+    'assignments',
+  ]);
+  const assignments = readArray(input.assignments, 100).map(parseAlbumAssignment);
+  if (new Set(assignments.map(item => item.albumId)).size !== assignments.length) {
+    throw new InputValidationError('Album assignments must be unique.');
+  }
+  return {
+    expectedRevision: readRevision(input.expectedRevision),
+    assignments,
+  };
+}
 
 export function albumRevision(assignments: readonly AlbumAssignment[]) {
   const normalized = [...assignments]
@@ -47,7 +67,7 @@ export interface AlbumAssociationPort {
 
 /** Must run within one transaction; the entity lock serializes every writer. */
 export async function replaceAlbumAssignments(port: AlbumAssociationPort, input: unknown) {
-  const request = albumReplacement.parse(input);
+  const request = parseAlbumReplacement(input);
   if (!await port.lockEntity()) throw new AlbumAssociationError(404, 'Entity not found.');
   const current = await port.read();
   if (albumRevision(current) !== request.expectedRevision) {

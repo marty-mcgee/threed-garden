@@ -1,5 +1,6 @@
+import { tryParseInput } from '@/libraries/utils/input-validation';
 import { THREED_GENERIC_TARGET_ACTIONS, THREED_PLANTING_TARGET_ACTIONS } from '../orchestration/action-target-core';
-import { multimediaActions, isMultimediaAction, multimediaActionLabels, multimediaSelectionSchema, type MultimediaSelection } from '../multimedia/scene-multimedia-contract';
+import { multimediaActions, isMultimediaAction, multimediaActionLabels, parseMultimediaSelection, type MultimediaSelection } from '../multimedia/scene-multimedia-contract';
 
 export class SimulationInputError extends Error {}
 export const SOCCER_SIMULATION_ACTIONS = ['runToTarget', 'kickBall'] as const;
@@ -42,7 +43,7 @@ export function parseSimulationDefinition(value: unknown): SimulationDefinition 
     if (!SIMULATION_ACTIONS.includes(s.action as SimulationAction)) throw new SimulationInputError('Choose a supported targeted Action.');
     if (!Number.isInteger(s.timeoutMs) || Number(s.timeoutMs) < 1000 || Number(s.timeoutMs) > 300_000) throw new SimulationInputError('Action timeout must be 1,000–300,000 milliseconds.');
     if (s.onFailure !== 'stop' && s.onFailure !== 'continue') throw new SimulationInputError('Choose Stop or Continue on failure.');
-    const media = isMultimediaAction(String(s.action)) ? multimediaSelectionSchema.safeParse(s.multimedia) : null;
+    const media = isMultimediaAction(String(s.action)) ? tryParseInput(parseMultimediaSelection, s.multimedia) : null;
     if (media && !media.success) throw new SimulationInputError('Choose a related Project Album for the Multimedia Action.');
     if (!media && s.multimedia !== undefined) throw new SimulationInputError('Multimedia fields belong only to Multimedia Actions.');
     if (media?.success && s.action !== 'playMultimedia' && media.data.trackId !== undefined) throw new SimulationInputError('Select a Track only for Play Multimedia.');

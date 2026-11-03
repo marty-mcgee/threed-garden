@@ -54,7 +54,9 @@ See [release notes](../releases/v0.24.3.md) for manual steps. Do not rerun histo
 
 ## Shared UI dependency upgrades
 
-Run `npm run validate -- shadcn-ui-boundary` against the matching clean installation; it verifies installed/locked shadcn and App Zod versions as well as existing Radix/configuration boundaries. Keep the App's direct Zod dependency separate from the CLI's own validation dependency.
+Run `npm run validate -- shadcn-ui-boundary` against the matching clean installation. It verifies the existing Radix/configuration boundaries and rejects direct or transitive Zod requirements in the manifest/lock. The shadcn generator CLI is removed because its dependencies include Zod; repository-owned UI components, Radix and `components.json` remain.
+
+App inputs use explicit TypeScript parsers, typed results and `InputValidationError` from `src/libraries/utils/input-validation.ts`. Keep request allowlists, bounds, normalization, defaults, revision checks and response field stripping in their existing domain contracts. Run `npm run validate -- input-validation` with the affected account, Settings, Learn, Multimedia or Weather tasks. The native contract check is included in portable CI. Do not replace runtime checks with TypeScript assertions or add a validation-library dependency.
 
 `npm run validate -- shadcn-ui-browser` is an optional Windows/installed-Edge check, excluded from portable `ci`/`all`. It exercises actual owned UI wrappers and App CSS through local files and a debugging pipe without starting a server: dialogs/focus, menus, selects, tabs/drafts, switches, sliders, help and disabled controls in both themes at 1440/375px. Its Tailwind source scan is explicitly limited to the same `src` tree for reproducible isolated-install comparisons. Artifacts remain in the printed OS temporary directory. Run it against baseline and candidate dependencies for an upgrade; it does not certify authenticated App flows, Scene rendering, uploads or production.
 

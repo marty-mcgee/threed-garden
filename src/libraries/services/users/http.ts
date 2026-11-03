@@ -1,11 +1,11 @@
-import { ZodError } from 'zod';
+import { InputValidationError } from '@/libraries/utils/input-validation';
 import { UserAdminError } from './admin';
 import { RegistrationConflict } from '@/libraries/auth/register';
 export const userResponse=(body:unknown,status=200)=>Response.json(body,{status,headers:{'Cache-Control':'private, no-store'}});
 export function userError(error:unknown) {
  if(error instanceof UserAdminError)return userResponse({error:error.message},error.status);
  if(error instanceof RegistrationConflict)return userResponse({error:'This email is already in use, including retained deleted accounts.'},409);
- if(error instanceof ZodError || error instanceof SyntaxError)return userResponse({error:'Invalid User request.'},400);
+ if(error instanceof InputValidationError || error instanceof SyntaxError)return userResponse({error:'Invalid User request.'},400);
  return userResponse({error:'Users request failed. Check the Users schema prerequisites before retrying.'},503);
 }
 export async function readUserRequest(request: Request) {

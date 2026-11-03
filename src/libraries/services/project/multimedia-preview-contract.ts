@@ -1,23 +1,35 @@
-import { z } from 'zod';
-import { multimediaSelectionSchema, multimediaActions, sceneMultimediaResponseSchema } from '@/libraries/services/threed/multimedia/scene-multimedia-contract';
+import { InputValidationError, readChoice, readStrictObject } from '@/libraries/utils/input-validation';
+import { parseMultimediaSelection, parseMultimediaId, multimediaActions, parseMultimediaPreviewData, type MultimediaAction, type MultimediaSelection, type MultimediaPreviewData } from '@/libraries/services/threed/multimedia/scene-multimedia-contract';
 
-const id = z.number().int().positive().max(2_147_483_647);
-export const projectMultimediaCommandSchema = multimediaSelectionSchema.extend({
-  projectId: id,
-  action: z.enum(multimediaActions),
-}).strict().refine(command => command.action === 'playMultimedia' || command.trackId === undefined, {
-  message: 'Select a Track only for Play Multimedia.',
-});
-export type ProjectMultimediaCommand = z.infer<typeof projectMultimediaCommandSchema>;
-export const projectMultimediaPreviewSchema = sceneMultimediaResponseSchema.pick({
-  projectId: true,
-  albumId: true,
-  albums: true,
-  tracks: true,
-  offset: true,
-  hasMore: true,
-});
-export type ProjectMultimediaPreview = z.infer<typeof projectMultimediaPreviewSchema>;
+export interface ProjectMultimediaCommand extends MultimediaSelection {
+  projectId: number;
+  action: MultimediaAction;
+}
+
+export function parseProjectMultimediaCommand(value: unknown): ProjectMultimediaCommand {
+  const input = readStrictObject(value, [
+    'albumId',
+    'trackId',
+    'projectId',
+    'action',
+  ]);
+  const selection = parseMultimediaSelection({
+    albumId: input.albumId,
+    ...(Object.hasOwn(input, 'trackId') ? {
+      trackId: input.trackId,
+    } : {}),
+  });
+  const action = readChoice(input.action, multimediaActions);
+  if (action !== 'playMultimedia' && selection.trackId !== undefined) throw new InputValidationError('Select a Track only for Play Multimedia.');
+  return {
+    ...selection,
+    projectId: parseMultimediaId(input.projectId),
+    action,
+  };
+}
+
+export const parseProjectMultimediaPreview = parseMultimediaPreviewData;
+export type ProjectMultimediaPreview = MultimediaPreviewData;
 export type ProjectMultimediaPreviewQuery = {
   projectId: number;
   albumId: number;
@@ -28,7 +40,7 @@ export function projectMultimediaPreviewQuery(params: URLSearchParams): ProjectM
   const number = (key: string) => {
     const raw = params.get(key) ?? '';
     if (!/^[1-9]\d*$/.test(raw)) throw Error('Invalid ' + key);
-    return id.parse(Number(raw));
+    return parseMultimediaId(Number(raw));
   };
   const offset = params.get('offset') ?? '0';
   if (!/^\d+$/.test(offset) || Number(offset) > 1_000_000) throw Error('Invalid Track page.');

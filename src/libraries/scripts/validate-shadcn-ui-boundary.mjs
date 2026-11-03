@@ -4,11 +4,8 @@ import assert from 'node:assert/strict';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createRequire } from 'node:module';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../..');
-const require = createRequire(path.join(root, 'package.json'));
-const semver = require('semver');
 const sourceRoot = path.join(root, 'src');
 const uiRoot = path.join(sourceRoot, 'components', 'ui');
 const sourceExtensions = new Set(['.js', '.jsx', '.mjs', '.cjs', '.ts', '.tsx', '.mts', '.cts']);
@@ -54,12 +51,15 @@ assert.deepEqual(
   `package.json must not declare individual Radix dependencies: ${individualRadixDependencies.join(', ')}`,
 );
 
-// Workspace settings import Zod at runtime: the CLI must not supply it implicitly.
-assert.equal(typeof packageJson.dependencies?.zod, 'string', 'App Zod must be a direct runtime dependency');
+// App validation uses native TypeScript. The generator CLI also pulled in Zod.
 for (const name of ['shadcn', 'zod']) {
-  const installed = JSON.parse(await fs.readFile(path.join(root, 'node_modules', name, 'package.json'), 'utf8'));
-  assert.equal(installed.version, lock.packages[`node_modules/${name}`]?.version, `${name} installation must match the lock`);
-  assert.ok(semver.satisfies(installed.version, declaredDependencies[name]), `${name} must satisfy its declared range`);
+  assert.equal(declaredDependencies[name], undefined, `${name} must not be a direct dependency`);
+}
+for (const [location, entry] of Object.entries(lock.packages)) {
+  assert(!/(?:^|\/)node_modules\/zod(?:\/|$)/.test(location), `Unexpected Zod package: ${location}`);
+  for (const dependencies of [entry.dependencies, entry.devDependencies, entry.optionalDependencies, entry.peerDependencies]) {
+    assert.equal(dependencies?.zod, undefined, `Unexpected Zod requirement: ${location}`);
+  }
 }
 
 assert.equal(componentsJson.aliases?.ui, '@/components/ui', 'components.json must keep the shadcn UI alias');

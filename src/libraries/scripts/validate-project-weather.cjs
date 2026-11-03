@@ -8,7 +8,8 @@ function load(file, deps = {}, globals = {}) {
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX },
   }).outputText, { exports, URL, URLSearchParams, AbortController, AbortSignal, Buffer, Date, console,
-    require(name) { assert(name in deps, `Unexpected import ${name}`); return deps[name]; }, ...globals });
+    require(name) {
+      if (name === '@/libraries/utils/input-validation') return require('../utils/input-validation.ts'); assert(name in deps, `Unexpected import ${name}`); return deps[name]; }, ...globals });
   return exports;
 }
 const core = load('src/libraries/services/threed/project-weather-core.ts');
@@ -132,7 +133,7 @@ async function serverChecks() {
   fetchMode = 'moved'; assert.equal((await route.POST(request('17', 'POST'))).status, 409); assert.equal(writes, 1);
   assert.equal((await route.GET(request())).body.data.readings.length, 0); projects[0].originLatitude = '0';
 
-  const legacyDeps = { 'next/server': next, 'drizzle-orm': drizzle, zod: require('zod'), '@/libraries/auth': auth,
+  const legacyDeps = { 'next/server': next, 'drizzle-orm': drizzle, '@/libraries/services/threed/weather-log-input': load('src/libraries/services/threed/weather-log-input.ts'), '@/libraries/auth': auth,
     '@/libraries/db/client': { db }, '@/libraries/schema/threed': { threedWeatherLogs: logs },
     '@/libraries/schema': { threedWeatherLogs: logs }, '@/libraries/services/threed/project-weather': service };
   const legacy = load('src/app/api/threed/weather/route.ts', legacyDeps);

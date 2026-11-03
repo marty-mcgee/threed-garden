@@ -4,7 +4,7 @@ import { eq } from 'drizzle-orm';
 import { db } from '@/libraries/db/client';
 import { User } from '@/libraries/schema/auth';
 import { settings, settingsAuditLogs } from '@/libraries/schema/settings';
-import { defaultModuleAppearance, readStoredModuleAppearance, moduleAppearanceSnapshotSchema, type ModuleAppearanceSnapshot } from '@/libraries/config/module-appearance';
+import { defaultModuleAppearance, readStoredModuleAppearance, parseModuleAppearanceSnapshot, type ModuleAppearanceSnapshot } from '@/libraries/config/module-appearance';
 
 const KEY = 'app.module-appearance.v1';
 export class ModuleAppearanceForbidden extends Error {}
@@ -23,7 +23,7 @@ export async function readModuleAppearance(): Promise<ModuleAppearanceSnapshot> 
 }
 
 export async function saveModuleAppearance(userId: string, input: ModuleAppearanceSnapshot): Promise<ModuleAppearanceSnapshot> {
-  const submitted = moduleAppearanceSnapshotSchema.parse(input);
+  const submitted = parseModuleAppearanceSnapshot(input);
   return db.transaction(async tx => {
     // Check current database authority inside the write transaction, not a stale JWT.
     const [actor] = await tx.select({ role: User.role, active: User.isActive, deleted: User.isDeleted }).from(User).where(eq(User.id, userId)).for('share');

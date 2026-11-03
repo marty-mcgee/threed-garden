@@ -1,3 +1,4 @@
+const { tryParseInput } = require('../utils/input-validation.ts');
 // Offline: real contracts, service, routes and navigation; in-memory DB/HTTP adapters.
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
@@ -10,7 +11,7 @@ function load(file, modules, globals = {}) {
   const code = ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: {
     target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX,
   } }).outputText;
-  vm.runInNewContext(code, { exports, require: name => name in modules ? modules[name] : require(name), console, Request, Response, URL, ...globals });
+  vm.runInNewContext(code, { exports, require: name => name === '@/libraries/utils/input-validation' ? require('../utils/input-validation.ts') : name in modules ? modules[name] : require(name), console, Request, Response, URL, ...globals });
   return exports;
 }
 const contract = load('src/libraries/config/workspace-settings.ts', {});
@@ -88,7 +89,7 @@ const request = (body, origin = 'https://example.test') => new Request('https://
 });
 (async () => {
   const defaults = contract.defaultWorkspaceSettings();
-  for (const invalid of [null, { ...defaults, userId: 'other' }, { ...defaults, theme: 'invisible' }, { ...defaults, modules: { ...defaults.modules, traffic: 'false' } }, { ...defaults, links: { ...defaults.links, cron: true } }]) assert.equal(contract.workspaceSettingsSchema.safeParse(invalid).success, false);
+  for (const invalid of [null, { ...defaults, userId: 'other' }, { ...defaults, theme: 'invisible' }, { ...defaults, modules: { ...defaults.modules, traffic: 'false' } }, { ...defaults, links: { ...defaults.links, cron: true } }]) assert.equal(tryParseInput(contract.parseWorkspaceSettings, invalid).success, false);
   const changed = contract.defaultWorkspaceSettings(); changed.modules.traffic = false; changed.links.weather = false;
   const visible = navigation.buildNavigationClient(changed);
   assert(!visible.some(row => row.module === 'traffic'));

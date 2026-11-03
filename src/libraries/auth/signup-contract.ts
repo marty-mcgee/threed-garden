@@ -1,8 +1,24 @@
-import { z } from 'zod';
+import { InputValidationError, readEmail, readStrictObject, readString } from '@/libraries/utils/input-validation';
 
-export const signupSchema = z.object({
-  name: z.string().trim().min(1).max(100),
-  email: z.string().trim().email().max(254).transform(value => value.toLowerCase()),
-  password: z.string().min(8).refine(value => new TextEncoder().encode(value).length <= 72,
-    'Password must be at most 72 UTF-8 bytes.'),
-}).strict();
+export interface SignupInput {
+  name: string;
+  email: string;
+  password: string;
+}
+
+export function parseSignupInput(value: unknown): SignupInput {
+  const input = readStrictObject(value, [
+    'name',
+    'email',
+    'password',
+  ]);
+  const password = readString(input.password, 8);
+  if (new TextEncoder().encode(password).length > 72) {
+    throw new InputValidationError('Password must be at most 72 UTF-8 bytes.');
+  }
+  return {
+    name: readString(input.name, 1, 100, true),
+    email: readEmail(readString(input.email).trim()).toLowerCase(),
+    password,
+  };
+}

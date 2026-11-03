@@ -33,9 +33,10 @@ function load(file, mocks = {}, globals = {}, cache = new Map()) {
     TextEncoder,
     ...globals,
     require(name) {
+      if (name === '@/libraries/utils/input-validation') return require('../utils/input-validation.ts');
       if (name in mocks) return mocks[name];
       if (name === 'server-only') return {};
-      if (['zod', 'drizzle-orm', 'drizzle-orm/pg-core', 'node:crypto'].includes(name)) return require(name);
+      if (['drizzle-orm', 'drizzle-orm/pg-core', 'node:crypto'].includes(name)) return require(name);
       assert(!name.includes('/db/') && name !== '@/libraries/auth', `Unmocked live boundary: ${name}`);
       const target = name.startsWith('@/') ? path.resolve('src', name.slice(2)) : name.startsWith('.') ? path.resolve(path.dirname(file), name) : null;
       assert(target, `Unexpected dependency ${name}`);
@@ -526,7 +527,7 @@ function checkSimulation() {
   assert.equal(contract.sceneMultimediaQuery(new URLSearchParams('projectId=7&markerId=radio')).projectId, 7);
   assert.throws(() => contract.sceneMultimediaQuery(new URLSearchParams('projectId=0&markerId=radio')));
   assert.throws(() => contract.sceneMultimediaQuery(new URLSearchParams('projectId=7&markerId=radio&offset=-1')));
-  assert.throws(() => contract.sceneMultimediaCommandSchema.parse({ ...baseCommand, url: 'arbitrary' }));
+  assert.throws(() => contract.parseSceneMultimediaCommand({ ...baseCommand, url: 'arbitrary' }));
   await checkReadBoundary();
   await checkProjectPreview();
   await checkPlayer();

@@ -9,7 +9,7 @@ import { threedMultimediaAlbums } from '@/libraries/schema/threed/album-associat
 import { readableProject } from '@/libraries/services/project/read-access';
 import { publicRecord } from '@/libraries/services/multimedia/access';
 import { albumEntityTables } from './album-entity-registry';
-import { sceneMultimediaResponseSchema, type SceneMultimediaQuery } from './scene-multimedia-contract';
+import { parseSceneMultimediaResponse, type SceneMultimediaQuery } from './scene-multimedia-contract';
 
 const markerKinds = {
   models: 'model',
@@ -140,7 +140,7 @@ export async function readSceneMultimedia(query: SceneMultimediaQuery, viewerId?
     if (typeof track.fileUrl !== 'string' || !track.fileUrl) return false;
     try { return ['https:', 'http:'].includes(new URL(track.fileUrl, 'https://threed.invalid').protocol); } catch { return false; }
   });
-  return sceneMultimediaResponseSchema.parse({
+  return parseSceneMultimediaResponse({
     projectId: query.projectId,
     markerId: query.markerId,
     sourceType: marker.kind,

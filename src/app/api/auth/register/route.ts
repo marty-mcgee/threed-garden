@@ -1,4 +1,5 @@
-import { signupSchema } from '@/libraries/auth/signup-contract';
+import { tryParseInput } from '@/libraries/utils/input-validation';
+import { parseSignupInput } from '@/libraries/auth/signup-contract';
 import { registerAccount, RegistrationConflict } from '@/libraries/auth/register';
 
 export const runtime = 'nodejs';
@@ -23,7 +24,7 @@ export async function POST(request: Request) {
       if (size > 4096) { await reader.cancel(); return json({ error: 'Signup details are too large.' }, 413); }
       chunks.push(value);
     }
-    const parsed = signupSchema.safeParse(JSON.parse(Buffer.concat(chunks).toString('utf8')));
+    const parsed = tryParseInput(parseSignupInput, JSON.parse(Buffer.concat(chunks).toString('utf8')));
     if (!parsed.success) return json({ error: 'Enter a name, valid email, and password of at least 8 characters (maximum 72 UTF-8 bytes).' }, 400);
     await registerAccount(parsed.data);
     return json({ created: true }, 201);

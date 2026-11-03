@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { and, eq } from 'drizzle-orm';
 import { db } from '@/libraries/db/client';
 import { settings, settingsUserOverrides, settingsAuditLogs } from '@/libraries/schema/settings';
-import { defaultWorkspaceSettings, workspaceSnapshotSchema, type WorkspaceSnapshot } from '@/libraries/config/workspace-settings';
+import { defaultWorkspaceSettings, parseWorkspaceSnapshot, type WorkspaceSnapshot } from '@/libraries/config/workspace-settings';
 
 const KEY = 'workspace.preferences.v2';
 export class WorkspaceSettingsConflict extends Error {}
@@ -14,11 +14,11 @@ export async function readWorkspaceSettings(userId: string): Promise<WorkspaceSn
     .innerJoin(settings, eq(settings.id, settingsUserOverrides.settingId))
     .where(and(eq(settings.key, KEY), eq(settings.scope, 'user'), eq(settingsUserOverrides.userId, userId)));
   // Invalid stored values are an error, not permission to overwrite them with defaults.
-  return row ? workspaceSnapshotSchema.parse(row.value) : { preferences: defaultWorkspaceSettings(), revision: null };
+  return row ? parseWorkspaceSnapshot(row.value) : { preferences: defaultWorkspaceSettings(), revision: null };
 }
 
 export async function saveWorkspaceSettings(userId: string, input: WorkspaceSnapshot): Promise<WorkspaceSnapshot> {
-  const submitted = workspaceSnapshotSchema.parse(input);
+  const submitted = parseWorkspaceSnapshot(input);
   return db.transaction(async tx => {
     await tx.insert(settings).values({
       key: KEY, scope: 'user', type: 'json', label: 'Workspace preferences',
@@ -31,7 +31,7 @@ export async function saveWorkspaceSettings(userId: string, input: WorkspaceSnap
     if (!definition || definition.scope !== 'user' || definition.sensitive) throw new Error('Invalid workspace definition');
     const owner = and(eq(settingsUserOverrides.settingId, definition.id), eq(settingsUserOverrides.userId, userId));
     const [existing] = await tx.select({ value: settingsUserOverrides.value }).from(settingsUserOverrides).where(owner);
-    const previous = existing ? workspaceSnapshotSchema.parse(existing.value) : null;
+    const previous = existing ? parseWorkspaceSnapshot(existing.value) : null;
     if ((previous?.revision ?? null) !== submitted.revision) throw new WorkspaceSettingsConflict();
     const saved = { preferences: submitted.preferences, revision: randomUUID() };
     await tx.insert(settingsUserOverrides).values({ userId, settingId: definition.id, value: saved })

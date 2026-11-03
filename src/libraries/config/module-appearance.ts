@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { readChoice, readGuid, readStrictObject } from '@/libraries/utils/input-validation';
 
 export const moduleColors = {
   brown: 'text-[#a87950]',
@@ -336,21 +336,38 @@ export const moduleManagementRoutes: Partial<Record<ModuleKey, string>> = {
 
 const colorNames = Object.keys(moduleColors) as [keyof typeof moduleColors, ...Array<keyof typeof moduleColors>];
 
-export const moduleStyleSchema = z.object({
-  color: z.enum(colorNames),
-  icon: z.enum(moduleIconNames)
-}).strict();
+export interface ModuleStyle {
+  color: keyof typeof moduleColors;
+  icon: typeof moduleIconNames[number];
+}
 
-export type ModuleStyle = z.infer<typeof moduleStyleSchema>;
+export interface ModuleAppearanceSnapshot {
+  styles: Record<ModuleKey, ModuleStyle>;
+  revision: string | null;
+}
 
-export const moduleAppearanceSchema = z.object(Object.fromEntries(moduleKeys.map(key => [key, moduleStyleSchema])) as Record<ModuleKey, typeof moduleStyleSchema>).strict();
+export function parseModuleStyle(value: unknown): ModuleStyle {
+  const input = readStrictObject(value, ['color', 'icon']);
+  return {
+    color: readChoice(input.color, colorNames),
+    icon: readChoice(input.icon, moduleIconNames),
+  };
+}
 
-export const moduleAppearanceSnapshotSchema = z.object({
-  styles: moduleAppearanceSchema,
-  revision: z.string().uuid().nullable()
-}).strict();
+export function parseModuleAppearance(value: unknown): ModuleAppearanceSnapshot['styles'] {
+  const input = readStrictObject(value, moduleKeys);
+  const styles = defaultModuleAppearance().styles;
+  for (const key of moduleKeys) styles[key] = parseModuleStyle(input[key]);
+  return styles;
+}
 
-export type ModuleAppearanceSnapshot = z.infer<typeof moduleAppearanceSnapshotSchema>;
+export function parseModuleAppearanceSnapshot(value: unknown): ModuleAppearanceSnapshot {
+  const input = readStrictObject(value, ['styles', 'revision']);
+  return {
+    styles: parseModuleAppearance(input.styles),
+    revision: input.revision === null ? null : readGuid(input.revision),
+  };
+}
 
 export function defaultModuleAppearance(): ModuleAppearanceSnapshot {
   return {
@@ -375,36 +392,26 @@ export function moduleForPath(path: string): ModuleKey | undefined {
 // Read only exact historical shapes: 42 before Dashboard/Admin, 41 before Learn,
 // and 40 before Users. Writes still require every current identity.
 
-const historicalAppearanceSchemas = [
-  moduleAppearanceSchema.omit({
-    dashboard: true,
-    admin: true
-  }),
-  moduleAppearanceSchema.omit({
-    dashboard: true,
-    admin: true,
-    learn: true
-  }),
-  moduleAppearanceSchema.omit({
-    dashboard: true,
-    admin: true,
-    users: true,
-    learn: true
-  }),
-].map(styles => moduleAppearanceSnapshotSchema.extend({
-  styles
-}));
+const historicalMissingKeys: readonly (readonly ModuleKey[])[] = [
+  ['dashboard', 'admin'],
+  ['dashboard', 'admin', 'learn'],
+  ['dashboard', 'admin', 'users', 'learn'],
+];
 
 export function readStoredModuleAppearance(value: unknown): ModuleAppearanceSnapshot {
-  for (const schema of historicalAppearanceSchemas) {
-    const stored = schema.safeParse(value);
-    if (stored.success) return moduleAppearanceSnapshotSchema.parse({
-      ...stored.data,
-      styles: {
-        ...defaultModuleAppearance().styles,
-        ...stored.data.styles
-      },
-    });
+  const input = readStrictObject(value, ['styles', 'revision']);
+  const revision = input.revision === null ? null : readGuid(input.revision);
+  const styles = readStrictObject(input.styles, moduleKeys);
+  const present = Object.keys(styles);
+  for (const missing of historicalMissingKeys) {
+    const expected = moduleKeys.filter(key => !missing.includes(key));
+    if (present.length !== expected.length || !expected.every(key => Object.hasOwn(styles, key))) continue;
+    const restored = defaultModuleAppearance().styles;
+    for (const key of expected) restored[key] = parseModuleStyle(styles[key]);
+    return {
+      styles: restored,
+      revision,
+    };
   }
-  return moduleAppearanceSnapshotSchema.parse(value);
+  return parseModuleAppearanceSnapshot(value);
 }

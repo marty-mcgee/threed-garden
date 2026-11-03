@@ -61,6 +61,39 @@ The read-only worker runs separately with `npm run farmbot:mqtt-worker`. Its pri
 
 The complete policy and manual ThreeD checklist are in [Agent Validation](../agents/VALIDATION.md).
 
+## Native input validation and dependency refresh
+
+The App validates runtime input with explicit TypeScript parsers and small shared checks in `src/libraries/utils/input-validation.ts`. Keep validation in the owning domain contract; TypeScript types alone do not validate incoming JSON. Preserve strict request fields, limits, normalization, defaults, revisions and public-response allowlists. Add boundary cases to the native contract checks when changing those rules. Do not add Zod or another validation library. The shadcn generator CLI is no longer installed because it pulls in Zod; existing repository-owned UI components and Radix remain available.
+
+When taking the Zod-removal changes into an existing checkout, stop your own development server before replacing its dependencies. Use Node 24 and npm 11.6.2, then run:
+
+```bash
+npm ci
+npm run typecheck -- --incremental false
+npm run validate -- input-validation shadcn-ui-boundary
+npm run validate -- ci
+git diff --check
+```
+
+`npm ci` recreates `node_modules` from the lockfile and removes the old dependency tree. Review any unexpected package-lock change. Build separately with `npm run build` while the development server is stopped; restart it yourself with `npm run dev` afterward. Keep local configuration/secrets untracked and use your team's approved development environment. No schema push, migration or seed is part of this dependency refresh.
+
+Smoke-check sign-in and validation errors; Super Admin User management; saving/reloading Module icons/colors and Workspace preferences; Learn draft/publishing controls; Album assignments; and Project Multimedia selection/playback/Save/reopen. Check Design selection, Model movement/resizing and Lock/Unlock alongside the existing ThreeD checklist. Offline checks use mocked boundaries and do not establish live persistence or production acceptance.
+
+### Stale Turbopack modules after dependency removal
+
+If a runtime error still names a removed package while the current source and clean installation no longer import it, inspect the generated development chunks before changing App code. Turbopack [persists compiler artifacts between runs](https://nextjs.org/docs/app/api-reference/turbopack). An open browser tab can also retain the previous module graph across dependency changes.
+
+The Developer should stop the local server with Ctrl+C, then run this from the workspace in PowerShell:
+
+```powershell
+if (Test-Path -LiteralPath '.next\dev') {
+  Rename-Item -LiteralPath '.next\dev' -NewName ('dev-stale-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
+}
+npm run dev
+```
+
+Then hard-reload the affected page with Ctrl+Shift+R. This preserves the old development output for inspection and leaves other `.next` evidence/build directories intact. Do not clear browser local storage or App preferences as part of this recovery. If the current installation already matches the lock and has no removed dependency, another dependency install is unnecessary. Browser recovery remains unverified until the original page loads successfully after the restart/reset.
+
 ## Local artifacts and compiler boundaries
 
 Retained `reference/`, `public/home-design/` and `public/assets-archive/` content is excluded from TypeScript checking as well as Git. `next-env.d.ts` is the Next-generated declaration; the redundant tracked `next-dev.d.ts` has been retired and is excluded/ignored. Keep the existing Next generated route-type includes. Root `test-results/` and `playwright-report/` are ignored generated outputs.

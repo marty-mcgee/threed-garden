@@ -2,20 +2,19 @@ import 'server-only';
 import { sql } from 'drizzle-orm';
 import { db } from '@/libraries/db/client';
 import {
-  albumEntityKind,
+  parseAlbumEntityKind,
   parseAlbumEntityId,
   type AlbumEntityId,
   albumRevision,
   AlbumAssociationError,
   replaceAlbumAssignments,
-  type AlbumAssignment,
   type AlbumEntityKind,
 } from './album-association-contract';
 
 import { albumEntityTables } from './album-entity-registry';
 
 function identifiers(kind: AlbumEntityKind, entityId: AlbumEntityId, userId: string) {
-  const table = albumEntityTables[albumEntityKind.parse(kind)];
+  const table = albumEntityTables[parseAlbumEntityKind(kind)];
   parseAlbumEntityId(kind, entityId);
   if (!userId) throw new AlbumAssociationError(404, 'Entity not found.');
   return {
@@ -61,7 +60,10 @@ export async function saveEntityAlbums(userId: string, kind: AlbumEntityKind, en
       const result = await tx.execute(sql`SELECT album_id AS "albumId", sort_order AS "sortOrder"
         FROM ${junction} WHERE module_type = ${kind} AND entity_id = ${entityId} ORDER BY album_id LIMIT 101`);
       if (result.rows.length > 100) throw new AlbumAssociationError(409, 'Too many assignments; no partial replacement is allowed.');
-      return result.rows as AlbumAssignment[];
+      return result.rows.map(row => ({
+        albumId: Number(row.albumId),
+        sortOrder: Number(row.sortOrder),
+      }));
     },
     lockAlbums: async ids => {
       if (!ids.length) return [];

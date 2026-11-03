@@ -5,8 +5,8 @@ import { useSession } from 'next-auth/react';
 import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { SceneMultimediaPlayer, type MultimediaScene, type ScenePlaybackState } from '@/libraries/services/threed/multimedia/scene-multimedia-player';
-import { sceneMultimediaResponseSchema, type SceneMultimediaQuery, type MultimediaAction } from '@/libraries/services/threed/multimedia/scene-multimedia-contract';
-import { projectMultimediaPreviewSchema, type ProjectMultimediaPreviewQuery } from '@/libraries/services/project/multimedia-preview-contract';
+import { parseSceneMultimediaResponse, type SceneMultimediaQuery, type MultimediaAction } from '@/libraries/services/threed/multimedia/scene-multimedia-contract';
+import { parseProjectMultimediaPreview, type ProjectMultimediaPreviewQuery } from '@/libraries/services/project/multimedia-preview-contract';
 import type { ProjectMultimediaWorkspaceState } from '@/libraries/services/threed/markers/project-view-state-core';
 
 export type ProjectMultimediaSelection = Pick<ProjectMultimediaWorkspaceState, 'albumId' | 'trackId'>;
@@ -25,7 +25,7 @@ export async function loadProjectMultimediaPreview(query: ProjectMultimediaPrevi
   const response = await fetch(`/api/project/multimedia-preview?${params}`, { signal, cache: 'no-store' });
   const body = await response.json();
   if (!response.ok) throw Error(body.error || 'Project Multimedia is unavailable.');
-  const data = projectMultimediaPreviewSchema.parse(body);
+  const data = parseProjectMultimediaPreview(body);
   if (data.projectId !== query.projectId || data.albumId !== query.albumId) throw Error('Project Multimedia response does not match the selection.');
   return data;
 }
@@ -45,7 +45,7 @@ export async function loadSceneMultimedia(query: SceneMultimediaQuery, signal: A
   });
   const body = await response.json();
   if (!response.ok) throw Error(body.error || 'Project Multimedia is unavailable.');
-  const data = sceneMultimediaResponseSchema.parse(body);
+  const data = parseSceneMultimediaResponse(body);
   if (data.projectId !== query.projectId || data.markerId !== query.markerId || data.albumId !== query.albumId) throw Error('Project Multimedia response does not match the selection.');
   return data;
 }

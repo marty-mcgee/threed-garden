@@ -6,7 +6,7 @@ import { projectAssets, projectMultimedia } from '@/libraries/schema/project';
 import { multimedia, multimediaAlbums, multimediaTracks } from '@/libraries/schema/multimedia';
 import { readableProject } from './read-access';
 import { publicRecord } from '@/libraries/services/multimedia/access';
-import { projectMultimediaPreviewSchema, type ProjectMultimediaPreviewQuery } from './multimedia-preview-contract';
+import { parseProjectMultimediaPreview, type ProjectMultimediaPreviewQuery } from './multimedia-preview-contract';
 
 export class ProjectMultimediaPreviewError extends Error {
   readonly status = 404;
@@ -73,7 +73,7 @@ export async function readProjectMultimediaPreview(query: ProjectMultimediaPrevi
     eq(multimediaTracks.userId, owner),
     eq(multimediaTracks.status, 'active'),
   )).orderBy(asc(multimediaTracks.trackNumber), asc(multimediaTracks.id)).limit(51).offset(offset);
-  return projectMultimediaPreviewSchema.parse({
+  return parseProjectMultimediaPreview({
     projectId: query.projectId,
     albumId: query.albumId,
     albums: albums.map(album => publicRecord('album', album)),

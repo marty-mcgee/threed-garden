@@ -6,12 +6,13 @@ const ts = require('typescript');
 function load(file, dependencies, globals = {}) {
   const exports = {};
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX } }).outputText,
-    { exports, ...globals, require(name) { if (!(name in dependencies)) throw Error(name); return dependencies[name]; } });
+    { exports, ...globals, require(name) {
+      if (name === '@/libraries/utils/input-validation') return require('../utils/input-validation.ts'); if (!(name in dependencies)) throw Error(name); return dependencies[name]; } });
   return exports;
 }
 const icons = new Proxy({}, { get: (_, name) => name });
 const nav = load('src/components/admin/layout/admin-navigation.ts', { 'lucide-react': icons });
-const contract = load('src/libraries/config/module-appearance.ts', {zod: require('zod')});
+const contract = load('src/libraries/config/module-appearance.ts', {});
 const appearance = contract.defaultModuleAppearance();
 appearance.styles.models = {icon:'Leaf',color:'rose'};
 appearance.styles.learn = {icon:'Star',color:'violet'};

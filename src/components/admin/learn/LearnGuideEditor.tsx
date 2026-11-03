@@ -1,5 +1,6 @@
 'use client';
 
+import { tryParseInput } from '@/libraries/utils/input-validation';
 import { useEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -13,7 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { LEARN_CONTENT_LIMIT, LEARN_SLUG_LIMIT, LEARN_SUMMARY_LIMIT, LEARN_TITLE_LIMIT, type LearnGuide, type LearnGuideInput } from '@/libraries/services/learn/contracts';
-import { learnGuideInputSchema } from '@/libraries/services/learn/input';
+import { parseLearnGuideInput } from '@/libraries/services/learn/input';
 import { LearnAdminError, learnAdminResponse, learnAdminActionClass as actionClass } from './learn-admin-client';
 
 type Form = Omit<LearnGuideInput, 'sortOrder'> & { sortOrder: string };
@@ -24,7 +25,7 @@ const validGuide = (guide: LearnGuide, expectedId?: number) => Number.isSafeInte
   && (!expectedId || guide.id === expectedId) && typeof guide.revision === 'string'
   && typeof guide.summary === 'string' && typeof guide.content === 'string' && typeof guide.sortOrder === 'number'
   && typeof guide.isActive === 'boolean' && typeof guide.isPublished === 'boolean'
-  && learnGuideInputSchema.safeParse({ title: guide.title, slug: guide.slug, summary: guide.summary, content: guide.content, sortOrder: guide.sortOrder, isActive: guide.isActive, isPublished: guide.isPublished }).success;
+  && tryParseInput(parseLearnGuideInput, { title: guide.title, slug: guide.slug, summary: guide.summary, content: guide.content, sortOrder: guide.sortOrder, isActive: guide.isActive, isPublished: guide.isPublished }).success;
 
 export function LearnGuideEditor({ id }: { id?: number }) {
   const { data: session, status } = useSession();
@@ -42,7 +43,7 @@ function LearnGuideForm({ id }: { id?: number }) {
   const mutation = useRef<AbortController | null>(null), mounted = useRef(true), leavingRef = useRef(false);
   const dirty = JSON.stringify(form) !== JSON.stringify(baseline);
   const currentDraft = useRef({ dirty, busy }); currentDraft.current = { dirty, busy };
-  const parsed = learnGuideInputSchema.safeParse({ ...form, sortOrder: Number(form.sortOrder) });
+  const parsed = tryParseInput(parseLearnGuideInput, { ...form, sortOrder: Number(form.sortOrder) });
   const invalid = !form.title.trim() ? 'Enter a guide title.' : !form.slug.trim() ? 'Enter a guide slug.'
     : !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(form.slug.trim()) ? 'Use lowercase letters, numbers and single hyphens in the slug.'
     : !form.sortOrder.trim() || !Number.isInteger(Number(form.sortOrder)) || Number(form.sortOrder) < -10000 || Number(form.sortOrder) > 10000 ? 'Sort Order must be an integer from -10000 to 10000.'

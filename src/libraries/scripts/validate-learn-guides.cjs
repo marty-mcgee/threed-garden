@@ -14,7 +14,7 @@ function load(file, modules = {}) {
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: {
     target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS,
   } }).outputText, { exports, Buffer, URL, URLSearchParams, Request, Response, TextEncoder,
-    require: name => name in modules ? modules[name] : require(name) });
+    require: name => name === '@/libraries/utils/input-validation' ? require('../utils/input-validation.ts') : name in modules ? modules[name] : require(name) });
   return exports;
 }
 const plain = value => JSON.parse(JSON.stringify(value));
@@ -75,7 +75,7 @@ assert.match(fs.readFileSync('src/libraries/schema/index.ts', 'utf8'), /export \
 const starters = load('src/libraries/data/learn/starter-guides.ts');
 assert.equal(starters.starterLearnGuides.length, 14);
 assert.equal(new Set(starters.starterLearnGuides.map(guide => guide.slug)).size, 14);
-for (const starter of starters.starterLearnGuides) input.learnGuideInputSchema.parse(starter);
+for (const starter of starters.starterLearnGuides) input.parseLearnGuideInput(starter);
 const manualImport = fs.readFileSync('docs/developers/sql/learn-guides-import.sql', 'utf8').replace(/\r\n/g, '\n');
 const manualPayload = manualImport.match(/\$learn_starters\$\s*([\s\S]*?)\s*\$learn_starters\$::jsonb;/);
 assert(manualPayload, 'Manual import contains a dollar-quoted JSON dataset');
@@ -109,8 +109,8 @@ for (const query of ['limit=201', 'limit=0', 'offset=-1', 'offset=1000001', 'sea
 }
 for (const query of ['isActive=true', 'isPublished=false', 'sort=isPublished']) assert.throws(() => input.learnListQuery(new URLSearchParams(query), true));
 for (const id of [null, '0', '-1', '1.2', '2147483648', '1 OR 1=1']) assert.throws(() => input.learnId(id));
-assert.throws(() => input.learnGuideUpdateSchema.parse({ ...draft, id: 1, revision: 'stale' }));
-assert.throws(() => input.learnImportSchema.parse({ overwrite: true }));
+assert.throws(() => input.parseLearnGuideUpdate({ ...draft, id: 1, revision: 'stale' }));
+assert.throws(() => input.parseLearnImport({ overwrite: true }));
 
 const memory = new DatabaseSync(':memory:');
 memory.exec(`PRAGMA foreign_keys=ON;

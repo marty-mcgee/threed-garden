@@ -1,6 +1,7 @@
+import { tryParseInput } from '@/libraries/utils/input-validation';
 import { NextResponse } from 'next/server';
 import { auth } from '@/libraries/auth';
-import { workspaceSnapshotSchema } from '@/libraries/config/workspace-settings';
+import { parseWorkspaceSnapshot } from '@/libraries/config/workspace-settings';
 import { readWorkspaceSettings, saveWorkspaceSettings, WorkspaceSettingsConflict } from '@/libraries/services/settings/workspace';
 
 export const dynamic = 'force-dynamic';
@@ -23,7 +24,7 @@ export async function PUT(request: Request) {
     if (!session?.user?.id) return respond({ error: 'Sign in to save your Settings.' }, 401);
     const origin = request.headers.get('origin');
     if (!origin || origin !== new URL(request.url).origin) return respond({ error: 'Invalid request origin.' }, 403);
-    const parsed = workspaceSnapshotSchema.safeParse(await request.json().catch(() => null));
+    const parsed = tryParseInput(parseWorkspaceSnapshot, await request.json().catch(() => null));
     if (!parsed.success) return respond({ error: 'Invalid Settings. Refresh and try again.' }, 400);
     return respond(await saveWorkspaceSettings(session.user.id, parsed.data));
   } catch (error) {

@@ -1,5 +1,6 @@
+import { tryParseInput } from '@/libraries/utils/input-validation';
 import { auth } from '@/libraries/auth';
-import { moduleAppearanceSnapshotSchema } from '@/libraries/config/module-appearance';
+import { parseModuleAppearanceSnapshot } from '@/libraries/config/module-appearance';
 import { canManageModuleAppearance, readModuleAppearance, saveModuleAppearance, ModuleAppearanceConflict, ModuleAppearanceForbidden } from '@/libraries/services/settings/module-appearance';
 
 export const dynamic = 'force-dynamic';
@@ -21,7 +22,7 @@ export async function PUT(request: Request) {
   if (request.headers.get('origin') !== new URL(request.url).origin) return json({error:'Invalid request origin.'},403);
   let input: unknown;
   try { input = await request.json(); } catch { return json({error:'Invalid settings.'},400); }
-  const parsed = moduleAppearanceSnapshotSchema.safeParse(input);
+  const parsed = tryParseInput(parseModuleAppearanceSnapshot, input);
   if (!parsed.success) return json({error:'Invalid Module color or icon settings.'},400);
   try { return json(await saveModuleAppearance(session.user.id,parsed.data)); }
   catch (error) {
