@@ -8,6 +8,7 @@ import { ArrowLeft, BookOpen, RefreshCw } from 'lucide-react';
 import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 import { LearnMarkdown } from '@/components/learn/LearnMarkdown';
+import { LearnGuideIllustration } from '@/components/learn/LearnGuideIllustration';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -155,7 +156,7 @@ function LearnGuideForm({ id }: { id?: number }) {
         </section>
         <section className="admin-editor-panel space-y-2 rounded-lg border p-3"><div className="flex flex-wrap items-center justify-between gap-1"><Label htmlFor="learn-guide-content">Markdown content</Label><span className="text-muted-foreground">{form.content.length.toLocaleString()} / {LEARN_CONTENT_LIMIT.toLocaleString()}</span></div><Textarea id="learn-guide-content" aria-label="Guide Markdown content" className="min-h-80 font-mono text-xs leading-6" rows={22} maxLength={LEARN_CONTENT_LIMIT} value={form.content} onChange={event => setForm(value => ({ ...value, content: event.target.value }))} /><p className="text-muted-foreground">Use Markdown headings, lists, links, code and tables. Raw HTML is not rendered.</p></section>
       </fieldset>
-      <section aria-label="Guide preview" className="admin-editor-panel mb-3 min-h-0 rounded-lg border xl:mb-0 xl:overflow-y-auto"><div className="sticky top-0 z-10 border-b bg-background px-3 py-2"><h2 className="font-semibold">Preview</h2><p className="text-muted-foreground">Your current draft; publication changes apply when saved.</p></div><div className="min-w-0 space-y-4 p-4"><h3 className="break-words text-2xl font-semibold">{form.title || 'Guide title'}</h3>{form.summary && <p className="break-words text-sm text-muted-foreground">{form.summary}</p>}{form.content ? <LearnMarkdown content={form.content} /> : <p className="text-sm text-muted-foreground">Write Markdown to preview the guide.</p>}</div></section>
+      <section aria-label="Guide preview" className="admin-editor-panel mb-3 min-h-0 rounded-lg border xl:mb-0 xl:overflow-y-auto"><div className="sticky top-0 z-10 border-b bg-background px-3 py-2"><h2 className="font-semibold">Preview</h2><p className="text-muted-foreground">Your current draft; publication changes apply when saved.</p></div><div className="min-w-0 space-y-4 p-4"><h3 className="break-words text-2xl font-semibold">{form.title || 'Guide title'}</h3>{form.summary && <p className="break-words text-sm text-muted-foreground">{form.summary}</p>}<LearnGuideIllustration topic={form.slug} content={form.content} />{form.content ? <LearnMarkdown content={form.content} /> : <p className="text-sm text-muted-foreground">Write Markdown to preview the guide.</p>}</div></section>
     </div>}
     <footer className="admin-editor-actions shrink-0 space-y-2 border-t pt-3">
       {error && !denied && <p role="alert" className="text-xs text-destructive">{error} Your draft is retained.</p>}

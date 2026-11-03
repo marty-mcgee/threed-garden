@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
+<title id="title">Project Albums. One playback overlay.</title>
+<desc id="description">Use Multimedia in the Project toolbar to browse assigned Albums and their Tracks. Project Save retains the supported overlay and Album/Track selection; reopen is paused.</desc>
+<defs>
+<linearGradient id="background" x2="1" y2="1">
+<stop stop-color="#112d32"/>
+<stop offset="1" stop-color="#0b1424"/>
+</linearGradient>
+<pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+<rect width="20" height="20" fill="#102331"/>
+<path d="M20 0H0V20" fill="none" stroke="#244552" stroke-width=".7"/>
+</pattern>
+</defs>
+<g font-family="Segoe UI, Arial, sans-serif">
+<rect x="1" y="1" width="1198" height="638" rx="24" fill="url(#background)" stroke="#355661"/>
+<path d="M40 34L72 34" fill="none" stroke="#67d4b3" stroke-width="4" />
+<text x="85" y="40" fill="#67d4b3" font-size="14" font-weight="600">THREED APP / VISUAL GUIDE</text>
+<text x="40" y="98" fill="#eef8f6" font-size="36" font-weight="700">Project Albums. One playback overlay.</text>
+<text x="40" y="134" fill="#afc8cb" font-size="19" font-weight="400">Use Multimedia in the Project toolbar to browse assigned Albums and their Tracks.</text>
+<rect x="40" y="189" width="330" height="329" rx="18" fill="#122832" stroke="#355661"/>
+<text x="62" y="224" fill="#67d4b3" font-size="23" font-weight="600">Project Assets</text>
+<g transform="translate(65 251) scale(1.3)">
+<g fill="none" stroke="#75e3ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M12 25V8l17-5v17M12 14l17-5"/>
+<ellipse cx="7" cy="26" rx="5" ry="4"/>
+<ellipse cx="24" cy="22" rx="5" ry="4"/>
+</g>
+</g>
+<text x="125" y="276" fill="#eef8f6" font-size="25" font-weight="400">Multimedia</text>
+<rect x="64" y="314" width="282" height="74" rx="10" fill="#0b1926" stroke="#67d4b3"/>
+<text x="82" y="345" fill="#eef8f6" font-size="24" font-weight="400">TRADE</text>
+<text x="82" y="371" fill="#afc8cb" font-size="17" font-weight="400">Assigned Album</text>
+<text x="64" y="477" fill="#afc8cb" font-size="17" font-weight="400">Select an Album to preview.</text>
+<path d="M385 354L422 354" fill="none" stroke="#67d4b3" stroke-width="3" />
+<path d="m412 347 10 7-10 7" fill="none" stroke="#67d4b3" stroke-width="3"/>
+<rect x="436" y="189" width="724" height="329" rx="18" fill="#122832" stroke="#355661"/>
+<text x="458" y="224" fill="#67d4b3" font-size="23" font-weight="600">Project Multimedia</text>
+<rect x="460" y="256" width="102" height="102" rx="12" fill="#284d4b" stroke="#67d4b3"/>
+<g transform="translate(490 284) scale(1.4)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M12 25V8l17-5v17M12 14l17-5"/>
+<ellipse cx="7" cy="26" rx="5" ry="4"/>
+<ellipse cx="24" cy="22" rx="5" ry="4"/>
+</g>
+</g>
+<text x="583" y="283" fill="#eef8f6" font-size="26" font-weight="400">TRADE</text>
+<text x="583" y="315" fill="#afc8cb" font-size="20" font-weight="400">Choose a Track from this Album.</text>
+<text x="460" y="387" fill="#afc8cb" font-size="16" font-weight="400">Selected Track</text>
+<rect x="460" y="399" width="671" height="42" rx="8" fill="#0b1926" stroke="#355661"/>
+<text x="473" y="427" fill="#eef8f6" font-size="19" font-weight="400">Track 1</text>
+<rect x="460" y="461" width="99" height="34" rx="17" fill="#183a3c" stroke="#67d4b3"/>
+<text x="474" y="484" fill="#67d4b3" font-size="16" font-weight="400">Play</text>
+<rect x="573" y="461" width="103" height="34" rx="17" fill="#183a3c" stroke="#67d4b3"/>
+<text x="587" y="484" fill="#67d4b3" font-size="16" font-weight="400">Pause</text>
+<rect x="690" y="461" width="94" height="34" rx="17" fill="#183a3c" stroke="#67d4b3"/>
+<text x="704" y="484" fill="#67d4b3" font-size="16" font-weight="400">Stop</text>
+<rect x="798" y="461" width="119" height="34" rx="17" fill="#183a3c" stroke="#67d4b3"/>
+<text x="812" y="484" fill="#67d4b3" font-size="16" font-weight="400">Rewind</text>
+<rect x="931" y="461" width="200" height="34" rx="17" fill="#183a3c" stroke="#67d4b3"/>
+<text x="945" y="484" fill="#67d4b3" font-size="16" font-weight="400">Next Track</text>
+<rect x="40" y="548" width="1120" height="52" rx="12" fill="#123831" stroke="#2d6557"/>
+<g transform="translate(56 561) scale(0.72)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M16 8Q8 2 2 6v22q6-4 14 1 8-5 14-1V6q-6-4-14 2v21"/>
+</g>
+</g>
+<text x="94" y="581" fill="#d2e8df" font-size="19" font-weight="400">Project Save retains the supported overlay and Album/Track selection; reopen is paused.</text>
+<text x="40" y="624" fill="#afc8cb" font-size="13" font-weight="400">Conceptual illustration · follow the guide for the current controls and supported behavior.</text>
+</g>
+</svg>

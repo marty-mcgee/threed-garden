@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
+<title id="title">Know which Settings you are changing</title>
+<desc id="description">Shared Module appearance, account preferences and browser-local choices have different scopes. Review the scope and Save control. Restore defaults prepares a draft.</desc>
+<defs>
+<linearGradient id="background" x2="1" y2="1">
+<stop stop-color="#112d32"/>
+<stop offset="1" stop-color="#0b1424"/>
+</linearGradient>
+<pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+<rect width="20" height="20" fill="#102331"/>
+<path d="M20 0H0V20" fill="none" stroke="#244552" stroke-width=".7"/>
+</pattern>
+</defs>
+<g font-family="Segoe UI, Arial, sans-serif">
+<rect x="1" y="1" width="1198" height="638" rx="24" fill="url(#background)" stroke="#355661"/>
+<path d="M40 34L72 34" fill="none" stroke="#67d4b3" stroke-width="4" />
+<text x="85" y="40" fill="#67d4b3" font-size="14" font-weight="600">THREED APP / VISUAL GUIDE</text>
+<text x="40" y="98" fill="#eef8f6" font-size="36" font-weight="700">Know which Settings you are changing</text>
+<text x="40" y="134" fill="#afc8cb" font-size="19" font-weight="400">Shared Module appearance, account preferences and browser-local choices have different scopes.</text>
+<rect x="40" y="198" width="346" height="311" rx="18" fill="#122832" stroke="#355661"/>
+<text x="62" y="233" fill="#67d4b3" font-size="23" font-weight="600">Shared App identity</text>
+<g transform="translate(64 260) scale(1.4)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m16 2 13 8v15l-13 7L3 25V10zM3 10l13 8 13-8M16 18v14M9 6l13 8"/>
+</g>
+</g>
+<g transform="translate(138 260) scale(1.4)">
+<g fill="none" stroke="#75e3ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M12 25V8l17-5v17M12 14l17-5"/>
+<ellipse cx="7" cy="26" rx="5" ry="4"/>
+<ellipse cx="24" cy="22" rx="5" ry="4"/>
+</g>
+</g>
+<g transform="translate(212 260) scale(1.4)">
+<g fill="none" stroke="#b2a0ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M16 8Q8 2 2 6v22q6-4 14 1 8-5 14-1V6q-6-4-14 2v21"/>
+</g>
+</g>
+<text x="64" y="368" fill="#afc8cb" font-size="20" font-weight="400">Module colors + icons</text>
+<text x="64" y="398" fill="#afc8cb" font-size="20" font-weight="400">Super Admin management</text>
+<text x="64" y="428" fill="#afc8cb" font-size="20" font-weight="400">Visible throughout the App</text>
+<rect x="406" y="198" width="358" height="311" rx="18" fill="#122832" stroke="#355661"/>
+<text x="428" y="233" fill="#75e3ed" font-size="23" font-weight="600">Your account</text>
+<g transform="translate(435 260) scale(1.4)">
+<g fill="none" stroke="#75e3ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="16" cy="7" r="5"/>
+<path d="M6 31v-6a10 10 0 0 1 20 0v6M16 18v13"/>
+</g>
+</g>
+<text x="435" y="368" fill="#afc8cb" font-size="20" font-weight="400">Theme preferences</text>
+<text x="435" y="398" fill="#afc8cb" font-size="20" font-weight="400">Navigation visibility</text>
+<text x="435" y="428" fill="#afc8cb" font-size="20" font-weight="400">Saved for this account</text>
+<rect x="784" y="198" width="376" height="311" rx="18" fill="#122832" stroke="#355661"/>
+<text x="806" y="233" fill="#efd294" font-size="23" font-weight="600">This browser</text>
+<g transform="translate(812 260) scale(1.4)">
+<g fill="none" stroke="#efd294" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M2 7h28M2 17h28M2 27h28"/>
+<rect x="8" y="3" width="5" height="8" fill="#122832"/>
+<rect x="21" y="13" width="5" height="8" fill="#122832"/>
+<rect x="9" y="23" width="5" height="8" fill="#122832"/>
+</g>
+</g>
+<text x="812" y="368" fill="#afc8cb" font-size="20" font-weight="400">Scene appearance</text>
+<text x="812" y="398" fill="#afc8cb" font-size="20" font-weight="400">Preview image defaults</text>
+<text x="812" y="428" fill="#afc8cb" font-size="20" font-weight="400">Browser-local preferences</text>
+<rect x="40" y="548" width="1120" height="52" rx="12" fill="#123831" stroke="#2d6557"/>
+<g transform="translate(56 561) scale(0.72)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M16 8Q8 2 2 6v22q6-4 14 1 8-5 14-1V6q-6-4-14 2v21"/>
+</g>
+</g>
+<text x="94" y="581" fill="#d2e8df" font-size="19" font-weight="400">Review the scope and Save control. Restore defaults prepares a draft.</text>
+<text x="40" y="624" fill="#afc8cb" font-size="13" font-weight="400">Conceptual illustration · follow the guide for the current controls and supported behavior.</text>
+</g>
+</svg>

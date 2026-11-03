@@ -16,9 +16,13 @@ The application is developed in the **ThreeD Garden** repository and is availabl
 
 [Latest features](#latest-features) · [Why build with ThreeD App?](#why-build-with-threed-app) · [Structural basics](#structural-basics) · [Modules](#modules)
 
+![ThreeD App Project workspace with the Model Library, locked Model DetailsCard, 3D Scene, and linked 2D Design plan](docs/images/v0.30.2/project-design-workspace.png)
+
+*ThreeD App v0.30.2, captured November 2, 2026: browse reusable Models, inspect a locked placement, and work with a linked 3D Scene and 2D Design plan.*
+
 ## Latest features
 
-Current production release: **[v0.29.0](docs/releases/v0.29.0.md)**. Recent releases bring a more consistent Admin experience, account management, shared App styling, and richer content workflows:
+Current production release: **[v0.31.2](docs/releases/v0.31.2.md)**. Recent releases bring a more consistent Admin experience, account management, shared App styling, and richer content workflows:
 
 - **Clearer Admin navigation and creation buttons.** An explicit Module hierarchy, **Add User** navigation, consistent **Add + entity** sidebar labels, and distinct current-page highlighting make common tasks easier to find. Creation buttons across Admin Module pages use green styling; sidebar links retain their ordinary navigation styling.
 - **App Settings for Module identity.** Super Admins choose shared colors and Lucide icons for App Modules. Connected Admin headers, sidebar items, and fixed record icons use those saved settings. Personal appearance, navigation visibility, and per-user sidebar expansion remain separate preferences.
@@ -28,10 +32,6 @@ Current production release: **[v0.29.0](docs/releases/v0.29.0.md)**. Recent rele
 - **Project-centered Design.** Inspect architectural summaries in Admin, edit supported plans in the Project workspace, and save architecture, placements, and supported view state through Project Save/load.
 
 See [release history](docs/releases/README.md) for detailed scope and validation, and [current context](CONTEXT.md) for implementation status and remaining acceptance work.
-
-![ThreeD App Project workspace with the Model Library, locked Model DetailsCard, 3D Scene, and linked 2D Design plan](docs/images/v0.30.2/project-design-workspace.png)
-
-*ThreeD App v0.30.2, captured November 2, 2026: browse reusable Models, inspect a locked placement, and work with a linked 3D Scene and 2D Design plan.*
 
 ## Why build with ThreeD App?
 
@@ -99,7 +99,15 @@ Creation, editing, and saving require the appropriate access. Public viewing and
 
 These are suggested uses of the existing modules. The screenshots illustrate the App at their capture dates, not verified customer deliveries.
 
+![Conceptual ThreeD App workflow showing reusable Models placed in a Project with linked 2D Design and 3D Scene views](docs/images/illustrations/project-workflow.svg)
+
+*A conceptual workflow: place reusable Models into a Project, design in 2D, and explore the same workspace in 3D.*
+
 ## Structural basics
+
+![ThreeD App has four peer Top Modules: ThreeD, Multimedia, Traffic and Learn.](public/learn/illustrations/top-modules.svg)
+
+*Conceptual illustration: Four peer Top Modules use the existing schema-defined relationships.*
 
 **A Project is the workspace boundary.** Reusable Models, Characters, garden records, and other content are managed in their Modules, then assigned or placed in Projects. Design architecture belongs to its Project. A catalog Model and a placed Model instance have separate identities.
 
@@ -196,6 +204,10 @@ Project measurement preferences support Imperial and Metric presentation. See [C
 <a id="models"></a>
 ## 🧩 Models, Files, and Textures
 
+![Geometry and supporting files, Materials, loaded Model preview, Library thumbnail and Top View image have separate jobs.](public/learn/illustrations/model-files.svg)
+
+*Conceptual illustration: Inspect the actual loaded Model as well as its saved files and images.*
+
 Keep reusable **Models** separate from the instances placed in your Projects.
 
 - Import supported **FBX, GLB, GLTF, and OBJ/MTL** assets.
@@ -279,6 +291,10 @@ Build a garden context using Plants, Beds, Plantings, and related records, then 
 
 <a id="multimedia"></a>
 ## 🎵 Multimedia
+
+![A Project Assets Album opens one Project Multimedia overlay with Track selection and playback controls.](public/learn/illustrations/project-multimedia.svg)
+
+*Conceptual illustration: Project Assets and the Multimedia overlay share Album and Track selection.*
 
 Browse a content library and use the shared Dashboard Player for supported audio and video.
 
@@ -407,7 +423,7 @@ See the [validation guide](docs/agents/VALIDATION.md) for task-specific and isol
 
 ## 🤝 Contribute and follow development
 
-The latest production release is [v0.29.0](docs/releases/v0.29.0.md). See [release history](docs/releases/README.md) for version-specific scope and checks, and [current context](CONTEXT.md) for active work and known limitations.
+The latest production release is [v0.31.2](docs/releases/v0.31.2.md). See [release history](docs/releases/README.md) for version-specific scope and checks, and [current context](CONTEXT.md) for active work and known limitations.
 
 Have a reproducible bug or a focused feature idea? [Open an issue](https://github.com/marty-mcgee/threed-garden/issues). Before contributing, review the [contribution workflow](docs/agents/TASK_CHECKLISTS.md), existing ownership boundaries, and applicable checks.
 

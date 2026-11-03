@@ -22,6 +22,10 @@ To change saved Source or Attribution, enter the corrected values before **Repla
 
 ## Align the Ground Map
 
+![Ground Map alignment settings position a flat site image beneath existing House and Tree placements.](../../public/learn/illustrations/ground-map.svg)
+
+*Conceptual illustration: Align the reference image around your placements, then save the Project.*
+
 Choose **Uploaded Image** under **Ground Visual**, then adjust:
 
 - **Width (Scene units)** and **Length (Scene units)** for the image footprint.

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
+<title id="title">Select first. Edit the selected object.</title>
+<desc id="description">Use the properties supported by that object, then inspect the result in both views. Changing measurement units changes display and input units; it does not resize objects.</desc>
+<defs>
+<linearGradient id="background" x2="1" y2="1">
+<stop stop-color="#112d32"/>
+<stop offset="1" stop-color="#0b1424"/>
+</linearGradient>
+<pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+<rect width="20" height="20" fill="#102331"/>
+<path d="M20 0H0V20" fill="none" stroke="#244552" stroke-width=".7"/>
+</pattern>
+</defs>
+<g font-family="Segoe UI, Arial, sans-serif">
+<rect x="1" y="1" width="1198" height="638" rx="24" fill="url(#background)" stroke="#355661"/>
+<path d="M40 34L72 34" fill="none" stroke="#67d4b3" stroke-width="4" />
+<text x="85" y="40" fill="#67d4b3" font-size="14" font-weight="600">THREED APP / VISUAL GUIDE</text>
+<text x="40" y="98" fill="#eef8f6" font-size="36" font-weight="700">Select first. Edit the selected object.</text>
+<text x="40" y="134" fill="#afc8cb" font-size="19" font-weight="400">Use the properties supported by that object, then inspect the result in both views.</text>
+<rect x="40" y="181" width="354" height="329" rx="18" fill="#122832" stroke="#355661"/>
+<text x="62" y="216" fill="#67d4b3" font-size="23" font-weight="600">Selected architecture</text>
+<g transform="translate(60 251) scale(1.2)">
+<rect x="0" y="0" width="260" height="175" rx="10" fill="url(#grid)" stroke="#355661"/>
+<path d="M35 30h184v115h-66m-45 0H35V30M35 80h85" fill="none" stroke="#eef8f6" stroke-width="5"/>
+<path d="M108 145v-44a44 44 0 0 1 44 44" fill="none" stroke="#67d4b3" stroke-width="2"/>
+<path d="M169 30h35" stroke="#75e3ed" stroke-width="5"/>
+<path d="M35 30h184" stroke="#75e3ed" stroke-width="7"/>
+<circle cx="35" cy="30" r="6" fill="#0b1926" stroke="#75e3ed"/>
+<circle cx="219" cy="30" r="6" fill="#0b1926" stroke="#75e3ed"/>
+</g>
+<path d="M402 344L430 344" fill="none" stroke="#67d4b3" stroke-width="3" />
+<path d="m420 337 10 7-10 7" fill="none" stroke="#67d4b3" stroke-width="3"/>
+<rect x="444" y="181" width="340" height="329" rx="18" fill="#122832" stroke="#355661"/>
+<text x="466" y="216" fill="#67d4b3" font-size="23" font-weight="600">Design Properties</text>
+<text x="467" y="252" fill="#afc8cb" font-size="16" font-weight="400">Wall height</text>
+<rect x="467" y="264" width="292" height="42" rx="8" fill="#0b1926" stroke="#355661"/>
+<text x="480" y="292" fill="#eef8f6" font-size="19" font-weight="400">100 cm</text>
+<text x="467" y="343" fill="#afc8cb" font-size="16" font-weight="400">Rotation</text>
+<rect x="467" y="355" width="292" height="42" rx="8" fill="#0b1926" stroke="#355661"/>
+<text x="480" y="383" fill="#eef8f6" font-size="19" font-weight="400">0°</text>
+<text x="467" y="465" fill="#afc8cb" font-size="16" font-weight="400">Undo / Redo retain the edit path.</text>
+<rect x="804" y="181" width="356" height="151" rx="18" fill="#122832" stroke="#355661"/>
+<text x="826" y="216" fill="#67d4b3" font-size="23" font-weight="600">Metric</text>
+<text x="828" y="269" fill="#75e3ed" font-size="30" font-weight="600">1 m = 100 cm</text>
+<rect x="804" y="352" width="356" height="158" rx="18" fill="#122832" stroke="#355661"/>
+<text x="826" y="387" fill="#67d4b3" font-size="23" font-weight="600">Imperial</text>
+<text x="828" y="440" fill="#efd294" font-size="30" font-weight="600">1 ft = 12 in</text>
+<rect x="40" y="548" width="1120" height="52" rx="12" fill="#123831" stroke="#2d6557"/>
+<g transform="translate(56 561) scale(0.72)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M16 8Q8 2 2 6v22q6-4 14 1 8-5 14-1V6q-6-4-14 2v21"/>
+</g>
+</g>
+<text x="94" y="581" fill="#d2e8df" font-size="19" font-weight="400">Changing measurement units changes display and input units; it does not resize objects.</text>
+<text x="40" y="624" fill="#afc8cb" font-size="13" font-weight="400">Conceptual illustration · follow the guide for the current controls and supported behavior.</text>
+</g>
+</svg>

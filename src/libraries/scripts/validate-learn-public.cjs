@@ -82,8 +82,34 @@ const respond = (request, body, status = 200) => request.resolve({ ok: status >=
   assert.equal(markdown.safeLearnUrl('mailto:reader@example.test', 'src'), undefined);
 
   const starters = load('src/libraries/data/learn/starter-guides.ts', {}).starterLearnGuides;
+  const illustrations = load('src/components/learn/guide-illustrations.ts', {});
+  const visual = load('src/components/learn/LearnGuideIllustration.tsx', {
+    './guide-illustrations': illustrations,
+    'react/jsx-runtime': require('react/jsx-runtime'),
+  });
+  for (const topic of Object.keys(illustrations.guideIllustrations)) {
+    const illustration = illustrations.getGuideIllustration(topic);
+    const svg = fs.readFileSync(`public${illustration.src}`, 'utf8');
+    assert.match(svg, /<title id="title">[^<]+<\/title>/);
+    assert.match(svg, /<desc id="description">[^<]+<\/desc>/);
+    assert.match(svg, /viewBox="0 0 1200 640"/);
+    assert.doesNotMatch(svg, /<script|<foreignObject|\bon\w+=|(?:href|src)="(?:https?:|\/\/|data:)/i);
+    const figure = renderToStaticMarkup(React.createElement(visual.LearnGuideIllustration, { topic }));
+    assert(figure.includes(`src="${illustration.src}"`));
+    assert(figure.includes('width="1200" height="640"'));
+    assert.match(figure, /<figcaption[^>]*>.*Conceptual illustration/);
+    assert.equal(renderToStaticMarkup(React.createElement(visual.LearnGuideIllustration, {
+      topic,
+      content: `![Author-provided diagram](${illustration.src})`,
+    })), '', 'An explicitly referenced built-in image is not added a second time');
+  }
+  for (const topic of ['custom-guide', '__proto__', 'constructor', '../private']) {
+    assert.equal(illustrations.getGuideIllustration(topic), null);
+    assert.equal(renderToStaticMarkup(React.createElement(visual.LearnGuideIllustration, { topic })), '');
+  }
   assert.equal(starters.length, 14); assert.equal(new Set(starters.map(guide => guide.slug)).size, 14);
   for (const [index, guide] of starters.entries()) {
+    assert(illustrations.getGuideIllustration(guide.slug), `Missing illustration for ${guide.slug}`);
     assert(contracts.isLearnGuideSlug(guide.slug)); assert(guide.summary.length <= 500); assert(guide.content.includes('## Expected result'));
     assert(guide.content.includes('https://github.com/marty-mcgee/threed-garden/blob/main/docs/')); assert.equal(guide.sortOrder, (index + 1) * 10);
     assert.equal(guide.isActive, true); assert.equal(guide.isPublished, true);
@@ -140,16 +166,23 @@ const respond = (request, body, status = 200) => request.resolve({ ok: status >=
   const reader = load('src/components/learn/LearnGuideReader.tsx', {
     react: readerHarness.react, 'react/jsx-runtime': runtime, 'next/link': { default: 'link' }, 'lucide-react': icons,
     '@/components/settings/ModuleAppearanceProvider': { ModuleIcon: 'module-icon' }, '@/components/ui/button': { Button: 'button' },
-    './LearnMarkdown': { LearnMarkdown: 'markdown' }, './learn-public-data': contracts, './use-public-learn': readerHarness.hook,
+    './LearnMarkdown': { LearnMarkdown: 'markdown' }, './LearnGuideIllustration': { LearnGuideIllustration: 'illustration' },
+    './learn-public-data': contracts, './use-public-learn': readerHarness.hook,
   });
   const read = () => readerHarness.render(() => reader.LearnGuideReader({ slug }));
   assert.match(text(read()), /Loading guide/); respond(readerHarness.requests.shift(), detail('published')); await flush();
   tree = read(); assert.equal(one(tree, node => node.type === 'markdown').props.content, 'Private-to-response body published');
+  slug = 'draw-room'; tree = read();
+  assert.equal(all(tree, node => node.type === 'illustration').length, 0, 'Loading cannot reveal a stale guide illustration');
+  respond(readerHarness.requests.shift(), detail('draw-room')); await flush(); tree = read();
+  assert.equal(one(tree, node => node.type === 'illustration').props.topic, 'draw-room');
+  assert.equal(one(tree, node => node.type === 'markdown').props.content, 'Private-to-response body draw-room', 'Illustrations do not replace database content');
   slug = 'unpublished'; tree = read(); assert.equal(all(tree, node => node.type === 'markdown').length, 0);
   respond(readerHarness.requests.shift(), { success: false, error: 'Guide not found.' }, 404); await flush(); tree = read();
   assert.match(text(tree), /Guide not found/); assert.equal(all(tree, node => node.type === 'markdown').length, 0);
+  assert.equal(all(tree, node => node.type === 'illustration').length, 0, 'Unpublished or missing content gets no guide illustration');
   slug = 'temporary-error'; read(); respond(readerHarness.requests.shift(), null, 503); await flush(); tree = read(); assert.match(text(tree), /could not be loaded/);
   button(tree, 'Retry guide').props.onClick(); read(); respond(readerHarness.requests.shift(), detail('temporary-error')); await flush(); assert.equal(all(read(), node => node.type === 'markdown').length, 1);
   slug = '../invalid'; assert.match(text(read()), /Guide not found/); assert.equal(readerHarness.requests.length, 0); readerHarness.unmount();
-  console.log('PASS Learn public: real safe GFM rendering, fourteen explicit starter guides, summary paging/search, legacy anchors, aborted/stale loads, retry/empty/error states and unpublished 404 handling (mock HTTP; no server).');
+  console.log('PASS Learn public: safe GFM, fourteen illustrated starter topics, accessible local SVG assets, authored-image preservation, summary paging/search, legacy anchors, stale loads, retry/empty/error states and publication gating (mock HTTP; no server).');
 })().catch(error => { console.error(error); process.exitCode = 1; });

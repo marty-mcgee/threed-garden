@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
+<title id="title">Keep Albums, Tracks and Lyrics connected</title>
+<desc id="description">Manage your content in Admin; public players show only eligible published content. A Project-only Lyrics assignment does not publish that content.</desc>
+<defs>
+<linearGradient id="background" x2="1" y2="1">
+<stop stop-color="#112d32"/>
+<stop offset="1" stop-color="#0b1424"/>
+</linearGradient>
+<pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+<rect width="20" height="20" fill="#102331"/>
+<path d="M20 0H0V20" fill="none" stroke="#244552" stroke-width=".7"/>
+</pattern>
+</defs>
+<g font-family="Segoe UI, Arial, sans-serif">
+<rect x="1" y="1" width="1198" height="638" rx="24" fill="url(#background)" stroke="#355661"/>
+<path d="M40 34L72 34" fill="none" stroke="#67d4b3" stroke-width="4" />
+<text x="85" y="40" fill="#67d4b3" font-size="14" font-weight="600">THREED APP / VISUAL GUIDE</text>
+<text x="40" y="98" fill="#eef8f6" font-size="36" font-weight="700">Keep Albums, Tracks and Lyrics connected</text>
+<text x="40" y="134" fill="#afc8cb" font-size="19" font-weight="400">Manage your content in Admin; public players show only eligible published content.</text>
+<rect x="40" y="188" width="330" height="331" rx="18" fill="#122832" stroke="#355661"/>
+<text x="62" y="223" fill="#67d4b3" font-size="23" font-weight="600">Album</text>
+<rect x="64" y="255" width="102" height="102" rx="12" fill="#284d4b" stroke="#67d4b3"/>
+<g transform="translate(93 285) scale(1.25)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M12 25V8l17-5v17M12 14l17-5"/>
+<ellipse cx="7" cy="26" rx="5" ry="4"/>
+<ellipse cx="24" cy="22" rx="5" ry="4"/>
+</g>
+</g>
+<text x="190" y="281" fill="#afc8cb" font-size="20" font-weight="400">Artwork</text>
+<text x="190" y="311" fill="#afc8cb" font-size="20" font-weight="400">Collection</text>
+<rect x="64" y="433" width="277" height="34" rx="17" fill="#183a3c" stroke="#67d4b3"/>
+<text x="78" y="456" fill="#67d4b3" font-size="16" font-weight="400">Public + Published</text>
+<path d="M384 354L421 354" fill="none" stroke="#67d4b3" stroke-width="3" />
+<path d="m411 347 10 7-10 7" fill="none" stroke="#67d4b3" stroke-width="3"/>
+<rect x="436" y="188" width="330" height="331" rx="18" fill="#122832" stroke="#355661"/>
+<text x="458" y="223" fill="#67d4b3" font-size="23" font-weight="600">Tracks</text>
+<rect x="459" y="252" width="283" height="49" rx="9" fill="#0b1926" stroke="#355661"/>
+<circle cx="482" cy="277" r="10" fill="#25594f" stroke="none"/>
+<text x="478" y="283" fill="#67d4b3" font-size="15" font-weight="400">1</text>
+<text x="506" y="284" fill="#eef8f6" font-size="21" font-weight="400">Track 1</text>
+<rect x="459" y="318" width="283" height="49" rx="9" fill="#0b1926" stroke="#355661"/>
+<circle cx="482" cy="343" r="10" fill="#25594f" stroke="none"/>
+<text x="478" y="349" fill="#67d4b3" font-size="15" font-weight="400">2</text>
+<text x="506" y="350" fill="#eef8f6" font-size="21" font-weight="400">Track 2</text>
+<rect x="459" y="384" width="283" height="49" rx="9" fill="#0b1926" stroke="#355661"/>
+<circle cx="482" cy="409" r="10" fill="#25594f" stroke="none"/>
+<text x="478" y="415" fill="#67d4b3" font-size="15" font-weight="400">3</text>
+<text x="506" y="416" fill="#eef8f6" font-size="21" font-weight="400">Track 3</text>
+<text x="459" y="483" fill="#afc8cb" font-size="18" font-weight="400">Order inside the Album.</text>
+<rect x="800" y="188" width="360" height="331" rx="18" fill="#122832" stroke="#355661"/>
+<text x="822" y="223" fill="#67d4b3" font-size="23" font-weight="600">Lyrics</text>
+<g transform="translate(824 252) scale(1.1)">
+<g fill="none" stroke="#75e3ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M6 2h14l8 8v21H6zM20 2v9h8M11 17h11M11 23h8"/>
+</g>
+</g>
+<text x="879" y="266" fill="#afc8cb" font-size="18" font-weight="400">Independent record</text>
+<text x="879" y="294" fill="#afc8cb" font-size="18" font-weight="400">with assignments.</text>
+<path d="M824 364L1126 364" fill="none" stroke="#355661" stroke-width="2" />
+<path d="M824 388L1092 388" fill="none" stroke="#355661" stroke-width="2" />
+<path d="M824 412L1115 412" fill="none" stroke="#355661" stroke-width="2" />
+<text x="824" y="483" fill="#afc8cb" font-size="17" font-weight="400">Active + eligible ownership.</text>
+<rect x="40" y="548" width="1120" height="52" rx="12" fill="#123831" stroke="#2d6557"/>
+<g transform="translate(56 561) scale(0.72)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M16 8Q8 2 2 6v22q6-4 14 1 8-5 14-1V6q-6-4-14 2v21"/>
+</g>
+</g>
+<text x="94" y="581" fill="#d2e8df" font-size="19" font-weight="400">A Project-only Lyrics assignment does not publish that content.</text>
+<text x="40" y="624" fill="#afc8cb" font-size="13" font-weight="400">Conceptual illustration · follow the guide for the current controls and supported behavior.</text>
+</g>
+</svg>

@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="680" viewBox="0 0 1280 680" role="img" aria-labelledby="title description">
+  <title id="title">One Project, connected views</title>
+  <desc id="description">Reusable house, tree and bench Models are placed into a Project. A top-down Design plan and a matching 3D Scene show the same arrangement. Catalog Models stay reusable; placements and architecture are saved with the Project.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#102b30"/>
+      <stop offset="1" stop-color="#0c1425"/>
+    </linearGradient>
+    <linearGradient id="project" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#173b3f"/>
+      <stop offset="1" stop-color="#11242f"/>
+    </linearGradient>
+    <linearGradient id="ground" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#3b8069"/>
+      <stop offset="1" stop-color="#205044"/>
+    </linearGradient>
+    <pattern id="plan-grid" width="22" height="22" patternUnits="userSpaceOnUse">
+      <path d="M22 0H0V22" fill="none" stroke="#1e3e52" stroke-width="1"/>
+    </pattern>
+    <pattern id="scene-grid" width="44" height="44" patternUnits="userSpaceOnUse">
+      <path d="M44 0H0V44" fill="none" stroke="#438775" stroke-width="1" opacity=".24"/>
+    </pattern>
+    <marker id="arrow" viewBox="0 0 12 12" refX="8" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="m3 2 5 4-5 4" fill="none" stroke="#74ddc3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <g id="tree">
+      <path d="M0 2V38" stroke="#b99569" stroke-width="7" stroke-linecap="round"/>
+      <ellipse cx="3" cy="-4" rx="25" ry="29" fill="#68b78b"/>
+      <ellipse cx="-9" cy="-12" rx="19" ry="23" fill="#92d39b"/>
+      <path d="M0 5V-19M0-2l-10-8M0-8l11-8" fill="none" stroke="#438b65" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g id="bench">
+      <path d="M-23 7v17m40-22v17" stroke="#99b7b5" stroke-width="5" stroke-linecap="round"/>
+      <path d="m-30-3 45-17 16 9-45 18z" fill="#d7af78"/>
+      <path d="m-30-3 16 10v7L-30 4z" fill="#9c784e"/>
+      <path d="m-27-17 43-16v10l-43 16z" fill="#e4bd88"/>
+      <path d="m-25-8-2-17M17-23v-12" fill="none" stroke="#99b7b5" stroke-width="4"/>
+    </g>
+    <g id="house">
+      <path d="m-68-4 78 42v76l-78-42z" fill="#d2e4da"/>
+      <path d="m10 38 88-47v76l-88 47z" fill="#8fb5ac"/>
+      <path d="m-68-4 39-23 39 65z" fill="#e4eee7"/>
+      <path d="m-31-29 96-51 45 69-96 51z" fill="#354b60"/>
+      <path d="m-76-8 96-51 45-21-96 51z" fill="#547285"/>
+      <path d="m-31-29 96-51m-96 51 45 69" fill="none" stroke="#718b99" stroke-width="2"/>
+      <path d="m-18 48 18 10v48l-18-10z" fill="#406767"/>
+      <path d="m-51 22 23 13v24l-23-13z" fill="#2c686e" stroke="#edf5ed" stroke-width="4"/>
+      <path d="m36 39 32-17v28L36 67z" fill="#2c686e" stroke="#dbece2" stroke-width="4"/>
+      <path d="m52 30 0 28M36 53l32-17" fill="none" stroke="#dbece2" stroke-width="3"/>
+    </g>
+    <style>
+      text { font-family: "Segoe UI", Arial, sans-serif; }
+      .title { fill: #f1f8f5; font-size: 43px; font-weight: 700; letter-spacing: -1px; }
+      .heading { fill: #eff8f4; font-size: 23px; font-weight: 600; }
+      .body { fill: #aac7ca; font-size: 19px; }
+      .small { fill: #a8c5c7; font-size: 17px; }
+      .accent { fill: #80dfc5; }
+    </style>
+  </defs>
+
+  <rect width="1280" height="680" rx="24" fill="url(#background)"/>
+  <rect x="1" y="1" width="1278" height="678" rx="23" fill="none" stroke="#315053"/>
+  <path d="M42 36h34" stroke="#60d6b4" stroke-width="5" stroke-linecap="round"/>
+  <text x="90" y="43" class="small accent" font-weight="600" letter-spacing="3">THREED APP</text>
+  <text x="40" y="106" class="title">One Project. Connected views.</text>
+  <text x="40" y="143" class="body">Choose reusable Models, shape a plan, and explore the same space in 3D.</text>
+
+  <!-- Reusable catalog content stays outside the Project instance boundary. -->
+  <rect x="40" y="198" width="280" height="365" rx="18" fill="#13242f" stroke="#34525d"/>
+  <text x="60" y="237" class="heading">Reusable Models</text>
+  <text x="60" y="266" class="small">Browse the Model Library</text>
+
+  <rect x="58" y="289" width="244" height="78" rx="12" fill="#1b303b" stroke="#39535e"/>
+  <rect x="70" y="301" width="62" height="54" rx="8" fill="#263f49"/>
+  <g transform="translate(100 328) scale(.24)"><use href="#house"/></g>
+  <text x="150" y="335" fill="#e6f2ed" font-size="21" font-weight="600">House</text>
+  <path d="M274 319v16m-8-8h16" stroke="#8fcdc1" stroke-width="2" stroke-linecap="round"/>
+
+  <rect x="58" y="378" width="244" height="78" rx="12" fill="#1b303b" stroke="#39535e"/>
+  <rect x="70" y="390" width="62" height="54" rx="8" fill="#263f49"/>
+  <g transform="translate(102 416) scale(.62)"><use href="#tree"/></g>
+  <text x="150" y="424" fill="#e6f2ed" font-size="21" font-weight="600">Tree</text>
+  <path d="M274 408v16m-8-8h16" stroke="#8fcdc1" stroke-width="2" stroke-linecap="round"/>
+
+  <rect x="58" y="467" width="244" height="78" rx="12" fill="#1b303b" stroke="#39535e"/>
+  <rect x="70" y="479" width="62" height="54" rx="8" fill="#263f49"/>
+  <g transform="translate(101 510) scale(.68)"><use href="#bench"/></g>
+  <text x="150" y="513" fill="#e6f2ed" font-size="21" font-weight="600">Bench</text>
+  <path d="M274 497v16m-8-8h16" stroke="#8fcdc1" stroke-width="2" stroke-linecap="round"/>
+
+  <path d="M324 389h35" fill="none" stroke="#74ddc3" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <!-- Both representations belong to one Project workspace. -->
+  <rect x="370" y="184" width="870" height="379" rx="18" fill="url(#project)" stroke="#53bca5" stroke-width="2"/>
+  <path d="M392 208h13l5 6h14v17h-32z" fill="none" stroke="#8ee3cb" stroke-width="2" stroke-linejoin="round"/>
+  <text x="437" y="230" class="heading">Project workspace</text>
+  <rect x="940" y="201" width="278" height="36" rx="18" fill="#204e48" stroke="#397a67"/>
+  <text x="1079" y="225" text-anchor="middle" fill="#9de5cb" font-size="17">Shared selection + placements</text>
+
+  <rect x="390" y="255" width="380" height="286" rx="12" fill="#101f30" stroke="#365264"/>
+  <rect x="390" y="255" width="380" height="286" rx="12" fill="url(#plan-grid)"/>
+  <rect x="406" y="270" width="141" height="34" rx="8" fill="#163646"/>
+  <path d="m419 287 8-8 8 8-8 8zM427 279v16" fill="none" stroke="#6de0f2" stroke-width="1.8"/>
+  <text x="445" y="293" fill="#9ce5ef" font-size="18" font-weight="600">2D Design</text>
+
+  <!-- Top-down house, tree and bench match the 3D arrangement. -->
+  <path d="M422 329h316v183H422z" fill="#356557" fill-opacity=".17" stroke="#538879" stroke-dasharray="6 6"/>
+  <path d="M473 354h135v116H473z" fill="#7b9397"/>
+  <path d="m473 354 16 15h103l16-15M489 369v86l-16 15M489 455h103l16 15M592 369v86" fill="none" stroke="#bdd0ce" stroke-width="3"/>
+  <path d="M466 347h149v130H466z" fill="none" stroke="#71e8ef" stroke-width="3"/>
+  <g fill="#0f2432" stroke="#7be9ec" stroke-width="2">
+    <rect x="461" y="342" width="10" height="10" rx="2"/>
+    <rect x="610" y="342" width="10" height="10" rx="2"/>
+    <rect x="461" y="472" width="10" height="10" rx="2"/>
+    <rect x="610" y="472" width="10" height="10" rx="2"/>
+  </g>
+  <path d="M541 478v25h165" fill="none" stroke="#bca580" stroke-width="16"/>
+  <g transform="translate(683 372)">
+    <circle r="24" fill="#3c795b" stroke="#8acb91" stroke-width="2"/>
+    <circle cx="-8" cy="-5" r="17" fill="#81bd86"/>
+    <circle cx="9" cy="6" r="15" fill="#65a676"/>
+  </g>
+  <rect x="664" y="434" width="45" height="13" rx="3" fill="#d0aa76" stroke="#edcc9d"/>
+  <text x="536" y="524" text-anchor="middle" fill="#77dfe9" font-size="16">Selected House instance</text>
+
+  <rect x="790" y="255" width="430" height="286" rx="12" fill="#112b30" stroke="#365c5c"/>
+  <rect x="806" y="270" width="140" height="34" rx="8" fill="#20483e"/>
+  <path d="m820 281 7-4 7 4v9l-7 4-7-4zm0 0 7 4 7-4m-7 4v9" fill="none" stroke="#8cddba" stroke-width="1.8" stroke-linejoin="round"/>
+  <text x="844" y="293" fill="#a0e3c3" font-size="18" font-weight="600">3D Scene</text>
+
+  <path d="m814 440 201-107 188 94-201 109z" fill="#112421"/>
+  <path d="m814 425 201-107 188 94-201 109z" fill="url(#ground)" stroke="#5a9d7d" stroke-width="2"/>
+  <path d="m814 425 201-107 188 94-201 109z" fill="url(#scene-grid)"/>
+  <path d="m977 471 49 24 103-57" fill="none" stroke="#bca580" stroke-width="14"/>
+  <g transform="translate(968 366) scale(.8)"><use href="#house"/></g>
+  <path d="m907 360 77-41 36-17 36 55-10 63-70 37-62-33z" fill="none" stroke="#7ee9ed" stroke-width="1.8" opacity=".9"/>
+  <ellipse cx="1121" cy="419" rx="28" ry="11" fill="#173e32" opacity=".6"/>
+  <g transform="translate(1120 372) scale(.95)"><use href="#tree"/></g>
+  <g transform="translate(1111 451) scale(.85)"><use href="#bench"/></g>
+
+  <path d="M778 374v43" fill="none" stroke="#8ae1cf" stroke-width="2" stroke-dasharray="3 5"/>
+  <circle cx="778" cy="396" r="14" fill="#1d4644" stroke="#6fcbb9"/>
+  <path d="M770 392h15m-4-3 4 3-4 3m5 5h-15m4-3-4 3 4 3" fill="none" stroke="#a5efda" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <rect x="40" y="590" width="1200" height="58" rx="12" fill="#12362f" stroke="#2f6b57"/>
+  <g transform="translate(61 608)" fill="none" stroke="#91dfb9" stroke-width="2" stroke-linejoin="round">
+    <path d="M0 0h17l6 6v18H0zM5 0v8h12V0M5 24V14h13v10"/>
+  </g>
+  <text x="99" y="626" fill="#dcf1e5" font-size="20">Catalog Models stay reusable. Save placements and architecture with the Project.</text>
+</svg>

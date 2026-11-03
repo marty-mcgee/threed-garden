@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
+<title id="title">Accounts keep their content boundaries</title>
+<desc id="description">Active Super Admins manage Users. Ordinary Admins manage their own content. Self, last-active-Super-Admin and content-owner deletion checks remain enforced.</desc>
+<defs>
+<linearGradient id="background" x2="1" y2="1">
+<stop stop-color="#112d32"/>
+<stop offset="1" stop-color="#0b1424"/>
+</linearGradient>
+<pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+<rect width="20" height="20" fill="#102331"/>
+<path d="M20 0H0V20" fill="none" stroke="#244552" stroke-width=".7"/>
+</pattern>
+</defs>
+<g font-family="Segoe UI, Arial, sans-serif">
+<rect x="1" y="1" width="1198" height="638" rx="24" fill="url(#background)" stroke="#355661"/>
+<path d="M40 34L72 34" fill="none" stroke="#67d4b3" stroke-width="4" />
+<text x="85" y="40" fill="#67d4b3" font-size="14" font-weight="600">THREED APP / VISUAL GUIDE</text>
+<text x="40" y="98" fill="#eef8f6" font-size="36" font-weight="700">Accounts keep their content boundaries</text>
+<text x="40" y="134" fill="#afc8cb" font-size="19" font-weight="400">Active Super Admins manage Users. Ordinary Admins manage their own content.</text>
+<rect x="40" y="193" width="352" height="321" rx="18" fill="#122832" stroke="#355661"/>
+<text x="62" y="228" fill="#67d4b3" font-size="23" font-weight="600">Create an account</text>
+<g transform="translate(64 256) scale(1.7)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="16" cy="7" r="5"/>
+<path d="M6 31v-6a10 10 0 0 1 20 0v6M16 18v13"/>
+</g>
+</g>
+<text x="141" y="277" fill="#afc8cb" font-size="21" font-weight="400">Name + email</text>
+<text x="141" y="308" fill="#afc8cb" font-size="21" font-weight="400">Initial password</text>
+<rect x="64" y="382" width="224" height="34" rx="17" fill="#183a3c" stroke="#67d4b3"/>
+<text x="78" y="405" fill="#67d4b3" font-size="16" font-weight="400">Create User</text>
+<text x="64" y="479" fill="#afc8cb" font-size="18" font-weight="400">New account: ordinary Admin.</text>
+<path d="M406 355L440 355" fill="none" stroke="#67d4b3" stroke-width="3" />
+<path d="m430 348 10 7-10 7" fill="none" stroke="#67d4b3" stroke-width="3"/>
+<rect x="454" y="193" width="330" height="321" rx="18" fill="#122832" stroke="#355661"/>
+<text x="476" y="228" fill="#67d4b3" font-size="23" font-weight="600">Review and edit</text>
+<text x="478" y="266" fill="#afc8cb" font-size="16" font-weight="400">Profile</text>
+<rect x="478" y="278" width="282" height="42" rx="8" fill="#0b1926" stroke="#355661"/>
+<text x="491" y="306" fill="#eef8f6" font-size="19" font-weight="400">Name / Email</text>
+<text x="478" y="369" fill="#afc8cb" font-size="16" font-weight="400">Role</text>
+<rect x="478" y="381" width="282" height="42" rx="8" fill="#0b1926" stroke="#355661"/>
+<text x="491" y="409" fill="#eef8f6" font-size="19" font-weight="400">Save Changes explicitly</text>
+<rect x="804" y="193" width="356" height="321" rx="18" fill="#122832" stroke="#355661"/>
+<text x="826" y="228" fill="#67d4b3" font-size="23" font-weight="600">Soft deletion</text>
+<g transform="translate(829 260) scale(1.6)">
+<g fill="none" stroke="#f2a5a0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<rect x="5" y="14" width="23" height="18" rx="4"/>
+<path d="M10 14V8a6 6 0 0 1 12 0v6M16 21v5"/>
+</g>
+</g>
+<text x="829" y="371" fill="#afc8cb" font-size="19" font-weight="400">Record is retained.</text>
+<text x="829" y="400" fill="#afc8cb" font-size="19" font-weight="400">Sign-in is denied.</text>
+<text x="829" y="429" fill="#afc8cb" font-size="19" font-weight="400">Protected accounts stay safe.</text>
+<rect x="40" y="548" width="1120" height="52" rx="12" fill="#123831" stroke="#2d6557"/>
+<g transform="translate(56 561) scale(0.72)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M16 8Q8 2 2 6v22q6-4 14 1 8-5 14-1V6q-6-4-14 2v21"/>
+</g>
+</g>
+<text x="94" y="581" fill="#d2e8df" font-size="19" font-weight="400">Self, last-active-Super-Admin and content-owner deletion checks remain enforced.</text>
+<text x="40" y="624" fill="#afc8cb" font-size="13" font-weight="400">Conceptual illustration · follow the guide for the current controls and supported behavior.</text>
+</g>
+</svg>

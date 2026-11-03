@@ -118,3 +118,17 @@ Following the Developer's location correction and question about ownership, the 
 Initial evidence is retained in ignored `.next/root-organization-tools`; final-path logs and parity evidence are under `.next/schema-drizzle-tools`, using `.next/root-organization-validation`. No environment files are copied; credentials are scrubbed and live network/database/port-4444 access is guarded. No Studio/server, push, live operation, Git write or deployment is performed. All changes remain unstaged.
 
 The Developer subsequently accepted the final structure and authorized [v0.31.2 release preparation](../releases/v0.31.2.md). Its version metadata, release gates and deployment status belong to that record; the unchanged-version and no-build statements above describe the earlier implementation checkpoint.
+
+## November 3: GitHub Pages cleanup
+
+The Developer requested investigation, stopping Pages publishing and cleanup of old deployment records. This follow-up began on clean `main` / `46c6b32c3a36a7ab0298570e02846d00eacda530`, with App/package-lock version **0.31.2**.
+
+Read-only GitHub API inspection found legacy Pages publishing from `main:/docs` to `https://marty-mcgee.github.io/threed-garden/`, with no custom domain. GitHub's managed `dynamic/pages/pages-build-deployment` workflow created these records; the latest Pages build succeeded. The separate Vercel Production deployment and repository validation run also reported success. The tracked validation workflow does not deploy Pages.
+
+Archived **477 Pages deployment records**, dating from December 9, 2020 through November 3, 2026, plus their available status histories and Pages configuration. Initial latest-status counts were 289 inactive, 184 successful and four errors. Disabled Pages publishing, marked non-inactive Pages records inactive with `autoInactive: false`, and removed only the archived `github-pages` deployment IDs. One HTTP 502 interrupted a batch after two deletions had taken effect; read-only ID reconciliation recovered those receipts before the journaled cleanup resumed.
+
+After all records were removed, rechecked that the remaining `github-pages` environment had zero deployments, secrets, variables and protection rules, then removed that empty environment. Final API verification confirms Pages returns 404, repository `has_pages` is false, no Pages deployments remain and its environment returns 404. `Production`, `Production – threed-garden` and `Preview – threed-garden` remain present. The existing Vercel Production status remains successful; [repository validation run 41667148856](https://github.com/marty-mcgee/threed-garden/actions/runs/41667148856) passed. These are provider/API observations, not a new authenticated App smoke check.
+
+Preserve the ignored archive at `reference/operations/github-pages-cleanup-2026-11-03/`, including original records/statuses, settings, mutation receipts, 502 reconciliation, final verification and SHA-256 integrity manifest. Execution helpers and initial evidence remain under ignored `.next/github-pages-cleanup-2026-11-03/`. Do not rerun completed mutations. GitHub deployment IDs and original timestamps cannot be restored exactly from the archive.
+
+No Vercel deployment, repository validation configuration, App source, package metadata, dependency, database, server, Git commit/push or publication was changed. Historical Actions run logs remain. Only the deployment guide, this maintenance record and current context are updated locally and left unstaged; documentation paths and whitespace checks pass.

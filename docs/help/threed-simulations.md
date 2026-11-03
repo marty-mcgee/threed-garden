@@ -4,6 +4,10 @@ A **Simulation** runs supported Actions through a Project's participating ThreeD
 
 ## Prepare a definition
 
+![Scenario guidance is separate from the Simulation path from saved definition through Actions to Results.](../../public/learn/illustrations/scenarios-simulations.svg)
+
+*Conceptual illustration: Open Scenario provides guidance; Run Simulation executes supported Actions.*
+
 1. Open **Admin → ThreeD → Simulations** and choose **Add Simulation**. From a Project's **Setup → Simulations** controls, **Create Simulation** opens the same Admin creation workflow with the available Project context.
 2. Choose an owned Project and its assigned ThreeD module, then enter a name and slug.
 3. Choose saved Project participants. For Soccer, use the same movable Character and target ball for **Run to target ball** and **Kick ball (foot contact)**.

@@ -4,6 +4,10 @@ Start at **Learn ThreeD** (`/learn`) for guided tasks, or open **Dashboard** (`/
 
 ## Create your first Project
 
+![Create an owned ThreeD Project, make one change, save and reopen to inspect it.](../../public/learn/illustrations/first-project.svg)
+
+*Conceptual illustration: Start with one small change you can save and verify.*
+
 1. Sign in at `/auth/sign-in`, or choose **Create an account** there if you are new. Then choose **Create Project** on Dashboard. In the Project workspace, use **Select Project → Create New Project**; if a Project is already open, its menu offers **New Project**.
 2. Enter a **Project Name**, choose **ThreeD Starter**, then select **Create & Open Project**. Choose the Public Project setting deliberately; owning a Project is still required to edit and save it.
 3. Open **Setup → Project Tour** for initial guidance. Use **3D** to explore the Scene or **Design** to open its editable plan.

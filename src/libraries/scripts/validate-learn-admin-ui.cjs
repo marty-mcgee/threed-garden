@@ -82,6 +82,7 @@ function fixture(kind = 'list', id) {
     '@/components/ui/textarea': { Textarea: 'textarea' }, '@/components/ui/label': { Label: 'label' }, '@/components/ui/switch': { Switch: 'switch' },
     '@/components/ui/table': Object.fromEntries(['Table', 'TableBody', 'TableCell', 'TableHead', 'TableHeader', 'TableRow'].map(name => [name, name])),
     '@/components/learn/LearnMarkdown': { LearnMarkdown: 'markdown' },
+    '@/components/learn/LearnGuideIllustration': { LearnGuideIllustration: 'illustration' },
     '@/libraries/services/learn/contracts': contracts, '@/libraries/services/learn/input': input,
     './learn-admin-client': client };
   const app = load(`src/components/admin/learn/${kind === 'list' ? 'LearnGuidesList' : 'LearnGuideEditor'}.tsx`, modules, globals);

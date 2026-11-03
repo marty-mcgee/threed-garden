@@ -10,6 +10,10 @@ The illustrative Home garden lets you practice orbit and zoom without an account
 
 ## Sign in and start your own Project
 
+![Create an owned ThreeD Project, make one change, save and reopen to inspect it.](../../public/learn/illustrations/first-project.svg)
+
+*Conceptual illustration: Start with one small change you can save and verify.*
+
 1. Open **Sign in** at `/auth/sign-in`. Enter **Email** and **Password**, then choose **Sign In**. The password visibility control lets you check your entry.
 2. If you need an account, choose **Create an account**, complete the signup form and select **Sign Up**. New accounts are Admins of their own content; Super Admin access is managed separately.
 3. After signing in, Admin opens at `/admin`. Choose **Projects > Add Project**, enter a Project Name and review access/measurement preferences, then **Create Project**.

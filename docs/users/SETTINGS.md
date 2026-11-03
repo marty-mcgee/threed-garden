@@ -4,6 +4,10 @@ Open **Admin > Settings > App Settings** (`/admin/settings`). Global Module appe
 
 ### A) Global Module settings
 
+![Shared Module appearance, account preferences and browser-local Settings are shown as three distinct scopes.](../../public/learn/illustrations/app-settings.svg)
+
+*Conceptual illustration: Check who a setting affects and which Save control retains it.*
+
 The current App defines 44 configurable appearance identities, including Learn and the Dashboard/Admin surfaces.
 
 Module colors and Lucide icons are shared by every user. Only active, non-deleted **Super Admin** accounts can save them through **Save Module appearance**; other Users can view the saved appearance. A collapsible tree groups controls under Users, Projects, ThreeD, Multimedia, Traffic, Learn, Dashboard and Admin. Nested groups and individual Modules start closed; expand a Module to edit its color and icon. Unsaved indicators remain visible on collapsed parent groups, and Save actions stay outside the tree. Connected Admin headers, navigation identities and fixed record icons use these settings; status indicators and individual Layer colors stay independent.

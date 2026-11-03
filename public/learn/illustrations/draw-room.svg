@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
+<title id="title">From corners to a room</title>
+<desc id="description">Draw the architecture in Design, then inspect the same room in the Scene. Walls, floors and hosted openings belong to Project architecture.</desc>
+<defs>
+<linearGradient id="background" x2="1" y2="1">
+<stop stop-color="#112d32"/>
+<stop offset="1" stop-color="#0b1424"/>
+</linearGradient>
+<pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+<rect width="20" height="20" fill="#102331"/>
+<path d="M20 0H0V20" fill="none" stroke="#244552" stroke-width=".7"/>
+</pattern>
+</defs>
+<g font-family="Segoe UI, Arial, sans-serif">
+<rect x="1" y="1" width="1198" height="638" rx="24" fill="url(#background)" stroke="#355661"/>
+<path d="M40 34L72 34" fill="none" stroke="#67d4b3" stroke-width="4" />
+<text x="85" y="40" fill="#67d4b3" font-size="14" font-weight="600">THREED APP / VISUAL GUIDE</text>
+<text x="40" y="98" fill="#eef8f6" font-size="36" font-weight="700">From corners to a room</text>
+<text x="40" y="134" fill="#afc8cb" font-size="19" font-weight="400">Draw the architecture in Design, then inspect the same room in the Scene.</text>
+<circle cx="62" cy="188" r="18" fill="#1d4847" stroke="#67d4b3"/>
+<text x="57" y="194" fill="#67d4b3" font-size="18" font-weight="600">1</text>
+<text x="92" y="195" fill="#eef8f6" font-size="22" font-weight="600">Connect walls</text>
+<circle cx="450" cy="188" r="18" fill="#1d4847" stroke="#67d4b3"/>
+<text x="445" y="194" fill="#67d4b3" font-size="18" font-weight="600">2</text>
+<text x="480" y="195" fill="#eef8f6" font-size="22" font-weight="600">Finish the floor</text>
+<circle cx="838" cy="188" r="18" fill="#1d4847" stroke="#67d4b3"/>
+<text x="833" y="194" fill="#67d4b3" font-size="18" font-weight="600">3</text>
+<text x="868" y="195" fill="#eef8f6" font-size="22" font-weight="600">Review in 3D</text>
+<g transform="translate(40 227) scale(1.25)">
+<rect x="0" y="0" width="260" height="175" rx="10" fill="url(#grid)" stroke="#355661"/>
+<path d="M35 30h184v115h-66m-45 0H35V30M35 80h85" fill="none" stroke="#eef8f6" stroke-width="5"/>
+<path d="M108 145v-44a44 44 0 0 1 44 44" fill="none" stroke="#67d4b3" stroke-width="2"/>
+<path d="M169 30h35" stroke="#75e3ed" stroke-width="5"/>
+<path d="M35 30h184" stroke="#75e3ed" stroke-width="7"/>
+<circle cx="35" cy="30" r="6" fill="#0b1926" stroke="#75e3ed"/>
+<circle cx="219" cy="30" r="6" fill="#0b1926" stroke="#75e3ed"/>
+</g>
+<path d="M380 340L410 340" fill="none" stroke="#67d4b3" stroke-width="3" />
+<path d="m400 333 10 7-10 7" fill="none" stroke="#67d4b3" stroke-width="3"/>
+<rect x="428" y="227" width="325" height="219" rx="18" fill="url(#grid)" stroke="#355661"/>
+<path d="M472 266h235v145H472z" fill="#69c3b0" fill-opacity=".22" stroke="#b8e2d9" stroke-width="4"/>
+<path d="M548 411v-51a51 51 0 0 1 51 51" fill="none" stroke="#67d4b3" stroke-width="2"/>
+<path d="M770 340L800 340" fill="none" stroke="#67d4b3" stroke-width="3" />
+<path d="m790 333 10 7-10 7" fill="none" stroke="#67d4b3" stroke-width="3"/>
+<rect x="816" y="227" width="344" height="219" rx="18" fill="#122832" stroke="#355661"/>
+<g transform="translate(840 250) scale(1.12)">
+<path d="m20 95 110-62 126 72-113 63z" fill="#baab8c"/>
+<path d="M20 95V25L130-37v70z" fill="#d6e8df"/>
+<path d="m130-37 126 72v70L130 33z" fill="#8bb9aa"/>
+<path d="M54 30 97 5v38L54 68z" fill="#24686a" stroke="#f1faf5" stroke-width="4"/>
+</g>
+<text x="40" y="489" fill="#afc8cb" font-size="18" font-weight="400">Start with a small, closed outline.</text>
+<text x="428" y="489" fill="#afc8cb" font-size="18" font-weight="400">A floor needs at least three corners.</text>
+<text x="816" y="489" fill="#afc8cb" font-size="18" font-weight="400">Save with the Project.</text>
+<rect x="40" y="548" width="1120" height="52" rx="12" fill="#123831" stroke="#2d6557"/>
+<g transform="translate(56 561) scale(0.72)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M16 8Q8 2 2 6v22q6-4 14 1 8-5 14-1V6q-6-4-14 2v21"/>
+</g>
+</g>
+<text x="94" y="581" fill="#d2e8df" font-size="19" font-weight="400">Walls, floors and hosted openings belong to Project architecture.</text>
+<text x="40" y="624" fill="#afc8cb" font-size="13" font-weight="400">Conceptual illustration · follow the guide for the current controls and supported behavior.</text>
+</g>
+</svg>

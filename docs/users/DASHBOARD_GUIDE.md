@@ -12,6 +12,10 @@ Sign in and create your own Project to edit and save. Other people's public Proj
 
 ## Find your way around
 
+![Design combines Scene and editable plan; 3D shows the Scene; 2D shows a map; Combined shows Scene and map.](../../public/learn/illustrations/view-modes.svg)
+
+*Conceptual illustration: Design contains the editable plan. The 2D surface is the geographic map.*
+
 | Control | Purpose |
 | --- | --- |
 | **3D, Design, 2D, Combined** | Switch views of the same Project. Design includes the editable architectural plan; 2D is the geographic Map. |
@@ -31,6 +35,10 @@ Modules must be enabled for the Project, and assets must meet their module's act
 
 ## Draw and edit in Design
 
+![Connected walls become a finished floor and an open 3D room with a window.](../../public/learn/illustrations/draw-room.svg)
+
+*Conceptual illustration: Draw architecture in Design and inspect the same room in the Scene.*
+
 1. Open your Project and choose **Design**. Project Assets and Design Properties occupy the left side; the Scene is above the plan on the right. Drag the horizontal divider to resize the rows.
 2. Use the tools at the **upper-right inside the 2D canvas**. **Wall** places connected wall segments; **Floor** completes a polygon after at least three corners. Finish Floor, Enter or the first corner finishes it; Escape cancels the draft.
 3. Place **Door** or **Window** on a wall with enough space. **Roof** supports Flat, Shed and Gable forms; **Skylight** and **Roof Cutout** place supported openings on a host roof.
@@ -44,6 +52,10 @@ Drag blank plan space to pan without changing tools. Pan, Alt-drag and middle-dr
 
 ## Place and inspect Models
 
+![One reusable House Model supplies two Project instances with independent placements.](../../public/learn/illustrations/add-model.svg)
+
+*Conceptual illustration: The Library holds reusable Models; Project Assets holds placed instances.*
+
 Choose **Add → Models** to open the **ThreeD Model Library**. Filter by collection, readiness or name. **Inspect** opens a preview; **Place** adds an instance to the Project. Follow its placement controls, or use **Place at Coordinates** when available.
 
 Use **Project Assets** to select an existing instance. Its **DetailsCard** offers the supported placement, object/environment, collision, Sensor and Model information controls. Help icons explain each section. Native architectural objects use **Design Properties** instead.
@@ -54,6 +66,10 @@ Manage reusable Model Files, required dependencies, Materials and preview images
 
 ## Save and reopen
 
+![Make a change, save the Project, wait for confirmation, then reopen and inspect the change.](../../public/learn/illustrations/save-reopen.svg)
+
+*Conceptual illustration: Explicit Save and reopen make a useful first verification.*
+
 Choose **Save ThreeD Project** in the Project menu or the Save icon at the right of the toolbar. A green ring and yellow dot indicate unsaved workspace changes. Wait for **ThreeD Project saved** before leaving.
 
 Save retains supported Scene content, architecture and workspace preferences together. Camera or inspector changes can be captured by explicit Save without independently changing the unsaved badge. Edits made while a Save is pending may still need another Save.
@@ -61,6 +77,10 @@ Save retains supported Scene content, architecture and workspace preferences tog
 If saving fails, keep the page open and read the error before retrying. Reopen the same Project and inspect your change: a saved architectural object should remain editable. Architectural Export JSON can preserve that part of your work, but is not a complete Project backup.
 
 ## Import or export architectural content
+
+![Architectural JSON passes through import review with Merge or Replace architecture choices before Project Save.](../../public/learn/illustrations/design-json.svg)
+
+*Conceptual illustration: Review the import scope. Architectural JSON is not a complete Project backup.*
 
 **Export JSON** downloads supported editable architecture. **Import JSON** opens a dialog that validates the file before changing the Project:
 

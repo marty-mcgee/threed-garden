@@ -6,6 +6,7 @@ import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { Button } from '@/components/ui/button';
 import { LearnMarkdown } from './LearnMarkdown';
+import { LearnGuideIllustration } from './LearnGuideIllustration';
 import { isLearnGuideSlug, readPublicLearnGuide } from './learn-public-data';
 import { usePublicLearn } from './use-public-learn';
 
@@ -33,6 +34,7 @@ export function LearnGuideReader({ slug, embedded = false }: { slug: string; emb
         <Heading className="text-3xl font-semibold tracking-tight sm:text-4xl">{guide.title}</Heading>
         {guide.summary && <p className="text-muted-foreground">{guide.summary}</p>}
       </header>
+      <LearnGuideIllustration topic={guide.slug} content={guide.content} />
       <LearnMarkdown content={guide.content} />
     </>}
   </article>;

@@ -4,6 +4,10 @@ A **Scenario** is a plan for a Project's setup and exploration. **Open Scenario*
 
 ## Create or edit a plan
 
+![Scenario guidance is separate from the Simulation path from saved definition through Actions to Results.](../../public/learn/illustrations/scenarios-simulations.svg)
+
+*Conceptual illustration: Open Scenario provides guidance; Run Simulation executes supported Actions.*
+
 1. Open **Admin → ThreeD → Scenarios**, or **Set up Scenario** from an owned Project in Admin.
 2. Choose a starting idea or **Start from scratch**, then select the Project's assigned ThreeD module.
 3. Enter the name, purpose and slug. Choose the saved setup: Soccer or Farming, an assigned field/environment Model and, for Soccer, a Sensor Group.

@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
+<title id="title">Four peer Top Modules</title>
+<desc id="description">Each Module keeps its schema identities, records and permissions. Use existing schema-defined relationships. Learn guides remain independently available.</desc>
+<defs>
+<linearGradient id="background" x2="1" y2="1">
+<stop stop-color="#112d32"/>
+<stop offset="1" stop-color="#0b1424"/>
+</linearGradient>
+<pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+<rect width="20" height="20" fill="#102331"/>
+<path d="M20 0H0V20" fill="none" stroke="#244552" stroke-width=".7"/>
+</pattern>
+</defs>
+<g font-family="Segoe UI, Arial, sans-serif">
+<rect x="1" y="1" width="1198" height="638" rx="24" fill="url(#background)" stroke="#355661"/>
+<path d="M40 34L72 34" fill="none" stroke="#67d4b3" stroke-width="4" />
+<text x="85" y="40" fill="#67d4b3" font-size="14" font-weight="600">THREED APP / VISUAL GUIDE</text>
+<text x="40" y="98" fill="#eef8f6" font-size="36" font-weight="700">Four peer Top Modules</text>
+<text x="40" y="134" fill="#afc8cb" font-size="19" font-weight="400">Each Module keeps its schema identities, records and permissions.</text>
+<rect x="465" y="170" width="270" height="34" rx="17" fill="#183a3c" stroke="#67d4b3"/>
+<text x="479" y="193" fill="#67d4b3" font-size="16" font-weight="400">ThreeD App</text>
+<path d="M600 204L600 220" fill="none" stroke="#355661" stroke-width="2" />
+<path d="M170 220L1028 220" fill="none" stroke="#355661" stroke-width="2" />
+<path d="M170 220L170 243" fill="none" stroke="#355661" stroke-width="2" />
+<path d="M456 220L456 243" fill="none" stroke="#355661" stroke-width="2" />
+<path d="M742 220L742 243" fill="none" stroke="#355661" stroke-width="2" />
+<path d="M1028 220L1028 243" fill="none" stroke="#355661" stroke-width="2" />
+<rect x="40" y="243" width="262" height="260" rx="18" fill="#122832" stroke="#355661"/>
+<text x="62" y="278" fill="#67d4b3" font-size="23" font-weight="600">ThreeD</text>
+<g transform="translate(64 307) scale(1.5)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m16 2 13 8v15l-13 7L3 25V10zM3 10l13 8 13-8M16 18v14M9 6l13 8"/>
+</g>
+</g>
+<text x="64" y="409" fill="#afc8cb" font-size="18" font-weight="400">Models · Characters</text>
+<text x="64" y="437" fill="#afc8cb" font-size="18" font-weight="400">Architecture · Simulations</text>
+<rect x="326" y="243" width="262" height="260" rx="18" fill="#122832" stroke="#355661"/>
+<text x="348" y="278" fill="#75e3ed" font-size="23" font-weight="600">Multimedia</text>
+<g transform="translate(350 307) scale(1.5)">
+<g fill="none" stroke="#75e3ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M12 25V8l17-5v17M12 14l17-5"/>
+<ellipse cx="7" cy="26" rx="5" ry="4"/>
+<ellipse cx="24" cy="22" rx="5" ry="4"/>
+</g>
+</g>
+<text x="350" y="409" fill="#afc8cb" font-size="18" font-weight="400">Albums · Tracks</text>
+<text x="350" y="437" fill="#afc8cb" font-size="18" font-weight="400">Media · Lyrics</text>
+<rect x="612" y="243" width="262" height="260" rx="18" fill="#122832" stroke="#355661"/>
+<text x="634" y="278" fill="#efd294" font-size="23" font-weight="600">Traffic</text>
+<g transform="translate(636 307) scale(1.5)">
+<g fill="none" stroke="#efd294" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m2 7 9-4 10 4 9-4v24l-9 4-10-4-9 4zM11 3v24M21 7v24"/>
+</g>
+</g>
+<text x="636" y="409" fill="#afc8cb" font-size="18" font-weight="400">Maps · provider records</text>
+<text x="636" y="437" fill="#afc8cb" font-size="18" font-weight="400">Geographic context</text>
+<rect x="898" y="243" width="262" height="260" rx="18" fill="#122832" stroke="#355661"/>
+<text x="920" y="278" fill="#b2a0ff" font-size="23" font-weight="600">Learn</text>
+<g transform="translate(922 307) scale(1.5)">
+<g fill="none" stroke="#b2a0ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M16 8Q8 2 2 6v22q6-4 14 1 8-5 14-1V6q-6-4-14 2v21"/>
+</g>
+</g>
+<text x="922" y="409" fill="#afc8cb" font-size="18" font-weight="400">Shared guides</text>
+<text x="922" y="437" fill="#afc8cb" font-size="18" font-weight="400">Markdown · publishing</text>
+<rect x="40" y="548" width="1120" height="52" rx="12" fill="#123831" stroke="#2d6557"/>
+<g transform="translate(56 561) scale(0.72)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M16 8Q8 2 2 6v22q6-4 14 1 8-5 14-1V6q-6-4-14 2v21"/>
+</g>
+</g>
+<text x="94" y="581" fill="#d2e8df" font-size="19" font-weight="400">Use existing schema-defined relationships. Learn guides remain independently available.</text>
+<text x="40" y="624" fill="#afc8cb" font-size="13" font-weight="400">Conceptual illustration · follow the guide for the current controls and supported behavior.</text>
+</g>
+</svg>

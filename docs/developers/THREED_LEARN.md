@@ -16,6 +16,16 @@ The starter source is [starter-guides.ts](../../src/libraries/data/learn/starter
 
 There is no seed on startup, schema creation, page load or public read, and no static fallback that makes an empty or unavailable database appear populated. The public page reports loading, empty and retryable error states.
 
+## Visual guides
+
+The public reader and Admin preview share topic-specific, conceptual illustrations for all fourteen starter-guide slugs. The Learn landing page also illustrates the first Project and the four peer Top Modules. These are explanatory drawings, not screenshots or additional interactive controls.
+
+The SVG assets live in [public/learn/illustrations](../../public/learn/illustrations). Their accessible descriptions and captions are maintained in [guide-illustrations.ts](../../src/components/learn/guide-illustrations.ts); [LearnGuideIllustration](../../src/components/learn/LearnGuideIllustration.tsx) reserves image dimensions and scales each image to its container. README and the linked user/help Markdown reuse those same assets.
+
+Existing database records gain illustrations through the reader; no SQL, starter import or content rewrite is needed. Database Markdown remains authoritative. Only recognized topic slugs receive automatic illustrations, after a guide has loaded successfully. Custom slugs retain their authored content without an unrelated automatic image. Changing a recognized slug changes its automatic topic selection.
+
+Authors can include an image through ordinary Markdown, for example `![Connected walls, finished floor and 3D room](/learn/illustrations/draw-room.svg)`. Referencing that built-in image in the body suppresses its automatic copy. Other Markdown images remain in their authored positions. Repository Markdown needs a relative path such as `../../public/learn/illustrations/draw-room.svg` because GitHub and the App serve files differently. Keep raw HTML disabled.
+
 ## Authoring and publishing
 
 Use **Add Guide** for a new unpublished guide. The editor provides Title, Slug, Summary, Markdown, Sort Order, Active and Published, with the same renderer for preview and public reading. Save is explicit. Failed saves retain the draft; stale revisions require reviewing the current record before retrying. Editor navigation buttons, same-tab links, reload/discard and destructive actions have confirmation guards. Learn Admin entry/exit uses document navigation so browser Back/Forward crosses the same unsaved-work/pending-write unload guard.

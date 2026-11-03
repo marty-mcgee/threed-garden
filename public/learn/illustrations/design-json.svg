@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
+<title id="title">A design backup has a specific scope</title>
+<desc id="description">Export architectural JSON, review an import, then save the result with your Project. Architectural JSON is not a complete Project or catalog Model backup.</desc>
+<defs>
+<linearGradient id="background" x2="1" y2="1">
+<stop stop-color="#112d32"/>
+<stop offset="1" stop-color="#0b1424"/>
+</linearGradient>
+<pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+<rect width="20" height="20" fill="#102331"/>
+<path d="M20 0H0V20" fill="none" stroke="#244552" stroke-width=".7"/>
+</pattern>
+</defs>
+<g font-family="Segoe UI, Arial, sans-serif">
+<rect x="1" y="1" width="1198" height="638" rx="24" fill="url(#background)" stroke="#355661"/>
+<path d="M40 34L72 34" fill="none" stroke="#67d4b3" stroke-width="4" />
+<text x="85" y="40" fill="#67d4b3" font-size="14" font-weight="600">THREED APP / VISUAL GUIDE</text>
+<text x="40" y="98" fill="#eef8f6" font-size="36" font-weight="700">A design backup has a specific scope</text>
+<text x="40" y="134" fill="#afc8cb" font-size="19" font-weight="400">Export architectural JSON, review an import, then save the result with your Project.</text>
+<rect x="40" y="196" width="270" height="313" rx="18" fill="#122832" stroke="#355661"/>
+<text x="62" y="231" fill="#67d4b3" font-size="23" font-weight="600">Design JSON</text>
+<g transform="translate(128 266) scale(2.2)">
+<g fill="none" stroke="#75e3ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M6 2h14l8 8v21H6zM20 2v9h8M11 17h11M11 23h8"/>
+</g>
+</g>
+<text x="64" y="406" fill="#afc8cb" font-size="18" font-weight="400">Walls, floors, roofs</text>
+<text x="64" y="434" fill="#afc8cb" font-size="18" font-weight="400">and supported openings.</text>
+<path d="M323 350L363 350" fill="none" stroke="#67d4b3" stroke-width="3" />
+<path d="m353 343 10 7-10 7" fill="none" stroke="#67d4b3" stroke-width="3"/>
+<rect x="380" y="196" width="400" height="313" rx="18" fill="#122832" stroke="#355661"/>
+<text x="402" y="231" fill="#67d4b3" font-size="23" font-weight="600">Review before importing</text>
+<rect x="404" y="257" width="344" height="34" rx="17" fill="#183a3c" stroke="#75e3ed"/>
+<text x="418" y="280" fill="#75e3ed" font-size="16" font-weight="400">Merge architectural content</text>
+<rect x="404" y="312" width="344" height="34" rx="17" fill="#183a3c" stroke="#efd294"/>
+<text x="418" y="335" fill="#efd294" font-size="16" font-weight="400">Replace architecture only</text>
+<text x="404" y="408" fill="#afc8cb" font-size="18" font-weight="400">Read counts and omissions.</text>
+<text x="404" y="436" fill="#afc8cb" font-size="18" font-weight="400">Cancel retains existing content.</text>
+<path d="M794 350L827 350" fill="none" stroke="#67d4b3" stroke-width="3" />
+<path d="m817 343 10 7-10 7" fill="none" stroke="#67d4b3" stroke-width="3"/>
+<rect x="842" y="196" width="318" height="313" rx="18" fill="#122832" stroke="#355661"/>
+<text x="864" y="231" fill="#67d4b3" font-size="23" font-weight="600">Project</text>
+<g transform="translate(864 253) scale(0.92)">
+<rect x="0" y="0" width="260" height="175" rx="10" fill="url(#grid)" stroke="#355661"/>
+<path d="M35 30h184v115h-66m-45 0H35V30M35 80h85" fill="none" stroke="#eef8f6" stroke-width="5"/>
+<path d="M108 145v-44a44 44 0 0 1 44 44" fill="none" stroke="#67d4b3" stroke-width="2"/>
+<path d="M169 30h35" stroke="#75e3ed" stroke-width="5"/>
+</g>
+<text x="866" y="459" fill="#afc8cb" font-size="18" font-weight="400">Other Models are retained.</text>
+<rect x="40" y="548" width="1120" height="52" rx="12" fill="#123831" stroke="#2d6557"/>
+<g transform="translate(56 561) scale(0.72)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M16 8Q8 2 2 6v22q6-4 14 1 8-5 14-1V6q-6-4-14 2v21"/>
+</g>
+</g>
+<text x="94" y="581" fill="#d2e8df" font-size="19" font-weight="400">Architectural JSON is not a complete Project or catalog Model backup.</text>
+<text x="40" y="624" fill="#afc8cb" font-size="13" font-weight="400">Conceptual illustration · follow the guide for the current controls and supported behavior.</text>
+</g>
+</svg>

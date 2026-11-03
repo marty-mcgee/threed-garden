@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
+<title id="title">Choose the Character, target and Action</title>
+<desc id="description">Read readiness and range feedback before asking a Character to act. Character animation, supported world changes and physical device commands are distinct.</desc>
+<defs>
+<linearGradient id="background" x2="1" y2="1">
+<stop stop-color="#112d32"/>
+<stop offset="1" stop-color="#0b1424"/>
+</linearGradient>
+<pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+<rect width="20" height="20" fill="#102331"/>
+<path d="M20 0H0V20" fill="none" stroke="#244552" stroke-width=".7"/>
+</pattern>
+</defs>
+<g font-family="Segoe UI, Arial, sans-serif">
+<rect x="1" y="1" width="1198" height="638" rx="24" fill="url(#background)" stroke="#355661"/>
+<path d="M40 34L72 34" fill="none" stroke="#67d4b3" stroke-width="4" />
+<text x="85" y="40" fill="#67d4b3" font-size="14" font-weight="600">THREED APP / VISUAL GUIDE</text>
+<text x="40" y="98" fill="#eef8f6" font-size="36" font-weight="700">Choose the Character, target and Action</text>
+<text x="40" y="134" fill="#afc8cb" font-size="19" font-weight="400">Read readiness and range feedback before asking a Character to act.</text>
+<rect x="40" y="195" width="330" height="313" rx="18" fill="#122832" stroke="#355661"/>
+<text x="62" y="230" fill="#67d4b3" font-size="23" font-weight="600">1  Character</text>
+<g transform="translate(171 260) scale(2.1)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="16" cy="7" r="5"/>
+<path d="M6 31v-6a10 10 0 0 1 20 0v6M16 18v13"/>
+</g>
+</g>
+<rect x="64" y="378" width="236" height="34" rx="17" fill="#183a3c" stroke="#67d4b3"/>
+<text x="78" y="401" fill="#67d4b3" font-size="16" font-weight="400">Take / Release Control</text>
+<text x="64" y="463" fill="#afc8cb" font-size="17" font-weight="400">WASD for controlled movement.</text>
+<path d="M383 351L418 351" fill="none" stroke="#67d4b3" stroke-width="3" />
+<path d="m408 344 10 7-10 7" fill="none" stroke="#67d4b3" stroke-width="3"/>
+<rect x="435" y="195" width="330" height="313" rx="18" fill="#122832" stroke="#355661"/>
+<text x="457" y="230" fill="#67d4b3" font-size="23" font-weight="600">2  Scene target</text>
+<g transform="translate(588 326) scale(1.1)">
+<ellipse cy="34" rx="29" ry="10" fill="#183f3c"/>
+<path d="M0 32V-17" stroke="#b7a47e" stroke-width="7" stroke-linecap="round"/>
+<ellipse cy="-18" rx="27" ry="31" fill="#6ebc92"/>
+<ellipse cx="-9" cy="-27" rx="20" ry="24" fill="#95cf9d"/>
+<path d="M0 8v-35m0 13-11-10M0-8l13-11" stroke="#4a9976" stroke-width="3" fill="none"/>
+</g>
+<rect x="459" y="378" width="282" height="34" rx="17" fill="#183a3c" stroke="#75e3ed"/>
+<text x="473" y="401" fill="#75e3ed" font-size="16" font-weight="400">Use as Action Target</text>
+<text x="459" y="463" fill="#afc8cb" font-size="17" font-weight="400">Select the supported instance.</text>
+<path d="M779 351L812 351" fill="none" stroke="#67d4b3" stroke-width="3" />
+<path d="m802 344 10 7-10 7" fill="none" stroke="#67d4b3" stroke-width="3"/>
+<rect x="830" y="195" width="330" height="313" rx="18" fill="#122832" stroke="#355661"/>
+<text x="852" y="230" fill="#67d4b3" font-size="23" font-weight="600">3  Supported Action</text>
+<circle cx="869" cy="279" r="12" fill="#173c38" stroke="#67d4b3"/>
+<path d="m864 279 3 4 7-8" fill="none" stroke="#67d4b3" stroke-width="2"/>
+<text x="896" y="286" fill="#eef8f6" font-size="21" font-weight="400">Ready + in range</text>
+<text x="854" y="344" fill="#afc8cb" font-size="20" font-weight="400">Compatible Animation</text>
+<text x="854" y="374" fill="#afc8cb" font-size="20" font-weight="400">and target required.</text>
+<text x="854" y="463" fill="#afc8cb" font-size="17" font-weight="400">Wait for completion feedback.</text>
+<rect x="40" y="548" width="1120" height="52" rx="12" fill="#123831" stroke="#2d6557"/>
+<g transform="translate(56 561) scale(0.72)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M16 8Q8 2 2 6v22q6-4 14 1 8-5 14-1V6q-6-4-14 2v21"/>
+</g>
+</g>
+<text x="94" y="581" fill="#d2e8df" font-size="19" font-weight="400">Character animation, supported world changes and physical device commands are distinct.</text>
+<text x="40" y="624" fill="#afc8cb" font-size="13" font-weight="400">Conceptual illustration · follow the guide for the current controls and supported behavior.</text>
+</g>
+</svg>

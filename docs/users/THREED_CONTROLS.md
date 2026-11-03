@@ -4,6 +4,10 @@ Open `/dashboard/scene`, choose a Project, and select a ThreeD marker to open it
 
 ## Dashboard workspace header
 
+![Design combines Scene and editable plan; 3D shows the Scene; 2D shows a map; Combined shows Scene and map.](../../public/learn/illustrations/view-modes.svg)
+
+*Conceptual illustration: Design contains the editable plan. The 2D surface is the geographic map.*
+
 - Select the Project name to view status, save the complete Project, change Projects, or open its Admin page.
 - Use the view buttons in their displayed order: **3D, Design, 2D, Combined**. Design contains the editable architectural plan; 2D is the geographic Map.
 - Use **Setup → Project Tour** for guided Project setup and Help. The Project menu also opens the Tour.
@@ -20,6 +24,10 @@ The toolbar separates Project guidance from live Scene presentation: **Project T
 
 ## 2D Design tools and navigation
 
+![A selected wall connects to Design Properties, with separate Metric and Imperial unit examples.](../../public/learn/illustrations/object-properties.svg)
+
+*Conceptual illustration: Select the object before editing. A unit change does not resize it.*
+
 In Design mode, the drawing toolbar is inside the upper-right of the 2D canvas, clear of the X/Z rulers. Groups are **Select, Pan | Wall, Floor, Roof | Door, Window | Skylight, Roof Cutout | Fit Plan, Zoom to Selection, Reset View**. Hover or focus a button for its tooltip.
 
 Drag a blank area to pan with any tool; a normal click still selects, draws or places an opening. Panning retains the active tool, selected entity and unfinished drawing points. Select and Pan remain separate tools. Use Pan, Alt-drag or middle-drag to pan even when starting over an object. Wheel zoom stays anchored to the pointer; use Fit Plan or Zoom to Selection to frame content. Save Project uses the existing architecture and workspace snapshot.
@@ -29,6 +37,10 @@ Choose **Design settings → Project measurement units** for Imperial or Metric.
 Floor and Roof drafts need at least three corners. Finish the draft with its Finish control, Enter or the first corner. Escape cancels unfinished drawing. Shift constrains drawing to X/Z axes. Delete/Backspace removes the selected architectural entity; Ctrl/Cmd-Z undoes, and Ctrl/Cmd-Shift-Z or Ctrl/Cmd-Y redoes. These shortcuts leave text-field editing alone. **Drawing defaults** affect new geometry; **Properties** edits the selected object.
 
 ## Characters
+
+![A Character, a selected Scene target and readiness checks lead to a supported Action.](../../public/learn/illustrations/character-actions.svg)
+
+*Conceptual illustration: Character, target, compatible Animation and readiness must agree.*
 
 - Autonomous `GardenCharacter` characters use their configured NPC movement behavior, which may include wandering, patrol, circle, follow, teleport, or stationary behavior.
 - Movable `EcctrlCharacter` characters expose **Take Control** and **Release Control**.

@@ -2,6 +2,8 @@
 
 Production is deployed from GitHub `main` to Vercel.
 
+GitHub Pages publishing is disabled. The former `main:/docs` configuration published a separate documentation site at `https://marty-mcgee.github.io/threed-garden/` and created GitHub-managed `pages build and deployment` runs. Keep Pages disabled unless a separate documentation site is intentionally requested. Repository documentation remains in Git, and the App's Learn route is served through Vercel. The repository validation workflow remains enabled.
+
 Before release:
 
 1. Review the entire diff and confirm the intended version scope.

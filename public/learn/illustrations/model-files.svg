@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
+<title id="title">A Model is more than its thumbnail</title>
+<desc id="description">Geometry, Materials and preview images have separate responsibilities. A Ready label records setup. The actual preview confirms successful loading.</desc>
+<defs>
+<linearGradient id="background" x2="1" y2="1">
+<stop stop-color="#112d32"/>
+<stop offset="1" stop-color="#0b1424"/>
+</linearGradient>
+<pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+<rect width="20" height="20" fill="#102331"/>
+<path d="M20 0H0V20" fill="none" stroke="#244552" stroke-width=".7"/>
+</pattern>
+</defs>
+<g font-family="Segoe UI, Arial, sans-serif">
+<rect x="1" y="1" width="1198" height="638" rx="24" fill="url(#background)" stroke="#355661"/>
+<path d="M40 34L72 34" fill="none" stroke="#67d4b3" stroke-width="4" />
+<text x="85" y="40" fill="#67d4b3" font-size="14" font-weight="600">THREED APP / VISUAL GUIDE</text>
+<text x="40" y="98" fill="#eef8f6" font-size="36" font-weight="700">A Model is more than its thumbnail</text>
+<text x="40" y="134" fill="#afc8cb" font-size="19" font-weight="400">Geometry, Materials and preview images have separate responsibilities.</text>
+<rect x="40" y="188" width="346" height="332" rx="18" fill="#122832" stroke="#355661"/>
+<text x="62" y="223" fill="#67d4b3" font-size="23" font-weight="600">Geometry + dependencies</text>
+<g transform="translate(67 246) scale(1.4)">
+<g fill="none" stroke="#75e3ed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M6 2h14l8 8v21H6zM20 2v9h8M11 17h11M11 23h8"/>
+</g>
+</g>
+<text x="132" y="263" fill="#afc8cb" font-size="20" font-weight="400">Primary Model File</text>
+<text x="132" y="293" fill="#afc8cb" font-size="20" font-weight="400">Supporting files</text>
+<g transform="translate(67 347) scale(1.4)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M2 7h28M2 17h28M2 27h28"/>
+<rect x="8" y="3" width="5" height="8" fill="#122832"/>
+<rect x="21" y="13" width="5" height="8" fill="#122832"/>
+<rect x="9" y="23" width="5" height="8" fill="#122832"/>
+</g>
+</g>
+<text x="132" y="362" fill="#afc8cb" font-size="20" font-weight="400">Materials</text>
+<text x="132" y="392" fill="#afc8cb" font-size="20" font-weight="400">Texture assignments</text>
+<path d="M399 352L431 352" fill="none" stroke="#67d4b3" stroke-width="3" />
+<path d="m421 345 10 7-10 7" fill="none" stroke="#67d4b3" stroke-width="3"/>
+<rect x="446" y="188" width="334" height="332" rx="18" fill="#122832" stroke="#355661"/>
+<text x="468" y="223" fill="#67d4b3" font-size="23" font-weight="600">Inspect the real preview</text>
+<g transform="translate(464 339) scale(1.15)">
+<path d="m0 90 112-60 113 62-112 63z" fill="#24594e" stroke="#5b9d86"/>
+<path d="M30 72v-68l52 29v70z" fill="#d0e3dc"/>
+<path d="m82 33 58-32v69l-58 33z" fill="#8fb8ad"/>
+<path d="m30 4 23-38 29 67z" fill="#e4efe8"/>
+<path d="m53-34 58-32 29 67-58 32z" fill="#3f6072" stroke="#73b5c1"/>
+<path d="m62 62 13 7v29l-13-7z" fill="#376468"/>
+<path d="m38 26 15 8v18l-15-8zM95 40l27-15v22L95 62z" fill="#2c656c" stroke="#ecf7ed" stroke-width="3"/>
+<path d="M108 33v21M95 51l27-15" stroke="#ecf7ed" stroke-width="2"/>
+</g>
+<text x="469" y="490" fill="#afc8cb" font-size="18" font-weight="400">Check loading and surfaces.</text>
+<rect x="800" y="188" width="360" height="153" rx="18" fill="#122832" stroke="#355661"/>
+<text x="822" y="223" fill="#67d4b3" font-size="23" font-weight="600">Library Preview Image</text>
+<g transform="translate(816 280) scale(0.32)">
+<path d="m0 90 112-60 113 62-112 63z" fill="#24594e" stroke="#5b9d86"/>
+<path d="M30 72v-68l52 29v70z" fill="#d0e3dc"/>
+<path d="m82 33 58-32v69l-58 33z" fill="#8fb8ad"/>
+<path d="m30 4 23-38 29 67z" fill="#e4efe8"/>
+<path d="m53-34 58-32 29 67-58 32z" fill="#3f6072" stroke="#73b5c1"/>
+<path d="m62 62 13 7v29l-13-7z" fill="#376468"/>
+<path d="m38 26 15 8v18l-15-8zM95 40l27-15v22L95 62z" fill="#2c656c" stroke="#ecf7ed" stroke-width="3"/>
+<path d="M108 33v21M95 51l27-15" stroke="#ecf7ed" stroke-width="2"/>
+</g>
+<text x="914" y="281" fill="#afc8cb" font-size="19" font-weight="400">Catalog thumbnail</text>
+<rect x="800" y="362" width="360" height="158" rx="18" fill="#122832" stroke="#355661"/>
+<text x="822" y="397" fill="#67d4b3" font-size="23" font-weight="600">Top View Image</text>
+<rect x="822" y="423" width="98" height="67" rx="1" fill="#8ca8a9" stroke="#75e3ed"/>
+<path d="m829 430 42 8 42-8m-42 8v44m-42 1 42-1 42 1" fill="none" stroke="#d1e4dd" stroke-width="3"/>
+<text x="942" y="455" fill="#afc8cb" font-size="18" font-weight="400">Plan representation</text>
+<rect x="40" y="548" width="1120" height="52" rx="12" fill="#123831" stroke="#2d6557"/>
+<g transform="translate(56 561) scale(0.72)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M16 8Q8 2 2 6v22q6-4 14 1 8-5 14-1V6q-6-4-14 2v21"/>
+</g>
+</g>
+<text x="94" y="581" fill="#d2e8df" font-size="19" font-weight="400">A Ready label records setup. The actual preview confirms successful loading.</text>
+<text x="40" y="624" fill="#afc8cb" font-size="13" font-weight="400">Conceptual illustration · follow the guide for the current controls and supported behavior.</text>
+</g>
+</svg>

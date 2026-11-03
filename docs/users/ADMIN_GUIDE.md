@@ -4,6 +4,10 @@ Use Admin at `/admin` to manage your Projects and reusable content. Sign in at `
 
 ## Find your workspace
 
+![Admin navigation leads to record management and eligible asset assignments for the Project workspace.](../../public/learn/illustrations/admin-navigation.svg)
+
+*Conceptual illustration: Manage records in Admin; place and inspect assigned content in the Project.*
+
 | Sidebar section | What you manage |
 | --- | --- |
 | Users | Accounts through **All Users** and **Add User**, available to Super Admins. |
@@ -36,6 +40,10 @@ Existing Project **Setup** changes use **Save Changes**; **Reset changes** resto
 
 ## Prepare Models, Files and Materials
 
+![Geometry and supporting files, Materials, loaded Model preview, Library thumbnail and Top View image have separate jobs.](../../public/learn/illustrations/model-files.svg)
+
+*Conceptual illustration: Inspect the actual loaded Model as well as its saved files and images.*
+
 1. Open **ThreeD > Models > All Models** at `/admin/threed/models`. Search/filter existing Models or choose **Add Model**. Use **Bulk Import Models** when importing a bundle or several supported Models together.
 2. Review the Model's **Details** and preview. A reusable Model and its placed Project instances are separate; creating a Model does not place it in a Project.
 3. Open the Model's **Files** view, or **ThreeD > Models > Files**, to inspect saved geometry and attachments. **Required files** identifies missing dependencies. Upload the requested files with their correct names/relative paths, then review the preview again.
@@ -51,6 +59,10 @@ For generated geometry, open **ThreeD > Models > Model Builder**. Adjust the Cot
 
 ## Manage Users as a Super Admin
 
+![Super Admin account management includes creation, explicit profile or role saves, and protected soft deletion.](../../public/learn/illustrations/manage-users.svg)
+
+*Conceptual illustration: Account management retains ownership boundaries and deletion protections.*
+
 Open **Users > All Users** at `/admin/users`. Search by name/email or filter by role and **Current Users**, **Deleted Users** or **All Users**.
 
 1. Choose **Add User** to open `/admin/users/new`.
@@ -63,6 +75,10 @@ To remove account access, save or discard pending edits, choose **Delete User**,
 Choose **Deleted Users** in the account filter to inspect retained accounts. Their fields are read-only and their email addresses remain reserved. There is no Restore, invitation or password-reset workflow here. Installation prerequisites belong to the [developer account-management guide](../developers/SUPER_ADMIN_BOOTSTRAP.md#users-crud-and-deletion).
 
 ## Add and display Lyrics
+
+![An eligible public Album contains ordered Tracks; independent active Lyrics use their saved assignments and ownership.](../../public/learn/illustrations/multimedia-lyrics.svg)
+
+*Conceptual illustration: Albums, Tracks and Lyrics retain their own relationships and visibility rules.*
 
 1. Open **Multimedia > Lyrics** at `/admin/multimedia/lyrics` and choose **Add Lyrics**.
 2. Enter a **Title** and plain-text **Lyrics**. Text may be empty while drafting. Set **Sort Order** and **Active** as needed.

@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
+<title id="title">Four views. One active Project.</title>
+<desc id="description">Design and 2D Map have different jobs; choose the view that suits your task. View order: Design, 3D, 2D, Combined. Design contains the editable plan.</desc>
+<defs>
+<linearGradient id="background" x2="1" y2="1">
+<stop stop-color="#112d32"/>
+<stop offset="1" stop-color="#0b1424"/>
+</linearGradient>
+<pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
+<rect width="20" height="20" fill="#102331"/>
+<path d="M20 0H0V20" fill="none" stroke="#244552" stroke-width=".7"/>
+</pattern>
+</defs>
+<g font-family="Segoe UI, Arial, sans-serif">
+<rect x="1" y="1" width="1198" height="638" rx="24" fill="url(#background)" stroke="#355661"/>
+<path d="M40 34L72 34" fill="none" stroke="#67d4b3" stroke-width="4" />
+<text x="85" y="40" fill="#67d4b3" font-size="14" font-weight="600">THREED APP / VISUAL GUIDE</text>
+<text x="40" y="98" fill="#eef8f6" font-size="36" font-weight="700">Four views. One active Project.</text>
+<text x="40" y="134" fill="#afc8cb" font-size="19" font-weight="400">Design and 2D Map have different jobs; choose the view that suits your task.</text>
+<rect x="40" y="181" width="262" height="345" rx="18" fill="#122832" stroke="#355661"/>
+<text x="62" y="216" fill="#75e3ed" font-size="23" font-weight="600">Design</text>
+<g transform="translate(56 260) scale(0.75)">
+<rect x="0" y="0" width="280" height="185" rx="10" fill="#102f35" stroke="#355661"/>
+<g transform="translate(20 79) scale(0.8)">
+<path d="m0 90 112-60 113 62-112 63z" fill="#24594e" stroke="#5b9d86"/>
+<path d="M30 72v-68l52 29v70z" fill="#d0e3dc"/>
+<path d="m82 33 58-32v69l-58 33z" fill="#8fb8ad"/>
+<path d="m30 4 23-38 29 67z" fill="#e4efe8"/>
+<path d="m53-34 58-32 29 67-58 32z" fill="#3f6072" stroke="#73b5c1"/>
+<path d="m62 62 13 7v29l-13-7z" fill="#376468"/>
+<path d="m38 26 15 8v18l-15-8zM95 40l27-15v22L95 62z" fill="#2c656c" stroke="#ecf7ed" stroke-width="3"/>
+<path d="M108 33v21M95 51l27-15" stroke="#ecf7ed" stroke-width="2"/>
+</g>
+<g transform="translate(222 93) scale(0.7)">
+<ellipse cy="34" rx="29" ry="10" fill="#183f3c"/>
+<path d="M0 32V-17" stroke="#b7a47e" stroke-width="7" stroke-linecap="round"/>
+<ellipse cy="-18" rx="27" ry="31" fill="#6ebc92"/>
+<ellipse cx="-9" cy="-27" rx="20" ry="24" fill="#95cf9d"/>
+<path d="M0 8v-35m0 13-11-10M0-8l13-11" stroke="#4a9976" stroke-width="3" fill="none"/>
+</g>
+</g>
+<g transform="translate(56 406) scale(0.68)">
+<rect x="0" y="0" width="260" height="175" rx="10" fill="url(#grid)" stroke="#355661"/>
+<path d="M35 30h184v115h-66m-45 0H35V30M35 80h85" fill="none" stroke="#eef8f6" stroke-width="5"/>
+<path d="M108 145v-44a44 44 0 0 1 44 44" fill="none" stroke="#67d4b3" stroke-width="2"/>
+<path d="M169 30h35" stroke="#75e3ed" stroke-width="5"/>
+</g>
+<text x="60" y="242" fill="#afc8cb" font-size="16" font-weight="400">Scene + editable plan</text>
+<rect x="326" y="181" width="262" height="345" rx="18" fill="#122832" stroke="#355661"/>
+<text x="348" y="216" fill="#75e3ed" font-size="23" font-weight="600">3D</text>
+<g transform="translate(342 276) scale(0.79)">
+<rect x="0" y="0" width="280" height="185" rx="10" fill="#102f35" stroke="#355661"/>
+<g transform="translate(20 79) scale(0.8)">
+<path d="m0 90 112-60 113 62-112 63z" fill="#24594e" stroke="#5b9d86"/>
+<path d="M30 72v-68l52 29v70z" fill="#d0e3dc"/>
+<path d="m82 33 58-32v69l-58 33z" fill="#8fb8ad"/>
+<path d="m30 4 23-38 29 67z" fill="#e4efe8"/>
+<path d="m53-34 58-32 29 67-58 32z" fill="#3f6072" stroke="#73b5c1"/>
+<path d="m62 62 13 7v29l-13-7z" fill="#376468"/>
+<path d="m38 26 15 8v18l-15-8zM95 40l27-15v22L95 62z" fill="#2c656c" stroke="#ecf7ed" stroke-width="3"/>
+<path d="M108 33v21M95 51l27-15" stroke="#ecf7ed" stroke-width="2"/>
+</g>
+<g transform="translate(222 93) scale(0.7)">
+<ellipse cy="34" rx="29" ry="10" fill="#183f3c"/>
+<path d="M0 32V-17" stroke="#b7a47e" stroke-width="7" stroke-linecap="round"/>
+<ellipse cy="-18" rx="27" ry="31" fill="#6ebc92"/>
+<ellipse cx="-9" cy="-27" rx="20" ry="24" fill="#95cf9d"/>
+<path d="M0 8v-35m0 13-11-10M0-8l13-11" stroke="#4a9976" stroke-width="3" fill="none"/>
+</g>
+</g>
+<text x="346" y="242" fill="#afc8cb" font-size="16" font-weight="400">Explore the Scene</text>
+<rect x="612" y="181" width="262" height="345" rx="18" fill="#122832" stroke="#355661"/>
+<text x="634" y="216" fill="#75e3ed" font-size="23" font-weight="600">2D</text>
+<rect x="628" y="263" width="222" height="200" rx="18" fill="#233d37" stroke="#355661"/>
+<path d="M637 444q70-140 180-162M638 316l195 96" fill="none" stroke="#729188" stroke-width="14"/>
+<g transform="translate(714 332) scale(1.4)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m2 7 9-4 10 4 9-4v24l-9 4-10-4-9 4zM11 3v24M21 7v24"/>
+</g>
+</g>
+<text x="632" y="242" fill="#afc8cb" font-size="16" font-weight="400">Geographic map</text>
+<rect x="898" y="181" width="262" height="345" rx="18" fill="#122832" stroke="#355661"/>
+<text x="920" y="216" fill="#75e3ed" font-size="23" font-weight="600">Combined</text>
+<g transform="translate(914 260) scale(0.75)">
+<rect x="0" y="0" width="280" height="185" rx="10" fill="#102f35" stroke="#355661"/>
+<g transform="translate(20 79) scale(0.8)">
+<path d="m0 90 112-60 113 62-112 63z" fill="#24594e" stroke="#5b9d86"/>
+<path d="M30 72v-68l52 29v70z" fill="#d0e3dc"/>
+<path d="m82 33 58-32v69l-58 33z" fill="#8fb8ad"/>
+<path d="m30 4 23-38 29 67z" fill="#e4efe8"/>
+<path d="m53-34 58-32 29 67-58 32z" fill="#3f6072" stroke="#73b5c1"/>
+<path d="m62 62 13 7v29l-13-7z" fill="#376468"/>
+<path d="m38 26 15 8v18l-15-8zM95 40l27-15v22L95 62z" fill="#2c656c" stroke="#ecf7ed" stroke-width="3"/>
+<path d="M108 33v21M95 51l27-15" stroke="#ecf7ed" stroke-width="2"/>
+</g>
+<g transform="translate(222 93) scale(0.7)">
+<ellipse cy="34" rx="29" ry="10" fill="#183f3c"/>
+<path d="M0 32V-17" stroke="#b7a47e" stroke-width="7" stroke-linecap="round"/>
+<ellipse cy="-18" rx="27" ry="31" fill="#6ebc92"/>
+<ellipse cx="-9" cy="-27" rx="20" ry="24" fill="#95cf9d"/>
+<path d="M0 8v-35m0 13-11-10M0-8l13-11" stroke="#4a9976" stroke-width="3" fill="none"/>
+</g>
+</g>
+<rect x="914" y="406" width="222" height="94" rx="18" fill="#233d37" stroke="#355661"/>
+<path d="M918 483L1128 420" fill="none" stroke="#729188" stroke-width="12" />
+<g transform="translate(1008 431) scale(1)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="m2 7 9-4 10 4 9-4v24l-9 4-10-4-9 4zM11 3v24M21 7v24"/>
+</g>
+</g>
+<text x="918" y="242" fill="#afc8cb" font-size="16" font-weight="400">Scene + map</text>
+<rect x="40" y="548" width="1120" height="52" rx="12" fill="#123831" stroke="#2d6557"/>
+<g transform="translate(56 561) scale(0.72)">
+<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+<path d="M16 8Q8 2 2 6v22q6-4 14 1 8-5 14-1V6q-6-4-14 2v21"/>
+</g>
+</g>
+<text x="94" y="581" fill="#d2e8df" font-size="19" font-weight="400">View order: Design, 3D, 2D, Combined. Design contains the editable plan.</text>
+<text x="40" y="624" fill="#afc8cb" font-size="13" font-weight="400">Conceptual illustration · follow the guide for the current controls and supported behavior.</text>
+</g>
+</svg>

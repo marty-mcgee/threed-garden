@@ -3,6 +3,7 @@ import { ArrowRight, BookOpen, CircleHelp, Info, ListChecks, Rocket } from 'luci
 import { LearnPreview } from '@/components/learn/LearnPreview';
 import { WhyThreeDApp } from '@/components/home/WhyThreeDApp';
 import { LearnGuideLibrary } from '@/components/learn/LearnGuideLibrary';
+import { LearnGuideIllustration } from '@/components/learn/LearnGuideIllustration';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -38,6 +39,7 @@ export default function LearnPage() {
       </nav>
     </section>
     <Card id="first-project" className="threed-workspace-panel threed-presentation-surface threed-presentation-featured mx-auto max-w-5xl scroll-mt-24 gap-0 rounded-2xl shadow-sm"><CardContent className="space-y-5 p-6 sm:p-10"><h2 className="flex items-center gap-2 text-2xl font-semibold"><Rocket aria-hidden="true" className="size-4 text-emerald-600 dark:text-emerald-400" />Your first Project</h2>
+      <LearnGuideIllustration topic="first-project" />
       <p>Public Projects are for exploring. To make and save changes, <Link className="underline" href="/auth/sign-in">sign in</Link> or <Link className="underline" href="/auth/sign-up">create an account</Link>, then create your own Project. New accounts can manage their own content.</p>
       <ol className="list-decimal space-y-2 pl-5">
         <li><Link className="underline" href="/dashboard/scene">Open the Project workspace</Link>. Use Select Project, then Create New Project. If a Project is already open, choose New Project from its menu. Select ThreeD Starter, enter a Project Name, then Create &amp; Open Project. Setup &gt; Project Tour helps with initial setup.</li>
@@ -55,6 +57,7 @@ export default function LearnPage() {
     </section>
     <section className="threed-workspace-panel threed-presentation-surface mx-auto max-w-5xl space-y-4 rounded-2xl border p-6 sm:p-10" aria-labelledby="learn-data-structure-title">
       <h2 id="learn-data-structure-title" className="text-2xl font-semibold">Understand the App’s data structure</h2>
+      <LearnGuideIllustration topic="top-modules" />
       <p className="text-muted-foreground">Explore ThreeD, Multimedia, Traffic and Learn, then follow their tables, fields and relationships through the shared Project structure.</p>
       <Button asChild variant="outline"><Link href="/learn/data-structure">Explore Data Structure<ArrowRight aria-hidden="true" /></Link></Button>
     </section>
