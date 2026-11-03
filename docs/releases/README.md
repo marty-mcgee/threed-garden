@@ -6,6 +6,8 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
+ - [v0.31.2 - App: Root Cleanup and Drizzle Configuration (prepared for production release)](v0.31.2.md)
+
  - [v0.31.1 - App: Next.js 16.4.4 Update (prepared for production release)](v0.31.1.md)
 
  - [v0.31.0 - App: Native TypeScript Validation and Zod Removal (Developer-confirmed production release)](v0.31.0.md)

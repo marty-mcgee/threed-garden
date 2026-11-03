@@ -22,6 +22,10 @@ Choose a guide for what you want to do. [Current project state](../CONTEXT.md) h
 - [Characters](developers/THREED_CHARACTERS.md), [Runtime Markers](developers/THREED_MARKERS.md), [Animations Library](developers/THREED_ANIMATIONS_LIBRARY.md) and [Simulations](developers/THREED_SIMULATIONS.md).
 - [FarmBot integration](developers/FARMBOT_INTEGRATION.md), [MQTT adapter](developers/FARMBOT_MQTT_WORKER.md) and [Project configuration authority](plans/project-configuration-authority.md).
 
+## Business planning
+
+- [Monetization notes](business/monetization.md): retained business proposal and pricing experiments.
+
 ## Agents and contributors
 
 - [Root working instructions](../AGENTS.md), [current context](../CONTEXT.md) and [agent index/preferences](agents/README.md).

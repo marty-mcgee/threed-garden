@@ -101,3 +101,20 @@ No direct Neon/Postgres connection, live migration/seed/storage/device operation
 - [src/libraries/scripts/validate-repository-maintenance.cjs](../../src/libraries/scripts/validate-repository-maintenance.cjs)
 - [src/libraries/scripts/validate-threed-scene-resources.cjs](../../src/libraries/scripts/validate-threed-scene-resources.cjs)
 - [src/libraries/scripts/validate.mjs](../../src/libraries/scripts/validate.mjs)
+
+## November 3: root file organization
+
+The Developer approved moving business notes and grouping Drizzle configurations to simplify the repository root. This follow-up began on clean `main` / `dd9417254b26a9f165b84fc44486622d5036ebef`, with App/package-lock version **0.31.1**. It does not prepare a new release or establish production acceptance.
+
+- Moved `NOTES.md` unchanged to [docs/business/monetization.md](../business/monetization.md), linked from the documentation index.
+- Moved both unchanged Drizzle files to [src/libraries/drizzle/](../../src/libraries/drizzle/). Updated `db:generate`, `db:push` and `db:studio` to use explicit paths; Studio previously depended on root config discovery.
+- Preserved credential-free generation, central schema identity, root-relative schema/output/environment paths, process/local/fallback connection precedence and strict push confirmation. The existing workflow check also verifies Studio selects the same configuration as push.
+- Updated the README layout and current local-development instructions. Existing historical release records remain unchanged. Root `CONTEXT.md`, shared skills/lock and all other tooling entry points retain their established locations.
+
+The three moved files retain their exact baseline SHA-256 hashes. Package-lock bytes, dependencies and App version are unchanged. Initial validation at the proposed root `config/drizzle/` location passed a new isolated clean installation (522 packages), three focused checks, fresh TypeScript (`--noEmit --incremental false`), all **103 offline CI tasks** and credential-free `npm run db:generate`. Initial source/input parity covered 1,236 source files, 73 tracked public assets and copied package/config/documentation inputs.
+
+Following the Developer's location correction and question about ownership, the final destination is `src/libraries/drizzle/`: CLI configuration sits alongside `schema/`, which retains the App's schema declarations and relationships. Both configs moved unchanged; the newly created empty root `config/` and the intermediate empty `schema/drizzle/` were removed. Commands, current documentation and the README tree now use the final location. Fresh TypeScript and four focused config/schema-explorer/documentation/dependency checks pass, reusing the matching isolated installation. Actual offline generation reports **no schema changes, nothing to migrate**; its existing SQL/snapshot hashes remain unchanged. Final source/input parity covers 1,238 source files (including the two relocated configs), 73 tracked public assets and copied package/config/documentation inputs. The full 103-task suite was not repeated after this path correction; its initial evidence is retained above. No App runtime source change or new production build is part of this organization-only follow-up; live push/Studio behavior is not independently verified.
+
+Initial evidence is retained in ignored `.next/root-organization-tools`; final-path logs and parity evidence are under `.next/schema-drizzle-tools`, using `.next/root-organization-validation`. No environment files are copied; credentials are scrubbed and live network/database/port-4444 access is guarded. No Studio/server, push, live operation, Git write or deployment is performed. All changes remain unstaged.
+
+The Developer subsequently accepted the final structure and authorized [v0.31.2 release preparation](../releases/v0.31.2.md). Its version metadata, release gates and deployment status belong to that record; the unchanged-version and no-build statements above describe the earlier implementation checkpoint.

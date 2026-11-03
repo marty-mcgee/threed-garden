@@ -18,7 +18,11 @@ const manifest = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const configFile = command => {
   const match = command.match(/--config=([^\s]+)/); assert(match, 'npm command selects an explicit config'); return match[1];
 };
-const generate = config(configFile(manifest.scripts['db:generate']));
+const generateConfigFile = configFile(manifest.scripts['db:generate']);
+const liveConfigFile = configFile(manifest.scripts['db:push']);
+assert.equal(configFile(manifest.scripts['db:studio']), liveConfigFile,
+  'Studio must select the same live configuration as push after config relocation');
+const generate = config(generateConfigFile);
 assert.equal(generate.schema, './src/libraries/schema/index.ts');
 assert.equal(generate.dialect, 'postgresql'); assert.equal(generate.out, './drizzle');
 assert.equal(generate.dbCredentials, undefined, 'Offline generation needs neither credentials nor dotenv');
@@ -26,7 +30,7 @@ assert(fs.readFileSync(generate.schema, 'utf8').includes("export * from './three
 
 function push(inherited, local, fallback) {
   const env = { ...inherited }, calls = [];
-  const result = config(configFile(manifest.scripts['db:push']), {
+  const result = config(liveConfigFile, {
     './drizzle.generate.config': { default: generate },
     dotenv: { config(options) {
       calls.push(options?.path ?? '.env');

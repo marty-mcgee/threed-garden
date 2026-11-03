@@ -130,6 +130,7 @@ src/
     ui/                Shared shadcn/ui components
   libraries/
     auth/              NextAuth and App account creation
+    drizzle/           Drizzle CLI configuration
     schema/            Drizzle schemas and relationships
     services/          Domain logic and integration boundaries
     db/                Database client
