@@ -29,6 +29,8 @@ function text(value) {
   if (Array.isArray(value)) return value.map(text).join('');
   return typeof value === 'string' ? value : value && typeof value === 'object' ? text(value.props?.children) : '';
 }
+assert(!source.includes('/admin/threed/assembly-groups'));
+assert(!source.includes('Assembly Groups'));
 const calls = [];
 const base = {
   selectedProjectId: '17',
@@ -44,7 +46,7 @@ const base = {
 };
 for (const mode of ['design', '3d', '2d', 'combined']) {
   const guest = nodes(exportsValue.ProjectSceneToolbar({ ...base, canEditProject: false, viewMode: mode }));
-  for (const restricted of ['Project Tour', 'Scenarios', 'Assembly Groups', 'Weather', ...(mode === '2d' ? ['Add Model'] : ['Shapes', 'Models', 'Characters', 'FarmBots', 'Beds', 'Plantings'])]) {
+  for (const restricted of ['Project Tour', 'Scenarios', 'Weather', ...(mode === '2d' ? ['Add Model'] : ['Shapes', 'Models', 'Characters', 'FarmBots', 'Beds', 'Plantings'])]) {
     const action = guest.find(node => ['Button', 'DropdownMenuItem'].includes(node.type) && text(node).trim() === restricted);
     assert(action, `Guest can discover ${restricted}`);
     assert.equal(action.props.disabled, true, `${restricted} requires edit access`);
@@ -68,7 +70,7 @@ for (const mode of ['design', '3d', '2d', 'combined']) {
   assert.equal(events.at(-1).detail.projectId, 17);
 }
 const owner = nodes(exportsValue.ProjectSceneToolbar({ ...base, canEditProject: true }));
-for (const label of ['Add', 'Tools', 'Project Tour', 'Scenarios', 'Assembly Groups', 'Weather']) {
+for (const label of ['Add', 'Tools', 'Project Tour', 'Scenarios', 'Weather']) {
   assert(owner.some(node => ['Button', 'DropdownMenuItem'].includes(node.type) && text(node).trim() === label), label);
 }
 assert(owner.some(node => node.props['aria-label'] === 'Save ThreeD Project'));

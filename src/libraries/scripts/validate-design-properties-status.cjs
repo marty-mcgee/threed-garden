@@ -21,11 +21,14 @@ function render(overrides = {}) {
   const context = { doc: { walls: [1, 2], floors: [1], nodes: [1, 2, 3], openings: [], roofs: [], roofOpenings: [] },
     saving: false, dirty: false, canSave: true, scene: {}, error: '', message: 'Ready to draw.',
     loading: false, importing: false, controlsHost: {}, propertiesPanel: jsx('aside', {}),
-    exports: {}, Activity: 'icon', DesignFieldHelp: 'help', require: () => ({ jsx, jsxs: jsx }), ...overrides };
+    PersistentDetails: 'details', exports: {}, Activity: 'icon', DesignFieldHelp: 'help', require: () => ({ jsx, jsxs: jsx }), ...overrides };
   const code = Object.entries(declarations).map(([name, expression]) => `const ${name} = ${expression};`).join('\n') + '\ncontrols;';
   const tree = vm.runInNewContext(ts.transpileModule(code, { compilerOptions: { jsx: ts.JsxEmit.ReactJSX } }).outputText, context);
   const section = nodes(tree).find(node => node.props['data-testid'] === 'design-status-section');
   assert(section, 'Status section is rendered');
+  assert.equal(section.type, 'details');
+  assert.equal(section.props.storageId, 'status');
+  assert(nodes(section).some(node => node.type === 'summary'));
   assert(!nodes(nodes(tree).find(node => node.type === 'fieldset')).includes(section), 'Status/help remain outside disabled editing controls');
   assert.equal(nodes(tree).filter(node => node.props['data-testid'] === 'design-save-status').length, 1);
   assert.match(text(section), /2 walls.*1 floors.*3 nodes/);

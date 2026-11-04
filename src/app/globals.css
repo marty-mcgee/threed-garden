@@ -616,3 +616,25 @@ button.threed-field-help {
   background-color: rgb(16 185 129 / 0.08);
   border-color: rgb(16 185 129 / 0.2);
 }
+
+/* Project Design sidebar: closed headers never inherit content spacing. */
+.threed-scene-sidebar-size summary {
+  margin: 0;
+  padding: 0.25rem 0.25rem;
+  line-height: 1rem;
+}
+/* Inline help must not make Design titles taller than asset titles. */
+@media (any-pointer: fine) and (not (any-pointer: coarse)) {
+  .threed-scene-sidebar-size summary > button.threed-field-help {
+    height: 1rem;
+    min-height: 1rem;
+    padding-block: 0;
+    vertical-align: top;
+  }
+}
+.threed-design-sections > details > :not(summary) {
+  margin-block: 0;
+}
+.threed-design-sections > details[open] > :not(summary) {
+  margin-top: 0.5rem;
+}

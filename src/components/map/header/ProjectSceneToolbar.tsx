@@ -6,7 +6,6 @@ import {
   BookOpen,
   CloudSun,
   PencilRuler,
-  Boxes,
   ChevronDown,
   ChevronUp,
   FlaskConical,
@@ -193,7 +192,6 @@ export function ProjectSceneToolbar({
             <DropdownMenuItem disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} className="threed-toolbar-menu-item" onSelect={canEditProject ? onOpenProjectTour : undefined}><Sparkles className="h-3.5 w-3.5" /> Project Tour</DropdownMenuItem>
             <DropdownMenuItem disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} className="threed-toolbar-menu-item" onSelect={canEditProject ? onOpenScenarios : undefined}><BookOpen className="h-3.5 w-3.5" /> Scenarios</DropdownMenuItem>
             <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={() => window.dispatchEvent(new CustomEvent('threed:simulation-panel', { detail: { projectId: Number(selectedProjectId) } }))}><FlaskConical className="h-3.5 w-3.5" /> Simulations</DropdownMenuItem>
-            {canEditProject ? <DropdownMenuItem className="threed-toolbar-menu-item" asChild><a href="/admin/threed/assembly-groups" target="_blank" rel="noopener noreferrer"><Boxes className="h-3.5 w-3.5" /> Assembly Groups</a></DropdownMenuItem> : <DropdownMenuItem disabled title={editHelp} className="threed-toolbar-menu-item"><Boxes className="h-3.5 w-3.5" /> Assembly Groups</DropdownMenuItem>}
           </DropdownMenuContent>
         </DropdownMenu>
       )}

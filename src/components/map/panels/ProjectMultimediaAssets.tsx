@@ -49,11 +49,11 @@ export function ProjectMultimediaAssets({ projectId, search }: { projectId: stri
   }, [projectId, search, offset, retry, key, status]);
 
   const current = result?.key === key ? result : null;
-  return <details open className="rounded-md border border-foreground/10 p-2">
-    <summary className="cursor-pointer text-xs font-semibold">
+  return <details open className="rounded-md border border-foreground/10 p-1">
+    <summary className="cursor-pointer px-1 py-2 text-xs font-semibold">
       <ModuleIcon moduleKey="multimedia" className="mr-1 inline size-3.5" />Multimedia
     </summary>
-    <div className="mt-2 space-y-2 text-xs" aria-live="polite">
+    <div className="space-y-2 text-xs" aria-live="polite">
       {!current && <p>Loading Albums…</p>}
       {current?.error && <p role="alert">{current.error}</p>}
       {current && !current.error && !current.albums.length && <p>No available Albums{search ? ' match this search' : ' assigned to this Project'}.</p>}

@@ -46,7 +46,7 @@ function nodes(value) {
 }
 const rendered = nodes(exportsObject.ProjectAssetsPanel(props));
 assert.equal(rendered.filter(node => node.type === 'Multimedia' && node.props.projectId === '8').length, 1, 'Project Assets includes its Project-scoped Multimedia section');
-const assetScroll = rendered.find(node => node.props?.className === 'min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pr-1');
+const assetScroll = rendered.find(node => node.type === 'div' && Array.isArray(node.props?.children) && node.props.children.some(child => child?.type === 'Multimedia'));
 assert.equal(assetScroll.props.children.filter(Boolean).at(-1).type, 'Multimedia', 'Multimedia follows all sibling asset and warning sections');
 assert.equal(rendered.filter(node => node.type === 'button' && node.props.className?.includes('border-amber-400/60')).length, 2, 'Only assets using the affected reusable Model are highlighted');
 const links = rendered.filter(node => node.type === 'a');
