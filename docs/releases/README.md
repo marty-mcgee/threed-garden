@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
- - [v0.31.3 - App: README and Learn Visual Guides (prepared for production release)](v0.31.3.md)
+ - [v0.31.4 - App: Screen Captures and Supporting Illustrations (prepared for production release)](v0.31.4.md)
+
+ - [v0.31.3 - App: README and Learn Visual Guides (Developer-confirmed production release)](v0.31.3.md)
 
  - [v0.31.2 - App: Root Cleanup and Drizzle Configuration (Developer-confirmed production release)](v0.31.2.md)
 

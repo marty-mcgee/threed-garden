@@ -22,7 +22,7 @@ The application is developed in the **ThreeD Garden** repository and is availabl
 
 ## Latest features
 
-Current production release: **[v0.31.2](docs/releases/v0.31.2.md)**. Recent releases bring a more consistent Admin experience, account management, shared App styling, and richer content workflows:
+Current production release: **[v0.31.3](docs/releases/v0.31.3.md)**. Recent releases bring a more consistent Admin experience, account management, shared App styling, and richer content workflows:
 
 - **Clearer Admin navigation and creation buttons.** An explicit Module hierarchy, **Add User** navigation, consistent **Add + entity** sidebar labels, and distinct current-page highlighting make common tasks easier to find. Creation buttons across Admin Module pages use green styling; sidebar links retain their ordinary navigation styling.
 - **App Settings for Module identity.** Super Admins choose shared colors and Lucide icons for App Modules. Connected Admin headers, sidebar items, and fixed record icons use those saved settings. Personal appearance, navigation visibility, and per-user sidebar expansion remain separate preferences.
@@ -99,15 +99,31 @@ Creation, editing, and saving require the appropriate access. Public viewing and
 
 These are suggested uses of the existing modules. The screenshots illustrate the App at their capture dates, not verified customer deliveries.
 
+<details>
+<summary>Supporting illustration: how reusable Models connect to Project views</summary>
+
 ![Conceptual ThreeD App workflow showing reusable Models placed in a Project with linked 2D Design and 3D Scene views](docs/images/illustrations/project-workflow.svg)
 
 *A conceptual workflow: place reusable Models into a Project, design in 2D, and explore the same workspace in 3D.*
 
+[More supporting illustrations: Model placements, Assembly Groups and Project Save](docs/images/illustrations/README.md).
+
+</details>
+
 ## Structural basics
+
+![Actual Learn Data Structure explorer showing schema counts, the four peer Top Modules and shared foundations](docs/images/v0.31.3/data-structure-explorer.png)
+
+*Captured November 3, 2026: Learn’s Data Structure explorer shows the existing Module hierarchy and local schema declarations.*
+
+<details>
+<summary>Supporting illustration: the four peer Top Modules</summary>
 
 ![ThreeD App has four peer Top Modules: ThreeD, Multimedia, Traffic and Learn.](public/learn/illustrations/top-modules.svg)
 
 *Conceptual illustration: Four peer Top Modules use the existing schema-defined relationships.*
+
+</details>
 
 **A Project is the workspace boundary.** Reusable Models, Characters, garden records, and other content are managed in their Modules, then assigned or placed in Projects. Design architecture belongs to its Project. A catalog Model and a placed Model instance have separate identities.
 
@@ -204,9 +220,14 @@ Project measurement preferences support Imperial and Metric presentation. See [C
 <a id="models"></a>
 ## 🧩 Models, Files, and Textures
 
+<details>
+<summary>Supporting illustration: Model Files, Materials and preview images</summary>
+
 ![Geometry and supporting files, Materials, loaded Model preview, Library thumbnail and Top View image have separate jobs.](public/learn/illustrations/model-files.svg)
 
 *Conceptual illustration: Inspect the actual loaded Model as well as its saved files and images.*
+
+</details>
 
 Keep reusable **Models** separate from the instances placed in your Projects.
 
@@ -292,9 +313,18 @@ Build a garden context using Plants, Beds, Plantings, and related records, then 
 <a id="multimedia"></a>
 ## 🎵 Multimedia
 
+![Actual Dashboard Multimedia screen showing Album artwork, Track List, waveform, playback controls and available Albums](docs/images/v0.31.3/multimedia-player.png)
+
+*Captured November 3, 2026: Dashboard Multimedia displays a real Album and its available Tracks, Links, Media and Lyrics tabs. Playback is paused.*
+
+<details>
+<summary>Supporting illustration: Project Album selection and playback</summary>
+
 ![A Project Assets Album opens one Project Multimedia overlay with Track selection and playback controls.](public/learn/illustrations/project-multimedia.svg)
 
 *Conceptual illustration: Project Assets and the Multimedia overlay share Album and Track selection.*
+
+</details>
 
 Browse a content library and use the shared Dashboard Player for supported audio and video.
 
@@ -326,6 +356,10 @@ Coverage and freshness depend on the upstream providers and configured integrati
 
 <a id="learn"></a>
 ## 📚 Learn
+
+![Actual public Learn guide library showing search, page-size controls, guide counts and published task cards](docs/images/v0.31.3/learn-guides.png)
+
+*Captured November 3, 2026: the public Learn guide library presents published instructions with search and paging.*
 
 **ThreeD Module Learn** provides public, task-based guides for Projects, Design, Models, Characters, Simulations, Multimedia, Users and Settings. Its v0.29.0 implementation adds shared Markdown records, Super Admin CRUD, preview and explicit publishing. Import Starter Guides adds the fourteen existing how-tos as editable database records without overwriting existing slugs. Each starter links to the fuller Markdown documentation.
 
@@ -423,7 +457,7 @@ See the [validation guide](docs/agents/VALIDATION.md) for task-specific and isol
 
 ## 🤝 Contribute and follow development
 
-The latest production release is [v0.31.2](docs/releases/v0.31.2.md). See [release history](docs/releases/README.md) for version-specific scope and checks, and [current context](CONTEXT.md) for active work and known limitations.
+The latest production release is [v0.31.3](docs/releases/v0.31.3.md). See [release history](docs/releases/README.md) for version-specific scope and checks, and [current context](CONTEXT.md) for active work and known limitations.
 
 Have a reproducible bug or a focused feature idea? [Open an issue](https://github.com/marty-mcgee/threed-garden/issues). Before contributing, review the [contribution workflow](docs/agents/TASK_CHECKLISTS.md), existing ownership boundaries, and applicable checks.
 

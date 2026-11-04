@@ -11,6 +11,7 @@ Read this file and [CONTEXT.md](CONTEXT.md) fully before editing. Inspect the cu
 - Treat explicit naming corrections as authoritative. State uncertainty and distinguish observations from assumptions; do not cycle through confident guesses.
 - Keep responses concise with **Next Steps:**. Suggest a concise Git commit title only, unless a detailed body is explicitly requested.
 - Preserve manual labels/order and user-scoped Admin sidebar preferences. Do not replace the accepted entity-focused taxonomy with new groups without a request.
+- Follow the [Learn Art Image Development Requirement](docs/developers/LEARN_ART_IMAGE_REQUIREMENT.md) for README and Learn work. Document the interface with captures of actual App screens; created illustrations are supporting material only. Preserve accessibility and database content authority. Use purpose-based filenames, titles and feature labels without `AI` branding.
 
 ## Prove, act, document
 

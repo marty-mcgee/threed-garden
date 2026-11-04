@@ -15,6 +15,7 @@ Choose a guide for what you want to do. [Current project state](../CONTEXT.md) h
 - [Schema-First, Top-Down Module Plan](plans/app-module-architecture.md): the App's established architecture and how to review changes against its existing schemas and relationships.
 - [Data structure visualization](developers/APP_DATA_STRUCTURE.md): interactive exploration of every declared table, column and database relationship, with separate application mappings.
 - [ThreeD Module Learn](developers/THREED_LEARN.md): shared guide CRUD, starter-record import, Markdown publishing and the scoped database prerequisite.
+- [Learn Art Image Development Requirement](developers/LEARN_ART_IMAGE_REQUIREMENT.md): actual App screen captures, optional supporting illustrations, accessibility and review for Learn and README development.
 
 - [Local development](developers/LOCAL_DEVELOPMENT.md), [architecture](developers/ARCHITECTURE.md), [data model](developers/DATA_MODEL.md), [API guide](developers/API_GUIDE.md) and [deployment](developers/DEPLOYMENT.md).
 - [Project Designs](developers/THREED_DESIGNS.md), [Model administration](developers/THREED_MODEL_ADMIN.md), [Model runtime API](developers/THREED_MODEL_RUNTIME_API.md) and [Model Builder](developers/THREED_MODEL_BUILDER.md).

@@ -18,6 +18,8 @@ There is no seed on startup, schema creation, page load or public read, and no s
 
 ## Visual guides
 
+The [Learn Art Image Development Requirement](LEARN_ART_IMAGE_REQUIREMENT.md) uses captures of actual App screens to document the interface. Created illustrations are supporting material only. It covers capture context, accuracy, accessibility and shared presentation. The existing topic SVGs below remain conceptual support illustrations; they are not actual screen captures.
+
 The public reader and Admin preview share topic-specific, conceptual illustrations for all fourteen starter-guide slugs. The Learn landing page also illustrates the first Project and the four peer Top Modules. These are explanatory drawings, not screenshots or additional interactive controls.
 
 The SVG assets live in [public/learn/illustrations](../../public/learn/illustrations). Their accessible descriptions and captions are maintained in [guide-illustrations.ts](../../src/components/learn/guide-illustrations.ts); [LearnGuideIllustration](../../src/components/learn/LearnGuideIllustration.tsx) reserves image dimensions and scales each image to its container. README and the linked user/help Markdown reuse those same assets.

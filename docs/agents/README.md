@@ -22,6 +22,7 @@ Inspect scripts before execution. Use Node 24, declared npm 11.6.2 and isolated 
 
 ## Ownership contracts
 
+- [Learn Art Image Development Requirement](../developers/LEARN_ART_IMAGE_REQUIREMENT.md): document actual App screens with captures; created illustrations provide support. Follow the shared asset, accessibility and review contract.
 - [Application architecture](../developers/ARCHITECTURE.md), [Project configuration](../plans/project-configuration-authority.md) and [Designs](../developers/THREED_DESIGNS.md).
 - [Character runtimes](../developers/THREED_CHARACTERS.md), [Runtime Markers/Layers](../developers/THREED_MARKERS.md) and [Simulations](../developers/THREED_SIMULATIONS.md).
 - [Model administration](../developers/THREED_MODEL_ADMIN.md), [Builder](../developers/THREED_MODEL_BUILDER.md), [FarmBot security](../developers/FARMBOT_INTEGRATION.md) and [MQTT worker](../developers/FARMBOT_MQTT_WORKER.md).
