@@ -6,6 +6,8 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
+ - [v0.31.5 - ThreeD: Guest Project Toolbar and Viewing Controls (prepared for production release)](v0.31.5.md)
+
  - [v0.31.4 - App: Screen Captures and Supporting Illustrations (prepared for production release)](v0.31.4.md)
 
  - [v0.31.3 - App: README and Learn Visual Guides (Developer-confirmed production release)](v0.31.3.md)

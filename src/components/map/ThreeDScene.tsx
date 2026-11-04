@@ -194,6 +194,7 @@ function GroundMapImagePlane({ asset, transform }: { asset: ProjectGroundMapAsse
 
 interface ThreeDSceneProps {
   onModelPlanImage?: (projectId: number, markerId: string, image: ModelPlanImage | null) => void;
+  canEditProject?: boolean;
   measurementUnits?: 'imperial' | 'metric';
   onMeasurementUnitsChange?: (units: 'imperial' | 'metric') => void;
   architecture?: DesignDocument;
@@ -2075,6 +2076,7 @@ function SceneModelDropTarget({
 }
 
 export function ThreeDScene({
+  canEditProject = true,
   measurementUnits = 'imperial', onMeasurementUnitsChange,
   architecture, metersPerSceneUnit = 0.3048, selectedArchitectureId, onArchitectureSelect, architectureLevelId, architectureShowRoofs = true,
 
@@ -3437,6 +3439,7 @@ export function ThreeDScene({
         {showControls && scenePostProduction && (
           <div className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[3000] mt-1 max-h-[min(44rem,calc(100dvh-8rem))] w-56 space-y-0.5 overflow-y-auto rounded-lg border border-foreground/10 p-1.5 pb-2.5 shadow-xl backdrop-blur-sm [scrollbar-width:thin]">
             <div className="text-[10px] text-foreground/60 px-2 py-0.5">Scene</div>
+            <fieldset disabled={!canEditProject} className="min-w-0 border-0 p-0 disabled:opacity-60" title={!canEditProject ? "Only the Project owner can change these settings." : undefined}>
             <div className="border-b border-foreground/10 px-2 pb-2"><ProjectMeasurementUnits helpText="Display and input units only. Object sizes, calibration and physics stay unchanged. Retained by Save Project." value={measurementUnits} onChange={units => onMeasurementUnitsChange?.(units)} disabled={!onMeasurementUnitsChange} /></div>
             <Button
               type="button"
@@ -3488,6 +3491,7 @@ export function ThreeDScene({
               <p className="mt-1 text-[10px]">Save Project to keep settings.</p>
             </details>
             <div className="border-t border-foreground/10 my-1" />
+            </fieldset>
             <button onClick={onAutoRotateToggle} aria-pressed={autoRotate} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${autoRotate ? 'bg-foreground/10 text-foreground' : 'text-foreground/70 hover:bg-foreground/10 hover:text-foreground'}`}>
               <RotateCw className={`h-3.5 w-3.5 ${autoRotate ? 'animate-spin [animation-duration:4s]' : ''}`} />
               {autoRotate ? 'Pause Rotation' : 'Auto-Rotate'}
@@ -3524,6 +3528,7 @@ export function ThreeDScene({
               </button>
             )}
             <div className="border-t border-foreground/10 my-1" />
+            <fieldset disabled={!canEditProject} className="min-w-0 border-0 p-0 disabled:opacity-60" title={!canEditProject ? "Only the Project owner can change these settings." : undefined}>
             {/* ✅ Save View button */}
             <button
               onClick={() => setShowPresetDialog(true)}
@@ -3543,6 +3548,7 @@ export function ThreeDScene({
               />
             )}
             
+            </fieldset>
             {/* Layer controls */}
             {availableLayers.length > 0 && (
               <SceneLayersMenu

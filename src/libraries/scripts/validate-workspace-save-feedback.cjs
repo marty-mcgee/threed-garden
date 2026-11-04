@@ -47,7 +47,7 @@ vm.runInNewContext(ts.transpileModule(fs.readFileSync('src/components/map/header
   return new Proxy({}, { get: (_target, key) => String(key) });
 } });
 function descendants(node) { if (!node || typeof node !== 'object') return []; return [node, ...[node.props?.children].flat(Infinity).flatMap(descendants)]; }
-const props = { selectedProjectId: '15', viewMode: '3d', projectAssetsTriggerRef: { current: null }, workspaceDirty: true, workspaceSaveMessage: 'Unsaved workspace; Save Project', savingProject: false };
+const props = { canEditProject: true, selectedProjectId: '15', viewMode: '3d', projectAssetsTriggerRef: { current: null }, workspaceDirty: true, workspaceSaveMessage: 'Unsaved workspace; Save Project', savingProject: false };
 let nodes = descendants(toolbarExports.ProjectSceneToolbar(props));
 assert.match(nodes.find(n => n.props?.['aria-label'] === 'Save ThreeD Project').props.className, /ring-green-400/);
 assert(nodes.some(n => n.props?.className?.includes('bg-amber-400') && n.props?.['aria-hidden'] === 'true'), 'Unsaved notification dot stays yellow');

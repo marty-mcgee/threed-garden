@@ -4,7 +4,7 @@ import { useProjectPageTitle } from '@/components/layout/AppPageTitle';
 import type { ProjectConfigurationStamp } from '@/libraries/services/project/configuration';
 import { useWorkspaceSaveFeedback } from '@/components/map/hooks/useWorkspaceSaveFeedback';
 import { ProjectWeatherOverlay } from '@/components/map/panels/ProjectWeatherOverlay';
-import { ProjectMultimediaOverlay, ProjectMultimediaToolbarButton } from '@/components/map/panels/ProjectMultimediaOverlay';
+import { ProjectMultimediaOverlay } from '@/components/map/panels/ProjectMultimediaOverlay';
 import { ProjectOverlayLayoutContext } from '@/components/map/panels/ProjectOverlayLayout';
 import type { SceneResourceIssue } from '@/components/threed/shared/SceneResourceStatus';
 import { GroundMapInspectorWorkspace, GroundMapInspector, useGroundMapInspector } from '@/components/map/details/GroundMapInspectorWorkspace';
@@ -2854,8 +2854,8 @@ function UnifiedMapPageInner() {
         style={{ ...(viewMode !== 'design' && viewMode !== '2d' && !isThreeDPresentationComplete ? { visibility: 'hidden' as const, height: 37, overflow: 'hidden' } : {}) }}
         className="threed-project-toolbar pointer-events-auto m-0 flex flex-wrap items-center justify-between gap-2 px-1 py-1">
         
-        {canEditProject ? <>
         <ProjectHeaderMenu
+          canEditProject={canEditProject}
           selectedProjectId={selectedProjectId}
           projectName={projectInfo?.name}
           isOpen={isProjectSummaryOpen}
@@ -2906,6 +2906,7 @@ function UnifiedMapPageInner() {
         />
         
         <ProjectSceneToolbar
+          canEditProject={canEditProject}
           multimediaOpen={multimediaProjectId === selectedProjectId}
           multimediaTriggerRef={multimediaTriggerRef}
           onToggleMultimedia={() => { setWeatherProjectId(null); setMultimediaProjectId(current => current === selectedProjectId ? null : selectedProjectId); }}
@@ -2988,7 +2989,7 @@ function UnifiedMapPageInner() {
           savingProject={savingProjectMarkers}
           onSaveProject={handleSaveThreeDProject}
         />
-        </> : <div className="flex w-full flex-wrap items-center justify-between gap-2 px-3 py-2 text-sm"><span>{projectInfo?.name ?? 'Public Project'} <span className="ml-2 text-xs opacity-60">Read-only view</span></span>{selectedProjectId && <ProjectMultimediaToolbarButton open={multimediaProjectId === selectedProjectId} triggerRef={multimediaTriggerRef} onClick={() => setMultimediaProjectId(current => current === selectedProjectId ? null : selectedProjectId)} />}</div>}
+
 
       </div>
 
@@ -2998,6 +2999,7 @@ function UnifiedMapPageInner() {
       {/* Project Assets is independent of toolbar menu visibility. */}
       <div>
       <ProjectAssetsPanel
+        canEditProject={canEditProject}
         measurementUnits={designWorkspace.measurementUnits ?? 'imperial'}
         metersPerSceneUnit={metersPerSceneUnit}
         architecture={architectureDraft.history.present}
@@ -3015,7 +3017,7 @@ function UnifiedMapPageInner() {
         dockHost={viewMode === 'design' ? designAssetsHost : null}
         resourceIssues={sceneResourceIssues?.projectId === selectedProjectId ? sceneResourceIssues.issues : []}
         selectedProjectId={selectedProjectId}
-        isOpen={canEditProject && isProjectAssetsOpen}
+        isOpen={isProjectAssetsOpen}
         search={projectAssetSearch}
         setSearch={setProjectAssetSearch}
         typeFilter={projectAssetType}
@@ -3028,7 +3030,7 @@ function UnifiedMapPageInner() {
         resolveRuntimeMarkerPosition={resolveRuntimeMarkerPosition}
         onDismiss={dismissProjectAssets}
         groundMapSelected={groundMapInspector?.open ?? false}
-        onOpenGroundMap={viewMode !== '2d' ? () => groundMapInspector?.setOpen(true) : undefined}
+        onOpenGroundMap={canEditProject && viewMode !== '2d' ? () => groundMapInspector?.setOpen(true) : undefined}
         selectedGroupId={groupInspector}
         onSelectGroup={groupId => {
           if (transform.session) return;
@@ -3264,7 +3266,7 @@ function UnifiedMapPageInner() {
             {/* Pass cameraMode to combined view's 3D UnifiedMapView */}
             <div ref={containerRef} className="relative flex h-full w-full flex-col">
               <div hidden={sceneViewMode === '2d'} className="min-h-0 flex-shrink-0" style={{ height: sceneViewMode === 'combined' ? panelHeight + '%' : '100%' }}>
-              <UnifiedMapView architectureFrameRequest={viewMode === '2d' && architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} architecture={architecturePreview ?? architectureDraft.history.present}
+              <UnifiedMapView canEditProject={canEditProject} architectureFrameRequest={viewMode === '2d' && architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} architecture={architecturePreview ?? architectureDraft.history.present}
                 measurementUnits={designWorkspace.measurementUnits ?? 'imperial'}
                 onMeasurementUnitsChange={canEditProject ? measurementUnits => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), measurementUnits } })) : undefined}
                 metersPerSceneUnit={metersPerSceneUnit}
@@ -3336,7 +3338,7 @@ function UnifiedMapPageInner() {
               /></div>
               <ScenePanelDivider hidden={sceneViewMode !== 'combined'} containerRef={containerRef} value={panelHeight} onChange={setPanelHeight} axis="vertical" label="Resize 3D and 2D panels" />
               <div hidden={sceneViewMode !== '2d' && sceneViewMode !== 'combined'} className="relative isolate min-h-0 flex-1">
-              <UnifiedMapView architectureFrameRequest={viewMode === '2d' && architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} architecture={architecturePreview ?? architectureDraft.history.present}
+              <UnifiedMapView canEditProject={canEditProject} architectureFrameRequest={viewMode === '2d' && architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} architecture={architecturePreview ?? architectureDraft.history.present}
                 metersPerSceneUnit={metersPerSceneUnit}
                 selectedArchitectureId={architectureDraft.selected}
                 onArchitectureSelect={selectArchitecture}

@@ -36,7 +36,7 @@ vm.runInNewContext(ts.transpileModule(fs.readFileSync('src/components/map/panels
 }).outputText, { exports: exportsObject, require(name) { assert(name in mocks, name); return mocks[name]; } });
 const asset = (id, type, data) => ({ id, type, data, name: id, position: { x: 0, y: 0, z: 0 }, metadata: {} });
 const markers = [asset('Model instance', 'models', { id: 501, modelId: 7 }), asset('Character instance', 'characters', { id: 12, model: { id: 7 } }), asset('Unrelated Model', 'models', { id: 8 })];
-const props = { selectedProjectId: '8', isOpen: true, search: '', setSearch() {}, typeFilter: 'all', setTypeFilter() {}, projectRuntimeMarkers: markers,
+const props = { canEditProject: true, selectedProjectId: '8', isOpen: true, search: '', setSearch() {}, typeFilter: 'all', setTypeFilter() {}, projectRuntimeMarkers: markers,
   projectAssetTypes: [], projectAssetTypeCounts: new Map(), visibleProjectAssets: markers, selectedMarker: null, resolveRuntimeMarkerPosition: () => null,
   onDismiss() {}, onSelectAsset() {}, onSelectGroup() {}, onSelectSensor() {}, resourceIssues: [{ modelId: 7, modelName: 'Farm Demo', fileName: 'Leaves_Diff.tga', message: 'Could not load' }] };
 function nodes(value) {
@@ -59,3 +59,15 @@ for (const link of links) {
 assert.equal(nodes(exportsObject.ProjectAssetsPanel({ ...props, visibleProjectAssets: [] })).filter(node => node.type === 'a').length, 1, 'Warnings remain discoverable when asset search hides affected rows');
 assert.equal(nodes(exportsObject.ProjectAssetsPanel({ ...props, resourceIssues: [] })).filter(node => node.type === 'a').length, 0, 'Cleared warnings remove repair links');
 console.log('PASS Project Assets: reusable Model identity, Character association, unaffected rows, safe new-tab links, filtered-list diagnostics and cleared warnings');
+let selected = null;
+const guest = nodes(exportsObject.ProjectAssetsPanel({
+  ...props,
+  canEditProject: false,
+  onSelectAsset: marker => { selected = marker; },
+}));
+assert.equal(guest.filter(node => node.type === 'a').length, 0, 'Guest diagnostics have no private Admin repair links');
+assert(!guest.some(node => node.props?.['aria-label'] === 'Sensor Tools'), 'Guest cannot create or edit Sensors');
+assert(guest.some(node => node.type === 'Multimedia'), 'Guest retains Album browsing');
+guest.find(node => node.type === 'button' && node.props.className?.includes('border-amber-400/60')).props.onClick();
+assert.equal(selected.id, markers[0].id, 'Guest selection keeps the placed asset identity');
+console.log('PASS guest Project Assets: browse/select/Multimedia without Admin or Sensor editing');

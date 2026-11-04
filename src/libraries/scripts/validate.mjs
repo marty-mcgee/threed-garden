@@ -19,6 +19,7 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  'project-guest-toolbar': [node('validate-project-guest-toolbar.cjs')],
   'input-validation': [node('validate-input-validation.cjs')],
   'threed-multimedia': [node('validate-threed-multimedia.cjs')],
   'threed-multimedia-browser': [node('validate-threed-multimedia-browser.cjs')],
@@ -201,6 +202,7 @@ const tasks = {
 };
 
 const ci = [
+  'project-guest-toolbar',
   'threed-multimedia',
   'learn-data-structure',
   'multimedia-lyrics',

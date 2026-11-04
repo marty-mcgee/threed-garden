@@ -136,7 +136,7 @@ const toolbar = load('src/components/map/header/ProjectSceneToolbar.tsx', {
   '@/components/ui/tooltip': { Tooltip: 'tooltip', TooltipContent: 'tooltip-content', TooltipProvider: 'tooltip-provider', TooltipTrigger: 'tooltip-trigger' },
 });
 const elements = []; function walk(element) { if (!react.isValidElement(element)) return; elements.push(element); react.Children.forEach(element.props.children, walk); }
-walk(toolbar.ProjectSceneToolbar({ selectedProjectId: '15', viewMode: 'design', onViewModeChange: mode => calls.push(mode), presentationComplete: true, projectAssetCount: 0 }));
+walk(toolbar.ProjectSceneToolbar({ canEditProject: true, selectedProjectId: '15', viewMode: 'design', onViewModeChange: mode => calls.push(mode), presentationComplete: true, projectAssetCount: 0 }));
 const modeButtons = elements.filter(element => element.type === 'button' && 'aria-pressed' in element.props);
 assert.equal(modeButtons.length, 4, 'All four view modes must be reachable from the toolbar.');
 const designButton = modeButtons.find(button => button.props['aria-label'] === 'ThreeD Design View'); assert(designButton.props['aria-pressed']);
@@ -146,7 +146,7 @@ assert(elements.some(element => element.props['aria-label'] === 'Project Assets'
 assert(elements.some(element => element.type === 'menu'));
 assert(elements.some(element => element.type === 'button' && react.Children.toArray(element.props.children).includes('Add')));
 assert(elements.some(element => element.props['aria-label'] === 'Save ThreeD Project'), 'Design mode must use the existing Project Save control.');
-const previewToolbar = toolbar.ProjectSceneToolbar({ selectedProjectId: '15', viewMode: 'design', onViewModeChange() {}, presentationComplete: true, projectAssetCount: 0, multimediaOpen: true, onToggleMultimedia: () => calls.push('project-multimedia') });
+const previewToolbar = toolbar.ProjectSceneToolbar({ canEditProject: true, selectedProjectId: '15', viewMode: 'design', onViewModeChange() {}, presentationComplete: true, projectAssetCount: 0, multimediaOpen: true, onToggleMultimedia: () => calls.push('project-multimedia') });
 elements.length = 0; walk(previewToolbar);
 const multimediaButton = elements.find(element => element.type === 'multimedia-button');
 assert(multimediaButton && multimediaButton.props.open, 'Project Multimedia is reachable without Model selection');

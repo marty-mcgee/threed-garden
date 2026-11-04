@@ -21,6 +21,7 @@ import { useSensorGroups } from '@/components/threed/physics/SensorGroupsWorkspa
 import { getThreeDIcon, getThreeDLabel } from '@/libraries/utils/map-helpers';
 
 export function ProjectAssetsPanel({
+  canEditProject = false,
   measurementUnits = 'imperial', metersPerSceneUnit = 0.3048,
   architecture, selectedArchitectureId, onSelectArchitecture, onLocateArchitecture, architectureLocateAvailable = true,
   dockHost,
@@ -46,6 +47,7 @@ export function ProjectAssetsPanel({
   groundMapSelected = false,
   onOpenGroundMap,
 }: {
+  canEditProject?: boolean;
   measurementUnits?: 'imperial' | 'metric';
   metersPerSceneUnit?: number;
   architecture?: DesignDocument;
@@ -113,7 +115,7 @@ export function ProjectAssetsPanel({
         >
           <div className="mb-2 flex shrink-0 items-start justify-between gap-2">
             <div className="min-w-0">
-              <div className="flex items-center gap-2"><h2 className="flex items-center gap-2 text-sm font-semibold"><Boxes aria-hidden="true" className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />Project Assets</h2><ModelFieldHelp label="Project Assets">Browse and search assets assigned to this Project. Select an asset to inspect it, or use its target icon to locate it in the Scene. Sensor tools manage this Project’s Sensor Groups.</ModelFieldHelp></div>
+              <div className="flex items-center gap-2"><h2 className="flex items-center gap-2 text-sm font-semibold"><Boxes aria-hidden="true" className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />Project Assets</h2><ModelFieldHelp label="Project Assets">Browse and search assets assigned to this Project. Select an asset to inspect it, or use its target icon to locate it in the Scene. {canEditProject && 'Sensor tools manage this Project’s Sensor Groups.'}</ModelFieldHelp></div>
 
             </div>
             <Button
@@ -155,7 +157,7 @@ export function ProjectAssetsPanel({
             )}
           </div>
 
-          {onOpenGroundMap && <Button type="button" variant="outline" className="mb-2 h-8 shrink-0 justify-start text-xs" aria-pressed={groundMapSelected} onClick={onOpenGroundMap}>Ground Map · Settings</Button>}
+          {canEditProject && onOpenGroundMap && <Button type="button" variant="outline" className="mb-2 h-8 shrink-0 justify-start text-xs" aria-pressed={groundMapSelected} onClick={onOpenGroundMap}>Ground Map · Settings</Button>}
           <div className="min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pr-1">
             {visibleProjectAssets.length === 0 && visibleArchitecture.length === 0 ? (
               <p className="py-8 text-center text-xs text-muted-foreground">
@@ -207,9 +209,9 @@ export function ProjectAssetsPanel({
                   </button>
                   {modelIssues.length > 0 && <div className="px-2 py-1 text-[10px] text-amber-800 dark:text-amber-200">
                     <ul>{modelIssues.map(issue => <li key={`${issue.fileName}:${issue.message}`} className="break-words">{issue.fileName} — {issue.message}</li>)}</ul>
-                    <a href={`/admin/threed/models/${modelId}?tab=files`} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 underline">Fix in Admin · Model Files <ExternalLink className="h-3 w-3" /><span className="sr-only"> (opens in a new tab)</span></a>
+                    {canEditProject && <a href={`/admin/threed/models/${modelId}?tab=files`} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 underline">Fix in Admin · Model Files <ExternalLink className="h-3 w-3" /><span className="sr-only"> (opens in a new tab)</span></a>}
                   </div>}
-                  {physicsSensors.length > 0 && (
+                  {canEditProject && physicsSensors.length > 0 && (
                     <div className="ml-4 mt-1 space-y-1 border-l border-foreground/10 pl-2" aria-label={`${marker.name} Physics Sensors`}>
                       <div className="px-1 text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">
                         Physics Sensors {physicsSensors.length}
@@ -256,12 +258,12 @@ export function ProjectAssetsPanel({
               <p className="mt-1">You can continue using this Project.</p>
               <ul className="mt-2 space-y-2">{resourceIssues.map((issue, index) => <li key={`${issue.modelId}:${issue.fileName}:${index}`} className="break-words">
                 <span className="font-mono">{issue.fileName}</span> — {issue.message}
-                {issue.modelId && <a className="mt-1 flex items-center gap-1 underline" href={`/admin/threed/models/${issue.modelId}?tab=files`} target="_blank" rel="noopener noreferrer">{issue.modelName || `Model #${issue.modelId}`} · Model Files <ExternalLink className="h-3 w-3 shrink-0" /><span className="sr-only"> (opens in a new tab)</span></a>}
+                {canEditProject && issue.modelId && <a className="mt-1 flex items-center gap-1 underline" href={`/admin/threed/models/${issue.modelId}?tab=files`} target="_blank" rel="noopener noreferrer">{issue.modelName || `Model #${issue.modelId}`} · Model Files <ExternalLink className="h-3 w-3 shrink-0" /><span className="sr-only"> (opens in a new tab)</span></a>}
               </li>)}</ul>
             </PersistentDetails>}
             <ProjectMultimediaAssets key={`${selectedProjectId}:${projectAssetSearch}`} projectId={selectedProjectId!} search={projectAssetSearch} />
           </div>
-          <div className="shrink-0 space-y-2 border-t border-foreground/15 pt-2 mt-2 mb-14 max-h-[30%] overflow-y-auto" aria-label="Sensor Tools">
+          {canEditProject && <div className="shrink-0 space-y-2 border-t border-foreground/15 pt-2 mt-2 mb-14 max-h-[30%] overflow-y-auto" aria-label="Sensor Tools">
             <div className="flex items-center gap-2"><h3 className="flex items-center gap-2 text-xs font-semibold"><Radio aria-hidden="true" className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-300" />Sensor Tools</h3><ModelFieldHelp label="Sensor Tools">Select a Sensor Group to inspect its members, or create a new group. Select a Project asset to add and configure its Sensors.</ModelFieldHelp></div>
             {!groundMapSelected && selectedMarker && ['project-marker', 'project-snapshot'].includes(String(selectedMarker.metadata?.source)) && ['model', 'models', 'bed', 'beds', 'planting', 'plantings', 'farmbot', 'farmbots'].includes(selectedMarker.type.toLowerCase()) && (
               <Button disabled={Boolean(transform.session) || readPhysicsSensorCuboids(selectedMarker.metadata).length >= 8} variant="outline" size="sm" className="w-full text-xs truncate" onClick={() => onSelectSensor(selectedMarker, '__new__')}>
@@ -275,7 +277,7 @@ export function ProjectAssetsPanel({
               </div>
             </PersistentDetails>
             <Button variant="outline" size="sm" className="w-full text-xs" disabled={Boolean(transform.session)} onClick={() => onSelectGroup('')}>+ New Sensor Group</Button>
-          </div>
+          </div>}
         </div>
       );
   return <DetailsSectionScope.Provider value={`assets:${selectedProjectId}`}>

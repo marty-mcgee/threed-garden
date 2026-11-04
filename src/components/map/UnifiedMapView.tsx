@@ -61,6 +61,7 @@ const ThreeDScene = dynamic(
 interface UnifiedMapViewProps {
   architectureFrameRequest?: { id: string; sequence: number } | null;
   onModelPlanImage?: (projectId: number, markerId: string, image: ModelPlanImage | null) => void;
+  canEditProject?: boolean;
   measurementUnits?: 'imperial' | 'metric';
   onMeasurementUnitsChange?: (units: 'imperial' | 'metric') => void;
   architecture?: DesignDocument;
@@ -209,6 +210,7 @@ function isSameRuntimeMarker(left: RuntimeMarker, right: RuntimeMarker): boolean
 }
 
 export function UnifiedMapView({
+  canEditProject = true,
   measurementUnits = 'imperial', onMeasurementUnitsChange, onModelPlanImage, architectureFrameRequest, architecture, metersPerSceneUnit = 0.3048, selectedArchitectureId, onArchitectureSelect, architectureLevelId, architectureShowRoofs = true,
 
   projectId,
@@ -684,7 +686,7 @@ export function UnifiedMapView({
       placementActive={Boolean(placementModel)}
       placementModelId={placementModel?.id ?? null}
       onPlacement={handleMapModelPlacement}
-      onModelMove={handleMapModelMove}
+      onModelMove={canEditProject ? handleMapModelMove : undefined}
     />
   );
 
@@ -698,6 +700,7 @@ export function UnifiedMapView({
     return (
       <ThreeDScene
         measurementUnits={measurementUnits}
+        canEditProject={canEditProject}
         onMeasurementUnitsChange={onMeasurementUnitsChange}
         onModelPlanImage={onModelPlanImage}
         architecture={architecture}

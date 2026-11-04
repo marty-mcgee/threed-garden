@@ -31,6 +31,7 @@ import type { MapViewMode } from '@/libraries/types/map';
 import { ProjectMultimediaToolbarButton } from '@/components/map/panels/ProjectMultimediaOverlay';
 
 interface ProjectSceneToolbarProps {
+  canEditProject: boolean;
   multimediaOpen?: boolean;
   onToggleMultimedia?: () => void;
   multimediaTriggerRef?: RefObject<HTMLButtonElement | null>;
@@ -73,6 +74,7 @@ interface ProjectSceneToolbarProps {
 }
 
 export function ProjectSceneToolbar({
+  canEditProject,
   multimediaOpen = false,
   onToggleMultimedia,
   multimediaTriggerRef,
@@ -111,6 +113,7 @@ export function ProjectSceneToolbar({
   savingProject,
   onSaveProject,
 }: ProjectSceneToolbarProps) {
+  const editHelp = 'Only the Project owner can use this action. Guests can explore this Project.';
   return (
     <div className="flex min-w-0 max-w-full flex-wrap items-center gap-1">
       <div role="group" aria-label="Scene view mode" className="threed-view-modes flex items-center gap-0 rounded-lg border p-0">
@@ -156,13 +159,14 @@ export function ProjectSceneToolbar({
           {sceneAddMenuOpen && (
             <div className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[2000] mt-1 max-h-[min(24rem,70dvh)] w-56 max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain rounded-lg border p-1.5 shadow-xl backdrop-blur-sm">
               <div className="px-2 pb-1 pt-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground/60">ThreeD Marker Type</div>
+              {!canEditProject && <p className="px-2 py-1 text-xs text-muted-foreground">{editHelp}</p>}
               <div className="grid grid-cols-1 gap-0.5">
-                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" onClick={onOpenAddShape}><Plus className="h-3.5 w-3.5" /> Shapes</Button>
-                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" onClick={onOpenModelLibrary}><Box className="h-3.5 w-3.5" /> Models</Button>
-                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" onClick={onOpenCharacterLibrary}><User className="h-3.5 w-3.5" /> Characters</Button>
-                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" onClick={onOpenFarmBotLibrary}><Settings className="h-3.5 w-3.5" /> FarmBots</Button>
-                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" onClick={onOpenBedPlacement}><Plus className="h-3.5 w-3.5" /> Beds</Button>
-                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" onClick={onOpenPlantingPlacement}><Sprout className="h-3.5 w-3.5" /> Plantings</Button>
+                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenAddShape : undefined}><Plus className="h-3.5 w-3.5" /> Shapes</Button>
+                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenModelLibrary : undefined}><Box className="h-3.5 w-3.5" /> Models</Button>
+                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenCharacterLibrary : undefined}><User className="h-3.5 w-3.5" /> Characters</Button>
+                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenFarmBotLibrary : undefined}><Settings className="h-3.5 w-3.5" /> FarmBots</Button>
+                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenBedPlacement : undefined}><Plus className="h-3.5 w-3.5" /> Beds</Button>
+                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenPlantingPlacement : undefined}><Sprout className="h-3.5 w-3.5" /> Plantings</Button>
               </div>
             </div>
           )}
@@ -170,7 +174,7 @@ export function ProjectSceneToolbar({
       )}
 
       {selectedProjectId && viewMode === '2d' && (
-        <Button type="button" variant="outline" size="sm" className="h-7 gap-1 px-2 text-xs" disabled={!hasThreeDModule} title="Add a Model through the supporting 2D Map" onClick={onOpenModelLibrary}>
+        <Button type="button" variant="outline" size="sm" className="h-7 gap-1 px-2 text-xs" disabled={!canEditProject || !hasThreeDModule} title={canEditProject ? "Add a Model through the supporting 2D Map" : editHelp} onClick={canEditProject ? onOpenModelLibrary : undefined}>
           <Plus className="h-3.5 w-3.5" /> Add Model
         </Button>
       )}
@@ -185,10 +189,11 @@ export function ProjectSceneToolbar({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="threed-workspace-panel threed-toolbar-dropdown-surface z-[2000] w-56 space-y-0.5 rounded-lg border-foreground/10 p-1.5 text-foreground shadow-xl backdrop-blur-sm">
-            <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onOpenProjectTour}><Sparkles className="h-3.5 w-3.5" /> Project Tour</DropdownMenuItem>
-            <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={onOpenScenarios}><BookOpen className="h-3.5 w-3.5" /> Scenarios</DropdownMenuItem>
+            {!canEditProject && <p className="px-2 py-1 text-xs text-muted-foreground">{editHelp}</p>}
+            <DropdownMenuItem disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} className="threed-toolbar-menu-item" onSelect={canEditProject ? onOpenProjectTour : undefined}><Sparkles className="h-3.5 w-3.5" /> Project Tour</DropdownMenuItem>
+            <DropdownMenuItem disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} className="threed-toolbar-menu-item" onSelect={canEditProject ? onOpenScenarios : undefined}><BookOpen className="h-3.5 w-3.5" /> Scenarios</DropdownMenuItem>
             <DropdownMenuItem className="threed-toolbar-menu-item" onSelect={() => window.dispatchEvent(new CustomEvent('threed:simulation-panel', { detail: { projectId: Number(selectedProjectId) } }))}><FlaskConical className="h-3.5 w-3.5" /> Simulations</DropdownMenuItem>
-            <DropdownMenuItem className="threed-toolbar-menu-item" asChild><a href="/admin/threed/assembly-groups" target="_blank" rel="noopener noreferrer"><Boxes className="h-3.5 w-3.5" /> Assembly Groups</a></DropdownMenuItem>
+            {canEditProject ? <DropdownMenuItem className="threed-toolbar-menu-item" asChild><a href="/admin/threed/assembly-groups" target="_blank" rel="noopener noreferrer"><Boxes className="h-3.5 w-3.5" /> Assembly Groups</a></DropdownMenuItem> : <DropdownMenuItem disabled title={editHelp} className="threed-toolbar-menu-item"><Boxes className="h-3.5 w-3.5" /> Assembly Groups</DropdownMenuItem>}
           </DropdownMenuContent>
         </DropdownMenu>
       )}
@@ -197,7 +202,7 @@ export function ProjectSceneToolbar({
         <div id="project-environment-controls-host" className="relative" hidden={viewMode === '2d'} />
       )}
 
-      {selectedProjectId && onToggleWeather && <Button ref={weatherTriggerRef} type="button" variant={weatherOpen ? 'secondary' : 'outline'} size="sm" className="h-7 gap-1 px-2 text-xs" aria-expanded={weatherOpen} aria-controls="project-weather-overlay" onClick={onToggleWeather} title="Project Weather"><CloudSun className="h-3.5 w-3.5" /><span className="hidden sm:inline">Weather</span></Button>}
+      {selectedProjectId && onToggleWeather && <Button ref={weatherTriggerRef} type="button" variant={weatherOpen ? 'secondary' : 'outline'} size="sm" className="h-7 gap-1 px-2 text-xs" aria-expanded={weatherOpen} aria-controls="project-weather-overlay" disabled={!canEditProject} onClick={canEditProject ? onToggleWeather : undefined} title={canEditProject ? "Project Weather" : "Project Weather requires owner access."}><CloudSun className="h-3.5 w-3.5" /><span className="hidden sm:inline">Weather</span></Button>}
       {selectedProjectId && onToggleMultimedia && <ProjectMultimediaToolbarButton open={multimediaOpen} onClick={onToggleMultimedia} triggerRef={multimediaTriggerRef} />}
 
       <SceneOperationStatus operation={activeOperation} viewMode={viewMode} onCancel={onCancelOperation} />
@@ -205,15 +210,15 @@ export function ProjectSceneToolbar({
 
 
 
-      {selectedProjectId && <span role="status" className="sr-only">{savingProject ? 'Saving Project' : workspaceSaveMessage}</span>}
-      <div ref={designHistoryHostRef} data-testid="project-design-history" hidden={viewMode !== 'design' || !selectedProjectId} className="min-w-0 max-w-full" />
+      {canEditProject && selectedProjectId && <span role="status" className="sr-only">{savingProject ? 'Saving Project' : workspaceSaveMessage}</span>}
+      <div ref={designHistoryHostRef} data-testid="project-design-history" hidden={!canEditProject || viewMode !== 'design' || !selectedProjectId} className="min-w-0 max-w-full" />
       {selectedProjectId && (
-        <TooltipProvider delayDuration={200}><Tooltip><TooltipTrigger asChild><span className="inline-flex" tabIndex={savingProject || saveDisabled ? 0 : undefined} aria-disabled={savingProject || saveDisabled || undefined}>
-        <Button type="button" variant={savingProject ? 'secondary' : 'outline'} size="icon" className={`relative h-7 w-7 ${workspaceDirty ? 'ring-1 ring-green-400' : ''}`} disabled={savingProject || saveDisabled} aria-label="Save ThreeD Project" title={workspaceSaveMessage} onClick={onSaveProject}>
+        <TooltipProvider delayDuration={200}><Tooltip><TooltipTrigger asChild><span className="inline-flex" tabIndex={!canEditProject || savingProject || saveDisabled ? 0 : undefined} aria-disabled={!canEditProject || savingProject || saveDisabled || undefined}>
+        <Button type="button" variant={savingProject ? 'secondary' : 'outline'} size="icon" className={`relative h-7 w-7 ${workspaceDirty ? 'ring-1 ring-green-400' : ''}`} disabled={!canEditProject || savingProject || saveDisabled} aria-label="Save ThreeD Project" title={canEditProject ? workspaceSaveMessage : editHelp} onClick={canEditProject ? onSaveProject : undefined}>
           {savingProject ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5 text-foreground dark:text-white" />}
           {workspaceDirty && <span className="absolute right-0 top-0 h-1.5 w-1.5 rounded-full bg-amber-400" aria-hidden="true" />}
         </Button>
-        </span></TooltipTrigger><TooltipContent>{savingProject ? 'Saving Project. Later edits still need Save.' : workspaceSaveMessage}</TooltipContent></Tooltip></TooltipProvider>
+        </span></TooltipTrigger><TooltipContent>{!canEditProject ? editHelp : savingProject ? 'Saving Project. Later edits still need Save.' : workspaceSaveMessage}</TooltipContent></Tooltip></TooltipProvider>
       )}
     </div>
   );
