@@ -2,6 +2,12 @@
 
 ## Current checkpoint
 
+November 4: Developer accepted [v0.31.8 - ThreeD: Movable Multimedia Overlay and Playback Controls](docs/releases/v0.31.8.md) for production preparation. Package/root lock are 0.31.8; fresh TypeScript, all 104 offline CI tasks, guarded production build and source/input parity pass. Changes remain unstaged; production confirmation is pending.
+
+November 4: [Movable Project Multimedia player](docs/releases/v0.31.8.md#unreleased-follow-up-movable-project-multimedia-player) adds shared overlay positioning/Project Save, compact Album presentation, seek/time and volume/mute controls on the persistent media element. Offline validation passes; browser acceptance pending. Version stays 0.31.7; changes remain unstaged.
+
+November 4: [Project Multimedia landing links](docs/releases/v0.31.8.md#unreleased-follow-up-project-multimedia-landing-links) open Albums and exact selected/current Tracks in a new Dashboard Multimedia tab. Existing preview/playback selection is retained. Focused offline checks and fresh TypeScript pass; browser acceptance pending. Changes remain unstaged at 0.31.7.
+
 November 4: prepared [v0.31.7 - ThreeD: Guest Weather and Metric Readings](docs/releases/v0.31.7.md) after Developer acceptance. Version metadata is 0.31.7; fresh TypeScript, all 104 offline CI tasks and the guarded production build pass. Dependencies/schemas are unchanged; production confirmation is pending.
 
 November 4: Weather latest/history readings now include Celsius and metric equivalents alongside existing units. Focused offline conversion/Weather checks pass; visual acceptance pending. See [measurement units](docs/releases/v0.31.7.md#unreleased-follow-up-weather-measurement-units).

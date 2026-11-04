@@ -2,9 +2,11 @@
 
 import { useEffect, useRef, useState, type RefObject } from 'react';
 import { useSession } from 'next-auth/react';
-import { X } from 'lucide-react';
+import { ExternalLink, X } from 'lucide-react';
+import { dashboardSelectionUrl } from '@/libraries/services/multimedia/dashboard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useProjectOverlayPosition } from './ProjectOverlayLayout';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { loadProjectMultimediaPreview, ProjectMultimediaPlayback, useSceneMultimedia } from '../multimedia/SceneMultimediaProvider';
 import type { ProjectMultimediaPreview } from '@/libraries/services/project/multimedia-preview-contract';
@@ -22,14 +24,15 @@ export function ProjectMultimediaToolbarButton({ open, onClick, triggerRef }: {
 
 export function ProjectMultimediaOverlay({ projectId, onClose, open = true }: { projectId: string; onClose: () => void; open?: boolean }) {
   const { data: session, status } = useSession();
+  const overlay = useProjectOverlayPosition('multimedia');
   const closeRef = useRef<HTMLButtonElement | null>(null);
   useEffect(() => {
     if (open) closeRef.current?.focus();
   }, [open]);
-  return <section id="project-multimedia-overlay" hidden={!open} role="region" aria-labelledby="project-multimedia-title"
+  return <section ref={overlay.ref} style={overlay.style} id="project-multimedia-overlay" hidden={!open} role="region" aria-labelledby="project-multimedia-title"
     className="threed-workspace-panel threed-scene-panel-surface absolute right-2 top-[38px] z-[46] flex max-h-[calc(100%-46px)] w-96 max-w-[calc(100%-1rem)] flex-col overflow-hidden rounded-md border shadow-xl backdrop-blur-md"
     onKeyDown={event => { if (event.key === 'Escape') { event.stopPropagation(); onClose(); } }}>
-    <header className="flex shrink-0 items-center justify-between gap-2 border-b px-3 py-2">
+    <header {...overlay.handle} className={`${overlay.handle.className} flex shrink-0 items-center justify-between gap-2 border-b px-3 py-2`}>
       <h2 id="project-multimedia-title" className="flex items-center gap-2 text-sm font-semibold"><ModuleIcon moduleKey="multimedia" className="h-4 w-4" />Project Multimedia</h2>
       <Button ref={closeRef} type="button" variant="ghost" size="icon" className="h-7 w-7" aria-label="Close Project Multimedia" onClick={onClose}><X className="h-3.5 w-3.5" /></Button>
     </header>
@@ -157,12 +160,11 @@ function ProjectMultimediaBrowser({ projectId }: { projectId: number }) {
     }
   };
   return <div className="space-y-3">
-    <p className="text-muted-foreground">Browse this Project’s Albums and preview their Tracks.</p>
     <Input aria-label="Search Project Albums" placeholder="Search Albums or artists…" maxLength={120} value={search} className="h-8 text-xs" onChange={event => { setSearch(event.target.value); setOffset(0); }} />
     {!currentAlbums && <p role="status">Loading Albums…</p>}
     {currentAlbums?.error && <p role="alert">{currentAlbums.error}</p>}
     {currentAlbums && !currentAlbums.error && !currentAlbums.rows.length && <p>{search ? 'No Albums match this search.' : 'No available Albums are assigned to this Project.'}</p>}
-    <div className="space-y-1">{currentAlbums?.rows.map(item => <Button key={item.id} type="button" variant={albumId === item.id ? 'secondary' : 'ghost'} aria-pressed={albumId === item.id} className="h-auto w-full justify-start whitespace-normal px-2 py-2 text-left text-xs" onClick={() => { setAlbumId(item.id); setTrackOffset(0); setMessage(''); }}>
+    <div className="space-y-1">{currentAlbums?.rows.filter(item => item.id !== albumId).map(item => <Button key={item.id} type="button" variant={albumId === item.id ? 'secondary' : 'ghost'} aria-pressed={albumId === item.id} className="h-auto w-full justify-start whitespace-normal px-2 py-2 text-left text-xs" onClick={() => { setAlbumId(item.id); setTrackOffset(0); setMessage(''); }}>
       <span className="min-w-0 break-words"><span className="block font-medium">{item.title}</span><span className="block text-muted-foreground">{item.artist}</span></span>
     </Button>)}</div>
     <div className="flex flex-wrap gap-1">
@@ -175,7 +177,7 @@ function ProjectMultimediaBrowser({ projectId }: { projectId: number }) {
       {currentTracks?.error && <p role="alert">{currentTracks.error}</p>}
       {album && <div className="flex items-start gap-2">
         {album.coverArt && <img key={album.coverArt} src={album.coverArt} alt={`${album.title} cover`} className="size-14 shrink-0 rounded object-cover" onError={event => { event.currentTarget.hidden = true; }} />}
-        <div className="min-w-0 break-words"><p className="font-semibold">{album.title}</p><p className="text-muted-foreground">{album.artist}</p></div>
+        <div className="min-w-0 break-words"><p className="flex items-center gap-1 font-semibold">{album.title}<a href={dashboardSelectionUrl(album.id, selectedTrack?.id)} target="_blank" rel="noopener noreferrer" className="rounded p-1 hover:bg-accent" aria-label="Open Album and selected Track in Dashboard Multimedia (new tab)" title="Open in Dashboard Multimedia (new tab)"><ExternalLink className="h-3 w-3" /></a></p><p className="text-muted-foreground">{album.artist}</p></div>
       </div>}
       {data && !data.tracks.length && <p>No playable active Tracks on this page.</p>}
       {!!data?.tracks.length && <label className="block">Track<select aria-label="Project Multimedia Track" className="mt-1 w-full rounded border bg-background p-1" value={selectedTrack?.id} onChange={event => setTrackId(Number(event.target.value))}>
@@ -187,6 +189,6 @@ function ProjectMultimediaBrowser({ projectId }: { projectId: number }) {
       </div>
       {message && <p role="alert">{message}</p>}
     </div>}
-    <ProjectMultimediaPlayback selectionChosen={!!albumId} selectionReady={ready} onPlaySelection={() => void play('playMultimedia')} />
+    <ProjectMultimediaPlayback selectionAlbumId={albumId} selectionTrackId={selectedTrack?.id ?? null} selectionChosen={!!albumId} selectionReady={ready} onPlaySelection={() => void play('playMultimedia')} />
   </div>;
 }

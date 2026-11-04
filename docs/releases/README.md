@@ -6,6 +6,8 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
+ - [v0.31.8 - ThreeD: Movable Multimedia Overlay and Playback Controls (prepared for production release)](v0.31.8.md)
+
  - [v0.31.7 - ThreeD: Guest Weather and Metric Readings (prepared for production release)](v0.31.7.md)
 
  - [v0.31.6 - ThreeD: Dashboard Panel Spacing and Collapse Controls (prepared for production release)](v0.31.6.md)

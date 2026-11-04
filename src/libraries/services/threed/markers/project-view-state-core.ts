@@ -16,7 +16,7 @@ export const PROJECT_VIEW_STATE_VERSION = 1 as const;
 export type ProjectViewMode = '2d' | '3d' | 'combined' | 'design';
 export type ProjectCameraMode = 'follow' | 'topdown' | 'firstperson' | 'orbit' | 'stationary';
 
-export type ProjectOverlayPositions = Partial<Record<'simulations' | 'scenarios' | 'tour' | 'sensorGroup' | 'sensors' | 'details', { x: number; y: number }>>;
+export type ProjectOverlayPositions = Partial<Record<'simulations' | 'scenarios' | 'tour' | 'sensorGroup' | 'sensors' | 'details' | 'multimedia', { x: number; y: number }>>;
 
 export interface ProjectVector3 {
   x: number;
@@ -303,9 +303,9 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
   if (input.design !== undefined) { try { result.design = parseDesignWorkspace(input.design); } catch { throw new ProjectViewStateError(); } }
   if (input.overlayPositions !== undefined) {
     const positions = record(input.overlayPositions);
-    if (!positions || Object.keys(positions).some(key => !['simulations', 'scenarios', 'tour', 'sensorGroup', 'sensors', 'details'].includes(key))) throw new ProjectViewStateError();
+    if (!positions || Object.keys(positions).some(key => !['simulations', 'scenarios', 'tour', 'sensorGroup', 'sensors', 'details', 'multimedia'].includes(key))) throw new ProjectViewStateError();
     result.overlayPositions = {};
-    for (const key of ['simulations', 'scenarios', 'tour', 'sensorGroup', 'sensors', 'details'] as const) {
+    for (const key of ['simulations', 'scenarios', 'tour', 'sensorGroup', 'sensors', 'details', 'multimedia'] as const) {
       if (positions[key] === undefined) continue;
       const position = record(positions[key]);
       if (!position || typeof position.x !== 'number' || typeof position.y !== 'number') throw new ProjectViewStateError();

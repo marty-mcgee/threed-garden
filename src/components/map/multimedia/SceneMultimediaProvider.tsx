@@ -3,6 +3,8 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import { useSession } from 'next-auth/react';
 import { createPortal } from 'react-dom';
+import { Slider } from '@/components/ui/slider';
+import { Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { SceneMultimediaPlayer, type MultimediaScene, type ScenePlaybackState } from '@/libraries/services/threed/multimedia/scene-multimedia-player';
 import { parseSceneMultimediaResponse, type SceneMultimediaQuery, type MultimediaAction } from '@/libraries/services/threed/multimedia/scene-multimedia-contract';
@@ -67,6 +69,8 @@ type Context = Omit<View, 'scope'> & {
   canOpenPreview: boolean;
   previewAlbum: (albumId: number, trackId?: number) => void;
   act: (action: MultimediaAction) => void;
+  media: HTMLVideoElement | null;
+  mediaTime: number;
   setMediaHost: (host: HTMLDivElement | null) => void;
 };
 const Context = createContext<Context | null>(null);
@@ -89,6 +93,7 @@ export function SceneMultimediaProvider({ projectId, children, initialWorkspace,
   const projectRef = useRef(id);
   projectRef.current = id;
   const sceneRef = useRef<MultimediaScene | null>(null);
+  const [mediaTime, setMediaTime] = useState(0);
   const mediaRef = useRef<HTMLVideoElement | null>(null);
   const [mediaHost, setMediaHost] = useState<HTMLDivElement | null>(null);
   const selectionRef = useRef({ scope, ...emptySelection });
@@ -224,6 +229,7 @@ export function SceneMultimediaProvider({ projectId, children, initialWorkspace,
     onOpenProjectPreview();
   };
   const mediaElement = <video ref={mediaRef} hidden={!video} controls playsInline preload="none" className="max-h-48 w-full rounded" aria-label="Scene Multimedia"
+    onTimeUpdate={event => setMediaTime(event.currentTarget.currentTime)} onLoadedMetadata={event => setMediaTime(event.currentTarget.currentTime)} onEmptied={() => setMediaTime(0)}
     onPlay={() => player.mediaChanged()} onPause={() => player.mediaChanged()} onEnded={() => player.mediaChanged('', true)}
     onError={() => { if (mediaRef.current?.getAttribute('src')) player.mediaChanged('Media could not be loaded. Select the Track and retry Play.'); }} />;
   return <Context.Provider value={{
@@ -239,6 +245,8 @@ export function SceneMultimediaProvider({ projectId, children, initialWorkspace,
     previewAlbum,
     act,
     setMediaHost,
+    media: mediaRef.current,
+    mediaTime,
   }}>
     {children}
     {mediaHost ? createPortal(mediaElement, mediaHost) : <div hidden>{mediaElement}</div>}
@@ -246,20 +254,45 @@ export function SceneMultimediaProvider({ projectId, children, initialWorkspace,
 }
 
 /** Mounted inside the persistent Project menu; hiding the menu never replaces its media element. */
-export function ProjectMultimediaPlayback({ selectionChosen, selectionReady, onPlaySelection }: {
+export function ProjectMultimediaPlayback({ selectionAlbumId, selectionTrackId, selectionChosen, selectionReady, onPlaySelection }: {
+  selectionAlbumId?: number | null;
+  selectionTrackId?: number | null;
   selectionChosen: boolean;
   selectionReady: boolean;
   onPlaySelection: () => void;
 }) {
   const multimedia = useSceneMultimedia();
+  const [volume, setVolume] = useState(1);
+  const [muted, setMuted] = useState(false);
+  useEffect(() => {
+    const media = multimedia?.media;
+    if (!media) return;
+    const syncVolume = () => {
+      setVolume(media.volume);
+      setMuted(media.muted);
+    };
+    syncVolume();
+    media.addEventListener('volumechange', syncVolume);
+    return () => media.removeEventListener('volumechange', syncVolume);
+  }, [multimedia?.media]);
   if (!multimedia) return null;
-  const { state, busy, error, act, setMediaHost } = multimedia;
+  const { state, busy, error, act, setMediaHost, media, mediaTime } = multimedia;
+  const duration = media && Number.isFinite(media.duration) ? media.duration : 0;
+  const formatTime = (time: number) => Math.floor(time / 60) + ':' + String(Math.floor(time % 60)).padStart(2, '0');
   return <section aria-label="Project Multimedia player" className="space-y-2 border-t pt-3" hidden={!state && !error && !selectionChosen}>
     {state && <div>
-      <p className="font-semibold">Current Album: {state.albumTitle}</p>
+      {state.albumId !== selectionAlbumId && <p className="font-semibold">Playing from: {state.albumTitle}</p>}
       <p role="status">{state.track.title} · <span className="capitalize">{state.status}</span></p>
     </div>}
     <div ref={setMediaHost} />
+    {state && <div className="space-y-2">
+      <Slider aria-label="Playback position" min={0} max={duration || 1} step={0.1} value={[Math.min(mediaTime, duration)]} disabled={!duration || busy} onValueChange={([value]) => { if (media && duration) media.currentTime = value; }} />
+      <div className="flex justify-between text-[10px] text-muted-foreground"><span>{formatTime(mediaTime)}</span><span>{formatTime(duration)}</span></div>
+      <div className="flex items-center gap-2">
+        <Button type="button" size="icon" variant="ghost" className="h-7 w-7" aria-label={muted ? 'Unmute' : 'Mute'} onClick={() => { if (media) { media.muted = !media.muted; setMuted(media.muted); } }}>{muted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}</Button>
+        <Slider aria-label="Volume" min={0} max={1} step={0.01} value={[muted ? 0 : volume]} onValueChange={([value]) => { if (media) { media.volume = value; media.muted = false; setVolume(value); setMuted(false); } }} />
+      </div>
+    </div>}
     <div className="flex flex-wrap gap-1">
       <Button type="button" size="xs" variant="outline" disabled={busy || (selectionChosen ? !selectionReady : !state)} onClick={() => selectionChosen ? onPlaySelection() : act('playMultimedia')}>Play</Button>
       <Button type="button" size="xs" variant="outline" disabled={busy || !state} onClick={() => act('pauseMultimedia')}>Pause</Button>
@@ -267,7 +300,7 @@ export function ProjectMultimediaPlayback({ selectionChosen, selectionReady, onP
       <Button type="button" size="xs" variant="outline" disabled={busy || !state} onClick={() => act('rewindMultimedia')}>Rewind</Button>
       <Button type="button" size="xs" variant="outline" disabled={busy || !state} onClick={() => act('nextTrack')}>Next Track</Button>
     </div>
-    {state?.markerId === null && multimedia.canOpenPreview && <Button type="button" size="xs" variant="ghost" onClick={() => multimedia.previewAlbum(state.albumId, state.track.id)}>Show current Album</Button>}
+    {state?.markerId === null && multimedia.canOpenPreview && (state.albumId !== selectionAlbumId || state.track.id !== selectionTrackId) && <Button type="button" size="xs" variant="ghost" onClick={() => multimedia.previewAlbum(state.albumId, state.track.id)}>Show current Album</Button>}
     {error && <p role="alert">{error}</p>}
   </section>;
 }

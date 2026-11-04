@@ -27,7 +27,7 @@ for (const viewMode of ['3d', '2d', 'combined', 'design']) {
   assert.deepEqual(restored.threeD, saved.threeD, 'Design mode must preserve the saved Scene state.');
 }
 assert.throws(() => parseThreeDProjectViewState({ ...saved, viewMode: 'unknown' }));
-const overlayPositions = { details: { x: 0.75, y: 0.25 }, simulations: { x: 0.3, y: 0.5 }, scenarios: { x: 0, y: 1 }, tour: { x: 1, y: 0 }, sensorGroup: { x: 0.1, y: 0.2 }, sensors: { x: 1, y: 0.4 } };
+const overlayPositions = { multimedia: { x: 0.8, y: 0.3 }, details: { x: 0.75, y: 0.25 }, simulations: { x: 0.3, y: 0.5 }, scenarios: { x: 0, y: 1 }, tour: { x: 1, y: 0 }, sensorGroup: { x: 0.1, y: 0.2 }, sensors: { x: 1, y: 0.4 } };
 assert.deepEqual(parseThreeDProjectViewState(JSON.parse(JSON.stringify({ ...saved, overlayPositions }))).overlayPositions, overlayPositions);
 assert.equal(parseThreeDProjectViewState(saved).overlayPositions, undefined);
 assert.equal(parseThreeDProjectViewState(saved).projectTourOpen, undefined);
