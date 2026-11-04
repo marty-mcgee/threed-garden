@@ -46,7 +46,7 @@ const base = {
 };
 for (const mode of ['design', '3d', '2d', 'combined']) {
   const guest = nodes(exportsValue.ProjectSceneToolbar({ ...base, canEditProject: false, viewMode: mode }));
-  for (const restricted of ['Project Tour', 'Scenarios', 'Weather', ...(mode === '2d' ? ['Add Model'] : ['Shapes', 'Models', 'Characters', 'FarmBots', 'Beds', 'Plantings'])]) {
+  for (const restricted of ['Project Tour', 'Scenarios', ...(mode === '2d' ? ['Add Model'] : ['Shapes', 'Models', 'Characters', 'FarmBots', 'Beds', 'Plantings'])]) {
     const action = guest.find(node => ['Button', 'DropdownMenuItem'].includes(node.type) && text(node).trim() === restricted);
     assert(action, `Guest can discover ${restricted}`);
     assert.equal(action.props.disabled, true, `${restricted} requires edit access`);
@@ -64,7 +64,8 @@ for (const mode of ['design', '3d', '2d', 'combined']) {
   assert.deepEqual(calls.splice(0), ['design', '3d', '2d', 'combined']);
   guest.find(node => node.props['aria-label'] === 'Project Assets').props.onClick();
   guest.find(node => node.type === 'ProjectMultimediaToolbarButton').props.onClick();
-  assert.deepEqual(calls.splice(0), ['assets', 'multimedia']);
+  guest.find(node => node.type === 'Button' && text(node).trim() === 'Weather').props.onClick();
+  assert.deepEqual(calls.splice(0), ['assets', 'multimedia', 'weather']);
   guest.find(node => node.type === 'DropdownMenuItem' && text(node).trim() === 'Simulations').props.onSelect();
   assert.equal(events.at(-1).type, 'threed:simulation-panel');
   assert.equal(events.at(-1).detail.projectId, 17);

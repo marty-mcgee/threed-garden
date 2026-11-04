@@ -2845,8 +2845,8 @@ function UnifiedMapPageInner() {
         }}
       />
 
-      {canEditProject && !loading && selectedProjectId && weatherProjectId === selectedProjectId && <ProjectWeatherOverlay key={selectedProjectId} projectId={selectedProjectId} onClose={() => { setWeatherProjectId(null); weatherTriggerRef.current?.focus(); }} />}
-      {!loading && selectedProjectId && <ProjectMultimediaOverlay key={selectedProjectId} projectId={selectedProjectId} open={multimediaProjectId === selectedProjectId} onClose={() => { setMultimediaProjectId(null); multimediaTriggerRef.current?.focus(); }} />}
+      {!loading && selectedProjectId && weatherProjectId === selectedProjectId && <ProjectWeatherOverlay key={`weather:${selectedProjectId}`} canEdit={canEditProject} projectId={selectedProjectId} onClose={() => { setWeatherProjectId(null); weatherTriggerRef.current?.focus(); }} />}
+      {!loading && selectedProjectId && <ProjectMultimediaOverlay key={`multimedia:${selectedProjectId}`} projectId={selectedProjectId} open={multimediaProjectId === selectedProjectId} onClose={() => { setMultimediaProjectId(null); multimediaTriggerRef.current?.focus(); }} />}
 
       {/* Project controls overlay the persistent Scene canvas. */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-50">

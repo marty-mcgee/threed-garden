@@ -25,7 +25,7 @@ assert.throws(() => core.normalizeProjectWeather({ ...observation, dt: 0 }));
 assert.equal(core.normalizeProjectWeather({ ...observation, rain: { '1h': 25.4 } }).rainfallInches, 1);
 
 function table(name, fields) { return Object.fromEntries([['name', name], ...fields.map(key => [key, { key }])]); }
-const project = table('project', ['id', 'userId', 'originLatitude', 'originLongitude', 'metadata']);
+const project = table('project', ['id', 'userId', 'originLatitude', 'originLongitude', 'metadata', 'isPublic', 'isActive']);
 const logs = table('logs', ['id', 'userId', 'recordedAt', 'temperature', 'humidity', 'rainfallInches', 'windSpeed', 'soilMoisture', 'sunlightHours', 'frostWarning', 'heatWarning', 'droughtWarning', 'source', 'rawData', 'createdAt', 'updatedAt']);
 let projects = [{ id: 17, userId: 'owner', originLatitude: '0', originLongitude: '0' }];
 let rows = [], writes = 0, providerCalls = 0, fetchMode = 'ok', session = { user: { id: 'owner' } };
@@ -100,7 +100,14 @@ const route = load('src/app/api/project/weather/route.ts', {
 const request = (id = '17', method = 'GET', origin = 'http://localhost:4444') => new Request(`http://localhost:4444/api/project/weather?projectId=${id}`, { method, headers: { origin } });
 
 async function serverChecks() {
-  session = null; assert.equal((await route.GET(request())).status, 401);
+  session = null; assert.equal((await route.GET(request())).status, 404);
+  projects[0].isPublic = true; projects[0].isActive = true;
+  assert.equal((await route.GET(request())).status, 200);
+  assert.equal((await route.POST(request('17', 'POST'))).status, 401);
+  assert.equal(writes, 0); assert.equal(providerCalls, 0);
+  projects[0].isActive = false;
+  assert.equal((await route.GET(request())).status, 404);
+  projects[0].isPublic = false; projects[0].isActive = true;
   session = { user: { id: 'stranger' } }; assert.equal((await route.GET(request())).status, 404);
   assert.equal((await route.POST(request('17', 'POST'))).status, 404);
   session = { user: { id: 'owner' } };
@@ -125,6 +132,19 @@ async function serverChecks() {
   assert.equal(rows.at(-1).userId, 'owner'); assert.equal(rows.at(-1).rawData.projectWeather.projectId, 17);
   assert(!JSON.stringify(result).includes('fixture-key')); assert(!('rawData' in result.body.data.readings[0]));
   assert.equal(result.headers['Cache-Control'], 'private, no-store');
+  projects[0].isPublic = true;
+  session = null;
+  const publicRead = await route.GET(request());
+  assert.equal(publicRead.status, 200);
+  assert.equal(publicRead.body.data.readings.length, 1);
+  assert(!('rawData' in publicRead.body.data.readings[0]));
+  assert(!('userId' in publicRead.body.data.readings[0]));
+  session = { user: { id: 'stranger' } };
+  assert.equal((await route.GET(request())).status, 200);
+  assert.equal((await route.POST(request('17', 'POST'))).status, 404);
+  assert.equal(writes, 1); assert.equal(providerCalls, 1);
+  projects[0].isPublic = false;
+  session = { user: { id: 'owner' } };
   await route.POST(request('17', 'POST')); assert.equal(writes, 1); assert.equal(providerCalls, 1);
   rows.at(-1).createdAt = new Date(0);
   fetchMode = 'error'; const failed = await route.POST(request('17', 'POST'));
@@ -230,25 +250,38 @@ function overlayChecks() {
   const nodes = node => !node || typeof node !== 'object' ? [] : Array.isArray(node)
     ? node.flatMap(nodes) : [node, ...nodes(node.props?.children)];
   let updates = 0, closed = 0;
+  const snapshot = { location: null, readings: [], providerConfigured: false };
   const overlay = load('src/components/map/panels/ProjectWeatherOverlay.tsx', {
     'react/jsx-runtime': { jsx, jsxs: jsx }, 'lucide-react': { CloudSun: 'icon', RefreshCw: 'icon', X: 'icon' },
     '@/components/ui/button': { Button: 'Button' },
     '@/components/map/hooks/useProjectWeather': { useProjectWeather: () => ({
-      snapshot: { location: null, readings: [], providerConfigured: false }, busy: false, error: null,
+      snapshot, busy: false, error: null,
       reload() {}, update() { updates++; },
     }) },
   });
-  const tree = overlay.ProjectWeatherOverlay({ projectId: '17', onClose() { closed++; } });
+  const tree = overlay.ProjectWeatherOverlay({ projectId: '17', canEdit: true, onClose() { closed++; } });
   assert.equal(tree.props.id, 'project-weather-overlay');
   assert(nodes(tree).some(node => node.props?.href === '/admin/projects/17#weather-settings'));
   assert.equal(nodes(tree).find(node => node.props?.children === 'Update Weather').props.disabled, true);
   nodes(tree).find(node => node.props?.['aria-label'] === 'Close Project Weather').props.onClick();
   tree.props.onKeyDown({ key: 'Escape', stopPropagation() {} });
   assert.equal(closed, 2); assert.equal(updates, 0);
+  snapshot.readings = [
+    { id: 1, temperature: 32, humidity: 0, rainfallInches: 1, windSpeed: 10, recordedAt: new Date().toISOString() },
+    { id: 2, temperature: null, humidity: null, rainfallInches: 0, windSpeed: 0, recordedAt: new Date().toISOString() },
+  ];
+  const measurements = nodes(overlay.ProjectWeatherOverlay({ projectId: '17', onClose() {} }));
+  for (const expected of ['32 °F | 0 °C', '1 in | 25.4 mm', '10 mph | 16.09 km/h', '0 in | 0 mm', '0 mph | 0 km/h']) {
+    assert(measurements.some(node => JSON.stringify(node.props?.children)?.includes(expected)), expected);
+  }
   const page = fs.readFileSync('src/app/dashboard/scene/page.tsx', 'utf8');
-  assert(page.includes('canEditProject && !loading && selectedProjectId && weatherProjectId === selectedProjectId'));
-  assert(page.includes('<ProjectWeatherOverlay key={selectedProjectId}'));
-  console.log('PASS: actual overlay exposes missing-location guidance, disables provider updates when unavailable, supports Close/Escape and mounts only for the selected owned Project. Mocked UI.');
+  assert(page.includes('!loading && selectedProjectId && weatherProjectId === selectedProjectId'));
+  const guest = nodes(overlay.ProjectWeatherOverlay({ projectId: '17', onClose() {} }));
+  assert(!guest.some(node => node.props?.href?.includes('/admin/')));
+  assert(!guest.some(node => node.props?.children === 'Update Weather'));
+  assert(page.includes('<ProjectWeatherOverlay key={`weather:${selectedProjectId}`}'));
+  assert(page.includes('<ProjectMultimediaOverlay key={`multimedia:${selectedProjectId}`}'));
+  console.log('PASS: actual overlay exposes missing-location guidance, disables provider updates when unavailable, supports Close/Escape and supports read-only guest presentation for the selected Project. Mocked UI.');
 }
 async function settingsFormChecks() {
   let slots = [], cursor = 0, effects = [], requests = [], navigation;

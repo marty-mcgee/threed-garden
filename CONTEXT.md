@@ -2,6 +2,14 @@
 
 ## Current checkpoint
 
+November 4: prepared [v0.31.7 - ThreeD: Guest Weather and Metric Readings](docs/releases/v0.31.7.md) after Developer acceptance. Version metadata is 0.31.7; fresh TypeScript, all 104 offline CI tasks and the guarded production build pass. Dependencies/schemas are unchanged; production confirmation is pending.
+
+November 4: Weather latest/history readings now include Celsius and metric equivalents alongside existing units. Focused offline conversion/Weather checks pass; visual acceptance pending. See [measurement units](docs/releases/v0.31.7.md#unreleased-follow-up-weather-measurement-units).
+
+November 4: [Guest Weather viewing](docs/releases/v0.31.7.md#unreleased-follow-up-guest-weather-viewing) permits stored observations for public, active Projects while retaining owner-only updates/Settings. Fresh TypeScript and two focused offline checks pass; guest browser acceptance is pending. Developer confirmed the preceding duplicate-key fix. Version stays 0.31.6; changes remain unstaged.
+
+November 4: [Weather overlay key fix](docs/releases/v0.31.7.md#unreleased-follow-up-weather-overlay-keys) gives sibling Weather/Multimedia overlays distinct Project-scoped keys. Two focused offline checks pass; browser confirmation is pending. Version remains 0.31.6.
+
 November 4: Developer accepted the final sidebar density and requested [v0.31.6 - ThreeD: Dashboard Panel Spacing and Collapse Controls](docs/releases/v0.31.6.md). Package/root lock are 0.31.6; dependencies and schemas are unchanged. Fresh TypeScript, all 104 offline CI tasks and the guarded 165-page production build pass. Changes remain unstaged and production confirmation is pending.
 
 November 4: [Dashboard sidebar spacing](docs/releases/v0.31.6.md#unreleased-follow-up-dashboard-sidebar-spacing) aligns section headers and open/closed spacing, and removes the Sensor Tools blank gap/bottom offset. Focused offline toolbar and Design checks pass; visual acceptance is pending. Version remains 0.31.5; prior edits are preserved and unstaged.

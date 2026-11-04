@@ -61,7 +61,16 @@ async function projectLocation(ownerId: string, projectId: number) {
     : resolved;
 }
 
-export async function readProjectWeather(ownerId: string, projectId: number): Promise<ProjectWeatherSnapshot> {
+export async function readProjectWeather(viewerId: string | null, projectId: number): Promise<ProjectWeatherSnapshot> {
+  const [record] = await db.select({
+    userId: project.userId,
+    isPublic: project.isPublic,
+    isActive: project.isActive,
+  }).from(project).where(eq(project.id, projectId)).limit(1);
+  if (!record?.userId || (record.userId !== viewerId && (!record.isPublic || !record.isActive))) {
+    throw new ProjectWeatherError('Project not found.', 404);
+  }
+  const ownerId = record.userId;
   const { location, locationSource } = await projectLocation(ownerId, projectId);
   const rows = location ? await db.select(weatherReadingColumns).from(threedWeatherLogs)
     .where(scope(ownerId, projectId, location)).orderBy(desc(threedWeatherLogs.recordedAt), desc(threedWeatherLogs.id)).limit(20) : [];

@@ -200,7 +200,7 @@ export function ProjectSceneToolbar({
         <div id="project-environment-controls-host" className="relative" hidden={viewMode === '2d'} />
       )}
 
-      {selectedProjectId && onToggleWeather && <Button ref={weatherTriggerRef} type="button" variant={weatherOpen ? 'secondary' : 'outline'} size="sm" className="h-7 gap-1 px-2 text-xs" aria-expanded={weatherOpen} aria-controls="project-weather-overlay" disabled={!canEditProject} onClick={canEditProject ? onToggleWeather : undefined} title={canEditProject ? "Project Weather" : "Project Weather requires owner access."}><CloudSun className="h-3.5 w-3.5" /><span className="hidden sm:inline">Weather</span></Button>}
+      {selectedProjectId && onToggleWeather && <Button ref={weatherTriggerRef} type="button" variant={weatherOpen ? 'secondary' : 'outline'} size="sm" className="h-7 gap-1 px-2 text-xs" aria-expanded={weatherOpen} aria-controls="project-weather-overlay" onClick={onToggleWeather} title="Project Weather"><CloudSun className="h-3.5 w-3.5" /><span className="hidden sm:inline">Weather</span></Button>}
       {selectedProjectId && onToggleMultimedia && <ProjectMultimediaToolbarButton open={multimediaOpen} onClick={onToggleMultimedia} triggerRef={multimediaTriggerRef} />}
 
       <SceneOperationStatus operation={activeOperation} viewMode={viewMode} onCancel={onCancelOperation} />
