@@ -43,6 +43,7 @@ import { ProjectTemplateDialog } from '@/components/map/panels/ProjectTemplateDi
 import { ProjectHeaderMenu } from '@/components/map/header/ProjectHeaderMenu';
 import { ProjectSceneToolbar } from '@/components/map/header/ProjectSceneToolbar';
 import { AddShapeDialog } from '@/components/map/panels/AddShapeDialog';
+import { AssemblyPlacementDialog } from '@/components/map/panels/AssemblyPlacementDialog';
 import type { ModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
 import { useThreeDLibraryWorkspace } from '@/components/map/hooks/useThreeDLibraryWorkspace';
 import { useCombinedMapPanelResize } from '@/components/map/hooks/useCombinedMapPanelResize';
@@ -291,6 +292,9 @@ function UnifiedMapPageInner() {
   const [isPlantingPlacementOpen, setIsPlantingPlacementOpen] = useState(false);
   const [isSceneAddMenuOpen, setIsSceneAddMenuOpen] = useState(false);
   const [isAddShapeOpen, setIsAddShapeOpen] = useState(false);
+  const [isAssemblyPlacementOpen, setIsAssemblyPlacementOpen] = useState(false);
+  const assemblyProjectScope = useRef(selectedProjectId);
+  assemblyProjectScope.current = selectedProjectId;
   const [environmentControlsCloseRequest, setEnvironmentControlsCloseRequest] = useState(0);
   const planImageProjectRef = useRef(selectedProjectId); planImageProjectRef.current = selectedProjectId;
   const [planModelImages, setPlanModelImages] = useState<{ projectId: number; images: Record<string, ModelPlanImage> }>({ projectId: 0, images: {} });
@@ -1256,6 +1260,7 @@ function UnifiedMapPageInner() {
     setIsFarmBotLibraryOpen(false);
     setIsSceneAddMenuOpen(false);
     setBedPlacementActive(false);
+    setIsAssemblyPlacementOpen(false);
     setIsBedPlacementOpen(false);
     setPlantingPlacementActive(false);
     setIsPlantingPlacementOpen(false);
@@ -2835,6 +2840,39 @@ function UnifiedMapPageInner() {
         onCreateNew={() => setIsProjectTemplateDialogOpen(true)}
       />
       <AddShapeDialog open={isAddShapeOpen} onOpenChange={setIsAddShapeOpen} onCreate={createSceneShape} />
+      {!loading && canEditProject && selectedProjectId && <AssemblyPlacementDialog
+        key={selectedProjectId}
+        open={isAssemblyPlacementOpen}
+        projectId={Number(selectedProjectId)}
+        modules={projectThreeDModules}
+        initialModuleId={placementThreedId}
+        onOpenChange={setIsAssemblyPlacementOpen}
+        onPlaced={(markers, name) => {
+          if (assemblyProjectScope.current !== selectedProjectId) return;
+          setData(current => applyThreeDProjectClientTransaction(current, {
+            markers: {
+              upsert: markers,
+            },
+          }));
+          const placedMarker = data.threed.raw
+            ? buildThreeDRuntimeMarkerResult({
+              ...data.threed.raw,
+              projectThreedMarkers: markers,
+            }).markers.find(marker => marker.id === markers[0]?.markerId)
+            : null;
+          if (placedMarker) {
+            selectArchitecture(null);
+            groundMapInspector?.setOpen(false);
+            setSensorInspector(null);
+            setGroupInspector(null);
+            setSelectedIncident(null);
+            setSelectedMarker(placedMarker);
+          }
+          setIsModelLibraryOpen(false);
+          setIsProjectAssetsOpen(true);
+          showToastRef.current(`${name}: ${markers.length} Models placed`, 'success');
+        }}
+      />}
       <ProjectTemplateDialog
         open={isProjectTemplateDialogOpen}
         onOpenChange={setIsProjectTemplateDialogOpen}
@@ -2951,6 +2989,14 @@ function UnifiedMapPageInner() {
           }}
           onOpenModelLibrary={() => void openModelLibrary()}
           onOpenAddShape={() => { setIsSceneAddMenuOpen(false); setIsAddShapeOpen(true); }}
+          onOpenAssemblyPlacement={() => {
+            if (!canEditProject || !selectedProjectId) return;
+            cancelActiveSceneOperation();
+            setIsSceneAddMenuOpen(false);
+            setIsSetupMenuOpen(false);
+            setIsAssemblyPlacementOpen(true);
+            setViewMode(current => current === '2d' ? '3d' : current);
+          }}
           onOpenCharacterLibrary={() => void openCharacterLibrary()}
           onOpenFarmBotLibrary={() => void openFarmBotLibrary()}
           onOpenBedPlacement={openBedPlacement}

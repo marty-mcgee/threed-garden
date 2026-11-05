@@ -42,11 +42,12 @@ const base = {
   onToggleProjectAssets: () => calls.push('assets'),
   onToggleMultimedia: () => calls.push('multimedia'),
   onToggleWeather: () => calls.push('weather'),
+  onOpenAssemblyPlacement: () => calls.push('assembly-placement'),
   sceneAddMenuOpen: true,
 };
 for (const mode of ['design', '3d', '2d', 'combined']) {
   const guest = nodes(exportsValue.ProjectSceneToolbar({ ...base, canEditProject: false, viewMode: mode }));
-  for (const restricted of ['Project Tour', 'Scenarios', ...(mode === '2d' ? ['Add Model'] : ['Shapes', 'Models', 'Characters', 'FarmBots', 'Beds', 'Plantings'])]) {
+  for (const restricted of ['Project Tour', 'Scenarios', ...(mode === '2d' ? ['Add Model'] : ['Shapes', 'Models', 'Assembly Group', 'Characters', 'FarmBots', 'Beds', 'Plantings'])]) {
     const action = guest.find(node => ['Button', 'DropdownMenuItem'].includes(node.type) && text(node).trim() === restricted);
     assert(action, `Guest can discover ${restricted}`);
     assert.equal(action.props.disabled, true, `${restricted} requires edit access`);
@@ -75,6 +76,9 @@ for (const label of ['Add', 'Tools', 'Project Tour', 'Scenarios', 'Weather']) {
   assert(owner.some(node => ['Button', 'DropdownMenuItem'].includes(node.type) && text(node).trim() === label), label);
 }
 assert(owner.some(node => node.props['aria-label'] === 'Save ThreeD Project'));
+owner.find(node => node.type === 'Button' && text(node).trim() === 'Assembly Group').props.onClick();
+assert.deepEqual(calls.splice(0), ['assembly-placement']);
+assert(!owner.some(node => node.type === 'DropdownMenuItem' && text(node).includes('Assembly')));
 const headerExports = {};
 vm.runInNewContext(ts.transpileModule(fs.readFileSync('src/components/map/header/ProjectHeaderMenu.tsx', 'utf8'), {
   compilerOptions: {

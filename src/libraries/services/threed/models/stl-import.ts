@@ -151,7 +151,8 @@ function preflight(bytes: ArrayBuffer, signal?: AbortSignal) {
   };
 }
 
-function boundsOf(geometry: BufferGeometry): StlImportBounds {
+/** Shared local-import geometry utility. Does not change positions or own resources. */
+export function stlGeometryBounds(geometry: BufferGeometry): StlImportBounds {
   geometry.computeBoundingBox();
   const box = geometry.boundingBox!;
   return {
@@ -187,7 +188,8 @@ function checkGeometry(geometry: BufferGeometry, triangleCount: number, signal?:
   }
 }
 
-function parseValidated(bytes: ArrayBuffer, signal?: AbortSignal) {
+/** Internal import boundary. The caller owns and must dispose the returned geometry. */
+export function parseStlImportGeometry(bytes: ArrayBuffer, signal?: AbortSignal) {
   const checked = preflight(bytes, signal);
   const geometry = new STLLoader().parse(checked.bytes);
   try {
@@ -196,7 +198,7 @@ function parseValidated(bytes: ArrayBuffer, signal?: AbortSignal) {
       format: checked.format,
       triangleCount: checked.triangleCount,
       hasColors: geometry.hasAttribute('color'),
-      bounds: boundsOf(geometry),
+      bounds: stlGeometryBounds(geometry),
     };
     return {
       geometry,
@@ -210,7 +212,7 @@ function parseValidated(bytes: ArrayBuffer, signal?: AbortSignal) {
 
 /** Local inspection only: no URLs, storage writes, Model records or persistent resources. */
 export function inspectStlImport(bytes: ArrayBuffer, signal?: AbortSignal): StlImportInspection {
-  const parsed = parseValidated(bytes, signal);
+  const parsed = parseStlImportGeometry(bytes, signal);
   try {
     return parsed.inspection;
   } finally {
@@ -218,50 +220,65 @@ export function inspectStlImport(bytes: ArrayBuffer, signal?: AbortSignal): StlI
   }
 }
 
-/** Encode a complete, Y-up GLB for the existing ThreeD Model upload and Scene-unit renderer. */
-export async function convertStlImport(
-  bytes: ArrayBuffer,
+/** Mutates owned import geometry once, retaining triangle order and source winding. */
+export function transformStlImportGeometry(
+  geometry: BufferGeometry,
   options: StlImportOptions,
   signal?: AbortSignal,
-): Promise<StlImportConversion> {
+) {
   signal?.throwIfAborted();
   if (!Object.hasOwn(metresPerSourceUnit, options.units) || !['y', 'z'].includes(options.upAxis)) {
     throw new Error('Choose the source STL units and up axis before converting.');
   }
-  const { geometry, inspection } = parseValidated(bytes, signal);
-  let material: MeshStandardMaterial | undefined;
+  const factor = metresPerSourceUnit[options.units] / DEFAULT_THREED_METERS_PER_SCENE_UNIT;
+  const positions = geometry.getAttribute('position');
+  for (let vertex = 0; vertex < positions.count; vertex += 1) {
+    if (vertex % 3072 === 0) signal?.throwIfAborted();
+    const x = positions.getX(vertex) * factor;
+    const y = positions.getY(vertex) * factor;
+    const z = positions.getZ(vertex) * factor;
+    positions.setXYZ(vertex, x, options.upAxis === 'z' ? z : y, options.upAxis === 'z' ? -y : z);
+  }
+  // STL normals are often zero or unnormalized. Recompute flat normals from retained triangle winding.
+  checkGeometry(geometry, positions.count / 3, signal, true);
+  geometry.clearGroups();
+}
+
+/** Encodes owned, prepared geometry without changing its origin; caller retains geometry ownership. */
+export async function encodeStlImportGeometry(
+  geometry: BufferGeometry,
+  options: StlImportOptions,
+  signal?: AbortSignal,
+  part?: {
+    id: string;
+    label: string;
+    islandIds: string[];
+    position: StlImportVector;
+  },
+): Promise<ArrayBuffer> {
+  signal?.throwIfAborted();
+  // Recheck after part-local recentering: float32 rounding must never silently collapse a face.
+  checkGeometry(geometry, geometry.getAttribute('position').count / 3, signal, true);
+  const hasColors = geometry.hasAttribute('color');
+  const alpha = (geometry as BufferGeometry & { alpha?: number }).alpha ?? 1;
+  const material = new MeshStandardMaterial({
+    color: hasColors ? 0xffffff : 0xb7c6cc,
+    vertexColors: hasColors,
+    opacity: alpha,
+    transparent: alpha < 1,
+    metalness: 0,
+    roughness: 0.75,
+    side: DoubleSide,
+  });
   try {
-    const factor = metresPerSourceUnit[options.units] / DEFAULT_THREED_METERS_PER_SCENE_UNIT;
-    const positions = geometry.getAttribute('position');
-    for (let vertex = 0; vertex < positions.count; vertex += 1) {
-      if (vertex % 3072 === 0) signal?.throwIfAborted();
-      const x = positions.getX(vertex) * factor;
-      const y = positions.getY(vertex) * factor;
-      const z = positions.getZ(vertex) * factor;
-      positions.setXYZ(vertex, x, options.upAxis === 'z' ? z : y, options.upAxis === 'z' ? -y : z);
-    }
-    // STL normals are often zero or unnormalized. Recompute flat normals from retained triangle winding.
-    checkGeometry(geometry, inspection.triangleCount, signal, true);
-    // All source solids belong to one reusable Model; a single material must include every triangle.
-    geometry.clearGroups();
-    const bounds = boundsOf(geometry);
-    const alpha = (geometry as BufferGeometry & { alpha?: number }).alpha ?? 1;
-    material = new MeshStandardMaterial({
-      color: inspection.hasColors ? 0xffffff : 0xb7c6cc,
-      vertexColors: inspection.hasColors,
-      opacity: alpha,
-      transparent: alpha < 1,
-      metalness: 0,
-      roughness: 0.75,
-      side: DoubleSide,
-    });
     const mesh = new Mesh(geometry, material);
-    mesh.name = 'Imported STL';
+    mesh.name = part?.label ?? 'Imported STL';
     mesh.userData.stlImport = {
       version: 1,
       sourceUnits: options.units,
       sourceUpAxis: options.upAxis,
       metresPerSceneUnit: DEFAULT_THREED_METERS_PER_SCENE_UNIT,
+      ...(part ? { part } : {}),
     };
     const result = await new GLTFExporter().parseAsync(mesh, {
       binary: true,
@@ -272,6 +289,23 @@ export async function convertStlImport(
     if (result.byteLength > MAX_THREED_DIRECT_MODEL_BYTES) {
       throw new Error('The converted GLB exceeds 32 MiB. Reduce the STL mesh before importing.');
     }
+    return result;
+  } finally {
+    material.dispose();
+  }
+}
+
+/** Encode a complete, Y-up GLB for the existing ThreeD Model upload and Scene-unit renderer. */
+export async function convertStlImport(
+  bytes: ArrayBuffer,
+  options: StlImportOptions,
+  signal?: AbortSignal,
+): Promise<StlImportConversion> {
+  const { geometry, inspection } = parseStlImportGeometry(bytes, signal);
+  try {
+    transformStlImportGeometry(geometry, options, signal);
+    const bounds = stlGeometryBounds(geometry);
+    const result = await encodeStlImportGeometry(geometry, options, signal);
     return {
       bytes: result,
       source: inspection,
@@ -283,6 +317,5 @@ export async function convertStlImport(
     };
   } finally {
     geometry.dispose();
-    material?.dispose();
   }
 }

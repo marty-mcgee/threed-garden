@@ -39,7 +39,24 @@ The [v0.31.10 STL import](../releases/v0.31.10.md) adds **Import STL** beside **
 
 Conversion bakes source units into the App's existing Scene-unit geometry (one Scene unit is 0.3048 metres), preserving source origin and triangles. Z-up input rotates into Y-up geometry. Supported inputs are complete ASCII or binary STL files up to 32 MiB and 250,000 triangles; the converted GLB must also fit the existing 32 MiB upload limit. Invalid, incomplete, non-finite or degenerate geometry is rejected before upload. Binary colors supported by the installed STL loader are retained; uncolored meshes receive a neutral material.
 
-An STL becomes one mesh Model, including disconnected parts. It does not recover native Design walls, floors, CAD constraints, materials or separate Assembly components. The original STL remains on the Developer's disk; retain it for CAD editing. No new database table or raw-STL storage type is introduced. A successful preview does not certify watertight geometry, collision behavior or a saved Project; verify those through the normal App workflow.
+This single-Model path keeps disconnected parts together. It does not recover native Design walls, floors, CAD constraints, materials or separate Assembly components. The original STL remains on the Developer's disk; retain it for CAD editing. No new database table or raw-STL storage type is introduced. A successful preview does not certify watertight geometry, collision behavior or a saved Project; verify those through the normal App workflow.
+
+### Import STL parts as an Assembly Group
+
+The [unreleased Assembly follow-up](../releases/v0.31.10.md#unreleased-follow-up-stl-parts-and-assembly-placement) adds a separate **Import STL** action to **Admin > ThreeD > Assembly Groups > Add/Edit**. The existing single-Model path above remains available.
+
+1. Save or export any current Assembly draft, then choose **Import STL** and the original file.
+2. Choose its source units and upward axis. For the supplied `openjscad.stl`, use **Inches** and **Z up**. Review the whole geometry, dimensions and detected parts.
+3. Preview and name each part. Select multiple parts and choose **Combine selected** when they belong in one Model. **Reset grouping** restores the original detected islands. All source islands are retained; this workflow does not silently discard geometry.
+4. Choose **Create Models and Assembly**. Each reviewed part becomes an owned private GLB Model with a primary Model File. The saved Assembly retains the arrangement. Move, rotate or scale its components in the existing visual editor, then **Save Changes**.
+5. Open an owned Project with an active ThreeD Module. Choose **Add > Assembly Group**, select the saved Assembly, and set its overall position, Y rotation and scale. **Place Assembly** creates ordinary Project Model instances together.
+6. Inspect both canvases, select each part, test movement/resizing and Lock/Unlock, then **Save Project** and reopen. Component placement is saved immediately through the existing marker/asset relationships; Project Save retains the workspace and current snapshot.
+
+Detection uses exact shared vertices in decoded triangles. Touching pieces that share a vertex remain connected; original CAD names, object hierarchy, constraints and native Design walls/floors cannot be reconstructed from STL. The supplied sample has **two** connected islands (1,450 and 124 triangles), not hundreds of authored CAD parts. Review supports up to 1,000 islands, combined into at most 100 Models, with the existing 32 MiB / 250,000-triangle source limits and a 32 MiB aggregate GLB limit. Part geometry is centered horizontally and grounded locally; Assembly translations retain each part's source-relative position, including elevated pieces.
+
+Keep an interrupted import open. **Continue import** reuses confirmed uploads and Model IDs; it does not recreate completed parts. If a Model save response is lost, locate it in **All Models** and enter its ID using **Use saved Model**. Recovery verifies the owner and exact primary File, name and transforms before continuing. An unconfirmed save is not blindly repeated. **Import receipt** downloads references for manual recovery; it is not a resumable geometry archive. Closing after partial work retains saved Models and uploaded files. Assembly save retries check the known Assembly ID first.
+
+Project placement is atomic and retries use the same request identity while the dialog remains mounted for that Project. Existing component markers serve as the receipt; partial removal or a conflicting request is rejected. Once all those markers are deleted, there is no durable receipt. Placed Models are independent instances: later edits to the saved Assembly do not reposition existing Project placements. Public visitors can discover the Add menu entry but cannot place an Assembly. No new schema or separate Design save is introduced.
 
 ### Matching a saved Texture to an FBX requirement
 

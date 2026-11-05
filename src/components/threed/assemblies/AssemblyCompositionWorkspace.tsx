@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { parseAssemblyDefinition, MAX_ASSEMBLY_COMPONENTS, type AssemblyDefinition, type AssemblyTransform } from '@/libraries/services/threed/models/assembly-group-core';
 import { assemblyComponentDraft, assemblyDraftTransform, assemblyTransformFields, type AssemblyComponentDraft } from '@/libraries/services/threed/models/assembly-editor-core';
 import { AssemblyCanvas } from './AssemblyCanvas';
+import { AssemblyStlImport } from './AssemblyStlImport';
 
 type ModelOption = { id: number; modelName: string; modelType: string };
 const fields = [
@@ -62,6 +63,8 @@ export function AssemblyCompositionWorkspace({ recordId }: { recordId?: string }
   const [saving, setSaving] = useState(false);
   const [savedRevision, setSavedRevision] = useState(0);
   const [loadedRecordId, setLoadedRecordId] = useState('');
+  const [stlImportOpen, setStlImportOpen] = useState(false);
+  const stlImportOpenRef = useRef(false);
   const operationRef = useRef(0);
   const busyRef = useRef(false);
   const manipulatingRef = useRef(false);
@@ -122,11 +125,15 @@ export function AssemblyCompositionWorkspace({ recordId }: { recordId?: string }
     setComponents(rows => rows.map(c => c.id === selectedId ? { ...c, ...patch } : c)); setDirty(true); setNotice('');
   }
   const transformComponent = useCallback((id: string, transform: AssemblyTransform) => {
-    if (busyRef.current) return;
+    if (busyRef.current || stlImportOpenRef.current) return;
     const patch = assemblyTransformFields(transform);
     setComponents(rows => rows.map(component => component.id === id ? { ...component, ...patch } : component));
     setDirty(true);
     setNotice('');
+  }, []);
+  const handleStlOpenChange = useCallback((open: boolean) => {
+    stlImportOpenRef.current = open;
+    setStlImportOpen(open);
   }, []);
   const handleManipulating = useCallback((active: boolean) => {
     manipulatingRef.current = active;
@@ -145,7 +152,7 @@ export function AssemblyCompositionWorkspace({ recordId }: { recordId?: string }
     link.click(); setTimeout(() => URL.revokeObjectURL(url), 1000); setNotice('Draft exported. Use Save to retain changes in Assembly Groups.');
   }
   async function importDraft(file?: File) {
-    if (!file || reading || busyRef.current || manipulatingRef.current || !ownerId) return;
+    if (!file || reading || busyRef.current || stlImportOpenRef.current || manipulatingRef.current || !ownerId) return;
     if (file.size > 1024 * 1024) { setNotice('Choose a draft smaller than 1 MiB.'); return; }
     if (dirty && !window.confirm('Replace the current composition? Export it first to keep a copy.')) return;
     const operation = ++operationRef.current;
@@ -162,7 +169,7 @@ export function AssemblyCompositionWorkspace({ recordId }: { recordId?: string }
     finally { if (accountRef.current === ownerId && operation === operationRef.current) { busyRef.current = false; setReading(false); } }
   }
   async function persistOrLoad(id?: string, confirmReplace = true) {
-    if (!ownerId || manipulatingRef.current || (confirmReplace && (busyRef.current || reading)) || (!id && !validation.definition)) return;
+    if (!ownerId || manipulatingRef.current || (confirmReplace && (busyRef.current || stlImportOpenRef.current || reading)) || (!id && !validation.definition)) return;
     if (id && confirmReplace && dirty && !window.confirm('Replace the current composition? Save or export it first to keep a copy.')) return;
     const operation = ++operationRef.current;
     busyRef.current = true; setSaving(true); setNotice('');
@@ -189,11 +196,11 @@ export function AssemblyCompositionWorkspace({ recordId }: { recordId?: string }
     }
   }
   function navigate(href: string) {
-    if (busyRef.current || manipulatingRef.current || saving || reading || (dirty && !window.confirm('Leave with unsaved changes? Save Changes or Export Draft first to keep your work.'))) return;
+    if (busyRef.current || stlImportOpenRef.current || manipulatingRef.current || saving || reading || (dirty && !window.confirm('Leave with unsaved changes? Save Changes or Export Draft first to keep your work.'))) return;
     router.push(href);
   }
   function startNew() {
-    if (busyRef.current || manipulatingRef.current || saving || reading || (dirty && !window.confirm('Start a new Assembly? Save Changes or export your composition first.'))) return;
+    if (busyRef.current || stlImportOpenRef.current || manipulatingRef.current || saving || reading || (dirty && !window.confirm('Start a new Assembly? Save Changes or export your composition first.'))) return;
     if (recordId) { router.push('/admin/threed/assembly-groups/new'); return; }
     setAssemblyId(crypto.randomUUID()); setName('New Assembly'); setComponents([]); setSelectedId(null); setSavedRevision(0); setDirty(false); setNotice('');
   }
@@ -201,17 +208,39 @@ export function AssemblyCompositionWorkspace({ recordId }: { recordId?: string }
   if (workspaceOwner !== ownerId) return <p role="status" className="p-6 text-sm">Loading your Assembly workspace…</p>;
   return <main className="flex h-full min-h-0 min-w-0 flex-col gap-2 text-xs">
     <AdminWorkspaceHeader moduleKey="assemblyGroups" icon={Boxes} title={savedRevision || recordId ? 'Edit Assembly Group' : 'Add Assembly Group'} description="Create and edit reusable Model compositions" className="shrink-0" showModuleAlbums={false}>
-      <ModelFieldHelp label="Assembly Groups">Add Models from the library, then select a component and drag its handles to assemble the group. Use Move, Rotate or Scale to arrange it. The fields and canvas edit the same relative transforms. Save Changes retains an Assembly revision. Import/Export Draft exchanges a JSON copy.</ModelFieldHelp>
+      <ModelFieldHelp label="Assembly Groups">Add Models from the library, then select a component and drag its handles to assemble the group. Use Move, Rotate or Scale to arrange it. The fields and canvas edit the same relative transforms. Save Changes retains an Assembly revision. Import/Export Draft exchanges a JSON copy. Import STL reviews disconnected geometry before creating reusable Models and a new Assembly.</ModelFieldHelp>
       <span data-testid="assembly-draft-status" className="rounded bg-muted px-2 py-0.5 text-xs text-muted-foreground">{savedRevision ? `Revision ${savedRevision}` : 'Local draft'}{dirty ? ' · modified' : ''}</span>
       <div className="ml-auto flex flex-wrap gap-1">
-        <Button variant="outline" className="h-7 text-xs" disabled={saving || reading || manipulating} onClick={() => navigate('/admin/threed/assembly-groups')}>All Assembly Groups</Button>
-        {recordId && <Button variant="outline" className="h-7 text-xs" disabled={saving || reading || manipulating} onClick={() => void persistOrLoad(recordId)}>Reload</Button>}
-        <Button variant="success" className="h-7 text-xs" disabled={saving || reading || manipulating} onClick={startNew}><Plus className="size-3.5" />New Assembly</Button>
+        <Button variant="outline" className="h-7 text-xs" disabled={saving || reading || manipulating || stlImportOpen} onClick={() => navigate('/admin/threed/assembly-groups')}>All Assembly Groups</Button>
+        {recordId && <Button variant="outline" className="h-7 text-xs" disabled={saving || reading || manipulating || stlImportOpen} onClick={() => void persistOrLoad(recordId)}>Reload</Button>}
+        <AssemblyStlImport
+          key={ownerId}
+          ownerId={ownerId}
+          disabled={saving || reading || manipulating || (!!recordId && loadedRecordId !== recordId)}
+          beforeOpen={() => {
+            if (busyRef.current || stlImportOpenRef.current || manipulatingRef.current) return false;
+            return !dirty || window.confirm('Import STL creates and opens a new Assembly after saving. Save Changes or Export Draft first to keep your current unsaved composition. Continue?');
+          }}
+          onOpenChange={handleStlOpenChange}
+          onSaved={saved => {
+            if (accountRef.current !== saved.ownerId) return;
+            setAssemblyId(saved.id);
+            setName(saved.name);
+            setComponents(saved.components.map(assemblyComponentDraft));
+            setSelectedId(saved.components[0].id);
+            setSavedRevision(saved.revision);
+            setLoadedRecordId(saved.id);
+            setDirty(false);
+            setNotice('STL Models and Assembly saved. Arrange the parts in the canvas.');
+            router.replace(`/admin/threed/assembly-groups/${saved.id}`);
+          }}
+        />
+        <Button variant="success" className="h-7 text-xs" disabled={saving || reading || manipulating || stlImportOpen} onClick={startNew}><Plus className="size-3.5" />New Assembly</Button>
       </div>
       <input ref={uploadRef} type="file" accept=".json,application/json" className="hidden" aria-label="Import assembly draft" onChange={e => { void importDraft(e.target.files?.[0]); e.target.value = ''; }} />
     </AdminWorkspaceHeader>
     {recordId && loadedRecordId !== recordId && <p role="status" className="text-muted-foreground">{saving || !notice ? 'Opening Assembly Group…' : 'Use Reload to try opening this Assembly Group again.'}</p>}
-    <fieldset hidden={!!recordId && loadedRecordId !== recordId} disabled={reading || saving || manipulating} className="min-h-0 min-w-0 flex-1 overflow-y-auto lg:overflow-hidden [&_input]:h-7 [&_input]:px-2 [&_input]:text-xs [&_select]:h-7 [&_select]:py-1 [&_select]:text-xs">
+    <fieldset hidden={!!recordId && loadedRecordId !== recordId} disabled={reading || saving || manipulating || stlImportOpen} className="min-h-0 min-w-0 flex-1 overflow-y-auto lg:overflow-hidden [&_input]:h-7 [&_input]:px-2 [&_input]:text-xs [&_select]:h-7 [&_select]:py-1 [&_select]:text-xs">
       <div className="grid min-w-0 gap-2 lg:h-full lg:min-h-0 lg:grid-cols-[16rem_minmax(0,1fr)] [&_h2]:text-xs [&_button]:text-xs">
         <div aria-label="Assembly controls" className="min-h-0 min-w-0 space-y-2 lg:overflow-y-auto">
           <section aria-label="Assembly details" className="admin-editor-panel rounded-lg border px-2 py-1.5">
@@ -241,13 +270,13 @@ export function AssemblyCompositionWorkspace({ recordId }: { recordId?: string }
             </> : <p className="text-xs text-muted-foreground">Select a component to edit its placement.</p>}
           </AssemblyEditorPanel>
         </div>
-        <AssemblyCanvas key={assemblyId} ownerId={ownerId} components={components} selectedId={selectedId} disabled={reading || saving} onSelect={setSelectedId} onTransform={transformComponent} onManipulating={handleManipulating} />
+        <AssemblyCanvas key={assemblyId} ownerId={ownerId} components={components} selectedId={selectedId} disabled={reading || saving || stlImportOpen} onSelect={setSelectedId} onTransform={transformComponent} onManipulating={handleManipulating} />
       </div>
     </fieldset>
     <footer aria-label="Assembly actions" className="admin-editor-actions rounded-lg border border-emerald-500/30 bg-emerald-50 p-2 dark:bg-emerald-950/50 [&_button]:h-8 [&_button]:text-xs [&_svg]:h-3.5 [&_svg]:w-3.5">
-      <Button size="sm" variant="success" disabled={!validation.definition || reading || saving || manipulating || (!!recordId && loadedRecordId !== recordId) || (!dirty && savedRevision > 0)} onClick={() => void persistOrLoad()}><Save className="h-4 w-4" />{saving ? 'Working…' : 'Save Changes'}</Button>
-      <Button size="sm" variant="outline" disabled={reading || saving || manipulating || (!!recordId && loadedRecordId !== recordId)} onClick={() => uploadRef.current?.click()}><Upload className="h-4 w-4" />Import Draft</Button>
-      <Button size="sm" variant="outline" disabled={!validation.definition || reading || saving || manipulating || (!!recordId && loadedRecordId !== recordId)} onClick={download}><Download className="h-4 w-4" />Export Draft</Button>
+      <Button size="sm" variant="success" disabled={!validation.definition || reading || saving || manipulating || stlImportOpen || (!!recordId && loadedRecordId !== recordId) || (!dirty && savedRevision > 0)} onClick={() => void persistOrLoad()}><Save className="h-4 w-4" />{saving ? 'Working…' : 'Save Changes'}</Button>
+      <Button size="sm" variant="outline" disabled={reading || saving || manipulating || stlImportOpen || (!!recordId && loadedRecordId !== recordId)} onClick={() => uploadRef.current?.click()}><Upload className="h-4 w-4" />Import Draft</Button>
+      <Button size="sm" variant="outline" disabled={!validation.definition || reading || saving || manipulating || stlImportOpen || (!!recordId && loadedRecordId !== recordId)} onClick={download}><Download className="h-4 w-4" />Export Draft</Button>
       {notice && <p role="status" className="min-w-0 flex-1 basis-full text-xs sm:basis-auto">{notice}</p>}
     </footer>
   </main>;

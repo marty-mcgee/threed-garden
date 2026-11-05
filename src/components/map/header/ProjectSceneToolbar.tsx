@@ -3,6 +3,7 @@
 import type { Ref, RefObject } from 'react';
 import {
   Box,
+  Boxes,
   BookOpen,
   CloudSun,
   PencilRuler,
@@ -52,6 +53,7 @@ interface ProjectSceneToolbarProps {
   onToggleSceneAddMenu: () => void;
   onOpenModelLibrary: () => void;
   onOpenAddShape: () => void;
+  onOpenAssemblyPlacement: () => void;
   onOpenCharacterLibrary: () => void;
   onOpenFarmBotLibrary: () => void;
   onOpenBedPlacement: () => void;
@@ -93,6 +95,7 @@ export function ProjectSceneToolbar({
   onToggleSceneAddMenu,
   onOpenModelLibrary,
   onOpenAddShape,
+  onOpenAssemblyPlacement,
   onOpenCharacterLibrary,
   onOpenFarmBotLibrary,
   onOpenBedPlacement,
@@ -162,6 +165,7 @@ export function ProjectSceneToolbar({
               <div className="grid grid-cols-1 gap-0.5">
                 <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenAddShape : undefined}><Plus className="h-3.5 w-3.5" /> Shapes</Button>
                 <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenModelLibrary : undefined}><Box className="h-3.5 w-3.5" /> Models</Button>
+                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenAssemblyPlacement : undefined}><Boxes className="h-3.5 w-3.5" /> Assembly Group</Button>
                 <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenCharacterLibrary : undefined}><User className="h-3.5 w-3.5" /> Characters</Button>
                 <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenFarmBotLibrary : undefined}><Settings className="h-3.5 w-3.5" /> FarmBots</Button>
                 <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenBedPlacement : undefined}><Plus className="h-3.5 w-3.5" /> Beds</Button>

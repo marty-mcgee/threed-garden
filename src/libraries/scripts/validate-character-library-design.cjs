@@ -47,7 +47,7 @@ assert.equal(exportsMock.ThreeDCharacterLibraryPanel({ ...props, isOpen: false }
 console.log('PASS: Character placement preserves Design/Combined/3D; 2D fallback and shared dock sizing.');
 
 // Exercise every action-level viewport updater in the actual page, including
-// DetailsCard module/planting movement, transforms, sensors and scenario start.
+// DetailsCard module/planting movement, transforms, sensors, scenario start and Assembly placement.
 let guardedActions = 0;
 function verifyModeUpdates(node) {
  if (ts.isCallExpression(node) && node.expression.getText(source) === 'setViewMode') {
@@ -62,5 +62,5 @@ function verifyModeUpdates(node) {
  ts.forEachChild(node, verifyModeUpdates);
 }
 verifyModeUpdates(source);
-assert.equal(guardedActions, 8, 'All eight viewport-requiring action paths are covered');
-console.log('PASS: all eight action paths preserve visible 3D modes, including DetailsCard Move Placement.');
+assert.equal(guardedActions, 9, 'All nine viewport-requiring action paths are covered');
+console.log('PASS: all nine action paths preserve visible 3D modes, including DetailsCard Move Placement and Assembly placement.');

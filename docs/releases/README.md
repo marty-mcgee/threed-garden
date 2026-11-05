@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
- - [v0.31.10 - ThreeD: STL Import as GLB Models (prepared for production release)](v0.31.10.md)
+ - [v0.31.11 - ThreeD: STL Parts and Assembly Placement (prepared for production release)](v0.31.11.md)
+
+ - [v0.31.10 - ThreeD: STL Import as GLB Models (Developer-confirmed production release)](v0.31.10.md)
 
  - [v0.31.9 - Learn: Guide Illustrations (prepared for production release)](v0.31.9.md)
 
