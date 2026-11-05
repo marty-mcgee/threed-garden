@@ -51,6 +51,7 @@ import { mergeThreeDModelMaterialAssignments } from '@/libraries/services/threed
 import { applyThreeDModelMaterialAssignments, bindThreeDModelMaterialTexture } from '@/libraries/services/threed/models/model-material-texture';
 import { readModelLightBoost } from '@/libraries/services/threed/models/model-lighting-core';
 import { applyModelLightBoost } from '@/libraries/services/threed/models/model-lighting-material';
+import { modelMaterials, ownTransientModelResources } from '@/libraries/services/threed/models/model-transient-resources';
 
 // ============================================
 // TYPES
@@ -115,6 +116,8 @@ interface ModelMarker3DProps {
   fitBounds?: ThreeDVisualBounds;
   /** False when the caller applies the composed base + instance scale outside the loaded object. */
   applyStoredScale?: boolean;
+  /** Fresh temporary preview resources; bypass shared caching and release on cleanup. */
+  transientResources?: boolean;
   /** Reports loaded, grounded geometry bounds for the marker-owned Rapier collider. */
   onCollisionBoundsChange?: (bounds: ModelCollisionBounds | null) => void;
   /** Opt-in transient top-down presentation; never uploads or changes Model data. */
@@ -188,6 +191,7 @@ function useModelLoad(
   model: ModelData,
   fitBounds?: ThreeDVisualBounds,
   applyStoredScale = true,
+  transientResources = false,
 ) {
   const reportResourceIssue = useSceneResourceIssueReporter(model.filePath, model.modelId ?? model.id, model.modelName);
   const [loadedModel, setLoadedModel] = useState<THREE.Group | null>(null);
@@ -206,10 +210,18 @@ function useModelLoad(
     }
     let cancelled = false;
     let releaseMaterialAssignments: (() => void) | undefined;
+    let transientOwner: ReturnType<typeof ownTransientModelResources> | undefined;
+    let loadingResources = true;
+    const releaseResources = () => {
+      releaseMaterialAssignments?.();
+      releaseMaterialAssignments = undefined;
+      transientOwner?.dispose();
+    };
 
     const loadModel = async () => {
       setLoading(true);
       setError(null);
+      if (transientResources) setLoadedModel(null);
 
       try {
         const modelType = model.modelType?.toLowerCase() || 'glb';
@@ -231,7 +243,7 @@ function useModelLoad(
 
         let m: THREE.Group;
 
-        if (modelCache.has(cacheKey)) {
+        if (!transientResources && modelCache.has(cacheKey)) {
           m = modelCache.get(cacheKey)!.clone();
         } else {
           if (modelType === 'fbx') {
@@ -246,8 +258,11 @@ function useModelLoad(
             m = gltf.scene;
             m.animations = gltf.animations;
           }
-          if (await waitForResources(30000, true) && !hadResourceIssue) modelCache.set(cacheKey, m.clone());
+          if (transientResources) transientOwner = ownTransientModelResources(m);
+          const resourcesReady = await waitForResources(30000, true);
+          if (!transientResources && resourcesReady && !hadResourceIssue) modelCache.set(cacheKey, m.clone());
         }
+        if (transientResources && cancelled) return;
 
         releaseMaterialAssignments = await applyThreeDModelMaterialAssignments(m, modelType,
           mergeThreeDModelMaterialAssignments(model.metadata, model.materialAssignments), async reference => {
@@ -259,9 +274,11 @@ function useModelLoad(
               return null;
             });
           });
-        if (cancelled) { releaseMaterialAssignments(); return; }
+        if (cancelled) { releaseResources(); return; }
 
+        const materialsBeforeLighting = transientResources ? modelMaterials(m) : undefined;
         applyModelLightBoost(m, model.modelLightBoost ?? readModelLightBoost(model.metadata));
+        if (materialsBeforeLighting) transientOwner?.retainNewMaterials(materialsBeforeLighting);
 
         // Apply model config transforms
         const storedModelScale = Number(model.scale ?? 1);
@@ -320,14 +337,15 @@ function useModelLoad(
           setLoadedModel(m);
         }
       } catch (err) {
-        releaseMaterialAssignments?.();
-        releaseMaterialAssignments = undefined;
+        releaseResources();
         if (!cancelled) {
           reportResourceIssue?.(model.filePath, 'Could not load Model');
           console.error(`ModelMarker3D: failed to load "${model.modelName}":`, err);
           setError(String(err));
         }
       } finally {
+        loadingResources = false;
+        if (cancelled) releaseResources();
         if (!cancelled) {
           setLoading(false);
         }
@@ -337,9 +355,11 @@ function useModelLoad(
     void loadModel();
     return () => {
       cancelled = true;
-      releaseMaterialAssignments?.();
+      // A pending assignment load still owns writes to the fresh result. Let
+      // its finally path release resources once it settles after cancellation.
+      if (!transientResources || !loadingResources) releaseResources();
     };
-  }, [applyStoredScale, fitDepth, fitHeight, fitWidth, model, reportResourceIssue]);
+  }, [applyStoredScale, fitDepth, fitHeight, fitWidth, model, reportResourceIssue, transientResources]);
 
   return { loadedModel, loading, error };
 }
@@ -370,11 +390,11 @@ function ModelFallback({ position, shape, scale = 1, solid = false }: {
 // ============================================
 // COMPONENT
 // ============================================
-export function ModelMarker3D({ model: savedModel, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, onCollisionBoundsChange, onPlanImageChange, onGeometryAuditChange, enableSurfaceCollider = false, onMaterialInventoryChange, materialPreviewOverride, materialPreviewSelectionId, onEnvironmentCollisionPreviewChange, onRuntimeSettled, onRuntimeError }: ModelMarker3DProps) {
+export function ModelMarker3D({ model: savedModel, position, name, scale = 1, animationSpeed = 1, fallback, fitBounds, applyStoredScale = true, transientResources = false, onCollisionBoundsChange, onPlanImageChange, onGeometryAuditChange, enableSurfaceCollider = false, onMaterialInventoryChange, materialPreviewOverride, materialPreviewSelectionId, onEnvironmentCollisionPreviewChange, onRuntimeSettled, onRuntimeError }: ModelMarker3DProps) {
   const model = useMemo(() => resolveActiveModelGeometry(savedModel), [savedModel]);
   const [labelHovered, setLabelHovered] = useState(false);
   const [labelPosition, setLabelPosition] = useState<[number, number, number]>([0, 1.5, 0]);
-  const { loadedModel, loading, error } = useModelLoad(model, fitBounds, applyStoredScale);
+  const { loadedModel, loading, error } = useModelLoad(model, fitBounds, applyStoredScale, transientResources);
   const hasModelFile = Boolean(model.filePath?.trim());
   const fallbackShape = readModelFallbackShape(model.fallbackShape === undefined ? model.metadata : { fallbackShape: model.fallbackShape });
   useSceneResourceStatus(loading, error);

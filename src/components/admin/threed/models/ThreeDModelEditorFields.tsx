@@ -73,6 +73,7 @@ interface ThreeDModelEditorFieldsProps {
   mode: 'create' | 'edit';
   modelId?: number;
   previewImageAction?: React.ReactNode;
+  stlImportAction?: React.ReactNode;
   showPreviewImage?: boolean;
   form: ThreeDModelAdminFormData;
   setForm: Dispatch<SetStateAction<ThreeDModelAdminFormData>>;
@@ -109,6 +110,7 @@ export function ThreeDModelEditorFields({
   onPrimaryFile,
   onThumbnail,
   previewImageAction,
+  stlImportAction,
   showPreviewImage = true,
 }: ThreeDModelEditorFieldsProps) {
   let fallbackMetadata: unknown = {};
@@ -198,7 +200,7 @@ export function ThreeDModelEditorFields({
           <Label htmlFor={id('filePath')}>Primary Model File URL</Label>
           <Input id={id('filePath')} value={form.filePath} readOnly disabled={disabled} placeholder="Upload a Model File" />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <input
             id={id('model-file-upload')}
             type="file"
@@ -215,6 +217,7 @@ export function ThreeDModelEditorFields({
             {uploadingPrimary ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <Upload className="mr-1 h-4 w-4" />}
             Upload Model File
           </Button>
+          {stlImportAction}
           {form.filePath && <span className="truncate text-xs text-muted-foreground">✓ file selected</span>}
         </div>
         <p className="text-xs text-muted-foreground">Direct storage upload supports Model files up to 32 MiB. Save Changes registers the verified file.</p>

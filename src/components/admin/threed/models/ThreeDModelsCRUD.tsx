@@ -8,6 +8,7 @@ import { useModelListState } from './use-model-list-state';
 import { buildCategoryTree, flattenCategoryTree } from './category-tree-core';
 import type { ModelListSortField } from '@/libraries/services/threed/models/model-list-query';
 import { ModelTopViewImage } from './ModelTopViewImage';
+import { ModelStlImport } from './ModelStlImport';
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -207,6 +208,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
   const [filesStatusContainer, setFilesStatusContainer] = useState<HTMLDivElement | null>(null);
   const [filesHeaderContainer, setFilesHeaderContainer] = useState<HTMLSpanElement | null>(null);
   const [exportOpen, setExportOpen] = useState(false);
+  const [stlImportOpen, setStlImportOpen] = useState(false);
   const [detailsReady, setDetailsReady] = useState(true);
   const [refreshingDetails, setRefreshingDetails] = useState(false);
   const [detailsRefreshError, setDetailsRefreshError] = useState('');
@@ -362,10 +364,10 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
   }
 
   // Upload the primary model file (GLB/GLTF/FBX/OBJ/USDZ) to Vercel Blob.
-  async function handlePrimaryFileUpload(file: File) {
-    if (!file || primaryUploadAbort.current || uploadingPrimary || isSubmitting) return;
+  async function handlePrimaryFileUpload(file: File): Promise<boolean> {
+    if (!file || primaryUploadAbort.current || uploadingPrimary || isSubmitting) return false;
     try { threeDModelUploadPolicy(file.name, file.size); }
-    catch (error) { setPrimaryUploadNotice(error instanceof Error ? error.message : 'Check the selected Model file.'); return; }
+    catch (error) { setPrimaryUploadNotice(error instanceof Error ? error.message : 'Check the selected Model file.'); return false; }
     const controller = new AbortController(); primaryUploadAbort.current = controller;
     setUploadingPrimary(true);
     setPrimaryCanCancel(true);
@@ -379,7 +381,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
         const candidateDiscarded = await discardPendingPrimaryUpload({ fileName: uploaded.fileName, filePath: uploaded.url, fileSize: uploaded.fileSize, modelType: uploaded.modelType });
         setPrimaryUploadNotice(candidateDiscarded ? 'Your previous staged Model is retained. Retry after its cleanup issue is resolved.'
           : 'Your previous staged Model is retained. New candidate cleanup is also unconfirmed; review staged uploads before retrying.');
-        return;
+        return false;
       }
         setFormData((prev) => ({
           ...prev,
@@ -404,8 +406,10 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
             : 'Model file uploaded',
           'success',
         );
+        return true;
     } catch (error) {
       setPrimaryUploadNotice(error instanceof Error ? error.message : 'Model upload failed. Your previous draft is retained.');
+      return false;
     } finally {
       primaryUploadAbort.current = null;
       setPrimaryCanCancel(false);
@@ -437,7 +441,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
   }
 
   async function handleCreate() {
-    if (isSubmitting || uploadingPrimary || uploadingThumbnail) return;
+    if (isSubmitting || uploadingPrimary || uploadingThumbnail || stlImportOpen) return;
     setFormError(null);
     setIsSubmitting(true);
     try {
@@ -636,7 +640,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
   const reportFilesBusy = useCallback((value: boolean) => setFilesBusy(value), []);
 
   if (view !== "list") {
-    const busy = isSubmitting || uploadingPrimary || uploadingThumbnail || filesBusy || exportOpen || refreshingDetails || tabs.transitioning;
+    const busy = isSubmitting || uploadingPrimary || uploadingThumbnail || filesBusy || exportOpen || stlImportOpen || refreshingDetails || tabs.transitioning;
     return (
       <div className="model-editor-surface flex h-full min-h-0 min-w-0 flex-col gap-2">
         {ToastComponent}
@@ -661,7 +665,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
                   <div className="grid min-h-0 min-w-0 items-start gap-3 lg:grid-cols-[minmax(0,1.15fr)_minmax(400px,0.85fr)]">
                     <section aria-label="Model draft preview" tabIndex={0} className="model-details-preview min-w-0 self-start">
                       <ThreeDModelAssetPreview
-                        active={(view !== 'edit' || tabs.tab === 'details') && !exportOpen}
+                        active={(view !== 'edit' || tabs.tab === 'details') && !exportOpen && !stlImportOpen}
                         model={importerPreviewModel}
                         attachedDependencyCount={0}
                         dependencyCount={0}
@@ -698,6 +702,14 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
                         uploadingPrimary={uploadingPrimary}
                         uploadingThumbnail={uploadingThumbnail}
                         uploadAnalysis={uploadAnalysis}
+                        stlImportAction={<ModelStlImport
+                          disabled={busy || !detailsReady}
+                          onBusyChange={setStlImportOpen}
+                          onUseFile={handlePrimaryFileUpload}
+                          uploadNotice={primaryUploadNotice}
+                          canCancelUpload={primaryCanCancel}
+                          onCancelUpload={() => primaryUploadAbort.current?.abort()}
+                        />}
                         onPrimaryFile={handlePrimaryFileUpload}
                         onThumbnail={handleThumbnailUpload}
                       />

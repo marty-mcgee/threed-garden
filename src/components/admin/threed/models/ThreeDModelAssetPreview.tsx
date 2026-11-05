@@ -43,6 +43,8 @@ interface ThreeDModelAssetPreviewProps {
   topViewCapture?: boolean;
   model: ModelData | null;
   active?: boolean;
+  /** Opt-in ownership for temporary files, separate from the shared Model cache. */
+  transientResources?: boolean;
   onBusyChange?: (busy: boolean) => void;
   preserveCameraOnEdit?: boolean;
   centerAtOrigin?: boolean;
@@ -99,6 +101,7 @@ function PreviewModel({
   fitRevision = 0,
   resetRevision = 0,
   centerAtOrigin = false,
+  transientResources = false,
   onError,
   perspective,
   onFitDistance,
@@ -113,6 +116,7 @@ function PreviewModel({
   fitRevision?: number;
   resetRevision?: number;
   centerAtOrigin?: boolean;
+  transientResources?: boolean;
   onSettled: () => void;
   onError?: (message: string | null) => void;
   perspective?: PreviewPerspective;
@@ -190,6 +194,7 @@ function PreviewModel({
       rotation={procedural ? [0, finite(model.rotationY) * Math.PI / 180, 0] : [0, 0, 0]}>
     <ModelMarker3D
       model={model}
+      transientResources={transientResources}
       position={[0, 0, 0]}
       scale={procedural ? Math.max(0.01, finite(model.scale, 1)) : 1}
       onCollisionBoundsChange={handleBounds}
@@ -256,6 +261,7 @@ export function ThreeDModelAssetPreview({
   model,
   topViewCapture = false,
   active = true,
+  transientResources = false,
   onBusyChange,
   preserveCameraOnEdit = false,
   centerAtOrigin = false,
@@ -525,13 +531,14 @@ export function ThreeDModelAssetPreview({
               <Bounds fit={!topViewCapture && !perspective && !preserveCameraOnEdit} clip margin={1.25} maxDuration={autoCapture || fixedCaptureCamera ? 0 : 1}>
                 <PreviewModel
                   model={model}
+                  transientResources={transientResources}
                   topViewCapture={topViewCapture}
                   preserveCameraOnEdit={preserveCameraOnEdit}
                   fitRevision={fitRevision}
                   resetRevision={resetKey}
                   centerAtOrigin={centerAtOrigin}
                   onSettled={() => setSettledKey(modelKey)}
-                  onMaterialInventoryChange={showMaterialInspector || onCaptureImage ? setMaterialInventory : undefined}
+                  onMaterialInventoryChange={showMaterialInspector || onCaptureImage || onCaptureReady ? setMaterialInventory : undefined}
                   onError={setRuntimeError}
                   perspective={perspective}
                   onFitDistance={rememberFitDistance}

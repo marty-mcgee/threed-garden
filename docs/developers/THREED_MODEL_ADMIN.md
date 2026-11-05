@@ -27,6 +27,20 @@ To adjust the Soccer Field, edit Model 51, raise Light boost gradually, save, an
 - **Bulk Import Models** is available beside **Add Model** in `/admin/threed/models` in beta (alpha: **Bulk Import FBX**). The embedded Project CRUD retains its single-Model entry point because its parent refresh unmounts child workspaces. Bulk imports create reusable Models without assigning them to a Project.
 - Bulk **Batch defaults → Assign Existing Texture File** reuses an active saved Texture as Base Color for all detected material slots. Each Model can inherit the batch selection, choose another Texture, or select None. Assignments are saved and verified during import; missing named texture files remain a separate dependency check. **Resolve missing texture files later (keep inactive)** applies the selected Texture now and retains the Model for further review.
 
+### Import an STL as a reusable Model
+
+The [v0.31.10 STL import](../releases/v0.31.10.md) adds **Import STL** beside **Upload Model File** in **Add Model > Primary Model File**, with **Geometry > Source: Model** selected.
+
+1. Choose the original `.stl` file. Inspection and preview stay in the browser.
+2. Select the units used to author it: Inches, Millimetres, Centimetres or Metres. STL does not record units. Choose **Z up** or **Y up** and inspect the orientation and dimensions.
+3. Wait for the converted Model preview to load, then choose **Upload converted Model**. This uses the existing authenticated, staged GLB upload. A failed or cancelled upload retains the local preview for retry.
+4. Review the Model name, scale and other existing fields, then choose **Create Model**. Upload alone does not save a Model record. Keep scale **1** to retain the converted size; existing manual field values are preserved.
+5. Place the saved Model through the Project's existing Model Library. Its ordinary geometry rendering, generated 2D plan counterpart, placement controls and explicit Project Save apply.
+
+Conversion bakes source units into the App's existing Scene-unit geometry (one Scene unit is 0.3048 metres), preserving source origin and triangles. Z-up input rotates into Y-up geometry. Supported inputs are complete ASCII or binary STL files up to 32 MiB and 250,000 triangles; the converted GLB must also fit the existing 32 MiB upload limit. Invalid, incomplete, non-finite or degenerate geometry is rejected before upload. Binary colors supported by the installed STL loader are retained; uncolored meshes receive a neutral material.
+
+An STL becomes one mesh Model, including disconnected parts. It does not recover native Design walls, floors, CAD constraints, materials or separate Assembly components. The original STL remains on the Developer's disk; retain it for CAD editing. No new database table or raw-STL storage type is introduced. A successful preview does not certify watertight geometry, collision behavior or a saved Project; verify those through the normal App workflow.
+
 ### Matching a saved Texture to an FBX requirement
 
 When the effective batch/per-Model **Assign Existing Texture File** selection has the same filename as a required FBX image, the importer reads that active saved Texture automatically if no local file with that name was selected. Matching is case-insensitive and uses the file name, not the Texture display name. The requirement shows **Matching saved Texture — uses the shared file; no copy is uploaded**. No disk selection is needed.

@@ -131,6 +131,7 @@ async function editorChecks() {
     '@/components/ui/dialog': proxy, '@/components/ui/dropdown-menu': proxy, '@/components/ui/input': proxy, '@/components/ui/tabs': proxy,
     './model-admin-form-core': form, './ThreeDModelEditorFields': { ...proxy, MODEL_TYPE_OPTIONS: [], MODEL_STATUS_OPTIONS: [], ThreeDModelEditorFields: 'fields', ThreeDModelPreviewImageFields: 'image-fields' },
     './ModelTopViewImage': proxy, './ModelPreviewBatchExport': proxy, './ModelPreviewImageExport': proxy, './ThreeDModelAssetPreview': proxy,
+    './ModelStlImport': { ModelStlImport: 'stl-import' },
     './ModelFieldHelp': { ModelFieldHelp: 'help' },
     '@/libraries/services/threed/models/model-primary-upload-client': {
       async uploadThreeDPrimaryFile(file) {

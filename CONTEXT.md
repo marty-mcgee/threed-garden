@@ -2,6 +2,8 @@
 
 ## Current checkpoint
 
+November 5: the Developer confirmed the initial STL import works and requested [v0.31.10 - ThreeD: STL Import as GLB Models](docs/releases/v0.31.10.md). Local unit/orientation review and GLB preview feed the existing staged upload/Create workflow, with temporary resource cleanup and retained Scene calibration. Package/root lock are 0.31.10; dependencies and schemas are unchanged. Preparation began on main / fc0dcdb3, preserving the accepted implementation. Fresh isolated TypeScript, all 105 offline CI tasks, the guarded 165-page production build and 1,820-input parity pass. Production confirmation is pending. Changes remain unstaged.
+
 November 4: prepared [v0.31.9 - Learn: Guide Illustrations](docs/releases/v0.31.9.md) after Developer acceptance of the illustrations and Learn landing-page improvements. Supporting SVG art covers all fourteen repository starter guides through the existing reader/Admin preview mapping; saved Markdown and real App captures are preserved. Package/root lock are 0.31.9. The complete checkpoint passed fresh TypeScript, all 104 offline CI tasks, the guarded 165-page production build and source/input parity. Changes remain unstaged; production confirmation is pending.
 
 The accepted [Learn landing navigation follow-up](docs/releases/v0.31.9.md#unreleased-follow-up-learn-landing-navigation) improves calls to action and defaults the library to 20 guides per page. Read-only local browser checks confirm all fourteen published guides on one page and responsive links/buttons in both themes. This follow-up is included in the refreshed release gates above; dependencies and schemas are unchanged.
