@@ -57,7 +57,15 @@ function harness() {
 
 const contracts = load('src/components/learn/learn-public-data.ts', {});
 const row = slug => ({ slug, title: `Guide ${slug}`, summary: `Summary ${slug}`, updatedAt: '2026-10-27T00:00:00.000Z' });
-const page = (slugs, total = slugs.length, offset = 0) => ({ success: true, data: slugs.map(row), pagination: { total, limit: 12, offset } });
+const page = (slugs, total = slugs.length, offset = 0, limit = 20) => ({
+  success: true,
+  data: slugs.map(row),
+  pagination: {
+    total,
+    limit,
+    offset,
+  },
+});
 const detail = slug => ({ success: true, data: { ...row(slug), content: `Private-to-response body ${slug}` } });
 const respond = (request, body, status = 200) => request.resolve({ ok: status >= 200 && status < 300, status, json: async () => body });
 
@@ -145,15 +153,23 @@ const respond = (request, body, status = 200) => request.resolve({ ok: status >=
   const draw = () => libraryHarness.render(() => library.LearnGuideLibrary());
   let tree = draw(); assert.match(text(tree), /Loading Learn guides/); assert.equal(one(tree, node => node.type === 'reader').props.slug, 'draw-room');
   assert.equal(libraryHarness.requests.length, 1, 'The list request never fetches every guide body');
+  assert.match(libraryHarness.requests[0].url, /limit=20&offset=0/);
+  respond(libraryHarness.requests.shift(), page(starters.map(guide => guide.slug))); await flush(); tree = draw();
+  assert.equal(all(tree, node => node.type === 'link' && node.props.href.startsWith('/learn/guides/')).length, 14, 'All starter guides fit on the first page');
+  assert.equal(all(tree, node => node.props['aria-label'] === 'Guide pages').length, 0, 'A single page needs no paging controls');
+  one(tree, node => node.type === 'select').props.onChange({ target: { value: '40' } }); draw();
+  const largerPage = libraryHarness.requests.shift(); assert.match(largerPage.url, /limit=40&offset=0/);
+  respond(largerPage, page(['draw-room', 'second', 'how-to'], 25, 0, 40)); await flush(); tree = draw();
+  one(tree, node => node.type === 'select').props.onChange({ target: { value: '20' } }); draw();
   respond(libraryHarness.requests.shift(), page(['draw-room', 'second', 'how-to'], 25)); await flush(); tree = draw();
   assert.equal(one(tree, node => node.type === 'link' && node.props.href === '/learn/guides/draw-room').props['aria-label'], 'Read Guide draw-room');
   assert.equal(all(tree, node => node.props.id === 'draw-room').length, 0, 'Legacy reader owns its anchor without a duplicate card ID');
   assert.equal(all(tree, node => node.props.id === 'how-to').length, 0, 'A custom guide slug must not duplicate a static landing-section anchor');
-  button(tree, 'Next').props.onClick(); tree = draw(); const secondPage = libraryHarness.requests.shift(); assert.match(secondPage.url, /offset=12/);
+  button(tree, 'Next').props.onClick(); tree = draw(); const secondPage = libraryHarness.requests.shift(); assert.match(secondPage.url, /offset=20/);
   one(tree, node => node.type === 'input').props.onChange({ target: { value: 'walls' } }); tree = draw();
   one(tree, node => node.type === 'form').props.onSubmit({ preventDefault() {} }); tree = draw(); const searched = libraryHarness.requests.shift();
   assert.match(searched.url, /search=walls/); assert.match(searched.url, /offset=0/); assert(secondPage.options.signal.aborted);
-  respond(searched, page(['walls'])); await flush(); respond(secondPage, page(['stale-page'], 25, 12)); await flush(); tree = draw();
+  respond(searched, page(['walls'])); await flush(); respond(secondPage, page(['stale-page'], 25, 20)); await flush(); tree = draw();
   assert.match(text(tree), /Guide walls/); assert.doesNotMatch(text(tree), /stale-page/);
   button(tree, 'Clear').props.onClick(); draw(); respond(libraryHarness.requests.shift(), { error: 'private storage error' }, 503); await flush(); tree = draw();
   assert.match(text(tree), /could not be loaded/); assert.doesNotMatch(text(tree), /private storage error|Guide walls/);

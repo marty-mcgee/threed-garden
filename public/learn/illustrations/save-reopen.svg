@@ -1,71 +1,128 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
-<title id="title">Make a change. Save. Return.</title>
-<desc id="description">Explicit Project Save keeps supported content and workspace preferences together. If Save fails, keep the page open, read the error and retry before leaving.</desc>
+<title id="title">Make a change. Keep your work.</title>
+<desc id="description">A courtyard Project is edited, saved explicitly with confirmation checked, and reopened with the same House, Tree and Bench placements. A failed save requires resolving the error before leaving.</desc>
 <defs>
-<linearGradient id="background" x2="1" y2="1">
-<stop stop-color="#112d32"/>
-<stop offset="1" stop-color="#0b1424"/>
-</linearGradient>
-<pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-<rect width="20" height="20" fill="#102331"/>
-<path d="M20 0H0V20" fill="none" stroke="#244552" stroke-width=".7"/>
-</pattern>
-</defs>
-<g font-family="Segoe UI, Arial, sans-serif">
-<rect x="1" y="1" width="1198" height="638" rx="24" fill="url(#background)" stroke="#355661"/>
-<path d="M40 34L72 34" fill="none" stroke="#67d4b3" stroke-width="4" />
-<text x="85" y="40" fill="#67d4b3" font-size="14" font-weight="600">THREED APP / VISUAL GUIDE</text>
-<text x="40" y="98" fill="#eef8f6" font-size="36" font-weight="700">Make a change. Save. Return.</text>
-<text x="40" y="134" fill="#afc8cb" font-size="19" font-weight="400">Explicit Project Save keeps supported content and workspace preferences together.</text>
-<rect x="40" y="210" width="262" height="290" rx="18" fill="#122832" stroke="#355661"/>
-<text x="62" y="245" fill="#67d4b3" font-size="23" font-weight="600">Make a change</text>
-<g transform="translate(130 283) scale(2)">
-<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<path d="m16 2 13 8v15l-13 7L3 25V10zM3 10l13 8 13-8M16 18v14M9 6l13 8"/>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#102b30"/>
+      <stop offset="1" stop-color="#0c1425"/>
+    </linearGradient>
+    <linearGradient id="project" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#173b3f"/>
+      <stop offset="1" stop-color="#11242f"/>
+    </linearGradient>
+    <linearGradient id="ground" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#3b8069"/>
+      <stop offset="1" stop-color="#205044"/>
+    </linearGradient>
+    <pattern id="plan-grid" width="22" height="22" patternUnits="userSpaceOnUse">
+      <path d="M22 0H0V22" fill="none" stroke="#1e3e52" stroke-width="1"/>
+    </pattern>
+    <pattern id="scene-grid" width="44" height="44" patternUnits="userSpaceOnUse">
+      <path d="M44 0H0V44" fill="none" stroke="#438775" stroke-width="1" opacity=".24"/>
+    </pattern>
+    <marker id="arrow" viewBox="0 0 12 12" refX="8" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="m3 2 5 4-5 4" fill="none" stroke="#74ddc3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <g id="tree">
+      <path d="M0 2V38" stroke="#b99569" stroke-width="7" stroke-linecap="round"/>
+      <ellipse cx="3" cy="-4" rx="25" ry="29" fill="#68b78b"/>
+      <ellipse cx="-9" cy="-12" rx="19" ry="23" fill="#92d39b"/>
+      <path d="M0 5V-19M0-2l-10-8M0-8l11-8" fill="none" stroke="#438b65" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g id="bench">
+      <path d="M-23 7v17m40-22v17" stroke="#99b7b5" stroke-width="5" stroke-linecap="round"/>
+      <path d="m-30-3 45-17 16 9-45 18z" fill="#d7af78"/>
+      <path d="m-30-3 16 10v7L-30 4z" fill="#9c784e"/>
+      <path d="m-27-17 43-16v10l-43 16z" fill="#e4bd88"/>
+      <path d="m-25-8-2-17M17-23v-12" fill="none" stroke="#99b7b5" stroke-width="4"/>
+    </g>
+    <g id="house">
+      <path d="m-68-4 78 42v76l-78-42z" fill="#d2e4da"/>
+      <path d="m10 38 88-47v76l-88 47z" fill="#8fb5ac"/>
+      <path d="m-68-4 39-23 39 65z" fill="#e4eee7"/>
+      <path d="m-31-29 96-51 45 69-96 51z" fill="#354b60"/>
+      <path d="m-76-8 96-51 45-21-96 51z" fill="#547285"/>
+      <path d="m-31-29 96-51m-96 51 45 69" fill="none" stroke="#718b99" stroke-width="2"/>
+      <path d="m-18 48 18 10v48l-18-10z" fill="#406767"/>
+      <path d="m-51 22 23 13v24l-23-13z" fill="#2c686e" stroke="#edf5ed" stroke-width="4"/>
+      <path d="m36 39 32-17v28L36 67z" fill="#2c686e" stroke="#dbece2" stroke-width="4"/>
+      <path d="m52 30 0 28M36 53l32-17" fill="none" stroke="#dbece2" stroke-width="3"/>
+    </g>
+
+
+<g id="plan">
+ <rect x="-139" y="-91" width="278" height="182" rx="8" fill="#102331" stroke="#36576a"/>
+ <rect x="-139" y="-91" width="278" height="182" rx="8" fill="url(#plan-grid)"/>
+ <path d="M-105-61H105V61H40M-5 61H-105V-61" fill="none" stroke="#d2e7dc" stroke-width="5"/>
+ <path d="M-5 61V16a45 45 0 0 1 45 45" fill="none" stroke="#80dfc5" stroke-width="2"/>
+ <path d="M30-61H77" stroke="#6ee5ed" stroke-width="7"/>
+ <path d="M-105-61H105" stroke="#6ee5ed" stroke-width="3"/>
+ <circle cx="-105" cy="-61" r="5" fill="#6ee5ed"/><circle cx="105" cy="-61" r="5" fill="#6ee5ed"/>
 </g>
+<g id="room">
+ <path d="m-130 40 130-75 130 75-130 75z" fill="#bca47e" stroke="#d2ba95"/>
+ <path d="M-130 40V-70L0-145V-35z" fill="#d0e5dc"/>
+ <path d="M0-145 130-70V40L0-35z" fill="#8eb5a9"/>
+ <path d="m-100-59 59-34v53l-59 34z" fill="#24666b" stroke="#edf8f0" stroke-width="5"/>
+ <path d="m-70-76 0 54m-30-10 59-34" fill="none" stroke="#edf8f0" stroke-width="3"/>
+ <path d="m74-19 35 20v53L74 34z" fill="#315a59" stroke="#e2eee5" stroke-width="4"/>
+ <path d="m-130 40 130 75 130-75" fill="none" stroke="#7be3ce" stroke-width="4"/>
 </g>
-<text x="62" y="412" fill="#afc8cb" font-size="18" font-weight="400">Edit architecture</text>
-<text x="62" y="440" fill="#afc8cb" font-size="18" font-weight="400">or place a Model.</text>
-<path d="M307 352L320 352" fill="none" stroke="#67d4b3" stroke-width="3" />
-<path d="m310 345 10 7-10 7" fill="none" stroke="#67d4b3" stroke-width="3"/>
-<rect x="326" y="210" width="262" height="290" rx="18" fill="#122832" stroke="#355661"/>
-<text x="348" y="245" fill="#67d4b3" font-size="23" font-weight="600">Save Project</text>
-<g transform="translate(416 283) scale(2)">
-<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<path d="M3 3h21l5 5v22H3zM9 3v9h13V3M9 30V19h14v11"/>
+<g id="map">
+ <rect x="-135" y="-83" width="270" height="166" rx="10" fill="#285345" stroke="#6fae87"/>
+ <path d="M-124-70h62v58h-62zm179 18h66v65H55zM-109 36h99v32h-99zM38 42h72v29H38z" fill="#406d50" stroke="#74986a"/>
+ <path d="M-127 11H127M10-83V83" stroke="#bda67b" stroke-width="15"/>
+ <path d="M-127 11H127M10-83V83" stroke="#e0cba4" stroke-width="2" stroke-dasharray="8 8"/>
+ <circle cx="-39" cy="-31" r="14" fill="#77d6bc" stroke="#d3f3e5" stroke-width="2"/>
+ <path d="m-47-29 8 16 8-16" fill="#77d6bc"/>
 </g>
+<g id="person">
+ <ellipse cy="61" rx="29" ry="10" fill="#0b1b24" opacity=".6"/>
+ <path d="m-12 21-5 38m29-38 5 38" fill="none" stroke="#899cae" stroke-width="12" stroke-linecap="round"/>
+ <path d="M-20-13q20-15 40 0v40h-40z" fill="#63b999"/>
+ <path d="m-22-8-10 30m54-30 13 28" fill="none" stroke="#dfbb97" stroke-width="9" stroke-linecap="round"/>
+ <circle cy="-35" r="17" fill="#dfbb97"/>
+ <path d="M-19-38q2-26 34-12l5 15-40-3z" fill="#b89a6b"/>
 </g>
-<text x="348" y="412" fill="#afc8cb" font-size="18" font-weight="400">Use explicit Save.</text>
-<text x="348" y="440" fill="#afc8cb" font-size="18" font-weight="400">Wait for its result.</text>
-<path d="M593 352L606 352" fill="none" stroke="#67d4b3" stroke-width="3" />
-<path d="m596 345 10 7-10 7" fill="none" stroke="#67d4b3" stroke-width="3"/>
-<rect x="612" y="210" width="262" height="290" rx="18" fill="#122832" stroke="#355661"/>
-<text x="634" y="245" fill="#67d4b3" font-size="23" font-weight="600">Confirm</text>
-<g transform="translate(702 283) scale(2)">
-<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<path d="M6 2h14l8 8v21H6zM20 2v9h8M11 17h11M11 23h8"/>
+<g id="save" fill="none" stroke="#9de5ca" stroke-width="4" stroke-linejoin="round">
+ <path d="M-34-40h50l18 18v62h-68zM-20-40v24H12v-24M-20 40V7h40v33"/>
 </g>
+<g id="file">
+ <path d="M-32-43h42l22 22v64h-64z" fill="#1b3b46" stroke="#8acdbd" stroke-width="3"/>
+ <path d="M10-43v22h22M-18-5h35M-18 9h35M-18 23H6" fill="none" stroke="#8acdbd" stroke-width="3"/>
 </g>
-<text x="634" y="412" fill="#afc8cb" font-size="18" font-weight="400">Read saved feedback.</text>
-<text x="634" y="440" fill="#afc8cb" font-size="18" font-weight="400">Keep failed drafts.</text>
-<path d="M879 352L892 352" fill="none" stroke="#67d4b3" stroke-width="3" />
-<path d="m882 345 10 7-10 7" fill="none" stroke="#67d4b3" stroke-width="3"/>
-<rect x="898" y="210" width="262" height="290" rx="18" fill="#122832" stroke="#355661"/>
-<text x="920" y="245" fill="#67d4b3" font-size="23" font-weight="600">Reopen</text>
-<g transform="translate(988 283) scale(2)">
-<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<path d="M2 6h8l4 4h16v19H2z"/>
+<g id="album">
+ <rect x="-68" y="-68" width="136" height="136" rx="8" fill="#264a4d" stroke="#80c4ad" stroke-width="2"/>
+ <circle r="53" fill="#0d202a" stroke="#598b83" stroke-width="3"/>
+ <circle r="39" fill="none" stroke="#375a60"/><circle r="28" fill="none" stroke="#375a60"/>
+ <circle r="18" fill="#d6b16d"/><circle r="5" fill="#18343b"/>
+ <path d="m-60-45 21-15m79 113 20-16" stroke="#80dfc5" stroke-width="3"/>
 </g>
+<g id="lock" fill="none" stroke="#efb6a7" stroke-width="4" stroke-linejoin="round">
+ <rect x="-25" y="-7" width="50" height="42" rx="7"/><path d="M-16-7v-17a16 16 0 0 1 32 0v17M0 8v12"/>
 </g>
-<text x="920" y="412" fill="#afc8cb" font-size="18" font-weight="400">Open the same Project.</text>
-<text x="920" y="440" fill="#afc8cb" font-size="18" font-weight="400">Inspect your change.</text>
-<rect x="40" y="548" width="1120" height="52" rx="12" fill="#123831" stroke="#2d6557"/>
-<g transform="translate(56 561) scale(0.72)">
-<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<path d="M16 8Q8 2 2 6v22q6-4 14 1 8-5 14-1V6q-6-4-14 2v21"/>
-</g>
-</g>
-<text x="94" y="581" fill="#d2e8df" font-size="19" font-weight="400">If Save fails, keep the page open, read the error and retry before leaving.</text>
-<text x="40" y="624" fill="#afc8cb" font-size="13" font-weight="400">Conceptual illustration · follow the guide for the current controls and supported behavior.</text>
-</g>
+<style>
+ text { font-family: "Segoe UI", Arial, sans-serif; }
+ .title { fill: #f1f8f5; font-size: 38px; font-weight: 700; letter-spacing: -.5px; }
+ .heading { fill: #eff8f4; font-size: 23px; font-weight: 600; }
+ .body { fill: #b8d0d1; font-size: 20px; }
+ .small { fill: #b3ced0; font-size: 18px; }
+ .accent { fill: #8ce3c8; }
+ .value { fill: #e8f7ee; font-size: 30px; font-weight: 600; }
+</style></defs>
+<rect x="1" y="1" width="1198" height="638" rx="24" fill="url(#background)" stroke="#36555e"/>
+<path d="M40 35h32" stroke="#80dfc5" stroke-width="4" stroke-linecap="round"/>
+<text x="86" y="42" class="small accent" text-anchor="start">THREED APP / LEARN</text>
+<text x="40" y="100" class="title" text-anchor="start">Make a change. Keep your work.</text>
+<text x="40" y="138" class="body" text-anchor="start">Save explicitly, read the outcome, then reopen the same Project.</text>
+<rect x="40" y="178" width="345" height="356" rx="18" fill="#142a35" stroke="#36555e"/><rect x="427" y="178" width="345" height="356" rx="18" fill="#142a35" stroke="#36555e"/><rect x="814" y="178" width="346" height="356" rx="18" fill="#142a35" stroke="#36555e"/>
+ <circle cx="73" cy="210" r="17" fill="#24574c" stroke="#80dfc5"/><text x="73" y="217" class="small accent" text-anchor="middle">1</text><text x="101" y="218" class="heading" text-anchor="start">Make one change</text><circle cx="460" cy="210" r="17" fill="#24574c" stroke="#80dfc5"/><text x="460" y="217" class="small accent" text-anchor="middle">2</text><text x="488" y="218" class="heading" text-anchor="start">Save and confirm</text><circle cx="847" cy="210" r="17" fill="#24574c" stroke="#80dfc5"/><text x="847" y="217" class="small accent" text-anchor="middle">3</text><text x="875" y="218" class="heading" text-anchor="start">Reopen and check</text>
+ <g transform="translate(212 355) scale(0.95)"><g transform="translate(0 35) scale(1)"><path d="m-150 0 160-80 150 80-160 85z" fill="url(#ground)" stroke="#68ab8d" stroke-width="2"/></g><g transform="translate(-30 -30) scale(0.85)"><use href="#house"/></g><g transform="translate(100 -20) scale(1.15)"><use href="#tree"/></g><g transform="translate(62 79) scale(0.85)"><use href="#bench"/></g></g><g transform="translate(600 327) scale(1.35)"><use href="#save"/></g><circle cx="653" cy="382" r="15" fill="#205448" stroke="#80dfc5"/><path d="m646 382 5 5 9-10" fill="none" stroke="#c4f5dc" stroke-width="2.5"/><g transform="translate(987 355) scale(0.95)"><g transform="translate(0 35) scale(1)"><path d="m-150 0 160-80 150 80-160 85z" fill="url(#ground)" stroke="#68ab8d" stroke-width="2"/></g><g transform="translate(-30 -30) scale(0.85)"><use href="#house"/></g><g transform="translate(100 -20) scale(1.15)"><use href="#tree"/></g><g transform="translate(62 79) scale(0.85)"><use href="#bench"/></g></g>
+ <path d="M392 355h23" fill="none" stroke="#74ddc3" stroke-width="3" marker-end="url(#arrow)"/><path d="M779 355h23" fill="none" stroke="#74ddc3" stroke-width="3" marker-end="url(#arrow)"/>
+ <text x="212" y="502" class="small" text-anchor="middle">Arrange your Project.</text><text x="600" y="459" class="small" text-anchor="middle">Wait for confirmation.</text>
+<text x="600" y="486" class="small" text-anchor="middle">If Save fails, keep the draft.</text>
+ <text x="987" y="502" class="small" text-anchor="middle">Verify the arrangement.</text>
+<rect x="40" y="562" width="1120" height="44" rx="12" fill="#173b32" stroke="#396c59"/>
+<text x="60" y="591" class="body accent" text-anchor="start">A successful Save and a successful reopen are two separate checks.</text>
+<text x="40" y="629" class="small" text-anchor="start">Conceptual illustration · use the guide for current controls and supported behavior.</text>
 </svg>

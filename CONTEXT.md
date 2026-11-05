@@ -2,11 +2,11 @@
 
 ## Current checkpoint
 
-November 4: Developer accepted [v0.31.8 - ThreeD: Movable Multimedia Overlay and Playback Controls](docs/releases/v0.31.8.md) for production preparation. Package/root lock are 0.31.8; fresh TypeScript, all 104 offline CI tasks, guarded production build and source/input parity pass. Changes remain unstaged; production confirmation is pending.
+November 4: prepared [v0.31.9 - Learn: Guide Illustrations](docs/releases/v0.31.9.md) after Developer acceptance of the illustrations and Learn landing-page improvements. Supporting SVG art covers all fourteen repository starter guides through the existing reader/Admin preview mapping; saved Markdown and real App captures are preserved. Package/root lock are 0.31.9. The complete checkpoint passed fresh TypeScript, all 104 offline CI tasks, the guarded 165-page production build and source/input parity. Changes remain unstaged; production confirmation is pending.
 
-November 4: [Movable Project Multimedia player](docs/releases/v0.31.8.md#unreleased-follow-up-movable-project-multimedia-player) adds shared overlay positioning/Project Save, compact Album presentation, seek/time and volume/mute controls on the persistent media element. Offline validation passes; browser acceptance pending. Version stays 0.31.7; changes remain unstaged.
+The accepted [Learn landing navigation follow-up](docs/releases/v0.31.9.md#unreleased-follow-up-learn-landing-navigation) improves calls to action and defaults the library to 20 guides per page. Read-only local browser checks confirm all fourteen published guides on one page and responsive links/buttons in both themes. This follow-up is included in the refreshed release gates above; dependencies and schemas are unchanged.
 
-November 4: [Project Multimedia landing links](docs/releases/v0.31.8.md#unreleased-follow-up-project-multimedia-landing-links) open Albums and exact selected/current Tracks in a new Dashboard Multimedia tab. Existing preview/playback selection is retained. Focused offline checks and fresh TypeScript pass; browser acceptance pending. Changes remain unstaged at 0.31.7.
+Previous Developer-confirmed production release: [v0.31.8 - ThreeD: Movable Multimedia Overlay and Playback Controls](docs/releases/v0.31.8.md), confirmed November 4. Follow-up began on clean main / 1ddd7fac; that observation does not establish the exact deployed commit or an independent post-deployment smoke check.
 
 November 4: prepared [v0.31.7 - ThreeD: Guest Weather and Metric Readings](docs/releases/v0.31.7.md) after Developer acceptance. Version metadata is 0.31.7; fresh TypeScript, all 104 offline CI tasks and the guarded production build pass. Dependencies/schemas are unchanged; production confirmation is pending.
 

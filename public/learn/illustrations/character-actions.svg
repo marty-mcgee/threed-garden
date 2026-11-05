@@ -1,64 +1,130 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
-<title id="title">Choose the Character, target and Action</title>
-<desc id="description">Read readiness and range feedback before asking a Character to act. Character animation, supported world changes and physical device commands are distinct.</desc>
+<title id="title">An Action needs the right participants</title>
+<desc id="description">A Character and a selected ball are connected to readiness checks for a supported Action. A separate control loop shows Take Control, movement and Release Control. Compatible animations and valid target assignments remain required.</desc>
 <defs>
-<linearGradient id="background" x2="1" y2="1">
-<stop stop-color="#112d32"/>
-<stop offset="1" stop-color="#0b1424"/>
-</linearGradient>
-<pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-<rect width="20" height="20" fill="#102331"/>
-<path d="M20 0H0V20" fill="none" stroke="#244552" stroke-width=".7"/>
-</pattern>
-</defs>
-<g font-family="Segoe UI, Arial, sans-serif">
-<rect x="1" y="1" width="1198" height="638" rx="24" fill="url(#background)" stroke="#355661"/>
-<path d="M40 34L72 34" fill="none" stroke="#67d4b3" stroke-width="4" />
-<text x="85" y="40" fill="#67d4b3" font-size="14" font-weight="600">THREED APP / VISUAL GUIDE</text>
-<text x="40" y="98" fill="#eef8f6" font-size="36" font-weight="700">Choose the Character, target and Action</text>
-<text x="40" y="134" fill="#afc8cb" font-size="19" font-weight="400">Read readiness and range feedback before asking a Character to act.</text>
-<rect x="40" y="195" width="330" height="313" rx="18" fill="#122832" stroke="#355661"/>
-<text x="62" y="230" fill="#67d4b3" font-size="23" font-weight="600">1  Character</text>
-<g transform="translate(171 260) scale(2.1)">
-<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<circle cx="16" cy="7" r="5"/>
-<path d="M6 31v-6a10 10 0 0 1 20 0v6M16 18v13"/>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#102b30"/>
+      <stop offset="1" stop-color="#0c1425"/>
+    </linearGradient>
+    <linearGradient id="project" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#173b3f"/>
+      <stop offset="1" stop-color="#11242f"/>
+    </linearGradient>
+    <linearGradient id="ground" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#3b8069"/>
+      <stop offset="1" stop-color="#205044"/>
+    </linearGradient>
+    <pattern id="plan-grid" width="22" height="22" patternUnits="userSpaceOnUse">
+      <path d="M22 0H0V22" fill="none" stroke="#1e3e52" stroke-width="1"/>
+    </pattern>
+    <pattern id="scene-grid" width="44" height="44" patternUnits="userSpaceOnUse">
+      <path d="M44 0H0V44" fill="none" stroke="#438775" stroke-width="1" opacity=".24"/>
+    </pattern>
+    <marker id="arrow" viewBox="0 0 12 12" refX="8" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="m3 2 5 4-5 4" fill="none" stroke="#74ddc3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <g id="tree">
+      <path d="M0 2V38" stroke="#b99569" stroke-width="7" stroke-linecap="round"/>
+      <ellipse cx="3" cy="-4" rx="25" ry="29" fill="#68b78b"/>
+      <ellipse cx="-9" cy="-12" rx="19" ry="23" fill="#92d39b"/>
+      <path d="M0 5V-19M0-2l-10-8M0-8l11-8" fill="none" stroke="#438b65" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g id="bench">
+      <path d="M-23 7v17m40-22v17" stroke="#99b7b5" stroke-width="5" stroke-linecap="round"/>
+      <path d="m-30-3 45-17 16 9-45 18z" fill="#d7af78"/>
+      <path d="m-30-3 16 10v7L-30 4z" fill="#9c784e"/>
+      <path d="m-27-17 43-16v10l-43 16z" fill="#e4bd88"/>
+      <path d="m-25-8-2-17M17-23v-12" fill="none" stroke="#99b7b5" stroke-width="4"/>
+    </g>
+    <g id="house">
+      <path d="m-68-4 78 42v76l-78-42z" fill="#d2e4da"/>
+      <path d="m10 38 88-47v76l-88 47z" fill="#8fb5ac"/>
+      <path d="m-68-4 39-23 39 65z" fill="#e4eee7"/>
+      <path d="m-31-29 96-51 45 69-96 51z" fill="#354b60"/>
+      <path d="m-76-8 96-51 45-21-96 51z" fill="#547285"/>
+      <path d="m-31-29 96-51m-96 51 45 69" fill="none" stroke="#718b99" stroke-width="2"/>
+      <path d="m-18 48 18 10v48l-18-10z" fill="#406767"/>
+      <path d="m-51 22 23 13v24l-23-13z" fill="#2c686e" stroke="#edf5ed" stroke-width="4"/>
+      <path d="m36 39 32-17v28L36 67z" fill="#2c686e" stroke="#dbece2" stroke-width="4"/>
+      <path d="m52 30 0 28M36 53l32-17" fill="none" stroke="#dbece2" stroke-width="3"/>
+    </g>
+
+
+<g id="plan">
+ <rect x="-139" y="-91" width="278" height="182" rx="8" fill="#102331" stroke="#36576a"/>
+ <rect x="-139" y="-91" width="278" height="182" rx="8" fill="url(#plan-grid)"/>
+ <path d="M-105-61H105V61H40M-5 61H-105V-61" fill="none" stroke="#d2e7dc" stroke-width="5"/>
+ <path d="M-5 61V16a45 45 0 0 1 45 45" fill="none" stroke="#80dfc5" stroke-width="2"/>
+ <path d="M30-61H77" stroke="#6ee5ed" stroke-width="7"/>
+ <path d="M-105-61H105" stroke="#6ee5ed" stroke-width="3"/>
+ <circle cx="-105" cy="-61" r="5" fill="#6ee5ed"/><circle cx="105" cy="-61" r="5" fill="#6ee5ed"/>
 </g>
+<g id="room">
+ <path d="m-130 40 130-75 130 75-130 75z" fill="#bca47e" stroke="#d2ba95"/>
+ <path d="M-130 40V-70L0-145V-35z" fill="#d0e5dc"/>
+ <path d="M0-145 130-70V40L0-35z" fill="#8eb5a9"/>
+ <path d="m-100-59 59-34v53l-59 34z" fill="#24666b" stroke="#edf8f0" stroke-width="5"/>
+ <path d="m-70-76 0 54m-30-10 59-34" fill="none" stroke="#edf8f0" stroke-width="3"/>
+ <path d="m74-19 35 20v53L74 34z" fill="#315a59" stroke="#e2eee5" stroke-width="4"/>
+ <path d="m-130 40 130 75 130-75" fill="none" stroke="#7be3ce" stroke-width="4"/>
 </g>
-<rect x="64" y="378" width="236" height="34" rx="17" fill="#183a3c" stroke="#67d4b3"/>
-<text x="78" y="401" fill="#67d4b3" font-size="16" font-weight="400">Take / Release Control</text>
-<text x="64" y="463" fill="#afc8cb" font-size="17" font-weight="400">WASD for controlled movement.</text>
-<path d="M383 351L418 351" fill="none" stroke="#67d4b3" stroke-width="3" />
-<path d="m408 344 10 7-10 7" fill="none" stroke="#67d4b3" stroke-width="3"/>
-<rect x="435" y="195" width="330" height="313" rx="18" fill="#122832" stroke="#355661"/>
-<text x="457" y="230" fill="#67d4b3" font-size="23" font-weight="600">2  Scene target</text>
-<g transform="translate(588 326) scale(1.1)">
-<ellipse cy="34" rx="29" ry="10" fill="#183f3c"/>
-<path d="M0 32V-17" stroke="#b7a47e" stroke-width="7" stroke-linecap="round"/>
-<ellipse cy="-18" rx="27" ry="31" fill="#6ebc92"/>
-<ellipse cx="-9" cy="-27" rx="20" ry="24" fill="#95cf9d"/>
-<path d="M0 8v-35m0 13-11-10M0-8l13-11" stroke="#4a9976" stroke-width="3" fill="none"/>
+<g id="map">
+ <rect x="-135" y="-83" width="270" height="166" rx="10" fill="#285345" stroke="#6fae87"/>
+ <path d="M-124-70h62v58h-62zm179 18h66v65H55zM-109 36h99v32h-99zM38 42h72v29H38z" fill="#406d50" stroke="#74986a"/>
+ <path d="M-127 11H127M10-83V83" stroke="#bda67b" stroke-width="15"/>
+ <path d="M-127 11H127M10-83V83" stroke="#e0cba4" stroke-width="2" stroke-dasharray="8 8"/>
+ <circle cx="-39" cy="-31" r="14" fill="#77d6bc" stroke="#d3f3e5" stroke-width="2"/>
+ <path d="m-47-29 8 16 8-16" fill="#77d6bc"/>
 </g>
-<rect x="459" y="378" width="282" height="34" rx="17" fill="#183a3c" stroke="#75e3ed"/>
-<text x="473" y="401" fill="#75e3ed" font-size="16" font-weight="400">Use as Action Target</text>
-<text x="459" y="463" fill="#afc8cb" font-size="17" font-weight="400">Select the supported instance.</text>
-<path d="M779 351L812 351" fill="none" stroke="#67d4b3" stroke-width="3" />
-<path d="m802 344 10 7-10 7" fill="none" stroke="#67d4b3" stroke-width="3"/>
-<rect x="830" y="195" width="330" height="313" rx="18" fill="#122832" stroke="#355661"/>
-<text x="852" y="230" fill="#67d4b3" font-size="23" font-weight="600">3  Supported Action</text>
-<circle cx="869" cy="279" r="12" fill="#173c38" stroke="#67d4b3"/>
-<path d="m864 279 3 4 7-8" fill="none" stroke="#67d4b3" stroke-width="2"/>
-<text x="896" y="286" fill="#eef8f6" font-size="21" font-weight="400">Ready + in range</text>
-<text x="854" y="344" fill="#afc8cb" font-size="20" font-weight="400">Compatible Animation</text>
-<text x="854" y="374" fill="#afc8cb" font-size="20" font-weight="400">and target required.</text>
-<text x="854" y="463" fill="#afc8cb" font-size="17" font-weight="400">Wait for completion feedback.</text>
-<rect x="40" y="548" width="1120" height="52" rx="12" fill="#123831" stroke="#2d6557"/>
-<g transform="translate(56 561) scale(0.72)">
-<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<path d="M16 8Q8 2 2 6v22q6-4 14 1 8-5 14-1V6q-6-4-14 2v21"/>
+<g id="person">
+ <ellipse cy="61" rx="29" ry="10" fill="#0b1b24" opacity=".6"/>
+ <path d="m-12 21-5 38m29-38 5 38" fill="none" stroke="#899cae" stroke-width="12" stroke-linecap="round"/>
+ <path d="M-20-13q20-15 40 0v40h-40z" fill="#63b999"/>
+ <path d="m-22-8-10 30m54-30 13 28" fill="none" stroke="#dfbb97" stroke-width="9" stroke-linecap="round"/>
+ <circle cy="-35" r="17" fill="#dfbb97"/>
+ <path d="M-19-38q2-26 34-12l5 15-40-3z" fill="#b89a6b"/>
 </g>
+<g id="save" fill="none" stroke="#9de5ca" stroke-width="4" stroke-linejoin="round">
+ <path d="M-34-40h50l18 18v62h-68zM-20-40v24H12v-24M-20 40V7h40v33"/>
 </g>
-<text x="94" y="581" fill="#d2e8df" font-size="19" font-weight="400">Character animation, supported world changes and physical device commands are distinct.</text>
-<text x="40" y="624" fill="#afc8cb" font-size="13" font-weight="400">Conceptual illustration · follow the guide for the current controls and supported behavior.</text>
+<g id="file">
+ <path d="M-32-43h42l22 22v64h-64z" fill="#1b3b46" stroke="#8acdbd" stroke-width="3"/>
+ <path d="M10-43v22h22M-18-5h35M-18 9h35M-18 23H6" fill="none" stroke="#8acdbd" stroke-width="3"/>
 </g>
+<g id="album">
+ <rect x="-68" y="-68" width="136" height="136" rx="8" fill="#264a4d" stroke="#80c4ad" stroke-width="2"/>
+ <circle r="53" fill="#0d202a" stroke="#598b83" stroke-width="3"/>
+ <circle r="39" fill="none" stroke="#375a60"/><circle r="28" fill="none" stroke="#375a60"/>
+ <circle r="18" fill="#d6b16d"/><circle r="5" fill="#18343b"/>
+ <path d="m-60-45 21-15m79 113 20-16" stroke="#80dfc5" stroke-width="3"/>
+</g>
+<g id="lock" fill="none" stroke="#efb6a7" stroke-width="4" stroke-linejoin="round">
+ <rect x="-25" y="-7" width="50" height="42" rx="7"/><path d="M-16-7v-17a16 16 0 0 1 32 0v17M0 8v12"/>
+</g>
+<style>
+ text { font-family: "Segoe UI", Arial, sans-serif; }
+ .title { fill: #f1f8f5; font-size: 38px; font-weight: 700; letter-spacing: -.5px; }
+ .heading { fill: #eff8f4; font-size: 23px; font-weight: 600; }
+ .body { fill: #b8d0d1; font-size: 20px; }
+ .small { fill: #b3ced0; font-size: 18px; }
+ .accent { fill: #8ce3c8; }
+ .value { fill: #e8f7ee; font-size: 30px; font-weight: 600; }
+</style></defs>
+<rect x="1" y="1" width="1198" height="638" rx="24" fill="url(#background)" stroke="#36555e"/>
+<path d="M40 35h32" stroke="#80dfc5" stroke-width="4" stroke-linecap="round"/>
+<text x="86" y="42" class="small accent" text-anchor="start">THREED APP / LEARN</text>
+<text x="40" y="100" class="title" text-anchor="start">An Action needs the right participants</text>
+<text x="40" y="138" class="body" text-anchor="start">Choose a Character and a target, then check what is ready to run.</text>
+<rect x="40" y="178" width="682" height="356" rx="18" fill="url(#project)" stroke="#589f91"/><text x="66" y="219" class="heading" text-anchor="start">Character + target</text>
+ <g transform="translate(372 371) scale(1.45)"><path d="m-150 0 160-80 150 80-160 85z" fill="url(#ground)" stroke="#68ab8d" stroke-width="2"/></g><g transform="translate(257 329) scale(1.35)"><use href="#person"/></g>
+ <circle cx="508" cy="398" r="35" fill="#dce8e5" stroke="#597b81" stroke-width="2"/><path d="m505 375 17 12-6 20h-21l-7-19z" fill="#37505c"/>
+ <ellipse cx="508" cy="425" rx="58" ry="22" fill="none" stroke="#6fe4ed" stroke-width="3"/>
+ <path d="M319 337Q402 296 484 351" fill="none" stroke="#74ddc3" stroke-width="3" marker-end="url(#arrow)"/><text x="248" y="474" class="heading" text-anchor="middle">Character</text><text x="508" y="474" class="heading" text-anchor="middle">Selected ball</text>
+ <text x="380" y="513" class="small" text-anchor="middle">Take Control → move → Release Control</text>
+ <rect x="746" y="178" width="414" height="356" rx="18" fill="#142a35" stroke="#36555e"/><text x="774" y="219" class="heading" text-anchor="start">Readiness comes first</text>
+ <circle cx="790" cy="282" r="15" fill="#205448" stroke="#80dfc5"/><path d="m783 282 5 5 9-10" fill="none" stroke="#c4f5dc" stroke-width="2.5"/><text x="818" y="290" class="small" text-anchor="start">Compatible Character</text><circle cx="790" cy="341" r="15" fill="#205448" stroke="#80dfc5"/><path d="m783 341 5 5 9-10" fill="none" stroke="#c4f5dc" stroke-width="2.5"/><text x="818" y="349" class="small" text-anchor="start">Valid target assignment</text><circle cx="790" cy="400" r="15" fill="#205448" stroke="#80dfc5"/><path d="m783 400 5 5 9-10" fill="none" stroke="#c4f5dc" stroke-width="2.5"/><text x="818" y="408" class="small" text-anchor="start">Supported Animation</text>
+ <rect x="774" y="471" width="358" height="32" rx="16" fill="#20463f" stroke="#417b66"/><text x="953" y="494" class="small accent" text-anchor="middle">Then run a supported Action</text>
+<rect x="40" y="562" width="1120" height="44" rx="12" fill="#173b32" stroke="#396c59"/>
+<text x="60" y="591" class="body accent" text-anchor="start">A selected target alone does not make every Action available. Check readiness in the guide.</text>
+<text x="40" y="629" class="small" text-anchor="start">Conceptual illustration · use the guide for current controls and supported behavior.</text>
 </svg>

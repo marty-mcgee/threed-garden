@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
- - [v0.31.8 - ThreeD: Movable Multimedia Overlay and Playback Controls (prepared for production release)](v0.31.8.md)
+ - [v0.31.9 - Learn: Guide Illustrations (prepared for production release)](v0.31.9.md)
+
+ - [v0.31.8 - ThreeD: Movable Multimedia Overlay and Playback Controls (Developer-confirmed production release)](v0.31.8.md)
 
  - [v0.31.7 - ThreeD: Guest Weather and Metric Readings (prepared for production release)](v0.31.7.md)
 

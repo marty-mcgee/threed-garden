@@ -1,72 +1,129 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="640" viewBox="0 0 1200 640" role="img" aria-labelledby="title description">
-<title id="title">One reusable Model. Many placements.</title>
-<desc id="description">Use the Model Library to add an instance; use Project Assets to select an existing one. Moving a placed instance preserves the reusable catalog Model.</desc>
+<title id="title">One Model. Your placements.</title>
+<desc id="description">One House Model from the Library supplies two separate Project instances on a shared ground plane. Cyan selection and transform handles identify the second instance. Each placement has its own position, rotation and scale.</desc>
 <defs>
-<linearGradient id="background" x2="1" y2="1">
-<stop stop-color="#112d32"/>
-<stop offset="1" stop-color="#0b1424"/>
-</linearGradient>
-<pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-<rect width="20" height="20" fill="#102331"/>
-<path d="M20 0H0V20" fill="none" stroke="#244552" stroke-width=".7"/>
-</pattern>
-</defs>
-<g font-family="Segoe UI, Arial, sans-serif">
-<rect x="1" y="1" width="1198" height="638" rx="24" fill="url(#background)" stroke="#355661"/>
-<path d="M40 34L72 34" fill="none" stroke="#67d4b3" stroke-width="4" />
-<text x="85" y="40" fill="#67d4b3" font-size="14" font-weight="600">THREED APP / VISUAL GUIDE</text>
-<text x="40" y="98" fill="#eef8f6" font-size="36" font-weight="700">One reusable Model. Many placements.</text>
-<text x="40" y="134" fill="#afc8cb" font-size="19" font-weight="400">Use the Model Library to add an instance; use Project Assets to select an existing one.</text>
-<rect x="40" y="181" width="320" height="328" rx="18" fill="#122832" stroke="#355661"/>
-<text x="62" y="216" fill="#67d4b3" font-size="23" font-weight="600">Model Library</text>
-<g transform="translate(64 236) scale(1.4)">
-<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<path d="m16 2 13 8v15l-13 7L3 25V10zM3 10l13 8 13-8M16 18v14M9 6l13 8"/>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#102b30"/>
+      <stop offset="1" stop-color="#0c1425"/>
+    </linearGradient>
+    <linearGradient id="project" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#173b3f"/>
+      <stop offset="1" stop-color="#11242f"/>
+    </linearGradient>
+    <linearGradient id="ground" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#3b8069"/>
+      <stop offset="1" stop-color="#205044"/>
+    </linearGradient>
+    <pattern id="plan-grid" width="22" height="22" patternUnits="userSpaceOnUse">
+      <path d="M22 0H0V22" fill="none" stroke="#1e3e52" stroke-width="1"/>
+    </pattern>
+    <pattern id="scene-grid" width="44" height="44" patternUnits="userSpaceOnUse">
+      <path d="M44 0H0V44" fill="none" stroke="#438775" stroke-width="1" opacity=".24"/>
+    </pattern>
+    <marker id="arrow" viewBox="0 0 12 12" refX="8" refY="6" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="m3 2 5 4-5 4" fill="none" stroke="#74ddc3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+    <g id="tree">
+      <path d="M0 2V38" stroke="#b99569" stroke-width="7" stroke-linecap="round"/>
+      <ellipse cx="3" cy="-4" rx="25" ry="29" fill="#68b78b"/>
+      <ellipse cx="-9" cy="-12" rx="19" ry="23" fill="#92d39b"/>
+      <path d="M0 5V-19M0-2l-10-8M0-8l11-8" fill="none" stroke="#438b65" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <g id="bench">
+      <path d="M-23 7v17m40-22v17" stroke="#99b7b5" stroke-width="5" stroke-linecap="round"/>
+      <path d="m-30-3 45-17 16 9-45 18z" fill="#d7af78"/>
+      <path d="m-30-3 16 10v7L-30 4z" fill="#9c784e"/>
+      <path d="m-27-17 43-16v10l-43 16z" fill="#e4bd88"/>
+      <path d="m-25-8-2-17M17-23v-12" fill="none" stroke="#99b7b5" stroke-width="4"/>
+    </g>
+    <g id="house">
+      <path d="m-68-4 78 42v76l-78-42z" fill="#d2e4da"/>
+      <path d="m10 38 88-47v76l-88 47z" fill="#8fb5ac"/>
+      <path d="m-68-4 39-23 39 65z" fill="#e4eee7"/>
+      <path d="m-31-29 96-51 45 69-96 51z" fill="#354b60"/>
+      <path d="m-76-8 96-51 45-21-96 51z" fill="#547285"/>
+      <path d="m-31-29 96-51m-96 51 45 69" fill="none" stroke="#718b99" stroke-width="2"/>
+      <path d="m-18 48 18 10v48l-18-10z" fill="#406767"/>
+      <path d="m-51 22 23 13v24l-23-13z" fill="#2c686e" stroke="#edf5ed" stroke-width="4"/>
+      <path d="m36 39 32-17v28L36 67z" fill="#2c686e" stroke="#dbece2" stroke-width="4"/>
+      <path d="m52 30 0 28M36 53l32-17" fill="none" stroke="#dbece2" stroke-width="3"/>
+    </g>
+
+
+<g id="plan">
+ <rect x="-139" y="-91" width="278" height="182" rx="8" fill="#102331" stroke="#36576a"/>
+ <rect x="-139" y="-91" width="278" height="182" rx="8" fill="url(#plan-grid)"/>
+ <path d="M-105-61H105V61H40M-5 61H-105V-61" fill="none" stroke="#d2e7dc" stroke-width="5"/>
+ <path d="M-5 61V16a45 45 0 0 1 45 45" fill="none" stroke="#80dfc5" stroke-width="2"/>
+ <path d="M30-61H77" stroke="#6ee5ed" stroke-width="7"/>
+ <path d="M-105-61H105" stroke="#6ee5ed" stroke-width="3"/>
+ <circle cx="-105" cy="-61" r="5" fill="#6ee5ed"/><circle cx="105" cy="-61" r="5" fill="#6ee5ed"/>
 </g>
+<g id="room">
+ <path d="m-130 40 130-75 130 75-130 75z" fill="#bca47e" stroke="#d2ba95"/>
+ <path d="M-130 40V-70L0-145V-35z" fill="#d0e5dc"/>
+ <path d="M0-145 130-70V40L0-35z" fill="#8eb5a9"/>
+ <path d="m-100-59 59-34v53l-59 34z" fill="#24666b" stroke="#edf8f0" stroke-width="5"/>
+ <path d="m-70-76 0 54m-30-10 59-34" fill="none" stroke="#edf8f0" stroke-width="3"/>
+ <path d="m74-19 35 20v53L74 34z" fill="#315a59" stroke="#e2eee5" stroke-width="4"/>
+ <path d="m-130 40 130 75 130-75" fill="none" stroke="#7be3ce" stroke-width="4"/>
 </g>
-<text x="128" y="266" fill="#eef8f6" font-size="24" font-weight="400">House Model</text>
-<rect x="64" y="302" width="126" height="34" rx="17" fill="#183a3c" stroke="#67d4b3"/>
-<text x="78" y="325" fill="#67d4b3" font-size="16" font-weight="400">Inspect</text>
-<rect x="64" y="350" width="126" height="34" rx="17" fill="#183a3c" stroke="#67d4b3"/>
-<text x="78" y="373" fill="#67d4b3" font-size="16" font-weight="400">Place</text>
-<text x="64" y="431" fill="#afc8cb" font-size="18" font-weight="400">Reusable geometry,</text>
-<text x="64" y="459" fill="#afc8cb" font-size="18" font-weight="400">Files and Materials.</text>
-<path d="M374 344L418 344" fill="none" stroke="#67d4b3" stroke-width="3" />
-<path d="m408 337 10 7-10 7" fill="none" stroke="#67d4b3" stroke-width="3"/>
-<rect x="432" y="181" width="728" height="328" rx="18" fill="#122832" stroke="#355661"/>
-<text x="454" y="216" fill="#67d4b3" font-size="23" font-weight="600">Project Assets / placed instances</text>
-<g transform="translate(455 320) scale(0.9)">
-<path d="m0 90 112-60 113 62-112 63z" fill="#24594e" stroke="#5b9d86"/>
-<path d="M30 72v-68l52 29v70z" fill="#d0e3dc"/>
-<path d="m82 33 58-32v69l-58 33z" fill="#8fb8ad"/>
-<path d="m30 4 23-38 29 67z" fill="#e4efe8"/>
-<path d="m53-34 58-32 29 67-58 32z" fill="#3f6072" stroke="#73b5c1"/>
-<path d="m62 62 13 7v29l-13-7z" fill="#376468"/>
-<path d="m38 26 15 8v18l-15-8zM95 40l27-15v22L95 62z" fill="#2c656c" stroke="#ecf7ed" stroke-width="3"/>
-<path d="M108 33v21M95 51l27-15" stroke="#ecf7ed" stroke-width="2"/>
+<g id="map">
+ <rect x="-135" y="-83" width="270" height="166" rx="10" fill="#285345" stroke="#6fae87"/>
+ <path d="M-124-70h62v58h-62zm179 18h66v65H55zM-109 36h99v32h-99zM38 42h72v29H38z" fill="#406d50" stroke="#74986a"/>
+ <path d="M-127 11H127M10-83V83" stroke="#bda67b" stroke-width="15"/>
+ <path d="M-127 11H127M10-83V83" stroke="#e0cba4" stroke-width="2" stroke-dasharray="8 8"/>
+ <circle cx="-39" cy="-31" r="14" fill="#77d6bc" stroke="#d3f3e5" stroke-width="2"/>
+ <path d="m-47-29 8 16 8-16" fill="#77d6bc"/>
 </g>
-<g transform="translate(776 320) scale(0.9)">
-<path d="m0 90 112-60 113 62-112 63z" fill="#24594e" stroke="#5b9d86"/>
-<path d="M30 72v-68l52 29v70z" fill="#d0e3dc"/>
-<path d="m82 33 58-32v69l-58 33z" fill="#8fb8ad"/>
-<path d="m30 4 23-38 29 67z" fill="#e4efe8"/>
-<path d="m53-34 58-32 29 67-58 32z" fill="#3f6072" stroke="#73b5c1"/>
-<path d="m62 62 13 7v29l-13-7z" fill="#376468"/>
-<path d="m38 26 15 8v18l-15-8zM95 40l27-15v22L95 62z" fill="#2c656c" stroke="#ecf7ed" stroke-width="3"/>
-<path d="M108 33v21M95 51l27-15" stroke="#ecf7ed" stroke-width="2"/>
+<g id="person">
+ <ellipse cy="61" rx="29" ry="10" fill="#0b1b24" opacity=".6"/>
+ <path d="m-12 21-5 38m29-38 5 38" fill="none" stroke="#899cae" stroke-width="12" stroke-linecap="round"/>
+ <path d="M-20-13q20-15 40 0v40h-40z" fill="#63b999"/>
+ <path d="m-22-8-10 30m54-30 13 28" fill="none" stroke="#dfbb97" stroke-width="9" stroke-linecap="round"/>
+ <circle cy="-35" r="17" fill="#dfbb97"/>
+ <path d="M-19-38q2-26 34-12l5 15-40-3z" fill="#b89a6b"/>
 </g>
-<rect x="464" y="447" width="248" height="34" rx="17" fill="#183a3c" stroke="#75e3ed"/>
-<text x="478" y="470" fill="#75e3ed" font-size="16" font-weight="400">House · front garden</text>
-<rect x="792" y="447" width="248" height="34" rx="17" fill="#183a3c" stroke="#75e3ed"/>
-<text x="806" y="470" fill="#75e3ed" font-size="16" font-weight="400">House · courtyard</text>
-<text x="672" y="235" fill="#afc8cb" font-size="18" font-weight="400">Independent position and scale</text>
-<rect x="40" y="548" width="1120" height="52" rx="12" fill="#123831" stroke="#2d6557"/>
-<g transform="translate(56 561) scale(0.72)">
-<g fill="none" stroke="#67d4b3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-<path d="M16 8Q8 2 2 6v22q6-4 14 1 8-5 14-1V6q-6-4-14 2v21"/>
+<g id="save" fill="none" stroke="#9de5ca" stroke-width="4" stroke-linejoin="round">
+ <path d="M-34-40h50l18 18v62h-68zM-20-40v24H12v-24M-20 40V7h40v33"/>
 </g>
+<g id="file">
+ <path d="M-32-43h42l22 22v64h-64z" fill="#1b3b46" stroke="#8acdbd" stroke-width="3"/>
+ <path d="M10-43v22h22M-18-5h35M-18 9h35M-18 23H6" fill="none" stroke="#8acdbd" stroke-width="3"/>
 </g>
-<text x="94" y="581" fill="#d2e8df" font-size="19" font-weight="400">Moving a placed instance preserves the reusable catalog Model.</text>
-<text x="40" y="624" fill="#afc8cb" font-size="13" font-weight="400">Conceptual illustration · follow the guide for the current controls and supported behavior.</text>
+<g id="album">
+ <rect x="-68" y="-68" width="136" height="136" rx="8" fill="#264a4d" stroke="#80c4ad" stroke-width="2"/>
+ <circle r="53" fill="#0d202a" stroke="#598b83" stroke-width="3"/>
+ <circle r="39" fill="none" stroke="#375a60"/><circle r="28" fill="none" stroke="#375a60"/>
+ <circle r="18" fill="#d6b16d"/><circle r="5" fill="#18343b"/>
+ <path d="m-60-45 21-15m79 113 20-16" stroke="#80dfc5" stroke-width="3"/>
 </g>
+<g id="lock" fill="none" stroke="#efb6a7" stroke-width="4" stroke-linejoin="round">
+ <rect x="-25" y="-7" width="50" height="42" rx="7"/><path d="M-16-7v-17a16 16 0 0 1 32 0v17M0 8v12"/>
+</g>
+<style>
+ text { font-family: "Segoe UI", Arial, sans-serif; }
+ .title { fill: #f1f8f5; font-size: 38px; font-weight: 700; letter-spacing: -.5px; }
+ .heading { fill: #eff8f4; font-size: 23px; font-weight: 600; }
+ .body { fill: #b8d0d1; font-size: 20px; }
+ .small { fill: #b3ced0; font-size: 18px; }
+ .accent { fill: #8ce3c8; }
+ .value { fill: #e8f7ee; font-size: 30px; font-weight: 600; }
+</style></defs>
+<rect x="1" y="1" width="1198" height="638" rx="24" fill="url(#background)" stroke="#36555e"/>
+<path d="M40 35h32" stroke="#80dfc5" stroke-width="4" stroke-linecap="round"/>
+<text x="86" y="42" class="small accent" text-anchor="start">THREED APP / LEARN</text>
+<text x="40" y="100" class="title" text-anchor="start">One Model. Your placements.</text>
+<text x="40" y="138" class="body" text-anchor="start">A reusable catalog Model can appear more than once in a Project.</text>
+<rect x="40" y="178" width="300" height="356" rx="18" fill="#142a35" stroke="#36555e"/><text x="66" y="219" class="heading" text-anchor="start">Model Library</text><text x="66" y="250" class="small" text-anchor="start">Reusable House Model</text>
+ <g transform="translate(185 410) scale(0.75)"><path d="m-150 0 160-80 150 80-160 85z" fill="url(#ground)" stroke="#68ab8d" stroke-width="2"/></g><g transform="translate(170 342) scale(0.97)"><use href="#house"/></g><rect x="92" y="480" width="196" height="32" rx="16" fill="#20463f" stroke="#417b66"/><text x="190" y="503" class="small accent" text-anchor="middle">Catalog source</text>
+ <path d="M348 354h47" fill="none" stroke="#74ddc3" stroke-width="3" marker-end="url(#arrow)"/><rect x="412" y="178" width="748" height="356" rx="18" fill="url(#project)" stroke="#589f91"/>
+ <text x="439" y="219" class="heading" text-anchor="start">Project instances</text><text x="439" y="250" class="small" text-anchor="start">Independent placement identities</text>
+ <g transform="translate(623 389) scale(1)"><path d="m-150 0 160-80 150 80-160 85z" fill="url(#ground)" stroke="#68ab8d" stroke-width="2"/></g><g transform="translate(972 389) scale(1)"><path d="m-150 0 160-80 150 80-160 85z" fill="url(#ground)" stroke="#68ab8d" stroke-width="2"/></g><g transform="translate(600 335) scale(0.78)"><use href="#house"/></g><g transform="translate(950 323) scale(1.05)"><use href="#house"/></g>
+ <path d="M863 235h201v217H863z" fill="none" stroke="#70e5ed" stroke-width="2" stroke-dasharray="5 5"/>
+ <path d="M982 439v-45m0 45 45 18m-45-18-43 22" fill="none" stroke="#70e5ed" stroke-width="3"/>
+ <text x="623" y="514" class="heading" text-anchor="middle">Guest house</text><text x="972" y="514" class="heading" text-anchor="middle">Main house</text>
+<rect x="40" y="562" width="1120" height="44" rx="12" fill="#173b32" stroke="#396c59"/>
+<text x="60" y="591" class="body accent" text-anchor="start">Use DetailsCard for a placed Model. Changing its placement keeps the catalog Model reusable.</text>
+<text x="40" y="629" class="small" text-anchor="start">Conceptual illustration · use the guide for current controls and supported behavior.</text>
 </svg>

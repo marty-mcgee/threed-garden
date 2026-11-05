@@ -16,6 +16,12 @@ The starter source is [starter-guides.ts](../../src/libraries/data/learn/starter
 
 There is no seed on startup, schema creation, page load or public read, and no static fallback that makes an empty or unavailable database appear populated. The public page reports loading, empty and retryable error states.
 
+## Public Learn navigation
+
+The main `/learn` page leads with **Browse guides** and **Start your first Project**, followed by a separate garden demo link. Topic shortcuts lead to first-Project instructions, guides, troubleshooting and App information. **Open Project workspace** opens the existing workspace; creation and Save still require the appropriate account and ownership. Each published guide has a distinct **Read guide** button.
+
+The guide library defaults to 20 records per page, so the fourteen starter guides fit together when published. Visitors can choose 20, 40 or 60; pagination controls appear only when needed. Search, publication checks and legacy guide anchors retain their existing behavior.
+
 ## Visual guides
 
 The [Learn Art Image Development Requirement](LEARN_ART_IMAGE_REQUIREMENT.md) uses captures of actual App screens to document the interface. Created illustrations are supporting material only. It covers capture context, accuracy, accessibility and shared presentation. The existing topic SVGs below remain conceptual support illustrations; they are not actual screen captures.
@@ -27,6 +33,27 @@ The SVG assets live in [public/learn/illustrations](../../public/learn/illustrat
 Existing database records gain illustrations through the reader; no SQL, starter import or content rewrite is needed. Database Markdown remains authoritative. Only recognized topic slugs receive automatic illustrations, after a guide has loaded successfully. Custom slugs retain their authored content without an unrelated automatic image. Changing a recognized slug changes its automatic topic selection.
 
 Authors can include an image through ordinary Markdown, for example `![Connected walls, finished floor and 3D room](/learn/illustrations/draw-room.svg)`. Referencing that built-in image in the body suppresses its automatic copy. Other Markdown images remain in their authored positions. Repository Markdown needs a relative path such as `../../public/learn/illustrations/draw-room.svg` because GitHub and the App serve files differently. Keep raw HTML disabled.
+
+### Illustration coverage
+
+Each repository starter guide has one supporting SVG through the existing topic mapping. These drawings explain concepts; they do not replace actual App screen captures. Custom database guides require an appropriate authored image or an explicitly reviewed topic mapping.
+
+| Guide / artwork | Learning objective |
+| --- | --- |
+| [Draw a room](../../public/learn/illustrations/draw-room.svg) | Connect walls, finish a floor and inspect the same architecture in the Scene. |
+| [Add a Model](../../public/learn/illustrations/add-model.svg) | Distinguish a reusable catalog Model from independent Project placements. |
+| [Object properties](../../public/learn/illustrations/object-properties.svg) | Select before editing; changing measurement units does not resize geometry. |
+| [View modes](../../public/learn/illustrations/view-modes.svg) | Compare Design, 3D, 2D geographic map and Combined in toolbar order. |
+| [Save and reopen](../../public/learn/illustrations/save-reopen.svg) | Save explicitly, check the outcome and verify the reopened Project. |
+| [Design JSON](../../public/learn/illustrations/design-json.svg) | Review architecture import scope while preserving Project Model placements. |
+| [Model Files](../../public/learn/illustrations/model-files.svg) | Distinguish geometry/materials from Library and Top View images. |
+| [Ground Map](../../public/learn/illustrations/ground-map.svg) | Align a flat reference image independently of placed objects. |
+| [Character Actions](../../public/learn/illustrations/character-actions.svg) | Match Character, target and readiness before running a supported Action. |
+| [Scenarios and Simulations](../../public/learn/illustrations/scenarios-simulations.svg) | Separate guidance from Action execution and captured Results. |
+| [Multimedia and Lyrics](../../public/learn/illustrations/multimedia-lyrics.svg) | Understand Album Track order and independent Lyrics eligibility. |
+| [Admin navigation](../../public/learn/illustrations/admin-navigation.svg) | Recognize the four peer Top Modules and eligible Project assignments. |
+| [App Settings](../../public/learn/illustrations/app-settings.svg) | Distinguish shared appearance, account preferences and browser-local state. |
+| [Manage Users](../../public/learn/illustrations/manage-users.svg) | Recognize Super Admin account management and protected soft deletion. |
 
 ## Authoring and publishing
 
