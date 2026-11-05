@@ -2,7 +2,9 @@
 
 ## Current checkpoint
 
-November 5: prepared [v0.31.11 - ThreeD: STL Parts and Assembly Placement](docs/releases/v0.31.11.md) after Developer acceptance of import and the corrected placement workflow. Package/root lock are 0.31.11; no dependency or schema change. Fresh isolated TypeScript, all 107 offline CI tasks and the guarded production build pass. Prior follow-up entries below preserve historical evidence; production remains unconfirmed for this checkpoint. Changes remain unstaged.
+November 5: prepared the documentation-only checkpoint `docs: v0.31.11 - ThreeD: STL Import as Assembly Group + Project Placement`. README includes the supplied local soccer Project screenshot near the top, with accurate alt text/caption and existing images retained. Source/copy hashes match; all 548 documentation paths/anchors and whitespace checks pass. Version remains 0.31.11; changes are unstaged and documentation publication is pending.
+
+November 5: Developer confirmed [v0.31.11 - ThreeD: STL Import as Assembly Group + Project Placement](docs/releases/v0.31.11.md) released to production after acceptance of import and corrected placement. Package/root lock remain 0.31.11; no dependency or schema change. Fresh isolated TypeScript, all 107 offline CI tasks and the guarded production build passed during preparation. Documentation follow-up began with a clean worktree at HEAD 738f076e; exact deployed commit and independent post-deployment checks are not established. Earlier entries below preserve historical evidence. Documentation changes remain unstaged.
 
 November 5: Developer confirmed STL Assembly import works, then reported Project placement SQLSTATE 42P10. Removed the new placement path's conflict-index dependency: under its existing Project transaction/lock, it reactivates owned assignments while preserving configuration and inserts missing assignments. Focused mocked placement checks pass, including reuse and retry; actual placement acceptance remains pending.
 

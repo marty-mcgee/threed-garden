@@ -16,6 +16,10 @@ The application is developed in the **ThreeD Garden** repository and is availabl
 
 [Latest features](#latest-features) · [Why build with ThreeD App?](#why-build-with-threed-app) · [Structural basics](#structural-basics) · [Modules](#modules)
 
+![ThreeD Soccer Project showing Farmer Kate selected in DetailsCard, Project Assets, the TRADE Album player paused, and the soccer field in the 3D Scene and 2D Design plan](docs/images/v0.31.11/project-soccer-character-multimedia.png)
+
+*Captured November 5, 2026 in the local ThreeD App: explore a soccer Project with Character controls, Project Multimedia, and linked 3D Scene and 2D Design views.*
+
 ![ThreeD App Project workspace with the Model Library, locked Model DetailsCard, 3D Scene, and linked 2D Design plan](docs/images/v0.30.2/project-design-workspace.png)
 
 *ThreeD App v0.30.2, captured November 2, 2026: browse reusable Models, inspect a locked placement, and work with a linked 3D Scene and 2D Design plan.*
