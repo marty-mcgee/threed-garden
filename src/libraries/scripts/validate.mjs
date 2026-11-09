@@ -180,7 +180,7 @@ const tasks = {
   'threed-model-builder': [node('validate-threed-model-builder.cjs'), node('validate-threed-model-builder-registration.cjs'), node('validate-threed-model-builder-ui.cjs')],
   'threed-model-builder-browser': [node('validate-threed-model-builder-browser.cjs')],
   'threed-model-pbr': [node('validate-model-pbr.cjs')],
-  'threed-model-direct-upload': [ts('validate-threed-model-direct-upload.mts')],
+  'threed-model-direct-upload': [ts('validate-threed-model-direct-upload.mts'), node('validate-model-upload-sdk.cjs')],
   'threed-stl-import': [
     ['node', '--import', 'tsx', `${scripts}/validate-stl-import.mts`],
     node('validate-stl-import-ui.cjs'),
@@ -190,6 +190,10 @@ const tasks = {
     ['node', '--import', 'tsx', `${scripts}/validate-stl-parts-import.mts`],
     node('validate-stl-assembly-import-client.cjs'),
     node('validate-stl-assembly-import-ui.cjs'),
+  ],
+  'threed-assembly-json-import': [
+    ['node', '--import', 'tsx', `${scripts}/validate-assembly-json-import.mts`],
+    node('validate-assembly-json-import-ui.cjs'),
   ],
   'threed-character-editor': [node('validate-threed-character-editor.cjs'), node('validate-character-admin-conventions.cjs')],
   'threed-model-file-requirements': [node('validate-threed-model-file-requirements.cjs')],
@@ -273,6 +277,7 @@ const ci = [
   'threed-model-direct-upload',
   'threed-stl-import',
   'threed-stl-assembly-import',
+  'threed-assembly-json-import',
   'threed-character-editor',
   'threed-model-file-requirements',
   'model-thumbnail-attachment',

@@ -13,6 +13,8 @@ import {
   parseThreeDGlbJsonChunk,
 } from '@/libraries/services/threed/models/gltf-runtime-inspection-core';
 import { inspectThreeDFbxStructure } from '@/libraries/services/threed/models/fbx-runtime-inspection-server';
+import { verifyThreeDDirectUpload } from '@/libraries/services/threed/models/model-direct-upload-server';
+import { MAX_THREED_MULTIPART_FILE_BYTES } from '@/libraries/services/threed/models/model-upload-policy-core';
 
 export const runtime = 'nodejs';
 
@@ -165,6 +167,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    let signedPath: string | undefined;
+    const authorization = formData.get('authorization');
+    if (authorization !== null) {
+      const secret = process.env.BLOB_READ_WRITE_TOKEN;
+      if (!secret) return NextResponse.json({ success: false, error: 'Model storage is not configured.' }, { status: 503 });
+      try {
+        const receipt = verifyThreeDDirectUpload(authorization, session.user.id, secret);
+        if (receipt.fileName !== file.name || receipt.fileSize !== file.size || receipt.modelType !== modelType || file.size > MAX_THREED_MULTIPART_FILE_BYTES) {
+          throw new Error('Upload file does not match its authorization.');
+        }
+        signedPath = receipt.pathname;
+      } catch {
+        return NextResponse.json({ success: false, error: 'Upload authorization does not match this account or file. Choose the file again.' }, { status: 400 });
+      }
+    }
+
     let analysis;
     try {
       analysis = await inspectUploadedModel(file, modelType);
@@ -175,7 +193,7 @@ export async function POST(request: NextRequest) {
       }, { status: 422 });
     }
 
-    const path = createThreeDBlobPath(session.user.id, 'models', file.name, crypto.randomUUID());
+    const path = signedPath ?? createThreeDBlobPath(session.user.id, 'models', file.name, crypto.randomUUID());
 
     const blob = await put(path, file, { access: 'public', addRandomSuffix: false, contentType: { glb: 'model/gltf-binary', gltf: 'model/gltf+json', fbx: 'application/octet-stream', obj: 'model/obj', usdz: 'model/vnd.usdz+zip' }[ext] });
 

@@ -1,6 +1,6 @@
 'use client';
 import { upload } from '@vercel/blob/client';
-import { threeDModelUploadPolicy } from './model-upload-policy-core';
+import { MAX_THREED_MULTIPART_FILE_BYTES, threeDModelUploadPolicy } from './model-upload-policy-core';
 import type { completeThreeDDirectUpload } from './model-direct-upload-server';
 
 export type ThreeDPrimaryUploadResult = Awaited<ReturnType<typeof completeThreeDDirectUpload>>;
@@ -23,12 +23,43 @@ export async function uploadThreeDPrimaryFile(file: File, options: ThreeDPrimary
   const authorized = await json({ action: 'authorize', fileName: metadata.fileName, fileSize: metadata.fileSize });
   options.signal?.throwIfAborted();
   options.onProgress?.(0, 'uploading');
-  let blob: Awaited<ReturnType<typeof upload>>;
-  try { blob = await upload(authorized.pathname, file, { access: 'public', contentType: metadata.contentType,
-    handleUploadUrl: ROUTE, clientPayload: authorized.authorization, multipart: true, abortSignal: options.signal,
-    onUploadProgress: ({ percentage }) => options.onProgress?.(percentage, 'uploading') }); }
-  catch { throw new ThreeDPrimaryUploadError(options.signal?.aborted ? 'Model upload cancelled. Your previous draft is retained.'
-    : 'Model storage upload failed. Your previous draft is retained. Retry the upload.'); }
+  let blob: { url: string };
+  // Generated Assembly parts are normally a few KiB. Use the established
+  // authenticated file-form route with the same signed destination and final
+  // stored-byte verification, within its safe server-transfer budget.
+  if (file.size <= MAX_THREED_MULTIPART_FILE_BYTES) {
+    const body = new FormData();
+    body.append('file', file);
+    body.append('authorization', authorized.authorization);
+    const response = await fetch('/api/threed/models/upload', {
+      method: 'POST',
+      cache: 'no-store',
+      body,
+      signal: options.signal,
+    });
+    const reply = await response.json().catch(() => null);
+    options.signal?.throwIfAborted();
+    if (!response.ok || !reply?.success || !reply.data) throw new ThreeDPrimaryUploadError(reply?.error || 'Model file upload failed. Your draft is retained.');
+    blob = reply.data;
+  } else {
+    try {
+      blob = await upload(authorized.pathname, file, {
+        access: 'public',
+        contentType: metadata.contentType,
+        handleUploadUrl: ROUTE,
+        clientPayload: authorized.authorization,
+        // Files are bounded to 32 MiB. One direct PUT retains the SDK's exact-length
+        // header; its multipart control requests omit that header in this SDK.
+        multipart: false,
+        abortSignal: options.signal,
+        onUploadProgress: ({ percentage }) => options.onProgress?.(percentage, 'uploading'),
+      });
+    } catch {
+      throw new ThreeDPrimaryUploadError(options.signal?.aborted
+        ? 'Model upload cancelled. Your previous draft is retained.'
+        : 'Model storage upload failed. Your previous draft is retained. Retry the upload.');
+    }
+  }
   try {
     options.signal?.throwIfAborted();
     options.onProgress?.(100, 'verifying');

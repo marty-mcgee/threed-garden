@@ -60,13 +60,27 @@ export function createStlAssemblyImportProgress(
   conversion: StlPartsConversion,
 ): StlAssemblyImportProgress {
   if (conversion.omittedIslandIds.length) throw new Error('Review all detected islands before importing this Assembly.');
-  const stem = sourceName.replace(/\.stl$/i, '').replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 120) || 'stl-assembly';
+  return createAssemblyModelImportProgress(ownerId, name, sourceName, conversion.parts);
+}
+
+/** Shared reviewed-geometry save path; JSON and STL both create ordinary owned Models. */
+export function createAssemblyModelImportProgress(
+  ownerId: string,
+  name: string,
+  sourceName: string,
+  parts: Array<{
+    label: string;
+    bytes: ArrayBuffer;
+    position: [number, number, number];
+  }>,
+): StlAssemblyImportProgress {
+  const stem = sourceName.replace(/\.(stl|json)$/i, '').replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 120) || 'assembly';
   const progress: StlAssemblyImportProgress = {
     id: crypto.randomUUID(),
     ownerId,
     name: name.trim(),
     sourceName,
-    parts: conversion.parts.map((part, index) => {
+    parts: parts.map((part, index) => {
       const file = new File([part.bytes], `${stem}-part-${index + 1}.glb`, { type: 'model/gltf-binary' });
       threeDModelUploadPolicy(file.name, file.size);
       return {

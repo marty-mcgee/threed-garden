@@ -19,6 +19,7 @@ async function respond(operation: (ownerId: string) => Promise<unknown>) {
       const current = cause as { code?: string; cause?: unknown };
       if (current.code === '42P01' || current.code === '42703') return NextResponse.json({ success: false, error: 'Assembly database setup is incomplete. Your draft is retained; export a copy before leaving.' }, { status: 503 });
       if (current.code === '23505' || current.code === '23503') return NextResponse.json({ success: false, error: 'Assembly references changed. Your draft is retained; export it before reopening the saved Assembly.' }, { status: 409 });
+      if (current.code === '42883') return NextResponse.json({ success: false, error: 'Assembly database operation failed because database types are incompatible. Check the Album cleanup trigger; no deletion was committed.' }, { status: 503 });
       cause = current.cause;
     }
     return NextResponse.json({ success: false, error: 'Could not access Assembly Groups. Your draft is retained. Please retry.' }, { status: 500 });

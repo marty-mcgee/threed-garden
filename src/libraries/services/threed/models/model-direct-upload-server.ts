@@ -44,12 +44,32 @@ export interface DirectUploadObject {
   pathname: string; url: string; size: number; contentType: string;
 }
 
+function mediaType(value: string) {
+  return typeof value === 'string' ? value.split(';', 1)[0].trim().toLowerCase() : '';
+}
+
 /** Reads only a provider-verified URL; request and response bytes remain bounded. */
 export async function completeThreeDDirectUpload(receipt: ThreeDDirectUploadReceipt, object: DirectUploadObject, request: typeof fetch = fetch) {
-  const url = new URL(object.url);
-  if (object.pathname !== receipt.pathname || object.size !== receipt.fileSize || object.contentType !== receipt.contentType
-    || url.protocol !== 'https:' || !url.hostname.endsWith('.blob.vercel-storage.com') || url.search || url.hash
-    || decodeURIComponent(url.pathname.slice(1)) !== receipt.pathname) throw new Error('Uploaded Model metadata could not be verified. Retry verification.');
+  if (object.pathname !== receipt.pathname) throw new Error('Uploaded Model storage path differs from its authorized destination. Retry verification.');
+  // A zero reported by metadata is not proof of an empty body. In that case,
+  // the bounded read below must establish the exact signed size and valid bytes.
+  if (object.size !== 0 && object.size !== receipt.fileSize) {
+    throw new Error(`Uploaded Model size differs: expected ${receipt.fileSize} bytes, storage reports ${Number.isSafeInteger(object.size) ? object.size : 'an invalid size'}. Retry verification.`);
+  }
+  if (mediaType(object.contentType) !== mediaType(receipt.contentType)) {
+    const reported = typeof object.contentType === 'string' ? object.contentType.slice(0, 120) : '(missing)';
+    throw new Error(`Uploaded Model content type differs: expected ${receipt.contentType}, storage reports ${reported}. Retry verification.`);
+  }
+  let url: URL;
+  try { url = new URL(object.url); }
+  catch { throw new Error('Uploaded Model storage returned an invalid URL. Retry verification.'); }
+  if (url.protocol !== 'https:' || !url.hostname.endsWith('.blob.vercel-storage.com') || url.search || url.hash) {
+    throw new Error('Uploaded Model URL is not an authorized HTTPS Blob URL. Retry verification.');
+  }
+  let pathname: string;
+  try { pathname = decodeURIComponent(url.pathname.slice(1)); }
+  catch { throw new Error('Uploaded Model URL path contains invalid encoding. Retry verification.'); }
+  if (pathname !== receipt.pathname) throw new Error('Uploaded Model URL path differs from its authorized destination. Retry verification.');
   const response = await request(object.url, { cache: 'no-store', redirect: 'error', signal: AbortSignal.timeout(30_000) });
   if (!response.ok || !response.body || Number(response.headers.get('content-length')) > MAX_THREED_DIRECT_MODEL_BYTES) {
     await response.body?.cancel();
@@ -65,7 +85,7 @@ export async function completeThreeDDirectUpload(receipt: ThreeDDirectUploadRece
       chunks.push(new Uint8Array(next.value));
     }
   } catch (error) { await reader.cancel().catch(() => undefined); throw error; }
-  if (size !== receipt.fileSize) throw new Error('Uploaded Model byte size does not match the selected file.');
+  if (size !== receipt.fileSize) throw new Error(`Uploaded Model contains ${size} bytes; expected ${receipt.fileSize}. Re-upload the file.`);
   const file = new File(chunks, receipt.fileName, { type: receipt.contentType });
   if (receipt.modelType === 'glb' || receipt.modelType === 'gltf') {
     // Check actual provider bytes, not the browser's inventory or filename alone.

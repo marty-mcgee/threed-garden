@@ -6,6 +6,8 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
+- [v0.31.12 - ThreeD: JSON Assembly Import and Deletion Fix](v0.31.12.md)
+
  - [v0.31.11 - ThreeD: STL Import as Assembly Group + Project Placement (Developer-confirmed production release)](v0.31.11.md)
 
  - [v0.31.10 - ThreeD: STL Import as GLB Models (Developer-confirmed production release)](v0.31.10.md)

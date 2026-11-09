@@ -7,6 +7,10 @@ import * as server from '../services/threed/models/model-direct-upload-server.ts
 // @ts-expect-error Native offline validator requires explicit extensions.
 import * as policy from '../services/threed/models/model-upload-policy-core.ts';
 // @ts-expect-error Native offline validator requires explicit extensions.
+import * as blobPaths from '../services/threed/models/model-blob-paths.ts';
+// @ts-expect-error Native offline validator requires explicit extensions.
+import * as gltfInspection from '../services/threed/models/gltf-runtime-inspection-core.ts';
+// @ts-expect-error Native offline validator requires explicit extensions.
 import { triangleGltfFixture, encodeGlb } from './fixtures/gltf-bundle-fixtures.ts';
 // @ts-expect-error Native offline validator requires explicit extensions.
 import { validateBulkPrimary, validateBulkCompanion } from '../../components/admin/threed/models/model-bulk-preparation-core.ts';
@@ -60,6 +64,28 @@ await group('completion verifies provider key/type/size before any byte fetch', 
   assert.equal(result.analysis.status, 'analyzed'); assert.equal(result.analysis.meshCount, 1);
 });
 
+await group('completion identifies the failed metadata field and accepts equivalent media-type spelling', async () => {
+  const request = (async () => new Response(bytes)) as typeof fetch;
+  await assert.rejects(server.completeThreeDDirectUpload(receipt, { ...object, pathname: 'other' }, request), /storage path differs/);
+  await assert.rejects(server.completeThreeDDirectUpload(receipt, { ...object, size: 1 }, request), new RegExp(`expected ${bytes.length} bytes, storage reports 1`));
+  await assert.rejects(server.completeThreeDDirectUpload(receipt, { ...object, contentType: 'application/octet-stream' }, request), /content type differs: expected model\/gltf-binary, storage reports application\/octet-stream/);
+  await assert.rejects(server.completeThreeDDirectUpload(receipt, { ...object, url: 'https://example.invalid/file.glb' }, request), /not an authorized HTTPS Blob URL/);
+  await assert.rejects(server.completeThreeDDirectUpload(receipt, { ...object, url: object.url.replace('/primary/', '/other/') }, request), /URL path differs/);
+  const result = await server.completeThreeDDirectUpload(receipt, { ...object, contentType: 'Model/GLTF-Binary; charset=binary' }, request);
+  assert.equal(result.analysis.status, 'analyzed');
+});
+
+await group('zero provider metadata size requires exact valid stored bytes and never permits an empty upload', async () => {
+  const zeroMetadata = { ...object, size: 0 };
+  const valid = await server.completeThreeDDirectUpload(receipt, zeroMetadata, (async () => new Response(bytes)) as typeof fetch);
+  assert.equal(valid.fileSize, bytes.length);
+  assert.equal(valid.analysis.status, 'analyzed');
+  for (const data of [new Uint8Array(0), bytes.slice(0, -1), new Uint8Array(bytes.length + 1), new Uint8Array(bytes.length)]) {
+    await assert.rejects(server.completeThreeDDirectUpload(receipt, zeroMetadata, (async () => new Response(data)) as typeof fetch));
+  }
+  await assert.rejects(server.completeThreeDDirectUpload(receipt, zeroMetadata, (async () => new Response(new Uint8Array(0))) as typeof fetch), new RegExp(`contains 0 bytes; expected ${bytes.length}`));
+});
+
 await group('completion rejects truncated, oversized and structurally invalid actual bytes', async () => {
   for (const data of [bytes.slice(0, -1), new Uint8Array(bytes.length + 1), new Uint8Array(bytes.length)]) {
     await assert.rejects(server.completeThreeDDirectUpload(receipt, object, (async () => new Response(data)) as typeof fetch));
@@ -90,7 +116,7 @@ function load(file: string, deps: Record<string, unknown>, globals: Record<strin
   const exports: Record<string, any> = {};
   vm.runInNewContext(ts.transpileModule(readFileSync(file, 'utf8'), { compilerOptions: {
     module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022,
-  } }).outputText, { exports, Buffer, File, TextEncoder, TextDecoder, Uint8Array, AbortSignal, AbortController,
+  } }).outputText, { exports, Buffer, File, FormData, TextEncoder, TextDecoder, Uint8Array, AbortSignal, AbortController,
     Error, URL, console, crypto, ...globals, require(name: string) { assert.ok(name in deps, `Unexpected import: ${name}`); return deps[name]; } });
   return exports;
 }
@@ -127,9 +153,9 @@ await group('actual browser helper preflights before network, uploads directly a
   const calls: string[] = [], progress: string[] = []; let corrupt = false, cleanupFails = false;
   let abortAfterTransfer: AbortController | undefined;
   const client = load('src/libraries/services/threed/models/model-primary-upload-client.ts', {
-    './model-upload-policy-core': policy,
+    './model-upload-policy-core': { ...policy, MAX_THREED_MULTIPART_FILE_BYTES: 0 },
     '@vercel/blob/client': { upload: async (path: string, file: File, options: any) => {
-      calls.push('blob'); assert.equal(path, authorized.pathname); assert.equal(options.multipart, true);
+      calls.push('blob'); assert.equal(path, authorized.pathname); assert.equal(options.multipart, false);
       assert.equal(options.clientPayload, authorized.authorization); assert.ok(file instanceof File);
       options.onUploadProgress({ percentage: 50 }); abortAfterTransfer?.abort(); return object;
     } },
@@ -161,6 +187,73 @@ await group('actual browser helper preflights before network, uploads directly a
     assert.match(error.message, /cleanup is unconfirmed/); return true;
   });
   assert.deepEqual(calls, ['authorize', 'blob', 'complete', 'DELETE']);
+});
+
+await group('small generated GLBs use the existing authenticated file-form route with exact original bytes', async () => {
+  const requests: string[] = [];
+  const client = load('src/libraries/services/threed/models/model-primary-upload-client.ts', {
+    './model-upload-policy-core': policy,
+    '@vercel/blob/client': { upload: () => assert.fail('Small files must not enter the browser SDK transfer') },
+  }, {
+    fetch: async (url: string, options: RequestInit) => {
+      requests.push(url);
+      if (url === '/api/threed/models/upload/direct') {
+        const body = JSON.parse(String(options.body));
+        if (body.action === 'authorize') return Response.json({ success: true, data: authorized });
+        assert.equal(body.action, 'complete');
+        return Response.json({ success: true, data: { url: object.url, fileName: receipt.fileName, fileSize: bytes.length, modelType: 'glb' } });
+      }
+      assert.equal(url, '/api/threed/models/upload');
+      assert.equal(options.headers, undefined, 'Browser supplies the FormData boundary');
+      assert.ok(options.body instanceof FormData);
+      assert.equal(options.body.get('authorization'), authorized.authorization);
+      const file = options.body.get('file');
+      assert.ok(file instanceof File);
+      assert.equal(file.size, bytes.length);
+      assert.deepEqual(new Uint8Array(await file.arrayBuffer()), bytes);
+      return Response.json({ success: true, data: { url: object.url, fileName: receipt.fileName, fileSize: bytes.length, modelType: 'glb' } });
+    },
+  });
+  const result = await client.uploadThreeDPrimaryFile(new File([bytes], receipt.fileName));
+  assert.equal(result.fileSize, bytes.length);
+  assert.deepEqual(requests, ['/api/threed/models/upload/direct', '/api/threed/models/upload', '/api/threed/models/upload/direct']);
+});
+
+await group('file-form upload binds the actual server File to signed owner/path/size before storage', async () => {
+  let sessionOwner = owner;
+  let puts = 0;
+  const route = load('src/app/api/threed/models/upload/route.ts', {
+    'next/server': { NextResponse: Response },
+    '@/libraries/auth': { auth: async () => ({ user: { id: sessionOwner } }) },
+    '@/libraries/services/threed/models/model-blob-paths': blobPaths,
+    '@/libraries/services/threed/models/model-direct-upload-server': server,
+    '@/libraries/services/threed/models/model-upload-policy-core': policy,
+    '@/libraries/services/threed/models/gltf-runtime-inspection-core': gltfInspection,
+    '@/libraries/services/threed/models/fbx-runtime-inspection-server': {},
+    'drizzle-orm': {},
+    '@/libraries/db/client': {},
+    '@/libraries/schema/threed': {},
+    '@vercel/blob': { put: async (pathname: string, file: File) => {
+      puts++;
+      assert.equal(pathname, receipt.pathname);
+      assert.deepEqual(new Uint8Array(await file.arrayBuffer()), bytes);
+      return { url: object.url };
+    } },
+  }, { process: { env: { BLOB_READ_WRITE_TOKEN: secret } } });
+  async function post(file = new File([bytes], receipt.fileName), authorization = authorized.authorization) {
+    const form = new FormData();
+    form.set('file', file);
+    form.set('authorization', authorization);
+    return route.POST(new Request('http://fixture.test/upload', { method: 'POST', body: form }));
+  }
+  assert.equal((await post()).status, 200);
+  assert.equal(puts, 1);
+  sessionOwner = 'other';
+  assert.equal((await post()).status, 400);
+  sessionOwner = owner;
+  assert.equal((await post(new File([bytes], 'renamed.glb'))).status, 400);
+  assert.equal((await post(new File([new Uint8Array(bytes.length + 1)], receipt.fileName))).status, 400);
+  assert.equal(puts, 1, 'Invalid signed file/owner attempts never reach storage');
 });
 
 console.log(`PASS ${groups} direct Model upload groups; all storage, auth and HTTP interactions mocked.`);
