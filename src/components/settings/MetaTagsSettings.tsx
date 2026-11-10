@@ -53,6 +53,15 @@ const metaTagGuidance: Partial<Record<MetaTagName, { label: string; help: string
     help: 'Use an absolute HTTPS URL for a publicly accessible, representative App image. Leave empty rows out until an image is available.',
     suggestion: defaultSocialImage,
   },
+  'og:url': {
+    label: 'Open Graph public site URL',
+    help: 'Absolute HTTPS site URL. Its origin is combined with each page path; authorized Project pages retain their Project ID. This does not add a canonical link.',
+    suggestion: 'https://threedgarden.com/',
+  },
+  'fb:app_id': {
+    label: 'Facebook App ID',
+    help: 'Enter one numeric Meta App ID for this site. Leave blank to omit it. Different Projects can override this ID in their metadata. Never enter an App Secret.',
+  },
 };
 
 export function useMetaTagsEditor() {
@@ -176,7 +185,7 @@ export function MetaTagsSettings({ editor }: { editor: ReturnType<typeof useMeta
             const name = availableMetaTagNames.find(name => !draft.tags.some(tag => tag.name === name));
             if (name) setDraft({ ...draft, tags: [...draft.tags, { name, content: '' }] });
           }}><Plus className="h-3.5 w-3.5" />Add Meta Tag</Button>
-          <details className="text-xs"><summary className="cursor-pointer">Configured override preview{!draft.enabled ? ' (overrides disabled)' : ''}</summary><pre className="overflow-x-auto whitespace-pre-wrap break-all rounded border p-2">{draft.tags.filter(tag => tag.content.trim()).map(tag => tag.name === 'title' ? `<title>${tag.content.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')} - [page / Project suffix]</title>` : `<meta ${tag.name.startsWith('og:') ? 'property' : 'name'}="${tag.name}" content="${tag.content.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')}" />`).join('\n') || 'No overrides configured; built-in metadata defaults apply.'}</pre></details>
+          <details className="text-xs"><summary className="cursor-pointer">Configured override preview{!draft.enabled ? ' (overrides disabled)' : ''}</summary><pre className="overflow-x-auto whitespace-pre-wrap break-all rounded border p-2">{draft.tags.filter(tag => tag.content.trim()).map(tag => tag.name === 'title' ? `<title>${tag.content.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')} - [page / Project suffix]</title>` : `<meta ${tag.name.startsWith('og:') || tag.name.startsWith('fb:') ? 'property' : 'name'}="${tag.name}" content="${tag.content.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;')}" />`).join('\n') || 'No overrides configured; built-in metadata defaults apply.'}</pre></details>
           <p className="text-xs text-muted-foreground">Robots directives are App-wide crawler instructions, not privacy controls. Social images require absolute HTTPS URLs. Saved values render as escaped metadata, never executable HTML.</p>
         </>}
       </fieldset>

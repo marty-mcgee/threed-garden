@@ -84,9 +84,16 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
  assert.equal(contract.metaTagsMetadata(titleSettings).title, undefined, 'Existing title owner remains authoritative');
  const preview = loadingUi.MetaTagsSettings({ editor: { ...suggestionEditor, draft: titleSettings } });
  assert(text(preview).includes('<title>ThreeD App - [page / Project suffix]</title>'));
- const root=load('src/app/layout.tsx',{'next/headers':{},'./providers':{},'./globals.css':{},'./fonts':{},'@/components/layout/AppPageTitle':{},'react/jsx-runtime':{jsx:element,jsxs:element},'@/libraries/services/settings/meta-tags':{readMetaTags:async()=>{if(unavailable)throw Error('offline');return stored}},'@/libraries/config/meta-tags':contract},{console:{warn(){}}});
+ const facebookDraft = { ...titleSettings, tags: [{ name: 'fb:app_id', content: '123456789012345' }] };
+ const facebookTree = loadingUi.MetaTagsSettings({ editor: { ...suggestionEditor, draft: facebookDraft } });
+ assert(text(facebookTree).includes('<meta property="fb:app_id" content="123456789012345" />'));
+ const root=load('src/app/layout.tsx',{'next/headers':{headers:async()=>new Map([['x-threed-page-path','/learn']])},'./providers':{},'./globals.css':{},'./fonts':{},'@/components/layout/AppPageTitle':{},'react/jsx-runtime':{jsx:element,jsxs:element},'@/libraries/services/settings/meta-tags':{readMetaTags:async()=>{if(unavailable)throw Error('offline');return stored}},'@/libraries/config/meta-tags':contract},{console:{warn(){}}});
  assert.equal((await root.generateMetadata()).authors[0].name,'Developer');unavailable=true;assert.equal((await root.generateMetadata()).description,contract.defaultDescription);assert(!rootSource.includes('dangerouslySetInnerHTML'));
  const nextConfig = load('next.config.ts', {}).default;
+ const proxy = load('src/proxy.ts', { 'next/server': { NextResponse: { next: value => value } } }, { Headers });
+ const forwarded = proxy.proxy({ headers: new Headers({ 'x-threed-page-path': '//attacker.test', host: 'attacker.test' }), nextUrl: { pathname: '/learn' } });
+ assert.equal(forwarded.request.headers.get('x-threed-page-path'), '/learn');
+ assert.equal((await root.generateMetadata()).openGraph.url,'https://threedgarden.com/learn');
  for (const agent of ['Mozilla/5.0', 'Twitterbot', 'Googlebot', '']) assert(nextConfig.htmlLimitedBots.test(agent), 'Every client receives blocking head metadata');
  console.log('PASS actual meta-tag editor load/save/failure/discard/permission handling and server generateMetadata defaults/failure fallback (mock HTTP/DB).');
 })().catch(error=>{console.error(error);process.exitCode=1});

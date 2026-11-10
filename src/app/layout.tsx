@@ -1,6 +1,6 @@
 // app/layout.tsx
 import type { Metadata } from "next";
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { cache } from 'react';
 import { Providers } from "./providers";
 import "./globals.css";
@@ -20,7 +20,8 @@ const readPageMetaTags = cache(async () => {
 });
 
 export async function generateMetadata(): Promise<Metadata> {
-  return metaTagsMetadata(await readPageMetaTags());
+  const requestHeaders = await headers();
+  return metaTagsMetadata(await readPageMetaTags(), requestHeaders.get('x-threed-page-path') ?? '/');
 }
 
 export default async function RootLayout({

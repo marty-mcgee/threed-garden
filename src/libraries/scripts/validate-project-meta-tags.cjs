@@ -67,6 +67,10 @@ const text = value => Array.isArray(value) ? value.map(text).join('') : typeof v
   assert.equal((await service.readProjectHtmlMetadata('17')).description, 'Project garden');
   const inherited = service.inheritProjectMetadata(await service.readProjectHtmlMetadata('17'), parent);
   assert.equal(inherited.openGraph.title, 'App title'); assert.equal(inherited.openGraph.description, 'Project sharing');
+  assert.equal(inherited.openGraph.url,'https://threedgarden.com/dashboard/scene?projectId=17');
+  assert.equal((await service.readProjectHtmlMetadata('17', undefined, 'https://example.test/learn')).openGraph.url,'https://example.test/dashboard/scene?projectId=17');
+  const fb = contract.metaTagsOverrides({...tags,tags:[{name:'fb:app_id',content:'987654321'}]});
+  assert.equal(service.inheritProjectMetadata(fb,parent).facebook.appId,'987654321');
   assert.equal(inherited.twitter, undefined, 'Untouched social defaults inherit through Next');
   const social = service.inheritProjectMetadata(contract.metaTagsOverrides({ ...tags, tags: [{ name: 'twitter:description', content: 'Project tweet' }] }), parent);
   assert.equal(social.twitter.card, 'summary_large_image'); assert.equal(social.twitter.title, 'App social title');

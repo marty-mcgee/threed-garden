@@ -10,8 +10,9 @@ export async function generateMetadata({ searchParams }: {
   if (typeof params.projectId !== 'string') return {};
   try {
     const session = await auth();
-    const overrides = await readProjectHtmlMetadata(params.projectId, session?.user?.id);
-    return inheritProjectMetadata(overrides, await parent);
+    const inherited = await parent;
+    const overrides = await readProjectHtmlMetadata(params.projectId, session?.user?.id, inherited.openGraph?.url?.toString());
+    return inheritProjectMetadata(overrides, inherited);
   } catch {
     console.warn('Project meta tags unavailable; retaining App metadata.');
     return {};

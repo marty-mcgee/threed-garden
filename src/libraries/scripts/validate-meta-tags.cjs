@@ -39,6 +39,16 @@ const request=(body,origin='https://example.test')=>new Request('https://example
  assert.equal(defaults.openGraph.title,contract.defaultSharingTitle);
  assert.equal(defaults.openGraph.siteName,'ThreeD App');assert(defaults.openGraph.description);
  assert.equal(defaults.twitter,undefined,'No Twitter defaults are introduced');
+ assert.equal(defaults.openGraph.url,'https://threedgarden.com/');
+ assert.equal(defaults.facebook,undefined,'Never fabricate an App ID');
+ assert.equal(defaults.alternates,undefined,'Open Graph does not introduce canonical links');
+ const facebook=contract.parseMetaTags({...initial,enabled:true,tags:[{name:'og:url',content:'https://example.test/'},{name:'fb:app_id',content:'123456789012345'}]});
+ assert.equal(contract.metaTagsMetadata(facebook,'/learn').openGraph.url,'https://example.test/learn');
+ assert.equal(contract.metaTagsMetadata(facebook,'//attacker.test').openGraph.url,'https://example.test/');
+ assert.equal(contract.metaTagsMetadata(facebook,'/learn?private=secret').openGraph.url,'https://example.test/');
+ assert.equal(contract.metaTagsMetadata(facebook).facebook.appId,'123456789012345');
+ for(const value of ['secret-text','123,456','0','123<script>'])assert(!tryParseInput(contract.parseMetaTags,{...initial,tags:[{name:'fb:app_id',content:value}]}).success);
+ for(const value of ['http://example.test','https://user:secret@example.test','javascript:alert(1)'])assert(!tryParseInput(contract.parseMetaTags,{...initial,tags:[{name:'og:url',content:value}]}).success);
  const blank=contract.parseMetaTags({...initial,enabled:true,tags:contract.metaTagNames.map(name=>({name,content:'  '}))});
  assert.deepEqual(clone(contract.metaTagsMetadata(blank)),clone(defaults));
  assert.deepEqual(clone(contract.metaTagsOverrides(blank)),{},'Blank Project tags inherit rather than overriding defaults');
@@ -49,6 +59,7 @@ const request=(body,origin='https://example.test')=>new Request('https://example
  const image=fs.readFileSync('public/assets/social/project-workspace.png');
  assert.equal(image.subarray(1,4).toString(),'PNG');assert(image.readUInt32BE(16)>=1200);assert(image.readUInt32BE(20)>=630);
  const input={...initial,enabled:true,tags:[{name:'description',content:'Garden & "design" <script>'},{name:'og:title',content:'Garden'},{name:'og:image',content:'https://example.test/image.png'},{name:'robots',content:'noindex, follow'},{name:'twitter:card',content:'summary_large_image'}]};
+ input.tags.push({name:'fb:app_id',content:'123456789012345'},{name:'og:url',content:'https://example.test/'});
  const metadata=contract.metaTagsMetadata(contract.parseMetaTags(input));
  assert.equal(metadata.description,input.tags[0].content);assert.equal(metadata.openGraph.title,'Garden');assert.equal(metadata.twitter.card,'summary_large_image');assert.equal(metadata.robots,'noindex, follow');assert.equal(metadata.title,undefined);
  for(const bad of [null,{...initial,unknown:1},{...initial,revision:'bad'},{...input,tags:[{name:'http-equiv',content:'refresh'}]},{...input,tags:[{name:'og:image',content:'javascript:alert(1)'}]},{...input,tags:[{name:'robots',content:'bad'}]},{...input,tags:[input.tags[0],input.tags[0]]}])assert(!tryParseInput(contract.parseMetaTags,bad).success);
@@ -60,6 +71,8 @@ const request=(body,origin='https://example.test')=>new Request('https://example
  assert.equal((await route.PUT(request({...input,extra:'x'.repeat(33000)}))).status,413);
  assert.deepEqual(clone(await service.readMetaTags()),clone(initial));
  const savedResponse=await route.PUT(request(input));assert.equal(savedResponse.status,200);const saved=await savedResponse.json();assert(saved.revision);assert.equal(data.audits.length,1);assert(locks>=2);
+ assert.equal(saved.tags.find(tag=>tag.name==='fb:app_id').content,'123456789012345');
+ assert.equal(contract.metaTagsMetadata(await service.readMetaTags(),'/learn').openGraph.url,'https://example.test/learn');
  assert.equal((await route.PUT(request(input))).status,409);assert.equal(data.audits.length,1);
  const deletion={...saved,tags:[],enabled:false};failAudit=true;assert.equal((await route.PUT(request(deletion))).status,503);assert.deepEqual(clone(await service.readMetaTags()),saved);failAudit=false;
  assert.equal((await route.PUT(request(deletion))).status,200);assert.deepEqual(clone(contract.metaTagsMetadata(await service.readMetaTags())),clone(defaults));

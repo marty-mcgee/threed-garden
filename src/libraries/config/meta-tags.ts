@@ -15,6 +15,8 @@ export const metaTagNames = [
   'twitter:description',
   'twitter:image',
   'title',
+  'og:url',
+  'fb:app_id',
 ] as const;
 export type MetaTagName = typeof metaTagNames[number];
 export interface AppMetaTags {
@@ -26,6 +28,13 @@ export interface AppMetaTags {
 export const defaultDescription = 'Create and explore interactive 3D gardens with models, characters, physics, maps, and multimedia.';
 export const defaultSocialImage = 'https://threedgarden.com/assets/social/project-workspace.png';
 export const defaultSharingTitle = 'ThreeD App | Interactive 2D Plans and 3D Project Presentations';
+export const defaultPublicSiteUrl = 'https://threedgarden.com/';
+export function pageOpenGraphUrl(snapshot: AppMetaTags, pathname = '/'): string {
+  const configured = snapshot.enabled ? snapshot.tags.find(tag => tag.name === 'og:url')?.content.trim() : '';
+  const origin = new URL(configured || defaultPublicSiteUrl).origin;
+  const safePath = pathname.startsWith('/') && !pathname.startsWith('//') && !/[?#\\]/.test(pathname) ? pathname : '/';
+  return new URL(safePath, origin).href;
+}
 export function appTitlePrefix(snapshot: AppMetaTags): string {
   return snapshot.enabled ? snapshot.tags.find(tag => tag.name === 'title')?.content.trim() || 'ThreeD Garden' : 'ThreeD Garden';
 }
@@ -47,11 +56,12 @@ export function parseMetaTags(value: unknown): AppMetaTags {
     const content = readString(row.content, 0, 2000, true);
     if (seen.has(name) || /[\u0000-\u001f\u007f]/.test(content)) throw new InputValidationError('Use unique tags and plain text values.');
     seen.add(name);
-    if (content && name.endsWith(':image')) {
+    if (content && (name.endsWith(':image') || name === 'og:url')) {
       let url: URL;
-      try { url = new URL(content); } catch { throw new InputValidationError('Images require an absolute HTTPS URL.'); }
-      if (url.protocol !== 'https:' || url.username || url.password) throw new InputValidationError('Images require an absolute HTTPS URL.');
+      try { url = new URL(content); } catch { throw new InputValidationError('Image and Open Graph URLs require an absolute HTTPS URL.'); }
+      if (url.protocol !== 'https:' || url.username || url.password) throw new InputValidationError('Image and Open Graph URLs require an absolute HTTPS URL.');
     }
+    if (content && name === 'fb:app_id' && !/^[1-9]\d{0,31}$/.test(content)) throw new InputValidationError('Enter one numeric Facebook App ID, not an App Secret or a list.');
     if (content && name === 'robots' && !['index, follow', 'noindex, follow', 'noindex, nofollow'].includes(content)) throw new InputValidationError('Choose a supported robots value.');
     if (content && name === 'twitter:card' && !['summary', 'summary_large_image'].includes(content)) throw new InputValidationError('Choose a supported Twitter card.');
     return { name, content };
@@ -65,7 +75,7 @@ export function parseMetaTags(value: unknown): AppMetaTags {
 }
 
 /** App defaults only: route metadata remains authoritative under Next inheritance. */
-export function metaTagsMetadata(snapshot: AppMetaTags): Metadata {
+export function metaTagsMetadata(snapshot: AppMetaTags, pathname = '/'): Metadata {
   const overrides = metaTagsOverrides(snapshot);
   return {
     description: defaultDescription,
@@ -83,6 +93,7 @@ export function metaTagsMetadata(snapshot: AppMetaTags): Metadata {
         alt: 'ThreeD App Project with Character controls, Multimedia and linked 3D Scene and 2D Design views',
       }],
       ...overrides.openGraph,
+      url: pageOpenGraphUrl(snapshot, pathname),
     },
   };
 }
@@ -102,11 +113,13 @@ export function metaTagsOverrides(snapshot: AppMetaTags): Metadata {
   if (tags.author) metadata.authors = [{ name: tags.author }];
   if (tags.keywords) metadata.keywords = tags.keywords;
   if (tags.robots) metadata.robots = tags.robots;
+  if (tags['fb:app_id']) metadata.facebook = { appId: tags['fb:app_id'] };
   if (populated.some(tag => tag.name.startsWith('og:'))) metadata.openGraph = {
     ...(tags['og:title'] ? { title: tags['og:title'] } : {}),
     ...(tags['og:description'] ? { description: tags['og:description'] } : {}),
     ...(tags['og:image'] ? { images: [tags['og:image']] } : {}),
     ...(tags['og:site_name'] ? { siteName: tags['og:site_name'] } : {}),
+    ...(tags['og:url'] ? { url: tags['og:url'] } : {}),
   };
   if (populated.some(tag => tag.name.startsWith('twitter:'))) metadata.twitter = {
     ...(tags['twitter:card'] ? { card: tags['twitter:card'] === 'summary_large_image' ? 'summary_large_image' as const : 'summary' as const } : {}),

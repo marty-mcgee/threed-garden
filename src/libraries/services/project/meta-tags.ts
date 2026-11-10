@@ -3,10 +3,10 @@ import type { Metadata, ResolvedMetadata } from 'next';
 import { and, eq, or, sql } from 'drizzle-orm';
 import { db } from '@/libraries/db/client';
 import { project } from '@/libraries/schema/project';
-import { metaTagsOverrides, readProjectMetaTags } from '@/libraries/config/meta-tags';
+import { defaultPublicSiteUrl, metaTagsOverrides, readProjectMetaTags } from '@/libraries/config/meta-tags';
 
 /** Select only the config of a published Project or the viewer's own Project. */
-export async function readProjectHtmlMetadata(projectId: unknown, viewerId?: string): Promise<Metadata> {
+export async function readProjectHtmlMetadata(projectId: unknown, viewerId?: string, publicSiteUrl: string = defaultPublicSiteUrl): Promise<Metadata> {
   if (typeof projectId !== 'string' || !/^[1-9]\d*$/.test(projectId) || !Number.isSafeInteger(Number(projectId))) return {};
   const [row] = await db.select({ config: project.config }).from(project).where(and(
     eq(project.id, Number(projectId)),
@@ -15,7 +15,15 @@ export async function readProjectHtmlMetadata(projectId: unknown, viewerId?: str
       viewerId ? eq(project.userId, viewerId) : sql`false`,
     ),
   )).limit(1);
-  return row ? metaTagsOverrides(readProjectMetaTags(row.config)) : {};
+  if (!row) return {};
+  const overrides = metaTagsOverrides(readProjectMetaTags(row.config));
+  return {
+    ...overrides,
+    openGraph: {
+      url: new URL(`/dashboard/scene?projectId=${projectId}`, publicSiteUrl).href,
+      ...overrides.openGraph,
+    },
+  };
 }
 
 export function inheritProjectMetadata(overrides: Metadata, parent: ResolvedMetadata): Metadata {
