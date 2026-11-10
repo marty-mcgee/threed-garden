@@ -121,6 +121,8 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
     './ModuleAppearanceProvider': { useModuleAppearance: () => moduleState },
     './module-icons': { moduleIcons: new Proxy({}, { get: (_, key) => key }) },
   }, { window: { addEventListener() {}, removeEventListener() {}, confirm: () => confirmResult } });
+  let metaSaves = 0, metaDiscards = 0;
+  const metaEditor = { dirty: false, busy: false, disabled: false, reload() {}, discard() { metaDiscards++; this.dirty = false; }, async save() { metaSaves++; this.dirty = false; } };
   const form = load('src/components/admin/settings/SettingsManager.tsx', {
     react: formHarness.react, 'react/jsx-runtime': { jsx: element, jsxs: element },
     'lucide-react': new Proxy({}, { get: (_, key) => key }),
@@ -129,6 +131,7 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
     '@/components/settings/PanelAppearance': { ...panelAppearance, usePanelAppearance: () => panelState },
     '@/components/ui/button': { Button: 'Button' }, '@/components/ui/switch': { Switch: 'Switch' },
     '@/components/settings/ModuleAppearanceSettings': { ...moduleEditor, ModuleAppearanceSettings: 'module-settings' },
+    '@/components/settings/MetaTagsSettings': { MetaTagsSettings: 'meta-tags', useMetaTagsEditor: () => metaEditor },
     '@/components/settings/WorkspaceSettingsProvider': { useWorkspaceSettings: () => context },
     '@/libraries/config/workspace-settings': contract,
   }, { window: { addEventListener() {}, removeEventListener() {}, confirm: () => confirmResult } });
@@ -244,6 +247,16 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
   assert.equal(moduleRefreshes, beforeRefresh + 1);
   button(renderForm(), 'Discard').props.onClick();
   console.log('PASS Shared Settings Save: actual Learn color edits activate Save Changes, persist through the Module owner, retain failed drafts/permissions and honor Discard/Refresh.');
+  metaEditor.dirty = true; tree = renderForm();
+  assert(!button(tree, 'Save Changes').props.disabled, 'Meta-tag-only edits activate shared Save');
+  await button(tree, 'Save Changes').props.onClick(); tree = renderForm();
+  assert.equal(metaSaves, 1);
+  metaEditor.dirty = true; tree = renderForm();
+  const beforeMetaDiscard = metaDiscards;
+  button(tree, 'Discard').props.onClick(); tree = renderForm();
+  assert.equal(metaDiscards, beforeMetaDiscard + 1);
+  metaEditor.dirty = true; metaEditor.disabled = true; tree = renderForm();
+  assert(button(tree, 'Save Changes').props.disabled, 'Unavailable meta-tag draft cannot be saved');
 
   let savedOpacity = null;
   const css = new Map();

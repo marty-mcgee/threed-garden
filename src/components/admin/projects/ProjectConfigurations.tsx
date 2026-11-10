@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ProjectMeasurementUnits } from '@/components/project/ProjectMeasurementUnits';
+import { ProjectMetaTagsFields } from './ProjectMetaTagsFields';
+import { readProjectMetaTags } from '@/libraries/config/meta-tags';
 import { projectConfigurationStamp, type ProjectConfigurationChanges, type ProjectConfigurationRequest } from '@/libraries/services/project/configuration';
 import { readThreeDProjectViewStateFromConfig, type ProjectViewMode, type ProjectCameraMode } from '@/libraries/services/threed/markers/project-view-state-core';
 import { THREE_D_ENVIRONMENT_PRESETS } from '@/libraries/services/threed/environment-presets';
@@ -14,6 +16,7 @@ import { THREE_D_ENVIRONMENT_PRESETS } from '@/libraries/services/threed/environ
 function settings(config: unknown) {
   const view = readThreeDProjectViewStateFromConfig(config), scene = view?.threeD;
   return {
+    metaTags: readProjectMetaTags(config),
     measurementUnits: projectConfigurationStamp(config).measurementUnits,
     viewMode: view?.viewMode ?? '3d' as ProjectViewMode, cameraMode: view?.cameraMode ?? 'stationary' as ProjectCameraMode,
     environment: scene?.environment ?? 'default-daylight', autoRotate: scene?.autoRotate ?? false,
@@ -26,6 +29,7 @@ function settings(config: unknown) {
 type Settings = ReturnType<typeof settings>;
 function changes(before: Settings, after: Settings): ProjectConfigurationChanges {
   const result: ProjectConfigurationChanges = {}, scene: NonNullable<ProjectConfigurationChanges['threeD']> = {};
+  if (JSON.stringify(before.metaTags) !== JSON.stringify(after.metaTags)) result.metaTags = after.metaTags;
   if (before.measurementUnits !== after.measurementUnits) result.measurementUnits = after.measurementUnits;
   if (before.viewMode !== after.viewMode) result.viewMode = after.viewMode;
   if (before.cameraMode !== after.cameraMode) result.cameraMode = after.cameraMode;
@@ -132,6 +136,7 @@ export function ProjectConfigurations({ project, disabled, onSaved, onCalibrate,
     </CardContent>
   </Card>
   {rightColumnFooter}
+  <ProjectMetaTagsFields value={draft.metaTags} onChange={value => set('metaTags', value)} disabled={disabled || busy || creating} />
   </div>
   <div className="min-w-0 space-y-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-5 xl:col-span-2">
       {error && <p role="alert" className="text-sm text-destructive">{error}</p>}

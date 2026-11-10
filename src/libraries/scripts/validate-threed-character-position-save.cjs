@@ -67,7 +67,7 @@ const base = {
   updatingCharacterMarkerId: null, controlledCharacterId: null,
   data: { threed: { raw: { projectThreedMarkers: [{ id: 77, sourceAssetId: 11 }] } } },
 };
-const savePosition = (ok) => callback('src/app/dashboard/scene/page.tsx', 'handleUpdateCharacterPosition', {
+const savePosition = (ok) => callback('src/app/dashboard/scene/SceneWorkspace.tsx', 'handleUpdateCharacterPosition', {
   ...base, fetch: async (url, options) => {
     requests.push({ url, ...options });
     return { ok, status: ok ? 200 : 500, json: async () => ({ success: ok, data: { sourceAssetId: 11, positionX: '5.000', positionY: '1.000', positionZ: '7.000' } }) };
@@ -105,9 +105,9 @@ const savePosition = (ok) => callback('src/app/dashboard/scene/page.tsx', 'handl
     isScenariosOpen: false, isProjectSetupOpen: true, overlayPositions: { sensors: { x: 1, y: 0.2 } },
     fetch: async (url, options) => { requests.push({ url, ...options }); return { ok: true, json: async () => ({ success: true, data: { projectId: 5, architecture: JSON.parse(options.body).architecture, markerCount: 1, markers: [] } }) }; },
   };
-  projectSaveContext.captureProjectWorkspace = callback('src/app/dashboard/scene/page.tsx', 'captureProjectWorkspace', projectSaveContext);
+  projectSaveContext.captureProjectWorkspace = callback('src/app/dashboard/scene/SceneWorkspace.tsx', 'captureProjectWorkspace', projectSaveContext);
   projectSaveContext.workspaceFeedback = { acknowledge() {} };
-  const projectSave = callback('src/app/dashboard/scene/page.tsx', 'handleSaveThreeDProject', projectSaveContext);
+  const projectSave = callback('src/app/dashboard/scene/SceneWorkspace.tsx', 'handleSaveThreeDProject', projectSaveContext);
   await projectSave();
   const payload = JSON.parse(requests.at(-1).body);
   assert.deepEqual(payload.markers[0].position, { x: 25, y: 3, z: 45 });
@@ -128,7 +128,7 @@ const savePosition = (ok) => callback('src/app/dashboard/scene/page.tsx', 'handl
 // Project marker suffixes are instance IDs and need not equal source Character IDs.
 let selectedCharacter = { id: 'project-character-204', type: 'characters', data: { id: 11 }, position: { x: 0, y: 0, z: 0 } };
 let liveCharacter = null;
-const handleLivePosition = callback('src/app/dashboard/scene/page.tsx', 'handleControlChange', {
+const handleLivePosition = callback('src/app/dashboard/scene/SceneWorkspace.tsx', 'handleControlChange', {
   controlledCharacterId: 11,
   setSelectedMarker: update => { selectedCharacter = update(selectedCharacter); },
   setLiveControlledCharacterPosition: value => { liveCharacter = value; },

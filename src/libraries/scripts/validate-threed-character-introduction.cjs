@@ -58,7 +58,7 @@ const route = fs.readFileSync('src/app/api/project/threed-markers/route.ts', 'ut
 assert.match(route, /CHARACTER_SPAWN_CLEARANCE \*\* 2/, 'Server clearance shares the controller policy');
 
 (async () => {
-  const dashboard = inspect('src/app/dashboard/scene/page.tsx');
+  const dashboard = inspect('src/app/dashboard/scene/SceneWorkspace.tsx');
   const placement = dashboard.nodes.find(n => ts.isVariableDeclaration(n) && n.name.getText(dashboard.source) === 'handleCharacterPlacement').initializer.arguments[0].getText(dashboard.source);
   function placementHarness() {
     let resolve;

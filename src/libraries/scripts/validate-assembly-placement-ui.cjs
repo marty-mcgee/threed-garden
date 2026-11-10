@@ -122,7 +122,7 @@ function runtime() {
 
 const contract = load('src/libraries/services/threed/models/assembly-group-core.ts', { three: require('three') });
 function scenePlacementCallback(globals) {
-  const path = 'src/app/dashboard/scene/page.tsx';
+  const path = 'src/app/dashboard/scene/SceneWorkspace.tsx';
   const source = ts.createSourceFile(path, fs.readFileSync(path, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
   const callbacks = [];
   function visit(node) {

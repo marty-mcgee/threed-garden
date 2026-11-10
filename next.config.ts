@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
   agentRules: false,
   reactCompiler: true,
   reactStrictMode: false,
+  // Resolve saved App meta tags into the initial document head for every client.
+  htmlLimitedBots: /.*/,
   // Ensure you're using the App Router
   experimental: {
     // Any experimental features you're using

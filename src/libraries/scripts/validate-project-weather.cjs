@@ -274,7 +274,7 @@ function overlayChecks() {
   for (const expected of ['32 °F | 0 °C', '1 in | 25.4 mm', '10 mph | 16.09 km/h', '0 in | 0 mm', '0 mph | 0 km/h']) {
     assert(measurements.some(node => JSON.stringify(node.props?.children)?.includes(expected)), expected);
   }
-  const page = fs.readFileSync('src/app/dashboard/scene/page.tsx', 'utf8');
+  const page = fs.readFileSync('src/app/dashboard/scene/SceneWorkspace.tsx', 'utf8');
   assert(page.includes('!loading && selectedProjectId && weatherProjectId === selectedProjectId'));
   const guest = nodes(overlay.ProjectWeatherOverlay({ projectId: '17', onClose() {} }));
   assert(!guest.some(node => node.props?.href?.includes('/admin/')));

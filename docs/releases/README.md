@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.32.0 - App: Mobile Device Responsiveness (prepared for production release)](v0.32.0.md)
+- [v0.32.1 - App: HTML and SEO Meta Tags (prepared; Developer verification confirmed)](v0.32.1.md)
+
+- [v0.32.0 - App: Mobile Device Responsiveness (Developer-confirmed release; Vercel/device checks pending)](v0.32.0.md)
 
 - [v0.31.13 - ThreeD: JSCAD Assembly Example Library](v0.31.13.md)
 

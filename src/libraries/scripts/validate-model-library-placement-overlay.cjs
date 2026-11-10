@@ -45,7 +45,7 @@ console.log('PASS: placement overlay outside Library/Design portal, single previ
 
 // Exercise the actual Scene placement callback with mocked persistence/runtime conversion.
 (async () => {
-  const source = fs.readFileSync('src/app/dashboard/scene/page.tsx', 'utf8');
+  const source = fs.readFileSync('src/app/dashboard/scene/SceneWorkspace.tsx', 'utf8');
   const begin = source.indexOf('  const handleModelPlacement =');
   const end = source.indexOf('  const handleCharacterPlacement', begin);
   const callback = source.slice(begin, end).replace('const handleModelPlacement =', 'globalThis.handleModelPlacement =');

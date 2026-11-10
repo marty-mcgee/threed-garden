@@ -164,6 +164,9 @@ export async function PATCH(request: NextRequest) {
 
     const body = await request.json();
     const { name, description, isPublic, isActive, coordinateCalibration } = body;
+    if (body.configuration?.changes?.metaTags !== undefined && request.headers.get('origin') !== new URL(request.url).origin) {
+      return NextResponse.json({ success: false, error: 'Invalid request origin.' }, { status: 403 });
+    }
 
     const userId = session.user.id;
 

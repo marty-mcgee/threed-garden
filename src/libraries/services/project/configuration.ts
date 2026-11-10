@@ -1,4 +1,5 @@
 import { parseMeasurementUnits, readProjectMeasurementUnits, type MeasurementUnits } from './measurement-units';
+import { parseMetaTags, readProjectMetaTags, type AppMetaTags } from '@/libraries/config/meta-tags';
 import { parseThreeDProjectViewState, type ProjectViewMode, type ProjectCameraMode, type ProjectThreeDViewState } from '../threed/markers/project-view-state-core';
 
 export class ProjectConfigurationError extends Error {}
@@ -9,6 +10,7 @@ export interface ProjectConfigurationStamp { savedAt: string | null; measurement
 export type ProjectSceneConfiguration = Pick<ProjectThreeDViewState, 'environment' | 'autoRotate' | 'showGrid' | 'showGizmo'>
   & Partial<Pick<ProjectThreeDViewState, 'showControls' | 'showSimulations' | 'designTransparency' | 'sunlight' | 'ground' | 'activeLayers'>>;
 export interface ProjectConfigurationChanges {
+  metaTags?: AppMetaTags;
   measurementUnits?: MeasurementUnits;
   viewMode?: ProjectViewMode;
   cameraMode?: ProjectCameraMode;
@@ -37,11 +39,24 @@ export function assertProjectConfigurationCurrent(config: unknown, expected: unk
 export function projectConfigurationPatch(config: unknown, input: unknown, now = new Date()): Record<string, unknown> {
   const request = record(input); only(request, ['expected', 'changes']);
   assertProjectConfigurationCurrent(config, request.expected);
-  const changes = record(request.changes); only(changes, ['measurementUnits', 'viewMode', 'cameraMode', 'threeD']);
+  const changes = record(request.changes); only(changes, ['measurementUnits', 'viewMode', 'cameraMode', 'threeD', 'metaTags']);
   if (!Object.keys(changes).length) throw new ProjectConfigurationError('Change a setting before saving.');
   const patch: Record<string, unknown> = {};
   if ('measurementUnits' in changes) patch.measurementUnits = parseMeasurementUnits(changes.measurementUnits);
   const source = config && typeof config === 'object' ? config as Record<string, unknown> : {};
+  if ('metaTags' in changes) {
+    let submitted: AppMetaTags;
+    let previous: AppMetaTags;
+    try {
+      submitted = parseMetaTags(changes.metaTags);
+      previous = readProjectMetaTags(source);
+    } catch { throw new ProjectConfigurationError('Invalid Project meta tags. Review the configured fields.'); }
+    if (submitted.revision !== previous.revision) throw new ProjectConfigurationConflict();
+    patch.metaTags = {
+      ...submitted,
+      revision: crypto.randomUUID(),
+    };
+  }
   if ('viewMode' in changes || 'cameraMode' in changes || 'threeD' in changes) {
     if (!source.threeDViewState) throw new ProjectConfigurationError('Open the Project Scene and Save Project once before editing its saved Scene settings.');
     const saved = record(source.threeDViewState);

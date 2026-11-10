@@ -1,6 +1,7 @@
 'use client';
 
 import { SettingsSection } from '@/components/settings/SettingsSection';
+import { MetaTagsSettings, useMetaTagsEditor } from '@/components/settings/MetaTagsSettings';
 import { ModuleAppearanceSettings, useModuleAppearanceEditor } from '@/components/settings/ModuleAppearanceSettings';
 import { ModelPreviewSettings } from '@/components/settings/ModelPreviewSettings';
 import { PanelAppearanceSettings, usePanelAppearance, type PanelAppearance } from '@/components/settings/PanelAppearance';
@@ -33,6 +34,7 @@ function PreferenceIcon({ name }: { name: keyof typeof preferenceIcons }) {
 export function SettingsManager() {
   const { snapshot, loading, saving, error, refresh, save } = useWorkspaceSettings();
   const moduleAppearance = useModuleAppearanceEditor();
+  const metaTags = useMetaTagsEditor();
   const panelAppearance = usePanelAppearance();
   const [opacityDraft, setOpacityDraft] = useState<PanelAppearance | null>(null);
   useEffect(() => { setOpacityDraft(panelAppearance?.value ?? null); }, [panelAppearance?.value]);
@@ -41,11 +43,11 @@ export function SettingsManager() {
   useEffect(() => { setDraft(snapshot?.preferences ?? null); setMessage(null); }, [snapshot]);
   const workspaceDirty = !!draft && !!snapshot && JSON.stringify(draft) !== JSON.stringify(snapshot.preferences);
   const opacityDirty = !!opacityDraft && !!panelAppearance && JSON.stringify(opacityDraft) !== JSON.stringify(panelAppearance.value);
-  const dirty = workspaceDirty || opacityDirty || moduleAppearance.dirty;
+  const dirty = workspaceDirty || opacityDirty || moduleAppearance.dirty || metaTags.dirty;
   const unavailable = loading || saving || !snapshot || !!error;
-  const busy = saving || !!moduleAppearance.context?.busy;
+  const busy = saving || !!moduleAppearance.context?.busy || metaTags.busy;
   const saveUnavailable = busy || ((workspaceDirty || opacityDirty) && unavailable)
-    || (moduleAppearance.dirty && moduleAppearance.disabled);
+    || (moduleAppearance.dirty && moduleAppearance.disabled) || (metaTags.dirty && metaTags.disabled);
   const control = 'h-8 gap-1.5 text-xs [@media(pointer:coarse)]:min-h-11';
 
   useEffect(() => {
@@ -59,6 +61,7 @@ export function SettingsManager() {
     if (!dirty || saveUnavailable) return;
     setMessage(null);
     try {
+      if (metaTags.dirty) await metaTags.save();
       if (moduleAppearance.dirty) await moduleAppearance.save();
       if (workspaceDirty && draft && snapshot) await save(draft, snapshot.revision);
       if (opacityDirty && opacityDraft && panelAppearance && !panelAppearance.update(opacityDraft)) {
@@ -72,6 +75,7 @@ export function SettingsManager() {
     setMessage(null);
     setOpacityDraft(panelAppearance?.value ?? null);
     if (moduleAppearance.context) void moduleAppearance.context.reload();
+    void metaTags.reload();
     void refresh();
   };
 
@@ -85,6 +89,7 @@ export function SettingsManager() {
       </AdminWorkspaceHeader>
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pr-1 pb-2">
       <ModuleAppearanceSettings editor={moduleAppearance} />
+      <MetaTagsSettings editor={metaTags} />
       {(error || message) && <p role="alert" className="rounded-md border border-destructive/40 p-2 text-sm text-destructive">{error || message}</p>}
       {loading && !draft && <p role="status" className="p-2 text-sm text-muted-foreground">Loading your Settings…</p>}
       {draft && <div className="space-y-2">
@@ -140,7 +145,7 @@ export function SettingsManager() {
       </div>
       <div className="admin-editor-actions rounded-md border border-emerald-500/20 bg-emerald-500/5 p-2" aria-label="Settings actions">
         <Button size="sm" className={control} disabled={saveUnavailable || !dirty} onClick={handleSave}><Save aria-hidden="true" className="h-3.5 w-3.5" />Save Changes</Button>
-        <Button variant="outline" size="sm" className={control} disabled={busy || !dirty} onClick={() => { setDraft(snapshot?.preferences ?? null); setOpacityDraft(panelAppearance?.value ?? null); moduleAppearance.discard(); setMessage(null); }}><RotateCcw aria-hidden="true" className="h-3.5 w-3.5 text-amber-500" />Discard</Button>
+        <Button variant="outline" size="sm" className={control} disabled={busy || !dirty} onClick={() => { setDraft(snapshot?.preferences ?? null); setOpacityDraft(panelAppearance?.value ?? null); moduleAppearance.discard(); metaTags.discard(); setMessage(null); }}><RotateCcw aria-hidden="true" className="h-3.5 w-3.5 text-amber-500" />Discard</Button>
         <Button variant="outline" size="sm" className={control} disabled={loading || busy} onClick={handleRefresh}><RefreshCw aria-hidden="true" className="h-3.5 w-3.5 text-sky-500" />Refresh</Button>
       </div>
     </div>

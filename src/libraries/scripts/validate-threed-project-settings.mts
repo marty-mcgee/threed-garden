@@ -65,7 +65,7 @@ console.log('PASS: Workspace/Controls/named-view round trip, legacy compatibilit
 // Execute the actual page capture expression under both Save entry-point states.
 const { readFileSync } = await import('node:fs');
 const ts = (await import('typescript')).default;
-const pageSource = ts.createSourceFile('page.tsx', readFileSync(new URL('../../app/dashboard/scene/page.tsx', import.meta.url), 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+const pageSource = ts.createSourceFile('page.tsx', readFileSync(new URL('../../app/dashboard/scene/SceneWorkspace.tsx', import.meta.url), 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 let captureExpression = '';
 function findWorkspace(node: import('typescript').Node) {
   if (ts.isPropertyAssignment(node) && node.name.getText(pageSource) === 'workspace' && ts.isObjectLiteralExpression(node.initializer)) if (node.initializer.properties.some(prop => ts.isPropertyAssignment(prop) && prop.name.getText(pageSource) === 'selectedMarkerId')) captureExpression = node.initializer.getText(pageSource);

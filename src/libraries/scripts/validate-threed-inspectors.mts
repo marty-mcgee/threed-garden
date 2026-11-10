@@ -22,7 +22,7 @@ console.log('PASS: parent lists both sensors without forms; each sensor inspecto
 // Exercise the actual page handlers with state-setter spies: menu operations
 // must not clear selection or dismiss the independent Assets workspace.
 const { readFileSync } = await import('node:fs');
-const page = readFileSync('src/app/dashboard/scene/page.tsx', 'utf8');
+const page = readFileSync('src/app/dashboard/scene/SceneWorkspace.tsx', 'utf8');
 for (const name of ['openCharacterLibrary', 'openFarmBotLibrary', 'openPlantingPlacement', 'openBedPlacement']) {
   const start = page.indexOf(`  const ${name} = useCallback(`);
   const end = page.indexOf('\n  }, [', start);

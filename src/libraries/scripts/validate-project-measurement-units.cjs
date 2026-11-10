@@ -77,7 +77,7 @@ const route = load('src/app/api/project/route.ts', {
   'drizzle-orm':{eq:()=>{},and:()=>{},desc:()=>{},sql:(strings,...values)=>({strings,values})},
   '@/libraries/services/threed/markers/map-coordinate-core':{ThreeDMapCoordinateError:class extends Error{}},
 });
-const request = body=>({url:'https://offline.invalid/api/project?id=17',json:async()=>body});
+const request = (body, origin = 'https://offline.invalid')=>({url:'https://offline.invalid/api/project?id=17',headers:{get:key=>key==='origin'?origin:null},json:async()=>body});
 (async()=>{
   const created = await route.POST(request({name:'New',description:'New Setup',isActive:false,isPublic:true,measurementUnits:'metric'}));
   assert.equal(created.status,200); assert.equal(created.body.data.config.measurementUnits,'metric');
@@ -124,6 +124,17 @@ const request = body=>({url:'https://offline.invalid/api/project?id=17',json:asy
   assert.throws(()=>configuration.projectConfigurationPatch(empty,{expected:configuration.projectConfigurationStamp(empty),changes:{viewMode:'design'}}),/Save Project once/);
   console.log('PASS: actual Admin configuration PATCH, owner/auth/row lock boundaries, validation, stale-write conflicts, failure and architecture/camera/cards/presets/unrelated-config preservation. Mocked DB only.');
   current=previousConfigTestState;
+  const projectTags = { version: 1, enabled: true, tags: [{ name: 'description', content: 'Project-specific description' }], revision: null };
+  const metaRequest = { configuration: { expected: configuration.projectConfigurationStamp(current.config), changes: { metaTags: projectTags } } };
+  assert.equal((await route.PATCH(request(metaRequest, 'https://other.invalid'))).status, 403);
+  assert.equal((await route.PATCH(request(metaRequest))).status, 200);
+  assert.equal(current.config.metaTags.tags[0].content, 'Project-specific description');
+  assert(current.config.metaTags.revision);
+  assert.equal(current.config.unrelated.retained, true);
+  assert.equal((await route.PATCH(request(metaRequest))).status, 409);
+  const savedMeta = copy(current.config.metaTags);
+  owned=false; assert.equal((await route.PATCH(request(metaRequest))).status,404); owned=true;
+  assert.deepEqual(copy(current.config.metaTags), savedMeta);
   const count = writes;
   assert.equal((await route.PATCH(request({measurementUnits:'yards'}))).status,400);
   assert.equal((await route.POST(request({name:'Invalid',measurementUnits:null}))).status,400);

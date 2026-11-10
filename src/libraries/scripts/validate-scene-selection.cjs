@@ -17,7 +17,7 @@ function declaration(file, name) {
   assert(found, name);
   return found;
 }
-const page = source('src/app/dashboard/scene/page.tsx');
+const page = source('src/app/dashboard/scene/SceneWorkspace.tsx');
 let draft = {
   selected: null,
   history: { present: { walls: [{ id: 'wall' }], nodes: [] } },

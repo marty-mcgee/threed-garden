@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const ts = require('typescript');
 const vm = require('node:vm');
-const file = 'src/app/dashboard/scene/page.tsx';
+const file = 'src/app/dashboard/scene/SceneWorkspace.tsx';
 const source = ts.createSourceFile(file, fs.readFileSync(file, 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 let panel;
 function visit(node) {

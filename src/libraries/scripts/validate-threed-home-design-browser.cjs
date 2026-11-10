@@ -11,7 +11,7 @@ const ts = require('typescript');
 const root = path.resolve(__dirname,'../../..');
 // Read the actual Dashboard positioning contracts: a full-height standalone host
 // otherwise masks a collapsed Scene host when its normal-flow content is hidden.
-const sceneAst = ts.createSourceFile('scene.tsx', fs.readFileSync(path.join(root,'src/app/dashboard/scene/page.tsx'),'utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
+const sceneAst = ts.createSourceFile('scene.tsx', fs.readFileSync(path.join(root,'src/app/dashboard/scene/SceneWorkspace.tsx'),'utf8'),ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
 let sceneWorkspaceClass;
 function findHost(node) {
  if(ts.isJsxOpeningElement(node)) {

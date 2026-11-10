@@ -2,7 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),ts=require('typescript');
 const names=['ThreeDModelLibraryPanel','ThreeDFarmBotLibraryPanel','ThreeDBedPlacementPanel','ThreeDPlantingPlacementPanel'];
 const jsx=(type,props)=>({type,props});
-const page=fs.readFileSync('src/app/dashboard/scene/page.tsx','utf8');
+const page=fs.readFileSync('src/app/dashboard/scene/SceneWorkspace.tsx','utf8');
 for(const name of names){
  const exports={};
  const source=fs.readFileSync('src/components/map/panels/'+name+'.tsx','utf8');

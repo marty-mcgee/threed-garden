@@ -5,11 +5,18 @@ import { Providers } from "./providers";
 import "./globals.css";
 import { inter } from "./fonts";
 import AppPageTitle from '@/components/layout/AppPageTitle';
+import { readMetaTags } from '@/libraries/services/settings/meta-tags';
+import { defaultMetaTags, metaTagsMetadata } from '@/libraries/config/meta-tags';
 // import { NowPlayingBar } from '@/components/multimedia/NowPlayingBar';
 
-export const metadata: Metadata = {
-  description: "Create and explore interactive 3D gardens with models, characters, physics, maps, and multimedia.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  try { return metaTagsMetadata(await readMetaTags()); }
+  catch {
+    // Optional metadata must not make the App unavailable during a Settings outage.
+    console.warn('App meta tags unavailable; using established metadata defaults.');
+    return metaTagsMetadata(defaultMetaTags());
+  }
+}
 
 export default async function RootLayout({
   children,

@@ -110,7 +110,7 @@ for (const label of ['Choose Project', 'New Project', 'Save ThreeD Project', 'Pr
 }
 header.find(node => node.type === 'Button' && text(node).includes('Project Assets')).props.onClick();
 assert.deepEqual(calls.splice(0), ['header-assets']);
-const page = fs.readFileSync('src/app/dashboard/scene/page.tsx', 'utf8');
+const page = fs.readFileSync('src/app/dashboard/scene/SceneWorkspace.tsx', 'utf8');
 assert(page.includes('canSave={canEditProject && !loading}'));
 assert(page.includes('saveSimulationResults={canEditProject}'));
 assert(page.includes('if (!selectedProjectId || !canEditProject || savingProjectMarkers'));

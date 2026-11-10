@@ -4,13 +4,14 @@ const cache=new Map();
 function load(file,overrides={}){
  file=path.resolve(file);if(!Object.keys(overrides).length&&cache.has(file))return cache.get(file);
  const exports={};vm.runInNewContext(ts.transpileModule(fs.readFileSync(file,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS,jsx:ts.JsxEmit.ReactJSX}}).outputText,
- {exports,console,Date,Error,TextEncoder,AbortController,fetch:(...args)=>transport(...args),window:{confirm:()=>false},require(name){if(name in overrides)return overrides[name];if(name.startsWith('.')||name.startsWith('@/')){let target=name.startsWith('@/')?path.resolve('src',name.slice(2)):path.resolve(path.dirname(file),name);if(!path.extname(target))target+='.ts';return load(target);}throw Error('Unexpected dependency '+name);}});
+ {exports,console,Date,Error,TextEncoder,AbortController,crypto:require('node:crypto').webcrypto,fetch:(...args)=>transport(...args),window:{confirm:()=>false},require(name){if(name in overrides)return overrides[name];if(name.startsWith('.')||name.startsWith('@/')){let target=name.startsWith('@/')?path.resolve('src',name.slice(2)):path.resolve(path.dirname(file),name);if(!path.extname(target))target+='.ts';return load(target);}throw Error('Unexpected dependency '+name);}});
  if(!Object.keys(overrides).length)cache.set(file,exports);return exports;
 }
 let states=[],refs=[],cursor=0,refCursor=0,transport=()=>{throw Error('No mocked request expected');};
 const jsx=(type,props)=>({type,props:props??{}});
 const reactDouble={useState(initial){const i=cursor++;if(!(i in states))states[i]=typeof initial==='function'?initial():initial;return[states[i],next=>{states[i]=typeof next==='function'?next(states[i]):next;}];},useRef(initial){return refs[refCursor++]??(refs[refCursor-1]={current:initial});},useEffect(){}};
 const components=load('src/components/admin/projects/ProjectConfigurations.tsx',{
+ './ProjectMetaTagsFields': { ProjectMetaTagsFields: 'project-meta-tags' },
  react:reactDouble,
  'react/jsx-runtime':{jsx,jsxs:jsx},'next/link':{default:'link'},'lucide-react':Object.fromEntries(['Box','Settings2','Save','RotateCcw','Loader2','Layers'].map(key=>[key,key])),
  '@/components/ui/card':{Card:'card',CardContent:'content',CardHeader:'header',CardTitle:'title'},'@/components/ui/button':{Button:'button'},'@/components/ui/input':{Input:'input'},'@/components/project/ProjectMeasurementUnits':{ProjectMeasurementUnits:'units'},
@@ -69,6 +70,18 @@ const flush=async()=>{for(let i=0;i<24;i++)await Promise.resolve();};
  one(tree,n=>n.type==='form').props.onSubmit({preventDefault(){}});await flush();
  assert.equal(submitted.name,'Details only');assert(!('configuration' in submitted),'Identity-only Save must not send an empty configuration patch.');
  console.log('PASS: one actual Project Save callback captures details/config together, retains pending/failed edits, resets both drafts, cancels Reload and isolates Projects. React/HTTP doubles only.');
+ states=[];refs=[];props={...props,detailsDirty:false,project:{...props.project,id:17,config:{unrelated:{retained:true}}}};tree=render();
+ const metadata = {version:1,enabled:true,tags:[{name:'author',content:'Project owner'}],revision:null};
+ one(tree,n=>n.type==='project-meta-tags').props.onChange(metadata);tree=render();
+ assert(text(tree).includes('Unsaved Project changes'));
+ transport=async(url,options)=>{submitted=JSON.parse(options.body);return{ok:false,json:async()=>({success:false,error:'Retained metadata failure'})};};
+ one(tree,n=>n.type==='form').props.onSubmit({preventDefault(){}});await flush();tree=render();
+ assert.equal(submitted.configuration.changes.metaTags.tags[0].content,'Project owner');
+ assert.equal(one(tree,n=>n.type==='project-meta-tags').props.value.tags[0].content,'Project owner');
+ transport=async(url,options)=>{submitted=JSON.parse(options.body);const config={unrelated:{retained:true},...configCore.projectConfigurationPatch({unrelated:{retained:true}},submitted.configuration)};return{ok:true,json:async()=>({success:true,data:{id:17,...parent.formData,config}})};};
+ one(tree,n=>n.type==='form').props.onSubmit({preventDefault(){}});await flush();tree=render();
+ assert(one(tree,n=>n.type==='project-meta-tags').props.value.revision);
+ assert(!text(tree).includes('Unsaved Project changes'));
  states=[];refs=[];props={...props,detailsDirty:false,project:{...props.project,id:null,config:{measurementUnits:'imperial'}}};tree=render();
  assert.equal(all(tree,n=>n.type==='link').length,0,'No Scene link may contain a nonexistent Project ID.');
  assert.equal(all(tree,n=>n.type==='button'&&text(n).trim()==='Reload configuration').length,0);

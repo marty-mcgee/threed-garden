@@ -19,6 +19,7 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  'meta-tags': [node('validate-meta-tags.cjs'), node('validate-meta-tags-ui.cjs'), node('validate-project-meta-tags.cjs')],
   'project-guest-toolbar': [node('validate-project-guest-toolbar.cjs')],
   'input-validation': [node('validate-input-validation.cjs')],
   'threed-multimedia': [node('validate-threed-multimedia.cjs')],
@@ -252,6 +253,7 @@ const ci = [
   'assets',
   'workspace-settings',
   'module-appearance',
+  'meta-tags',
   'threed-albums',
   'users-admin',
   'signup',

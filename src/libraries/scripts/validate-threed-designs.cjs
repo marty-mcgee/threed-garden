@@ -11,7 +11,8 @@ function load(file, deps = {}) {
 const root = 'src/libraries/services/threed/design/';
 const sceneUnits = load('src/libraries/services/threed/scene-units.ts');
 const measurementUnits = load('src/libraries/services/project/measurement-units.ts', {'../threed/scene-units':sceneUnits});
-const configuration = load('src/libraries/services/project/configuration.ts', {'./measurement-units':measurementUnits,'../threed/markers/project-view-state-core':{parseThreeDProjectViewState:value=>value}});
+const metaTags = load('src/libraries/config/meta-tags.ts', {'@/libraries/utils/input-validation': require('../utils/input-validation.ts')});
+const configuration = load('src/libraries/services/project/configuration.ts', {'@/libraries/config/meta-tags':metaTags,'./measurement-units':measurementUnits,'../threed/markers/project-view-state-core':{parseThreeDProjectViewState:value=>value}});
 const document = load(root+'document.ts', {'../scene-units':sceneUnits}), history = load(root+'history.ts', {'./document':document});
 const workspace = load(root+'workspace-state.ts');
 const architecture = load(root+'project-architecture.ts', {'./document':document,'./history':history,'./workspace-state':workspace});
@@ -109,7 +110,7 @@ async function checkStaleLoads(){
  assert.equal(outcomes.length,1);assert.equal(outcomes[0].session.projectName,'new');
 }
 // Execute the actual Dashboard mode callback, including busy-transition cancellation.
-const sceneSource = fs.readFileSync('src/app/dashboard/scene/page.tsx', 'utf8');
+const sceneSource = fs.readFileSync('src/app/dashboard/scene/SceneWorkspace.tsx', 'utf8');
 const sceneAst = ts.createSourceFile('page.tsx', sceneSource, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 let modeCallback;
 function findMode(node) {
