@@ -273,10 +273,23 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
   </div></PersistentDetails>;
   const controls = <div ref={controlsHost} className="flex min-h-0 min-w-0 flex-col gap-2 overflow-auto overscroll-contain text-foreground [&_input]:min-w-0 [&_label]:min-w-0 [&_select]:max-w-full" data-testid="design-controls"><fieldset disabled={loading || importing || !canSave} className="min-w-0 border-0 p-0">{propertiesPanel}</fieldset>{statusPanel}</div>;
   const plan = <DesignPlan selectedModel={selectedModel} onSaveModel={onSaveModel} modelBusy={modelBusy} visibleLevelIds={visibleLevelIds} onToggleLevel={toggleLevel} contextActions={actionGroups} showMeasurements={canSave ? workspace.showMeasurements ?? false : readOnlyMeasurements} onShowMeasurementsChange={showMeasurements => { if (canSave) changeWorkspace({ showMeasurements }); else setReadOnlyMeasurements(showMeasurements); }} selectedModelId={selectedModelId} modelImages={modelImages} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={onModelSelect} measurementUnits={units} frameRequest={frameRequest} embedded={Boolean(scene)} drawingActions={scene ? drawingActions : undefined} planView={workspace.plan} onViewChange={plan => changeWorkspace({ plan })} active={active} disabled={!canSave || importing} document={doc} displayDocument={displayed} activeLevelId={activeLevelId} selected={selected} tool={tool} gridSnap={gridSnap} onSelect={select} onCommit={commit} onPreview={previewUpdate} onMessage={setMessage} onDrawComplete={id => { setSelected(id); setTool('select'); }} cancelToken={cancelToken} />;
-  if (scene) return <div className="flex h-full min-h-0 min-w-0 overflow-hidden" data-testid="home-editor">
+  if (scene) return <div className="threed-design-editor relative flex h-full min-h-0 min-w-0 overflow-hidden" data-testid="home-editor">
     {importDialog}
-    <div data-testid="design-properties-panel" className="threed-workspace-panel threed-scene-panel-surface threed-scene-sidebar-size flex min-h-0 min-w-0 shrink-0 flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md"><DetailsSectionScope.Provider value={`design:${scene.projectId}`}><div className="mb-2 flex shrink-0 items-center gap-2 text-sm font-semibold"><Building2 className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />Design Properties<DesignFieldHelp label="Design Properties">Edit selected geometry and workspace settings. Save Project retains both.</DesignFieldHelp></div>{controls}</DetailsSectionScope.Provider></div>
-    <div className="flex min-h-0 min-w-0 flex-1 flex-col">{plan}</div>
+    <div id={`design-properties-${scene.projectId}`} tabIndex={-1} role="region" aria-label="Design Properties" data-testid="design-properties-panel" className="threed-design-properties threed-workspace-panel threed-scene-panel-surface threed-scene-sidebar-size flex min-h-0 min-w-0 shrink-0 flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md"><DetailsSectionScope.Provider value={`design:${scene.projectId}`}><div className="mb-2 flex shrink-0 flex-wrap items-center gap-2 text-sm font-semibold"><Building2 className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />Design Properties<DesignFieldHelp label="Design Properties">Edit selected geometry and workspace settings. Save Project retains both.</DesignFieldHelp><Button type="button" variant="ghost" className="threed-design-properties-access ml-auto h-11 px-2 text-xs" onClick={() => {
+      const canvas = controlsHost.current?.closest('.threed-design-layout')?.querySelector<HTMLElement>('[data-testid="design-scene-column"]');
+      canvas?.scrollIntoView({ block: 'start' });
+      canvas?.focus({ preventScroll: true });
+    }}>Back to canvases</Button></div>{controls}</DetailsSectionScope.Provider></div>
+    <div className="threed-design-plan-column flex min-h-0 min-w-0 flex-1 flex-col">
+      <div className="threed-design-properties-access h-11 shrink-0 items-center border-b px-1">
+        <Button type="button" variant="ghost" className="h-11 gap-2 px-3 text-xs" aria-controls={`design-properties-${scene.projectId}`} onClick={() => {
+          const panel = controlsHost.current?.closest<HTMLElement>('.threed-design-properties');
+          panel?.scrollIntoView({ block: 'start' });
+          panel?.focus({ preventScroll: true });
+        }}><SlidersHorizontal aria-hidden="true" className="size-4" />Properties below canvases</Button>
+      </div>
+      {plan}
+    </div>
   </div>;
   return <div className="flex h-full min-h-0 flex-col gap-2 text-foreground" data-testid="home-editor">{header}{importDialog}
     <div className="min-h-0 flex-1 overflow-y-auto"><div data-testid="home-workspace" className="grid min-h-full min-w-0 gap-3 lg:h-full lg:min-h-[560px] lg:grid-cols-[minmax(10rem,15rem)_minmax(0,1fr)]"><fieldset disabled={loading || importing || !canSave} className="min-h-0 min-w-0 overflow-y-auto border-0 p-0">{propertiesPanel}</fieldset><div data-testid="home-viewports" className="grid min-h-[560px] min-w-0 grid-rows-2 gap-3">{plan}<Preview document={displayed} selected={selected} onSelect={select} visibleLevelId={visibleLevelIds} showRoofs={showRoofs} /></div></div></div>{statusPanel}

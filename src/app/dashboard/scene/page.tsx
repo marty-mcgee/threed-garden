@@ -3060,7 +3060,7 @@ function UnifiedMapPageInner() {
           if (viewMode === 'design' || viewMode === '2d') setArchitectureFrame(current => ({ projectId: selectedProjectId, id, sequence: (current?.sequence ?? 0) + 1 }));
           else { setSensorFocusPosition({ x: asset.position.x / metersPerSceneUnit, y: asset.position.y / metersPerSceneUnit, z: asset.position.z / metersPerSceneUnit }); setSensorFocusRequest(value => value + 1); }
         }}
-        dockHost={viewMode === 'design' ? designAssetsHost : null}
+        dockHost={designAssetsHost}
         resourceIssues={sceneResourceIssues?.projectId === selectedProjectId ? sceneResourceIssues.issues : []}
         selectedProjectId={selectedProjectId}
         isOpen={isProjectAssetsOpen}
@@ -3153,7 +3153,7 @@ function UnifiedMapPageInner() {
       </div>
       <div>
       <ThreeDModelLibraryPanel
-        dockHost={viewMode === 'design' ? designAssetsHost : null}
+        dockHost={designAssetsHost}
         isOpen={canEditProject && Boolean(selectedProjectId) && isModelLibraryOpen}
         viewMode={viewMode}
         projectModules={projectThreeDModules}
@@ -3205,7 +3205,7 @@ function UnifiedMapPageInner() {
 
       <div>
       <ThreeDCharacterLibraryPanel
-        dockHost={viewMode === 'design' ? designAssetsHost : null}
+        dockHost={designAssetsHost}
         isOpen={canEditProject && Boolean(selectedProjectId) && isCharacterLibraryOpen}
         projectModules={projectThreeDModules}
         selectedModuleId={placementThreedId}
@@ -3229,7 +3229,7 @@ function UnifiedMapPageInner() {
 
       <div>
       <ThreeDFarmBotLibraryPanel
-        dockHost={viewMode === 'design' ? designAssetsHost : null}
+        dockHost={designAssetsHost}
         isOpen={canEditProject && Boolean(selectedProjectId) && isFarmBotLibraryOpen}
         projectModules={projectThreeDModules}
         selectedModuleId={placementThreedId}
@@ -3256,7 +3256,7 @@ function UnifiedMapPageInner() {
       </div>
 
       <ThreeDBedPlacementPanel
-        dockHost={viewMode === 'design' ? designAssetsHost : null}
+        dockHost={designAssetsHost}
         isOpen={canEditProject && Boolean(selectedProjectId) && isBedPlacementOpen}
         projectModules={projectThreeDModules}
         selectedModuleId={placementThreedId}
@@ -3279,7 +3279,7 @@ function UnifiedMapPageInner() {
       />
 
       <ThreeDPlantingPlacementPanel
-        dockHost={viewMode === 'design' ? designAssetsHost : null}
+        dockHost={designAssetsHost}
         isOpen={canEditProject && Boolean(selectedProjectId) && isPlantingPlacementOpen}
         projectModules={projectThreeDModules}
         selectedModuleId={placementThreedId}

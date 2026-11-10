@@ -129,6 +129,7 @@ calls.length = 0; allowTransition = true; changeMode('design');
 assert(calls.includes('cancel')); assert(calls.includes('threed:design:entered')); assert(calls.includes('design')); assert.deepEqual(calls.at(-1), ['mode', 'design']);
 const react = require('react');
 const toolbar = load('src/components/map/header/ProjectSceneToolbar.tsx', {
+  './useToolbarMenuBounds': { useToolbarMenuBounds: () => ({ ref: null, style: undefined }) },
   '@/components/map/panels/ProjectMultimediaOverlay': { ProjectMultimediaToolbarButton: 'multimedia-button' },
   'react/jsx-runtime': require('react/jsx-runtime'), 'lucide-react': new Proxy({}, { get: () => 'svg' }),
   '@/components/map/panels/SceneOperationStatus': { SceneOperationStatus: 'status' }, '@/components/ui/button': { Button: 'button' },

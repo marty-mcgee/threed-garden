@@ -339,6 +339,12 @@
 }
 
 @media (any-pointer: coarse) {
+  .threed-project-toolbar :is(button, a),
+  .threed-design-plan-column :is(button, [role="button"]),
+  .threed-toolbar-dropdown-surface [role="menuitem"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
   .threed-workspace-panel :is(summary, button, a, input, select) {
     min-height: 44px;
     font-size: 12px;
@@ -448,6 +454,105 @@
 /* Shared desktop/sidebar sizing used by Assets, Model Library and Design properties. */
 .threed-scene-sidebar-size {
   @apply w-72 max-w-[calc(100vw-1rem)];
+}
+/* Fluid panels follow their workspace, including embedded/narrow columns. */
+.threed-design-workspace {
+  container: threed-design / inline-size;
+}
+.threed-design-workspace .threed-scene-sidebar-size {
+  width: clamp(14rem, 24cqw, 18rem);
+  max-width: 100%;
+}
+.threed-design-properties-access {
+  display: none;
+}
+/* Non-Design views retain the established floating left-panel placement. */
+.threed-design-workspace[data-design-active="false"] .threed-design-assets-dock {
+  position: absolute;
+  top: var(--threed-toolbar-height, 38px);
+  bottom: 0;
+  left: 0;
+  z-index: 40;
+  pointer-events: none;
+}
+.threed-design-workspace[data-design-active="false"][data-toolbar-reserved="true"] .threed-design-assets-dock {
+  top: 0;
+}
+.threed-design-assets-dock > * {
+  pointer-events: auto;
+}
+/* Canvas-first reading layout; the same owners remain mounted at every size. */
+@container threed-design (max-width: 56rem) {
+  .threed-design-layout {
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    scroll-padding-block: 0.5rem;
+  }
+  .threed-design-layout > [data-testid="design-viewing-area"],
+  .threed-design-layout > [data-testid="design-bottom-panel"]:not([hidden]),
+  .threed-design-layout .threed-design-editor {
+    display: contents;
+  }
+  .threed-design-layout > [role="separator"] {
+    display: none;
+  }
+  .threed-design-workspace .threed-scene-sidebar-size {
+    width: 100%;
+    max-width: 100%;
+  }
+  .threed-design-scene-column {
+    order: 1;
+    flex: none;
+    height: clamp(12rem, 40dvh, 26rem);
+    min-height: 0;
+    width: 100%;
+  }
+  .threed-design-workspace[data-design-active="false"] .threed-design-scene-column {
+    height: 100%;
+    min-height: 12rem;
+  }
+  .threed-design-plan-column {
+    order: 2;
+    flex: none;
+    height: clamp(16rem, 45dvh, 32rem);
+    width: 100%;
+  }
+  .threed-design-workspace[data-design-active] .threed-design-assets-dock {
+    order: 3;
+    position: relative;
+    inset: auto;
+    flex: none;
+    height: clamp(14rem, 55dvh, 32rem);
+    z-index: auto;
+    pointer-events: auto;
+  }
+  .threed-design-assets-dock:empty {
+    display: none;
+  }
+  .threed-design-properties-access {
+    display: flex;
+  }
+  .threed-design-properties {
+    order: 4;
+    position: relative;
+    inset: auto;
+    flex: none;
+    height: clamp(18rem, 60dvh, 36rem);
+    z-index: auto;
+    padding: clamp(0px, 1dvh, 0.75rem);
+    margin-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  }
+  .threed-design-properties > :first-child {
+    margin-bottom: clamp(0px, 1dvh, 0.5rem);
+  }
+}
+/* Defaults follow wrapping toolbar rows; restored inline positions still win. */
+[data-testid="project-scene-workspace"] :is(#project-assets-panel, #project-weather-overlay, #project-multimedia-overlay, .threed-inspector) {
+  top: var(--threed-toolbar-height, 38px);
+  max-height: calc(100% - var(--threed-toolbar-height, 38px) - max(8px, env(safe-area-inset-bottom)));
+}
+.threed-design-workspace .threed-design-assets-dock #project-assets-panel {
+  max-height: 100%;
 }
 .threed-toolbar-dropdown-surface:hover,
 .threed-toolbar-dropdown-surface:focus-within,

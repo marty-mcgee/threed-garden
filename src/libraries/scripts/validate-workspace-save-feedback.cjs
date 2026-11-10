@@ -43,6 +43,7 @@ const jsx = (type, props) => ({ type, props });
 vm.runInNewContext(ts.transpileModule(fs.readFileSync('src/components/map/header/ProjectSceneToolbar.tsx', 'utf8'), {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX },
 }).outputText, { exports: toolbarExports, require(name) {
+  if (name === './useToolbarMenuBounds') return { useToolbarMenuBounds: () => ({ ref: null, style: undefined }) };
   if (name === 'react/jsx-runtime') return { jsx, jsxs: jsx };
   return new Proxy({}, { get: (_target, key) => String(key) });
 } });

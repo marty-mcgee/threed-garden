@@ -16,6 +16,7 @@ vm.runInNewContext(ts.transpileModule(source, {
   exports: exportsValue,
   require(name) {
     if (name === 'react/jsx-runtime') return { jsx, jsxs: jsx };
+    if (name === './useToolbarMenuBounds') return { useToolbarMenuBounds: () => ({ ref: null, style: undefined }) };
     return new Proxy({}, { get: (_, key) => key });
   },
   window: { dispatchEvent: event => events.push(event) },
@@ -89,6 +90,7 @@ vm.runInNewContext(ts.transpileModule(fs.readFileSync('src/components/map/header
   exports: headerExports,
   require(name) {
     if (name === 'react') return { useEffect() {}, useRef: () => ({ current: null }) };
+    if (name === './useToolbarMenuBounds') return { useToolbarMenuBounds: () => ({ ref: null, style: undefined }) };
     if (name === 'react/jsx-runtime') return { jsx, jsxs: jsx };
     return new Proxy({}, { get: (_, key) => key });
   },

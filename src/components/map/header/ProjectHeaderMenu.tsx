@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useToolbarMenuBounds } from './useToolbarMenuBounds';
 import {
   Clock,
   ExternalLink,
@@ -73,6 +74,7 @@ export function ProjectHeaderMenu({
   onOpenProjectTour: () => void;
   onOpenProjectSettings: () => void;
 }) {
+  const menuBounds = useToolbarMenuBounds(isOpen);
   const containerRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
 
@@ -89,25 +91,25 @@ export function ProjectHeaderMenu({
   }, [isOpen, onDismiss]);
 
   return (
-    <div ref={containerRef} className="relative flex flex-col items-start" onKeyDown={(event) => {
+    <div ref={containerRef} className="relative flex min-w-0 max-w-full flex-col items-start" onKeyDown={(event) => {
       if (event.key !== 'Escape' || !isOpen) return;
       event.preventDefault();
       event.stopPropagation();
       onDismiss();
       triggerRef.current?.focus();
     }}>
-      <div className="flex items-center gap-2">
+      <div className="flex min-w-0 max-w-full items-center gap-2">
         <Button
           ref={triggerRef}
           type="button"
           variant={isOpen ? 'secondary' : 'outline'}
           size="sm"
-          className="h-7 gap-1 px-2 text-xs font-medium"
+          className="h-7 min-w-0 max-w-full gap-1 px-2 text-xs font-medium"
           aria-expanded={selectedProjectId ? isOpen : undefined}
           onClick={onTrigger}
         >
           <FolderOpen className="h-3.5 w-3.5" />
-          {selectedProjectId ? projectName || `Project #${selectedProjectId}` : 'Select Project'}
+          <span className="min-w-0 truncate">{selectedProjectId ? projectName || `Project #${selectedProjectId}` : 'Select Project'}</span>
           {isOpen && selectedProjectId
             ? <ChevronDown className="h-3.5 w-3.5" />
             : <ChevronRight className="h-3.5 w-3.5" />}
@@ -115,7 +117,7 @@ export function ProjectHeaderMenu({
       </div>
 
       {selectedProjectId && isOpen && (
-        <div className="threed-workspace-panel absolute left-0 top-full z-[2000] mt-1 max-h-[70dvh] w-72 max-w-[calc(100vw-2rem)] space-y-2 overflow-y-auto overscroll-contain rounded-lg border p-2 shadow-xl">
+        <div ref={menuBounds.ref} style={menuBounds.style} className="threed-workspace-panel absolute left-0 top-full z-[2000] mt-1 max-h-[70dvh] w-72 max-w-[calc(100vw-2rem)] space-y-2 overflow-y-auto overscroll-contain rounded-lg border p-2 shadow-xl">
           {!canEditProject && <p className="px-1 text-xs text-muted-foreground">Read-only view. Only the Project owner can use editing and management actions.</p>}
           <div className="space-y-1.5 px-1">
             <div className="flex items-center gap-2 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">

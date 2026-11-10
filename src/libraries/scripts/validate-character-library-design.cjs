@@ -21,7 +21,7 @@ for (const viewMode of ['design', 'combined', '3d', '2d']) {
  select(character);
  assert.equal(selections[0], character);
  assert.deepEqual(modes, [viewMode === '2d' ? '3d' : viewMode]);
- assert.equal(vm.runInNewContext(attribute('dockHost'), context), viewMode === 'design' ? host : null);
+ assert.equal(vm.runInNewContext(attribute('dockHost'), context), host);
 }
 const exportsMock = {};
 const jsx = (type, props) => ({ type, props });

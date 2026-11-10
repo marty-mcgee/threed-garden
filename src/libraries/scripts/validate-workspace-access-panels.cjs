@@ -27,7 +27,7 @@ for(const name of names){
  assert(docked.child.props.className.includes('overflow-y-auto'));
  assert(docked.child.props.className.includes('[&>*]:shrink-0'));
  assert.equal(exports[name]({...props,isOpen:false,dockHost:host}),null);
- assert(page.includes('<'+name+"\n        dockHost={viewMode === 'design' ? designAssetsHost : null}"),name+' must use the existing Design host');
+ assert(page.includes('<'+name+"\n        dockHost={designAssetsHost}"),name+' must retain the shared host across view changes');
 }
 console.log('PASS: four access panels dock, preserve floating mode, scroll their complete forms, use shared width, and close cleanly.');
 

@@ -24,6 +24,7 @@ const tasks = {
   'threed-multimedia': [node('validate-threed-multimedia.cjs')],
   'threed-multimedia-browser': [node('validate-threed-multimedia-browser.cjs')],
   'threed-project-presentation-browser': [node('validate-project-presentation-browser.cjs')],
+  'threed-mobile-panels-browser': [node('validate-mobile-project-panels-browser.cjs')],
   'threed-assembly-browser': [node('validate-assembly-workspace-browser.cjs')],
   'learn-data-structure': [
     [...node('generate-schema-visualization.cjs'), '--check'],
@@ -332,7 +333,15 @@ const ci = [
 
 const unavailableFixtures = ['threed-fbx-material-targets'];
 // Native Chromium/WebGL is optional and intentionally separate from portable CI/all.
-const runnableTasks = Object.keys(tasks).filter((name) => !unavailableFixtures.includes(name) && !['threed-model-builder-browser', 'threed-home-design-browser', 'shadcn-ui-browser', 'threed-multimedia-browser', 'threed-project-presentation-browser', 'threed-assembly-browser'].includes(name));
+const runnableTasks = Object.keys(tasks).filter((name) => !unavailableFixtures.includes(name) && ![
+  'threed-model-builder-browser',
+  'threed-home-design-browser',
+  'shadcn-ui-browser',
+  'threed-multimedia-browser',
+  'threed-project-presentation-browser',
+  'threed-assembly-browser',
+  'threed-mobile-panels-browser',
+].includes(name));
 
 const groups = {
   all: runnableTasks,

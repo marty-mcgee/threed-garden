@@ -1,6 +1,7 @@
 'use client';
 
 import type { Ref, RefObject } from 'react';
+import { useToolbarMenuBounds } from './useToolbarMenuBounds';
 import {
   Box,
   Boxes,
@@ -115,6 +116,7 @@ export function ProjectSceneToolbar({
   savingProject,
   onSaveProject,
 }: ProjectSceneToolbarProps) {
+  const addMenuBounds = useToolbarMenuBounds(sceneAddMenuOpen);
   const editHelp = 'Only the Project owner can use this action. Guests can explore this Project.';
   return (
     <div className="flex min-w-0 max-w-full flex-wrap items-center gap-1">
@@ -159,7 +161,7 @@ export function ProjectSceneToolbar({
           </Button>
 
           {sceneAddMenuOpen && (
-            <div className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[2000] mt-1 max-h-[min(24rem,70dvh)] w-56 max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain rounded-lg border p-1.5 shadow-xl backdrop-blur-sm">
+            <div ref={addMenuBounds.ref} style={addMenuBounds.style} className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[2000] mt-1 max-h-[min(24rem,70dvh)] w-56 max-w-[calc(100vw-2rem)] overflow-y-auto overscroll-contain rounded-lg border p-1.5 shadow-xl backdrop-blur-sm">
               <div className="px-2 pb-1 pt-0.5 text-[10px] font-semibold uppercase tracking-wide text-foreground/60">ThreeD Marker Type</div>
               {!canEditProject && <p className="px-2 py-1 text-xs text-muted-foreground">{editHelp}</p>}
               <div className="grid grid-cols-1 gap-0.5">
@@ -204,7 +206,7 @@ export function ProjectSceneToolbar({
         <div id="project-environment-controls-host" className="relative" hidden={viewMode === '2d'} />
       )}
 
-      {selectedProjectId && onToggleWeather && <Button ref={weatherTriggerRef} type="button" variant={weatherOpen ? 'secondary' : 'outline'} size="sm" className="h-7 gap-1 px-2 text-xs" aria-expanded={weatherOpen} aria-controls="project-weather-overlay" onClick={onToggleWeather} title="Project Weather"><CloudSun className="h-3.5 w-3.5" /><span className="hidden sm:inline">Weather</span></Button>}
+      {selectedProjectId && onToggleWeather && <Button ref={weatherTriggerRef} type="button" variant={weatherOpen ? 'secondary' : 'outline'} size="sm" className="h-7 gap-1 px-2 text-xs" aria-expanded={weatherOpen} aria-controls="project-weather-overlay" onClick={onToggleWeather} aria-label="Project Weather" title="Project Weather"><CloudSun className="h-3.5 w-3.5" /><span className="hidden sm:inline">Weather</span></Button>}
       {selectedProjectId && onToggleMultimedia && <ProjectMultimediaToolbarButton open={multimediaOpen} onClick={onToggleMultimedia} triggerRef={multimediaTriggerRef} />}
 
       <SceneOperationStatus operation={activeOperation} viewMode={viewMode} onCancel={onCancelOperation} />

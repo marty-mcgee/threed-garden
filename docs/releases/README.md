@@ -6,6 +6,8 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
+- [v0.32.0 - App: Mobile Device Responsiveness (prepared for production release)](v0.32.0.md)
+
 - [v0.31.13 - ThreeD: JSCAD Assembly Example Library](v0.31.13.md)
 
 - [v0.31.12 - ThreeD: JSON Assembly Import and Deletion Fix](v0.31.12.md)

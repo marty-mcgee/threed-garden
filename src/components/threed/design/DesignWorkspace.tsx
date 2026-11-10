@@ -14,19 +14,27 @@ export function DesignWorkspace({ active, reserveToolbar = false, editor, childr
     observer.observe(element); return () => observer.disconnect();
   }, []);
   useEffect(() => {
-    const toolbar = container.current?.closest('[data-testid="project-scene-workspace"]')?.querySelector('.threed-project-toolbar');
+    const workspace = container.current?.closest<HTMLElement>('[data-testid="project-scene-workspace"]');
+    const toolbar = workspace?.querySelector('.threed-project-toolbar');
     if (!toolbar) return;
-    const measure = () => setToolbarHeight(Math.ceil(toolbar.getBoundingClientRect().height));
+    const measure = () => {
+      const measured = Math.ceil(toolbar.getBoundingClientRect().height);
+      setToolbarHeight(measured);
+      workspace?.style.setProperty('--threed-toolbar-height', `${measured}px`);
+    };
     measure(); const observer = new ResizeObserver(measure); observer.observe(toolbar); return () => observer.disconnect();
   }, []);
-  const minimum = Math.min(180, availableHeight * .35), bottomMinimum = Math.min(260, availableHeight * .45);
+  const minimum = Math.min(180, availableHeight * .2);
+  const bottomMinimum = Math.min(260, Math.max(0, availableHeight - minimum - 6));
   const mainHeight = Math.max(minimum, Math.min(availableHeight - bottomMinimum - 6, availableHeight * (split ?? height) / 100));
-  return <div ref={container} data-testid="design-scene-split" className="absolute inset-x-0 bottom-0 flex min-h-0 min-w-0 flex-col overflow-hidden" style={{ top: active || reserveToolbar ? toolbarHeight : 0 }}>
-    <div data-testid="design-viewing-area" className="flex min-h-0 min-w-0 shrink-0" style={{ height: active ? mainHeight : '100%' }}>
-    <div ref={assetsHostRef} hidden={!active} data-testid="design-assets-host" className="threed-scene-sidebar-size relative min-h-0 shrink-0 overflow-hidden" />
-    <div data-testid="design-scene-column" className="min-h-0 min-w-0 flex-1">{children}</div>
+  return <div ref={container} data-testid="design-scene-split" data-design-active={active} data-toolbar-reserved={active || reserveToolbar} className="threed-design-workspace absolute inset-x-0 bottom-0 flex min-h-0 min-w-0 flex-col overflow-hidden" style={{ top: active || reserveToolbar ? toolbarHeight : 0 }}>
+    <div className="threed-design-layout flex h-full min-h-0 min-w-0 flex-col">
+    <div data-testid="design-viewing-area" className="relative flex min-h-0 min-w-0 shrink-0" style={{ height: active ? mainHeight : '100%' }}>
+    <div ref={assetsHostRef} data-testid="design-assets-host" className="threed-design-assets-dock threed-scene-sidebar-size relative min-h-0 shrink-0 overflow-hidden" />
+    <div data-testid="design-scene-column" tabIndex={-1} className="threed-design-scene-column min-h-0 min-w-0 flex-1">{children}</div>
     </div>
     <ScenePanelDivider hidden={!active} containerRef={container} value={mainHeight / availableHeight * 100} onChange={onSplitChange ?? setHeight} axis="vertical" label="Resize bottom Design workspace" />
     <section hidden={!active} inert={!active} data-testid="design-bottom-panel" aria-label="Project ThreeD Design workspace" className="min-h-0 min-w-0 flex-1 overflow-hidden border-t border-white/10 bg-[#0d1420]">{editor}</section>
+    </div>
   </div>;
 }
