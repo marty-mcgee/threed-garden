@@ -1,21 +1,26 @@
 // app/layout.tsx
 import type { Metadata } from "next";
 import { cookies } from 'next/headers';
+import { cache } from 'react';
 import { Providers } from "./providers";
 import "./globals.css";
 import { inter } from "./fonts";
 import AppPageTitle from '@/components/layout/AppPageTitle';
 import { readMetaTags } from '@/libraries/services/settings/meta-tags';
-import { defaultMetaTags, metaTagsMetadata } from '@/libraries/config/meta-tags';
+import { appTitlePrefix, defaultMetaTags, metaTagsMetadata } from '@/libraries/config/meta-tags';
 // import { NowPlayingBar } from '@/components/multimedia/NowPlayingBar';
 
-export async function generateMetadata(): Promise<Metadata> {
-  try { return metaTagsMetadata(await readMetaTags()); }
+const readPageMetaTags = cache(async () => {
+  try { return await readMetaTags(); }
   catch {
     // Optional metadata must not make the App unavailable during a Settings outage.
     console.warn('App meta tags unavailable; using established metadata defaults.');
-    return metaTagsMetadata(defaultMetaTags());
+    return defaultMetaTags();
   }
+});
+
+export async function generateMetadata(): Promise<Metadata> {
+  return metaTagsMetadata(await readPageMetaTags());
 }
 
 export default async function RootLayout({
@@ -24,6 +29,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const storedTheme = (await cookies()).get('threed-theme')?.value;
+  const titlePrefix = appTitlePrefix(await readPageMetaTags());
   const initialTheme = storedTheme === 'light' || storedTheme === 'dark' || storedTheme === 'system'
     ? storedTheme
     : 'dark';
@@ -38,7 +44,7 @@ export default async function RootLayout({
       suppressHydrationWarning
     >
       <body>
-        <AppPageTitle>
+        <AppPageTitle titlePrefix={titlePrefix}>
         <Providers initialTheme={initialTheme} initialResolvedTheme={initialResolvedTheme}>
           {children}
 

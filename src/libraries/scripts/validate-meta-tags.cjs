@@ -32,7 +32,22 @@ const route=load('src/app/api/settings/meta-tags/route.ts',{'@/libraries/auth':{
 const request=(body,origin='https://example.test')=>new Request('https://example.test/api/settings/meta-tags',{method:'PUT',headers:{origin,'Content-Type':'application/json'},body:JSON.stringify(body)});
 (async()=>{
  const initial=contract.defaultMetaTags();
- assert.deepEqual(clone(contract.metaTagsMetadata(initial)),{description:contract.defaultDescription});
+ const defaults=contract.metaTagsMetadata(initial);
+ assert.equal(defaults.description,contract.defaultDescription);
+ assert(defaults.authors[0].name);assert(defaults.keywords);assert(defaults.robots);
+ assert.equal(defaults.openGraph.images[0].url,contract.defaultSocialImage);
+ assert.equal(defaults.openGraph.title,contract.defaultSharingTitle);
+ assert.equal(defaults.openGraph.siteName,'ThreeD App');assert(defaults.openGraph.description);
+ assert.equal(defaults.twitter,undefined,'No Twitter defaults are introduced');
+ const blank=contract.parseMetaTags({...initial,enabled:true,tags:contract.metaTagNames.map(name=>({name,content:'  '}))});
+ assert.deepEqual(clone(contract.metaTagsMetadata(blank)),clone(defaults));
+ assert.deepEqual(clone(contract.metaTagsOverrides(blank)),{},'Blank Project tags inherit rather than overriding defaults');
+ assert.equal(contract.appTitlePrefix(blank),'ThreeD Garden');
+ const custom=contract.metaTagsMetadata({...initial,enabled:true,tags:[{name:'og:title',content:'Saved sharing title'}]});
+ assert.equal(custom.openGraph.title,'Saved sharing title');assert.equal(custom.openGraph.images[0].url,contract.defaultSocialImage);
+ assert.deepEqual(clone(contract.metaTagsMetadata({...blank,enabled:false})),clone(defaults));
+ const image=fs.readFileSync('public/assets/social/project-workspace.png');
+ assert.equal(image.subarray(1,4).toString(),'PNG');assert(image.readUInt32BE(16)>=1200);assert(image.readUInt32BE(20)>=630);
  const input={...initial,enabled:true,tags:[{name:'description',content:'Garden & "design" <script>'},{name:'og:title',content:'Garden'},{name:'og:image',content:'https://example.test/image.png'},{name:'robots',content:'noindex, follow'},{name:'twitter:card',content:'summary_large_image'}]};
  const metadata=contract.metaTagsMetadata(contract.parseMetaTags(input));
  assert.equal(metadata.description,input.tags[0].content);assert.equal(metadata.openGraph.title,'Garden');assert.equal(metadata.twitter.card,'summary_large_image');assert.equal(metadata.robots,'noindex, follow');assert.equal(metadata.title,undefined);
@@ -47,10 +62,10 @@ const request=(body,origin='https://example.test')=>new Request('https://example
  const savedResponse=await route.PUT(request(input));assert.equal(savedResponse.status,200);const saved=await savedResponse.json();assert(saved.revision);assert.equal(data.audits.length,1);assert(locks>=2);
  assert.equal((await route.PUT(request(input))).status,409);assert.equal(data.audits.length,1);
  const deletion={...saved,tags:[],enabled:false};failAudit=true;assert.equal((await route.PUT(request(deletion))).status,503);assert.deepEqual(clone(await service.readMetaTags()),saved);failAudit=false;
- assert.equal((await route.PUT(request(deletion))).status,200);assert.deepEqual(clone(contract.metaTagsMetadata(await service.readMetaTags())),{description:contract.defaultDescription});
+ assert.equal((await route.PUT(request(deletion))).status,200);assert.deepEqual(clone(contract.metaTagsMetadata(await service.readMetaTags())),clone(defaults));
  const React=require('react'),{renderToStaticMarkup}=require('react-dom/server');const html=renderToStaticMarkup(React.createElement('meta',{name:'description',content:input.tags[0].content}));assert(html.includes('&lt;script&gt;'));assert(!html.includes('<script>'));
  let draft=clone(initial);const jsx=(type,props)=>({type,props});const ui=load('src/components/settings/MetaTagsSettings.tsx',{'react/jsx-runtime':{jsx,jsxs:jsx},react:{},'lucide-react':new Proxy({},{get:(_,k)=>k}),'@/components/ui/button':{Button:'button'},'./SettingsSection':{SettingsSection:'section'},'@/libraries/config/meta-tags':contract});
  const editor={allowed:true,draft,disabled:false,dirty:true,setDraft:v=>{draft=v},snapshot:initial};const nodes=v=>Array.isArray(v)?v.flatMap(nodes):v&&typeof v==='object'?[v,...nodes(v.props?.children)]:[];const text=v=>Array.isArray(v)?v.map(text).join(''):typeof v==='string'?v:text(v?.props?.children??[]);
- let tree=nodes(ui.MetaTagsSettings({editor}));tree.find(n=>n.type==='button'&&text(n)==='Add Meta Tag').props.onClick();assert.equal(draft.tags.length,1);editor.draft=draft;tree=nodes(ui.MetaTagsSettings({editor}));tree.find(n=>n.props?.['aria-label']==='Content for description').props.onChange({target:{value:'New description'}});assert.equal(draft.tags[0].content,'New description');editor.draft=draft;tree=nodes(ui.MetaTagsSettings({editor}));tree.find(n=>n.props?.['aria-label']==='Remove description').props.onClick();assert.equal(draft.tags.length,0);
+ let tree=nodes(ui.MetaTagsSettings({editor}));tree.find(n=>n.type==='button'&&text(n)==='Add Meta Tag').props.onClick();assert.equal(draft.tags.length,1);editor.draft=draft;tree=nodes(ui.MetaTagsSettings({editor}));tree.find(n=>n.props?.['aria-label']==='Meta tag 1').props.onChange({target:{value:'description'}});editor.draft=draft;tree=nodes(ui.MetaTagsSettings({editor}));tree.find(n=>n.props?.['aria-label']==='Content for description').props.onChange({target:{value:'New description'}});assert.equal(draft.tags[0].content,'New description');editor.draft=draft;tree=nodes(ui.MetaTagsSettings({editor}));tree.find(n=>n.props?.['aria-label']==='Remove description').props.onClick();assert.equal(draft.tags.length,0);
  console.log('PASS meta-tag contracts, metadata mapping/escaping, actual CRUD controls, owner gates, origin/size bounds, audited save/removal, stale revisions and audit rollback (mock DB).');
 })().catch(error=>{console.error(error);process.exitCode=1});

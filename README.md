@@ -26,7 +26,9 @@ The application is developed in the **ThreeD Garden** repository and is availabl
 
 ## Latest features
 
-Current production release: **[v0.31.3](docs/releases/v0.31.3.md)**. Recent releases bring a more consistent Admin experience, account management, shared App styling, and richer content workflows:
+Developer-confirmed production release: **[v0.32.1](docs/releases/v0.32.1.md)**. Recent releases bring a more consistent Admin experience, account management, shared App styling, and richer content workflows:
+
+- **HTML and SEO Settings.** Super Admins manage App-wide metadata, and Project owners can save Project-specific overrides. Learn retains its route-specific description. See the [release record](docs/releases/v0.32.1.md) for released scope and subsequent unreleased refinements.
 
 - **Clearer Admin navigation and creation buttons.** An explicit Module hierarchy, **Add User** navigation, consistent **Add + entity** sidebar labels, and distinct current-page highlighting make common tasks easier to find. Creation buttons across Admin Module pages use green styling; sidebar links retain their ordinary navigation styling.
 - **App Settings for Module identity.** Super Admins choose shared colors and Lucide icons for App Modules. Connected Admin headers, sidebar items, and fixed record icons use those saved settings. Personal appearance, navigation visibility, and per-user sidebar expansion remain separate preferences.
@@ -461,7 +463,7 @@ See the [validation guide](docs/agents/VALIDATION.md) for task-specific and isol
 
 ## 🤝 Contribute and follow development
 
-The latest production release is [v0.31.3](docs/releases/v0.31.3.md). See [release history](docs/releases/README.md) for version-specific scope and checks, and [current context](CONTEXT.md) for active work and known limitations.
+The latest Developer-confirmed production release is [v0.32.1](docs/releases/v0.32.1.md). See [release history](docs/releases/README.md) for version-specific scope and checks, and [current context](CONTEXT.md) for active work and known limitations.
 
 Have a reproducible bug or a focused feature idea? [Open an issue](https://github.com/marty-mcgee/threed-garden/issues). Before contributing, review the [contribution workflow](docs/agents/TASK_CHECKLISTS.md), existing ownership boundaries, and applicable checks.
 

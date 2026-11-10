@@ -35,7 +35,7 @@ const labels: Record<string, string> = {
   chatgpt: 'ChatGPT',
 };
 
-export function getAppPageTitle(pathname: string | null): string {
+export function getAppPageTitle(pathname: string | null, titlePrefix = 'ThreeD Garden'): string {
   const segments = (pathname ?? '/').split('/').filter(Boolean);
   const titles = segments
     // ThreeD is a grouping route within these surfaces, not another page title.
@@ -46,16 +46,16 @@ export function getAppPageTitle(pathname: string | null): string {
       return labels[segment] ?? segment.replace(/^_/, '').split('-')
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     });
-  return ['ThreeD Garden', ...titles].join(' - ');
+  return [titlePrefix, ...titles].join(' - ');
 }
 
 /** One title owner for server rendering and client-side route transitions. */
-export default function AppPageTitle({ children }: { children: ReactNode }) {
+export default function AppPageTitle({ children, titlePrefix = 'ThreeD Garden' }: { children: ReactNode; titlePrefix?: string }) {
   const pathname = usePathname();
   const [project, setProject] = useState<ProjectTitle>(null);
   const suffix = project?.pathname === pathname ? ` - ${project.name} [${project.id}]` : '';
   return <ProjectTitleContext.Provider value={setProject}>
-    <title>{getAppPageTitle(pathname) + suffix}</title>
+    <title>{getAppPageTitle(pathname, titlePrefix) + suffix}</title>
     {children}
   </ProjectTitleContext.Provider>;
 }

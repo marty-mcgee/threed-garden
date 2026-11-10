@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-11-09",
+  "generatedAt": "2026-11-10",
   "branch": "main",
-  "head": "412875dd9af5f15e8caa751ecf78ae970e1c55a3",
-  "version": "0.32.1",
+  "head": "ea8953a6339f00256e5ffa8575d1c59a54538e34",
+  "version": "0.32.2",
   "summary": {
     "tables": 86,
     "columns": 1230,

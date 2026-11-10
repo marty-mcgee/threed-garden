@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.32.1 - App: HTML and SEO Meta Tags (prepared; Developer verification confirmed)](v0.32.1.md)
+- [v0.32.2 - App: Metadata Defaults and Open Graph Previews (prepared; deployment pending)](v0.32.2.md)
+
+- [v0.32.1 - App: HTML and SEO Meta Tags (Developer-confirmed production release)](v0.32.1.md)
 
 - [v0.32.0 - App: Mobile Device Responsiveness (Developer-confirmed release; Vercel/device checks pending)](v0.32.0.md)
 
