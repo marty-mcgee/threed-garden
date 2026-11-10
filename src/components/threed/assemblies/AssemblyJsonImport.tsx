@@ -40,6 +40,214 @@ const examples = [
     file: 'mcgee-home-garden-v001.json',
     label: 'McGee Home Garden',
   },
+  {
+    file: 'slices-double-screw.json',
+    label: 'Slices: Double Screw',
+  },
+  {
+    file: 'slices-four2three-round.json',
+    label: 'Slices: Four to Three - Rounded',
+  },
+  {
+    file: 'slices-four2three.json',
+    label: 'Slices: Four to Three',
+  },
+  {
+    file: 'slices-jar-barrel.json',
+    label: 'Slices: Jar barrel',
+  },
+  {
+    file: 'slices-jar.json',
+    label: 'Slices: Jar',
+  },
+  {
+    file: 'slices-non-aff.json',
+    label: 'Slices: Non Affine Transformation',
+  },
+  {
+    file: 'slices-rose.json',
+    label: 'Slices: Rose Curve',
+  },
+  {
+    file: 'slices-screw.json',
+    label: 'Slices: Screw',
+  },
+  {
+    file: 'slices-slices.json',
+    label: 'Slices: Slices (single screw evolution)',
+  },
+  {
+    file: 'slices-spring.json',
+    label: 'Slices: Spring',
+  },
+  {
+    file: 'slices-three2four.json',
+    label: 'Slices: Three to Four',
+  },
+  {
+    file: 'slices-tor.json',
+    label: 'Slices: Torus - Multicolor',
+  },
+  {
+    file: 'jscad-axis-coupler.json',
+    label: "JSCAD: Axis Coupler",
+  },
+  {
+    file: 'jscad-balloons.json',
+    label: "JSCAD: Balloons",
+  },
+  {
+    file: 'jscad-benchmark.json',
+    label: "JSCAD: Benchmark SCAD Compatibility",
+  },
+  {
+    file: 'jscad-benchmark_csg.json',
+    label: "JSCAD: Benchmark",
+  },
+  {
+    file: 'jscad-bunch-cubes.json',
+    label: "JSCAD: Bunch of Cubes",
+  },
+  {
+    file: 'jscad-celtic-knot-ring.json',
+    label: "JSCAD: Celtic Knot Ring",
+  },
+  {
+    file: 'jscad-center.json',
+    label: "JSCAD: Center",
+  },
+  {
+    file: 'jscad-colors.json',
+    label: "JSCAD: Colors",
+  },
+  {
+    file: 'jscad-dodecahedron.json',
+    label: "JSCAD: Dodecahedron",
+  },
+  {
+    file: 'jscad-example001.json',
+    label: "JSCAD: Example 001",
+  },
+  {
+    file: 'jscad-example002.json',
+    label: "JSCAD: Example 002",
+  },
+  {
+    file: 'jscad-example003.json',
+    label: "JSCAD: Example 003",
+  },
+  {
+    file: 'jscad-example004.json',
+    label: "JSCAD: Example 004",
+  },
+  {
+    file: 'jscad-example005.json',
+    label: "JSCAD: Example 005",
+  },
+  {
+    file: 'jscad-expand.json',
+    label: "JSCAD: Expand",
+  },
+  {
+    file: 'jscad-gear.json',
+    label: "JSCAD: Gear",
+  },
+  {
+    file: 'jscad-grille.json',
+    label: "JSCAD: Grille",
+  },
+  {
+    file: 'jscad-hull.json',
+    label: "JSCAD: Hull",
+  },
+  {
+    file: 'jscad-iphone4-case.json',
+    label: "JSCAD: iPhone 4 Dock",
+  },
+  {
+    file: 'jscad-lamp-shade.json',
+    label: "JSCAD: Lamp Shade",
+  },
+  {
+    file: 'jscad-linear_extrude.json',
+    label: "JSCAD: Linear Extrude",
+  },
+  {
+    file: 'jscad-logo.json',
+    label: "JSCAD: OpenJSCAD.org Logo",
+  },
+  {
+    file: 'jscad-lookup.json',
+    label: "JSCAD: Lookup",
+  },
+  {
+    file: 'jscad-name_plate.json',
+    label: "JSCAD: Name Plate",
+  },
+  {
+    file: 'jscad-polyhedron.json',
+    label: "JSCAD: Polyhedron",
+  },
+  {
+    file: 'jscad-primitives.json',
+    label: "JSCAD: Primitives",
+  },
+  {
+    file: 'jscad-rectangular_extrude.json',
+    label: "JSCAD: Rectangular Extrude",
+  },
+  {
+    file: 'jscad-rotate_extrude.json',
+    label: "JSCAD: Rotate Extrude",
+  },
+  {
+    file: 'jscad-rounded-cube.json',
+    label: "JSCAD: Rounded Cube",
+  },
+  {
+    file: 'jscad-s-hook.json',
+    label: "JSCAD: S Hook",
+  },
+  {
+    file: 'jscad-servo.json',
+    label: "JSCAD: Servo Motor",
+  },
+  {
+    file: 'jscad-simplex.json',
+    label: "JSCAD: Simplex Vector Font",
+  },
+  {
+    file: 'jscad-sphere.json',
+    label: "JSCAD: Sphere",
+  },
+  {
+    file: 'jscad-stepper-motor.json',
+    label: "JSCAD: Stepper Motor",
+  },
+  {
+    file: 'jscad-text.json',
+    label: "JSCAD: Vector Text Rendering",
+  },
+  {
+    file: 'jscad-torus.json',
+    label: "JSCAD: Torus()",
+  },
+  {
+    file: 'jscad-transparency.json',
+    label: "JSCAD: Transparency",
+  },
+  {
+    file: 'jscad-transparency2.json',
+    label: "JSCAD: Transparency 2",
+  },
+  {
+    file: 'jscad-include-test-main.json',
+    label: "JSCAD: Recursive Include Example",
+  },
+  {
+    file: 'jscad-platonics-main.json',
+    label: "JSCAD: Platonics",
+  },
 ] as const;
 
 interface Props {

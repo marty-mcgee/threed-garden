@@ -1,7 +1,11 @@
 The Fortunate Cabin, McGee Home Garage and McGee Home Garden geometry examples
 are converted from OpenJSCAD designs authored by Marty McGee and marked MIT.
 
-Copyright (c) Marty McGee
+The twelve slices-* geometry examples are converted from OpenJSCAD designs
+by Eduard Bespalov, each marked MIT License in its original source.
+
+Copyright (c) Marty McGee (Cabin, Garage and Garden examples)
+Copyright (c) Eduard Bespalov (slices examples)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,3 +24,50 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+
+Additional jscad-* examples retain these source credits (MIT unless noted):
+jscad-axis-coupler.json: Joost Nieuwenhuijse; MIT License
+jscad-balloons.json: Z3 Dev; MIT License
+jscad-benchmark.json: Rene K. Mueller; MIT License
+jscad-benchmark_csg.json: Z3 Development; MIT License
+jscad-bunch-cubes.json: Rene K. Mueller; MIT License
+jscad-celtic-knot-ring.json: Joost Nieuwenhuijse; MIT License
+jscad-center.json: Rene K. Mueller; MIT License
+jscad-colors.json: Rene K. Mueller; MIT License
+jscad-dodecahedron.json: OpenSCAD, adapted by Rene K. Mueller; MIT License
+jscad-example001.json: OpenSCAD.org, adapted by Rene K. Mueller; MIT License
+jscad-example002.json: OpenSCAD.org, adapted by Rene K. Mueller; MIT License
+jscad-example003.json: OpenSCAD.org, adapted by Rene K. Mueller; MIT License
+jscad-example004.json: OpenSCAD.org, adapted by Rene K. Mueller; MIT License
+jscad-example005.json: OpenSCAD.org, adapted by Rene K. Mueller; MIT License
+jscad-expand.json: OpenSCAD.org, adapted by Rene K. Mueller; MIT License
+jscad-gear.json: Joost Nieuwenhuijse; MIT License
+jscad-grille.json: Joost Nieuwenhuijse; MIT License
+jscad-hull.json: Rene K. Mueller; MIT License
+jscad-iphone4-case.json: Joost Nieuwenhuijse; MIT License
+jscad-lamp-shade.json: Joost Nieuwenhuijse; MIT License
+jscad-linear_extrude.json: Rene K. Mueller; MIT License
+jscad-logo.json: Rene K. Mueller; MIT License
+jscad-lookup.json: OpenSCAD.org, adapted by Rene K. Mueller; MIT License (repository default)
+jscad-name_plate.json: Rene K. Mueller; MIT License
+jscad-polyhedron.json: OpenSCAD.org, adapted by Rene K. Mueller; MIT License
+jscad-primitives.json: Rene K. Mueller; MIT License
+jscad-rectangular_extrude.json: Rene K. Mueller; MIT License
+jscad-rotate_extrude.json: Rene K. Mueller; MIT License
+jscad-rounded-cube.json: Rene K. Mueller; MIT License
+jscad-s-hook.json: Joost Nieuwenhuijse; MIT License
+jscad-servo.json: Joost Nieuwenhuijse; MIT License
+jscad-simplex.json: Rene K. Mueller; MIT License
+jscad-sphere.json: Rene K. Mueller; MIT License
+jscad-stepper-motor.json: Derrick Oswald; MIT License
+jscad-text.json: Rene K. Mueller; MIT License
+jscad-torus.json: Rene K. Mueller; MIT License
+jscad-transparency.json: Rene K. Mueller; MIT License
+jscad-transparency2.json: Rene K. Mueller; MIT License
+jscad-include-test-main.json: OpenJSCAD contributors; MIT License (repository default)
+jscad-platonics-main.json: Willliam A. Adams, Rene K. Mueller; Public Domain
+
+These files are geometry conversions with original returned-solid boundaries,
+colors and default parameters retained. Randomized scripts use seed 314159.
+MIT permission and disclaimer above apply to MIT-derived files; public-domain
+examples retain their source designation. No CC BY-SA examples are bundled.
