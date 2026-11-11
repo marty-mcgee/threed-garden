@@ -12,6 +12,7 @@ import {
   ChevronUp,
   FlaskConical,
   Layers,
+  Mountain,
   ListTree,
   Loader2,
   Plus,
@@ -55,6 +56,7 @@ interface ProjectSceneToolbarProps {
   onOpenModelLibrary: () => void;
   onOpenAddShape: () => void;
   onOpenAssemblyPlacement: () => void;
+  onOpenTerrain: () => void;
   onOpenCharacterLibrary: () => void;
   onOpenFarmBotLibrary: () => void;
   onOpenBedPlacement: () => void;
@@ -97,6 +99,7 @@ export function ProjectSceneToolbar({
   onOpenModelLibrary,
   onOpenAddShape,
   onOpenAssemblyPlacement,
+  onOpenTerrain,
   onOpenCharacterLibrary,
   onOpenFarmBotLibrary,
   onOpenBedPlacement,
@@ -168,6 +171,7 @@ export function ProjectSceneToolbar({
                 <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenAddShape : undefined}><Plus className="h-3.5 w-3.5" /> Shapes</Button>
                 <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenModelLibrary : undefined}><Box className="h-3.5 w-3.5" /> Models</Button>
                 <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenAssemblyPlacement : undefined}><Boxes className="h-3.5 w-3.5" /> Assembly Group</Button>
+                <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenTerrain : undefined}><Mountain className="h-3.5 w-3.5" /> Terrain</Button>
                 <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenCharacterLibrary : undefined}><User className="h-3.5 w-3.5" /> Characters</Button>
                 <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenFarmBotLibrary : undefined}><Settings className="h-3.5 w-3.5" /> FarmBots</Button>
                 <Button type="button" variant="ghost" size="sm" className="threed-toolbar-menu-item" disabled={!canEditProject} title={!canEditProject ? editHelp : undefined} onClick={canEditProject ? onOpenBedPlacement : undefined}><Plus className="h-3.5 w-3.5" /> Beds</Button>

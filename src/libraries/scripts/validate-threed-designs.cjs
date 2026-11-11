@@ -97,7 +97,10 @@ assert.equal(imported.levels[1].name,'Ground (2)');
 const replaced=architecture.importProjectArchitecture(source,source,'replace',()=> 'replace'+(++n));assert.equal(replaced.walls.length,4);assert.notEqual(replaced.walls[0].id,'w0');
 for(const bad of [{...source,userId:'other',projectId:99},{...source,walls:[{...source.walls[0],id:123}]},{...source,openings:[{...source.openings[0],wallId:'missing'}]}])assert.throws(()=>architecture.importProjectArchitecture(source,bad,'replace',()=> 'bad'+(++n)));
 assert.throws(()=>architecture.parseProjectArchitecture({...captured,userId:'other'}));
-const session=load('src/libraries/services/map/threed-project-session-core.ts',{'../threed/design/project-architecture':architecture});
+const session=load('src/libraries/services/map/threed-project-session-core.ts',{
+ '../threed/design/project-architecture':architecture,
+ '@/libraries/services/threed/terrains/terrain-core':{parseProjectTerrainSurface:value=>value ?? null},
+});
 async function checkStaleLoads(){
  const pending=[];const loader=load('src/components/map/hooks/useThreeDProjectSessionLoader.ts',{
  'react':{useRef:value=>({current:value}),useState:value=>[value,()=>{}],useCallback:fn=>fn,useEffect:()=>{}},
@@ -198,7 +201,7 @@ function functionSource(file, name) {
  function visit(node){if(ts.isFunctionDeclaration(node)&&node.name?.text===name)found=node.getText(source);ts.forEachChild(node,visit);}visit(source);assert(found,name);return found;
 }
 const route='src/app/api/project/threed-markers/route.ts';
-const tables=Object.fromEntries(['project','projectAssets','projectThreed','projectThreedMarkers'].map(name=>[name,new Proxy({name},{get:(o,key)=>key==='name'?name:name+'.'+String(key)})]));
+const tables=Object.fromEntries(['project','projectAssets','projectThreed','projectThreedMarkers','projectTerrainPlacements'].map(name=>[name,new Proxy({name},{get:(o,key)=>key==='name'?name:name+'.'+String(key)})]));
 const orm=Object.fromEntries(['and','eq','inArray','notInArray'].map(name=>[name,(...args)=>({name,args})]));
 orm.sql=(strings,...values)=>({strings:[...strings],values});
 let signedIn=true,owned=true,fail=false,missingUpdate=false,workspaceWriteFault=null,writes=0,conditions=[],assignments=[{moduleId:7,assetType:'threed_models',assetId:20}];
@@ -215,8 +218,10 @@ const scope={...tables,...orm,...modelPolicy,db,Buffer,Date,console:{error(){}},
  ...measurementUnits, ...configuration,
  // Projection storage has its own focused validator; this fixture isolates the Project roundtrip.
  saveProjectDesignProjection:async()=>{},ProjectDesignProjectionError:class extends Error{},CharacterPhysicsInputError:class extends Error{},
+ TerrainInputError:class extends Error{},
  auth:async()=>signedIn?{user:{id:'owner'}}:null,MAX_REQUEST_BYTES:1048576,
  parsePositiveId:value=>Number.isSafeInteger(Number(value))&&Number(value)>0?Number(value):null,
+ parseTerrainPlacement:value=>value,
  parseProjectThreeDMarkerSnapshot:value=>value,parseThreeDProjectViewState:value=>value,
  parseProjectArchitecture:architecture.parseProjectArchitecture,ProjectArchitectureError:architecture.ProjectArchitectureError,
  ProjectMarkerSnapshotError:MarkerError,ProjectViewStateError:ViewError,ProjectPlantingPlacementInputError:PlantingError,
@@ -265,6 +270,7 @@ async function checkClientSave(model,view) {
  let finish, transportCount=0, body, feedback;
  const drafts={current:new Map([['15',draft]])};
 const context={projectConfigurationRef:{current:{projectId:'15',stamp:{savedAt:null,measurementUnits:'imperial'}}},selectedProjectId:'15',canEditProject:true,loading:false,savingProjectMarkers:false,projectSaveBusy:{current:false},saveRequestRef:{current:0},architectureDrafts:drafts,acknowledgeArchitecture:architecture.acknowledgeArchitecture,parseProjectArchitecture:architecture.parseProjectArchitecture,
+ projectTerrain:null,confirmsTerrainPlacement:(requested,saved)=>requested===null && saved==null,setSavedTerrainPlacement:()=>{},
  projectMarkerSnapshotProviderRef:{current:()=>[model]},showToastRef:{current:()=>{}},setSavingProjectMarkers:()=>{},setArchitectureSaveError:value=>feedback=value,
  projectThreeDViewStateProviderRef:{current:null},lastProjectThreeDViewStateRef:{current:null},projectMapViewStateProviderRef:{current:null},lastProjectMapViewStateRef:{current:null},initialProjectViewState:null,
  multimediaProjectId:'15',multimediaWorkspaceProviderRef:{current:()=>({albumId:28,trackId:71})},
@@ -431,7 +437,7 @@ function findInventoryCallbacks(node){
  if(ts.isJsxAttribute(node)&&node.name.getText(sceneAst)==='onLocateArchitecture')locateSource=node.initializer.expression.getText(sceneAst);
  ts.forEachChild(node,findInventoryCallbacks);
 }findInventoryCallbacks(sceneAst);
-const selectionContext={selectedProjectId:'15',architectureDrafts:{current:new Map([['15',architecture.projectArchitectureDraft(captured)],['16',architecture.projectArchitectureDraft()]])},entityLevelId:document.entityLevelId,defaultDesignWorkspace:workspace.defaultDesignWorkspace,renderArchitecture:()=>{},setSelectedMarker:value=>assert.equal(value,null),setSelectedIncident:value=>assert.equal(value,null),setSensorInspector:value=>assert.equal(value,null),setGroupInspector:value=>assert.equal(value,null),groundMapInspector:{setOpen:value=>assert.equal(value,false)}};
+const selectionContext={selectedProjectId:'15',architectureDrafts:{current:new Map([['15',architecture.projectArchitectureDraft(captured)],['16',architecture.projectArchitectureDraft()]])},entityLevelId:document.entityLevelId,defaultDesignWorkspace:workspace.defaultDesignWorkspace,renderArchitecture:()=>{},setSelectedMarker:value=>assert.equal(value,null),setSelectedIncident:value=>assert.equal(value,null),setSensorInspector:value=>assert.equal(value,null),setGroupInspector:value=>assert.equal(value,null),setIsTerrainDetailsOpen:value=>assert.equal(value,false),groundMapInspector:{setOpen:value=>assert.equal(value,false)}};
 const selectFromAssets=vm.runInNewContext(compile('('+selectionSource+')'),selectionContext);
 selectFromAssets('door');assert.equal(selectionContext.architectureDrafts.current.get('15').selected,'door');assert(selectionContext.architectureDrafts.current.get('15').workspace.sections['threed:details:v1:design:15:selected-properties']);
 selectFromAssets('missing');assert.equal(selectionContext.architectureDrafts.current.get('15').selected,'door');

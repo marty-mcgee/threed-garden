@@ -79,6 +79,8 @@ import type { ThreeDRuntimeMarkerModuleType } from '@/libraries/types/map';
 import { IMPORTED_SENSOR_GROUP, removeLegacyAttachedSensors } from '@/libraries/services/threed/physics/sensor-legacy-compat';
 import { readSensorGroups } from '@/libraries/services/threed/physics/sensor-group-core';
 import { validatePhysicsSensorCuboids } from '@/libraries/services/threed/physics/sensor-cuboid-core';
+import { parseTerrainPlacement, TerrainInputError } from '@/libraries/services/threed/terrains/terrain-core';
+import { projectTerrainPlacements, threedTerrainRevisions, threedTerrains } from '@/libraries/schema/threed';
 
 const MAX_REQUEST_BYTES = 1_048_576;
 
@@ -391,6 +393,7 @@ async function saveSnapshot(request: NextRequest) {
     const rawUnits = (requestBody.viewState as {design?: {measurementUnits?: unknown}})?.design?.measurementUnits;
     const measurementPatch = rawUnits === undefined ? {} : { measurementUnits: parseMeasurementUnits(rawUnits) };
     const architecture = requestBody.architecture === undefined ? undefined : parseProjectArchitecture(requestBody.architecture);
+    const terrain = requestBody.terrain === undefined ? undefined : parseTerrainPlacement(requestBody.terrain);
     if (viewState.threeD?.sensorState && viewState.threeD.sensorState.projectId !== projectId) {
       return NextResponse.json({ success: false, error: 'Sensor state belongs to another Project' }, { status: 400 });
     }
@@ -488,6 +491,56 @@ async function saveSnapshot(request: NextRequest) {
           .where(and(eq(project.id, projectId), eq(project.userId, userId))).limit(1).for('update');
         if (!locked) throw new ProjectConfigurationConflict();
         assertProjectConfigurationCurrent(locked.config, requestBody.expectedConfiguration);
+      }
+      let savedTerrain: typeof projectTerrainPlacements.$inferSelect | null | undefined;
+      if (terrain !== undefined) {
+        const [currentTerrain] = await tx.select().from(projectTerrainPlacements)
+          .where(and(eq(projectTerrainPlacements.projectId, projectId), eq(projectTerrainPlacements.userId, userId)))
+          .limit(1).for('update');
+        if (terrain === null) {
+          await tx.delete(projectTerrainPlacements).where(and(eq(projectTerrainPlacements.projectId, projectId), eq(projectTerrainPlacements.userId, userId)));
+          savedTerrain = null;
+        } else {
+          if (terrain.id !== (currentTerrain?.id ?? null)) throw new ProjectConfigurationConflict('Terrain placement changed since this Scene loaded. Your edits are retained. Review the latest Terrain before saving again.');
+          const [source] = await tx.select({ id: threedTerrains.id }).from(threedTerrains)
+            .innerJoin(threedTerrainRevisions, and(
+              eq(threedTerrainRevisions.terrainId, threedTerrains.id),
+              eq(threedTerrainRevisions.revision, terrain.terrainRevision),
+            ))
+            .where(and(eq(threedTerrains.id, terrain.terrainId), eq(threedTerrains.userId, userId))).limit(1);
+          const [assignment] = await tx.select({ id: projectAssets.id }).from(projectAssets)
+            .innerJoin(projectThreed, and(
+              eq(projectThreed.projectId, projectAssets.projectId),
+              eq(projectThreed.threedId, projectAssets.moduleId),
+              eq(projectThreed.userId, projectAssets.userId),
+              eq(projectThreed.isActive, true),
+            ))
+            .where(and(
+              eq(projectAssets.projectId, projectId),
+              eq(projectAssets.userId, userId),
+              eq(projectAssets.moduleType, 'threed'),
+              eq(projectAssets.moduleId, terrain.threedId),
+              eq(projectAssets.assetType, 'threed_terrains'),
+              eq(projectAssets.assetId, terrain.terrainId),
+              eq(projectAssets.isActive, true),
+            )).limit(1);
+          if (!source || !assignment) throw new TerrainInputError('Terrain revision must be actively assigned to this Project and ThreeD Module.');
+          const values = {
+            userId,
+            projectId,
+            threedId: terrain.threedId,
+            terrainId: terrain.terrainId,
+            terrainRevision: terrain.terrainRevision,
+            centerXM: terrain.centerXM,
+            centerZM: terrain.centerZM,
+            rotationYDeg: terrain.rotationYDeg,
+            scale: terrain.scale,
+            savedAt: new Date(),
+          };
+          [savedTerrain] = currentTerrain
+            ? await tx.update(projectTerrainPlacements).set(values).where(eq(projectTerrainPlacements.id, currentTerrain.id)).returning()
+            : await tx.insert(projectTerrainPlacements).values(values).returning();
+        }
       }
       if (rows.some(row => row.markerType === 'models')) {
         const currentModels = await tx.select().from(projectThreedMarkers).where(and(
@@ -593,7 +646,7 @@ async function saveSnapshot(request: NextRequest) {
       // Derived Designs record participates in the same commit/rollback as config and markers.
       try { await saveProjectDesignProjection(tx, userId, projectId); }
       catch { throw new ProjectDesignProjectionError(`Design synchronization failed. No Project changes were saved. Keep your draft and retry; if this continues, check Designs storage availability.${architecture?.document.version === 6 ? ' Sloped walls require the Designs version-6 database constraint update.' : ''}`); }
-      return { markers: savedRows, architecture: savedArchitecture };
+      return { markers: savedRows, architecture: savedArchitecture, terrain: savedTerrain };
     });
 
     return NextResponse.json({
@@ -603,10 +656,12 @@ async function saveSnapshot(request: NextRequest) {
         ...(saved.architecture ? { architecture: saved.architecture } : {}),
         markerCount: saved.markers.length,
         markers: saved.markers,
+        ...(saved.terrain !== undefined ? { terrain: saved.terrain } : {}),
         savedAt: new Date().toISOString(),
       },
     });
   } catch (error) {
+    if (error instanceof TerrainInputError) return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     if (error instanceof MeasurementUnitsError) return NextResponse.json({success:false,error:error.message},{status:400});
     if (error instanceof ProjectModelTransformLockedError) return NextResponse.json({ success: false, error: error.message }, { status: 409 });
     if (error instanceof ProjectConfigurationConflict) return NextResponse.json({ success: false, error: error.message }, { status: 409 });

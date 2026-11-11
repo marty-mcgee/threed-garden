@@ -61,6 +61,7 @@ const api = load('src/app/api/map/threed/route.ts', {
   '@/libraries/services/threed/farmbot/sanitize': { sanitizeFarmBotRecord: row => row },
   '@/libraries/schema/threed': schema, '@/libraries/schema/traffic': schema, '@/libraries/schema/project': schema,
   '@/libraries/services/threed/markers/project-view-state-core': { readThreeDProjectViewStateFromConfig: () => null },
+  '@/libraries/services/project/configuration': { projectConfigurationStamp: config => ({ savedAt: config?.threeDViewState?.savedAt ?? null, measurementUnits: config?.measurementUnits ?? 'imperial' }) },
 });
 const access = load('src/libraries/services/project/read-access.ts', {
   './scene-read-policy': policy, 'drizzle-orm': orm, '@/libraries/db/client': { db }, '@/libraries/schema/project': schema,
@@ -75,7 +76,7 @@ const ground = load('src/app/api/threed/ground-maps/route.ts', {
 function fixture() {
   const model = { id: 7, userId: 'owner', isActive: true, status: 'active', isPublic: false, isLibraryItem: false, modelType: 'fbx', filePath: 'https://fixture.invalid/current.fbx' };
   records = {
-    project: [{ id: 8, userId: 'owner', isPublic: true, name: 'Public garden', originLatitude: null }],
+    project: [{ id: 8, userId: 'owner', isPublic: true, name: 'Public garden', originLatitude: null, config: { measurementUnits: 'metric', threeDViewState: { savedAt: '2026-11-11T12:00:00.000Z' } } }],
     projectThreed: [{ projectId: 8, userId: 'owner', isActive: true, threedId: 2, name: 'Garden' }],
     projectAssets: [{ projectId: 8, moduleType: 'threed', moduleId: 2, userId: 'owner', isActive: true, assetType: 'threed_models', assetId: 7 }],
     threedModels: [model, { ...model, id: 99, userId: 'stranger' }],
@@ -93,6 +94,8 @@ async function run(extra = '') { return api.GET({ url: `http://localhost/api/map
     fixture(); const result = await run(); assert.equal(result.status, 200);
     const model = result.body.data.models[0];
     assert.equal(result.body.projectContext.canEdit, viewer === 'owner');
+    assert.equal(result.body.projectContext.viewState, null);
+    assert.equal(result.body.projectContext.configurationStamp.savedAt, '2026-11-11T12:00:00.000Z');
     assert.equal(result.body.data.models.length, 1, 'Unassigned Models must not appear');
     assert.equal(model.renderingAssetsResolved, true);
     assert.equal(model.files.length, 1, 'Cross-owner File must not appear');

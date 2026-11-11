@@ -16,6 +16,7 @@ import {
   threedPlantings,
   threedPlants,
   threedTasks,
+  threedTerrains,
   threedWateringSchedules,
 } from '@/libraries/schema/threed';
 import {
@@ -84,6 +85,13 @@ export const ASSIGNABLE_ASSET_REGISTRY: Record<string, AssignableAssetDefinition
   threed_models: {
     moduleType: 'threed', policy: 'ownerOnly', table: threedModels,
     idColumn: threedModels.id, userIdColumn: threedModels.userId,
+  },
+  threed_terrains: {
+    moduleType: 'threed',
+    policy: 'ownerOnly',
+    table: threedTerrains,
+    idColumn: threedTerrains.id,
+    userIdColumn: threedTerrains.userId,
   },
   threed_characters: {
     moduleType: 'threed', policy: 'ownerOnly', table: threedCharacters,

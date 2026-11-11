@@ -24,6 +24,10 @@ const result = buildThreeDProjectSession({
       metersPerSceneUnit: '0.3048',
     },
     viewState: null,
+    configurationStamp: {
+      savedAt: '2026-11-11T12:00:00.000Z',
+      measurementUnits: 'metric',
+    },
   },
 }, '8');
 
@@ -38,6 +42,10 @@ assert.equal(result.session.data.traffic.raw?.chpCadIncidents[0]?.latitude, 39.5
 assert.equal(result.session.data.threed.total, 2);
 assert.equal(result.session.data.traffic.total, 1);
 assert.equal(result.session.geographicOrigin?.metersPerSceneUnit, 0.3048);
+assert.deepEqual(result.session.configurationStamp, {
+  savedAt: '2026-11-11T12:00:00.000Z',
+  measurementUnits: 'metric',
+});
 console.log('✓ Project session response preserves modules, coordinates, counts, and marker snapshots');
 
 assert.deepEqual(buildThreeDProjectSession({ success: false, error: 'Unavailable' }, '8'), {

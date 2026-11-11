@@ -34,6 +34,7 @@ const boundary = {
   entityLevelId: (doc, id) => doc.walls.some(wall => wall.id === id) ? 'ground' : undefined,
   defaultDesignWorkspace: () => ({ sections: {} }),
   setSelectedMarker: next => { selectedMarker = next; },
+  setIsTerrainDetailsOpen() {},
   setSelectedIncident: next => { incident = next; },
   setSensorInspector: next => { sensor = next; },
   setGroupInspector: next => { group = next; },

@@ -2,6 +2,8 @@ import { parseProjectArchitecture, type ProjectArchitecture } from '../threed/de
 import type { ThreeDProjectViewState } from '@/libraries/services/threed/markers/project-view-state-core';
 import type { ThreeDGeographicOrigin } from '@/libraries/services/threed/markers/map-coordinate-core';
 import type { UnifiedMapData } from '@/libraries/types/map';
+import { parseProjectTerrainSurface, type ProjectTerrainSurface } from '@/libraries/services/threed/terrains/terrain-core';
+import type { ProjectConfigurationStamp } from '@/libraries/services/project/configuration';
 
 export interface ThreeDProjectModuleSummary {
   id: number;
@@ -16,9 +18,11 @@ export interface ThreeDProjectSessionData {
   threedModules: ThreeDProjectModuleSummary[];
   geographicOrigin: ThreeDGeographicOrigin | null;
   savedViewState: ThreeDProjectViewState | null;
+  configurationStamp: ProjectConfigurationStamp;
   architecture?: ProjectArchitecture;
   metersPerSceneUnit: number;
   measurementUnits?: 'imperial' | 'metric';
+  terrain: ProjectTerrainSurface | null;
 }
 
 export type ThreeDProjectSessionResult =
@@ -78,6 +82,9 @@ export function buildThreeDProjectSession(
   let architecture: ProjectArchitecture | undefined;
   try { if (result.projectContext?.architecture !== undefined) architecture = parseProjectArchitecture(result.projectContext.architecture); }
   catch { return { success: false, error: 'Project architectural content is invalid. Loading stopped to protect the saved content.' }; }
+  let terrain: ProjectTerrainSurface | null;
+  try { terrain = parseProjectTerrainSurface(result.projectContext?.terrain); }
+  catch { return { success: false, error: 'Project Terrain content is invalid. Loading stopped to protect the saved content.' }; }
   const resultData = result.data || {};
   const threedModules = Array.isArray(result.projectContext?.threedModules)
     ? result.projectContext.threedModules.filter((module: any) => (
@@ -153,10 +160,18 @@ export function buildThreeDProjectSession(
       hasData: result.total > 0,
       threedModules,
       architecture,
+      terrain,
       metersPerSceneUnit: Number(result.projectContext?.metersPerSceneUnit) > 0 && Number.isFinite(Number(result.projectContext?.metersPerSceneUnit)) ? Number(result.projectContext.metersPerSceneUnit) : 0.3048,
       measurementUnits: result.projectContext?.measurementUnits === 'metric' ? 'metric' : result.projectContext?.measurementUnits === 'imperial' ? 'imperial' : result.projectContext?.viewState?.design?.measurementUnits ?? 'imperial',
       geographicOrigin: parseGeographicOrigin(result.projectContext?.geographicOrigin),
       savedViewState: (result.projectContext?.viewState as ThreeDProjectViewState | null) ?? null,
+      configurationStamp: {
+        savedAt: typeof result.projectContext?.configurationStamp?.savedAt === 'string'
+          ? result.projectContext.configurationStamp.savedAt
+          : result.projectContext?.viewState?.savedAt ?? null,
+        measurementUnits: result.projectContext?.configurationStamp?.measurementUnits === 'metric'
+          || result.projectContext?.measurementUnits === 'metric' ? 'metric' : 'imperial',
+      },
     },
   };
 }

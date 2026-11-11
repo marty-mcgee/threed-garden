@@ -44,6 +44,8 @@ import { ProjectHeaderMenu } from '@/components/map/header/ProjectHeaderMenu';
 import { ProjectSceneToolbar } from '@/components/map/header/ProjectSceneToolbar';
 import { AddShapeDialog } from '@/components/map/panels/AddShapeDialog';
 import { AssemblyPlacementDialog } from '@/components/map/panels/AssemblyPlacementDialog';
+import { ProjectTerrainDialog } from '@/components/map/panels/ProjectTerrainDialog';
+import { TerrainDetailsCard } from '@/components/map/details/TerrainDetailsCard';
 import type { ModelFallbackShape } from '@/libraries/services/threed/models/model-fallback-core';
 import { useThreeDLibraryWorkspace } from '@/components/map/hooks/useThreeDLibraryWorkspace';
 import { useCombinedMapPanelResize } from '@/components/map/hooks/useCombinedMapPanelResize';
@@ -125,6 +127,7 @@ import {
 import { ThreeDRuntimeMarkerRegistry } from '@/libraries/services/threed/markers/runtime-marker-core';
 import { buildThreeDRuntimeMarkerResult } from '@/libraries/services/threed/markers/runtime-marker-builder';
 import type { ThreeDGeographicOrigin } from '@/libraries/services/threed/markers/map-coordinate-core';
+import { confirmsTerrainPlacement, type ProjectTerrainSurface } from '@/libraries/services/threed/terrains/terrain-core';
 import {
   PROJECT_VIEW_STATE_VERSION,
   defaultDesignWorkspace,
@@ -242,6 +245,8 @@ function UnifiedMapPageInner() {
   const [isProjectSummaryOpen, setIsProjectSummaryOpen] = useState(false);
   const dismissProjectSummary = useCallback(() => setIsProjectSummaryOpen(false), []);
   const [data, setData] = useState<UnifiedMapData>(getDefaultMapData());
+  const [projectTerrain, setProjectTerrain] = useState<ProjectTerrainSurface | null>(null);
+  const [savedTerrainPlacement, setSavedTerrainPlacement] = useState<string>('null');
   const [isDefaultView, setIsDefaultView] = useState(!projectIdParam);
   const [savingProjectMarkers, setSavingProjectMarkers] = useState(false);
   const [overlayPositions, setOverlayPositions] = useState<ProjectOverlayPositions>({});
@@ -293,6 +298,8 @@ function UnifiedMapPageInner() {
   const [isSceneAddMenuOpen, setIsSceneAddMenuOpen] = useState(false);
   const [isAddShapeOpen, setIsAddShapeOpen] = useState(false);
   const [isAssemblyPlacementOpen, setIsAssemblyPlacementOpen] = useState(false);
+  const [isTerrainOpen, setIsTerrainOpen] = useState(false);
+  const [isTerrainDetailsOpen, setIsTerrainDetailsOpen] = useState(false);
   const assemblyProjectScope = useRef(selectedProjectId);
   assemblyProjectScope.current = selectedProjectId;
   const [environmentControlsCloseRequest, setEnvironmentControlsCloseRequest] = useState(0);
@@ -587,6 +594,7 @@ function UnifiedMapPageInner() {
     const current = architectureDrafts.current.get(selectedProjectId)!;
     if (selected && !entityLevelId(current.history.present, selected)) return;
     setSelectedMarker(null);
+    if (selected) setIsTerrainDetailsOpen(false);
     setSelectedIncident(null);
     setSensorInspector(null);
     setGroupInspector(null);
@@ -629,7 +637,7 @@ function UnifiedMapPageInner() {
   const [selectedMarker, setSelectedMarker] = useState<any>(null);
   const [groupInspector, setGroupInspector] = useState<string | null>(null);
   const [sensorInspector, setSensorInspector] = useState<{ ownerId: string; sensorId: string } | null>(null);
-  useEffect(() => { setSensorInspector(null); setGroupInspector(null); groundMapInspector?.setOpen(false); }, [selectedProjectId, groundMapInspector?.setOpen]);
+  useEffect(() => { setSensorInspector(null); setGroupInspector(null); setIsTerrainDetailsOpen(false); groundMapInspector?.setOpen(false); }, [selectedProjectId, groundMapInspector?.setOpen]);
 
   const [controlledCharacterId, setControlledCharacterId] = useState<number | null>(null);
   const [liveControlledCharacterPosition, setLiveControlledCharacterPosition] =
@@ -1086,6 +1094,7 @@ function UnifiedMapPageInner() {
           markers,
           viewState,
           architecture,
+          terrain: projectTerrain?.placement ?? null,
           expectedConfiguration: configuration.stamp,
         }),
       });
@@ -1098,6 +1107,22 @@ function UnifiedMapPageInner() {
         || JSON.stringify(parseProjectArchitecture(result.data.architecture)) !== JSON.stringify(parseProjectArchitecture(architecture))) {
         throw new Error('Project Save did not confirm the architectural content. Your edits are retained. Retry Save Project; if it repeats, reload the App after checking that its API is up to date.');
       }
+      if (!confirmsTerrainPlacement(projectTerrain?.placement ?? null, result.data?.terrain)) {
+        throw new Error('Project Save did not confirm the Terrain placement. Your draft is retained.');
+      }
+      if (projectTerrain && result.data?.terrain?.id && projectTerrain.placement.id !== result.data.terrain.id) {
+        setProjectTerrain({ ...projectTerrain, placement: { ...projectTerrain.placement, id: result.data.terrain.id } });
+      }
+      setSavedTerrainPlacement(JSON.stringify(result.data?.terrain ? {
+        id: result.data.terrain.id,
+        threedId: result.data.terrain.threedId,
+        terrainId: result.data.terrain.terrainId,
+        terrainRevision: result.data.terrain.terrainRevision,
+        centerXM: result.data.terrain.centerXM,
+        centerZM: result.data.terrain.centerZM,
+        rotationYDeg: result.data.terrain.rotationYDeg,
+        scale: result.data.terrain.scale,
+      } : null));
 
       setData(current => applyThreeDProjectClientTransaction(current, {
         markers: {upsert: result.data.markers as ProjectThreeDMarkerRecord[]},
@@ -1124,7 +1149,7 @@ function UnifiedMapPageInner() {
     } finally {
       if (saveRequestRef.current === requestId) { projectSaveBusy.current = false; setSavingProjectMarkers(false); }
     }
-  }, [captureProjectWorkspace, workspaceFeedback.acknowledge, canEditProject, loading, cameraMode, initialProjectViewState, panelHeight, savingProjectMarkers, selectedProjectId, viewMode, selectedMarker, sensorInspector, groupInspector, groundMapInspector?.open, isProjectAssetsOpen, isModelLibraryOpen, projectAssetSearch, projectAssetType, scenarioPanelState, isScenariosOpen, isProjectSetupOpen, overlayPositions]);
+  }, [captureProjectWorkspace, workspaceFeedback.acknowledge, canEditProject, loading, cameraMode, initialProjectViewState, panelHeight, savingProjectMarkers, selectedProjectId, viewMode, selectedMarker, sensorInspector, groupInspector, groundMapInspector?.open, isProjectAssetsOpen, isModelLibraryOpen, projectAssetSearch, projectAssetType, scenarioPanelState, isScenariosOpen, isProjectSetupOpen, overlayPositions, projectTerrain]);
 
   // Phase 5A compatibility bridge: establish the orchestration request
   // lifecycle while preserving immediate animation until proximity is gated.
@@ -1494,6 +1519,8 @@ function UnifiedMapPageInner() {
     await loadProjectSession(selectedProjectId, (outcome) => {
       try {
       if (outcome.status === 'default') {
+        setProjectTerrain(null);
+        setSavedTerrainPlacement('null');
         projectConfigurationRef.current = null;
         setInitialProjectViewState(null);
         setScenarioPanelState(emptyProjectScenarioPanelState());
@@ -1507,7 +1534,9 @@ function UnifiedMapPageInner() {
 
       if (outcome.status === 'loaded') {
         const { session } = outcome;
-        projectConfigurationRef.current = { projectId: String(selectedProjectId), stamp: { savedAt: session.savedViewState?.savedAt ?? null, measurementUnits: session.measurementUnits ?? 'imperial' } };
+        setProjectTerrain(session.terrain);
+        setSavedTerrainPlacement(JSON.stringify(session.terrain?.placement ?? null));
+        projectConfigurationRef.current = { projectId: String(selectedProjectId), stamp: session.configurationStamp };
         setProjectAccess({ projectId: String(selectedProjectId), canEdit: session.canEdit });
         const cachedArchitecture = architectureDrafts.current.get(String(selectedProjectId));
         architectureDrafts.current.set(String(selectedProjectId), hydrateArchitectureDraft(cachedArchitecture, session.architecture, { ...(session.savedViewState?.design ?? defaultDesignWorkspace()), measurementUnits: session.measurementUnits ?? 'imperial' }));
@@ -2792,6 +2821,7 @@ function UnifiedMapPageInner() {
   const selectProjectAsset = useCallback((marker: RuntimeMarker) => {
     if (selectArchitecture(null) === false) return;
     groundMapInspector?.setOpen(false);
+    setIsTerrainDetailsOpen(false);
     setSensorInspector(null);
     setGroupInspector(null);
     const sourceAssetId = Number(marker.data?.id);
@@ -2873,6 +2903,24 @@ function UnifiedMapPageInner() {
           showToastRef.current(`${name}: ${markers.length} Models placed`, 'success');
         }}
       />}
+      {!loading && canEditProject && selectedProjectId && <ProjectTerrainDialog
+        open={isTerrainOpen}
+        projectId={Number(selectedProjectId)}
+        modules={projectThreeDModules}
+        surface={projectTerrain}
+        onChange={surface => {
+          setProjectTerrain(surface);
+          setIsTerrainDetailsOpen(Boolean(surface));
+          if (surface) {
+            setSelectedMarker(null);
+            setSelectedIncident(null);
+            setSensorInspector(null);
+            setGroupInspector(null);
+            groundMapInspector?.setOpen(false);
+          }
+        }}
+        onClose={() => setIsTerrainOpen(false)}
+      />}
       <ProjectTemplateDialog
         open={isProjectTemplateDialogOpen}
         onOpenChange={setIsProjectTemplateDialogOpen}
@@ -2953,8 +3001,8 @@ function UnifiedMapPageInner() {
           onToggleWeather={() => { setMultimediaProjectId(null); setWeatherProjectId(current => current === selectedProjectId ? null : selectedProjectId); }}
           measurementUnits={designWorkspace.measurementUnits ?? 'imperial'}
           onMeasurementUnitsChange={canEditProject ? measurementUnits => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), measurementUnits } })) : undefined}
-          workspaceSaveMessage={architectureSaveError ? `Save failed: ${architectureSaveError}` : architectureIsDirty(architectureDraft) || workspaceFeedback.dirty ? 'Unsaved architecture or workspace; Save Project to keep changes' : 'Workspace unchanged since loading or last Save'}
-          workspaceDirty={architectureIsDirty(architectureDraft) || workspaceFeedback.dirty}
+          workspaceSaveMessage={architectureSaveError ? `Save failed: ${architectureSaveError}` : architectureIsDirty(architectureDraft) || workspaceFeedback.dirty || JSON.stringify(projectTerrain?.placement ?? null) !== savedTerrainPlacement ? 'Unsaved architecture or workspace; Save Project to keep changes' : 'Workspace unchanged since loading or last Save'}
+          workspaceDirty={architectureIsDirty(architectureDraft) || workspaceFeedback.dirty || JSON.stringify(projectTerrain?.placement ?? null) !== savedTerrainPlacement}
           designHistoryHostRef={setDesignHistoryHost}
           saveDisabled={loading || !canEditProject || (viewMode === 'design' && designActionsBusy)}
           selectedProjectId={selectedProjectId}
@@ -2996,6 +3044,11 @@ function UnifiedMapPageInner() {
             setIsSetupMenuOpen(false);
             setIsAssemblyPlacementOpen(true);
             setViewMode(current => current === '2d' ? '3d' : current);
+          }}
+          onOpenTerrain={() => {
+            if (!canEditProject || !selectedProjectId) return;
+            setIsSceneAddMenuOpen(false);
+            setIsTerrainOpen(true);
           }}
           onOpenCharacterLibrary={() => void openCharacterLibrary()}
           onOpenFarmBotLibrary={() => void openFarmBotLibrary()}
@@ -3076,7 +3129,20 @@ function UnifiedMapPageInner() {
         resolveRuntimeMarkerPosition={resolveRuntimeMarkerPosition}
         onDismiss={dismissProjectAssets}
         groundMapSelected={groundMapInspector?.open ?? false}
-        onOpenGroundMap={canEditProject && viewMode !== '2d' ? () => groundMapInspector?.setOpen(true) : undefined}
+        onOpenGroundMap={canEditProject && viewMode !== '2d' ? () => { setIsTerrainDetailsOpen(false); groundMapInspector?.setOpen(true); } : undefined}
+        terrain={projectTerrain}
+        terrainSelected={isTerrainDetailsOpen && Boolean(projectTerrain)}
+        onSelectTerrain={() => {
+          if (!projectTerrain || transform.session) return;
+          if (selectArchitecture(null) === false) return;
+          setSelectedMarker(null);
+          setSelectedIncident(null);
+          setSensorInspector(null);
+          setGroupInspector(null);
+          groundMapInspector?.setOpen(false);
+          setIsTerrainDetailsOpen(true);
+        }}
+        onChooseTerrain={canEditProject ? () => setIsTerrainOpen(true) : undefined}
         selectedGroupId={groupInspector}
         onSelectGroup={groupId => {
           if (transform.session) return;
@@ -3304,7 +3370,7 @@ function UnifiedMapPageInner() {
         }}
       />
       {/* ✅ Map Container */}
-      <DesignWorkspace reserveToolbar={viewMode === '2d'} split={designWorkspace.split} onSplitChange={split => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), split } }))} assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor selectedModel={designModel} onSaveModel={saveDesignModel} modelBusy={updatingModelInstanceId != null || deletingModelInstanceId != null} selectedModelId={!architectureDraft.selected && selectedMarker?.type === 'models' ? String(selectedMarker.id) : null} modelImages={planModelImages.projectId === Number(selectedProjectId) ? Object.values(planModelImages.images) : []} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={id => { const marker = projectRuntimeMarkers.find(marker => String(marker.id) === id); if (marker) selectProjectAsset(marker); }} key={selectedProjectId} frameRequest={architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} active={viewMode === 'design'} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSelect: selectArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
+      <DesignWorkspace reserveToolbar={viewMode === '2d'} split={designWorkspace.split} onSplitChange={split => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), split } }))} assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor selectedModel={designModel} onSaveModel={saveDesignModel} modelBusy={updatingModelInstanceId != null || deletingModelInstanceId != null} selectedModelId={!architectureDraft.selected && selectedMarker?.type === 'models' ? String(selectedMarker.id) : null} modelImages={planModelImages.projectId === Number(selectedProjectId) ? Object.values(planModelImages.images) : []} terrain={projectTerrain} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={id => { const marker = projectRuntimeMarkers.find(marker => String(marker.id) === id); if (marker) selectProjectAsset(marker); }} key={selectedProjectId} frameRequest={architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} active={viewMode === 'design'} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSelect: selectArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
       <Card data-project-canvas className="h-full gap-0 rounded-none border-0 py-0 shadow-none">
         <CardContent className="h-full p-0 overflow-hidden">
           <div className="h-full">
@@ -3313,6 +3379,7 @@ function UnifiedMapPageInner() {
             <div ref={containerRef} className="relative flex h-full w-full flex-col">
               <div hidden={sceneViewMode === '2d'} className="min-h-0 flex-shrink-0" style={{ height: sceneViewMode === 'combined' ? panelHeight + '%' : '100%' }}>
               <UnifiedMapView canEditProject={canEditProject} architectureFrameRequest={viewMode === '2d' && architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} architecture={architecturePreview ?? architectureDraft.history.present}
+                terrain={projectTerrain}
                 measurementUnits={designWorkspace.measurementUnits ?? 'imperial'}
                 onMeasurementUnitsChange={canEditProject ? measurementUnits => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), measurementUnits } })) : undefined}
                 metersPerSceneUnit={metersPerSceneUnit}
@@ -3423,6 +3490,17 @@ function UnifiedMapPageInner() {
         hidden={viewMode !== '2d' && !isThreeDPresentationComplete}
         inert={viewMode !== '2d' && !isThreeDPresentationComplete}
       >
+      {projectTerrain && isTerrainDetailsOpen && !groundMapInspector?.open && groupInspector === null && <TerrainDetailsCard
+        surface={projectTerrain}
+        projectId={selectedProjectId ?? ''}
+        canEdit={canEditProject}
+        leftOffsetRem={isLeftSceneWorkspaceOpen ? 18 : 0}
+        onChange={setProjectTerrain}
+        onChoose={() => setIsTerrainOpen(true)}
+        onClose={() => setIsTerrainDetailsOpen(false)}
+        onSave={handleSaveThreeDProject}
+        saving={savingProjectMarkers}
+      />}
       {canEditProject && <>
       <GroundMapInspector leftOffsetRem={isLeftSceneWorkspaceOpen ? 18.75 : 0.75} available={viewMode !== '2d' && isThreeDPresentationComplete} onSave={handleSaveThreeDProject} saving={savingProjectMarkers} />
       {groupInspector !== null && !groundMapInspector?.open && <SensorGroupInspector

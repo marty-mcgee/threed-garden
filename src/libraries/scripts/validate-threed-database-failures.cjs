@@ -61,6 +61,8 @@ vm.runInNewContext(code('src/app/api/map/threed/route.ts'), {
   exports: api, URL, console: { error() {} },
   require(name) {
     if (name === '@/libraries/services/project/measurement-units') return measurementUnits;
+    if (name === '@/libraries/services/project/configuration') return { projectConfigurationStamp: () => ({ savedAt: null, measurementUnits: 'metric' }) };
+    if (name === '@/libraries/services/threed/terrains/terrain-core') return { parseProjectTerrainSurface: value => value ?? null };
     if (name === '@/libraries/services/threed/design/project-architecture') return { readProjectArchitecture: config => config?.threeDArchitecture };
     if (name === '@/libraries/services/project/scene-texture-resources') return { sceneTextureResources: async () => [] };
     if (name === '@/libraries/services/project/scene-character-animations') return { sceneCharacterAnimations: async () => new Map() };
@@ -88,7 +90,7 @@ vm.runInNewContext(code('src/app/api/map/threed/route.ts'), {
   assert.equal(failed.body.data, undefined);
   assert.equal(queue.length, 0);
   const disconnect = () => new Error('Failed query', { cause: new Error('Connection terminated unexpectedly') });
-  queue = [...prefix(), disconnect(), [], []];
+  queue = [...prefix(), disconnect(), [], [], []];
   const recovered = await api.GET({ url: 'http://localhost/api/map/threed?projectId=5' });
   assert.equal(recovered.status, 200);
   assert.equal(recovered.body.success, true);
@@ -102,7 +104,7 @@ vm.runInNewContext(code('src/app/api/map/threed/route.ts'), {
   const schemaFailure = await api.GET({ url: 'http://localhost/api/map/threed?projectId=5' });
   assert.equal(schemaFailure.status, 500);
   assert.equal(queue.length, 0);
-  queue = [...prefix(), [], []];
+  queue = [...prefix(), [], [], []];
   const empty = await api.GET({ url: 'http://localhost/api/map/threed?projectId=5' });
   assert.equal(empty.status, 200);
   assert.equal(empty.body.success, true);

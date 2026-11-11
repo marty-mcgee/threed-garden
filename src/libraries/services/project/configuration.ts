@@ -4,7 +4,7 @@ import { parseThreeDProjectViewState, type ProjectViewMode, type ProjectCameraMo
 
 export class ProjectConfigurationError extends Error {}
 export class ProjectConfigurationConflict extends Error {
-  constructor() { super('Project settings changed in another window. Your edits are retained. Review the latest Project settings before saving again.'); }
+  constructor(message = 'Project settings changed since this Scene loaded. Your edits are retained. Review the latest Project settings before saving again.') { super(message); }
 }
 export interface ProjectConfigurationStamp { savedAt: string | null; measurementUnits: MeasurementUnits }
 export type ProjectSceneConfiguration = Pick<ProjectThreeDViewState, 'environment' | 'autoRotate' | 'showGrid' | 'showGizmo'>

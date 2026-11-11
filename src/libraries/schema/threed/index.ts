@@ -552,6 +552,66 @@ export const threedGroundMaps = pgTable('threed_ground_maps', {
   ownerPathIdx: uniqueIndex('idx_threed_ground_maps_owner_path').on(table.userId, table.filePath),
 }));
 
+// Reusable Terrain definitions are independent of Project placement and flat Ground Map images.
+export const threedTerrains = pgTable('threed_terrains', {
+  id: integer('id').generatedByDefaultAsIdentity().primaryKey(),
+  userId: text('user_id').notNull().references(() => user.id),
+  name: varchar('name', { length: 255 }).notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+}, table => [
+  index('threed_terrains_owner_name_idx').on(table.userId, table.name),
+  check('threed_terrains_name_check', sql`length(btrim(${table.name})) > 0`),
+]);
+
+// Immutable sampled heights are the shared authority for Terrain visuals, placement, and collision.
+export const threedTerrainRevisions = pgTable('threed_terrain_revisions', {
+  terrainId: integer('terrain_id').notNull().references(() => threedTerrains.id, { onDelete: 'restrict' }),
+  revision: integer('revision').notNull(),
+  formatVersion: integer('format_version').notNull().default(1),
+  widthM: doublePrecision('width_m').notNull(),
+  lengthM: doublePrecision('length_m').notNull(),
+  columns: integer('columns').notNull(),
+  rows: integer('rows').notNull(),
+  heightsM: jsonb('heights_m').$type<number[]>().notNull(),
+  appearance: jsonb('appearance').$type<Record<string, unknown>>().notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, table => [
+  primaryKey({ columns: [table.terrainId, table.revision] }),
+  check('threed_terrain_revision_positive', sql`${table.revision} > 0`),
+  check('threed_terrain_format_version', sql`${table.formatVersion} = 1`),
+  check('threed_terrain_width_check', sql`${table.widthM} > 0 AND ${table.widthM} <= 1000`),
+  check('threed_terrain_length_check', sql`${table.lengthM} > 0 AND ${table.lengthM} <= 1000`),
+  check('threed_terrain_columns_check', sql`${table.columns} BETWEEN 2 AND 129`),
+  check('threed_terrain_rows_check', sql`${table.rows} BETWEEN 2 AND 129`),
+  check('threed_terrain_heights_array', sql`jsonb_typeof(${table.heightsM}) = 'array'`),
+  check('threed_terrain_appearance_object', sql`jsonb_typeof(${table.appearance}) = 'object'`),
+]);
+
+// One active Terrain placement per Project; existing Project Save owns writes.
+export const projectTerrainPlacements = pgTable('project_terrain_placements', {
+  id: text('id').primaryKey().default(sql`gen_random_uuid()::text`),
+  userId: text('user_id').notNull().references(() => user.id),
+  projectId: integer('project_id').notNull().references(() => project.id, { onDelete: 'cascade' }),
+  threedId: integer('threed_id').notNull().references(() => threed.id),
+  terrainId: integer('terrain_id').notNull(),
+  terrainRevision: integer('terrain_revision').notNull(),
+  centerXM: doublePrecision('center_x_m').notNull(),
+  centerZM: doublePrecision('center_z_m').notNull(),
+  rotationYDeg: doublePrecision('rotation_y_deg').notNull(),
+  scale: doublePrecision('scale').notNull(),
+  savedAt: timestamp('saved_at').notNull().defaultNow(),
+}, table => [
+  uniqueIndex('project_terrain_placements_project_idx').on(table.projectId),
+  index('project_terrain_placements_owner_terrain_idx').on(table.userId, table.terrainId),
+  foreignKey({
+    name: 'project_terrain_placements_revision_fk',
+    columns: [table.terrainId, table.terrainRevision],
+    foreignColumns: [threedTerrainRevisions.terrainId, threedTerrainRevisions.revision],
+  }).onDelete('restrict'),
+  check('project_terrain_placements_scale_check', sql`${table.scale} > 0`),
+]);
+
 // ============================================
 // 1e. threed_model_material_assignments - Model material/Texture junction
 // ============================================

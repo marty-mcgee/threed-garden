@@ -2,7 +2,7 @@
 
 [Open the interactive schema explorer](app-data-structure.html) · [Structured schema snapshot](app-data-structure.json) · [Established App architecture](../plans/app-module-architecture.md)
 
-Snapshot: 2026-11-10, App 0.32.4, main / 109fb8e6 plus working-tree changes. Generated from the actual local Drizzle declarations, without a database connection. This visualizes the existing structure; it does not introduce a new architecture.
+Snapshot: 2026-11-11, App 0.33.0, main / 98450a62 plus working-tree changes. Generated from the actual local Drizzle declarations, without a database connection. This visualizes the existing structure; it does not introduce a new architecture.
 
 ## Explore the structure
 
@@ -12,16 +12,16 @@ Open the HTML file directly in a browser; it needs no server, network or CDN. Se
 
 | Domain | Tables | Columns | Foreign keys |
 | --- | ---: | ---: | ---: |
-| ThreeD | 46 | 669 | 105 |
+| ThreeD | 49 | 695 | 111 |
 | Multimedia | 13 | 136 | 24 |
 | Traffic | 10 | 227 | 10 |
 | Learn | 1 | 13 | 2 |
 | Projects (shared) | 6 | 84 | 15 |
 | Accounts (shared) | 5 | 48 | 2 |
 | Settings (shared) | 5 | 53 | 6 |
-| **Total** | **86** | **1230** | **164** |
+| **Total** | **89** | **1256** | **170** |
 
-Also includes **37 enums**, **161 ORM relation declarations** and **53 reviewed application mappings**. Counts describe source declarations, not verified live database objects. Auth aliases are deduplicated. Composite foreign keys remain single relationships with all participating columns. JSON/JSONB columns are shown without inventing their nested structures.
+Also includes **37 enums**, **161 ORM relation declarations** and **54 reviewed application mappings**. Counts describe source declarations, not verified live database objects. Auth aliases are deduplicated. Composite foreign keys remain single relationships with all participating columns. JSON/JSONB columns are shown without inventing their nested structures.
 
 ## Project and Module relationships
 
@@ -49,6 +49,7 @@ The interactive explorer expands polymorphic asset/Module links using the actual
 
 | Table | Columns | Outgoing FKs |
 | --- | ---: | ---: |
+| [`project_terrain_placements`](../../src/libraries/schema/threed/index.ts) | 11 | 4 |
 | [`threed`](../../src/libraries/schema/threed/index.ts) | 13 | 2 |
 | [`threed_animation_action_slots`](../../src/libraries/schema/threed/index.ts) | 9 | 2 |
 | [`threed_animation_categories`](../../src/libraries/schema/threed/index.ts) | 5 | 1 |
@@ -92,6 +93,8 @@ The interactive explorer expands polymorphic asset/Module links using the actual
 | [`threed_simulations`](../../src/libraries/schema/threed/index.ts) | 12 | 3 |
 | [`threed_system_logs`](../../src/libraries/schema/threed/index.ts) | 9 | 1 |
 | [`threed_tasks`](../../src/libraries/schema/threed/index.ts) | 19 | 5 |
+| [`threed_terrain_revisions`](../../src/libraries/schema/threed/index.ts) | 10 | 1 |
+| [`threed_terrains`](../../src/libraries/schema/threed/index.ts) | 5 | 1 |
 | [`threed_watering_history`](../../src/libraries/schema/threed/index.ts) | 20 | 5 |
 | [`threed_watering_schedules`](../../src/libraries/schema/threed/index.ts) | 27 | 5 |
 | [`threed_weather_logs`](../../src/libraries/schema/threed/index.ts) | 16 | 1 |

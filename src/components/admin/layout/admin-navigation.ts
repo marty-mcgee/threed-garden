@@ -1,4 +1,4 @@
-import { LayoutDashboard, Star, Plus, Settings } from 'lucide-react';
+import { LayoutDashboard, Mountain, Star, Plus, Settings } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import type { ModuleKey } from '@/libraries/config/module-appearance';
 import type { WorkspaceModule } from '@/libraries/config/workspace-settings';
@@ -93,6 +93,7 @@ export const navSections: NavSection[] = [
           { title: 'Assembly Groups', href: '/admin/threed/assembly-groups', moduleKey: 'assemblyGroups' },
         ],
       },
+      { title: 'Terrains', href: '/admin/threed/terrains', icon: Mountain, exact: false },
       { title: 'Designs', href: '/admin/threed/designs', moduleKey: 'designs' },
       { title: 'Characters', href: '/admin/threed/characters', moduleKey: 'characters', exact: false },
       { title: 'Scenarios', href: '/admin/threed/scenarios', moduleKey: 'scenarios', exact: false },

@@ -26,6 +26,7 @@ export const assetTypeEnum = pgEnum('asset_type', [
   'threed_layers',
   'threed_markers',
   'threed_models',
+  'threed_terrains',
   'threed_characters',
   'threed_tasks',
   'threed_harvests',

@@ -12,6 +12,7 @@ import {
   projectTraffic,
 } from '@/libraries/schema/project';
 import { multimedia, threed, traffic } from '@/libraries/schema';
+import { projectTerrainPlacements } from '@/libraries/schema/threed';
 import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/libraries/db/sequence';
 import {
@@ -385,6 +386,21 @@ export async function DELETE(request: NextRequest) {
         { success: false, error: 'Invalid ID(s)' },
         { status: 400 }
       );
+    }
+
+    if (assetType === 'threed_terrains') {
+      const [activeTerrain] = await db.select({ id: projectTerrainPlacements.id })
+        .from(projectTerrainPlacements)
+        .where(and(
+          eq(projectTerrainPlacements.projectId, parsedProjectId),
+          eq(projectTerrainPlacements.userId, userId),
+          eq(projectTerrainPlacements.threedId, parsedModuleId),
+          eq(projectTerrainPlacements.terrainId, parsedAssetId),
+        )).limit(1);
+      if (activeTerrain) return NextResponse.json({
+        success: false,
+        error: 'Remove the active Terrain with Project Save before removing its asset assignment.',
+      }, { status: 409 });
     }
 
     // Soft delete

@@ -19,6 +19,7 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  'threed-terrains': [ts('validate-threed-terrains.mjs')],
   'meta-tags': [node('validate-meta-tags.cjs'), node('validate-meta-tags-ui.cjs'), node('validate-project-meta-tags.cjs')],
   'project-guest-toolbar': [node('validate-project-guest-toolbar.cjs')],
   'input-validation': [node('validate-input-validation.cjs')],

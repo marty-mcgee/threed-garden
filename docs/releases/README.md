@@ -6,6 +6,8 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
+- [v0.33.0 - ThreeD: Terrains (Developer-confirmed checkpoint; deployment pending)](v0.33.0.md)
+
 - [v0.32.4 - ThreeD: Model Selection and Scene Controls (prepared; deployment pending)](v0.32.4.md)
 
 - [v0.32.3 - App: Open Graph URLs and Facebook App ID (Developer-confirmed production release)](v0.32.3.md)

@@ -2,6 +2,7 @@
 'use client';
 import { isProjectModelCanvasLocked } from '@/libraries/services/threed/models/project-model-instance-core';
 import type { ModelPlanImage } from '@/libraries/services/threed/models/model-plan-image';
+import type { ProjectTerrainSurface } from '@/libraries/services/threed/terrains/terrain-core';
 
 import { entityPoints } from '@/libraries/services/threed/design/object-properties';
 import type { DesignDocument } from '@/libraries/services/threed/design/document';
@@ -59,6 +60,7 @@ const ThreeDScene = dynamic(
 );
 
 interface UnifiedMapViewProps {
+  terrain?: ProjectTerrainSurface | null;
   architectureFrameRequest?: { id: string; sequence: number } | null;
   onModelPlanImage?: (projectId: number, markerId: string, image: ModelPlanImage | null) => void;
   canEditProject?: boolean;
@@ -210,6 +212,7 @@ function isSameRuntimeMarker(left: RuntimeMarker, right: RuntimeMarker): boolean
 }
 
 export function UnifiedMapView({
+  terrain = null,
   canEditProject = true,
   measurementUnits = 'imperial', onMeasurementUnitsChange, onModelPlanImage, architectureFrameRequest, architecture, metersPerSceneUnit = 0.3048, selectedArchitectureId, onArchitectureSelect, architectureLevelId, architectureShowRoofs = true,
 
@@ -699,6 +702,7 @@ export function UnifiedMapView({
       }));
     return (
       <ThreeDScene
+        terrain={terrain}
         measurementUnits={measurementUnits}
         canEditProject={canEditProject}
         onMeasurementUnitsChange={onMeasurementUnitsChange}

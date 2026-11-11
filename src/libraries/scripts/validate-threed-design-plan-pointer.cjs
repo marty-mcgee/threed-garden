@@ -17,6 +17,7 @@ function load(file, dependencies = {}, globals = {}) {
 const sceneUnits = load('src/libraries/services/threed/scene-units.ts');
 const document = load(service + 'document.ts', { '../scene-units': sceneUnits });
 const navigation = load(service + 'plan-navigation.ts', { './document': document });
+const terrain = load('src/libraries/services/threed/terrains/terrain-core.ts');
 const properties = load(service + 'object-properties.ts', { './document': document });
 // Use the real footprint function without initializing unrelated Three/WebGL geometry owners.
 const geometryAst = ts.createSourceFile('geometry.ts', fs.readFileSync(service + 'geometry.ts', 'utf8'), ts.ScriptTarget.Latest, true);
@@ -54,6 +55,7 @@ function fixture(overrides = {}) {
       return [slots[index], next => { const value = typeof next === 'function' ? next(slots[index]) : next; if (!Object.is(value, slots[index])) { slots[index] = value; dirty = true; } }];
     },
     useCallback(callback, dependencies) { const index = cursor++; if (!slots[index] || changed(slots[index].deps, dependencies)) slots[index] = { callback, deps: dependencies }; return slots[index].callback; },
+    useMemo(factory, dependencies) { const index = cursor++; if (!slots[index] || changed(slots[index].deps, dependencies)) slots[index] = { value: factory(), deps: dependencies }; return slots[index].value; },
     useEffect(callback, dependencies) {
       const index = cursor++;
       if (!effects[index] || changed(effects[index].deps, dependencies)) { pending.push(() => { effects[index]?.cleanup?.(); effects[index] = { deps: dependencies, cleanup: callback() }; }); }
@@ -79,6 +81,7 @@ function fixture(overrides = {}) {
     '@/libraries/services/threed/design/plan-navigation': navigation,
     '@/libraries/services/threed/design/object-properties': properties,
     '@/libraries/services/threed/design/geometry': { wallFootprint },
+    '@/libraries/services/threed/terrains/terrain-core': terrain,
   }, {
     Event,
     window: { addEventListener() {}, removeEventListener() {}, dispatchEvent: () => true },
@@ -106,6 +109,30 @@ function fixture(overrides = {}) {
     world(x, z) { return { x: props.planView.x + x * props.planView.scale, y: props.planView.y + z * props.planView.scale }; },
   };
   flush(); return api;
+}
+
+// Terrain footprint remains visible above an opaque Model plan image.
+{
+  const definition = terrain.generateTerrainDefinition(1);
+  const placement = terrain.parseTerrainPlacement({
+    id: null,
+    threedId: 1,
+    terrainId: 2,
+    terrainRevision: 1,
+    centerXM: 0,
+    centerZM: 0,
+    rotationYDeg: 0,
+    scale: 0.08,
+  });
+  const f = fixture({
+    terrain: { name: 'New Terrain', definition, placement },
+    modelImages: [{ id: 'field', url: 'fixture', corners: [{ x: -20, z: -20 }, { x: 20, z: -20 }, { x: -20, z: 20 }] }],
+  });
+  const nodes = flatten(f.tree);
+  const imageIndex = nodes.findIndex(node => node.type === 'image');
+  const outlineIndex = nodes.findIndex(node => node.props?.['data-plan-terrain-outline'] === 2);
+  assert.ok(outlineIndex > imageIndex, 'Terrain footprint remains visible above an opaque Ground Map Model image');
+  assert.equal(nodes[outlineIndex].props.pointerEvents, 'none', 'Terrain outline cannot block Model selection');
 }
 
 // Visible saved objects stay selectable when the active drawing level is different/hidden.

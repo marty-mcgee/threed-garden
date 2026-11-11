@@ -15,6 +15,8 @@ import { SceneViewPresetsMenu } from './panels/SceneViewPresetsMenu';
 import { SceneLayersMenu } from './panels/SceneLayersMenu';
 import { SceneResourceFeedback } from './presentation/SceneResourceFeedback';
 import { HighResolutionEnvironmentBackground, ProceduralDaylightBackground, ShadowLight, InteractiveGround } from './presentation/SceneEnvironment';
+import { buildTerrainGeometry, ProjectTerrainGround } from './presentation/ProjectTerrainGround';
+import { terrainSpawnFloorY, type ProjectTerrainSurface } from '@/libraries/services/threed/terrains/terrain-core';
 import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 import { useProjectOverlayPosition } from './panels/ProjectOverlayLayout';
 
@@ -185,7 +187,10 @@ function GroundMapImagePlane({ asset, transform }: { asset: ProjectGroundMapAsse
     texture.anisotropy = Math.min(8, gl.capabilities.getMaxAnisotropy());
     texture.needsUpdate = true;
   }, [gl, texture]);
-  if (!texture) return null;
+  if (!texture) return <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+    <planeGeometry args={[transform.width, transform.length]} />
+    <meshStandardMaterial color="#527b38" roughness={0.9} />
+  </mesh>;
   return <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
     <planeGeometry args={[transform.width, transform.length]} />
     <meshStandardMaterial map={texture} transparent opacity={transform.opacity} roughness={0.95} metalness={0} />
@@ -193,6 +198,7 @@ function GroundMapImagePlane({ asset, transform }: { asset: ProjectGroundMapAsse
 }
 
 interface ThreeDSceneProps {
+  terrain?: ProjectTerrainSurface | null;
   onModelPlanImage?: (projectId: number, markerId: string, image: ModelPlanImage | null) => void;
   canEditProject?: boolean;
   measurementUnits?: 'imperial' | 'metric';
@@ -1550,6 +1556,8 @@ function characterSceneSignature(marker: any): string {
 
 const CharacterSceneInstance = memo(function CharacterSceneInstance({
   marker,
+  terrain,
+  metersPerSceneUnit,
   isSelected,
   isActionTarget,
   isLayerEnabled,
@@ -1585,6 +1593,12 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
     Number(marker.position?.y) || 0,
     Number(marker.position?.z) || 0,
   ];
+  const spawnFloorY = terrainSpawnFloorY(terrain, metersPerSceneUnit, {
+    x: position[0],
+    y: position[1],
+    z: position[2],
+  });
+  const groundedPosition: [number, number, number] = [position[0], spawnFloorY, position[2]];
   const sourceCharacterId = Number(characterData?.id);
   const isControlled = controlledCharacterId != null
     && controlledCharacterId === sourceCharacterId;
@@ -1606,7 +1620,7 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
       <EcctrlCharacter
         physicsSettings={marker.metadata?.characterPhysics}
         character={characterData}
-        runtimePosition={position}
+        runtimePosition={groundedPosition}
         isControlled={isControlled}
         isSelected={isSelected}
         layerEnabled={isLayerEnabled}
@@ -1629,7 +1643,7 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
   }
 
   return (
-    <SceneMarkerRigidBody sceneEnabled={gardenSceneEnabled} visualMotionRef={gardenGroupRef} type="fixed" colliders={false} position={position}>
+    <SceneMarkerRigidBody sceneEnabled={gardenSceneEnabled} visualMotionRef={gardenGroupRef} type="fixed" colliders={false} position={groundedPosition}>
       <CuboidCollider args={GARDEN_CHARACTER_COLLIDER_HALF_EXTENTS} position={[0, GARDEN_CHARACTER_COLLIDER_CENTER_Y, 0]} />
       <group
         visible={gardenSceneEnabled}
@@ -1658,6 +1672,8 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
   && Number(previous.marker.position?.x) === Number(next.marker.position?.x)
   && Number(previous.marker.position?.y) === Number(next.marker.position?.y)
   && Number(previous.marker.position?.z) === Number(next.marker.position?.z)
+  && previous.terrain === next.terrain
+  && previous.metersPerSceneUnit === next.metersPerSceneUnit
   && previous.isSelected === next.isSelected
   && previous.isActionTarget === next.isActionTarget
   && previous.isLayerEnabled === next.isLayerEnabled
@@ -1673,7 +1689,7 @@ const CharacterSceneInstance = memo(function CharacterSceneInstance({
 ));
 
 // ✅ ThreeD Marker Component
-const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onClick, isSelected, isActionTarget, isLayerEnabled, placementActive, onPlacementHover, onPlacementClick, actionTarget, soccerBallTargeted, controlledCharacterId, characterLayerEnabled, soccerKickActorPosition, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug, onModelRuntimeSettled, onCharacterRuntimeSettled, characterSpawnPositions, projectId, onSensorPhysicsEvent, onModelPlanImage }: any) {
+const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, terrain, metersPerSceneUnit, onClick, isSelected, isActionTarget, isLayerEnabled, placementActive, onPlacementHover, onPlacementClick, actionTarget, soccerBallTargeted, controlledCharacterId, characterLayerEnabled, soccerKickActorPosition, onControlChange, cameraFollowRef, livePositionsRef, physicsDebug, onModelRuntimeSettled, onCharacterRuntimeSettled, characterSpawnPositions, projectId, onSensorPhysicsEvent, onModelPlanImage }: any) {
   const [hovered, setHovered] = useState(false);
   const color = marker.color || getMarkerColor(marker.type);
   const size = isSelected ? 1.0 : 0.6;
@@ -1725,6 +1741,8 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
     return (
       <CharacterSceneInstance
         marker={marker}
+        terrain={terrain}
+        metersPerSceneUnit={metersPerSceneUnit}
         isSelected={isSelected}
         isActionTarget={isActionTarget}
         isLayerEnabled={isLayerEnabled}
@@ -1865,12 +1883,19 @@ const ThreeDMarkerComponent = memo(function ThreeDMarkerComponent({ marker, onCl
       marker.data?.scale,
       marker.data?.scaleMultiplier,
     );
+    const ballFloorY = isProjectModelMovableBall(marker.metadata)
+      ? terrainSpawnFloorY(terrain, metersPerSceneUnit, { x: pos[0], y: pos[1], z: pos[2] })
+      : pos[1];
     return <ProjectModelMarkerBody
       marker={marker}
       onLivePosition={(position) => onControlChange?.(String(marker.id), 'models', Number(marker.data?.id), position)}
       soccerKickActorPosition={soccerKickActorPosition}
       characterLayerEnabled={characterLayerEnabled}
-      position={pos}
+      position={isProjectModelMovableBall(marker.metadata) ? [
+        pos[0],
+        ballFloorY > pos[1] ? ballFloorY + 0.75 : pos[1],
+        pos[2],
+      ] : pos}
       rotation={instanceRotation}
       scale={instanceScale}
       onClick={selectMarker}
@@ -2012,6 +2037,8 @@ function SceneModelDropTarget({
   centerX,
   centerZ,
   onDrop,
+  terrain,
+  metersPerSceneUnit,
 }: {
   active: boolean;
   expectedModelId: number | null;
@@ -2019,6 +2046,8 @@ function SceneModelDropTarget({
   centerX: number;
   centerZ: number;
   onDrop?: (position: { x: number; y: number; z: number }) => void;
+  terrain?: ProjectTerrainSurface | null;
+  metersPerSceneUnit: number;
 }) {
   const { camera, gl } = useThree();
 
@@ -2030,6 +2059,9 @@ function SceneModelDropTarget({
     const pointer = new THREE.Vector2();
     const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
     const intersection = new THREE.Vector3();
+    const terrainGeometry = terrain ? buildTerrainGeometry(terrain, metersPerSceneUnit).mesh : null;
+    const terrainMaterial = terrainGeometry ? new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }) : null;
+    const terrainMesh = terrainGeometry && terrainMaterial ? new THREE.Mesh(terrainGeometry, terrainMaterial) : null;
 
     const setDropFeedback = (valid: boolean | null) => {
       canvas.style.outline = valid === null
@@ -2062,7 +2094,9 @@ function SceneModelDropTarget({
         -((event.clientY - bounds.top) / bounds.height) * 2 + 1,
       );
       raycaster.setFromCamera(pointer, camera);
-      if (!raycaster.ray.intersectPlane(groundPlane, intersection)) return;
+      const terrainHit = terrainMesh ? raycaster.intersectObject(terrainMesh, false)[0] : null;
+      if (terrainHit) intersection.copy(terrainHit.point);
+      else if (!raycaster.ray.intersectPlane(groundPlane, intersection)) return;
       const halfSize = size / 2;
       if (
         intersection.x < centerX - halfSize
@@ -2070,24 +2104,31 @@ function SceneModelDropTarget({
         || intersection.z < centerZ - halfSize
         || intersection.z > centerZ + halfSize
       ) return;
-      onDrop({ x: intersection.x, y: 0, z: intersection.z });
+      onDrop({
+        x: intersection.x,
+        y: intersection.y,
+        z: intersection.z,
+      });
     };
 
     canvas.addEventListener('dragover', handleDragOver);
     canvas.addEventListener('dragleave', handleDragLeave);
     canvas.addEventListener('drop', handleDrop);
     return () => {
+      terrainGeometry?.dispose();
+      terrainMaterial?.dispose();
       setDropFeedback(null);
       canvas.removeEventListener('dragover', handleDragOver);
       canvas.removeEventListener('dragleave', handleDragLeave);
       canvas.removeEventListener('drop', handleDrop);
     };
-  }, [active, camera, centerX, centerZ, expectedModelId, gl, onDrop, size]);
+  }, [active, camera, centerX, centerZ, expectedModelId, gl, metersPerSceneUnit, onDrop, size, terrain]);
 
   return null;
 }
 
 export function ThreeDScene({
+  terrain = null,
   canEditProject = true,
   measurementUnits = 'imperial', onMeasurementUnitsChange,
   architecture, metersPerSceneUnit = 0.3048, selectedArchitectureId, onArchitectureSelect, architectureLevelId, architectureShowRoofs = true,
@@ -2604,11 +2645,21 @@ export function ThreeDScene({
   const [groundMapSourceProvider, setGroundMapSourceProvider] = useState('');
   const [groundMapAttribution, setGroundMapAttribution] = useState('');
   const groundMapInputRef = useRef<HTMLInputElement | null>(null);
+  const previousTerrainRef = useRef({ projectId, present: Boolean(terrain) });
   useEffect(() => {
     setSunlight(initialViewState?.sunlight ?? { azimuth: 0, elevation: 45 });
     setExtraGround(initialViewState?.ground ?? { enabled: false, size: 200, height: -0.1 });
     setGroundMap(initialViewState?.groundMap ?? DEFAULT_PROJECT_GROUND_MAP_TRANSFORM);
   }, [projectId, initialViewState?.sunlight, initialViewState?.ground, initialViewState?.groundMap]);
+  useEffect(() => {
+    const previous = previousTerrainRef.current;
+    if (previous.projectId === projectId && previous.present && !terrain) {
+      setGroundMap(current => current.visualMode === 'hidden'
+        ? { ...current, visualMode: 'procedural' }
+        : current);
+    }
+    previousTerrainRef.current = { projectId, present: Boolean(terrain) };
+  }, [projectId, terrain]);
   useEffect(() => {
     const controller = new AbortController();
     setGroundMapAsset(null);
@@ -2918,6 +2969,12 @@ export function ThreeDScene({
   const groundSize = hasVisibleEnvironmentModel
     ? 500
     : Math.min(Math.max(maxDimension + 10, 30), 500);
+  const hasMatchingGroundMapImage = groundMap.visualMode === 'image'
+    && groundMapAsset !== null
+    && groundMap.groundMapId === groundMapAsset.id;
+  const effectiveGroundVisualMode = groundMap.visualMode === 'image' && !hasMatchingGroundMapImage
+    ? 'procedural'
+    : groundMap.visualMode;
 
   const availableTypeCounts = markers.reduce((acc: Record<string, number>, marker: any) => {
     const type = normalizeSceneLayerType(marker.type);
@@ -3347,9 +3404,9 @@ export function ThreeDScene({
 
   const groundMapControls = (
     <div className="mt-2 space-y-1.5">
-                <label className="block">Ground Visual
+                <label className="block">Project Ground Map
                   <select value={groundMap.visualMode} onChange={event => setGroundMap(value => ({ ...value, visualMode: event.target.value as ProjectGroundMapTransform['visualMode'] }))} className="mt-1 w-full rounded border border-white/10 bg-black/40 px-1 py-1">
-                    <option value="procedural">Procedural</option>
+                    <option value="procedural">Procedural ground plane</option>
                     <option value="image" disabled={!groundMapAsset}>Uploaded Image</option>
                     <option value="hidden">Hidden</option>
                   </select>
@@ -3780,6 +3837,8 @@ export function ThreeDScene({
           centerX={groundCenterX}
           centerZ={groundCenterZ}
           onDrop={onModelPlacement}
+          terrain={terrain}
+          metersPerSceneUnit={metersPerSceneUnit}
         />
 
         <Physics
@@ -3788,10 +3847,24 @@ export function ThreeDScene({
           paused={transforming}
         >
           <SensorOccupancySync stateRef={sensorCounterStateRef} onSeparated={clearSeparatedSensorOccupancy} />
+          {terrain && <ProjectTerrainGround
+            surface={terrain}
+            metersPerSceneUnit={metersPerSceneUnit}
+            groundSize={groundSize}
+            centerX={groundCenterX}
+            centerZ={groundCenterZ}
+            onHover={position => { if (placementLabel) setPlacementPreviewPosition(position); }}
+            onLeave={() => setPlacementPreviewPosition(null)}
+            onClick={position => {
+              if (!placementLabel) return;
+              const place = placementPhysicsSensor ? onPhysicsSensorPlacement : movingModelName ? onModelReposition : placementCharacterName ? onCharacterPlacement : placementFarmBotName ? onFarmBotPlacement : placementPlantingName ? onPlantingPlacement : placementBedName ? onBedPlacement : onModelPlacement;
+              place?.(position);
+            }}
+          />}
           {projectId && architecture && <DesignScenePhysics document={architecture} projectId={projectId} metersPerSceneUnit={metersPerSceneUnit} />}
           {/* Physics Debug renders the active Rapier colliders as well as
               each owner's focused Sensor and Environment guides. */}
-          {groundMap.visualMode === 'image' && groundMapAsset && groundMap.groundMapId === groundMapAsset.id && <RigidBody
+          {!terrain && hasMatchingGroundMapImage && groundMapAsset && <RigidBody
             type="fixed" colliders={false}
             position={[groundMap.centerX, groundMap.height, groundMap.centerZ]}
             rotation={[0, groundMap.rotationY * Math.PI / 180, 0]}
@@ -3810,7 +3883,7 @@ export function ThreeDScene({
               </Suspense>
             </group>
           </RigidBody>}
-          {groundMap.visualMode !== 'image' && extraGround.enabled && <RigidBody type="fixed" colliders={false} position={[centerX, extraGround.height, centerZ]}>
+          {!terrain && !hasMatchingGroundMapImage && extraGround.enabled && <RigidBody type="fixed" colliders={false} position={[centerX, extraGround.height, centerZ]}>
             <CuboidCollider args={[extraGround.size / 2, 0.1, extraGround.size / 2]} position={[0, -0.1, 0]} />
             <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow
               onPointerMove={event => { if (placementLabel) setPlacementPreviewPosition({x: event.point.x, y: event.point.y, z: event.point.z}); }}
@@ -3822,11 +3895,11 @@ export function ThreeDScene({
                 place?.({x: event.point.x, y: event.point.y, z: event.point.z});
               }}>
               <planeGeometry args={[extraGround.size, extraGround.size]} />
-              <meshStandardMaterial color="#527b38" roughness={0.9} visible={groundMap.visualMode === 'procedural'} />
+              <meshStandardMaterial color="#527b38" roughness={0.9} visible={effectiveGroundVisualMode === 'procedural'} />
             </mesh>
           </RigidBody>}
           {/* v0.16.0-alpha: Interactive ground plane as fixed physics body */}
-          {groundMap.visualMode !== 'image' && !extraGround.enabled && <RigidBody type="fixed" colliders="cuboid">
+          {!terrain && !hasMatchingGroundMapImage && !extraGround.enabled && <RigidBody type="fixed" colliders="cuboid">
             <InteractiveGround
               size={groundSize}
               centerX={groundCenterX}
@@ -3847,7 +3920,7 @@ export function ThreeDScene({
                   : placementBedName
                     ? onBedPlacement
                     : onModelPlacement}
-              showVisualGround={groundMap.visualMode === 'procedural' && !hasVisibleEnvironmentModel}
+              showVisualGround={effectiveGroundVisualMode === 'procedural'}
             />
           </RigidBody>}
 
@@ -3945,6 +4018,8 @@ export function ThreeDScene({
               >
                 <ThreeDMarkerComponent
                   marker={marker}
+                  terrain={terrain}
+                  metersPerSceneUnit={metersPerSceneUnit}
                   onClick={handleMarkerClick}
                   isSelected={selectedMarker?.id === marker.id && selectedMarker?.type === marker.type}
                   isLayerEnabled={activeLayers.has(normalizeSceneLayerType(marker.type))}

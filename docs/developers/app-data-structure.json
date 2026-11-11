@@ -1,15 +1,15 @@
 {
-  "generatedAt": "2026-11-10",
+  "generatedAt": "2026-11-11",
   "branch": "main",
-  "head": "109fb8e661dc7c30d4e28c656af8c63e57c4aae9",
-  "version": "0.32.4",
+  "head": "98450a62e3f36a52bf39f57639a03fe7211738fe",
+  "version": "0.33.0",
   "summary": {
-    "tables": 86,
-    "columns": 1230,
-    "foreignKeys": 164,
+    "tables": 89,
+    "columns": 1256,
+    "foreignKeys": 170,
     "enums": 37,
     "ormRelations": 161,
-    "applicationLinks": 53
+    "applicationLinks": 54
   },
   "domains": [
     {
@@ -2218,7 +2218,7 @@
       "domain": "project",
       "source": "../../src/libraries/schema/project/index.ts",
       "sourcePath": "src/libraries/schema/project/index.ts",
-      "line": 64,
+      "line": 65,
       "columns": [
         {
           "name": "id",
@@ -2508,7 +2508,7 @@
       "domain": "project",
       "source": "../../src/libraries/schema/project/index.ts",
       "sourcePath": "src/libraries/schema/project/index.ts",
-      "line": 160,
+      "line": 161,
       "columns": [
         {
           "name": "id",
@@ -2580,6 +2580,7 @@
             "threed_layers",
             "threed_markers",
             "threed_models",
+            "threed_terrains",
             "threed_characters",
             "threed_tasks",
             "threed_harvests",
@@ -2711,7 +2712,7 @@
       "domain": "project",
       "source": "../../src/libraries/schema/project/index.ts",
       "sourcePath": "src/libraries/schema/project/index.ts",
-      "line": 141,
+      "line": 142,
       "columns": [
         {
           "name": "id",
@@ -2829,13 +2830,164 @@
       "notes": []
     },
     {
+      "id": "project_terrain_placements",
+      "name": "project_terrain_placements",
+      "exportName": "projectTerrainPlacements",
+      "domain": "threed",
+      "source": "../../src/libraries/schema/threed/index.ts",
+      "sourcePath": "src/libraries/schema/threed/index.ts",
+      "line": 592,
+      "columns": [
+        {
+          "name": "id",
+          "property": "id",
+          "type": "text",
+          "notNull": true,
+          "primaryKey": true,
+          "unique": false,
+          "hasDefault": true,
+          "default": "gen_random_uuid()::text"
+        },
+        {
+          "name": "user_id",
+          "property": "userId",
+          "type": "text",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "project_id",
+          "property": "projectId",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "threed_id",
+          "property": "threedId",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "terrain_id",
+          "property": "terrainId",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "terrain_revision",
+          "property": "terrainRevision",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "center_x_m",
+          "property": "centerXM",
+          "type": "double precision",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "center_z_m",
+          "property": "centerZM",
+          "type": "double precision",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "rotation_y_deg",
+          "property": "rotationYDeg",
+          "type": "double precision",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "scale",
+          "property": "scale",
+          "type": "double precision",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "saved_at",
+          "property": "savedAt",
+          "type": "timestamp",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "project_terrain_placements_project_idx",
+          "columns": [
+            "project_id"
+          ],
+          "unique": true,
+          "where": null
+        },
+        {
+          "name": "project_terrain_placements_owner_terrain_idx",
+          "columns": [
+            "user_id",
+            "terrain_id"
+          ],
+          "unique": false,
+          "where": null
+        }
+      ],
+      "checks": [
+        {
+          "name": "project_terrain_placements_scale_check",
+          "expression": "\"project_terrain_placements\".\"scale\" > 0"
+        }
+      ],
+      "uniqueConstraints": [],
+      "primaryKey": [
+        "id"
+      ],
+      "notes": []
+    },
+    {
       "id": "project_threed",
       "name": "project_threed",
       "exportName": "projectThreed",
       "domain": "project",
       "source": "../../src/libraries/schema/project/index.ts",
       "sourcePath": "src/libraries/schema/project/index.ts",
-      "line": 111,
+      "line": 112,
       "columns": [
         {
           "name": "id",
@@ -2959,7 +3111,7 @@
       "domain": "project",
       "source": "../../src/libraries/schema/project/index.ts",
       "sourcePath": "src/libraries/schema/project/index.ts",
-      "line": 192,
+      "line": 193,
       "columns": [
         {
           "name": "id",
@@ -3275,7 +3427,7 @@
       "domain": "project",
       "source": "../../src/libraries/schema/project/index.ts",
       "sourcePath": "src/libraries/schema/project/index.ts",
-      "line": 126,
+      "line": 127,
       "columns": [
         {
           "name": "id",
@@ -4398,7 +4550,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2211,
+      "line": 2271,
       "columns": [
         {
           "name": "id",
@@ -4529,7 +4681,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2187,
+      "line": 2247,
       "columns": [
         {
           "name": "id",
@@ -4620,7 +4772,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2198,
+      "line": 2258,
       "columns": [
         {
           "name": "id",
@@ -4696,7 +4848,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2082,
+      "line": 2142,
       "columns": [
         {
           "name": "id",
@@ -4837,7 +4989,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2169,
+      "line": 2229,
       "columns": [
         {
           "name": "id",
@@ -4958,7 +5110,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2154,
+      "line": 2214,
       "columns": [
         {
           "name": "id",
@@ -5073,7 +5225,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2099,
+      "line": 2159,
       "columns": [
         {
           "name": "id",
@@ -5233,7 +5385,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2233,
+      "line": 2293,
       "columns": [
         {
           "name": "id",
@@ -5324,7 +5476,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2267,
+      "line": 2327,
       "columns": [
         {
           "name": "assembly_id",
@@ -5524,7 +5676,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2245,
+      "line": 2305,
       "columns": [
         {
           "name": "assembly_id",
@@ -5582,7 +5734,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2254,
+      "line": 2314,
       "columns": [
         {
           "name": "assembly_id",
@@ -5664,7 +5816,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 581,
+      "line": 641,
       "columns": [
         {
           "name": "id",
@@ -5967,7 +6119,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2136,
+      "line": 2196,
       "columns": [
         {
           "name": "id",
@@ -6096,7 +6248,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1625,
+      "line": 1685,
       "columns": [
         {
           "name": "id",
@@ -6220,7 +6372,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1535,
+      "line": 1595,
       "columns": [
         {
           "name": "id",
@@ -6943,7 +7095,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1051,
+      "line": 1111,
       "columns": [
         {
           "name": "id",
@@ -7121,7 +7273,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1187,
+      "line": 1247,
       "columns": [
         {
           "name": "id",
@@ -7580,7 +7732,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1354,
+      "line": 1414,
       "columns": [
         {
           "name": "id",
@@ -7901,7 +8053,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1486,
+      "line": 1546,
       "columns": [
         {
           "name": "id",
@@ -8054,7 +8206,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1010,
+      "line": 1070,
       "columns": [
         {
           "name": "id",
@@ -8221,7 +8373,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 935,
+      "line": 995,
       "columns": [
         {
           "name": "id",
@@ -8754,7 +8906,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 822,
+      "line": 882,
       "columns": [
         {
           "name": "id",
@@ -8944,7 +9096,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1677,
+      "line": 1737,
       "columns": [
         {
           "name": "id",
@@ -9188,7 +9340,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2119,
+      "line": 2179,
       "columns": [
         {
           "name": "id",
@@ -9758,7 +9910,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 558,
+      "line": 618,
       "columns": [
         {
           "name": "id",
@@ -10449,7 +10601,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1129,
+      "line": 1189,
       "columns": [
         {
           "name": "id",
@@ -10747,7 +10899,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1082,
+      "line": 1142,
       "columns": [
         {
           "name": "id",
@@ -11132,7 +11284,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 626,
+      "line": 686,
       "columns": [
         {
           "name": "id",
@@ -12446,7 +12598,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1512,
+      "line": 1572,
       "columns": [
         {
           "name": "id",
@@ -12571,7 +12723,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 855,
+      "line": 915,
       "columns": [
         {
           "name": "id",
@@ -12873,13 +13025,248 @@
       "notes": []
     },
     {
+      "id": "threed_terrain_revisions",
+      "name": "threed_terrain_revisions",
+      "exportName": "threedTerrainRevisions",
+      "domain": "threed",
+      "source": "../../src/libraries/schema/threed/index.ts",
+      "sourcePath": "src/libraries/schema/threed/index.ts",
+      "line": 568,
+      "columns": [
+        {
+          "name": "terrain_id",
+          "property": "terrainId",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": true,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "revision",
+          "property": "revision",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": true,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "format_version",
+          "property": "formatVersion",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "1"
+        },
+        {
+          "name": "width_m",
+          "property": "widthM",
+          "type": "double precision",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "length_m",
+          "property": "lengthM",
+          "type": "double precision",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "columns",
+          "property": "columns",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "rows",
+          "property": "rows",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "heights_m",
+          "property": "heightsM",
+          "type": "jsonb",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "appearance",
+          "property": "appearance",
+          "type": "jsonb",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "property": "createdAt",
+          "type": "timestamp",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "now()"
+        }
+      ],
+      "indexes": [],
+      "checks": [
+        {
+          "name": "threed_terrain_revision_positive",
+          "expression": "\"threed_terrain_revisions\".\"revision\" > 0"
+        },
+        {
+          "name": "threed_terrain_format_version",
+          "expression": "\"threed_terrain_revisions\".\"format_version\" = 1"
+        },
+        {
+          "name": "threed_terrain_width_check",
+          "expression": "\"threed_terrain_revisions\".\"width_m\" > 0 AND \"threed_terrain_revisions\".\"width_m\" <= 1000"
+        },
+        {
+          "name": "threed_terrain_length_check",
+          "expression": "\"threed_terrain_revisions\".\"length_m\" > 0 AND \"threed_terrain_revisions\".\"length_m\" <= 1000"
+        },
+        {
+          "name": "threed_terrain_columns_check",
+          "expression": "\"threed_terrain_revisions\".\"columns\" BETWEEN 2 AND 129"
+        },
+        {
+          "name": "threed_terrain_rows_check",
+          "expression": "\"threed_terrain_revisions\".\"rows\" BETWEEN 2 AND 129"
+        },
+        {
+          "name": "threed_terrain_heights_array",
+          "expression": "jsonb_typeof(\"threed_terrain_revisions\".\"heights_m\") = 'array'"
+        },
+        {
+          "name": "threed_terrain_appearance_object",
+          "expression": "jsonb_typeof(\"threed_terrain_revisions\".\"appearance\") = 'object'"
+        }
+      ],
+      "uniqueConstraints": [],
+      "primaryKey": [
+        "terrain_id",
+        "revision"
+      ],
+      "notes": []
+    },
+    {
+      "id": "threed_terrains",
+      "name": "threed_terrains",
+      "exportName": "threedTerrains",
+      "domain": "threed",
+      "source": "../../src/libraries/schema/threed/index.ts",
+      "sourcePath": "src/libraries/schema/threed/index.ts",
+      "line": 556,
+      "columns": [
+        {
+          "name": "id",
+          "property": "id",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": true,
+          "unique": false,
+          "hasDefault": true,
+          "default": "Implicit generated value"
+        },
+        {
+          "name": "user_id",
+          "property": "userId",
+          "type": "text",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "name",
+          "property": "name",
+          "type": "varchar(255)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "property": "createdAt",
+          "type": "timestamp",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "property": "updatedAt",
+          "type": "timestamp",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "threed_terrains_owner_name_idx",
+          "columns": [
+            "user_id",
+            "name"
+          ],
+          "unique": false,
+          "where": null
+        }
+      ],
+      "checks": [
+        {
+          "name": "threed_terrains_name_check",
+          "expression": "length(btrim(\"threed_terrains\".\"name\")) > 0"
+        }
+      ],
+      "uniqueConstraints": [],
+      "primaryKey": [
+        "id"
+      ],
+      "notes": []
+    },
+    {
       "id": "threed_watering_history",
       "name": "threed_watering_history",
       "exportName": "threedWateringHistory",
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 753,
+      "line": 813,
       "columns": [
         {
           "name": "id",
@@ -13145,7 +13532,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 674,
+      "line": 734,
       "columns": [
         {
           "name": "id",
@@ -13498,7 +13885,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 901,
+      "line": 961,
       "columns": [
         {
           "name": "id",
@@ -18143,6 +18530,104 @@
       "status": "declared"
     },
     {
+      "id": "fk:threed_terrains:threed_terrains_user_id_user_id_fk",
+      "from": "threed_terrains",
+      "fromColumns": [
+        "user_id"
+      ],
+      "to": "user",
+      "toColumns": [
+        "id"
+      ],
+      "kind": "foreign-key",
+      "label": "threed_terrains_user_id_user_id_fk",
+      "onDelete": "no action",
+      "onUpdate": "no action",
+      "status": "declared"
+    },
+    {
+      "id": "fk:threed_terrain_revisions:threed_terrain_revisions_terrain_id_threed_terrains_id_fk",
+      "from": "threed_terrain_revisions",
+      "fromColumns": [
+        "terrain_id"
+      ],
+      "to": "threed_terrains",
+      "toColumns": [
+        "id"
+      ],
+      "kind": "foreign-key",
+      "label": "threed_terrain_revisions_terrain_id_threed_terrains_id_fk",
+      "onDelete": "restrict",
+      "onUpdate": "no action",
+      "status": "declared"
+    },
+    {
+      "id": "fk:project_terrain_placements:project_terrain_placements_user_id_user_id_fk",
+      "from": "project_terrain_placements",
+      "fromColumns": [
+        "user_id"
+      ],
+      "to": "user",
+      "toColumns": [
+        "id"
+      ],
+      "kind": "foreign-key",
+      "label": "project_terrain_placements_user_id_user_id_fk",
+      "onDelete": "no action",
+      "onUpdate": "no action",
+      "status": "declared"
+    },
+    {
+      "id": "fk:project_terrain_placements:project_terrain_placements_project_id_project_id_fk",
+      "from": "project_terrain_placements",
+      "fromColumns": [
+        "project_id"
+      ],
+      "to": "project",
+      "toColumns": [
+        "id"
+      ],
+      "kind": "foreign-key",
+      "label": "project_terrain_placements_project_id_project_id_fk",
+      "onDelete": "cascade",
+      "onUpdate": "no action",
+      "status": "declared"
+    },
+    {
+      "id": "fk:project_terrain_placements:project_terrain_placements_threed_id_threed_id_fk",
+      "from": "project_terrain_placements",
+      "fromColumns": [
+        "threed_id"
+      ],
+      "to": "threed",
+      "toColumns": [
+        "id"
+      ],
+      "kind": "foreign-key",
+      "label": "project_terrain_placements_threed_id_threed_id_fk",
+      "onDelete": "no action",
+      "onUpdate": "no action",
+      "status": "declared"
+    },
+    {
+      "id": "fk:project_terrain_placements:project_terrain_placements_revision_fk",
+      "from": "project_terrain_placements",
+      "fromColumns": [
+        "terrain_id",
+        "terrain_revision"
+      ],
+      "to": "threed_terrain_revisions",
+      "toColumns": [
+        "terrain_id",
+        "revision"
+      ],
+      "kind": "foreign-key",
+      "label": "project_terrain_placements_revision_fk",
+      "onDelete": "restrict",
+      "onUpdate": "no action",
+      "status": "declared"
+    },
+    {
       "id": "fk:threed_model_material_assignments:threed_model_material_assignments_user_id_user_id_fk",
       "from": "threed_model_material_assignments",
       "fromColumns": [
@@ -22284,6 +22769,22 @@
       "status": "declared"
     },
     {
+      "id": "application:project_assets:asset_id:threed_terrains",
+      "from": "project_assets",
+      "fromColumns": [
+        "asset_id"
+      ],
+      "to": "threed_terrains",
+      "toColumns": [
+        "id"
+      ],
+      "kind": "application",
+      "label": "module_type = 'threed' AND asset_type = 'threed_terrains'",
+      "condition": "module_type = 'threed' AND asset_type = 'threed_terrains'",
+      "note": "No asset FK. Assignment requires an owned record and an active matching Project/Module assignment.",
+      "status": "declared"
+    },
+    {
       "id": "application:project_assets:asset_id:threed_characters",
       "from": "project_assets",
       "fromColumns": [
@@ -22965,6 +23466,7 @@
         "threed_layers",
         "threed_markers",
         "threed_models",
+        "threed_terrains",
         "threed_characters",
         "threed_tasks",
         "threed_harvests",
@@ -23115,7 +23617,7 @@
       ],
       "domain": "project",
       "source": "../../src/libraries/schema/project/index.ts",
-      "line": 55
+      "line": 56
     },
     {
       "name": "project_threed_marker_type",
@@ -23128,7 +23630,7 @@
       ],
       "domain": "project",
       "source": "../../src/libraries/schema/project/index.ts",
-      "line": 47
+      "line": 48
     },
     {
       "name": "setting_scope",
@@ -23315,7 +23817,7 @@
       ],
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
-      "line": 1653
+      "line": 1713
     },
     {
       "name": "threed_layer_visibility",
@@ -23326,7 +23828,7 @@
       ],
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
-      "line": 1667
+      "line": 1727
     },
     {
       "name": "threed_model_status",
@@ -23452,17 +23954,17 @@
     }
   ],
   "sourceHashes": {
-    "src/app/api/project/threed-markers/route.ts": "daaa72b1404850970a7bf0e0fd31bcbffcbfba8b59c4283d5304453fdea38e4e",
-    "src/libraries/project-assets/asset-registry.ts": "8f6a7c55e5f6ec8600354b956b36e492986830be35ef188f80e401af144c3cf9",
+    "src/app/api/project/threed-markers/route.ts": "d8b797bdab4e98a7c4e36e96df898375164e716cfa17b66a114d0396ceea339e",
+    "src/libraries/project-assets/asset-registry.ts": "10cda90f2baf403aa27f5723d7478402f7a1febc8c99a4b1efffccaee72c240b",
     "src/libraries/schema/auth/index.ts": "df98d02c496180eea94d986d92634deee72a10a2bb264cdc073775c1b72374b4",
     "src/libraries/schema/auth/user-role-audit.ts": "9e207990b630615acbe5f77622dbf586275f1777b401e83e46f29c518c3220e7",
     "src/libraries/schema/index.ts": "ec1e6535f233b722a01ac817b65f24c324ececfaf7d64081f79350aa19e5109b",
     "src/libraries/schema/learn/index.ts": "ec9df7d1af0027a1d0eec2216385a9eee5d9e77058a076131e5679af5c08e3f8",
     "src/libraries/schema/multimedia/index.ts": "0d454cdeaf38e616125b99340a92e2e26b2b145ab39e87cc7c8f42a281e0f672",
-    "src/libraries/schema/project/index.ts": "829bcede37aee1940b268c87454cf466983f70621ac975c4e9ebca37286938bf",
+    "src/libraries/schema/project/index.ts": "dcbaf3db114a807f5fc0f9c897d56d4019357b9642b257dcc9cbc4a0ff36d857",
     "src/libraries/schema/settings/index.ts": "36c9ce83d70c4517b44952899574a47c68798551b3c1a63992819e89063ced55",
     "src/libraries/schema/threed/album-associations.ts": "f1dfc1d4701a484c1d0b8cd8582768aa61b9585b19a6d3c693ab9c2cc619dff8",
-    "src/libraries/schema/threed/index.ts": "37caa2c6438d0e96b98079d277dfa255b125462451f550b140da07043342b65d",
+    "src/libraries/schema/threed/index.ts": "f2744a9a71c1d51af6a19277411dd63bac1eaf8ce3e37f1202273b26d1f7a7c2",
     "src/libraries/schema/traffic/index.ts": "d15d70e180a2cbacc693fb1c9ea8575585125fe7f7e0fdc7a4daee22d316568e",
     "src/libraries/services/threed/multimedia/album-entity-registry.ts": "24ce57ab3ac472b06fd25590a0090dc1579215a63cedc6eceabbc612034a59e9"
   },

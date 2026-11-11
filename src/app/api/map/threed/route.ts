@@ -30,6 +30,9 @@ import {
   threedModelFiles,
   threedModelMaterialAssignments,
   threedModelTextures,
+  threedTerrains,
+  threedTerrainRevisions,
+  projectTerrainPlacements,
 } from '@/libraries/schema/threed';
 import { 
   trafficChpCadIncidents,
@@ -50,6 +53,7 @@ import {
 } from '@/libraries/schema/project';
 import { eq, and, or, desc, sql, inArray } from 'drizzle-orm';
 import { readThreeDProjectViewStateFromConfig } from '@/libraries/services/threed/markers/project-view-state-core';
+import { projectConfigurationStamp } from '@/libraries/services/project/configuration';
 
 const MARKER_ASSET_TYPE_BY_MODULE = {
   plantings: 'threed_plantings',
@@ -479,10 +483,65 @@ export async function GET(request: NextRequest) {
       }
     });
 
+    const [terrainRow] = await db.select({
+      placement: projectTerrainPlacements,
+      definition: threedTerrainRevisions,
+      name: threedTerrains.name,
+    }).from(projectTerrainPlacements)
+      .innerJoin(threedTerrainRevisions, and(
+        eq(threedTerrainRevisions.terrainId, projectTerrainPlacements.terrainId),
+        eq(threedTerrainRevisions.revision, projectTerrainPlacements.terrainRevision),
+      ))
+      .innerJoin(threedTerrains, and(
+        eq(threedTerrains.id, projectTerrainPlacements.terrainId),
+        eq(threedTerrains.userId, projectData.userId!),
+      ))
+      .innerJoin(projectThreed, and(
+        eq(projectThreed.projectId, projectTerrainPlacements.projectId),
+        eq(projectThreed.threedId, projectTerrainPlacements.threedId),
+        eq(projectThreed.userId, projectTerrainPlacements.userId),
+        eq(projectThreed.isActive, true),
+      ))
+      .innerJoin(projectAssets, and(
+        eq(projectAssets.projectId, projectTerrainPlacements.projectId),
+        eq(projectAssets.moduleId, projectTerrainPlacements.threedId),
+        eq(projectAssets.userId, projectTerrainPlacements.userId),
+        eq(projectAssets.moduleType, 'threed'),
+        eq(projectAssets.assetType, 'threed_terrains'),
+        eq(projectAssets.assetId, projectTerrainPlacements.terrainId),
+        eq(projectAssets.isActive, true),
+      ))
+      .where(and(
+        eq(projectTerrainPlacements.projectId, parsedProjectId),
+        eq(projectTerrainPlacements.userId, projectData.userId!),
+      )).limit(1);
+
     return NextResponse.json({
       success: true,
       data: allData,
       projectContext: {
+        terrain: terrainRow ? {
+          name: terrainRow.name,
+          placement: {
+            id: terrainRow.placement.id,
+            threedId: terrainRow.placement.threedId,
+            terrainId: terrainRow.placement.terrainId,
+            terrainRevision: terrainRow.placement.terrainRevision,
+            centerXM: terrainRow.placement.centerXM,
+            centerZM: terrainRow.placement.centerZM,
+            rotationYDeg: terrainRow.placement.rotationYDeg,
+            scale: terrainRow.placement.scale,
+          },
+          definition: {
+            formatVersion: terrainRow.definition.formatVersion,
+            widthM: terrainRow.definition.widthM,
+            lengthM: terrainRow.definition.lengthM,
+            columns: terrainRow.definition.columns,
+            rows: terrainRow.definition.rows,
+            heightsM: terrainRow.definition.heightsM,
+            appearance: terrainRow.definition.appearance,
+          },
+        } : null,
         architecture: readProjectArchitecture(projectData.config),
         measurementUnits: readProjectMeasurementUnits(projectData.config),
         metersPerSceneUnit: Number(projectData.metersPerSceneUnit),
@@ -490,6 +549,7 @@ export async function GET(request: NextRequest) {
         canEdit,
         projectName: projectData.name,
         viewState: readThreeDProjectViewStateFromConfig(projectData.config),
+        configurationStamp: projectConfigurationStamp(projectData.config),
         geographicOrigin: projectData.originLatitude !== null
           && projectData.originLongitude !== null
           ? {

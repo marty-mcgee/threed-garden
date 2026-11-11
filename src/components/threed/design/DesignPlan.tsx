@@ -1,7 +1,7 @@
 'use client';
 import type { DesignModelSelection, SaveDesignModel } from './DesignModelProperties';
 
-import { useEffect, useId, useRef, useState, type PointerEvent, type ReactNode, type SetStateAction, useCallback } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type PointerEvent, type ReactNode, type SetStateAction, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { Check, Focus, Maximize, RotateCcw, Ruler, type LucideIcon } from 'lucide-react';
 import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem, ContextMenuSeparator } from '@/components/ui/context-menu';
@@ -12,12 +12,13 @@ import { distance, insidePolygon, roofFrame, roofOpeningFootprint, INCH, levelDo
 import { formatPlanLength, framePlan, gridFeet as planGridFeet, rulerTicks, RULER_SIZE, zoomPlan } from '@/libraries/services/threed/design/plan-navigation';
 import { entityPoints } from '@/libraries/services/threed/design/object-properties';
 import type { ModelPlanImage } from '@/libraries/services/threed/models/model-plan-image';
+import { terrainHeightAt, terrainPlanCells, type ProjectTerrainSurface } from '@/libraries/services/threed/terrains/terrain-core';
 import { wallFootprint } from '@/libraries/services/threed/design/geometry';
 
 export type DesignTool = 'select' | 'wall' | 'floor' | 'roof' | 'door' | 'window' | 'cutout' | 'skylight' | 'pan';
 type DrawPoint = PlanPoint & { nodeId?: string };
 export interface DesignContextGroup { label: string; color: string; actions: { label: string; icon: LucideIcon; disabled?: boolean; active?: boolean; run: () => void }[] }
-interface Props { selectedModel?: DesignModelSelection | null; onSaveModel?: SaveDesignModel; modelBusy?: boolean; visibleLevelIds?: string[]; onToggleLevel?: (id: string) => void; contextActions?: DesignContextGroup[]; showMeasurements?: boolean; onShowMeasurementsChange?: (show: boolean) => void; selectedModelId?: string | null; modelImages?: ModelPlanImage[]; metersPerSceneUnit?: number; onModelSelect?: (id: string) => void; measurementUnits?: 'imperial' | 'metric'; frameRequest?: { id: string; sequence: number } | null; drawingActions?: ReactNode; planView?: PlanView; onViewChange?: (view: PlanView) => void; toolbarHost?: HTMLDivElement | null; embedded?: boolean; active?: boolean; disabled?: boolean; document: DesignDocument; displayDocument?: DesignDocument; activeLevelId: string; selected: string | null; tool: DesignTool; gridSnap: boolean;
+interface Props { selectedModel?: DesignModelSelection | null; onSaveModel?: SaveDesignModel; modelBusy?: boolean; visibleLevelIds?: string[]; onToggleLevel?: (id: string) => void; contextActions?: DesignContextGroup[]; showMeasurements?: boolean; onShowMeasurementsChange?: (show: boolean) => void; selectedModelId?: string | null; modelImages?: ModelPlanImage[]; terrain?: ProjectTerrainSurface | null; metersPerSceneUnit?: number; onModelSelect?: (id: string) => void; measurementUnits?: 'imperial' | 'metric'; frameRequest?: { id: string; sequence: number } | null; drawingActions?: ReactNode; planView?: PlanView; onViewChange?: (view: PlanView) => void; toolbarHost?: HTMLDivElement | null; embedded?: boolean; active?: boolean; disabled?: boolean; document: DesignDocument; displayDocument?: DesignDocument; activeLevelId: string; selected: string | null; tool: DesignTool; gridSnap: boolean;
   onSelect: (id: string | null) => void; onCommit: (doc: DesignDocument) => void;
   onPreview: (doc: DesignDocument | null) => void; onMessage: (text: string) => void;
   onDrawComplete: (id: string) => void; cancelToken: number }
@@ -40,7 +41,7 @@ function addShape(doc: DesignDocument, points: DrawPoint[], tool: 'wall' | 'floo
     floors: tool === 'floor' ? [...doc.floors, { id, levelId, vertices: ids, thickness: doc.defaults.floorThickness, elevation: 0 }] : doc.floors, roofs: tool === 'roof' ? [...doc.roofs, { id, levelId, vertices: ids, kind: 'gable', pitch: 6, direction: 0, thickness: 6 * INCH, elevation: doc.defaults.wallHeight }] : doc.roofs };
 }
 
-export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visibleLevelIds, onToggleLevel, contextActions = [], showMeasurements, onShowMeasurementsChange, selectedModelId, modelImages = [], metersPerSceneUnit = 1, onModelSelect, measurementUnits = 'imperial', frameRequest, drawingActions, planView, onViewChange, toolbarHost, embedded = false, active: enabled = true, disabled = false, document: doc, displayDocument = doc, activeLevelId, selected, tool, gridSnap, onSelect, onCommit, onPreview, onMessage, onDrawComplete, cancelToken }: Props) {
+export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visibleLevelIds, onToggleLevel, contextActions = [], showMeasurements, onShowMeasurementsChange, selectedModelId, modelImages = [], terrain, metersPerSceneUnit = 1, onModelSelect, measurementUnits = 'imperial', frameRequest, drawingActions, planView, onViewChange, toolbarHost, embedded = false, active: enabled = true, disabled = false, document: doc, displayDocument = doc, activeLevelId, selected, tool, gridSnap, onSelect, onCommit, onPreview, onMessage, onDrawComplete, cancelToken }: Props) {
   const shownLevels = visibleLevelIds ?? [activeLevelId];
   const editingHidden = !shownLevels.includes(activeLevelId);
   const [localMeasurements, setLocalMeasurements] = useState(false);
@@ -77,6 +78,8 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
     // Draw large environments first so their footprints cannot cover smaller Models.
     return area(right) - area(left);
   });
+  const terrainCells = useMemo(() => terrain ? terrainPlanCells(terrain.definition) : [], [terrain?.definition]);
+  const terrainRelief = useMemo(() => terrain ? Math.max(1, ...terrain.definition.heightsM.map(Math.abs)) : 1, [terrain?.definition]);
   const cancelModel = () => {
     const current = modelGesture.current;
     modelGesture.current = null;
@@ -294,9 +297,11 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
       if (svg.current?.hasPointerCapture(event.pointerId)) svg.current.releasePointerCapture(event.pointerId);
       if (onSaveModel && !selectedModel?.locked && (modelDrag.dx !== 0 || modelDrag.dz !== 0 || modelDrag.factor !== 1)) {
         modelSaving.current = true;
+        const oldHeight = terrain ? terrainHeightAt(terrain.definition, terrain.placement, modelDrag.model.positionX * metersPerSceneUnit, modelDrag.model.positionZ * metersPerSceneUnit) ?? 0 : 0;
+        const newHeight = terrain ? terrainHeightAt(terrain.definition, terrain.placement, (modelDrag.model.positionX + modelDrag.dx) * metersPerSceneUnit, (modelDrag.model.positionZ + modelDrag.dz) * metersPerSceneUnit) ?? 0 : 0;
         void onSaveModel(modelDrag.model.id, {
           positionX: modelDrag.model.positionX + modelDrag.dx,
-          positionY: modelDrag.model.positionY,
+          positionY: modelDrag.model.positionY + (newHeight - oldHeight) / metersPerSceneUnit,
           positionZ: modelDrag.model.positionZ + modelDrag.dz,
           scaleMultiplier: modelDrag.model.scaleMultiplier * modelDrag.factor,
         }).then(saved => onMessage(saved ? 'Model placement saved.' : 'Model update failed. Saved placement retained.'))
@@ -355,6 +360,12 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
       <rect width={size.width} height={size.height} fill={`url(#${patternId})`} />
       <g pointerEvents="none" stroke="#4d91a6" strokeWidth="1"><line x1={view.x} x2={view.x} y1={RULER_SIZE} y2={size.height}/><line y1={view.y} y2={view.y} x1={RULER_SIZE} x2={size.width}/></g>
       <g transform={`translate(${view.x} ${view.y}) scale(${view.scale})`}>
+        {terrain && <g data-plan-terrain={terrain.placement.terrainId} pointerEvents="none" transform={`translate(${terrain.placement.centerXM} ${terrain.placement.centerZM}) rotate(${-terrain.placement.rotationYDeg}) scale(${terrain.placement.scale})`}>
+          <title>{`${terrain.name} Terrain elevation plan`}</title>
+          <rect x={-terrain.definition.widthM / 2} y={-terrain.definition.lengthM / 2} width={terrain.definition.widthM} height={terrain.definition.lengthM} fill={terrain.definition.appearance.color} fillOpacity=".8" />
+          {terrainCells.map((cell, index) => <rect key={index} x={cell.x} y={cell.z} width={cell.width} height={cell.length} fill={cell.height >= 0 ? '#f8fafc' : '#091423'} fillOpacity={Math.min(.48, Math.abs(cell.height) / terrainRelief * .48)} />)}
+          <rect x={-terrain.definition.widthM / 2} y={-terrain.definition.lengthM / 2} width={terrain.definition.widthM} height={terrain.definition.lengthM} fill="none" stroke="#86efac" strokeWidth={2 / (view.scale * terrain.placement.scale)} />
+        </g>}
         {hover && points.length > 0 && <g pointerEvents="none" stroke="#38bdf8" strokeWidth={1 / view.scale} strokeDasharray={`${4 / view.scale} ${4 / view.scale}`}>
           {active.nodes.some(node => Math.abs(node.x - hover.x) < .000001) && <line x1={hover.x} x2={hover.x} y1={(RULER_SIZE - view.y) / view.scale} y2={(size.height - view.y) / view.scale}/>}
           {active.nodes.some(node => Math.abs(node.z - hover.z) < .000001) && <line y1={hover.z} y2={hover.z} x1={(RULER_SIZE - view.x) / view.scale} x2={(size.width - view.x) / view.scale}/>}
@@ -399,6 +410,9 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
               </text>}
           </g>;
         })}
+        {terrain && <g data-plan-terrain-outline={terrain.placement.terrainId} pointerEvents="none" transform={`translate(${terrain.placement.centerXM} ${terrain.placement.centerZM}) rotate(${-terrain.placement.rotationYDeg}) scale(${terrain.placement.scale})`}>
+          <rect x={-terrain.definition.widthM / 2} y={-terrain.definition.lengthM / 2} width={terrain.definition.widthM} height={terrain.definition.lengthM} fill="none" stroke="#a3e635" strokeWidth={2 / (view.scale * terrain.placement.scale)} strokeDasharray={`${6 / (view.scale * terrain.placement.scale)} ${4 / (view.scale * terrain.placement.scale)}`} />
+        </g>}
         {displayedImages.filter(image => image.id === selectedModelId).map(image => {
           const [a, b, c] = image.corners;
           const corners = [a, b, {

@@ -145,9 +145,9 @@ tree = draw();
 assert.match(text(tree), /No matching tables/);
 one(tree, node => node.type === 'button' && text(node).startsWith('Learn')).props.onClick();
 tree = draw();
-assert.match(text(tree), /1\s+of\s+86\s+tables/);
+assert.match(text(tree), new RegExp(`1\\s+of\\s+${schema.tables.length}\\s+tables`));
 one(tree, node => node.type === 'button' && text(node) === 'Reset filters').props.onClick();
-assert.match(text(draw()), /86\s+of\s+86\s+tables/);
+assert.match(text(draw()), new RegExp(`${schema.tables.length}\\s+of\\s+${schema.tables.length}\\s+tables`));
 state.unmount();
 assert.equal(listeners.size, 0, 'Hash listener cleans up');
 

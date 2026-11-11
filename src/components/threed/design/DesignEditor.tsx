@@ -1,6 +1,7 @@
 'use client';
 import { DesignModelProperties, type DesignModelSelection, type SaveDesignModel } from './DesignModelProperties';
 import type { ModelPlanImage } from '@/libraries/services/threed/models/model-plan-image';
+import type { ProjectTerrainSurface } from '@/libraries/services/threed/terrains/terrain-core';
 import { ProjectMeasurementUnits } from '@/components/project/ProjectMeasurementUnits';
 import { DesignNameInput } from './DesignNameInput';
 
@@ -42,6 +43,7 @@ export interface DesignEditorProps {
   onSaveModel?: SaveDesignModel;
   modelBusy?: boolean;
   modelImages?: ModelPlanImage[];
+  terrain?: ProjectTerrainSurface | null;
   selectedModelId?: string | null;
   metersPerSceneUnit?: number;
   onModelSelect?: (id: string) => void;
@@ -61,7 +63,7 @@ export interface DesignEditorProps {
     error?: string;
   };
 }
-export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, selectedModelId, modelImages, metersPerSceneUnit, onModelSelect, frameRequest, active = true, canSave = true, scene, onActionsBusyChange }: DesignEditorProps = {}) {
+export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, selectedModelId, modelImages, terrain, metersPerSceneUnit, onModelSelect, frameRequest, active = true, canSave = true, scene, onActionsBusyChange }: DesignEditorProps = {}) {
   const controlsHost = useRef<HTMLDivElement>(null);
   const [localDraft, setLocalDraft] = useState(() => projectArchitectureDraft());
   const draft = scene?.draft ?? localDraft, history = draft.history;
@@ -272,7 +274,7 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
     {(error || scene?.error) && <p role="alert" className="text-red-400">{error || scene?.error}</p>}
   </div></PersistentDetails>;
   const controls = <div ref={controlsHost} className="flex min-h-0 min-w-0 flex-col gap-2 overflow-auto overscroll-contain text-foreground [&_input]:min-w-0 [&_label]:min-w-0 [&_select]:max-w-full" data-testid="design-controls"><fieldset disabled={loading || importing || !canSave} className="min-w-0 border-0 p-0">{propertiesPanel}</fieldset>{statusPanel}</div>;
-  const plan = <DesignPlan selectedModel={selectedModel} onSaveModel={onSaveModel} modelBusy={modelBusy} visibleLevelIds={visibleLevelIds} onToggleLevel={toggleLevel} contextActions={actionGroups} showMeasurements={canSave ? workspace.showMeasurements ?? false : readOnlyMeasurements} onShowMeasurementsChange={showMeasurements => { if (canSave) changeWorkspace({ showMeasurements }); else setReadOnlyMeasurements(showMeasurements); }} selectedModelId={selectedModelId} modelImages={modelImages} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={onModelSelect} measurementUnits={units} frameRequest={frameRequest} embedded={Boolean(scene)} drawingActions={scene ? drawingActions : undefined} planView={workspace.plan} onViewChange={plan => changeWorkspace({ plan })} active={active} disabled={!canSave || importing} document={doc} displayDocument={displayed} activeLevelId={activeLevelId} selected={selected} tool={tool} gridSnap={gridSnap} onSelect={select} onCommit={commit} onPreview={previewUpdate} onMessage={setMessage} onDrawComplete={id => { setSelected(id); setTool('select'); }} cancelToken={cancelToken} />;
+  const plan = <DesignPlan selectedModel={selectedModel} onSaveModel={onSaveModel} modelBusy={modelBusy} visibleLevelIds={visibleLevelIds} onToggleLevel={toggleLevel} contextActions={actionGroups} showMeasurements={canSave ? workspace.showMeasurements ?? false : readOnlyMeasurements} onShowMeasurementsChange={showMeasurements => { if (canSave) changeWorkspace({ showMeasurements }); else setReadOnlyMeasurements(showMeasurements); }} selectedModelId={selectedModelId} modelImages={modelImages} terrain={terrain} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={onModelSelect} measurementUnits={units} frameRequest={frameRequest} embedded={Boolean(scene)} drawingActions={scene ? drawingActions : undefined} planView={workspace.plan} onViewChange={plan => changeWorkspace({ plan })} active={active} disabled={!canSave || importing} document={doc} displayDocument={displayed} activeLevelId={activeLevelId} selected={selected} tool={tool} gridSnap={gridSnap} onSelect={select} onCommit={commit} onPreview={previewUpdate} onMessage={setMessage} onDrawComplete={id => { setSelected(id); setTool('select'); }} cancelToken={cancelToken} />;
   if (scene) return <div className="threed-design-editor relative flex h-full min-h-0 min-w-0 overflow-hidden" data-testid="home-editor">
     {importDialog}
     <div id={`design-properties-${scene.projectId}`} tabIndex={-1} role="region" aria-label="Design Properties" data-testid="design-properties-panel" className="threed-design-properties threed-workspace-panel threed-scene-panel-surface threed-scene-sidebar-size flex min-h-0 min-w-0 shrink-0 flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md"><DetailsSectionScope.Provider value={`design:${scene.projectId}`}><div className="mb-2 flex shrink-0 flex-wrap items-center gap-2 text-sm font-semibold"><Building2 className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />Design Properties<DesignFieldHelp label="Design Properties">Edit selected geometry and workspace settings. Save Project retains both.</DesignFieldHelp><Button type="button" variant="ghost" className="threed-design-properties-access ml-auto h-11 px-2 text-xs" onClick={() => {
