@@ -480,7 +480,7 @@ export function DetailsCard({ metersPerSceneUnit, selectedSensorId, onSelectSens
         <div className="min-w-0 pb-1 pt-0.5">
           <div className="flex min-w-0 items-center gap-2">
           {selectedSensorId ? <Radio aria-hidden="true" className="h-4 w-4 shrink-0 text-cyan-600 dark:text-cyan-300" /> : <Box aria-hidden="true" className="h-4 w-4 shrink-0 text-violet-600 dark:text-violet-300" />}
-          <div className="truncate text-sm font-semibold text-foreground">
+          <div className="min-w-0 break-words text-sm font-semibold text-foreground" title={selectedSensorId ? (readPhysicsSensorCuboids(selected.metadata).find(sensor => sensor.id === selectedSensorId)?.name ?? 'New Physics Sensor') : selected.name || selected.title || selected.label || 'Unknown'}>
             {selectedSensorId ? (readPhysicsSensorCuboids(selected.metadata).find(sensor => sensor.id === selectedSensorId)?.name ?? 'New Physics Sensor') : selected.name || selected.title || selected.label || 'Unknown'}
           </div>
           <ModelFieldHelp label={selectedSensorId ? 'Physics Sensor' : 'Asset details'}>{selectedSensorId ? `Edit this Physics Sensor. ${selectedSensorCount} sensors are configured on this asset.` : isProjectModelInstance ? 'This card edits a placed Model instance. Expand a section for its settings and use the question-mark help for guidance. Architectural walls, floors, roofs and openings are edited in Design Properties. Selecting a Library preview does not change the selected Scene instance.' : 'Inspect this Project asset and use its controls to adjust settings, position or available Actions.'}</ModelFieldHelp>

@@ -6,6 +6,8 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
+- [v0.32.4 - ThreeD: Model Selection and Scene Controls (prepared; deployment pending)](v0.32.4.md)
+
 - [v0.32.3 - App: Open Graph URLs and Facebook App ID (Developer-confirmed production release)](v0.32.3.md)
 
 - [v0.32.2 - App: Metadata Defaults and Open Graph Previews (prepared; deployment pending)](v0.32.2.md)

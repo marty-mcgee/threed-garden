@@ -18,7 +18,7 @@ export function SceneViewPresetsMenu({ viewPresets, selectedPresetId, onLoadPres
     <>
       <div className="border-t border-foreground/10 my-1"></div>
       <div className="text-[10px] text-foreground/60 px-2 py-0.5">Saved Views</div>
-      {viewPresets.map((preset) => (
+      <div role="group" aria-label="Saved views" className="max-h-28 overflow-y-auto overscroll-contain [scrollbar-width:thin]">{viewPresets.map((preset) => (
         <div key={preset.id} className="flex items-center gap-1 group">
           <button
             onClick={() => onLoadPreset(preset)}
@@ -37,7 +37,7 @@ export function SceneViewPresetsMenu({ viewPresets, selectedPresetId, onLoadPres
             <Trash2 className="h-3 w-3" />
           </button>
         </div>
-      ))}
+      ))}</div>
     </>
   );
 }

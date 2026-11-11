@@ -42,8 +42,9 @@ export function captureModelPlanImage(renderer: WebGLRenderer, root: Object3D, b
   snapshot.matrixAutoUpdate = false;
   snapshot.matrix.copy(body.matrixWorld).invert().multiply(root.matrixWorld);
   scene.add(snapshot);
-  scene.add(new AmbientLight(0xffffff, 2));
-  const light = new DirectionalLight(0xffffff, 3);
+  // Keep pale CAD parts legible in the plan without changing their materials.
+  scene.add(new AmbientLight(0xffffff, 0.8));
+  const light = new DirectionalLight(0xffffff, 1.4);
   light.position.set(center.x + width, box.max.y + Math.max(width, depth, 1), center.z - depth);
   light.target.position.copy(center);
   scene.add(light, light.target);

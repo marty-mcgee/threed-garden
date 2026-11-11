@@ -1192,6 +1192,12 @@ function ProjectModelMarkerBody({
   const requestedCollisionMode = resolveProjectModelCollisionMode(marker.metadata, isEnvironment);
   const wantsSurfaceCollider = requestedCollisionMode === 'triangle-surface' && !isMovableBall;
   const [collisionBounds, setCollisionBounds] = useState<ModelCollisionBounds | null>(null);
+  const selectionBox = useMemo(() => collisionBounds ? new THREE.BoxGeometry(
+    collisionBounds.halfExtents[0] * 2,
+    collisionBounds.halfExtents[1] * 2,
+    collisionBounds.halfExtents[2] * 2,
+  ) : null, [collisionBounds]);
+  useEffect(() => () => selectionBox?.dispose(), [selectionBox]);
   const [modelPlanCapture, setModelPlanCapture] = useState<ModelPlanCapture | null>(null);
   const [regionsReady, setRegionsReady] = useState(false);
   const [geometryAudit, setGeometryAudit] = useState<ModelGeometryAudit | null>(null);
@@ -1490,6 +1496,12 @@ function ProjectModelMarkerBody({
           onRuntimeSettled={handleModelVisualSettled}
           onRuntimeError={handleModelRuntimeError}
         />
+        {isSelected && !isMovableBall && collisionBounds && selectionBox && (
+          <lineSegments position={collisionBounds.center} raycast={() => null}>
+            <edgesGeometry args={[selectionBox]} />
+            <lineBasicMaterial color="#22d3ee" transparent opacity={0.65} depthTest />
+          </lineSegments>
+        )}
         {isEnvironment && effectiveCollisionMode === 'box-fallback' && physicsDebug && environmentColliderPlan && (
           <EnvironmentCollisionPreview boxes={environmentColliderPlan.boxes} />
         )}
@@ -3437,7 +3449,7 @@ export function ThreeDScene({
         </Button>
 
         {showControls && scenePostProduction && (
-          <div className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[3000] mt-1 max-h-[min(44rem,calc(100dvh-8rem))] w-56 space-y-0.5 overflow-y-auto rounded-lg border border-foreground/10 p-1.5 pb-2.5 shadow-xl backdrop-blur-sm [scrollbar-width:thin]">
+          <div className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[3000] mt-1 max-h-[min(32rem,calc(100dvh-8rem))] w-56 space-y-0.5 overflow-y-auto overscroll-contain rounded-lg border border-foreground/10 p-1.5 pb-2.5 shadow-xl backdrop-blur-sm [scrollbar-width:thin]">
             <div className="text-[10px] text-foreground/60 px-2 py-0.5">Scene</div>
             <fieldset disabled={!canEditProject} className="min-w-0 border-0 p-0 disabled:opacity-60" title={!canEditProject ? "Only the Project owner can change these settings." : undefined}>
             <div className="border-b border-foreground/10 px-2 pb-2"><ProjectMeasurementUnits helpText="Display and input units only. Object sizes, calibration and physics stay unchanged. Retained by Save Project." value={measurementUnits} onChange={units => onMeasurementUnitsChange?.(units)} disabled={!onMeasurementUnitsChange} /></div>

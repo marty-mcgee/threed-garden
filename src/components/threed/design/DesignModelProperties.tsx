@@ -86,9 +86,6 @@ export function DesignModelProperties({ model, save, metersPerSceneUnit, busy }:
       finally { setSaving(false); }
     }}>Save Model</Button>
     {error && <p role="alert">{error}</p>}
-    <p className="text-muted-foreground">{model.locked
-      ? model.environment ? 'Environment Models are protected on the canvas. Use DetailsCard Project placement for deliberate edits.'
-        : 'Model placement is locked. Use Unlock Model in DetailsCard to edit its position or size.'
-      : 'Drag the Model to move. Drag its corner to resize proportionally. Canvas edits save on release.'}</p>
+    {!model.locked && <p className="text-muted-foreground">Drag the Model to move. Drag its corner to resize proportionally. Canvas edits save on release.</p>}
   </div>;
 }
