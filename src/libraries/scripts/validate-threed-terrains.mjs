@@ -5,11 +5,15 @@ import ts from 'typescript';
 import {
   confirmsTerrainPlacement,
   generateTerrainDefinition,
+  maxTerrainOperations,
   parseTerrainDefinition,
   parseTerrainPlacement,
+  sculptTerrainDefinition,
+  shapeTerrainPathDefinition,
   terrainPlanCells,
   terrainHeightAt,
   terrainSpawnFloorY,
+  updateTerrainAuthoring,
 } from '../services/threed/terrains/terrain-core.ts';
 
 const definition = generateTerrainDefinition(17);
@@ -19,6 +23,100 @@ assert.equal(definition.heightsM[definition.columns - 1], 0);
 assert.equal(definition.heightsM.at(-1), 0);
 assert.deepEqual(generateTerrainDefinition(17), definition);
 assert.notDeepEqual(generateTerrainDefinition(18).heightsM, definition.heightsM);
+assert.deepEqual(generateTerrainDefinition(17, 40, 40, 33, 33, { reliefM: 2, hillSize: 1, detail: 0.35 }), definition);
+assert.notDeepEqual(generateTerrainDefinition(17, 40, 40, 33, 33, { reliefM: 4, hillSize: 1, detail: 0.35 }).heightsM, definition.heightsM);
+assert.notDeepEqual(generateTerrainDefinition(17, 40, 40, 33, 33, { reliefM: 2, hillSize: 2, detail: 0.35 }).heightsM, definition.heightsM);
+assert.notDeepEqual(generateTerrainDefinition(17, 40, 40, 33, 33, { reliefM: 2, hillSize: 1, detail: 0 }).heightsM, definition.heightsM);
+assert.ok(generateTerrainDefinition(17, 40, 40, 33, 33, { reliefM: 0, hillSize: 1, detail: 0 }).heightsM.every(height => height === 0));
+assert.throws(() => generateTerrainDefinition(17, 40, 40, 33, 33, { reliefM: 21, hillSize: 1, detail: 0.35 }));
+const centerIndex = Math.floor(definition.rows / 2) * definition.columns + Math.floor(definition.columns / 2);
+const raisedDefinition = sculptTerrainDefinition(definition, 0, 0, 4, 1);
+assert.equal(raisedDefinition.heightsM[centerIndex], Number((definition.heightsM[centerIndex] + 1).toFixed(4)));
+assert.equal(definition.heightsM[centerIndex], generateTerrainDefinition(17).heightsM[centerIndex]);
+assert.equal(raisedDefinition.heightsM[0], 0);
+assert.equal(raisedDefinition.heightsM.at(-1), 0);
+assert.equal(raisedDefinition.heightsM[1 * definition.columns + 1], definition.heightsM[1 * definition.columns + 1]);
+const loweredDefinition = sculptTerrainDefinition(raisedDefinition, 0, 0, 4, -1);
+assert.equal(loweredDefinition.heightsM[centerIndex], definition.heightsM[centerIndex]);
+assert.throws(() => sculptTerrainDefinition(definition, 0, 0, 0, 1));
+const flat = parseTerrainDefinition({ ...definition, heightsM: definition.heightsM.map(() => 0) });
+const levelPath = shapeTerrainPathDefinition(flat, [{ xM: -8, zM: 0 }, { xM: 8, zM: 0 }], 4, 3, 3, 0.5);
+assert.equal(levelPath.heightsM[centerIndex], 3);
+assert.equal(levelPath.heightsM[0], 0);
+assert.equal(flat.heightsM[centerIndex], 0);
+const slopePath = shapeTerrainPathDefinition(flat, [{ xM: -8, zM: 0 }, { xM: 0, zM: 8 }, { xM: 8, zM: 0 }], 3, -2, 2, 0.5);
+assert.equal(slopePath.heightsM[16 * 33 + 16], 0);
+assert.ok(slopePath.heightsM[16 * 33 + 10] < 0);
+assert.ok(slopePath.heightsM[16 * 33 + 22] > 0);
+assert.equal(slopePath.heightsM[0], 0);
+assert.throws(() => shapeTerrainPathDefinition(flat, [{ xM: 0, zM: 0 }], 3, 0, 2, 0.5));
+assert.throws(() => shapeTerrainPathDefinition(flat, [{ xM: -8, zM: 0 }, { xM: 8, zM: 0 }], 3, 0, 2, 2));
+const savedDrawing = {
+  id: 'a4ad70ab-14c5-42b0-b574-97b54e59874b',
+  mode: 'straight',
+  points: [{ xM: -8, zM: 0 }, { xM: 8, zM: 0 }],
+  radiusM: 4,
+  startHeightM: 3,
+  endHeightM: 3,
+  feather: 0.5,
+  hidden: false,
+};
+const drawnTerrain = updateTerrainAuthoring(flat, [{ type: 'path', drawing: savedDrawing }]);
+assert.equal(drawnTerrain.heightsM[centerIndex], 3);
+assert.deepEqual(parseTerrainDefinition(JSON.parse(JSON.stringify(drawnTerrain))).appearance.authoring.operations[0].drawing, savedDrawing);
+const revisedDrawing = updateTerrainAuthoring(drawnTerrain, [{ type: 'path', drawing: { ...savedDrawing, startHeightM: 5, endHeightM: 5 } }]);
+assert.equal(revisedDrawing.heightsM[centerIndex], 5);
+const hiddenDrawing = updateTerrainAuthoring(revisedDrawing, [{ type: 'path', drawing: { ...savedDrawing, hidden: true } }]);
+assert.equal(hiddenDrawing.heightsM[centerIndex], 3);
+assert.equal(hiddenDrawing.appearance.authoring.operations[0].drawing.hidden, true);
+const deletedDrawing = updateTerrainAuthoring(hiddenDrawing, []);
+assert.deepEqual(deletedDrawing.heightsM, flat.heightsM);
+// Saved generation recipes reproduce the base without changing the Seed.
+const recipe = definition.appearance.generation;
+assert.deepEqual(parseTerrainDefinition(JSON.parse(JSON.stringify(definition))).appearance.generation, recipe);
+assert.deepEqual(generateTerrainDefinition(recipe.seed, definition.widthM, definition.lengthM, definition.columns, definition.rows, recipe).heightsM, definition.heightsM);
+assert.equal(parseTerrainDefinition({ ...definition, appearance: { color: '#58823f' } }).appearance.generation, undefined);
+assert.throws(() => parseTerrainDefinition({ ...definition, appearance: { ...definition.appearance, generation: { ...recipe, detail: 2 } } }));
+assert.throws(() => generateTerrainDefinition(1, 40, 40, 1000, 99), /2 to 129/);
+const plateauDrawing = {
+  ...savedDrawing,
+  mode: 'freeform',
+  points: [
+    { xM: -8, zM: -8 },
+    { xM: 8, zM: -8 },
+    { xM: 8, zM: 8 },
+    { xM: -8, zM: 8 },
+  ],
+  radiusM: 2,
+  fillArea: true,
+};
+const plateau = updateTerrainAuthoring(flat, [{ type: 'path', drawing: plateauDrawing }]);
+assert.equal(plateau.heightsM[centerIndex], 3);
+assert.equal(plateau.heightsM[definition.columns + 1], 0);
+assert.equal(plateau.heightsM[0], 0);
+assert.equal(updateTerrainAuthoring(flat, [{ type: 'path', drawing: { ...plateauDrawing, fillArea: false } }]).heightsM[centerIndex], 0);
+assert.deepEqual(parseTerrainDefinition(JSON.parse(JSON.stringify(plateau))), plateau);
+assert.deepEqual(updateTerrainAuthoring(plateau, [{ type: 'path', drawing: { ...plateauDrawing, hidden: true } }]).heightsM, plateau.heightsM);
+assert.deepEqual(updateTerrainAuthoring(plateau, []).heightsM, flat.heightsM);
+for (const invalid of [
+  { ...plateauDrawing, mode: 'straight' },
+  { ...plateauDrawing, points: plateauDrawing.points.slice(0, 2) },
+  { ...plateauDrawing, endHeightM: 4 },
+]) {
+  assert.throws(() => parseTerrainDefinition({ ...plateau, appearance: { ...plateau.appearance, authoring: { baseHeightsM: flat.heightsM, operations: [{ type: 'path', drawing: invalid }] } } }));
+}
+const regenerated = updateTerrainAuthoring(generateTerrainDefinition(19), plateau.appearance.authoring.operations);
+assert.equal(regenerated.appearance.generation.seed, 19);
+assert.deepEqual(regenerated.appearance.authoring.operations, plateau.appearance.authoring.operations);
+assert.equal(regenerated.heightsM[centerIndex], 3);
+const smallTerrain = generateTerrainDefinition(1, 4, 4, 3, 3);
+const brushOperations = Array.from({ length: maxTerrainOperations }, () => ({
+  type: 'brush',
+  stroke: { xM: 0, zM: 0, radiusM: 1, changeM: 0.01 },
+}));
+const fullySculpted = updateTerrainAuthoring(smallTerrain, brushOperations);
+assert.equal(parseTerrainDefinition(JSON.parse(JSON.stringify(fullySculpted))).appearance.authoring.operations.length, maxTerrainOperations);
+assert.throws(() => updateTerrainAuthoring(fullySculpted, [...brushOperations, brushOperations[0]]), /up to 256/);
 
 const placement = parseTerrainPlacement({
   id: null,

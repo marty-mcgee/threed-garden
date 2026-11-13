@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.33.0 - ThreeD: Terrains (Developer-confirmed checkpoint; deployment pending)](v0.33.0.md)
+- [v0.33.1 - ThreeD: Terrain Visual Editor and Drawing Tools (prepared; deployment pending)](v0.33.1.md)
+
+- [v0.33.0 - ThreeD: Terrains (Developer-confirmed production release)](v0.33.0.md)
 
 - [v0.32.4 - ThreeD: Model Selection and Scene Controls (prepared; deployment pending)](v0.32.4.md)
 

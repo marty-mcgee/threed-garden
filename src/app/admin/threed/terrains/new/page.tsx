@@ -1,5 +1,5 @@
-import { TerrainEditor } from '@/components/admin/threed/terrains/TerrainEditor';
+import { ThreeDTerrainsCRUD } from '@/components/admin/threed/terrains/ThreeDTerrainsCRUD';
 
 export default function AddTerrainPage() {
-  return <TerrainEditor />;
+  return <ThreeDTerrainsCRUD view="create" />;
 }

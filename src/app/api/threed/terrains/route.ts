@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { and, desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, ilike, sql } from 'drizzle-orm';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
 import { projectTerrainPlacements, threedTerrainRevisions, threedTerrains } from '@/libraries/schema/threed';
@@ -32,13 +32,24 @@ export async function GET(request: NextRequest) {
       const revisions = await db.select().from(threedTerrainRevisions).where(eq(threedTerrainRevisions.terrainId, terrainId)).orderBy(desc(threedTerrainRevisions.revision));
       return NextResponse.json({ success: true, data: { ...terrain, revisions } }, { headers: { 'Cache-Control': 'private, no-store' } });
     }
+    const paged = request.nextUrl.searchParams.get('paged') === '1';
+    const search = (request.nextUrl.searchParams.get('search') ?? '').trim();
+    const limit = Number(request.nextUrl.searchParams.get('limit') ?? '25');
+    const offset = Number(request.nextUrl.searchParams.get('offset') ?? '0');
+    if (paged && (search.length > 120 || ![25, 50, 100].includes(limit) || !Number.isSafeInteger(offset) || offset < 0 || offset > 100000)) {
+      throw new TerrainInputError('Invalid Terrain list request.');
+    }
+    const ownerFilter = eq(threedTerrains.userId, userId);
+    const listFilter = paged && search ? and(ownerFilter, ilike(threedTerrains.name, `%${search.replace(/[\\%_]/g, '\\$&')}%`)) : ownerFilter;
     const terrains = await db.select({
       id: threedTerrains.id,
       name: threedTerrains.name,
       updatedAt: threedTerrains.updatedAt,
       revision: sql<number>`(select max(revision) from threed_terrain_revisions where terrain_id = ${threedTerrains.id})`,
-    }).from(threedTerrains).where(eq(threedTerrains.userId, userId)).orderBy(desc(threedTerrains.updatedAt)).limit(100);
-    return NextResponse.json({ success: true, data: terrains }, { headers: { 'Cache-Control': 'private, no-store' } });
+    }).from(threedTerrains).where(listFilter).orderBy(desc(threedTerrains.updatedAt)).limit(paged ? limit : 100).offset(paged ? offset : 0);
+    if (!paged) return NextResponse.json({ success: true, data: terrains }, { headers: { 'Cache-Control': 'private, no-store' } });
+    const [total] = await db.select({ count: sql<number>`count(*)::integer` }).from(threedTerrains).where(listFilter);
+    return NextResponse.json({ success: true, data: { items: terrains, total: total.count } }, { headers: { 'Cache-Control': 'private, no-store' } });
   } catch (error) {
     return errorResponse(error);
   }

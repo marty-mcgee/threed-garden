@@ -1,5 +1,5 @@
-import { TerrainsList } from '@/components/admin/threed/terrains/TerrainsList';
+import { ThreeDTerrainsCRUD } from '@/components/admin/threed/terrains/ThreeDTerrainsCRUD';
 
 export default function TerrainsPage() {
-  return <TerrainsList />;
+  return <ThreeDTerrainsCRUD view="list" />;
 }
