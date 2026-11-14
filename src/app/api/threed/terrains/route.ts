@@ -1,12 +1,46 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { and, desc, eq, ilike, sql } from 'drizzle-orm';
+import { and, asc, desc, eq, ilike, sql } from 'drizzle-orm';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
+import { projectAssets } from '@/libraries/schema/project';
 import { projectTerrainPlacements, threedTerrainRevisions, threedTerrains } from '@/libraries/schema/threed';
 import { parseTerrainDefinition, TerrainInputError } from '@/libraries/services/threed/terrains/terrain-core';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
+
+class TerrainDeleteError extends Error {
+  constructor(message: string, readonly status: number) { super(message); }
+}
+
+export async function DELETE(request: NextRequest) {
+  const session = await auth();
+  if (!session?.user?.id) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+  try {
+    const id = Number(request.nextUrl.searchParams.get('id'));
+    const revision = Number(request.nextUrl.searchParams.get('revision'));
+    if (!Number.isSafeInteger(id) || id <= 0 || !Number.isSafeInteger(revision) || revision <= 0) {
+      throw new TerrainDeleteError('Invalid Terrain deletion request.', 400);
+    }
+    await db.transaction(async tx => {
+      const [owned] = await tx.select({ id: threedTerrains.id }).from(threedTerrains)
+        .where(and(eq(threedTerrains.id, id), eq(threedTerrains.userId, session.user!.id!))).limit(1).for('update');
+      if (!owned) throw new TerrainDeleteError('This Terrain record does not exist, or is not available for edit by this User.', 404);
+      const [latest] = await tx.select({ revision: threedTerrainRevisions.revision }).from(threedTerrainRevisions)
+        .where(eq(threedTerrainRevisions.terrainId, id)).orderBy(desc(threedTerrainRevisions.revision)).limit(1);
+      if (latest?.revision !== revision) throw new TerrainDeleteError('Terrain changed. Refresh the list before deleting.', 409);
+      const [placement] = await tx.select({ id: projectTerrainPlacements.id }).from(projectTerrainPlacements).where(eq(projectTerrainPlacements.terrainId, id)).limit(1);
+      const [asset] = await tx.select({ id: projectAssets.id }).from(projectAssets).where(and(eq(projectAssets.assetType, 'threed_terrains'), eq(projectAssets.assetId, id))).limit(1);
+      if (placement || asset) throw new TerrainDeleteError('This Terrain is assigned to a Project. Remove its Project placements and asset assignments before deleting.', 409);
+      await tx.delete(threedTerrainRevisions).where(eq(threedTerrainRevisions.terrainId, id));
+      await tx.delete(threedTerrains).where(eq(threedTerrains.id, id));
+    });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    if (error instanceof TerrainDeleteError) return NextResponse.json({ success: false, error: error.message }, { status: error.status });
+    return errorResponse(error);
+  }
+}
 
 function errorResponse(error: unknown) {
   if (error instanceof TerrainInputError) {
@@ -36,17 +70,25 @@ export async function GET(request: NextRequest) {
     const search = (request.nextUrl.searchParams.get('search') ?? '').trim();
     const limit = Number(request.nextUrl.searchParams.get('limit') ?? '25');
     const offset = Number(request.nextUrl.searchParams.get('offset') ?? '0');
+    const sortBy = paged ? request.nextUrl.searchParams.get('sortBy') ?? 'updatedAt' : 'updatedAt';
+    const sortDir = paged ? request.nextUrl.searchParams.get('sortDir') ?? 'desc' : 'desc';
+    if (!['name', 'revision', 'updatedAt'].includes(sortBy) || !['asc', 'desc'].includes(sortDir)) {
+      throw new TerrainInputError('Invalid Terrain sort request.');
+    }
     if (paged && (search.length > 120 || ![25, 50, 100].includes(limit) || !Number.isSafeInteger(offset) || offset < 0 || offset > 100000)) {
       throw new TerrainInputError('Invalid Terrain list request.');
     }
     const ownerFilter = eq(threedTerrains.userId, userId);
+    const latestRevision = sql<number>`(select max(revision) from threed_terrain_revisions where terrain_id = ${threedTerrains.id})`;
+    const sortField = sortBy === 'name' ? threedTerrains.name : sortBy === 'revision' ? latestRevision : threedTerrains.updatedAt;
+    const order = sortDir === 'asc' ? asc : desc;
     const listFilter = paged && search ? and(ownerFilter, ilike(threedTerrains.name, `%${search.replace(/[\\%_]/g, '\\$&')}%`)) : ownerFilter;
     const terrains = await db.select({
       id: threedTerrains.id,
       name: threedTerrains.name,
       updatedAt: threedTerrains.updatedAt,
-      revision: sql<number>`(select max(revision) from threed_terrain_revisions where terrain_id = ${threedTerrains.id})`,
-    }).from(threedTerrains).where(listFilter).orderBy(desc(threedTerrains.updatedAt)).limit(paged ? limit : 100).offset(paged ? offset : 0);
+      revision: latestRevision,
+    }).from(threedTerrains).where(listFilter).orderBy(order(sortField), order(threedTerrains.id)).limit(paged ? limit : 100).offset(paged ? offset : 0);
     if (!paged) return NextResponse.json({ success: true, data: terrains }, { headers: { 'Cache-Control': 'private, no-store' } });
     const [total] = await db.select({ count: sql<number>`count(*)::integer` }).from(threedTerrains).where(listFilter);
     return NextResponse.json({ success: true, data: { items: terrains, total: total.count } }, { headers: { 'Cache-Control': 'private, no-store' } });

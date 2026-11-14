@@ -56,11 +56,19 @@ function terrainHistoryReducer(state: TerrainHistory, action: TerrainHistoryActi
   };
 }
 
-function TerrainEditorPanel({ label, title, children }: { label: string; title: string; children: ReactNode }) {
+function TerrainEditorPanel({ label, title, help, children }: {
+  label: string;
+  title: string;
+  help?: ReactNode;
+  children: ReactNode;
+}) {
   const [open, setOpen] = useState(true);
   const contentId = useId();
   return <section aria-label={label} className="admin-editor-panel rounded-lg border px-2 py-1.5">
-    <h2><Button type="button" variant="ghost" className="h-6 w-full justify-start gap-1 p-0 text-left text-xs font-semibold hover:bg-transparent has-[>svg]:px-0" aria-expanded={open} aria-controls={contentId} onClick={() => setOpen(value => !value)}><ChevronRight className={`size-3.5 transition-transform ${open ? 'rotate-90' : ''}`} />{title}</Button></h2>
+    <div className="flex flex-wrap items-center gap-1">
+      <h2 className="min-w-0 flex-1"><Button type="button" variant="ghost" className="h-6 w-full justify-start gap-1 p-0 text-left text-xs font-semibold hover:bg-transparent has-[>svg]:px-0" aria-expanded={open} aria-controls={contentId} onClick={() => setOpen(value => !value)}><ChevronRight className={`size-3.5 transition-transform ${open ? 'rotate-90' : ''}`} />{title}</Button></h2>
+      {help && <ModelFieldHelp label={title}>{help}</ModelFieldHelp>}
+    </div>
     <div id={contentId} hidden={!open} className="space-y-2 pt-1">{children}</div>
   </section>;
 }
@@ -393,20 +401,20 @@ export function TerrainEditor({ recordId }: Props) {
       {!recordUnavailable && (error || message) && <p role={error ? "alert" : "status"} className={`min-w-0 flex-1 ${error ? "text-destructive" : "text-emerald-500"}`}>{error || message}</p>}
       <div className="ml-auto flex flex-wrap gap-1">
         <AdminWorkspaceLink href={root} icon={Mountain}>All Terrains</AdminWorkspaceLink>
-        {recordId && <AdminWorkspaceLink href={`${root}/new`} icon={Plus}>New Terrain</AdminWorkspaceLink>}
+        {recordId && <Button asChild variant="success" size="sm"><Link href={`${root}/new`}><Plus className="size-4" />New Terrain</Link></Button>}
       </div>
     </AdminWorkspaceHeader>
     {loading ? <p role="status">Opening Terrain…</p> : recordUnavailable ? <div role="alert" className="flex flex-wrap items-center gap-2 rounded-lg border p-3">
       <p>{error === 'Terrain not found' ? 'This Terrain record does not exist, or is not available for edit by this User.' : error || 'This Terrain could not be opened.'}</p>
       <Link className="font-medium underline underline-offset-2" href={root}>Back to All Terrains</Link>
       <Button type="button" size="xs" variant="outline" disabled={busy} onClick={() => setLoadAttempt(value => value + 1)}>Retry opening Terrain</Button>
-    </div> : <div className="grid min-h-0 min-w-0 flex-1 gap-2 overflow-y-auto lg:overflow-hidden lg:grid-cols-[minmax(0,1fr)_16rem] [&_input]:h-7 [&_input]:px-2 [&_input]:text-xs">
+    </div> : <div className="grid min-h-0 min-w-0 flex-1 gap-2 overflow-y-auto lg:overflow-hidden lg:grid-cols-[minmax(0,1fr)_16rem] [&_input:not([type=checkbox])]:h-7 [&_input:not([type=checkbox])]:px-2 [&_input]:text-xs">
       <TerrainCanvas fillArea={brushMode === 'freeform' && fillArea} definition={definition} brushMode={brushMode} onBrushModeChange={changeBrushMode} onSculpt={sculpt} drawnPath={drawnPath} onDrawnPathChange={setDrawnPath} selectedDrawingId={selectedDrawingId} onDrawingStart={() => setSelectedDrawingId(null)} onSelectDrawing={id => { const operation = definition.appearance.authoring?.operations.find(item => item.type === 'path' && item.drawing.id === id); if (operation?.type === 'path') selectDrawing(operation.drawing); }} onMoveDrawingPoint={moveDrawingPoint} onUndo={() => stepHistory('undo')} undoDisabled={busy || loading || history.past.length === 0} onRedo={() => stepHistory('redo')} redoDisabled={busy || loading || history.future.length === 0} onSave={() => void save()} saveDisabled={saveDisabled} disabled={busy} />
       <div aria-label="Terrain controls" className="min-h-0 min-w-0 space-y-2 lg:overflow-y-auto">
         <section aria-label="Terrain details" className="admin-editor-panel rounded-lg border px-2 py-1.5">
           <label className="block">Terrain name<Input value={name} maxLength={255} onChange={event => setName(event.target.value)} /></label>
         </section>
-        <TerrainEditorPanel label="Height grid" title="Generate height grid">
+        <TerrainEditorPanel label="Height grid" title="Generate height grid" help="Generation fields apply only when you click Generate. The same Seed and settings produce the same base. Change relief, hill size, detail, or Seed to make a variation. Existing sculpting and drawings remain.">
           <div className="grid grid-cols-2 gap-1.5">
             <label>Seed<Input type="number" step="1" value={seed} onChange={event => setSeed(event.target.value)} /></label>
             <label>Relief height (m)<Input type="number" min="0" max="20" step="0.1" value={reliefM} onChange={event => setReliefM(event.target.value)} /></label>
@@ -420,11 +428,10 @@ export function TerrainEditor({ recordId }: Props) {
               if (event.target.value !== definition.appearance.color) commitDefinition({ ...definition, appearance: { ...definition.appearance, color: event.target.value } });
             }} /></label>
           </div>
-          <Button type="button" size="xs" variant="outline" onClick={generate} disabled={busy || Boolean(generationError)}>Generate</Button>
+          <Button type="button" size="xs" variant="success" onClick={generate} disabled={busy || Boolean(generationError)}>Generate</Button>
           {generationError && <p role="alert" className="text-destructive">{generationError}</p>}
-          <p className="text-muted-foreground">Generation fields apply only when you click Generate. The same Seed and settings produce the same base. Change relief, hill size, detail, or Seed to make a variation. Existing sculpting and drawings remain.</p>
         </TerrainEditorPanel>
-        <TerrainEditorPanel label="Sculpt brush" title="Sculpt brush">
+        <TerrainEditorPanel label="Sculpt brush" title="Sculpt brush" help={<>{definition.widthM} × {definition.lengthM} m · {definition.columns} × {definition.rows} grid · {definition.appearance.authoring?.operations.length ?? 0}/{maxTerrainOperations} shaping operations</>}>
           <div className="grid grid-cols-2 gap-1.5">
             <label>Radius (m)<Input type="number" min="0.01" max="1000" step="0.1" value={brushRadius} onChange={event => setBrushRadius(event.target.value)} /></label>
             {(brushMode === 'raise' || brushMode === 'lower') && <label>Height per click (m)<Input type="number" min="0.01" max="100" step="0.1" value={brushStrength} onChange={event => setBrushStrength(event.target.value)} /></label>}
@@ -436,19 +443,18 @@ export function TerrainEditor({ recordId }: Props) {
           </div>
           {(brushMode === 'straight' || brushMode === 'freeform') && <>
             {brushMode === 'freeform' && <label className="flex items-center gap-2"><input type="checkbox" checked={fillArea} onChange={event => setFillArea(event.target.checked)} />Fill enclosed area as a plateau</label>}
-            <p className="text-muted-foreground">Filled plateaus close the freeform outline and use Start elevation throughout the interior. Drag on the Terrain to draw. Drag a saved path's point handles to reshape it. Equal start/end elevations make a plateau; different elevations make a slope. Radius controls width.</p>
-            <div className="flex gap-1">
+            <div className="flex flex-wrap items-center gap-1">
               <Button type="button" size="xs" variant="success" disabled={busy || drawnPath.length < 2} onClick={applyPath}>Apply elevation</Button>
               <Button type="button" size="xs" variant="outline" disabled={drawnPath.length === 0} onClick={() => { setDrawnPath([]); setSelectedDrawingId(null); }}>Clear draft</Button>
+              <ModelFieldHelp label="Drawing elevation">Filled plateaus close the freeform outline and use Start elevation throughout the interior. Drag on the Terrain to draw. Drag a saved path's point handles to reshape it. Equal start/end elevations make a plateau; different elevations make a slope. Radius controls width.</ModelFieldHelp>
             </div>
           </>}
-          <p className="text-muted-foreground">{definition.widthM} × {definition.lengthM} m · {definition.columns} × {definition.rows} grid · {definition.appearance.authoring?.operations.length ?? 0}/{maxTerrainOperations} shaping operations</p>
         </TerrainEditorPanel>
         <TerrainEditorPanel label="Terrain drawings" title="Terrain drawings">
           {(definition.appearance.authoring?.operations.filter(operation => operation.type === 'path') ?? []).map(operation => {
             if (operation.type !== 'path') return null;
             const drawing = operation.drawing;
-            return <div key={drawing.id} className="flex items-center gap-1 rounded border p-1">
+            return <div key={drawing.id} className="flex flex-wrap items-center gap-1 rounded border p-1">
               <Button type="button" size="xs" variant={selectedDrawingId === drawing.id ? 'secondary' : 'ghost'} onClick={() => selectDrawing(drawing)}>{drawing.fillArea ? 'Plateau' : drawing.mode === 'straight' ? 'Straight' : 'Freeform'} · {drawing.startHeightM}–{drawing.endHeightM} m</Button>
               <Button type="button" size="xs" variant="outline" onClick={() => changeDrawing(drawing.id, 'hide')}>{drawing.hidden ? 'Show' : 'Hide'}</Button>
               <Button type="button" size="xs" variant="outline" onClick={() => changeDrawing(drawing.id, 'delete')}>Delete</Button>
@@ -456,8 +462,7 @@ export function TerrainEditor({ recordId }: Props) {
           })}
           {!definition.appearance.authoring?.operations.some(operation => operation.type === 'path') && <p className="text-muted-foreground">Draw and apply a path to keep it here.</p>}
         </TerrainEditorPanel>
-        <TerrainEditorPanel label="2D height map" title="2D height map">
-          <p className="text-muted-foreground">Height range: {Math.min(...definition.heightsM).toFixed(2)} to {Math.max(...definition.heightsM).toFixed(2)} m. Colors emphasize relative heights; the 3D preview uses actual scale.</p>
+        <TerrainEditorPanel label="2D height map" title="2D height map" help={<>Height range: {Math.min(...definition.heightsM).toFixed(2)} to {Math.max(...definition.heightsM).toFixed(2)} m. Colors emphasize relative heights; the 3D preview uses actual scale.</>}>
           <svg role="img" aria-label="Top view of Terrain heights" viewBox={`0 0 ${sampleColumns} ${sampleRows}`} preserveAspectRatio="none" className="h-44 w-full rounded-md border">{preview}</svg>
         </TerrainEditorPanel>
       </div>
