@@ -28,6 +28,7 @@ Use [agent guidance](docs/agents/README.md), [safe change areas](docs/agents/SAF
 - Do not connect directly to live Neon/Postgres, execute live migrations/seeds, upload storage objects or issue device commands as validation. Use mocked persistence/device boundaries. Completed legacy recovery must not be rerun; preserve ignored journals/receipts and original references.
 - Never expose/request secrets or edit environment files without an explicit request. Schema changes and persistence expansion need explicit approval. Do not guess schema fields, API paths, auth patterns or props.
 - Production confirmation does not identify an exact deployed commit or establish new post-deployment/browser acceptance. Preserve pending and failed evidence honestly.
+- Treat the Developer's report that a release or fix was released to production as production confirmation automatically; do not request redundant confirmation. Record it as Developer-confirmed, keeping independent deployed-commit verification and browser acceptance separate.
 
 ## Project, Scene and renderer ownership
 
