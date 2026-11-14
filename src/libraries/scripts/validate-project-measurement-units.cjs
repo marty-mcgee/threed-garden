@@ -62,7 +62,8 @@ const copy = x=>JSON.parse(JSON.stringify(x));
 const tx = {select:()=>({from:()=>({where:()=>({limit:()=>({for:async()=>owned?[copy(current)]:[]})})})}),update:()=>({set:patch=>({where:()=>({returning:async()=>{
   if(fail) throw new Error('mock failure');
   const config = patch.config ? {...current.config,...JSON.parse(patch.config.values.find(v=>typeof v==='string'))} : current.config;
-  current={...current,...patch,config}; writes++; return [current];
+  const metadata = patch.metadata ? {...current.metadata,...JSON.parse(patch.metadata.values.find(v=>typeof v==='string'))} : current.metadata;
+  current={...current,...patch,config,metadata}; writes++; return [current];
 }})})})};
 const db = {
   select:()=>({from:()=>({where:()=>({limit:async()=>owned?[copy(current)]:[]})})}),
@@ -73,7 +74,7 @@ const route = load('src/app/api/project/route.ts', {
   'next/server':{NextResponse:{json:(body,init={})=>({status:init.status??200,body})}},
   '@/libraries/auth':{auth:async()=>authenticated?{user:{id:'owner'}}:null},
   '@/libraries/db/client':{db},
-  '@/libraries/schema/project':{project:{id:'id',userId:'userId',config:{column:'config'}},projectThreedMarkers:{}},
+  '@/libraries/schema/project':{project:{id:'id',userId:'userId',config:{column:'config'},metadata:{column:'metadata'}},projectThreedMarkers:{}},
   'drizzle-orm':{eq:()=>{},and:()=>{},desc:()=>{},sql:(strings,...values)=>({strings,values})},
   '@/libraries/services/threed/markers/map-coordinate-core':{ThreeDMapCoordinateError:class extends Error{}},
 });
@@ -135,6 +136,22 @@ const request = (body, origin = 'https://offline.invalid')=>({url:'https://offli
   const savedMeta = copy(current.config.metaTags);
   owned=false; assert.equal((await route.PATCH(request(metaRequest))).status,404); owned=true;
   assert.deepEqual(copy(current.config.metaTags), savedMeta);
+  current.metadata = { unrelated: { retained: true } };
+  const image = '/home/showcase/garden-project.png';
+  assert.equal((await route.PATCH(request({featured_image:image}))).status,200);
+  assert.equal(current.metadata.featured_image,image);
+  assert.equal(current.metadata.unrelated.retained,true);
+  assert.equal((await route.PATCH(request({featured_image:''}))).status,200);
+  assert.equal(current.metadata.featured_image,null);
+  assert.equal((await route.POST(request({name:'Image Project',featured_image:image}))).body.data.metadata.featured_image,image);
+  const imageWrites = writes;
+  for(const featured_image of ['javascript:alert(1)', '//example.com/image.png', 'http://example.com/a.png', {}, 42]) {
+    assert.equal((await route.PATCH(request({featured_image}))).status,400);
+    assert.equal((await route.POST(request({name:'Invalid image',featured_image}))).status,400);
+  }
+  owned=false;assert.equal((await route.PATCH(request({featured_image:image}))).status,404);owned=true;
+  authenticated=false;assert.equal((await route.PATCH(request({featured_image:image}))).status,401);authenticated=true;
+  assert.equal(writes,imageWrites);
   const count = writes;
   assert.equal((await route.PATCH(request({measurementUnits:'yards'}))).status,400);
   assert.equal((await route.POST(request({name:'Invalid',measurementUnits:null}))).status,400);

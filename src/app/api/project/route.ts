@@ -1,3 +1,4 @@
+import { parseProjectFeaturedImage, ProjectFeaturedImageError } from '@/libraries/services/project/featured-image';
 import { parseMeasurementUnits, MeasurementUnitsError } from '@/libraries/services/project/measurement-units';
 import { projectConfigurationPatch, ProjectConfigurationError, ProjectConfigurationConflict } from '@/libraries/services/project/configuration';
 // app/api/project/route.ts - Updated to filter by user
@@ -118,6 +119,7 @@ export async function POST(request: NextRequest) {
         name,
         description: description || null,
         slug,
+        metadata: body.featured_image === undefined ? {} : { featured_image: parseProjectFeaturedImage(body.featured_image) },
         config: { measurementUnits: body.measurementUnits === undefined ? 'imperial' : parseMeasurementUnits(body.measurementUnits) },
         isPublic: isPublic || false,
         isActive: isActive !== false,
@@ -130,6 +132,7 @@ export async function POST(request: NextRequest) {
       message: 'Project created successfully',
     });
   } catch (error) {
+    if (error instanceof ProjectFeaturedImageError) return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     if (error instanceof MeasurementUnitsError) return NextResponse.json({success:false,error:error.message},{status:400});
     console.error('Error creating project:', error);
     return NextResponse.json(
@@ -227,6 +230,7 @@ export async function PATCH(request: NextRequest) {
       const [updatedProject] = await tx
         .update(project)
         .set({
+          ...(body.featured_image === undefined ? {} : { metadata: sql`coalesce(${project.metadata}, '{}'::jsonb) || ${JSON.stringify({ featured_image: parseProjectFeaturedImage(body.featured_image) })}::jsonb` }),
           ...(name ? { name } : {}),
           ...(description !== undefined ? { description } : {}),
           ...(isPublic !== undefined ? { isPublic } : {}),
@@ -313,6 +317,7 @@ export async function PATCH(request: NextRequest) {
         : 'Project updated successfully',
     });
   } catch (error) {
+    if (error instanceof ProjectFeaturedImageError) return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     if (error instanceof MeasurementUnitsError) return NextResponse.json({success:false,error:error.message},{status:400});
     if (error instanceof ThreeDMapCoordinateError) {
       return NextResponse.json({ success: false, error: error.message }, { status: 400 });

@@ -24,6 +24,7 @@ let saveSource;function visit(node){if(ts.isVariableDeclaration(node)&&node.name
 let savedProject;
 const parent={session:{user:{id:'owner'}},projectId:16,projectScopeRef:{current:16},formData:{name:'Original Project',description:'Description',isPublic:false,isActive:true},
  setIsSubmitting(){},router:{push(){}},showToast(){},fetch:(...args)=>transport(...args),setProject:value=>savedProject=value,setFormData:fn=>parent.formData=fn(parent.formData),Error};
+parent.projectFeaturedImage = vm.runInNewContext(ts.transpileModule('('+pageAst.statements.find(node => ts.isFunctionDeclaration(node) && node.name?.text === 'projectFeaturedImage').getText(pageAst)+')', {compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText, {readProjectFeaturedImage:load('src/libraries/services/project/featured-image.ts').readProjectFeaturedImage, PROJECT_CAPTURES:load('src/libraries/config/project-showcase.ts').PROJECT_CAPTURES});
 const saveProject=vm.runInNewContext(ts.transpileModule('('+saveSource+')',{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText,parent);
 let resets=0;
 let props={project:{id:16,config:original,metersPerSceneUnit:'.3048',headingDegrees:'0',originLatitude:null,originLongitude:null},disabled:false,onSaved(){},onCalibrate(){},details:null,detailsDirty:false,onReset(){resets++;},onSave:saveProject};

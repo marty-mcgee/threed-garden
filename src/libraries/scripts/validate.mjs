@@ -19,6 +19,7 @@ const ts = (file) => [...nodeTs, `${scripts}/${file}`];
 const reactServerTs = (file) => [...nodeReactServerTs, `${scripts}/${file}`];
 
 const tasks = {
+  'home-introduction': [node('validate-home-introduction.cjs')],
   'threed-terrains': [
     ts('validate-threed-terrains.mjs'),
     node('validate-terrain-assignment-delete.cjs'),
@@ -226,6 +227,7 @@ const tasks = {
 };
 
 const ci = [
+  'home-introduction',
   'project-guest-toolbar',
   'threed-multimedia',
   'learn-data-structure',

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { APP_DEMO_HREF } from '@/libraries/config/app-links';
 import { Box, Flower2, PencilRuler } from 'lucide-react';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { Button } from '@/components/ui/button';
@@ -26,6 +27,6 @@ export function DashboardStartingPaths() {
         { title: 'Explore an interactive scene', description: 'Learn to orbit, zoom and switch views.', href: '/learn#view-modes', Icon: Box, accent: 'bg-violet-500/10 text-violet-700 dark:text-violet-300' }].map(({ title, description, href, Icon, accent }) =>
         <Link key={href} href={href} className="group rounded-lg focus-visible:outline-2 focus-visible:outline-ring"><Card className="threed-workspace-panel threed-presentation-surface h-full gap-0 rounded-lg shadow-none"><CardContent className="flex items-start gap-3 p-3"><span className={`flex size-9 shrink-0 items-center justify-center rounded-md ${accent}`}><Icon aria-hidden="true" className="size-5" /></span><div className="min-w-0 space-y-1"><h3 className="text-sm font-semibold">{title}</h3><p className="text-xs text-muted-foreground">{description}</p></div></CardContent></Card></Link>)}
     </div>
-    <p className="text-sm text-muted-foreground"><Link href="/#garden-demo" className="underline underline-offset-4">Try the illustrative garden demo</Link> to practice orbit and zoom without saving a Project.</p>
+    <p className="text-sm text-muted-foreground"><Link href={APP_DEMO_HREF} className="underline underline-offset-4">Try the illustrative garden demo</Link> to practice orbit and zoom without saving a Project.</p>
   </section>;
 }

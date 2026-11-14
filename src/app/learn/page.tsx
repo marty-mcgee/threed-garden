@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { APP_DEMO_HREF } from '@/libraries/config/app-links';
 import { ArrowRight, BookOpen, CircleHelp, ExternalLink, Info, ListChecks, Rocket } from 'lucide-react';
 import { LearnPreview } from '@/components/learn/LearnPreview';
 import { WhyThreeDApp } from '@/components/home/WhyThreeDApp';
@@ -54,7 +55,7 @@ export default function LearnPage() {
             <Button asChild variant="success" size="lg" className={actionClassName}><a href="#how-to"><BookOpen aria-hidden="true" />Browse guides<ArrowRight aria-hidden="true" /></a></Button>
             <Button asChild variant="outline" size="lg" className={actionClassName}><a href="#first-project"><Rocket aria-hidden="true" />Start your first Project</a></Button>
           </div>
-          <Button asChild variant="link" className="mt-3 h-auto min-h-11 max-w-full whitespace-normal text-base"><Link href="/#garden-demo">Just exploring? Try the garden demo<ArrowRight aria-hidden="true" /></Link></Button>
+          <Button asChild variant="link" className="mt-3 h-auto min-h-11 max-w-full whitespace-normal text-base"><Link href={APP_DEMO_HREF}>Just exploring? Try the garden demo<ArrowRight aria-hidden="true" /></Link></Button>
         </div>
         <LearnPreview />
       </div>
@@ -78,7 +79,7 @@ export default function LearnPage() {
         <li>Choose Save ThreeD Project from the Project menu or use the Save icon. Wait for confirmation; read any error before leaving.</li>
         <li>Return to Dashboard and open that Project again. Choose Design, select the wall from Architecture in Project Assets and confirm the saved height. You should still be able to edit it.</li>
       </ol>
-      <p className="text-sm text-muted-foreground">No account yet? <Link href="/#garden-demo" className="underline">Try the garden demo</Link> for orbit and zoom, or browse public Projects from Dashboard. The illustrative demo does not save or support drawing.</p>
+      <p className="text-sm text-muted-foreground">No account yet? <Link href={APP_DEMO_HREF} className="underline">Try the garden demo</Link> for orbit and zoom, or browse public Projects from Dashboard. The illustrative demo does not save or support drawing.</p>
       <div className="flex flex-wrap gap-3">
         <Button asChild variant="success" size="lg" className={actionClassName}><Link href="/dashboard/scene"><Rocket aria-hidden="true" />Open Project workspace<ArrowRight aria-hidden="true" /></Link></Button>
         <Button asChild variant="outline" size="lg" className={actionClassName}><a href="#how-to"><BookOpen aria-hidden="true" />Choose a guide</a></Button>

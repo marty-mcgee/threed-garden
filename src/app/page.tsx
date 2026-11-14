@@ -1,167 +1,19 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { APP_DEMO_HREF, HOME_GARDEN_DEMO_ID } from '@/libraries/config/app-links';
 import { ArrowRight } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import GardenHero from '@/components/home/GardenHero';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
-import { MultimediaPlayer } from '@/components/multimedia/MultimediaPlayer';
-import { AlbumLyrics } from '@/components/multimedia/AlbumLyrics';
+import { HomeMultimedia } from '@/components/home/HomeMultimedia';
+import { HomeShowcase, HomeOnboarding, HomeQuestions } from '@/components/home/HomeIntroduction';
 import { Button } from '@/components/ui/button';
 
 const largeActionClassName = 'h-auto min-h-14 whitespace-normal rounded-xl px-7 py-4 text-base [&_svg]:size-5';
 const greenOutlineClassName = 'border-emerald-700/25 bg-emerald-500/10 text-emerald-800 hover:bg-emerald-500/20 hover:text-emerald-950 dark:border-emerald-400/25 dark:bg-emerald-500/10 dark:text-emerald-200 dark:hover:bg-emerald-500/20 dark:hover:text-emerald-100';
 
 export default function HomePage() {
-  const [mounted, setMounted] = useState(false);
-  const [albums, setAlbums] = useState<any[]>([]);
-  const [selectedAlbum, setSelectedAlbum] = useState<any>(null);
-  const [tracks, setTracks] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  // Player state
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.7);
-  const [isMuted, setIsMuted] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
-
-  const currentTrack = tracks[currentTrackIndex];
-
-  // Fetch first album on mount
-  useEffect(() => {
-    setMounted(true);
-    fetchFirstAlbum();
-  }, []);
-
-  // Set up audio element
-  useEffect(() => {
-    const audio = new Audio();
-    setAudioElement(audio);
-    return () => {
-      audio.pause();
-      audio.src = '';
-    };
-  }, []);
-
-  // Handle audio source changes
-  useEffect(() => {
-    if (audioElement && currentTrack?.fileUrl) {
-      audioElement.src = currentTrack.fileUrl;
-      audioElement.load();
-      if (isPlaying) {
-        audioElement.play().catch(console.error);
-      }
-    }
-  }, [currentTrack, audioElement]);
-
-  // Handle play/pause
-  useEffect(() => {
-    if (audioElement) {
-      if (isPlaying) {
-        audioElement.play().catch(console.error);
-      } else {
-        audioElement.pause();
-      }
-    }
-  }, [isPlaying, audioElement]);
-
-  // Handle volume
-  useEffect(() => {
-    if (audioElement) {
-      audioElement.volume = isMuted ? 0 : volume;
-    }
-  }, [volume, isMuted, audioElement]);
-
-  // Handle time updates
-  useEffect(() => {
-    if (audioElement) {
-      const handleTimeUpdate = () => setCurrentTime(audioElement.currentTime);
-      const handleDurationChange = () => setDuration(audioElement.duration);
-      const handleEnded = () => {
-        const nextIndex = (currentTrackIndex + 1) % tracks.length;
-        setCurrentTrackIndex(nextIndex);
-        setIsPlaying(true);
-      };
-
-      audioElement.addEventListener('timeupdate', handleTimeUpdate);
-      audioElement.addEventListener('durationchange', handleDurationChange);
-      audioElement.addEventListener('ended', handleEnded);
-
-      return () => {
-        audioElement.removeEventListener('timeupdate', handleTimeUpdate);
-        audioElement.removeEventListener('durationchange', handleDurationChange);
-        audioElement.removeEventListener('ended', handleEnded);
-      };
-    }
-  }, [audioElement, currentTrackIndex, tracks.length]);
-
-  const fetchFirstAlbum = async () => {
-    try {
-      const response = await fetch('/api/multimedia/albums?scope=public');
-      if (response.ok) {
-        const data = await response.json();
-        setAlbums(data);
-        if (data.length > 0) {
-          setSelectedAlbum(data[0]);
-          await fetchTracks(data[0].id);
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching albums:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchTracks = async (albumId: number) => {
-    try {
-      const response = await fetch(`/api/multimedia/tracks?scope=public&albumId=${albumId}`);
-      if (response.ok) {
-        const data = await response.json();
-        setTracks(data);
-        setCurrentTrackIndex(0);
-      }
-    } catch (error) {
-      console.error('Error fetching tracks:', error);
-    }
-  };
-
-  const handlePlayPause = () => setIsPlaying(!isPlaying);
-  const handleNext = () => {
-    setCurrentTrackIndex((prev) => (prev + 1) % tracks.length);
-    setIsPlaying(true);
-  };
-  const handlePrevious = () => {
-    setCurrentTrackIndex((prev) => (prev - 1 + tracks.length) % tracks.length);
-    setIsPlaying(true);
-  };
-  const handleVolumeChange = (value: number[]) => {
-    const newVolume = value[0];
-    setVolume(newVolume);
-    setIsMuted(newVolume === 0);
-  };
-  const handleToggleMute = () => setIsMuted(!isMuted);
-  const handleSeek = (value: number[]) => {
-    if (audioElement) {
-      audioElement.currentTime = value[0];
-      setCurrentTime(value[0]);
-    }
-  };
-  const handleTrackSelect = (index: number) => {
-    setCurrentTrackIndex(index);
-    setIsPlaying(true);
-  };
-  const formatTime = (time: number) => {
-    if (isNaN(time)) return '0:00';
-    const minutes = Math.floor(time / 60);
-    const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-  };
-
   const features = [
     {
       moduleKey: 'threed',
@@ -240,10 +92,6 @@ export default function HomePage() {
     },
   ];
 
-  if (!mounted) {
-    return null;
-  }
-
   return (
     <div className="threed-presentation min-h-screen">
       <AppHeader surface="dashboard" />
@@ -256,12 +104,12 @@ export default function HomePage() {
               <p className="mt-6 max-w-lg text-lg leading-relaxed text-foreground/85">Explore garden layouts, architectural ideas and interactive Scenes in ThreeD App.</p>
               <p className="mt-4 max-w-lg leading-relaxed text-muted-foreground">Start with a look around. Rotate the garden preview, discover public Projects or follow a guide to see what you can create.</p>
               <div className="mt-8 flex flex-wrap gap-3">
-                <Button asChild variant="success" className={largeActionClassName}><a href="#garden-demo">Explore a Demo<ArrowRight aria-hidden="true" /></a></Button>
+                <Button asChild variant="success" className={largeActionClassName}><Link href={APP_DEMO_HREF}>Explore a Demo<ArrowRight aria-hidden="true" /></Link></Button>
                 <Button asChild variant="outline" className={largeActionClassName + ' ' + greenOutlineClassName}><Link href="/learn">Learn ThreeD</Link></Button>
               </div>
               <p className="mt-4 text-sm leading-relaxed text-muted-foreground">No account needed for this illustrative garden preview. Creating and saving your own Projects requires sign-in.</p>
             </div>
-            <div id="garden-demo" tabIndex={-1} className="min-w-0 scroll-mt-20 rounded-3xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-500"><GardenHero /></div>
+            <div id={HOME_GARDEN_DEMO_ID} tabIndex={-1} className="min-w-0 scroll-mt-20 rounded-3xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-500"><GardenHero /></div>
           </div>
         </section>
         <section aria-labelledby="explore-title" className="mx-auto max-w-7xl px-6 py-12 sm:py-16">
@@ -287,52 +135,10 @@ export default function HomePage() {
           <h2 id="home-possibilities" className="text-2xl font-semibold tracking-tight sm:text-3xl">From a first idea to a space you can explore.</h2>
           <p className="text-base leading-relaxed text-muted-foreground">Bring editable plans, reusable Models, maps and Multimedia together in a Project. Explore a garden arrangement, explain an architectural concept or bring a Scene to life with supported Characters and Actions. Learn guides help you take the next step.</p>
         </section>
-      {/* Featured Music Player Section */}
-      {selectedAlbum && currentTrack && !loading && (
-        <div className="threed-presentation-surface border-y py-8">
-          <div className="mx-auto w-full max-w-7xl px-6">
-            <div className="text-center mb-4">
-              <div className="mb-2 inline-flex items-center rounded-full border border-violet-500/20 bg-violet-500/10 px-3 py-1 text-xs text-violet-800 dark:text-violet-200">
-                🎵 Featured Release
-              </div>
-              <h2 className="mb-1 text-2xl font-bold text-foreground">{selectedAlbum.title}</h2>
-              <p className="text-sm text-muted-foreground">{selectedAlbum.artist}</p>
-            </div>
-            <MultimediaPlayer
-              lyricsPanel={<AlbumLyrics albumId={selectedAlbum.id} albumTitle={selectedAlbum.title} />}
-              track={currentTrack}
-              album={selectedAlbum}
-              tracks={tracks}
-              isPlaying={isPlaying}
-              onPlayPause={handlePlayPause}
-              onNext={handleNext}
-              onPrevious={handlePrevious}
-              onSeek={handleSeek}
-              onTrackSelect={handleTrackSelect}
-              currentTime={currentTime}
-              duration={duration}
-              volume={volume}
-              isMuted={isMuted}
-              onVolumeChange={handleVolumeChange}
-              onToggleMute={handleToggleMute}
-              formatTime={formatTime}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* Loading State */}
-      {loading && (
-        <div className="threed-workspace-panel threed-presentation-surface border-y py-8">
-          <div className="mx-auto w-full max-w-7xl px-6 text-center">
-            <div className="animate-pulse motion-reduce:animate-none">
-              <div className="mx-auto mb-2 h-8 w-48 rounded bg-foreground/10"></div>
-              <div className="mx-auto h-4 w-64 rounded bg-foreground/10"></div>
-            </div>
-          </div>
-        </div>
-      )}
-
+        <HomeShowcase />
+        <HomeOnboarding />
+        <HomeMultimedia />
+        <HomeQuestions />
 
         <section aria-labelledby="home-developers" className="mx-auto max-w-7xl px-6 py-12">
           <div className="flex flex-wrap items-start justify-between gap-6 border-t pt-10">
@@ -351,7 +157,7 @@ export default function HomePage() {
           <h2 id="home-next" className="text-3xl font-bold tracking-tight">Your next idea starts with a little exploring.</h2>
           <p className="mx-auto mb-6 mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">Try the garden preview or find a guide. Sign in when you are ready to create and save your own Projects.</p>
           <div className="flex flex-wrap justify-center gap-3">
-            <Button asChild variant="success" className={largeActionClassName}><a href="#garden-demo">Explore a Demo<ArrowRight aria-hidden="true" /></a></Button>
+            <Button asChild variant="success" className={largeActionClassName}><Link href={APP_DEMO_HREF}>Explore a Demo<ArrowRight aria-hidden="true" /></Link></Button>
             <Button asChild variant="outline" className={largeActionClassName}><Link href="/learn">Learn ThreeD</Link></Button>
           </div>
           <Link href="/auth/sign-in" className="mt-4 inline-flex min-h-11 items-center text-sm font-medium underline underline-offset-4">Sign in to your account</Link>

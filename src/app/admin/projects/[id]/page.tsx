@@ -2,6 +2,8 @@
 
 'use client';
 
+import { readProjectFeaturedImage } from '@/libraries/services/project/featured-image';
+import { PROJECT_CAPTURES } from '@/libraries/config/project-showcase';
 import { ProjectWeatherSettings } from '@/components/admin/projects/ProjectWeatherSettings';
 import { ProjectConfigurations } from '@/components/admin/projects/ProjectConfigurations';
 import { ProjectDetailsFields } from '@/components/admin/projects/ProjectDetailsFields';
@@ -63,6 +65,7 @@ import {
 
 interface Project {
   config?: unknown;
+  metadata?: unknown;
   id: number;
   name: string;
   description: string;
@@ -84,6 +87,11 @@ interface Project {
   calibrationPointBLocalZ: string | null;
   calibrationPointBLatitude: string | null;
   calibrationPointBLongitude: string | null;
+}
+
+function projectFeaturedImage(value: Project): string {
+  const saved = readProjectFeaturedImage(value.metadata);
+  return saved === undefined ? PROJECT_CAPTURES.find(item => item.id === value.id)?.featured_image ?? '' : saved ?? '';
 }
 
 interface Module {
@@ -273,7 +281,8 @@ export default function ProjectDetailPage() {
     name: '',
     description: '',
   });
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{ name: string; description: string; featured_image?: string; isPublic: boolean; isActive: boolean }>({
+    featured_image: '',
     name: '',
     description: '',
     isPublic: false,
@@ -292,7 +301,7 @@ export default function ProjectDetailPage() {
   const [calibrationDiagnostics, setCalibrationDiagnostics] = useState<CalibrationDiagnostics | null>(null);
 
   const restoreProjectDetails = (saved: Project) => {
-    setFormData({ name: saved.name || '', description: saved.description || '', isPublic: saved.isPublic || false, isActive: saved.isActive !== false });
+    setFormData({ featured_image: projectFeaturedImage(saved), name: saved.name || '', description: saved.description || '', isPublic: saved.isPublic || false, isActive: saved.isActive !== false });
     setCalibrationDiagnostics(getStoredCalibrationDiagnostics(saved));
     setCalibrationData({
       pointALocalX: saved.calibrationPointALocalX ?? '0',
@@ -473,6 +482,7 @@ export default function ProjectDetailPage() {
 
       setProject(result.data);
       setFormData(current => ({
+        featured_image: current.featured_image === captured.featured_image ? projectFeaturedImage(result.data) : current.featured_image,
         name: current.name === captured.name ? result.data.name : current.name,
         description: current.description === captured.description ? result.data.description || '' : current.description,
         isPublic: current.isPublic === captured.isPublic ? result.data.isPublic === true : current.isPublic,
@@ -785,7 +795,7 @@ export default function ProjectDetailPage() {
         <TabsContent value="setup" forceMount className="space-y-4 data-[state=inactive]:hidden">
       {/* Project details are always available on the Setup tab. */}
       <ProjectConfigurations key={project.id} project={project} disabled={isSubmitting}
-        detailsDirty={formData.name !== project.name || formData.description !== (project.description || '') || formData.isPublic !== (project.isPublic === true) || formData.isActive !== (project.isActive !== false)}
+        detailsDirty={formData.featured_image !== projectFeaturedImage(project) || formData.name !== project.name || formData.description !== (project.description || '') || formData.isPublic !== (project.isPublic === true) || formData.isActive !== (project.isActive !== false)}
         onSave={updateProject} onReset={() => restoreProjectDetails(project)}
         onSaved={config => setProject(current => current?.id === project.id ? { ...current, config } : current)}
         onCalibrate={() => { const panel = document.getElementById('project-coordinate-calibration'); if (panel instanceof HTMLDetailsElement) panel.open = true; requestAnimationFrame(() => document.getElementById('calibration-pointALocalX')?.focus()); }}

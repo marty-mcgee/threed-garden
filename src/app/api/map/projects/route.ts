@@ -1,3 +1,4 @@
+import { readProjectFeaturedImage } from '@/libraries/services/project/featured-image';
 // app/api/map/projects/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -50,6 +51,7 @@ export async function GET(request: NextRequest) {
       .select({
         id: project.id,
         name: project.name,
+        metadata: project.metadata,
         description: project.description,
         slug: project.slug,
         isActive: project.isActive,
@@ -138,6 +140,7 @@ export async function GET(request: NextRequest) {
         return {
           id: proj.id,
           name: proj.name,
+          featured_image: readProjectFeaturedImage(proj.metadata),
           description: proj.description || '',
           slug: proj.slug,
           hasTraffic: moduleCounts.traffic > 0,

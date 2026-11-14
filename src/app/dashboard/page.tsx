@@ -8,6 +8,7 @@ import { useSession } from 'next-auth/react';
 import { ProjectTemplateDialog } from '@/components/map/panels/ProjectTemplateDialog';
 import { useWorkspaceSettings } from '@/components/settings/WorkspaceSettingsProvider';
 import Link from 'next/link';
+import { ProjectFeaturedImage } from '@/components/home/ProjectFeaturedImage';
 import { DashboardWelcome, DashboardStartingPaths } from '@/components/home/DashboardWelcome';
 import {
   FolderOpen, Map, Music, Box, Car, Loader2, ChevronRight, Search,
@@ -150,6 +151,7 @@ export default function DashboardHomePage() {
               className="threed-workspace-panel threed-presentation-surface group rounded-lg shadow-sm"
             >
               <CardContent className="flex h-full flex-col p-3">
+                <ProjectFeaturedImage projectId={project.id} featured_image={project.featured_image} />
                 {/* Project Header */}
                 <div className="flex items-start justify-between mb-3">
                   <div className="min-w-0 flex-1">

@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.34.0 - App: Home and Guest Landing Pages (planning released; Phase 1 local, browser review pending)](v0.34.0.md)
+- [v0.34.1 - ThreeD Home Showcase and Project Images (prepared; deployment pending)](v0.34.1.md)
+
+- [v0.34.0 - ThreeD Home Improvements (Developer-confirmed production; Phase 2 continued in v0.34.1)](v0.34.0.md)
 
 - [v0.33.2 - ThreeD: Terrain Editor Actions and Help (Developer-confirmed production release)](v0.33.2.md)
 

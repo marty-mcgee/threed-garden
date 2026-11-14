@@ -96,6 +96,7 @@ export const project = pgTable('project', {
   // the authenticated marker snapshot transaction. The editor holds a draft,
   // not a client mirror of this column; only successful Project Save persists it.
   config: jsonb('config').default({}),
+  // Optional featured_image: App image path or HTTPS URL; null explicitly clears it.
   metadata: jsonb('metadata').default({}),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),

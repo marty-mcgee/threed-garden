@@ -1,6 +1,7 @@
 export interface DashboardProject {
   id: number;
   name: string;
+  featured_image?: string | null;
   slug: string;
   description: string | null;
   isPublic: boolean;
@@ -27,6 +28,7 @@ export function readDashboardProjectPage(value: unknown, expectedOffset: number)
     const id = count(project.id);
     if (id < 1 || typeof project.name !== 'string' || typeof project.isPublic !== 'boolean') throw new Error('Invalid Project');
     return { id, name: project.name.trim() || 'Untitled', slug: typeof project.slug === 'string' ? project.slug : '',
+      featured_image: typeof project.featured_image === 'string' ? project.featured_image : project.featured_image === null ? null : undefined,
       description: typeof project.description === 'string' ? project.description : null,
       isPublic: project.isPublic, assetCount: count(project.assetCount), sceneAssetCount: count(project.sceneAssetCount ?? 0),
       modules: { multimedia: count(modules.multimedia), threed: count(modules.threed), traffic: count(modules.traffic) } };

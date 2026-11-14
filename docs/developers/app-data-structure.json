@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-11-13",
+  "generatedAt": "2026-11-14",
   "branch": "main",
-  "head": "6f84cc408de5994a80413027131c6f924b21d819",
-  "version": "0.33.2",
+  "head": "f817dda8d98fad6a44f913c14d4a8ead9a960d0c",
+  "version": "0.34.1",
   "summary": {
     "tables": 89,
     "columns": 1256,
@@ -2508,7 +2508,7 @@
       "domain": "project",
       "source": "../../src/libraries/schema/project/index.ts",
       "sourcePath": "src/libraries/schema/project/index.ts",
-      "line": 161,
+      "line": 162,
       "columns": [
         {
           "name": "id",
@@ -2712,7 +2712,7 @@
       "domain": "project",
       "source": "../../src/libraries/schema/project/index.ts",
       "sourcePath": "src/libraries/schema/project/index.ts",
-      "line": 142,
+      "line": 143,
       "columns": [
         {
           "name": "id",
@@ -2987,7 +2987,7 @@
       "domain": "project",
       "source": "../../src/libraries/schema/project/index.ts",
       "sourcePath": "src/libraries/schema/project/index.ts",
-      "line": 112,
+      "line": 113,
       "columns": [
         {
           "name": "id",
@@ -3111,7 +3111,7 @@
       "domain": "project",
       "source": "../../src/libraries/schema/project/index.ts",
       "sourcePath": "src/libraries/schema/project/index.ts",
-      "line": 193,
+      "line": 194,
       "columns": [
         {
           "name": "id",
@@ -3427,7 +3427,7 @@
       "domain": "project",
       "source": "../../src/libraries/schema/project/index.ts",
       "sourcePath": "src/libraries/schema/project/index.ts",
-      "line": 127,
+      "line": 128,
       "columns": [
         {
           "name": "id",
@@ -23961,7 +23961,7 @@
     "src/libraries/schema/index.ts": "ec1e6535f233b722a01ac817b65f24c324ececfaf7d64081f79350aa19e5109b",
     "src/libraries/schema/learn/index.ts": "ec9df7d1af0027a1d0eec2216385a9eee5d9e77058a076131e5679af5c08e3f8",
     "src/libraries/schema/multimedia/index.ts": "0d454cdeaf38e616125b99340a92e2e26b2b145ab39e87cc7c8f42a281e0f672",
-    "src/libraries/schema/project/index.ts": "dcbaf3db114a807f5fc0f9c897d56d4019357b9642b257dcc9cbc4a0ff36d857",
+    "src/libraries/schema/project/index.ts": "dc1a0c978eae09b605942ff0351e81a9d0f85ee554f4757f5ae00a5c20b5be6a",
     "src/libraries/schema/settings/index.ts": "36c9ce83d70c4517b44952899574a47c68798551b3c1a63992819e89063ced55",
     "src/libraries/schema/threed/album-associations.ts": "f1dfc1d4701a484c1d0b8cd8582768aa61b9585b19a6d3c693ab9c2cc619dff8",
     "src/libraries/schema/threed/index.ts": "f2744a9a71c1d51af6a19277411dd63bac1eaf8ce3e37f1202273b26d1f7a7c2",
