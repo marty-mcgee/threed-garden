@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import GardenHero from '@/components/home/GardenHero';
-import { WhyThreeDApp } from '@/components/home/WhyThreeDApp';
+import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { MultimediaPlayer } from '@/components/multimedia/MultimediaPlayer';
 import { AlbumLyrics } from '@/components/multimedia/AlbumLyrics';
 import { Button } from '@/components/ui/button';
@@ -162,56 +162,82 @@ export default function HomePage() {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  // Content Links (features)
   const features = [
     {
-      icon: "🌱",
-      title: "ThreeD Garden",
-      description: "Interactive 3D garden using real Physics, with FarmBot integration",
-      href: "/dashboard/scene?projectId=17&view=design",
-      // href: "https://threed-garden-neon.vercel.app/", 
-      color: "border-emerald-500/20 bg-emerald-500/10",
-      external: false
+      moduleKey: 'threed',
+      title: 'ThreeD',
+      description: 'Explore spaces through linked plans and 3D Scenes, with Models, Characters and garden layouts.',
+      href: '/dashboard',
+      action: 'Browse Projects',
+      detail: 'Discover Projects available to you.',
     },
     {
-      icon: "📻",
-      title: "Traffic Monitor",
-      description: "Real-time CHP, Caltrans, Calfire incident tracking",
-      href: "/dashboard/traffic",
-      // href: "https://mendocinocoast.news/traffic/", 
-      color: "border-cyan-500/20 bg-cyan-500/10",
-      external: false
+      moduleKey: 'multimedia',
+      title: 'Multimedia',
+      description: 'Find an Album, choose a Track and enjoy music, video and lyrics in one place.',
+      href: '/dashboard/multimedia',
+      action: 'Explore Multimedia',
+      detail: 'Browse published Albums and available media.',
     },
     {
-      icon: "🎵",
-      title: "Music Streaming",
-      description: "Browse available albums and listen to tracks",
-      href: "/dashboard/multimedia",
-      color: "border-violet-500/20 bg-violet-500/10",
-      external: false
+      moduleKey: 'traffic',
+      title: 'Traffic',
+      description: 'Explore maps and reports from CHP, Caltrans, CalFire and Bay Area 511.',
+      href: '/dashboard/traffic',
+      action: 'Explore Traffic',
+      detail: 'Coverage and updates depend on each provider.',
     },
     {
-      icon: "💻",
-      title: "Open-Source Project",
-      description: "Explore the source and developer documentation",
-      href: "https://github.com/marty-mcgee/threed-garden",
-      color: "border-amber-500/20 bg-amber-500/10",
-      external: true
+      moduleKey: 'learn',
+      title: 'Learn',
+      description: 'Get to know the App with task-based guides for Projects, Design, Models and more.',
+      href: '/learn',
+      action: 'Find a guide',
+      detail: 'Read public guides at your own pace.',
     },
-  ];
+  ] as const;
 
   const techStack = [
-    { name: "TypeScript", url: "https://www.typescriptlang.org" },
-    { name: "React", url: "https://react.org" },
-    { name: "Next.js", url: "https://nextjs.org" },
-    { name: "Three.js", url: "https://threejs.org" },
-    { name: "React-Three", url: "https://r3f.docs.pmnd.rs/next" },
-    // { name: "ThreeD Design", url: "https://threed.design" },
-    { name: "Postgres", url: "https://www.postgresql.org/about" },
-    { name: "Neon", url: "https://neon.tech" },
-    { name: "Drizzle ORM", url: "https://orm.drizzle.team" },
-    { name: "AWS S3", url: "https://aws.amazon.com/s3" },
-    { name: "Vercel", url: "https://vercel.com" },
+    {
+      name: 'TypeScript',
+      url: 'https://www.typescriptlang.org',
+    },
+    {
+      name: 'React',
+      url: 'https://react.org',
+    },
+    {
+      name: 'Next.js',
+      url: 'https://nextjs.org',
+    },
+    {
+      name: 'Three.js',
+      url: 'https://threejs.org',
+    },
+    {
+      name: 'React-Three',
+      url: 'https://r3f.docs.pmnd.rs/next',
+    },
+    {
+      name: 'Postgres',
+      url: 'https://www.postgresql.org/about',
+    },
+    {
+      name: 'Neon',
+      url: 'https://neon.tech',
+    },
+    {
+      name: 'Drizzle ORM',
+      url: 'https://orm.drizzle.team',
+    },
+    {
+      name: 'AWS S3',
+      url: 'https://aws.amazon.com/s3',
+    },
+    {
+      name: 'Vercel',
+      url: 'https://vercel.com',
+    },
   ];
 
   if (!mounted) {
@@ -220,130 +246,47 @@ export default function HomePage() {
 
   return (
     <div className="threed-presentation min-h-screen">
-
       <AppHeader surface="dashboard" />
-      {/* Garden studio hero */}
-      <div className="threed-workspace-panel threed-presentation-surface threed-presentation-featured relative overflow-hidden border-b">
-        {/* Content */}
-        <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-6 py-12 lg:grid-cols-[.85fr_1.15fr] lg:py-20">
-          <div className="text-center lg:text-left">
-            <div className="mb-4 inline-flex items-center rounded-full border border-emerald-600/20 bg-emerald-500/10 px-3 py-1 text-sm text-emerald-800 dark:border-emerald-400/20 dark:text-emerald-200">
-              <a
-                key={`THREED-GARDEN-MAIN`}
-                href={`/`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                🥕 Interactive 3D Designs
-              </a>
-            </div>
-            <h1 className="mb-4 text-4xl font-bold tracking-tight text-foreground lg:text-6xl">
-              ThreeD Garden
-            </h1>
-
-
-            <p className="mb-6 text-lg leading-relaxed text-foreground/85 lg:text-xl">
-              Plan spaces, build interactive scenes, and explore your ideas in 3D.
-            </p>
-
-            <p className="mx-auto mb-8 max-w-md text-base leading-relaxed text-muted-foreground lg:mx-0">Draw a room, arrange a garden layout, or explore a scene with Models and Characters. Begin with a small Project and inspect it from different views.</p>
-
-            {/* Hero CTA Buttons - Horizontal layout */}
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-              {features.map((feature, index) => {
-                const ButtonContent = (
-                  <>
-                    <span aria-hidden="true" className="text-2xl">{feature.icon}</span>
-                    <span className="flex-1">{feature.title}</span><ArrowRight aria-hidden="true" className="shrink-0" />
-                  </>
-                );
-
-                if (feature.external) {
-                  return (
-                    <Button key={index} asChild variant="outline" className={`h-auto min-h-16 justify-start whitespace-normal rounded-xl px-4 py-4 text-left text-base ${greenOutlineClassName}`}>
-                      <a href={feature.href} target="_blank" rel="noopener noreferrer">
-                        {ButtonContent}
-                      </a>
-                    </Button>
-                  );
-                }
-
-                return (
-                  <Button key={index} asChild variant="outline" className={`h-auto min-h-16 justify-start whitespace-normal rounded-xl px-4 py-4 text-left text-base ${greenOutlineClassName}`}>
-                    <Link href={feature.href}>
-                      {ButtonContent}
-                    </Link>
-                  </Button>
-                );
-              })}
-            </div>
-
-          </div>
-          <div id="garden-demo" className="min-w-0 scroll-mt-16"><GardenHero /></div>
-        </div>
-      </div>
-
-      <div className="mx-auto max-w-7xl px-6 py-8 sm:py-12">
-        <WhyThreeDApp />
-      </div>
-
-      {/* Tech Stack */}
-      <div className="threed-workspace-panel threed-presentation-surface border-b py-6">
-        <div className="mx-auto w-full max-w-7xl px-6">
-          <div className="text-center mb-4">
-            <h2 className="text-lg font-semibold mb-1">Tech Stack</h2>
-            <div className="w-8 h-0.5 bg-gradient-to-r from-green-800 to-emerald-600 mx-auto" />
-          </div>
-          <div className="flex flex-wrap justify-center gap-3">
-            {techStack.map((tech) => (
-              <a key={tech.name} href={tech.url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-full border border-cyan-700/15 bg-cyan-500/5 px-3 py-1.5 text-xs font-medium text-foreground/80 transition-colors hover:bg-cyan-500/15 hover:text-foreground dark:border-cyan-400/20">
-                <span>{tech.name}</span>
-                <span className="text-xs opacity-50">↗</span>
-              </a>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Features Grid */}
-      <div className="py-12 sm:py-16">
-        <div className="mx-auto w-full max-w-7xl px-6">
-          <div className="text-center mb-6">
-            <h2 className="text-3xl font-bold mb-2">Explore ThreeD Garden</h2>
-            <div className="w-12 h-0.5 bg-gradient-to-r from-green-800 to-emerald-600 mx-auto" />
-          </div>
-          <p className="mb-8 text-center text-base text-muted-foreground">Choose where you want to go. Create, listen, explore or see how it works.</p>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {features.map((feature, index) => (
-              <div key={index} className="threed-workspace-panel threed-presentation-surface flex flex-col rounded-2xl border p-6 sm:p-7">
-                <div className={`mb-5 flex h-14 w-14 items-center justify-center rounded-xl border text-3xl ${feature.color}`}>{feature.icon}</div>
-                <h3 className="mb-2 text-xl font-semibold">{feature.title}</h3>
-                <p className="mb-5 text-sm leading-relaxed text-muted-foreground">{feature.description}</p>
-                {feature.external ? (
-                  <Button asChild variant="outline" className={`mt-auto min-h-12 w-full rounded-xl px-5 py-3 text-base ${greenOutlineClassName}`}><a href={feature.href} target="_blank" rel="noopener noreferrer">Explore <span>↗</span></a></Button>
-                ) : (
-                  <Button asChild variant="outline" className={`mt-auto min-h-12 w-full rounded-xl px-5 py-3 text-base ${greenOutlineClassName}`}><Link href={feature.href}>Explore <span>→</span></Link></Button>
-                )}
+      <main>
+        <section aria-labelledby="home-title" className="threed-presentation-surface threed-presentation-featured overflow-hidden border-b">
+          <div className="mx-auto grid max-w-7xl items-center gap-10 px-6 py-12 lg:grid-cols-[.85fr_1.15fr] lg:gap-14 lg:py-20">
+            <div className="min-w-0">
+              <p className="mb-5 text-sm font-semibold uppercase tracking-[.16em] text-emerald-800 dark:text-emerald-200">ThreeD Garden &middot; An open-source workspace</p>
+              <h1 id="home-title" className="max-w-xl text-4xl font-bold leading-tight tracking-tight text-foreground sm:text-5xl lg:text-6xl">Plan your space.<br /><span className="text-emerald-800 dark:text-emerald-200">Build your world.</span></h1>
+              <p className="mt-6 max-w-lg text-lg leading-relaxed text-foreground/85">Explore garden layouts, architectural ideas and interactive Scenes in ThreeD App.</p>
+              <p className="mt-4 max-w-lg leading-relaxed text-muted-foreground">Start with a look around. Rotate the garden preview, discover public Projects or follow a guide to see what you can create.</p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button asChild variant="success" className={largeActionClassName}><a href="#garden-demo">Explore a Demo<ArrowRight aria-hidden="true" /></a></Button>
+                <Button asChild variant="outline" className={largeActionClassName + ' ' + greenOutlineClassName}><Link href="/learn">Learn ThreeD</Link></Button>
               </div>
+              <p className="mt-4 text-sm leading-relaxed text-muted-foreground">No account needed for this illustrative garden preview. Creating and saving your own Projects requires sign-in.</p>
+            </div>
+            <div id="garden-demo" tabIndex={-1} className="min-w-0 scroll-mt-20 rounded-3xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-500"><GardenHero /></div>
+          </div>
+        </section>
+        <section aria-labelledby="explore-title" className="mx-auto max-w-7xl px-6 py-12 sm:py-16">
+          <div className="mb-8 max-w-2xl">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-muted-foreground">Four ways to explore</p>
+            <h2 id="explore-title" className="text-3xl font-bold tracking-tight sm:text-4xl">Where will your curiosity take you?</h2>
+            <p className="mt-4 text-base leading-relaxed text-muted-foreground">Plan a space, discover media, explore a map or learn something new. Choose a place to begin.</p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {features.map(feature => (
+              <article key={feature.moduleKey} className="threed-presentation-surface flex min-w-0 flex-col rounded-2xl border p-6">
+                <ModuleIcon moduleKey={feature.moduleKey} className="mb-6 size-8" />
+                <h3 className="text-xl font-semibold">{feature.title}</h3>
+                <p className="mb-5 mt-3 text-sm leading-relaxed text-muted-foreground">{feature.description}</p>
+                <p className="mb-5 mt-auto text-xs leading-relaxed text-muted-foreground">{feature.detail}</p>
+                <Button asChild variant="outline" className="h-auto min-h-12 justify-between gap-2 whitespace-normal rounded-xl px-4 py-3 text-left"><Link href={feature.href}>{feature.action}<ArrowRight aria-hidden="true" className="size-4 shrink-0" /></Link></Button>
+              </article>
             ))}
           </div>
-        </div>
-      </div>
-
-      {/* About + Stats */}
-      <div className="py-8">
-        <div className="mx-auto w-full max-w-7xl px-6">
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            <div className="text-center md:text-left">
-              <h2 className="text-2xl font-bold mb-2">About ThreeD Garden</h2>
-              <div className="w-12 h-0.5 bg-gradient-to-r from-green-800 to-emerald-600 mx-auto md:mx-0 mb-4" />
-              <p className="leading-relaxed text-muted-foreground">Create interactive gardens with 3D models, characters, physics, and maps. Bring your projects to life in a shared workspace for nature, technology, and creativity.</p>
-            </div>
-            <div className="threed-workspace-panel threed-presentation-surface space-y-3 rounded-xl border p-6"><h3 className="font-semibold">Open source, ready to explore</h3><p className="text-sm leading-relaxed text-muted-foreground">ThreeD Garden is available under the MIT License. Explore the source, follow a guide, or start a Project of your own.</p><a className="text-sm text-emerald-800 underline underline-offset-4 hover:text-emerald-950 dark:text-emerald-200 dark:hover:text-emerald-100" href="https://github.com/marty-mcgee/threed-garden">View the ThreeD Garden repository</a></div>
-          </div>
-        </div>
-      </div>
-
+          <p className="mt-5 text-sm leading-relaxed text-muted-foreground">Guests can explore public content. Private Projects and editing tools remain available only to authorized accounts.</p>
+        </section>
+        <section aria-labelledby="home-possibilities" className="mx-auto grid max-w-7xl gap-6 border-t px-6 py-10 md:grid-cols-[1fr_1.4fr] md:gap-12">
+          <h2 id="home-possibilities" className="text-2xl font-semibold tracking-tight sm:text-3xl">From a first idea to a space you can explore.</h2>
+          <p className="text-base leading-relaxed text-muted-foreground">Bring editable plans, reusable Models, maps and Multimedia together in a Project. Explore a garden arrangement, explain an architectural concept or bring a Scene to life with supported Characters and Actions. Learn guides help you take the next step.</p>
+        </section>
       {/* Featured Music Player Section */}
       {selectedAlbum && currentTrack && !loading && (
         <div className="threed-presentation-surface border-y py-8">
@@ -390,29 +333,37 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Call to Action */}
-      <div className="threed-workspace-panel threed-presentation-surface threed-presentation-featured border-y py-10">
-        <div className="mx-auto w-full max-w-7xl px-6 text-center">
-          <h2 className="text-3xl font-bold mb-3">Ready to Explore More?</h2>
-          <p className="mb-5 text-sm leading-relaxed text-muted-foreground">Explore the 3D garden, discover the music library, or check out live traffic.</p>
-          <div className="flex flex-wrap gap-3 justify-center">
-            <Button asChild variant="success" className={largeActionClassName}><Link href="/dashboard/multimedia"><span>🎵</span>Full Library</Link></Button>
-            <Button asChild variant="outline" className={`${largeActionClassName} ${greenOutlineClassName}`}><a href="https://github.com/marty-mcgee/threed-garden" target="_blank" rel="noopener noreferrer"><span>🐙</span>GitHub</a></Button>
-          </div>
-        </div>
-      </div>
 
-      {/* Footer */}
-      <footer className="bg-background/40 py-5">
-        <div className="mx-auto w-full max-w-7xl px-6 text-center text-xs text-muted-foreground">
-          <p>ThreeD Garden © 2026 Marty McGee · Built with Next.js, Neon, and 💚</p>
-          <div className="mt-2 flex flex-wrap justify-center gap-3">
-            <Link href="/dashboard/multimedia" className="hover:text-foreground transition-colors">Music</Link>
-            <Link href="/dashboard/threed" className="hover:text-foreground transition-colors">3D Design</Link>
-            <Link href="/dashboard/traffic" className="hover:text-foreground transition-colors">Traffic</Link>
-            <Link href="/learn" className="hover:text-foreground transition-colors">Learn ThreeD</Link>
-            <a href="https://github.com/marty-mcgee/threed-garden" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">GitHub</a>
+        <section aria-labelledby="home-developers" className="mx-auto max-w-7xl px-6 py-12">
+          <div className="flex flex-wrap items-start justify-between gap-6 border-t pt-10">
+            <div className="max-w-2xl">
+              <p className="mb-3 text-sm font-semibold uppercase tracking-widest text-muted-foreground">For developers and curious minds</p>
+              <h2 id="home-developers" className="text-2xl font-semibold tracking-tight">Open source. Open to your ideas.</h2>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">Explore how ThreeD App works, read the documentation and build on the code. Application code is MIT-licensed; third-party assets may have their own terms.</p>
+            </div>
+            <Button asChild variant="outline" className="min-h-12 rounded-xl"><a href="https://github.com/marty-mcgee/threed-garden" target="_blank" rel="noopener noreferrer">Explore on GitHub<span aria-hidden="true">&nearr;</span></a></Button>
           </div>
+          <div aria-label="Built with" className="mt-6 flex flex-wrap gap-x-5 gap-y-2">
+            {techStack.map(tech => <a key={tech.name} href={tech.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">{tech.name}</a>)}
+          </div>
+        </section>
+        <section aria-labelledby="home-next" className="threed-presentation-surface threed-presentation-featured border-y px-6 py-12 text-center sm:py-16">
+          <h2 id="home-next" className="text-3xl font-bold tracking-tight">Your next idea starts with a little exploring.</h2>
+          <p className="mx-auto mb-6 mt-4 max-w-xl text-base leading-relaxed text-muted-foreground">Try the garden preview or find a guide. Sign in when you are ready to create and save your own Projects.</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Button asChild variant="success" className={largeActionClassName}><a href="#garden-demo">Explore a Demo<ArrowRight aria-hidden="true" /></a></Button>
+            <Button asChild variant="outline" className={largeActionClassName}><Link href="/learn">Learn ThreeD</Link></Button>
+          </div>
+          <Link href="/auth/sign-in" className="mt-4 inline-flex min-h-11 items-center text-sm font-medium underline underline-offset-4">Sign in to your account</Link>
+        </section>
+      </main>
+      <footer className="bg-background/40 px-6 py-6">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 text-xs text-muted-foreground">
+          <p>ThreeD Garden &copy; 2026 Marty McGee</p>
+          <nav aria-label="Footer" className="flex flex-wrap gap-x-5 gap-y-1">
+            {features.map(feature => <Link key={feature.moduleKey} href={feature.href} className="inline-flex min-h-11 items-center hover:text-foreground">{feature.title}</Link>)}
+            <a href="https://github.com/marty-mcgee/threed-garden" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center hover:text-foreground">GitHub</a>
+          </nav>
         </div>
       </footer>
     </div>

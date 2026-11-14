@@ -79,7 +79,7 @@ export default function GardenHero() {
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/10 px-5 py-4">
         <p className="text-xs text-emerald-100/70" role="status">{failed ? 'Static preview · interactive 3D unavailable' : ready ? 'Drag to orbit · scroll or pinch to zoom' : 'Loading interactive garden…'}</p>
         <button type="button" disabled={!ready || failed} onClick={() => setReset(value => value + 1)} className="inline-flex items-center gap-2 rounded-lg border border-white/20 px-3 py-2 text-xs text-white hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-emerald-300 disabled:opacity-40"><RotateCcw size={14} />Reset View</button>
-        <Link href="/dashboard/scene" className="inline-flex items-center gap-2 text-sm font-medium text-emerald-200 hover:text-white">Open ThreeD Scene <ArrowUpRight size={16} /></Link>
+        <Link href="/dashboard" className="inline-flex items-center gap-2 text-sm font-medium text-emerald-200 hover:text-white">Browse Projects <ArrowUpRight size={16} /></Link>
       </div>
     </section>
   );

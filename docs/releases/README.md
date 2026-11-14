@@ -6,7 +6,7 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.34.0 - App: Home and Guest Landing Pages (plan; implementation pending)](v0.34.0.md)
+- [v0.34.0 - App: Home and Guest Landing Pages (planning released; Phase 1 local, browser review pending)](v0.34.0.md)
 
 - [v0.33.2 - ThreeD: Terrain Editor Actions and Help (Developer-confirmed production release)](v0.33.2.md)
 
