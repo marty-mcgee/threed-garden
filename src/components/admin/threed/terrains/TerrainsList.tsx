@@ -138,7 +138,7 @@ export function TerrainsList() {
         </TableRow></TableHeader>
         <TableBody>
           {current?.items.map(row => <TableRow key={row.id}>
-            <TableCell><Link className="font-medium hover:underline" href={`${root}/${row.id}`}>{row.name}</Link><span className="ml-2 inline-flex rounded-full border border-cyan-500/20 bg-cyan-500/10 px-1.5 py-0.5 text-[10px] text-cyan-700 dark:text-cyan-300">#{row.id}</span></TableCell>
+            <TableCell><Link className="font-medium hover:underline" href={`${root}/${row.id}`}>{row.name}</Link><Link href={`${root}/${row.id}`} aria-label={`Edit Terrain #${row.id}`} className="ml-2 inline-flex rounded-full border border-cyan-500/20 bg-cyan-500/10 px-1.5 py-0.5 text-[10px] text-cyan-700 dark:text-cyan-300">#{row.id}</Link></TableCell>
             <TableCell>{row.revision}</TableCell>
             <TableCell>{row.updatedAt ? new Date(row.updatedAt).toLocaleDateString() : '—'}</TableCell>
             <TableCell className="text-right"><Button asChild variant="ghost" className={actionClass}><Link href={`${root}/${row.id}`} aria-label={`Edit ${row.name}`}><Pencil className="size-3.5" />Edit</Link></Button></TableCell>

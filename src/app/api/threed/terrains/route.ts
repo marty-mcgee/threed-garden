@@ -31,7 +31,8 @@ export async function DELETE(request: NextRequest) {
       if (latest?.revision !== revision) throw new TerrainDeleteError('Terrain changed. Refresh the list before deleting.', 409);
       const [placement] = await tx.select({ id: projectTerrainPlacements.id }).from(projectTerrainPlacements).where(eq(projectTerrainPlacements.terrainId, id)).limit(1);
       const [asset] = await tx.select({ id: projectAssets.id }).from(projectAssets).where(and(eq(projectAssets.assetType, 'threed_terrains'), eq(projectAssets.assetId, id))).limit(1);
-      if (placement || asset) throw new TerrainDeleteError('This Terrain is assigned to a Project. Remove its Project placements and asset assignments before deleting.', 409);
+      if (placement) throw new TerrainDeleteError('This Terrain has a saved Project placement and cannot be deleted.', 409);
+      if (asset) throw new TerrainDeleteError('This Terrain has a retained Project asset assignment and cannot be deleted. Removing an assignment only marks it inactive; inactive assignment records also protect the Terrain.', 409);
       await tx.delete(threedTerrainRevisions).where(eq(threedTerrainRevisions.terrainId, id));
       await tx.delete(threedTerrains).where(eq(threedTerrains.id, id));
     });

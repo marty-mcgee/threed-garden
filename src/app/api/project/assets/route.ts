@@ -12,7 +12,7 @@ import {
   projectTraffic,
 } from '@/libraries/schema/project';
 import { multimedia, threed, traffic } from '@/libraries/schema';
-import { projectTerrainPlacements } from '@/libraries/schema/threed';
+import { projectTerrainPlacements, threedTerrains } from '@/libraries/schema/threed';
 import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/libraries/db/sequence';
 import {
@@ -246,100 +246,117 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const assetAccessCondition = assetDefinition.policy === 'ownerOrActivePublic'
-      ? or(
-          eq(assetDefinition.userIdColumn, userId),
+    async function assignAsset(connection: Pick<typeof db, 'select' | 'update' | 'insert'>) {
+      if (assetType === 'threed_terrains') {
+        // Serialize assignment with Terrain deletion until this transaction commits.
+        const [terrain] = await connection.select({ id: threedTerrains.id })
+          .from(threedTerrains)
+          .where(and(eq(threedTerrains.id, parsedAssetId), eq(threedTerrains.userId, userId)))
+          .limit(1).for('share');
+        if (!terrain) return NextResponse.json({
+          success: false,
+          error: 'Asset not found or not assignable',
+        }, { status: 404 });
+      }
+      const assetAccessCondition = assetDefinition.policy === 'ownerOrActivePublic'
+        ? or(
+            eq(assetDefinition.userIdColumn, userId),
+            and(
+              eq(assetDefinition.isPublicColumn, true),
+              eq(assetDefinition.isActiveColumn, true)
+            )
+          )
+        : eq(assetDefinition.userIdColumn, userId);
+
+      const [assignableAsset] = await connection
+        .select({ id: assetDefinition.idColumn })
+        .from(assetDefinition.table)
+        .where(
           and(
-            eq(assetDefinition.isPublicColumn, true),
-            eq(assetDefinition.isActiveColumn, true)
+            eq(assetDefinition.idColumn, parsedAssetId),
+            assetAccessCondition
           )
         )
-      : eq(assetDefinition.userIdColumn, userId);
+        .limit(1);
 
-    const [assignableAsset] = await db
-      .select({ id: assetDefinition.idColumn })
-      .from(assetDefinition.table)
-      .where(
-        and(
-          eq(assetDefinition.idColumn, parsedAssetId),
-          assetAccessCondition
+      if (!assignableAsset) {
+        return NextResponse.json(
+          { success: false, error: 'Asset not found or not assignable' },
+          { status: 404 }
+        );
+      }
+
+      // Check both active and inactive rows. The database unique index does not
+      // include isActive, so a previously removed assignment must be reactivated.
+      const [existing] = await connection
+        .select()
+        .from(projectAssets)
+        .where(
+          and(
+            eq(projectAssets.projectId, parsedProjectId),
+            eq(projectAssets.moduleId, parsedModuleId),
+            eq(projectAssets.assetType, assetType as any),
+            eq(projectAssets.assetId, parsedAssetId),
+            eq(projectAssets.userId, userId)
+          )
         )
-      )
-      .limit(1);
+        .limit(1);
 
-    if (!assignableAsset) {
-      return NextResponse.json(
-        { success: false, error: 'Asset not found or not assignable' },
-        { status: 404 }
-      );
-    }
+      if (existing?.isActive) {
+        return NextResponse.json(
+          { success: false, error: 'Asset already added to this module' },
+          { status: 409 }
+        );
+      }
 
-    // Check both active and inactive rows. The database unique index does not
-    // include isActive, so a previously removed assignment must be reactivated.
-    const [existing] = await db
-      .select()
-      .from(projectAssets)
-      .where(
-        and(
-          eq(projectAssets.projectId, parsedProjectId),
-          eq(projectAssets.moduleId, parsedModuleId),
-          eq(projectAssets.assetType, assetType as any),
-          eq(projectAssets.assetId, parsedAssetId),
-          eq(projectAssets.userId, userId)
-        )
-      )
-      .limit(1);
+      if (existing) {
+        const [reactivatedAsset] = await connection
+          .update(projectAssets)
+          .set({
+            moduleType,
+            config: config || {},
+            isActive: true,
+            updatedAt: new Date(),
+          })
+          .where(eq(projectAssets.id, existing.id))
+          .returning();
 
-    if (existing?.isActive) {
-      return NextResponse.json(
-        { success: false, error: 'Asset already added to this module' },
-        { status: 409 }
-      );
-    }
+        return NextResponse.json({
+          success: true,
+          data: reactivatedAsset,
+          message: 'Asset added to module successfully'
+        });
+      }
 
-    if (existing) {
-      const [reactivatedAsset] = await db
-        .update(projectAssets)
-        .set({
-          moduleType,
+      // ✅ Create the assignment
+      await ensureTableSequence('project_assets');
+
+      const [newAsset] = await connection
+        .insert(projectAssets)
+        .values({
+          userId,
+          projectId: parsedProjectId,
+          moduleId: parsedModuleId,
+          moduleType: moduleType,
+          assetType: assetType as any,
+          assetId: parsedAssetId,
           config: config || {},
           isActive: true,
-          updatedAt: new Date(),
         })
-        .where(eq(projectAssets.id, existing.id))
         .returning();
+
+      console.log('✅ Asset assigned:', newAsset);
 
       return NextResponse.json({
         success: true,
-        data: reactivatedAsset,
+        data: newAsset,
         message: 'Asset added to module successfully'
       });
     }
 
-    // ✅ Create the assignment
-    await ensureTableSequence('project_assets');
-
-    const [newAsset] = await db
-      .insert(projectAssets)
-      .values({
-        userId,
-        projectId: parsedProjectId,
-        moduleId: parsedModuleId,
-        moduleType: moduleType,
-        assetType: assetType as any,
-        assetId: parsedAssetId,
-        config: config || {},
-        isActive: true,
-      })
-      .returning();
-
-    console.log('✅ Asset assigned:', newAsset);
-
-    return NextResponse.json({ 
-      success: true, 
-      data: newAsset,
-      message: 'Asset added to module successfully'
-    });
+    return assetType === 'threed_terrains'
+      ? await db.transaction(tx => assignAsset(tx))
+      : await assignAsset(db);
   } catch (error) {
     console.error('Error adding asset:', error);
     return NextResponse.json(
