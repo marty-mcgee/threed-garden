@@ -1,16 +1,69 @@
 'use client';
 
-import { useEffect, useMemo, useRef, type Dispatch, type SetStateAction } from 'react';
+import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { Grid, Line, OrbitControls } from '@react-three/drei';
-import type { ThreeEvent } from '@react-three/fiber';
-import { Eye, Mountain, Pickaxe, PenLine, Redo2, Ruler, Save, Undo2 } from 'lucide-react';
+import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
+import { Eye, Grid2X2, Mountain, Pickaxe, PenLine, Redo2, Ruler, Save, Undo2 } from 'lucide-react';
 import * as THREE from 'three';
+import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { SafeCanvas } from '@/components/threed/shared/SafeCanvas';
 import { Button } from '@/components/ui/button';
 import { buildTerrainGeometry } from '@/components/map/presentation/ProjectTerrainGround';
-import { terrainHeightAt, type TerrainDefinition } from '@/libraries/services/threed/terrains/terrain-core';
+import { terrainHeightAt, type TerrainDefinition, type TerrainPreviewCamera } from '@/libraries/services/threed/terrains/terrain-core';
+
+export function updateTerrainPreviewClipping(camera: THREE.PerspectiveCamera | THREE.OrthographicCamera, radius: number) {
+  const far = Math.max(1000, Math.ceil((camera.position.length() + radius * 2) / 100) * 100);
+  if (camera.far !== far) {
+    camera.far = far;
+    camera.updateProjectionMatrix();
+  }
+}
+
+function TerrainPreviewClipping({ radius }: { radius: number }) {
+  const camera = useThree(state => state.camera);
+  useFrame(() => updateTerrainPreviewClipping(camera, radius));
+  return null;
+}
+
+function TerrainCameraControls({ restoredCamera, onCameraChange, enabled, extent, verticalExtent, peak }: {
+  restoredCamera?: TerrainPreviewCamera;
+  onCameraChange?: (view: TerrainPreviewCamera) => void;
+  enabled: boolean;
+  extent: number;
+  verticalExtent: number;
+  peak: number;
+}) {
+  const camera = useThree(state => state.camera);
+  const controls = useRef<OrbitControlsImpl>(null);
+  const tracking = useRef(false);
+  useEffect(() => {
+    tracking.current = false;
+    if (!restoredCamera || !controls.current || !(camera instanceof THREE.PerspectiveCamera)) return;
+    camera.position.fromArray(restoredCamera.position);
+    camera.zoom = restoredCamera.zoom;
+    camera.fov = restoredCamera.fov;
+    camera.updateProjectionMatrix();
+    controls.current.target.fromArray(restoredCamera.target);
+    controls.current.update();
+  }, [camera, restoredCamera]);
+  return <OrbitControls ref={controls} makeDefault enabled={enabled}
+    minDistance={Math.max(1, extent * 0.15)} maxDistance={Math.max(extent * 4, verticalExtent * 4)}
+    target={restoredCamera?.target ?? [0, peak * 0.2, 0]}
+    onStart={() => { tracking.current = true; }}
+    onChange={() => {
+      if (!tracking.current || !controls.current || !(camera instanceof THREE.PerspectiveCamera)) return;
+      onCameraChange?.({
+        position: camera.position.toArray(),
+        target: controls.current.target.toArray(),
+        zoom: camera.zoom,
+        fov: camera.fov,
+      });
+    }} />;
+}
 
 interface Props {
+  restoredCamera?: TerrainPreviewCamera;
+  onCameraChange?: (view: TerrainPreviewCamera) => void;
   definition: TerrainDefinition;
   fillArea?: boolean;
   brushMode: 'inspect' | 'raise' | 'lower' | 'straight' | 'freeform';
@@ -127,7 +180,7 @@ function TerrainSurface({ definition, fillArea, brushMode, onSculpt, drawnPath, 
   const handleRadius = Math.max(0.16, Math.min(0.65, Math.max(definition.widthM, definition.lengthM) * 0.008));
   return <>
     <mesh geometry={geometry.mesh} onPointerDown={paint} onPointerMove={continueDrawing} onPointerUp={stopDrawing} onPointerCancel={stopDrawing}>
-      <meshStandardMaterial color={definition.appearance.color} side={THREE.DoubleSide} roughness={0.9} />
+      <meshStandardMaterial key={definition.appearance.elevationColors ? 'bands' : 'solid'} vertexColors={Boolean(definition.appearance.elevationColors)} color={definition.appearance.elevationColors ? '#ffffff' : definition.appearance.color} side={THREE.DoubleSide} roughness={0.9} />
     </mesh>
     {drawnPath.length > 1 && <Line points={linePoints(drawnPath, fillArea)} color="#facc15" lineWidth={3} raycast={() => null} />}
     {definition.appearance.authoring?.operations.map(operation => {
@@ -160,7 +213,8 @@ function TerrainSurface({ definition, fillArea, brushMode, onSculpt, drawnPath, 
   </>;
 }
 
-export function TerrainCanvas({ definition, fillArea, brushMode, onBrushModeChange, onSculpt, drawnPath, onDrawnPathChange, selectedDrawingId, onDrawingStart, onSelectDrawing, onMoveDrawingPoint, onUndo, undoDisabled, onRedo, redoDisabled, onSave, saveDisabled, disabled }: Props) {
+export function TerrainCanvas({ restoredCamera, onCameraChange, definition, fillArea, brushMode, onBrushModeChange, onSculpt, drawnPath, onDrawnPathChange, selectedDrawingId, onDrawingStart, onSelectDrawing, onMoveDrawingPoint, onUndo, undoDisabled, onRedo, redoDisabled, onSave, saveDisabled, disabled }: Props) {
+  const [showGrid, setShowGrid] = useState(false);
   const extent = Math.max(definition.widthM, definition.lengthM);
   let peak = 0;
   let lowest = 0;
@@ -168,14 +222,16 @@ export function TerrainCanvas({ definition, fillArea, brushMode, onBrushModeChan
     peak = Math.max(peak, height);
     lowest = Math.min(lowest, height);
   }
+  const verticalExtent = Math.max(Math.abs(lowest), peak);
   const gridY = lowest - 0.1;
-  return <div className="relative h-full min-h-72 w-full overflow-hidden rounded-lg border bg-[#08182a]" aria-label="3D Terrain editor">
-    <SafeCanvas camera={{ position: [extent * 0.75, Math.max(extent * 0.55, peak * 2 + 8), extent * 0.75], fov: 48, near: 0.1, far: Math.max(1000, extent * 8) }}>
+  return <div className="relative h-full min-h-0 w-full overflow-hidden rounded-lg border bg-[#08182a]" aria-label="3D Terrain editor">
+    <SafeCanvas camera={{ position: [extent * 0.75, Math.max(extent * 0.55, peak * 2 + 8), extent * 0.75], fov: 48, near: 0.1, far: Math.max(1000, extent * 8, verticalExtent * 8) }}>
+      <TerrainPreviewClipping radius={Math.hypot(extent * 0.75, extent * 0.75, verticalExtent + 0.1)} />
       <ambientLight intensity={1.5} />
       <directionalLight position={[extent * 0.4, extent, extent * 0.3]} intensity={2} />
-      <Grid position={[0, gridY, 0]} args={[extent * 1.5, extent * 1.5]} sectionColor="#2b859f" cellColor="#315263" fadeDistance={extent * 3} />
+      {showGrid && <Grid position={[0, gridY, 0]} args={[extent * 1.5, extent * 1.5]} sectionColor="#2b859f" cellColor="#315263" fadeDistance={extent * 3} />}
       <TerrainSurface fillArea={fillArea} definition={definition} brushMode={brushMode} onBrushModeChange={onBrushModeChange} onSculpt={onSculpt} drawnPath={drawnPath} onDrawnPathChange={onDrawnPathChange} selectedDrawingId={selectedDrawingId} onDrawingStart={onDrawingStart} onSelectDrawing={onSelectDrawing} onMoveDrawingPoint={onMoveDrawingPoint} disabled={disabled} />
-      <OrbitControls makeDefault enabled={brushMode === 'inspect'} minDistance={Math.max(1, extent * 0.15)} maxDistance={extent * 4} target={[0, peak * 0.2, 0]} />
+      <TerrainCameraControls restoredCamera={restoredCamera} onCameraChange={onCameraChange} enabled={brushMode === 'inspect' && !disabled} extent={extent} verticalExtent={verticalExtent} peak={peak} />
     </SafeCanvas>
     <div role="toolbar" aria-label="Terrain canvas tools" className="absolute right-2 top-2 z-10 flex max-w-[calc(100%-1rem)] flex-wrap items-center justify-end gap-1 rounded-md border border-white/15 bg-slate-900/85 p-1 text-slate-100 shadow-md backdrop-blur-md" onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()}>
       <Button type="button" size="sm" variant={brushMode === 'inspect' ? 'secondary' : 'ghost'} className={brushMode === 'inspect' ? 'bg-slate-800/80 text-slate-100 hover:bg-slate-700/80 hover:text-slate-100' : 'text-slate-100 hover:bg-slate-800/60 hover:text-slate-100'} aria-pressed={brushMode === 'inspect'} disabled={disabled} onClick={() => onBrushModeChange('inspect')}><Eye className="size-3.5" />Inspect</Button>
@@ -183,6 +239,7 @@ export function TerrainCanvas({ definition, fillArea, brushMode, onBrushModeChan
       <Button type="button" size="sm" variant={brushMode === 'lower' ? 'secondary' : 'ghost'} className={brushMode === 'lower' ? 'bg-slate-800/80 text-slate-100 hover:bg-slate-700/80 hover:text-slate-100' : 'text-slate-100 hover:bg-slate-800/60 hover:text-slate-100'} aria-pressed={brushMode === 'lower'} disabled={disabled} onClick={() => onBrushModeChange('lower')}><Pickaxe className="size-3.5" />Lower</Button>
       <Button type="button" size="sm" variant={brushMode === 'straight' ? 'secondary' : 'ghost'} className={brushMode === 'straight' ? 'bg-slate-800/80 text-slate-100 hover:bg-slate-700/80 hover:text-slate-100' : 'text-slate-100 hover:bg-slate-800/60 hover:text-slate-100'} aria-pressed={brushMode === 'straight'} disabled={disabled} onClick={() => onBrushModeChange('straight')}><Ruler className="size-3.5" />Straight</Button>
       <Button type="button" size="sm" variant={brushMode === 'freeform' ? 'secondary' : 'ghost'} className={brushMode === 'freeform' ? 'bg-slate-800/80 text-slate-100 hover:bg-slate-700/80 hover:text-slate-100' : 'text-slate-100 hover:bg-slate-800/60 hover:text-slate-100'} aria-pressed={brushMode === 'freeform'} disabled={disabled} onClick={() => onBrushModeChange('freeform')}><PenLine className="size-3.5" />Freeform</Button>
+      <Button type="button" size="icon-sm" variant={showGrid ? 'secondary' : 'ghost'} className="text-slate-100 hover:bg-slate-800/60 hover:text-slate-100" aria-label="Show grid" title="Show grid" aria-pressed={showGrid} onClick={() => setShowGrid(value => !value)}><Grid2X2 className="size-4" /></Button>
       <Button type="button" size="icon-sm" variant="ghost" className="text-slate-100 hover:bg-slate-800/60 hover:text-slate-100" aria-label="Undo" title="Undo" disabled={undoDisabled} onClick={onUndo}><Undo2 className="size-4" /></Button>
       <Button type="button" size="icon-sm" variant="ghost" className="text-slate-100 hover:bg-slate-800/60 hover:text-slate-100" aria-label="Redo" title="Redo" disabled={redoDisabled} onClick={onRedo}><Redo2 className="size-4" /></Button>
       <Button type="button" size="icon-sm" variant="ghost" className="border border-emerald-500/50 text-emerald-600 hover:bg-slate-800/60 hover:text-emerald-500 dark:text-emerald-400" aria-label="Save Changes" title="Save Changes" disabled={saveDisabled} onClick={onSave}><Save className="size-4" /></Button>

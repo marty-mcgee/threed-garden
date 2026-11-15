@@ -3,6 +3,7 @@
 import { useEffect, useMemo } from 'react';
 import { TrimeshCollider, RigidBody } from '@react-three/rapier';
 import * as THREE from 'three';
+import { terrainElevationColor } from '@/libraries/services/threed/terrains/terrain-core';
 import type { ProjectTerrainSurface } from '@/libraries/services/threed/terrains/terrain-core';
 
 interface Props {
@@ -48,6 +49,15 @@ export function buildTerrainGeometry(surface: ProjectTerrainSurface, metersPerSc
     const mesh = new THREE.BufferGeometry();
     mesh.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
     mesh.setIndex(new THREE.BufferAttribute(indices, 1));
+    if (definition.appearance.elevationColors) {
+      const colors = new Float32Array(vertices.length);
+      const color = new THREE.Color();
+      definition.heightsM.forEach((height, index) => {
+        color.set(terrainElevationColor(definition.appearance.elevationColors!, height, definition.appearance.color));
+        color.toArray(colors, index * 3);
+      });
+      mesh.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    }
     mesh.computeVertexNormals();
     return { mesh, vertices, indices };
 }
@@ -125,7 +135,7 @@ export function ProjectTerrainGround({ surface, metersPerSceneUnit, groundSize, 
         event.stopPropagation();
         onClick({ x: event.point.x, y: event.point.y, z: event.point.z });
       }}>
-      <meshStandardMaterial color={surface.definition.appearance.color} roughness={0.92} side={THREE.DoubleSide} />
+      <meshStandardMaterial key={surface.definition.appearance.elevationColors ? 'bands' : 'solid'} vertexColors={Boolean(surface.definition.appearance.elevationColors)} color={surface.definition.appearance.elevationColors ? '#ffffff' : surface.definition.appearance.color} roughness={0.92} side={THREE.DoubleSide} />
     </mesh>
     <mesh geometry={outside.mesh} receiveShadow
       onPointerMove={event => onHover?.({ x: event.point.x, y: 0, z: event.point.z })}
