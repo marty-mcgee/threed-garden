@@ -7,7 +7,6 @@ import { LearnGuideLibrary } from '@/components/learn/LearnGuideLibrary';
 import { LearnGuideIllustration } from '@/components/learn/LearnGuideIllustration';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 
 export const metadata = {
   description: 'Learn ThreeD App: create Projects, draw designs, prepare Models, explore Multimedia and manage your workspace.',
@@ -16,7 +15,7 @@ export const metadata = {
 const documentationRoot = 'https://github.com/marty-mcgee/threed-garden/blob/main/docs/';
 const guideTopics = [
   {
-    href: '#first-project',
+    href: '/learn/first-project',
     label: 'Start your first Project',
     detail: 'Follow the setup and Save steps',
     Icon: Rocket,
@@ -53,9 +52,9 @@ export default function LearnPage() {
           <p className="mx-auto mb-8 max-w-md text-base text-muted-foreground lg:mx-0">Start small: open a Project, make one change, and check that you can reopen it.</p>
           <div className="flex flex-wrap justify-center gap-3 lg:justify-start">
             <Button asChild variant="success" size="lg" className={actionClassName}><a href="#how-to"><BookOpen aria-hidden="true" />Browse guides<ArrowRight aria-hidden="true" /></a></Button>
-            <Button asChild variant="outline" size="lg" className={actionClassName}><a href="#first-project"><Rocket aria-hidden="true" />Start your first Project</a></Button>
+            <Button asChild variant="outline" size="lg" className={actionClassName}><a href="/learn/first-project"><Rocket aria-hidden="true" />Start your first Project</a></Button>
           </div>
-          <Button asChild variant="link" className="mt-3 h-auto min-h-11 max-w-full whitespace-normal text-base"><Link href={APP_DEMO_HREF}>Just exploring? Try the garden demo<ArrowRight aria-hidden="true" /></Link></Button>
+          <Button asChild variant="link" className="mt-3 h-auto min-h-11 max-w-full whitespace-normal text-base"><Link href={APP_DEMO_HREF}>Just exploring? Explore the Garden Project<ArrowRight aria-hidden="true" /></Link></Button>
         </div>
         <LearnPreview />
       </div>
@@ -69,22 +68,7 @@ export default function LearnPage() {
           <Button key={href} asChild variant="outline" className="group h-auto min-h-32 min-w-0 justify-start gap-3 whitespace-normal rounded-2xl border-emerald-600/25 bg-emerald-500/5 p-4 text-left hover:border-emerald-500/60 hover:bg-emerald-500/10"><a href={href}><span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"><Icon aria-hidden="true" className="size-5" /></span><span className="min-w-0 flex-1"><span className="block text-base font-semibold">{label}</span><span className="mt-1 block text-sm font-normal text-muted-foreground">{detail}</span></span><ArrowRight aria-hidden="true" className="size-4 text-muted-foreground group-hover:text-foreground" /></a></Button>)}
       </nav>
     </section>
-    <Card id="first-project" className="threed-workspace-panel threed-presentation-surface threed-presentation-featured mx-auto max-w-5xl scroll-mt-24 gap-0 rounded-2xl shadow-sm"><CardContent className="space-y-5 p-6 sm:p-10"><h2 className="flex items-center gap-2 text-2xl font-semibold"><Rocket aria-hidden="true" className="size-4 text-emerald-600 dark:text-emerald-400" />Your first Project</h2>
-      <LearnGuideIllustration topic="first-project" />
-      <p>Public Projects are for exploring. To make and save changes, <Link className="underline" href="/auth/sign-in">sign in</Link> or <Link className="underline" href="/auth/sign-up">create an account</Link>, then create your own Project. New accounts can manage their own content.</p>
-      <ol className="list-decimal space-y-2 pl-5">
-        <li><Link className="underline" href="/dashboard/scene">Open the Project workspace</Link>. Use Select Project, then Create New Project. If a Project is already open, choose New Project from its menu. Select ThreeD Starter, enter a Project Name, then Create &amp; Open Project. Tools &gt; Project Tour helps with initial setup.</li>
-        <li>Choose 3D and practice dragging to orbit and scrolling to zoom. Choose Design to reveal the drawing plan below the Scene.</li>
-        <li>Choose Wall in the plan toolbar and click two points. Choose Select, click the wall and change Height in Properties. Expect the wall to update in both views.</li>
-        <li>Choose Save ThreeD Project from the Project menu or use the Save icon. Wait for confirmation; read any error before leaving.</li>
-        <li>Return to Dashboard and open that Project again. Choose Design, select the wall from Architecture in Project Assets and confirm the saved height. You should still be able to edit it.</li>
-      </ol>
-      <p className="text-sm text-muted-foreground">No account yet? <Link href={APP_DEMO_HREF} className="underline">Try the garden demo</Link> for orbit and zoom, or browse public Projects from Dashboard. The illustrative demo does not save or support drawing.</p>
-      <div className="flex flex-wrap gap-3">
-        <Button asChild variant="success" size="lg" className={actionClassName}><Link href="/dashboard/scene"><Rocket aria-hidden="true" />Open Project workspace<ArrowRight aria-hidden="true" /></Link></Button>
-        <Button asChild variant="outline" size="lg" className={actionClassName}><a href="#how-to"><BookOpen aria-hidden="true" />Choose a guide</a></Button>
-      </div>
-    </CardContent></Card>
+
     <section id="how-to" className="scroll-mt-24 space-y-6">
       <h2 className="flex items-center justify-center gap-2 pb-2 text-2xl font-semibold tracking-tight"><ListChecks aria-hidden="true" className="size-4 text-cyan-500" />How-to guides</h2>
       <LearnGuideLibrary />

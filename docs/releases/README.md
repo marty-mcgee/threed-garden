@@ -6,6 +6,8 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
+- [v0.34.2 - ThreeD Ground Map Fix and Learn Navigation (prepared; deployment pending)](v0.34.2.md)
+
 - [v0.34.1 - ThreeD Home Showcase and Project Images (prepared; deployment pending)](v0.34.1.md)
 
 - [v0.34.0 - ThreeD Home Improvements (Developer-confirmed production; Phase 2 continued in v0.34.1)](v0.34.0.md)

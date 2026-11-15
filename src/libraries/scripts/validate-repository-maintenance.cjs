@@ -40,7 +40,8 @@ const productImage = readme.search(/!\[[^\]]*\]\(docs\/images\/[^)]+\)/);
 const capabilities = readme.indexOf('## ✨ What can you create?');
 assert(productImage >= 0 && capabilities > productImage, 'Approved product image precedes capabilities');
 const homepage = fs.readFileSync('src/app/page.tsx', 'utf8');
-assert.match(homepage, /id=\{HOME_GARDEN_DEMO_ID\}/, 'Home uses the shared demo anchor identity');
+assert.match(homepage, /href=\{APP_DEMO_HREF\}/, 'Home uses the shared App demo destination');
+assert(fs.existsSync('src/app/learn/first-project/page.tsx'), 'First Project guide has its own App page');
 assert(fs.existsSync('src/app/learn/page.tsx'), 'Learn route exists');
 
 const workflow = fs.readFileSync('.github/workflows/validation.yml', 'utf8');

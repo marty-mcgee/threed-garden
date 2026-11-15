@@ -113,7 +113,7 @@ const tasks = {
 
   'threed-hidden-collision-mount': [node('validate-threed-hidden-collision-mount.cjs')],
   'threed-character-introduction': [node('validate-threed-character-introduction.cjs')],
-  'threed-ground-map': [ts('validate-threed-ground-map.mts')],
+  'threed-ground-map': [ts('validate-threed-ground-map.mts'), node('validate-ground-map-material.cjs')],
   'threed-bed-planting-bounds': [ts('validate-threed-bed-planting-bounds.mts')],
   'threed-runtime-markers': [['node', '--import', 'tsx', `${scripts}/validate-threed-runtime-markers.mts`]],
   'threed-overlay-layout': [node('validate-scene-selection.cjs'), node('validate-workspace-save-feedback.cjs'), node('validate-project-overlay-layout.cjs'), node('validate-project-presentation.cjs'), node('validate-scene-view-presets.cjs'), ['node', '--import', 'tsx', `${scripts}/validate-threed-project-settings.mts`]],

@@ -189,11 +189,12 @@ function GroundMapImagePlane({ asset, transform }: { asset: ProjectGroundMapAsse
   }, [gl, texture]);
   if (!texture) return <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
     <planeGeometry args={[transform.width, transform.length]} />
-    <meshStandardMaterial color="#527b38" roughness={0.9} />
+    <meshStandardMaterial key="ground-map-fallback" color="#527b38" roughness={0.9} />
   </mesh>;
   return <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
     <planeGeometry args={[transform.width, transform.length]} />
-    <meshStandardMaterial map={texture} transparent opacity={transform.opacity} roughness={0.95} metalness={0} />
+    {/* A loaded map needs a fresh shader after the untextured fallback. */}
+    <meshStandardMaterial key="ground-map-image" map={texture} transparent opacity={transform.opacity} roughness={0.95} metalness={0} />
   </mesh>;
 }
 

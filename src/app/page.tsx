@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { APP_DEMO_HREF, HOME_GARDEN_DEMO_ID } from '@/libraries/config/app-links';
+import { APP_DEMO_HREF } from '@/libraries/config/app-links';
 import { ArrowRight } from 'lucide-react';
 import { AppHeader } from '@/components/layout/AppHeader';
 import GardenHero from '@/components/home/GardenHero';
@@ -109,7 +109,7 @@ export default function HomePage() {
               </div>
               <p className="mt-4 text-sm leading-relaxed text-muted-foreground">No account needed for this illustrative garden preview. Creating and saving your own Projects requires sign-in.</p>
             </div>
-            <div id={HOME_GARDEN_DEMO_ID} tabIndex={-1} className="min-w-0 scroll-mt-20 rounded-3xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-500"><GardenHero /></div>
+            <div tabIndex={-1} className="min-w-0 scroll-mt-20 rounded-3xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-emerald-500"><GardenHero /></div>
           </div>
         </section>
         <section aria-labelledby="explore-title" className="mx-auto max-w-7xl px-6 py-12 sm:py-16">
