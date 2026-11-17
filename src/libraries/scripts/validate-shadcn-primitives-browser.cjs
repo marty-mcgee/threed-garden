@@ -22,6 +22,9 @@ import{Switch}from'./src/components/ui/switch';import{Slider}from'./src/componen
 import{ModelFieldHelp}from'./src/components/admin/threed/models/ModelFieldHelp';
 window.__errors=[];window.addEventListener('error',e=>window.__errors.push(e.message));
 function Fixture(){const[draft,setDraft]=React.useState('kept'),[actions,setActions]=React.useState(0),[on,setOn]=React.useState(false),[choice,setChoice]=React.useState('alpha'),[slide,setSlide]=React.useState([2]);window.__ready=true;
+const [guardMode, setGuardMode] = React.useState('busy');
+const [retainedTab, setRetainedTab] = React.useState('details');
+const preventDismiss = event => { if (guardMode !== 'idle') event.preventDefault(); };
 return <main className="p-4 text-foreground"><Card className="threed-workspace-panel max-w-xl"><CardContent className="space-y-4 pt-4">
 <div className="flex items-center gap-2"><h2 className="text-sm font-semibold">Example</h2><ModelFieldHelp label="Example">Existing App help, keyboard and focus behavior.</ModelFieldHelp></div>
 <div className="flex flex-wrap gap-2"><Button variant="success" onClick={()=>setActions(v=>v+1)}>Enabled</Button><Button disabled onClick={()=>setActions(v=>v+1)}>Disabled</Button>
@@ -32,6 +35,21 @@ return <main className="p-4 text-foreground"><Card className="threed-workspace-p
 <Tabs defaultValue="one"><TabsList><TabsTrigger value="one">One</TabsTrigger><TabsTrigger value="two">Two</TabsTrigger></TabsList><TabsContent value="one"><Label htmlFor="draft">Draft</Label><Input id="draft" aria-label="Draft" value={draft} onChange={e=>setDraft(e.target.value)}/></TabsContent><TabsContent value="two">Second panel</TabsContent></Tabs>
 <div className="flex items-center gap-2"><Switch aria-label="Toggle" checked={on} onCheckedChange={setOn}/><Label>Toggle</Label></div>
 <Slider aria-label="Amount" value={slide} onValueChange={setSlide} min={0} max={10}/><Textarea aria-label="Notes" defaultValue="Retained notes"/>
+<Dialog>
+  <DialogTrigger asChild><Button data-testid="guard-trigger">Guarded dialog</Button></DialogTrigger>
+  <DialogContent data-testid="guard-dialog" showCloseButton={false} onEscapeKeyDown={preventDismiss} onInteractOutside={preventDismiss}>
+    <DialogTitle>Protected draft</DialogTitle><DialogDescription>Busy and dirty dismissal guards.</DialogDescription>
+    <Input aria-label="Protected draft" defaultValue="unsaved" />
+    <Button data-testid="guard-dirty" onClick={() => setGuardMode('dirty')}>Dirty</Button>
+    <Button data-testid="guard-idle" onClick={() => setGuardMode('idle')}>Allow dismissal</Button>
+    <span data-testid="guard-mode">{guardMode}</span>
+  </DialogContent>
+</Dialog>
+<Tabs value={retainedTab} onValueChange={setRetainedTab}>
+  <TabsList><TabsTrigger data-testid="retained-details" value="details">Details</TabsTrigger><TabsTrigger data-testid="retained-files" value="files">Files</TabsTrigger></TabsList>
+  <TabsContent value="details" forceMount hidden={retainedTab !== 'details'} className="data-[state=inactive]:hidden"><Input data-testid="retained-draft" defaultValue="local draft" /></TabsContent>
+  <TabsContent value="files" forceMount hidden={retainedTab !== 'files'} className="data-[state=inactive]:hidden">Retained Files</TabsContent>
+</Tabs>
 <p data-testid="actions" className="text-xs">Actions: {actions}</p></CardContent></Card></main>}
 createRoot(document.getElementById('root')).render(<Fixture/>);`;
   const bundle = (await require('esbuild').build({ stdin: { contents: source, resolveDir: root, loader: 'tsx' }, bundle: true, write: false, format: 'iife', platform: 'browser', define: { 'process.env.NODE_ENV': '"production"' }, logLevel: 'silent' })).outputFiles[0].text;
@@ -76,13 +94,43 @@ createRoot(document.getElementById('root')).render(<Fixture/>);`;
       await evaluate('document.querySelector(".threed-field-help").focus({preventScroll:true})'); await delay(300);
       if (await evaluate('document.querySelector(".threed-field-help").getAttribute("data-state")') === 'closed') { await call('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 }); await call('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 }); await delay(150); }
       assert.match(await evaluate('document.querySelector("[role=tooltip]")?.textContent || ""'), /Existing App help/); await key('Escape'); await delay(150);
+      await click('[data-testid="guard-trigger"]');
+      await key('Escape');
+      assert(await evaluate('!!document.querySelector("[data-testid=guard-dialog]")'), 'Busy dialog prevents Escape dismissal');
+      await click('[data-testid="guard-dirty"]');
+      await key('Escape');
+      assert(await evaluate('!!document.querySelector("[data-testid=guard-dialog]")'), 'Dirty dialog prevents Escape dismissal');
+      for (const type of ['mousePressed', 'mouseReleased']) {
+        await call('Input.dispatchMouseEvent', {
+          type,
+          x: 4,
+          y: 4,
+          button: 'left',
+          buttons: type === 'mousePressed' ? 1 : 0,
+          clickCount: 1,
+        });
+      }
+      await delay(150);
+      assert.equal(await evaluate('document.querySelector("[data-testid=guard-dialog] input")?.value'), 'unsaved', 'Outside click retains the dirty dialog and draft');
+      await click('[data-testid="guard-idle"]');
+      await key('Escape');
+      await delay(150);
+      assert(!await evaluate('document.querySelector("[data-testid=guard-dialog]")'), 'Latest idle handler allows dismissal');
+      assert.equal(await evaluate('document.activeElement?.dataset.testid'), 'guard-trigger', 'Guarded dialog restores trigger focus');
+      await click('[data-testid="retained-draft"]');
+      await call('Input.insertText', { text: ' changed' });
+      await evaluate('window.__retainedInput = document.querySelector("[data-testid=retained-draft]"); window.__retainedValue = window.__retainedInput.value');
+      await click('[data-testid="retained-files"]');
+      assert(await evaluate('window.__retainedInput.isConnected && window.__retainedInput.closest("[role=tabpanel]").hidden'), 'Inactive Details stays mounted and hidden');
+      await click('[data-testid="retained-details"]');
+      assert(await evaluate('document.querySelector("[data-testid=retained-draft]") === window.__retainedInput && window.__retainedInput.value === window.__retainedValue && !window.__retainedInput.closest("[role=tabpanel]").hidden'), 'Returning to Details retains the same input and unsaved value');
       assert(!await evaluate('document.documentElement.scrollWidth>innerWidth'), 'No page overflow'); assert.deepEqual(await evaluate('window.__errors'), []);
       await evaluate('document.activeElement?.blur();window.scrollTo(0,0)'); await delay(200);
       const capture = await call('Page.captureScreenshot', { format: 'png' }); fs.writeFileSync(path.join(temp, `${theme}-${width}.png`), Buffer.from(capture.data, 'base64'));
-      console.log(`PASS native primitives ${theme}/${width}: dialog/focus, menus, select, tabs/draft, switch, slider, help, disabled controls`);
+      console.log(`PASS native primitives ${theme}/${width}: dialog/focus/busy-dirty guards, menus, select, tabs/draft/forceMount, switch, slider, help, disabled controls`);
     }
     console.log('Artifacts: ' + temp);
   } finally { await send('Browser.close').catch(() => {}); child.kill(); }
 }
-const timeout = setTimeout(() => { console.error('Native UI timeout: ' + temp); child?.kill(); process.exit(1); }, 60000);
+const timeout = setTimeout(() => { console.error('Native UI timeout: ' + temp); child?.kill(); process.exit(1); }, 120000);
 main().catch(error => { console.error(error); process.exitCode = 1; }).finally(() => clearTimeout(timeout));

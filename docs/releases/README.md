@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.34.4 - ThreeD Terrain Precision (prepared; deployment pending)](v0.34.4.md)
+- [v0.35.0 - ThreeD App Updates and Project Menus (prepared; deployment pending)](v0.35.0.md)
+
+- [v0.34.4 - ThreeD Terrain Precision (Developer-confirmed production)](v0.34.4.md)
 
 - [v0.34.3 - ThreeD Terrain Colors and Thresholds (Developer-confirmed production)](v0.34.3.md)
 

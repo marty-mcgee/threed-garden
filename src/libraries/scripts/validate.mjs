@@ -30,6 +30,7 @@ const tasks = {
   'threed-multimedia': [node('validate-threed-multimedia.cjs')],
   'threed-multimedia-browser': [node('validate-threed-multimedia-browser.cjs')],
   'threed-project-presentation-browser': [node('validate-project-presentation-browser.cjs')],
+  'project-header-browser': [node('validate-project-header-browser.cjs')],
   'threed-mobile-panels-browser': [node('validate-mobile-project-panels-browser.cjs')],
   'threed-assembly-browser': [node('validate-assembly-workspace-browser.cjs')],
   'learn-data-structure': [
@@ -80,7 +81,12 @@ const tasks = {
   'shadcn-ui-boundary': [node('validate-shadcn-ui-boundary.mjs')],
   'dashboard-project-discovery': [node('validate-dashboard-project-discovery.cjs')],
   'dashboard-scene-route': [ts('validate-dashboard-scene-route.mts')],
-  'signup': [node('validate-signup.cjs'),node('validate-signup-ui.cjs'),node('validate-signin-ui.cjs')],
+  'signup': [
+    node('validate-registration-pause.cjs'),
+    node('validate-signup.cjs'),
+    node('validate-signup-ui.cjs'),
+    node('validate-signin-ui.cjs'),
+  ],
   'users-admin': [node('validate-super-admin-bootstrap.cjs'),node('validate-user-roles.cjs'),node('validate-users-admin.cjs'),node('validate-users-admin-ui.cjs'),node('validate-user-access.cjs')],
   'module-appearance': [node('validate-module-appearance.cjs'),node('validate-module-appearance-ui.cjs')],
   'workspace-settings': [
@@ -347,6 +353,7 @@ const runnableTasks = Object.keys(tasks).filter((name) => !unavailableFixtures.i
   'shadcn-ui-browser',
   'threed-multimedia-browser',
   'threed-project-presentation-browser',
+  'project-header-browser',
   'threed-assembly-browser',
   'threed-mobile-panels-browser',
 ].includes(name));

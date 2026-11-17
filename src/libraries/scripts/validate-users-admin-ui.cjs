@@ -4,10 +4,16 @@ const element = (type, props) => ({ type, props });
 function load(file, modules, globals = {}) {
   const exports = {};
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX } }).outputText, {
-    exports, Error, require: key => key === '@/libraries/utils/input-validation' ? require('../utils/input-validation.ts') : key === '@/components/settings/SettingsSection' ? {SettingsSection:'settings-section'} : modules[key] ?? require(key), ...globals,
+    exports, Error, require: key => key === '@/libraries/auth/registration-policy' ? registrationPolicy : key === '@/libraries/utils/input-validation' ? require('../utils/input-validation.ts') : key === '@/components/settings/SettingsSection' ? {SettingsSection:'settings-section'} : modules[key] ?? require(key), ...globals,
   });
   return exports;
 }
+// Exercise retained creation contracts with the pause explicitly lifted in this fixture.
+const registrationPolicy = {
+  ...load('src/libraries/auth/registration-policy.ts', {}),
+  registrationEnabled: true,
+  assertRegistrationEnabled() {},
+};
 const contract = load('src/libraries/config/module-appearance.ts', {});
 function harness() {
   const slots = []; let index = 0, dirty = false, component, tree;
@@ -86,5 +92,9 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
  button(tree,'Create User').props.onClick();button(tree,'Create User').props.onClick();assert.equal(requests.length,1);request=requests.shift();assert.equal(request.init.method,'POST');assert.deepEqual(JSON.parse(request.init.body),{name:'New',email:'new@example.test',password:'password1'});
  request.resolve({ok:false,json:async()=>({error:'Email in use'})});await flush();tree=render();assert(text(tree).includes('Email in use'));assert.equal(find(tree,n=>n.props?.['aria-label']==='User name').props.value,'New');
  button(tree,'Create User').props.onClick();request=requests.shift();request.resolve({ok:true,json:async()=>({...row,id:'new'})});await flush();tree=render();assert.equal(find(tree,n=>n.props?.['aria-label']==='Initial password').props.value,'');button(tree,'Create User').props.onClick();assert.equal(requests.length,0);
+ registrationPolicy.registrationEnabled=false;tree=render();
+ assert(!button(tree,'Create User'));assert(!find(tree,n=>n.props?.['aria-label']==='Initial password'));assert(text(tree).includes(registrationPolicy.registrationPausedMessage));assert.equal(requests.length,0);
+ targetId=undefined;createNew=false;tree=render();assert(!find(tree,n=>n.props?.href==='/admin/users/new'));
+ console.log('PASS paused Admin creation hides form and Add User link; existing User editing/deletion checks retained.');
  console.log('PASS Users UI: profile/role drafts, create payload and duplicate guard, confirmed soft-delete failure/success, deleted read-only fields and account isolation (mock hooks/network).');
 })().catch(error=>{console.error(error);process.exitCode=1;});

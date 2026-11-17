@@ -1,5 +1,6 @@
 import type { Adapter } from 'next-auth/adapters';
 import { defaultAccountRole } from '@/libraries/config/user-roles';
+import { assertRegistrationEnabled } from '@/libraries/auth/registration-policy';
 
 // App-owned creation policy. Never accept a privileged role from provider input.
 export function withAccountDefaults(adapter: Adapter): Adapter {
@@ -12,6 +13,7 @@ export function withAccountDefaults(adapter: Adapter): Adapter {
       throw new Error('Use the Super Admin Users soft-delete action.');
     },
     createUser(data) {
+      assertRegistrationEnabled();
       const account = { ...data, role: defaultAccountRole, isActive: true, isDeleted: false };
       return createUser(account);
     },

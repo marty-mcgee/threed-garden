@@ -9,6 +9,7 @@ import { parseUserCreate, parseUserProfileUpdate, parseUserDelete } from './cont
 import { findUserContent } from './content';
 import bcrypt from 'bcryptjs';
 import { insertCredentialsAccount } from '@/libraries/auth/register';
+import { assertRegistrationEnabled } from '@/libraries/auth/registration-policy';
 
 export class UserAdminError extends Error {
   constructor(public status: number, message: string) { super(message); }
@@ -26,6 +27,7 @@ export async function lockUsersAdmin(tx: Transaction, actorId: string) {
   if (actor?.role !== 'super_admin' || actor.active !== true || actor.deleted !== false) throw new UserAdminError(403, 'An active Super Admin account is required.');
 }
 export async function createAdminUser(actorId: string, input: unknown) {
+  assertRegistrationEnabled();
   const data = parseUserCreate(input);
   await requireUsersAdmin(actorId);
   const password = await bcrypt.hash(data.password, 12);

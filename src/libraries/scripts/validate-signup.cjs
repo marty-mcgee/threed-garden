@@ -10,11 +10,17 @@ function load(file, modules, globals = {}) {
   const code = ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: {
     target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX,
   } }).outputText;
-  vm.runInNewContext(code, { exports, require: name => name === '@/libraries/utils/input-validation' ? require('../utils/input-validation.ts') : name in modules ? modules[name] : require(name), console, Request, Response, URL, ...globals });
+  vm.runInNewContext(code, { exports, require: name => name === '@/libraries/auth/registration-policy' ? registrationPolicy : name === '@/libraries/utils/input-validation' ? require('../utils/input-validation.ts') : name in modules ? modules[name] : require(name), console, Request, Response, URL, ...globals });
   return exports;
 }
 
 
+// Exercise retained creation contracts with the pause explicitly lifted in this fixture.
+const registrationPolicy = {
+  ...load('src/libraries/auth/registration-policy.ts', {}),
+  registrationEnabled: true,
+  assertRegistrationEnabled() {},
+};
 const contract=load('src/libraries/auth/signup-contract.ts',{}, {TextEncoder});
 const roles=load('src/libraries/config/user-roles.ts',{});
 const schema=load('src/libraries/schema/auth/index.ts',{});

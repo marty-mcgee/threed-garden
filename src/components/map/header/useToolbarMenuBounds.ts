@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 
 /** Bound custom toolbar menus without changing their action or focus owners. */
-export function useToolbarMenuBounds(open: boolean) {
+export function useToolbarMenuBounds(open: boolean, align: 'start' | 'end' = 'start') {
   const ref = useRef<HTMLDivElement>(null);
   const [style, setStyle] = useState<CSSProperties>();
 
@@ -20,10 +20,15 @@ export function useToolbarMenuBounds(open: boolean) {
       const anchor = trigger.getBoundingClientRect();
       const toolbar = trigger.closest('.threed-project-toolbar')?.getBoundingClientRect();
       const top = Math.min(bottom - 44, Math.max((viewport?.offsetTop ?? 0) + 8, toolbar?.bottom ?? anchor.bottom));
+      // Dashboard's backdrop filter creates a containing block for fixed elements.
+      // Convert viewport bounds into the menu's actual positioning parent's space.
+      const parent = menu.offsetParent instanceof HTMLElement ? menu.offsetParent : trigger;
+      const origin = parent.getBoundingClientRect();
+      const anchorLeft = align === 'end' ? anchor.right - menu.offsetWidth : anchor.left;
       setStyle({
-        position: 'fixed',
-        top,
-        left: Math.max(left, Math.min(anchor.left, right - menu.offsetWidth)),
+        position: 'absolute',
+        top: top - origin.top - parent.clientTop + parent.scrollTop,
+        left: Math.max(left, Math.min(anchorLeft, right - menu.offsetWidth)) - origin.left - parent.clientLeft + parent.scrollLeft,
         right: 'auto',
         marginTop: 0,
         maxWidth: Math.max(0, right - left),
@@ -52,7 +57,7 @@ export function useToolbarMenuBounds(open: boolean) {
       window.removeEventListener('resize', measure);
       viewportSubscribe(false);
     };
-  }, [open]);
+  }, [open, align]);
 
   return { ref, style };
 }

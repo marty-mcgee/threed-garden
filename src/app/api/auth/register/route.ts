@@ -1,6 +1,7 @@
 import { tryParseInput } from '@/libraries/utils/input-validation';
 import { parseSignupInput } from '@/libraries/auth/signup-contract';
 import { registerAccount, RegistrationConflict } from '@/libraries/auth/register';
+import { registrationEnabled, registrationPausedMessage, RegistrationPaused } from '@/libraries/auth/registration-policy';
 
 export const runtime = 'nodejs';
 const json = (body: unknown, status: number) => Response.json(body, {
@@ -8,6 +9,7 @@ const json = (body: unknown, status: number) => Response.json(body, {
 });
 
 export async function POST(request: Request) {
+  if (!registrationEnabled) return json({ error: registrationPausedMessage }, 403);
   if (request.headers.get('origin') !== new URL(request.url).origin) {
     return json({ error: 'Invalid request origin.' }, 403);
   }
@@ -29,6 +31,7 @@ export async function POST(request: Request) {
     await registerAccount(parsed.data);
     return json({ created: true }, 201);
   } catch (error) {
+    if (error instanceof RegistrationPaused) return json({ error: registrationPausedMessage }, 403);
     if (error instanceof SyntaxError) return json({ error: 'Invalid signup details.' }, 400);
     if (error instanceof RegistrationConflict) return json({ error: 'Unable to create this account. Try signing in or use another email.' }, 409);
     return json({ error: 'Account creation could not be completed. Please try again.' }, 503);

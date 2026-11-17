@@ -27,7 +27,7 @@ export function SceneLayersMenu({ availableLayers, activeLayers, allAvailableLay
           {allAvailableLayersVisible ? 'Hide All' : 'Show All'}
         </button>
       </div>
-      <div role="group" aria-label="Scene layers" className="max-h-28 overflow-y-auto overscroll-contain [scrollbar-width:thin]">{availableLayers.map((layer) => (
+      <div role="group" aria-label="Scene layers">{availableLayers.map((layer) => (
         <button
           key={layer}
           onClick={() => onToggleLayer(layer)}

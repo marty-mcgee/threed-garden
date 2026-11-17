@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import Link from 'next/link';
+import { registrationEnabled, registrationPausedMessage } from '@/libraries/auth/registration-policy';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -25,6 +26,7 @@ export default function SignUpPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!registrationEnabled) return;
     if (submitting.current || created) return;
     setError(null);
     setLoading(true);
@@ -78,6 +80,23 @@ export default function SignUpPage() {
       setLoading(false);
     }
   };
+
+  if (!registrationEnabled) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-muted/30 p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-2xl text-center">Sign Up Temporarily Unavailable</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p role="status" className="text-center text-sm text-muted-foreground">{registrationPausedMessage}</p>
+            <Button asChild className="w-full"><Link href="/auth/sign-in">Sign in</Link></Button>
+            <div className="text-center text-sm"><Link href="/" className="text-primary hover:underline">Return Home</Link></div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-muted/30 p-4">

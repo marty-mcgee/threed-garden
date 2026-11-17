@@ -4,10 +4,16 @@ const element = (type, props) => ({ type, props });
 function load(file, modules, globals = {}) {
   const exports = {};
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX } }).outputText, {
-    exports, Error, require: key => key === '@/libraries/utils/input-validation' ? require('../utils/input-validation.ts') : key === '@/components/settings/SettingsSection' ? {SettingsSection:'settings-section'} : modules[key] ?? require(key), ...globals,
+    exports, Error, require: key => key === '@/libraries/auth/registration-policy' ? registrationPolicy : key === '@/libraries/utils/input-validation' ? require('../utils/input-validation.ts') : key === '@/components/settings/SettingsSection' ? {SettingsSection:'settings-section'} : modules[key] ?? require(key), ...globals,
   });
   return exports;
 }
+// Exercise retained creation contracts with the pause explicitly lifted in this fixture.
+const registrationPolicy = {
+  ...load('src/libraries/auth/registration-policy.ts', {}),
+  registrationEnabled: true,
+  assertRegistrationEnabled() {},
+};
 const contract = load('src/libraries/config/module-appearance.ts', {});
 function harness() {
   const slots = []; let index = 0, dirty = false, component, tree;
@@ -55,5 +61,8 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
  await find(tree,n=>n.type==='form').props.onSubmit({preventDefault(){}});tree=render();
  assert.equal(posts.length,1);assert.equal(posts[0].url,'/api/auth/register');assert(!('role' in JSON.parse(posts[0].init.body)));assert.equal(signins.length,1);assert.equal(signins[0].email,'new@example.test');assert(!('action' in signins[0]));assert(!navigated);assert(text(tree).includes('account was created'));assert(find(tree,n=>n.type==='button').props.disabled);
  await find(tree,n=>n.type==='form').props.onSubmit({preventDefault(){}});assert.equal(posts.length,1);
+ registrationPolicy.registrationEnabled=false;tree=render();
+ assert(!find(tree,n=>n.type==='form'));assert(!find(tree,n=>n.type==='input'));assert(text(tree).includes(registrationPolicy.registrationPausedMessage));assert(find(tree,n=>n.type==='link'&&n.props.href==='/auth/sign-in'));assert.equal(posts.length,1);
+ console.log('PASS paused signup has message/sign-in link and no creation fields or requests.');
  console.log('PASS signup form: registration precedes sign-in, role-free payload, normalized email, login-failure recovery and duplicate-submit guard (mock network/hooks).');
 })().catch(error=>{console.error(error);process.exitCode=1});

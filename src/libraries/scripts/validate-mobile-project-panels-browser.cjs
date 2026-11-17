@@ -99,7 +99,7 @@ createRoot(document.getElementById('root')).render(<Fixture/>);`;
       console.log('PASS actual responsive panel layout at ' + width + 'px');
       for (const label of ['Add', 'A Project with']) {
         await evaluate(`Array.from(document.querySelectorAll('.threed-project-toolbar button')).find(b=>b.textContent.trim().startsWith(${JSON.stringify(label)})).click()`); await delay(80);
-        assert(await evaluate(`(()=>{const menu=Array.from(document.querySelectorAll('.threed-project-toolbar .threed-workspace-panel')).find(e=>getComputedStyle(e).position==='fixed');if(!menu)return false;const b=menu.getBoundingClientRect();return b.left>=7&&b.right<=innerWidth-7&&b.top>=0&&b.bottom<=innerHeight-7&&menu.scrollHeight>=menu.clientHeight})()`), 'Custom menu stays reachable at ' + width + ': ' + label);
+        assert(await evaluate(`(()=>{const menu=Array.from(document.querySelectorAll('.threed-project-toolbar .threed-workspace-panel')).find(e=>getComputedStyle(e).position==='absolute');if(!menu)return false;const b=menu.getBoundingClientRect();return b.left>=7&&b.right<=innerWidth-7&&b.top>=0&&b.bottom<=innerHeight-7&&menu.scrollHeight>=menu.clientHeight})()`), 'Custom menu stays reachable at ' + width + ': ' + label);
         if (label === 'Add') await evaluate(`Array.from(document.querySelectorAll('.threed-project-toolbar button')).find(b=>b.textContent.trim()==='Add').click()`);
         else { await call('Input.dispatchKeyEvent', {type:'keyDown',key:'Escape',code:'Escape'}); await evaluate(`Array.from(document.querySelectorAll('.threed-project-toolbar button')).find(b=>b.textContent.includes('A Project with')).click()`); }
       }

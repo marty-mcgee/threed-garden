@@ -1,6 +1,7 @@
 import { auth } from '@/libraries/auth';
 import { listAdminUsers, createAdminUser } from '@/libraries/services/users/admin';
 import { userResponse, userError, readUserRequest } from '@/libraries/services/users/http';
+import { assertRegistrationEnabled } from '@/libraries/auth/registration-policy';
 export const dynamic='force-dynamic';
 export async function GET(request:Request) {
  try {
@@ -13,6 +14,7 @@ export async function POST(request:Request) {
  try {
   const session=await auth();
   if(!session?.user?.id)return userResponse({error:'Sign in required.'},401);
+  assertRegistrationEnabled();
   return userResponse(await createAdminUser(session.user.id,await readUserRequest(request)),201);
  }catch(error){return userError(error);}
 }

@@ -12,6 +12,7 @@ import type { DesignDocument } from '@/libraries/services/threed/design/document
 import { PhysicsSensorsPanel } from './panels/PhysicsSensorsPanel';
 import { SceneViewPresetDialog } from './panels/SceneViewPresetDialog';
 import { SceneViewPresetsMenu } from './panels/SceneViewPresetsMenu';
+import { useToolbarMenuBounds } from './header/useToolbarMenuBounds';
 import { SceneLayersMenu } from './panels/SceneLayersMenu';
 import { SceneResourceFeedback } from './presentation/SceneResourceFeedback';
 import { HighResolutionEnvironmentBackground, ProceduralDaylightBackground, ShadowLight, InteractiveGround } from './presentation/SceneEnvironment';
@@ -2538,6 +2539,7 @@ export function ThreeDScene({
     && !resourcesPending;
   const sceneProductionStarted = productionSceneKey === presentationKey;
   const scenePostProduction = postProductionSceneKey === presentationKey;
+  const sceneMenuBounds = useToolbarMenuBounds(showControls && scenePostProduction, 'end');
   const scenePresentationPhase: ThreeDScenePresentationPhase = !sceneProductionStarted
     ? 'pre-production'
     : scenePostProduction
@@ -3507,7 +3509,7 @@ export function ThreeDScene({
         </Button>
 
         {showControls && scenePostProduction && (
-          <div className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[3000] mt-1 max-h-[min(32rem,calc(100dvh-8rem))] w-56 space-y-0.5 overflow-y-auto overscroll-contain rounded-lg border border-foreground/10 p-1.5 pb-2.5 shadow-xl backdrop-blur-sm [scrollbar-width:thin]">
+          <div ref={sceneMenuBounds.ref} style={sceneMenuBounds.style} className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[3000] mt-1 w-56 space-y-0.5 overflow-x-hidden overflow-y-auto overscroll-contain rounded-lg border border-foreground/10 p-1.5 pb-2.5 shadow-xl backdrop-blur-sm [scrollbar-width:thin]">
             <div className="text-[10px] text-foreground/60 px-2 py-0.5">Scene</div>
             <fieldset disabled={!canEditProject} className="min-w-0 border-0 p-0 disabled:opacity-60" title={!canEditProject ? "Only the Project owner can change these settings." : undefined}>
             <div className="border-b border-foreground/10 px-2 pb-2"><ProjectMeasurementUnits helpText="Display and input units only. Object sizes, calibration and physics stay unchanged. Retained by Save Project." value={measurementUnits} onChange={units => onMeasurementUnitsChange?.(units)} disabled={!onMeasurementUnitsChange} /></div>

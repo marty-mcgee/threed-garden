@@ -11,6 +11,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 import type { AdminUserRecord } from '@/libraries/services/users/contracts';
+import { registrationEnabled, registrationPausedMessage } from '@/libraries/auth/registration-policy';
 
 const selectStyle='h-7 min-w-0 rounded-md border border-input bg-background px-2 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring [@media(pointer:coarse)]:min-h-11';
 const actionStyle='h-7 gap-1.5 px-2 text-xs [@media(pointer:coarse)]:min-h-11';
@@ -71,6 +72,7 @@ export function UsersWorkspace({userId,createNew=false}:{userId?:string;createNe
   return()=>{window.removeEventListener('beforeunload',warn);document.removeEventListener('click',guard,true);};
  },[dirty,saving]);
  async function save(){
+  if(createNew&&!registrationEnabled)return;
   if(leaving.current||mutation.current||saving||!dirty||(!record&&!createNew)||record?.isDeleted)return;
   mutation.current=true;
   const generation=sequence.current;const currentOwner=owner;
@@ -106,14 +108,14 @@ export function UsersWorkspace({userId,createNew=false}:{userId?:string;createNe
     <Input aria-label="Search Users" className="h-7 w-full text-xs sm:w-60" placeholder="Search name or email..." value={search} maxLength={100} onChange={event=>{setSearch(event.target.value);setPage(1);}} />
     <select aria-label="Filter by role" className={selectStyle} value={filter} onChange={event=>{setFilter(event.target.value);setPage(1);}}><option value="all">All roles</option><option value="admin">Admin</option><option value="super_admin">Super Admin</option><option value="user">Legacy User</option></select>
     <select aria-label="Filter by account" className={selectStyle} value={accountFilter} onChange={event=>{setAccountFilter(event.target.value);setPage(1);}}><option value="current">Current Users</option><option value="deleted">Deleted Users</option><option value="all">All Users</option></select>
-    {!loading&&!error&&<Button asChild className={actionStyle} variant="success"><Link href="/admin/users/new"><Plus aria-hidden="true" className="h-3 w-3" />Add User</Link></Button>}
+    {registrationEnabled&&!loading&&!error&&<Button asChild className={actionStyle} variant="success"><Link href="/admin/users/new"><Plus aria-hidden="true" className="h-3 w-3" />Add User</Link></Button>}
     <Button className={actionStyle+' ml-auto'} variant="outline" disabled={loading} onClick={()=>setRefresh(value=>value+1)}><RefreshCw aria-hidden="true" className="h-3 w-3" />Refresh</Button>
    </>}
    {editing&&<Button className={actionStyle+' ml-auto'} variant="outline" asChild><Link href="/admin/users">All Users</Link></Button>}
   </AdminWorkspaceHeader>
   {error&&<p role="alert" className="rounded-md border border-destructive/20 bg-destructive/5 px-3 py-2 text-xs text-destructive">{error}</p>}
   {message&&<p role="status" className="text-xs text-emerald-600 dark:text-emerald-400">{message}</p>}
-  {editing?(loading?<p role="status" className="p-3 text-xs text-muted-foreground">Loading User...</p>:(record||createNew&&loadedKey===viewKey)&&<>
+  {createNew&&!registrationEnabled?<p role="status" className="rounded-md border border-border/60 bg-muted/10 p-3 text-sm text-muted-foreground">{registrationPausedMessage}</p>:editing?(loading?<p role="status" className="p-3 text-xs text-muted-foreground">Loading User...</p>:(record||createNew&&loadedKey===viewKey)&&<>
    <div className="min-h-0 flex-1 overflow-auto">
     <div className="grid items-start gap-3 md:grid-cols-2">
      <section className="admin-editor-panel space-y-3 rounded-md border border-border/60 bg-muted/10 p-3 text-xs">
