@@ -4,7 +4,7 @@ import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
 import { projectAssets } from '@/libraries/schema/project';
 import { projectTerrainPlacements, threedTerrainRevisions, threedTerrains } from '@/libraries/schema/threed';
-import { parseTerrainDefinition, TerrainInputError } from '@/libraries/services/threed/terrains/terrain-core';
+import { maxTerrainRequestBytes, parseTerrainDefinition, TerrainInputError } from '@/libraries/services/threed/terrains/terrain-core';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
   if (!session?.user?.id) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
   try {
     const text = await request.text();
-    if (Buffer.byteLength(text, 'utf8') > 300_000) throw new TerrainInputError('Terrain request is too large.');
+    if (Buffer.byteLength(text, 'utf8') > maxTerrainRequestBytes) throw new TerrainInputError('Terrain request is too large.');
     let input: Record<string, unknown>;
     try { input = JSON.parse(text); } catch { throw new TerrainInputError('Invalid Terrain JSON.'); }
     if (!input || typeof input !== 'object' || Array.isArray(input)) throw new TerrainInputError('Invalid Terrain request.');

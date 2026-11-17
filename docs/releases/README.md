@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.34.3 - ThreeD Terrain Colors and Thresholds (prepared; deployment pending)](v0.34.3.md)
+- [v0.34.4 - ThreeD Terrain Precision (prepared; deployment pending)](v0.34.4.md)
+
+- [v0.34.3 - ThreeD Terrain Colors and Thresholds (Developer-confirmed production)](v0.34.3.md)
 
 - [v0.34.2 - ThreeD Ground Map Fix and Learn Navigation (Developer-confirmed production)](v0.34.2.md)
 

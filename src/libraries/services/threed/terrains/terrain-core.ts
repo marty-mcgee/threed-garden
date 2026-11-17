@@ -7,7 +7,76 @@ export const terrainBandNames = [
   'Snow',
 ] as const;
 
+export const maxTerrainGridSize = 257;
+export const maxTerrainRequestBytes = 2_000_000;
+
+export interface TerrainStyle {
+  surface: 'mesh' | 'blocks';
+  resolution: number;
+  display: 'color' | 'height';
+  flatWater: boolean;
+  saturation: number;
+  depthColor: boolean;
+  lighting: 'standard' | 'warm';
+  background: string;
+}
+
+export const defaultTerrainStyle = (): TerrainStyle => ({
+  surface: 'mesh',
+  resolution: 150,
+  display: 'color',
+  flatWater: false,
+  saturation: 1,
+  depthColor: false,
+  lighting: 'standard',
+  background: '#08182a',
+});
+
+export interface TerrainNoiseRecipe {
+  version: 1;
+  seed: number;
+  heightM: number;
+  scale: number;
+  detail: number;
+  fuzziness: number;
+}
+
+export function parseTerrainNoiseRecipe(value: unknown): TerrainNoiseRecipe {
+  const input = object(value);
+  if (input.version !== 1 || Object.keys(input).some(key => !['version', 'seed', 'heightM', 'scale', 'detail', 'fuzziness'].includes(key))) throw new TerrainInputError('Invalid natural generation recipe.');
+  return {
+    version: 1,
+    seed: bounded(input.seed, 0, 1, 'noise Seed'),
+    heightM: bounded(input.heightM, 0, 500, 'noise Height'),
+    scale: bounded(input.scale, 0.01, 1, 'noise Scale'),
+    detail: bounded(input.detail, 0.01, 1, 'noise Detail'),
+    fuzziness: bounded(input.fuzziness, 0.01, 1, 'noise Fuzziness'),
+  };
+}
+
+export function parseTerrainStyle(value: unknown): TerrainStyle {
+  const input = object(value);
+  if (Object.keys(input).some(key => !Object.keys(defaultTerrainStyle()).includes(key))
+    || !['mesh', 'blocks'].includes(String(input.surface)) || !['color', 'height'].includes(String(input.display))
+    || !['standard', 'warm'].includes(String(input.lighting)) || typeof input.flatWater !== 'boolean'
+    || typeof input.depthColor !== 'boolean' || typeof input.background !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(input.background)) throw new TerrainInputError('Invalid Terrain display settings.');
+  const resolution = bounded(input.resolution, 20, 500, 'display resolution');
+  if (!Number.isInteger(resolution)) throw new TerrainInputError('Resolution must be a whole number.');
+  return {
+    surface: input.surface as TerrainStyle['surface'],
+    resolution,
+    display: input.display as TerrainStyle['display'],
+    flatWater: input.flatWater,
+    saturation: bounded(input.saturation, 0, 2, 'saturation'),
+    depthColor: input.depthColor,
+    lighting: input.lighting as TerrainStyle['lighting'],
+    background: input.background,
+  };
+}
+
 export interface TerrainElevationColors {
+  /** Retained for saved-revision compatibility; elevation palettes render as sharp height bands. */
+  rendering?: 'smooth' | 'bands';
   seaLevelM: number;
   waterColor: string;
   waterEnabled?: boolean;
@@ -18,6 +87,7 @@ export function defaultTerrainElevationColors(): TerrainElevationColors {
   return {
     seaLevelM: 0,
     waterColor: '#00a9ff',
+    rendering: 'bands',
     bands: [
       {
         fromM: 0,
@@ -48,22 +118,23 @@ export function defaultTerrainElevationColors(): TerrainElevationColors {
 }
 
 export function parseTerrainElevationColors(value: unknown): TerrainElevationColors {
-  const fail = (): never => { throw new Error('Terrain colors require six ordered thresholds from Shore (0 m) to Snow, valid hex colors, and a Sea Level between -1000 and 1000 m.'); };
+  const fail = (): never => { throw new Error('Terrain colors require six increasing thresholds from Shore to Snow between 0 and 2000 m above Sea Level. Shore width and Beach start share a positive boundary below Shrub from. Use valid hex colors and a Sea Level between -1000 and 1000 m.'); };
   if (!value || typeof value !== 'object' || Array.isArray(value)) return fail();
   const input = value as Record<string, unknown>;
   const color = (value: unknown): string => typeof value === 'string' && /^#[0-9a-fA-F]{6}$/.test(value) ? value : fail();
-  if (Object.keys(input).some(key => key !== 'seaLevelM' && key !== 'waterColor' && key !== 'waterEnabled' && key !== 'bands')
+  if (Object.keys(input).some(key => key !== 'seaLevelM' && key !== 'waterColor' && key !== 'waterEnabled' && key !== 'bands' && key !== 'rendering')
+    || (input.rendering !== undefined && input.rendering !== 'smooth' && input.rendering !== 'bands')
     || (input.waterEnabled !== undefined && typeof input.waterEnabled !== 'boolean')
     || typeof input.seaLevelM !== 'number' || !Number.isFinite(input.seaLevelM) || Math.abs(input.seaLevelM) > 1000
     || !Array.isArray(input.bands) || input.bands.length !== terrainBandNames.length) return fail();
   let previous = -1;
-  const bands = input.bands.map((raw: unknown, index: number) => {
+  const bands = input.bands.map((raw: unknown) => {
     if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return fail();
     const band = raw as Record<string, unknown>;
     if (Object.keys(band).some(key => key !== 'fromM' && key !== 'color' && key !== 'enabled')
       || (band.enabled !== undefined && typeof band.enabled !== 'boolean')
       || typeof band.fromM !== 'number' || !Number.isFinite(band.fromM)
-      || band.fromM <= previous || band.fromM > 2000 || (index === 0 && band.fromM !== 0)) return fail();
+      || band.fromM < 0 || band.fromM <= previous || band.fromM > 2000) return fail();
     previous = band.fromM;
     return {
       fromM: band.fromM,
@@ -74,6 +145,7 @@ export function parseTerrainElevationColors(value: unknown): TerrainElevationCol
   return {
     seaLevelM: input.seaLevelM,
     waterColor: color(input.waterColor),
+    ...(input.rendering === undefined ? {} : { rendering: input.rendering as 'smooth' | 'bands' }),
     ...(input.waterEnabled === undefined ? {} : { waterEnabled: input.waterEnabled }),
     bands,
   };
@@ -83,7 +155,9 @@ export function terrainElevationColor(settings: TerrainElevationColors, heightM:
   const aboveSeaM = heightM - settings.seaLevelM;
   if (aboveSeaM <= 0) return settings.waterEnabled !== false ? settings.waterColor : fallbackColor;
   for (let index = settings.bands.length - 1; index >= 0; index--) {
-    if (settings.bands[index].enabled !== false && aboveSeaM >= settings.bands[index].fromM) return settings.bands[index].color;
+    // Shore starts at Sea Level; its width is the Beach boundary. Older nonzero
+    // Shore starts remain readable without leaving an uncolored coastal gap.
+    if (settings.bands[index].enabled !== false && aboveSeaM >= (index === 0 ? 0 : settings.bands[index].fromM)) return settings.bands[index].color;
   }
   return fallbackColor;
 }
@@ -127,6 +201,7 @@ export function parseTerrainBrushSettings(value: unknown): TerrainBrushSettings 
 export const terrainEditorPanelKeys = [
   'heightMap',
   'generation',
+  'display',
   'colors',
   'sculpt',
   'drawings',
@@ -138,6 +213,7 @@ export function defaultTerrainEditorPanels(): TerrainEditorPanels {
   return {
     heightMap: true,
     generation: true,
+    display: true,
     colors: true,
     sculpt: true,
     drawings: true,
@@ -145,7 +221,9 @@ export function defaultTerrainEditorPanels(): TerrainEditorPanels {
 }
 
 export function parseTerrainEditorPanels(value: unknown): TerrainEditorPanels {
-  const input = object(value);
+  const saved = object(value);
+  const input: Record<string, unknown> = { ...saved, display: saved.display ?? true };
+  if (saved.display === null) throw new TerrainInputError('Invalid Terrain editor section visibility.');
   if (Object.keys(input).length !== terrainEditorPanelKeys.length || terrainEditorPanelKeys.some(key => typeof input[key] !== 'boolean')) {
     throw new TerrainInputError('Invalid Terrain editor section visibility.');
   }
@@ -187,6 +265,8 @@ export interface TerrainDefinition {
   appearance: {
     color: string;
     previewCamera?: TerrainPreviewCamera;
+    style?: TerrainStyle;
+    noiseRecipe?: TerrainNoiseRecipe;
     editorPanels?: TerrainEditorPanels;
     brushSettings?: TerrainBrushSettings;
     elevationColors?: TerrainElevationColors;
@@ -288,7 +368,7 @@ export function parseTerrainDefinition(value: unknown): TerrainDefinition {
   if (input.formatVersion !== 1) throw new TerrainInputError('Unsupported Terrain format.');
   const columns = positiveId(input.columns, 'columns');
   const rows = positiveId(input.rows, 'rows');
-  if (columns < 2 || columns > 129 || rows < 2 || rows > 129) throw new TerrainInputError('Terrain grid must have 2–129 columns and rows.');
+  if (columns < 2 || columns > maxTerrainGridSize || rows < 2 || rows > maxTerrainGridSize) throw new TerrainInputError('Terrain grid must have 2–257 columns and rows.');
   const widthM = bounded(input.widthM, 0.01, 1000, 'width');
   const lengthM = bounded(input.lengthM, 0.01, 1000, 'length');
   if (!Array.isArray(input.heightsM) || input.heightsM.length !== columns * rows) {
@@ -302,7 +382,7 @@ export function parseTerrainDefinition(value: unknown): TerrainDefinition {
     if (heightsM[row * columns] !== 0 || heightsM[row * columns + columns - 1] !== 0) throw new TerrainInputError('Terrain border must meet flat ground at zero height.');
   }
   const appearance = object(input.appearance);
-  if (Object.keys(appearance).some(key => key !== 'color' && key !== 'authoring' && key !== 'generation' && key !== 'elevationColors' && key !== 'previewCamera' && key !== 'editorPanels' && key !== 'brushSettings') || typeof appearance.color !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(appearance.color)) {
+  if (Object.keys(appearance).some(key => key !== 'style' && key !== 'noiseRecipe' && key !== 'color' && key !== 'authoring' && key !== 'generation' && key !== 'elevationColors' && key !== 'previewCamera' && key !== 'editorPanels' && key !== 'brushSettings') || typeof appearance.color !== 'string' || !/^#[0-9a-fA-F]{6}$/.test(appearance.color)) {
     throw new TerrainInputError('Invalid Terrain appearance.');
   }
   let elevationColors: TerrainElevationColors | undefined;
@@ -324,6 +404,8 @@ export function parseTerrainDefinition(value: unknown): TerrainDefinition {
     heightsM,
     appearance: {
       color: appearance.color,
+      ...(appearance.style === undefined ? {} : { style: parseTerrainStyle(appearance.style) }),
+      ...(appearance.noiseRecipe === undefined ? {} : { noiseRecipe: parseTerrainNoiseRecipe(appearance.noiseRecipe) }),
       ...(previewCamera ? { previewCamera } : {}),
       ...(editorPanels ? { editorPanels } : {}),
       ...(brushSettings ? { brushSettings } : {}),
@@ -405,18 +487,50 @@ export interface TerrainGenerationOptions {
   reliefM: number;
   hillSize: number;
   detail: number;
+  transitionRadiusM?: number;
 }
 
 function parseTerrainGeneration(value: unknown): TerrainGenerationOptions & { version: 1; seed: number } {
   const input = object(value);
-  if (Object.keys(input).some(key => !['version', 'seed', 'reliefM', 'hillSize', 'detail'].includes(key)) || input.version !== 1 || !Number.isSafeInteger(input.seed)) throw new TerrainInputError('Invalid Terrain generation settings.');
+  if (Object.keys(input).some(key => !['version', 'seed', 'reliefM', 'hillSize', 'detail', 'transitionRadiusM'].includes(key)) || input.version !== 1 || !Number.isSafeInteger(input.seed)) throw new TerrainInputError('Invalid Terrain generation settings.');
   return {
     version: 1,
     seed: input.seed as number,
     reliefM: bounded(input.reliefM, 0, maxTerrainReliefM, 'relief (0-500 m)'),
     hillSize: bounded(input.hillSize, 0.5, 4, 'hill size (0.5–4)'),
     detail: bounded(input.detail, 0, 1, 'detail (0–100%)'),
+    ...(input.transitionRadiusM === undefined ? {} : { transitionRadiusM: bounded(input.transitionRadiusM, 0, 1000, 'transition radius') }),
   };
+}
+
+// Separable cosine-weighted smoothing in metres. The original generator is
+// unchanged when the optional radius is absent or zero in an older recipe.
+function smoothTerrainTransitions(heights: number[], columns: number, rows: number, widthM: number, lengthM: number, radiusM: number): number[] {
+  if (radiusM <= Math.min(widthM / (columns - 1), lengthM / (rows - 1))) return heights;
+  let result = heights;
+  for (const horizontal of [true, false]) {
+    const spacing = horizontal ? widthM / (columns - 1) : lengthM / (rows - 1);
+    const limit = Math.min(horizontal ? columns - 1 : rows - 1, Math.ceil(radiusM / spacing));
+    const weights = Array.from({ length: limit + 1 }, (_, offset) => offset * spacing >= radiusM ? 0 : (1 + Math.cos(Math.PI * offset * spacing / radiusM)) / 2);
+    const source = result;
+    result = source.map((height, index) => {
+      const column = index % columns;
+      const row = Math.floor(index / columns);
+      if (column === 0 || row === 0 || column === columns - 1 || row === rows - 1) return 0;
+      let total = 0;
+      let weight = 0;
+      for (let offset = -limit; offset <= limit; offset++) {
+        const x = horizontal ? column + offset : column;
+        const z = horizontal ? row : row + offset;
+        if (x < 0 || z < 0 || x >= columns || z >= rows) continue;
+        const contribution = weights[Math.abs(offset)];
+        total += source[z * columns + x] * contribution;
+        weight += contribution;
+      }
+      return weight ? total / weight : height;
+    });
+  }
+  return result.map(height => Number(height.toFixed(4)));
 }
 
 function validatePlateau(points: { xM: number; zM: number }[]): void {
@@ -429,12 +543,15 @@ function validatePlateau(points: { xM: number; zM: number }[]): void {
 
 export function generateTerrainDefinition(seed: number, widthM = 40, lengthM = 40, columns = 33, rows = 33, options: TerrainGenerationOptions = { reliefM: 2, hillSize: 1, detail: 0.35 }): TerrainDefinition {
   if (!Number.isSafeInteger(seed)) throw new TerrainInputError('Invalid Terrain seed.');
+  bounded(widthM, 0.01, 1000, 'width');
+  bounded(lengthM, 0.01, 1000, 'length');
   const { reliefM, hillSize, detail } = options;
+  const transitionRadiusM = options.transitionRadiusM === undefined ? undefined : bounded(options.transitionRadiusM, 0, 1000, 'transition radius');
   if (!Number.isFinite(reliefM) || reliefM < 0 || reliefM > maxTerrainReliefM || !Number.isFinite(hillSize) || hillSize < 0.5 || hillSize > 4 || !Number.isFinite(detail) || detail < 0 || detail > 1) {
     throw new TerrainInputError('Relief must be 0-500 m, hill size 0.5–4, and detail 0–100%.');
   }
-  if (!Number.isSafeInteger(columns) || !Number.isSafeInteger(rows) || columns < 2 || columns > 129 || rows < 2 || rows > 129) {
-    throw new TerrainInputError('Columns and rows must each be whole numbers from 2 to 129. The current Terrain is unchanged.');
+  if (!Number.isSafeInteger(columns) || !Number.isSafeInteger(rows) || columns < 2 || columns > maxTerrainGridSize || rows < 2 || rows > maxTerrainGridSize) {
+    throw new TerrainInputError('Columns and rows must each be whole numbers from 2 to 257. The current Terrain is unchanged.');
   }
   const heightsM: number[] = [];
   for (let row = 0; row < rows; row++) {
@@ -449,7 +566,9 @@ export function generateTerrainDefinition(seed: number, widthM = 40, lengthM = 4
         : Number((edge * wave * reliefM).toFixed(4)));
     }
   }
-  return parseTerrainDefinition({ formatVersion: 1, widthM, lengthM, columns, rows, heightsM, appearance: { color: '#58823f', generation: { version: 1, seed, reliefM, hillSize, detail } } });
+  const transitions = transitionRadiusM === undefined ? {} : { transitionRadiusM };
+  const generatedHeights = transitionRadiusM ? smoothTerrainTransitions(heightsM, columns, rows, widthM, lengthM, transitionRadiusM) : heightsM;
+  return parseTerrainDefinition({ formatVersion: 1, widthM, lengthM, columns, rows, heightsM: generatedHeights, appearance: { color: '#58823f', generation: { version: 1, seed, reliefM, hillSize, detail, ...transitions } } });
 }
 
 export function sculptTerrainDefinition(

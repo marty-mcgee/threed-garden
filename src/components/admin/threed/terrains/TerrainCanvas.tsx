@@ -1,5 +1,8 @@
 'use client';
 
+import { TerrainMaterial } from '@/components/threed/terrains/TerrainMaterial';
+import { TerrainDisplay } from '@/components/threed/terrains/TerrainDisplay';
+
 import { useEffect, useMemo, useRef, useState, type Dispatch, type SetStateAction } from 'react';
 import { Grid, Line, OrbitControls } from '@react-three/drei';
 import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
@@ -179,8 +182,9 @@ function TerrainSurface({ definition, fillArea, brushMode, onSculpt, drawnPath, 
   };
   const handleRadius = Math.max(0.16, Math.min(0.65, Math.max(definition.widthM, definition.lengthM) * 0.008));
   return <>
-    <mesh geometry={geometry.mesh} onPointerDown={paint} onPointerMove={continueDrawing} onPointerUp={stopDrawing} onPointerCancel={stopDrawing}>
-      <meshStandardMaterial key={definition.appearance.elevationColors ? 'bands' : 'solid'} vertexColors={Boolean(definition.appearance.elevationColors)} color={definition.appearance.elevationColors ? '#ffffff' : definition.appearance.color} side={THREE.DoubleSide} roughness={0.9} />
+    <TerrainDisplay definition={definition} />
+    <mesh castShadow receiveShadow geometry={geometry.mesh} onPointerDown={paint} onPointerMove={continueDrawing} onPointerUp={stopDrawing} onPointerCancel={stopDrawing}>
+      <TerrainMaterial appearance={definition.appearance} roughness={0.9} />
     </mesh>
     {drawnPath.length > 1 && <Line points={linePoints(drawnPath, fillArea)} color="#facc15" lineWidth={3} raycast={() => null} />}
     {definition.appearance.authoring?.operations.map(operation => {
@@ -225,10 +229,14 @@ export function TerrainCanvas({ restoredCamera, onCameraChange, definition, fill
   const verticalExtent = Math.max(Math.abs(lowest), peak);
   const gridY = lowest - 0.1;
   return <div className="relative h-full min-h-0 w-full overflow-hidden rounded-lg border bg-[#08182a]" aria-label="3D Terrain editor">
-    <SafeCanvas camera={{ position: [extent * 0.75, Math.max(extent * 0.55, peak * 2 + 8), extent * 0.75], fov: 48, near: 0.1, far: Math.max(1000, extent * 8, verticalExtent * 8) }}>
+    <SafeCanvas shadows camera={{ position: [extent * 0.75, Math.max(extent * 0.55, peak * 2 + 8), extent * 0.75], fov: 48, near: 0.1, far: Math.max(1000, extent * 8, verticalExtent * 8) }}>
       <TerrainPreviewClipping radius={Math.hypot(extent * 0.75, extent * 0.75, verticalExtent + 0.1)} />
-      <ambientLight intensity={1.5} />
-      <directionalLight position={[extent * 0.4, extent, extent * 0.3]} intensity={2} />
+      <color attach="background" args={[definition.appearance.style?.background ?? '#08182a']} />
+      {definition.appearance.style?.lighting === 'warm' ? <>
+        <hemisphereLight args={['white', 'darkslategrey', 0.4]} />
+        <directionalLight castShadow color="orange" position={[-extent * 0.6, extent * 0.8, -extent * 0.6]} intensity={2.5} shadow-mapSize={[2048, 2048]} shadow-camera-left={-extent} shadow-camera-right={extent} shadow-camera-top={extent} shadow-camera-bottom={-extent} shadow-camera-far={extent * 5} shadow-bias={-0.0002} />
+        <directionalLight position={[extent, extent, extent]} intensity={0.3} />
+      </> : <><ambientLight intensity={1.5} /><directionalLight position={[extent * 0.4, extent, extent * 0.3]} intensity={2} /></>}
       {showGrid && <Grid position={[0, gridY, 0]} args={[extent * 1.5, extent * 1.5]} sectionColor="#2b859f" cellColor="#315263" fadeDistance={extent * 3} />}
       <TerrainSurface fillArea={fillArea} definition={definition} brushMode={brushMode} onBrushModeChange={onBrushModeChange} onSculpt={onSculpt} drawnPath={drawnPath} onDrawnPathChange={onDrawnPathChange} selectedDrawingId={selectedDrawingId} onDrawingStart={onDrawingStart} onSelectDrawing={onSelectDrawing} onMoveDrawingPoint={onMoveDrawingPoint} disabled={disabled} />
       <TerrainCameraControls restoredCamera={restoredCamera} onCameraChange={onCameraChange} enabled={brushMode === 'inspect' && !disabled} extent={extent} verticalExtent={verticalExtent} peak={peak} />

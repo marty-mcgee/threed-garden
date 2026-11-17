@@ -7,10 +7,12 @@ import { ChevronRight, Mountain, Plus, Save } from 'lucide-react';
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
 import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 import { Button } from '@/components/ui/button';
+import { TerrainHelp } from './TerrainHelp';
 import { Input } from '@/components/ui/input';
-import { defaultTerrainBrushSettings, parseTerrainBrushSettings, type TerrainBrushSettings, defaultTerrainEditorPanels, type TerrainEditorPanels, generateTerrainDefinition, maxTerrainOperations, maxTerrainReliefM, parseTerrainDefinition, updateTerrainAuthoring, type TerrainPreviewCamera, type TerrainDefinition, type TerrainDrawing } from '@/libraries/services/threed/terrains/terrain-core';
+import { defaultTerrainBrushSettings, parseTerrainBrushSettings, type TerrainBrushSettings, defaultTerrainEditorPanels, type TerrainEditorPanels, generateTerrainDefinition, maxTerrainOperations, maxTerrainReliefM, maxTerrainGridSize, parseTerrainDefinition, updateTerrainAuthoring, type TerrainPreviewCamera, type TerrainDefinition, type TerrainDrawing } from '@/libraries/services/threed/terrains/terrain-core';
 import { TerrainCanvas } from './TerrainCanvas';
 import { TerrainColors } from './TerrainColors';
+import { TerrainStyleControls, terrainStyleHelp } from './TerrainStyleControls';
 
 interface Props {
   recordId?: number;
@@ -18,6 +20,31 @@ interface Props {
 
 const root = '/admin/threed/terrains';
 const historyLimit = 30;
+
+type TerrainGenerationDraft = {
+  seed: string;
+  reliefM: string;
+  hillSize: string;
+  detailPercent: string;
+  width: string;
+  length: string;
+  columns: string;
+  rows: string;
+  brushRadius: string;
+};
+
+function validateGenerationDraft({ seed, reliefM, hillSize, detailPercent, width, length, columns, rows, brushRadius }: TerrainGenerationDraft): string {
+  return [seed, reliefM, hillSize, detailPercent, width, length, columns, rows, brushRadius].some(value => !value.trim() || !Number.isFinite(Number(value)))
+    ? 'Complete all generation fields with finite numbers.'
+    : !Number.isInteger(Number(columns)) || !Number.isInteger(Number(rows)) || Number(columns) < 2 || Number(columns) > maxTerrainGridSize || Number(rows) < 2 || Number(rows) > maxTerrainGridSize
+      ? 'Columns and Rows must be whole numbers from 2 to 257. The applied Terrain is unchanged.'
+      : !Number.isSafeInteger(Number(seed)) ? 'Seed must be a safe whole number.'
+      : Number(brushRadius) < 0.01 || Number(brushRadius) > 1000 ? 'Brush radius must be between 0.01 and 1000 metres.'
+      : Number(width) < 0.01 || Number(width) > 1000 || Number(length) < 0.01 || Number(length) > 1000 ? 'Width and Length must be between 0.01 and 1000 metres.'
+      : Number(reliefM) < 0 || Number(reliefM) > maxTerrainReliefM || Number(hillSize) < 0.5 || Number(hillSize) > 4 || Number(detailPercent) < 0 || Number(detailPercent) > 100 ? 'Use relief 0-500 m, hill size 0.5-4 and detail 0-100%.'
+      : '';
+}
+
 
 interface TerrainHistory {
   past: TerrainDefinition[];
@@ -67,12 +94,11 @@ function TerrainEditorPanel({ label, title, help, children, open, onOpenChange, 
   children: ReactNode;
 }) {
   const contentId = useId();
-  return <section aria-label={label} className="admin-editor-panel rounded-lg border px-2 py-1.5">
+  return <section aria-label={label} className="admin-editor-panel rounded-lg border px-2 py-1">
     <div className="flex flex-wrap items-center gap-1">
-      <h2 className="min-w-0 flex-1"><Button type="button" variant="ghost" className="h-6 w-full justify-start gap-1 p-0 text-left text-xs font-semibold hover:bg-transparent has-[>svg]:px-0" aria-expanded={open} aria-controls={contentId} disabled={disabled} onClick={() => onOpenChange(!open)}><ChevronRight className={`size-3.5 transition-transform ${open ? 'rotate-90' : ''}`} />{title}</Button></h2>
-      {help && <ModelFieldHelp label={title}>{help}</ModelFieldHelp>}
+      <h2 className="min-w-0 flex-1"><TerrainHelp content={help}><Button type="button" variant="ghost" className="h-6 w-full justify-start gap-1 p-0 text-left text-xs font-semibold hover:bg-transparent has-[>svg]:px-0" aria-expanded={open} aria-controls={contentId} disabled={disabled} onClick={() => onOpenChange(!open)}><ChevronRight className={`size-3.5 transition-transform ${open ? 'rotate-90' : ''}`} />{title}</Button></TerrainHelp></h2>
     </div>
-    <div id={contentId} hidden={!open} className="space-y-2 pt-1">{children}</div>
+    <div id={contentId} hidden={!open} className="space-y-1 pt-1">{children}</div>
   </section>;
 }
 
@@ -116,6 +142,8 @@ export function TerrainEditor({ recordId }: Props) {
   const [selectedDrawingId, setSelectedDrawingId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [colorsPending, setColorsPending] = useState(false);
+  const [stylePending, setStylePending] = useState(false);
+  const [generationFailed, setGenerationFailed] = useState(false);
   const [loading, setLoading] = useState(Boolean(recordId));
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
@@ -212,31 +240,75 @@ export function TerrainEditor({ recordId }: Props) {
       setDrawnPath([]);
     }
     restoreGeneration(next);
+    if (next.appearance.generation?.transitionRadiusM !== definition.appearance.generation?.transitionRadiusM) {
+      setBrushRadius(String(next.appearance.generation?.transitionRadiusM || next.appearance.brushSettings?.radiusM || 4));
+    }
     setWidth(String(next.widthM));
     setLength(String(next.lengthM));
     setColumns(String(next.columns));
     setRows(String(next.rows));
     setError('');
+    setGenerationFailed(false);
     setMessage(direction === 'undo' ? 'Terrain edit undone. Save Changes to retain this state.' : 'Terrain edit redone. Save Changes to retain this state.');
   }
 
-  function generate() {
+  function changeGeneration(key: keyof TerrainGenerationDraft, value: string) {
+    if (busy || loading) return;
+    const setters = {
+      seed: setSeed,
+      reliefM: setReliefM,
+      hillSize: setHillSize,
+      detailPercent: setDetailPercent,
+      width: setWidth,
+      length: setLength,
+      columns: setColumns,
+      rows: setRows,
+      brushRadius: setBrushRadius,
+    };
+    setters[key](value);
+    const draft = {
+      seed,
+      reliefM,
+      hillSize,
+      detailPercent,
+      width,
+      length,
+      columns,
+      rows,
+      brushRadius,
+      [key]: value,
+    };
+    setError('');
+    setMessage('');
+    setGenerationFailed(false);
+    if (!validateGenerationDraft(draft)) generate(draft, true);
+  }
+
+  function generate(draft: TerrainGenerationDraft = { seed, reliefM, hillSize, detailPercent, width, length, columns, rows, brushRadius }, automatic = false) {
+    if (busy || loading) return;
+    const generationError = validateGenerationDraft(draft);
+    setGenerationFailed(false);
     setError('');
     setMessage('');
     try {
       if (generationError) throw new Error(generationError);
-      const requestedSeed = Number(seed);
-      const next = generateTerrainDefinition(requestedSeed, Number(width), Number(length), Number(columns), Number(rows), {
-        reliefM: Number(reliefM),
-        hillSize: Number(hillSize),
-        detail: Number(detailPercent) / 100,
+      const requestedSeed = Number(draft.seed);
+      const next = generateTerrainDefinition(requestedSeed, Number(draft.width), Number(draft.length), Number(draft.columns), Number(draft.rows), {
+        reliefM: Number(draft.reliefM),
+        hillSize: Number(draft.hillSize),
+        detail: Number(draft.detailPercent) / 100,
+        transitionRadiusM: Number(draft.brushRadius),
       });
+      const retainedAppearance = { ...definition.appearance };
+      delete retainedAppearance.authoring;
+      delete retainedAppearance.generation;
+      delete retainedAppearance.noiseRecipe;
       const base = {
         ...next,
         appearance: {
+          ...retainedAppearance,
           ...next.appearance,
           color: definition.appearance.color,
-          ...(definition.appearance.elevationColors ? { elevationColors: definition.appearance.elevationColors } : {}),
         },
       };
       const operations = definition.appearance.authoring?.operations ?? [];
@@ -247,7 +319,7 @@ export function TerrainEditor({ recordId }: Props) {
         && generated.rows === definition.rows
         && JSON.stringify(generated.appearance.generation) === JSON.stringify(definition.appearance.generation)
         && generated.heightsM.every((height, index) => height === definition.heightsM[index])) {
-        setMessage('These settings already produce the current Terrain. Change a control to create a variation.');
+        if (!automatic) setMessage('These settings already produce the current Terrain. Change a control to create a variation.');
         return;
       }
       commitDefinition(generated);
@@ -255,6 +327,7 @@ export function TerrainEditor({ recordId }: Props) {
         ? 'Height grid generated. Existing sculpting and drawings were retained. Save Changes to retain this revision.'
         : 'Height grid generated. Save Changes to retain this revision.');
     } catch (cause) {
+      setGenerationFailed(true);
       setError(cause instanceof Error ? cause.message : 'Could not generate Terrain.');
     }
   }
@@ -413,14 +486,10 @@ export function TerrainEditor({ recordId }: Props) {
     }
   }
 
-  const generationError = [seed, reliefM, hillSize, detailPercent, width, length, columns, rows].some(value => !value.trim() || !Number.isFinite(Number(value)))
-    ? 'Complete all generation fields with finite numbers.'
-    : !Number.isInteger(Number(columns)) || !Number.isInteger(Number(rows)) || Number(columns) < 2 || Number(columns) > 129 || Number(rows) < 2 || Number(rows) > 129
-      ? 'Columns and Rows must be whole numbers from 2 to 129. The applied Terrain is unchanged.'
-      : !Number.isSafeInteger(Number(seed)) ? 'Seed must be a safe whole number.'
-      : Number(width) < 0.01 || Number(width) > 1000 || Number(length) < 0.01 || Number(length) > 1000 ? 'Width and Length must be between 0.01 and 1000 metres.'
-      : Number(reliefM) < 0 || Number(reliefM) > maxTerrainReliefM || Number(hillSize) < 0.5 || Number(hillSize) > 4 || Number(detailPercent) < 0 || Number(detailPercent) > 100 ? 'Use relief 0-500 m, hill size 0.5-4 and detail 0-100%.'
-      : '';
+  const generationError = validateGenerationDraft({ seed, reliefM, hillSize, detailPercent, width, length, columns, rows, brushRadius });
+  const gridSpacingX = Number(width) / (Number(columns) - 1);
+  const gridSpacingZ = Number(length) / (Number(rows) - 1);
+  const brushBelowGrid = Number(brushRadius) <= Math.min(gridSpacingX, gridSpacingZ);
   const sampleColumns = Math.min(definition.columns, 65);
   const sampleRows = Math.min(definition.rows, 65);
   const peak = Math.max(1, ...definition.heightsM.map(Math.abs));
@@ -434,7 +503,7 @@ export function TerrainEditor({ recordId }: Props) {
   let brushSettings: TerrainBrushSettings | undefined;
   let brushSettingsError = '';
   try {
-    if ([brushRadius, brushStrength, brushFeather, pathStartHeight, pathEndHeight].some(value => !value.trim())) throw new Error('Complete all Sculpt brush values before saving.');
+    if ([brushRadius, brushStrength, brushFeather, pathStartHeight, pathEndHeight].some(value => !value.trim())) throw new Error('Complete all Terrain editing values before saving.');
     brushSettings = parseTerrainBrushSettings({
       radiusM: Number(brushRadius),
       strengthM: Number(brushStrength),
@@ -444,10 +513,10 @@ export function TerrainEditor({ recordId }: Props) {
       fillArea,
     });
   } catch (cause) {
-    brushSettingsError = cause instanceof Error ? cause.message : 'Invalid Sculpt brush values.';
+    brushSettingsError = cause instanceof Error ? cause.message : 'Invalid Terrain editing values.';
   }
   const hasChanges = !recordId || name !== savedName || definition !== savedDefinition || JSON.stringify(cameraDraft) !== JSON.stringify(savedCamera) || JSON.stringify(editorPanels) !== JSON.stringify(savedPanels) || JSON.stringify(brushSettings) !== JSON.stringify(savedBrushSettings);
-  const saveDisabled = colorsPending || Boolean(brushSettingsError) || busy || loading || Boolean(recordId && revision === null) || (recoveryRequired && !recoveryChanged) || !hasChanges;
+  const saveDisabled = colorsPending || stylePending || Boolean(generationError) || generationFailed || Boolean(brushSettingsError) || busy || loading || Boolean(recordId && revision === null) || (recoveryRequired && !recoveryChanged) || !hasChanges;
   const recordUnavailable = Boolean(recordId && !loading && revision === null);
 
   return <main className="flex h-full min-h-0 min-w-0 flex-col gap-2 overflow-hidden text-xs">
@@ -464,7 +533,7 @@ export function TerrainEditor({ recordId }: Props) {
       <p>{error === 'Terrain not found' ? 'This Terrain record does not exist, or is not available for edit by this User.' : error || 'This Terrain could not be opened.'}</p>
       <Link className="font-medium underline underline-offset-2" href={root}>Back to All Terrains</Link>
       <Button type="button" size="xs" variant="outline" disabled={busy} onClick={() => setLoadAttempt(value => value + 1)}>Retry opening Terrain</Button>
-    </div> : <div className="grid min-h-0 min-w-0 flex-1 gap-2 overflow-hidden grid-rows-[minmax(0,1fr)_minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_16rem] lg:grid-rows-[minmax(0,1fr)] [&_input:not([type=checkbox])]:h-7 [&_input:not([type=checkbox])]:px-2 [&_input]:text-xs">
+    </div> : <div className="grid min-h-0 min-w-0 flex-1 gap-2 overflow-hidden grid-rows-[minmax(0,1fr)_minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_16rem] lg:grid-rows-[minmax(0,1fr)] [&_input:not([type=checkbox])]:h-7 [&_input[type=text]]:px-2 [&_input[type=number]]:px-1.5 [&_input[type=color]]:w-10 [&_input[type=color]]:p-0.5 [&_input]:text-xs">
       <div className="flex min-h-0 min-w-0 flex-col gap-2">
       <div className="min-h-0 flex-1">
       <TerrainCanvas restoredCamera={restoredCamera} onCameraChange={setCameraDraft} fillArea={brushMode === 'freeform' && fillArea} definition={definition} brushMode={brushMode} onBrushModeChange={changeBrushMode} onSculpt={sculpt} drawnPath={drawnPath} onDrawnPathChange={setDrawnPath} selectedDrawingId={selectedDrawingId} onDrawingStart={() => setSelectedDrawingId(null)} onSelectDrawing={id => { const operation = definition.appearance.authoring?.operations.find(item => item.type === 'path' && item.drawing.id === id); if (operation?.type === 'path') selectDrawing(operation.drawing); }} onMoveDrawingPoint={moveDrawingPoint} onUndo={() => stepHistory('undo')} undoDisabled={busy || loading || history.past.length === 0} onRedo={() => stepHistory('redo')} redoDisabled={busy || loading || history.future.length === 0} onSave={() => void save()} saveDisabled={saveDisabled} disabled={busy} />
@@ -473,33 +542,43 @@ export function TerrainEditor({ recordId }: Props) {
       <Button variant="success" size="sm" disabled={saveDisabled} onClick={() => void save()}><Save className="size-4" />{busy ? 'Saving…' : 'Save Changes'}</Button>
     </footer>
       </div>
-      <div aria-label="Terrain controls" className="min-h-0 min-w-0 space-y-2 overflow-y-auto overscroll-contain">
-        <section aria-label="Terrain details" className="admin-editor-panel rounded-lg border px-2 py-1.5">
-          <label className="block">Terrain name<Input value={name} maxLength={255} onChange={event => setName(event.target.value)} /></label>
+      <div aria-label="Terrain controls" className="min-h-0 min-w-0 space-y-1 overflow-y-auto overscroll-contain">
+        <section aria-label="Terrain details" className="admin-editor-panel rounded-lg border px-2 py-1">
+          <label className="block"><TerrainHelp content="Terrain name changes the saved label, not the Canvas geometry. Save Changes retains it."><span tabIndex={0} className="cursor-help rounded-sm focus-visible:outline focus-visible:outline-1">Terrain name</span></TerrainHelp><Input value={name} maxLength={255} onChange={event => setName(event.target.value)} /></label>
         </section>
         <TerrainEditorPanel open={editorPanels.heightMap} onOpenChange={open => setEditorPanels(current => ({ ...current, heightMap: open }))} disabled={busy} label="2D height map" title="2D height map" help={<>Height range: {Math.min(...definition.heightsM).toFixed(2)} to {Math.max(...definition.heightsM).toFixed(2)} m. Colors emphasize relative heights; the 3D preview uses actual scale.</>}>
-          <svg role="img" aria-label="Top view of Terrain heights" viewBox={`0 0 ${sampleColumns} ${sampleRows}`} preserveAspectRatio="none" className="h-44 w-full rounded-md border">{preview}</svg>
+          <svg role="img" aria-label="Top view of Terrain heights" viewBox={`0 0 ${sampleColumns} ${sampleRows}`} preserveAspectRatio="none" className="h-32 w-full rounded-md border">{preview}</svg>
         </TerrainEditorPanel>
-        <TerrainEditorPanel open={editorPanels.generation} onOpenChange={open => setEditorPanels(current => ({ ...current, generation: open }))} disabled={busy} label="Height grid" title="Generate height grid" help="Generation fields apply only when you click Generate. The same Seed and settings produce the same base. Relief supports 0-500 metres in actual terrain geometry; larger footprints need larger relief for pronounced mountains. Change relief, hill size, detail, or Seed to make a variation. Existing sculpting and drawings remain.">
-          <div className="grid grid-cols-2 gap-1.5">
-            <label>Seed<Input type="number" step="1" value={seed} onChange={event => setSeed(event.target.value)} /></label>
-            <label>Relief height (m)<Input type="number" min="0" max={maxTerrainReliefM} step="0.1" value={reliefM} onChange={event => setReliefM(event.target.value)} /></label>
-            <label>Hill size<Input type="number" min="0.5" max="4" step="0.1" value={hillSize} onChange={event => setHillSize(event.target.value)} /></label>
-            <label>Surface detail (%)<Input type="number" min="0" max="100" step="5" value={detailPercent} onChange={event => setDetailPercent(event.target.value)} /></label>
-            <label>Width (m)<Input type="number" min="0.01" max="1000" step="0.1" value={width} onChange={event => setWidth(event.target.value)} /></label>
-            <label>Length (m)<Input type="number" min="0.01" max="1000" step="0.1" value={length} onChange={event => setLength(event.target.value)} /></label>
-            <label>Columns<Input type="number" min="2" max="129" step="1" value={columns} onChange={event => setColumns(event.target.value)} /></label>
-            <label>Rows<Input type="number" min="2" max="129" step="1" value={rows} onChange={event => setRows(event.target.value)} /></label>
+        <TerrainEditorPanel open={editorPanels.generation} onOpenChange={open => setEditorPanels(current => ({ ...current, generation: open }))} disabled={busy} label="Height grid" title="Generate Terrain" help="Set Columns and Rows to 257 for finer geometry (about four times the samples of 129). Higher resolution increases Save size and physics cost. Valid generation fields update the Canvas immediately. Each applied edit is one Undo step. Blank or invalid entries keep the last valid Terrain and block Save until corrected. Generate optionally reapplies the current settings. Loading and Undo/Redo never regenerate the Terrain. The same Seed and settings produce the same base. Relief supports 0-500 metres in actual terrain geometry; larger footprints need larger relief for pronounced mountains. Change relief, hill size, detail, or Seed to make a variation. Existing sculpting and drawings remain.">
+          <div className="grid grid-cols-2 gap-x-2 gap-y-1">
+            <label className="block"><TerrainHelp content={Number(reliefM) === 0 ? 'Seed: relief is zero, so the generated base stays flat. Valid changes apply automatically.' : 'Seed: valid changes apply automatically. The same Seed and settings reproduce the same base.'}><span tabIndex={0} className="cursor-help rounded-sm focus-visible:outline focus-visible:outline-1">Seed</span></TerrainHelp><Input type="number" step="1" value={seed} onChange={event => changeGeneration('seed', event.target.value)} /></label>
+            <label className="block"><TerrainHelp content={'Relief height: valid changes apply automatically. Zero creates a flat base; existing drawings are replayed.'}><span tabIndex={0} className="cursor-help rounded-sm focus-visible:outline focus-visible:outline-1">Relief height (m)</span></TerrainHelp><Input type="number" min="0" max={maxTerrainReliefM} step="0.1" value={reliefM} onChange={event => changeGeneration('reliefM', event.target.value)} /></label>
+            <label className="block"><TerrainHelp content={Number(reliefM) === 0 ? 'Hill size: relief is zero, so the generated base stays flat.' : 'Hill size: valid changes automatically change the width of hills.'}><span tabIndex={0} className="cursor-help rounded-sm focus-visible:outline focus-visible:outline-1">Hill size</span></TerrainHelp><Input type="number" min="0.5" max="4" step="0.1" value={hillSize} onChange={event => changeGeneration('hillSize', event.target.value)} /></label>
+            <label className="block"><TerrainHelp content={Number(reliefM) === 0 ? 'Surface detail: relief is zero, so the generated base stays flat.' : 'Surface detail: valid changes apply automatically. A coarse grid or large Brush radius can hide fine detail.'}><span tabIndex={0} className="cursor-help rounded-sm focus-visible:outline focus-visible:outline-1">Surface detail (%)</span></TerrainHelp><Input type="number" min="0" max="100" step="5" value={detailPercent} onChange={event => changeGeneration('detailPercent', event.target.value)} /></label>
+            <label className="block"><TerrainHelp content={<>{brushBelowGrid ? 'Brush radius: at or below grid spacing, so changing it will not smooth the base. Tools use this radius on the next edit.' : 'Brush radius: valid changes automatically smooth the base. Tools use it on the next edit; saved drawings keep their radius until updated.'} Shared transition radius. Changing the radius smooths the base height grid across this distance before replaying existing drawings. Larger values produce broader elevation transitions and may reduce peaks; smaller values retain detail. Radius must exceed grid spacing to affect generated transitions. Raise/Lower and new or explicitly updated drawings use the same radius. The generated base updates immediately; existing drawing operations retain their own radii. Color thresholds remain unchanged.</>}><span tabIndex={0} className="cursor-help rounded-sm focus-visible:outline focus-visible:outline-1">Brush radius (m)</span></TerrainHelp><Input type="number" min="0.01" max="1000" step="0.01" value={brushRadius} onChange={event => changeGeneration('brushRadius', event.target.value)} /></label>
+            {!generationError && <div className="self-center text-[10px] tabular-nums text-muted-foreground">
+              <p>Grid spacing: {gridSpacingX.toFixed(2)} / {gridSpacingZ.toFixed(2)} m</p>
+              <p>Applied Brush: {definition.appearance.generation?.transitionRadiusM ?? 0} m</p>
+              {brushBelowGrid && <p className="text-muted-foreground">Brush below grid spacing: no smoothing</p>}
+            </div>}
+            <label className="block"><TerrainHelp content={'Width: valid changes automatically resize the base. Display resolution does not change the editable grid.'}><span tabIndex={0} className="cursor-help rounded-sm focus-visible:outline focus-visible:outline-1">Width (m)</span></TerrainHelp><Input type="number" min="0.01" max="1000" step="0.01" value={width} onChange={event => changeGeneration('width', event.target.value)} /></label>
+            <label className="block"><TerrainHelp content={'Length: valid changes automatically resize the base. Display resolution does not change the editable grid.'}><span tabIndex={0} className="cursor-help rounded-sm focus-visible:outline focus-visible:outline-1">Length (m)</span></TerrainHelp><Input type="number" min="0.01" max="1000" step="0.01" value={length} onChange={event => changeGeneration('length', event.target.value)} /></label>
+            <label className="block"><TerrainHelp content={'Columns: valid changes automatically update horizontal sampling. A flat base stays flat even with more samples.'}><span tabIndex={0} className="cursor-help rounded-sm focus-visible:outline focus-visible:outline-1">Columns</span></TerrainHelp><Input type="number" min="2" max={maxTerrainGridSize} step="1" value={columns} onChange={event => changeGeneration('columns', event.target.value)} /></label>
+            <label className="block"><TerrainHelp content={'Rows: valid changes automatically update vertical sampling. A flat base stays flat even with more samples.'}><span tabIndex={0} className="cursor-help rounded-sm focus-visible:outline focus-visible:outline-1">Rows</span></TerrainHelp><Input type="number" min="2" max={maxTerrainGridSize} step="1" value={rows} onChange={event => changeGeneration('rows', event.target.value)} /></label>
 
           </div>
-          <Button type="button" size="xs" variant="success" onClick={generate} disabled={busy || Boolean(generationError)}>Generate</Button>
+            {(brushMode === 'raise' || brushMode === 'lower') && <label className="block"><TerrainHelp content={'Height per click: affects the next Raise/Lower click only; it does not modify previous edits or generation.'}><span tabIndex={0} className="cursor-help rounded-sm focus-visible:outline focus-visible:outline-1">Height per click (m)</span></TerrainHelp><Input type="number" min="0.01" max="100" step="0.01" value={brushStrength} onChange={event => setBrushStrength(event.target.value)} /></label>}
+          <Button type="button" size="xs" variant="success" onClick={() => generate()} disabled={busy || Boolean(generationError)}>Generate</Button>
           {generationError && <p role="alert" className="text-destructive">{generationError}</p>}
         </TerrainEditorPanel>
+        <TerrainEditorPanel open={editorPanels.display} onOpenChange={open => setEditorPanels(current => ({ ...current, display: open }))} disabled={busy} label="Surface detail and display" title="Surface detail and display" help={terrainStyleHelp}>
+          <TerrainStyleControls onPendingChange={setStylePending} definition={definition} disabled={busy || loading} onChange={commitDefinition} />
+        </TerrainEditorPanel>
         <TerrainEditorPanel open={editorPanels.colors} onOpenChange={open => setEditorPanels(current => ({ ...current, colors: open }))} disabled={busy} label="Terrain colors and thresholds" title="Colors and thresholds" help="Optional elevation bands are saved with this Terrain revision. Existing Project placements keep their selected revision until explicitly updated.">
-            <label>Surface color<Input type="color" value={definition.appearance.color} onChange={event => {
+            <label className="flex items-center justify-between"><TerrainHelp content={definition.appearance.style?.display === 'height' ? 'Surface color: Height map overrides palette colors. Switch Display to Terrain colors.' : definition.appearance.elevationColors ? 'Surface color: only visible where no enabled elevation band or Water supplies a color.' : 'Surface color previews immediately. Save Changes retains it.'}><span tabIndex={0} className="cursor-help rounded-sm focus-visible:outline focus-visible:outline-1">Surface color</span></TerrainHelp><Input type="color" value={definition.appearance.color} onChange={event => {
               if (event.target.value !== definition.appearance.color) commitDefinition({ ...definition, appearance: { ...definition.appearance, color: event.target.value } });
             }} /></label>
-          <TerrainColors settings={definition.appearance.elevationColors} disabled={busy || loading} onPendingChange={setColorsPending} onChange={elevationColors => {
+          <TerrainColors heightsM={definition.heightsM} display={definition.appearance.style?.display} settings={definition.appearance.elevationColors} disabled={busy || loading} onPendingChange={setColorsPending} onChange={elevationColors => {
             const { elevationColors: previous, ...appearance } = definition.appearance;
             commitDefinition({
               ...definition,
@@ -510,27 +589,24 @@ export function TerrainEditor({ recordId }: Props) {
             });
           }} />
         </TerrainEditorPanel>
-        <TerrainEditorPanel open={editorPanels.sculpt} onOpenChange={open => setEditorPanels(current => ({ ...current, sculpt: open }))} disabled={busy} label="Sculpt brush" title="Sculpt brush" help={<>{definition.widthM} × {definition.lengthM} m · {definition.columns} × {definition.rows} grid · {definition.appearance.authoring?.operations.length ?? 0}/{maxTerrainOperations} shaping operations</>}>
-          <div className="grid grid-cols-2 gap-1.5">
+        <TerrainEditorPanel open={editorPanels.drawings} onOpenChange={open => setEditorPanels(current => ({ ...current, drawings: open }))} disabled={busy} label="Terrain drawings" title="Terrain drawings" help={<>Filled plateaus close the freeform outline and use Start elevation throughout the interior. Drag on the Terrain to draw. Drag a saved path's point handles to reshape it. Equal start/end elevations make a plateau; different elevations make a slope. Radius controls width. Draw paths or plateaus, then Apply elevation. The selected tool controls the available settings. Terrain: {definition.widthM} by {definition.lengthM} m; grid: {definition.columns} by {definition.rows}; shaping operations: {definition.appearance.authoring?.operations.length ?? 0}/{maxTerrainOperations}. Shared Brush radius is in Generate Terrain.</>}>
+          <div className="grid grid-cols-2 gap-x-2 gap-y-1">
             {brushSettingsError && <p role="alert" className="col-span-2 text-destructive">{brushSettingsError}</p>}
-            <label>Radius (m)<Input type="number" min="0.01" max="1000" step="0.1" value={brushRadius} onChange={event => setBrushRadius(event.target.value)} /></label>
-            {(brushMode === 'raise' || brushMode === 'lower') && <label>Height per click (m)<Input type="number" min="0.01" max="100" step="0.1" value={brushStrength} onChange={event => setBrushStrength(event.target.value)} /></label>}
+
             {(brushMode === 'straight' || brushMode === 'freeform') && <>
-              <label>Start elevation (m)<Input type="number" min="-1000" max="1000" step="0.1" value={pathStartHeight} onChange={event => setPathStartHeight(event.target.value)} /></label>
-              <label>End elevation (m)<Input type="number" min="-1000" max="1000" step="0.1" disabled={brushMode === 'freeform' && fillArea} value={brushMode === 'freeform' && fillArea ? pathStartHeight : pathEndHeight} onChange={event => setPathEndHeight(event.target.value)} /></label>
-              <label>Edge feather (%)<Input type="number" min="0" max="100" step="5" value={brushFeather} onChange={event => setBrushFeather(event.target.value)} /></label>
+              <label className="block"><TerrainHelp content={'Start elevation: draw or select a path, then Apply elevation. Changing this value alone does not move the Terrain.'}><span tabIndex={0} className="cursor-help rounded-sm focus-visible:outline focus-visible:outline-1">Start elevation (m)</span></TerrainHelp><Input type="number" min="-1000" max="1000" step="0.1" value={pathStartHeight} onChange={event => setPathStartHeight(event.target.value)} /></label>
+              <label className="block"><TerrainHelp content={brushMode === 'freeform' && fillArea ? 'End elevation: a filled plateau uses Start elevation throughout; this field has no effect.' : 'End elevation: draw or select a path, then Apply elevation.'}><span tabIndex={0} className="cursor-help rounded-sm focus-visible:outline focus-visible:outline-1">End elevation (m)</span></TerrainHelp><Input type="number" min="-1000" max="1000" step="0.1" disabled={brushMode === 'freeform' && fillArea} value={brushMode === 'freeform' && fillArea ? pathStartHeight : pathEndHeight} onChange={event => setPathEndHeight(event.target.value)} /></label>
+              <label className="block"><TerrainHelp content={'Edge feather: changes the edge transition when you Apply elevation; existing drawings stay unchanged until updated.'}><span tabIndex={0} className="cursor-help rounded-sm focus-visible:outline focus-visible:outline-1">Edge feather (%)</span></TerrainHelp><Input type="number" min="0" max="100" step="5" value={brushFeather} onChange={event => setBrushFeather(event.target.value)} /></label>
             </>}
           </div>
           {(brushMode === 'straight' || brushMode === 'freeform') && <>
-            {brushMode === 'freeform' && <label className="flex items-center gap-2"><input type="checkbox" checked={fillArea} onChange={event => setFillArea(event.target.checked)} />Fill enclosed area as a plateau</label>}
+            {brushMode === 'freeform' && <label className="flex items-center gap-2"><input type="checkbox" checked={fillArea} onChange={event => setFillArea(event.target.checked)} /><TerrainHelp content="Fill enclosed area: requires a closed Freeform drawing and Apply elevation. End elevation is unused for a filled plateau."><span tabIndex={0} className="cursor-help rounded-sm focus-visible:outline focus-visible:outline-1">Fill enclosed area as a plateau</span></TerrainHelp></label>}
             <div className="flex flex-wrap items-center gap-1">
               <Button type="button" size="xs" variant="success" disabled={busy || drawnPath.length < 2} onClick={applyPath}>Apply elevation</Button>
               <Button type="button" size="xs" variant="outline" disabled={drawnPath.length === 0} onClick={() => { setDrawnPath([]); setSelectedDrawingId(null); }}>Clear draft</Button>
-              <ModelFieldHelp label="Drawing elevation">Filled plateaus close the freeform outline and use Start elevation throughout the interior. Drag on the Terrain to draw. Drag a saved path's point handles to reshape it. Equal start/end elevations make a plateau; different elevations make a slope. Radius controls width.</ModelFieldHelp>
             </div>
           </>}
-        </TerrainEditorPanel>
-        <TerrainEditorPanel open={editorPanels.drawings} onOpenChange={open => setEditorPanels(current => ({ ...current, drawings: open }))} disabled={busy} label="Terrain drawings" title="Terrain drawings">
+
           {(definition.appearance.authoring?.operations.filter(operation => operation.type === 'path') ?? []).map(operation => {
             if (operation.type !== 'path') return null;
             const drawing = operation.drawing;
@@ -540,7 +616,7 @@ export function TerrainEditor({ recordId }: Props) {
               <Button type="button" size="xs" variant="outline" onClick={() => changeDrawing(drawing.id, 'delete')}>Delete</Button>
             </div>;
           })}
-          {!definition.appearance.authoring?.operations.some(operation => operation.type === 'path') && <p className="text-muted-foreground">Draw and apply a path to keep it here.</p>}
+          {!definition.appearance.authoring?.operations.some(operation => operation.type === 'path') && <p className="text-muted-foreground">No drawings</p>}
         </TerrainEditorPanel>
 
       </div>

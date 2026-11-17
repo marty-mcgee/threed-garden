@@ -1,5 +1,8 @@
 'use client';
 
+import { TerrainMaterial } from '@/components/threed/terrains/TerrainMaterial';
+import { TerrainDisplay } from '@/components/threed/terrains/TerrainDisplay';
+
 import { useEffect, useMemo } from 'react';
 import { TrimeshCollider, RigidBody } from '@react-three/rapier';
 import * as THREE from 'three';
@@ -49,6 +52,7 @@ export function buildTerrainGeometry(surface: ProjectTerrainSurface, metersPerSc
     const mesh = new THREE.BufferGeometry();
     mesh.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
     mesh.setIndex(new THREE.BufferAttribute(indices, 1));
+    mesh.setAttribute('terrainHeight', new THREE.BufferAttribute(new Float32Array(definition.heightsM), 1));
     if (definition.appearance.elevationColors) {
       const colors = new Float32Array(vertices.length);
       const color = new THREE.Color();
@@ -123,6 +127,9 @@ export function ProjectTerrainGround({ surface, metersPerSceneUnit, groundSize, 
   useEffect(() => () => outside.mesh.dispose(), [outside]);
 
   return <>
+    <group position={[surface.placement.centerXM / metersPerSceneUnit, 0, surface.placement.centerZM / metersPerSceneUnit]} rotation={[0, surface.placement.rotationYDeg * Math.PI / 180, 0]} scale={surface.placement.scale / metersPerSceneUnit}>
+      <TerrainDisplay definition={surface.definition} />
+    </group>
     <RigidBody type="fixed" colliders={false}>
       <TrimeshCollider args={[outside.vertices, outside.indices]} />
       <TrimeshCollider args={[geometry.vertices, geometry.indices]} />
@@ -135,7 +142,7 @@ export function ProjectTerrainGround({ surface, metersPerSceneUnit, groundSize, 
         event.stopPropagation();
         onClick({ x: event.point.x, y: event.point.y, z: event.point.z });
       }}>
-      <meshStandardMaterial key={surface.definition.appearance.elevationColors ? 'bands' : 'solid'} vertexColors={Boolean(surface.definition.appearance.elevationColors)} color={surface.definition.appearance.elevationColors ? '#ffffff' : surface.definition.appearance.color} roughness={0.92} side={THREE.DoubleSide} />
+      <TerrainMaterial appearance={surface.definition.appearance} roughness={0.92} />
     </mesh>
     <mesh geometry={outside.mesh} receiveShadow
       onPointerMove={event => onHover?.({ x: event.point.x, y: 0, z: event.point.z })}

@@ -1,4 +1,6 @@
 import { Color, PerspectiveCamera, Vector3 } from 'three';
+import * as THREE from 'three';
+import * as terrainCore from '../services/threed/terrains/terrain-core.ts';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { runInNewContext } from 'node:vm';
@@ -27,11 +29,166 @@ import {
 } from '../services/threed/terrains/terrain-core.ts';
 
 const definition = generateTerrainDefinition(17);
+// Previously saved noise metadata remains readable without running a second generator.
+const noiseRecipe = { version: 1, seed: 0.61, heightM: 90, scale: 0.3, detail: 0.5, fuzziness: 0.01 };
+const natural = parseTerrainDefinition({ ...definition, appearance: { color: definition.appearance.color, noiseRecipe } });
+assert.deepEqual(natural.heightsM, definition.heightsM);
+assert.deepEqual(natural.appearance.noiseRecipe, noiseRecipe);
+assert.throws(() => terrainCore.parseTerrainStyle({ ...terrainCore.defaultTerrainStyle(), resolution: 501 }));
+const displayModule = { exports: {} };
+let instances;
+const blockDefinition = {
+  ...natural,
+  appearance: {
+    ...natural.appearance,
+    elevationColors: terrainCore.defaultTerrainElevationColors(),
+    style: { ...terrainCore.defaultTerrainStyle(), surface: 'blocks', resolution: 20 },
+  },
+};
+runInNewContext(ts.transpileModule(readFileSync(new URL('../../components/threed/terrains/TerrainDisplay.tsx', import.meta.url), 'utf8'), {
+  compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX },
+}).outputText, {
+  exports: displayModule.exports,
+  require(name) {
+    if (name === 'three') return THREE;
+    if (name.endsWith('/terrain-core')) return terrainCore;
+    if (name === 'react') return {
+      useRef() {
+        instances = new THREE.InstancedMesh(new THREE.BoxGeometry(), new THREE.MeshPhongMaterial(), 400);
+        return { current: instances };
+      },
+      useLayoutEffect(callback) { callback(); },
+    };
+    if (name === 'react/jsx-runtime') return { jsx() {}, jsxs() {} };
+    throw new Error(name);
+  },
+});
+displayModule.exports.TerrainDisplay({ definition: blockDefinition });
+assert.equal(instances.instanceColor.count, 400);
+assert.ok(instances.boundingSphere.radius > 0);
+assert.ok(instances.instanceMatrix.array.every(Number.isFinite));
+instances.geometry.dispose();
+instances.material.dispose();
+instances.dispose();
+console.log('Saved display settings and actual instanced block buffers passed (offline).');
+// Display controls can update presentation but must preserve every saved height/recipe.
+{
+  const module = { exports: {} };
+  let cursor = 0;
+  const state = [], dependencies = [];
+  let effects = [];
+  const react = {
+    useState(initial) {
+      const index = cursor++;
+      if (!(index in state)) state[index] = initial;
+      return [state[index], value => { state[index] = value; }];
+    },
+    useEffect(effect, next) {
+      const index = cursor++;
+      if (!dependencies[index] || next.some((value, i) => value !== dependencies[index][i])) effects.push(effect);
+      dependencies[index] = next;
+    },
+  };
+  const source = readFileSync(new URL('../../components/admin/threed/terrains/TerrainStyleControls.tsx', import.meta.url), 'utf8');
+  runInNewContext(ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX } }).outputText, {
+    exports: module.exports,
+    require(name) {
+      if (name.endsWith('/terrain-core')) return terrainCore;
+      if (name === 'react') return react;
+      if (name === 'react/jsx-runtime') return { jsx: (type, props) => ({ type, props }), jsxs: (type, props) => ({ type, props }) };
+      if (name.endsWith('/input')) return { Input: 'input' };
+      if (name.endsWith('/TerrainHelp')) return { TerrainHelp: 'TerrainHelp' };
+      if (name.endsWith('/ModelFieldHelp')) return { ModelFieldHelp: 'help' };
+      throw new Error(name);
+    },
+  });
+  const changes = [];
+  let pending = false;
+  const props = {
+    definition,
+    disabled: false,
+    onChange(value) { changes.push(value); props.definition = value; },
+    onPendingChange(value) { pending = value; },
+  };
+  function render() {
+    cursor = 0;
+    const tree = module.exports.TerrainStyleControls(props);
+    const queued = effects; effects = []; queued.forEach(effect => effect());
+    return tree;
+  }
+  const tree = render();
+  const nodes = [];
+  function visit(node) {
+    if (Array.isArray(node)) node.forEach(visit);
+    else if (node && typeof node === 'object') { nodes.push(node); visit(node.props?.children); }
+  }
+  visit(tree);
+  assert.equal(nodes.filter(node => node.type === 'button').length, 0);
+  for (const node of nodes.filter(node => node.type === 'input' && node.props.type === 'number')) {
+    node.props.onChange({ target: { value: String(node.props.max) } });
+  }
+  assert.equal(changes.length, 2);
+  for (const changed of changes) {
+    assert.equal(changed.heightsM, definition.heightsM);
+    assert.equal(changed.appearance.generation, definition.appearance.generation);
+    assert.equal(changed.rows, definition.rows);
+    assert.equal(changed.columns, definition.columns);
+  }
+  function inputs() {
+    nodes.length = 0; visit(render());
+    return nodes.filter(node => node.type === 'input' && node.props.type === 'number');
+  }
+  inputs();
+  let fields = inputs();
+  fields[0].props.onChange({ target: { value: '' } });
+  fields = inputs();
+  assert.equal(fields[0].props.value, '');
+  assert.equal(pending, true);
+  assert.equal(changes.length, 2, 'Blank display entry must not mutate the definition');
+  fields[0].props.onChange({ target: { value: '20.5' } });
+  inputs();
+  assert.equal(pending, true);
+  assert.equal(changes.length, 2, 'Fractional resolution must not mutate the definition');
+  fields[0].props.onChange({ target: { value: '200' } });
+  inputs(); inputs();
+  assert.equal(pending, false);
+  fields = inputs();
+  fields[1].props.onChange({ target: { value: '3' } });
+  inputs();
+  assert.equal(pending, true);
+  assert.equal(changes.length, 3, 'Out-of-range saturation must not mutate the definition');
+  fields[1].props.onChange({ target: { value: '1' } });
+  inputs(); inputs();
+  assert.equal(pending, false);
+  inputs();
+  assert.match(nodes.find(node => node.type === 'TerrainHelp' && node.props.children.props.children === 'Squares per side').props.content, /only affects Square blocks/);
+  props.definition = { ...props.definition, appearance: { ...props.definition.appearance, style: { ...props.definition.appearance.style, display: 'height' } } };
+  inputs();
+  assert.match(nodes.find(node => node.type === 'TerrainHelp' && node.props.children.props.children === 'Saturation').props.content, /no effect in Height map/);
+  console.log('Numeric display controls preserve geometry, reject invalid drafts, gate Save and explain inactive settings.');
+}
 assert.equal(definition.heightsM.length, definition.columns * definition.rows);
 assert.equal(definition.heightsM[0], 0);
 assert.equal(definition.heightsM[definition.columns - 1], 0);
 assert.equal(definition.heightsM.at(-1), 0);
 assert.deepEqual(generateTerrainDefinition(17), definition);
+const smoothingOptions = { reliefM: 2, hillSize: 1, detail: 0.35, transitionRadiusM: 8 };
+const smoothed = generateTerrainDefinition(17, 40, 40, 33, 33, smoothingOptions);
+assert.deepEqual(smoothed, generateTerrainDefinition(17, 40, 40, 33, 33, smoothingOptions));
+assert.deepEqual(generateTerrainDefinition(17, 40, 40, 33, 33, { ...smoothingOptions, transitionRadiusM: 0 }).heightsM, definition.heightsM);
+assert.deepEqual(generateTerrainDefinition(17, 40, 40, 33, 33, { ...smoothingOptions, transitionRadiusM: 0.5 }).heightsM, definition.heightsM);
+const roughness = value => value.heightsM.reduce((total, height, index) => {
+  const right = index % value.columns < value.columns - 1 ? (height - value.heightsM[index + 1]) ** 2 : 0;
+  const down = index < value.heightsM.length - value.columns ? (height - value.heightsM[index + value.columns]) ** 2 : 0;
+  return total + right + down;
+}, 0);
+assert.ok(roughness(smoothed) < roughness(definition));
+assert.ok(Math.max(...smoothed.heightsM) <= Math.max(...definition.heightsM));
+assert.ok(Math.min(...smoothed.heightsM) >= Math.min(...definition.heightsM));
+assert.equal(parseTerrainDefinition(JSON.parse(JSON.stringify(smoothed))).appearance.generation.transitionRadiusM, 8);
+assert.deepEqual(parseTerrainDefinition(smoothed).heightsM, smoothed.heightsM);
+assert.throws(() => generateTerrainDefinition(17, 40, 40, 33, 33, { ...smoothingOptions, transitionRadiusM: -1 }));
+assert.throws(() => generateTerrainDefinition(17, 40, 40, 33, 33, { ...smoothingOptions, transitionRadiusM: 1001 }));
 assert.notDeepEqual(generateTerrainDefinition(18).heightsM, definition.heightsM);
 assert.deepEqual(generateTerrainDefinition(17, 40, 40, 33, 33, { reliefM: 2, hillSize: 1, detail: 0.35 }), definition);
 assert.notDeepEqual(generateTerrainDefinition(17, 40, 40, 33, 33, { reliefM: 4, hillSize: 1, detail: 0.35 }).heightsM, definition.heightsM);
@@ -87,7 +244,14 @@ assert.deepEqual(parseTerrainDefinition(JSON.parse(JSON.stringify(definition))).
 assert.deepEqual(generateTerrainDefinition(recipe.seed, definition.widthM, definition.lengthM, definition.columns, definition.rows, recipe).heightsM, definition.heightsM);
 assert.equal(parseTerrainDefinition({ ...definition, appearance: { color: '#58823f' } }).appearance.generation, undefined);
 assert.throws(() => parseTerrainDefinition({ ...definition, appearance: { ...definition.appearance, generation: { ...recipe, detail: 2 } } }));
-assert.throws(() => generateTerrainDefinition(1, 40, 40, 1000, 99), /2 to 129/);
+assert.throws(() => generateTerrainDefinition(1, 40, 40, 1000, 99), /2 to 257/);
+const dense = generateTerrainDefinition(17, 800, 800, 257, 257);
+assert.equal(dense.heightsM.length, 66049);
+assert.equal(JSON.stringify(parseTerrainDefinition(JSON.parse(JSON.stringify(dense)))), JSON.stringify(dense));
+assert.throws(() => generateTerrainDefinition(17, 800, 800, 258, 257));
+assert.throws(() => generateTerrainDefinition(17, 800, 800, 257, 258));
+const denseEditable = updateTerrainAuthoring(dense, []);
+assert.ok(Buffer.byteLength(JSON.stringify({ definition: denseEditable })) < 2_000_000);
 const plateauDrawing = {
   ...savedDrawing,
   mode: 'freeform',
@@ -196,6 +360,7 @@ const terrainScene = { exports: {} };
 runInNewContext(terrainSceneSource, {
   exports: terrainScene.exports,
   require(name) {
+    if ((name.endsWith('/TerrainMaterial') || name.endsWith('/TerrainDisplay'))) return {};
     if (name.endsWith('/terrains/terrain-core')) return { terrainElevationColor };
     if (name === 'three') return { BufferAttribute, BufferGeometry, Color };
     if (name === 'react' || name === '@react-three/rapier' || name === 'react/jsx-runtime') return {};
@@ -216,6 +381,37 @@ for (let index = 0; index < definition.heightsM.length; index++) {
 }
 assert.equal(geometry.mesh.attributes.position.array, geometry.vertices);
 assert.equal(geometry.mesh.index.array, geometry.indices);
+// Measure actual mesh/collider creation offline, without a Scene or live persistence.
+const actualScene = { exports: {} };
+runInNewContext(terrainSceneSource, {
+  exports: actualScene.exports,
+  require(name) {
+    if (name.endsWith('/terrains/terrain-core')) return { terrainElevationColor };
+    if (name === 'three') return THREE;
+    if ((name.endsWith('/TerrainMaterial') || name.endsWith('/TerrainDisplay')) || name === 'react' || name === '@react-three/rapier' || name === 'react/jsx-runtime') return {};
+    throw new Error(`Unexpected geometry dependency: ${name}`);
+  },
+});
+const RAPIER = await import('@dimforge/rapier3d-compat');
+await RAPIER.init();
+for (const size of [129, 257]) {
+  const sample = generateTerrainDefinition(17, 800, 800, size, size, { reliefM: 90, hillSize: 1, detail: 0.35 });
+  const editable = updateTerrainAuthoring(sample, []);
+  const bytes = Buffer.byteLength(JSON.stringify({ definition: editable }));
+  assert.ok(bytes < 2_000_000);
+  const started = performance.now();
+  const built = actualScene.exports.buildTerrainGeometry({ name: 'Precision check', definition: sample, placement }, 1);
+  const meshMs = performance.now() - started;
+  const world = new RAPIER.World({ x: 0, y: -9.81, z: 0 });
+  const colliderStarted = performance.now();
+  const collider = world.createCollider(RAPIER.ColliderDesc.trimesh(built.vertices, built.indices));
+  assert.ok(collider.isValid());
+  world.step();
+  console.log(JSON.stringify({ size, bytes, triangles: built.indices.length / 3, meshMs, colliderAndStepMs: performance.now() - colliderStarted }));
+  assert.equal(built.mesh.attributes.terrainHeight.count, size * size);
+  world.free();
+  built.mesh.dispose();
+}
 assert.throws(() => parseTerrainDefinition({ ...definition, heightsM: [1] }));
 assert.throws(() => parseTerrainDefinition({ ...definition, heightsM: [1, ...definition.heightsM.slice(1)] }));
 assert.throws(() => parseTerrainPlacement({ ...placement, scale: 0 }));
@@ -223,6 +419,47 @@ assert.throws(() => parseTerrainPlacement({ ...placement, scale: 0 }));
 console.log('ThreeD Terrain definition, independent placement, 2D footprint, mesh heights, border and rejection checks passed.');
 
 const palette = defaultTerrainElevationColors();
+const materialModule = { exports: {} };
+runInNewContext(ts.transpileModule(
+  readFileSync(new URL('../../components/threed/terrains/TerrainMaterial.tsx', import.meta.url), 'utf8'),
+  { compilerOptions: { module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX } },
+).outputText, {
+  exports: materialModule.exports,
+  require(name) {
+    if (name === 'three') return THREE;
+    if (name === 'react' || name === 'react/jsx-runtime') return {};
+    throw new Error(`Unexpected material dependency: ${name}`);
+  },
+});
+const sharpMaterial = materialModule.exports.createTerrainMaterial({ color: '#58823f', elevationColors: palette }, 0.9);
+const shader = { uniforms: {}, vertexShader: THREE.ShaderLib.standard.vertexShader, fragmentShader: THREE.ShaderLib.standard.fragmentShader };
+sharpMaterial.onBeforeCompile(shader);
+assert.equal(sharpMaterial.vertexColors, false);
+assert.equal(shader.uniforms.terrainStarts.value.length, 6);
+assert.ok(shader.fragmentShader.includes('terrainAboveSea >= terrainStarts[i]'));
+assert.ok(shader.vertexShader.includes('vTerrainHeight = terrainHeight'));
+sharpMaterial.dispose();
+const legacyPalette = { ...palette };
+delete legacyPalette.rendering;
+assert.equal(parseTerrainElevationColors(legacyPalette).rendering, undefined);
+for (const storedPalette of [legacyPalette, { ...palette, rendering: 'smooth' }, palette]) {
+  const before = JSON.stringify(storedPalette);
+  const parsed = parseTerrainElevationColors(storedPalette);
+  const material = materialModule.exports.createTerrainMaterial({ color: '#58823f', elevationColors: parsed }, 0.9);
+  const compiled = {
+    uniforms: {},
+    vertexShader: THREE.ShaderLib.standard.vertexShader,
+    fragmentShader: THREE.ShaderLib.standard.fragmentShader,
+  };
+  material.onBeforeCompile(compiled);
+  assert.equal(material.vertexColors, false, 'All palettes use height classification, including legacy Smooth colors');
+  assert.ok(compiled.fragmentShader.includes('terrainAboveSea >= terrainStarts[i]'));
+  assert.deepEqual(compiled.uniforms.terrainStarts.value, palette.bands.map(band => band.fromM));
+  assert.equal(JSON.stringify(storedPalette), before, 'Rendering does not rewrite saved settings');
+  material.dispose();
+}
+console.log('Sharp height bands render current, legacy Smooth colors and unspecified palettes without vertex-color blending or data rewrites.');
+assert.throws(() => parseTerrainElevationColors({ ...palette, rendering: 'invalid' }));
 const colored = parseTerrainDefinition({
   ...definition,
   appearance: { ...definition.appearance, elevationColors: palette },
@@ -235,6 +472,39 @@ assert.equal(terrainElevationColor(palette, 0), palette.waterColor);
 assert.equal(terrainElevationColor(palette, 0.001), palette.bands[0].color);
 for (const band of palette.bands.slice(1)) assert.equal(terrainElevationColor(palette, band.fromM), band.color);
 assert.equal(terrainElevationColor({ ...palette, seaLevelM: 2 }, 1), palette.waterColor);
+const raisedShore = parseTerrainElevationColors({
+  ...palette,
+  seaLevelM: 2,
+  bands: palette.bands.map((band, index) => ({
+    ...band,
+    fromM: index === 0 ? 0.04 : band.fromM,
+  })),
+});
+assert.deepEqual(parseTerrainElevationColors(JSON.parse(JSON.stringify(raisedShore))), raisedShore);
+assert.equal(terrainElevationColor(raisedShore, 2), palette.waterColor);
+assert.equal(terrainElevationColor(raisedShore, 2.02, '#123456'), palette.bands[0].color, 'Legacy nonzero Shore starts do not leave a gap above Sea Level');
+assert.equal(terrainElevationColor(raisedShore, 2.04), palette.bands[0].color);
+assert.equal(terrainElevationColor(raisedShore, 2.07), palette.bands[0].color);
+assert.equal(terrainElevationColor(raisedShore, 2.08), palette.bands[1].color);
+const shoreMaterial = materialModule.exports.createTerrainMaterial({ color: '#123456', elevationColors: raisedShore }, 0.9);
+const shoreShader = {
+  uniforms: {},
+  vertexShader: THREE.ShaderLib.standard.vertexShader,
+  fragmentShader: THREE.ShaderLib.standard.fragmentShader,
+};
+shoreMaterial.onBeforeCompile(shoreShader);
+assert.equal(shoreShader.uniforms.terrainStarts.value[0], 0, 'Shore shader starts at Sea Level for legacy saved offsets too');
+assert.equal(shoreShader.uniforms.terrainSea.value, 2);
+shoreMaterial.dispose();
+for (const invalidShore of [-0.01, NaN, Infinity, 0.08, 0.1]) {
+  assert.throws(() => parseTerrainElevationColors({
+    ...palette,
+    bands: palette.bands.map((band, index) => ({
+      ...band,
+      fromM: index === 0 ? invalidShore : band.fromM,
+    })),
+  }));
+}
 for (const invalid of [
   { ...palette, seaLevelM: NaN },
   { ...palette, waterColor: 'red' },
@@ -274,6 +544,7 @@ runInNewContext(ts.transpileModule(readFileSync(new URL('../../components/admin/
   exports: controls.exports,
   require(name) {
     if (name === 'react/jsx-runtime') return { jsx, jsxs: jsx };
+    if (name.endsWith('/TerrainHelp')) return { TerrainHelp: 'TerrainHelp' };
     if (name.endsWith('/models/ModelFieldHelp')) return { ModelFieldHelp: 'Help' };
     if (name === 'react') return {
       useRef(initial) {
@@ -329,7 +600,7 @@ controlsProps.settings = appliedColors;
 renderColors();
 controlNodes = nodes(renderColors());
 assert.equal(numberInputs()[2].props.value, '0.09');
-assert.match(readFileSync(new URL('../../components/admin/threed/terrains/TerrainEditor.tsx', import.meta.url), 'utf8'), /const saveDisabled = colorsPending \|\| Boolean\(brushSettingsError\) \|\| busy/);
+assert.match(readFileSync(new URL('../../components/admin/threed/terrains/TerrainEditor.tsx', import.meta.url), 'utf8'), /const saveDisabled = colorsPending \|\| stylePending \|\| Boolean\(generationError\) \|\| generationFailed \|\| Boolean\(brushSettingsError\) \|\| busy/);
 console.log('Actual Terrain color controls retain invalid drafts, block Save for invalid values and preview validated edits.');
 
 controlsProps.settings = undefined;
@@ -386,7 +657,8 @@ renderColors();
 controlNodes = nodes(renderColors());
 assert.equal(numberInputs()[2].props.value, String(palette.bands[1].fromM), 'External Undo restores the palette');
 assert.equal(pendingColors, false);
-assert.equal(controlNodes.filter(node => node.type === 'Help').length, 2);
+assert.equal(controlNodes.filter(node => node.type === 'Help').length, 0);
+assert.ok(controlNodes.some(node => node.type === 'TerrainHelp' && String(node.props.content).includes('Enable Elevation colors')));
 assert.equal(controlNodes.filter(node => node.type === 'p' && !node.props.role).length, 0);
 console.log('Immediate switch commits preserve unapplied inputs; external Undo restores controls; descriptive guidance uses help tooltips.');
 
@@ -404,6 +676,41 @@ numberInputs()[2].props.onChange({ target: { value: '4' } });
 assert.equal(appliedColors, beforeInvalidThreshold, 'Unordered threshold retains last valid preview');
 assert.equal(pendingColors, true);
 console.log('Sea Level and thresholds preview automatically; invalid drafts preserve geometry and block Save.');
+
+controlsProps.settings = palette;
+renderColors();
+controlNodes = nodes(renderColors());
+assert.equal(numberInputs()[1].props.disabled, false, 'Enabled Shore threshold is editable');
+numberInputs()[1].props.onChange({ target: { value: '0.04' } });
+assert.equal(appliedColors.bands[0].fromM, 0, 'Shore always starts at Sea Level');
+assert.equal(appliedColors.bands[1].fromM, 0.04, 'Shore width immediately updates the Beach start');
+assert.equal(pendingColors, false);
+const validShorePreview = appliedColors;
+controlNodes = nodes(renderColors());
+assert.equal(numberInputs()[1].props.value, '0.04');
+assert.equal(numberInputs()[2].props.value, '0.04', 'Both fields display the same shared boundary');
+for (const value of ['', '-0.01', '0', '0.2', '0.3']) {
+  controlNodes = nodes(renderColors());
+  numberInputs()[1].props.onChange({ target: { value } });
+  assert.equal(appliedColors, validShorePreview, 'Invalid Shore retains last valid preview');
+  assert.equal(pendingColors, true, 'Invalid Shore blocks Save');
+}
+controlNodes = nodes(renderColors());
+numberInputs()[2].props.onChange({ target: { value: '0.06' } });
+assert.equal(appliedColors.bands[0].fromM, 0);
+assert.equal(appliedColors.bands[1].fromM, 0.06);
+controlNodes = nodes(renderColors());
+assert.equal(numberInputs()[1].props.value, '0.06', 'Beach edits also update Shore width');
+assert.equal(pendingColors, false);
+controlsProps.settings = validShorePreview;
+renderColors();
+controlNodes = nodes(renderColors());
+assert.equal(numberInputs()[1].props.value, '0.04', 'External Undo restores Shore width');
+assert.equal(numberInputs()[2].props.value, '0.04', 'External Undo restores Beach boundary together');
+assert.equal(terrainElevationColor(validShorePreview, 0.02), palette.bands[0].color);
+assert.equal(terrainElevationColor(validShorePreview, 0.04), palette.bands[1].color);
+assert.deepEqual(parseTerrainElevationColors(JSON.parse(JSON.stringify(validShorePreview))), validShorePreview);
+console.log('Shore width and Beach start share one immediate, undoable boundary without coastal gaps; invalid drafts block Save.');
 
 const largeTerrain = generateTerrainDefinition(1, 800, 800, 129, 129, { reliefM: 20, hillSize: 1, detail: 0 });
 const previewPlacement = { ...placement, centerXM: 0, centerZM: 0, rotationYDeg: 0, scale: 1 };
@@ -499,12 +806,98 @@ assert.deepEqual(captures[0].target, savedView.target);
 console.log('Terrain camera parser, restore, hydration guard and user movement capture pass; saving remains manual.');
 
 const editorSource = readFileSync(new URL('../../components/admin/threed/terrains/TerrainEditor.tsx', import.meta.url), 'utf8');
-const saveSource = editorSource.slice(editorSource.indexOf('  async function save()'), editorSource.indexOf('  const generationError')).replace('async function save()', 'export async function save()');
+{
+  const source = editorSource.slice(editorSource.indexOf('function validateGenerationDraft('), editorSource.indexOf('interface TerrainHistory'))
+    + editorSource.slice(editorSource.indexOf('  function changeGeneration('), editorSource.indexOf('  function sculpt(')).replace('function generate(', 'export function generate(').replace('function changeGeneration(', 'export function changeGeneration(');
+  const module = { exports: {} };
+  const input = {
+    ...drawnTerrain,
+    appearance: {
+      ...drawnTerrain.appearance,
+      elevationColors: defaultTerrainElevationColors(),
+      style: terrainCore.defaultTerrainStyle(),
+      noiseRecipe,
+      editorPanels: defaultTerrainEditorPanels(),
+      brushSettings: defaultTerrainBrushSettings(),
+    },
+  };
+  let result;
+  let commits = 0;
+  const context = {
+    exports: module.exports,
+    definition: input,
+    busy: false,
+    loading: false,
+    maxTerrainGridSize: terrainCore.maxTerrainGridSize,
+    maxTerrainReliefM: terrainCore.maxTerrainReliefM,
+    setGenerationFailed() {},
+    seed: '23',
+    width: '40',
+    length: '40',
+    columns: '33',
+    rows: '33',
+    reliefM: '4',
+    hillSize: '1',
+    detailPercent: '35',
+    brushRadius: '4',
+    generationError: '',
+    generateTerrainDefinition,
+    updateTerrainAuthoring,
+    setError(value) { assert.equal(value, ''); },
+    setMessage() {},
+    commitDefinition(value) { result = value; commits++; context.definition = value; },
+  };
+  const fields = ['seed', 'width', 'length', 'columns', 'rows', 'reliefM', 'hillSize', 'detailPercent', 'brushRadius'];
+  for (const field of fields) context['set' + field[0].toUpperCase() + field.slice(1)] = value => { context[field] = value; };
+  runInNewContext(ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText, context);
+  module.exports.generate();
+  assert.equal(commits, 1);
+  assert.deepEqual(result.heightsM, updateTerrainAuthoring(generateTerrainDefinition(23, 40, 40, 33, 33, { reliefM: 4, hillSize: 1, detail: 0.35, transitionRadiusM: 4 }), input.appearance.authoring.operations).heightsM);
+  for (const key of ['style', 'elevationColors', 'editorPanels', 'brushSettings']) assert.equal(result.appearance[key], input.appearance[key]);
+  assert.equal(input.appearance.noiseRecipe, noiseRecipe);
+  assert.equal(result.appearance.noiseRecipe, undefined);
+  module.exports.generate();
+  assert.equal(commits, 1, 'Optional Generate does not duplicate an already applied history step');
+  const edits = {
+    seed: '24',
+    width: '45',
+    length: '48',
+    columns: '41',
+    rows: '43',
+    reliefM: '6',
+    hillSize: '1.5',
+    detailPercent: '50',
+    brushRadius: '8',
+  };
+  for (const [field, value] of Object.entries(edits)) {
+    const before = commits;
+    module.exports.changeGeneration(field, value);
+    assert.equal(commits, before + 1, field + ' applies immediately in one commit');
+    assert.equal(context[field], value);
+    assert.equal(result.appearance.elevationColors, input.appearance.elevationColors);
+    assert.equal(result.appearance.style, input.appearance.style);
+    assert.deepEqual(result.appearance.authoring.operations, input.appearance.authoring.operations);
+  }
+  const valid = result;
+  const beforeInvalid = commits;
+  module.exports.changeGeneration('seed', '');
+  module.exports.changeGeneration('columns', '41.5');
+  assert.equal(result, valid);
+  assert.equal(commits, beforeInvalid);
+  module.exports.changeGeneration('seed', '25');
+  assert.equal(commits, beforeInvalid, 'Another invalid draft still blocks generation');
+  module.exports.changeGeneration('columns', '41');
+  assert.equal(commits, beforeInvalid + 1, 'Correcting the draft applies all current valid fields');
+  module.exports.generate();
+  assert.equal(commits, beforeInvalid + 1, 'Optional Generate remains idempotent');
+  console.log('Immediate generation applies each valid field, retains drawings/appearance, rejects incomplete drafts and avoids duplicate history.');
+}
+const saveSource = editorSource.slice(editorSource.indexOf('  async function save()'), editorSource.indexOf('  const generationError', editorSource.indexOf('  async function save()'))).replace('async function save()', 'export async function save()');
 let savePayload;
 let failCameraSave = false;
 const acknowledgedCameras = [];
 const acknowledgedPanels = [];
-const panelDraft = { ...defaultTerrainEditorPanels(), generation: false, colors: false };
+const panelDraft = { ...defaultTerrainEditorPanels(), generation: false, display: false, colors: false };
 const saveModule = { exports: {} };
 const noop = () => {};
 runInNewContext(ts.transpileModule(saveSource, { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText, {
@@ -550,6 +943,9 @@ assert.deepEqual(parseTerrainEditorPanels(JSON.parse(JSON.stringify(panelDraft))
 assert.deepEqual(parseTerrainDefinition({ ...definition, appearance: { ...definition.appearance, editorPanels: panelDraft } }).appearance.editorPanels, panelDraft);
 assert.throws(() => parseTerrainEditorPanels({ ...panelDraft, colors: 'false' }));
 assert.throws(() => parseTerrainEditorPanels({ ...panelDraft, unknown: true }));
+const { display: omittedDisplay, ...legacyPanels } = panelDraft;
+assert.deepEqual(parseTerrainEditorPanels(legacyPanels), { ...panelDraft, display: true });
+assert.throws(() => parseTerrainEditorPanels({ ...panelDraft, display: null }));
 assert.throws(() => parseTerrainEditorPanels({ colors: false }));
 const panelSource = editorSource.slice(editorSource.indexOf('function TerrainEditorPanel'), editorSource.indexOf('export function TerrainEditor')).replace('function TerrainEditorPanel', 'export function TerrainEditorPanel');
 const panelModule = { exports: {} };
@@ -559,6 +955,7 @@ runInNewContext(ts.transpileModule(panelSource, { compilerOptions: { module: ts.
   Button: 'Button',
   ChevronRight: 'ChevronRight',
   ModelFieldHelp: 'Help',
+  TerrainHelp: 'TerrainHelp',
   require: () => ({ jsx, jsxs: jsx }),
 });
 let requestedOpen;
