@@ -5,6 +5,7 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Boxes, ChevronRight, Copy, Download, Plus, Save, Trash2, Upload } from 'lucide-react';
 import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
+import { useAssemblyPageTitle } from '@/components/layout/AppPageTitle';
 import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -64,6 +65,7 @@ export function AssemblyCompositionWorkspace({ recordId }: { recordId?: string }
   const [saving, setSaving] = useState(false);
   const [savedRevision, setSavedRevision] = useState(0);
   const [loadedRecordId, setLoadedRecordId] = useState('');
+  useAssemblyPageTitle(ownerId && workspaceOwner === ownerId && recordId === loadedRecordId ? name : undefined);
   const [modelImportOpen, setModelImportOpen] = useState(false);
   const modelImportOpenRef = useRef(false);
   const operationRef = useRef(0);

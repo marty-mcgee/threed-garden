@@ -5,6 +5,24 @@ import { createContext, useContext, useEffect, useState, type ReactNode, type Di
 
 type ProjectTitle = { pathname: string; name: string; id: string } | null;
 const ProjectTitleContext = createContext<Dispatch<SetStateAction<ProjectTitle>> | null>(null);
+type AssemblyTitle = {
+  pathname: string;
+  name: string;
+} | null;
+const AssemblyTitleContext = createContext<Dispatch<SetStateAction<AssemblyTitle>> | null>(null);
+
+export function useAssemblyPageTitle(name: string | undefined) {
+  const pathname = usePathname();
+  const setAssembly = useContext(AssemblyTitleContext);
+  useEffect(() => {
+    if (!setAssembly) return;
+    setAssembly(name?.trim() ? {
+      pathname,
+      name: name.trim(),
+    } : null);
+    return () => setAssembly(null);
+  }, [name, pathname, setAssembly]);
+}
 
 export function useProjectPageTitle(id: string | null, name: string | undefined) {
   const pathname = usePathname();
@@ -35,8 +53,10 @@ const labels: Record<string, string> = {
   chatgpt: 'ChatGPT',
 };
 
-export function getAppPageTitle(pathname: string | null, titlePrefix = 'ThreeD Garden'): string {
+export function getAppPageTitle(pathname: string | null, titlePrefix = 'ThreeD Garden', assemblyName?: string): string {
   const segments = (pathname ?? '/').split('/').filter(Boolean);
+  const assemblyRecord = /^\/admin\/threed\/assembly-groups\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/?$/i.test(pathname ?? '');
+  if (assemblyRecord) segments.pop();
   const titles = segments
     // ThreeD is a grouping route within these surfaces, not another page title.
     .filter((segment, index) => !(segment === 'threed' && index === 1 &&
@@ -46,16 +66,19 @@ export function getAppPageTitle(pathname: string | null, titlePrefix = 'ThreeD G
       return labels[segment] ?? segment.replace(/^_/, '').split('-')
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     });
-  return [titlePrefix, ...titles].join(' - ');
+  return [titlePrefix, ...titles, ...(assemblyRecord && assemblyName?.trim() ? [assemblyName.trim()] : [])].join(' - ');
 }
 
 /** One title owner for server rendering and client-side route transitions. */
 export default function AppPageTitle({ children, titlePrefix = 'ThreeD Garden' }: { children: ReactNode; titlePrefix?: string }) {
   const pathname = usePathname();
   const [project, setProject] = useState<ProjectTitle>(null);
+  const [assembly, setAssembly] = useState<AssemblyTitle>(null);
   const suffix = project?.pathname === pathname ? ` - ${project.name} [${project.id}]` : '';
   return <ProjectTitleContext.Provider value={setProject}>
-    <title>{getAppPageTitle(pathname, titlePrefix) + suffix}</title>
-    {children}
+    <AssemblyTitleContext.Provider value={setAssembly}>
+      <title>{getAppPageTitle(pathname, titlePrefix, assembly?.pathname === pathname ? assembly.name : undefined) + suffix}</title>
+      {children}
+    </AssemblyTitleContext.Provider>
   </ProjectTitleContext.Provider>;
 }

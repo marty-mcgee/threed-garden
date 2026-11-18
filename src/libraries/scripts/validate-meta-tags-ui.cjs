@@ -81,6 +81,11 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
  assert.equal(titles.getAppPageTitle('/admin/settings', contract.appTitlePrefix(titleSettings)), 'ThreeD App - Admin - Settings');
  assert.equal(titles.getAppPageTitle('/', contract.appTitlePrefix(titleSettings)), 'ThreeD App');
  assert.equal(titles.getAppPageTitle('/dashboard/scene'), 'ThreeD Garden - Dashboard - Scene');
+ const assemblyPath = '/admin/threed/assembly-groups/05b3b80c-0ed3-4123-8bc0-bf388e45cbef';
+ assert.equal(titles.getAppPageTitle(assemblyPath, 'ThreeD App', 'Garden Pavilion'), 'ThreeD App - Admin - Assembly Groups - Garden Pavilion');
+ assert.equal(titles.getAppPageTitle(assemblyPath, 'ThreeD App'), 'ThreeD App - Admin - Assembly Groups', 'Loading must not expose a UUID as a page name');
+ assert.equal(titles.getAppPageTitle('/admin/threed/assembly-groups/new', 'ThreeD App', 'Ignored'), 'ThreeD App - Admin - Assembly Groups - New');
+ assert.equal(titles.getAppPageTitle('/admin/threed/models/15', 'ThreeD App', 'Ignored'), 'ThreeD App - Admin - Models - #15');
  assert.equal(contract.metaTagsMetadata(titleSettings).title, undefined, 'Existing title owner remains authoritative');
  const preview = loadingUi.MetaTagsSettings({ editor: { ...suggestionEditor, draft: titleSettings } });
  assert(text(preview).includes('<title>ThreeD App - [page / Project suffix]</title>'));
