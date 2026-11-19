@@ -4,7 +4,7 @@ import { SettingsSection } from '@/components/settings/SettingsSection';
 import { useEffect, useState } from 'react';
 import { Palette } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { defaultModuleAppearance, moduleColors, moduleDefinitions, moduleManagementRoutes, moduleKeys, moduleIconNames, type ModuleAppearanceSnapshot, type ModuleStyle } from '@/libraries/config/module-appearance';
+import { defaultModuleAppearance, getModuleManagementRoute, moduleColors, moduleDefinitions, moduleKeys, moduleIconNames, type ModuleAppearanceSnapshot, type ModuleStyle } from '@/libraries/config/module-appearance';
 import { useModuleAppearance } from './ModuleAppearanceProvider';
 import { moduleIcons } from './module-icons';
 
@@ -73,8 +73,8 @@ export function ModuleAppearanceSettings({ editor }: { editor: ReturnType<typeof
     {context.loaded&&!context.canEdit&&<p className="text-xs text-muted-foreground">Read only: an active Super Admin account is required to edit.</p>}
     <fieldset disabled={disabled} className="min-w-0 space-y-1.5">
       {draft&&moduleGroups.map(group=>{
-        const groupRoute = moduleManagementRoutes[group.key];
-        const keys = moduleKeys.filter(key => key === group.key || (groupRoute && moduleManagementRoutes[key]?.startsWith(groupRoute + '/')));
+        const groupRoute = getModuleManagementRoute(group.key);
+        const keys = moduleKeys.filter(key => key === group.key || (groupRoute && getModuleManagementRoute(key)?.startsWith(groupRoute + '/')));
         const GroupIcon = moduleIcons[draft.styles[group.key].icon];
         const changed = keys.filter(key => JSON.stringify(draft.styles[key]) !== JSON.stringify(context.snapshot.styles[key])).length;
         return <details key={group.key} className="admin-editor-panel min-w-0 rounded-md border border-border/60">

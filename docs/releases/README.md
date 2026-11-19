@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.35.1 - ThreeD Assembly Group Navigation and Titles (prepared; deployment pending)](v0.35.1.md)
+- [v0.35.2 - ThreeD Configuration Cleanup and Font Assets (prepared, deployment pending)](v0.35.2.md)
+
+- [v0.35.1 - ThreeD Assembly Group Navigation and Titles (Developer-confirmed production)](v0.35.1.md)
 
 - [v0.35.0 - ThreeD App Updates, Project Menus and Registration Pause (Developer-confirmed production)](v0.35.0.md)
 

@@ -6,7 +6,33 @@ import { useFrame } from '@react-three/fiber';
 import { Sphere, Html, Billboard } from '@react-three/drei';
 import * as THREE from 'three';
 import { TrafficIncident3D } from '@/libraries/types/threed';
-import { getSourceColor, getSourceIcon } from '@/libraries/config/constants';
+
+const sourceStyles: Record<string, { color: string; icon: string }> = {
+  caltrans: {
+    color: '#3b82f6',
+    icon: '🚧',
+  },
+  bayarea511: {
+    color: '#10b981',
+    icon: '📻',
+  },
+  chpLive: {
+    color: '#ef4444',
+    icon: '🚨',
+  },
+  chpHistorical: {
+    color: '#8b5cf6',
+    icon: '📊',
+  },
+  calfire: {
+    color: '#f97316',
+    icon: '🔥',
+  },
+  default: {
+    color: '#6b7280',
+    icon: '📍',
+  },
+};
 
 interface TrafficMarker3DProps {
   incident: TrafficIncident3D;
@@ -16,8 +42,7 @@ interface TrafficMarker3DProps {
 export function TrafficMarker3D({ incident, position }: TrafficMarker3DProps) {
   const meshRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
-  const color = getSourceColor(incident.type);
-  const icon = getSourceIcon(incident.type);
+  const { color, icon } = Object.hasOwn(sourceStyles, incident.type) ? sourceStyles[incident.type] : sourceStyles.default;
 
   useFrame(({ clock }) => {
     if (meshRef.current) {

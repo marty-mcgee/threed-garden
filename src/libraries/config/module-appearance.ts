@@ -289,7 +289,7 @@ export const workspaceSurfaces = [
 // Module management destinations, separate from public/workspace surfaces.
 // Appearance keys and saved icon/color snapshots are unchanged.
 
-export const moduleManagementRoutes: Partial<Record<ModuleKey, string>> = {
+export const moduleManagementRoutes = {
   users: '/admin/users',
   learn: '/admin/learn',
   projects: '/admin/projects',
@@ -332,7 +332,18 @@ export const moduleManagementRoutes: Partial<Record<ModuleKey, string>> = {
   caltransCctv: '/admin/traffic/caltrans-cctv',
   calfire: '/admin/traffic/calfire',
   bayArea511: '/admin/traffic/bay-area-511',
-};
+} as const satisfies Partial<Record<ModuleKey, `/${string}`>>;
+
+const managementRoutes: Partial<Record<ModuleKey, string>> = moduleManagementRoutes;
+
+export function getModuleManagementRoute(key: ModuleKey): string | undefined {
+  return managementRoutes[key];
+}
+
+const managementRoutesBySpecificity = moduleKeys.flatMap(key => {
+  const href = getModuleManagementRoute(key);
+  return href ? [{ key, href }] : [];
+}).sort((a, b) => b.href.length - a.href.length);
 
 const colorNames = Object.keys(moduleColors) as [keyof typeof moduleColors, ...Array<keyof typeof moduleColors>];
 
@@ -380,10 +391,8 @@ export function defaultModuleAppearance(): ModuleAppearanceSnapshot {
 }
 
 export function moduleForPath(path: string): ModuleKey | undefined {
-  const managementKey = moduleKeys
-    .filter(key => moduleManagementRoutes[key] !== undefined)
-    .sort((a, b) => moduleManagementRoutes[b]!.length - moduleManagementRoutes[a]!.length)
-    .find(key => path === moduleManagementRoutes[key] || path.startsWith(moduleManagementRoutes[key] + '/'));
+  const managementKey = managementRoutesBySpecificity
+    .find(({ href }) => path === href || path.startsWith(href + '/'))?.key;
   if (managementKey) return managementKey;
   return workspaceSurfaces.find(surface => path === surface.href ||
     (surface.appearanceMatch === 'subtree' && path.startsWith(surface.href + '/')))?.moduleKey;

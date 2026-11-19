@@ -11,8 +11,11 @@ function load(file, dependencies, globals = {}) {
   return exports;
 }
 const icons = new Proxy({}, { get: (_, name) => name });
-const nav = load('src/components/admin/layout/admin-navigation.ts', { 'lucide-react': icons });
 const contract = load('src/libraries/config/module-appearance.ts', {});
+const nav = load('src/components/admin/layout/admin-navigation.ts', {
+  'lucide-react': icons,
+  '@/libraries/config/module-appearance': contract,
+});
 const appearance = contract.defaultModuleAppearance();
 appearance.styles.models = {icon:'Leaf',color:'rose'};
 appearance.styles.learn = {icon:'Star',color:'violet'};

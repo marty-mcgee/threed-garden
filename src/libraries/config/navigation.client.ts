@@ -1,74 +1,96 @@
-// lib/config/navigation.client.ts
 'use client';
 
 import {
-  MapPin, AlertTriangle, Radio, Car, Flame, BarChart3,
-  ScanEye, Droplets, TrendingUp, Activity, Carrot,
+  AlertTriangle, Radio, Car, Flame, BarChart3,
+  Droplets, TrendingUp, Carrot,
   LayoutDashboard, Music, type LucideIcon
 } from 'lucide-react';
-import { defaultWorkspaceSettings, workspaceLinkVisible, workspaceModules, type WorkspaceSettings } from './workspace-settings';
+import {
+  defaultWorkspaceSettings,
+  workspaceLinkDefinitions,
+  workspaceLinkVisible,
+  workspaceModules,
+  type WorkspaceLinkKey,
+  type WorkspaceModule,
+  type WorkspaceSettings,
+} from './workspace-settings';
 
-export interface NavItem {
+interface NavItem {
   path: string;
   name: string;
   icon: LucideIcon;
-  color: string;
-  module: 'traffic' | 'threed' | 'multimedia';
-  service?: string;
+  module: WorkspaceModule;
+  service?: WorkspaceLinkKey;
 }
 
-export interface NavSection {
-  module: 'traffic' | 'threed' | 'multimedia';
+interface NavSection {
+  module: WorkspaceModule;
   title: string;
   icon: LucideIcon;
   items: NavItem[];
 }
 
-// All possible navigation items
-export const ALL_NAV_ITEMS: NavItem[] = [
-  // Multimedia
-  { path: '/dashboard/multimedia', name: 'Overview', icon: LayoutDashboard, color: 'orange', module: 'multimedia' },
-  
-  // Traffic
-  { path: '/dashboard/traffic', name: 'Overview', icon: LayoutDashboard, color: 'blue', module: 'traffic' },
-  { path: '/dashboard/traffic/chp-live', name: 'CHP Live', icon: AlertTriangle, color: 'red', module: 'traffic', service: 'chpCad' },
-  { path: '/dashboard/traffic/511org', name: 'Bay Area 511', icon: Radio, color: 'emerald', module: 'traffic', service: 'bayArea511' },
-  { path: '/dashboard/traffic/caltrans', name: 'Caltrans', icon: Car, color: 'blue', module: 'traffic', service: 'caltrans' },
-  { path: '/dashboard/traffic/calfire', name: 'CalFire', icon: Flame, color: 'orange', module: 'traffic', service: 'calfire' },
-  { path: '/dashboard/traffic/chp-historical', name: 'CHP Historical', icon: BarChart3, color: 'purple', module: 'traffic', service: 'chpHistorical' },
-  
-  // ThreeD
-  { path: '/dashboard/scene', name: 'Overview', icon: LayoutDashboard, color: 'green', module: 'threed' },
-  { path: '/dashboard/threed/weather', name: 'Weather', icon: Droplets, color: 'cyan', module: 'threed', service: 'weather' },
-  { path: '/dashboard/threed/garden/analytics', name: 'Analytics', icon: TrendingUp, color: 'amber', module: 'threed', service: 'analytics' },
-];
+// Menu order and icons are specific to this surface.
+const linkIcons = {
+  chpCad: AlertTriangle,
+  bayArea511: Radio,
+  caltrans: Car,
+  calfire: Flame,
+  chpHistorical: BarChart3,
+  weather: Droplets,
+  analytics: TrendingUp,
+} satisfies Record<WorkspaceLinkKey, LucideIcon>;
 
-export const SECTION_CONFIG: Record<'traffic' | 'threed' | 'multimedia', { title: string; icon: LucideIcon }> = {
-  traffic: { title: 'Traffic Services', icon: Car },
-  threed: { title: 'ThreeD Garden', icon: Carrot },
-  multimedia: { title: 'Multimedia Library', icon: Music },
-};
+const navigationLinks: NavItem[] = (Object.keys(linkIcons) as WorkspaceLinkKey[]).map(service => {
+  const { path, label, module } = workspaceLinkDefinitions[service];
+  return {
+    path,
+    name: service === 'analytics' ? 'Analytics' : label,
+    icon: linkIcons[service],
+    module,
+    service,
+  };
+});
+
+const sectionConfig = {
+  traffic: {
+    title: 'Traffic Services',
+    icon: Car,
+    overviewPath: '/dashboard/traffic',
+  },
+  threed: {
+    title: 'ThreeD Garden',
+    icon: Carrot,
+    overviewPath: '/dashboard/scene',
+  },
+  multimedia: {
+    title: 'Multimedia Library',
+    icon: Music,
+    overviewPath: '/dashboard/multimedia',
+  },
+} satisfies Record<WorkspaceModule, { title: string; icon: LucideIcon; overviewPath: `/${string}` }>;
 
 export function buildNavigationClient(settings: WorkspaceSettings = defaultWorkspaceSettings()): NavSection[] {
   const sections: NavSection[] = [];
 
   workspaceModules.forEach((module) => {
-    const moduleEnabled = settings.modules[module];
-    if (!moduleEnabled) return;
-
-    const moduleItems = ALL_NAV_ITEMS.filter(item => item.module === module);
-    const enabledItems = moduleItems.filter(item => {
-      if (!item.service) return true;
-      return workspaceLinkVisible(settings, module, item.service);
-    });
-
-    if (enabledItems.length === 0) return;
+    if (!settings.modules[module]) return;
+    const { title, icon, overviewPath } = sectionConfig[module];
+    const items = navigationLinks.filter(item => item.module === module && workspaceLinkVisible(settings, module, item.service));
 
     sections.push({
       module,
-      title: SECTION_CONFIG[module].title,
-      icon: SECTION_CONFIG[module].icon,
-      items: enabledItems,
+      title,
+      icon,
+      items: [
+        {
+          path: overviewPath,
+          name: 'Overview',
+          icon: LayoutDashboard,
+          module,
+        },
+        ...items,
+      ],
     });
   });
 

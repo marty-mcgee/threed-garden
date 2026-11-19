@@ -167,7 +167,7 @@ Decide whether identifiers are global or per owner, then align allocation, confl
 
 ### 9. Latent Settings helpers need review before reuse
 
-[Legacy DB settings helpers](../../src/libraries/config/settings.ts) have a shared process cache across user-specific reads and activate deployments with two separate writes; the schema has no one-active-deployment constraint. No external runtime callers of those helpers were found. The active workspace Settings service uses its own guarded transactional path. These findings are deferred risks before helper reuse, not demonstrated current-user leakage or failed workspace saving.
+At the time of the audit, the legacy DB settings helpers in `src/libraries/config/settings.ts` used a shared process cache across user-specific reads and activated deployments with two separate writes. The schema had no one-active-deployment constraint. The audit found no external runtime callers or observed workspace Save failures. The November 19 config cleanup removed those unused helpers. Workspace Settings uses its existing guarded transactional path.
 
 ### Positive module-specific checks
 
