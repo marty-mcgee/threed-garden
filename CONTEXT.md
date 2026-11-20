@@ -2,6 +2,8 @@
 
 ## Current checkpoint
 
+November 19. [v0.35.4 - ThreeD Task Visibility](docs/releases/v0.35.4.md) is prepared and unstaged. It adds private Pending Tasks, a Public Task switch and scoped Task and Project reads. The Developer applied the migration, and the signed-out localhost API returns HTTP 200 with the visibility field. Fresh TypeScript, seven focused checks, all 111 offline CI tasks and the guarded production build passed. Deployment and post-deploy privacy checks on the shared Neon branch are pending before the 20-Task import.
+
 November 19. [v0.35.3 - ThreeD Learn Guides, Categories and Ownership](docs/releases/v0.35.3.md#production-confirmation) is Developer-confirmed production. The Developer verified all four Learn migrations on the production database and confirmed both signed-in and signed-out Guide views. The local checkout remained `main` at `5e761a14` with package and root lock versions 0.35.3. Release preparation passed fresh TypeScript, five focused checks, all 110 offline CI tasks, the isolated 169-page build and 1,979-input parity. The exact deployed commit remains independently unverified.
 
 November 19. The Developer confirmed that [Learn Guide ownership SQL](docs/developers/sql/learn-guides-owner.sql) ran successfully in the Neon Console SQL Editor and verified in the signed-in browser that Learn loads and shows all Guides as Super Admin. The target database branch remains independently unverified. The migration backfills `learn_guides.user_id` from the recorded creator. The read fallback covers databases awaiting that migration, and guests require Active, Published and Public. Fresh TypeScript and focused checks passed for both ownership and the fallback. The local guest list and detail returned 200.

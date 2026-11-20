@@ -62,6 +62,7 @@ vm.runInNewContext(code('src/app/api/map/threed/route.ts'), {
   require(name) {
     if (name === '@/libraries/services/project/measurement-units') return measurementUnits;
     if (name === '@/libraries/services/project/configuration') return { projectConfigurationStamp: () => ({ savedAt: null, measurementUnits: 'metric' }) };
+    if (name === '@/libraries/services/threed/tasks/read-scope') return { readThreeDTasks: () => { throw new Error('Fixture supplies no Tasks'); } };
     if (name === '@/libraries/services/threed/terrains/terrain-core') return { parseProjectTerrainSurface: value => value ?? null };
     if (name === '@/libraries/services/threed/design/project-architecture') return { readProjectArchitecture: config => config?.threeDArchitecture };
     if (name === '@/libraries/services/project/scene-texture-resources') return { sceneTextureResources: async () => [] };

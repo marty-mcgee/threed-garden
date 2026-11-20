@@ -1017,6 +1017,7 @@ export enum TaskType {
 
 export interface ThreeDTask {
   isActive: boolean | null;
+  isPublic: boolean | null;
   id: number;
   userId: string;
   taskId: string;
@@ -1050,6 +1051,7 @@ export interface ThreeDTaskFormData {
   type: string;
   priority: TaskPriority;
   status: TaskStatus;
+  isPublic: boolean;
   dueDate: string;
   assignedTo: string;
   notes: string;

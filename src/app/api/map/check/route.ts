@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
 import { project, projectAssets } from '@/libraries/schema/project';
-import { eq, and, or, sql } from 'drizzle-orm';
+import { eq, and, ne, or, sql } from 'drizzle-orm';
+import { readableTaskAssignment, readThreeDTasks } from '@/libraries/services/threed/tasks/read-scope';
 
 // ============================================
 // GET /api/map/check - Check if a project has map data
@@ -53,58 +54,33 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // ✅ Count total assets for this project
-    const [assetCount] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(projectAssets)
-      .where(
-        and(
+    const [assetCount, trafficCount, threedCount] = await readThreeDTasks(userId, 'project', async scope => {
+      const countAssets = async (moduleType?: 'traffic' | 'threed') => {
+        const [row] = await db.select({ count: sql<number>`count(*)` }).from(projectAssets).where(and(
           eq(projectAssets.projectId, parsedProjectId),
           eq(projectAssets.userId, projectData.userId!),
-          eq(projectAssets.isActive, true)
-        )
-      );
+          eq(projectAssets.isActive, true),
+          moduleType ? eq(projectAssets.moduleType, moduleType) : undefined,
+          or(ne(projectAssets.assetType, 'threed_tasks'), readableTaskAssignment(projectAssets.assetId, scope)),
+        ));
+        return Number(row?.count || 0);
+      };
+      return Promise.all([countAssets(), countAssets('traffic'), countAssets('threed')]);
+    });
 
-    // ✅ Check if project has traffic assets
-    const [trafficCount] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(projectAssets)
-      .where(
-        and(
-          eq(projectAssets.projectId, parsedProjectId),
-          eq(projectAssets.userId, projectData.userId!),
-          eq(projectAssets.moduleType, 'traffic'),
-          eq(projectAssets.isActive, true)
-        )
-      );
-
-    // ✅ Check if project has threed assets
-    const [threedCount] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(projectAssets)
-      .where(
-        and(
-          eq(projectAssets.projectId, parsedProjectId),
-          eq(projectAssets.userId, projectData.userId!),
-          eq(projectAssets.moduleType, 'threed'),
-          eq(projectAssets.isActive, true)
-        )
-      );
-
-    const totalAssets = assetCount?.count || 0;
-    const hasTraffic = (trafficCount?.count || 0) > 0;
-    const hasThreeD = (threedCount?.count || 0) > 0;
+    const hasTraffic = trafficCount > 0;
+    const hasThreeD = threedCount > 0;
 
     return NextResponse.json({
       success: true,
       data: {
         hasTraffic,
         hasThreeD,
-        totalAssets,
-        trafficCount: trafficCount?.count || 0,
-        threedCount: threedCount?.count || 0,
+        totalAssets: assetCount,
+        trafficCount,
+        threedCount,
       },
-    });
+    }, { headers: { 'Cache-Control': 'private, no-store' } });
   } catch (error) {
     console.error('Error checking project data:', error);
     return NextResponse.json(

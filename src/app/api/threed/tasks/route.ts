@@ -12,6 +12,12 @@ import {
 import { projectAssets } from '@/libraries/schema/project';
 import { eq, and, or, desc, ilike, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/libraries/db/sequence';
+import { databaseConnectionDiagnostic } from '@/libraries/db/connection-diagnostics';
+import { isMissingTaskVisibilityColumn, readThreeDTasks, taskVisibilityUnavailable } from '@/libraries/services/threed/tasks/read-scope';
+
+export const dynamic = 'force-dynamic';
+const taskReadHeaders = { 'Cache-Control': 'private, no-store' };
+const migrationRequired = () => NextResponse.json({ success: false, error: taskVisibilityUnavailable }, { status: 503 });
 
 // ============================================
 // GET /api/threed/tasks
@@ -31,13 +37,6 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(100, Math.max(1, Math.floor(Number(searchParams.get('limit')) || 50)));
     const rawOffset = Number(searchParams.get('offset'));
     const offset = Number.isFinite(rawOffset) ? Math.max(0, Math.floor(rawOffset)) : 0;
-    const accessCondition = userId
-      ? or(
-          eq(threedTasks.userId, userId),
-          eq(threedTasks.status, 'pending')
-        )!
-      : eq(threedTasks.status, 'pending');
-
     // ✅ Get a single task by ID
     if (id) {
       const parsedId = parseInt(id);
@@ -48,11 +47,11 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      const [task] = await db
-        .select()
+      const [task] = await readThreeDTasks(userId, 'catalog', async (scope, selection) => db
+        .select(selection)
         .from(threedTasks)
-        .where(and(eq(threedTasks.id, parsedId), accessCondition))
-        .limit(1);
+        .where(and(eq(threedTasks.id, parsedId), scope))
+        .limit(1));
 
       if (!task) {
         return NextResponse.json(
@@ -64,12 +63,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         success: true,
         data: task,
-      });
+      }, { headers: taskReadHeaders });
     }
 
     type TaskStatus = NonNullable<(typeof threedTasks.$inferSelect)['status']>;
     type TaskPriority = NonNullable<(typeof threedTasks.$inferSelect)['priority']>;
-    const conditions: SQL[] = [accessCondition];
+    const conditions: SQL[] = [];
 
     const search = searchParams.get('search')?.trim();
     if (search) conditions.push(or(ilike(threedTasks.title, `%${search}%`), ilike(threedTasks.description, `%${search}%`))!);
@@ -112,18 +111,10 @@ export async function GET(request: NextRequest) {
             success: true,
             data: [],
             pagination: { limit, offset, total: 0 },
-          });
+          }, { headers: taskReadHeaders });
         }
       }
     }
-
-    const where = and(...conditions);
-
-    // ✅ Get total count
-    const countResult = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(threedTasks)
-      .where(where);
 
     const sortColumns = {
       title: threedTasks.title, type: threedTasks.type,
@@ -135,18 +126,21 @@ export async function GET(request: NextRequest) {
       ? sortColumns[sortKey as keyof typeof sortColumns] : null;
     const direction = searchParams.get('direction') === 'desc' ? sql`desc` : sql`asc`;
 
-    const tasks = await db
-      .select()
-      .from(threedTasks)
-      .where(where)
-      .orderBy(
-        ...(sortColumn ? [sql`${sortColumn} ${direction} nulls last`] : [
-          sql`CASE WHEN ${threedTasks.status} = 'pending' THEN 0 WHEN ${threedTasks.status} = 'in_progress' THEN 1 WHEN ${threedTasks.status} = 'completed' THEN 2 ELSE 3 END`,
-          desc(threedTasks.createdAt),
-        ]), desc(threedTasks.id)
-      )
-      .limit(limit)
-      .offset(offset);
+    const [countResult, tasks] = await readThreeDTasks(userId, 'catalog', async (scope, selection) => {
+      const where = and(scope, ...conditions);
+      return Promise.all([
+        db.select({ count: sql<number>`count(*)` }).from(threedTasks).where(where),
+        db.select(selection).from(threedTasks).where(where)
+          .orderBy(
+            ...(sortColumn ? [sql`${sortColumn} ${direction} nulls last`] : [
+              sql`CASE WHEN ${threedTasks.status} = 'pending' THEN 0 WHEN ${threedTasks.status} = 'in_progress' THEN 1 WHEN ${threedTasks.status} = 'completed' THEN 2 ELSE 3 END`,
+              desc(threedTasks.createdAt),
+            ]), desc(threedTasks.id)
+          )
+          .limit(limit)
+          .offset(offset),
+      ]);
+    });
 
     return NextResponse.json({
       success: true,
@@ -156,9 +150,9 @@ export async function GET(request: NextRequest) {
         offset,
         total: countResult[0]?.count || 0,
       },
-    });
+    }, { headers: taskReadHeaders });
   } catch (error) {
-    console.error('[Tasks API] GET error:', error);
+    console.error('[Tasks API] GET error:', databaseConnectionDiagnostic(error));
     return NextResponse.json(
       { success: false, error: 'Failed to fetch tasks' },
       { status: 500 }
@@ -182,17 +176,14 @@ export async function POST(request: NextRequest) {
     const userId = session.user.id;
     const body = await request.json();
 
-    console.log('[Tasks API] POST - Received body:', body);
-    console.log('[Tasks API] dueDate type:', typeof body.dueDate);
-    console.log('[Tasks API] dueDate value:', body.dueDate);
-    console.log('[Tasks API] dueDate === undefined:', body.dueDate === undefined);
-    console.log('[Tasks API] dueDate === null:', body.dueDate === null);
-
     if (!body.title) {
       return NextResponse.json(
         { success: false, error: 'Missing required field: title' },
         { status: 400 }
       );
+    }
+    if (body.isPublic !== undefined && typeof body.isPublic !== 'boolean') {
+      return NextResponse.json({ success: false, error: 'Invalid Public Task value' }, { status: 400 });
     }
 
     // ✅ Generate taskId
@@ -209,6 +200,7 @@ export async function POST(request: NextRequest) {
       type: body.type || null,
       priority: body.priority || 'medium',
       status: body.status || 'pending',
+      isPublic: body.isPublic ?? false,
       assignedTo: body.assignedTo || null,
       notes: body.notes || null,
     };
@@ -282,8 +274,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log('[Tasks API] Inserting values:', values);
-
     const [newTask] = await db
       .insert(threedTasks)
       .values(values)
@@ -308,17 +298,16 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log('[Tasks API] Created task:', newTask.id, newTask.title);
-
     return NextResponse.json({
       success: true,
       data: newTask,
       message: 'Task created successfully',
     });
   } catch (error) {
-    console.error('[Tasks API] POST error:', error);
+    if (isMissingTaskVisibilityColumn(error)) return migrationRequired();
+    console.error('[Tasks API] POST error:', databaseConnectionDiagnostic(error));
     return NextResponse.json(
-      { success: false, error: 'Failed to create task', details: error instanceof Error ? error.message : String(error) },
+      { success: false, error: 'Failed to create task' },
       { status: 500 }
     );
   }
@@ -375,11 +364,9 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    console.log('[Tasks API] PUT - Updating task:', parsedId, body);
-    console.log('[Tasks API] dueDate type:', typeof body.dueDate);
-    console.log('[Tasks API] dueDate value:', body.dueDate);
-    console.log('[Tasks API] dueDate === undefined:', body.dueDate === undefined);
-    console.log('[Tasks API] dueDate === null:', body.dueDate === null);
+    if (body.isPublic !== undefined && typeof body.isPublic !== 'boolean') {
+      return NextResponse.json({ success: false, error: 'Invalid Public Task value' }, { status: 400 });
+    }
 
     // ✅ Build updateData with ONLY fields that are explicitly provided
     const updateData: any = { updatedAt: new Date() };
@@ -399,6 +386,9 @@ export async function PUT(request: NextRequest) {
     }
     if (body.status !== undefined) {
       updateData.status = body.status;
+    }
+    if (body.isPublic !== undefined) {
+      updateData.isPublic = body.isPublic;
     }
     if (body.assignedTo !== undefined) {
       updateData.assignedTo = body.assignedTo;
@@ -441,8 +431,6 @@ export async function PUT(request: NextRequest) {
         : null;
     }
 
-    console.log('[Tasks API] Updating with values:', updateData);
-
     const [updated] = await db
       .update(threedTasks)
       .set(updateData)
@@ -454,17 +442,16 @@ export async function PUT(request: NextRequest) {
       )
       .returning();
 
-    console.log('[Tasks API] Updated task:', updated.id, updated.title);
-
     return NextResponse.json({
       success: true,
       data: updated,
       message: 'Task updated successfully',
     });
   } catch (error) {
-    console.error('[Tasks API] PUT error:', error);
+    if (isMissingTaskVisibilityColumn(error)) return migrationRequired();
+    console.error('[Tasks API] PUT error:', databaseConnectionDiagnostic(error));
     return NextResponse.json(
-      { success: false, error: 'Failed to update task', details: error instanceof Error ? error.message : String(error) },
+      { success: false, error: 'Failed to update task' },
       { status: 500 }
     );
   }
@@ -542,15 +529,14 @@ export async function DELETE(request: NextRequest) {
       )
       .returning();
 
-    console.log('[Tasks API] Deleted task:', deleted.id, deleted.title);
-
     return NextResponse.json({
       success: true,
       data: deleted,
       message: 'Task deleted successfully',
     });
   } catch (error) {
-    console.error('[Tasks API] DELETE error:', error);
+    if (isMissingTaskVisibilityColumn(error)) return migrationRequired();
+    console.error('[Tasks API] DELETE error:', databaseConnectionDiagnostic(error));
     return NextResponse.json(
       { success: false, error: 'Failed to delete task' },
       { status: 500 }

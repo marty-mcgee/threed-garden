@@ -54,14 +54,42 @@ function run(fetch, offset = 0, current = []) {
 // Compile the real route count expressions with installed Drizzle, without a database.
 const { pgTable, integer, text, boolean } = require('drizzle-orm/pg-core');
 const { drizzle } = require('drizzle-orm/node-postgres');
-const { sql, getTableName } = require('drizzle-orm');
+const orm = require('drizzle-orm');
+const { eq, ne, or, sql, getTableName } = orm;
 const projectTable = pgTable('project', { id: integer('id'), userId: text('user_id') });
-const assetsTable = pgTable('project_assets', { id: integer('id'), projectId: integer('project_id'), userId: text('user_id'), isActive: boolean('is_active') });
+const assetsTable = pgTable('project_assets', {
+  id: integer('id'),
+  projectId: integer('project_id'),
+  userId: text('user_id'),
+  isActive: boolean('is_active'),
+  assetType: text('asset_type'),
+  assetId: integer('asset_id'),
+});
 const markersTable = pgTable('project_threed_markers', { id: integer('id'), projectId: integer('project_id'), userId: text('user_id'), isActive: boolean('is_active') });
+const taskTable = pgTable('threed_tasks', { id: integer('id'), isPublic: boolean('is_public') });
+const taskPrivacy = {};
+vm.runInNewContext(compile(fs.readFileSync(path.join(root, 'src/libraries/services/threed/tasks/read-scope.ts'), 'utf8')), {
+  exports: taskPrivacy,
+  require(name) {
+    if (name === 'drizzle-orm') return orm;
+    assert.equal(name, '@/libraries/schema/threed');
+    return { threedTasks: taskTable };
+  },
+});
 const routeSource = ts.createSourceFile('route.ts', fs.readFileSync(path.join(root, 'src/app/api/map/projects/route.ts'), 'utf8'), ts.ScriptTarget.Latest, true);
-const queryContext = { sql, getTableName, project: projectTable, projectAssets: assetsTable, projectThreedMarkers: markersTable };
+const queryContext = {
+  sql,
+  getTableName,
+  project: projectTable,
+  projectAssets: assetsTable,
+  projectThreedMarkers: markersTable,
+  ne,
+  or,
+  scope: eq(taskTable.isPublic, true),
+  readableTaskAssignment: taskPrivacy.readableTaskAssignment,
+};
 (function findOuter(node) {
- if (ts.isVariableDeclaration(node) && ['outerProjectId','outerProjectOwner'].includes(node.name.getText(routeSource))) queryContext[node.name.getText(routeSource)] = vm.runInNewContext(compile(`(() => ${node.initializer.getText(routeSource)})()` ), queryContext);
+ if (ts.isVariableDeclaration(node) && ['outerProjectId','outerProjectOwner','visibleAssets'].includes(node.name.getText(routeSource))) queryContext[node.name.getText(routeSource)] = vm.runInNewContext(compile(`(() => ${node.initializer.getText(routeSource)})()` ), queryContext);
  ts.forEachChild(node, findOuter);
 })(routeSource);
 let countChecks = 0;
@@ -73,6 +101,11 @@ let countChecks = 0;
   assert.match(query, /"project_id" = "project"\."id"/);
   assert.match(query, /"user_id" = "project"\."user_id"/);
   assert.match(query, /"is_active" = true/);
+  if (node.name.getText(routeSource) === 'assetCount') {
+   assert.match(query, /"project_assets"\."asset_type" <>/);
+   assert.match(query, /"threed_tasks"\."id" = "project_assets"\."asset_id"/);
+   assert.match(query, /"threed_tasks"\."is_public" =/);
+  }
  }
  ts.forEachChild(node, findCount);
 })(routeSource);

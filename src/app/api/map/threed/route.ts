@@ -54,6 +54,7 @@ import {
 import { eq, and, or, desc, sql, inArray } from 'drizzle-orm';
 import { readThreeDProjectViewStateFromConfig } from '@/libraries/services/threed/markers/project-view-state-core';
 import { projectConfigurationStamp } from '@/libraries/services/project/configuration';
+import { readThreeDTasks } from '@/libraries/services/threed/tasks/read-scope';
 
 const MARKER_ASSET_TYPE_BY_MODULE = {
   plantings: 'threed_plantings',
@@ -192,16 +193,19 @@ export async function GET(request: NextRequest) {
             ? or(eq(table.userId, projectData.userId), and(eq(table.isPublic, true), eq(table.isLibraryItem, true), eq(table.isActive, true), eq(table.status, 'active')))
             : canEdit ? sql`true` : eq(table.userId, projectData.userId))
           : sql`true`);
-        const rawItems = await retryDisconnectedRead(async () => db
-          .select(tableName === 'threedModels' ? modelSelection() : getTableColumns(table))
+        const read = (selection: Parameters<typeof db.select>[0], scope?: ReturnType<typeof and>) => retryDisconnectedRead(async () => db
+          .select(selection ?? {})
           .from(table)
           .where(
             !includeInactive && table.isActive
-              ? and(assignedAssetCondition, eq(table.isActive, true))
-              : assignedAssetCondition
+              ? and(assignedAssetCondition, scope, eq(table.isActive, true))
+              : and(assignedAssetCondition, scope)
           )
           .orderBy(desc(orderField))
           .limit(limit));
+        const rawItems = tableName === 'threedTasks'
+          ? await readThreeDTasks(userId, 'project', (scope, selection) => read(selection, scope))
+          : await read(tableName === 'threedModels' ? modelSelection() : getTableColumns(table));
 
         // ✅ Pre-process: normalize position columns and add metadata fields
         return rawItems.map((item: any) => {

@@ -8,7 +8,8 @@ import { project, projectAssets, projectThreedMarkers, projectMultimedia, projec
 import { multimedia } from '@/libraries/schema/multimedia';
 import { threed } from '@/libraries/schema/threed';
 import { traffic } from '@/libraries/schema/traffic';
-import { eq, and, desc, sql, count, getTableName } from 'drizzle-orm';
+import { eq, and, desc, ne, or, sql, count, getTableName } from 'drizzle-orm';
+import { readableTaskAssignment, readThreeDTasks } from '@/libraries/services/threed/tasks/read-scope';
 
 // ============================================
 // GET /api/map/projects - Get projects with map data
@@ -27,67 +28,73 @@ export async function GET(request: NextRequest) {
     const limit = parseInt(searchParams.get('limit') || '50');
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    const projectScope = and(
-      userId ? eq(project.userId, userId) : eq(project.isPublic, true),
-      includeInactive ? undefined : eq(project.isActive, true),
-      // Owners must be able to reopen a new, empty Project and use the
-      // Dashboard setup workflow. Anonymous discovery remains limited to
-      // public Projects that already contain at least one active asset.
-      userId ? undefined : sql`EXISTS (
-          SELECT 1
-          FROM ${projectAssets}
-          WHERE ${projectAssets.projectId} = ${project.id}
-          AND ${projectAssets.userId} = ${project.userId}
-          AND ${projectAssets.isActive} = true
-        )`
-    );
+    const { results, total } = await readThreeDTasks(userId, 'project', async scope => {
+      const visibleAssets = or(ne(projectAssets.assetType, 'threed_tasks'), readableTaskAssignment(projectAssets.assetId, scope));
+      const projectScope = and(
+        userId ? eq(project.userId, userId) : eq(project.isPublic, true),
+        includeInactive ? undefined : eq(project.isActive, true),
+        // Owners must be able to reopen a new, empty Project and use the
+        // Dashboard setup workflow. Anonymous discovery remains limited to
+        // public Projects that already contain at least one active asset.
+        userId ? undefined : sql`EXISTS (
+            SELECT 1
+            FROM ${projectAssets}
+            WHERE ${projectAssets.projectId} = ${project.id}
+            AND ${projectAssets.userId} = ${project.userId}
+            AND ${projectAssets.isActive} = true
+            AND ${visibleAssets}
+          )`
+      );
 
-    // Explicit identifiers survive Drizzle's single-table SELECT unqualification.
-    const outerProjectId = sql`${sql.identifier(getTableName(project))}.${sql.identifier('id')}`;
-    const outerProjectOwner = sql`${sql.identifier(getTableName(project))}.${sql.identifier('user_id')}`;
+      // Explicit identifiers survive Drizzle's single-table SELECT unqualification.
+      const outerProjectId = sql`${sql.identifier(getTableName(project))}.${sql.identifier('id')}`;
+      const outerProjectOwner = sql`${sql.identifier(getTableName(project))}.${sql.identifier('user_id')}`;
 
-    // ✅ Build base query for projects
-    const query = db
-      .select({
-        id: project.id,
-        name: project.name,
-        metadata: project.metadata,
-        description: project.description,
-        slug: project.slug,
-        isActive: project.isActive,
-        isPublic: project.isPublic,
-        createdAt: project.createdAt,
-        sceneAssetCount: sql<number>`(
-          SELECT COUNT(*) FROM ${projectThreedMarkers}
-          WHERE ${projectThreedMarkers.projectId} = ${outerProjectId}
-          AND ${projectThreedMarkers.userId} = ${outerProjectOwner}
-          AND ${projectThreedMarkers.isActive} = true
-        )`.as('sceneAssetCount'),
-        // ✅ Count assets for this project
-        assetCount: sql<number>`(
-          SELECT COUNT(*) 
-          FROM ${projectAssets} 
-          WHERE ${projectAssets.projectId} = ${outerProjectId}
-          AND ${projectAssets.userId} = ${outerProjectOwner}
-          AND ${projectAssets.isActive} = true
-        )`.as('assetCount'),
-      })
-      .from(project)
-      .where(projectScope);
+      // ✅ Build base query for projects
+      const query = db
+        .select({
+          id: project.id,
+          name: project.name,
+          metadata: project.metadata,
+          description: project.description,
+          slug: project.slug,
+          isActive: project.isActive,
+          isPublic: project.isPublic,
+          createdAt: project.createdAt,
+          sceneAssetCount: sql<number>`(
+            SELECT COUNT(*) FROM ${projectThreedMarkers}
+            WHERE ${projectThreedMarkers.projectId} = ${outerProjectId}
+            AND ${projectThreedMarkers.userId} = ${outerProjectOwner}
+            AND ${projectThreedMarkers.isActive} = true
+          )`.as('sceneAssetCount'),
+          // ✅ Count assets for this project
+          assetCount: sql<number>`(
+            SELECT COUNT(*)
+            FROM ${projectAssets}
+            WHERE ${projectAssets.projectId} = ${outerProjectId}
+            AND ${projectAssets.userId} = ${outerProjectOwner}
+            AND ${projectAssets.isActive} = true
+            AND ${visibleAssets}
+          )`.as('assetCount'),
+        })
+        .from(project)
+        .where(projectScope);
 
-    // ✅ Get total count for pagination
-    const [countResult] = await db
-      .select({ count: count() })
-      .from(project)
-      .where(projectScope);
+      // ✅ Get total count for pagination
+      const [countResult] = await db
+        .select({ count: count() })
+        .from(project)
+        .where(projectScope);
 
-    const total = countResult?.count || 0;
+      const total = countResult?.count || 0;
 
-    // ✅ Get paginated results
-    const results = await query
-      .orderBy(desc(project.createdAt))
-      .limit(limit)
-      .offset(offset);
+      // ✅ Get paginated results
+      const results = await query
+        .orderBy(desc(project.createdAt))
+        .limit(limit)
+        .offset(offset);
+      return { results, total };
+    });
 
     // ✅ For each project, check if it has traffic or threed data
     const projectsWithTypes = await Promise.all(
@@ -163,7 +170,7 @@ export async function GET(request: NextRequest) {
         offset,
         total,
       },
-    });
+    }, { headers: { 'Cache-Control': 'private, no-store' } });
   } catch (error) {
     console.error('Error fetching map projects:', error);
     return NextResponse.json(

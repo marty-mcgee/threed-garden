@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
 import { assetTypeEnum, project, projectAssets } from '@/libraries/schema/project';
-import { eq, and, sql } from 'drizzle-orm';
+import { eq, and, sql, type SQL } from 'drizzle-orm';
+import { readableTaskAssignment, readThreeDTasks } from '@/libraries/services/threed/tasks/read-scope';
 
 // ============================================
 // GET /api/map/asset-type - Get assets of a specific type for a project
@@ -77,7 +78,7 @@ export async function GET(request: NextRequest) {
     }
 
     // ✅ Get assets of the specified type
-    const assets = await db
+    const read = (scope?: SQL) => db
       .select({
         assetId: projectAssets.assetId,
         assetType: projectAssets.assetType,
@@ -92,10 +93,14 @@ export async function GET(request: NextRequest) {
           eq(projectAssets.projectId, parsedProjectId),
           eq(projectAssets.assetType, validAssetType),
           userId ? eq(projectAssets.userId, userId) : sql`1=1`,
-          includeInactive ? sql`1=1` : eq(projectAssets.isActive, true)
+          includeInactive ? sql`1=1` : eq(projectAssets.isActive, true),
+          scope
         )
       )
       .limit(limit);
+    const assets = validAssetType === 'threed_tasks'
+      ? await readThreeDTasks(userId, 'project', async scope => read(readableTaskAssignment(projectAssets.assetId, scope)))
+      : await read();
 
     return NextResponse.json({
       success: true,
@@ -104,7 +109,7 @@ export async function GET(request: NextRequest) {
         count: assets.length,
         assets,
       },
-    });
+    }, { headers: { 'Cache-Control': 'private, no-store' } });
   } catch (error) {
     console.error('Error fetching asset type data:', error);
     return NextResponse.json(

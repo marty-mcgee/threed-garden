@@ -148,6 +148,7 @@ const tasks = {
   'threed-simulation-launch': [node('validate-threed-simulation-launch.cjs')],
   'threed-simulation-results': [node('validate-threed-simulation-results-schema.cjs'), node('validate-threed-simulation-results.cjs'), node('validate-threed-simulation-results-admin.cjs')],
   'threed-library-collections': [ts('validate-threed-library-collections.mts')],
+  'threed-task-privacy': [node('validate-threed-task-privacy.cjs'), node('validate-threed-task-bulk.cjs')],
   'threed-project-session': [['node', '--import', 'tsx', `${scripts}/validate-threed-project-session.mts`], node('validate-public-scene-api.cjs'), node('validate-project-asset-warnings.cjs'), ['node', '--import', 'tsx', `${scripts}/validate-scene-loading-policy.mts`]],
   'threed-mqtt': [['node', '--import', 'tsx', 'src/libraries/services/threed/mqtt/validate.mts']],
   'threed-assembly-persistence': [
@@ -274,6 +275,7 @@ const ci = [
   'threed-harvest-list',
   'threed-farmbot-list',
   'threed-layer-list',
+  'threed-task-privacy',
   'threed-character-list',
   'threed-planting-list',
   'threed-bed-list',

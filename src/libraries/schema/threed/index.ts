@@ -926,6 +926,7 @@ export const threedTasks = pgTable('threed_tasks', {
   priority: taskPriorityEnum('priority').default('medium'),
   status: taskStatusEnum('status').default('pending'),
   isActive: boolean('is_active').default(true),
+  isPublic: boolean('is_public').notNull().default(false),
   
   // Scheduling
   dueDate: timestamp('due_date', { mode: 'string' }), // ✅ Use string mode

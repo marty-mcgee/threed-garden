@@ -119,6 +119,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
     type: '',
     priority: TaskPriority.MEDIUM,
     status: TaskStatus.PENDING,
+    isPublic: false,
     dueDate: '',
     assignedTo: '',
     notes: '',
@@ -268,6 +269,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
         type: formData.type || null,
         priority: formData.priority,
         status: formData.status,
+        isPublic: formData.isPublic,
         dueDate: formData.dueDate || null,
         assignedTo: formData.assignedTo || null,
         notes: formData.notes || null,
@@ -321,6 +323,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
         type: formData.type || null,
         priority: formData.priority,
         status: formData.status,
+        isPublic: formData.isPublic,
         dueDate: formData.dueDate || null,
         assignedTo: formData.assignedTo || null,
         notes: formData.notes || null,
@@ -382,6 +385,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
       type: '',
       priority: TaskPriority.MEDIUM,
       status: TaskStatus.PENDING,
+      isPublic: false,
       dueDate: '',
       assignedTo: '',
       notes: '',
@@ -413,6 +417,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
       type: task.type || '',
       priority: task.priority || TaskPriority.MEDIUM,
       status: task.status || TaskStatus.PENDING,
+      isPublic: task.isPublic === true,
       dueDate: formatDateForInput(task.dueDate),
       assignedTo: task.assignedTo || '',
       notes: task.notes || '',
@@ -427,6 +432,18 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
       isActive: true,
     });
   };
+
+  const renderVisibility = (id: string) => (
+    <div className="flex items-center gap-2">
+      <Switch
+        id={id}
+        checked={formData.isPublic}
+        onCheckedChange={isPublic => setFormData(current => ({ ...current, isPublic }))}
+        disabled={isSubmitting || editingTask?.isPublic === null}
+      />
+      <Label htmlFor={id}>Public Task</Label>
+    </div>
+  );
 
   const renderActions = (task: ThreeDTask) => (
     <div className="flex items-center justify-end gap-1">
@@ -793,6 +810,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
                 />
                 <Label htmlFor="isActive">Active</Label>
               </div>
+              {renderVisibility('create-task-public')}
 
               <Button variant="success" onClick={handleCreate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
                 {isSubmitting ? (
@@ -873,7 +891,9 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
                         <ListTodo className="w-3.5 h-3.5 text-muted-foreground" />
                       )}
                       {task.title}
-
+                      <Badge variant="outline" className="text-[10px]">
+                        {task.isPublic === null ? 'Visibility unavailable' : task.isPublic ? 'Public' : 'Private'}
+                      </Badge>
                     </div>
                   </TableCell>
                   <TableCell className="py-1 text-xs whitespace-nowrap">{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '—'}</TableCell>
@@ -1208,6 +1228,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
               />
               <Label htmlFor="edit-isActive">Active</Label>
             </div>
+            {renderVisibility('edit-task-public')}
 
             <Button onClick={handleUpdate} className="h-8 w-full self-end text-xs md:col-span-2 md:w-auto md:justify-self-end" disabled={isSubmitting}>
               {isSubmitting ? (

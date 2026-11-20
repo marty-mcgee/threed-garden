@@ -10,7 +10,7 @@ const load = (file, mocks) => {
 };
 const table = name => new Proxy({ name }, { get: (target, key) => key === 'name' ? name : { table: name, key } });
 const schema = new Proxy({}, { get: (_, name) => table(name) });
-const orm = { getTableColumns: () => ({}) };
+const orm = { getTableColumns: table => ({ isPublic: table.isPublic }) };
 for (const op of ['and', 'or', 'eq', 'inArray', 'desc']) orm[op] = (...args) => ({ op, args });
 orm.sql = (strings, ...values) => ({ op: 'sql', strings, values });
 function test(expr, row) {
@@ -62,6 +62,9 @@ const api = load('src/app/api/map/threed/route.ts', {
   '@/libraries/schema/threed': schema, '@/libraries/schema/traffic': schema, '@/libraries/schema/project': schema,
   '@/libraries/services/threed/markers/project-view-state-core': { readThreeDProjectViewStateFromConfig: () => null },
   '@/libraries/services/project/configuration': { projectConfigurationStamp: config => ({ savedAt: config?.threeDViewState?.savedAt ?? null, measurementUnits: config?.measurementUnits ?? 'imperial' }) },
+  '@/libraries/services/threed/tasks/read-scope': load('src/libraries/services/threed/tasks/read-scope.ts', {
+    'drizzle-orm': orm, '@/libraries/schema/threed': schema,
+  }),
 });
 const access = load('src/libraries/services/project/read-access.ts', {
   './scene-read-policy': policy, 'drizzle-orm': orm, '@/libraries/db/client': { db }, '@/libraries/schema/project': schema,
@@ -91,7 +94,19 @@ function fixture() {
 async function run(extra = '') { return api.GET({ url: `http://localhost/api/map/threed?projectId=8${extra}` }); }
 (async () => {
   for (viewer of [undefined, 'visitor', 'owner']) {
-    fixture(); const result = await run(); assert.equal(result.status, 200);
+    fixture();
+    records.threedTasks = [
+      { id: 21, userId: 'owner', isActive: true, isPublic: false, status: 'pending', title: 'Owner-only Task' },
+      { id: 22, userId: 'owner', isActive: true, isPublic: true, status: 'completed', title: 'Shared Project Task' },
+      { id: 23, userId: 'other', isActive: true, isPublic: false, status: 'pending', title: 'Cross-owner Task' },
+    ];
+    for (const task of records.threedTasks) {
+      records.projectAssets.push({ ...records.projectAssets[0], assetType: 'threed_tasks', assetId: task.id });
+    }
+    const result = await run(); assert.equal(result.status, 200);
+    assert.deepEqual(Array.from(result.body.data.tasks, task => task.id), viewer === 'owner' ? [21, 22] : [22]);
+    assert(!JSON.stringify(result.body).includes('Cross-owner Task'));
+    assert.equal(JSON.stringify(result.body).includes('Owner-only Task'), viewer === 'owner');
     const model = result.body.data.models[0];
     assert.equal(result.body.projectContext.canEdit, viewer === 'owner');
     assert.equal(result.body.projectContext.viewState, null);

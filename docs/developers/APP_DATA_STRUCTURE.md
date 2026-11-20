@@ -2,7 +2,7 @@
 
 [Open the interactive schema explorer](app-data-structure.html) · [Structured schema snapshot](app-data-structure.json) · [Established App architecture](../plans/app-module-architecture.md)
 
-Snapshot: 2026-11-19, App 0.35.3, main / 5e761a14 plus working-tree changes. Generated from the actual local Drizzle declarations, without a database connection. This visualizes the existing structure; it does not introduce a new architecture.
+Snapshot: 2026-11-19, App 0.35.4, main / dde03310 plus working-tree changes. Generated from the actual local Drizzle declarations, without a database connection. This visualizes the existing structure; it does not introduce a new architecture.
 
 ## Explore the structure
 
@@ -12,14 +12,14 @@ Open the HTML file directly in a browser; it needs no server, network or CDN. Se
 
 | Domain | Tables | Columns | Foreign keys |
 | --- | ---: | ---: | ---: |
-| ThreeD | 49 | 695 | 111 |
+| ThreeD | 49 | 696 | 111 |
 | Multimedia | 13 | 136 | 24 |
 | Traffic | 10 | 227 | 10 |
 | Learn | 3 | 32 | 8 |
 | Projects (shared) | 6 | 84 | 15 |
 | Accounts (shared) | 5 | 48 | 2 |
 | Settings (shared) | 5 | 53 | 6 |
-| **Total** | **91** | **1275** | **176** |
+| **Total** | **91** | **1276** | **176** |
 
 Also includes **37 enums**, **161 ORM relation declarations** and **54 reviewed application mappings**. Counts describe source declarations, not verified live database objects. Auth aliases are deduplicated. Composite foreign keys remain single relationships with all participating columns. JSON/JSONB columns are shown without inventing their nested structures.
 
@@ -92,7 +92,7 @@ The interactive explorer expands polymorphic asset/Module links using the actual
 | [`threed_simulation_results`](../../src/libraries/schema/threed/index.ts) | 14 | 4 |
 | [`threed_simulations`](../../src/libraries/schema/threed/index.ts) | 12 | 3 |
 | [`threed_system_logs`](../../src/libraries/schema/threed/index.ts) | 9 | 1 |
-| [`threed_tasks`](../../src/libraries/schema/threed/index.ts) | 19 | 5 |
+| [`threed_tasks`](../../src/libraries/schema/threed/index.ts) | 20 | 5 |
 | [`threed_terrain_revisions`](../../src/libraries/schema/threed/index.ts) | 10 | 1 |
 | [`threed_terrains`](../../src/libraries/schema/threed/index.ts) | 5 | 1 |
 | [`threed_watering_history`](../../src/libraries/schema/threed/index.ts) | 20 | 5 |
