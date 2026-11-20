@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-[v0.35.7 - ThreeD Garden Release Metadata](docs/releases/v0.35.7.md) is prepared for the Developer's commit. The isolated build and all 111 offline CI tasks passed. Two critical production-dependency audit findings remain open. Deployment is pending.
+The Developer confirmed that [v0.35.7 - ThreeD Garden Release Metadata](docs/releases/v0.35.7.md#production-status) reached production on November 20, 2026. Two critical production-dependency audit findings remain open.
 
 [v0.35.6 - ThreeD Admin Blueprint Skill](docs/releases/v0.35.6.md#production-status) is verified in production at `ded1ceca`. The Developer also confirmed production deployment of the documentation follow-up observed locally at `e8ff2b80`. This release adds repository-local Codex skill discovery and requires the Blueprint before Admin page, shared UI, and related API edits.
 
