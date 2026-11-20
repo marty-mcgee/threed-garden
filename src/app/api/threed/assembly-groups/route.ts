@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
 import { AssemblyContractError } from '@/libraries/services/threed/models/assembly-group-core';
-import { AssemblyWorkspaceError, assemblyId, assemblyListQuery, deleteAssembly, listAssemblies, readAssembly, saveAssembly } from '@/libraries/services/threed/models/assembly-workspace-server';
+import { AssemblyWorkspaceError, assemblyId, assemblyListQuery, deleteAssembly, isMissingAssemblyColumn, listAssemblies, readAssembly, saveAssembly, updateAssemblyList } from '@/libraries/services/threed/models/assembly-workspace-server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -14,6 +14,8 @@ async function respond(operation: (ownerId: string) => Promise<unknown>) {
     return NextResponse.json({ success: true, data: await operation(session.user.id) }, { headers: { 'Cache-Control': 'private, no-store' } });
   } catch (error) {
     if (error instanceof AssemblyWorkspaceError || error instanceof AssemblyContractError) return NextResponse.json({ success: false, error: error.message }, { status: error instanceof AssemblyWorkspaceError ? error.status : 400 });
+    if (isMissingAssemblyColumn(error, 'sort_order')) return NextResponse.json({ success: false, error: 'Assembly Groups Sort Order requires the database migration.' }, { status: 503 });
+    if (isMissingAssemblyColumn(error, 'is_active')) return NextResponse.json({ success: false, error: 'Assembly Groups Active status requires the database migration.' }, { status: 503 });
     let cause: unknown = error;
     for (let depth = 0; cause && depth < 5; depth++) {
       const current = cause as { code?: string; cause?: unknown };
@@ -38,6 +40,16 @@ export function DELETE(request: NextRequest) {
     const revision = request.nextUrl.searchParams.get('revision');
     if (revision === null || !/^\d+$/.test(revision)) throw new AssemblyWorkspaceError('Invalid saved revision.');
     return deleteAssembly(db, ownerId, assemblyId(request.nextUrl.searchParams.get('id')), Number(revision));
+  });
+}
+
+export function PATCH(request: NextRequest) {
+  return respond(async ownerId => {
+    const text = await request.text();
+    if (text.length > 8192) throw new AssemblyWorkspaceError('Assembly Group update is too large.');
+    let input: unknown;
+    try { input = JSON.parse(text); } catch { throw new AssemblyWorkspaceError('Invalid Assembly Group update.'); }
+    return updateAssemblyList(db, ownerId, input);
   });
 }
 

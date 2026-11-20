@@ -1,4 +1,13 @@
-export const HARVEST_LIST_SORTS = ['id', 'harvestId', 'plant', 'quantity', 'weight', 'date', 'active', 'createdAt'] as const;
+export const HARVEST_LIST_SORTS = ['id', 'harvestId', 'plant', 'quantity', 'weight', 'date', 'active', 'createdAt', 'sortOrder'] as const;
+
+export function isMissingHarvestSortOrder(error: unknown) {
+  for (let current = error, depth = 0; current && typeof current === 'object' && depth < 5; depth++) {
+    const cause = current as { code?: string; message?: string; cause?: unknown };
+    if (cause.code === '42703' && /^column (?:"?threed_harvests"?\."?sort_order"?|"sort_order"(?: of relation "threed_harvests")?) does not exist$/.test(cause.message ?? '')) return true;
+    current = cause.cause;
+  }
+  return false;
+}
 export function parseHarvestListQuery(params: URLSearchParams) {
   const integer = (key: string, fallback: number, min: number, max: number) => {
     const raw = params.get(key) ?? String(fallback);

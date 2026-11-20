@@ -4,6 +4,7 @@ import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
 import { useState, useEffect, useRef } from 'react';
+import { useSession } from 'next-auth/react';
 import {
   Plus,
   Edit,
@@ -11,6 +12,7 @@ import {
   Loader2,
   CheckCircle,
   ListTodo,
+  GripVertical,
   MoreHorizontal,
   Search,
   Clock,
@@ -28,6 +30,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
+import { isTaskSortOrder, TASK_SORT_ORDER_LIMIT, taskSortOrderError } from '@/libraries/services/threed/tasks/sort-order';
+import { BulkTaskEditDialog } from './BulkTaskEditDialog';
 
 // ✅ Import types from lib
 import {
@@ -90,20 +94,45 @@ const getPriorityColor = (priority: string) => {
 
 export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = false }: ThreeDTasksCRUDProps) {
   const { showToast, ToastComponent } = useToast();
+  const userId = useSession().data?.user?.id;
   const [tasks, setTasks] = useState<ThreeDTask[]>([]);
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [editingTask, setEditingTask] = useState<ThreeDTask | null>(null);
   const [searchQuery, setSearchQuery] = useAdminListQueryState('/admin/threed/tasks', 'search', '', {enabled: scrollRecords});
-  const [sort, setSort] = useAdminListQueryState('/admin/threed/tasks', 'sort', 'title', {enabled: scrollRecords, values: ["title","type","priority","status","dueDate","assignedTo","isActive"]});
+  const [sort, setSort] = useAdminListQueryState('/admin/threed/tasks', 'sort', 'sortOrder', {
+    enabled: scrollRecords,
+    values: [
+      'sortOrder',
+      'title',
+      'type',
+      'priority',
+      'status',
+      'dueDate',
+      'assignedTo',
+      'isActive',
+    ],
+  });
   const [direction, setDirection] = useAdminListQueryState<'asc' | 'desc'>('/admin/threed/tasks', 'direction', 'asc', {enabled: scrollRecords, values: ['asc','desc']});
   const [page, setPage] = useAdminListQueryState('/admin/threed/tasks', 'page', 1, {enabled: scrollRecords});
   const [pageSize, setPageSize] = useAdminListQueryState('/admin/threed/tasks', 'limit', 25, {enabled: scrollRecords});
   const [total, setTotal] = useState(0);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
+  const [bulkEditIds, setBulkEditIds] = useState<number[] | null>(null);
+  const [reorderBusy, setReorderBusy] = useState(false);
+  const [dragging, setDragging] = useState<number | null>(null);
+  const [dropTarget, setDropTarget] = useState<{ id: number; after: boolean } | null>(null);
+  const reorderLock = useRef(false);
   const requestSequence = useRef(0);
+  const recordsBusy = bulkBusy || reorderBusy;
+  const isTasksAdmin = scrollRecords && !threedId;
+  const selectableTasks = isTasksAdmin ? tasks.filter(task => userId && task.userId === userId) : tasks;
+  const selectedTaskIds = selectableTasks.filter(task => selected.has(task.id)).map(task => task.id);
+  const ownedTasks = tasks.filter(task => userId && task.userId === userId && typeof task.sortOrder === 'number');
+  const canReorder = isTasksAdmin && ownedTasks.length > 1 && !loading && !recordsBusy &&
+    !isSubmitting && !showCreateDialog && !editingTask && !bulkEditIds && !searchQuery.trim() && sort === 'sortOrder' && direction === 'asc';
 
 
   // ✅ State for related entity options
@@ -120,6 +149,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
     priority: TaskPriority.MEDIUM,
     status: TaskStatus.PENDING,
     isPublic: false,
+    sortOrder: '0',
     dueDate: '',
     assignedTo: '',
     notes: '',
@@ -141,6 +171,8 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
 
   useEffect(() => {
     setSelected(new Set());
+    setDragging(null);
+    setDropTarget(null);
     void fetchTasks();
     return () => { requestSequence.current++; };
   }, [threedId, page, pageSize, searchQuery, sort, direction]);
@@ -233,6 +265,38 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
 
   const filteredTasks = tasks;
   const pages = Math.max(1, Math.ceil(total / pageSize));
+  const clearDrag = () => {
+    setDragging(null);
+    setDropTarget(null);
+  };
+
+  const moveTask = async (sourceId: number, targetId: number, after: boolean) => {
+    clearDrag();
+    if (!canReorder || reorderLock.current || sourceId === targetId) return;
+
+    reorderLock.current = true;
+    setReorderBusy(true);
+    const listRequest = requestSequence.current;
+    try {
+      const response = await fetch('/api/threed/tasks', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sourceId, targetId, after }),
+        signal: AbortSignal.timeout(30000),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) throw new Error(result.error || 'Failed to reorder Tasks');
+      if (result.changed) showToast('Task order saved', 'success');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Failed to reorder Tasks', 'error');
+    } finally {
+      // A lost response can still follow a committed move. Reload the saved order in either case.
+      if (listRequest === requestSequence.current) await fetchTasks();
+      reorderLock.current = false;
+      setReorderBusy(false);
+    }
+  };
+
   const toggleTask = (id: number) => setSelected(previous => {
     const next = new Set(previous); next.has(id) ? next.delete(id) : next.add(id); return next;
   });
@@ -260,6 +324,11 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
       showToast('Task title is required', 'error');
       return;
     }
+    const sortOrder = Number(formData.sortOrder);
+    if (!isTaskSortOrder(sortOrder)) {
+      showToast(taskSortOrderError, 'error');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -270,6 +339,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
         priority: formData.priority,
         status: formData.status,
         isPublic: formData.isPublic,
+        sortOrder,
         dueDate: formData.dueDate || null,
         assignedTo: formData.assignedTo || null,
         notes: formData.notes || null,
@@ -314,6 +384,11 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
       showToast('Task title is required', 'error');
       return;
     }
+    const sortOrder = Number(formData.sortOrder);
+    if (!isTaskSortOrder(sortOrder)) {
+      showToast(taskSortOrderError, 'error');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -324,6 +399,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
         priority: formData.priority,
         status: formData.status,
         isPublic: formData.isPublic,
+        sortOrder,
         dueDate: formData.dueDate || null,
         assignedTo: formData.assignedTo || null,
         notes: formData.notes || null,
@@ -342,7 +418,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
       const data = await response.json();
       if (data.success) {
         showToast('Task updated successfully', 'success');
-        setEditingTask(null);
+        closeEditDialog();
         await fetchTasks();
         if (onModuleUpdate) onModuleUpdate();
       } else {
@@ -386,6 +462,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
       priority: TaskPriority.MEDIUM,
       status: TaskStatus.PENDING,
       isPublic: false,
+      sortOrder: '0',
       dueDate: '',
       assignedTo: '',
       notes: '',
@@ -418,6 +495,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
       priority: task.priority || TaskPriority.MEDIUM,
       status: task.status || TaskStatus.PENDING,
       isPublic: task.isPublic === true,
+      sortOrder: String(task.sortOrder ?? 0),
       dueDate: formatDateForInput(task.dueDate),
       assignedTo: task.assignedTo || '',
       notes: task.notes || '',
@@ -433,6 +511,27 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
     });
   };
 
+  const closeEditDialog = () => {
+    setEditingTask(null);
+    resetForm();
+  };
+
+  const renderSortOrder = (id: string) => (
+    <div>
+      <Label htmlFor={id}>Sort Order</Label>
+      <Input
+        id={id}
+        type="number"
+        min={-TASK_SORT_ORDER_LIMIT}
+        max={TASK_SORT_ORDER_LIMIT}
+        step={1}
+        value={formData.sortOrder}
+        onChange={(event) => setFormData(current => ({ ...current, sortOrder: event.target.value }))}
+        disabled={isSubmitting || editingTask?.sortOrder === null}
+      />
+    </div>
+  );
+
   const renderVisibility = (id: string) => (
     <div className="flex items-center gap-2">
       <Switch
@@ -447,12 +546,12 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
 
   const renderActions = (task: ThreeDTask) => (
     <div className="flex items-center justify-end gap-1">
-      <Button variant="ghost" size="sm" onClick={() => openEditDialog(task)}>
+      <Button variant="ghost" size="sm" disabled={reorderBusy} onClick={() => openEditDialog(task)}>
         <Edit className="w-4 h-4" />
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
+          <Button variant="ghost" size="icon" className="h-8 w-8" disabled={reorderBusy}>
             <MoreHorizontal className="w-4 h-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -485,21 +584,21 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
       {ToastComponent}
 
       {/* Header */}
-      <AdminWorkspaceHeader iconColor="muted" icon={ListTodo} title="Tasks" description="Manage garden tasks and to-do items for your 3D garden" className="shrink-0">
+      <AdminWorkspaceHeader iconColor="muted" icon={ListTodo} title="Tasks" description="Manage garden tasks and to-do items for your 3D garden" showModuleAlbums={!isTasksAdmin} className="shrink-0">
         <Badge variant="secondary" className="text-xs">{total}</Badge>
         <div className="relative min-w-0 w-full flex-auto sm:w-auto sm:min-w-48 sm:flex-1">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
           <Input
             placeholder="Search tasks..."
             value={searchQuery}
-            disabled={bulkBusy}
+            disabled={recordsBusy}
             onChange={(e) => { setPage(1); setSearchQuery(e.target.value); }}
             className="pl-7 h-7 text-xs"
           />
         </div>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button variant="success" size="sm" className="h-7 px-2 text-xs">
+            <Button variant="success" size="sm" className="h-7 px-2 text-xs" disabled={reorderBusy}>
               <Plus className="w-3 h-3 mr-1" />
               Add Task
             </Button>
@@ -614,6 +713,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
                 />
               </div>
 
+              {renderSortOrder('create-task-sort-order')}
               <div>
                 <Label htmlFor="notes">Notes</Label>
                 <Textarea
@@ -831,18 +931,36 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
         <div className="flex flex-wrap items-center gap-2">
           <span>{total ? (page - 1) * pageSize + 1 : 0}–{Math.min(page * pageSize, total)} of {total} Tasks</span>
           <span aria-hidden="true">|</span><span>{selected.size} selected</span>
-          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={!selected.size || bulkBusy || loading} onClick={deleteSelected}><Trash2 className="mr-1 h-3 w-3" />Delete selected ({selected.size})</Button>
-          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={!selected.size || bulkBusy} onClick={() => setSelected(new Set())}>Clear selection</Button>
+          {isTasksAdmin && (
+            <Button variant="outline" size="sm" className="h-7 text-xs" disabled={!selectedTaskIds.length || recordsBusy || loading} onClick={() => setBulkEditIds(selectedTaskIds)}>
+              <Edit className="mr-1 h-3 w-3" />Bulk Edit
+            </Button>
+          )}
+          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={!selected.size || recordsBusy || loading} onClick={deleteSelected}><Trash2 className="mr-1 h-3 w-3" />Delete selected ({selected.size})</Button>
+          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={!selected.size || recordsBusy} onClick={() => setSelected(new Set())}>Clear selection</Button>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <label>Per page <select aria-label="Tasks per page" className="rounded border bg-background p-1 text-xs" value={pageSize} disabled={bulkBusy} onChange={e => { setPage(1); setPageSize(Number(e.target.value)); }}>{[25,50,100].map(size => <option key={size} value={size}>{size}</option>)}</select></label>
-          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={page === 1 || bulkBusy || loading} onClick={() => setPage(1)}>First</Button>
-          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={page === 1 || bulkBusy || loading} onClick={() => setPage(page - 1)}>Previous</Button>
+          <label>Per page <select aria-label="Tasks per page" className="rounded border bg-background p-1 text-xs" value={pageSize} disabled={recordsBusy} onChange={e => { setPage(1); setPageSize(Number(e.target.value)); }}>{[25,50,100].map(size => <option key={size} value={size}>{size}</option>)}</select></label>
+          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={page === 1 || recordsBusy || loading} onClick={() => setPage(1)}>First</Button>
+          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={page === 1 || recordsBusy || loading} onClick={() => setPage(page - 1)}>Previous</Button>
           <span>Page {page} of {pages}</span>
-          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={page >= pages || bulkBusy || loading} onClick={() => setPage(page + 1)}>Next</Button>
-          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={page >= pages || bulkBusy || loading} onClick={() => setPage(pages)}>Last</Button>
+          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={page >= pages || recordsBusy || loading} onClick={() => setPage(page + 1)}>Next</Button>
+          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={page >= pages || recordsBusy || loading} onClick={() => setPage(pages)}>Last</Button>
         </div>
       </div>
+      {bulkEditIds && (
+        <BulkTaskEditDialog
+          ids={bulkEditIds}
+          onClose={() => setBulkEditIds(null)}
+          onSaved={async count => {
+            setBulkEditIds(null);
+            setSelected(new Set());
+            showToast(`${count} ${count === 1 ? 'Task' : 'Tasks'} updated`, 'success');
+            await fetchTasks();
+            onModuleUpdate?.();
+          }}
+        />
+      )}
       {loading && <p role="status" className="text-xs text-muted-foreground">Loading Tasks…</p>}
       {/* Tasks Table */}
       {filteredTasks.length === 0 ? (
@@ -865,10 +983,19 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
           <Table className="min-w-[700px]">
             <TableHeader className={scrollRecords ? "sticky top-0 z-10 bg-background" : undefined}>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="w-8"><input type="checkbox" aria-label="Select all Tasks on this page" disabled={bulkBusy || loading} checked={tasks.length > 0 && tasks.every(task => selected.has(task.id))} onChange={e => setSelected(e.target.checked ? new Set(tasks.map(task => task.id)) : new Set())} /></TableHead>
-                {([['title', 'Title'], ['dueDate', 'Due Date'], ['assignedTo', 'Assigned To'], ['type', 'Type'], ['priority', 'Priority'], ['status', 'Status'], ['isActive', 'Active']] as const).map(([key, label]) => (
+                <TableHead className="w-8"><input type="checkbox" aria-label="Select all editable Tasks on this page" disabled={recordsBusy || loading || !selectableTasks.length} checked={selectableTasks.length > 0 && selectableTasks.every(task => selected.has(task.id))} onChange={e => setSelected(e.target.checked ? new Set(selectableTasks.map(task => task.id)) : new Set())} /></TableHead>
+                {([
+                  ['title', 'Title'],
+                  ['sortOrder', 'Sort Order'],
+                  ['dueDate', 'Due Date'],
+                  ['assignedTo', 'Assigned To'],
+                  ['type', 'Type'],
+                  ['priority', 'Priority'],
+                  ['status', 'Status'],
+                  ['isActive', 'Active'],
+                ] as const).map(([key, label]) => (
                   <TableHead key={key} className="text-xs py-1" aria-sort={sort === key ? direction === 'asc' ? 'ascending' : 'descending' : 'none'}>
-                    <button className="inline-flex items-center gap-1 py-1" disabled={bulkBusy} onClick={() => {
+                    <button className="inline-flex items-center gap-1 py-1" disabled={recordsBusy} onClick={() => {
                       setPage(1); setSelected(new Set());
                       setDirection(sort === key && direction === 'asc' ? 'desc' : 'asc'); setSort(key);
                     }}>{label}<span aria-hidden="true">{sort === key ? direction === 'asc' ? '↑' : '↓' : '↕'}</span></button>
@@ -878,56 +1005,108 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredTasks.map((task) => (
-                <TableRow key={task.id} className="hover:bg-muted/50">
-                  <TableCell><input type="checkbox" aria-label={`Select ${task.title}`} checked={selected.has(task.id)} disabled={bulkBusy || loading} onChange={() => toggleTask(task.id)} /></TableCell>
-                <TableCell className="py-1 text-sm font-medium">
-                    <div className="flex items-center gap-2">
-                      {task.status === 'completed' ? (
-                        <CheckCircle className="w-3.5 h-3.5 text-green-500" />
-                      ) : task.status === 'in_progress' ? (
-                        <Clock className="w-3.5 h-3.5 text-blue-500" />
+              {filteredTasks.map((task) => {
+                const ownedIndex = ownedTasks.findIndex(row => row.id === task.id);
+                const canDrop = canReorder && ownedIndex >= 0 && dragging !== null && dragging !== task.id;
+                return (
+                  <TableRow
+                    key={task.id}
+                    className={dragging === task.id ? 'opacity-50' : dropTarget?.id === task.id
+                      ? (dropTarget.after ? 'border-b-2 border-b-emerald-500 bg-emerald-500/10' : 'border-t-2 border-t-emerald-500 bg-emerald-500/10')
+                      : 'hover:bg-muted/50'}
+                    onDragOver={event => {
+                      if (!canDrop) { setDropTarget(null); return; }
+                      event.preventDefault();
+                      event.dataTransfer.dropEffect = 'move';
+                      const rect = event.currentTarget.getBoundingClientRect();
+                      const after = event.clientY >= rect.top + rect.height / 2;
+                      setDropTarget(current => current?.id === task.id && current.after === after ? current : { id: task.id, after });
+                    }}
+                    onDrop={event => {
+                      if (!canDrop || dragging === null) return;
+                      event.preventDefault();
+                      const rect = event.currentTarget.getBoundingClientRect();
+                      void moveTask(dragging, task.id, event.clientY >= rect.top + rect.height / 2);
+                    }}
+                  >
+                    <TableCell><input type="checkbox" aria-label={`Select ${task.title}`} checked={selected.has(task.id)} disabled={recordsBusy || loading || (isTasksAdmin && (!userId || task.userId !== userId))} onChange={() => toggleTask(task.id)} /></TableCell>
+                    <TableCell className="py-1 text-sm font-medium">
+                      <div className="flex items-center gap-2">
+                        {isTasksAdmin && ownedIndex >= 0 && (
+                          <span title={canReorder ? 'Drag to reorder, or use Arrow Up and Arrow Down' : 'Clear search and sort by Sort Order ascending to reorder'}>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6 shrink-0 cursor-grab active:cursor-grabbing"
+                              disabled={!canReorder && !reorderBusy}
+                              aria-disabled={!canReorder}
+                              draggable={canReorder}
+                              aria-label={`Reorder ${task.title}`}
+                              onDragStart={event => {
+                                if (!canReorder) { event.preventDefault(); return; }
+                                setDragging(task.id);
+                                event.dataTransfer.effectAllowed = 'move';
+                                event.dataTransfer.setData('text/plain', String(task.id));
+                              }}
+                              onDragEnd={clearDrag}
+                              onKeyDown={event => {
+                                if (!canReorder || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) return;
+                                event.preventDefault();
+                                const after = event.key === 'ArrowDown';
+                                const target = ownedTasks[ownedIndex + (after ? 1 : -1)];
+                                if (target) void moveTask(task.id, target.id, after);
+                              }}
+                            ><GripVertical className="h-4 w-4" /></Button>
+                          </span>
+                        )}
+                        {task.status === 'completed' ? (
+                          <CheckCircle className="w-3.5 h-3.5 text-green-500" />
+                        ) : task.status === 'in_progress' ? (
+                          <Clock className="w-3.5 h-3.5 text-blue-500" />
+                        ) : (
+                          <ListTodo className="w-3.5 h-3.5 text-muted-foreground" />
+                        )}
+                        {task.title}
+                        <Badge variant="outline" className="text-[10px]">
+                          {task.isPublic === null ? 'Visibility unavailable' : task.isPublic ? 'Public' : 'Private'}
+                        </Badge>
+                      </div>
+                    </TableCell>
+                    <TableCell className="py-1 text-xs tabular-nums">{task.sortOrder ?? '—'}</TableCell>
+                    <TableCell className="py-1 text-xs whitespace-nowrap">{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '—'}</TableCell>
+                    <TableCell className="py-1 text-xs">{task.assignedTo || '—'}</TableCell>
+                    <TableCell className="py-1 text-sm text-muted-foreground">
+                      {task.type ? (
+                        <Badge variant="outline" className="text-[10px]">
+                          {getOptionLabel(TASK_TYPE_OPTIONS, task.type)}
+                        </Badge>
                       ) : (
-                        <ListTodo className="w-3.5 h-3.5 text-muted-foreground" />
+                        '—'
                       )}
-                      {task.title}
-                      <Badge variant="outline" className="text-[10px]">
-                        {task.isPublic === null ? 'Visibility unavailable' : task.isPublic ? 'Public' : 'Private'}
-                      </Badge>
-                    </div>
-                  </TableCell>
-                  <TableCell className="py-1 text-xs whitespace-nowrap">{task.dueDate ? new Date(task.dueDate).toLocaleDateString() : '—'}</TableCell>
-                  <TableCell className="py-1 text-xs">{task.assignedTo || '—'}</TableCell>
-                  <TableCell className="py-1 text-sm text-muted-foreground">
-                    {task.type ? (
-                      <Badge variant="outline" className="text-[10px]">
-                        {getOptionLabel(TASK_TYPE_OPTIONS, task.type)}
-                      </Badge>
-                    ) : (
-                      '—'
-                    )}
-                  </TableCell>
-                  <TableCell className="py-1 text-sm text-muted-foreground">
-                    <span className={`text-xs ${getPriorityColor(task.priority)}`}>
-                      {getOptionLabel(TASK_PRIORITY_OPTIONS, task.priority)}
-                    </span>
-                  </TableCell>
-                  <TableCell className="py-1">
-                    <span className={`text-xs ${getStatusColor(task.status)}`}>
-                      {getOptionLabel(TASK_STATUS_OPTIONS, task.status)}
-                    </span>
-                  </TableCell>
-                  <TableCell className="py-1"><span aria-label={task.isActive ? 'Active' : 'Inactive'} title={task.isActive ? 'Active' : 'Inactive'} className={task.isActive ? 'text-green-500' : 'text-muted-foreground'}>{task.isActive ? '✓' : '×'}</span></TableCell>
-                  <TableCell className="py-1 text-right">{renderActions(task)}</TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                    <TableCell className="py-1 text-sm text-muted-foreground">
+                      <span className={`text-xs ${getPriorityColor(task.priority)}`}>
+                        {getOptionLabel(TASK_PRIORITY_OPTIONS, task.priority)}
+                      </span>
+                    </TableCell>
+                    <TableCell className="py-1">
+                      <span className={`text-xs ${getStatusColor(task.status)}`}>
+                        {getOptionLabel(TASK_STATUS_OPTIONS, task.status)}
+                      </span>
+                    </TableCell>
+                    <TableCell className="py-1"><span aria-label={task.isActive ? 'Active' : 'Inactive'} title={task.isActive ? 'Active' : 'Inactive'} className={task.isActive ? 'text-green-500' : 'text-muted-foreground'}>{task.isActive ? '✓' : '×'}</span></TableCell>
+                    <TableCell className="py-1 text-right">{renderActions(task)}</TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>
       )}
 
       {/* Edit Dialog */}
-      <Dialog open={!!editingTask} onOpenChange={(open) => !open && setEditingTask(null)}>
+      <Dialog open={!!editingTask} onOpenChange={(open) => { if (!open) closeEditDialog(); }}>
         <DialogContent className="w-[calc(100%-2rem)] sm:max-w-6xl max-h-[90dvh] gap-3 overflow-y-auto p-4">
           <DialogHeader>
             <DialogTitle>Edit Task</DialogTitle>
@@ -1034,6 +1213,7 @@ export function ThreeDTasksCRUD({ threedId, onModuleUpdate, scrollRecords = fals
               />
             </div>
 
+            {renderSortOrder('edit-task-sort-order')}
             <div>
               <Label htmlFor="edit-notes">Notes</Label>
               <Textarea

@@ -5,16 +5,19 @@ const ts = require('typescript');
 
 // Execute actual routes with a deterministic lock scheduler, never a database.
 const table = name => new Proxy({ name }, { get: (target, key) => target[key] ?? `${name}.${String(key)}` });
-const names = ['project', 'projectAssets', 'projectMultimedia', 'projectThreed', 'projectTraffic', 'multimedia', 'threed', 'traffic', 'threedTerrains', 'threedTerrainRevisions', 'projectTerrainPlacements'];
+const names = ['project', 'projectAssets', 'projectMultimedia', 'projectThreed', 'projectTraffic', 'multimedia', 'threed', 'traffic', 'threedTerrains', 'threedTerrainRevisions', 'projectTerrainPlacements', 'threedWateringSchedules', 'threedWateringHistory', 'threedTasks'];
 const schema = Object.fromEntries(names.map(name => [name, table(name)]));
-schema.assetTypeEnum = { enumValues: ['threed_terrains'] };
+schema.assetTypeEnum = { enumValues: ['threed_terrains', 'threed_watering_schedules'] };
 const deferred = () => {
   let resolve;
   const promise = new Promise(done => { resolve = done; });
   return { promise, resolve };
 };
 
-function fixture({ asset = null, placement = false, pause = false } = {}) {
+function fixture({ asset = null, placement = false, pause = false, assetType = 'threed_terrains' } = {}) {
+  const watering = assetType === 'threed_watering_schedules';
+  const source = watering ? schema.threedWateringSchedules : schema.threedTerrains;
+  const updatedAt = new Date('2026-11-20T16:00:00.000Z');
   const state = { terrain: true, asset, placement, writes: 0 };
   let lockTail = Promise.resolve();
   const acquired = deferred();
@@ -42,7 +45,7 @@ function fixture({ asset = null, placement = false, pause = false } = {}) {
       async function execute() {
         if (lock) {
           assert.ok(transaction, 'Terrain lock must belong to a transaction');
-          assert.equal(target, schema.threedTerrains);
+          assert.equal(target, source);
           events.push(`request:${lock}`);
           const previous = lockTail;
           const held = deferred();
@@ -57,16 +60,17 @@ function fixture({ asset = null, placement = false, pause = false } = {}) {
           }
         }
         if (kind === 'select') {
-          if (target === schema.threedTerrains) return state.terrain ? [{ id: 7 }] : [];
+          if (target === source) return state.terrain ? [{ id: 7, updatedAt }] : [];
           if (target === schema.threedTerrainRevisions) return [{ revision: 1 }];
           if (target === schema.projectTerrainPlacements) return state.placement ? [{ id: 'placement' }] : [];
           if (target === schema.projectAssets) return state.asset ? [state.asset] : [];
+          if (target === schema.threedTasks || target === schema.threedWateringHistory) return [];
           return [{ id: 1 }];
         }
         assert.ok(transaction && release, 'Assignment/deletion writes must retain the Terrain lock');
         state.writes++;
         if (kind === 'delete') {
-          if (target === schema.threedTerrains) state.terrain = false;
+          if (target === source) state.terrain = false;
           return [];
         }
         assert.ok(state.terrain, 'Cannot assign a deleted Terrain');
@@ -96,29 +100,36 @@ function fixture({ asset = null, placement = false, pause = false } = {}) {
     vm.runInNewContext(code, {
       exports,
       console: { log() {}, error() {} },
-      URL,
+      URL, URLSearchParams,
       require(name) {
         if (name === 'next/server') return { NextResponse: { json: (body, options) => ({ body, status: options?.status ?? 200 }) } };
         if (name === '@/libraries/auth') return { auth: async () => ({ user: { id: 'owner' } }) };
         if (name === '@/libraries/db/client') return { db };
         if (name.startsWith('@/libraries/schema')) return schema;
-        if (name === 'drizzle-orm') return Object.fromEntries(['eq', 'and', 'or', 'desc', 'asc', 'sql'].map(key => [key, () => null]));
+        if (name === 'drizzle-orm') return { ...Object.fromEntries(['eq', 'and', 'or', 'desc', 'asc', 'sql'].map(key => [key, () => null])), getTableColumns: () => ({}) };
         if (name === '@/libraries/db/sequence') return { ensureTableSequence: async () => {} };
         if (name === '@/libraries/project-assets/asset-registry') return { ASSIGNABLE_ASSET_REGISTRY: {
-          threed_terrains: { moduleType: 'threed', policy: 'ownerOnly', table: schema.threedTerrains, idColumn: schema.threedTerrains.id, userIdColumn: schema.threedTerrains.userId },
+          [assetType]: { moduleType: 'threed', policy: 'ownerOnly', table: source, idColumn: source.id, userIdColumn: source.userId },
         } };
         if (name.endsWith('/terrain-core')) return { TerrainInputError: class extends Error {} };
+        if (name.endsWith('/list-sort-order')) return {};
+        if (name.endsWith('/watering-list-query')) return {};
+        if (name.endsWith('/watering-schedule-edit')) return { parseWateringScheduleVersion: value => new Date(value), WateringScheduleInputError: class extends Error {} };
         throw new Error(`Unexpected dependency: ${name}`);
       },
     });
     return exports;
   }
   const assignment = load('src/app/api/project/assets/route.ts');
-  const terrain = load('src/app/api/threed/terrains/route.ts');
+  const records = load(watering ? 'src/app/api/threed/watering-schedules/route.ts' : 'src/app/api/threed/terrains/route.ts');
   return {
     state, events, acquired, resume,
-    assign: () => assignment.POST({ json: async () => ({ projectId: 1, moduleId: 1, moduleType: 'threed', assetType: 'threed_terrains', assetId: 7 }) }),
-    remove: () => terrain.DELETE({ nextUrl: new URL('https://fixture.invalid/?id=7&revision=1') }),
+    assign: () => assignment.POST({ json: async () => ({ projectId: 1, moduleId: 1, moduleType: 'threed', assetType, assetId: 7 }) }),
+    remove: () => {
+      const url = new URL('https://fixture.invalid/?id=7&revision=1');
+      url.searchParams.set('expectedUpdatedAt', updatedAt.toISOString());
+      return records.DELETE({ url: url.href, nextUrl: url });
+    },
   };
 }
 
@@ -161,4 +172,18 @@ const timeout = setTimeout(() => {
   assert.match((await placed.remove()).body.error, /saved Project placement/);
   assert.equal(placed.state.writes, 0);
   console.log('PASS: Terrain assignment/delete mocked interleavings, reactivation and retained-reference protection.');
+  for (const assignmentFirst of [true, false]) {
+    const schedule = fixture({ pause: true, assetType: 'threed_watering_schedules' });
+    const first = assignmentFirst ? schedule.assign() : schedule.remove();
+    await schedule.acquired.promise;
+    const second = assignmentFirst ? schedule.remove() : schedule.assign();
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(schedule.events.at(-1), assignmentFirst ? 'request:update' : 'request:share');
+    schedule.resume.resolve();
+    assert.equal((await first).status, 200);
+    assert.equal((await second).status, assignmentFirst ? 409 : 404);
+    assert.equal(schedule.state.terrain, assignmentFirst);
+    assert.equal(Boolean(schedule.state.asset), assignmentFirst);
+  }
+  console.log('PASS: Watering Schedule assignment and deletion are serialized against the owned schedule.');
 })().catch(error => { console.error(error); process.exitCode = 1; }).finally(() => clearTimeout(timeout));

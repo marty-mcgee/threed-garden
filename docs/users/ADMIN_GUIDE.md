@@ -1,6 +1,6 @@
 # Admin Guide
 
-Use Admin at `/admin` to manage your Projects and reusable content. Sign in at `/auth/sign-in`; **Create an account** opens signup. New accounts are Admins of their own content. An active, non-deleted Super Admin can also manage Users and global Module appearance. That role does not grant ownership of another User's private content.
+Use Admin at `/admin` to manage your Projects and reusable content. Existing users can sign in at `/auth/sign-in` during the temporary registration pause. An active, non-deleted Super Admin can also manage Users and global Module appearance. That role does not grant ownership of another User's private content.
 
 ## Find your workspace
 
@@ -21,6 +21,23 @@ Use Admin at `/admin` to manage your Projects and reusable content. Sign in at `
 Expand a section or subgroup to see its pages. Expansion choices are remembered for your account in this browser. The current page has a tinted background and outline; creation links such as **Add User**, **Add Project**, **Add Model**, **Add Simulation** and **Add Speech** retain ordinary sidebar styling.
 
 Creation buttons on Admin pages are green. Read the button label before acting: existing Save buttons can also be green. Module icons and colors follow saved App Settings; utility icons such as the creation Plus remain distinct. Use search, filters and paging where offered to find records, and follow linked relationship badges to their related Admin records.
+
+## Sort and edit ThreeD records
+
+The ThreeD Admin lists for Tasks, Assembly Groups, Terrains, Watering Schedules, Watering Schedule History, and Harvests support saved **Sort Order** and **Bulk Edit**. On the Watering Schedules page, choose **Schedules** for planned watering or **History** for recorded outcomes.
+
+1. Select a sortable column heading to change the view. Select it again to reverse the direction.
+2. To save a manual order, clear search and other filters and use **Sort Order** ascending. Use **Reorder** where available to return to that view. Drag a row by its grip, or focus the grip and press **Up Arrow** or **Down Arrow** to move it. You can also edit the row's Sort Order value directly.
+3. To edit several rows, select them on the current page, open **Bulk Edit**, and choose the fields to change before saving. Paging, searching, filtering or sorting clears the current selection.
+4. Use the row's **Edit** action for record details. Review any deletion confirmation carefully. Linked records can prevent deletion. A **?** beside a heading opens help for that section.
+
+| List | Bulk Edit fields |
+| --- | --- |
+| Tasks | Sort Order, Task Type, Assigned To, Due Date, Priority, Status, and Active. Task Type groups Tasks. Public Task remains a separate visibility setting. |
+| Assembly Groups and Terrains | Sort Order and Active. Saved compositions and Terrain revisions have their own editors. |
+| Watering Schedules | Sort Order and supported timing, amount, weather, notes, and Active settings. |
+| Watering Schedule History | Sort Order, execution date, duration, volume, status, skip reason, and error message. |
+| Harvests | Sort Order, quantity, unit, weight, harvest date, notes, and Active. |
 
 ## Manage Learn guides
 
@@ -64,6 +81,8 @@ For generated geometry, open **ThreeD > Models > Model Builder**. Adjust the Cot
 *Conceptual illustration: Account management retains ownership boundaries and deletion protections.*
 
 Open **Users > All Users** at `/admin/users`. Search by name/email or filter by role and **Current Users**, **Deleted Users** or **All Users**.
+
+**Add User** becomes available for account creation when registration reopens. You can continue to edit existing accounts during the pause.
 
 1. Choose **Add User** to open `/admin/users/new`.
 2. Enter **Name**, **Email** and **Initial password**. The password needs at least eight characters and at most 72 UTF-8 bytes.

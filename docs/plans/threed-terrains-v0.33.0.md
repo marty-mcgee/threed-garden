@@ -14,6 +14,12 @@ For an unavailable Edit record, the editor shows a return link to All Terrains a
 
 The intended result is a **smooth terrain surface** saved as a reusable ThreeD asset and placed in multiple Projects, comparable to Assembly Group reuse. It serves as the Project's Environment Map surface: grounded Models, Characters, and other applicable objects stand, are placed, and move at its elevations. Intentional vertical offsets and existing runtime physics remain valid. The Developer chose this direction after reviewing the supplied block-based example. Exact authoring controls, file format, storage, and collider implementation remain to be designed.
 
+## Admin list ordering and activity
+
+The Terrains and Assembly Groups lists share the Tasks-style records table and Bulk Edit controls. The Terrains list opens in **Sort Order** ascending. Clear search and use a row grip to drag above or below another row, or focus the grip and press **Arrow Up** or **Arrow Down**. Click a rank or the **Active** indicator to edit one Terrain. Select rows on the current page to edit rank, activity, or both in **Bulk Edit**.
+
+Apply the [Terrains list settings migration](../developers/sql/threed-terrains-list-settings.sql) before deploying the updated Admin list. It adds rank and activity to the reusable Terrain record, with defaults of 0 and Active. The Activity field is Admin list metadata. The Project Terrain picker and placements use their existing selection and revision contracts. An App rollback can keep the columns and their saved values.
+
 ## Current App boundary
 
 - The active 3D Scene is owned by `ThreeDScene.tsx` and its persistent Canvas/Rapier world. `SceneEnvironment.tsx` supplies the procedural ground presentation and placement surface.

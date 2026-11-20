@@ -12,7 +12,7 @@ import {
   projectTraffic,
 } from '@/libraries/schema/project';
 import { multimedia, threed, traffic } from '@/libraries/schema';
-import { projectTerrainPlacements, threedTerrains } from '@/libraries/schema/threed';
+import { projectTerrainPlacements } from '@/libraries/schema/threed';
 import { eq, and, desc, or, sql } from 'drizzle-orm';
 import { ensureTableSequence } from '@/libraries/db/sequence';
 import {
@@ -246,18 +246,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const serializeAssignment = assetType === 'threed_terrains' || assetType === 'threed_watering_schedules';
     async function assignAsset(connection: Pick<typeof db, 'select' | 'update' | 'insert'>) {
-      if (assetType === 'threed_terrains') {
-        // Serialize assignment with Terrain deletion until this transaction commits.
-        const [terrain] = await connection.select({ id: threedTerrains.id })
-          .from(threedTerrains)
-          .where(and(eq(threedTerrains.id, parsedAssetId), eq(threedTerrains.userId, userId)))
-          .limit(1).for('share');
-        if (!terrain) return NextResponse.json({
-          success: false,
-          error: 'Asset not found or not assignable',
-        }, { status: 404 });
-      }
       const assetAccessCondition = assetDefinition.policy === 'ownerOrActivePublic'
         ? or(
             eq(assetDefinition.userIdColumn, userId),
@@ -268,7 +258,7 @@ export async function POST(request: NextRequest) {
           )
         : eq(assetDefinition.userIdColumn, userId);
 
-      const [assignableAsset] = await connection
+      const assetQuery = connection
         .select({ id: assetDefinition.idColumn })
         .from(assetDefinition.table)
         .where(
@@ -278,6 +268,8 @@ export async function POST(request: NextRequest) {
           )
         )
         .limit(1);
+      // Hold the source row through assignment so concurrent deletion cannot orphan the link.
+      const [assignableAsset] = await (serializeAssignment ? assetQuery.for('share') : assetQuery);
 
       if (!assignableAsset) {
         return NextResponse.json(
@@ -354,7 +346,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    return assetType === 'threed_terrains'
+    return serializeAssignment
       ? await db.transaction(tx => assignAsset(tx))
       : await assignAsset(db);
   } catch (error) {

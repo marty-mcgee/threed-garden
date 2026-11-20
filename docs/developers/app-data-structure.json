@@ -1,11 +1,11 @@
 {
-  "generatedAt": "2026-11-19",
+  "generatedAt": "2026-11-20",
   "branch": "main",
-  "head": "dde033104e7e6d855101e79d47e7d76609ef9983",
-  "version": "0.35.4",
+  "head": "831995cca04bb3298a6475e219d3f8040ac944ef",
+  "version": "0.35.5",
   "summary": {
     "tables": 91,
-    "columns": 1276,
+    "columns": 1284,
     "foreignKeys": 176,
     "enums": 37,
     "ormRelations": 161,
@@ -3131,7 +3131,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 592,
+      "line": 594,
       "columns": [
         {
           "name": "id",
@@ -4845,7 +4845,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2272,
+      "line": 2278,
       "columns": [
         {
           "name": "id",
@@ -4976,7 +4976,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2248,
+      "line": 2254,
       "columns": [
         {
           "name": "id",
@@ -5067,7 +5067,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2259,
+      "line": 2265,
       "columns": [
         {
           "name": "id",
@@ -5143,7 +5143,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2143,
+      "line": 2149,
       "columns": [
         {
           "name": "id",
@@ -5284,7 +5284,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2230,
+      "line": 2236,
       "columns": [
         {
           "name": "id",
@@ -5405,7 +5405,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2215,
+      "line": 2221,
       "columns": [
         {
           "name": "id",
@@ -5520,7 +5520,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2160,
+      "line": 2166,
       "columns": [
         {
           "name": "id",
@@ -5680,7 +5680,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2294,
+      "line": 2300,
       "columns": [
         {
           "name": "id",
@@ -5711,6 +5711,26 @@
           "unique": false,
           "hasDefault": false,
           "default": null
+        },
+        {
+          "name": "sort_order",
+          "property": "sortOrder",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "0"
+        },
+        {
+          "name": "is_active",
+          "property": "isActive",
+          "type": "boolean",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "true"
         },
         {
           "name": "demo_key",
@@ -5771,7 +5791,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2328,
+      "line": 2336,
       "columns": [
         {
           "name": "assembly_id",
@@ -5971,7 +5991,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2306,
+      "line": 2314,
       "columns": [
         {
           "name": "assembly_id",
@@ -6029,7 +6049,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2315,
+      "line": 2323,
       "columns": [
         {
           "name": "assembly_id",
@@ -6111,7 +6131,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 641,
+      "line": 643,
       "columns": [
         {
           "name": "id",
@@ -6414,7 +6434,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2197,
+      "line": 2203,
       "columns": [
         {
           "name": "id",
@@ -6543,7 +6563,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1686,
+      "line": 1692,
       "columns": [
         {
           "name": "id",
@@ -6667,7 +6687,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1596,
+      "line": 1602,
       "columns": [
         {
           "name": "id",
@@ -7390,7 +7410,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1112,
+      "line": 1118,
       "columns": [
         {
           "name": "id",
@@ -7568,7 +7588,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1248,
+      "line": 1254,
       "columns": [
         {
           "name": "id",
@@ -8027,7 +8047,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1415,
+      "line": 1421,
       "columns": [
         {
           "name": "id",
@@ -8348,7 +8368,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1547,
+      "line": 1553,
       "columns": [
         {
           "name": "id",
@@ -8501,7 +8521,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1071,
+      "line": 1077,
       "columns": [
         {
           "name": "id",
@@ -8668,7 +8688,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 996,
+      "line": 1002,
       "columns": [
         {
           "name": "id",
@@ -9201,7 +9221,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 882,
+      "line": 886,
       "columns": [
         {
           "name": "id",
@@ -9232,6 +9252,16 @@
           "unique": true,
           "hasDefault": false,
           "default": null
+        },
+        {
+          "name": "sort_order",
+          "property": "sortOrder",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "0"
         },
         {
           "name": "planting_id",
@@ -9391,7 +9421,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1738,
+      "line": 1744,
       "columns": [
         {
           "name": "id",
@@ -9635,7 +9665,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 2180,
+      "line": 2186,
       "columns": [
         {
           "name": "id",
@@ -10205,7 +10235,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 618,
+      "line": 620,
       "columns": [
         {
           "name": "id",
@@ -10896,7 +10926,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1190,
+      "line": 1196,
       "columns": [
         {
           "name": "id",
@@ -11194,7 +11224,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1143,
+      "line": 1149,
       "columns": [
         {
           "name": "id",
@@ -11579,7 +11609,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 686,
+      "line": 688,
       "columns": [
         {
           "name": "id",
@@ -12893,7 +12923,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 1573,
+      "line": 1579,
       "columns": [
         {
           "name": "id",
@@ -13018,7 +13048,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 915,
+      "line": 920,
       "columns": [
         {
           "name": "id",
@@ -13079,6 +13109,16 @@
           "unique": false,
           "hasDefault": false,
           "default": null
+        },
+        {
+          "name": "sort_order",
+          "property": "sortOrder",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "0"
         },
         {
           "name": "priority",
@@ -13336,7 +13376,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 568,
+      "line": 570,
       "columns": [
         {
           "name": "terrain_id",
@@ -13521,6 +13561,26 @@
           "default": null
         },
         {
+          "name": "sort_order",
+          "property": "sortOrder",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "0"
+        },
+        {
+          "name": "is_active",
+          "property": "isActive",
+          "type": "boolean",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "true"
+        },
+        {
           "name": "created_at",
           "property": "createdAt",
           "type": "timestamp",
@@ -13571,7 +13631,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 813,
+      "line": 816,
       "columns": [
         {
           "name": "id",
@@ -13602,6 +13662,16 @@
           "unique": true,
           "hasDefault": false,
           "default": null
+        },
+        {
+          "name": "sort_order",
+          "property": "sortOrder",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "0"
         },
         {
           "name": "schedule_id",
@@ -13837,7 +13907,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 734,
+      "line": 736,
       "columns": [
         {
           "name": "id",
@@ -13868,6 +13938,16 @@
           "unique": true,
           "hasDefault": false,
           "default": null
+        },
+        {
+          "name": "sort_order",
+          "property": "sortOrder",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "0"
         },
         {
           "name": "plant_id",
@@ -14190,7 +14270,7 @@
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
       "sourcePath": "src/libraries/schema/threed/index.ts",
-      "line": 962,
+      "line": 968,
       "columns": [
         {
           "name": "id",
@@ -24218,7 +24298,7 @@
       ],
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
-      "line": 1714
+      "line": 1720
     },
     {
       "name": "threed_layer_visibility",
@@ -24229,7 +24309,7 @@
       ],
       "domain": "threed",
       "source": "../../src/libraries/schema/threed/index.ts",
-      "line": 1728
+      "line": 1734
     },
     {
       "name": "threed_model_status",
@@ -24365,7 +24445,7 @@
     "src/libraries/schema/project/index.ts": "dc1a0c978eae09b605942ff0351e81a9d0f85ee554f4757f5ae00a5c20b5be6a",
     "src/libraries/schema/settings/index.ts": "36c9ce83d70c4517b44952899574a47c68798551b3c1a63992819e89063ced55",
     "src/libraries/schema/threed/album-associations.ts": "f1dfc1d4701a484c1d0b8cd8582768aa61b9585b19a6d3c693ab9c2cc619dff8",
-    "src/libraries/schema/threed/index.ts": "ff95c69b3e49b200305344aa4231c09d1842e0f7aa24f641a7c3ba9b4ca954c6",
+    "src/libraries/schema/threed/index.ts": "6eae169f87981a06b4d279a1db10c8f9d5f9b3226f2f4bf22413f48c30094bd3",
     "src/libraries/schema/traffic/index.ts": "d15d70e180a2cbacc693fb1c9ea8575585125fe7f7e0fdc7a4daee22d316568e",
     "src/libraries/services/threed/multimedia/album-entity-registry.ts": "24ce57ab3ac472b06fd25590a0090dc1579215a63cedc6eceabbc612034a59e9"
   },

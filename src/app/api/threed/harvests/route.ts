@@ -9,9 +9,12 @@ import {
   threedBeds,
 } from '@/libraries/schema/threed';
 import { project, projectAssets } from '@/libraries/schema/project';
-import { eq, and, asc, desc, sql, inArray } from 'drizzle-orm';
-import { parseHarvestListQuery } from '@/libraries/services/threed/harvests/harvest-list-query';
+import { eq, and, asc, desc, getTableColumns, sql, inArray } from 'drizzle-orm';
+import { isMissingHarvestSortOrder, parseHarvestListQuery } from '@/libraries/services/threed/harvests/harvest-list-query';
+import { HarvestInputError, parseHarvestDate } from '@/libraries/services/threed/harvests/harvest-edit';
 import { ensureTableSequence } from '@/libraries/db/sequence';
+
+const { sortOrder: rankColumn, ...harvestFields } = getTableColumns(threedHarvests);
 
 // ============================================
 // GET /api/threed/harvests
@@ -89,14 +92,19 @@ export async function GET(request: NextRequest) {
       conditions.push(sql`(${threedHarvests.harvestId} ilike ${pattern} or ${threedHarvests.notes} ilike ${pattern} or ${plantName} ilike ${pattern})`);
     }
     const columns = { id: threedHarvests.id, harvestId: threedHarvests.harvestId, plant: plantName, quantity: threedHarvests.quantity,
-      weight: threedHarvests.weightLbs, date: threedHarvests.harvestDate, active: threedHarvests.isActive, createdAt: threedHarvests.createdAt };
+      weight: threedHarvests.weightLbs, date: threedHarvests.harvestDate, active: threedHarvests.isActive, createdAt: threedHarvests.createdAt, sortOrder: rankColumn };
     const order = direction === 'asc' ? asc : desc;
     const where = and(...conditions);
     const [{ count }] = await db.select({ count: sql<number>`count(*)` }).from(threedHarvests).where(where);
-    const harvests = await db.select().from(threedHarvests).where(where)
-      .orderBy(order(columns[sort]), order(threedHarvests.createdAt), order(threedHarvests.id))
+    const chronological = [desc(threedHarvests.harvestDate), desc(threedHarvests.createdAt), desc(threedHarvests.id)];
+    const load = async (withRank: boolean) => db.select({ ...harvestFields, sortOrder: withRank ? rankColumn : sql<null>`null` }).from(threedHarvests).where(where)
+      .orderBy(...(sort === 'sortOrder' ? [...(withRank ? [order(rankColumn)] : []), ...chronological] : [order(columns[sort]), order(threedHarvests.createdAt), order(threedHarvests.id)]))
       .limit(limit)
       .offset(offset);
+    const harvests = await load(true).catch(error => {
+      if (!isMissingHarvestSortOrder(error)) throw error;
+      return load(false);
+    });
 
     const harvestIds = harvests.map((harvest) => harvest.id);
     const plantingIds = harvests.flatMap((harvest) => harvest.plantingId ? [harvest.plantingId] : []);
@@ -216,6 +224,7 @@ export async function POST(request: NextRequest) {
     if (weightLbs != null && (!Number.isFinite(weightLbs) || weightLbs < 0)) {
       return NextResponse.json({ success: false, error: 'Weight cannot be negative' }, { status: 400 });
     }
+    const harvestDate = parseHarvestDate(body.harvestDate || new Date().toISOString().slice(0, 10));
 
     const [planting] = plantingId
       ? await db.select().from(threedPlantings).where(and(eq(threedPlantings.id, plantingId), eq(threedPlantings.userId, userId))).limit(1)
@@ -264,9 +273,10 @@ export async function POST(request: NextRequest) {
       quantity: quantity == null ? null : String(quantity),
       unit: body.unit || 'lbs',
       weightLbs: weightLbs == null ? null : String(weightLbs),
-      harvestDate: body.harvestDate || new Date().toISOString().split('T')[0],
+      harvestDate,
       notes: body.notes || null,
       imageUrl: body.imageUrl || null,
+      isActive: typeof body.isActive === 'boolean' ? body.isActive : true,
     };
 
     console.log('[Harvests API] Inserting values:', values);
@@ -300,6 +310,7 @@ export async function POST(request: NextRequest) {
       message: 'Harvest created successfully',
     });
   } catch (error) {
+    if (error instanceof HarvestInputError) return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     console.error('[Harvests API] POST error:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to create harvest', details: error instanceof Error ? error.message : String(error) },
@@ -341,7 +352,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const [existing] = await db
-      .select()
+      .select(harvestFields)
       .from(threedHarvests)
       .where(
         and(
@@ -426,7 +437,7 @@ export async function PUT(request: NextRequest) {
       updateData.weightLbs = weight == null ? null : String(weight);
     }
     if (body.harvestDate !== undefined) {
-      updateData.harvestDate = body.harvestDate || null;
+      updateData.harvestDate = parseHarvestDate(body.harvestDate);
     }
     if (body.notes !== undefined) {
       updateData.notes = body.notes || null;
@@ -453,7 +464,7 @@ export async function PUT(request: NextRequest) {
           eq(threedHarvests.userId, userId)
         )
       )
-      .returning();
+      .returning(harvestFields);
 
     console.log('[Harvests API] Updated harvest:', updated.id, updated.harvestId);
 
@@ -463,6 +474,7 @@ export async function PUT(request: NextRequest) {
       message: 'Harvest updated successfully',
     });
   } catch (error) {
+    if (error instanceof HarvestInputError) return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     console.error('[Harvests API] PUT error:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to update harvest', details: error instanceof Error ? error.message : String(error) },
@@ -506,7 +518,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const [existing] = await db
-      .select()
+      .select(harvestFields)
       .from(threedHarvests)
       .where(
         and(
@@ -533,7 +545,7 @@ export async function DELETE(request: NextRequest) {
       const [deletedHarvest] = await tx.delete(threedHarvests).where(and(
         eq(threedHarvests.id, parsedId),
         eq(threedHarvests.userId, userId),
-      )).returning();
+      )).returning(harvestFields);
 
       return deletedHarvest;
     });

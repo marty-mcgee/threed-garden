@@ -12,3 +12,54 @@ export function parseWateringListQuery(params: URLSearchParams) {
   if (search.length > 200) throw new Error('Search is too long');
   return { limit: integer('limit', 50, 1, 200), offset: integer('offset', 0, 0, 2147483647), search };
 }
+
+export const wateringScheduleSortFields = [
+  'sortOrder',
+  'scheduleId',
+  'frequency',
+  'nextWatering',
+  'lastWatering',
+  'durationMs',
+  'volumeMl',
+  'isActive',
+] as const;
+
+type WateringScheduleSortField = typeof wateringScheduleSortFields[number];
+
+export function parseWateringScheduleSort(params: URLSearchParams) {
+  const field = params.get('sortBy') ?? 'nextWatering';
+  const direction = params.get('sortDir') ?? 'desc';
+  if (!wateringScheduleSortFields.some(allowed => allowed === field) || (direction !== 'asc' && direction !== 'desc')) {
+    throw new Error('Invalid watering schedule sort');
+  }
+  return { field: field as WateringScheduleSortField, direction };
+}
+
+export const wateringHistorySortFields = [
+  'sortOrder',
+  'historyId',
+  'executedAt',
+  'status',
+  'durationMs',
+  'volumeMl',
+  'scheduleId',
+  'executedBy',
+] as const;
+
+export function parseWateringHistorySort(params: URLSearchParams) {
+  const field = params.get('sortBy') ?? 'executedAt';
+  const direction = params.get('sortDir') ?? 'desc';
+  if (!wateringHistorySortFields.some(allowed => allowed === field) || (direction !== 'asc' && direction !== 'desc')) {
+    throw new Error('Invalid watering history sort');
+  }
+  return { field: field as typeof wateringHistorySortFields[number], direction };
+}
+
+export function isMissingWateringSortOrder(error: unknown) {
+  for (let current = error, depth = 0; current && typeof current === 'object' && depth < 5; depth++) {
+    const cause = current as { code?: string; message?: string; cause?: unknown };
+    if (cause.code === '42703' && /^column (?:"?threed_watering_(?:schedules|history)"?\."?sort_order"?|"sort_order"(?: of relation "threed_watering_(?:schedules|history)")?) does not exist$/.test(cause.message ?? '')) return true;
+    current = cause.cause;
+  }
+  return false;
+}

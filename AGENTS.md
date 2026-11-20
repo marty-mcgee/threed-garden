@@ -21,6 +21,8 @@ Read this file and [CONTEXT.md](CONTEXT.md) fully before editing. Inspect the cu
 
 Use [agent guidance](docs/agents/README.md), [safe change areas](docs/agents/SAFE_CHANGE_AREAS.md), [task checklists](docs/agents/TASK_CHECKLISTS.md) and [validation](docs/agents/VALIDATION.md).
 
+For Admin Blueprint work, follow [Apply ThreeD Admin Page Blueprint](docs/agents/skills/apply-threed-admin-page-blueprint/SKILL.md) for the authorized pages.
+
 ## Manual release and live-system boundaries
 
 - Leave changes unstaged. Do not stage, commit, amend, reset, cherry-pick, merge, rebase, tag, push, publish or deploy without explicit authorization for that action. Implement/proceed/checks-passed/ready-for-release do not grant it.

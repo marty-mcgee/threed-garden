@@ -10,14 +10,28 @@ import {
   threedWateringSchedules, // ✅ Add this
 } from '@/libraries/schema/threed';
 import { projectAssets } from '@/libraries/schema/project';
-import { eq, and, or, desc, ilike, sql, type SQL } from 'drizzle-orm';
+import { eq, and, or, asc, desc, ilike, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/libraries/db/sequence';
 import { databaseConnectionDiagnostic } from '@/libraries/db/connection-diagnostics';
-import { isMissingTaskVisibilityColumn, readThreeDTasks, taskVisibilityUnavailable } from '@/libraries/services/threed/tasks/read-scope';
+import {
+  isMissingTaskSortOrderColumn,
+  isMissingTaskVisibilityColumn,
+  readThreeDTasks,
+  taskSortOrderUnavailable,
+  taskVisibilityUnavailable,
+} from '@/libraries/services/threed/tasks/read-scope';
+import { isTaskSortOrder, reorderTasks, TASK_SORT_ORDER_LIMIT, taskSortOrderError } from '@/libraries/services/threed/tasks/sort-order';
 
 export const dynamic = 'force-dynamic';
 const taskReadHeaders = { 'Cache-Control': 'private, no-store' };
-const migrationRequired = () => NextResponse.json({ success: false, error: taskVisibilityUnavailable }, { status: 503 });
+function migrationRequired(error: unknown) {
+  if (isMissingTaskVisibilityColumn(error)) {
+    return NextResponse.json({ success: false, error: taskVisibilityUnavailable }, { status: 503 });
+  }
+  if (isMissingTaskSortOrderColumn(error)) {
+    return NextResponse.json({ success: false, error: taskSortOrderUnavailable }, { status: 503 });
+  }
+}
 
 // ============================================
 // GET /api/threed/tasks
@@ -128,15 +142,18 @@ export async function GET(request: NextRequest) {
 
     const [countResult, tasks] = await readThreeDTasks(userId, 'catalog', async (scope, selection) => {
       const where = and(scope, ...conditions);
+      const order = sortKey === 'sortOrder'
+        ? (selection.sortOrder === threedTasks.sortOrder
+          ? [sql`${threedTasks.sortOrder} ${direction}`, asc(threedTasks.title)]
+          : [asc(threedTasks.title)])
+        : sortColumn ? [sql`${sortColumn} ${direction} nulls last`] : [
+          sql`CASE WHEN ${threedTasks.status} = 'pending' THEN 0 WHEN ${threedTasks.status} = 'in_progress' THEN 1 WHEN ${threedTasks.status} = 'completed' THEN 2 ELSE 3 END`,
+          desc(threedTasks.createdAt),
+        ];
       return Promise.all([
         db.select({ count: sql<number>`count(*)` }).from(threedTasks).where(where),
         db.select(selection).from(threedTasks).where(where)
-          .orderBy(
-            ...(sortColumn ? [sql`${sortColumn} ${direction} nulls last`] : [
-              sql`CASE WHEN ${threedTasks.status} = 'pending' THEN 0 WHEN ${threedTasks.status} = 'in_progress' THEN 1 WHEN ${threedTasks.status} = 'completed' THEN 2 ELSE 3 END`,
-              desc(threedTasks.createdAt),
-            ]), desc(threedTasks.id)
-          )
+          .orderBy(...order, desc(threedTasks.id))
           .limit(limit)
           .offset(offset),
       ]);
@@ -185,6 +202,9 @@ export async function POST(request: NextRequest) {
     if (body.isPublic !== undefined && typeof body.isPublic !== 'boolean') {
       return NextResponse.json({ success: false, error: 'Invalid Public Task value' }, { status: 400 });
     }
+    if (body.sortOrder !== undefined && !isTaskSortOrder(body.sortOrder)) {
+      return NextResponse.json({ success: false, error: taskSortOrderError }, { status: 400 });
+    }
 
     // ✅ Generate taskId
     const taskId = body.taskId || `task_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
@@ -201,6 +221,7 @@ export async function POST(request: NextRequest) {
       priority: body.priority || 'medium',
       status: body.status || 'pending',
       isPublic: body.isPublic ?? false,
+      sortOrder: body.sortOrder ?? 0,
       assignedTo: body.assignedTo || null,
       notes: body.notes || null,
     };
@@ -304,7 +325,8 @@ export async function POST(request: NextRequest) {
       message: 'Task created successfully',
     });
   } catch (error) {
-    if (isMissingTaskVisibilityColumn(error)) return migrationRequired();
+    const unavailable = migrationRequired(error);
+    if (unavailable) return unavailable;
     console.error('[Tasks API] POST error:', databaseConnectionDiagnostic(error));
     return NextResponse.json(
       { success: false, error: 'Failed to create task' },
@@ -367,6 +389,9 @@ export async function PUT(request: NextRequest) {
     if (body.isPublic !== undefined && typeof body.isPublic !== 'boolean') {
       return NextResponse.json({ success: false, error: 'Invalid Public Task value' }, { status: 400 });
     }
+    if (body.sortOrder !== undefined && !isTaskSortOrder(body.sortOrder)) {
+      return NextResponse.json({ success: false, error: taskSortOrderError }, { status: 400 });
+    }
 
     // ✅ Build updateData with ONLY fields that are explicitly provided
     const updateData: any = { updatedAt: new Date() };
@@ -390,6 +415,9 @@ export async function PUT(request: NextRequest) {
     if (body.isPublic !== undefined) {
       updateData.isPublic = body.isPublic;
     }
+    if (body.sortOrder !== undefined) {
+      updateData.sortOrder = body.sortOrder;
+    }
     if (body.assignedTo !== undefined) {
       updateData.assignedTo = body.assignedTo;
     }
@@ -405,7 +433,7 @@ export async function PUT(request: NextRequest) {
     // ✅ Handle completion date
     if (body.status === 'completed' && existing.status !== 'completed') {
       updateData.completedAt = new Date().toISOString();
-    } else if (body.status !== 'completed') {
+    } else if (body.status !== undefined && body.status !== 'completed') {
       updateData.completedAt = null;
     }
 
@@ -448,12 +476,73 @@ export async function PUT(request: NextRequest) {
       message: 'Task updated successfully',
     });
   } catch (error) {
-    if (isMissingTaskVisibilityColumn(error)) return migrationRequired();
+    const unavailable = migrationRequired(error);
+    if (unavailable) return unavailable;
     console.error('[Tasks API] PUT error:', databaseConnectionDiagnostic(error));
     return NextResponse.json(
       { success: false, error: 'Failed to update task' },
       { status: 500 }
     );
+  }
+}
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const userId = (await auth())?.user?.id;
+    if (!userId) return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+
+    const move = await request.json().catch(() => null);
+    const { sourceId, targetId, after } = move ?? {};
+    if (!Number.isSafeInteger(sourceId) || sourceId < 1 || !Number.isSafeInteger(targetId) || targetId < 1 ||
+        sourceId === targetId || typeof after !== 'boolean') {
+      return NextResponse.json({ success: false, error: 'Invalid Task move' }, { status: 400 });
+    }
+
+    const outcome = await db.transaction(async tx => {
+      const owned = eq(threedTasks.userId, userId);
+      // Lock in ID order, then read the locked rows in their current display order.
+      const locked = tx.$with('locked_tasks').as(
+        tx.select({
+          id: threedTasks.id,
+          title: threedTasks.title,
+          sortOrder: threedTasks.sortOrder,
+        }).from(threedTasks).where(owned).orderBy(asc(threedTasks.id)).for('update'),
+      );
+      const tasks = await tx.with(locked).select({
+        id: locked.id,
+        sortOrder: locked.sortOrder,
+      }).from(locked).orderBy(asc(locked.sortOrder), asc(locked.title), desc(locked.id));
+
+      const reordered = reorderTasks(tasks, sourceId, targetId, after);
+      if (!reordered) return 'not-found';
+      if (reordered === tasks) return 'unchanged';
+      if (reordered.length > TASK_SORT_ORDER_LIMIT + 1) return 'too-many';
+
+      const changes = reordered.flatMap((task, index) => task.sortOrder === index ? [] : [{
+        id: task.id,
+        sort_order: index,
+      }]);
+      await tx.execute(sql`
+        UPDATE ${threedTasks}
+        SET sort_order = ranks.sort_order, updated_at = now()
+        FROM jsonb_to_recordset(${JSON.stringify(changes)}::jsonb) AS ranks(id integer, sort_order integer)
+        WHERE ${threedTasks.id} = ranks.id AND ${owned}
+      `);
+      return 'moved';
+    });
+
+    if (outcome === 'not-found') {
+      return NextResponse.json({ success: false, error: 'Task not found' }, { status: 404 });
+    }
+    if (outcome === 'too-many') {
+      return NextResponse.json({ success: false, error: 'Too many Tasks to assign unique Sort Order values' }, { status: 409 });
+    }
+    return NextResponse.json({ success: true, changed: outcome === 'moved' });
+  } catch (error) {
+    const unavailable = migrationRequired(error);
+    if (unavailable) return unavailable;
+    console.error('[Tasks API] PATCH error:', databaseConnectionDiagnostic(error));
+    return NextResponse.json({ success: false, error: 'Failed to reorder Tasks' }, { status: 500 });
   }
 }
 
@@ -535,7 +624,8 @@ export async function DELETE(request: NextRequest) {
       message: 'Task deleted successfully',
     });
   } catch (error) {
-    if (isMissingTaskVisibilityColumn(error)) return migrationRequired();
+    const unavailable = migrationRequired(error);
+    if (unavailable) return unavailable;
     console.error('[Tasks API] DELETE error:', databaseConnectionDiagnostic(error));
     return NextResponse.json(
       { success: false, error: 'Failed to delete task' },

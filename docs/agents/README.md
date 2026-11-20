@@ -18,6 +18,8 @@ Read [AGENTS.md](../../AGENTS.md) and [CONTEXT.md](../../CONTEXT.md) fully befor
 
 [Safe change areas](SAFE_CHANGE_AREAS.md) · [Task/contribution checklists](TASK_CHECKLISTS.md) · [Validation ladder](VALIDATION.md)
 
+Use [Apply ThreeD Admin Page Blueprint](skills/apply-threed-admin-page-blueprint/SKILL.md) when rolling out the common list and CRUD patterns to an Admin page. The [rollout plan](../plans/admin-threed-workspace-blueprint.md#rollout-across-top-modules) tracks the scope across the four Top Modules.
+
 Inspect scripts before execution. Use Node 24, declared npm 11.6.2 and isolated clean `npm ci` installations. Reconcile intentional dependency changes with matching package/lock metadata; retain lockfile integrity checks. Validate focused areas, TypeScript and applicable CI checks, then run a guarded isolated npm production build for release preparation. Use mocked database/device boundaries and scrubbed credentials; no live writes, migrations, seeds, uploads or device commands as tests. Do not start temporary fixture servers.
 
 ## Ownership contracts

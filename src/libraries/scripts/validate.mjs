@@ -23,6 +23,7 @@ const tasks = {
   'threed-terrains': [
     ts('validate-threed-terrains.mjs'),
     node('validate-terrain-assignment-delete.cjs'),
+    node('validate-terrain-list.cjs'),
   ],
   'meta-tags': [node('validate-meta-tags.cjs'), node('validate-meta-tags-ui.cjs'), node('validate-project-meta-tags.cjs')],
   'project-guest-toolbar': [node('validate-project-guest-toolbar.cjs')],
@@ -148,7 +149,7 @@ const tasks = {
   'threed-simulation-launch': [node('validate-threed-simulation-launch.cjs')],
   'threed-simulation-results': [node('validate-threed-simulation-results-schema.cjs'), node('validate-threed-simulation-results.cjs'), node('validate-threed-simulation-results-admin.cjs')],
   'threed-library-collections': [ts('validate-threed-library-collections.mts')],
-  'threed-task-privacy': [node('validate-threed-task-privacy.cjs'), node('validate-threed-task-bulk.cjs')],
+  'threed-task-privacy': [node('validate-threed-task-privacy.cjs'), node('validate-threed-task-bulk.cjs'), node('validate-threed-task-reorder-ui.cjs')],
   'threed-project-session': [['node', '--import', 'tsx', `${scripts}/validate-threed-project-session.mts`], node('validate-public-scene-api.cjs'), node('validate-project-asset-warnings.cjs'), ['node', '--import', 'tsx', `${scripts}/validate-scene-loading-policy.mts`]],
   'threed-mqtt': [['node', '--import', 'tsx', 'src/libraries/services/threed/mqtt/validate.mts']],
   'threed-assembly-persistence': [
@@ -222,7 +223,7 @@ const tasks = {
   'threed-character-preview-switch': [node('validate-threed-character-preview-switch.cjs')],
   'threed-character-animation-restart': [node('validate-threed-character-animation-restart.cjs')],
   'threed-harvest-list': [node('validate-threed-harvest-list.cjs')],
-  'threed-watering-list': [node('validate-threed-watering-list.cjs')],
+  'threed-watering-list': [node('validate-threed-watering-list.cjs'), node('validate-waterings-reorder-ui.cjs')],
   'threed-farmbot-list': [node('validate-threed-farmbot-list.cjs')],
   'threed-layer-list': [node('validate-threed-layer-list.cjs')],
   'threed-character-list': [node('validate-threed-character-list.cjs')],

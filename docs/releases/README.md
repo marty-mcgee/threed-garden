@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.35.4 - ThreeD Task Visibility (deployment pending)](v0.35.4.md)
+- [v0.35.5 - ThreeD Admin Page Blueprint (prepared, deployment pending)](v0.35.5.md)
+
+- [v0.35.4 - ThreeD Task Visibility (Developer-confirmed production)](v0.35.4.md)
 
 - [v0.35.3 - ThreeD Learn Guides, Categories and Ownership (Developer-confirmed production)](v0.35.3.md)
 

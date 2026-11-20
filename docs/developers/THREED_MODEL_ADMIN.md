@@ -14,6 +14,16 @@ The initial v0.19.8a workflow deliberately managed one reusable ThreeD Model at 
 
 The Admin route uses `#020618` as its presentation background. Its header, sidebar, and footer are translucent layers of that same color, scoped to `/admin` so Dashboard presentation remains independent. Shared Dialog, Modal (including confirmations), dropdown/submenu and Select popup surfaces use solid very dark gray (`zinc-900`) backgrounds in dark mode across their consumers, visually separating popups from the main App. Popup surfaces, text and controls are fully opaque; existing backdrop dimming and light-mode backgrounds remain unchanged. This presentation change passed TypeScript and diff checks.
 
+## Assembly Groups list order
+
+**Admin > ThreeD > Assembly Groups** sorts by **Sort Order** by default. Existing and new Groups start at 0, with ties sorted by Name. Click a rank to edit one Group, or select Groups on the current page and use **Bulk Edit** to set a shared rank. Clear search and sort by **Sort Order** ascending to drag a grip above or below another Group on the page. A focused grip also supports **Arrow Up** and **Arrow Down**. Each move saves consecutive ranks across the owner's list while preserving the relative order of other Groups.
+
+Apply the [Assembly Groups Sort Order migration](sql/threed-assembly-sort-order.sql) before deploying this change. The new Group and demo creation paths use the updated schema. Rank is stored on the Group and saves independently of its composition revisions. An App rollback can leave the column in place to retain the ranks.
+
+The **Active** column sorts by status and uses the same indicators as Tasks. Click a status indicator to change one Group. In **Bulk Edit**, choose **Active** or **Inactive** under **Activity**. **Keep current** preserves each Group's existing status. Activity is an Admin field on the Group record and saves independently of composition revisions and Project placement.
+
+Apply the [Assembly Groups Active status migration](sql/threed-assembly-is-active.sql) before deploying this change. Existing and new Groups default to Active. The previous App can run with the added column in place, so a rollback can keep saved statuses.
+
 ## Reusable Model light boost (v0.22.7)
 
 The Model Create/Edit form exposes **Model Lighting → Light boost** from 0% to 100%, stored as `metadata.lightBoost` on the reusable Model. At 0%, imported materials retain their original appearance. Higher values add a bounded emissive contribution to lit Model materials, including a base-color texture where available; they do not add a scene light or illuminate nearby objects. The runtime clones materials before adjustment so Models sharing one cached GLB cannot change one another. Project Model snapshots use the current reusable Model value, so one saved adjustment applies when any Project using that Model loads the Scene. No GLB re-export or database schema change is required. Character-specific rendering remains separate.

@@ -694,9 +694,9 @@ Run `npm run validate -- threed-layer-list` and TypeScript for Layers list/pagin
 
 Run `npm run validate -- threed-farmbot-list` and TypeScript for FarmBots pagination/search/selection changes. The offline fixture exercises actual list and bulk handlers plus the response sanitizer with mocked queries and requests. It checks owner/search/count parity, bounds/sorting, batched Bed reads, credential field omission and cancellation/busy/partial-deletion handling. It performs no live device operation. Browser/live SQL checks are recorded separately in the continuation plan.
 
-### Waterings read-only workspace
+### Waterings workspace
 
-Run `npm run validate -- threed-watering-list` and TypeScript for schedule/history browsing changes. Offline actual-handler tests mock DB responses and cover query bounds, owner/search/count parity, module scope and pagination. Confirm Schedules/History navigation and units locally; tests do not establish live PostgreSQL execution or historical Project attribution. No watering or device operation is needed to test browsing.
+Run `npm run validate -- threed-watering-list threed-terrains` and TypeScript for schedule and history changes. Offline handler tests cover owner and Project scope, sorting, pagination, changed-field saves, manual History provenance, stale records, linked-record deletion checks, and assignment/deletion interleavings. In standalone Admin, verify Schedules/History navigation, units, Add/Edit and cancel, and confirmed deletion of unlinked disposable records.
 
 Harvest workspace list changes: run `npm run validate -- threed-harvest-list`. Offline GET and bulk-handler fixtures cover query validation/auth, owner-scoped search, Project/count parity, stable sorts, Plant enrichment/provenance, and partial/page-local/cancelled deletion. Manual acceptance covers server paging/search/sorting, scope changes, selection reset and last-page recovery; use disposable records for deletion tests.
 

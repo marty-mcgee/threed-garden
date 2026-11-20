@@ -1,6 +1,21 @@
 # Admin ThreeD workspace blueprint
 
-Design checkpoint: **v0.19.12 — ThreeD Admin Model Workspace**. The User requested that Admin ThreeD Models become the blueprint for future Admin ThreeD sub-module pages. The rollout is now assigned to [v0.19.13 — ThreeD Admin Sub-Module Workspace UI/UX Updates](v0.19.13.md). Apply it incrementally; the v0.19.12 release itself changed only the Models workspace.
+The Admin Blueprint started with the Models workspace in v0.19.12. The [original ThreeD rollout](v0.19.13.md) established the shared presentation. The current plan extends those conventions across the four Top Modules page by page.
+
+## Rollout across Top Modules
+
+The v0.35.5 checkpoint adds saved ordering, accessible reordering, and scoped Bulk Edit to the reference set. Use the [agent skill](../agents/skills/apply-threed-admin-page-blueprint/SKILL.md) for each authorized adoption. Track version-specific validation in the [release record](../releases/v0.35.5.md), and use the [Admin Guide](../users/ADMIN_GUIDE.md#sort-and-edit-threed-records) for the current User workflow.
+
+| Top Module | Current reference or next audit |
+| --- | --- |
+| ThreeD | Tasks, Assembly Groups, Terrains, Watering Schedules, Watering History, and Harvests are the v0.35.5 reference set. Review the remaining Admin routes against the existing Models, Characters, and Simulations references. Preserve captured Simulation Results and Project-scoped or device-facing workflows. |
+| Multimedia | Review existing Album and Track lists and editors. Preserve the established rank fields, in-place dialogs, players, and test controls. |
+| Traffic | Audit CHP, Caltrans, CalFire, and Bay Area 511 Admin routes. Verify source ownership and editability before choosing list or mutation controls. |
+| Learn | Audit Guides and Categories. Retain owner, publication, visibility, hierarchy, and multi-category assignments. |
+
+For each route, record its canonical entity, owner and visibility rules, supported list actions, mutable fields, and embedded callers. Review differences against the shared UI before adding missing controls. Reuse `RankedRecordsList` and `RecordMutationDialog` when their contracts match. Preserve module-specific CRUD and history, and seek approval for any new saved field. Verify read-only routes for list and navigation parity where applicable. Record each completed route and its evidence in the relevant release.
+
+The sections below preserve the original ThreeD rollout and its references. Their exclusions and prior read-only descriptions reflect those checkpoints.
 
 ## Reference implementation
 

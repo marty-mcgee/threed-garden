@@ -7,6 +7,7 @@ Choose a guide for what you want to do. [Current project state](../CONTEXT.md) h
 - [Home help](help/home.md).
 - [Learn ThreeD](https://threedgarden.com/learn) provides short guided tasks; [Getting started](users/GETTING_STARTED.md) and the [Dashboard guide](users/DASHBOARD_GUIDE.md) cover the first Project, Design, Models and Save/reopen in more detail.
 - [Admin guide](users/ADMIN_GUIDE.md), [ThreeD controls](users/THREED_CONTROLS.md) and [Ground Maps](users/THREED_GROUND_MAPS.md).
+- [ThreeD Admin sorting and Bulk Edit](users/ADMIN_GUIDE.md#sort-and-edit-threed-records).
 - [App Settings and Users](users/SETTINGS.md): global Module colors/icons, personal preferences and Super Admin account management.
 - [Scenario help](help/threed-scenarios.md) and [Simulation help](help/threed-simulations.md).
 
@@ -26,6 +27,7 @@ Choose a guide for what you want to do. [Current project state](../CONTEXT.md) h
 ## Agents and contributors
 
 - [Root working instructions](../AGENTS.md), [current context](../CONTEXT.md) and [agent index/preferences](agents/README.md).
+- [Apply ThreeD Admin Page Blueprint skill](agents/skills/apply-threed-admin-page-blueprint/SKILL.md) and [rollout plan](plans/admin-threed-workspace-blueprint.md#rollout-across-top-modules).
 - [Safe change areas](agents/SAFE_CHANGE_AREAS.md), [contribution/task workflow](agents/TASK_CHECKLISTS.md) and [validation ladder](agents/VALIDATION.md).
 - [Repository maintenance](plans/repository-maintenance-2026-10-17.md) and [MIT License](../LICENSE).
 

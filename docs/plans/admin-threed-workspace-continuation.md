@@ -1,5 +1,7 @@
 # Admin ThreeD workspace continuation
 
+The [cross-Module rollout](admin-threed-workspace-blueprint.md#rollout-across-top-modules) uses the v0.35.5 Admin reference set. For the User workflow, see the [Admin Guide](../users/ADMIN_GUIDE.md#sort-and-edit-threed-records).
+
 Baseline: [v0.19.13](../releases/v0.19.13.md), commit `c976c77`, User-confirmed production deployment and manual build. The User has resumed the remaining stages. Current production: [v0.19.15 — ThreeD Admin Pages: UI Updates](../releases/v0.19.15.md), commit `9157e06`; deployment and manual build User-confirmed. Earlier stage notes retain their historical status. The manual build gate remains User-owned.
 
 ## Model Animations — presentation step
@@ -242,6 +244,18 @@ Validation: TypeScript, `validate:threed-watering-list` and diff checks passed. 
 
 Manual acceptance: Admin → ThreeD → Waterings; switch Schedules/History, search each, page/resize/refresh, verify units and blank measurements, and compare known completed watering records. Empty Schedules is valid when none exist. Verify Project embedding and the current-link scope note. Schedule editing, richer target labels/navigation, history details and any execution remain future work. Next workspace page: Harvests.
 
+The Admin list styling now follows Tasks. Schedules supports sorting by Schedule ID, Frequency, Next Watering, Last Watering, Duration, Volume, and Active before applying pagination. The default stays Next Watering descending. The standalone page retains sorting in the URL, while Project Admin uses its own local sort. History keeps its execution chronology.
+
+Standalone **Waterings → Schedules** now has **Edit** and **More actions → Delete**. Edit saves only changed schedule settings, including timing, duration, volume, recurrence, weather limits, Active and notes. Schedule identity and linked targets are displayed in the list. Delete requires confirmation and returns a conflict for schedules referenced by retained Project assignments, Tasks, or watering history. Owners can mark linked schedules Inactive through Edit. Project assignment and deletion lock the same source row. Project Admin and History remain browsing views.
+
+The standalone Waterings header uses **Add Watering Schedule** on Schedules in place of the Multimedia Albums and Plantings shortcuts. Creation requires a unique Schedule ID, duration, and next watering time. It uses the same settings as Edit, defaults to Daily, Active, and Skip If Rain, and checks ownership of any optional targets. The list refreshes after a successful save.
+
+Standalone **Waterings → History** now uses the same header, sortable table, and **Add**, **Edit**, and **More actions → Delete** controls. Sorting applies to the paginated results and defaults to newest execution first. Add records a manual outcome with a unique History ID, execution time, and status, plus optional measurements, reasons, and owned targets. Edit saves changes to time, status, measurements, and reasons while retaining the original executor and recorded metadata. Delete removes the selected log after confirmation. The History tools manage records independently of watering execution and Project placement.
+
+Both standalone Waterings tabs open in **Sort Order** ascending and support **Bulk Edit**. Records with the same rank are ordered by their watering dates and a stable tie-breaker. Drag a grip or use **Arrow Up** and **Arrow Down** to reorder rows on the current page. After searching or sorting by another column, click **Reorder** to return to the saved order. Click a rank to edit it individually. Bulk Edit applies chosen fields to selected records on the current page in one transaction and rejects the whole selection if any record has changed.
+
+Apply the [Waterings Sort Order migration](../developers/sql/threed-waterings-sort-order.sql) before deploying. It adds rank to both tables, with a default of 0. Leave the columns in place on an App rollback to retain saved ranks.
+
 ## Harvests — workspace presentation checkpoint
 
 User accepted the Waterings two-view approach and requested Harvests next. Inspection found a duplicate page title, a separate search/filter toolbar, whole-component loading replacement, breakpoint-hidden columns and redundant Active badges. Acceptance for this step: shared compact header that remains visible while records load/scroll, all columns reachable, preserved quantities/units, Project scope and record-management forms.
@@ -265,6 +279,10 @@ Validation: `npm run typecheck`, `npm run validate:threed-harvest-list`, and dif
 Manual acceptance: Admin → ThreeD → Harvests; page and change page size, search a known older Harvest/Plant, select a Project, sort each heading both ways, confirm selection clears on list changes. With disposable records, cancel then confirm bulk deletion; test deletion on the last page and verify totals/recovery. Verify existing Add/Edit, units and World Action badges remain correct, including Project embedding.
 
 Harvests column refinement: User requested Harvest Name | Plant | ID | Quantity | Weight | Date | Active | Actions. Schema inspection confirms no separate name/status field: Harvest Name displays the existing editable harvestId, while ID displays the numeric record id with server sorting. Active retains check/X semantics. Orange Package and World Action provenance move with Harvest Name. Updated table state colspans. TypeScript, Harvest list validation (including numeric ID sort) and diff checks passed; no schema changes or build.
+
+Standalone Harvests follows the Waterings header and list blueprint. **Sort Order** ascending opens with drag and keyboard grips, and equal ranks use harvest dates as tie-breakers. **Reorder** clears search and the Project filter and returns to saved order. Click a rank to edit it individually. **Bulk Edit** changes chosen fields for the selected rows on the current page in one transaction, with optional Project scope and stale-record checks. The existing Add, Edit, Delete, and Delete selected flows retain their Project and planting behavior. Add and Edit save validated dates, and Add honors Active.
+
+Apply the [Harvests Sort Order migration](../developers/sql/threed-harvests-sort-order.sql) before deploying. It adds a rank with a default of 0 to existing and new records. An App rollback can keep the column and its saved ranks.
 
 ## Milestone review — v0.19.15 candidate
 

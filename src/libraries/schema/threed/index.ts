@@ -557,6 +557,8 @@ export const threedTerrains = pgTable('threed_terrains', {
   id: integer('id').generatedByDefaultAsIdentity().primaryKey(),
   userId: text('user_id').notNull().references(() => user.id),
   name: varchar('name', { length: 255 }).notNull(),
+  sortOrder: integer('sort_order').notNull().default(0),
+  isActive: boolean('is_active').notNull().default(true),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 }, table => [
@@ -736,6 +738,7 @@ export const threedWateringSchedules = pgTable('threed_watering_schedules', {
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   
   scheduleId: varchar('schedule_id', { length: 50 }).unique().notNull(),
+  sortOrder: integer('sort_order').notNull().default(0),
   plantId: integer('plant_id').references(() => threedPlants.id, { onDelete: 'cascade' }),
   farmbotId: integer('farmbot_id').references(() => threedFarmbots.id, { onDelete: 'set null' }),
   bedId: integer('bed_id').references(() => threedBeds.id, { onDelete: 'cascade' }),
@@ -815,6 +818,7 @@ export const threedWateringHistory = pgTable('threed_watering_history', {
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
 
   historyId: varchar('history_id', { length: 50 }).unique().notNull(),
+  sortOrder: integer('sort_order').notNull().default(0),
   scheduleId: integer('schedule_id').references(() => threedWateringSchedules.id, { onDelete: 'set null' }),
   plantId: integer('plant_id').references(() => threedPlants.id),
   farmbotId: integer('farmbot_id').references(() => threedFarmbots.id),
@@ -884,6 +888,7 @@ export const threedHarvests = pgTable('threed_harvests', {
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   
   harvestId: varchar('harvest_id', { length: 50 }).unique().notNull(),
+  sortOrder: integer('sort_order').notNull().default(0),
   plantingId: integer('planting_id').references(() => threedPlantings.id, { onDelete: 'set null' }),
   plantId: integer('plant_id').references(() => threedPlants.id, { onDelete: 'set null' }),
   
@@ -921,6 +926,7 @@ export const threedTasks = pgTable('threed_tasks', {
   title: varchar('title', { length: 200 }).notNull(),
   description: text('description'),
   type: varchar('type', { length: 50 }), // water, fertilize, prune, harvest, weed, pest_control, plant
+  sortOrder: integer('sort_order').notNull().default(0),
   
   // Status and priority
   priority: taskPriorityEnum('priority').default('medium'),
@@ -2295,6 +2301,8 @@ export const threedAssembly = pgTable('threed_assembly', {
   id: text('id').primaryKey().default(sql`gen_random_uuid()::text`),
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   name: varchar('name', { length: 255 }).notNull(),
+  sortOrder: integer('sort_order').notNull().default(0),
+  isActive: boolean('is_active').notNull().default(true),
   demoKey: text('demo_key'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),

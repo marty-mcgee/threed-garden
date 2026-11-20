@@ -18,11 +18,33 @@ const tick=()=>new Promise(resolve=>queueMicrotask(resolve));
 function walkFiles(dir){return fs.readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walkFiles(dir+'/'+e.name):[dir+'/'+e.name])}
 const bindings=[];
 for(const path of [...walkFiles('src/components/admin/threed'), 'src/components/threed/design/DesignStandalone.tsx'].filter(p=>p.endsWith('.tsx'))){const a=ts.createSourceFile(path,fs.readFileSync(path,'utf8'),99,true,4);function visit(n){if(ts.isCallExpression(n)&&n.expression.getText(a)==='useAdminListQueryState')bindings.push({path,args:n.arguments.map(arg=>arg.getText(a))});ts.forEachChild(n,visit)}visit(a)}
-const evalArg=text=>vm.runInNewContext('('+text+')',{scrollRecords:true,view:'list',projectId:'8',initialProjectId:8,initialSimulationId:3,initialCategoryId:2,String});
+const wateringSorts = {};
+const wateringQuery = fs.readFileSync('src/libraries/services/threed/waterings/watering-list-query.ts', 'utf8');
+vm.runInNewContext(ts.transpileModule(wateringQuery, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText, { exports: wateringSorts });
+const wateringRoute = '/admin/threed/watering-schedules';
+const evalArg = text => vm.runInNewContext('(' + text + ')', {
+  ...wateringSorts,
+  route: wateringRoute,
+  standalone: true,
+  scrollRecords: true,
+  view: 'list',
+  projectId: '8',
+  initialProjectId: 8,
+  initialSimulationId: 3,
+  initialCategoryId: 2,
+  String,
+});
 (async()=>{
- assert.equal(bindings.length,89,'Every approved list field and Designs search/filter/sort/paging remains connected');
+ assert.equal(bindings.length,92,'Every approved list field and Designs search/filter/sort/paging remains connected');
+ const waterings = bindings.filter(binding => binding.path.endsWith('/ThreeDWateringSchedulesCRUD.tsx')).map(binding => binding.args.map(evalArg));
+ assert.deepEqual(waterings.slice(-3).map(([route, key, initial]) => [route, key, JSON.parse(JSON.stringify(initial))]), [
+  [wateringRoute, 'sort', { field: 'sortOrder', direction: 'asc' }],
+  [wateringRoute, 'historySort', 'sortOrder'],
+  [wateringRoute, 'historyDirection', 'asc'],
+ ]);
  for(const binding of bindings){const args=binding.args.map(evalArg),[route,key,initial,options]=args;const f=fixture('http://fixture'+route+'?unrelated=keep#records');
   const desired=typeof initial==='number' ? (key==='limit'?100:key==='page'?initial+2:100) : typeof initial==='object'?{...initial,direction:initial.direction==='asc'?'desc':'asc'}:key==='direction'?'desc':options?.values?.find(v=>v!==initial)??'sample';
+  if (route === wateringRoute && key === 'sort') desired.field = 'nextWatering';
   f.render(...args)[1](desired);await tick();assert.deepEqual(JSON.parse(JSON.stringify(f.render(...args)[0])),JSON.parse(JSON.stringify(desired)),binding.path+' '+key);
   assert.equal(f.url.searchParams.get('unrelated'),'keep');assert.equal(f.url.hash,'#records');assert.equal(f.history.state.custom,'keep');assert.equal(f.history.state.__NA,true);assert.equal(f.routerNotices,1);assert.equal(f.notices,1);
   if(key!=='search'){f.back();assert.equal(f.url.searchParams.get(key),null);f.forward();assert.equal(f.notices,3);}

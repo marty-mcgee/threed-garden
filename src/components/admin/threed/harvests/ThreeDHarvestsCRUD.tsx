@@ -5,7 +5,7 @@ import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { AdminRelationshipBadge } from '@/components/admin/shared/AdminRelationshipBadge';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Plus,
   Edit,
@@ -16,8 +16,9 @@ import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
-  Check,
-  X,
+  GripVertical,
+  RefreshCw,
+  Search,
   Eye,
   EyeOff,
   Calendar,
@@ -36,6 +37,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
+import { harvestUnits as UNIT_OPTIONS } from '@/libraries/services/threed/harvests/harvest-edit';
+import { HarvestBulkEditDialog, type HarvestSelection } from './HarvestBulkEditDialog';
 
 // ✅ Types
 interface Plant {
@@ -54,6 +57,7 @@ interface Planting {
 interface Harvest {
   id: number;
   harvestId: string;
+  sortOrder?: number | null;
   plantingId: number | null;
   plantId: number | null;
   quantity: string;
@@ -64,7 +68,7 @@ interface Harvest {
   imageUrl: string | null;
   isActive: boolean;
   createdAt: string;
-  updatedAt: string;
+  updatedAt: string | null;
   planting?: Planting;
   plant?: Plant;
   source?: 'manual' | 'world-action';
@@ -88,20 +92,12 @@ interface FormData {
 }
 
 // ✅ Options
-const UNIT_OPTIONS = [
-  { value: 'lbs', label: 'Pounds (lbs)' },
-  { value: 'oz', label: 'Ounces (oz)' },
-  { value: 'kg', label: 'Kilograms (kg)' },
-  { value: 'g', label: 'Grams (g)' },
-  { value: 'each', label: 'Each' },
-  { value: 'bunch', label: 'Bunch' },
-];
-
 // ✅ Helper
-const getOptionLabel = (options: { value: string; label: string }[], value: string) => {
+const getOptionLabel = (options: readonly { value: string; label: string }[], value: string) => {
   const option = options.find((o) => o.value === value);
   return option ? option.label : value;
 };
+const dateLabel = (date: string | null) => date ? new Date(date).toLocaleDateString(undefined, { timeZone: 'UTC' }) : '—';
 
 export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { onModuleUpdate?: () => void; scrollRecords?: boolean }) {
   const { showToast, ToastComponent } = useToast();
@@ -120,13 +116,63 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
   const [page, setPage] = useAdminListQueryState('/admin/threed/harvests', 'page', 0, {enabled: scrollRecords});
   const [pageSize, setPageSize] = useAdminListQueryState('/admin/threed/harvests', 'limit', 25, {enabled: scrollRecords});
   const [total, setTotal] = useState(0);
-  const [sort, setSort] = useAdminListQueryState('/admin/threed/harvests', 'sort', { key: 'date', direction: 'desc' }, {enabled: scrollRecords, values: ["harvestId","plant","id","quantity","weight","date","active"]});
+  const [sort, setSort] = useAdminListQueryState('/admin/threed/harvests', 'sort', scrollRecords ? { key: 'sortOrder', direction: 'asc' } : { key: 'date', direction: 'desc' },
+    { enabled: scrollRecords, values: ['harvestId', 'plant', 'id', 'quantity', 'weight', 'date', 'active', 'sortOrder'] });
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
   const [bulkNotice, setBulkNotice] = useState('');
+  const [bulkEdit, setBulkEdit] = useState<{ selection: HarvestSelection; projectId: string; rank?: number } | null>(null);
+  const [moving, setMoving] = useState(false);
+  const [dragging, setDragging] = useState<number | null>(null);
+  const [dropTarget, setDropTarget] = useState<{ id: number; after: boolean } | null>(null);
+  const dragSource = useRef<number | null>(null);
+  const moveLock = useRef(false);
+  const focusAfterMove = useRef<number | null>(null);
   const [revision, setRevision] = useState(0);
+  const ranksReady = harvests.length > 0 && harvests.every(harvest => typeof harvest.sortOrder === 'number');
+  const reorderMode = sort.key === 'sortOrder' && sort.direction === 'asc' && !searchQuery.trim() && filterProject === 'all';
+  const canReorder = scrollRecords && reorderMode && ranksReady && harvests.length > 1 && !loading && !moving && !bulkBusy && !isSubmitting && !bulkEdit && !editingHarvest && !showCreateDialog;
+  const reorderHelp = !ranksReady ? 'Sort Order is unavailable' : harvests.length < 2 ? 'At least two records are needed to reorder'
+    : reorderMode ? 'Drag or use Arrow Up and Arrow Down' : 'Use Reorder to return to Sort Order';
+  const columnCount = scrollRecords ? 10 : 9;
   const fetchHarvests = () => setRevision(value => value + 1);
   function resetList() { setPage(0); setSelected(new Set()); setLoading(true); }
+  const clearDrag = () => { dragSource.current = null; setDragging(null); setDropTarget(null); };
+  function startReordering() {
+    resetList();
+    setSearchQuery('');
+    setFilterProject('all');
+    setSort({ key: 'sortOrder', direction: 'asc' });
+  }
+  function openBulkEdit(rows: Harvest[], rank?: number) {
+    setBulkNotice('');
+    setBulkEdit({ selection: rows.map(row => ({ id: row.id, expectedUpdatedAt: row.updatedAt ? new Date(row.updatedAt).toISOString() : null })), projectId: filterProject, rank });
+  }
+  async function moveHarvest(sourceId: number, targetId: number, after: boolean, keyboard = false) {
+    clearDrag();
+    if (!canReorder || moveLock.current || sourceId === targetId) return;
+    moveLock.current = true;
+    setMoving(true);
+    setBulkNotice('');
+    try {
+      const response = await fetch('/api/threed/harvests/manage', {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(30000),
+        body: JSON.stringify({ action: 'move', sourceId, targetId, after }),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success || !Number.isInteger(result.data?.updated)) throw new Error(result.error || 'Failed to reorder Harvests.');
+      if (!result.data.updated) return;
+      if (keyboard) focusAfterMove.current = sourceId;
+      setBulkNotice('Sort Order saved.');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Failed to reorder Harvests.', 'error');
+    } finally {
+      moveLock.current = false;
+      setMoving(false);
+      setLoading(true);
+      fetchHarvests();
+    }
+  }
 
 
   // ✅ Form state
@@ -153,7 +199,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
 
   useEffect(() => {
     const controller = new AbortController();
-    setLoading(true); setLoadError(false); setSelected(new Set());
+    setLoading(true); setLoadError(false); setSelected(new Set()); clearDrag();
     const params = new URLSearchParams({ limit: String(pageSize), offset: String(page * pageSize), search: searchQuery, sort: sort.key, direction: sort.direction });
     if (filterProject !== 'all') params.set('projectId', filterProject);
     const timer = setTimeout(async () => {
@@ -381,17 +427,17 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
   }
   function heading(key: string, title: string) {
     const Icon = sort.key === key ? sort.direction === 'asc' ? ArrowUp : ArrowDown : ArrowUpDown;
-    return <TableHead className="py-1 text-xs" aria-sort={sort.key === key ? sort.direction === 'asc' ? 'ascending' : 'descending' : 'none'}><button disabled={loading || bulkBusy} className="inline-flex items-center gap-1" onClick={() => { resetList(); setSort({ key, direction: sort.key === key && sort.direction === 'asc' ? 'desc' : 'asc' }); }}>{title}<Icon className="h-3 w-3" aria-hidden="true" /></button></TableHead>;
+    return <TableHead className="py-1 text-xs" aria-sort={sort.key === key ? sort.direction === 'asc' ? 'ascending' : 'descending' : 'none'}><button type="button" disabled={loading || bulkBusy || moving} className="inline-flex items-center gap-1 py-1" onClick={() => { resetList(); setSort({ key, direction: sort.key === key && sort.direction === 'asc' ? 'desc' : 'asc' }); }}>{title}<Icon className="h-3 w-3" aria-hidden="true" /></button></TableHead>;
   }
 
   const renderActions = (harvest: Harvest) => (
     <div className="flex items-center justify-end gap-1">
-      <Button variant="ghost" size="sm" onClick={() => openEditDialog(harvest)}>
+      <Button variant="ghost" size="sm" aria-label={`Edit ${harvest.harvestId}`} onClick={() => openEditDialog(harvest)}>
         <Edit className="w-4 h-4" />
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
+          <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={`More actions for ${harvest.harvestId}`}>
             <MoreHorizontal className="w-4 h-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -413,13 +459,13 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
           {harvest.harvestDate && (
             <DropdownMenuItem>
               <span className="text-xs text-muted-foreground">
-                Harvested: {new Date(harvest.harvestDate).toLocaleDateString()}
+                Harvested: {dateLabel(harvest.harvestDate)}
               </span>
             </DropdownMenuItem>
           )}
           <DropdownMenuItem
             className="text-red-600"
-            onClick={() => handleDelete(harvest.id, harvest.harvestId)}
+            onSelect={() => handleDelete(harvest.id, harvest.harvestId)}
           >
             <Trash2 className="w-4 h-4 mr-2" />
             Delete
@@ -432,11 +478,14 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
   return (
     <div className={scrollRecords ? 'flex h-full min-h-0 flex-col gap-2' : 'space-y-2'}>
       {ToastComponent}
-      <AdminWorkspaceHeader iconColor="orange" icon={Package} title="Harvests" description="Log and manage harvest records from your garden" className="shrink-0 [&>a]:text-[11px]">
+      <AdminWorkspaceHeader iconColor="orange" icon={Package} title="Harvests" description="Log and manage harvest records from your garden" showModuleAlbums={!scrollRecords} className="shrink-0">
         <Badge variant="secondary" className="text-xs">{loading || loadError ? '—' : total}</Badge>
-        <Input aria-label="Search Harvests" placeholder="Search Harvests..." value={searchQuery}
-          disabled={bulkBusy} onChange={(event) => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
-        <Select value={filterProject} disabled={bulkBusy} onValueChange={value => { resetList(); setFilterProject(value); }}>
+        <div className="relative min-w-0 w-full flex-auto sm:w-auto sm:min-w-48 sm:flex-1">
+          <Search aria-hidden="true" className="absolute left-2 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground" />
+          <Input aria-label="Search Harvests" placeholder="Search Harvests…" maxLength={200} value={searchQuery}
+            disabled={bulkBusy || moving} onChange={event => { resetList(); setSearchQuery(event.target.value); }} className="pl-7 h-7 text-xs" />
+        </div>
+        <Select value={filterProject} disabled={bulkBusy || moving} onValueChange={value => { resetList(); setFilterProject(value); }}>
           <SelectTrigger aria-label="Filter Harvests by Project" className="h-7 w-auto min-w-48 text-[11px]">
             <SelectValue placeholder="Project" />
           </SelectTrigger>
@@ -447,7 +496,7 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
         </Select>
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
           <DialogTrigger asChild>
-            <Button variant="success" size="sm" className="h-7 px-2 text-[11px]" disabled={bulkBusy}>
+            <Button variant="success" size="sm" className="h-7 px-2 text-xs" disabled={bulkBusy || moving}>
               <Plus className="w-3 h-3 mr-1" />
               Add Harvest
             </Button>
@@ -644,17 +693,21 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
             </div>
           </DialogContent>
         </Dialog>
-        <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={loading || bulkBusy} onClick={fetchHarvests}>Refresh</Button>
-        <AdminWorkspaceLink href="/admin/threed/plantings" icon={Sprout}>Plantings</AdminWorkspaceLink>
+        <Button variant="outline" size="sm" className="h-7 text-xs" disabled={loading || bulkBusy || moving} onClick={fetchHarvests}><RefreshCw className="mr-1 size-3" />Refresh</Button>
+        {!scrollRecords && <AdminWorkspaceLink href="/admin/threed/plantings" icon={Sprout}>Plantings</AdminWorkspaceLink>}
       </AdminWorkspaceHeader>
 
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">
         <div className="flex flex-wrap items-center gap-2"><span>{loading ? 'Loading…' : loadError ? 'Harvests unavailable' : `${total ? page * pageSize + 1 : 0}–${Math.min((page + 1) * pageSize, total)} of ${total} Harvests`}</span><span aria-hidden="true">|</span><span>{selected.size} selected</span>
-          <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={loading || bulkBusy || isSubmitting || !!loadError || !selected.size} onClick={() => void deleteSelected()}>Delete selected ({selected.size})</Button>
-          <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={bulkBusy || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button>
+          {scrollRecords && <Button variant="outline" size="sm" className="h-7 text-xs" disabled={loading || moving || bulkBusy || isSubmitting || loadError || !selected.size}
+            onClick={() => openBulkEdit(harvests.filter(harvest => selected.has(harvest.id)))}><Edit className="mr-1 size-3" />Bulk Edit</Button>}
+          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={loading || moving || bulkBusy || isSubmitting || !!loadError || !selected.size} onClick={() => void deleteSelected()}>Delete selected ({selected.size})</Button>
+          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={bulkBusy || moving || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button>
+          {scrollRecords && !reorderMode && <Button variant="outline" size="sm" className="h-7 text-xs" disabled={loading || moving || bulkBusy}
+            title="Clear search and Project filters and sort by Sort Order" onClick={startReordering}><GripVertical className="size-3" />Reorder</Button>}
         </div>
-        <div className="flex flex-wrap items-center gap-2"><label>Per page <select aria-label="Harvests per page" className="rounded border bg-background p-1 text-[11px]" value={pageSize} disabled={loading || bulkBusy} onChange={event => { resetList(); setPageSize(Number(event.target.value)); }}>{[25, 50, 100, 200].map(size => <option key={size} value={size}>{size}</option>)}</select></label>
-          {(['First', 'Previous', 'Page', 'Next', 'Last'] as const).map(label => label === 'Page' ? <span key={label}>Page {page + 1} of {Math.max(1, Math.ceil(total / pageSize))}</span> : <Button key={label} size="sm" variant="outline" className="h-7 text-[11px]" disabled={loading || bulkBusy || !!loadError || (label === 'First' || label === 'Previous' ? page === 0 : (page + 1) * pageSize >= total)} onClick={() => { setSelected(new Set()); setLoading(true); setPage(label === 'First' ? 0 : label === 'Previous' ? page - 1 : label === 'Next' ? page + 1 : Math.max(0, Math.ceil(total / pageSize) - 1)); }}>{label}</Button>)}
+        <div className="flex flex-wrap items-center gap-2"><label>Per page <select aria-label="Harvests per page" className="rounded border bg-background p-1 text-xs" value={pageSize} disabled={loading || bulkBusy || moving} onChange={event => { resetList(); setPageSize(Number(event.target.value)); }}>{[25, 50, 100, 200].map(size => <option key={size} value={size}>{size}</option>)}</select></label>
+          {(['First', 'Previous', 'Page', 'Next', 'Last'] as const).map(label => label === 'Page' ? <span key={label}>Page {page + 1} of {Math.max(1, Math.ceil(total / pageSize))}</span> : <Button key={label} size="sm" variant="outline" className="h-7 text-xs" disabled={loading || bulkBusy || moving || !!loadError || (label === 'First' || label === 'Previous' ? page === 0 : (page + 1) * pageSize >= total)} onClick={() => { setSelected(new Set()); setLoading(true); setPage(label === 'First' ? 0 : label === 'Previous' ? page - 1 : label === 'Next' ? page + 1 : Math.max(0, Math.ceil(total / pageSize) - 1)); }}>{label}</Button>)}
         </div>
       </div>
       {bulkNotice && <p role="status" className="max-h-24 shrink-0 overflow-auto text-xs">{bulkNotice}</p>}
@@ -665,8 +718,9 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
           <Table className="min-w-[850px]">
             <TableHeader className={scrollRecords ? 'sticky top-0 z-10 bg-background' : undefined}>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="w-8"><input type="checkbox" aria-label="Select Harvests on this page" disabled={loading || bulkBusy || !!loadError || !harvests.length} checked={harvests.length > 0 && harvests.every(harvest => selected.has(harvest.id))} ref={input => { if (input) input.indeterminate = harvests.some(harvest => selected.has(harvest.id)) && !harvests.every(harvest => selected.has(harvest.id)); }} onChange={event => setSelected(event.target.checked ? new Set(harvests.map(harvest => harvest.id)) : new Set())} /></TableHead>
+                <TableHead className="w-8"><input type="checkbox" aria-label="Select Harvests on this page" disabled={loading || moving || bulkBusy || !!loadError || !harvests.length} checked={harvests.length > 0 && harvests.every(harvest => selected.has(harvest.id))} ref={input => { if (input) input.indeterminate = harvests.some(harvest => selected.has(harvest.id)) && !harvests.every(harvest => selected.has(harvest.id)); }} onChange={event => setSelected(event.target.checked ? new Set(harvests.map(harvest => harvest.id)) : new Set())} /></TableHead>
                 {heading('harvestId', 'Harvest Name')}
+                {scrollRecords && heading('sortOrder', 'Sort Order')}
                 {heading('plant', 'Plant')}
                 {heading('id', 'ID')}
                 {heading('quantity', 'Quantity')}
@@ -677,17 +731,53 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
               </TableRow>
             </TableHeader>
             <TableBody>
-              {loading ? <TableRow><TableCell colSpan={9} className="py-8 text-center"><Loader2 className="mx-auto h-5 w-5 animate-spin" aria-label="Loading Harvests" /></TableCell></TableRow>
-                : loadError ? <TableRow><TableCell colSpan={9} className="py-8 text-center">
+              {loading ? <TableRow><TableCell colSpan={columnCount} className="py-4 text-xs text-muted-foreground"><span role="status">Loading Harvests…</span></TableCell></TableRow>
+                : loadError ? <TableRow><TableCell colSpan={columnCount} className="py-4 text-center">
                   <p className="text-sm text-destructive">Unable to load Harvests.</p>
                   <Button variant="outline" size="sm" className="mt-2 text-xs" onClick={fetchHarvests}>Retry</Button>
                 </TableCell></TableRow>
-                : filteredHarvests.length === 0 ? <TableRow><TableCell colSpan={9} className="py-8 text-center text-sm text-muted-foreground">No Harvests found. Use Add Harvest to create a record.</TableCell></TableRow>
-                : filteredHarvests.map((harvest) => (
-                <TableRow key={harvest.id} className="hover:bg-muted/50">
-                  <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${harvest.harvestId}`} checked={selected.has(harvest.id)} disabled={bulkBusy || loading} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(harvest.id); else next.delete(harvest.id); return next; })} /></TableCell>
+                : filteredHarvests.length === 0 ? <TableRow><TableCell colSpan={columnCount} className="py-4 text-center text-sm text-muted-foreground">No Harvests found.</TableCell></TableRow>
+                : filteredHarvests.map((harvest, index) => (
+                <TableRow key={harvest.id} className={dragging === harvest.id ? 'opacity-50' : dropTarget?.id === harvest.id
+                  ? (dropTarget.after ? 'border-b-2 border-b-emerald-500 bg-emerald-500/10' : 'border-t-2 border-t-emerald-500 bg-emerald-500/10') : 'hover:bg-muted/50'}
+                  onDragOver={event => {
+                    if (!canReorder || dragSource.current === null || dragSource.current === harvest.id) { setDropTarget(null); return; }
+                    event.preventDefault();
+                    event.dataTransfer.dropEffect = 'move';
+                    const rect = event.currentTarget.getBoundingClientRect();
+                    const after = event.clientY >= rect.top + rect.height / 2;
+                    setDropTarget(previous => previous?.id === harvest.id && previous.after === after ? previous : { id: harvest.id, after });
+                  }} onDrop={event => {
+                    const sourceId = dragSource.current;
+                    if (!canReorder || sourceId === null || sourceId === harvest.id) return;
+                    event.preventDefault();
+                    const rect = event.currentTarget.getBoundingClientRect();
+                    void moveHarvest(sourceId, harvest.id, event.clientY >= rect.top + rect.height / 2);
+                  }}>
+                  <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${harvest.harvestId}`} checked={selected.has(harvest.id)} disabled={bulkBusy || loading || moving} onChange={event => {
+                    const checked = event.target.checked;
+                    setSelected(previous => { const next = new Set(previous); if (checked) next.add(harvest.id); else next.delete(harvest.id); return next; });
+                  }} /></TableCell>
                   <TableCell className="py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
+                      {scrollRecords && <span title={reorderHelp}>
+                        <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0 cursor-grab" aria-label={`Reorder ${harvest.harvestId}`}
+                          draggable={canReorder} disabled={!canReorder && !moving} aria-disabled={!canReorder} ref={button => {
+                            if (button && focusAfterMove.current === harvest.id) { focusAfterMove.current = null; button.focus(); }
+                          }} onDragStart={event => {
+                            if (!canReorder) { event.preventDefault(); return; }
+                            dragSource.current = harvest.id;
+                            setDragging(harvest.id);
+                            event.dataTransfer.effectAllowed = 'move';
+                            event.dataTransfer.setData('text/plain', String(harvest.id));
+                          }} onDragEnd={clearDrag} onKeyDown={event => {
+                            if (!canReorder || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) return;
+                            event.preventDefault();
+                            const after = event.key === 'ArrowDown';
+                            const target = filteredHarvests[index + (after ? 1 : -1)];
+                            if (target) void moveHarvest(harvest.id, target.id, after, true);
+                          }}><GripVertical className="size-4" /></Button>
+                      </span>}
                       <ModuleIcon moduleKey="harvests" className="h-3.5 w-3.5 shrink-0" />
                       {harvest.harvestId}
                       {harvest.source === 'world-action' && (
@@ -697,6 +787,9 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                       )}
                     </div>
                   </TableCell>
+                  {scrollRecords && <TableCell className="py-1 text-xs tabular-nums">{typeof harvest.sortOrder === 'number'
+                    ? <button type="button" className="hover:underline" disabled={moving || bulkBusy || isSubmitting} aria-label={`Edit Sort Order for ${harvest.harvestId}`} onClick={() => openBulkEdit([harvest], harvest.sortOrder ?? 0)}>{harvest.sortOrder}</button>
+                    : <span title="Apply the Harvests Sort Order migration">—</span>}</TableCell>}
                   <TableCell className="py-1 text-sm"><AdminRelationshipBadge kind="plant" id={harvest.plantId} label={harvest.plant?.commonName} /></TableCell>
                   <TableCell className="py-1 text-xs font-mono text-muted-foreground">{harvest.id}</TableCell>
                   <TableCell className="py-1 text-sm text-muted-foreground">
@@ -706,19 +799,26 @@ export function ThreeDHarvestsCRUD({ onModuleUpdate, scrollRecords = false }: { 
                     {harvest.weightLbs ? `${harvest.weightLbs} lbs` : '—'}
                   </TableCell>
                   <TableCell className="py-1 text-sm text-muted-foreground">
-                    {harvest.harvestDate ? new Date(harvest.harvestDate).toLocaleDateString() : '—'}
+                    {dateLabel(harvest.harvestDate)}
                   </TableCell>
                   <TableCell className="text-center py-1">
-                    {harvest.isActive
-                      ? <Check className="mx-auto h-4 w-4 text-green-500" aria-label="Active" />
-                      : <X className="mx-auto h-4 w-4 text-gray-500" aria-label="Inactive" />}
+                    <span aria-label={harvest.isActive ? 'Active' : 'Inactive'} title={harvest.isActive ? 'Active' : 'Inactive'} className={harvest.isActive ? 'text-green-500' : 'text-muted-foreground'}>{harvest.isActive ? '✓' : '×'}</span>
                   </TableCell>
-                  <TableCell className="py-1 text-right">{!bulkBusy && !isSubmitting && renderActions(harvest)}</TableCell>
+                  <TableCell className="py-1 text-right">{!bulkBusy && !moving && !isSubmitting && renderActions(harvest)}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </div>
+
+      {scrollRecords && bulkEdit && <HarvestBulkEditDialog selection={bulkEdit.selection} rank={bulkEdit.rank} ranksReady={ranksReady} projectId={bulkEdit.projectId}
+        onClose={() => setBulkEdit(null)} onSaved={() => {
+          setBulkNotice(`Updated ${bulkEdit.selection.length} ${bulkEdit.selection.length === 1 ? 'Harvest' : 'Harvests'}.`);
+          setBulkEdit(null);
+          setLoading(true);
+          fetchHarvests();
+          onModuleUpdate?.();
+        }} />}
 
       {/* Edit Dialog */}
       <Dialog open={!!editingHarvest} onOpenChange={(open) => !open && setEditingHarvest(null)}>

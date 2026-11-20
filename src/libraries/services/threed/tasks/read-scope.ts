@@ -2,11 +2,14 @@ import { and, eq, getTableColumns, or, sql, type SQL, type SQLWrapper } from 'dr
 import { threedTasks } from '@/libraries/schema/threed';
 
 const taskColumns = getTableColumns(threedTasks);
-const { isPublic, ...legacyColumns } = taskColumns;
-const legacySelection = { ...legacyColumns, isPublic: sql<null>`null` };
-type TaskSelection = typeof taskColumns | typeof legacySelection;
+const { isPublic } = taskColumns;
+type TaskSelection = Omit<typeof taskColumns, 'isPublic' | 'sortOrder'> & {
+  isPublic: typeof isPublic | SQL<null>;
+  sortOrder: typeof taskColumns.sortOrder | SQL<null>;
+};
 type TaskReadSurface = 'catalog' | 'project' | 'stats';
 export const taskVisibilityUnavailable = 'Task visibility needs the database migration. Task writes are unavailable until it is applied.';
+export const taskSortOrderUnavailable = 'Task Sort Order needs the database migration. Task writes are unavailable until it is applied.';
 
 function taskReadScope(userId: string | undefined, surface: TaskReadSurface): SQL {
   const publicTask = eq(isPublic, true);
@@ -21,15 +24,23 @@ export function readableTaskAssignment(assetId: SQLWrapper, scope: SQL): SQL {
   )`;
 }
 
-export function isMissingTaskVisibilityColumn(error: unknown): boolean {
+function isMissingTaskColumn(error: unknown, column: 'is_public' | 'sort_order'): boolean {
+  const message = new RegExp(`^column (?:"?threed_tasks"?\\."?${column}"?|"${column}"(?: of relation "threed_tasks")?) does not exist$`);
   for (let current = error; current && typeof current === 'object';) {
     const detail = current as { code?: unknown; message?: unknown; cause?: unknown };
-    if (detail.code === '42703' && typeof detail.message === 'string' &&
-      /^column (?:"?threed_tasks"?\."?is_public"?|"is_public"(?: of relation "threed_tasks")?) does not exist$/.test(detail.message)) return true;
+    if (detail.code === '42703' && typeof detail.message === 'string' && message.test(detail.message)) return true;
     if (!detail.cause || detail.cause === current) return false;
     current = detail.cause;
   }
   return false;
+}
+
+export function isMissingTaskVisibilityColumn(error: unknown): boolean {
+  return isMissingTaskColumn(error, 'is_public');
+}
+
+export function isMissingTaskSortOrderColumn(error: unknown): boolean {
+  return isMissingTaskColumn(error, 'sort_order');
 }
 
 export async function readThreeDTasks<T>(
@@ -37,11 +48,22 @@ export async function readThreeDTasks<T>(
   surface: TaskReadSurface,
   read: (scope: SQL, selection: TaskSelection) => Promise<T>,
 ): Promise<T> {
-  try {
-    return await read(taskReadScope(userId, surface), taskColumns);
-  } catch (error) {
-    if (!isMissingTaskVisibilityColumn(error)) throw error;
-    console.warn('[Tasks API] Task visibility migration is missing (42703). Using owner-only reads.');
-    return read(userId ? eq(threedTasks.userId, userId) : sql`false`, legacySelection);
+  let scope = taskReadScope(userId, surface);
+  let selection: TaskSelection = taskColumns;
+  for (;;) {
+    try {
+      return await read(scope, selection);
+    } catch (error) {
+      if (selection.isPublic === isPublic && isMissingTaskVisibilityColumn(error)) {
+        console.warn('[Tasks API] Task visibility migration is missing (42703). Using owner-only reads.');
+        scope = userId ? eq(threedTasks.userId, userId) : sql`false`;
+        selection = { ...selection, isPublic: sql<null>`null` };
+      } else if (selection.sortOrder === taskColumns.sortOrder && isMissingTaskSortOrderColumn(error)) {
+        console.warn('[Tasks API] Task Sort Order migration is missing (42703). Reading Tasks without ranks.');
+        selection = { ...selection, sortOrder: sql<null>`null` };
+      } else {
+        throw error;
+      }
+    }
   }
 }
