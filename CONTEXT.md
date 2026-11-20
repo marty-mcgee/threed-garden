@@ -2,7 +2,9 @@
 
 ## Current checkpoint
 
-[v0.35.6 - ThreeD Admin Blueprint Skill](docs/releases/v0.35.6.md#production-status) is verified in production. GitHub `main`, Repository validation, and the successful Vercel Production deployment matched `ded1ceca`. The public homepage returned HTTP 200. This release adds repository-local Codex skill discovery and requires the Blueprint before Admin page, shared UI, and related API edits.
+[v0.35.7 - ThreeD Garden Release Metadata](docs/releases/v0.35.7.md) is prepared for the Developer's commit. The isolated build and all 111 offline CI tasks passed. Two critical production-dependency audit findings remain open. Deployment is pending.
+
+[v0.35.6 - ThreeD Admin Blueprint Skill](docs/releases/v0.35.6.md#production-status) is verified in production at `ded1ceca`. The Developer also confirmed production deployment of the documentation follow-up observed locally at `e8ff2b80`. This release adds repository-local Codex skill discovery and requires the Blueprint before Admin page, shared UI, and related API edits.
 
 November 20. [v0.35.5 - ThreeD Admin Page Blueprint](docs/releases/v0.35.5.md) covers Tasks, Assembly Groups, Terrains, both Waterings lists, and Harvests. The Developer reported applying Harvests Sort Order. The [Admin Guide](docs/users/ADMIN_GUIDE.md#sort-and-edit-threed-records) documents the workflows, and the [agent skill](docs/agents/skills/apply-threed-admin-page-blueprint/SKILL.md) supports the [rollout across ThreeD, Multimedia, Traffic, and Learn](docs/plans/admin-threed-workspace-blueprint.md#rollout-across-top-modules).
 
