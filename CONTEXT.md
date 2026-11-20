@@ -2,6 +2,8 @@
 
 ## Current checkpoint
 
+[v0.35.6 - ThreeD Admin Blueprint Skill](docs/releases/v0.35.6.md) adds repository-local Codex skill discovery and requires the Blueprint before Admin page, shared UI, and related API edits. Deployment is pending.
+
 November 20. [v0.35.5 - ThreeD Admin Page Blueprint](docs/releases/v0.35.5.md) covers Tasks, Assembly Groups, Terrains, both Waterings lists, and Harvests. The Developer reported applying Harvests Sort Order. The [Admin Guide](docs/users/ADMIN_GUIDE.md#sort-and-edit-threed-records) documents the workflows, and the [agent skill](docs/agents/skills/apply-threed-admin-page-blueprint/SKILL.md) supports the [rollout across ThreeD, Multimedia, Traffic, and Learn](docs/plans/admin-threed-workspace-blueprint.md#rollout-across-top-modules). Production remains Developer-confirmed v0.35.4.
 
 November 20. The Developer applied the Waterings Sort Order migration. Both standalone [Waterings tabs](docs/plans/admin-threed-workspace-continuation.md#waterings--separate-schedules-and-history-views) now open in Sort Order so the drag and keyboard grips are enabled. Reorder clears search and returns a differently sorted list to saved order. Bulk Edit applies only selected fields on the current page. Fresh TypeScript and focused checks passed, including native pointer dragging and refresh on both tabs in isolated Edge with mocked data.

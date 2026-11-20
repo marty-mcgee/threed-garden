@@ -21,7 +21,7 @@ Read this file and [CONTEXT.md](CONTEXT.md) fully before editing. Inspect the cu
 
 Use [agent guidance](docs/agents/README.md), [safe change areas](docs/agents/SAFE_CHANGE_AREAS.md), [task checklists](docs/agents/TASK_CHECKLISTS.md) and [validation](docs/agents/VALIDATION.md).
 
-For Admin Blueprint work, follow [Apply ThreeD Admin Page Blueprint](docs/agents/skills/apply-threed-admin-page-blueprint/SKILL.md) for the authorized pages.
+Before changing any ThreeD Garden Admin page, shared Admin UI component, or API behavior used by an Admin page, read and apply [Apply ThreeD Admin Page Blueprint](docs/agents/skills/apply-threed-admin-page-blueprint/SKILL.md). Before editing, identify the affected route, the existing pattern to follow, and how you’ll verify the change.
 
 ## Manual release and live-system boundaries
 
