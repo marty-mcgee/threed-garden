@@ -50,9 +50,13 @@ const find = (node, predicate) => {
 const button = (tree, label) => find(tree, node => node.type === 'button' && (text(node).trim() === label || node.props['aria-label'] === label));
 const field = (tree, label) => find(tree, node => node.props?.['aria-label'] === label);
 const guide = (id = 1, override = {}) => ({ id, title: `Guide ${id}`, slug: `guide-${id}`, summary: 'Summary', content: '# Saved content',
-  sortOrder: id, isActive: true, isPublished: false, revision: '8e57d4e7-f2a7-4481-966c-692ae4cc7001',
+  sortOrder: id, isActive: true, isPublished: false, isPublic: true, categoryIds: [], revision: '8e57d4e7-f2a7-4481-966c-692ae4cc7001',
   createdAt: '2026-10-27T00:00:00Z', updatedAt: '2026-10-27T00:00:00Z', ...override });
-const page = (rows, total = rows.length) => ({ success: true, data: rows.map(({ content, ...row }) => row), pagination: { total, limit: 25, offset: 0 } });
+const page = (rows, total = rows.length) => ({
+  success: true,
+  data: rows.map(({ content, categoryIds, categories = [], ...row }) => ({ ...row, categories })),
+  pagination: { total, limit: 25, offset: 0 },
+});
 const contracts = load('src/libraries/services/learn/contracts.ts');
 const input = load('src/libraries/services/learn/input.ts', { './contracts': contracts });
 const client = load('src/components/admin/learn/learn-admin-client.ts');
@@ -84,11 +88,20 @@ function fixture(kind = 'list', id) {
     '@/components/learn/LearnMarkdown': { LearnMarkdown: 'markdown' },
     '@/components/learn/LearnGuideIllustration': { LearnGuideIllustration: 'illustration' },
     '@/libraries/services/learn/contracts': contracts, '@/libraries/services/learn/input': input,
-    './learn-admin-client': client };
-  const app = load(`src/components/admin/learn/${kind === 'list' ? 'LearnGuidesList' : 'LearnGuideEditor'}.tsx`, modules, globals);
-  const root = () => kind === 'list' ? app.LearnGuidesList() : app.LearnGuideEditor({ id });
+    './learn-admin-client': client, './LearnGuideCategories': { LearnGuideCategories: 'guide-categories' } };
+  modules['./use-learn-categories'] = load('src/components/admin/learn/use-learn-categories.ts', modules, globals);
+  const components = { list: 'LearnGuidesList', edit: 'LearnGuideEditor', categories: 'LearnCategoriesWorkspace', selector: 'LearnGuideCategories' };
+  const name = components[kind];
+  const app = load(`src/components/admin/learn/${name}.tsx`, modules, globals);
+  let selected = [1];
+  const root = () => kind === 'selector'
+    ? element(app[name], { selected, saved: [1], onChange: next => { selected = Array.from(next); } })
+    : app[name]({ id });
   const entry = root();
-  const render = () => h.render(() => entry.type(entry.props));
+  const render = () => h.render(() => {
+    const current = kind === 'selector' ? root() : entry;
+    return current.type(current.props);
+  });
   return { render, root, requests, routes, listeners, location, h,
     tick() { timers.splice(0).forEach(timer => timer()); },
     session(value) { session = value; }, confirm(value) { confirmed = value; },
@@ -193,7 +206,11 @@ function fixture(kind = 'list', id) {
   const denied = fixture('edit'); denied.render(); tree = await denied.reply({ success: false, error: 'An active Super Admin account is required.' }, 403);
   assert(!field(tree, 'Guide title')); assert(button(tree, 'Create Guide').props.disabled); denied.h.unmount();
 
-  const edit = fixture('edit', 1); edit.render(); tree = await edit.reply({ success: true, data: guide() });
+  const edit = fixture('edit', 1); edit.render(); tree = await edit.reply({ success: true, data: guide(1, { categoryIds: [1] }) });
+  const categoryField = () => find(tree, node => node.type === 'guide-categories');
+  assert.deepEqual(categoryField().props.selected, [1]);
+  categoryField().props.onChange([1, 2]); tree = edit.render();
+  assert(!button(tree, 'Save Changes').props.disabled, 'Category edits alone enable Guide Save');
   field(tree, 'Guide Markdown content').props.onChange({ target: { value: '# Draft kept' } }); tree = edit.render();
   assert.equal(find(tree, node => node.type === 'markdown').props.content, '# Draft kept');
   assert(edit.listeners.get('beforeunload')?.size);
@@ -205,8 +222,10 @@ function fixture(kind = 'list', id) {
   assert(edit.click('/admin').prevented); assert.equal(edit.routes.length, 0);
   request = edit.requests.shift(); assert.equal(request.init.method, 'PUT');
   assert.equal(JSON.parse(request.init.body).revision, guide().revision); assert.equal(JSON.parse(request.init.body).content, '# Draft kept');
+  assert.deepEqual(JSON.parse(request.init.body).categoryIds, [1, 2]);
   tree = await edit.reply({ success: false, error: 'Temporary save failure' }, 503, request);
   assert.equal(field(tree, 'Guide Markdown content').props.value, '# Draft kept'); assert(text(tree).includes('Temporary save failure'));
+  assert.deepEqual(categoryField().props.selected, [1, 2]);
   button(tree, 'Save Changes').props.onClick(); const incomplete = guide(); delete incomplete.content;
   tree = await edit.reply({ success: true, data: incomplete });
   assert.equal(field(tree, 'Guide Markdown content').props.value, '# Draft kept'); assert(text(tree).includes('save could not be confirmed'));
@@ -250,5 +269,93 @@ function fixture(kind = 'list', id) {
   const cleanNavigation = fixture('edit', 1); cleanNavigation.render(); await cleanNavigation.reply({ success: true, data: guide() });
   cleanNavigation.click('/admin'); assert.equal(cleanNavigation.routes[0]?.method, 'document-assign', 'Even clean exits use document transitions'); cleanNavigation.h.unmount();
 
-  console.log('PASS Learn Admin: real URL/list/editor hooks; bounded paging, stale/account isolation, partial sequential deletion, starter import, access denial, failed-load/draft/conflict guards, Markdown preview, document entry/exit and Back beforeunload boundary, create/edit save lifecycle (mock auth/network only).');
+  const category = (id, name, parentId = null, isActive = true) => ({
+    id, name, slug: name.toLowerCase().replaceAll(' ', '-'), parentId, isActive, sortOrder: 0,
+    description: null, revision: guide().revision,
+  });
+  const setup = category(1, 'Setup');
+  const projects = category(2, 'Projects', setup.id);
+  const inactive = category(3, 'Archived', null, false);
+  const categoryList = { success: true, data: [setup, projects, inactive] };
+  const workspace = fixture('categories');
+  workspace.render();
+  assert.equal(workspace.requests[0].url, '/api/learn/categories');
+  tree = await workspace.reply(categoryList);
+  button(tree, 'Setup').props.onClick(); tree = workspace.render();
+  const inputId = id => find(tree, node => node.props?.id === id);
+  assert(button(tree, 'Delete Category').props.disabled);
+  assert(!find(inputId('learn-category-parent'), node => node.type === 'option' && node.props.value === projects.id));
+  button(tree, 'Add Category').props.onClick(); tree = workspace.render();
+  inputId('learn-category-name').props.onChange({ target: { value: 'Getting Started' } });
+  tree = workspace.render();
+  assert.equal(inputId('learn-category-slug').props.value, 'getting-started');
+  inputId('learn-category-parent').props.onChange({ target: { value: String(projects.id) } });
+  tree = workspace.render();
+  assert(workspace.unload().prevented);
+  find(tree, node => node.type === 'form').props.onSubmit({ preventDefault() {} });
+  request = workspace.requests.shift();
+  assert.equal(request.init.method, 'POST');
+  assert.equal(JSON.parse(request.init.body).parentId, projects.id);
+  const gettingStarted = category(4, 'Getting Started', projects.id);
+  tree = await workspace.reply({ success: true, data: gettingStarted }, 201, request);
+  assert(button(tree, 'Setup › Projects › Getting Started'));
+  assert(!workspace.unload().prevented);
+  workspace.confirm(false); button(tree, 'Delete Category').props.onClick();
+  assert.equal(workspace.requests.length, 0);
+  workspace.confirm(true); button(tree, 'Delete Category').props.onClick();
+  request = workspace.requests.shift();
+  assert.equal(request.init.method, 'DELETE');
+  assert(request.url.includes('id=4&revision='));
+  tree = await workspace.reply({ success: true, data: { id: 4 } }, 200, request);
+  assert(!button(tree, 'Setup › Projects › Getting Started'));
+  workspace.h.unmount();
+
+  const selector = fixture('selector');
+  selector.render();
+  tree = await selector.reply({ ...categoryList, data: [{ ...setup, isActive: false }, projects, inactive] });
+  const checkbox = label => find(find(tree, node => node.type === 'label' && text(node).trim() === label), node => node.props?.type === 'checkbox');
+  assert(checkbox('Setup (Inactive)').props.checked, 'Existing inactive assignments stay visible');
+  assert(!checkbox('Archived (Inactive)'), 'Unassigned inactive Categories stay out of the picker');
+  checkbox('Setup › Projects').props.onChange({ target: { checked: true } }); tree = selector.render();
+  assert(text(tree).includes('2 selected'));
+  checkbox('Setup (Inactive)').props.onChange({ target: { checked: false } }); tree = selector.render();
+  assert(text(tree).includes('1 selected'));
+  selector.h.unmount();
+
+  const sorting = fixture();
+  sorting.render(); sorting.tick(); await sorting.reply(page([guide(1)], 51));
+  tree = await sorting.query('?page=2'); sorting.tick();
+  tree = await sorting.reply(page([guide(26, { categories: [setup, inactive] })], 51));
+  assert(text(tree).includes('Setup') && text(tree).includes('Archived (Inactive)'));
+  button(tree, 'Sort by Categories').props.onClick(); await flush(); sorting.render(); sorting.tick();
+  request = sorting.requests.shift();
+  const sortParams = new URL(request.url, 'https://fixture.invalid').searchParams;
+  assert.equal(sortParams.get('sort'), 'categories');
+  assert.equal(sortParams.get('direction'), 'asc');
+  assert.equal(sortParams.get('offset'), '0', 'Sorting resets pagination');
+  tree = await sorting.reply(page([guide(1)], 51), 200, request);
+  assert(find(tree, node => node.props?.['aria-sort'] === 'ascending'));
+  button(tree, 'Sort by Categories').props.onClick(); await flush(); sorting.render(); sorting.tick();
+  request = sorting.requests.shift();
+  assert.equal(new URL(request.url, 'https://fixture.invalid').searchParams.get('direction'), 'desc');
+  sorting.h.unmount();
+
+  const visibility = fixture('edit', 1);
+  visibility.render();
+  const publishedGuide = guide(1, { isPublished: true, categoryIds: [1, 2] });
+  tree = await visibility.reply({ success: true, data: publishedGuide });
+  field(tree, 'Guide Public').props.onCheckedChange(false); tree = visibility.render();
+  assert(!button(tree, 'Save Changes').props.disabled, 'Public alone enables Guide Save');
+  button(tree, 'Save Changes').props.onClick();
+  request = visibility.requests.shift();
+  const visibilityDraft = JSON.parse(request.init.body);
+  assert.equal(visibilityDraft.isPublic, false);
+  assert.equal(visibilityDraft.isPublished, true);
+  assert(!Object.hasOwn(visibilityDraft, 'categoryIds'), 'Visibility changes preserve Category assignments');
+  tree = await visibility.reply({ success: true, data: { ...publishedGuide, isPublic: false } }, 200, request);
+  assert.equal(field(tree, 'Guide Public').props.checked, false);
+  assert(button(tree, 'Save Changes').props.disabled);
+  assert(text(tree).includes('Guide saved. It is not publicly visible.'));
+  visibility.h.unmount();
+  console.log('PASS Learn Admin: Guide draft/revision and navigation guards, Category management, sorting and assignments, and the Public switch (mock auth/network only).');
 })().catch(error => { console.error(error); process.exitCode = 1; });

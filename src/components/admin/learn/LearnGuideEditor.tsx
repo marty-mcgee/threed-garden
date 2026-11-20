@@ -17,16 +17,28 @@ import { Switch } from '@/components/ui/switch';
 import { LEARN_CONTENT_LIMIT, LEARN_SLUG_LIMIT, LEARN_SUMMARY_LIMIT, LEARN_TITLE_LIMIT, type LearnGuide, type LearnGuideInput } from '@/libraries/services/learn/contracts';
 import { parseLearnGuideInput } from '@/libraries/services/learn/input';
 import { LearnAdminError, learnAdminResponse, learnAdminActionClass as actionClass } from './learn-admin-client';
+import { LearnGuideCategories } from './LearnGuideCategories';
 
-type Form = Omit<LearnGuideInput, 'sortOrder'> & { sortOrder: string };
-const blank = (): Form => ({ title: '', slug: '', summary: '', content: '', sortOrder: '0', isActive: true, isPublished: false });
-const toForm = (guide: LearnGuide): Form => ({ title: guide.title, slug: guide.slug, summary: guide.summary, content: guide.content, sortOrder: String(guide.sortOrder), isActive: guide.isActive, isPublished: guide.isPublished });
+type Form = Omit<LearnGuideInput, 'sortOrder' | 'categoryIds' | 'isPublic'> & { sortOrder: string; categoryIds: number[]; isPublic: boolean };
+const blank = (): Form => ({ title: '', slug: '', summary: '', content: '', sortOrder: '0', isActive: true, isPublished: false, isPublic: true, categoryIds: [] });
+const toForm = (guide: LearnGuide): Form => ({
+  title: guide.title,
+  slug: guide.slug,
+  summary: guide.summary,
+  content: guide.content,
+  sortOrder: String(guide.sortOrder),
+  isActive: guide.isActive,
+  isPublished: guide.isPublished,
+  isPublic: guide.isPublic,
+  categoryIds: guide.categoryIds,
+});
 const slugFor = (title: string) => title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, LEARN_SLUG_LIMIT).replace(/-$/, '');
 const validGuide = (guide: LearnGuide, expectedId?: number) => Number.isSafeInteger(guide?.id) && guide.id > 0
   && (!expectedId || guide.id === expectedId) && typeof guide.revision === 'string'
   && typeof guide.summary === 'string' && typeof guide.content === 'string' && typeof guide.sortOrder === 'number'
-  && typeof guide.isActive === 'boolean' && typeof guide.isPublished === 'boolean'
-  && tryParseInput(parseLearnGuideInput, { title: guide.title, slug: guide.slug, summary: guide.summary, content: guide.content, sortOrder: guide.sortOrder, isActive: guide.isActive, isPublished: guide.isPublished }).success;
+  && typeof guide.isActive === 'boolean' && typeof guide.isPublished === 'boolean' && typeof guide.isPublic === 'boolean'
+  && Array.isArray(guide.categoryIds)
+  && tryParseInput(parseLearnGuideInput, { ...toForm(guide), sortOrder: guide.sortOrder }).success;
 
 export function LearnGuideEditor({ id }: { id?: number }) {
   const { data: session, status } = useSession();
@@ -45,6 +57,7 @@ function LearnGuideForm({ id }: { id?: number }) {
   const dirty = JSON.stringify(form) !== JSON.stringify(baseline);
   const currentDraft = useRef({ dirty, busy }); currentDraft.current = { dirty, busy };
   const parsed = tryParseInput(parseLearnGuideInput, { ...form, sortOrder: Number(form.sortOrder) });
+  const publicVisibility = form.isActive && form.isPublished && form.isPublic;
   const invalid = !form.title.trim() ? 'Enter a guide title.' : !form.slug.trim() ? 'Enter a guide slug.'
     : !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(form.slug.trim()) ? 'Use lowercase letters, numbers and single hyphens in the slug.'
     : !form.sortOrder.trim() || !Number.isInteger(Number(form.sortOrder)) || Number(form.sortOrder) < -10000 || Number(form.sortOrder) > 10000 ? 'Sort Order must be an integer from -10000 to 10000.'
@@ -119,14 +132,17 @@ function LearnGuideForm({ id }: { id?: number }) {
     if (mutation.current || leavingRef.current || blocked || !parsed.success) return;
     const controller = new AbortController(); mutation.current = controller; setBusy(true); setError(''); setMessage('');
     try {
-      const response = await fetch('/api/learn/guides', { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...parsed.data, ...(id ? { id, revision: record!.revision } : {}) }), signal: AbortSignal.any([controller.signal, AbortSignal.timeout(30000)]) });
+      const { categoryIds, ...fields } = parsed.data;
+      const categoriesChanged = form.categoryIds.length !== baseline.categoryIds.length
+        || form.categoryIds.some((categoryId, index) => categoryId !== baseline.categoryIds[index]);
+      const response = await fetch('/api/learn/guides', { method: id ? 'PUT' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...fields, ...(categoriesChanged ? { categoryIds } : {}), ...(id ? { id, revision: record!.revision } : {}) }), signal: AbortSignal.any([controller.signal, AbortSignal.timeout(30000)]) });
       const payload = await learnAdminResponse<{ data: LearnGuide }>(response, 'The guide could not be saved.');
       const guide = payload.data;
       if (!validGuide(guide, id)) throw new Error('The save could not be confirmed. Retain your draft and check the saved guide before retrying.');
       if (!mounted.current || controller.signal.aborted) return;
       const saved = toForm(payload.data);
       setRecord(payload.data); setForm(saved); setBaseline(saved); setConflict(false);
-      setMessage(payload.data.isActive && payload.data.isPublished ? 'Guide saved and available on Learn.' : 'Guide saved. It is not publicly visible.');
+      setMessage(guide.isActive && guide.isPublished && guide.isPublic ? 'Guide saved and available on Learn.' : 'Guide saved. It is not publicly visible.');
       if (!id) { leavingRef.current = true; setLeaving(true); window.location.replace(`/admin/learn/${payload.data.id}`); }
     } catch (error) {
       if (!mounted.current || controller.signal.aborted) return;
@@ -140,7 +156,7 @@ function LearnGuideForm({ id }: { id?: number }) {
 
   return <div className="flex h-full min-h-0 min-w-0 flex-1 flex-col gap-2 overflow-hidden text-xs">
     <AdminWorkspaceHeader moduleKey="learn" icon={BookOpen} title={id ? 'Edit Guide' : 'Add Guide'} description="Write shared Learn guides with Markdown." className="shrink-0">
-      <ModelFieldHelp label="Learn guide">Only Active and Published guides appear publicly. Preview uses the same Markdown renderer as Learn. Saving an unpublished guide keeps it available only to Super Admins.</ModelFieldHelp>
+      <ModelFieldHelp label="Learn guide">A Guide appears on public Learn when Active, Published and Public are all on. Preview uses the same Markdown renderer as Learn.</ModelFieldHelp>
       {record && !denied && !loadError && <span className="text-xs text-muted-foreground">#{record.id}</span>}
       <div className="ml-auto flex flex-wrap gap-1"><Button variant="outline" className={actionClass} disabled={busy || leaving} onClick={close}><ArrowLeft aria-hidden="true" className="h-3.5 w-3.5" />Guides</Button><Button variant="outline" className={actionClass} disabled={busy || loading || leaving} onClick={refresh}><RefreshCw aria-hidden="true" className="h-3.5 w-3.5" />Reload</Button></div>
     </AdminWorkspaceHeader>
@@ -151,8 +167,13 @@ function LearnGuideForm({ id }: { id?: number }) {
           <div className="sm:col-span-2"><Label htmlFor="learn-guide-slug">Slug *</Label><Input id="learn-guide-slug" aria-label="Guide slug" className="h-8 text-xs" required maxLength={LEARN_SLUG_LIMIT} value={form.slug} aria-describedby="learn-guide-slug-help" onChange={event => setForm(value => ({ ...value, slug: event.target.value }))} /><p id="learn-guide-slug-help" className="mt-1 text-muted-foreground">Unique across Learn. Lowercase letters, numbers and single hyphens. Changing it changes the public guide URL.</p></div>
           <div className="sm:col-span-2"><Label htmlFor="learn-guide-summary">Summary</Label><Textarea id="learn-guide-summary" aria-label="Guide summary" className="text-xs" rows={3} maxLength={LEARN_SUMMARY_LIMIT} value={form.summary} onChange={event => setForm(value => ({ ...value, summary: event.target.value }))} /></div>
           <div><Label htmlFor="learn-guide-order">Sort Order</Label><Input id="learn-guide-order" aria-label="Guide Sort Order" className="h-8 text-xs" type="number" step={1} min={-10000} max={10000} value={form.sortOrder} onChange={event => setForm(value => ({ ...value, sortOrder: event.target.value }))} /></div>
-          <div className="space-y-3"><div className="flex items-center gap-2"><Switch id="learn-guide-active" aria-label="Guide Active" checked={form.isActive} onCheckedChange={isActive => setForm(value => ({ ...value, isActive }))} /><Label htmlFor="learn-guide-active">Active</Label></div><div className="flex items-center gap-2"><Switch id="learn-guide-published" aria-label="Guide Published" checked={form.isPublished} onCheckedChange={isPublished => setForm(value => ({ ...value, isPublished }))} /><Label htmlFor="learn-guide-published">Published</Label></div></div>
-          <p className="text-muted-foreground sm:col-span-2">{form.isActive && form.isPublished ? 'Saving makes this guide available to everyone on Learn.' : 'This guide stays out of public Learn while either Active or Published is off.'}</p>
+          <div className="space-y-3">
+            <div className="flex items-center gap-2"><Switch id="learn-guide-active" aria-label="Guide Active" checked={form.isActive} onCheckedChange={isActive => setForm(value => ({ ...value, isActive }))} /><Label htmlFor="learn-guide-active">Active</Label></div>
+            <div className="flex items-center gap-2"><Switch id="learn-guide-published" aria-label="Guide Published" checked={form.isPublished} onCheckedChange={isPublished => setForm(value => ({ ...value, isPublished }))} /><Label htmlFor="learn-guide-published">Published</Label></div>
+            <div className="flex items-center gap-2"><Switch id="learn-guide-public" aria-label="Guide Public" checked={form.isPublic} onCheckedChange={isPublic => setForm(value => ({ ...value, isPublic }))} /><Label htmlFor="learn-guide-public">Public</Label></div>
+          </div>
+          <p className="text-muted-foreground sm:col-span-2">{publicVisibility ? 'Saving makes this Guide available to everyone on Learn.' : 'Public Learn requires Active, Published and Public to be on.'}</p>
+          <LearnGuideCategories selected={form.categoryIds} saved={baseline.categoryIds} onChange={categoryIds => setForm(value => ({ ...value, categoryIds }))} />
         </section>
         <section className="admin-editor-panel space-y-2 rounded-lg border p-3"><div className="flex flex-wrap items-center justify-between gap-1"><Label htmlFor="learn-guide-content">Markdown content</Label><span className="text-muted-foreground">{form.content.length.toLocaleString()} / {LEARN_CONTENT_LIMIT.toLocaleString()}</span></div><Textarea id="learn-guide-content" aria-label="Guide Markdown content" className="min-h-80 font-mono text-xs leading-6" rows={22} maxLength={LEARN_CONTENT_LIMIT} value={form.content} onChange={event => setForm(value => ({ ...value, content: event.target.value }))} /><p className="text-muted-foreground">Use Markdown headings, lists, links, code and tables. Raw HTML is not rendered.</p></section>
       </fieldset>

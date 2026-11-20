@@ -8,11 +8,12 @@ function duplicateSlug(error: unknown): boolean {
   if ('code' in error && error.code === '23505') return true;
   return 'cause' in error && error.cause !== error && duplicateSlug(error.cause);
 }
-export function learnFailure(error: unknown) {
+export function learnFailure(error: unknown, record: 'guide' | 'Category' = 'guide') {
   if (error instanceof LearnError) return learnResponse({ success: false, error: error.message }, error.status);
-  if (error instanceof InputValidationError || error instanceof SyntaxError) return learnResponse({ success: false, error: 'Invalid Learn guide request.' }, 400);
-  if (duplicateSlug(error)) return learnResponse({ success: false, error: 'A Learn guide already uses this slug.' }, 409);
-  return learnResponse({ success: false, error: 'Learn guides are unavailable. Check the Learn schema prerequisite, then retry.' }, 503);
+  if (error instanceof InputValidationError || error instanceof SyntaxError) return learnResponse({ success: false, error: `Invalid Learn ${record} request.` }, 400);
+  if (duplicateSlug(error)) return learnResponse({ success: false, error: `A Learn ${record} already uses this slug.` }, 409);
+  const records = record === 'Category' ? 'Categories' : 'guides';
+  return learnResponse({ success: false, error: `Learn ${records} are unavailable. Check the Learn schema prerequisite, then retry.` }, 503);
 }
 export function requireLearnOrigin(request: Request) {
   if (request.headers.get('origin') !== new URL(request.url).origin) throw new LearnError(403, 'Invalid request origin.');

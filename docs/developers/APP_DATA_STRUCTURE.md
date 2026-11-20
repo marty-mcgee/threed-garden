@@ -2,7 +2,7 @@
 
 [Open the interactive schema explorer](app-data-structure.html) · [Structured schema snapshot](app-data-structure.json) · [Established App architecture](../plans/app-module-architecture.md)
 
-Snapshot: 2026-11-19, App 0.35.2, main / bc7268f9 plus working-tree changes. Generated from the actual local Drizzle declarations, without a database connection. This visualizes the existing structure; it does not introduce a new architecture.
+Snapshot: 2026-11-19, App 0.35.3, main / 5e761a14 plus working-tree changes. Generated from the actual local Drizzle declarations, without a database connection. This visualizes the existing structure; it does not introduce a new architecture.
 
 ## Explore the structure
 
@@ -15,11 +15,11 @@ Open the HTML file directly in a browser; it needs no server, network or CDN. Se
 | ThreeD | 49 | 695 | 111 |
 | Multimedia | 13 | 136 | 24 |
 | Traffic | 10 | 227 | 10 |
-| Learn | 1 | 13 | 2 |
+| Learn | 3 | 32 | 8 |
 | Projects (shared) | 6 | 84 | 15 |
 | Accounts (shared) | 5 | 48 | 2 |
 | Settings (shared) | 5 | 53 | 6 |
-| **Total** | **89** | **1256** | **170** |
+| **Total** | **91** | **1275** | **176** |
 
 Also includes **37 enums**, **161 ORM relation declarations** and **54 reviewed application mappings**. Counts describe source declarations, not verified live database objects. Auth aliases are deduplicated. Composite foreign keys remain single relationships with all participating columns. JSON/JSONB columns are shown without inventing their nested structures.
 
@@ -136,7 +136,9 @@ The interactive explorer expands polymorphic asset/Module links using the actual
 
 | Table | Columns | Outgoing FKs |
 | --- | ---: | ---: |
-| [`learn_guides`](../../src/libraries/schema/learn/index.ts) | 13 | 2 |
+| [`learn_categories`](../../src/libraries/schema/learn/index.ts) | 12 | 3 |
+| [`learn_guide_category_assignments`](../../src/libraries/schema/learn/index.ts) | 5 | 2 |
+| [`learn_guides`](../../src/libraries/schema/learn/index.ts) | 15 | 3 |
 
 ### Projects
 

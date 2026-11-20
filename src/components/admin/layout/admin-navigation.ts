@@ -1,4 +1,4 @@
-import { LayoutDashboard, Mountain, Star, Plus, Settings } from 'lucide-react';
+import { FolderTree, LayoutDashboard, Mountain, Star, Plus, Settings } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { moduleManagementRoutes, type ModuleKey } from '@/libraries/config/module-appearance';
 import type { WorkspaceModule } from '@/libraries/config/workspace-settings';
@@ -164,6 +164,7 @@ export const navSections: NavSection[] = [
     items: [
       { title: 'All Guides', href: moduleManagementRoutes.learn, moduleKey: 'learn', documentNavigation: true },
       { title: 'Add Guide', href: '/admin/learn/new', icon: Plus, action: 'create', exact: true, documentNavigation: true },
+      { title: 'Categories', href: '/admin/learn/categories', icon: FolderTree, exact: true, documentNavigation: true },
     ],
   },
   {

@@ -45,9 +45,11 @@ function harness() {
     }); },
   };
   const requests = [];
+  let session = { status: 'unauthenticated', data: null };
   const fetch = (url, options) => new Promise((resolve, reject) => requests.push({ url, options, resolve, reject }));
-  const hook = load('src/components/learn/use-public-learn.ts', { react }, { fetch });
+  const hook = load('src/components/learn/use-public-learn.ts', { react, 'next-auth/react': { useSession: () => session } }, { fetch });
   return { react, hook, requests,
+    setSession(status, userId) { session = { status, data: userId ? { user: { id: userId } } : null }; },
     render(fn = component) { component = fn; for (let pass = 0; pass < 30; pass++) {
       dirty = false; cursor = 0; tree = component(); jobs.splice(0).forEach(job => job()); if (!dirty) return tree;
     } throw Error('Render loop'); },
@@ -134,6 +136,17 @@ const respond = (request, body, status = 200) => request.resolve({ ok: status >=
   url = '/api/learn/public/guides?search=new'; render(); const latest = h.requests.shift(); assert(old.options.signal.aborted);
   respond(latest, page(['new'])); await flush(); assert.equal(render().data.data[0].slug, 'new');
   respond(old, page(['old'])); await flush(); assert.equal(render().data.data[0].slug, 'new');
+  h.setSession('loading'); assert.equal(render().data, null); assert.equal(h.requests.length, 0);
+  h.setSession('authenticated', 'owner'); assert.equal(render().data, null);
+  respond(h.requests.shift(), page(['owner-only'])); await flush();
+  assert.equal(render().data.data[0].slug, 'owner-only');
+  render().retry(); render(); const oldOwner = h.requests.shift();
+  h.setSession('authenticated', 'different-user'); assert.equal(render().data, null);
+  assert(oldOwner.options.signal.aborted);
+  respond(oldOwner, page(['owner-only'])); await flush(); assert.equal(render().data, null);
+  respond(h.requests.shift(), page(['next-user'])); await flush(); assert.equal(render().data.data[0].slug, 'next-user');
+  h.setSession('unauthenticated'); assert.equal(render().data, null);
+  respond(h.requests.shift(), page(['public'])); await flush(); assert.equal(render().data.data[0].slug, 'public');
   render().retry(); assert.equal(render().data, null); const failed = h.requests.shift(); failed.reject(Error('private diagnostic')); await flush();
   assert.equal(render().status, 'error'); assert.equal(render().data, null);
   render().retry(); render(); respond(h.requests.shift(), { success: true, data: 'bad' }); await flush(); assert.equal(render().status, 'error');
@@ -174,7 +187,7 @@ const respond = (request, body, status = 200) => request.resolve({ ok: status >=
   button(tree, 'Clear').props.onClick(); draw(); respond(libraryHarness.requests.shift(), { error: 'private storage error' }, 503); await flush(); tree = draw();
   assert.match(text(tree), /could not be loaded/); assert.doesNotMatch(text(tree), /private storage error|Guide walls/);
   button(tree, 'Retry guides').props.onClick(); draw(); respond(libraryHarness.requests.shift(), page([])); await flush(); tree = draw();
-  assert.match(text(tree), /awaiting publication/); assert.doesNotMatch(text(tree), /Prepare Model Files/);
+  assert.match(text(tree), /No Guides are available/); assert.doesNotMatch(text(tree), /Prepare Model Files/);
   browser.location.hash = '#how-to'; listeners.get('hashchange')(); tree = draw(); assert.equal(all(tree, node => node.type === 'reader').length, 0);
   libraryHarness.unmount(); assert.equal(listeners.size, 0);
 

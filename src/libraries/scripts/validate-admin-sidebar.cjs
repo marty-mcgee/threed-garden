@@ -70,6 +70,7 @@ for (const [route, expected] of [
   ['/learn/data-structure', null],
   ['/learn/guides/first-project', null],
   ['/admin/learn/new', '/admin/learn/new'],
+  ['/admin/learn/categories', '/admin/learn/categories'],
   ['/admin/learn/4', '/admin/learn'],
   ['/learn-extra', null],
 ]) assert.equal(nav.activeAdminHref(route), expected);
@@ -142,6 +143,7 @@ assert.equal(all(tree,n=>n.type==='button'&&text(n)==='Add Model')[0].props.vari
 pathname='/admin/learn';owner='learn-menu-check';tree=render();
 assert.equal(all(tree,n=>n.type==='a'&&text(n)==='All Guides')[0].props.href,'/admin/learn');
 assert.equal(all(tree,n=>n.type==='a'&&text(n)==='Add Guide')[0].props.href,'/admin/learn/new');
+assert.equal(all(tree,n=>n.type==='a'&&text(n)==='Categories')[0].props.href,'/admin/learn/categories');
 assert.equal(button(tree,'Learn').props['aria-expanded'],true);
 assert.equal(all(tree,n=>n.props?.href==='/learn').length,0,'Public Learn is reached through the App surfaces, not the Admin sidebar');
 assert(renderedIcons(tree).some(icon=>icon?.type==='Star'&&icon.props.className.includes('text-violet-500')));

@@ -26,7 +26,7 @@ export function LearnGuideReader({ slug, embedded = false }: { slug: string; emb
       {embedded && guide && <Link href={`/learn/guides/${guide.slug}`} className="inline-flex items-center gap-2 underline underline-offset-4">Open guide page<ArrowUpRight aria-hidden="true" className="size-4" /></Link>}
     </nav>
     {request.status === 'loading' && <p role="status" className="text-muted-foreground">Loading guide…</p>}
-    {missing && <div role="status" className="space-y-2"><Heading className="text-2xl font-semibold">Guide not found</Heading><p className="text-muted-foreground">This guide is unavailable or is no longer published. Browse the current guides to continue.</p></div>}
+    {missing && <div role="status" className="space-y-2"><Heading className="text-2xl font-semibold">Guide not found</Heading><p className="text-muted-foreground">Browse the available Guides to continue.</p></div>}
     {request.status === 'error' && <div role="alert" className="space-y-3"><p>This guide could not be loaded. Please try again.</p><Button variant="outline" onClick={request.retry}>Retry guide</Button></div>}
     {guide && <>
       <header className="space-y-3 border-b pb-5">

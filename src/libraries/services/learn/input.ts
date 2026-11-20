@@ -1,5 +1,5 @@
-import { InputValidationError, readBoolean, readGuid, readInteger, readStrictObject, readString } from '@/libraries/utils/input-validation';
-import { LEARN_CONTENT_LIMIT, LEARN_SEARCH_LIMIT, LEARN_SLUG_LIMIT, LEARN_SUMMARY_LIMIT, LEARN_TITLE_LIMIT, learnGuideSorts, type LearnGuideInput, type LearnGuideSort } from './contracts';
+import { InputValidationError, readArray, readBoolean, readGuid, readInteger, readStrictObject, readString } from '@/libraries/utils/input-validation';
+import { LEARN_CATEGORY_DESCRIPTION_LIMIT, LEARN_CATEGORY_NAME_LIMIT, LEARN_CONTENT_LIMIT, LEARN_GUIDE_CATEGORY_LIMIT, LEARN_SEARCH_LIMIT, LEARN_SLUG_LIMIT, LEARN_SUMMARY_LIMIT, LEARN_TITLE_LIMIT, learnGuideSorts, type LearnCategoryInput, type LearnGuideInput, type LearnGuideSort } from './contracts';
 
 export class LearnError extends Error {
   constructor(public readonly status: number, message: string) { super(message); }
@@ -13,7 +13,15 @@ const guideFields = [
   'sortOrder',
   'isActive',
   'isPublished',
+  'isPublic',
+  'categoryIds',
 ] as const;
+
+export function parseLearnCategoryIds(value: unknown): number[] {
+  const ids = readArray(value, LEARN_GUIDE_CATEGORY_LIMIT).map(id => readInteger(id, 1, 2147483647));
+  if (new Set(ids).size !== ids.length) throw new InputValidationError('Select each Category only once.');
+  return ids.sort((a, b) => a - b);
+}
 
 export function parseLearnSlug(value: unknown): string {
   const slug = readString(value, 1, LEARN_SLUG_LIMIT, true);
@@ -30,11 +38,13 @@ function guideInput(input: Record<string, unknown>): LearnGuideInput {
     sortOrder: input.sortOrder === undefined ? 0 : readInteger(input.sortOrder, -10000, 10000),
     isActive: input.isActive === undefined ? true : readBoolean(input.isActive),
     isPublished: input.isPublished === undefined ? false : readBoolean(input.isPublished),
+    ...(input.isPublic === undefined ? {} : { isPublic: readBoolean(input.isPublic) }),
+    ...(input.categoryIds === undefined ? {} : { categoryIds: parseLearnCategoryIds(input.categoryIds) }),
   };
 }
 
 export function parseLearnGuideInput(value: unknown): LearnGuideInput {
-  return guideInput(readStrictObject(value, guideFields));
+  return { isPublic: true, ...guideInput(readStrictObject(value, guideFields)) };
 }
 
 export function parseLearnGuideUpdate(value: unknown): LearnGuideInput & {
@@ -58,8 +68,41 @@ export function parseLearnImport(value: unknown): Record<string, never> {
   return {};
 }
 
-export function learnId(value: unknown): number {
-  if (typeof value !== 'string' || !/^[1-9]\d*$/.test(value) || Number(value) > 2147483647) throw new LearnError(400, 'Invalid Learn guide ID.');
+const categoryFields = [
+  'name',
+  'slug',
+  'description',
+  'parentId',
+  'sortOrder',
+  'isActive',
+] as const;
+
+function categoryInput(input: Record<string, unknown>): LearnCategoryInput {
+  return {
+    name: readString(input.name, 1, LEARN_CATEGORY_NAME_LIMIT, true),
+    slug: parseLearnSlug(input.slug),
+    description: input.description == null ? null : readString(input.description, 0, LEARN_CATEGORY_DESCRIPTION_LIMIT, true) || null,
+    parentId: input.parentId == null ? null : readInteger(input.parentId, 1, 2147483647),
+    sortOrder: input.sortOrder === undefined ? 0 : readInteger(input.sortOrder, -10000, 10000),
+    isActive: input.isActive === undefined ? true : readBoolean(input.isActive),
+  };
+}
+
+export function parseLearnCategoryInput(value: unknown): LearnCategoryInput {
+  return categoryInput(readStrictObject(value, categoryFields));
+}
+
+export function parseLearnCategoryUpdate(value: unknown): LearnCategoryInput & { id: number; revision: string } {
+  const input = readStrictObject(value, [...categoryFields, 'id', 'revision']);
+  return {
+    ...categoryInput(input),
+    id: readInteger(input.id, 1, 2147483647),
+    revision: readGuid(input.revision),
+  };
+}
+
+export function learnId(value: unknown, record: 'guide' | 'Category' = 'guide'): number {
+  if (typeof value !== 'string' || !/^[1-9]\d*$/.test(value) || Number(value) > 2147483647) throw new LearnError(400, `Invalid Learn ${record} ID.`);
   return Number(value);
 }
 export function learnRevision(value: unknown): string { return readGuid(value); }
@@ -85,7 +128,7 @@ export function learnListQuery(params: URLSearchParams, publicRead = false): Lea
   const search = (params.get('search') ?? '').trim();
   if (search.length > LEARN_SEARCH_LIMIT) throw new LearnError(400, 'Learn search is too long.');
   const sort = params.get('sort') ?? 'sortOrder';
-  if (!learnGuideSorts.some(key => key === sort) || publicRead && (sort === 'isActive' || sort === 'isPublished')) throw new LearnError(400, 'Invalid Learn sort.');
+  if (!learnGuideSorts.some(key => key === sort) || publicRead && (sort === 'isActive' || sort === 'isPublished' || sort === 'categories')) throw new LearnError(400, 'Invalid Learn sort.');
   const direction = params.get('direction') ?? 'asc';
   if (direction !== 'asc' && direction !== 'desc') throw new LearnError(400, 'Invalid Learn sort direction.');
   const flag = (key: string) => {

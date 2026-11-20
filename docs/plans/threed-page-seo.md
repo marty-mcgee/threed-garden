@@ -8,7 +8,7 @@ controlled through the existing App Settings and Project metadata boundaries.
 This is a formulated implementation plan, not a claim that dynamic record
 metadata is already implemented. No new version is assigned here.
 
-Reviewed [monetization](../business/monetization.md), current App metadata
+Reviewed the former monetization notes, current App metadata
 contracts, Project metadata service, page declarations, AppPageTitle and the
 Project, Learn and Multimedia schemas. The commercial document is an older
 business proposal: suggested prices, subscriptions, marketplace, confidential

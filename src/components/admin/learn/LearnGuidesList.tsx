@@ -65,7 +65,8 @@ function LearnGuidesWorkspace() {
       try {
         const response = await fetch(`/api/learn/guides?${queryKey}`, { cache: 'no-store', signal: controller.signal });
         const payload = await learnAdminResponse<LearnGuidePage<LearnGuideRow>>(response, 'Learn guides could not be loaded.');
-        if (!Array.isArray(payload.data) || !Number.isSafeInteger(payload.pagination?.total) || payload.pagination.total < 0) throw new Error('Learn guides returned an invalid page.');
+        if (!Array.isArray(payload.data) || payload.data.some(row => !Array.isArray(row?.categories))
+          || !Number.isSafeInteger(payload.pagination?.total) || payload.pagination.total < 0) throw new Error('Learn guides returned an invalid page.');
         if (controller.signal.aborted || request !== generation.current || currentQuery.current !== queryKey) return;
         if (page > 0 && page * limit >= payload.pagination.total) {
           setPage(Math.max(0, Math.ceil(payload.pagination.total / limit) - 1), { replace: true });
@@ -143,7 +144,7 @@ function LearnGuidesWorkspace() {
   return <div className="flex h-full min-h-0 flex-1 flex-col gap-2 text-xs [&_button]:text-xs">
     <fieldset disabled={busy} className="contents">
       <AdminWorkspaceHeader moduleKey="learn" icon={BookOpen} title="Learn" description="Manage shared App guides." className="shrink-0">
-        <ModelFieldHelp label="Learn guides">Super Admins manage one shared collection. Only Active and Published guides appear publicly. Import Starter Guides adds missing slugs and keeps existing content.</ModelFieldHelp>
+        <ModelFieldHelp label="Learn guides">Super Admins manage one shared collection. Active, Published and Public must all be on for a Guide to appear on public Learn. Import Starter Guides adds missing slugs and keeps existing content.</ModelFieldHelp>
         <span className="rounded border px-1.5 py-0.5">{loading ? '…' : total}</span>
         <Input aria-label="Search Learn guides" className="h-7 min-w-40 flex-1 text-xs" placeholder="Search title, slug or summary…" maxLength={LEARN_SEARCH_LIMIT} value={search} onChange={event => { setSearch(event.target.value); resetPage(); }} />
         <select aria-label="Filter guides by activity" className={selectClass} value={active} onChange={event => { setActive(event.target.value); resetPage(); }}><option value="">All activity</option><option value="true">Active</option><option value="false">Inactive</option></select>
@@ -160,8 +161,39 @@ function LearnGuidesWorkspace() {
       </nav>
       <div className="min-h-0 flex-1 overflow-auto rounded-md border" aria-busy={loading}>
         {loading ? <p role="status" className="p-4">Loading Learn guides…</p> : denied || current?.error ? <div role="alert" className="space-y-2 p-4"><p>{denied ? 'An active Super Admin account is required to manage Learn guides.' : current?.error}</p><Button variant="outline" className={actionClass} onClick={reload}>Retry</Button></div> : <Table>
-          <TableHeader className="sticky top-0 z-10 bg-background"><TableRow><TableHead className="w-9"><input type="checkbox" aria-label="Select guides on this page" checked={!!rows.length && rows.every(row => selected.has(row.id))} disabled={!rows.length} onChange={event => setSelection({ key: queryKey, ids: new Set(event.target.checked ? rows.map(row => row.id) : []) })} /></TableHead><TableHead>{heading('Title', 'title')}</TableHead><TableHead>{heading('Slug', 'slug')}</TableHead><TableHead>{heading('Sort Order', 'sortOrder')}</TableHead><TableHead>{heading('Active', 'isActive')}</TableHead><TableHead>{heading('Published', 'isPublished')}</TableHead><TableHead>{heading('Updated', 'updatedAt')}</TableHead><TableHead className="text-right">Actions</TableHead></TableRow></TableHeader>
-          <TableBody>{rows.map(row => <TableRow key={row.id}><TableCell><input type="checkbox" aria-label={`Select ${row.title}`} checked={selected.has(row.id)} onChange={event => setSelection({ key: queryKey, ids: new Set(event.target.checked ? [...selected, row.id] : [...selected].filter(id => id !== row.id)) })} /></TableCell><TableCell><button type="button" className="text-left font-medium hover:underline focus-visible:underline" onClick={() => window.location.assign(`/admin/learn/${row.id}`)}>{row.title}</button>{row.summary && <p className="mt-0.5 max-w-lg truncate text-[11px] text-muted-foreground">{row.summary}</p>}</TableCell><TableCell className="text-muted-foreground">{row.slug}</TableCell><TableCell>{row.sortOrder}</TableCell><TableCell>{row.isActive ? <Check aria-label="Active" className="h-3.5 w-3.5 text-emerald-500" /> : <X aria-label="Inactive" className="h-3.5 w-3.5 text-muted-foreground" />}</TableCell><TableCell>{row.isPublished ? <Check aria-label="Published" className="h-3.5 w-3.5 text-emerald-500" /> : <X aria-label="Unpublished" className="h-3.5 w-3.5 text-muted-foreground" />}</TableCell><TableCell className="whitespace-nowrap">{new Date(row.updatedAt).toLocaleDateString()}</TableCell><TableCell className="whitespace-nowrap text-right"><Button variant="ghost" size="icon" className="h-8 w-8" aria-label={`Edit ${row.title}`} onClick={() => window.location.assign(`/admin/learn/${row.id}`)}><Pencil aria-hidden="true" className="h-3.5 w-3.5 text-blue-500" /></Button><Button variant="ghost" size="icon" className="h-8 w-8" aria-label={`Delete ${row.title}`} onClick={() => void remove([row])}><Trash2 aria-hidden="true" className="h-3.5 w-3.5 text-red-500" /></Button></TableCell></TableRow>)}{!rows.length && <TableRow><TableCell colSpan={8} className="py-10 text-center text-muted-foreground">{filtered ? 'No guides match these filters.' : 'No Learn guides yet. Add a Guide or import Starter Guides.'}</TableCell></TableRow>}</TableBody>
+          <TableHeader className="sticky top-0 z-10 bg-background">
+            <TableRow>
+              <TableHead className="w-9"><input type="checkbox" aria-label="Select guides on this page" checked={!!rows.length && rows.every(row => selected.has(row.id))} disabled={!rows.length} onChange={event => setSelection({ key: queryKey, ids: new Set(event.target.checked ? rows.map(row => row.id) : []) })} /></TableHead>
+              <TableHead>{heading('Title', 'title')}</TableHead>
+              <TableHead>{heading('Slug', 'slug')}</TableHead>
+              <TableHead aria-sort={sort === 'categories' ? direction === 'asc' ? 'ascending' : 'descending' : undefined}>{heading('Categories', 'categories')}</TableHead>
+              <TableHead>{heading('Sort Order', 'sortOrder')}</TableHead>
+              <TableHead>{heading('Active', 'isActive')}</TableHead>
+              <TableHead>{heading('Published', 'isPublished')}</TableHead>
+              <TableHead>{heading('Updated', 'updatedAt')}</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.map(row => <TableRow key={row.id}>
+              <TableCell><input type="checkbox" aria-label={`Select ${row.title}`} checked={selected.has(row.id)} onChange={event => setSelection({ key: queryKey, ids: new Set(event.target.checked ? [...selected, row.id] : [...selected].filter(id => id !== row.id)) })} /></TableCell>
+              <TableCell><button type="button" className="text-left font-medium hover:underline focus-visible:underline" onClick={() => window.location.assign(`/admin/learn/${row.id}`)}>{row.title}</button>{row.summary && <p className="mt-0.5 max-w-lg truncate text-[11px] text-muted-foreground">{row.summary}</p>}</TableCell>
+              <TableCell className="text-muted-foreground">{row.slug}</TableCell>
+              <TableCell className="min-w-36 whitespace-normal">
+                {row.categories.length ? <ul className="flex max-w-xs flex-wrap gap-1" aria-label="Categories">
+                  {row.categories.map(category => <li key={category.id} className="break-all rounded border px-1.5 py-0.5 text-[11px]">
+                    {category.name}{!category.isActive && <span className="text-muted-foreground"> (Inactive)</span>}
+                  </li>)}
+                </ul> : <span className="text-muted-foreground">None</span>}
+              </TableCell>
+              <TableCell>{row.sortOrder}</TableCell>
+              <TableCell>{row.isActive ? <Check aria-label="Active" className="h-3.5 w-3.5 text-emerald-500" /> : <X aria-label="Inactive" className="h-3.5 w-3.5 text-muted-foreground" />}</TableCell>
+              <TableCell>{row.isPublished ? <Check aria-label="Published" className="h-3.5 w-3.5 text-emerald-500" /> : <X aria-label="Unpublished" className="h-3.5 w-3.5 text-muted-foreground" />}</TableCell>
+              <TableCell className="whitespace-nowrap">{new Date(row.updatedAt).toLocaleDateString()}</TableCell>
+              <TableCell className="whitespace-nowrap text-right"><Button variant="ghost" size="icon" className="h-8 w-8" aria-label={`Edit ${row.title}`} onClick={() => window.location.assign(`/admin/learn/${row.id}`)}><Pencil aria-hidden="true" className="h-3.5 w-3.5 text-blue-500" /></Button><Button variant="ghost" size="icon" className="h-8 w-8" aria-label={`Delete ${row.title}`} onClick={() => void remove([row])}><Trash2 aria-hidden="true" className="h-3.5 w-3.5 text-red-500" /></Button></TableCell>
+            </TableRow>)}
+            {!rows.length && <TableRow><TableCell colSpan={9} className="py-10 text-center text-muted-foreground">{filtered ? 'No guides match these filters.' : 'No Learn guides yet. Add a Guide or import Starter Guides.'}</TableCell></TableRow>}
+          </TableBody>
         </Table>}
       </div>
     </fieldset>

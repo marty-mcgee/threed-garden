@@ -84,6 +84,7 @@ assert.deepEqual(plain(learn.parseLearnGuideInput({ title: ' Guide ', slug: ' gu
   sortOrder: 0,
   isActive: true,
   isPublished: false,
+  isPublic: true,
 });
 reject(learn.parseLearnGuideInput, { title: 'Guide', slug: 'UPPER' });
 reject(learn.parseLearnImport, { overwrite: true });

@@ -307,7 +307,7 @@ for (const [kind, definition] of literalRegistry('src/libraries/services/threed/
 
 const addNote = (name, note) => tableByName.get(name).notes.push(note);
 addNote('threed_multimedia_albums', 'Original SQL application was Developer-confirmed. Source now uses text entity IDs for numeric and Assembly UUID identities; the follow-up identity SQL is prepared, not confirmed applied. The disputed Learn mapping has been removed from current application paths.');
-addNote('learn_guides', 'Shared App content managed by Super Admins. Creator/editor references are attribution, not personal ownership. No separate learn root table or project_learn table is declared.');
+addNote('learn_guides', 'Shared Learn collection managed by Super Admins. The user_id reference identifies the Guide owner. Creator/editor references record attribution separately. No separate learn root table or project_learn table is declared.');
 addNote('project_assets', 'Project assignment: module_type + module_id identify the Module; asset_type + asset_id identify its content. These polymorphic references are application-validated.');
 addNote('project_threed_markers', 'Saved Scene placements preserve marker_id separately from source_asset_id.');
 addNote('user_role_audit', 'Actor and target IDs intentionally have no database foreign keys, retaining historical identities.');

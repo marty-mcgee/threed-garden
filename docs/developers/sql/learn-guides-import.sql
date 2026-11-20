@@ -1,5 +1,6 @@
 -- Import the fourteen current Learn starter guides as shared, editable App records.
 -- Prerequisite: apply learn-guides.sql separately if public.learn_guides does not exist.
+-- Apply learn-guides-owner.sql before this import. The importing User owns the new Guides.
 -- Replace only the REPLACE_WITH_SUPER_ADMIN_USER_ID value below with your existing User ID.
 -- To find eligible IDs if needed, run this separate read-only query:
 -- SELECT "id", "name", "email" FROM "public"."user"
@@ -168,11 +169,11 @@ BEGIN
 
   INSERT INTO "public"."learn_guides" (
     "title", "slug", "summary", "content", "sort_order", "is_active", "is_published",
-    "revision", "created_by", "updated_by", "created_at", "updated_at"
+    "revision", "user_id", "created_by", "updated_by", "created_at", "updated_at"
   )
   SELECT guide.title, guide.slug, guide.summary, guide.content, guide."sortOrder",
     guide."isActive", guide."isPublished", gen_random_uuid(),
-    v_super_admin_user_id, v_super_admin_user_id, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
+    v_super_admin_user_id, v_super_admin_user_id, v_super_admin_user_id, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP
   FROM jsonb_to_recordset(v_starters) AS guide (
     title text, slug text, summary text, content text, "sortOrder" integer,
     "isActive" boolean, "isPublished" boolean

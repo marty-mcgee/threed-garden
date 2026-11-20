@@ -106,7 +106,7 @@ No direct Neon/Postgres connection, live migration/seed/storage/device operation
 
 The Developer approved moving business notes and grouping Drizzle configurations to simplify the repository root. This follow-up began on clean `main` / `dd9417254b26a9f165b84fc44486622d5036ebef`, with App/package-lock version **0.31.1**. It does not prepare a new release or establish production acceptance.
 
-- Moved `NOTES.md` unchanged to [docs/business/monetization.md](../business/monetization.md), linked from the documentation index.
+- Moved `NOTES.md` unchanged to `docs/business/monetization.md` and linked it from the documentation index at that checkpoint.
 - Moved both unchanged Drizzle files to [src/libraries/drizzle/](../../src/libraries/drizzle/). Updated `db:generate`, `db:push` and `db:studio` to use explicit paths; Studio previously depended on root config discovery.
 - Preserved credential-free generation, central schema identity, root-relative schema/output/environment paths, process/local/fallback connection precedence and strict push confirmation. The existing workflow check also verifies Studio selects the same configuration as push.
 - Updated the README layout and current local-development instructions. Existing historical release records remain unchanged. Root `CONTEXT.md`, shared skills/lock and all other tooling entry points retain their established locations.

@@ -1,12 +1,12 @@
 {
   "generatedAt": "2026-11-19",
   "branch": "main",
-  "head": "bc7268f9948d49af18b6ac7954254d6329702070",
-  "version": "0.35.2",
+  "head": "5e761a144318dad1113536cad3da524a14c7bdaf",
+  "version": "0.35.3",
   "summary": {
-    "tables": 89,
-    "columns": 1256,
-    "foreignKeys": 170,
+    "tables": 91,
+    "columns": 1275,
+    "foreignKeys": 176,
     "enums": 37,
     "ormRelations": 161,
     "applicationLinks": 54
@@ -70,6 +70,273 @@
     }
   ],
   "tables": [
+    {
+      "id": "learn_categories",
+      "name": "learn_categories",
+      "exportName": "learnCategories",
+      "domain": "learn",
+      "source": "../../src/libraries/schema/learn/index.ts",
+      "sourcePath": "src/libraries/schema/learn/index.ts",
+      "line": 35,
+      "columns": [
+        {
+          "name": "id",
+          "property": "id",
+          "type": "serial",
+          "notNull": true,
+          "primaryKey": true,
+          "unique": false,
+          "hasDefault": true,
+          "default": "Implicit generated value"
+        },
+        {
+          "name": "parent_id",
+          "property": "parentId",
+          "type": "integer",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "name",
+          "property": "name",
+          "type": "varchar(120)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "slug",
+          "property": "slug",
+          "type": "varchar(120)",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "description",
+          "property": "description",
+          "type": "text",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "sort_order",
+          "property": "sortOrder",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "0"
+        },
+        {
+          "name": "is_active",
+          "property": "isActive",
+          "type": "boolean",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "true"
+        },
+        {
+          "name": "revision",
+          "property": "revision",
+          "type": "uuid",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "created_by",
+          "property": "createdBy",
+          "type": "text",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "updated_by",
+          "property": "updatedBy",
+          "type": "text",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "property": "createdAt",
+          "type": "timestamp with time zone",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "property": "updatedAt",
+          "type": "timestamp with time zone",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "learn_categories_active_order_idx",
+          "columns": [
+            "is_active",
+            "sort_order",
+            "id"
+          ],
+          "unique": false,
+          "where": null
+        },
+        {
+          "name": "learn_categories_parent_idx",
+          "columns": [
+            "parent_id"
+          ],
+          "unique": false,
+          "where": null
+        }
+      ],
+      "checks": [
+        {
+          "name": "learn_categories_name_valid",
+          "expression": "length(btrim(\"learn_categories\".\"name\")) BETWEEN 1 AND 120"
+        },
+        {
+          "name": "learn_categories_slug_valid",
+          "expression": "\"learn_categories\".\"slug\" ~ '^[a-z0-9]+(-[a-z0-9]+)*$'"
+        },
+        {
+          "name": "learn_categories_sort_range",
+          "expression": "\"learn_categories\".\"sort_order\" BETWEEN -10000 AND 10000"
+        },
+        {
+          "name": "learn_categories_parent_not_self",
+          "expression": "\"learn_categories\".\"parent_id\" <> \"learn_categories\".\"id\""
+        }
+      ],
+      "uniqueConstraints": [
+        {
+          "name": "learn_categories_slug_unique",
+          "columns": [
+            "slug"
+          ]
+        }
+      ],
+      "primaryKey": [
+        "id"
+      ],
+      "notes": []
+    },
+    {
+      "id": "learn_guide_category_assignments",
+      "name": "learn_guide_category_assignments",
+      "exportName": "learnGuideCategoryAssignments",
+      "domain": "learn",
+      "source": "../../src/libraries/schema/learn/index.ts",
+      "sourcePath": "src/libraries/schema/learn/index.ts",
+      "line": 61,
+      "columns": [
+        {
+          "name": "id",
+          "property": "id",
+          "type": "serial",
+          "notNull": true,
+          "primaryKey": true,
+          "unique": false,
+          "hasDefault": true,
+          "default": "Implicit generated value"
+        },
+        {
+          "name": "guide_id",
+          "property": "guideId",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "category_id",
+          "property": "categoryId",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "created_at",
+          "property": "createdAt",
+          "type": "timestamp with time zone",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "now()"
+        },
+        {
+          "name": "updated_at",
+          "property": "updatedAt",
+          "type": "timestamp with time zone",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "now()"
+        }
+      ],
+      "indexes": [
+        {
+          "name": "learn_guide_category_assignments_guide_category_idx",
+          "columns": [
+            "guide_id",
+            "category_id"
+          ],
+          "unique": true,
+          "where": null
+        },
+        {
+          "name": "learn_guide_category_assignments_category_idx",
+          "columns": [
+            "category_id"
+          ],
+          "unique": false,
+          "where": null
+        }
+      ],
+      "checks": [],
+      "uniqueConstraints": [],
+      "primaryKey": [
+        "id"
+      ],
+      "notes": []
+    },
     {
       "id": "learn_guides",
       "name": "learn_guides",
@@ -160,6 +427,16 @@
           "default": "false"
         },
         {
+          "name": "is_public",
+          "property": "isPublic",
+          "type": "boolean",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": true,
+          "default": "true"
+        },
+        {
           "name": "revision",
           "property": "revision",
           "type": "uuid",
@@ -208,6 +485,16 @@
           "unique": false,
           "hasDefault": true,
           "default": "now()"
+        },
+        {
+          "name": "user_id",
+          "property": "userId",
+          "type": "text",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
         }
       ],
       "indexes": [
@@ -218,6 +505,14 @@
             "is_published",
             "sort_order",
             "id"
+          ],
+          "unique": false,
+          "where": null
+        },
+        {
+          "name": "learn_guides_user_id_idx",
+          "columns": [
+            "user_id"
           ],
           "unique": false,
           "where": null
@@ -253,7 +548,7 @@
         "id"
       ],
       "notes": [
-        "Shared App content managed by Super Admins. Creator/editor references are attribution, not personal ownership. No separate learn root table or project_learn table is declared."
+        "Shared Learn collection managed by Super Admins. The user_id reference identifies the Guide owner. Creator/editor references record attribution separately. No separate learn root table or project_learn table is declared."
       ]
     },
     {
@@ -20442,6 +20737,102 @@
       "status": "declared"
     },
     {
+      "id": "fk:learn_guides:learn_guides_user_id_user_id_fk",
+      "from": "learn_guides",
+      "fromColumns": [
+        "user_id"
+      ],
+      "to": "user",
+      "toColumns": [
+        "id"
+      ],
+      "kind": "foreign-key",
+      "label": "learn_guides_user_id_user_id_fk",
+      "onDelete": "restrict",
+      "onUpdate": "no action",
+      "status": "declared"
+    },
+    {
+      "id": "fk:learn_categories:learn_categories_parent_id_learn_categories_id_fk",
+      "from": "learn_categories",
+      "fromColumns": [
+        "parent_id"
+      ],
+      "to": "learn_categories",
+      "toColumns": [
+        "id"
+      ],
+      "kind": "foreign-key",
+      "label": "learn_categories_parent_id_learn_categories_id_fk",
+      "onDelete": "restrict",
+      "onUpdate": "no action",
+      "status": "declared"
+    },
+    {
+      "id": "fk:learn_categories:learn_categories_created_by_user_id_fk",
+      "from": "learn_categories",
+      "fromColumns": [
+        "created_by"
+      ],
+      "to": "user",
+      "toColumns": [
+        "id"
+      ],
+      "kind": "foreign-key",
+      "label": "learn_categories_created_by_user_id_fk",
+      "onDelete": "restrict",
+      "onUpdate": "no action",
+      "status": "declared"
+    },
+    {
+      "id": "fk:learn_categories:learn_categories_updated_by_user_id_fk",
+      "from": "learn_categories",
+      "fromColumns": [
+        "updated_by"
+      ],
+      "to": "user",
+      "toColumns": [
+        "id"
+      ],
+      "kind": "foreign-key",
+      "label": "learn_categories_updated_by_user_id_fk",
+      "onDelete": "restrict",
+      "onUpdate": "no action",
+      "status": "declared"
+    },
+    {
+      "id": "fk:learn_guide_category_assignments:learn_guide_category_assignments_guide_fk",
+      "from": "learn_guide_category_assignments",
+      "fromColumns": [
+        "guide_id"
+      ],
+      "to": "learn_guides",
+      "toColumns": [
+        "id"
+      ],
+      "kind": "foreign-key",
+      "label": "learn_guide_category_assignments_guide_fk",
+      "onDelete": "cascade",
+      "onUpdate": "no action",
+      "status": "declared"
+    },
+    {
+      "id": "fk:learn_guide_category_assignments:learn_guide_category_assignments_category_fk",
+      "from": "learn_guide_category_assignments",
+      "fromColumns": [
+        "category_id"
+      ],
+      "to": "learn_categories",
+      "toColumns": [
+        "id"
+      ],
+      "kind": "foreign-key",
+      "label": "learn_guide_category_assignments_category_fk",
+      "onDelete": "cascade",
+      "onUpdate": "no action",
+      "status": "declared"
+    },
+    {
       "id": "fk:threed_multimedia_albums:threed_multimedia_albums_album_id_multimedia_albums_id_fk",
       "from": "threed_multimedia_albums",
       "fromColumns": [
@@ -23959,7 +24350,7 @@
     "src/libraries/schema/auth/index.ts": "df98d02c496180eea94d986d92634deee72a10a2bb264cdc073775c1b72374b4",
     "src/libraries/schema/auth/user-role-audit.ts": "9e207990b630615acbe5f77622dbf586275f1777b401e83e46f29c518c3220e7",
     "src/libraries/schema/index.ts": "ec1e6535f233b722a01ac817b65f24c324ececfaf7d64081f79350aa19e5109b",
-    "src/libraries/schema/learn/index.ts": "ec9df7d1af0027a1d0eec2216385a9eee5d9e77058a076131e5679af5c08e3f8",
+    "src/libraries/schema/learn/index.ts": "dd533b5333f11d489963527b0cfd391caefad9c222028df3ece8c4824cce41b8",
     "src/libraries/schema/multimedia/index.ts": "0d454cdeaf38e616125b99340a92e2e26b2b145ab39e87cc7c8f42a281e0f672",
     "src/libraries/schema/project/index.ts": "dc1a0c978eae09b605942ff0351e81a9d0f85ee554f4757f5ae00a5c20b5be6a",
     "src/libraries/schema/settings/index.ts": "36c9ce83d70c4517b44952899574a47c68798551b3c1a63992819e89063ced55",

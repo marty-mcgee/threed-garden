@@ -43,7 +43,7 @@ export function LearnGuideLibrary() {
   const busy = request.status === 'loading';
   const unavailable = request.status === 'error' || request.status === 'missing';
   return <div className="space-y-6">
-    <p className="text-center text-muted-foreground">Browse published guides, search for a skill, or open a guide to follow its steps.</p>
+    <p className="text-center text-muted-foreground">Browse Learn Guides, search for a skill, or open a Guide to follow its steps.</p>
     <form role="search" aria-label="Search Learn guides" className="mx-auto flex max-w-3xl flex-wrap items-end gap-2" onSubmit={event => { event.preventDefault(); setSearch(input.trim()); setOffset(0); }}>
       <label className="min-w-0 flex-1 basis-64 space-y-1 text-sm"><span>Search guides</span><input type="search" maxLength={200} value={input} onChange={event => setInput(event.target.value)} placeholder="Try Models, drawing or saving…" className="h-10 w-full rounded-lg border border-input bg-background px-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-ring" /></label>
       <Button type="submit" variant="outline" className="h-10"><Search aria-hidden="true" className="size-4" />Search</Button>
@@ -64,7 +64,7 @@ export function LearnGuideLibrary() {
             <p className="flex-1 text-sm leading-7 text-muted-foreground">{guide.summary}</p>
             <Button asChild variant="outline" className="group h-11 w-full justify-between gap-4 rounded-lg sm:w-auto sm:self-start"><Link href={`/learn/guides/${guide.slug}`} aria-label={`Read ${guide.title}`}>Read guide<ArrowRight aria-hidden="true" className="size-4 text-muted-foreground group-hover:text-foreground" /></Link></Button>
           </CardContent></Card>)}
-        </div> : <p role="status" className="rounded-xl border border-dashed p-8 text-center text-muted-foreground">{search ? 'No published guides match this search. Try another term or clear the search.' : page.pagination.total ? 'No guides on this page. Return to the previous page.' : 'Guides are awaiting publication. You can still use the first-Project steps and troubleshooting on this page.'}</p>}
+        </div> : <p role="status" className="rounded-xl border border-dashed p-8 text-center text-muted-foreground">{search ? 'No guides match this search. Try another term or clear the search.' : page.pagination.total ? 'No guides on this page. Return to the previous page.' : 'No Guides are available. You can still use the first-Project steps and troubleshooting on this page.'}</p>}
         {(page.pagination.total > limit || offset > 0) && <nav aria-label="Guide pages" className="flex flex-wrap items-center justify-center gap-3">
           <Button variant="outline" disabled={busy || offset === 0} onClick={() => setOffset(Math.max(0, offset - limit))}>Previous</Button>
           <span className="text-sm text-muted-foreground">Page {Math.floor(offset / limit) + 1} of {Math.max(1, Math.ceil(page.pagination.total / limit))}</span>
