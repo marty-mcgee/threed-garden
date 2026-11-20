@@ -6,7 +6,7 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.35.6 - ThreeD Admin Blueprint Skill (prepared, deployment pending)](v0.35.6.md)
+- [v0.35.6 - ThreeD Admin Blueprint Skill (production verified)](v0.35.6.md)
 
 - [v0.35.5 - ThreeD Admin Page Blueprint (prepared, deployment pending)](v0.35.5.md)
 
