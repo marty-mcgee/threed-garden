@@ -6,7 +6,6 @@ import { useSession } from 'next-auth/react';
 export const settingsSectionDefaults = {
   modules: true,
   'html-seo': false,
-  skills: false,
   scene: false,
   appearance: true,
   previews: true,
