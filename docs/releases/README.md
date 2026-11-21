@@ -6,7 +6,7 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.36.0 - ThreeD Garden Release Metadata](v0.36.0.md)
+- [v0.36.0 - ThreeD Garden Release Metadata (Developer-confirmed production)](v0.36.0.md#production-status)
 
 - [v0.35.12 - Project Setup, Scene Setup and Wall Drawing (Developer-confirmed production)](v0.35.12.md#production-status)
 

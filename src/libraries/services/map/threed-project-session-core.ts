@@ -1,3 +1,4 @@
+import type { ThreeDGroup } from '../threed/design/groups';
 import { parseProjectArchitecture, type ProjectArchitecture } from '../threed/design/project-architecture';
 import type { ProjectSetup, ThreeDProjectViewState } from '@/libraries/services/threed/markers/project-view-state-core';
 import type { ThreeDGeographicOrigin } from '@/libraries/services/threed/markers/map-coordinate-core';
@@ -20,6 +21,7 @@ export interface ThreeDProjectSessionData {
   projectSetup?: ProjectSetup;
   savedViewState: ThreeDProjectViewState | null;
   configurationStamp: ProjectConfigurationStamp;
+  groups?: ThreeDGroup[];
   architecture?: ProjectArchitecture;
   metersPerSceneUnit: number;
   measurementUnits?: 'imperial' | 'metric';
@@ -160,6 +162,7 @@ export function buildThreeDProjectSession(
       projectName: result.projectContext?.projectName || `Project #${projectId}`,
       hasData: result.total > 0,
       threedModules,
+      groups: result.projectContext?.groups,
       architecture,
       terrain,
       metersPerSceneUnit: Number(result.projectContext?.metersPerSceneUnit) > 0 && Number.isFinite(Number(result.projectContext?.metersPerSceneUnit)) ? Number(result.projectContext.metersPerSceneUnit) : 0.3048,

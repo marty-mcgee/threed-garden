@@ -201,7 +201,7 @@ function functionSource(file, name) {
  function visit(node){if(ts.isFunctionDeclaration(node)&&node.name?.text===name)found=node.getText(source);ts.forEachChild(node,visit);}visit(source);assert(found,name);return found;
 }
 const route='src/app/api/project/threed-markers/route.ts';
-const tables=Object.fromEntries(['project','projectAssets','projectThreed','projectThreedMarkers','projectTerrainPlacements'].map(name=>[name,new Proxy({name},{get:(o,key)=>key==='name'?name:name+'.'+String(key)})]));
+const tables=Object.fromEntries(['project','projectAssets','projectThreed','projectThreedMarkers','projectTerrainPlacements','threedGroups','threedGroupModelMembers','threedGroupDesignMembers'].map(name=>[name,new Proxy({name},{get:(o,key)=>key==='name'?name:name+'.'+String(key)})]));
 const orm=Object.fromEntries(['and','eq','inArray','notInArray'].map(name=>[name,(...args)=>({name,args})]));
 orm.sql=(strings,...values)=>({strings:[...strings],values});
 let signedIn=true,owned=true,fail=false,missingUpdate=false,workspaceWriteFault=null,writes=0,conditions=[],assignments=[{moduleId:7,assetType:'threed_models',assetId:20}];
@@ -211,11 +211,11 @@ const modelPolicyAst = ts.createSourceFile('model.ts', fs.readFileSync('src/libr
 const modelPolicy = {};
 vm.runInNewContext(ts.transpileModule(modelPolicyAst.statements.filter(node => modelPolicyNames.includes(node.name?.text)).map(node => node.getText(modelPolicyAst)).join('\n'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText, { exports: modelPolicy });
 const db={select(){const q={};const chain={from(table){q.table=table;return chain;},innerJoin(){return chain;},limit(){return chain;},where(condition){conditions.push(condition);return chain;},then(resolve,reject){return Promise.resolve(q.table===tables.project?(owned?[{id:15,userId:'owner',metersPerSceneUnit:'.3048'}]:[]):assignments).then(resolve,reject);}};return chain;},
- async transaction(fn){writes++;const pending=structuredClone(stored);const tx={select(){let table;const query={from(value){table=value;return query;},where(){return query;},limit(){return query;},for:async()=>table===tables.projectThreedMarkers?pending.markers.filter(row=>row.markerType==='models'):[{config:pending.config}]};return query;},execute:async()=>{},insert(){return{values(rows){pending.markers=structuredClone(rows);return{onConflictDoUpdate(){return{returning:async()=>rows};}}}};},delete(){return{where:async()=>{}};},update(){return{set(values){const delta=JSON.parse(values.config.values[1]);return{where(){return{returning:async()=>{if(fail)throw Error('mock transaction failure');if(missingUpdate)return [];pending.config={...pending.config,...delta};const returned=structuredClone(pending.config);if(workspaceWriteFault==='missing')delete returned.threeDViewState;if(workspaceWriteFault==='reordered')returned.threeDViewState=Object.fromEntries(Object.entries(returned.threeDViewState).reverse());if(workspaceWriteFault==='stale')returned.threeDViewState={...returned.threeDViewState,panelHeight:33};return [{config:returned}];}};}};}};}};
+ async transaction(fn){writes++;const pending=structuredClone(stored);const tx={select(){let table;const query={from(value){table=value;return query;},where(){return query;},limit(){return query;},for:async()=>table===tables.projectThreedMarkers?pending.markers.filter(row=>row.markerType==='models'):[{config:pending.config}]};return query;},execute:async()=>{},insert(table){return{values(rows){if ([tables.threedGroups,tables.threedGroupDesignMembers,tables.threedGroupModelMembers].includes(table)) { pending[table.name]=structuredClone(rows);return; } pending.markers=structuredClone(rows);return{onConflictDoUpdate(){return{returning:async()=>rows};}}}};},delete(table){return{where:async()=>{if(table===tables.threedGroups) for(const name of ['threedGroups','threedGroupDesignMembers','threedGroupModelMembers']) pending[name]=[];}};},update(){return{set(values){const delta=JSON.parse(values.config.values[1]);return{where(){return{returning:async()=>{if(fail)throw Error('mock transaction failure');if(missingUpdate)return [];pending.config={...pending.config,...delta};const returned=structuredClone(pending.config);if(workspaceWriteFault==='missing')delete returned.threeDViewState;if(workspaceWriteFault==='reordered')returned.threeDViewState=Object.fromEntries(Object.entries(returned.threeDViewState).reverse());if(workspaceWriteFault==='stale')returned.threeDViewState={...returned.threeDViewState,panelHeight:33};return [{config:returned}];}};}};}};}};
  const result=await fn(tx);stored=pending;return result;}};
 class MarkerError extends Error{};class ViewError extends Error{};class PlantingError extends Error{};
 const scope={...tables,...orm,...modelPolicy,db,Buffer,Date,console:{error(){}},NextResponse:{json:(body,options)=>({body,status:options?.status??200})},
- ...measurementUnits, ...configuration,
+ ...measurementUnits, ...configuration, ...load(root+'groups.ts',{}),
  // Projection storage has its own focused validator; this fixture isolates the Project roundtrip.
  saveProjectDesignProjection:async()=>{},ProjectDesignProjectionError:class extends Error{},CharacterPhysicsInputError:class extends Error{},
  TerrainInputError:class extends Error{},
@@ -238,9 +238,13 @@ for(const node of mapAst.statements)if(ts.isImportDeclaration(node)&&node.module
 const mapDb={select(selection){let table;const chain={from(value){table=value;return chain},where(){return chain},innerJoin(){return chain},orderBy(){return chain},limit(){return chain},then(resolve,reject){
  const records=table===tables.project?[{id:15,userId:'owner',name:'Existing Project',config:structuredClone(stored.config),metersPerSceneUnit:'.3048',originLatitude:null,originLongitude:null}]
  :table===tables.projectThreed?[{threedId:7,name:'Garden'}]:table===tables.projectAssets?assignments:table===tables.projectThreedMarkers?stored.markers
- :table===tables.threedModels?[{id:20,userId:'owner',filePath:'saved.glb',positionX:10,positionY:0,positionZ:5,isActive:true}]:[];
+ :table===tables.threedGroups?(stored.threedGroups??[]).map(group=>({
+   id:group.id,name:group.name,
+   entityIds:stored.threedGroupDesignMembers.filter(row=>row.groupId===group.id).map(row=>row.entityId),
+   markerIds:stored.threedGroupModelMembers.filter(row=>row.groupId===group.id).map(row=>row.markerId),
+ })):table===tables.threedModels?[{id:20,userId:'owner',filePath:'saved.glb',positionX:10,positionY:0,positionZ:5,isActive:true}]:[];
  return Promise.resolve(records).then(resolve,reject);}};return chain;}};
-const get=vm.runInNewContext(compile(functionSource(mapRoute,'GET')+'\nGET;'),{...scope,...tables,exports:{},db:mapDb,URL,
+const get=vm.runInNewContext(compile(functionSource(mapRoute,'readGroups')+'\n'+functionSource(mapRoute,'GET')+'\nGET;'),{...scope,...tables,exports:{},db:mapDb,URL,
  or:(...args)=>({args}),desc:value=>value,sql:orm.sql,getTableColumns:table=>table,modelSelection:()=>({}),retryDisconnectedRead:fn=>fn(),
  readProjectArchitecture:architecture.readProjectArchitecture,readProjectSetup:()=>undefined,readThreeDProjectViewStateFromConfig:config=>config?.threeDViewState,
  readProjectMeasurementUnits:measurementUnits.readProjectMeasurementUnits,
@@ -250,7 +254,7 @@ const get=vm.runInNewContext(compile(functionSource(mapRoute,'GET')+'\nGET;'),{.
 let clientLoadSource;
 function findLoad(node){if(ts.isVariableDeclaration(node)&&node.name.getText(sceneAst)==='loadData')clientLoadSource=node.initializer.arguments[0].getText(sceneAst);ts.forEachChild(node,findLoad);}findLoad(sceneAst);
 async function hydrateDashboard(loaded, drafts, projectId='15', observed={}){
- const context={projectConfigurationRef:{current:null},selectedProjectId:projectId,architectureDrafts:drafts,hydrateArchitectureDraft:architecture.hydrateArchitectureDraft,
+ const context={projectConfigurationRef:{current:null},selectedProjectId:projectId,architectureDrafts:drafts,architectureIsDirty:architecture.architectureIsDirty,hydrateArchitectureDraft:architecture.hydrateArchitectureDraft,
  defaultDesignWorkspace:workspace.defaultDesignWorkspace,
  loadProjectSession:async(id,receive)=>receive({status:'loaded',session:loaded}),URL,window:{location:{href:'http://local/dashboard/scene?view=design'}},
  lastProjectThreeDViewStateRef:{current:null},lastProjectMapViewStateRef:{current:null},showToastRef:{current:()=>{}},Date,
@@ -335,6 +339,16 @@ async function run(){
  assert.equal(JSON.stringify(saved.body.data.architecture),JSON.stringify(captured),'Save response must describe the returned stored Project row.');
  assert(JSON.stringify(conditions).includes('project.userId'));assert(JSON.stringify(conditions).includes('owner'));
  assert.deepEqual(stored.config.unrelated,{keep:true});assert.equal(stored.markers[0].markerId,model.markerId);assert.deepEqual(stored.markers[0].data,model.data);assert.deepEqual(stored.markers[0].metadata,model.metadata);
+ const mixed={id:'cafebabe-1111-4444-8888-000000000001',name:'Room',entityIds:[source.walls[0].id],markerIds:[model.markerId]};
+ const expectedConfiguration=configuration.projectConfigurationStamp(stored.config);
+ const mixedSave=await save(request({...input,groups:[mixed],expectedConfiguration}));
+ assert.equal(mixedSave.status,200,JSON.stringify(mixedSave.body));
+ assert.deepEqual(JSON.parse(JSON.stringify(mixedSave.body.data.groups)),[mixed]);
+ const mixedGet=await get({url:'http://local/api/map/threed?projectId=15'});
+ assert.deepEqual(JSON.parse(JSON.stringify(mixedGet.body.projectContext.groups)),[mixed]);
+ const beforeInvalid=JSON.stringify(stored);
+ assert.equal((await save(request({...input,groups:[{...mixed,markerIds:['missing']}],expectedConfiguration}))).status,400);
+ assert.equal(JSON.stringify(stored),beforeInvalid);
  const beforeLockChecks=structuredClone(stored);
  stored.markers[0].metadata.transformLocked=true;
  assert.equal((await save(request(input))).status,200);

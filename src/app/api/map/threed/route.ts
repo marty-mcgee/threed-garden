@@ -1,3 +1,4 @@
+import { threedGroups, threedGroupDesignMembers, threedGroupModelMembers } from '@/libraries/schema/threed/groups';
 import { readProjectMeasurementUnits } from '@/libraries/services/project/measurement-units';
 import { readProjectArchitecture } from '@/libraries/services/threed/design/project-architecture';
 import { sceneTextureResources } from '@/libraries/services/project/scene-texture-resources';
@@ -546,6 +547,7 @@ export async function GET(request: NextRequest) {
             appearance: terrainRow.definition.appearance,
           },
         } : null,
+        groups: canEdit ? await readGroups(parsedProjectId) : undefined,
         architecture: readProjectArchitecture(projectData.config),
         measurementUnits: readProjectMeasurementUnits(projectData.config),
         metersPerSceneUnit: Number(projectData.metersPerSceneUnit),
@@ -580,5 +582,20 @@ export async function GET(request: NextRequest) {
       { success: false, error: 'Failed to fetch ThreeD data' },
       { status: 500 }
     );
+  }
+}
+
+async function readGroups(projectId: number) {
+  try {
+    return await db.select({
+      id: threedGroups.id,
+      name: threedGroups.name,
+      entityIds: sql<string[]>`ARRAY(SELECT entity_id FROM ${threedGroupDesignMembers} WHERE project_id = ${projectId} AND group_id = ${threedGroups.id} ORDER BY entity_id)`,
+      markerIds: sql<string[]>`ARRAY(SELECT marker_id FROM ${threedGroupModelMembers} WHERE project_id = ${projectId} AND group_id = ${threedGroups.id} ORDER BY marker_id)`,
+    }).from(threedGroups).where(eq(threedGroups.projectId, projectId)).orderBy(threedGroups.id);
+  } catch (error) {
+    // Projects can still open before the Groups migration has been applied.
+    if ([error, (error as Error)?.cause].some(e => (e as {code?: string})?.code === '42P01')) return undefined;
+    throw error;
   }
 }

@@ -2,7 +2,9 @@
 
 ## Current checkpoint
 
-[v0.36.0 - ThreeD Garden Release Metadata](docs/releases/v0.36.0.md) is the local release candidate.
+The local Design canvas combines box selection and select-all in **Select Objects**. A ThreeD Group is a Project record of grouped records. The **Create ThreeD Group** action records selected Design objects and placed Model instances as members. The focused offline Design checks cover mixed selection and Project Save/reopen. The Developer confirmed running the ThreeD Groups SQL migration. Live browser acceptance is pending.
+
+The Developer confirmed [v0.36.0 - ThreeD Garden Release Metadata](docs/releases/v0.36.0.md#production-status) reached production on November 21, 2026.
 
 The Developer confirmed [v0.35.12 - Project Setup, Scene Setup and Wall Drawing](docs/releases/v0.35.12.md#production-status) reached production on November 21, 2026. In the Scene workspace, **Scene > Scene Setup** brings ground sizing, Ground Map, lighting and Environment Model into the existing inspector. Manual ground dimensions use the Project measurement units and calibration.
 

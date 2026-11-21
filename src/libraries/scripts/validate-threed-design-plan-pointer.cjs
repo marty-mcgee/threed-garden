@@ -84,7 +84,7 @@ function fixture(overrides = {}) {
     '@/libraries/services/threed/terrains/terrain-core': terrain,
   }, {
     Event,
-    window: { addEventListener() {}, removeEventListener() {}, dispatchEvent: () => true },
+    window: { prompt:()=> 'Room', addEventListener() {}, removeEventListener() {}, dispatchEvent: () => true },
     ResizeObserver: class { observe() {} disconnect() {} },
   });
   function flush() {
@@ -98,8 +98,8 @@ function fixture(overrides = {}) {
     }
   }
   function pointer(name, x = 350, y = 210, options = {}) {
-    const { entity = null, node = null, ...values } = options;
-    const target = { closest: () => entity ? { getAttribute: () => entity } : null, getAttribute: name => name === 'data-node' ? node : null };
+    const { entity = null, node = null, moveHandle = false, ...values } = options;
+    const target = { closest: selector => moveHandle && selector === '[data-selection-handle]' ? { getAttribute: () => 'move' } : entity ? { getAttribute: () => entity } : null, getAttribute: name => name === 'data-node' ? node : null };
     const event = { clientX: x + 100, clientY: y + 50, pointerId: 7, button: 0, altKey: false, shiftKey: false, preventDefault() {}, target, currentTarget: element, ...values };
     svgElement.props[name](event); flush();
   }
@@ -154,6 +154,95 @@ function fixture(overrides = {}) {
   assert.equal(picked, 'tree', 'Project Model selection is independent of the architecture drawing level');
 }
 
+// One X/Z translation covers shared nodes and hidden levels while keeping host bindings intact.
+{
+  const upper = room.nodes.map(node => ({ ...node, id: node.id + '-upper' }));
+  const whole = document.validateDesign({
+    ...room,
+    levels: [...room.levels, { id: 'upper', name: 'Upper', elevation: 3 }],
+    nodes: [...room.nodes, ...upper],
+    roofs: [{ id: 'roof', levelId: 'upper', vertices: upper.map(node => node.id), kind: 'gable', pitch: 6, direction: 0, thickness: .15, elevation: 3 }],
+    openings: [{ id: 'door', kind: 'door', wallId: 'w0', offset: .5, width: .8, height: 2, sill: 0 }],
+  });
+  const f = fixture({ document: whole, visibleLevelIds: ['ground'], tool: 'objects', selected: null });
+  f.update({selectAllRequest: 1});
+  f.pointer('onPointerDown', 140, 100, {entity:'w0'});
+  f.pointer('onPointerMove', 185, 145);
+  assert(f.preview);
+  assert.equal(f.calls.commit.length, 0);
+  f.pointer('onPointerUp', 230, 55);
+  assert.equal(f.calls.commit.length, 1);
+  const moved = plain(f.props.document);
+  assert.deepEqual(moved.nodes, plain(whole.nodes).map(n => ({ ...n, x: n.x + 2, z: n.z - 1 })));
+  for (const key of ['levels','walls','floors','roofs','openings']) assert.deepEqual(moved[key], plain(whole[key]));
+  f.pointer('onPointerDown', 140, 100);
+  f.pointer('onPointerMove', 185, 145);
+  f.pointer('onPointerCancel');
+  f.pointer('onPointerUp', 185, 145);
+  assert.equal(f.calls.commit.length, 1);
+  assert.deepEqual(plain(f.props.planView), initialView);
+}
+// Reverse marquee encloses only the bottom wall of the shared-node room.
+{
+  const f = fixture({ tool: 'objects', selected: null });
+  f.pointer('onPointerDown', 230, 95);
+  f.pointer('onPointerMove', 60, 60);
+  assert(flatten(f.tree).some(n => n.props?.['data-selection-box'] === ''));
+  f.pointer('onPointerUp', 60, 60);
+  assert.equal(f.calls.commit.length, 0);
+  const highlighted = flatten(f.tree).filter(n => n.props?.fill === '#36b8c8');
+  assert.equal(f.props.selected, null, 'Box selection leaves individual objects inactive.');
+  assert.deepEqual(highlighted.map(n => n.props['data-entity']), ['w0']);
+  f.pointer('onPointerDown', 130, 80, {entity:'w0'});
+  assert.equal(f.props.selected, null, 'Dragging the group leaves individual objects inactive.');
+  f.pointer('onPointerMove', 175, 125);
+  assert(f.preview);
+  f.pointer('onPointerUp', 175, 125);
+  assert.equal(f.calls.commit.length, 1);
+  const moved = plain(f.props.document);
+  const wall = moved.walls[0];
+  assert.deepEqual(moved.nodes.find(n => n.id === wall.start), { id:wall.start, x:1, z:1 });
+  assert.deepEqual(moved.nodes.slice(0,4), plain(room.nodes));
+  assert.deepEqual(moved.walls.slice(1), plain(room.walls.slice(1)));
+  assert.deepEqual(moved.floors, plain(room.floors));
+  assert.deepEqual(plain(f.props.planView), initialView);
+}
+{
+  const f = fixture({ tool: 'objects', selected: null });
+  f.click(130,80,{entity:'w0'});
+  f.click(215,120,{entity:'w1'});
+  assert.equal(flatten(f.tree).filter(n=>n.props?.['data-selection-outline']==='').length,2);
+  assert(flatten(f.tree).some(n=>n.props?.['data-selection-handle']==='move'));
+  assert.equal(f.calls.select.length,0);
+  assert.equal(f.calls.commit.length,0);
+}
+// Both selection gestures feed Group, and a mixed drag is one transaction.
+{
+  const model = { id: 'models-42', url: null, corners: [{x:0,z:0},{x:.3,z:0},{x:0,z:.2}] };
+  let groups, move;
+  const f = fixture({
+    tool: 'objects', selected: null, modelImages: [model],
+    onGroupChange: value => { groups = plain(value); },
+    onMixedMove: (doc, ids, dx, dz) => { move = {doc, ids:plain(ids), dx, dz}; },
+  });
+  f.pointer('onPointerDown', 230, 95);
+  f.pointer('onPointerUp', 60, 60);
+  assert.equal(flatten(f.tree).filter(n => n.props?.['data-selection-outline'] === '').length, 2);
+  assert(flatten(f.tree).some(n => n.props?.['data-selection-handle'] === 'move'));
+  const groupAction = () => flatten(f.tree).find(n=>n.props?.label==='Create ThreeD Group');
+  assert.equal(groupAction().props.disabled,false);
+  groupAction().props.onClick();
+  assert.deepEqual(groups[0].entityIds,['w0']);
+  assert.deepEqual(groups[0].markerIds,[model.id]);
+  f.update({groups,selectAllRequest:1});
+  f.pointer('onPointerDown',130,80,{moveHandle:true});
+  f.pointer('onPointerUp',175,125);
+  assert.deepEqual(move.ids,[model.id]);
+  assert.equal(move.dx,1);
+  assert.equal(move.dz,1);
+  assert.deepEqual(plain(move.doc.nodes),plain(room.nodes).map(n=>({...n,x:n.x+1,z:n.z+1})));
+  assert.equal(f.calls.select.length,0);
+}
 // Select remains its own tool: background click deselects; drag pans without losing selection.
 {
   const f = fixture();

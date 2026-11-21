@@ -1079,11 +1079,30 @@ function UnifiedMapPageInner() {
     }
 
     const requestId = ++saveRequestRef.current;
-    const architecture = { version: 1 as const, document: architectureDrafts.current.get(selectedProjectId)!.history.present };
+    const capturedDraft = architectureDrafts.current.get(selectedProjectId)!;
+    const architecture = { version: 1 as const, document: capturedDraft.history.present };
+    const modelPositions = capturedDraft.modelPositions;
     projectSaveBusy.current = true; setArchitectureSaveError('');
     setSavingProjectMarkers(true);
     try {
-      const markers = provider();
+      const markers = provider().map(marker => {
+        const moved = modelPositions?.[marker.markerId];
+        return moved && marker.moduleType === 'models' ? {
+          ...marker,
+          position: { ...marker.position, x: moved.x, z: moved.z },
+          positionSource: 'runtime' as const,
+          data: { ...marker.data, positionX: moved.x, positionZ: moved.z },
+        } : marker;
+      });
+      const document = architecture.document;
+      const currentEntities = new Set([...document.walls, ...document.floors, ...document.roofs, ...document.openings, ...document.roofOpenings].map(entity => entity.id));
+      const currentModels = new Set(markers.filter(marker => marker.moduleType === 'models').map(marker => marker.markerId));
+      const groups = (capturedDraft.groups ?? []).map(group => ({
+        ...group,
+        entityIds: group.entityIds.filter(id => currentEntities.has(id)),
+        markerIds: group.markerIds.filter(id => currentModels.has(id)),
+      })).filter(group => group.entityIds.length + group.markerIds.length > 0);
+      const groupsChanged = JSON.stringify(groups) !== (capturedDraft.savedGroups ?? '[]');
       const viewState = captureProjectWorkspace();
       const configuration = projectConfigurationRef.current;
       if (configuration?.projectId !== selectedProjectId) throw new Error('Project settings are still loading. Wait before saving.');
@@ -1095,6 +1114,7 @@ function UnifiedMapPageInner() {
           markers,
           viewState,
           architecture,
+          ...(groupsChanged ? { groups } : {}),
           terrain: projectTerrain?.placement ?? null,
           expectedConfiguration: configuration.stamp,
         }),
@@ -1108,6 +1128,7 @@ function UnifiedMapPageInner() {
         || JSON.stringify(parseProjectArchitecture(result.data.architecture)) !== JSON.stringify(parseProjectArchitecture(architecture))) {
         throw new Error('Project Save did not confirm the architectural content. Your edits are retained. Retry Save Project; if it repeats, reload the App after checking that its API is up to date.');
       }
+      if (groupsChanged && JSON.stringify(result.data.groups) !== JSON.stringify(groups)) throw new Error('Project Save did not confirm ThreeD Groups.');
       if (!confirmsTerrainPlacement(projectTerrain?.placement ?? null, result.data?.terrain)) {
         throw new Error('Project Save did not confirm the Terrain placement. Your draft is retained.');
       }
@@ -1130,7 +1151,13 @@ function UnifiedMapPageInner() {
       }));
       projectConfigurationRef.current = { projectId: selectedProjectId, stamp: { savedAt: viewState.savedAt, measurementUnits: viewState.design?.measurementUnits ?? configuration.stamp.measurementUnits } };
       const current = architectureDrafts.current.get(selectedProjectId)!;
-      architectureDrafts.current.set(selectedProjectId, acknowledgeArchitecture(current, result.data.architecture, viewState.design)); renderArchitecture(value => value + 1);
+      architectureDrafts.current.set(selectedProjectId, {
+        ...acknowledgeArchitecture(current, result.data.architecture, viewState.design),
+        modelPositions: current.modelPositions === modelPositions ? undefined : current.modelPositions,
+        groups: current.groups === capturedDraft.groups ? groups : current.groups,
+        savedGroups: JSON.stringify(groups),
+      });
+      renderArchitecture(value => value + 1);
       workspaceFeedback.acknowledge(viewState);
       setLastUpdated(new Date());
       showToastRef.current(
@@ -1543,6 +1570,11 @@ function UnifiedMapPageInner() {
         setProjectAccess({ projectId: String(selectedProjectId), canEdit: session.canEdit });
         const cachedArchitecture = architectureDrafts.current.get(String(selectedProjectId));
         architectureDrafts.current.set(String(selectedProjectId), hydrateArchitectureDraft(cachedArchitecture, session.architecture, { ...(session.savedViewState?.design ?? defaultDesignWorkspace()), measurementUnits: session.measurementUnits ?? 'imperial' }));
+        if (session.groups && !(cachedArchitecture && architectureIsDirty(cachedArchitecture))) {
+          const draft = architectureDrafts.current.get(String(selectedProjectId))!;
+          draft.groups = session.groups;
+          draft.savedGroups = JSON.stringify(session.groups);
+        }
         setMetersPerSceneUnit(session.metersPerSceneUnit); renderArchitecture(value => value + 1);
         setInitialProjectViewState(session.savedViewState);
         setProjectSetup(session.projectSetup);
@@ -1573,7 +1605,12 @@ function UnifiedMapPageInner() {
             ? current
             : session.threedModules[0]?.id ?? null
         ));
-        setData(session.data);
+        const restoredPositions = cachedArchitecture?.modelPositions;
+        const movedModels = restoredPositions && session.data.threed.raw?.projectThreedMarkers?.flatMap(record => {
+          const moved = restoredPositions[record.markerId];
+          return moved && record.markerType === 'models' ? [{ ...record, positionX: moved.x, positionZ: moved.z, data: { ...record.data, positionX: moved.x, positionZ: moved.z } }] : [];
+        });
+        setData(movedModels?.length ? applyThreeDProjectClientTransaction(session.data, { markers: { upsert: movedModels } }) : session.data);
         setLastUpdated(new Date());
         setProjectInfo({ name: session.projectName, hasData: session.hasData });
         setIsDefaultView(false);
@@ -2053,7 +2090,13 @@ function UnifiedMapPageInner() {
         throw new Error(result?.error || `Model position update failed (${response.status})`);
       }
 
-      if (position.scaleMultiplier !== undefined && planImageProjectRef.current !== selectedProjectId) return false;
+      if (planImageProjectRef.current !== selectedProjectId) return false;
+      changeArchitecture(draft => {
+        if (!draft.modelPositions?.[saved.markerId]) return draft;
+        const modelPositions = { ...draft.modelPositions };
+        delete modelPositions[saved.markerId];
+        return { ...draft, modelPositions };
+      });
 
       notifyModelPlacement(result.data as ProjectThreeDMarkerRecord, Number(selectedProjectId));
       setData((current) => applyThreeDProjectClientTransaction(current, {
@@ -2826,6 +2869,24 @@ function UnifiedMapPageInner() {
     } finally { designModelSaveBusy.current = false; }
   };
 
+  function moveDesignModels(ids: string[], dx: number, dz: number) {
+    if (projectSaveBusy.current || updatingModelInstanceId != null || deletingModelInstanceId != null || !canEditProject) throw new Error('Wait for the current Project or Model edit to finish.');
+    const records = data.threed.raw?.projectThreedMarkers ?? [];
+    const moved = ids.map(id => {
+      const record = records.find(row => row.markerId === id && row.markerType === 'models');
+      if (!record || isProjectModelCanvasLocked(record.metadata)) throw new Error('The selection contains an unavailable or locked Model.');
+      const positionX = Number(record.positionX) + dx;
+      const positionZ = Number(record.positionZ) + dz;
+      return { ...record, positionX, positionZ, positionSource: 'runtime' as const, data: { ...record.data, positionX, positionZ } };
+    });
+    changeArchitecture(draft => ({
+      ...draft,
+      modelPositions: { ...draft.modelPositions, ...Object.fromEntries(moved.map(record => [record.markerId, { x: record.positionX, z: record.positionZ }])) },
+    }));
+    for (const record of moved) notifyModelPlacement(record, Number(selectedProjectId));
+    setData(current => applyThreeDProjectClientTransaction(current, { markers: { upsert: moved } }));
+  }
+
   const designModel = !architectureDraft.selected && selectedMarker?.type === 'models' && selectedMarker.metadata?.source === 'project-marker' ? {
     id: String(selectedMarker.id),
     name: String(selectedMarker.name ?? 'Model'),
@@ -3380,7 +3441,7 @@ function UnifiedMapPageInner() {
         }}
       />
       {/* ✅ Map Container */}
-      <DesignWorkspace reserveToolbar={viewMode === '2d'} split={designWorkspace.split} onSplitChange={split => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), split } }))} assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor selectedModel={designModel} onSaveModel={saveDesignModel} modelBusy={updatingModelInstanceId != null || deletingModelInstanceId != null} selectedModelId={!architectureDraft.selected && selectedMarker?.type === 'models' ? String(selectedMarker.id) : null} modelImages={planModelImages.projectId === Number(selectedProjectId) ? Object.values(planModelImages.images) : []} terrain={projectTerrain} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={id => { const marker = projectRuntimeMarkers.find(marker => String(marker.id) === id); if (marker) selectProjectAsset(marker); }} key={selectedProjectId} frameRequest={architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} active={viewMode === 'design'} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, onSelect: selectArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
+      <DesignWorkspace reserveToolbar={viewMode === '2d'} split={designWorkspace.split} onSplitChange={split => changeArchitecture(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), split } }))} assetsHostRef={setDesignAssetsHost} active={viewMode === 'design'} editor={designVisited && selectedProjectId ? <DesignEditor selectedModel={designModel} onSaveModel={saveDesignModel} modelBusy={updatingModelInstanceId != null || deletingModelInstanceId != null} selectedModelId={!architectureDraft.selected && selectedMarker?.type === 'models' ? String(selectedMarker.id) : null} modelImages={planModelImages.projectId === Number(selectedProjectId) ? Object.values(planModelImages.images) : []} terrain={projectTerrain} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={id => { const marker = projectRuntimeMarkers.find(marker => String(marker.id) === id); if (marker) selectProjectAsset(marker); }} key={selectedProjectId} frameRequest={architectureFrame?.projectId === selectedProjectId ? architectureFrame : null} active={viewMode === 'design'} historyHost={designHistoryHost} onActionsBusyChange={setDesignActionsBusy} canSave={canEditProject && !loading} scene={{ projectId: Number(selectedProjectId), projectName: projectInfo?.name ?? `Project #${selectedProjectId}`, draft: architectureDraft, onChange: changeArchitecture, placedModelIds: data.threed.raw?.projectThreedMarkers?.filter(row => row.markerType === 'models').map(row => row.markerId), onMoveModels: moveDesignModels, onSelect: selectArchitecture, onSave: handleSaveThreeDProject, saving: savingProjectMarkers, onPreview: setArchitecturePreview, onVisibility: showArchitecture, error: architectureSaveError }} /> : null}>
       <Card data-project-canvas className="h-full gap-0 rounded-none border-0 py-0 shadow-none">
         <CardContent className="h-full p-0 overflow-hidden">
           <div className="h-full">

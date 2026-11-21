@@ -1,9 +1,10 @@
 'use client';
+import type { ThreeDGroup } from '@/libraries/services/threed/design/groups';
 import type { DesignModelSelection, SaveDesignModel } from './DesignModelProperties';
 
 import { useEffect, useId, useMemo, useRef, useState, type PointerEvent, type ReactNode, type SetStateAction, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Check, Focus, Maximize, RotateCcw, Ruler, type LucideIcon } from 'lucide-react';
+import { Group, Ungroup, Check, Focus, Maximize, RotateCcw, Ruler, type LucideIcon } from 'lucide-react';
 import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem, ContextMenuSeparator } from '@/components/ui/context-menu';
 import { DesignAction } from './DesignAction';
 import { Button } from '@/components/ui/button';
@@ -15,14 +16,19 @@ import type { ModelPlanImage } from '@/libraries/services/threed/models/model-pl
 import { terrainHeightAt, terrainPlanCells, type ProjectTerrainSurface } from '@/libraries/services/threed/terrains/terrain-core';
 import { wallFootprint } from '@/libraries/services/threed/design/geometry';
 
-export type DesignTool = 'select' | 'wall' | 'floor' | 'roof' | 'door' | 'window' | 'cutout' | 'skylight' | 'pan';
+export type DesignTool = 'objects' | 'select' | 'wall' | 'floor' | 'roof' | 'door' | 'window' | 'cutout' | 'skylight' | 'pan';
 type DrawPoint = PlanPoint & { nodeId?: string };
 export interface DesignContextGroup { label: string; color: string; actions: { label: string; icon: LucideIcon; disabled?: boolean; active?: boolean; run: () => void }[] }
-interface Props { selectedModel?: DesignModelSelection | null; onSaveModel?: SaveDesignModel; modelBusy?: boolean; visibleLevelIds?: string[]; onToggleLevel?: (id: string) => void; contextActions?: DesignContextGroup[]; showMeasurements?: boolean; onShowMeasurementsChange?: (show: boolean) => void; selectedModelId?: string | null; modelImages?: ModelPlanImage[]; terrain?: ProjectTerrainSurface | null; metersPerSceneUnit?: number; onModelSelect?: (id: string) => void; measurementUnits?: 'imperial' | 'metric'; frameRequest?: { id: string; sequence: number } | null; drawingActions?: ReactNode; planView?: PlanView; onViewChange?: (view: PlanView) => void; toolbarHost?: HTMLDivElement | null; embedded?: boolean; active?: boolean; disabled?: boolean; document: DesignDocument; displayDocument?: DesignDocument; activeLevelId: string; selected: string | null; tool: DesignTool; gridSnap: boolean;
+interface Props {
+  groups?: ThreeDGroup[];
+  onGroupChange?: (groups: ThreeDGroup[]) => void;
+  onMixedMove?: (doc: DesignDocument, ids: string[], dx: number, dz: number) => void;
+  selectAllRequest?: number;
+  placedModelIds?: string[]; selectedModel?: DesignModelSelection | null; onSaveModel?: SaveDesignModel; modelBusy?: boolean; visibleLevelIds?: string[]; onToggleLevel?: (id: string) => void; contextActions?: DesignContextGroup[]; showMeasurements?: boolean; onShowMeasurementsChange?: (show: boolean) => void; selectedModelId?: string | null; modelImages?: ModelPlanImage[]; terrain?: ProjectTerrainSurface | null; metersPerSceneUnit?: number; onModelSelect?: (id: string) => void; measurementUnits?: 'imperial' | 'metric'; frameRequest?: { id: string; sequence: number } | null; drawingActions?: (groupControls: ReactNode) => ReactNode; planView?: PlanView; onViewChange?: (view: PlanView) => void; toolbarHost?: HTMLDivElement | null; embedded?: boolean; active?: boolean; disabled?: boolean; document: DesignDocument; displayDocument?: DesignDocument; activeLevelId: string; selected: string | null; tool: DesignTool; gridSnap: boolean;
   onSelect: (id: string | null) => void; onCommit: (doc: DesignDocument) => void;
   onPreview: (doc: DesignDocument | null) => void; onMessage: (text: string) => void;
   onDrawComplete: (id: string) => void; cancelToken: number }
-interface Gesture { pointerId: number; base: DesignDocument; point: PlanPoint; screenStart?: { x: number; y: number }; view: PlanView; nodes: string[]; pan: boolean; wallPress?: { started: boolean; shiftKey: boolean }; pendingClick?: { shiftKey: boolean }; node?: string; opening?: string; roofOpening?: string; merge?: string; latest: DesignDocument }
+interface Gesture { pointerId: number; base: DesignDocument; point: PlanPoint; screenStart?: { x: number; y: number }; view: PlanView; nodes: string[]; pan: boolean; boxStart?: PlanPoint; pickedEntity?: string; pickedModel?: string; movableBase?: DesignDocument; wallPress?: { started: boolean; shiftKey: boolean }; pendingClick?: { shiftKey: boolean }; node?: string; opening?: string; roofOpening?: string; merge?: string; latest: DesignDocument }
 const PAN_DRAG_THRESHOLD = 4; // CSS pixels: allow ordinary click jitter without drawing during a pan.
 const makeId = () => crypto.randomUUID();
 
@@ -41,7 +47,7 @@ function addShape(doc: DesignDocument, points: DrawPoint[], tool: 'wall' | 'floo
     floors: tool === 'floor' ? [...doc.floors, { id, levelId, vertices: ids, thickness: doc.defaults.floorThickness, elevation: 0 }] : doc.floors, roofs: tool === 'roof' ? [...doc.roofs, { id, levelId, vertices: ids, kind: 'gable', pitch: 6, direction: 0, thickness: 6 * INCH, elevation: doc.defaults.wallHeight }] : doc.roofs };
 }
 
-export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visibleLevelIds, onToggleLevel, contextActions = [], showMeasurements, onShowMeasurementsChange, selectedModelId, modelImages = [], terrain, metersPerSceneUnit = 1, onModelSelect, measurementUnits = 'imperial', frameRequest, drawingActions, planView, onViewChange, toolbarHost, embedded = false, active: enabled = true, disabled = false, document: doc, displayDocument = doc, activeLevelId, selected, tool, gridSnap, onSelect, onCommit, onPreview, onMessage, onDrawComplete, cancelToken }: Props) {
+export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixedMove, selectAllRequest = 0, selectedModel, onSaveModel, modelBusy = false, visibleLevelIds, onToggleLevel, contextActions = [], showMeasurements, onShowMeasurementsChange, selectedModelId, modelImages = [], terrain, metersPerSceneUnit = 1, onModelSelect, measurementUnits = 'imperial', frameRequest, drawingActions, planView, onViewChange, toolbarHost, embedded = false, active: enabled = true, disabled = false, document: doc, displayDocument = doc, activeLevelId, selected, tool, gridSnap, onSelect, onCommit, onPreview, onMessage, onDrawComplete, cancelToken }: Props) {
   const shownLevels = visibleLevelIds ?? [activeLevelId];
   const editingHidden = !shownLevels.includes(activeLevelId);
   const [localMeasurements, setLocalMeasurements] = useState(false);
@@ -61,16 +67,37 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
   const [size, setSize] = useState({ width: 600, height: 280 });
   const [points, setPoints] = useState<DrawPoint[]>([]), [hover, setHover] = useState<DrawPoint | null>(null);
   const [draftOpeningId] = useState(makeId);
+  const [boxed, setBoxed] = useState<Set<string>>(() => new Set());
+  const [modelIds, setModelIds] = useState<string[]>([]);
+  const lastSelectAll = useRef(0);
+  const [marquee, setMarquee] = useState<{ start: PlanPoint; end: PlanPoint } | null>(null);
+  useEffect(() => {
+    setBoxed(new Set());
+    setModelIds([]);
+    setMarquee(null);
+    if (tool === 'objects') svg.current?.focus();
+  }, [tool, cancelToken, activeLevelId, enabled, disabled, shownLevels.join('|')]);
+  useEffect(() => {
+    if (selectAllRequest === lastSelectAll.current) return;
+    lastSelectAll.current = selectAllRequest;
+    setBoxed(new Set([...doc.walls, ...doc.floors, ...doc.roofs, ...doc.openings, ...doc.roofOpenings].map(item => item.id)));
+    setModelIds(placedModelIds ?? modelImages.map(image => image.id));
+  }, [selectAllRequest]);
+  const groupSelected = (id: string) => tool === 'objects' && boxed.has(id);
   const gesture = useRef<Gesture | null>(null);
   const modelGesture = useRef<{ pointerId: number; start: PlanPoint; model: DesignModelSelection; resize: boolean; factor: number; dx: number; dz: number } | null>(null);
   const modelSaving = useRef(false);
   const [modelPreview, setModelPreview] = useState<{ id: string; x: number; z: number; factor: number; dx: number; dz: number } | null>(null);
+  const [groupOffset, setGroupOffset] = useState<PlanPoint | null>(null);
   const [failedModelImages, setFailedModelImages] = useState<Record<string, string>>({});
   const [hoveredModelId, setHoveredModelId] = useState<string | null>(null);
   const displayedImages = modelImages.map(image => image.id === modelPreview?.id ? { ...image, corners: image.corners.map(point => ({
     x: modelPreview.x + (point.x - modelPreview.x) * modelPreview.factor + modelPreview.dx,
     z: modelPreview.z + (point.z - modelPreview.z) * modelPreview.factor + modelPreview.dz,
-  })) as ModelPlanImage['corners'] } : image).sort((left, right) => {
+  })) as ModelPlanImage['corners'] } : groupOffset && modelIds.includes(image.id) ? {
+    ...image,
+    corners: image.corners.map(p => ({ x: p.x + groupOffset.x, z: p.z + groupOffset.z })) as ModelPlanImage['corners'],
+  } : image).sort((left, right) => {
     const area = (image: ModelPlanImage) => {
       const [a, b, c] = image.corners;
       return Math.abs((b.x - a.x) * (c.z - a.z) - (b.z - a.z) * (c.x - a.x));
@@ -84,6 +111,7 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
     const current = modelGesture.current;
     modelGesture.current = null;
     setModelPreview(null);
+    setGroupOffset(null);
     if (current && svg.current?.hasPointerCapture(current.pointerId)) svg.current.releasePointerCapture(current.pointerId);
   };
   useEffect(() => { cancelModel(); }, [selectedModelId, selectedModel?.locked, cancelToken, tool, enabled, disabled]);
@@ -170,6 +198,58 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
     const opening = { id: draft && ![...doc.levels, ...doc.nodes, ...doc.walls, ...doc.floors, ...doc.roofs, ...doc.openings, ...doc.roofOpenings].some(entity => entity.id === draftOpeningId) ? draftOpeningId : makeId(), roofId: roof.id, kind: tool, along: snap(local.along - width / 2), across: snap(local.across - length / 2), width, length };
     return { next: validateDesign({ ...doc, roofOpenings: [...doc.roofOpenings, opening] }), id: opening.id };
   }
+  function finishBox(start: PlanPoint, end: PlanPoint) {
+    const contained = (p: PlanPoint) => p.x >= Math.min(start.x, end.x) && p.x <= Math.max(start.x, end.x)
+      && p.z >= Math.min(start.z, end.z) && p.z <= Math.max(start.z, end.z);
+    const ids = new Set<string>();
+    for (const wall of visible.walls) if (wallFootprint(doc, wall).every(contained)) ids.add(wall.id);
+    for (const shape of [...visible.floors, ...visible.roofs]) {
+      if (shape.vertices.every(id => contained(nodes.get(id)!))) ids.add(shape.id);
+    }
+    for (const opening of visible.openings) if (ids.has(opening.wallId)) ids.add(opening.id);
+    for (const opening of visible.roofOpenings) if (ids.has(opening.roofId)) ids.add(opening.id);
+    setBoxed(ids);
+    const models = modelImages.filter(image => modelPoints([image]).every(contained));
+    setModelIds(models.map(image => image.id));
+    onMessage(ids.size || models.length ? 'Drag a highlighted object to move the selection.' : 'No Design objects enclosed.');
+  }
+
+  function prepareBoxMove() {
+    const moving = new Set<string>(), stationary = new Set<string>();
+    for (const shape of [...doc.walls, ...doc.floors, ...doc.roofs]) {
+      const refs = boxed.has(shape.id) ? moving : stationary;
+      for (const id of 'vertices' in shape ? shape.vertices : [shape.start, shape.end]) refs.add(id);
+    }
+    // Split shared boundary nodes only for the moving group. Preview and commit reuse the same IDs.
+    const replacements = new Map<string, string>();
+    for (const id of moving) if (stationary.has(id)) replacements.set(id, makeId());
+    const remap = (id: string) => replacements.get(id) ?? id;
+    const movableBase = replacements.size ? {
+      ...doc,
+      nodes: [...doc.nodes, ...doc.nodes.filter(n => replacements.has(n.id)).map(n => ({ ...n, id: remap(n.id) }))],
+      walls: doc.walls.map(w => boxed.has(w.id) ? { ...w, start: remap(w.start), end: remap(w.end) } : w),
+      floors: doc.floors.map(f => boxed.has(f.id) ? { ...f, vertices: f.vertices.map(remap) } : f),
+      roofs: doc.roofs.map(r => boxed.has(r.id) ? { ...r, vertices: r.vertices.map(remap) } : r),
+    } : doc;
+    return { movableBase, nodes: [...moving].map(remap) };
+  }
+
+  function groupOffsetInScene(drag: Gesture, point: PlanPoint) {
+    const delta = (value: number) => (gridSnap ? Math.round(value / (6 * INCH)) * 6 * INCH : value) / metersPerSceneUnit;
+    return { x: delta(point.x - drag.point.x), z: delta(point.z - drag.point.z) };
+  }
+  function groupTranslation(drag: Gesture, point: PlanPoint) {
+    const delta = (value: number) => gridSnap ? Math.round(value / (6 * INCH)) * 6 * INCH : value;
+    const dx = delta(point.x - drag.point.x);
+    const dz = delta(point.z - drag.point.z);
+    if (!dx && !dz) return drag.base;
+    const base = drag.movableBase ?? drag.base;
+    const subset = drag.movableBase ? new Set(drag.nodes) : null;
+    return validateDesign(moveNodes(base, new Map(base.nodes.filter(node => !subset || subset.has(node.id)).map(node => [
+      node.id,
+      { x: node.x + dx, z: node.z + dz },
+    ]))));
+  }
   function down(event: PointerEvent<SVGSVGElement>) {
     if (!enabled || gesture.current || (event.button !== 0 && event.button !== 1) || local(event).x < RULER_SIZE || local(event).y < RULER_SIZE) return;
     event.preventDefault(); svg.current?.focus();
@@ -187,6 +267,28 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
     }
     const hitNodeId = (event.target as Element).getAttribute('data-node');
     const nodeId = active.nodes.some(node => node.id === hitNodeId) ? hitNodeId : null;
+    if (tool === 'objects' && !disabled && event.button === 0 && !event.altKey) {
+      const modelId = (event.target as Element).closest('[data-plan-model]')?.getAttribute('data-plan-model');
+      const moveHandle = (event.target as Element).closest('[data-selection-handle]')?.getAttribute('data-selection-handle') === 'move';
+      const moveSelection = moveHandle || Boolean((targetId && boxed.has(targetId)) || (modelId && modelIds.includes(modelId)));
+      gesture.current = {
+        pointerId: event.pointerId,
+        base: doc,
+        latest: doc,
+        point,
+        view,
+        pan: false,
+        pickedEntity: targetId ?? undefined,
+        pickedModel: modelId ?? undefined,
+        screenStart: local(event),
+        ...(moveSelection
+          ? prepareBoxMove()
+          : { nodes: [], boxStart: point }),
+      };
+      if (gesture.current.boxStart) setMarquee({ start: point, end: point });
+      svg.current!.setPointerCapture(event.pointerId);
+      return;
+    }
     const explicitPan = editingHidden || tool === 'pan' || event.button === 1 || event.altKey;
     if (!explicitPan && !disabled && tool === 'wall') {
       const started = points.length === 0;
@@ -268,7 +370,7 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
       setModelPreview({ id: model.id, x: model.positionX, z: model.positionZ, factor: modelDrag.factor, dx: modelDrag.dx, dz: modelDrag.dz });
       return;
     }
-    if (!enabled || ((disabled || editingHidden) && !gesture.current?.pan)) return;
+    if (!enabled || ((disabled || (editingHidden && tool !== 'objects')) && !gesture.current?.pan)) return;
     const active = gesture.current;
     if (!active) {
       if ((tool === 'wall' || tool === 'floor' || tool === 'roof') && points.length) setHover(snapped(pointer(event), [], event.shiftKey));
@@ -277,6 +379,19 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
       return;
     }
     if (event.pointerId !== active.pointerId) return;
+    if (active.boxStart) {
+      setMarquee({ start: active.boxStart, end: screenToPlan(local(event), active.view) });
+      return;
+    }
+    if (active.movableBase && !active.pan) {
+      try {
+        const end = screenToPlan(local(event), active.view);
+        onPreview(groupTranslation(active, end));
+        if (modelIds.length) setGroupOffset(groupOffsetInScene(active, end));
+      }
+      catch (error) { onPreview(null); onMessage((error as Error).message); }
+      return;
+    }
     if (active.wallPress) {
       setHover(snapped(pointer(event), [], event.shiftKey));
       return;
@@ -335,7 +450,41 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
     if (active.pan) panGesture(active, local(event));
     gesture.current = null;
     try {
-      if (active.wallPress) {
+      if (active.boxStart) {
+        setMarquee(null);
+        if (doc === active.base && enabled && !disabled) {
+          const release = local(event);
+          const click = active.screenStart && Math.hypot(release.x - active.screenStart.x, release.y - active.screenStart.y) < PAN_DRAG_THRESHOLD;
+          if (click && active.pickedEntity) {
+            const id = active.pickedEntity;
+            const host = visible.openings.find(item => item.id === id)?.wallId ?? visible.roofOpenings.find(item => item.id === id)?.roofId ?? id;
+            const ids = new Set(boxed);
+            ids.add(host);
+            for (const opening of visible.openings) if (opening.wallId === host) ids.add(opening.id);
+            for (const opening of visible.roofOpenings) if (opening.roofId === host) ids.add(opening.id);
+            setBoxed(ids);
+          } else if (click && active.pickedModel) {
+            setModelIds([...new Set([...modelIds, active.pickedModel])]);
+          } else finishBox(active.boxStart, screenToPlan(release, active.view));
+        }
+      } else if (active.movableBase && !active.pan) {
+        if (doc === active.base && !disabled && enabled) {
+          const release = local(event);
+          if (active.screenStart && Math.hypot(release.x - active.screenStart.x, release.y - active.screenStart.y) < PAN_DRAG_THRESHOLD) {
+            setGroupOffset(null);
+            onPreview(null);
+            if (svg.current?.hasPointerCapture(event.pointerId)) svg.current.releasePointerCapture(event.pointerId);
+            return;
+          }
+          const next = groupTranslation(active, screenToPlan(release, active.view));
+          const end = screenToPlan(local(event), active.view);
+          const { x: dx, z: dz } = groupOffsetInScene(active, end);
+          if (modelIds.length && (dx || dz)) {
+            if (!onMixedMove) throw new Error('Model movement is unavailable.');
+            onMixedMove(next, modelIds, dx, dz);
+          } else if (active.nodes.length && next !== active.base) onCommit(next);
+        }
+      } else if (active.wallPress) {
         const start = active.screenStart!, release = local(event);
         const dragged = Math.hypot(release.x - start.x, release.y - start.y) >= PAN_DRAG_THRESHOLD;
         if (dragged) activateTool(pointer(event), event.shiftKey);
@@ -344,6 +493,7 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
       else if (!active.pan) onCommit(active.node && active.merge ? mergeNodes(active.latest, active.node, active.merge) : active.latest);
     }
     catch (error) { onMessage((error as Error).message); }
+    setGroupOffset(null);
     onPreview(null); if (svg.current?.hasPointerCapture(event.pointerId)) svg.current.releasePointerCapture(event.pointerId);
   }
   const polygon = (points: PlanPoint[]) => points.map(point => `${point.x},${point.z}`).join(' ');
@@ -369,17 +519,64 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
     { label: 'Zoom to Selection', icon: Focus, disabled: !selectionPoints.length, run: () => fitPlan(true) },
     { label: 'Reset View', icon: RotateCcw, run: () => setView({ x: 80, y: 80, scale: 45 }) },
   ] };
+  const groupActions: DesignContextGroup['actions'] = [];
+  if (onGroupChange) {
+    const matched = groups.find(group => boxed.size === group.entityIds.length && modelIds.length === group.markerIds.length
+      && group.entityIds.every(id => boxed.has(id)) && group.markerIds.every(id => modelIds.includes(id)));
+    if (matched) groupActions.unshift({
+      label: 'Ungroup',
+      icon: Ungroup,
+      disabled,
+      run: () => onGroupChange(groups.filter(group => group.id !== matched.id)),
+    });
+    groupActions.unshift({
+      label: 'Create ThreeD Group',
+      icon: Group,
+      disabled: disabled || tool !== 'objects' || Boolean(matched) || boxed.size + modelIds.length < 2,
+      run: () => {
+        const name = window.prompt('Name this ThreeD Group')?.trim();
+        if (!name) return;
+        if (name.length > 120) { onMessage('Use a group name of 120 characters or fewer.'); return; }
+        onGroupChange([...groups, { id: crypto.randomUUID(), name, entityIds: [...boxed], markerIds: modelIds }]);
+        onMessage('ThreeD Group created. Save Project to keep it.');
+      },
+    });
+  }
+  const selectionCount = tool === 'objects' ? boxed.size + modelIds.length : 0;
+  const outlines = selectionCount ? [
+    ...visible.walls.filter(w => boxed.has(w.id)).map(w => wallFootprint(displayDocument, w)),
+    ...[...visible.floors, ...visible.roofs].filter(shape => boxed.has(shape.id)).map(shape => shape.vertices.map(id => nodes.get(id)!)),
+    ...visible.openings.filter(o => boxed.has(o.id)).map(o => openingFootprint(displayDocument, o)),
+    ...visible.roofOpenings.filter(o => boxed.has(o.id)).map(o => roofOpeningFootprint(displayDocument, o)),
+    ...displayedImages.filter(image => modelIds.includes(image.id)).map(image => {
+      const [a, b, c, d] = modelPoints([image]);
+      return [a, b, d, c];
+    }),
+  ] : [];
+  let minX = Infinity, maxX = -Infinity, minZ = Infinity;
+  for (const outline of outlines) for (const point of outline) {
+    minX = Math.min(minX, point.x);
+    maxX = Math.max(maxX, point.x);
+    minZ = Math.min(minZ, point.z);
+  }
+  const handleX = Number.isFinite(minX) ? view.x + (minX + maxX) / 2 * view.scale - 102 : size.width / 2 - 102;
+  const handleY = Number.isFinite(minZ) ? view.y + minZ * view.scale - 46 : size.height / 2;
+  const groupPicker = tool === 'objects' && groups.length > 0 && <select aria-label="Select ThreeD Group" value="" onChange={event => {
+    const group = groups.find(item => item.id === event.target.value);
+    if (group) { setBoxed(new Set(group.entityIds)); setModelIds(group.markerIds); }
+  }}><option value="">ThreeD Groups</option>{groups.map(group => <option key={group.id} value={group.id}>{group.name}</option>)}</select>;
+  const groupControls = groupActions.map(action => <DesignAction key={action.label} label={action.label} disabled={action.disabled} onClick={action.run}><action.icon className="size-3.5" aria-hidden="true" /></DesignAction>);
   const viewActions = <div role="group" aria-label={viewGroup.label} className="flex shrink-0 items-center gap-1 rounded-md border border-border bg-muted/40 p-1 [&_svg]:text-cyan-700 dark:[&_svg]:text-cyan-300">{viewGroup.actions.map(action => <DesignAction key={action.label} label={action.label} disabled={action.disabled} aria-pressed={action.active} variant={action.active ? 'secondary' : 'outline'} onClick={action.run}><action.icon className="h-3.5 w-3.5" /></DesignAction>)}</div>;
   return <section aria-label="Design plan canvas" className={`relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#091423] ${embedded ? '' : 'rounded-lg border border-white/10'}`}>
-    {embedded && enabled && <div data-testid="design-canvas-tools" role="toolbar" aria-label="Design drawing and view tools" className="threed-workspace-panel threed-scene-panel-surface absolute z-10 flex max-w-[calc(100%-40px)] flex-nowrap items-center gap-1 overflow-x-auto [&>nav]:flex-nowrap [&>nav]:shrink-0 rounded-md border p-1 shadow-md" style={{ right: 8, top: RULER_SIZE + 8 }} onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}>{drawingActions}{viewActions}</div>}
+    {embedded && enabled && <div data-testid="design-canvas-tools" role="toolbar" aria-label="Design drawing and view tools" className="threed-workspace-panel threed-scene-panel-surface absolute z-10 flex max-w-[calc(100%-40px)] flex-nowrap items-center gap-1 overflow-x-auto [&>nav]:flex-nowrap [&>nav]:shrink-0 rounded-md border p-1 shadow-md" style={{ right: 8, top: RULER_SIZE + 8 }} onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}>{drawingActions ? drawingActions(groupControls) : groupControls}{groupPicker}{viewActions}</div>}
     {!embedded && <div data-testid="design-plan-header" className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-white/10 px-3 py-2 text-xs">
       <span className="font-semibold">2D Plan · {doc.levels.find(level => level.id === activeLevelId)?.name} · X / Z · {measurementUnits === 'metric' ? `${Number((gridFeet * 12 * INCH).toFixed(4))} m` : `${gridFeet} ft`} grid</span>
-      <div className="flex items-center gap-2"><span>{Number(view.scale.toFixed(2))} px/m</span>{viewActions}</div>
+      <div className="flex items-center gap-2"><span>{Number(view.scale.toFixed(2))} px/m</span>{groupControls}{viewActions}</div>
     </div>}
     <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
     <ContextMenu><ContextMenuTrigger asChild><svg ref={svg} data-testid="home-plan" aria-label="ThreeD Design 2D plan" tabIndex={0} width="100%" height="100%" className="block min-h-0 w-full flex-1 touch-none select-none outline-none focus-visible:ring-2 focus-visible:ring-cyan-400" style={{ cursor: tool === 'pan' ? 'grab' : tool === 'select' ? 'default' : 'crosshair' }}
-      onPointerDown={down} onPointerMove={move} onPointerUp={end} onPointerCancel={() => { cancelModel(); gesture.current = null; setPoints([]); setHover(null); onPreview(null); onMessage('Gesture cancelled.'); }}
-      onLostPointerCapture={() => { if (gesture.current) { if (gesture.current.wallPress?.started) setPoints([]); gesture.current = null; setHover(null); onPreview(null); } }}
+      onPointerDown={down} onPointerMove={move} onPointerUp={end} onPointerCancel={() => { setMarquee(null); cancelModel(); gesture.current = null; setPoints([]); setHover(null); onPreview(null); onMessage('Gesture cancelled.'); }}
+      onLostPointerCapture={() => { setGroupOffset(null); setMarquee(null); if (gesture.current) { if (gesture.current.wallPress?.started) setPoints([]); gesture.current = null; setHover(null); onPreview(null); } }}
       onPointerLeave={() => { if (!gesture.current && (tool === 'door' || tool === 'window' || tool === 'cutout' || tool === 'skylight')) onPreview(null); }}
       >
       <defs><pattern id={patternId} width={grid} height={grid} patternUnits="userSpaceOnUse" x={view.x % grid} y={view.y % grid}><path d={`M ${grid} 0 L 0 0 0 ${grid}`} fill="none" stroke="#204259" strokeWidth=".7" /></pattern></defs>
@@ -396,7 +593,7 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
           {active.nodes.some(node => Math.abs(node.x - hover.x) < .000001) && <line x1={hover.x} x2={hover.x} y1={(RULER_SIZE - view.y) / view.scale} y2={(size.height - view.y) / view.scale}/>}
           {active.nodes.some(node => Math.abs(node.z - hover.z) < .000001) && <line y1={hover.z} y2={hover.z} x1={(RULER_SIZE - view.x) / view.scale} x2={(size.width - view.x) / view.scale}/>}
         </g>}
-        {visible.floors.map(floor => <polygon key={floor.id} data-entity={floor.id} points={polygon(floor.vertices.map(id => nodes.get(id)!))} fill={selected === floor.id ? '#177986' : '#405a76'} fillOpacity=".55" stroke="#7694b8" strokeWidth={1 / view.scale} />)}
+        {visible.floors.map(floor => <polygon key={floor.id} data-entity={floor.id} points={polygon(floor.vertices.map(id => nodes.get(id)!))} fill={(groupSelected(floor.id) || selected === floor.id) ? '#177986' : '#405a76'} fillOpacity=".55" stroke="#7694b8" strokeWidth={1 / view.scale} />)}
         {displayedImages.map(image => {
           const [a,b,c] = image.corners.map(p => ({ x: p.x * metersPerSceneUnit, z: p.z * metersPerSceneUnit }));
           if (![a.x,a.z,b.x,b.z,c.x,c.z].every(Number.isFinite)) return null;
@@ -430,6 +627,7 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
               <polygon {...interaction} data-model-footprint={image.id} points={polygon(corners)}
                 fill="#38bdf8" fillOpacity=".12" stroke="#7dd3fc" strokeWidth={1.5 / view.scale} style={{ cursor: 'pointer' }} />
             </g>}
+            {tool === 'objects' && modelIds.includes(image.id) && <polygon points={polygon(corners)} fill="#22d3ee" fillOpacity=".24" stroke="#22d3ee" strokeWidth={2 / view.scale} pointerEvents="none" />}
             {(selectedModelId === image.id || hoveredModelId === image.id) && <text x={Math.min(...corners.map(point => point.x))} y={Math.min(...corners.map(point => point.z)) - 6 / view.scale}
                 fill="#e0f2fe" stroke="#091423" strokeWidth={3 / view.scale} paintOrder="stroke" fontSize={11 / view.scale} pointerEvents="none">
                 {image.name ?? `Model ${image.id}`}
@@ -454,14 +652,14 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
             {selectedModel?.id === image.id && !selectedModel.locked && onSaveModel && !disabled && !modelBusy && <circle data-model-resize={image.id} cx={corners[2].x} cy={corners[2].z} r={6 / view.scale} fill="#facc15" stroke="#101827" strokeWidth={1 / view.scale} style={{ cursor: 'nwse-resize' }} onPointerDown={event => startModel(event, image.id, true)} />}
           </g>;
         })}
-        {visible.roofs.map(roof => { const points = roof.vertices.map(id => nodes.get(id)!); return <g key={roof.id} data-entity={roof.id} data-roof={roof.kind}><polygon points={polygon(points)} fill="#c084fc" fillOpacity={selected === roof.id ? .18 : .06} stroke="#c084fc" strokeWidth={3 / view.scale} pointerEvents="stroke" /></g>; })}
-        {visible.walls.map(wall => <g key={wall.id}><polygon data-entity={wall.id} points={polygon(wallFootprint(displayDocument, wall))} fill={selected === wall.id ? '#36b8c8' : '#b4c8df'} stroke="#5b8baf" strokeWidth={1 / view.scale} /><line data-entity={wall.id} x1={nodes.get(wall.start)!.x} y1={nodes.get(wall.start)!.z} x2={nodes.get(wall.end)!.x} y2={nodes.get(wall.end)!.z} stroke="transparent" strokeWidth={Math.max(wall.thickness, 10 / view.scale)} />{measurementsVisible && <text data-measurement={wall.id} x={(nodes.get(wall.start)!.x + nodes.get(wall.end)!.x) / 2} y={(nodes.get(wall.start)!.z + nodes.get(wall.end)!.z) / 2 - .2} fill="#dde8f6" fontSize={11 / view.scale} textAnchor="middle" pointerEvents="none">{formatPlanLength(distance(nodes.get(wall.start)!, nodes.get(wall.end)!), measurementUnits)}</text>}</g>)}
+        {visible.roofs.map(roof => { const points = roof.vertices.map(id => nodes.get(id)!); return <g key={roof.id} data-entity={roof.id} data-roof={roof.kind}><polygon points={polygon(points)} fill="#c084fc" fillOpacity={(groupSelected(roof.id) || selected === roof.id) ? .18 : .06} stroke="#c084fc" strokeWidth={3 / view.scale} pointerEvents="stroke" /></g>; })}
+        {visible.walls.map(wall => <g key={wall.id}><polygon data-entity={wall.id} points={polygon(wallFootprint(displayDocument, wall))} fill={(groupSelected(wall.id) || selected === wall.id) ? '#36b8c8' : '#b4c8df'} stroke="#5b8baf" strokeWidth={1 / view.scale} /><line data-entity={wall.id} x1={nodes.get(wall.start)!.x} y1={nodes.get(wall.start)!.z} x2={nodes.get(wall.end)!.x} y2={nodes.get(wall.end)!.z} stroke="transparent" strokeWidth={Math.max(wall.thickness, 10 / view.scale)} />{measurementsVisible && <text data-measurement={wall.id} x={(nodes.get(wall.start)!.x + nodes.get(wall.end)!.x) / 2} y={(nodes.get(wall.start)!.z + nodes.get(wall.end)!.z) / 2 - .2} fill="#dde8f6" fontSize={11 / view.scale} textAnchor="middle" pointerEvents="none">{formatPlanLength(distance(nodes.get(wall.start)!, nodes.get(wall.end)!), measurementUnits)}</text>}</g>)}
         {visible.openings.map(opening => {
           const footprint = openingFootprint(displayDocument, opening), host = displayDocument.walls.find(w => w.id === opening.wallId)!, frame = wallFrame(displayDocument, host);
-          const a = frame.point(opening.offset), b = frame.point(opening.offset + opening.width), color = selected === opening.id ? '#facc15' : opening.kind === 'door' ? '#f0ab65' : '#67e8f9';
+          const a = frame.point(opening.offset), b = frame.point(opening.offset + opening.width), color = (groupSelected(opening.id) || selected === opening.id) ? '#facc15' : opening.kind === 'door' ? '#f0ab65' : '#67e8f9';
           return <g key={opening.id} data-entity={opening.id} data-opening={opening.kind}><polygon points={polygon(footprint)} fill="#091423" stroke={color} strokeWidth={1.5 / view.scale} /><line x1={a.x} y1={a.z} x2={b.x} y2={b.z} stroke={color} strokeWidth={3 / view.scale} strokeDasharray={opening.kind === 'door' ? `${5 / view.scale} ${3 / view.scale}` : undefined} /><line x1={a.x} y1={a.z} x2={b.x} y2={b.z} stroke="transparent" strokeWidth={Math.max(host.thickness, 12 / view.scale)} /><text x={(a.x + b.x) / 2} y={(a.z + b.z) / 2 + .35} fill={color} fontSize={11 / view.scale} textAnchor="middle" pointerEvents="none">{opening.kind === 'door' ? 'Door' : 'Window'}</text></g>;
         })}
-        {visible.roofOpenings.map(opening => { const points = roofOpeningFootprint(displayDocument, opening), center = points.reduce((sum, p) => ({ x: sum.x + p.x / 4, z: sum.z + p.z / 4 }), { x: 0, z: 0 }); const color = selected === opening.id ? '#facc15' : opening.kind === 'skylight' ? '#67e8f9' : '#fb923c'; return <g key={opening.id} data-entity={opening.id} data-roof-opening={opening.kind}><polygon points={polygon(points)} fill={opening.kind === 'skylight' ? '#164e63' : '#091423'} fillOpacity={opening.kind === 'skylight' ? .65 : .9} stroke={color} strokeWidth={2 / view.scale} /><text x={center.x} y={center.z} fill={color} fontSize={10 / view.scale} textAnchor="middle" pointerEvents="none">{opening.kind === 'skylight' ? 'Skylight' : 'Cutout'}</text></g>; })}
+        {visible.roofOpenings.map(opening => { const points = roofOpeningFootprint(displayDocument, opening), center = points.reduce((sum, p) => ({ x: sum.x + p.x / 4, z: sum.z + p.z / 4 }), { x: 0, z: 0 }); const color = (groupSelected(opening.id) || selected === opening.id) ? '#facc15' : opening.kind === 'skylight' ? '#67e8f9' : '#fb923c'; return <g key={opening.id} data-entity={opening.id} data-roof-opening={opening.kind}><polygon points={polygon(points)} fill={opening.kind === 'skylight' ? '#164e63' : '#091423'} fillOpacity={opening.kind === 'skylight' ? .65 : .9} stroke={color} strokeWidth={2 / view.scale} /><text x={center.x} y={center.z} fill={color} fontSize={10 / view.scale} textAnchor="middle" pointerEvents="none">{opening.kind === 'skylight' ? 'Skylight' : 'Cutout'}</text></g>; })}
         {measurementsVisible && <g pointerEvents="none" fill="#dde8f6" fontSize={11 / view.scale} textAnchor="middle">
           {[...visible.floors, ...visible.roofs].map(entity => {
             const points = entity.vertices.map(id => nodes.get(id)!);
@@ -475,6 +673,8 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
         </g>}
         {handles.map(key => <circle key={key} data-node={key} cx={nodes.get(key)!.x} cy={nodes.get(key)!.z} r={6 / view.scale} fill="#facc15" stroke="#101827" strokeWidth={1 / view.scale} />)}
         {!!points.length && <><polyline points={polygon(hover ? [...points, hover] : points)} fill={tool !== 'wall' ? '#15b8a633' : 'none'} stroke="#2dd4bf" strokeWidth={2 / view.scale} strokeDasharray={`${6 / view.scale} ${4 / view.scale}`} pointerEvents="none" />{points.map((p, index) => <circle key={index} cx={p.x} cy={p.z} r={4 / view.scale} fill="#2dd4bf" pointerEvents="none" />)}{hover && <circle cx={hover.x} cy={hover.z} r={6 / view.scale} fill="none" stroke={hover.nodeId ? '#facc15' : '#2dd4bf'} strokeWidth={2 / view.scale} pointerEvents="none" />}</>}
+        {outlines.map((points, index) => <polygon key={index} data-selection-outline="" points={polygon(points)} pointerEvents="none"
+          fill="#fbbf24" fillOpacity=".24" stroke="#fde047" strokeWidth="2.5" vectorEffect="non-scaling-stroke" strokeDasharray="7 2" />)}
       </g>
       <g data-testid="design-rulers" pointerEvents="none" fontSize="10" fill="#cbd5e1">
         <title>Project coordinates in {measurementUnits === 'metric' ? 'metres' : 'feet'}. +X points right; +Z points down. Cyan axes mark zero.</title>
@@ -483,9 +683,20 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
         {zTicks.map(tick => <g key={tick.index} data-axis="z" data-world={tick.world} data-pixel={tick.pixel}><line y1={tick.pixel} y2={tick.pixel} x1={tick.major ? 16 : 22} x2={28} stroke={tick.index === 0 ? '#22d3ee' : '#64748b'}/>{tick.major && <text transform={`translate(12 ${tick.pixel + 3}) rotate(-90)`}>{tick.label}</text>}</g>)}
         <rect width={28} height={28} fill="#111e30"/><text x={3} y={11} fill="#22d3ee">X +</text><text x={3} y={24} fill="#22d3ee">Z +</text>
       </g>
+      {selectionCount > 0 && !marquee && <g data-selection-handle="move" transform={`translate(${Math.max(RULER_SIZE + 4, Math.min(handleX, size.width - 212))} ${Math.max(RULER_SIZE + 62, Math.min(handleY, size.height - 52))})`} style={{ cursor: 'move' }}>
+        <title>Drag to move the selected objects on X and Z</title>
+        <rect width="204" height="38" rx="7" fill="#fde047" stroke="#172033" strokeWidth="2" />
+        <text x="12" y="24" fill="#172033" fontSize="14" fontWeight="700">Drag to move ({selectionCount} selected)</text>
+      </g>}
+      {marquee && <rect data-selection-box="" pointerEvents="none"
+        x={view.x + Math.min(marquee.start.x, marquee.end.x) * view.scale}
+        y={view.y + Math.min(marquee.start.z, marquee.end.z) * view.scale}
+        width={Math.abs(marquee.end.x - marquee.start.x) * view.scale}
+        height={Math.abs(marquee.end.z - marquee.start.z) * view.scale}
+        fill="#22d3ee" fillOpacity={0.12} stroke="#22d3ee" strokeDasharray="5 3" />}
     </svg></ContextMenuTrigger>
     <ContextMenuContent aria-label="2D Design Tools" className="z-[5000] w-60" onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}>
-      {[...contextActions, viewGroup].map((group, index) => <div key={group.label}>
+      {[...contextActions.map(group => ({ ...group, actions: group.actions.flatMap(action => action.label === 'Select Objects' ? [action, ...groupActions] : [action]) })), viewGroup].map((group, index) => <div key={group.label}>
         {index > 0 && <ContextMenuSeparator className="my-0.5" />}
         {group.actions.map(action => <ContextMenuItem key={action.label} disabled={action.disabled || !enabled} onSelect={action.run} className={`py-0.5 ${action.active ? 'bg-accent/50' : ''}`}>
           <action.icon aria-hidden="true" className={`size-4 ${group.color}`} /><span>{action.label}</span>{action.active && <><Check aria-hidden="true" className="ml-auto size-3.5" /><span className="sr-only">Selected</span></>}

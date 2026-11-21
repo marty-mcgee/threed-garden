@@ -241,6 +241,8 @@ export const projectThreedMarkers = pgTable('project_threed_markers', {
     .on(table.userId, table.projectId),
   uniqueRuntimeMarker: uniqueIndex('idx_project_threed_markers_unique_runtime')
     .on(table.projectId, table.markerId),
+  typedRuntimeMarker: uniqueIndex('idx_project_threed_markers_typed_runtime')
+    .on(table.projectId, table.markerId, table.markerType),
 }));
 
 // ============================================

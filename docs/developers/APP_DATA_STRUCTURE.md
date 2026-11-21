@@ -2,7 +2,7 @@
 
 [Open the interactive schema explorer](app-data-structure.html) · [Structured schema snapshot](app-data-structure.json) · [Established App architecture](../plans/app-module-architecture.md)
 
-Snapshot: 2026-11-21, App 0.36.0, main / 0914bd3a plus working-tree changes. Generated from the actual local Drizzle declarations, without a database connection. This visualizes the existing structure; it does not introduce a new architecture.
+Snapshot: 2026-11-21, App 0.36.0, main / cd3f2140 plus working-tree changes. Generated from the actual local Drizzle declarations, without a database connection. This visualizes the existing structure; it does not introduce a new architecture.
 
 ## Explore the structure
 
@@ -12,14 +12,14 @@ Open the HTML file directly in a browser; it needs no server, network or CDN. Se
 
 | Domain | Tables | Columns | Foreign keys |
 | --- | ---: | ---: | ---: |
-| ThreeD | 49 | 706 | 111 |
+| ThreeD | 52 | 716 | 115 |
 | Multimedia | 13 | 136 | 24 |
 | Traffic | 10 | 227 | 10 |
 | Learn | 3 | 32 | 8 |
 | Projects (shared) | 6 | 84 | 15 |
 | Accounts (shared) | 5 | 48 | 2 |
 | Settings (shared) | 5 | 53 | 6 |
-| **Total** | **91** | **1286** | **176** |
+| **Total** | **94** | **1296** | **180** |
 
 Also includes **37 enums**, **161 ORM relation declarations** and **54 reviewed application mappings**. Counts describe source declarations, not verified live database objects. Auth aliases are deduplicated. Composite foreign keys remain single relationships with all participating columns. JSON/JSONB columns are shown without inventing their nested structures.
 
@@ -74,6 +74,9 @@ The interactive explorer expands polymorphic asset/Module links using the actual
 | [`threed_farmbot_peripheral_bindings`](../../src/libraries/schema/threed/index.ts) | 11 | 2 |
 | [`threed_farmbots`](../../src/libraries/schema/threed/index.ts) | 26 | 2 |
 | [`threed_ground_maps`](../../src/libraries/schema/threed/index.ts) | 14 | 2 |
+| [`threed_group_design_members`](../../src/libraries/schema/threed/groups.ts) | 3 | 1 |
+| [`threed_group_model_members`](../../src/libraries/schema/threed/groups.ts) | 4 | 2 |
+| [`threed_groups`](../../src/libraries/schema/threed/groups.ts) | 3 | 1 |
 | [`threed_harvests`](../../src/libraries/schema/threed/index.ts) | 15 | 3 |
 | [`threed_layers`](../../src/libraries/schema/threed/index.ts) | 16 | 1 |
 | [`threed_model_animation_assignments`](../../src/libraries/schema/threed/index.ts) | 8 | 3 |

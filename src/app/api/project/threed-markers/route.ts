@@ -1,3 +1,5 @@
+import { threedGroups, threedGroupDesignMembers, threedGroupModelMembers } from '@/libraries/schema/threed/groups';
+import { parseThreeDGroups } from '@/libraries/services/threed/design/groups';
 import { parseMeasurementUnits, MeasurementUnitsError } from '@/libraries/services/project/measurement-units';
 import { parseProjectArchitecture, ProjectArchitectureError } from '@/libraries/services/threed/design/project-architecture';
 import { assertProjectConfigurationCurrent, ProjectConfigurationConflict, ProjectConfigurationError } from '@/libraries/services/project/configuration';
@@ -392,6 +394,9 @@ async function saveSnapshot(request: NextRequest) {
     const viewState = parseThreeDProjectViewState(requestBody.viewState);
     const rawUnits = (requestBody.viewState as {design?: {measurementUnits?: unknown}})?.design?.measurementUnits;
     const measurementPatch = rawUnits === undefined ? {} : { measurementUnits: parseMeasurementUnits(rawUnits) };
+    let groups: ReturnType<typeof parseThreeDGroups> | undefined;
+    try { if (requestBody.groups !== undefined) groups = parseThreeDGroups(requestBody.groups); }
+    catch (error) { return NextResponse.json({ success: false, error: (error as Error).message }, { status: 400 }); }
     const architecture = requestBody.architecture === undefined ? undefined : parseProjectArchitecture(requestBody.architecture);
     const terrain = requestBody.terrain === undefined ? undefined : parseTerrainPlacement(requestBody.terrain);
     if (viewState.threeD?.sensorState && viewState.threeD.sensorState.projectId !== projectId) {
@@ -556,14 +561,14 @@ async function saveSnapshot(request: NextRequest) {
       const plantingRows = rows.filter(row => row.markerType === 'plantings');
       const sources = plantingRows.length ? await tx.select({id:threedPlantings.id,bedId:threedPlantings.bedId}).from(threedPlantings)
         .where(and(eq(threedPlantings.userId,userId),inArray(threedPlantings.id,plantingRows.map(row=>row.sourceAssetId)))) : [];
-      const groups = new Map<string, typeof plantingRows>();
+      const plantingGroups = new Map<string, typeof plantingRows>();
       for (const row of plantingRows) {
         const bedId = resolveProjectPlantingBedId(row.data, sources.find(source=>source.id===row.sourceAssetId)?.bedId);
         if (!bedId) continue;
         const key = `${row.threedId}:${bedId}`;
-        groups.set(key,[...(groups.get(key) ?? []),row]);
+        plantingGroups.set(key,[...(plantingGroups.get(key) ?? []),row]);
       }
-      for (const group of groups.values()) {
+      for (const group of plantingGroups.values()) {
         const bedId = resolveProjectPlantingBedId(group[0].data, sources.find(source=>source.id===group[0].sourceAssetId)?.bedId)!;
         const threedId = group[0].threedId;
         if (!await requireAssignedBed(userId,projectId,threedId,bedId)) throw new ProjectPlantingPlacementInputError('Assigned Project Bed not found');
@@ -627,6 +632,21 @@ async function saveSnapshot(request: NextRequest) {
         ));
       }
 
+      if (groups) {
+        if (!architecture || !requestBody.expectedConfiguration) throw new ProjectArchitectureError('Group edits require a complete, version-checked Project Save.');
+        const doc = architecture.document;
+        const entities = new Set([...doc.walls, ...doc.floors, ...doc.roofs, ...doc.openings, ...doc.roofOpenings].map(entity => entity.id));
+        const models = new Set(rows.filter(row => row.markerType === 'models').map(row => row.markerId));
+        const designMembers = groups.flatMap(group => group.entityIds.map(entityId => ({ projectId, groupId: group.id, entityId })));
+        const modelMembers = groups.flatMap(group => group.markerIds.map(markerId => ({ projectId, groupId: group.id, markerId })));
+        if (designMembers.some(row => !entities.has(row.entityId)) || modelMembers.some(row => !models.has(row.markerId))) {
+          throw new ProjectArchitectureError('A group member is missing from the Project.');
+        }
+        await tx.delete(threedGroups).where(eq(threedGroups.projectId, projectId));
+        if (groups.length) await tx.insert(threedGroups).values(groups.map(({ id, name }) => ({ projectId, id, name })));
+        if (designMembers.length) await tx.insert(threedGroupDesignMembers).values(designMembers);
+        if (modelMembers.length) await tx.insert(threedGroupModelMembers).values(modelMembers);
+      }
       const [savedProject] = await tx.update(project).set({
         config: sql`coalesce(${project.config}, '{}'::jsonb) || ${JSON.stringify({ ...measurementPatch, threeDViewState: viewState, ...(architecture ? { threeDArchitecture: architecture } : {}) })}::jsonb`,
         updatedAt: new Date(),
@@ -653,6 +673,7 @@ async function saveSnapshot(request: NextRequest) {
       success: true,
       data: {
         projectId,
+        ...(groups ? { groups } : {}),
         ...(saved.architecture ? { architecture: saved.architecture } : {}),
         markerCount: saved.markers.length,
         markers: saved.markers,

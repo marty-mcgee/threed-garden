@@ -1,3 +1,4 @@
+import type { ThreeDGroup } from './groups';
 import { entityLevelId, newDesign, validateDesign, type DesignDocument } from './document';
 import { designHistory, type DesignHistory } from './history';
 import { defaultDesignWorkspace, parseDesignWorkspace, type ProjectDesignWorkspaceState } from './workspace-state';
@@ -19,7 +20,16 @@ export function readProjectArchitecture(config: unknown): ProjectArchitecture | 
   if (!config || typeof config !== 'object' || !('threeDArchitecture' in config)) return undefined;
   return parseProjectArchitecture((config as Record<string, unknown>).threeDArchitecture);
 }
-export interface ProjectArchitectureDraft { history: DesignHistory; saved: string; selected: string | null; workspace?: ProjectDesignWorkspaceState; savedWorkspace?: string }
+export interface ProjectArchitectureDraft {
+  history: DesignHistory;
+  saved: string;
+  selected: string | null;
+  workspace?: ProjectDesignWorkspaceState;
+  savedWorkspace?: string;
+  groups?: ThreeDGroup[];
+  savedGroups?: string;
+  modelPositions?: Record<string, { x: number; z: number }>;
+}
 export function projectArchitectureDraft(content?: ProjectArchitecture, preferences?: ProjectDesignWorkspaceState): ProjectArchitectureDraft {
   const document = content ? parseProjectArchitecture(content).document : newDesign();
   const history = designHistory(document);
@@ -33,6 +43,8 @@ export function hydrateArchitectureDraft(draft: ProjectArchitectureDraft | undef
   return draft && architectureIsDirty(draft) ? draft : projectArchitectureDraft(content, preferences);
 }
 export const architectureIsDirty = (draft: ProjectArchitectureDraft) => JSON.stringify(draft.history.present) !== draft.saved
+  || Boolean(Object.keys(draft.modelPositions ?? {}).length)
+  || JSON.stringify(draft.groups ?? []) !== (draft.savedGroups ?? '[]')
   || (draft.workspace !== undefined && JSON.stringify(draft.workspace) !== draft.savedWorkspace);
 /** Acknowledges captured source only, retaining edits completed during Project Save. */
 export function acknowledgeArchitecture(draft: ProjectArchitectureDraft, captured: ProjectArchitecture, workspace?: ProjectDesignWorkspaceState): ProjectArchitectureDraft {

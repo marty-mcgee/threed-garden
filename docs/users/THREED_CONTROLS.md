@@ -28,7 +28,11 @@ The toolbar separates Project guidance from live Scene presentation: **Project T
 
 *Conceptual illustration: Select the object before editing. A unit change does not resize it.*
 
-In Design mode, the drawing toolbar is inside the upper-right of the 2D canvas, clear of the X/Z rulers. Groups are **Select, Pan | Wall, Floor, Roof | Door, Window | Skylight, Roof Cutout | Fit Plan, Zoom to Selection, Reset View**. Hover or focus a button for its tooltip.
+In Design mode, the drawing toolbar is inside the upper-right of the 2D canvas, clear of the X/Z rulers. Groups are **Select, Select Objects, Pan | Wall, Floor, Roof | Door, Window | Skylight, Roof Cutout | Fit Plan, Zoom to Selection, Reset View**. Hover or focus a button for its tooltip.
+
+Choose **Select Objects** and click objects one by one to add them, or drag a rectangle in either direction around the walls, floors or roofs you want to move on visible levels. Release to outline fully enclosed objects in yellow. Drag the yellow **Drag to move** handle beside the selection or any highlighted member to move the selection. The **Create ThreeD Group** action sits beside **Select Objects**. To inspect one object in Design Properties, choose **Select** and click it. Openings follow their hosts. If a selected object shares a corner with an unselected one, moving separates that corner so the neighboring object stays in place. Undo restores the original connections.
+
+With the canvas focused, press **Ctrl+A** or **Cmd+A** to select the Design across levels and all placed Models in the Project. Drag a highlighted member to move the selection on X/Z. Choose **Create ThreeD Group**, enter a name, and use **Save Project** to keep its membership. Use the **ThreeD Groups** list in Select Objects to recall it. **Ungroup** removes the group and keeps its members in place.
 
 With Wall selected, drag between endpoints or click each endpoint. Click again to extend the wall, or press Escape to finish. Other tools support dragging a blank area to pan. Panning retains the active tool, selected entity and unfinished drawing points. Select and Pan remain separate tools. Use Pan, Alt-drag or middle-drag to pan even when starting over an object. Wheel zoom stays anchored to the pointer; use Fit Plan or Zoom to Selection to frame content. Save Project uses the existing architecture and workspace snapshot.
 

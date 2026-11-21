@@ -1,13 +1,14 @@
 'use client';
 import { DesignModelProperties, type DesignModelSelection, type SaveDesignModel } from './DesignModelProperties';
+import type { ThreeDGroup } from '@/libraries/services/threed/design/groups';
 import type { ModelPlanImage } from '@/libraries/services/threed/models/model-plan-image';
 import type { ProjectTerrainSurface } from '@/libraries/services/threed/terrains/terrain-core';
 import { ProjectMeasurementUnits } from '@/components/project/ProjectMeasurementUnits';
 import { DesignNameInput } from './DesignNameInput';
 
-import { useCallback, useEffect, useRef, useState, type SetStateAction } from 'react';
+import { Fragment, type ReactNode, useCallback, useEffect, useRef, useState, type SetStateAction } from 'react';
 import dynamic from 'next/dynamic';
-import { Activity, Eye, Settings2, SlidersHorizontal, Building2, Scissors, SquareDashed, House, DoorOpen, Download, Layers, LockKeyhole, MousePointer2, Move, PanelsTopLeft, Pentagon, PencilRuler, Plus, Redo2, Trash2, Undo2, Upload, Loader2 } from 'lucide-react';
+import { Activity, Eye, Settings2, SlidersHorizontal, Building2, Scissors, SquareDashed, BoxSelect, House, DoorOpen, Download, Layers, LockKeyhole, MousePointer2, Move, PanelsTopLeft, Pentagon, PencilRuler, Plus, Redo2, Trash2, Undo2, Upload, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DetailsSectionScope, PersistentDetails } from '@/components/map/details/PersistentDetails';
@@ -57,12 +58,18 @@ export interface DesignEditorProps {
     projectId: number; projectName: string; draft: ProjectArchitectureDraft;
     onChange: (update: (draft: ProjectArchitectureDraft) => ProjectArchitectureDraft) => void;
     onSelect?: (selected: string | null) => void;
+    placedModelIds?: string[];
+    onMoveModels?: (ids: string[], dx: number, dz: number) => void;
     onSave: () => Promise<void>; saving: boolean;
     onPreview: (document: DesignDocument | null) => void;
     onVisibility: (levelId: string | string[] | undefined, showRoofs: boolean) => void;
     error?: string;
   };
 }
+type ModelMove = { ids: string[]; dx: number; dz: number };
+const groupsByHistoryStep = new WeakMap<DesignDocument, { before: ThreeDGroup[]; after: ThreeDGroup[] }>();
+const moveByHistoryStep = new WeakMap<DesignDocument, ModelMove>();
+
 export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, selectedModelId, modelImages, terrain, metersPerSceneUnit, onModelSelect, frameRequest, active = true, canSave = true, scene, onActionsBusyChange }: DesignEditorProps = {}) {
   const controlsHost = useRef<HTMLDivElement>(null);
   const [localDraft, setLocalDraft] = useState(() => projectArchitectureDraft());
@@ -151,7 +158,12 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
   }, [setHistory]);
   const select = useCallback((id: string | null) => {
     const nextLevel = id ? entityLevelId(doc, id) : undefined;
-    if (nextLevel && nextLevel !== activeLevelId) { setLevelChoice(nextLevel); setCancelToken(value => value + 1); setPreview(null); setTool('select'); }
+    if (nextLevel && nextLevel !== activeLevelId) {
+      setLevelChoice(nextLevel);
+      setCancelToken(value => value + 1);
+      setPreview(null);
+      setTool('select');
+    }
     setSelected(nextLevel ? id : null);
   }, [doc, activeLevelId, setSelected]);
   const cancel = useCallback(() => { setCancelToken(value => value + 1); setPreview(null); setMessage('Draft cancelled. Completed design geometry is retained.'); }, []);
@@ -166,6 +178,47 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
     if (occupied && !window.confirm(`Delete ${level.name} and all of its walls, floors, roofs and all hosted openings? Undo can restore them.`)) return;
     cancel(); commit(removeLevel(doc, activeLevelId)); changeWorkspace({ levelId: doc.levels.find(other => other.id !== activeLevelId)!.id, visibleLevelIds: visibleLevelIds.filter(id => id !== activeLevelId) }); setSelected(null); setTool('select'); setMessage('Level removed. Undo restores the level and its geometry together.');
   }
+  const [selectAllRequest, setSelectAllRequest] = useState(0);
+  function selectAllObjects() {
+    cancel();
+    setSelected(null);
+    setTool('objects');
+    setSelectAllRequest(n => n + 1);
+    setMessage('All Design objects and placed Models selected. Drag a highlighted member to move the selection.');
+  }
+  function commitMixedMove(document: DesignDocument, ids: string[], dx: number, dz: number) {
+    if (!scene?.onMoveModels) throw new Error('Model movement is unavailable.');
+    const present = validateDesign(document);
+    scene.onMoveModels(ids, dx, dz);
+    moveByHistoryStep.set(present, { ids, dx, dz });
+    setHistory(state => ({ past: [...state.past, state.present].slice(-100), present, future: [] }));
+  }
+  function changeGroups(groups: ThreeDGroup[]) {
+    updateDraft(current => {
+      const present = { ...current.history.present };
+      groupsByHistoryStep.set(present, { before: current.groups ?? [], after: groups });
+      return {
+        ...current,
+        groups,
+        history: { past: [...current.history.past, current.history.present].slice(-100), present, future: [] },
+      };
+    });
+  }
+  function stepHistory(redo: boolean) {
+    const step = redo ? history.future[0] : history.present;
+    if (!(redo ? history.future.length : history.past.length)) return;
+    const movement = moveByHistoryStep.get(step);
+    try {
+      if (movement) scene?.onMoveModels?.(movement.ids, redo ? movement.dx : -movement.dx, redo ? movement.dz : -movement.dz);
+      const groups = groupsByHistoryStep.get(step);
+      updateDraft(current => ({
+        ...current,
+        ...(groups ? { groups: redo ? groups.after : groups.before } : {}),
+        history: redo ? redoDesign(current.history) : undoDesign(current.history),
+      }));
+      setSelected(null);
+    } catch (error) { setMessage((error as Error).message); }
+  }
   function remove() {
     if (!selected) return;
     cancel(); commit(removeEntity(doc, selected)); setSelected(null);
@@ -174,8 +227,13 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
     const keyboard = (event: KeyboardEvent) => {
       if (!active || !canSave || importing || loading) return;
       if ((event.target as Element)?.closest?.('input, textarea, select, [contenteditable]:not([contenteditable="false"])')) return;
-      if (event.key === 'Escape') { event.preventDefault(); cancel(); if (tool === 'door' || tool === 'window' || tool === 'cutout' || tool === 'skylight') setTool('select'); return; }
-      if ((event.ctrlKey || event.metaKey) && (event.key.toLowerCase() === 'z' || event.key.toLowerCase() === 'y')) { event.preventDefault(); cancel(); setHistory(event.shiftKey || event.key.toLowerCase() === 'y' ? redoDesign : undoDesign); setSelected(null); }
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'a' && (event.target as Element)?.closest?.('[aria-label="Design plan canvas"]')) {
+        event.preventDefault();
+        selectAllObjects();
+        return;
+      }
+      if (event.key === 'Escape') { event.preventDefault(); cancel(); if (tool === 'objects' || tool === 'door' || tool === 'window' || tool === 'cutout' || tool === 'skylight') setTool('select'); return; }
+      if ((event.ctrlKey || event.metaKey) && (event.key.toLowerCase() === 'z' || event.key.toLowerCase() === 'y')) { event.preventDefault(); cancel(); stepHistory(event.shiftKey || event.key.toLowerCase() === 'y'); }
       else if (event.key === 'Delete' || event.key === 'Backspace') { event.preventDefault(); remove(); }
     };
     window.addEventListener('keydown', keyboard); return () => window.removeEventListener('keydown', keyboard);
@@ -205,29 +263,29 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
     setMessage('Editable JSON backup exported. Project save status is unchanged.');
   }
   const toolGroups = [
-      { label: 'Selection and pan', color: 'text-cyan-700 dark:text-cyan-300', tools: [{ key: 'select', title: 'Select', icon: MousePointer2 }, { key: 'pan', title: 'Pan', icon: Move }] },
+      { label: 'Selection and pan', color: 'text-cyan-700 dark:text-cyan-300', tools: [{ key: 'select', title: 'Select', icon: MousePointer2 }, { key: 'objects', title: 'Select Objects', icon: BoxSelect }, { key: 'pan', title: 'Pan', icon: Move }] },
       { label: 'Structures', color: 'text-emerald-700 dark:text-emerald-300', tools: [{ key: 'wall', title: 'Wall', icon: PencilRuler }, { key: 'floor', title: 'Floor', icon: Pentagon }, { key: 'roof', title: 'Roof', icon: House }] },
       { label: 'Wall openings', color: 'text-amber-700 dark:text-amber-300', tools: [{ key: 'door', title: 'Door', icon: DoorOpen }, { key: 'window', title: 'Window', icon: PanelsTopLeft }] },
       { label: 'Roof openings', color: 'text-violet-700 dark:text-violet-300', tools: [{ key: 'skylight', title: 'Skylight', icon: SquareDashed }, { key: 'cutout', title: 'Roof Cutout', icon: Scissors }] },
     ] as const;
   const actionGroups = [
-    ...toolGroups.map(group => ({ label: group.label, color: group.color, actions: group.tools.map(item => ({ label: item.title, icon: item.icon, active: tool === item.key, disabled: !canSave || importing || loading, run: () => { cancel(); setTool(item.key); if (item.key === 'cutout' || item.key === 'skylight') { setShowRoofs(true); setMessage('Choose a host roof in the active plan. Hover to preview a 24 by 36 inch opening. Select the roof first when roofs overlap.'); } if (item.key === 'door' || item.key === 'window') setMessage(`Choose a host wall in the plan to place a ${item.title.toLowerCase()}. Hover to preview; Escape cancels.`); } })) })),
+    ...toolGroups.map(group => ({ label: group.label, color: group.color, actions: group.tools.map(item => ({ label: item.title, icon: item.icon, active: tool === item.key, disabled: !canSave || importing || loading, run: () => { cancel(); setTool(item.key); if (item.key === 'objects') { setSelected(null); setMessage('Click objects to add them or drag a selection box. Drag the yellow handle to move them.'); } if (item.key === 'cutout' || item.key === 'skylight') { setShowRoofs(true); setMessage('Choose a host roof in the active plan. Hover to preview a 24 by 36 inch opening. Select the roof first when roofs overlap.'); } if (item.key === 'door' || item.key === 'window') setMessage(`Choose a host wall in the plan to place a ${item.title.toLowerCase()}. Hover to preview; Escape cancels.`); } })) })),
     { label: 'Design history', color: 'text-sky-700 dark:text-sky-300', actions: [
-      { label: 'Undo', icon: Undo2, disabled: !canSave || !history.past.length || importing || loading, run: () => { cancel(); setHistory(undoDesign); setSelected(null); } },
-      { label: 'Redo', icon: Redo2, disabled: !canSave || !history.future.length || importing || loading, run: () => { cancel(); setHistory(redoDesign); setSelected(null); } },
+      { label: 'Undo', icon: Undo2, disabled: !canSave || !history.past.length || importing || loading, run: () => { cancel(); stepHistory(false); } },
+      { label: 'Redo', icon: Redo2, disabled: !canSave || !history.future.length || importing || loading, run: () => { cancel(); stepHistory(true); } },
     ] },
     { label: 'Design JSON files', color: 'text-teal-700 dark:text-teal-300', actions: [
       { label: 'Import JSON', icon: importing ? Loader2 : Upload, disabled: !canSave || saving || importing || loading, run: () => setImporting(true) },
       { label: 'Export JSON', icon: Download, disabled: importing || loading, run: exportFile },
     ] },
   ];
-  const drawingActions = <nav aria-label="ThreeD Design Action Tools" className={`flex min-w-0 max-w-full flex-wrap items-center gap-1 ${scene ? "[&_button]:h-7 [&_button]:w-7 [&_svg]:size-3.5" : ""}`}>
+  const drawingActions = (groupControls?: ReactNode) => <nav aria-label="ThreeD Design Action Tools" className={`flex min-w-0 max-w-full flex-wrap items-center gap-1 ${scene ? "[&_button]:h-7 [&_button]:w-7 [&_svg]:size-3.5" : ""}`}>
     {actionGroups.map(group => <div key={group.label} role="group" aria-label={group.label} className="flex shrink-0 items-center gap-1 rounded-md border border-border bg-muted/40 p-1">
-      {group.actions.map(action => <DesignAction key={action.label} label={action.label} disabled={action.disabled} variant={'active' in action && action.active ? (scene ? 'secondary' : 'default') : 'outline'} aria-pressed={'active' in action ? action.active : undefined} onClick={action.run}><action.icon className={`h-4 w-4 ${'active' in action && action.active && !scene ? '' : group.color} ${action.label === 'Import JSON' && importing ? 'animate-spin' : ''}`} aria-hidden="true" /></DesignAction>)}
+      {group.actions.map(action => <Fragment key={action.label}><DesignAction label={action.label} disabled={action.disabled} variant={'active' in action && action.active ? (scene ? 'secondary' : 'default') : 'outline'} aria-pressed={'active' in action ? action.active : undefined} onClick={action.run}><action.icon className={`h-4 w-4 ${'active' in action && action.active && !scene ? '' : group.color} ${action.label === 'Import JSON' && importing ? 'animate-spin' : ''}`} aria-hidden="true" /></DesignAction>{action.label === 'Select Objects' && groupControls}</Fragment>)}
     </div>)}
   </nav>;
   const header =     <header className="flex shrink-0 flex-wrap items-center gap-2 border-b pb-2"><div className="flex min-w-0 flex-wrap items-center gap-2"><Building2 className="h-5 w-5 text-cyan-400" /><h1 className="text-base font-semibold">ThreeD Design</h1><DesignFieldHelp label="ThreeD Design">Draw architectural content in the active Project Scene. Save Project stores editable parameters and existing Scene objects together. Export JSON makes a portable architectural backup. Wall centers and floor corners share node IDs.</DesignFieldHelp><span className="text-xs text-muted-foreground">{scene?.projectName ?? 'Local tools preview'}</span></div>
-{drawingActions}</header>;
+{drawingActions()}</header>;
   const importDialog = <DesignImportDialog open={importing} onOpenChange={setImporting} onImport={importFile} />;
   const importStatus = <div data-testid="design-save-status" aria-live="polite" className="text-xs text-muted-foreground">{saving ? 'Saving Project...' : scene?.error ? 'Project save failed - edits retained' : dirty ? 'Unsaved Project changes' : 'No unsaved architecture changes'}{!canSave && ' / Sign in as the Project owner to edit.'}</div>;
   const propertiesPanel = <aside data-testid="design-properties" className={`threed-design-sections flex min-w-0 flex-col gap-2 [&>section]:min-w-0 ${scene ? '' : 'rounded-lg border border-white/10 bg-[#111a28] p-3'}`}>
@@ -274,7 +332,7 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
     {(error || scene?.error) && <p role="alert" className="text-red-400">{error || scene?.error}</p>}
   </div></PersistentDetails>;
   const controls = <div ref={controlsHost} className="flex min-h-0 min-w-0 flex-col gap-2 overflow-auto overscroll-contain text-foreground [&_input]:min-w-0 [&_label]:min-w-0 [&_select]:max-w-full" data-testid="design-controls"><fieldset disabled={loading || importing || !canSave} className="min-w-0 border-0 p-0">{propertiesPanel}</fieldset>{statusPanel}</div>;
-  const plan = <DesignPlan selectedModel={selectedModel} onSaveModel={onSaveModel} modelBusy={modelBusy} visibleLevelIds={visibleLevelIds} onToggleLevel={toggleLevel} contextActions={actionGroups} showMeasurements={canSave ? workspace.showMeasurements ?? false : readOnlyMeasurements} onShowMeasurementsChange={showMeasurements => { if (canSave) changeWorkspace({ showMeasurements }); else setReadOnlyMeasurements(showMeasurements); }} selectedModelId={selectedModelId} modelImages={modelImages} terrain={terrain} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={onModelSelect} measurementUnits={units} frameRequest={frameRequest} embedded={Boolean(scene)} drawingActions={scene ? drawingActions : undefined} planView={workspace.plan} onViewChange={plan => changeWorkspace({ plan })} active={active} disabled={!canSave || importing} document={doc} displayDocument={displayed} activeLevelId={activeLevelId} selected={selected} tool={tool} gridSnap={gridSnap} onSelect={select} onCommit={commit} onPreview={previewUpdate} onMessage={setMessage} onDrawComplete={id => { setSelected(id); setTool('select'); }} cancelToken={cancelToken} />;
+  const plan = <DesignPlan placedModelIds={scene?.placedModelIds} selectAllRequest={selectAllRequest} groups={draft.groups} onGroupChange={scene && canSave ? changeGroups : undefined} onMixedMove={commitMixedMove} selectedModel={selectedModel} onSaveModel={onSaveModel} modelBusy={modelBusy} visibleLevelIds={visibleLevelIds} onToggleLevel={toggleLevel} contextActions={actionGroups} showMeasurements={canSave ? workspace.showMeasurements ?? false : readOnlyMeasurements} onShowMeasurementsChange={showMeasurements => { if (canSave) changeWorkspace({ showMeasurements }); else setReadOnlyMeasurements(showMeasurements); }} selectedModelId={selectedModelId} modelImages={modelImages} terrain={terrain} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={onModelSelect} measurementUnits={units} frameRequest={frameRequest} embedded={Boolean(scene)} drawingActions={scene ? drawingActions : undefined} planView={workspace.plan} onViewChange={plan => changeWorkspace({ plan })} active={active} disabled={!canSave || importing} document={doc} displayDocument={displayed} activeLevelId={activeLevelId} selected={selected} tool={tool} gridSnap={gridSnap} onSelect={select} onCommit={commit} onPreview={previewUpdate} onMessage={setMessage} onDrawComplete={id => { setSelected(id); setTool('select'); }} cancelToken={cancelToken} />;
   if (scene) return <div className="threed-design-editor relative flex h-full min-h-0 min-w-0 overflow-hidden" data-testid="home-editor">
     {importDialog}
     <div id={`design-properties-${scene.projectId}`} tabIndex={-1} role="region" aria-label="Design Properties" data-testid="design-properties-panel" className="threed-design-properties threed-workspace-panel threed-scene-panel-surface threed-scene-sidebar-size flex min-h-0 min-w-0 shrink-0 flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md"><DetailsSectionScope.Provider value={`design:${scene.projectId}`}><div className="mb-2 flex shrink-0 flex-wrap items-center gap-2 text-sm font-semibold"><Building2 className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />Design Properties<DesignFieldHelp label="Design Properties">Edit selected geometry and workspace settings. Save Project retains both.</DesignFieldHelp><Button type="button" variant="ghost" className="threed-design-properties-access ml-auto h-11 px-2 text-xs" onClick={() => {
