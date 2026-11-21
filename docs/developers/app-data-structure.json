@@ -1,8 +1,8 @@
 {
   "generatedAt": "2026-11-21",
   "branch": "main",
-  "head": "cd3f2140f5c26efcef2b83ad8b111d20a291accf",
-  "version": "0.36.0",
+  "head": "139bba2b10bf36534b450ea5fc9002e406a3f632",
+  "version": "0.36.1",
   "summary": {
     "tables": 94,
     "columns": 1296,
@@ -24718,7 +24718,7 @@
     }
   ],
   "sourceHashes": {
-    "src/app/api/project/threed-markers/route.ts": "d8b797bdab4e98a7c4e36e96df898375164e716cfa17b66a114d0396ceea339e",
+    "src/app/api/project/threed-markers/route.ts": "118c8e7d7ddbdcf709023a60929d03c2a6ddcf03be9f7258efea9d2e24a67661",
     "src/libraries/project-assets/asset-registry.ts": "10cda90f2baf403aa27f5723d7478402f7a1febc8c99a4b1efffccaee72c240b",
     "src/libraries/schema/auth/index.ts": "df98d02c496180eea94d986d92634deee72a10a2bb264cdc073775c1b72374b4",
     "src/libraries/schema/auth/user-role-audit.ts": "9e207990b630615acbe5f77622dbf586275f1777b401e83e46f29c518c3220e7",
