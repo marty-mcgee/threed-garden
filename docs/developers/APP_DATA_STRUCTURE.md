@@ -2,7 +2,7 @@
 
 [Open the interactive schema explorer](app-data-structure.html) · [Structured schema snapshot](app-data-structure.json) · [Established App architecture](../plans/app-module-architecture.md)
 
-Snapshot: 2026-11-21, App 0.35.12, main / 1a66a681 plus working-tree changes. Generated from the actual local Drizzle declarations, without a database connection. This visualizes the existing structure; it does not introduce a new architecture.
+Snapshot: 2026-11-21, App 0.36.0, main / 0914bd3a plus working-tree changes. Generated from the actual local Drizzle declarations, without a database connection. This visualizes the existing structure; it does not introduce a new architecture.
 
 ## Explore the structure
 

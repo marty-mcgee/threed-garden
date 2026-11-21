@@ -2,7 +2,9 @@
 
 ## Current checkpoint
 
-[v0.35.12 - Project Setup, Scene Setup and Wall Drawing](docs/releases/v0.35.12.md) is the local release candidate. In the Scene workspace, **Scene > Scene Setup** brings ground sizing, Ground Map, lighting and Environment Model into the existing inspector. Manual ground dimensions use the Project measurement units and calibration.
+[v0.36.0 - ThreeD Garden Release Metadata](docs/releases/v0.36.0.md) is the local release candidate.
+
+The Developer confirmed [v0.35.12 - Project Setup, Scene Setup and Wall Drawing](docs/releases/v0.35.12.md#production-status) reached production on November 21, 2026. In the Scene workspace, **Scene > Scene Setup** brings ground sizing, Ground Map, lighting and Environment Model into the existing inspector. Manual ground dimensions use the Project measurement units and calibration.
 
 The Developer confirmed that [v0.35.10 - App Skills and Agent Requests](docs/releases/v0.35.10.md#production-status) reached production on November 20, 2026. The Developer confirmed [v0.35.11](docs/releases/v0.35.11.md#production-status) reached production on November 21, 2026. The Developer confirmed successful local Project creation. New Project now accepts workspace, appearance, layers, coordinate calibration and Project meta tags together with Project details in the create request.
 
