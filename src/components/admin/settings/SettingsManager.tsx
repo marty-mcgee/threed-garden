@@ -1,6 +1,7 @@
 'use client';
 
 import { SettingsSection } from '@/components/settings/SettingsSection';
+import { AgentSkillsSettings } from './AgentSkillsSettings';
 import { MetaTagsSettings, useMetaTagsEditor } from '@/components/settings/MetaTagsSettings';
 import { ModuleAppearanceSettings, useModuleAppearanceEditor } from '@/components/settings/ModuleAppearanceSettings';
 import { ModelPreviewSettings } from '@/components/settings/ModelPreviewSettings';
@@ -90,6 +91,7 @@ export function SettingsManager() {
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-contain pr-1 pb-2">
       <ModuleAppearanceSettings editor={moduleAppearance} />
       <MetaTagsSettings editor={metaTags} />
+      {moduleAppearance.context?.canEdit && !moduleAppearance.context.error && <AgentSkillsSettings />}
       {(error || message) && <p role="alert" className="rounded-md border border-destructive/40 p-2 text-sm text-destructive">{error || message}</p>}
       {loading && !draft && <p role="status" className="p-2 text-sm text-muted-foreground">Loading your Settings…</p>}
       {draft && <div className="space-y-2">

@@ -2,7 +2,9 @@
 
 ## Current checkpoint
 
-[v0.35.9 - ThreeD Admin Bulk Edit and Plantings Sort Order](docs/releases/v0.35.9.md) is ready for the Developer’s commit. The Developer confirmed the signed-in Plantings Bulk Edit check and both Plantings migrations. TypeScript, 18 focused checks, all 114 CI tasks and the guarded production build passed. Deployment is pending.
+[v0.35.10 - App Skills and Agent Requests](docs/releases/v0.35.10.md) is ready for manual commit. Codex acknowledged the release Skill request in the coordinating conversation. Fresh TypeScript, four focused checks, all 115 CI tasks and the isolated production build passed. Deployment is pending.
+
+The Developer confirmed that [v0.35.9 - ThreeD Admin Bulk Edit and Plantings Sort Order](docs/releases/v0.35.9.md#production-status) reached production on November 20, 2026. The signed-in Plantings Bulk Edit check and both Plantings migrations were confirmed before release.
 
 The [v0.35.8 release preparation skill](docs/releases/v0.35.8.md) was committed locally at `071a7608`. Its deployment remains unconfirmed.
 

@@ -60,6 +60,7 @@ const tasks = {
   'threed-model-image-backfill': [ts('validate-threed-model-image-backfill.mts')],
   'shadcn-ui-browser': [node('validate-shadcn-primitives-browser.cjs')],
   'repository-maintenance': [node('validate-repository-maintenance.cjs'), node('validate-farmbot-status-summary.cjs')],
+  'admin-skills': [node('validate-admin-skills.cjs')],
   'design-appearance-top-view': [
     node('validate-project-model-lock.cjs'),
     node('validate-model-top-view-export.cjs'),
@@ -259,6 +260,7 @@ const ci = [
   'multimedia-authority',
   'project-weather',
   'repository-maintenance',
+  'admin-skills',
   'threed-designs',
   'project-configurations',
   'admin-sidebar',

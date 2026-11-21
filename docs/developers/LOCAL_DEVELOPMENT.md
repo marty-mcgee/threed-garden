@@ -13,6 +13,12 @@ npm run dev
 
 Open `http://localhost:4444`. Create an untracked `.env.local` in the project root and populate it with your own development values and never commit it.
 
+## Agent for release preparation
+
+Admin Settings can queue the repository’s release-preparation Skill in an existing Codex conversation. On the App host, install a Codex CLI with `codex queue --help` support and set the server-only `THREED_SKILLS_THREAD_ID` to the UUID of the ThreeD Garden coordinating conversation. That agent can delegate work to other agents. Codex rejects direct input to unloaded child agents. In local mode the App process uses the operating-system account’s Codex installation and thread store. A hosted App needs the CLI on its executable path and access to the target Agent.
+
+For a remote Codex app server, configure `THREED_SKILLS_AGENT_URL` with its secure WebSocket address and, when required, supply the bearer token through `THREED_SKILLS_AGENT_TOKEN`. The browser sends only a Skill name and a version. The response confirms queue delivery. Follow the target conversation for execution results and the manual release handoff.
+
 ## Database schema commands
 
 Use the native Drizzle Kit commands defined in `package.json`, running from the repository root:

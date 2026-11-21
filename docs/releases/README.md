@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.35.9 - ThreeD Admin Bulk Edit and Plantings Sort Order (prepared, deployment pending)](v0.35.9.md)
+- [v0.35.10 - App Skills and Agent Requests (prepared, deployment pending)](v0.35.10.md)
+
+- [v0.35.9 - ThreeD Admin Bulk Edit and Plantings Sort Order (Developer-confirmed production)](v0.35.9.md#production-status)
 
 - [v0.35.8 - ThreeD App Version Preparation Skill (prepared, deployment pending)](v0.35.8.md)
 

@@ -124,6 +124,7 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
   let metaSaves = 0, metaDiscards = 0;
   const metaEditor = { dirty: false, busy: false, disabled: false, reload() {}, discard() { metaDiscards++; this.dirty = false; }, async save() { metaSaves++; this.dirty = false; } };
   const form = load('src/components/admin/settings/SettingsManager.tsx', {
+    './AgentSkillsSettings': { AgentSkillsSettings: 'agent-skills' },
     react: formHarness.react, 'react/jsx-runtime': { jsx: element, jsxs: element },
     'lucide-react': new Proxy({}, { get: (_, key) => key }),
     '@/components/admin/layout/AdminWorkspaceHeader': { AdminWorkspaceHeader: 'Header' },
@@ -138,6 +139,11 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
   const renderForm = () => formHarness.render(() => form.SettingsManager());
   const button = (tree, label) => find(tree, node => node.type === 'Button' && text(node).includes(label));
   let tree = renderForm(); assert(button(tree, 'Save Changes').props.disabled);
+  assert(find(tree, node => node.type === 'agent-skills'));
+  moduleState = { ...moduleState, canEdit: false };
+  assert(!find(renderForm(), node => node.type === 'agent-skills'));
+  moduleState = { ...moduleState, canEdit: true };
+  tree = renderForm();
   find(tree, node => node.props?.id === 'workspace-traffic').props.onCheckedChange(false);
   tree = renderForm(); assert(!button(tree, 'Save Changes').props.disabled);
   assert(find(tree, node => node.props?.htmlFor === 'workspace-traffic'), 'Switch has visible label');
@@ -341,6 +347,47 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
   assert.equal(css.get('--threed-dark-control'), '#000040');
   assert.equal(css.get('--threed-dark-control-text'), '#ffffff');
   assert.equal(css.get('--threed-control-active-opacity'), '60%');
+  const skillHarness = harness();
+  const skillCalls = [];
+  let finishRequest;
+  const { AgentSkillsSettings } = load('src/components/admin/settings/AgentSkillsSettings.tsx', {
+    react: skillHarness.react,
+    'react/jsx-runtime': { jsx: element, jsxs: element },
+    'lucide-react': { Send: 'send' },
+    '@/components/ui/button': { Button: 'Button' },
+    '@/components/ui/input': { Input: 'Input' },
+    '../../../../package.json': { version: '1.0.0' },
+  }, {
+    AbortSignal,
+    fetch(url, options) {
+      skillCalls.push({ url, method: options.method, body: JSON.parse(options.body) });
+      return new Promise(resolve => { finishRequest = (status, result) => resolve({ status, json: async () => result }); });
+    },
+  });
+  const renderSkill = () => skillHarness.render(AgentSkillsSettings);
+  const submitSkill = tree => find(tree, node => node.type === 'form').props.onSubmit({ preventDefault() {} });
+  const skillTree = renderSkill();
+  const input = find(skillTree, node => node.type === 'Input');
+  assert.equal(input.props.value, '1.0.0');
+  input.props.onChange({ target: { value: 'v0.35.10' } });
+  const submissionTree = renderSkill();
+  const firstRequest = submitSkill(submissionTree);
+  await submitSkill(submissionTree);
+  const skillRequest = { skill: 'prepare-threed-app-version', version: '0.35.10' };
+  assert.deepEqual(skillCalls, [{ url: '/api/admin/skills', method: 'POST', body: skillRequest }]);
+  finishRequest(202, { ...skillRequest, version: '0.35.9', status: 'queued' });
+  await firstRequest;
+  const afterMismatch = renderSkill();
+  assert.match(text(find(afterMismatch, node => node.props?.role === 'alert')), /confirmation is unavailable/);
+  const retry = submitSkill(afterMismatch);
+  finishRequest(202, { ...skillRequest, status: 'queued' });
+  await retry;
+  const afterQueued = renderSkill();
+  assert.match(text(find(afterQueued, node => node.props?.role === 'status')), /v0\.35\.10 was queued/);
+  assert(find(afterQueued, node => node.type === 'Button').props.disabled);
+  await submitSkill(afterQueued);
+  assert.equal(skillCalls.length, 2);
+  console.log('PASS Agent Skills settings: Super Admin visibility, target version, one request per submission, receipt matching and queued feedback (mock transport).');
   console.log('PASS Panel Appearance: independent sliders, fixed bounds, CSS values, saved restoration and reset');
   console.log('PASS Settings provider/form: signed-out defaults, stale-account responses, saved appearance, failed-save retention, dirty/discard/refresh and accessible labels (mock React/network).');
 })().catch(error => { console.error(error); process.exitCode = 1; });

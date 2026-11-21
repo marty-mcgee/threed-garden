@@ -22,6 +22,10 @@ Expand a section or subgroup to see its pages. Expansion choices are remembered 
 
 Creation buttons on Admin pages are green. Read the button label before acting: existing Save buttons can also be green. Module icons and colors follow saved App Settings; utility icons such as the creation Plus remain distinct. Use search, filters and paging where offered to find records, and follow linked relationship badges to their related Admin records.
 
+## Request release preparation
+
+As an active Super Admin, open **Admin → Settings → Skills**, enter the target version and choose **Queue release preparation**. The version defaults to the current App version. After the queue confirms delivery, follow the configured Agent conversation for progress and validation results. If delivery is uncertain, check the conversation before retrying. [Agent configuration](../developers/LOCAL_DEVELOPMENT.md#agent-for-release-preparation)
+
 ## Sort and edit ThreeD records
 
 Use **Bulk Edit** in a standalone ThreeD Admin catalog to change several records together. The table below lists the fields each catalog supports. On the Watering Schedules page, choose **Schedules** for planned watering or **History** for recorded outcomes.
