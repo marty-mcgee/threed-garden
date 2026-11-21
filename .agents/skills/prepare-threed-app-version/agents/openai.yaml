@@ -1,0 +1,3 @@
+interface:
+  display_name: "Prepare ThreeD App: New Version v0.x.x"
+  short_description: "Prepare and verify a ThreeD App release candidate"

@@ -61,6 +61,8 @@ Before changing any ThreeD Garden Admin page, shared Admin UI component, or API 
 
 ## Commands and documentation
 
+For a requested version release, use [Prepare ThreeD App: New Version v0.x.x](docs/agents/skills/prepare-threed-app-version/SKILL.md).
+
 Use Node 24 and declared npm 11.6.2. Clean installs use `npm ci`; deliberate dependency changes use the matching npm version to reconcile package/lock together. Retain lockfile integrity checks. Inspect scripts before running them.
 
 - `npm run typecheck` (fresh gate: `tsc --noEmit --incremental false`).

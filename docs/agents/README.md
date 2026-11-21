@@ -18,6 +18,8 @@ Read [AGENTS.md](../../AGENTS.md) and [CONTEXT.md](../../CONTEXT.md) fully befor
 
 [Safe change areas](SAFE_CHANGE_AREAS.md) · [Task/contribution checklists](TASK_CHECKLISTS.md) · [Validation ladder](VALIDATION.md)
 
+Use `$prepare-threed-app-version` in Codex when the Developer requests a new release candidate. [ThreeD App version preparation workflow](skills/prepare-threed-app-version/SKILL.md)
+
 Follow the Admin pre-edit rule in [AGENTS.md](../../AGENTS.md#prove-act-document). Use `$apply-threed-admin-page-blueprint` to select the [repository skill](../../.agents/skills/apply-threed-admin-page-blueprint/SKILL.md) in Codex. It loads the [canonical Blueprint skill](skills/apply-threed-admin-page-blueprint/SKILL.md). The [rollout plan](../plans/admin-threed-workspace-blueprint.md#rollout-across-top-modules) tracks the four Top Modules.
 
 Inspect scripts before execution. Use Node 24, declared npm 11.6.2 and isolated clean `npm ci` installations. Reconcile intentional dependency changes with matching package/lock metadata; retain lockfile integrity checks. Validate focused areas, TypeScript and applicable CI checks, then run a guarded isolated npm production build for release preparation. Use mocked database/device boundaries and scrubbed credentials; no live writes, migrations, seeds, uploads or device commands as tests. Do not start temporary fixture servers.
