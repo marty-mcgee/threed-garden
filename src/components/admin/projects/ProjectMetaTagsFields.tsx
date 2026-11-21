@@ -18,7 +18,7 @@ export function ProjectMetaTagsFields({ value, onChange, disabled }: {
   return <details className="rounded-xl border p-4">
     <summary className="cursor-pointer text-sm font-semibold">HTML &amp; SEO: Project Meta Tags</summary>
     <fieldset disabled={disabled} className="mt-3 min-w-0 space-y-3">
-      <p className="text-xs text-muted-foreground">Override App-wide defaults for this Project's Scene page. Unlisted or blank tags inherit App Settings and built-in defaults. Save Changes below retains these settings. Disable or clear to inherit all App defaults. Save a new Project before configuring its tags.</p>
+      <p className="text-xs text-muted-foreground">Override App-wide defaults for this Project's Scene page. Unlisted or blank tags inherit App Settings and built-in defaults. Disable or clear to inherit all App defaults.</p>
       <label className="flex items-center gap-2 text-sm"><input type="checkbox" checked={value.enabled} onChange={event => onChange({ ...value, enabled: event.target.checked })} />Enable Project meta tags</label>
       {value.tags.map((tag, index) => <div key={index} className="grid min-w-0 gap-2 rounded border p-2">
         <select aria-label={`Project meta tag ${index + 1}`} className={control} value={tag.name} onChange={event => update(index, { name: event.target.value as MetaTagName, content: '' })}>

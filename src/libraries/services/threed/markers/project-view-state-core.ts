@@ -16,7 +16,7 @@ export const PROJECT_VIEW_STATE_VERSION = 1 as const;
 export type ProjectViewMode = '2d' | '3d' | 'combined' | 'design';
 export type ProjectCameraMode = 'follow' | 'topdown' | 'firstperson' | 'orbit' | 'stationary';
 
-export type ProjectOverlayPositions = Partial<Record<'simulations' | 'scenarios' | 'tour' | 'sensorGroup' | 'sensors' | 'details' | 'multimedia', { x: number; y: number }>>;
+export type ProjectOverlayPositions = Partial<Record<'simulations' | 'scenarios' | 'tour' | 'sceneSetup' | 'sensorGroup' | 'sensors' | 'details' | 'multimedia', { x: number; y: number }>>;
 
 export interface ProjectVector3 {
   x: number;
@@ -172,6 +172,75 @@ function sceneLayers(value: unknown): string[] {
   return layers;
 }
 
+/** Editable Project settings do not contain camera poses or Scene content. */
+export function parseProjectSetup(value: unknown) {
+  const input = record(value);
+  if (!input || Object.keys(input).some(key => !['viewMode', 'cameraMode', 'threeD'].includes(key))) throw new ProjectViewStateError();
+  const viewMode = input.viewMode as ProjectViewMode;
+  const cameraMode = input.cameraMode as ProjectCameraMode;
+  if (!VIEW_MODES.has(viewMode) || !CAMERA_MODES.has(cameraMode)) throw new ProjectViewStateError();
+  const scene = record(input.threeD);
+  if (!scene || Object.keys(scene).some(key => !['environment', 'activeLayers', 'showGrid', 'autoRotate', 'showGizmo', 'showSimulations', 'showControls', 'designTransparency', 'sunlight', 'ground'].includes(key))) throw new ProjectViewStateError();
+  if (typeof scene.environment !== 'string' || !ENVIRONMENTS.has(scene.environment)) throw new ProjectViewStateError();
+  const sunlight = record(scene.sunlight);
+  const ground = record(scene.ground);
+  if (!sunlight || !ground
+    || Object.keys(sunlight).some(key => !['azimuth', 'elevation'].includes(key))
+    || Object.keys(ground).some(key => !['enabled', 'size', 'height'].includes(key))
+    || [sunlight.azimuth, sunlight.elevation, ground.size, ground.height].some(number => typeof number !== 'number')) {
+    throw new ProjectViewStateError();
+  }
+  return {
+    viewMode,
+    cameraMode,
+    threeD: {
+      environment: scene.environment,
+      activeLayers: sceneLayers(scene.activeLayers),
+      autoRotate: boolean(scene.autoRotate),
+      showGrid: boolean(scene.showGrid),
+      showGizmo: boolean(scene.showGizmo),
+      showSimulations: boolean(scene.showSimulations),
+      showControls: boolean(scene.showControls),
+      designTransparency: boolean(scene.designTransparency),
+      sunlight: {
+        azimuth: finite(sunlight.azimuth, 0, 360),
+        elevation: finite(sunlight.elevation, 5, 90),
+      },
+      ground: {
+        enabled: boolean(ground.enabled),
+        size: finite(ground.size, 10, 2000),
+        height: finite(ground.height, -1000, 1000),
+      },
+    },
+  };
+}
+export type ProjectSetup = ReturnType<typeof parseProjectSetup>;
+
+export function readProjectSetup(config: unknown): ProjectSetup | undefined {
+  const setup = record(config)?.projectSetup;
+  if (!setup) return undefined;
+  try { return parseProjectSetup(setup); } catch { return undefined; }
+}
+
+export function defaultProjectSetup(): ProjectSetup {
+  return {
+    viewMode: '3d',
+    cameraMode: 'stationary',
+    threeD: {
+      environment: 'default-daylight',
+      activeLayers: [...SCENE_LAYERS],
+      autoRotate: false,
+      showGrid: false,
+      showGizmo: false,
+      showSimulations: true,
+      showControls: false,
+      designTransparency: false,
+      sunlight: { azimuth: 0, elevation: 45 },
+      ground: { enabled: false, size: 200, height: -0.1 },
+    },
+  };
+}
+
 export function resolveRestoredThreeDActiveLayers(
   savedActiveLayers: readonly string[],
   savedAvailableLayers: readonly string[] | undefined,
@@ -303,9 +372,9 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
   if (input.design !== undefined) { try { result.design = parseDesignWorkspace(input.design); } catch { throw new ProjectViewStateError(); } }
   if (input.overlayPositions !== undefined) {
     const positions = record(input.overlayPositions);
-    if (!positions || Object.keys(positions).some(key => !['simulations', 'scenarios', 'tour', 'sensorGroup', 'sensors', 'details', 'multimedia'].includes(key))) throw new ProjectViewStateError();
+    if (!positions || Object.keys(positions).some(key => !['simulations', 'scenarios', 'tour', 'sceneSetup', 'sensorGroup', 'sensors', 'details', 'multimedia'].includes(key))) throw new ProjectViewStateError();
     result.overlayPositions = {};
-    for (const key of ['simulations', 'scenarios', 'tour', 'sensorGroup', 'sensors', 'details', 'multimedia'] as const) {
+    for (const key of ['simulations', 'scenarios', 'tour', 'sceneSetup', 'sensorGroup', 'sensors', 'details', 'multimedia'] as const) {
       if (positions[key] === undefined) continue;
       const position = record(positions[key]);
       if (!position || typeof position.x !== 'number' || typeof position.y !== 'number') throw new ProjectViewStateError();

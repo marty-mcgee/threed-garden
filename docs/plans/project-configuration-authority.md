@@ -58,7 +58,11 @@ This organization is a proposal, not a claim these new sections or controls are 
 
 Implemented locally October 15 after explicit Developer authorization. Package remains 0.26.4; this increment is unreleased. The earlier inspection table and proposed organization above describe the starting point/specification.
 
-### Delivered entry point
+### Project settings at creation
+
+On November 21, the Developer requested that the New Project form accept all Project Setup fields. Create Project validates details, measurement units, workspace and appearance settings, optional calibration points, and meta tags before inserting the owned Project. A Project without a saved workspace reads its editable settings from `project.config.projectSetup`. The settings revision participates in the existing Project conflict check. A saved workspace remains authoritative for the settings it captures. Creating the Project does not generate camera poses, assets, or a Scene snapshot.
+
+### October 16 implementation history
 
 October 16 New/Edit parity follow-up: `/admin/projects/new` now reuses `ProjectConfigurations` and new `ProjectDetailsFields.tsx`, which also supplies Edit's identity/access fields. New has matching Setup presentation, All Projects navigation, name/description/Public/Active controls, measurement preference, one Create Project action and one Reset. Existing POST creation remains authoritative and redirects only after a confirmed positive Project ID. Failed creation retains the draft. This adds no new creation API, schema, modules, Models, architecture or camera snapshot.
 

@@ -2,7 +2,9 @@
 
 ## Current checkpoint
 
-The Developer confirmed that [v0.35.10 - App Skills and Agent Requests](docs/releases/v0.35.10.md#production-status) reached production on November 20, 2026. [v0.35.11 - Remove Skills from Admin Settings](docs/releases/v0.35.11.md) is the local release candidate.
+[v0.35.12 - Project Setup, Scene Setup and Wall Drawing](docs/releases/v0.35.12.md) is the local release candidate. In the Scene workspace, **Scene > Scene Setup** brings ground sizing, Ground Map, lighting and Environment Model into the existing inspector. Manual ground dimensions use the Project measurement units and calibration.
+
+The Developer confirmed that [v0.35.10 - App Skills and Agent Requests](docs/releases/v0.35.10.md#production-status) reached production on November 20, 2026. The Developer confirmed [v0.35.11](docs/releases/v0.35.11.md#production-status) reached production on November 21, 2026. The Developer confirmed successful local Project creation. New Project now accepts workspace, appearance, layers, coordinate calibration and Project meta tags together with Project details in the create request.
 
 The Developer confirmed that [v0.35.9 - ThreeD Admin Bulk Edit and Plantings Sort Order](docs/releases/v0.35.9.md#production-status) reached production on November 20, 2026. The signed-in Plantings Bulk Edit check and both Plantings migrations were confirmed before release.
 

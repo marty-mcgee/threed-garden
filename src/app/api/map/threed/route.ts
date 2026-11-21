@@ -52,7 +52,7 @@ import {
   projectTraffic,
 } from '@/libraries/schema/project';
 import { eq, and, or, desc, sql, inArray } from 'drizzle-orm';
-import { readThreeDProjectViewStateFromConfig } from '@/libraries/services/threed/markers/project-view-state-core';
+import { readProjectSetup, readThreeDProjectViewStateFromConfig } from '@/libraries/services/threed/markers/project-view-state-core';
 import { projectConfigurationStamp } from '@/libraries/services/project/configuration';
 import { readThreeDTasks } from '@/libraries/services/threed/tasks/read-scope';
 
@@ -552,6 +552,7 @@ export async function GET(request: NextRequest) {
         projectId: projectData.id,
         canEdit,
         projectName: projectData.name,
+        projectSetup: readProjectSetup(projectData.config),
         viewState: readThreeDProjectViewStateFromConfig(projectData.config),
         configurationStamp: projectConfigurationStamp(projectData.config),
         geographicOrigin: projectData.originLatitude !== null

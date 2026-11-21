@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, type ReactNode } from 'react';
+import { useProjectOverlayPosition } from '@/components/map/panels/ProjectOverlayLayout';
 import { Map, X } from 'lucide-react';
 import { ModelFieldHelp } from '@/components/admin/threed/models/ModelFieldHelp';
 import { Button } from '@/components/ui/button';
@@ -8,6 +9,7 @@ import { Button } from '@/components/ui/button';
 const Context = createContext<{
   open: boolean;
   setOpen: (open: boolean) => void;
+  openSection: (section: "ground" | "map") => void;
   host: HTMLDivElement | null;
   setHost: (host: HTMLDivElement | null) => void;
 } | null>(null);
@@ -15,23 +17,45 @@ const Context = createContext<{
 export function GroundMapInspectorWorkspace({ children }: { children: ReactNode }) {
   const [open, setOpen] = useState(false);
   const [host, setHost] = useState<HTMLDivElement | null>(null);
-  return <Context.Provider value={{ open, setOpen, host, setHost }}>{children}</Context.Provider>;
+  function openSection(section: "ground" | "map") {
+    setOpen(true);
+    requestAnimationFrame(() => {
+      const target = host?.querySelector<HTMLElement>('[data-setup-section="' + section + '"]');
+      target?.focus({ preventScroll: true });
+      if (host && target) host.scrollTop += target.getBoundingClientRect().top - host.getBoundingClientRect().top;
+    });
+  }
+  return <Context.Provider value={{ open, setOpen, openSection, host, setHost }}>{children}</Context.Provider>;
 }
 export const useGroundMapInspector = () => useContext(Context);
 
-export function GroundMapInspector({ leftOffsetRem, available, onSave, saving }: {
-  leftOffsetRem: number; available: boolean; onSave: () => void; saving: boolean;
+export function GroundMapInspector({ available, onSave, saving }: {
+  available: boolean;
+  onSave: () => void;
+  saving: boolean;
 }) {
   const workspace = useGroundMapInspector();
-  return <section hidden={!workspace?.open || !available} aria-label="Ground Map inspector"
-    className="threed-workspace-panel threed-details-surface absolute top-[38px] z-40 flex max-h-[calc(100%-38px)] w-[min(18rem,calc(100vw-1.5rem))] flex-col overflow-hidden rounded-lg border border-foreground/15 text-foreground shadow-xl"
-    style={{ display: !workspace?.open || !available ? 'none' : undefined, left: `${leftOffsetRem}rem`, backgroundColor: 'var(--threed-details-background)' }}>
-    <div className="shrink-0 border-b border-foreground/10 p-2">
-      <Button className="h-8 w-full text-xs" variant="outline" disabled={saving} onClick={onSave}>{saving ? 'Saving…' : 'Save Project'}</Button>
-      <div className="mt-2 flex items-center justify-between"><div className="flex items-center gap-2"><Map aria-hidden="true" className="h-4 w-4 text-sky-600 dark:text-sky-300" /><h2 className="text-sm font-semibold">Ground Map</h2><ModelFieldHelp label="Ground Map">Adjust the Project ground map settings, then Save Project to keep your changes.</ModelFieldHelp></div>
-        <Button variant="ghost" size="icon" className="h-7 w-7" aria-label="Close Ground Map" onClick={() => workspace?.setOpen(false)}><X className="h-4 w-4" /></Button>
+  const overlay = useProjectOverlayPosition('sceneSetup');
+  const visible = workspace?.open && available;
+  return <section ref={overlay.ref} hidden={!visible} aria-labelledby="scene-setup-title"
+    style={{ ...overlay.style, display: visible ? undefined : 'none' }}
+    className="threed-workspace-panel threed-toolbar-dropdown-surface absolute left-1/2 top-10 z-40 flex max-h-[calc(100%_-_4rem)] w-[min(28rem,calc(100%_-_2rem))] -translate-x-1/2 flex-col overflow-hidden rounded-xl border border-white/10 shadow-2xl backdrop-blur-md">
+    <div className="h-1 shrink-0 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500" />
+    <header className="flex shrink-0 items-center gap-2 p-3">
+      <div {...overlay.handle} aria-label="Move Scene Setup panel" className={overlay.handle.className + ' flex flex-1 items-center gap-2'}>
+        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cyan-500/15 ring-1 ring-cyan-400/30">
+          <Map aria-hidden="true" className="h-4 w-4 text-cyan-500" />
+        </span>
+        <h2 id="scene-setup-title" className="text-base font-semibold">Scene Setup</h2>
       </div>
-    </div>
-    <div ref={workspace?.setHost} className="min-h-0 overflow-y-auto overscroll-contain p-3 text-xs" />
+      <ModelFieldHelp label="Scene Setup">Save Project to keep ground sizing, map alignment and lighting changes.</ModelFieldHelp>
+      <Button type="button" variant="ghost" size="icon" className="h-7 w-7 shrink-0" aria-label="Close Scene Setup" onClick={() => workspace?.setOpen(false)}>
+        <X aria-hidden="true" className="h-3.5 w-3.5" />
+      </Button>
+    </header>
+    <div ref={workspace?.setHost} className="min-h-0 overflow-y-auto overscroll-contain px-3 pb-3 text-xs" />
+    <footer className="shrink-0 border-t border-foreground/10 p-3">
+      <Button type="button" className="h-8 w-full bg-cyan-600 text-xs text-white hover:bg-cyan-500" disabled={saving} onClick={onSave}>{saving ? 'Saving\u2026' : 'Save Project'}</Button>
+    </footer>
   </section>;
 }

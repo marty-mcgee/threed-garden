@@ -242,7 +242,7 @@ const mapDb={select(selection){let table;const chain={from(value){table=value;re
  return Promise.resolve(records).then(resolve,reject);}};return chain;}};
 const get=vm.runInNewContext(compile(functionSource(mapRoute,'GET')+'\nGET;'),{...scope,...tables,exports:{},db:mapDb,URL,
  or:(...args)=>({args}),desc:value=>value,sql:orm.sql,getTableColumns:table=>table,modelSelection:()=>({}),retryDisconnectedRead:fn=>fn(),
- readProjectArchitecture:architecture.readProjectArchitecture,readThreeDProjectViewStateFromConfig:config=>config?.threeDViewState,
+ readProjectArchitecture:architecture.readProjectArchitecture,readProjectSetup:()=>undefined,readThreeDProjectViewStateFromConfig:config=>config?.threeDViewState,
  readProjectMeasurementUnits:measurementUnits.readProjectMeasurementUnits,
  canRenderAssignedModel:()=>true,currentModelAssets:model=>({filePath:model.filePath}),sceneTextureResources:async()=>[],
  MARKER_ASSET_TYPE_BY_MODULE:{models:'threed_models'},databaseConnectionDiagnostic:()=>({}),

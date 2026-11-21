@@ -28,6 +28,8 @@ Use the Node version in `.nvmrc` and npm version in `package.json`’s `packageM
 
 ## Hand off
 
+Whenever the Developer asks for the agreed version and Git commit title, reply immediately with the exact title on one copyable line in the form `v<version> - <release title>`. Continue any release checks already in progress.
+
 Review the final diff and whitespace. Once the required gates pass, tell the Developer the candidate is ready to commit, link the release record, and use its exact versioned title under **Next Steps:** (`v<version> - <release title>`). Flag any unrelated staged changes that a plain commit would include. If a gate is blocked or fails, record the specific result and what is pending. Keep preparation edits unstaged. Each Git write, publication or deployment requires explicit authorization for that action.
 
 When the Developer confirms a versioned release reached production, update its release record, index status and current checkpoint. If a subsequent `docs:` commit reaches production, record it as a follow-up under the existing version. Identify any locally observed commit as local evidence. Record independent deployed-commit verification and post-deployment browser checks only when observed.

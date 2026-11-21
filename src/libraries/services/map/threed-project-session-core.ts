@@ -1,5 +1,5 @@
 import { parseProjectArchitecture, type ProjectArchitecture } from '../threed/design/project-architecture';
-import type { ThreeDProjectViewState } from '@/libraries/services/threed/markers/project-view-state-core';
+import type { ProjectSetup, ThreeDProjectViewState } from '@/libraries/services/threed/markers/project-view-state-core';
 import type { ThreeDGeographicOrigin } from '@/libraries/services/threed/markers/map-coordinate-core';
 import type { UnifiedMapData } from '@/libraries/types/map';
 import { parseProjectTerrainSurface, type ProjectTerrainSurface } from '@/libraries/services/threed/terrains/terrain-core';
@@ -17,6 +17,7 @@ export interface ThreeDProjectSessionData {
   hasData: boolean;
   threedModules: ThreeDProjectModuleSummary[];
   geographicOrigin: ThreeDGeographicOrigin | null;
+  projectSetup?: ProjectSetup;
   savedViewState: ThreeDProjectViewState | null;
   configurationStamp: ProjectConfigurationStamp;
   architecture?: ProjectArchitecture;
@@ -164,6 +165,7 @@ export function buildThreeDProjectSession(
       metersPerSceneUnit: Number(result.projectContext?.metersPerSceneUnit) > 0 && Number.isFinite(Number(result.projectContext?.metersPerSceneUnit)) ? Number(result.projectContext.metersPerSceneUnit) : 0.3048,
       measurementUnits: result.projectContext?.measurementUnits === 'metric' ? 'metric' : result.projectContext?.measurementUnits === 'imperial' ? 'imperial' : result.projectContext?.viewState?.design?.measurementUnits ?? 'imperial',
       geographicOrigin: parseGeographicOrigin(result.projectContext?.geographicOrigin),
+      projectSetup: result.projectContext?.projectSetup,
       savedViewState: (result.projectContext?.viewState as ThreeDProjectViewState | null) ?? null,
       configurationStamp: {
         savedAt: typeof result.projectContext?.configurationStamp?.savedAt === 'string'

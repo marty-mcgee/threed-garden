@@ -11,7 +11,7 @@ Open `/dashboard/scene`, choose a Project, and select a ThreeD marker to open it
 - Select the Project name to view status, save the complete Project, change Projects, or open its Admin page.
 - Use the view buttons in their displayed order: **3D, Design, 2D, Combined**. Design contains the editable architectural plan; 2D is the geographic Map.
 - Use **Setup → Project Tour** for guided Project setup and Help. The Project menu also opens the Tour.
-- Use **Environment** for the environment preset, Ground Map, sunlight, ground plane, camera presentation, legend, grid, Physics Debug, gizmo, incidents, saved views, and Scene Layers.
+- Open **Scene > Scene Setup** for ground dimensions, Ground Map, lighting and Environment Model. The Scene menu also provides view and layer controls.
 - In 3D, Design or Combined mode, select **Add** to choose Shapes, Models, Characters, FarmBots, Beds or Plantings. In the Model Library, use **All Models** or a collection, then optionally narrow results by readiness or name. Collections describe reusable Library Models; Project Assets lists instances already placed in the Project. **Inspect** previews a reusable Model; **Place** adds another instance.
 - In 2D-only mode, **Add Model** retains the Map-supported Model placement workflow.
 - While a marker is awaiting placement or a Model is awaiting repositioning, the header shows the active operation. Select its X button to cancel that complete Scene operation.
@@ -20,7 +20,7 @@ Open `/dashboard/scene`, choose a Project, and select a ThreeD marker to open it
 
 When a nested Physics Sensor is selected in Project Assets, its focused inspector presents the parent asset, **Place it in the Scene** controls, detection and group settings, then precise geometry fields. **Save Sensor** appears after a changed form value; **Remove sensor** is an optional action at the bottom. See [Physics Sensors and Sensor Groups](../developers/THREED_PHYSICS_SENSORS.md) for the full workflow.
 
-The toolbar separates Project guidance from live Scene presentation: **Project Tour** owns setup/Help and **Environment** owns Scene presentation. The **DetailsCard** remains responsible for the selected marker's actions and editing. See [ThreeD Ground Maps](THREED_GROUND_MAPS.md) for image-ground setup and alignment.
+The toolbar separates Project guidance from live Scene presentation: **Project Tour** owns setup/Help and **Scene** owns Scene presentation. The **DetailsCard** remains responsible for the selected marker's actions and editing. See [ThreeD Ground Maps](THREED_GROUND_MAPS.md) for image-ground setup and alignment.
 
 ## 2D Design tools and navigation
 
@@ -30,7 +30,7 @@ The toolbar separates Project guidance from live Scene presentation: **Project T
 
 In Design mode, the drawing toolbar is inside the upper-right of the 2D canvas, clear of the X/Z rulers. Groups are **Select, Pan | Wall, Floor, Roof | Door, Window | Skylight, Roof Cutout | Fit Plan, Zoom to Selection, Reset View**. Hover or focus a button for its tooltip.
 
-Drag a blank area to pan with any tool; a normal click still selects, draws or places an opening. Panning retains the active tool, selected entity and unfinished drawing points. Select and Pan remain separate tools. Use Pan, Alt-drag or middle-drag to pan even when starting over an object. Wheel zoom stays anchored to the pointer; use Fit Plan or Zoom to Selection to frame content. Save Project uses the existing architecture and workspace snapshot.
+With Wall selected, drag between endpoints or click each endpoint. Click again to extend the wall, or press Escape to finish. Other tools support dragging a blank area to pan. Panning retains the active tool, selected entity and unfinished drawing points. Select and Pan remain separate tools. Use Pan, Alt-drag or middle-drag to pan even when starting over an object. Wheel zoom stays anchored to the pointer; use Fit Plan or Zoom to Selection to frame content. Save Project uses the existing architecture and workspace snapshot.
 
 Choose **Design settings → Project measurement units** for Imperial or Metric. Length inputs use inches or centimetres; X/Z rulers use feet or metres. Rotation uses degrees. This is a display/input preference, not a change to object size, Scene calibration or physics.
 

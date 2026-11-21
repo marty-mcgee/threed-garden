@@ -111,6 +111,7 @@ interface UnifiedMapViewProps {
   onProjectMarkerSnapshotProviderChange?: (
     provider: ProjectThreeDMarkerSnapshotProvider | null,
   ) => void;
+  projectAppearance?: import('@/libraries/services/threed/markers/project-view-state-core').ProjectSetup['threeD'];
   initialProjectViewState?: ThreeDProjectViewState | null;
   onProjectThreeDViewStateProviderChange?: (
     provider: ProjectThreeDViewStateProvider | null,
@@ -173,6 +174,8 @@ interface UnifiedMapViewProps {
   onEnvironmentControlsOpenChange?: (open: boolean) => void;
   onOpenEnvironmentDetails?: () => void;
   hasProjectEnvironment?: boolean;
+  environmentModelName?: string;
+  onOpenTerrainDetails?: () => void;
 }
 
 function isTrafficIncident(m: RuntimeMarker | TrafficIncident): m is TrafficIncident {
@@ -241,6 +244,7 @@ export function UnifiedMapView({
   actionTargetFocusRequest = 0,
   onProjectMarkerSnapshotProviderChange,
   initialProjectViewState,
+  projectAppearance,
   onProjectThreeDViewStateProviderChange,
   onProjectMapViewStateProviderChange,
   onRuntimeMarkerPositionResolverChange,
@@ -274,6 +278,8 @@ export function UnifiedMapView({
   onEnvironmentControlsOpenChange,
   onOpenEnvironmentDetails,
   hasProjectEnvironment,
+  environmentModelName,
+  onOpenTerrainDetails,
 }: UnifiedMapViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const selectedMarkerRef = useRef<RuntimeMarker | null | undefined>(selectedMarker);
@@ -729,6 +735,7 @@ export function UnifiedMapView({
         height="100%"
         autoRotate={autoRotate}
         onAutoRotateToggle={() => setAutoRotate(!autoRotate)}
+        projectAppearance={initialProjectViewState?.threeD ? undefined : projectAppearance}
         initialViewState={initialProjectViewState?.threeD}
         onViewStateProviderChange={onProjectThreeDViewStateProviderChange}
         controlledCharacterId={controlledCharacterId}
@@ -768,6 +775,8 @@ export function UnifiedMapView({
         scenarioInstructionDimmed={scenarioInstructionDimmed}
         onEnvironmentControlsOpenChange={onEnvironmentControlsOpenChange}
         onOpenEnvironmentDetails={onOpenEnvironmentDetails}
+        onOpenTerrainDetails={onOpenTerrainDetails}
+        environmentModelName={environmentModelName}
         hasProjectEnvironment={hasProjectEnvironment}
       />
     );

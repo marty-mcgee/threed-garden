@@ -1,6 +1,6 @@
 import { parseMeasurementUnits, readProjectMeasurementUnits, type MeasurementUnits } from './measurement-units';
 import { parseMetaTags, readProjectMetaTags, type AppMetaTags } from '@/libraries/config/meta-tags';
-import { parseThreeDProjectViewState, type ProjectViewMode, type ProjectCameraMode, type ProjectThreeDViewState } from '../threed/markers/project-view-state-core';
+import { defaultProjectSetup, parseProjectSetup, readProjectSetup, parseThreeDProjectViewState, type ProjectViewMode, type ProjectCameraMode, type ProjectThreeDViewState } from '../threed/markers/project-view-state-core';
 
 export class ProjectConfigurationError extends Error {}
 export class ProjectConfigurationConflict extends Error {
@@ -27,7 +27,7 @@ function only(value: Record<string, unknown>, keys: string[]) {
 export function projectConfigurationStamp(config: unknown): ProjectConfigurationStamp {
   const source = config && typeof config === 'object' ? config as Record<string, unknown> : {};
   const view = source.threeDViewState as { savedAt?: unknown } | undefined;
-  return { savedAt: typeof view?.savedAt === 'string' ? view.savedAt : null, measurementUnits: readProjectMeasurementUnits(source) };
+  return { savedAt: typeof view?.savedAt === 'string' ? view.savedAt : typeof source.projectSetupUpdatedAt === 'string' ? source.projectSetupUpdatedAt : null, measurementUnits: readProjectMeasurementUnits(source) };
 }
 export function assertProjectConfigurationCurrent(config: unknown, expected: unknown) {
   const stamp = record(expected); only(stamp, ['savedAt', 'measurementUnits']);
@@ -58,7 +58,22 @@ export function projectConfigurationPatch(config: unknown, input: unknown, now =
     };
   }
   if ('viewMode' in changes || 'cameraMode' in changes || 'threeD' in changes) {
-    if (!source.threeDViewState) throw new ProjectConfigurationError('Open the Project Scene and Save Project once before editing its saved Scene settings.');
+    if (!source.threeDViewState) {
+      const previous = readProjectSetup(source) ?? defaultProjectSetup();
+      try {
+        patch.projectSetup = parseProjectSetup({
+          viewMode: 'viewMode' in changes ? changes.viewMode : previous.viewMode,
+          cameraMode: 'cameraMode' in changes ? changes.cameraMode : previous.cameraMode,
+          threeD: {
+            ...previous.threeD,
+            ...('threeD' in changes ? record(changes.threeD) : {}),
+          },
+        });
+      } catch { throw new ProjectConfigurationError('Invalid Project settings. Check the selected values and numeric ranges.'); }
+      const prior = projectConfigurationStamp(source).savedAt;
+      patch.projectSetupUpdatedAt = new Date(Math.max(now.getTime(), prior ? Date.parse(prior) + 1 : 0)).toISOString();
+      return patch;
+    }
     const saved = record(source.threeDViewState);
     try { parseThreeDProjectViewState(saved); } catch { throw new ProjectConfigurationError('Saved workspace is invalid. Open and review the Project Scene before saving its settings.'); }
     const next = { ...saved };

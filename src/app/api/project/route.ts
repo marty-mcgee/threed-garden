@@ -15,9 +15,80 @@ import {
 } from '@/libraries/services/threed/markers/map-coordinate-core';
 
 function calibrationNumber(value: unknown, label: string): number {
+  if (typeof value !== 'number' && (typeof value !== 'string' || !value.trim())) throw new ThreeDMapCoordinateError(`${label} is required`);
   const parsed = Number(value);
   if (!Number.isFinite(parsed)) throw new ThreeDMapCoordinateError(`${label} must be finite`);
   return parsed;
+}
+
+type CalibrationPoint = { localX: unknown; localZ: unknown; latitude: unknown; longitude: unknown };
+type CalibrationInput = { pointA: CalibrationPoint; pointB: CalibrationPoint };
+function calculateCalibration(coordinateCalibration: CalibrationInput, altitude: number) {
+  if (!coordinateCalibration?.pointA || !coordinateCalibration.pointB) throw new ThreeDMapCoordinateError('Enter both calibration points.');
+  return calibrateThreeDGeographicOrigin({
+    pointA: {
+      local: {
+        x: calibrationNumber(coordinateCalibration?.pointA?.localX, 'Point A local X'),
+        z: calibrationNumber(coordinateCalibration?.pointA?.localZ, 'Point A local Z'),
+      },
+      geographic: {
+        latitude: calibrationNumber(coordinateCalibration?.pointA?.latitude, 'Point A latitude'),
+        longitude: calibrationNumber(coordinateCalibration?.pointA?.longitude, 'Point A longitude'),
+      },
+    },
+    pointB: {
+      local: {
+        x: calibrationNumber(coordinateCalibration?.pointB?.localX, 'Point B local X'),
+        z: calibrationNumber(coordinateCalibration?.pointB?.localZ, 'Point B local Z'),
+      },
+      geographic: {
+        latitude: calibrationNumber(coordinateCalibration?.pointB?.latitude, 'Point B latitude'),
+        longitude: calibrationNumber(coordinateCalibration?.pointB?.longitude, 'Point B longitude'),
+      },
+    },
+    originAltitude: altitude,
+  });
+}
+function calibrationFields(coordinateCalibration: CalibrationInput, calibration: ReturnType<typeof calculateCalibration> | null) {
+  if (!calibration) return {};
+  return {
+    originLatitude: calibration.latitude.toFixed(7),
+    originLongitude: calibration.longitude.toFixed(7),
+    headingDegrees: calibration.headingDegrees.toFixed(3),
+    metersPerSceneUnit: calibration.metersPerSceneUnit.toFixed(6),
+    calibrationPointALocalX: calibrationNumber(
+      coordinateCalibration.pointA.localX,
+      'Point A local X',
+    ).toFixed(3),
+    calibrationPointALocalZ: calibrationNumber(
+      coordinateCalibration.pointA.localZ,
+      'Point A local Z',
+    ).toFixed(3),
+    calibrationPointALatitude: calibrationNumber(
+      coordinateCalibration.pointA.latitude,
+      'Point A latitude',
+    ).toFixed(7),
+    calibrationPointALongitude: calibrationNumber(
+      coordinateCalibration.pointA.longitude,
+      'Point A longitude',
+    ).toFixed(7),
+    calibrationPointBLocalX: calibrationNumber(
+      coordinateCalibration.pointB.localX,
+      'Point B local X',
+    ).toFixed(3),
+    calibrationPointBLocalZ: calibrationNumber(
+      coordinateCalibration.pointB.localZ,
+      'Point B local Z',
+    ).toFixed(3),
+    calibrationPointBLatitude: calibrationNumber(
+      coordinateCalibration.pointB.latitude,
+      'Point B latitude',
+    ).toFixed(7),
+    calibrationPointBLongitude: calibrationNumber(
+      coordinateCalibration.pointB.longitude,
+      'Point B longitude',
+    ).toFixed(7),
+  };
 }
 
 // ============================================
@@ -112,6 +183,12 @@ export async function POST(request: NextRequest) {
     const userId = session.user.id;
     const slug = name.toLowerCase().replace(/\s+/g, '-') + '-' + Date.now();
 
+    const base = { measurementUnits: body.measurementUnits === undefined ? 'imperial' : parseMeasurementUnits(body.measurementUnits) };
+    if (body.configuration?.changes?.metaTags !== undefined && request.headers.get('origin') !== new URL(request.url).origin) {
+      return NextResponse.json({ success: false, error: 'Invalid request origin.' }, { status: 403 });
+    }
+    const config = body.configuration === undefined ? base : { ...base, ...projectConfigurationPatch(base, body.configuration) };
+    const calibration = body.coordinateCalibration === undefined ? null : calculateCalibration(body.coordinateCalibration, 0);
     const [newProject] = await db
       .insert(project)
       .values({
@@ -120,7 +197,8 @@ export async function POST(request: NextRequest) {
         description: description || null,
         slug,
         metadata: body.featured_image === undefined ? {} : { featured_image: parseProjectFeaturedImage(body.featured_image) },
-        config: { measurementUnits: body.measurementUnits === undefined ? 'imperial' : parseMeasurementUnits(body.measurementUnits) },
+        config,
+        ...calibrationFields(body.coordinateCalibration, calibration),
         isPublic: isPublic || false,
         isActive: isActive !== false,
       })
@@ -134,6 +212,8 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof ProjectFeaturedImageError) return NextResponse.json({ success: false, error: error.message }, { status: 400 });
     if (error instanceof MeasurementUnitsError) return NextResponse.json({success:false,error:error.message},{status:400});
+    if (error instanceof ProjectConfigurationError || error instanceof ThreeDMapCoordinateError) return NextResponse.json({ success: false, error: error.message }, { status: 400 });
+    if (error instanceof ProjectConfigurationConflict) return NextResponse.json({ success: false, error: error.message }, { status: 409 });
     console.error('Error creating project:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to create project' },
@@ -192,31 +272,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const calibration = coordinateCalibration === undefined
-      ? null
-      : calibrateThreeDGeographicOrigin({
-          pointA: {
-            local: {
-              x: calibrationNumber(coordinateCalibration?.pointA?.localX, 'Point A local X'),
-              z: calibrationNumber(coordinateCalibration?.pointA?.localZ, 'Point A local Z'),
-            },
-            geographic: {
-              latitude: calibrationNumber(coordinateCalibration?.pointA?.latitude, 'Point A latitude'),
-              longitude: calibrationNumber(coordinateCalibration?.pointA?.longitude, 'Point A longitude'),
-            },
-          },
-          pointB: {
-            local: {
-              x: calibrationNumber(coordinateCalibration?.pointB?.localX, 'Point B local X'),
-              z: calibrationNumber(coordinateCalibration?.pointB?.localZ, 'Point B local Z'),
-            },
-            geographic: {
-              latitude: calibrationNumber(coordinateCalibration?.pointB?.latitude, 'Point B latitude'),
-              longitude: calibrationNumber(coordinateCalibration?.pointB?.longitude, 'Point B longitude'),
-            },
-          },
-          originAltitude: Number(existing.originAltitude),
-        });
+    const calibration = coordinateCalibration === undefined ? null : calculateCalibration(coordinateCalibration, Number(existing.originAltitude));
 
     const result = await db.transaction(async (tx) => {
       let configurationPatch: Record<string, unknown> | undefined;
@@ -237,44 +293,7 @@ export async function PATCH(request: NextRequest) {
           ...(isActive !== undefined ? { isActive } : {}),
           ...(body.measurementUnits === undefined ? {} : { config: sql`coalesce(${project.config}, '{}'::jsonb) || ${JSON.stringify({ measurementUnits: parseMeasurementUnits(body.measurementUnits) })}::jsonb` }),
           ...(configurationPatch ? { config: sql`coalesce(${project.config}, '{}'::jsonb) || ${JSON.stringify(configurationPatch)}::jsonb` } : {}),
-          ...(calibration ? {
-            originLatitude: calibration.latitude.toFixed(7),
-            originLongitude: calibration.longitude.toFixed(7),
-            headingDegrees: calibration.headingDegrees.toFixed(3),
-            metersPerSceneUnit: calibration.metersPerSceneUnit.toFixed(6),
-            calibrationPointALocalX: calibrationNumber(
-              coordinateCalibration.pointA.localX,
-              'Point A local X',
-            ).toFixed(3),
-            calibrationPointALocalZ: calibrationNumber(
-              coordinateCalibration.pointA.localZ,
-              'Point A local Z',
-            ).toFixed(3),
-            calibrationPointALatitude: calibrationNumber(
-              coordinateCalibration.pointA.latitude,
-              'Point A latitude',
-            ).toFixed(7),
-            calibrationPointALongitude: calibrationNumber(
-              coordinateCalibration.pointA.longitude,
-              'Point A longitude',
-            ).toFixed(7),
-            calibrationPointBLocalX: calibrationNumber(
-              coordinateCalibration.pointB.localX,
-              'Point B local X',
-            ).toFixed(3),
-            calibrationPointBLocalZ: calibrationNumber(
-              coordinateCalibration.pointB.localZ,
-              'Point B local Z',
-            ).toFixed(3),
-            calibrationPointBLatitude: calibrationNumber(
-              coordinateCalibration.pointB.latitude,
-              'Point B latitude',
-            ).toFixed(7),
-            calibrationPointBLongitude: calibrationNumber(
-              coordinateCalibration.pointB.longitude,
-              'Point B longitude',
-            ).toFixed(7),
-          } : {}),
+          ...calibrationFields(coordinateCalibration, calibration),
           updatedAt: new Date(),
         })
         .where(and(eq(project.id, parseInt(id)), eq(project.userId, userId)))

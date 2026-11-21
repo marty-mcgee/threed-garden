@@ -77,7 +77,7 @@ vm.runInNewContext(code('src/app/api/map/threed/route.ts'), {
     if (name.startsWith('@/libraries/schema/')) return schema;
     if (name === 'drizzle-orm') return orm;
     if (name.endsWith('/model-primary-file')) return { modelSelection: () => ({}) };
-    if (name.endsWith('/project-view-state-core')) return { readThreeDProjectViewStateFromConfig: () => null };
+    if (name.endsWith('/project-view-state-core')) return { readProjectSetup:()=>undefined,readThreeDProjectViewStateFromConfig: () => null };
     if (name.endsWith('/model-snapshot-assets') || name.endsWith('/sanitize')) return {};
     throw new Error(`Unexpected import ${name}`);
   },

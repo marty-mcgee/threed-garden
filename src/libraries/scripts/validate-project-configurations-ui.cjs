@@ -64,7 +64,7 @@ const flush=async()=>{for(let i=0;i<24;i++)await Promise.resolve();};
  states=[];refs=[];props={...props,detailsDirty:false,project:{...props.project,id:17,config:{unrelated:true}}};tree=render();
  assert.equal(one(tree,n=>n.type==='units').props.value,'imperial');assert(!text(tree).includes('Unsaved Project changes'));
  assert.equal(one(tree,n=>n.type==='link').props.href,'/dashboard/scene?projectId=17');
- assert(text(tree).includes('Save Project in the Scene once'));
+ assert.equal(all(tree,n=>n.type==='fieldset' && n.props.disabled).length,0);
  assert(one(tree,n=>n.type==='select'&&n.props['aria-label']==='Saved View Mode').props.value==='3d');
  props.detailsDirty=true;parent.projectId=parent.projectScopeRef.current=17;parent.formData={...parent.formData,name:'Details only'};tree=render();
  transport=async(url,options)=>{assert.equal(url,'/api/project?id=17');submitted=JSON.parse(options.body);return {ok:true,json:async()=>({success:true,data:{id:17,...parent.formData,config:{unrelated:true}}})};};
@@ -87,7 +87,32 @@ const flush=async()=>{for(let i=0;i<24;i++)await Promise.resolve();};
  assert.equal(all(tree,n=>n.type==='link').length,0,'No Scene link may contain a nonexistent Project ID.');
  assert.equal(all(tree,n=>n.type==='button'&&text(n).trim()==='Reload configuration').length,0);
  assert.equal(one(tree,n=>n.type==='button'&&n.props.type==='submit').props.children.at(-1),'Create Project');
- assert(text(tree).includes('Coordinate calibration is available after creation'));
+ assert.equal(all(tree,n=>n.props?.['aria-label']==='Saved View Mode'||n.props?.id==='project-configurations'||n.type==='project-meta-tags').length,3);
+ assert.equal(one(tree,n=>n.type==='project-meta-tags').props.disabled,false);
+
+ const configured = configCore.projectConfigurationPatch({}, {
+   expected: configCore.projectConfigurationStamp({}),
+   changes: {
+     measurementUnits: 'metric',
+     viewMode: 'combined',
+     cameraMode: 'follow',
+     threeD: {
+       environment: 'park',
+       activeLayers: [],
+       ground: { enabled: true, size: 115, height: -2 },
+       sunlight: { azimuth: 180, elevation: 52 },
+     },
+     metaTags: metadata,
+   },
+ });
+ states=[];refs=[];props={...props, project:{...props.project, id:23, config:configured}};tree=render();
+ assert.equal(one(tree,n=>n.props?.['aria-label']==='Saved View Mode').props.value,'combined');
+ assert.equal(one(tree,n=>n.props?.['aria-label']==='Saved camera mode').props.value,'follow');
+ assert.equal(one(tree,n=>n.props?.['aria-label']==='Scene environment').props.value,'park');
+ assert.equal(one(tree,n=>n.type==='units').props.value,'metric');
+ assert.equal(one(tree,n=>n.type==='project-meta-tags').props.value.tags[0].content,'Project owner');
+ assert.equal(all(tree,n=>n.type==='fieldset' && n.props.disabled).length,0);
+ assert(!text(tree).includes('Unsaved Project changes'));
 
  const navigation=[];
  const newPage=load('src/app/admin/projects/new/page.tsx',{
@@ -103,9 +128,9 @@ const flush=async()=>{for(let i=0;i<24;i++)await Promise.resolve();};
  assert.equal(fields.value.isActive,true);assert.equal(fields.value.isPublic,false);assert.equal(setup.project.id,null);
  fields.onChange({name:'New Scene Project',description:'Shared Setup',isPublic:true,isActive:false});tree=renderNew();setup=one(tree,n=>n.type==='configuration').props;
  let attempts=0;
- transport=async(url,options)=>{attempts++;assert.equal(url,'/api/project');assert.equal(options.method,'POST');submitted=JSON.parse(options.body);return{ok:true,json:async()=>({success:true,data:{id:23,...submitted,config:{measurementUnits:submitted.measurementUnits}}})};};
+ transport=async(url,options)=>{attempts++;assert.equal(url,'/api/project');assert.equal(options.method,'POST');submitted=JSON.parse(options.body);return{ok:true,json:async()=>({success:true,data:{id:23,...submitted,config:{measurementUnits:submitted.configuration.changes.measurementUnits}}})};};
  const created=await setup.onSave({expected:{savedAt:null,measurementUnits:'imperial'},changes:{measurementUnits:'metric'}},new AbortController().signal);
- assert.deepEqual(submitted,{name:'New Scene Project',description:'Shared Setup',isPublic:true,isActive:false,measurementUnits:'metric'});
+ assert.deepEqual(submitted,{name:'New Scene Project',description:'Shared Setup',isPublic:true,isActive:false,configuration:{expected:{savedAt:null,measurementUnits:'imperial'},changes:{measurementUnits:'metric'}}});
  assert.equal(created.measurementUnits,'metric');assert.equal(navigation.at(-1),'/admin/projects/23');assert(!('threeDViewState' in submitted));assert(!('threeDArchitecture' in submitted));
  navigation.length=0;transport=async()=>({ok:false,json:async()=>({success:false,error:'Mock create failure'})});
  await assert.rejects(setup.onSave(undefined,new AbortController().signal),/Mock create failure/);

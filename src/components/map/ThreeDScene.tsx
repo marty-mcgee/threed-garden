@@ -26,6 +26,8 @@ import { ProjectSimulationLauncher } from './panels/ProjectSimulationLauncher';
 import { simulationLaunchParticipants } from '@/libraries/services/threed/simulations/simulation-launch';
 import { SceneResourceStatus, useSceneResourceStatus, SceneResourceIssues, useSceneResourceIssueReporter, type SceneResourceIssue, type SceneResourceState } from '@/components/threed/shared/SceneResourceStatus';
 
+import { formatProjectSceneLength } from '@/libraries/services/project/measurement-units';
+import { METRES_PER_FOOT } from '@/libraries/services/threed/scene-units';
 import { useGroundMapInspector } from '@/components/map/details/GroundMapInspectorWorkspace';
 import { placeHoverTitle } from '@/libraries/services/threed/markers/hover-title-placement';
 import { SceneHoverTitleContext } from '@/components/threed/shared/SceneHoverTitleContext';
@@ -224,6 +226,7 @@ interface ThreeDSceneProps {
   height?: string;
   autoRotate?: boolean;
   onAutoRotateToggle?: () => void;
+  projectAppearance?: import('@/libraries/services/threed/markers/project-view-state-core').ProjectSetup['threeD'];
   initialViewState?: ProjectThreeDViewState;
   onViewStateProviderChange?: (provider: (() => ProjectThreeDViewState) | null) => void;
   projectId?: number;
@@ -302,6 +305,8 @@ interface ThreeDSceneProps {
   /** Opens the assigned Environment Model in its Project DetailsCard. */
   onOpenEnvironmentDetails?: () => void;
   hasProjectEnvironment?: boolean;
+  environmentModelName?: string;
+  onOpenTerrainDetails?: () => void;
 }
 
 function isRapierFrameError(reason: unknown): boolean {
@@ -2147,6 +2152,7 @@ export function ThreeDScene({
   autoRotate = false,
   onAutoRotateToggle,
   initialViewState,
+  projectAppearance,
   onModelPlanImage,
   onViewStateProviderChange,
   projectId,
@@ -2189,6 +2195,8 @@ export function ThreeDScene({
   onEnvironmentControlsOpenChange,
   onOpenEnvironmentDetails,
   hasProjectEnvironment = false,
+  environmentModelName,
+  onOpenTerrainDetails,
 }: ThreeDSceneProps) {
   const transform = useOptionalSceneTransform();
   const transforming = Boolean(transform?.session);
@@ -2214,8 +2222,8 @@ export function ThreeDScene({
   const [showGrid, setShowGrid] = useState(false);
   const [showSensors, setShowSensors] = useState(false);
   const [showSimulations, setShowSimulations] = useState(true);
-  const [designTransparency, setDesignTransparency] = useState(initialViewState?.designTransparency ?? false);
-  useEffect(() => setDesignTransparency(initialViewState?.designTransparency ?? false), [projectId, initialViewState?.designTransparency]);
+  const [designTransparency, setDesignTransparency] = useState(initialViewState?.designTransparency ?? projectAppearance?.designTransparency ?? false);
+  useEffect(() => setDesignTransparency(initialViewState?.designTransparency ?? projectAppearance?.designTransparency ?? false), [projectId, initialViewState?.designTransparency, projectAppearance?.designTransparency]);
   const sensorsOverlay = useProjectOverlayPosition('sensors');
   const [activeScenario, setActiveScenario] = useState<ScenarioStartRequest | null>(null);
   const [scenarioInstructionVisible, setScenarioInstructionVisible] = useState(false);
@@ -2641,6 +2649,7 @@ export function ThreeDScene({
   const [envPreset, setEnvPreset] = useState<string>(DEFAULT_THREE_D_ENVIRONMENT_PRESET_KEY);
   const [showIncidents, setShowIncidents] = useState(false);
   const [sunlight, setSunlight] = useState({ azimuth: 0, elevation: 45 });
+  const [groundSizeError, setGroundSizeError] = useState('');
   const [extraGround, setExtraGround] = useState({ enabled: false, size: 200, height: -0.1 });
   const [groundMap, setGroundMap] = useState<ProjectGroundMapTransform>(DEFAULT_PROJECT_GROUND_MAP_TRANSFORM);
   const [groundMapAsset, setGroundMapAsset] = useState<ProjectGroundMapAsset | null>(null);
@@ -2650,10 +2659,10 @@ export function ThreeDScene({
   const groundMapInputRef = useRef<HTMLInputElement | null>(null);
   const previousTerrainRef = useRef({ projectId, present: Boolean(terrain) });
   useEffect(() => {
-    setSunlight(initialViewState?.sunlight ?? { azimuth: 0, elevation: 45 });
-    setExtraGround(initialViewState?.ground ?? { enabled: false, size: 200, height: -0.1 });
+    setSunlight(initialViewState?.sunlight ?? projectAppearance?.sunlight ?? { azimuth: 0, elevation: 45 });
+    setExtraGround(initialViewState?.ground ?? projectAppearance?.ground ?? { enabled: false, size: 200, height: -0.1 });
     setGroundMap(initialViewState?.groundMap ?? DEFAULT_PROJECT_GROUND_MAP_TRANSFORM);
-  }, [projectId, initialViewState?.sunlight, initialViewState?.ground, initialViewState?.groundMap]);
+  }, [projectId, initialViewState?.sunlight, initialViewState?.ground, initialViewState?.groundMap, projectAppearance]);
   useEffect(() => {
     const previous = previousTerrainRef.current;
     if (previous.projectId === projectId && previous.present && !terrain) {
@@ -2740,9 +2749,9 @@ export function ThreeDScene({
   // state must not inherit another Project's browser-wide environment choice.
   useEffect(() => {
     setEnvPreset(
-      initialViewState?.environment ?? DEFAULT_THREE_D_ENVIRONMENT_PRESET_KEY,
+      initialViewState?.environment ?? projectAppearance?.environment ?? DEFAULT_THREE_D_ENVIRONMENT_PRESET_KEY,
     );
-  }, [initialViewState?.environment, projectId]);
+  }, [initialViewState?.environment, projectAppearance?.environment, projectId]);
 
   // Scene visibility controls operate on the marker types that are actually
   // present. Database ThreeD Layer records do not currently assign individual
@@ -3098,7 +3107,20 @@ export function ThreeDScene({
   }, [sunlight, extraGround, groundMap, activeLayers, activeScenario, autoRotate, availableLayers, controlsReady, envPreset, onViewStateProviderChange, physicsDebug, projectId, scenarioInstructionVisible, showControls, showGizmoCube, showGrid, showSensors, showSimulations, designTransparency, viewPresets]);
 
   useEffect(() => {
-    if (!controlsReady || !controlsRef.current || !initialViewState) return;
+    if (!controlsReady || !controlsRef.current) return;
+    if (!initialViewState) {
+      if (!projectAppearance) return;
+      const key = JSON.stringify([projectId, projectAppearance]);
+      if (restoredProjectViewKeyRef.current === key) return;
+      restoredProjectViewKeyRef.current = key;
+      setActiveLayers(new Set(projectAppearance.activeLayers));
+      setShowGrid(projectAppearance.showGrid);
+      setShowSimulations(projectAppearance.showSimulations);
+      setShowGizmoCube(projectAppearance.showGizmo);
+      setShowControls(projectAppearance.showControls);
+      if (Boolean(autoRotate) !== projectAppearance.autoRotate) onAutoRotateToggle?.();
+      return;
+    }
     const key = JSON.stringify([projectId, initialViewState]);
     if (restoredProjectViewKeyRef.current === key) return;
     restoredProjectViewKeyRef.current = key;
@@ -3139,7 +3161,7 @@ export function ThreeDScene({
     setShowSensors(savedScenario?.sensorsVisible ?? false);
     if (Boolean(autoRotate) !== initialViewState.autoRotate) onAutoRotateToggle?.();
     updateGeographicCompass();
-  }, [autoRotate, availableLayers, bounds, maxOrbitDistance, centerX, centerZ, controlsReady, initialViewState, onAutoRotateToggle, projectId, updateGeographicCompass]);
+  }, [autoRotate, availableLayers, bounds, maxOrbitDistance, centerX, centerZ, controlsReady, initialViewState, projectAppearance, onAutoRotateToggle, projectId, updateGeographicCompass]);
 
   const showNorthUpView = useCallback(() => {
     const controls = controlsRef.current;
@@ -3408,14 +3430,14 @@ export function ThreeDScene({
   const groundMapControls = (
     <div className="mt-2 space-y-1.5">
                 <label className="block">Project Ground Map
-                  <select value={groundMap.visualMode} onChange={event => setGroundMap(value => ({ ...value, visualMode: event.target.value as ProjectGroundMapTransform['visualMode'] }))} className="mt-1 w-full rounded border border-white/10 bg-black/40 px-1 py-1">
+                  <select value={groundMap.visualMode} onChange={event => setGroundMap(value => ({ ...value, visualMode: event.target.value as ProjectGroundMapTransform['visualMode'] }))} className="mt-1 w-full rounded border border-white/10 bg-background px-1 py-1">
                     <option value="procedural">Procedural ground plane</option>
                     <option value="image" disabled={!groundMapAsset}>Uploaded Image</option>
                     <option value="hidden">Hidden</option>
                   </select>
                 </label>
                 <input ref={groundMapInputRef} className="hidden" type="file" accept="image/png,image/jpeg,image/webp" onChange={event => { const file = event.target.files?.[0]; event.target.value = ''; if (file) void uploadGroundMap(file); }} />
-                <input value={groundMapSourceProvider} maxLength={120} onChange={event => setGroundMapSourceProvider(event.target.value)} placeholder="Source (optional)" aria-label="Ground Map source" className="w-full rounded border border-white/10 bg-black/40 px-2 py-1 text-[10px]" />
+                <input value={groundMapSourceProvider} maxLength={120} onChange={event => setGroundMapSourceProvider(event.target.value)} placeholder="Source (optional)" aria-label="Ground Map source" className="w-full rounded border border-white/10 bg-background px-2 py-1 text-[10px]" />
                 <input value={groundMapAttribution} maxLength={1000} onChange={event => setGroundMapAttribution(event.target.value)} placeholder="Attribution (optional)" aria-label="Ground Map attribution" className="w-full rounded border border-white/10 bg-black/40 px-2 py-1 text-[10px]" />
                 <button type="button" disabled={groundMapBusy || !projectId} onClick={() => groundMapInputRef.current?.click()} className="w-full rounded border border-white/15 bg-white/5 px-2 py-1 text-left hover:bg-white/10 disabled:opacity-40">
                   {groundMapBusy ? 'Uploading…' : groundMapAsset ? 'Replace Ground Map Image' : 'Upload Ground Map Image'}
@@ -3438,6 +3460,81 @@ export function ThreeDScene({
                 <p className="text-[10px]">Save Project to keep alignment settings.</p>
               </div>
   );
+
+  const unitLabel = measurementUnits === 'metric' ? 'm' : 'ft';
+  const unitsPerSceneUnit = metersPerSceneUnit / (measurementUnits === 'metric' ? 1 : METRES_PER_FOOT);
+  const displayLength = (value: number) => formatProjectSceneLength(value, metersPerSceneUnit, measurementUnits);
+  const side = extraGround.enabled ? extraGround.size : groundSize;
+  const surface = terrain ? terrain.name : hasMatchingGroundMapImage ? groundMapAsset?.fileName : 'Procedural ground plane';
+  const width = terrain ? terrain.definition.widthM * terrain.placement.scale / metersPerSceneUnit : hasMatchingGroundMapImage ? groundMap.width : side;
+  const length = terrain ? terrain.definition.lengthM * terrain.placement.scale / metersPerSceneUnit : hasMatchingGroundMapImage ? groundMap.length : side;
+  const sceneSetupControls = <fieldset disabled={!canEditProject} className="min-w-0 space-y-4">
+    <section data-setup-section="ground" tabIndex={-1} className="space-y-2">
+      <h3 className="font-semibold">Ground</h3>
+      <p>{surface} · {displayLength(width)} × {displayLength(length)}{effectiveGroundVisualMode === 'hidden' && !terrain ? ' (hidden)' : ''}</p>
+      <div className="border-b border-foreground/10 px-2 pb-2"><ProjectMeasurementUnits helpText="Display and input units only. Object sizes, calibration and physics stay unchanged. Retained by Save Project." value={measurementUnits} onChange={units => onMeasurementUnitsChange?.(units)} disabled={!onMeasurementUnitsChange} /></div>
+      {terrain && onOpenTerrainDetails && <Button type="button" variant="outline" size="sm" onClick={onOpenTerrainDetails}>Open Terrain details</Button>}
+      {!terrain && !hasMatchingGroundMapImage && <>
+        <label className="block">Ground sizing
+          <select className="block w-full rounded border bg-background p-1" value={extraGround.enabled ? 'manual' : 'automatic'} onChange={event => {
+            const enabled = event.currentTarget.value === 'manual';
+            setGroundSizeError('');
+            setExtraGround(previous => ({ ...previous, enabled }));
+          }}>
+            <option value="automatic">Automatic</option>
+            <option value="manual">Manual</option>
+          </select>
+        </label>
+        {extraGround.enabled && ([
+          ['size', 'Side length', 10, 2000],
+          ['height', 'Elevation', -1000, 1000],
+        ] as const).map(([key, label, min, max]) => <label key={key} className="block">{label} ({unitLabel})
+          <input key={[projectId, extraGround[key], unitsPerSceneUnit].join(':')} className="block w-full rounded border bg-background p-1" type="number" step="any"
+            min={min * unitsPerSceneUnit} max={max * unitsPerSceneUnit}
+            defaultValue={Number((extraGround[key] * unitsPerSceneUnit).toFixed(6))}
+            onBlur={event => {
+              const input = event.currentTarget;
+              const value = input.valueAsNumber / unitsPerSceneUnit;
+              if (Number.isFinite(value) && value >= min && value <= max) {
+                setGroundSizeError('');
+                setExtraGround(previous => ({ ...previous, [key]: value }));
+              } else {
+                input.value = String(Number((extraGround[key] * unitsPerSceneUnit).toFixed(6)));
+                setGroundSizeError('Enter a value between ' + displayLength(min) + ' and ' + displayLength(max) + '.');
+              }
+            }} />
+        </label>)}
+        {groundSizeError && <p role="alert">{groundSizeError}</p>}
+      </>}
+    </section>
+    <section data-setup-section="map" tabIndex={-1}><h3 className="font-semibold">Ground Map</h3>{groundMapControls}</section>
+    <section className="space-y-2"><h3 className="font-semibold">Lighting</h3>
+      <label className="block">Environment preset<select
+              value={envPreset}
+              onChange={(e) => setEnvPreset(e.target.value)}
+              className="w-full bg-foreground/5 border border-foreground/10 rounded px-2 py-1 text-xs text-foreground/80 focus:outline-none focus:border-foreground/30 appearance-none"
+              style={{ scrollbarWidth: 'thin' }}
+            >
+              {THREE_D_ENVIRONMENT_PRESETS.map((preset) => (
+                <option key={preset.key} value={preset.key} className="bg-background text-foreground">
+                  {preset.label}
+                </option>
+              ))}
+            </select></label>
+      <label className="block mt-2">Sun Direction: {sunlight.azimuth}°
+                <input className="w-full" type="range" min="0" max="360" value={sunlight.azimuth} title="Adjust sun direction. An overhead sun lowers to 45° so direction is visible." onChange={e => setSunlight(v => ({...v, azimuth: Number(e.target.value), elevation: v.elevation === 90 ? 45 : v.elevation}))} />
+              </label>
+              <label className="block">Sun Elevation: {sunlight.elevation}°
+                <input className="w-full" type="range" min="5" max="90" value={sunlight.elevation} onChange={e => setSunlight(v => ({...v, elevation: Number(e.target.value)}))} />
+              </label>
+    </section>
+    <section className="space-y-2"><h3 className="font-semibold">Environment Model</h3>
+      {environmentModelName && <p>{environmentModelName}</p>}
+      <Button type="button" size="sm" variant="outline" disabled={!onOpenEnvironmentDetails} onClick={() => onOpenEnvironmentDetails?.()}>
+        {hasProjectEnvironment ? 'Open DetailsCard' : 'Choose Environment Model'}
+      </Button>
+    </section>
+  </fieldset>;
 
   return (
     <SceneResourceIssues.Provider value={reportResourceIssue}>
@@ -3488,7 +3585,7 @@ export function ThreeDScene({
           )}
 
       {/* Scene-owned controls are presented from the shared Project toolbar. */}
-      {groundMapInspector?.host && createPortal(groundMapControls, groundMapInspector.host)}
+      {groundMapInspector?.host && createPortal(sceneSetupControls, groundMapInspector.host)}
       {environmentControlsHost && createPortal(<div data-scene-hover-obstacle className="relative">
         <Button
           type="button"
@@ -3512,58 +3609,13 @@ export function ThreeDScene({
           <div ref={sceneMenuBounds.ref} style={sceneMenuBounds.style} className="threed-workspace-panel threed-toolbar-dropdown-surface absolute right-0 top-full z-[3000] mt-1 w-56 space-y-0.5 overflow-x-hidden overflow-y-auto overscroll-contain rounded-lg border border-foreground/10 p-1.5 pb-2.5 shadow-xl backdrop-blur-sm [scrollbar-width:thin]">
             <div className="text-[10px] text-foreground/60 px-2 py-0.5">Scene</div>
             <fieldset disabled={!canEditProject} className="min-w-0 border-0 p-0 disabled:opacity-60" title={!canEditProject ? "Only the Project owner can change these settings." : undefined}>
-            <div className="border-b border-foreground/10 px-2 pb-2"><ProjectMeasurementUnits helpText="Display and input units only. Object sizes, calibration and physics stay unchanged. Retained by Save Project." value={measurementUnits} onChange={units => onMeasurementUnitsChange?.(units)} disabled={!onMeasurementUnitsChange} /></div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="h-8 w-full justify-start text-xs"
-              disabled={!hasProjectEnvironment}
-              title={hasProjectEnvironment ? 'Open the assigned Environment Model DetailsCard' : 'No Environment Model is assigned to this Project'}
-              onClick={() => {
-                setShowControls(false);
-                onEnvironmentControlsOpenChange?.(false);
-                onOpenEnvironmentDetails?.();
-              }}
-            >
-              <Settings className="h-3.5 w-3.5" />
-              Setup Environment Map
-            </Button>
-            <div className="my-1 border-t border-foreground/10" />
-            <select
-              value={envPreset}
-              onChange={(e) => setEnvPreset(e.target.value)}
-              className="w-full bg-foreground/5 border border-foreground/10 rounded px-2 py-1 text-xs text-foreground/80 focus:outline-none focus:border-foreground/30 appearance-none"
-              style={{ scrollbarWidth: 'thin' }}
-            >
-              {THREE_D_ENVIRONMENT_PRESETS.map((preset) => (
-                <option key={preset.key} value={preset.key} className="bg-background text-foreground">
-                  {preset.label}
-                </option>
-              ))}
-            </select>
-            {groundMapInspector ? <button type="button" className="w-full rounded px-2 py-2 text-left text-xs text-foreground/80 hover:bg-foreground/10" onClick={() => {
-              groundMapInspector?.setOpen(true);
+            {groundMapInspector ? <Button type="button" variant="ghost" size="sm" className="h-auto w-full justify-start gap-2 px-2 py-1 text-xs font-normal" onClick={() => {
+              groundMapInspector.openSection('ground');
               setShowControls(false);
               onEnvironmentControlsOpenChange?.(false);
-            }}>Ground Map · Edit settings</button> : <details className="px-2 py-1 text-xs"><summary>Ground Map</summary>{groundMapControls}</details>}
-            <details className="px-2 py-1 text-xs text-foreground/70">
-              <summary className="cursor-pointer">Sunlight + Ground</summary>
-              <label className="block mt-2">Sun Direction: {sunlight.azimuth}°
-                <input className="w-full" type="range" min="0" max="360" value={sunlight.azimuth} title="Adjust sun direction. An overhead sun lowers to 45° so direction is visible." onChange={e => setSunlight(v => ({...v, azimuth: Number(e.target.value), elevation: v.elevation === 90 ? 45 : v.elevation}))} />
-              </label>
-              <label className="block">Sun Elevation: {sunlight.elevation}°
-                <input className="w-full" type="range" min="5" max="90" value={sunlight.elevation} onChange={e => setSunlight(v => ({...v, elevation: Number(e.target.value)}))} />
-              </label>
-              <label className="block"><input type="checkbox" checked={extraGround.enabled} onChange={e => setExtraGround(v => ({...v, enabled: e.target.checked}))} /> Apply Ground Plane</label>
-              {extraGround.enabled && <div className="space-y-1 mt-1">
-                <label className="flex items-center gap-2"><span className="w-10 shrink-0">Size</span><input aria-label="Ground size" className="min-w-0 flex-1 bg-background/80" type="number" min="10" max="2000" value={extraGround.size} onChange={e => { const n = Number(e.target.value); if (Number.isFinite(n) && n >= 10 && n <= 2000) setExtraGround(v => ({...v, size: n})); }} /></label>
-                <label className="flex items-center gap-2"><span className="w-10 shrink-0">Height</span><input aria-label="Ground height" className="min-w-0 flex-1 bg-background/80" type="number" step="0.1" min="-1000" max="1000" value={extraGround.height} onChange={e => { const n = Number(e.target.value); if (Number.isFinite(n) && Math.abs(n) <= 1000) setExtraGround(v => ({...v, height: n})); }} /></label>
-              </div>}
-              <p className="mt-1 text-[10px]">Save Project to keep settings.</p>
-            </details>
-            <div className="border-t border-foreground/10 my-1" />
+            }}><Settings aria-hidden="true" className="size-3.5 shrink-0" />Scene Setup</Button> : <details><summary className="flex cursor-pointer items-center gap-2 px-2 py-1 text-xs"><Settings aria-hidden="true" className="size-3.5 shrink-0" />Scene Setup</summary>{sceneSetupControls}</details>}
             </fieldset>
+            <hr className="my-1 border-foreground/10" />
             <button onClick={onAutoRotateToggle} aria-pressed={autoRotate} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${autoRotate ? 'bg-foreground/10 text-foreground' : 'text-foreground/70 hover:bg-foreground/10 hover:text-foreground'}`}>
               <RotateCw className={`h-3.5 w-3.5 ${autoRotate ? 'animate-spin [animation-duration:4s]' : ''}`} />
               {autoRotate ? 'Pause Rotation' : 'Auto-Rotate'}

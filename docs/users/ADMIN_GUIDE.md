@@ -72,7 +72,7 @@ For shared learning content, open **Learn > All Guides**. **Import Starter Guide
 ## Create and configure a Project
 
 1. Choose **Projects > Add Project** at `/admin/projects/new`.
-2. In **Setup**, enter **Project Name**, optionally add a Description, and review Public, Active and measurement preferences. Choose **Create Project**.
+2. In **Setup**, enter **Project Name**, optionally add a Description and featured image, and review Public, Active and measurement units. In the same form, choose workspace and camera modes, appearance, lighting, ground settings and layers. You can also enter two coordinate calibration points and set Project meta tags. Choose **Create Project**.
 3. On the saved Project, open **Modules and assets**. Use **Add Module** for the Modules this Project needs.
 4. Use **Manage Assigned Assets** to choose the specific assets for that Module. An asset being Active does not assign it to your Project.
 5. Use **Open Project Scene** to work in the Dashboard. Choose **Save ThreeD Project** in the Project menu, or the toolbar Save icon, to retain its content and workspace, then reopen it to check your work.

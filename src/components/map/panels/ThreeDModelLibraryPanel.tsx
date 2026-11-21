@@ -275,6 +275,9 @@ export function ThreeDModelLibraryPanel({
         </Button>
       </div>
 
+      {placementRole === 'environment' && !projectModules.length && (
+        <p role="status" className="px-2 text-xs text-muted-foreground">Add a ThreeD Module in the Project’s Modules and assets tab in Admin to place an Environment Model.</p>
+      )}
       {projectModules.length > 1 && (
         <label className="mb-2 block text-xs">
           <span className="mb-1 block text-muted-foreground">ThreeD Module</span>

@@ -15,11 +15,24 @@ import { useToast } from '@/components/ui/toast';
 
 const emptyDetails = (): ProjectDetailsValues => ({ name: '', featured_image: '', description: '', isPublic: false, isActive: true });
 
+const calibrationKeys = ['localX', 'localZ', 'latitude', 'longitude'] as const;
+const pointLabels = {
+  localX: 'Local X',
+  localZ: 'Local Z',
+  latitude: 'Latitude',
+  longitude: 'Longitude',
+};
+const emptyPoint = () => ({ localX: '', localZ: '', latitude: '', longitude: '' });
+const emptyCalibration = () => ({ pointA: emptyPoint(), pointB: emptyPoint() });
+
 export default function NewProjectPage() {
   const router = useRouter();
   const { showToast, ToastComponent } = useToast();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState(emptyDetails);
+
+  const [calibration, setCalibration] = useState(emptyCalibration);
+  const hasCalibration = Object.values(calibration).some(point => Object.values(point).some(Boolean));
 
   const createProject = async (configuration: ProjectConfigurationRequest | undefined, signal: AbortSignal) => {
     if (!formData.name.trim()) throw new Error('Project name is required');
@@ -27,7 +40,11 @@ export default function NewProjectPage() {
     try {
       const response = await fetch('/api/project', {
         method: 'POST', headers: { 'Content-Type': 'application/json' }, signal,
-        body: JSON.stringify({ ...formData, measurementUnits: configuration?.changes.measurementUnits ?? 'imperial' }),
+        body: JSON.stringify({
+          ...formData,
+          configuration,
+          ...(hasCalibration ? { coordinateCalibration: calibration } : {}),
+        }),
       });
       const result = await response.json().catch(() => null);
       if (!response.ok || !result?.success) throw new Error(result?.error || 'Failed to create Project. Your edits are retained.');
@@ -44,14 +61,28 @@ export default function NewProjectPage() {
 
   return <div className="space-y-4">
     {ToastComponent}
-    <div className="flex flex-wrap items-start justify-between gap-4"><div><h1 className="text-3xl font-bold">New Project</h1><p className="mt-1 text-muted-foreground">Set up Project details, access and measurement preferences. Add modules and Scene content after creation.</p></div><Button variant="outline" asChild><Link href="/admin/projects"><FolderOpen aria-hidden="true" className="mr-2 h-4 w-4" />All Projects</Link></Button></div>
+    <div className="flex flex-wrap items-start justify-between gap-4"><div><h1 className="text-3xl font-bold">New Project</h1><p className="mt-1 text-muted-foreground">Set up Project details, access, coordinates, workspace, appearance and meta tags. Add modules and Scene content after creation.</p></div><Button variant="outline" asChild><Link href="/admin/projects"><FolderOpen aria-hidden="true" className="mr-2 h-4 w-4" />All Projects</Link></Button></div>
     <Tabs defaultValue="setup" className="space-y-4">
       <TabsList><TabsTrigger value="setup">Setup</TabsTrigger><TabsTrigger value="modules" disabled>Modules and assets</TabsTrigger></TabsList>
       <TabsContent value="setup" className="space-y-4">
         <ProjectConfigurations project={{ id: null, config: { measurementUnits: 'imperial' }, metersPerSceneUnit: String(DEFAULT_THREED_METERS_PER_SCENE_UNIT), headingDegrees: '0', originLatitude: null, originLongitude: null }}
-          disabled={loading} detailsDirty={Boolean(formData.featured_image || formData.name || formData.description || formData.isPublic || !formData.isActive)}
-          onSave={createProject} onReset={() => setFormData(emptyDetails())} onSaved={() => {}} onCalibrate={() => {}}
-          details={<Card className="min-w-0 gap-0 overflow-hidden border-t-2 border-t-emerald-500/60"><CardContent className="space-y-3 p-5"><h2 className="flex items-center gap-2 text-lg font-semibold"><FolderOpen aria-hidden="true" className="size-5 shrink-0 text-emerald-600 dark:text-emerald-400" />Project details and access</h2><p className="text-sm text-muted-foreground">Name your Project and choose who can view it.</p><ProjectDetailsFields value={formData} onChange={setFormData} disabled={loading} idPrefix="new-project" /><p className="text-xs text-muted-foreground">Create the Project to add modules/assets and calibrate coordinates. No Models, Designs or Scene snapshots are created by this form.</p></CardContent></Card>} />
+          disabled={loading} detailsDirty={Boolean(hasCalibration || formData.featured_image || formData.name || formData.description || formData.isPublic || !formData.isActive)}
+          onSave={createProject} onReset={() => { setFormData(emptyDetails()); setCalibration(emptyCalibration()); }} onSaved={() => {}} onCalibrate={() => {}}
+          calibrationFields={<details open={hasCalibration || undefined}>
+            <summary className="cursor-pointer text-sm font-semibold">Coordinate calibration</summary>
+            <p className="my-2 text-xs text-muted-foreground">Enter both reference points to calibrate this Project, or leave both blank.</p>
+            {(['pointA', 'pointB'] as const).map(point => <fieldset key={point} className="grid gap-2 sm:grid-cols-2">
+              <legend className="text-sm font-medium">{point === 'pointA' ? 'Point A' : 'Point B'}</legend>
+              {calibrationKeys.map(key => <label key={key} className="text-sm">{pointLabels[key]}
+                <input type="number" step="any" required={hasCalibration} value={calibration[point][key]} className="block w-full rounded-md border bg-background px-2 py-1"
+                  onChange={event => setCalibration(current => ({
+                    ...current,
+                    [point]: { ...current[point], [key]: event.target.value },
+                  }))} />
+              </label>)}
+            </fieldset>)}
+          </details>}
+          details={<Card className="min-w-0 gap-0 overflow-hidden border-t-2 border-t-emerald-500/60"><CardContent className="space-y-3 p-5"><h2 className="flex items-center gap-2 text-lg font-semibold"><FolderOpen aria-hidden="true" className="size-5 shrink-0 text-emerald-600 dark:text-emerald-400" />Project details and access</h2><p className="text-sm text-muted-foreground">Name your Project and choose who can view it.</p><ProjectDetailsFields value={formData} onChange={setFormData} disabled={loading} idPrefix="new-project" /><p className="text-xs text-muted-foreground">Add modules and assets after creating the Project.</p></CardContent></Card>} />
       </TabsContent>
     </Tabs>
   </div>;

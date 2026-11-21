@@ -27,6 +27,8 @@ Sign in and create your own Project to edit and save. Other people's public Proj
 | **Weather** | View the Project's Weather overlay. |
 | **Save** | Save the complete supported ThreeD Project snapshot. |
 
+Open **Scene > Scene Setup** to see the ground surface and its dimensions. For procedural ground, choose **Manual** to enter a side length and elevation in Project units. Drag the Scene Setup title or focus it and use the arrow keys to move the panel. Use **Save Project** at the bottom to retain the settings and panel position. The same panel contains Ground Map, Lighting and Environment Model. **Choose Environment Model** opens the Model Library.
+
 Hover or focus an icon to read its tooltip. An active placement/repositioning operation appears in the header; its X cancels that operation. **Setup → Reset Overlay Positions** restores overlay placement when panels are difficult to find.
 
 Modules must be enabled for the Project, and assets must meet their module's activity, assignment and access requirements. An Active Library record does not appear in every Project automatically.
@@ -48,7 +50,7 @@ Modules must be enabled for the Project, and assets must meet their module's act
 
 Named levels control architectural elevation and visibility. Position, dimensions, rotation and flips appear only where supported; invalid host/opening changes are rejected together. Architecture remains part of the Project, with no separate Design Save.
 
-Drag blank plan space to pan without changing tools. Pan, Alt-drag and middle-drag also work over objects; wheel zoom follows the pointer. **Fit Plan**, **Zoom to Selection** and **Reset View** help recover your view. See [ThreeD controls](THREED_CONTROLS.md#2d-design-tools-and-navigation) for shortcuts.
+With Wall selected, drag from the start to the endpoint or click the two endpoints. With Select active, drag blank plan space to pan. Pan, Alt-drag and middle-drag also work over objects; wheel zoom follows the pointer. **Fit Plan**, **Zoom to Selection** and **Reset View** help recover your view. See [ThreeD controls](THREED_CONTROLS.md#2d-design-tools-and-navigation) for shortcuts.
 
 ## Place and inspect Models
 

@@ -76,7 +76,7 @@ const route = load('src/app/api/project/route.ts', {
   '@/libraries/db/client':{db},
   '@/libraries/schema/project':{project:{id:'id',userId:'userId',config:{column:'config'},metadata:{column:'metadata'}},projectThreedMarkers:{}},
   'drizzle-orm':{eq:()=>{},and:()=>{},desc:()=>{},sql:(strings,...values)=>({strings,values})},
-  '@/libraries/services/threed/markers/map-coordinate-core':{ThreeDMapCoordinateError:class extends Error{}},
+
 });
 const request = (body, origin = 'https://offline.invalid')=>({url:'https://offline.invalid/api/project?id=17',headers:{get:key=>key==='origin'?origin:null},json:async()=>body});
 (async()=>{
@@ -122,7 +122,34 @@ const request = (body, origin = 'https://offline.invalid')=>({url:'https://offli
   assert.deepEqual(copy(current),savedState);
   const empty={unrelated:true};const patch=configuration.projectConfigurationPatch(empty,{expected:configuration.projectConfigurationStamp(empty),changes:{measurementUnits:'metric'}});
   assert.deepEqual(copy(patch),{measurementUnits:'metric'});
-  assert.throws(()=>configuration.projectConfigurationPatch(empty,{expected:configuration.projectConfigurationStamp(empty),changes:{viewMode:'design'}}),/Save Project once/);
+  const createSettings = {
+    expected: configuration.projectConfigurationStamp(empty),
+    changes: {
+      viewMode: 'design',
+      cameraMode: 'orbit',
+      measurementUnits: 'metric',
+      threeD: { activeLayers: [], showGrid: true, environment: 'park' },
+    },
+  };
+  const coordinateCalibration = {
+    pointA: { localX: 0, localZ: 0, latitude: 37, longitude: -122 },
+    pointB: { localX: 100, localZ: 0, latitude: 37, longitude: -121.999 },
+  };
+  const configured = await route.POST(request({ name: 'Configured', configuration: createSettings, coordinateCalibration }));
+  assert.equal(configured.body.data?.calibrationPointALatitude, '37.0000000');
+  assert(Number(configured.body.data?.metersPerSceneUnit) > 0);
+  const badCalibration = await route.POST(request({ name: 'Invalid', coordinateCalibration: { pointA: coordinateCalibration.pointA } }));
+  assert.equal(badCalibration.status, 400);
+  assert.equal(configured.status, 200);
+  const config = configured.body.data.config;
+  assert.equal(config.projectSetup.cameraMode, 'orbit');
+  assert.equal(config.projectSetup.threeD.environment, 'park');
+  assert.deepEqual(copy(config.projectSetup.threeD.activeLayers), []);
+  assert.equal(config.measurementUnits, 'metric');
+  assert(!('threeDViewState' in config));
+  assert.throws(() => configuration.projectConfigurationPatch(config, createSettings), configuration.ProjectConfigurationConflict);
+  const invalid = await route.POST(request({ name: 'Rejected', configuration: { ...createSettings, changes: { threeD: { activeLayers: ['unknown'] } } } }));
+  assert.equal(invalid.status, 400);
   console.log('PASS: actual Admin configuration PATCH, owner/auth/row lock boundaries, validation, stale-write conflicts, failure and architecture/camera/cards/presets/unrelated-config preservation. Mocked DB only.');
   current=previousConfigTestState;
   const projectTags = { version: 1, enabled: true, tags: [{ name: 'description', content: 'Project-specific description' }], revision: null };

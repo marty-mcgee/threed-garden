@@ -60,7 +60,7 @@ const api = load('src/app/api/map/threed/route.ts', {
   '@/libraries/db/client': { db },
   '@/libraries/services/threed/farmbot/sanitize': { sanitizeFarmBotRecord: row => row },
   '@/libraries/schema/threed': schema, '@/libraries/schema/traffic': schema, '@/libraries/schema/project': schema,
-  '@/libraries/services/threed/markers/project-view-state-core': { readThreeDProjectViewStateFromConfig: () => null },
+  '@/libraries/services/threed/markers/project-view-state-core': { readProjectSetup:()=>undefined,readThreeDProjectViewStateFromConfig: () => null },
   '@/libraries/services/project/configuration': { projectConfigurationStamp: config => ({ savedAt: config?.threeDViewState?.savedAt ?? null, measurementUnits: config?.measurementUnits ?? 'imperial' }) },
   '@/libraries/services/threed/tasks/read-scope': load('src/libraries/services/threed/tasks/read-scope.ts', {
     'drizzle-orm': orm, '@/libraries/schema/threed': schema,

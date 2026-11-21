@@ -658,6 +658,7 @@ function UnifiedMapPageInner() {
   const projectMapViewStateProviderRef = useRef<ProjectMapViewStateProvider | null>(null);
   const lastProjectThreeDViewStateRef = useRef<ReturnType<ProjectThreeDViewStateProvider> | undefined>(undefined);
   const lastProjectMapViewStateRef = useRef<ReturnType<ProjectMapViewStateProvider> | undefined>(undefined);
+  const [projectSetup, setProjectSetup] = useState<import('@/libraries/services/threed/markers/project-view-state-core').ProjectSetup>();
   const [initialProjectViewState, setInitialProjectViewState] =
     useState<ThreeDProjectViewState | null>(null);
   const projectConfigurationRef = useRef<{ projectId: string; stamp: ProjectConfigurationStamp } | null>(null);
@@ -1265,6 +1266,7 @@ function UnifiedMapPageInner() {
     setProjectThreeDModules([]);
     setProjectGeographicOrigin(null);
     setInitialProjectViewState(null);
+    setProjectSetup(undefined);
     setPlacementThreedId(null);
     setPlacementModel(null);
     setPlacementCharacter(null);
@@ -1523,6 +1525,7 @@ function UnifiedMapPageInner() {
         setSavedTerrainPlacement('null');
         projectConfigurationRef.current = null;
         setInitialProjectViewState(null);
+        setProjectSetup(undefined);
         setScenarioPanelState(emptyProjectScenarioPanelState());
         setScenarioStartRequest(null);
         setIsScenariosOpen(false);
@@ -1542,6 +1545,7 @@ function UnifiedMapPageInner() {
         architectureDrafts.current.set(String(selectedProjectId), hydrateArchitectureDraft(cachedArchitecture, session.architecture, { ...(session.savedViewState?.design ?? defaultDesignWorkspace()), measurementUnits: session.measurementUnits ?? 'imperial' }));
         setMetersPerSceneUnit(session.metersPerSceneUnit); renderArchitecture(value => value + 1);
         setInitialProjectViewState(session.savedViewState);
+        setProjectSetup(session.projectSetup);
         setMultimediaProjectId(session.savedViewState?.multimedia?.open ? String(selectedProjectId) : null);
         if (session.savedViewState?.multimedia?.open) setWeatherProjectId(null);
         setOverlayPositions(session.savedViewState?.overlayPositions ?? {});
@@ -1554,6 +1558,10 @@ function UnifiedMapPageInner() {
           lastProjectThreeDViewStateRef.current = session.savedViewState.threeD;
           lastProjectMapViewStateRef.current = session.savedViewState.map;
         } else {
+          if (session.projectSetup) {
+            if (new URL(window.location.href).searchParams.get('view') !== 'design') setViewMode(session.projectSetup.viewMode);
+            setCameraMode(session.projectSetup.cameraMode);
+          }
           lastProjectThreeDViewStateRef.current = undefined;
           lastProjectMapViewStateRef.current = undefined;
         }
@@ -2737,6 +2745,17 @@ function UnifiedMapPageInner() {
     setIsProjectAssetsOpen(true);
   }, [projectEnvironmentMarkers, groundMapInspector?.setOpen]);
 
+  function openTerrainDetails() {
+    if (!projectTerrain || transform.session) return;
+    if (selectArchitecture(null) === false) return;
+    setSelectedMarker(null);
+    setSelectedIncident(null);
+    setSensorInspector(null);
+    setGroupInspector(null);
+    groundMapInspector?.setOpen(false);
+    setIsTerrainDetailsOpen(true);
+  }
+
   const openProjectAssets = useCallback(() => {
     setIsModelLibraryOpen(false);
     setPlacementModel(null);
@@ -3129,19 +3148,10 @@ function UnifiedMapPageInner() {
         resolveRuntimeMarkerPosition={resolveRuntimeMarkerPosition}
         onDismiss={dismissProjectAssets}
         groundMapSelected={groundMapInspector?.open ?? false}
-        onOpenGroundMap={canEditProject && viewMode !== '2d' ? () => { setIsTerrainDetailsOpen(false); groundMapInspector?.setOpen(true); } : undefined}
+        onOpenGroundMap={canEditProject && viewMode !== '2d' ? () => { setIsTerrainDetailsOpen(false); groundMapInspector?.openSection('map'); } : undefined}
         terrain={projectTerrain}
         terrainSelected={isTerrainDetailsOpen && Boolean(projectTerrain)}
-        onSelectTerrain={() => {
-          if (!projectTerrain || transform.session) return;
-          if (selectArchitecture(null) === false) return;
-          setSelectedMarker(null);
-          setSelectedIncident(null);
-          setSensorInspector(null);
-          setGroupInspector(null);
-          groundMapInspector?.setOpen(false);
-          setIsTerrainDetailsOpen(true);
-        }}
+        onSelectTerrain={openTerrainDetails}
         onChooseTerrain={canEditProject ? () => setIsTerrainOpen(true) : undefined}
         selectedGroupId={groupInspector}
         onSelectGroup={groupId => {
@@ -3403,7 +3413,16 @@ function UnifiedMapPageInner() {
                 scenarioOverlaysObscured={scenarioOverlaysObscured}
                 scenarioInstructionDimmed={isProjectAssetsOpen}
                 onEnvironmentControlsOpenChange={handleEnvironmentControlsOpenChange}
-                onOpenEnvironmentDetails={() => openEnvironmentDetails()}
+                onOpenEnvironmentDetails={canEditProject && selectedProjectId ? () => {
+                  if (projectEnvironmentMarkers.length) {
+                    openEnvironmentDetails();
+                  } else {
+                    setIsProjectSetupOpen(false);
+                    void openModelLibrary('environment');
+                  }
+                } : undefined}
+                onOpenTerrainDetails={openTerrainDetails}
+                environmentModelName={projectEnvironmentMarkers[0]?.name}
                 hasProjectEnvironment={projectEnvironmentMarkers.length > 0}
                 runtimeMarkerRegistry={projectRuntimeMarkerRegistryRef.current}
                 geographicOrigin={projectGeographicOrigin}
@@ -3443,6 +3462,7 @@ function UnifiedMapPageInner() {
                 placementPhysicsSensor={placementPhysicsSensorPreview}
                 onPhysicsSensorPlacement={handlePhysicsSensorPlacement}
                 onProjectMarkerSnapshotProviderChange={handleProjectMarkerSnapshotProviderChange}
+                projectAppearance={projectSetup?.threeD}
                 initialProjectViewState={initialProjectViewState}
                 onProjectThreeDViewStateProviderChange={handleProjectThreeDViewStateProviderChange}
                 onRuntimeMarkerPositionResolverChange={handleRuntimeMarkerPositionResolverChange}
@@ -3476,6 +3496,7 @@ function UnifiedMapPageInner() {
                 placementModel={placementModel}
                 onModelPlacement={handleModelPlacement}
                 onModelMove={handleMoveModelInstance}
+                projectAppearance={projectSetup?.threeD}
                 initialProjectViewState={initialProjectViewState}
                 onProjectMapViewStateProviderChange={handleProjectMapViewStateProviderChange}
               /></div>
@@ -3502,7 +3523,7 @@ function UnifiedMapPageInner() {
         saving={savingProjectMarkers}
       />}
       {canEditProject && <>
-      <GroundMapInspector leftOffsetRem={isLeftSceneWorkspaceOpen ? 18.75 : 0.75} available={viewMode !== '2d' && isThreeDPresentationComplete} onSave={handleSaveThreeDProject} saving={savingProjectMarkers} />
+      <GroundMapInspector available={viewMode !== '2d' && isThreeDPresentationComplete} onSave={handleSaveThreeDProject} saving={savingProjectMarkers} />
       {groupInspector !== null && !groundMapInspector?.open && <SensorGroupInspector
         key={`${selectedProjectId}:${groupInspector}`}
         groupId={groupInspector} markers={projectRuntimeMarkers}

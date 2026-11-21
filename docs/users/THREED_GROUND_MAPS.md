@@ -5,10 +5,8 @@ ThreeD Ground Maps let a Project owner use a PNG, JPG or WebP map screenshot as 
 ## Open Ground Map controls
 
 1. Open `/dashboard/scene` and choose a Project with an active ThreeD module.
-2. In 3D, Design or Combined view, select **Environment** in the Project Toolbar.
-3. Select **Ground Map · Edit settings** to open its inspector.
-
-**Setup → Project Tour** is the separate setup and Help workflow. **Environment** contains the live Scene presentation controls.
+2. In 3D, Design or Combined view, open **Scene > Scene Setup** in the Project Toolbar.
+3. Under **Ground Map**, choose the image and adjust its alignment. The Ground Map shortcut in Project Assets opens this section directly.
 
 ## Upload an image
 

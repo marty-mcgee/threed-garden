@@ -174,7 +174,7 @@ for (const moveBeforeRelease of [false, true]) {
   f.pointer('onPointerUp', 354, 210);
   assert.equal(f.props.selected, 'w0'); assert.equal(f.props.planView.x, 84); assert.equal(f.captures.size, 0);
 }
-for (const tool of ['select', 'wall', 'floor', 'roof', 'door', 'window', 'cutout', 'skylight']) {
+for (const tool of ['select', 'floor', 'roof', 'door', 'window', 'cutout', 'skylight']) {
   const f = fixture({ tool }); f.pointer('onPointerDown'); f.pointer('onPointerMove', 375, 230); f.pointer('onPointerUp', 375, 230);
   assert.equal(f.props.selected, 'w0'); assert.equal(f.props.tool, tool); assert.equal(f.calls.commit.length, 0);
   assert.equal(f.props.planView.x, 105); assert.equal(f.props.planView.y, 100);
@@ -208,7 +208,7 @@ for (const tool of ['wall', 'floor', 'roof']) {
   f.click(125, 125); assert.equal(f.calls.commit.length, 0);
   f.pointer('onPointerMove', 180, 180); const before = flatten(f.tree).filter(n => n.type === 'polyline').map(n => n.props.points);
   assert.equal(before.length, 1, 'First drawing point must remain in the actual draft.');
-  f.pointer('onPointerDown', 350, 210); f.pointer('onPointerMove', 410, 230); f.pointer('onPointerUp', 410, 230);
+  f.pointer('onPointerDown', 350, 210, { altKey: true }); f.pointer('onPointerMove', 410, 230); f.pointer('onPointerUp', 410, 230);
   assert.equal(f.props.tool, tool); assert.equal(f.calls.commit.length, 0); assert.equal(f.props.selected, null);
   const start = f.world(1, 1), next = f.world(2, 1);
   f.click(next.x, next.y, { shiftKey: true });
@@ -236,12 +236,15 @@ for (const tool of ['wall', 'floor', 'roof']) {
   assert.equal(f.props.document.openings.length, 1); assert.equal(f.props.document.openings[0].wallId, 'w0');
   assert.equal(f.props.tool, 'select'); assert.equal(f.calls.complete.length, 1); assert.deepEqual(plain(f.props.planView), initialView);
 }
-// A pointer landing on transient preview geometry must still count as blank for panning.
+// A primary wall drag on empty space or a preview draws one segment without moving the plan.
 {
   const f = fixture({ tool: 'wall', document: document.newDesign(), selected: null });
-  f.click(125, 125); f.pointer('onPointerMove', 180, 180);
-  f.pointer('onPointerDown', 180, 180, { entity: 'preview-entity' }); f.pointer('onPointerMove', 220, 190, { entity: 'preview-entity' }); f.pointer('onPointerUp', 220, 190, { entity: 'preview-entity' });
-  assert.equal(f.props.planView.x, 120); assert.equal(f.calls.commit.length, 0); assert.equal(f.props.tool, 'wall');
+  f.pointer('onPointerDown', 180, 180); f.pointer('onPointerMove', 220, 190, { entity: 'preview-entity' }); f.pointer('onPointerUp', 220, 190, { entity: 'preview-entity' });
+  assert.deepEqual(plain(f.props.planView), initialView);
+  assert.equal(f.calls.commit.length, 1);
+  assert.equal(f.props.document.walls.length, 1);
+  assert.equal(f.props.tool, 'wall');
+  assert.equal(f.captures.size, 0);
 }
 // Cancel, lost capture and parent cancellation discard pending click actions; inactive/ruler input is ignored.
 for (const action of ['onPointerCancel', 'onLostPointerCapture', 'parent-cancel']) {

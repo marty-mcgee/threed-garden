@@ -22,7 +22,7 @@ interface Props { selectedModel?: DesignModelSelection | null; onSaveModel?: Sav
   onSelect: (id: string | null) => void; onCommit: (doc: DesignDocument) => void;
   onPreview: (doc: DesignDocument | null) => void; onMessage: (text: string) => void;
   onDrawComplete: (id: string) => void; cancelToken: number }
-interface Gesture { pointerId: number; base: DesignDocument; point: PlanPoint; screenStart?: { x: number; y: number }; view: PlanView; nodes: string[]; pan: boolean; pendingClick?: { shiftKey: boolean }; node?: string; opening?: string; roofOpening?: string; merge?: string; latest: DesignDocument }
+interface Gesture { pointerId: number; base: DesignDocument; point: PlanPoint; screenStart?: { x: number; y: number }; view: PlanView; nodes: string[]; pan: boolean; wallPress?: { started: boolean; shiftKey: boolean }; pendingClick?: { shiftKey: boolean }; node?: string; opening?: string; roofOpening?: string; merge?: string; latest: DesignDocument }
 const PAN_DRAG_THRESHOLD = 4; // CSS pixels: allow ordinary click jitter without drawing during a pan.
 const makeId = () => crypto.randomUUID();
 
@@ -188,6 +188,23 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
     const hitNodeId = (event.target as Element).getAttribute('data-node');
     const nodeId = active.nodes.some(node => node.id === hitNodeId) ? hitNodeId : null;
     const explicitPan = editingHidden || tool === 'pan' || event.button === 1 || event.altKey;
+    if (!explicitPan && !disabled && tool === 'wall') {
+      const started = points.length === 0;
+      if (started) activateTool(point, event.shiftKey);
+      gesture.current = {
+        pointerId: event.pointerId,
+        base: doc,
+        latest: doc,
+        point,
+        screenStart: local(event),
+        view,
+        nodes: [],
+        pan: false,
+        wallPress: { started, shiftKey: event.shiftKey },
+      };
+      svg.current!.setPointerCapture(event.pointerId);
+      return;
+    }
     if (explicitPan || (!entityId && !nodeId)) {
       gesture.current = { pointerId: event.pointerId, base: doc, latest: doc, point, screenStart: local(event), view, nodes: [], pan: true,
         pendingClick: explicitPan ? undefined : { shiftKey: event.shiftKey } };
@@ -260,6 +277,10 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
       return;
     }
     if (event.pointerId !== active.pointerId) return;
+    if (active.wallPress) {
+      setHover(snapped(pointer(event), [], event.shiftKey));
+      return;
+    }
     if (active.pan) { panGesture(active, local(event)); return; }
     const p = screenToPlan(local(event), active.view), baseNodes = new Map(active.base.nodes.map(node => [node.id, node]));
     if (active.roofOpening) {
@@ -314,7 +335,12 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
     if (active.pan) panGesture(active, local(event));
     gesture.current = null;
     try {
-      if (active.pendingClick) activateTool(active.point, active.pendingClick.shiftKey);
+      if (active.wallPress) {
+        const start = active.screenStart!, release = local(event);
+        const dragged = Math.hypot(release.x - start.x, release.y - start.y) >= PAN_DRAG_THRESHOLD;
+        if (dragged) activateTool(pointer(event), event.shiftKey);
+        else if (!active.wallPress.started) activateTool(active.point, active.wallPress.shiftKey);
+      } else if (active.pendingClick) activateTool(active.point, active.pendingClick.shiftKey);
       else if (!active.pan) onCommit(active.node && active.merge ? mergeNodes(active.latest, active.node, active.merge) : active.latest);
     }
     catch (error) { onMessage((error as Error).message); }
@@ -353,7 +379,7 @@ export function DesignPlan({ selectedModel, onSaveModel, modelBusy = false, visi
     <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
     <ContextMenu><ContextMenuTrigger asChild><svg ref={svg} data-testid="home-plan" aria-label="ThreeD Design 2D plan" tabIndex={0} width="100%" height="100%" className="block min-h-0 w-full flex-1 touch-none select-none outline-none focus-visible:ring-2 focus-visible:ring-cyan-400" style={{ cursor: tool === 'pan' ? 'grab' : tool === 'select' ? 'default' : 'crosshair' }}
       onPointerDown={down} onPointerMove={move} onPointerUp={end} onPointerCancel={() => { cancelModel(); gesture.current = null; setPoints([]); setHover(null); onPreview(null); onMessage('Gesture cancelled.'); }}
-      onLostPointerCapture={() => { if (gesture.current) { gesture.current = null; onPreview(null); } }}
+      onLostPointerCapture={() => { if (gesture.current) { if (gesture.current.wallPress?.started) setPoints([]); gesture.current = null; setHover(null); onPreview(null); } }}
       onPointerLeave={() => { if (!gesture.current && (tool === 'door' || tool === 'window' || tool === 'cutout' || tool === 'skylight')) onPreview(null); }}
       >
       <defs><pattern id={patternId} width={grid} height={grid} patternUnits="userSpaceOnUse" x={view.x % grid} y={view.y % grid}><path d={`M ${grid} 0 L 0 0 0 ${grid}`} fill="none" stroke="#204259" strokeWidth=".7" /></pattern></defs>

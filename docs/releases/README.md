@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.35.11 - Remove Skills from Admin Settings](v0.35.11.md)
+- [v0.35.12 - Project Setup, Scene Setup and Wall Drawing](v0.35.12.md)
+
+- [v0.35.11 - Remove Skills from Admin Settings (Developer-confirmed production)](v0.35.11.md#production-status)
 
 - [v0.35.10 - App Skills and Agent Requests (Developer-confirmed production)](v0.35.10.md#production-status)
 
