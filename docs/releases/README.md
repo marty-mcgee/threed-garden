@@ -6,6 +6,8 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
+- [v0.35.9 - ThreeD Admin Bulk Edit and Plantings Sort Order (prepared, deployment pending)](v0.35.9.md)
+
 - [v0.35.8 - ThreeD App Version Preparation Skill (prepared, deployment pending)](v0.35.8.md)
 
 - [v0.35.7 - ThreeD Garden Release Metadata (Developer-confirmed production)](v0.35.7.md#production-status)

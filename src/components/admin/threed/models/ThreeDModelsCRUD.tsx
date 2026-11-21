@@ -42,6 +42,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/toast';
 import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
+import { CatalogBulkEditButton } from '@/components/admin/threed/CatalogBulkEditButton';
 import type { ThreeDModelCategoryOption } from './ThreeDModelCategoriesManager';
 import {
   buildThreeDModelAdminPayload,
@@ -754,7 +755,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
       {ToastComponent}
 
       <fieldset disabled={deleting} className="min-w-0 shrink-0">
-      <AdminWorkspaceHeader iconColor="blue"
+      <AdminWorkspaceHeader iconColor="blue" showModuleAlbums={!scrollRecords}
         icon={Box}
         title="Models"
         description="Import and manage reusable ThreeD Models"
@@ -807,6 +808,16 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
           <span aria-hidden="true" className="text-muted-foreground">|</span>
           <div className="flex flex-wrap items-center gap-2 text-xs" aria-label="Bulk Model actions">
             <span>{selectedModels.length} selected</span>
+            {scrollRecords && <CatalogBulkEditButton
+              resource="models"
+              rows={selectedModels}
+              disabled={loading || deleting || !!listError || !!bulkCategoryTargets}
+              onSaved={() => {
+                setSelectedIds(new Set());
+                void fetchModels();
+                onModuleUpdate?.();
+              }}
+            />}
             <Button size="sm" variant="outline" className="h-7 px-2 text-xs" disabled={loading || deleting || !selectedModels.length} onClick={() => setBulkCategoryTargets(selectedModels.map(model => ({ id: model.id, modelName: model.modelName })))}>Update Categories ({selectedModels.length})</Button>
             <Button size="sm" variant="outline" className="h-7 px-2 text-xs" disabled={loading || deleting || !selectedModels.length} onClick={() => void handleDeleteModels(selectedModels)}>
               {deleting ? <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" /> : <Trash2 className="mr-1 h-3.5 w-3.5" />}Delete selected ({selectedModels.length})

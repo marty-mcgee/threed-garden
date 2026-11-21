@@ -26,12 +26,12 @@ export class SceneMultimediaReadError extends Error {
 }
 
 /** Shared by UI and command revalidation; no write or playback occurs here. */
-export async function readSceneMultimedia(query: SceneMultimediaQuery, viewerId?: string) {
-  const accessible = await readableProject(query.projectId, viewerId);
+export async function readSceneMultimedia(query: SceneMultimediaQuery, viewerId?: string, client: Pick<typeof db, 'select' | 'selectDistinct' | 'execute'> = db) {
+  const accessible = await readableProject(query.projectId, viewerId, client);
   if (!accessible?.userId) throw new SceneMultimediaReadError(404, 'Project not found.');
   const owner = accessible.userId;
   async function placement(markerId: string) {
-    const [marker] = await db.select({
+    const [marker] = await client.select({
       markerType: projectThreedMarkers.markerType,
       sourceAssetId: projectThreedMarkers.sourceAssetId,
       threedId: projectThreedMarkers.threedId,
@@ -66,7 +66,7 @@ export async function readSceneMultimedia(query: SceneMultimediaQuery, viewerId?
     if (!marker || data?.visible === false || data?.status === 'inactive') throw new SceneMultimediaReadError(404, 'Save this object in the Project before using Multimedia, and check its active assignment.');
     const kind = markerKinds[marker.markerType];
     const entity = sql.identifier(albumEntityTables[kind]);
-    const record = await db.execute(sql`SELECT id FROM ${entity} WHERE id = ${marker.sourceAssetId} AND user_id = ${owner} AND is_active = true`);
+    const record = await client.execute(sql`SELECT id FROM ${entity} WHERE id = ${marker.sourceAssetId} AND user_id = ${owner} AND is_active = true`);
     if (!record.rows.length) throw new SceneMultimediaReadError(404, 'Source record not found.');
     return {
       ...marker,
@@ -80,7 +80,7 @@ export async function readSceneMultimedia(query: SceneMultimediaQuery, viewerId?
       throw new SceneMultimediaReadError(409, 'Choose a saved movable Character in the same Project module.');
     }
   }
-  const albums = await db.selectDistinct({
+  const albums = await client.selectDistinct({
     id: multimediaAlbums.id,
     title: multimediaAlbums.title,
     artist: multimediaAlbums.artist,
@@ -114,7 +114,7 @@ export async function readSceneMultimedia(query: SceneMultimediaQuery, viewerId?
   let offset = query.offset;
   if (query.trackId) {
     if (!query.albumId) throw new SceneMultimediaReadError(404, 'Choose an Album.');
-    const rank = await db.execute(sql`SELECT position FROM (
+    const rank = await client.execute(sql`SELECT position FROM (
       SELECT id, row_number() OVER (ORDER BY track_number ASC NULLS LAST, id) - 1 AS position
       FROM multimedia_tracks WHERE album_id = ${query.albumId} AND user_id = ${owner} AND status = 'active'
     ) AS ranked WHERE id = ${query.trackId} LIMIT 1`);
@@ -122,7 +122,7 @@ export async function readSceneMultimedia(query: SceneMultimediaQuery, viewerId?
     if (!Number.isSafeInteger(position) || position < 0 || position > 1_000_000) throw new SceneMultimediaReadError(404, 'Track is not available in this Album.');
     offset = Math.floor(position / 50) * 50;
   }
-  const tracks = query.albumId ? await db.select({
+  const tracks = query.albumId ? await client.select({
     id: multimediaTracks.id,
     albumId: multimediaTracks.albumId,
     title: multimediaTracks.title,

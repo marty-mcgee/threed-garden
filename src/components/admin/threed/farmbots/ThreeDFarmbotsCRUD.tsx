@@ -1,5 +1,6 @@
 // components/admin/threed/farmbots/ThreeDFarmbotsCRUD.tsx
 'use client';
+import { CatalogBulkEditButton } from '@/components/admin/threed/CatalogBulkEditButton';
 import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
@@ -979,7 +980,7 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
   return (
     <div className={scrollRecords ? 'flex h-full min-h-0 flex-col gap-2' : 'space-y-2'}>
       {ToastComponent}
-      <AdminWorkspaceHeader iconColor="slate" icon={Bot} title="FarmBots" description="Manage FarmBot devices and connections" className="shrink-0 [&>a]:text-[11px]">
+      <AdminWorkspaceHeader iconColor="slate" icon={Bot} title="FarmBots" description="Manage FarmBot devices and connections" showModuleAlbums={!scrollRecords} className="shrink-0 [&>a]:text-[11px]">
         <Badge variant="secondary" className="text-xs">{loading || loadError ? '—' : total}</Badge>
         <Input aria-label="Search FarmBots" placeholder="Search FarmBots by name, asset code, device ID or notes…" disabled={listBusy} value={searchQuery} onChange={event => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -1198,6 +1199,17 @@ export function ThreeDFarmbotsCRUD({ onModuleUpdate, scrollRecords = false }: { 
 
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">
         <div className="flex flex-wrap items-center gap-2"><span>{loading ? 'Loading…' : loadError ? 'Farmbots unavailable' : `${total ? page * pageSize + 1 : 0}–${Math.min((page + 1) * pageSize, total)} of ${total} Farmbots`}</span><span aria-hidden="true">|</span><span>{selected.size} selected</span>
+          {scrollRecords && <CatalogBulkEditButton
+            resource="farmbots"
+            rows={farmbots.filter(farmbot => selected.has(farmbot.id))}
+            disabled={loading || listBusy || isSubmitting || !!loadError || showCreateDialog || !!editingFarmbot}
+            onSaved={() => {
+              setSelected(new Set());
+              setBulkNotice('Selected FarmBots updated.');
+              setLoading(true);
+              fetchFarmbots();
+            }}
+          />}
           <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={loading || listBusy || isSubmitting || !!loadError || !selected.size} onClick={() => void deleteSelected()}>Delete selected ({selected.size})</Button>
           <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={listBusy || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button>
         </div>

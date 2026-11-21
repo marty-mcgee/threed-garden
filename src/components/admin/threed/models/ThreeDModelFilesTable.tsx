@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, ArrowDown, ArrowUp, ArrowUpDown, Clapperboard, FolderOpen, FolderTree, Images, Pencil, Plus, RefreshCw, Search } from 'lucide-react';
 import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
+import { CatalogBulkEditButton } from '@/components/admin/threed/CatalogBulkEditButton';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -15,6 +16,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { MODEL_FILE_LIST_FILE_TYPES, parseModelFileListQuery, type ModelFileListQuery, type ModelFileListSortField } from '@/libraries/services/threed/models/model-file-list-query';
 
 interface ModelFileRow {
+  updatedAt: string | null;
   id: number; modelId: number; modelName: string; modelType: string;
   fileName: string; relativePath: string | null; fileType: string; textureType: string | null;
   fileSize: number | null; loadOrder: number | null; role: 'primary' | 'supporting';
@@ -62,6 +64,7 @@ export function ThreeDModelFilesTable() {
   const [query, setQuery] = useState<ModelFileListQuery>(parsedLocation.query);
   const [locationError, setLocationError] = useState(parsedLocation.error);
   const [rows, setRows] = useState<ModelFileRow[]>([]);
+  const [selected, setSelected] = useState<Set<number>>(new Set());
   const [total, setTotal] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -154,6 +157,7 @@ export function ThreeDModelFilesTable() {
     let current = true;
     const isCurrent = () => current && !controller.signal.aborted && request === listRequest.current && currentListContext.current === context;
     setLoading(true); setError(''); setTotal(null);
+    setSelected(new Set());
     if (locationError) { setRows([]); setLoading(false); return () => { current = false; controller.abort(); }; }
     const timer = setTimeout(() => {
       void (async () => {
@@ -183,6 +187,7 @@ export function ThreeDModelFilesTable() {
   const page = Math.floor(query.offset / query.limit);
   const pageCount = total === null ? null : Math.max(1, Math.ceil(total / query.limit));
   const unavailable = loading || !!error || !!locationError || total === null;
+  const selectedRows = rows.filter(file => selected.has(file.id));
   const range = locationError || error ? 'Model Files unavailable' : loading || total === null ? 'Loading Model Files…'
     : total ? `${query.offset + 1}–${Math.min(query.offset + rows.length, total)} of ${total} Files` : '0 Files';
 
@@ -195,7 +200,7 @@ export function ThreeDModelFilesTable() {
   }
 
   return <div className="flex min-h-0 flex-1 flex-col gap-2">
-    <AdminWorkspaceHeader icon={FolderOpen} title="Model Files" description="Find saved File attachments across your Models" className="min-w-0 shrink-0">
+    <AdminWorkspaceHeader icon={FolderOpen} title="Model Files" description="Find saved File attachments across your Models" showModuleAlbums={false} className="min-w-0 shrink-0">
       <Badge variant="secondary" className="text-xs tabular-nums">{unavailable ? '—' : total}</Badge>
       <div className="relative min-w-48 flex-1">
         <Search aria-hidden="true" className="pointer-events-none absolute left-2 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -234,7 +239,19 @@ export function ThreeDModelFilesTable() {
       </div>
     </AdminWorkspaceHeader>
     <nav aria-label="Model Files pagination" className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">
-      <span role="status" className="tabular-nums text-muted-foreground">{range}</span>
+      <div className="flex flex-wrap items-center gap-2">
+        <span role="status" className="tabular-nums text-muted-foreground">{range}</span>
+        <span aria-hidden="true">|</span>
+        <span>{selectedRows.length} selected</span>
+        <CatalogBulkEditButton
+          resource="model-files"
+          rows={selectedRows}
+          scope={query.modelId === null ? undefined : { modelId: query.modelId }}
+          disabled={unavailable}
+          onSaved={refresh}
+        />
+        <Button variant="outline" size="sm" className={COMPACT_BUTTON} disabled={unavailable || !selectedRows.length} onClick={() => setSelected(new Set())}>Clear selection</Button>
+      </div>
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex items-center gap-2"><Label htmlFor="model-files-page-size" className="shrink-0 text-xs">Rows per page</Label>
         <Select value={String(query.limit)} onValueChange={value => changeQuery({ limit: Number(value), offset: 0 }, true)}>
@@ -251,13 +268,32 @@ export function ThreeDModelFilesTable() {
     {modelsError && <p role="alert" className="flex shrink-0 flex-wrap items-center gap-2 text-sm text-destructive">{modelsError} <Button variant="outline" size="sm" className={COMPACT_BUTTON} onClick={() => setModelRevision(value => value + 1)}>Retry parent Models</Button></p>}
     <div role="region" aria-label="Model File records" tabIndex={0} className="min-h-0 flex-1 overflow-auto overscroll-contain rounded-lg border border-border bg-card text-card-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background [&>[data-slot=table-container]]:overflow-visible">
       <Table className="min-w-[1100px]">
-        <TableHeader className="sticky top-0 z-10 bg-card"><TableRow className="hover:bg-transparent">{heading('model', 'Parent Model')}{heading('name', 'Filename')}{heading('path', 'Dependency path')}{heading('type', 'Type')}{heading('role', 'Role')}{heading('size', 'Size')}{heading('loadOrder', 'Load order')}<TableHead className="py-1 text-right text-xs">Actions</TableHead></TableRow></TableHeader>
+        <TableHeader className="sticky top-0 z-10 bg-card"><TableRow className="hover:bg-transparent">
+          <TableHead className="w-8"><input
+            type="checkbox"
+            aria-label="Select Model Files on this page"
+            disabled={unavailable || !rows.length}
+            checked={rows.length > 0 && selectedRows.length === rows.length}
+            ref={input => { if (input) input.indeterminate = selectedRows.length > 0 && selectedRows.length < rows.length; }}
+            onChange={event => setSelected(event.target.checked ? new Set(rows.map(file => file.id)) : new Set())}
+          /></TableHead>
+          {heading('model', 'Parent Model')}{heading('name', 'Filename')}{heading('path', 'Dependency path')}{heading('type', 'Type')}{heading('role', 'Role')}{heading('size', 'Size')}{heading('loadOrder', 'Load order')}<TableHead className="py-1 text-right text-xs">Actions</TableHead></TableRow></TableHeader>
         <TableBody>
-          {locationError ? <TableRow><TableCell colSpan={8} className="space-y-2 py-4 text-center"><p role="alert" className="text-destructive">{locationError}</p><Button variant="outline" size="sm" className={COMPACT_BUTTON} onClick={() => changeQuery(parseModelFileListQuery(new URLSearchParams()))}>Reset list filters</Button></TableCell></TableRow>
-            : loading ? <TableRow><TableCell colSpan={8} className="py-4 text-center text-muted-foreground"><span role="status">Loading Model Files…</span></TableCell></TableRow>
-            : error ? <TableRow><TableCell colSpan={8} className="py-4 text-center"><span role="alert" className="text-destructive">{error}</span><Button variant="outline" size="sm" className={`${COMPACT_BUTTON} ml-2`} onClick={refresh}>Retry</Button></TableCell></TableRow>
-            : !rows.length ? <TableRow><TableCell colSpan={8} className="py-4 text-center text-muted-foreground">No saved Model File attachments found.</TableCell></TableRow>
+          {locationError ? <TableRow><TableCell colSpan={9} className="space-y-2 py-4 text-center"><p role="alert" className="text-destructive">{locationError}</p><Button variant="outline" size="sm" className={COMPACT_BUTTON} onClick={() => changeQuery(parseModelFileListQuery(new URLSearchParams()))}>Reset list filters</Button></TableCell></TableRow>
+            : loading ? <TableRow><TableCell colSpan={9} className="py-4 text-center text-muted-foreground"><span role="status">Loading Model Files…</span></TableCell></TableRow>
+            : error ? <TableRow><TableCell colSpan={9} className="py-4 text-center"><span role="alert" className="text-destructive">{error}</span><Button variant="outline" size="sm" className={`${COMPACT_BUTTON} ml-2`} onClick={refresh}>Retry</Button></TableCell></TableRow>
+            : !rows.length ? <TableRow><TableCell colSpan={9} className="py-4 text-center text-muted-foreground">No saved Model File attachments found.</TableCell></TableRow>
             : rows.map(file => <TableRow key={file.id} className="hover:bg-muted/50">
+              <TableCell className="py-1"><input
+                type="checkbox"
+                aria-label={`Select File #${file.id} ${file.fileName}`}
+                checked={selected.has(file.id)}
+                onChange={event => {
+                  const next = new Set(selected);
+                  if (event.target.checked) next.add(file.id); else next.delete(file.id);
+                  setSelected(next);
+                }}
+              /></TableCell>
               <TableCell className="py-1"><Link className={`${RECORD_LINK} text-sm font-medium`} href={`/admin/threed/models/${file.modelId}?tab=files`}>{file.modelName}</Link><p className="text-xs text-muted-foreground">Model #{file.modelId} · {file.modelType}</p></TableCell>
               <TableCell className="py-1"><Link className={`${RECORD_LINK} break-all text-sm font-medium`} href={`/admin/threed/models/${file.modelId}/files/${file.id}`}>{file.fileName}</Link><p className="text-xs text-muted-foreground">File #{file.id}</p></TableCell>
               <TableCell className="max-w-sm whitespace-pre-wrap break-all py-1 text-xs text-muted-foreground">{file.relativePath || 'No dependency path saved'}</TableCell>

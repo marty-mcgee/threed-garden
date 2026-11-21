@@ -2,7 +2,9 @@
 
 ## Current checkpoint
 
-[v0.35.8 - ThreeD App Version Preparation Skill](docs/releases/v0.35.8.md) is ready for the Developer’s commit. The new repository skill was used to prepare this release. All 111 offline CI tasks and the guarded production build passed. Deployment is pending.
+[v0.35.9 - ThreeD Admin Bulk Edit and Plantings Sort Order](docs/releases/v0.35.9.md) is ready for the Developer’s commit. The Developer confirmed the signed-in Plantings Bulk Edit check and both Plantings migrations. TypeScript, 18 focused checks, all 114 CI tasks and the guarded production build passed. Deployment is pending.
+
+The [v0.35.8 release preparation skill](docs/releases/v0.35.8.md) was committed locally at `071a7608`. Its deployment remains unconfirmed.
 
 The Developer confirmed that [v0.35.7 - ThreeD Garden Release Metadata](docs/releases/v0.35.7.md#production-status) reached production on November 20, 2026, and subsequently confirmed deployment of its documentation follow-up. Two critical production-dependency audit findings remain open.
 

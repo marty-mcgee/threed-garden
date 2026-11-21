@@ -1,16 +1,18 @@
 // components/admin/threed/plantings/ThreeDPlantingsCRUD.tsx
 'use client';
+import { CatalogBulkEditButton } from '@/components/admin/threed/CatalogBulkEditButton';
 import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { AdminRelationshipBadge } from '@/components/admin/shared/AdminRelationshipBadge';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
 import {
   ArrowUpDown,
   ArrowUp,
   ArrowDown,
+  GripVertical,
   Check,
   X,
   Box,
@@ -62,6 +64,8 @@ interface Model {
 
 interface Planting {
   id: number;
+  name: string | null;
+  sortOrder: number | null;
   plantingId: string;
   plantId: number | null;
   bedId: number | null;
@@ -90,6 +94,7 @@ interface Planting {
 }
 
 interface FormData {
+  name: string;
   plantingId: string;
   plantId: string;
   bedId: string;
@@ -170,6 +175,59 @@ const getGrowthStageColor = (stage: string) => {
   }
 };
 
+function plantingFormValues(planting: Planting): FormData {
+  return {
+    name: planting.name ?? '',
+    plantingId: planting.plantingId || '',
+    plantId: planting.plantId ? String(planting.plantId) : '',
+    bedId: planting.bedId ? String(planting.bedId) : '',
+    customModelId: planting.customModelId ? String(planting.customModelId) : '',
+    modelScale: planting.modelScale || '1.0',
+    modelOffset: planting.modelOffset ? JSON.stringify(planting.modelOffset) : '{"x":0,"y":0,"z":0}',
+    quantity: String(planting.quantity || 1),
+    spacingInches: planting.spacingInches ? String(planting.spacingInches) : '',
+    positionX: planting.positionX || '',
+    positionY: planting.positionY || '',
+    positionZ: planting.positionZ || '',
+    plantedDate: planting.plantedDate ? new Date(planting.plantedDate).toISOString().split('T')[0] : '',
+    expectedGerminationDate: planting.expectedGerminationDate ? new Date(planting.expectedGerminationDate).toISOString().split('T')[0] : '',
+    expectedHarvestDate: planting.expectedHarvestDate ? new Date(planting.expectedHarvestDate).toISOString().split('T')[0] : '',
+    actualHarvestDate: planting.actualHarvestDate ? new Date(planting.actualHarvestDate).toISOString().split('T')[0] : '',
+    isActive: planting.isActive ?? true,
+    status: planting.status || 'planted',
+    growthStage: planting.growthStage || 'seed',
+    health: planting.health || 'good',
+    notes: planting.notes || '',
+  };
+}
+
+function plantingPayload(draft: FormData, initial?: FormData) {
+  const payload = {
+    ...draft,
+    name: draft.name.trim() || null,
+    plantId: draft.plantId ? Number(draft.plantId) : null,
+    bedId: draft.bedId && draft.bedId !== 'none' ? Number(draft.bedId) : null,
+    customModelId: draft.customModelId && draft.customModelId !== 'none' ? Number(draft.customModelId) : null,
+    quantity: parseInt(draft.quantity) || 1,
+    spacingInches: draft.spacingInches ? parseInt(draft.spacingInches) : null,
+    modelScale: draft.modelScale || '1.0',
+    modelOffset: draft.modelOffset ? JSON.parse(draft.modelOffset) : { x: 0, y: 0, z: 0 },
+    positionX: draft.positionX || null,
+    positionY: draft.positionY || null,
+    positionZ: draft.positionZ || null,
+    plantedDate: draft.plantedDate || null,
+    expectedGerminationDate: draft.expectedGerminationDate || null,
+    expectedHarvestDate: draft.expectedHarvestDate || null,
+    actualHarvestDate: draft.actualHarvestDate || null,
+  };
+  if (!initial) return payload;
+
+  const keys = Object.keys(draft) as (keyof FormData)[];
+  return Object.fromEntries(keys
+    .filter(key => draft[key] !== initial[key])
+    .map(key => [key, payload[key]]));
+}
+
 export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: { onModuleUpdate?: () => void; scrollRecords?: boolean }) {
   const { showToast, ToastComponent } = useToast();
   const [plantings, setPlantings] = useState<Planting[]>([]);
@@ -186,17 +244,95 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
   const [page, setPage] = useAdminListQueryState('/admin/threed/plantings', 'page', 0, {enabled: scrollRecords});
   const [pageSize, setPageSize] = useAdminListQueryState('/admin/threed/plantings', 'limit', 25, {enabled: scrollRecords});
   const [total, setTotal] = useState(0);
-  const [sort, setSort] = useAdminListQueryState('/admin/threed/plantings', 'sort', { key: 'plantingId', direction: 'asc' }, {enabled: scrollRecords, values: ["plant","bed","plantingId","position","growth","status","active"]});
+  const [sort, setSort] = useAdminListQueryState('/admin/threed/plantings', 'sort', {
+    key: scrollRecords ? 'sortOrder' : 'plantingId',
+    direction: 'asc',
+  }, {
+    enabled: scrollRecords,
+    values: [
+      'name',
+      'sortOrder',
+      'plant',
+      'bed',
+      'plantingId',
+      'position',
+      'growth',
+      'status',
+      'active',
+    ],
+  });
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [bulkBusy, setBulkBusy] = useState(false);
   const [bulkNotice, setBulkNotice] = useState('');
+  const [moving, setMoving] = useState(false);
+  const [dragging, setDragging] = useState<number | null>(null);
+  const [dropTarget, setDropTarget] = useState<{ id: number; after: boolean } | null>(null);
+  const dragSource = useRef<number | null>(null);
+  const moveLock = useRef(false);
+  const focusAfterMove = useRef<number | null>(null);
   const [revision, setRevision] = useState(0);
+  const recordsBusy = bulkBusy || moving;
+  const ranksReady = plantings.every(planting => Number.isInteger(planting.sortOrder));
+  const reorderMode = sort.key === 'sortOrder' && sort.direction === 'asc' && !searchQuery.trim();
+  const canReorder = scrollRecords && reorderMode && ranksReady && plantings.length > 1
+    && !loading && !loadError && !recordsBusy && !isSubmitting && !editingPlanting && !showCreateDialog;
+  const reorderHelp = !ranksReady ? 'Sort Order is unavailable' : !reorderMode ? 'Use Reorder to return to Sort Order'
+    : plantings.length < 2 ? 'At least two Plantings on this page are needed to reorder' : 'Drag or use Arrow Up and Arrow Down';
+  const columnCount = scrollRecords ? 11 : 10;
   const fetchPlantings = () => setRevision(value => value + 1);
   function resetList() { setPage(0); setSelected(new Set()); setLoading(true); }
 
+  function clearDrag() {
+    dragSource.current = null;
+    setDragging(null);
+    setDropTarget(null);
+  }
+
+  function startReordering() {
+    resetList();
+    setSearchQuery('');
+    setSort({
+      key: 'sortOrder',
+      direction: 'asc',
+    });
+  }
+
+  async function movePlanting(sourceId: number, targetId: number, after: boolean, keyboard = false) {
+    clearDrag();
+    if (!canReorder || moveLock.current || sourceId === targetId) return;
+    moveLock.current = true;
+    setMoving(true);
+    setBulkNotice('');
+    try {
+      const response = await fetch('/api/threed/plantings/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        signal: AbortSignal.timeout(30000),
+        body: JSON.stringify({
+          sourceId,
+          targetId,
+          after,
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok || result.success !== true || !Number.isSafeInteger(result.data?.updated) || result.data.updated < 0) {
+        throw new Error(result.error || 'Failed to save Plantings Sort Order.');
+      }
+      setBulkNotice(result.data.updated ? 'Sort Order saved.' : 'Planting already in that position.');
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : 'Failed to save Plantings Sort Order.', 'error');
+    } finally {
+      if (keyboard) focusAfterMove.current = sourceId;
+      moveLock.current = false;
+      setLoading(true);
+      setMoving(false);
+      fetchPlantings();
+    }
+  }
 
   // ✅ Form state
   const [formData, setFormData] = useState<FormData>({
+    name: '',
     plantingId: '',
     plantId: '',
     bedId: '',
@@ -228,7 +364,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
 
   useEffect(() => {
     const controller = new AbortController();
-    setLoading(true); setLoadError(''); setSelected(new Set());
+    setLoading(true); setLoadError(''); setSelected(new Set()); clearDrag();
     const params = new URLSearchParams({ limit: String(pageSize), offset: String(page * pageSize), search: searchQuery, sort: sort.key, direction: sort.direction });
     const timer = setTimeout(async () => {
       try {
@@ -301,20 +437,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
 
     setIsSubmitting(true);
     try {
-      const payload = {
-        ...formData,
-        quantity: parseInt(formData.quantity) || 1,
-        spacingInches: formData.spacingInches ? parseInt(formData.spacingInches) : null,
-        modelScale: formData.modelScale || '1.0',
-        modelOffset: formData.modelOffset ? JSON.parse(formData.modelOffset) : { x: 0, y: 0, z: 0 },
-        positionX: formData.positionX || null,
-        positionY: formData.positionY || null,
-        positionZ: formData.positionZ || null,
-        plantedDate: formData.plantedDate || null,
-        expectedGerminationDate: formData.expectedGerminationDate || null,
-        expectedHarvestDate: formData.expectedHarvestDate || null,
-        actualHarvestDate: formData.actualHarvestDate || null,
-      };
+      const payload = plantingPayload(formData);
 
       const response = await fetch('/api/threed/plantings', {
         method: 'POST',
@@ -346,27 +469,14 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
       showToast('Planting ID is required', 'error');
       return;
     }
-    if (!formData.plantId) {
+    if (editingPlanting.plantId != null && !formData.plantId) {
       showToast('Plant is required', 'error');
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const payload = {
-        ...formData,
-        quantity: parseInt(formData.quantity) || 1,
-        spacingInches: formData.spacingInches ? parseInt(formData.spacingInches) : null,
-        modelScale: formData.modelScale || '1.0',
-        modelOffset: formData.modelOffset ? JSON.parse(formData.modelOffset) : { x: 0, y: 0, z: 0 },
-        positionX: formData.positionX || null,
-        positionY: formData.positionY || null,
-        positionZ: formData.positionZ || null,
-        plantedDate: formData.plantedDate || null,
-        expectedGerminationDate: formData.expectedGerminationDate || null,
-        expectedHarvestDate: formData.expectedHarvestDate || null,
-        actualHarvestDate: formData.actualHarvestDate || null,
-      };
+      const payload = plantingPayload(formData, plantingFormValues(editingPlanting));
 
       const response = await fetch(`/api/threed/plantings?id=${editingPlanting.id}`, {
         method: 'PATCH',
@@ -375,7 +485,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
       });
 
       const data = await response.json();
-      if (data.success) {
+      if (response.ok && data.success && data.data?.id === editingPlanting.id) {
         showToast('Planting updated successfully', 'success');
         setEditingPlanting(null);
         await fetchPlantings();
@@ -392,7 +502,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
   };
 
   const handleDelete = async (id: number, name: string) => {
-    if (bulkBusy || isSubmitting) return;
+    if (recordsBusy || isSubmitting) return;
     if (!confirm(`Delete planting "${name}"? This action cannot be undone.`)) return;
 
     setIsSubmitting(true);
@@ -417,6 +527,7 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
 
   const resetForm = () => {
     setFormData({
+      name: '',
       plantingId: '',
       plantId: '',
       bedId: '',
@@ -442,33 +553,12 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
 
   const openEditDialog = (planting: Planting) => {
     setEditingPlanting(planting);
-    setFormData({
-      plantingId: planting.plantingId || '',
-      plantId: planting.plantId ? String(planting.plantId) : '',
-      bedId: planting.bedId ? String(planting.bedId) : '',
-      customModelId: planting.customModelId ? String(planting.customModelId) : '',
-      modelScale: planting.modelScale || '1.0',
-      modelOffset: planting.modelOffset ? JSON.stringify(planting.modelOffset) : '{"x":0,"y":0,"z":0}',
-      quantity: String(planting.quantity || 1),
-      spacingInches: planting.spacingInches ? String(planting.spacingInches) : '',
-      positionX: planting.positionX || '',
-      positionY: planting.positionY || '',
-      positionZ: planting.positionZ || '',
-      plantedDate: planting.plantedDate ? new Date(planting.plantedDate).toISOString().split('T')[0] : '',
-      expectedGerminationDate: planting.expectedGerminationDate ? new Date(planting.expectedGerminationDate).toISOString().split('T')[0] : '',
-      expectedHarvestDate: planting.expectedHarvestDate ? new Date(planting.expectedHarvestDate).toISOString().split('T')[0] : '',
-      actualHarvestDate: planting.actualHarvestDate ? new Date(planting.actualHarvestDate).toISOString().split('T')[0] : '',
-      isActive: planting.isActive ?? true,
-      status: planting.status || 'planted',
-      growthStage: planting.growthStage || 'seed',
-      health: planting.health || 'good',
-      notes: planting.notes || '',
-    });
+    setFormData(plantingFormValues(planting));
   };
 
   async function deleteSelected() {
     const targets = plantings.filter(planting => selected.has(planting.id));
-    if (bulkBusy || loading || isSubmitting || !targets.length || !confirm(`Delete ${targets.length} selected Plantings? This action cannot be undone.`)) return;
+    if (recordsBusy || loading || isSubmitting || !targets.length || !confirm(`Delete ${targets.length} selected Plantings? This action cannot be undone.`)) return;
     setBulkBusy(true); setBulkNotice('');
     let deleted = 0;
     const failures: string[] = [];
@@ -486,17 +576,17 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
   }
   function heading(key: string, title: string) {
     const Icon = sort.key === key ? sort.direction === 'asc' ? ArrowUp : ArrowDown : ArrowUpDown;
-    return <TableHead className="py-1 text-xs" aria-sort={sort.key === key ? sort.direction === 'asc' ? 'ascending' : 'descending' : 'none'}><button disabled={loading || bulkBusy} className="inline-flex items-center gap-1" onClick={() => { resetList(); setSort({ key, direction: sort.key === key && sort.direction === 'asc' ? 'desc' : 'asc' }); }}>{title}<Icon className="h-3 w-3" aria-hidden="true" /></button></TableHead>;
+    return <TableHead className="py-1 text-xs" aria-sort={sort.key === key ? sort.direction === 'asc' ? 'ascending' : 'descending' : 'none'}><button disabled={loading || recordsBusy} className="inline-flex items-center gap-1" onClick={() => { resetList(); setSort({ key, direction: sort.key === key && sort.direction === 'asc' ? 'desc' : 'asc' }); }}>{title}<Icon className="h-3 w-3" aria-hidden="true" /></button></TableHead>;
   }
 
   const renderActions = (planting: Planting) => (
     <div className="flex items-center justify-end gap-1">
-      <Button variant="ghost" size="sm" disabled={bulkBusy || isSubmitting} aria-label={`Edit ${planting.plantingId}`} onClick={() => openEditDialog(planting)}>
+      <Button variant="ghost" size="sm" disabled={recordsBusy || isSubmitting} aria-label={`Edit ${planting.plantingId}`} onClick={() => openEditDialog(planting)}>
         <Edit className="w-4 h-4" />
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8">
+          <Button variant="ghost" size="icon" className="h-8 w-8" disabled={recordsBusy || isSubmitting}>
             <MoreHorizontal className="w-4 h-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -545,12 +635,22 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
   return (
     <div className={scrollRecords ? 'flex h-full min-h-0 flex-col gap-2' : 'space-y-2'}>
       {ToastComponent}
-      <AdminWorkspaceHeader iconColor="brown" icon={Bean} title="Plantings" description="Manage plants in beds with growth tracking and harvest planning" className="shrink-0 [&>a]:text-[11px]">
+      <AdminWorkspaceHeader
+        iconColor="brown"
+        icon={Bean}
+        title="Plantings"
+        description="Manage plants in beds with growth tracking and harvest planning"
+        showModuleAlbums={!scrollRecords}
+        className="shrink-0 [&>a]:text-[11px]"
+      >
         <Badge variant="secondary" className="text-xs">{loading || loadError ? '—' : total}</Badge>
-        <Input aria-label="Search Plantings" placeholder="Search Plantings by ID, Plant, Bed or notes…" disabled={bulkBusy} value={searchQuery} onChange={event => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
-        <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
+        <Input aria-label="Search Plantings" placeholder="Search by name, ID, Plant, Bed or notes…" disabled={recordsBusy} value={searchQuery} onChange={event => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
+        <Dialog open={showCreateDialog} onOpenChange={open => {
+          if (open) resetForm();
+          setShowCreateDialog(open);
+        }}>
           <DialogTrigger asChild>
-            <Button variant="success" size="sm" disabled={bulkBusy} className="h-7 px-2 text-[11px]">
+            <Button variant="success" size="sm" disabled={recordsBusy} className="h-7 px-2 text-[11px]">
               <Plus className="w-3 h-3 mr-1" />
               Add Planting
             </Button>
@@ -561,6 +661,16 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
             </DialogHeader>
             <div className="grid min-w-0 grid-cols-1 items-start gap-3 pt-1 md:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
               {/* Basic Info */}
+              <div>
+                <Label htmlFor="name">Title/Name</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  maxLength={255}
+                  onChange={event => setFormData({ ...formData, name: event.target.value })}
+                  disabled={isSubmitting}
+                />
+              </div>
               <div>
                 <Label htmlFor="plantingId">Planting ID *</Label>
                 <Input
@@ -890,20 +1000,35 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
 
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">
         <div className="flex flex-wrap items-center gap-2"><span>{loading ? 'Loading…' : loadError ? 'Plantings unavailable' : `${total ? page * pageSize + 1 : 0}–${Math.min((page + 1) * pageSize, total)} of ${total} Plantings`}</span><span aria-hidden="true">|</span><span>{selected.size} selected</span>
-          <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={loading || bulkBusy || isSubmitting || !!loadError || !selected.size} onClick={() => void deleteSelected()}>Delete selected ({selected.size})</Button>
-          <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={bulkBusy || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button>
+          {scrollRecords && <CatalogBulkEditButton
+            resource="plantings"
+            rows={plantings.filter(planting => selected.has(planting.id))}
+            disabled={loading || recordsBusy || isSubmitting || !!loadError || showCreateDialog || !!editingPlanting}
+            onSaved={() => {
+              setSelected(new Set());
+              setBulkNotice('Selected Plantings updated.');
+              setLoading(true);
+              fetchPlantings();
+            }}
+          />}
+          <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={loading || recordsBusy || isSubmitting || !!loadError || !selected.size} onClick={() => void deleteSelected()}>Delete selected ({selected.size})</Button>
+          <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={recordsBusy || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button>
+          {scrollRecords && !reorderMode && <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={loading || recordsBusy}
+            title="Clear search and sort by Sort Order ascending" onClick={startReordering}><GripVertical className="size-3" />Reorder</Button>}
         </div>
-        <div className="flex flex-wrap items-center gap-2"><label>Per page <select aria-label="Plantings per page" className="rounded border bg-background p-1 text-[11px]" value={pageSize} disabled={loading || bulkBusy} onChange={event => { resetList(); setPageSize(Number(event.target.value)); }}>{[25, 50, 100, 200].map(size => <option key={size} value={size}>{size}</option>)}</select></label>
-          {(['First', 'Previous', 'Page', 'Next', 'Last'] as const).map(label => label === 'Page' ? <span key={label}>Page {page + 1} of {Math.max(1, Math.ceil(total / pageSize))}</span> : <Button key={label} size="sm" variant="outline" className="h-7 text-[11px]" disabled={loading || bulkBusy || !!loadError || (label === 'First' || label === 'Previous' ? page === 0 : (page + 1) * pageSize >= total)} onClick={() => { setSelected(new Set()); setLoading(true); setPage(label === 'First' ? 0 : label === 'Previous' ? page - 1 : label === 'Next' ? page + 1 : Math.max(0, Math.ceil(total / pageSize) - 1)); }}>{label}</Button>)}
+        <div className="flex flex-wrap items-center gap-2"><label>Per page <select aria-label="Plantings per page" className="rounded border bg-background p-1 text-[11px]" value={pageSize} disabled={loading || recordsBusy} onChange={event => { resetList(); setPageSize(Number(event.target.value)); }}>{[25, 50, 100, 200].map(size => <option key={size} value={size}>{size}</option>)}</select></label>
+          {(['First', 'Previous', 'Page', 'Next', 'Last'] as const).map(label => label === 'Page' ? <span key={label}>Page {page + 1} of {Math.max(1, Math.ceil(total / pageSize))}</span> : <Button key={label} size="sm" variant="outline" className="h-7 text-[11px]" disabled={loading || recordsBusy || !!loadError || (label === 'First' || label === 'Previous' ? page === 0 : (page + 1) * pageSize >= total)} onClick={() => { setSelected(new Set()); setLoading(true); setPage(label === 'First' ? 0 : label === 'Previous' ? page - 1 : label === 'Next' ? page + 1 : Math.max(0, Math.ceil(total / pageSize) - 1)); }}>{label}</Button>)}
         </div>
       </div>
-      {bulkNotice && <p role="status" className="max-h-24 shrink-0 overflow-auto text-xs">{bulkNotice}</p>}
+      {(moving || bulkNotice) && <p role="status" className="max-h-24 shrink-0 overflow-auto text-xs">{moving ? 'Saving Sort Order…' : bulkNotice}</p>}
 
       <div className={scrollRecords ? 'min-h-0 flex-1 overflow-auto overscroll-contain rounded-lg border [&>[data-slot=table-container]]:overflow-visible' : 'overflow-auto rounded-lg border'} role="region" aria-label="Planting records" tabIndex={0}>
           <Table className="min-w-[850px]">
             <TableHeader className={scrollRecords ? 'sticky top-0 z-10 bg-background' : undefined}>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="w-8"><input type="checkbox" aria-label="Select Plantings on this page" disabled={loading || bulkBusy || !!loadError || !plantings.length} checked={plantings.length > 0 && plantings.every(planting => selected.has(planting.id))} ref={input => { if (input) input.indeterminate = plantings.some(planting => selected.has(planting.id)) && !plantings.every(planting => selected.has(planting.id)); }} onChange={event => setSelected(event.target.checked ? new Set(plantings.map(planting => planting.id)) : new Set())} /></TableHead>
+                <TableHead className="w-8"><input type="checkbox" aria-label="Select Plantings on this page" disabled={loading || recordsBusy || !!loadError || !plantings.length} checked={plantings.length > 0 && plantings.every(planting => selected.has(planting.id))} ref={input => { if (input) input.indeterminate = plantings.some(planting => selected.has(planting.id)) && !plantings.every(planting => selected.has(planting.id)); }} onChange={event => setSelected(event.target.checked ? new Set(plantings.map(planting => planting.id)) : new Set())} /></TableHead>
+                {heading('name', 'Title/Name')}
+                {scrollRecords && heading('sortOrder', 'Sort Order')}
                 {heading('plant', 'Plant')}
                 {heading('bed', 'Bed')}
                 {heading('plantingId', 'Planting ID')}
@@ -915,17 +1040,74 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {loading ? <TableRow><TableCell colSpan={9} className="py-4 text-sm"><span role="status">Loading Plantings…</span></TableCell></TableRow> : loadError ? <TableRow><TableCell colSpan={9} className="py-4 text-sm"><span role="alert" className="text-destructive">{loadError}</span><Button size="sm" variant="outline" className="ml-2 h-7 text-[11px]" onClick={() => void fetchPlantings()}>Retry</Button></TableCell></TableRow> : filteredPlantings.length === 0 ? <TableRow><TableCell colSpan={9} className="py-4 text-sm">No Plantings found.</TableCell></TableRow> : filteredPlantings.map((planting) => (
-                <TableRow key={planting.id} className="hover:bg-muted/50">
-                  <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${planting.plantingId}`} checked={selected.has(planting.id)} disabled={bulkBusy || loading} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(planting.id); else next.delete(planting.id); return next; })} /></TableCell>
-                  <TableCell className="py-1 text-sm font-medium">
+              {loading ? <TableRow><TableCell colSpan={columnCount} className="py-4 text-sm"><span role="status">Loading Plantings…</span></TableCell></TableRow> : loadError ? <TableRow><TableCell colSpan={columnCount} className="py-4 text-sm"><span role="alert" className="text-destructive">{loadError}</span><Button size="sm" variant="outline" className="ml-2 h-7 text-[11px]" onClick={() => void fetchPlantings()}>Retry</Button></TableCell></TableRow> : filteredPlantings.length === 0 ? <TableRow><TableCell colSpan={columnCount} className="py-4 text-sm">No Plantings found.</TableCell></TableRow> : filteredPlantings.map((planting, index) => (
+                <TableRow key={planting.id}
+                  className={dragging === planting.id ? 'opacity-50' : dropTarget?.id === planting.id
+                    ? (dropTarget.after ? 'border-b-2 border-b-emerald-500 bg-emerald-500/10' : 'border-t-2 border-t-emerald-500 bg-emerald-500/10') : 'hover:bg-muted/50'}
+                  onDragOver={event => {
+                    if (!canReorder || dragSource.current === null || dragSource.current === planting.id) {
+                      setDropTarget(null);
+                      return;
+                    }
+                    event.preventDefault();
+                    event.dataTransfer.dropEffect = 'move';
+                    const rect = event.currentTarget.getBoundingClientRect();
+                    const after = event.clientY >= rect.top + rect.height / 2;
+                    setDropTarget(previous => previous?.id === planting.id && previous.after === after ? previous : {
+                      id: planting.id,
+                      after,
+                    });
+                  }}
+                  onDrop={event => {
+                    const sourceId = dragSource.current;
+                    if (!canReorder || sourceId === null || sourceId === planting.id) return;
+                    event.preventDefault();
+                    const rect = event.currentTarget.getBoundingClientRect();
+                    void movePlanting(sourceId, planting.id, event.clientY >= rect.top + rect.height / 2);
+                  }}>
+                  <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${planting.plantingId}`} checked={selected.has(planting.id)} disabled={recordsBusy || loading} onChange={event => {
+                    const checked = event.target.checked;
+                    setSelected(previous => { const next = new Set(previous); if (checked) next.add(planting.id); else next.delete(planting.id); return next; });
+                  }} /></TableCell>
+                  <TableCell className="max-w-64 whitespace-normal break-words py-1 text-sm font-medium">
                     <div className="flex items-center gap-2">
-                      <ModuleIcon moduleKey="plantings" className="w-3.5 h-3.5" />
-                      <AdminRelationshipBadge kind="plant" id={planting.plantId} label={planting.plant?.commonName} />
+                      {scrollRecords && <span title={reorderHelp}>
+                        <Button type="button" variant="ghost" size="icon" className="h-6 w-6 shrink-0 cursor-grab"
+                          aria-label={`Reorder ${planting.name || planting.plantingId}`}
+                          aria-keyshortcuts="ArrowUp ArrowDown" aria-disabled={!canReorder}
+                          draggable={canReorder} disabled={!canReorder && !moving}
+                          ref={button => {
+                            if (button && focusAfterMove.current === planting.id) {
+                              focusAfterMove.current = null;
+                              button.focus();
+                            }
+                          }}
+                          onDragStart={event => {
+                            if (!canReorder) { event.preventDefault(); return; }
+                            dragSource.current = planting.id;
+                            setDragging(planting.id);
+                            event.dataTransfer.effectAllowed = 'move';
+                            event.dataTransfer.setData('text/plain', String(planting.id));
+                          }}
+                          onDragEnd={clearDrag}
+                          onKeyDown={event => {
+                            if (!canReorder || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) return;
+                            event.preventDefault();
+                            const after = event.key === 'ArrowDown';
+                            const target = filteredPlantings[index + (after ? 1 : -1)];
+                            if (target) void movePlanting(planting.id, target.id, after, true);
+                          }}><GripVertical className="size-4" /></Button>
+                      </span>}
+                      <ModuleIcon moduleKey="plantings" className="h-3.5 w-3.5 shrink-0" />
+                      <span className="min-w-0">{planting.name || '—'}</span>
                       {!planting.isActive && (
                         <Badge variant="secondary" className="text-[10px]">Inactive</Badge>
                       )}
                     </div>
+                  </TableCell>
+                  {scrollRecords && <TableCell className="py-1 text-xs tabular-nums">{planting.sortOrder ?? '—'}</TableCell>}
+                  <TableCell className="py-1 text-sm">
+                    <AdminRelationshipBadge kind="plant" id={planting.plantId} label={planting.plant?.commonName} />
                   </TableCell>
                   <TableCell className="py-1 text-sm text-muted-foreground">
                     {planting.bed?.name || '—'}
@@ -967,6 +1149,16 @@ export function ThreeDPlantingsCRUD({ onModuleUpdate, scrollRecords = false }: {
             <DialogTitle>Edit Planting</DialogTitle>
           </DialogHeader>
           <div className="grid min-w-0 grid-cols-1 items-start gap-3 pt-1 md:grid-cols-2 [&_input]:h-8 [&_input]:text-xs [&_textarea]:min-h-16 [&_textarea]:text-xs [&_label]:text-xs [&_[data-slot=select-trigger]]:h-8 [&_[data-slot=select-trigger]]:text-xs [&>div]:min-w-0">
+            <div>
+              <Label htmlFor="edit-name">Title/Name</Label>
+              <Input
+                id="edit-name"
+                value={formData.name}
+                maxLength={255}
+                onChange={event => setFormData({ ...formData, name: event.target.value })}
+                disabled={isSubmitting}
+              />
+            </div>
             <div>
               <Label htmlFor="edit-plantingId">Planting ID *</Label>
               <Input

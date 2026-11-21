@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
+import { CatalogBulkEditButton } from '@/components/admin/threed/CatalogBulkEditButton';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import type { CategorySortField } from '@/libraries/services/threed/models/category-list-query';
 import { Switch } from '@/components/ui/switch';
@@ -43,7 +44,7 @@ const EMPTY_FORM: CategoryForm = {
 
 export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => void }) {
   const { showToast, ToastComponent } = useToast();
-  const [categories, setCategories] = useState<ThreeDModelCategoryOption[]>([]);
+  const [categories, setCategories] = useState<(ThreeDModelCategoryOption & { updatedAt: string | null })[]>([]);
   const [editing, setEditing] = useState<ThreeDModelCategoryOption | null>(null);
   const [form, setForm] = useState<CategoryForm>(EMPTY_FORM);
   const [loading, setLoading] = useState(true);
@@ -197,7 +198,7 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
     <div className="flex h-full min-h-0 flex-col gap-2">
       {ToastComponent}
       <fieldset disabled={deleting || saving} className="shrink-0 min-w-0">
-        <AdminWorkspaceHeader icon={FolderTree} title="Model Categories" description="Organize reusable Models with owner-scoped relational taxonomy">
+        <AdminWorkspaceHeader icon={FolderTree} title="Model Categories" description="Organize reusable Models with owner-scoped relational taxonomy" showModuleAlbums={false}>
           <ModelFieldHelp label="Model Categories">
             <p>Parents group their children. Use the arrows beside category names to expand or collapse branches.</p>
             <p>Drag a grip above or below a sibling to save its Order. Focus a grip and use Arrow Up or Arrow Down for keyboard reordering.</p>
@@ -217,6 +218,16 @@ export function ThreeDModelCategoriesManager({ onChanged }: { onChanged?: () => 
         <div className="flex flex-wrap items-center gap-2">
           <span role="status">{loading ? 'Loading…' : total ? `${page * pageSize + 1}–${Math.min((page + 1) * pageSize, total)} of ${total} root branches` : '0 root branches'}</span>
           <span aria-hidden="true">|</span><span>{selected.size} selected</span>
+          <CatalogBulkEditButton
+            resource="model-categories"
+            rows={rows.filter(row => selected.has(row.id))}
+            disabled={loading || saving || deleting || open || !!listError}
+            onSaved={() => {
+              setSelected(new Set());
+              setRevision(value => value + 1);
+              onChanged?.();
+            }}
+          />
           <Button variant="outline" size="sm" className="h-7 text-xs" disabled={loading || deleting || saving || !selected.size} onClick={() => void deleteCategories(rows.filter((row) => selected.has(row.id)))}>Delete selected ({selected.size})</Button>
           <Button variant="outline" size="sm" className="h-7 text-xs" disabled={deleting || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button>
         </div>

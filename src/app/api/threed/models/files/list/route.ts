@@ -73,6 +73,7 @@ export async function GET(request: NextRequest) {
       textureType: threedModelFiles.textureType,
       fileSize: threedModelFiles.fileSize,
       loadOrder: threedModelFiles.loadOrder,
+      updatedAt: threedModelFiles.updatedAt,
       role,
     }).from(threedModelFiles).innerJoin(threedModels, join).where(where)
       .orderBy(sql`${ordering} nulls last`, asc(threedModelFiles.id)).limit(query.limit).offset(query.offset);

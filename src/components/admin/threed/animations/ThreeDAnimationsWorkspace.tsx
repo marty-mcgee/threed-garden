@@ -1,4 +1,5 @@
 'use client';
+import { CatalogBulkEditButton } from '@/components/admin/threed/CatalogBulkEditButton';
 import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
@@ -14,7 +15,7 @@ import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '@
 
 type UploadResult = { name: string; status: 'Queued' | 'Uploading' | 'Imported' | 'Needs attention'; detail?: string };
 
-type Animation = { categoryIds?: number[]; id: number; name: string; fileName: string; clipIndex: number; duration: number; isActive: boolean; presetUsage?: number; modelUsage: number; characterUsage: number; filePath: string; fileSize: number; format: string };
+type Animation = { updatedAt: string; categoryIds?: number[]; id: number; name: string; fileName: string; clipIndex: number; duration: number; isActive: boolean; presetUsage?: number; modelUsage: number; characterUsage: number; filePath: string; fileSize: number; format: string };
 async function request(url: string, init?: RequestInit) {
   const response = await fetch(url, { ...init, cache: 'no-store' });
   const result = await response.json();
@@ -108,8 +109,8 @@ export function ThreeDAnimationsWorkspace({ initialCategoryId }: { initialCatego
     }
   }
   async function removeSelected() {
-    const targets = rows.filter(row => selected.has(row.id) && row.modelUsage + row.characterUsage + (row.presetUsage ?? 0) === 0);
-    if (busy || !targets.length || !window.confirm(`Delete ${targets.length} animations? Source files are retained.`)) return;
+    const targets = selectedRows;
+    if (busy || !canDeleteSelection || !window.confirm(`Delete ${targets.length} animations? Source files are retained.`)) return;
     setBusy(true); let count = 0;
     try { for (const row of targets) { await request(`/api/threed/animations?id=${row.id}`, { method: 'DELETE' }); count++; } setNotice(`Deleted ${count} animations; source files retained.`); }
     catch (err) { setNotice(`Deleted ${count} of ${targets.length} animations.`); setOperationError(err instanceof Error ? err.message : 'Deletion stopped'); }
@@ -126,10 +127,11 @@ export function ThreeDAnimationsWorkspace({ initialCategoryId }: { initialCatego
     catch (err) { setOperationError(err instanceof Error ? err.message : 'Could not update animation'); }
     finally { setBusy(false); }
   }
-  const deletable = rows.filter(row => row.modelUsage + row.characterUsage + (row.presetUsage ?? 0) === 0);
+  const selectedRows = rows.filter(row => selected.has(row.id));
+  const canDeleteSelection = selectedRows.length > 0 && selectedRows.every(row => row.modelUsage + row.characterUsage + (row.presetUsage ?? 0) === 0);
   return <div className="flex h-full min-h-0 flex-col gap-2">
     <input ref={uploadRef} type="file" multiple accept=".fbx,.glb" aria-label="Upload animation files" className="hidden" disabled={busy} onChange={event => { const files = Array.from(event.target.files ?? []); event.target.value = ''; void upload(files); }} />
-    <AdminWorkspaceHeader iconColor="blue" icon={Clapperboard} title="Animations" description="Reusable animation assets, independent of Models and Characters">
+    <AdminWorkspaceHeader showModuleAlbums={false} iconColor="blue" icon={Clapperboard} title="Animations" description="Reusable animation assets, independent of Models and Characters">
       <span className="rounded bg-muted px-2 text-xs">{error ? '—' : total}</span>
       <Input aria-label="Search saved animations" placeholder="Search saved animations…" value={search} disabled={busy} onChange={event => { setSearch(event.target.value); setPage(0); }} className="h-7 min-w-48 flex-1 text-xs" />
       <select aria-label="Filter Animations by category" className="h-7 min-w-40 rounded border bg-background px-2 text-xs" disabled={busy || !!categoryError} value={category} onChange={e => { setCategory(e.target.value); setPage(0); }}><option value="">All categories</option>{category && !categories.some(c => String(c.id) === category) && <option value={category}>Category #{category}</option>}{categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}</select>
@@ -172,17 +174,24 @@ export function ThreeDAnimationsWorkspace({ initialCategoryId }: { initialCatego
     </section>}
     <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">
       <div className="flex flex-wrap items-center gap-2"><span role="status">{loading ? 'Loading saved animations…' : error ? 'Saved library unavailable' : `${total ? page * pageSize + 1 : 0}–${Math.min((page + 1) * pageSize, total)} of ${total} Animations`}</span>
-      <span aria-hidden="true">|</span><span>{selected.size} selected</span><Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading || !!error || !selected.size} onClick={() => void removeSelected()}>Delete selected ({selected.size})</Button><Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button></div>
+      <span aria-hidden="true">|</span><span>{selected.size} selected</span>
+        <CatalogBulkEditButton
+          resource="animations"
+          rows={selectedRows}
+          disabled={busy || loading || !!error || !!editing || !!categoryEditing}
+          onSaved={() => { setSelected(new Set()); setRefresh(value => value + 1); }}
+        />
+        <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading || !!error || !canDeleteSelection} title={selectedRows.length && !canDeleteSelection ? 'The selection includes a referenced record.' : undefined} onClick={() => void removeSelected()}>Delete selected ({selected.size})</Button><Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button></div>
       <div className="flex flex-wrap items-center gap-2"><label>Per page <select aria-label="Animations per page" value={pageSize} disabled={busy || loading} className="rounded border bg-background p-1" onChange={event => { setPageSize(Number(event.target.value)); setPage(0); }}>{[25, 50, 100, 200].map(size => <option key={size} value={size}>{size}</option>)}</select></label><Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading || !!error || page === 0} onClick={() => setPage(0)}>First</Button><Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading || !!error || page === 0} onClick={() => setPage(value => value - 1)}>Previous</Button>
         <span>Page {page + 1} of {Math.max(1, Math.ceil(total / pageSize))}</span>
         <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading || !!error || (page + 1) * pageSize >= total} onClick={() => setPage(value => value + 1)}>Next</Button><Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading || !!error || (page + 1) * pageSize >= total} onClick={() => setPage(Math.max(0, Math.ceil(total / pageSize) - 1))}>Last</Button></div>
     </div>
     <div className="min-h-0 flex-1 overflow-auto overscroll-contain rounded-lg border [&>[data-slot=table-container]]:overflow-visible" role="region" aria-label="Animation library records" tabIndex={0}>
       <Table className="min-w-[950px]"><TableHeader className="sticky top-0 z-10 bg-background"><TableRow>
-        <TableHead className="w-8"><input type="checkbox" aria-label="Select unreferenced animations on this page" disabled={busy || loading || !deletable.length} checked={deletable.length > 0 && deletable.every(row => selected.has(row.id))} ref={input => { if (input) input.indeterminate = deletable.some(row => selected.has(row.id)) && !deletable.every(row => selected.has(row.id)); }} onChange={event => setSelected(event.target.checked ? new Set(deletable.map(row => row.id)) : new Set())} /></TableHead>
+        <TableHead className="w-8"><input type="checkbox" aria-label="Select Animations on this page" disabled={busy || loading || !rows.length} checked={rows.length > 0 && rows.every(row => selected.has(row.id))} ref={input => { if (input) input.indeterminate = rows.some(row => selected.has(row.id)) && !rows.every(row => selected.has(row.id)); }} onChange={event => setSelected(event.target.checked ? new Set(rows.map(row => row.id)) : new Set())} /></TableHead>
         {heading('name', 'Name')}<TableHead className="text-xs">Categories</TableHead>{heading('fileName', 'Source / Clip')}{heading('type', 'Type')}{heading('duration', 'Duration')}{heading('active', 'Active')}{heading('references', 'References')}{heading('size', 'Size')}<TableHead className="text-right text-xs">Actions</TableHead></TableRow></TableHeader>
         <TableBody>{loading ? <TableRow><TableCell colSpan={10}>Loading Animations…</TableCell></TableRow> : error ? <TableRow><TableCell colSpan={10}><div role="alert" className="flex items-center gap-2 text-sm text-destructive">{error}<Button variant="outline" size="sm" className="h-7 text-xs" disabled={busy} onClick={() => setRefresh(value => value + 1)}>Retry</Button></div></TableCell></TableRow> : rows.length === 0 ? <TableRow><TableCell colSpan={10}>No Animations found. Use Upload Animations to add FBX or self-contained GLB sources (up to 100 files, 4 MiB each).</TableCell></TableRow> : rows.map(row => <TableRow key={row.id}>
-          <TableCell className="py-1 text-xs"><input type="checkbox" aria-label={`Select ${row.name}`} disabled={busy || loading || row.modelUsage + row.characterUsage + (row.presetUsage ?? 0) > 0} checked={selected.has(row.id)} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(row.id); else next.delete(row.id); return next; })} /></TableCell>
+          <TableCell className="py-1 text-xs"><input type="checkbox" aria-label={`Select ${row.name}`} disabled={busy || loading} checked={selected.has(row.id)} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(row.id); else next.delete(row.id); return next; })} /></TableCell>
           <TableCell className="py-1 text-sm"><div className="flex items-center gap-2"><ModuleIcon moduleKey="animations" className="h-4 w-4 shrink-0" />{row.name}</div><span className="text-xs text-muted-foreground">#{row.id}</span></TableCell><TableCell className="py-1 text-xs"><button className="text-left underline decoration-dotted" disabled={busy || !!categoryError} onClick={() => setCategoryEditing(row)} aria-label={`Edit categories for ${row.name}`}>{(row.categoryIds ?? []).map(id => categories.find(c => c.id === id)?.name).filter(Boolean).join(', ') || 'Assign'}</button></TableCell><TableCell className="py-1 text-xs">{row.fileName} · #{row.clipIndex + 1}</TableCell><TableCell className="py-1 text-xs uppercase">{row.format}</TableCell><TableCell className="py-1 text-xs">{row.duration.toFixed(2)}s</TableCell><TableCell className="py-1 text-xs">{row.isActive ? <span className="inline-flex items-center gap-1 text-green-500"><Check aria-hidden="true" className="h-4 w-4" />Active</span> : <span className="inline-flex items-center gap-1 text-muted-foreground"><X aria-hidden="true" className="h-4 w-4" />Inactive</span>}</TableCell><TableCell className="py-1 text-xs">{row.modelUsage} Models · {row.characterUsage} Characters · {row.presetUsage ?? 0} Presets</TableCell><TableCell className="py-1 text-xs">{(row.fileSize / 1024).toFixed(1)} KiB</TableCell>
           <TableCell className="py-1 text-xs"><div className="flex justify-end gap-1"><Button size="icon" variant="ghost" className="h-8 w-8" aria-label={`Edit ${row.name}`} title="Rename animation" disabled={busy || loading} onClick={() => { setNotice(''); setOperationError(''); setEditing({ ...row }); }}><Pencil className="h-4 w-4" /></Button><Button variant="ghost" size="icon" className="h-8 w-8" disabled={busy || loading} aria-label={`${row.isActive ? 'Deactivate' : 'Activate'} ${row.name}`} onClick={() => void toggle(row)}>{row.isActive ? <ToggleRight className="h-4 w-4" /> : <ToggleLeft className="h-4 w-4" />}</Button><Button size="icon" variant="ghost" className="h-8 w-8" title="Delete unreferenced animation" aria-label={`Delete ${row.name}`} disabled={busy || loading || row.modelUsage + row.characterUsage + (row.presetUsage ?? 0) > 0} onClick={() => void remove(row)}><Trash2 className="h-4 w-4" /></Button><Button asChild size="icon" variant="ghost" className="h-8 w-8"><a href={row.filePath} target="_blank" rel="noopener noreferrer" title="Open source file" aria-label={`Open source for ${row.name}`}><ExternalLink className="h-4 w-4" /></a></Button></div></TableCell>
         </TableRow>)}</TableBody></Table>

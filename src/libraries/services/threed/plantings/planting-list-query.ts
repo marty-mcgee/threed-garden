@@ -1,4 +1,25 @@
-export const PLANTING_LIST_SORTS = ['plantingId', 'plant', 'bed', 'growth', 'position', 'status', 'active', 'createdAt'] as const;
+export const PLANTING_LIST_SORTS = [
+  'sortOrder',
+  'name',
+  'plantingId',
+  'plant',
+  'bed',
+  'growth',
+  'position',
+  'status',
+  'active',
+  'createdAt',
+] as const;
+
+export function isMissingPlantingSortOrder(error: unknown) {
+  for (let current = error, depth = 0; current && typeof current === 'object' && depth < 5; depth++) {
+    const cause = current as { code?: string; message?: string; cause?: unknown };
+    if (cause.code === '42703' && /^column (?:"?threed_plantings"?\."?sort_order"?|"sort_order"(?: of relation "threed_plantings")?) does not exist$/.test(cause.message ?? '')) return true;
+    current = cause.cause;
+  }
+  return false;
+}
+
 export function parsePlantingListQuery(params: URLSearchParams) {
   const integer = (key: string, fallback: number, min: number, max: number) => {
     const raw = params.get(key) ?? String(fallback);

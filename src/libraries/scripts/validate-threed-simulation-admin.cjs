@@ -7,6 +7,7 @@ const load = (file, deps = {}, globals = {}) => {
   vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText,
     { exports, console, URL, URLSearchParams, Buffer, Date, ...globals, require(name) {
       if (name === '@/libraries/utils/input-validation') return require('../utils/input-validation.ts');
+      if (name.endsWith('/simulation-references')) return load('src/libraries/services/threed/simulations/simulation-references.ts', deps);
       if (name.endsWith('scene-multimedia-contract')) return load('src/libraries/services/threed/multimedia/scene-multimedia-contract.ts');
       if (name.endsWith('SimulationMultimediaFields')) return { SimulationMultimediaFields: 'SimulationMultimediaFields' };
       if (name.endsWith('MultimediaSimulationControls')) return { MultimediaSimulationControls: 'MultimediaSimulationControls' };
@@ -35,17 +36,18 @@ for (const query of ['limit=101', 'offset=-1', 'sort=sql', 'direction=sideways',
 assert.throws(() => input.simulationId(2147483648));
 
 const tables = Object.fromEntries(['project', 'projectThreed', 'projectThreedMarkers', 'threed', 'threedScenarios', 'threedSimulations'].map(name => [name, new Proxy({}, { get: (_, field) => `${name}.${field}` })]));
-const orm = Object.fromEntries(['and', 'eq', 'asc', 'desc', 'ilike', 'or'].map(name => [name, (...args) => ({ name, args })]));
+const orm = Object.fromEntries(['and', 'eq', 'asc', 'desc', 'ilike', 'or', 'inArray'].map(name => [name, (...args) => ({ name, args })]));
+orm.exists = query => ({ exists: query.definition });
 orm.sql = (strings, ...args) => ({ strings: [...strings], args });
 let queue = [], queries = [], signedIn = true;
 const db = { transaction: async fn => fn(db) };
 for (const method of ['select', 'insert', 'update', 'delete']) db[method] = (...args) => {
-  const query = { method, args }, chain = {};
+  const query = { method, args }, chain = { definition: query };
   for (const name of ['from', 'innerJoin', 'leftJoin', 'where', 'orderBy', 'limit', 'offset', 'values', 'set', 'returning', 'for']) chain[name] = (...values) => { (query[name] ??= []).push(values); return chain; };
   chain.then = (resolve, reject) => { queries.push(query); assert(queue.length, 'Unexpected database read/write'); const next = queue.shift(); return Promise.resolve(next).then(resolve, reject); };
   return chain;
 };
-const api = load('src/app/api/threed/simulations/route.ts', {
+const deps = {
   'next/server': { NextResponse: { json: (data, options) => ({ data, status: options.status, headers: options.headers }) } },
   'drizzle-orm': orm, '@/libraries/auth': { auth: async () => signedIn ? { user: { id: 'owner' } } : null }, '@/libraries/db/client': { db },
   '@/libraries/schema/project': tables, '@/libraries/schema/threed': tables,
@@ -54,6 +56,14 @@ const api = load('src/app/api/threed/simulations/route.ts', {
   '@/libraries/services/threed/physics/sensor-cuboid-core': cuboids,
   '@/libraries/services/threed/models/project-model-instance-core': ballCore.exports,
   '@/libraries/services/threed/simulations/simulation-preview-contract': load(root + 'simulations/simulation-preview-contract.ts'),
+};
+const api = load('src/app/api/threed/simulations/route.ts', deps);
+const bulk = load(root + 'bulk-edit/definitions.ts', {
+  ...deps,
+  './contract': load(root + 'bulk-edit/contract.ts', {
+    './fields': {},
+    '../list-sort-order': load(root + 'list-sort-order.ts', {}),
+  }),
 });
 const record = { ...valid, id: 9, revision: 1 };
 const choices = [[{ metadata: { physicsSensorGroups: [{ id: 'group1', name: 'Goals' }] } }], [{ markerId: 'characters-9', markerType: 'characters', name: 'Kate' }, { markerId: 'models-5', markerType: 'models', name: 'Field' }]];
@@ -63,6 +73,45 @@ async function run(method, query, data, responses = [], origin = null) {
   assert.equal(queue.length, 0); return result;
 }
 const predicates = query => JSON.stringify(query.where);
+async function checkBulkDefinitions() {
+  const stamp = '2026-11-20T12:00:00.000Z';
+  const row = { ...record, updatedAt: stamp };
+  const second = { ...row, id: row.id + 1 };
+  const selection = [row, second].map(({ id, revision }) => ({ id, revision, expectedUpdatedAt: stamp }));
+  const update = (changes, resource = 'simulations') => bulk.updateBulkDefinitions(db, 'owner', resource, selection, changes, { projectId: 15 });
+
+  queue = [[row, second], ...choices, [row, second]]; queries = [];
+  assert.equal(await update({ isActive: true }), 2);
+  assert.equal(queries[0].for[0][0], 'update');
+  for (const field of ['threedSimulations.userId', 'projectThreed.projectId', 'projectThreed.threedId', 'project.userId', 'threed.userId']) {
+    assert(predicates(queries[0]).includes(field), field);
+  }
+  assert.equal(predicates(queries.at(-1)), predicates(queries[0]));
+  const changed = queries.at(-1).set[0][0];
+  assert.deepEqual(Object.keys(changed).sort(), ['isActive', 'revision', 'updatedAt']);
+  assert.deepEqual(changed.revision.args, ['threedSimulations.revision']);
+  assert.equal(queue.length, 0, 'Definitions in the same module share a single choices read');
+
+  for (const [locked, reads, status] of [
+    [[row], [], 404],
+    [[row, { ...second, revision: second.revision + 1 }], [], 409],
+    [[row, second], [[]], 404],
+    [[row, { ...second, definition: input.emptySimulationDefinition() }], choices, 400],
+    [[row, second], [choices[0], []], 400],
+  ]) {
+    queue = [locked, ...reads]; queries = [];
+    await assert.rejects(update({ isActive: true }), error => error.status === status);
+    assert(!queries.some(query => query.method === 'update'));
+    assert.equal(queue.length, 0);
+  }
+
+  const scenarioSelection = selection.map(({ revision, ...item }) => item);
+  queue = [[row, second], [row, second]]; queries = [];
+  assert.equal(await bulk.updateBulkDefinitions(db, 'owner', 'scenarios', scenarioSelection, { description: null }, { projectId: 15 }), 2);
+  assert.deepEqual(Object.keys(queries.at(-1).set[0][0]).sort(), ['description', 'updatedAt']);
+  assert(predicates(queries.at(-1)).includes('threedScenarios.userId'));
+  assert.equal(queue.length, 0);
+}
 (async () => {
   signedIn = false; for (const method of ['GET', 'POST', 'PATCH', 'DELETE']) assert.equal((await run(method, '', valid)).status, 401); signedIn = true;
   assert.equal((await run('GET', '?id=bad')).status, 400);
@@ -119,5 +168,6 @@ const predicates = query => JSON.stringify(query.where);
   assert.equal((await run('DELETE', '?id=9&revision=1', null, [[]])).status, 409);
   assert.equal((await run('DELETE', '?id=9&revision=1', null, [[{ id: 9 }]])).status, 200);
   assert(predicates(queries[0]).includes('threedSimulations.userId')); assert(predicates(queries[0]).includes('threedSimulations.revision'));
-  console.log('PASS: Simulation bounded parser, private reads, scoped choices/references, immutable binding, revision conflict/lock and deletion; no Scene dispatch or database connection.');
+  await checkBulkDefinitions();
+  console.log('PASS: Simulation definition reads and writes, Project-scoped Scenario and Simulation bulk updates, locked selection, stale revisions, validation of saved references and activation guards (mocked persistence).');
 })().catch(e => { console.error(e); process.exitCode = 1; });

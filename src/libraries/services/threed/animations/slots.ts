@@ -5,7 +5,7 @@ import { threedAnimationCategories as categories, threedAnimationActionSlots as 
 import { AnimationLibraryError, LIBRARY_ACTIONS, objectInput, positiveId } from './contracts';
 export async function readActionSlots(tx: Transaction, userId: string) {
   const usage = (table: typeof models | typeof characters | typeof presets) => sql<number>`(select count(*)::integer from ${table} a where a.action_key = ${slots.actionKey} and a.user_id = ${slots.userId})`;
-  return tx.select({ id: slots.id, actionKey: slots.actionKey, name: slots.name, categoryId: slots.categoryId, categoryName: categories.name, isActive: slots.isActive, modelUsage: usage(models), characterUsage: usage(characters), presetUsage: usage(presets) }).from(slots).leftJoin(categories, and(eq(categories.id, slots.categoryId), eq(categories.userId, slots.userId))).where(eq(slots.userId, userId)).orderBy(asc(categories.name), asc(slots.name));
+  return tx.select({ id: slots.id, actionKey: slots.actionKey, name: slots.name, updatedAt: slots.updatedAt, categoryId: slots.categoryId, categoryName: categories.name, isActive: slots.isActive, modelUsage: usage(models), characterUsage: usage(characters), presetUsage: usage(presets) }).from(slots).leftJoin(categories, and(eq(categories.id, slots.categoryId), eq(categories.userId, slots.userId))).where(eq(slots.userId, userId)).orderBy(asc(categories.name), asc(slots.name));
 }
 export async function listActionSlots(userId: string) {
   return db.transaction(async tx => ({ data: await readActionSlots(tx, userId) }));

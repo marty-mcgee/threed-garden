@@ -690,6 +690,8 @@ export const threedPlantings = pgTable('threed_plantings', {
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
   
   plantingId: varchar('planting_id', { length: 50 }).unique().notNull(),
+  name: varchar('name', { length: 255 }),
+  sortOrder: integer('sort_order').notNull().default(0),
   plantId: integer('plant_id').references(() => threedPlants.id, { onDelete: 'set null' }),
   bedId: integer('bed_id').references(() => threedBeds.id, { onDelete: 'set null' }),
   

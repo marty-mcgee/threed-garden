@@ -1,4 +1,5 @@
 'use client';
+import { CatalogBulkEditButton } from '@/components/admin/threed/CatalogBulkEditButton';
 import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
@@ -515,7 +516,7 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollReco
 
   return (
     <div className={scrollRecords ? 'flex h-full min-h-0 flex-col gap-2' : 'space-y-2'}>
-      <AdminWorkspaceHeader iconColor="cyan" icon={Layers} title="Layers" description="Manage Map 2D and ThreeD Layers" className="shrink-0">
+      <AdminWorkspaceHeader iconColor="cyan" icon={Layers} title="Layers" description="Manage Map 2D and ThreeD Layers" showModuleAlbums={!scrollRecords} className="shrink-0">
         <Badge variant="secondary" className="text-xs">{loading || loadError ? '—' : total}</Badge>
         <Input aria-label="Search Layers" placeholder="Search Layers by name, ID or description…" disabled={bulkBusy} value={searchQuery} onChange={event => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -750,6 +751,17 @@ export function ThreeDLayersCRUD({ onModuleUpdate, userId, projectId, scrollReco
 
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">
         <div className="flex flex-wrap items-center gap-2"><span>{loading ? 'Loading…' : loadError ? 'Layers unavailable' : `${total ? page * pageSize + 1 : 0}–${Math.min((page + 1) * pageSize, total)} of ${total} Layers`}</span><span aria-hidden="true">|</span><span>{selected.size} selected</span>
+          {scrollRecords && <CatalogBulkEditButton
+            resource="layers"
+            rows={layers.filter(layer => selected.has(layer.id))}
+            disabled={loading || bulkBusy || isSubmitting || !!loadError || showCreateDialog || !!editingLayer}
+            onSaved={() => {
+              setSelected(new Set());
+              setBulkNotice('Selected Layers updated.');
+              setLoading(true);
+              fetchLayers();
+            }}
+          />}
           <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={loading || bulkBusy || isSubmitting || !!loadError || !selected.size} onClick={() => void deleteSelected()}>Delete selected ({selected.size})</Button>
           <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={bulkBusy || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button>
         </div>

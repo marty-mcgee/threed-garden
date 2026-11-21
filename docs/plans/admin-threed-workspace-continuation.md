@@ -126,7 +126,19 @@ Affected files: Plantings CRUD/API, new planting-list-query parser and offline v
 
 Manual acceptance: open Admin → ThreeD → Plantings; search an older record by ID/Plant/Bed/notes; sort headings both ways, including missing Bed links; switch page sizes and navigate/search rapidly; select/clear rows and cancel deletion; test deletion on disposable records including an entire final page; verify forms and Project-embedded sizing. Next planned module: Characters, retaining its specialized animation assignments and runtime separation.
 
-Plantings column-order refinement: Plant / Bed / Planting ID / Position / Growth / Status / Active / Actions, following the selection checkbox. Header sort keys and row cells remain aligned. TypeScript and diff checks passed.
+The Plantings table places the selection checkbox first, followed by **Title/Name**, Plant, Bed, Planting ID, Position, Growth, Status, Active and Actions. Standalone Admin adds **Sort Order** immediately after **Title/Name**. Add and Edit save an optional Planting name of up to 255 characters. Search and sorting cover names across the owner’s records before pagination. Older Plantings show a dash until named. [Admin workflow](../users/ADMIN_GUIDE.md#name-a-planting)
+
+On November 20, 2026, the Developer confirmed running the [Planting name migration](../developers/sql/threed-planting-name.sql). It adds one nullable column without backfilling existing rows. If the App is rolled back, the column can stay in place to preserve names already saved.
+
+Fresh TypeScript and five offline validation groups passed. An isolated Edge check with mocked data covered creating a named Planting, naming and reopening an older Planting, and sorting by name. The focused table regression checks the complete column order and row selection in both hosts. Offline Drizzle generation confirmed a single added column. Save and reopen against the target database remain unverified.
+
+### Plantings Sort Order
+
+Standalone Plantings opens in ascending **Sort Order**. A grip before the Plantings icon supports dragging and arrow keys on the current page. **Reorder** clears search and restores the saved view. The server orders ties by Planting ID, then numeric record ID, and saves each move across the owner’s full catalog in one transaction. Project Setup retains its Planting ID sort and existing columns. [User workflow](../users/ADMIN_GUIDE.md#reorder-plantings) · [Blueprint](admin-threed-workspace-blueprint.md#drag-and-drop-sort-order)
+
+On November 20, 2026, the Developer confirmed that the [Plantings Sort Order migration](../developers/sql/threed-plantings-sort-order.sql) ran successfully. It gives existing and new records an initial rank of 0. The column can stay in place on an App rollback to preserve saved ranks.
+
+Fresh TypeScript and the focused Plantings checks passed, including owner isolation, failed writes, tied ranks, and both table layouts. Isolated Edge verified a pointer drop, a keyboard move, restored focus and a full refresh using mocked persistence. Offline Drizzle generation matched the reviewed single-column migration. A signed-in move and refresh against the target database and production deployment of the App change remain unconfirmed.
 
 Plantings row icon color: the Plant seedling now uses `text-blue-500`, matching the workspace header. The Plants page retains its approved green icon. TypeScript and diff checks passed.
 

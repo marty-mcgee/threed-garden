@@ -60,6 +60,7 @@ function evaluate(expression, row) {
     return left != null && right != null && left === right;
   }
   if (expression.kind === 'and') return args.every(item => evaluate(item, row));
+  if (expression.kind === 'inArray') return args[1].includes(evaluate(args[0], row));
   if (expression.kind === 'or') return args.some(item => evaluate(item, row));
   assert.equal(expression.kind, 'sql', 'Unsupported SQL fixture expression');
   const pattern = sqlPattern(expression);
@@ -93,7 +94,7 @@ const models = [
 ];
 const file = (id, modelId, fileName, fileType, fields = {}) => ({
   id, modelId, userId: 'owner', fileName, relativePath: `resources/${fileName}`, fileType,
-  textureType: null, fileSize: id * 10, loadOrder: 0, filePath: 'private-storage-url', metadata: { private: true }, ...fields,
+  textureType: null, fileSize: id * 10, loadOrder: 0, updatedAt: null, filePath: 'private-storage-url', metadata: { private: true }, ...fields,
 });
 const files = [
   file(10, 7, 'Main.gltf', 'model'), file(11, 7, 'Leaf.png', 'texture', { textureType: 'baseColor' }),
@@ -190,7 +191,7 @@ async function verifyParserAndAPI() {
   assert(!ids(all).some(id => [17, 18, 19, 20].includes(id)), 'Both File and parent Model must belong to the authenticated owner');
   assert(ids(all).includes(15), 'Inactive Models remain manageable');
   for (const row of all.body.data) assert.deepEqual(Object.keys(row).sort(), [
-    'id', 'modelId', 'modelName', 'modelType', 'fileName', 'relativePath', 'fileType', 'textureType', 'fileSize', 'loadOrder', 'role',
+    'id', 'modelId', 'modelName', 'modelType', 'fileName', 'relativePath', 'fileType', 'textureType', 'fileSize', 'loadOrder', 'updatedAt', 'role',
   ].sort(), 'Expose only the table DTO, without saved URL, metadata or owner fields');
   assert.equal(all.body.data.find(row => row.id === 21).relativePath, null, 'Legacy null dependency paths remain explicit');
   assert.deepEqual(ids(await get('role=primary&sort=size')), [10, 15]); sameCountAndPage();
@@ -230,10 +231,75 @@ async function verifyParserAndAPI() {
   authFailure = true; assert.equal((await get()).status, 500); assert.equal(queries.length, 0); authFailure = false;
 }
 
+async function verifyBulkFileEdit() {
+  const fileEdit = load('src/libraries/services/threed/models/model-file-edit-core.ts', {
+    './model-material-override-core.ts': load('src/libraries/services/threed/models/model-material-override-core.ts'),
+  });
+  const { updateBulkModelFiles } = load('src/libraries/services/threed/bulk-edit/model-files.ts', {
+    'drizzle-orm': { ...orm, inArray: op('inArray') },
+    '@/libraries/schema/threed': schema,
+    '@/libraries/services/threed/models/model-file-edit-core': fileEdit,
+    './contract': load('src/libraries/services/threed/bulk-edit/contract.ts', {
+      './fields': {},
+      '../list-sort-order': load('src/libraries/services/threed/list-sort-order.ts'),
+    }),
+  });
+  const locks = [];
+  const writes = [];
+  const tx = {
+    select() {
+      let source, predicate;
+      return {
+        from(table) { source = table.table; return this; },
+        where(where) { predicate = where; return this; },
+        orderBy(order) {
+          assert.deepEqual(clone(order), clone(orm.asc(schema[source].id)));
+          return this;
+        },
+        for(mode) {
+          assert.equal(mode, 'update');
+          locks.push(source);
+          return (source === 'threedModels' ? models : files).filter(row => evaluate(predicate, { [source]: row }));
+        },
+      };
+    },
+    update(table) {
+      assert.equal(table.table, 'threedModelFiles');
+      let changes, predicate;
+      return {
+        set(values) { changes = values; return this; },
+        where(where) { predicate = where; return this; },
+        returning() {
+          const rows = files.filter(row => evaluate(predicate, { threedModelFiles: row }));
+          writes.push({ changes, ids: rows.map(row => row.id) });
+          return rows;
+        },
+      };
+    },
+  };
+  const selected = (id, modelId, expectedUpdatedAt = null) => ({ id, modelId, expectedUpdatedAt });
+  const save = (selection, scope = {}) => updateBulkModelFiles(tx, 'owner', selection, { loadOrder: 7 }, scope);
+  assert.equal(await save([selected(11, 7), selected(15, 8)]), 2);
+  assert.deepEqual(locks, ['threedModels', 'threedModelFiles']);
+  assert.deepEqual(writes[0].ids, [11, 15]);
+  assert.deepEqual(Object.keys(writes[0].changes).sort(), ['loadOrder', 'updatedAt']);
+  assert.equal(writes[0].changes.loadOrder, 7);
+  for (const [selection, scope, status] of [
+    [[selected(11, 7), selected(17, 9)], {}, 404],
+    [[selected(11, 7), selected(18, 7)], {}, 404],
+    [[selected(11, 8), selected(15, 7)], {}, 404],
+    [[selected(11, 7), selected(15, 8)], { modelId: 7 }, 400],
+    [[selected(11, 7), selected(15, 8, '2026-11-01T12:00:00.000Z')], {}, 409],
+  ]) {
+    await assert.rejects(save(selection, scope), error => error.status === status);
+  }
+  assert.equal(writes.length, 1, 'A denied parent, mismatched attachment, or stale row prevents the whole write');
+}
+
 async function verifyCompiledOwnershipSQL() {
   // The installed query builder only compiles SQL here; no driver/client is loaded.
   const actualORM = require('drizzle-orm');
-  const { pgTable, integer, text: pgText, PgDialect } = require('drizzle-orm/pg-core');
+  const { pgTable, integer, timestamp, text: pgText, PgDialect } = require('drizzle-orm/pg-core');
   const actualSchema = {
     threedModels: pgTable('fixture_models', {
       id: integer('id'), userId: pgText('user_id'), modelName: pgText('model_name'),
@@ -242,7 +308,7 @@ async function verifyCompiledOwnershipSQL() {
     threedModelFiles: pgTable('fixture_files', {
       id: integer('id'), userId: pgText('user_id'), modelId: integer('model_id'), fileName: pgText('file_name'),
       relativePath: pgText('relative_path'), fileType: pgText('file_type'), textureType: pgText('texture_type'),
-      fileSize: integer('file_size'), loadOrder: integer('load_order'),
+      fileSize: integer('file_size'), loadOrder: integer('load_order'), updatedAt: timestamp('updated_at'),
     }),
   };
   const captures = [];
@@ -350,6 +416,7 @@ function tableHarness(initialLocation = '') {
     'lucide-react': new Proxy({}, { get: (_, field) => `icon-${String(field)}` }),
     '@/components/settings/ModuleAppearanceProvider': {ModuleIcon:'module-icon'},
     '@/components/admin/layout/AdminWorkspaceHeader': { AdminWorkspaceHeader: 'workspace-header', AdminWorkspaceLink: 'link' },
+    '@/components/admin/threed/CatalogBulkEditButton': { CatalogBulkEditButton: 'bulk-edit' },
     '@/components/ui/button': { Button: 'button' }, '@/components/ui/input': { Input: 'input' }, '@/components/ui/label': { Label: 'label' },
     '@/components/ui/badge': { Badge: 'badge' },
     '@/components/ui/select': Object.fromEntries(['Select', 'SelectTrigger', 'SelectValue', 'SelectContent', 'SelectItem'].map(name => [name, name])),
@@ -393,8 +460,8 @@ function tableHarness(initialLocation = '') {
   };
 }
 const tableRows = [
-  { id: 11, modelId: 7, modelName: 'Tree', modelType: 'gltf', fileName: 'Leaf.png', relativePath: 'textures/Leaf.png', fileType: 'texture', textureType: 'baseColor', fileSize: 1024, loadOrder: 2, role: 'supporting' },
-  { id: 15, modelId: 8, modelName: 'Inactive Bridge', modelType: 'fbx', fileName: 'Main.fbx', relativePath: null, fileType: 'model', textureType: null, fileSize: null, loadOrder: null, role: 'primary' },
+  { id: 11, modelId: 7, modelName: 'Tree', modelType: 'gltf', fileName: 'Leaf.png', relativePath: 'textures/Leaf.png', fileType: 'texture', textureType: 'baseColor', fileSize: 1024, loadOrder: 2, updatedAt: '2026-11-01T12:00:00.000Z', role: 'supporting' },
+  { id: 15, modelId: 8, modelName: 'Inactive Bridge', modelType: 'fbx', fileName: 'Main.fbx', relativePath: null, fileType: 'model', textureType: null, fileSize: null, loadOrder: null, updatedAt: null, role: 'primary' },
 ];
 const listBody = (data = tableRows, total = data.length) => ({ success: true, data, pagination: { limit: 50, offset: 0, total } });
 async function verifyTable() {
@@ -433,7 +500,12 @@ async function verifyTable() {
   const first = filtered.listRequests()[0], firstParams = new URL(first.url, 'http://fixture.invalid').searchParams;
   assert.deepEqual(parse(firstParams), { search: 'Leaf', modelId: 7, fileType: 'texture', role: 'supporting', limit: 25, offset: 25, sort: 'path', direction: 'desc' });
   first.answer(listBody([tableRows[0]], 80)); await filtered.flush();
+  filtered.control('Select Model Files on this page').props.onChange({ target: { checked: true } });
+  const bulk = filtered.find(node => node.type === 'bulk-edit');
+  assert.deepEqual(clone(bulk.props.rows), [tableRows[0]], 'The selected File retains its parent and edit stamp');
+  assert.deepEqual(clone(bulk.props.scope), { modelId: 7 });
   assert.equal(filtered.button('Next').props.disabled, false); filtered.button('Next').props.onClick(); filtered.render();
+  assert.equal(filtered.find(node => node.type === 'bulk-edit').props.rows.length, 0, 'Paging clears File selection');
   assert.equal(new URL(filtered.navigation.at(-1).href, 'http://fixture.invalid').searchParams.get('offset'), '50');
   assert.equal(new URL(filtered.navigation.at(-1).href, 'http://fixture.invalid').searchParams.get('parentModelId'), '7');
   filtered.runTimers();
@@ -495,8 +567,9 @@ async function verifyTable() {
 
 async function main() {
   await verifyParserAndAPI();
+  await verifyBulkFileEdit();
   await verifyCompiledOwnershipSQL();
   await verifyTable();
-  console.log('PASS Model File list: actual strict parser/private GET and installed Drizzle SQL ownership proof; complete owner joins, grouped literal search, exact primary authority, inactive/legacy rows, stable sorting/pagination and safe failures; actual React table explicit-parent Add/cancel/scoped Edit, complete selector paging, filters/navigation and stale-response protection, all offline');
+  console.log('PASS Model File list: owner joins, search, primary File authority, private projections, navigation and stale-response protection. Bulk edits verify the parent and File locks, exact parent identity, revision, write scope and page selection (offline).');
 }
 main().catch(error => { console.error(error); process.exitCode = 1; });

@@ -1,4 +1,5 @@
 'use client';
+import { CatalogBulkEditButton } from '@/components/admin/threed/CatalogBulkEditButton';
 import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
@@ -11,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useAnimationCategories } from './AnimationCategories';
 import type { AnimationActionSlot } from '@/libraries/services/threed/animations/action-slots';
-type Slot = AnimationActionSlot & { modelUsage: number; characterUsage: number; presetUsage: number };
+type Slot = AnimationActionSlot & { updatedAt: string; modelUsage: number; characterUsage: number; presetUsage: number };
 type Draft = { id?: number; name: string; categoryId: number | null; isActive: boolean };
 type SortKey = 'name' | 'categoryName' | 'isActive' | 'references';
 const references = (slot: Slot) => slot.modelUsage + slot.characterUsage + slot.presetUsage;
@@ -59,7 +60,9 @@ export function ThreeDAnimationSlotsWorkspace({ initialCategoryId }: { initialCa
   }, [rows, search, sort, categoryFilter, availability]);
   const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
   useEffect(() => { if (!loading && !error) setPage(value => Math.min(value, pages - 1), {replace: true}); setSelected(new Set()); }, [loading, error, pages, page, pageSize, search, sort, categoryFilter, availability]);
-  const visible = filtered.slice(page * pageSize, (page + 1) * pageSize), deletable = visible.filter(slot => references(slot) === 0);
+  const visible = filtered.slice(page * pageSize, (page + 1) * pageSize);
+  const selectedRows = visible.filter(row => selected.has(row.id));
+  const canDeleteSelection = selectedRows.length > 0 && selectedRows.every(row => references(row) === 0);
   async function save() {
     if (!draft || busy) return;
     setBusy(true); setOperationError(''); setNotice('');
@@ -68,7 +71,7 @@ export function ThreeDAnimationSlotsWorkspace({ initialCategoryId }: { initialCa
     finally { setBusy(false); }
   }
   async function remove(targets: Slot[]) {
-    if (busy || !targets.length || !confirm(`Delete ${targets.length} unreferenced Action slot(s)?`)) return;
+    if (busy || !targets.length || targets.some(row => references(row) > 0) || !confirm(`Delete ${targets.length} unreferenced Action slot(s)?`)) return;
     setBusy(true); setOperationError(''); setNotice('');
     let removed = 0; const failures: string[] = [];
     for (const slot of targets) {
@@ -81,7 +84,7 @@ export function ThreeDAnimationSlotsWorkspace({ initialCategoryId }: { initialCa
     return <TableHead aria-sort={sort.key === key ? sort.direction === 'asc' ? 'ascending' : 'descending' : 'none'}><button disabled={busy || loading} className="flex items-center gap-1 text-xs" onClick={() => { setSort(previous => ({ key, direction: previous.key === key && previous.direction === 'asc' ? 'desc' : 'asc' })); setPage(0); }}>{title}{sort.key !== key ? <ArrowUpDown className="h-3 w-3" /> : sort.direction === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}</button></TableHead>;
   }
   return <div className="flex h-full min-h-0 flex-col gap-2">
-    <AdminWorkspaceHeader iconColor="blue" icon={Clapperboard} title="Animation Slots" description="User-defined animation-only actions for Characters and Model defaults">
+    <AdminWorkspaceHeader showModuleAlbums={false} iconColor="blue" icon={Clapperboard} title="Animation Slots" description="User-defined animation-only actions for Characters and Model defaults">
       <span className="rounded bg-muted px-2 text-xs">{error ? '—' : filtered.length}</span>
       <Input aria-label="Search Animation Slots" placeholder="Search slots by name or Category…" value={search} disabled={busy} onChange={event => { setSearch(event.target.value); setPage(0); }} className="h-7 min-w-48 flex-1 text-xs" />
       <select aria-label="Filter Slots by Category" className="h-7 rounded border bg-background px-2 text-xs" value={categoryFilter} disabled={busy || !!categoryError} onChange={event => { setCategoryFilter(event.target.value); setPage(0); setSelected(new Set()); }}>
@@ -119,16 +122,22 @@ export function ThreeDAnimationSlotsWorkspace({ initialCategoryId }: { initialCa
     </Dialog>
     <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">
       <div className="flex flex-wrap items-center gap-2"><span role="status">{loading ? 'Loading slots…' : error ? 'Slots unavailable' : `${filtered.length ? page * pageSize + 1 : 0}–${Math.min((page + 1) * pageSize, filtered.length)} of ${filtered.length} Slots`}</span><span>|</span><span>{selected.size} selected</span>
-        <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading || !!error || !!draft || !selected.size} onClick={() => void remove(deletable.filter(slot => selected.has(slot.id)))}>Delete selected ({selected.size})</Button><Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button></div>
+        <CatalogBulkEditButton
+          resource="animation-slots"
+          rows={selectedRows}
+          disabled={busy || loading || !!error || !!draft}
+          onSaved={() => { setSelected(new Set()); setRefresh(value => value + 1); }}
+        />
+        <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading || !!error || !!draft || !canDeleteSelection} title={selectedRows.length && !canDeleteSelection ? 'The selection includes a referenced record.' : undefined} onClick={() => void remove(selectedRows)}>Delete selected ({selected.size})</Button><Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button></div>
       <div className="flex flex-wrap items-center gap-2"><label>Per page <select aria-label="Slots per page" className="rounded border bg-background p-1" disabled={busy || loading} value={pageSize} onChange={event => { setPageSize(Number(event.target.value)); setPage(0); }}>{[25, 50, 100, 200].map(size => <option key={size}>{size}</option>)}</select></label>
         {(['First', 'Previous', 'Next', 'Last'] as const).map(text => <Button key={text} size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading || !!error || (text === 'First' || text === 'Previous' ? page === 0 : page >= pages - 1)} onClick={() => setPage(text === 'First' ? 0 : text === 'Previous' ? page - 1 : text === 'Next' ? page + 1 : pages - 1)}>{text}</Button>)}<span>Page {page + 1} of {pages}</span></div>
     </div>
     <div role="region" aria-label="Animation Slot records" tabIndex={0} className="min-h-0 flex-1 overflow-auto overscroll-contain rounded-lg border [&>[data-slot=table-container]]:overflow-visible">
       <Table className="min-w-[700px]"><TableHeader className="sticky top-0 z-10 bg-background"><TableRow>
-        <TableHead className="w-8"><input type="checkbox" aria-label="Select unreferenced slots on this page" disabled={busy || loading || !!error || !deletable.length} checked={deletable.length > 0 && deletable.every(slot => selected.has(slot.id))} ref={input => { if (input) input.indeterminate = deletable.some(slot => selected.has(slot.id)) && !deletable.every(slot => selected.has(slot.id)); }} onChange={event => setSelected(event.target.checked ? new Set(deletable.map(slot => slot.id)) : new Set())} /></TableHead>
+        <TableHead className="w-8"><input type="checkbox" aria-label="Select Animation Slots on this page" disabled={busy || loading || !!error || !visible.length} checked={visible.length > 0 && visible.every(slot => selected.has(slot.id))} ref={input => { if (input) input.indeterminate = visible.some(slot => selected.has(slot.id)) && !visible.every(slot => selected.has(slot.id)); }} onChange={event => setSelected(event.target.checked ? new Set(visible.map(slot => slot.id)) : new Set())} /></TableHead>
         {heading('name', 'Name')}{heading('categoryName', 'Category')}{heading('isActive', 'Enabled')}{heading('references', 'References')}<TableHead className="text-right text-xs">Actions</TableHead>
       </TableRow></TableHeader><TableBody>{loading ? <TableRow><TableCell colSpan={6}>Loading Animation Slots…</TableCell></TableRow> : error ? <TableRow><TableCell colSpan={6}><div role="alert" className="text-destructive">{error} <Button size="sm" variant="outline" onClick={() => setRefresh(value => value + 1)}>Retry</Button></div></TableCell></TableRow> : !visible.length ? <TableRow><TableCell colSpan={6}>No Animation Slots found. Use Add Slot to create an action.</TableCell></TableRow> : visible.map(slot => <TableRow key={slot.id}>
-        <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${slot.name}`} disabled={busy || references(slot) > 0} checked={selected.has(slot.id)} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(slot.id); else next.delete(slot.id); return next; })} /></TableCell>
+        <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${slot.name}`} disabled={busy || loading} checked={selected.has(slot.id)} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(slot.id); else next.delete(slot.id); return next; })} /></TableCell>
         <TableCell className="py-1 text-sm"><span className="flex items-center gap-2"><ModuleIcon moduleKey="animationSlots" className="h-4 w-4 shrink-0" />{slot.name}</span><span className="text-xs text-muted-foreground">#{slot.id}</span></TableCell><TableCell className="py-1 text-xs">{slot.categoryName ?? 'Uncategorized'}</TableCell><TableCell className="py-1 text-xs">{slot.isActive ? <span className="inline-flex items-center gap-1 text-green-500"><Check aria-hidden="true" className="h-4 w-4" />Enabled</span> : <span className="inline-flex items-center gap-1 text-muted-foreground"><X aria-hidden="true" className="h-4 w-4" />Disabled</span>}</TableCell><TableCell className="py-1 text-xs">{slot.modelUsage} Models · {slot.characterUsage} Characters · {slot.presetUsage} Presets</TableCell>
         <TableCell className="py-1"><div className="flex justify-end gap-1"><Button size="icon" variant="ghost" className="h-8 w-8" aria-label={`Edit ${slot.name}`} disabled={busy || !!draft} onClick={() => { setOperationError(''); setNotice(''); setNewCategory(null); setDraft({ id: slot.id, name: slot.name, categoryId: slot.categoryId, isActive: slot.isActive }); }}><Pencil className="h-4 w-4" /></Button><Button size="icon" variant="ghost" className="h-8 w-8" aria-label={`Delete ${slot.name}`} title={references(slot) ? 'Remove mappings or disable this slot instead' : 'Delete unreferenced slot'} disabled={busy || !!draft || references(slot) > 0} onClick={() => void remove([slot])}><Trash2 className="h-4 w-4" /></Button></div></TableCell>
       </TableRow>)}</TableBody></Table>

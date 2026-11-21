@@ -13,11 +13,16 @@ function find(node,predicate) { if(Array.isArray(node)) { for(const child of nod
 const flush=()=>new Promise(resolve=>setImmediate(resolve));
 (async()=>{
  render(); effects[0](); await flush(); let tree=render();
- assert(find(tree,n=>n.props?.['aria-label']==='Select Action 01').props.disabled,'Referenced slot selection is disabled');
+ const referenced=find(tree,n=>n.props?.['aria-label']==='Select Action 01');
+ assert.equal(referenced.props.disabled,false,'Referenced records are eligible for metadata edits');
+ referenced.props.onChange({target:{checked:true}}); tree=render();
+ assert.deepEqual(Array.from(find(tree,n=>n.type==='CatalogBulkEditButton' && n.props.resource==='animation-slots').props.rows,row=>row.id),[1]);
+ assert(find(tree,n=>Array.isArray(n.props?.children) && n.props.children[0]==='Delete selected (').props.disabled,'Referenced records remain protected from bulk deletion');
+ find(tree,n=>n.props?.children==='Clear selection').props.onClick(); tree=render();
  assert(!find(tree,n=>n.props?.['aria-label']==='Select Action 26'),'Pagination limits visible rows');
  find(tree,n=>n.props?.children==='Next').props.onClick(); tree=render();
  assert(find(tree,n=>n.props?.['aria-label']==='Select Action 26'));
- find(tree,n=>n.props?.['aria-label']==='Select unreferenced slots on this page').props.onChange({target:{checked:true}});
+ find(tree,n=>n.props?.['aria-label']==='Select Animation Slots on this page').props.onChange({target:{checked:true}});
  failId=26; tree=render(); find(tree,n=>Array.isArray(n.props?.children) && n.props.children[0]==='Delete selected (').props.onClick(); await flush();
  const deleted=calls.filter(call=>call.method==='DELETE'); assert.equal(deleted.length,25); assert(deleted.every(call=>Number(call.url.split('=')[1])>=26 && Number(call.url.split('=')[1])<=50));
  assert(states[12].includes('Referenced slot'),'Partial failure is retained separately from success'); assert(states[11].includes('24')); assert.equal(states[7].size,0);

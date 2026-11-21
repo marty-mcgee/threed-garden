@@ -24,20 +24,46 @@ Creation buttons on Admin pages are green. Read the button label before acting: 
 
 ## Sort and edit ThreeD records
 
-The ThreeD Admin lists for Tasks, Assembly Groups, Terrains, Watering Schedules, Watering Schedule History, and Harvests support saved **Sort Order** and **Bulk Edit**. On the Watering Schedules page, choose **Schedules** for planned watering or **History** for recorded outcomes.
+Use **Bulk Edit** in a standalone ThreeD Admin catalog to change several records together. The table below lists the fields each catalog supports. On the Watering Schedules page, choose **Schedules** for planned watering or **History** for recorded outcomes.
 
 1. Select a sortable column heading to change the view. Select it again to reverse the direction.
-2. To save a manual order, clear search and other filters and use **Sort Order** ascending. Use **Reorder** where available to return to that view. Drag a row by its grip, or focus the grip and press **Up Arrow** or **Down Arrow** to move it. You can also edit the row's Sort Order value directly.
-3. To edit several rows, select them on the current page, open **Bulk Edit**, and choose the fields to change before saving. Paging, searching, filtering or sorting clears the current selection.
+2. On lists with saved **Sort Order**, clear search and other filters and use **Sort Order** ascending. Use **Reorder** where available to return to that view. Drag a row by its grip, or focus the grip and press **Up Arrow** or **Down Arrow** to move it.
+3. Select the records on the current page, open **Bulk Edit**, choose the fields to change, then save. Fields set to **Keep current** retain their individual values. **Cancel** discards the draft. If the editor reports that a selected record has changed or become unavailable, close the dialog, refresh, and select the records again.
 4. Use the row's **Edit** action for record details. Review any deletion confirmation carefully. Linked records can prevent deletion. A **?** beside a heading opens help for that section.
 
 | List | Bulk Edit fields |
 | --- | --- |
+| Plants | Active, Status, Plant Type. |
+| Plantings | Sort Order, Active, Status, Growth Stage. Giving several Plantings the same rank orders them by Planting ID within that rank. |
+| Beds | Active and Status. |
+| FarmBots | Active in the inventory. Connection settings and device actions have their own controls. |
+| Layers | Active and Visible. |
+| Models | Status. Use the Model editor to activate a Model or change its geometry. |
+| Model Categories, Model Textures, Animations | Active. |
+| Model Files | Load Order for the selected attachments. |
+| Characters | Active and Status. |
+| Scenarios and Simulations | Active and Description. To clear a description, enable **Change Description** and leave it blank. An active Simulation needs a valid Action. |
+| Animation Slots | Enabled. |
+| Animation Categories | Enter a distinct name for each Category you want to rename. |
 | Tasks | Sort Order, Task Type, Assigned To, Due Date, Priority, Status, and Active. Task Type groups Tasks. Public Task remains a separate visibility setting. |
 | Assembly Groups and Terrains | Sort Order and Active. Saved compositions and Terrain revisions have their own editors. |
 | Watering Schedules | Sort Order and supported timing, amount, weather, notes, and Active settings. |
 | Watering Schedule History | Sort Order, execution date, duration, volume, status, skip reason, and error message. |
 | Harvests | Sort Order, quantity, unit, weight, harvest date, notes, and Active. |
+
+### Edit a Plant from its detail page
+
+Choose **Edit** on the Plant detail page to open the same editor used in the Plants list. **Save Changes** shows the saved values on that Plant’s detail page. **Cancel** discards the Plant field changes and returns to the same detail. If a save fails, the editor keeps your entries for retry. Related Album assignments have their own Save.
+
+### Name a Planting
+
+Open **Admin → ThreeD → Plantings**. In **Add Planting** or a row’s **Edit** dialog, enter an optional **Title/Name**, such as “Spring basil, north bed”. The **Title/Name** cell follows the selection checkbox and shows the Plantings icon to the left of the name. Inactive Plantings have an **Inactive** badge after the name. Search by name or select the column heading to sort. A dash means the Planting has no saved name. The **Plant** column opens the linked Plant, and **Planting ID** shows the Planting’s existing identifier.
+
+### Reorder Plantings
+
+Open **Admin → ThreeD → Plantings**. Drag the grip beside a Planting’s name onto the upper half of another row to place it before that Planting, or onto the lower half to place it after. With a keyboard, focus the grip and press **Arrow Up** or **Arrow Down**. Each move saves automatically. The **Sort Order** column shows the saved rank.
+
+Choose **Reorder** after searching or sorting by another heading to return to the first page in saved order. Both Plantings must be visible on the same page for a move. A larger page size can bring them together. The order belongs to your standalone Plantings list. Project Setup keeps its Planting ID view.
 
 ## Manage Learn guides
 

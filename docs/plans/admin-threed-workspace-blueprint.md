@@ -2,16 +2,22 @@
 
 The Admin Blueprint started with the Models workspace in v0.19.12. The [original ThreeD rollout](v0.19.13.md) established the shared presentation. The current plan extends those conventions across the four Top Modules page by page.
 
+## Current page audit
+
+The November 20 [Admin page audit and Blueprint recommendations](admin-page-blueprint-audit.md) maps all 48 ThreeD routes and the 40 peer-Module and shared Admin routes. Use the [ThreeD route inventory](admin-page-blueprint-audit.md#threed-route-inventory) to find examples of ranked lists, parent-scoped editors, relationship pickers, specialized authoring tools and read-only reports. The [follow-up table](admin-page-blueprint-audit.md#first-follow-ups-to-verify) pairs each observed gap with a concrete verification case.
+
+Plant detail and the catalog now share the Edit Plant dialog. Use this example when an editor should preserve the detail URL, discard a canceled field draft and display the confirmed saved record. [Plant workflow](../users/ADMIN_GUIDE.md#edit-a-plant-from-its-detail-page)
+
 ## Rollout across Top Modules
 
 The v0.35.5 checkpoint adds saved ordering, accessible reordering, and scoped Bulk Edit to the reference set. Use the [agent skill](../agents/skills/apply-threed-admin-page-blueprint/SKILL.md) for each authorized adoption. Track version-specific validation in the [release record](../releases/v0.35.5.md), and use the [Admin Guide](../users/ADMIN_GUIDE.md#sort-and-edit-threed-records) for the current User workflow.
 
-| Top Module | Current reference or next audit |
+| Top Module | Current reference and adoption guidance |
 | --- | --- |
-| ThreeD | Tasks, Assembly Groups, Terrains, Watering Schedules, Watering History, and Harvests are the v0.35.5 reference set. Review the remaining Admin routes against the existing Models, Characters, and Simulations references. Preserve captured Simulation Results and Project-scoped or device-facing workflows. |
-| Multimedia | Review existing Album and Track lists and editors. Preserve the established rank fields, in-place dialogs, players, and test controls. |
-| Traffic | Audit CHP, Caltrans, CalFire, and Bay Area 511 Admin routes. Verify source ownership and editability before choosing list or mutation controls. |
-| Learn | Audit Guides and Categories. Retain owner, publication, visibility, hierarchy, and multi-category assignments. |
+| ThreeD | Tasks, Assembly Groups, Terrains, Watering Schedules, Watering History, and Harvests are the v0.35.5 list references. The current audit also covers Models, Characters, Scenarios, Simulations, captured Results, Project-scoped and device-facing workflows. |
+| Multimedia | Album and Track lists and editors provide parent-scoped ordering references. Preserve the established rank fields, in-place dialogs, players and test controls. |
+| Traffic | CHP, Caltrans, CalFire and Bay Area 511 pages combine feed-specific filters with editable records. Verify source ownership, editability and whether filters apply before or after paging. |
+| Learn | Guides and Categories provide publishing and hierarchy references. Preserve ownership, visibility, revisions and multi-category assignments. |
 
 For each route, record its canonical entity, owner and visibility rules, supported list actions, mutable fields, and embedded callers. Review differences against the shared UI before adding missing controls. Reuse `RankedRecordsList` and `RecordMutationDialog` when their contracts match. Preserve module-specific CRUD and history, and seek approval for any new saved field. Verify read-only routes for list and navigation parity where applicable. Record each completed route and its evidence in the relevant release.
 
@@ -44,16 +50,40 @@ See [v0.26.4 scope and checks](v0.26.4.md). Developer acceptance is separate fro
 
 ## Required presentation and behavior
 
+Before changing table order or styling, compare the headers and corresponding row cells on Admin pages that display similar records. Plants and Beds put the configured record icon directly to the left of the name and the Inactive badge after it when applicable. Harvests keeps its linked Plant in a separate column. Plantings follows both patterns. [Plants table](../../src/components/admin/threed/plants/ThreeDPlantsCRUD.tsx) · [Beds table](../../src/components/admin/threed/beds/ThreeDBedsCRUD.tsx) · [Harvests table](../../src/components/admin/threed/harvests/ThreeDHarvestsCRUD.tsx)
+
 For the specialized parent Model Details/File editor hosts, the [October 4 workspace continuation](model-file-editor-workspace.md) uses compact stationary navigation/footer, responsive owned scroll regions and an opt-in origin-centered three-quarter preview. Keep the parent's draft/save and editable appearance workflows separate from individual File settings; camera Reset retains loaded geometry. Do not apply preview-only centering to Project runtimes or reviewed capture/export coordinates.
 
 1. Keep App navigation, workspace controls and pagination stationary. Let records scroll independently, with visible column headings and horizontal scrolling when necessary. Keep the sidebar's own navigation scroll area usable.
-2. Place the compact title, total badge, search, create/import actions and related-module links at the top. Keep reusable controls consistent without forcing Model-specific actions onto unrelated modules.
+2. Place the compact title, total badge, search, create/import actions and related-module links at the top. Keep reusable controls consistent without forcing Model-specific actions onto unrelated modules. Omit the **Multimedia Albums** button from standalone ThreeD Admin page headers. Keep existing Album assignments accessible from the record editor, as in **Edit Planting**. [Plantings workspace](../../src/components/admin/threed/plantings/ThreeDPlantingsCRUD.tsx)
 3. Put result range, `|`, selected count, Delete selected and Clear selection on the pagination row. Use compact button text, page-size selection and First/Previous/Page N of M/Next/Last controls. Permit wrapping on narrow screens.
 4. Search and sort the complete authorized result set on the server before pagination. Use the same filters for rows and total count, stable ID tie-breakers, bounded inputs, and module-appropriate columns. Show pending/error/empty states honestly; cancel or ignore stale requests.
 5. Scope bulk selection to the current page and clear it when paging/filtering/sorting changes. Preserve confirmation and module-specific deletion restrictions. Refresh totals after mutation and recover from an emptied final page.
 6. Use text status colors consistently: green Active/success, yellow Pending/uncertain result, orange Needs Attention, red Maintenance/failure and gray Dormant/Retired. Use a green check or gray X for boolean Active when that field exists.
 7. Preserve accessible labels for icon actions, keyboard-operable sorting and scroll panels, focus handling, and readable dark/light states. Do not use color as the only status signal.
 8. Keep module-specific fields, relationships, permissions and validation. Models' primary-file links, Texture substitution and importer geometry checks are not generic requirements for all pages.
+
+### Bulk Edit on ThreeD Admin pages
+
+Provide **Bulk Edit** next to the selection count on each standalone catalog of editable records. The [Admin Guide field table](../users/ADMIN_GUIDE.md#sort-and-edit-threed-records) covers the 20 catalog routes and both Waterings views. Use the shared [catalog control](../../src/components/admin/threed/CatalogBulkEditButton.tsx) and [field definitions](../../src/libraries/services/threed/bulk-edit/fields.ts) for common metadata. The rules below describe that shared workflow. Waterings and Harvests have specialized editors with timestamp checks. Tasks, Assembly Groups and Terrains use their existing ID-based bulk selection and transaction rules.
+
+- Freeze the selected IDs, parent scope and conflict stamps when the dialog opens. Offer editable records independently of delete eligibility. A referenced Texture can change its Active flag while keeping its deletion protection.
+- Let the user opt into each field. Show the selection count and allow Cancel. Preserve distinct Category names with per-record inputs. Keep record identity, publication permissions, device credentials and physical commands in their existing workflows.
+- Authenticate the request, validate its field allowlist, then lock the complete authorized selection in a deterministic order. Recheck timestamps, parent ownership and any domain revisions in the transaction. A missing, foreign, stale or invalid member aborts the whole save. Preserve unselected columns, report failure in the dialog and refresh the list after a confirmed success. [Shared endpoint](../../src/app/api/threed/bulk-edit/%5Bresource%5D/route.ts)
+- Match controls to the route's purpose. Overview provides navigation, Designs lists Project summaries, and Simulation Results presents immutable runs. Detail and creation routes edit one record. Album assignments, Character animation mappings and composition editors keep their parent-scoped Save workflows. The [route inventory](admin-page-blueprint-audit.md#threed-route-inventory) identifies aliases and host relationships.
+
+Verify multiple selected rows, a selection change across pages, explicit false and zero, an omitted field, a stale or foreign member, rollback, and save/reopen with a refreshed list. For Model Files include a mismatched parent. For Simulations include a stale definition revision and invalid activation. For Plantings include a drag reorder between opening Bulk Edit and saving a new rank.
+
+### Drag-and-drop Sort Order
+
+First identify what owns the order. Harvests saves an order for one owner's catalog. Model Categories moves siblings under one parent. Project Setup can embed the same catalog table while managing separate Project assignments. Use the scope of the saved rank for both reads and writes. [Harvests](../../src/components/admin/threed/harvests/ThreeDHarvestsCRUD.tsx) · [Model Categories](../../src/components/admin/threed/models/category-tree-core.ts)
+
+- On a standalone ranked table, place the grip inside the first data cell, before the icon and name. Put **Sort Order** immediately after that cell. Keep the selection checkbox first, the record icon beside its name, and related records in their own columns.
+- Enable moves in the unfiltered **Sort Order** ascending view. **Reorder** clears the search and applicable filters, selects that sort and returns to the first page. Drag the grip onto the upper or lower half of a visible row to place the record before or after it. A focused grip supports **Arrow Up** and **Arrow Down** within the current page.
+- Send the source ID, target ID and placement to the server. Use the same rank and tie-breakers as the list query. Resolve both rows in the authorized scope and save the move atomically across that scope, including records outside the visible page. Preserve the relative order of all other rows. [Harvests write](../../src/app/api/threed/harvests/manage/route.ts) · [Shared move helper](../../src/libraries/services/threed/list-sort-order.ts)
+- Show where the drop will land and prevent a second move while saving. Announce the result and return keyboard focus to the moved record after refresh. Verify both input methods, canceled drags, page edges, missing or inaccessible records, and a failed save. Check each embedded host separately.
+
+Use Plantings as the reference for adding manual ordering to a catalog that also appears in Project Setup. Standalone Admin has a grip and rank column. Project Setup retains its own table and initial sort. [Plantings table](../../src/components/admin/threed/plantings/ThreeDPlantingsCRUD.tsx) · [Plantings reorder checks](../../src/libraries/scripts/validate-plantings-reorder-ui.cjs)
 
 ## Admin editor styling reference — October 4, 2026
 

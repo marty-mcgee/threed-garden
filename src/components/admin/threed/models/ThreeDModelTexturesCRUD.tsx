@@ -5,6 +5,7 @@ import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list
 import { useCallback, useEffect, useRef, useState, type ChangeEvent } from 'react';
 import { ArrowLeft, ArrowUp, ArrowDown, ArrowUpDown, Check, X, Images, FolderTree, FolderOpen, Clapperboard, ExternalLink, Loader2, Pencil, ToggleLeft, ToggleRight, Trash2, Upload } from 'lucide-react';
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
+import { CatalogBulkEditButton } from '@/components/admin/threed/CatalogBulkEditButton';
 import { Table, TableHeader, TableHead, TableBody, TableRow, TableCell } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import type { TextureSortField } from '@/libraries/services/threed/models/texture-list-query';
@@ -14,6 +15,7 @@ import { useToast } from '@/components/ui/toast';
 
 interface ModelTextureRow {
   id: number;
+  updatedAt: string | null;
   textureName: string;
   fileName: string;
   filePath: string;
@@ -54,7 +56,8 @@ export function ThreeDModelTexturesCRUD() {
   const loadTextures = useCallback(async () => { setRevision((value) => value + 1); }, []);
   const busy = workingId !== null;
   const references = (texture: ModelTextureRow) => texture.assignmentCount + (texture.fileReferenceCount ?? 0);
-  const deletable = textures.filter((texture) => references(texture) === 0);
+  const selectedRows = textures.filter(texture => selected.has(texture.id));
+  const selectionCanDelete = selectedRows.length > 0 && selectedRows.every(texture => references(texture) === 0);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -160,7 +163,7 @@ export function ThreeDModelTexturesCRUD() {
       {ToastComponent}
       <input ref={inputRef} aria-label="Upload Model Texture file" type="file" accept="image/png,image/jpeg,image/webp,image/bmp" className="hidden" disabled={busy} onChange={uploadTexture} />
       <fieldset className="min-w-0 shrink-0" disabled={busy}>
-        <AdminWorkspaceHeader icon={Images} title="Model Textures" description="Manage reusable Texture files and their Model references">
+        <AdminWorkspaceHeader icon={Images} title="Model Textures" description="Manage reusable Texture files and their Model references" showModuleAlbums={false}>
           <span className="rounded bg-muted px-2 text-xs">{total}</span>
           <Input aria-label="Search Model Textures" value={search} onChange={(event) => { setPage(0); setSelected(new Set()); setSearch(event.target.value); }} placeholder="Search name, filename or type…" className="h-7 min-w-48 flex-1 text-xs" />
           <Button variant="success" size="sm" className="h-7 text-xs" onClick={() => inputRef.current?.click()}>{workingId === 'upload' ? <Loader2 className="h-3 w-3 animate-spin" /> : <Upload className="h-3 w-3" />}Upload Texture</Button>
@@ -174,7 +177,16 @@ export function ThreeDModelTexturesCRUD() {
         <div className="flex flex-wrap items-center gap-2">
           <span role="status">{loading ? 'Loading…' : total ? `${page * pageSize + 1}–${Math.min((page + 1) * pageSize, total)} of ${total} Textures` : '0 Textures'}</span>
           <span aria-hidden="true">|</span><span>{selected.size} selected</span>
-          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={busy || loading || !selected.size} onClick={() => void deleteTextures(textures.filter((texture) => selected.has(texture.id)))}>Delete selected ({selected.size})</Button>
+          <CatalogBulkEditButton
+            resource="model-textures"
+            rows={selectedRows}
+            disabled={busy || loading || !!error || editingId !== null}
+            onSaved={() => {
+              setSelected(new Set());
+              void loadTextures();
+            }}
+          />
+          <Button variant="outline" size="sm" className="h-7 text-xs" disabled={busy || loading || !selectionCanDelete} onClick={() => void deleteTextures(selectedRows)}>Delete selected ({selectedRows.length})</Button>
           <Button variant="outline" size="sm" className="h-7 text-xs" disabled={busy || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -193,14 +205,14 @@ export function ThreeDModelTexturesCRUD() {
       <div role="region" aria-label="Model Texture records" tabIndex={0} className="min-h-0 flex-1 overflow-auto overscroll-contain rounded-lg border [&>[data-slot=table-container]]:overflow-visible">
         <Table className="min-w-[950px]">
           <TableHeader className="sticky top-0 z-10 bg-background"><TableRow>
-            <TableHead className="w-8"><input type="checkbox" aria-label="Select unreferenced Textures on this page" disabled={busy || loading || !deletable.length} checked={deletable.length > 0 && deletable.every((texture) => selected.has(texture.id))}
-              ref={(element) => { if (element) element.indeterminate = deletable.some((texture) => selected.has(texture.id)) && !deletable.every((texture) => selected.has(texture.id)); }}
-              onChange={(event) => setSelected(event.target.checked ? new Set(deletable.map((texture) => texture.id)) : new Set())} /></TableHead>
+            <TableHead className="w-8"><input type="checkbox" aria-label="Select Textures on this page" disabled={busy || loading || !textures.length} checked={textures.length > 0 && selectedRows.length === textures.length}
+              ref={(element) => { if (element) element.indeterminate = selectedRows.length > 0 && selectedRows.length < textures.length; }}
+              onChange={(event) => setSelected(event.target.checked ? new Set(textures.map(texture => texture.id)) : new Set())} /></TableHead>
             <TableHead className="text-xs">Preview</TableHead>{heading('name', 'Name')}{heading('fileName', 'Filename')}{heading('type', 'Type')}{heading('references', 'References')}{heading('active', 'Active')}{heading('size', 'Size')}<TableHead className="text-right text-xs">Actions</TableHead>
           </TableRow></TableHeader>
           <TableBody>
             {loading ? <TableRow><TableCell colSpan={9}>Loading Model Textures…</TableCell></TableRow> : textures.length === 0 ? <TableRow><TableCell colSpan={9}>{error ? 'Textures could not be loaded.' : 'No Model Textures found.'}</TableCell></TableRow> : textures.map((texture) => <TableRow key={texture.id}>
-              <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${texture.textureName}`} title={references(texture) ? 'Referenced Textures cannot be deleted' : 'Select Texture'} disabled={busy || references(texture) > 0} checked={selected.has(texture.id)} onChange={(event) => { const next = new Set(selected); if (event.target.checked) next.add(texture.id); else next.delete(texture.id); setSelected(next); }} /></TableCell>
+              <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${texture.textureName}`} title={references(texture) ? 'Available for editing. Referenced Textures cannot be deleted.' : 'Select Texture'} disabled={busy} checked={selected.has(texture.id)} onChange={(event) => { const next = new Set(selected); if (event.target.checked) next.add(texture.id); else next.delete(texture.id); setSelected(next); }} /></TableCell>
               <TableCell className="py-1"><button type="button" aria-label={`Preview ${texture.textureName}`} className="block h-8 w-12 rounded bg-muted" onClick={() => setPreview(texture)}><img src={texture.filePath} alt="" className="h-full w-full object-contain" loading="lazy" /></button></TableCell>
               <TableCell className="py-1 text-sm">{editingId === texture.id ? <div className="flex items-center gap-1"><Input aria-label="Texture name" value={editingName} maxLength={255} disabled={busy} onChange={(event) => setEditingName(event.target.value)} className="h-8 text-xs" /><Button size="icon" className="h-8 w-8" aria-label="Save Texture name" disabled={busy || !editingName.trim()} onClick={() => void updateTexture(texture.id, { textureName: editingName.trim() })}><Check className="h-4 w-4" /></Button><Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Cancel rename" disabled={busy} onClick={() => setEditingId(null)}><X className="h-4 w-4" /></Button></div> : texture.textureName}</TableCell>
               <TableCell className="py-1 text-xs">{texture.fileName}</TableCell><TableCell className="py-1 text-xs">{texture.mimeType}</TableCell>

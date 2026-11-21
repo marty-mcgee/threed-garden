@@ -1,4 +1,4 @@
-import { parsePlantingListQuery } from '@/libraries/services/threed/plantings/planting-list-query';
+import { isMissingPlantingSortOrder, parsePlantingListQuery } from '@/libraries/services/threed/plantings/planting-list-query';
 import { modelSelection } from '@/libraries/services/threed/models/model-primary-file';
 // app/api/threed/plantings/route.ts
 import { NextRequest, NextResponse } from 'next/server';
@@ -14,6 +14,30 @@ import {
 import { eq, and, asc, desc, getTableColumns, sql, type SQL } from 'drizzle-orm';
 import { ensureTableSequence } from '@/libraries/db/sequence';
 
+function checkRankWrite(body: Record<string, unknown>) {
+  if ('sortOrder' in body || 'sort_order' in body) {
+    return NextResponse.json({
+      success: false,
+      error: 'Use the Plantings reorder action to change Sort Order.',
+    }, { status: 400 });
+  }
+}
+
+function plantingNameField(value: unknown): Pick<typeof threedPlantings.$inferInsert, 'name'> | { error: NextResponse } {
+  if (value === undefined) return {};
+  if (value === null) return { name: null };
+  if (typeof value === 'string') {
+    const name = value.trim();
+    if ([...name].length <= 255) return { name: name || null };
+  }
+  return {
+    error: NextResponse.json({
+      success: false,
+      error: 'Planting name must be text up to 255 characters or null.',
+    }, { status: 400 }),
+  };
+}
+
 // ============================================
 // GET /api/threed/plantings - List ThreeD Plantings
 // Query Parameters:
@@ -22,7 +46,7 @@ import { ensureTableSequence } from '@/libraries/db/sequence';
 //   - bedId (optional): Filter by bed
 //   - status (optional): Filter by planting status
 //   - isActive (optional): Filter by active status
-//   - search (optional): Search by plantingId or notes
+//   - search (optional): Search Planting name, Planting ID, notes, Plant or Bed
 //   - limit (optional): Number of records (default: 50)
 //   - offset (optional): Number of records to skip (default: 0)
 // ============================================
@@ -95,6 +119,7 @@ export async function GET(request: NextRequest) {
     }
     const { limit, offset, sort, direction, search, isActive } = query;
     const fields = {
+      name: sql`lower(${threedPlantings.name})`,
       plantingId: threedPlantings.plantingId,
       plant: sql`lower(${threedPlants.commonName})`,
       bed: sql`lower(${threedBeds.name})`,
@@ -129,7 +154,8 @@ export async function GET(request: NextRequest) {
 
     if (search) {
       conditions.push(
-        sql`(${threedPlantings.plantingId} ILIKE ${`%${search}%`} OR
+        sql`(${threedPlantings.name} ILIKE ${`%${search}%`} OR
+            ${threedPlantings.plantingId} ILIKE ${`%${search}%`} OR
             ${threedPlantings.notes} ILIKE ${`%${search}%`} OR
             ${threedPlants.commonName} ILIKE ${`%${search}%`} OR
             ${threedBeds.name} ILIKE ${`%${search}%`})`
@@ -146,15 +172,29 @@ export async function GET(request: NextRequest) {
       .leftJoin(threedBeds, bedJoin)
       .where(where);
     const total = Number(countResult?.count || 0);
-    const plantingsWithRelations = await db
-      .select({ ...getTableColumns(threedPlantings), plant: threedPlants, bed: threedBeds })
-      .from(threedPlantings)
-      .leftJoin(threedPlants, plantJoin)
-      .leftJoin(threedBeds, bedJoin)
-      .where(where)
-      .orderBy(direction === 'asc' ? asc(fields[sort]) : desc(fields[sort]), asc(threedPlantings.id))
-      .limit(limit)
-      .offset(offset);
+    const order = direction === 'asc' ? asc : desc;
+    const load = async (withRank: boolean) => {
+      const ordering = sort === 'sortOrder'
+        ? [...(withRank ? [order(threedPlantings.sortOrder)] : []), asc(threedPlantings.plantingId), asc(threedPlantings.id)]
+        : [order(fields[sort]), asc(threedPlantings.id)];
+      return db.select({
+        ...getTableColumns(threedPlantings),
+        sortOrder: withRank ? threedPlantings.sortOrder : sql<null>`null`,
+        plant: threedPlants,
+        bed: threedBeds,
+      })
+        .from(threedPlantings)
+        .leftJoin(threedPlants, plantJoin)
+        .leftJoin(threedBeds, bedJoin)
+        .where(where)
+        .orderBy(...ordering)
+        .limit(limit)
+        .offset(offset);
+    };
+    const plantingsWithRelations = await load(true).catch(error => {
+      if (!isMissingPlantingSortOrder(error)) throw error;
+      return load(false);
+    });
 
     return NextResponse.json({
       success: true,
@@ -185,7 +225,11 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+    const rankError = checkRankWrite(body);
+    if (rankError) return rankError;
     console.log('📝 POST /api/threed/plantings - Request body:', body);
+    const nameField = plantingNameField(body.name);
+    if ('error' in nameField) return nameField.error;
 
     const {
       plantingId,
@@ -314,6 +358,7 @@ export async function POST(request: NextRequest) {
       .values({
         userId,
         plantingId,
+        ...nameField,
         plantId: parseInt(plantId),
         bedId: bedId ? parseInt(bedId) : null,
         customModelId: customModelId ? parseInt(customModelId) : null,
@@ -373,6 +418,8 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
+    const rankError = checkRankWrite(body);
+    if (rankError) return rankError;
     const userId = session.user.id;
     const parsedId = parseInt(id);
 
@@ -444,8 +491,13 @@ export async function PUT(request: NextRequest) {
       }
     }
 
-    // ✅ Handle date fields
-    const updateData: any = { ...body, updatedAt: new Date() };
+    const nameField = plantingNameField(body.name);
+    if ('error' in nameField) return nameField.error;
+    const updateData: any = {
+      ...body,
+      ...nameField,
+      updatedAt: new Date(),
+    };
     if (body.plantedDate) updateData.plantedDate = new Date(body.plantedDate);
     if (body.expectedGerminationDate) updateData.expectedGerminationDate = new Date(body.expectedGerminationDate);
     if (body.expectedHarvestDate) updateData.expectedHarvestDate = new Date(body.expectedHarvestDate);
@@ -499,6 +551,8 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
+    const rankError = checkRankWrite(body);
+    if (rankError) return rankError;
     const userId = session.user.id;
     const parsedId = parseInt(id);
 
@@ -528,8 +582,13 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    // ✅ Handle date fields
-    const updateData: any = { ...body, updatedAt: new Date() };
+    const nameField = plantingNameField(body.name);
+    if ('error' in nameField) return nameField.error;
+    const updateData: any = {
+      ...body,
+      ...nameField,
+      updatedAt: new Date(),
+    };
     if (body.plantedDate) updateData.plantedDate = new Date(body.plantedDate);
     if (body.expectedGerminationDate) updateData.expectedGerminationDate = new Date(body.expectedGerminationDate);
     if (body.expectedHarvestDate) updateData.expectedHarvestDate = new Date(body.expectedHarvestDate);

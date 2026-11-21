@@ -1,5 +1,6 @@
 // components/admin/threed/beds/ThreeDBedsCRUD.tsx
 'use client';
+import { CatalogBulkEditButton } from '@/components/admin/threed/CatalogBulkEditButton';
 import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
@@ -446,7 +447,7 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
   return (
     <div className={scrollRecords ? 'flex h-full min-h-0 flex-col gap-2' : 'space-y-2'}>
       {ToastComponent}
-      <AdminWorkspaceHeader iconColor="amber" icon={Cuboid} title="Beds" description="Manage reusable Garden Beds and their dimensions" className="shrink-0 [&>a]:text-[11px]">
+      <AdminWorkspaceHeader iconColor="amber" icon={Cuboid} title="Beds" description="Manage reusable Garden Beds and their dimensions" showModuleAlbums={!scrollRecords} className="shrink-0 [&>a]:text-[11px]">
         <Badge variant="secondary" className="text-xs">{loading || loadError ? '—' : total}</Badge>
         <Input aria-label="Search Beds" placeholder="Search Beds…" disabled={bulkBusy} value={searchQuery} onChange={event => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
         <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -781,6 +782,17 @@ export function ThreeDBedsCRUD({ onModuleUpdate, scrollRecords = false }: { onMo
 
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">
         <div className="flex flex-wrap items-center gap-2"><span>{loading ? 'Loading…' : loadError ? 'Beds unavailable' : `${total ? page * pageSize + 1 : 0}–${Math.min((page + 1) * pageSize, total)} of ${total} Beds`}</span><span aria-hidden="true">|</span><span>{selected.size} selected</span>
+          {scrollRecords && <CatalogBulkEditButton
+            resource="beds"
+            rows={beds.filter(bed => selected.has(bed.id))}
+            disabled={loading || bulkBusy || isSubmitting || !!loadError || showCreateDialog || !!editingBed}
+            onSaved={() => {
+              setSelected(new Set());
+              setBulkNotice('Selected Beds updated.');
+              setLoading(true);
+              fetchBeds();
+            }}
+          />}
           <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={loading || bulkBusy || isSubmitting || !!loadError || !selected.size} onClick={() => void deleteSelected()}>Delete selected ({selected.size})</Button>
           <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={bulkBusy || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button>
         </div>

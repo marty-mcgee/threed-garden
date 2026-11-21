@@ -1,4 +1,5 @@
 'use client';
+import { CatalogBulkEditButton } from '@/components/admin/threed/CatalogBulkEditButton';
 import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
@@ -9,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-type Category = { id: number; name: string; slotUsage: number; clipUsage: number };
+type Category = { id: number; updatedAt: string; name: string; slotUsage: number; clipUsage: number };
 type Draft = { id?: number; name: string };
 type SortKey = 'name' | 'references';
 const references = (category: Category) => category.slotUsage;
@@ -43,7 +44,9 @@ export function ThreeDAnimationCategoriesWorkspace() {
   }, [rows, search, sort]);
   const pages = Math.max(1, Math.ceil(filtered.length / pageSize));
   useEffect(() => { if (!loading && !error) setPage(value => Math.min(value, pages - 1), {replace: true}); setSelected(new Set()); }, [loading, error, pages, page, pageSize, search, sort]);
-  const visible = filtered.slice(page * pageSize, (page + 1) * pageSize), deletable = visible.filter(category => references(category) === 0);
+  const visible = filtered.slice(page * pageSize, (page + 1) * pageSize);
+  const selectedRows = visible.filter(row => selected.has(row.id));
+  const canDeleteSelection = selectedRows.length > 0 && selectedRows.every(row => references(row) === 0);
   async function save() {
     if (!draft || busy) return;
     setBusy(true); setOperationError(''); setNotice('');
@@ -52,7 +55,7 @@ export function ThreeDAnimationCategoriesWorkspace() {
     finally { setBusy(false); }
   }
   async function remove(targets: Category[]) {
-    if (busy || !targets.length || !confirm(`Delete ${targets.length} Categories without Slot references? Clip Category labels will be removed; clips and action mappings remain.`)) return;
+    if (busy || !targets.length || targets.some(row => references(row) > 0) || !confirm(`Delete ${targets.length} Categories without Slot references? Clip Category labels will be removed; clips and action mappings remain.`)) return;
     setBusy(true); setOperationError(''); setNotice('');
     let removed = 0; const failures: string[] = [];
     for (const category of targets) {
@@ -65,7 +68,7 @@ export function ThreeDAnimationCategoriesWorkspace() {
     return <TableHead aria-sort={sort.key === key ? sort.direction === 'asc' ? 'ascending' : 'descending' : 'none'}><button disabled={busy || loading} className="flex items-center gap-1 text-xs" onClick={() => { setSort(previous => ({ key, direction: previous.key === key && previous.direction === 'asc' ? 'desc' : 'asc' })); setPage(0); }}>{title}{sort.key !== key ? <ArrowUpDown className="h-3 w-3" /> : sort.direction === 'asc' ? <ArrowUp className="h-3 w-3" /> : <ArrowDown className="h-3 w-3" />}</button></TableHead>;
   }
   return <div className="flex h-full min-h-0 flex-col gap-2">
-    <AdminWorkspaceHeader iconColor="blue" icon={FolderTree} title="Animation Categories" description="Shared Categories for animation clips and Action Slots">
+    <AdminWorkspaceHeader showModuleAlbums={false} iconColor="blue" icon={FolderTree} title="Animation Categories" description="Shared Categories for animation clips and Action Slots">
       <span className="rounded bg-muted px-2 text-xs">{error ? '—' : filtered.length}</span>
       <Input aria-label="Search Animation Categories" placeholder="Search Categories by name…" value={search} disabled={busy} onChange={event => { setSearch(event.target.value); setPage(0); }} className="h-7 min-w-48 flex-1 text-xs" />
       <Button variant="success" size="sm" className="h-7 text-xs" disabled={busy || loading || !!draft || !!error} onClick={() => { setOperationError(''); setNotice(''); setDraft({ name: '' }); }}><Plus className="mr-1 h-3 w-3" />Add Category</Button>
@@ -94,16 +97,22 @@ export function ThreeDAnimationCategoriesWorkspace() {
     </Dialog>
     <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">
       <div className="flex flex-wrap items-center gap-2"><span role="status">{loading ? 'Loading Categories…' : error ? 'Categories unavailable' : `${filtered.length ? page * pageSize + 1 : 0}–${Math.min((page + 1) * pageSize, filtered.length)} of ${filtered.length} Categories`}</span><span>|</span><span>{selected.size} selected</span>
-        <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading || !!error || !!draft || !selected.size} onClick={() => void remove(deletable.filter(category => selected.has(category.id)))}>Delete selected ({selected.size})</Button><Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button></div>
+        <CatalogBulkEditButton
+          resource="animation-categories"
+          rows={selectedRows}
+          disabled={busy || loading || !!error || !!draft}
+          onSaved={() => { setSelected(new Set()); setRefresh(value => value + 1); }}
+        />
+        <Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading || !!error || !!draft || !canDeleteSelection} title={selectedRows.length && !canDeleteSelection ? 'The selection includes a referenced record.' : undefined} onClick={() => void remove(selectedRows)}>Delete selected ({selected.size})</Button><Button size="sm" variant="outline" className="h-7 text-xs" disabled={busy || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button></div>
       <div className="flex flex-wrap items-center gap-2"><label>Per page <select aria-label="Animation Categories per page" className="rounded border bg-background p-1" disabled={busy || loading} value={pageSize} onChange={event => { setPageSize(Number(event.target.value)); setPage(0); }}>{[25, 50, 100, 200].map(size => <option key={size}>{size}</option>)}</select></label>
         {(['First', 'Previous', 'Next', 'Last'] as const).map(text => <Button key={text} size="sm" variant="outline" className="h-7 text-xs" disabled={busy || loading || !!error || (text === 'First' || text === 'Previous' ? page === 0 : page >= pages - 1)} onClick={() => setPage(text === 'First' ? 0 : text === 'Previous' ? page - 1 : text === 'Next' ? page + 1 : pages - 1)}>{text}</Button>)}<span>Page {page + 1} of {pages}</span></div>
     </div>
     <div role="region" aria-label="Animation Category records" tabIndex={0} className="min-h-0 flex-1 overflow-auto overscroll-contain rounded-lg border [&>[data-slot=table-container]]:overflow-visible">
       <Table className="min-w-[700px]"><TableHeader className="sticky top-0 z-10 bg-background"><TableRow>
-        <TableHead className="w-8"><input type="checkbox" aria-label="Select Categories without Slot references on this page" disabled={busy || loading || !!error || !deletable.length} checked={deletable.length > 0 && deletable.every(category => selected.has(category.id))} ref={input => { if (input) input.indeterminate = deletable.some(category => selected.has(category.id)) && !deletable.every(category => selected.has(category.id)); }} onChange={event => setSelected(event.target.checked ? new Set(deletable.map(category => category.id)) : new Set())} /></TableHead>
+        <TableHead className="w-8"><input type="checkbox" aria-label="Select Animation Categories on this page" disabled={busy || loading || !!error || !visible.length} checked={visible.length > 0 && visible.every(category => selected.has(category.id))} ref={input => { if (input) input.indeterminate = visible.some(category => selected.has(category.id)) && !visible.every(category => selected.has(category.id)); }} onChange={event => setSelected(event.target.checked ? new Set(visible.map(category => category.id)) : new Set())} /></TableHead>
         {heading('name', 'Name')}{heading('references', 'References')}<TableHead className="text-right text-xs">Actions</TableHead>
       </TableRow></TableHeader><TableBody>{loading ? <TableRow><TableCell colSpan={4}>Loading Animation Categories…</TableCell></TableRow> : error ? <TableRow><TableCell colSpan={4}><div role="alert" className="text-destructive">{error} <Button size="sm" variant="outline" onClick={() => setRefresh(value => value + 1)}>Retry</Button></div></TableCell></TableRow> : !visible.length ? <TableRow><TableCell colSpan={4}>No Animation Categories found. Use Add Category to create a Category.</TableCell></TableRow> : visible.map(category => <TableRow key={category.id}>
-        <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${category.name}`} disabled={busy || references(category) > 0} checked={selected.has(category.id)} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(category.id); else next.delete(category.id); return next; })} /></TableCell>
+        <TableCell className="py-1"><input type="checkbox" aria-label={`Select ${category.name}`} disabled={busy || loading} checked={selected.has(category.id)} onChange={event => setSelected(previous => { const next = new Set(previous); if (event.target.checked) next.add(category.id); else next.delete(category.id); return next; })} /></TableCell>
         <TableCell className="py-1 text-sm"><span className="flex items-center gap-2"><ModuleIcon moduleKey="animationCategories" className="h-4 w-4 shrink-0" />{category.name}</span><span className="text-xs text-muted-foreground">#{category.id}</span></TableCell><TableCell className="py-1 text-xs">{category.clipUsage} Clips · {category.slotUsage} Slots</TableCell>
         <TableCell className="py-1"><div className="flex items-center justify-end gap-1"><AdminWorkspaceLink href={`/admin/threed/animations?categoryId=${category.id}`} icon={Clapperboard}>Clips<span className="sr-only"> in {category.name}</span></AdminWorkspaceLink><AdminWorkspaceLink href={`/admin/threed/animation-slots?categoryId=${category.id}`} icon={Clapperboard}>Slots<span className="sr-only"> in {category.name}</span></AdminWorkspaceLink><Button size="icon" variant="ghost" className="h-8 w-8" aria-label={`Edit ${category.name}`} disabled={busy || !!draft} onClick={() => { setOperationError(''); setNotice(''); setDraft({ id: category.id, name: category.name }); }}><Pencil className="h-4 w-4" /></Button><Button size="icon" variant="ghost" className="h-8 w-8" aria-label={`Delete ${category.name}`} title={references(category) ? 'Reassign Action Slots before deleting' : 'Delete Category'} disabled={busy || !!draft || references(category) > 0} onClick={() => void remove([category])}><Trash2 className="h-4 w-4" /></Button></div></TableCell>
       </TableRow>)}</TableBody></Table>

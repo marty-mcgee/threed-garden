@@ -1,4 +1,5 @@
 'use client';
+import { CatalogBulkEditButton } from '@/components/admin/threed/CatalogBulkEditButton';
 import { AdminRelationshipBadge } from '@/components/admin/shared/AdminRelationshipBadge';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
@@ -12,7 +13,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { useToast } from '@/components/ui/toast';
 import { ModelFieldHelp } from '../models/ModelFieldHelp';
 
-type Row = { id: number; name: string; slug: string; projectId: number; projectName: string; threedName: string; isActive: boolean; revision: number; actionCount: number; observationCount: number };
+type Row = { id: number; updatedAt: string; name: string; slug: string; projectId: number; projectName: string; threedName: string; isActive: boolean; revision: number; actionCount: number; observationCount: number };
 type Sort = 'name' | 'slug' | 'project' | 'revision' | 'active';
 export function SimulationsList({ initialProjectId }: { initialProjectId?: number } = {}) {
   const router = useRouter(), { showToast, ToastComponent } = useToast(), lock = useRef(false);
@@ -55,6 +56,7 @@ export function SimulationsList({ initialProjectId }: { initialProjectId?: numbe
     return () => { clearTimeout(timer); controller.abort(); };
   }, [page, limit, search, sort, direction, projectId, availability, refresh]);
   const reset = () => { setPage(0); setSelected(new Set()); };
+  const selectedRows = rows.filter(row => selected.has(row.id));
   const filtered = !!(search || projectId || availability);
   const clearFilters = () => { setSearch(''); setProjectId(''); setAvailability(''); reset(); };
   const resultsHref = `/admin/threed/simulation-results${projectId ? `?projectId=${projectId}` : ''}`;
@@ -79,7 +81,7 @@ export function SimulationsList({ initialProjectId }: { initialProjectId?: numbe
   return <div className="flex min-h-0 flex-1 flex-col gap-2 text-xs [&_button]:text-xs">
     {ToastComponent}
     <fieldset disabled={busy} className="contents">
-      <AdminWorkspaceHeader icon={FlaskConical} title="ThreeD Simulations" description="Manage Project-owned Simulation definitions.">
+      <AdminWorkspaceHeader showModuleAlbums={false} icon={FlaskConical} title="ThreeD Simulations" description="Manage Project-owned Simulation definitions.">
         <ModelFieldHelp label="Simulations">Plan ordered Character Actions and Sensor Group observations. Active controls availability; saving does not execute a Simulation. Select saved Project markers as Action participants.</ModelFieldHelp>
         <span className="rounded border px-1.5 py-0.5 text-xs">{total}</span>
         <Input aria-label="Search Simulations" className="h-7 min-w-40 flex-1 text-xs" maxLength={120} placeholder="Search name, slug or Project…" value={search} onChange={event => { setSearch(event.target.value); reset(); }} />
@@ -93,7 +95,15 @@ export function SimulationsList({ initialProjectId }: { initialProjectId?: numbe
       </AdminWorkspaceHeader>
       <p className="text-xs text-muted-foreground">Active makes a saved definition available in its Project. Scene execution currently supports Run to target ball and Kick ball with one Character and one ball; readiness is checked in the Scene. Other Actions can be authored and previewed.</p>
       <nav aria-label="Simulations pagination" className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-wrap items-center gap-2"><span>{loading ? 'Loading…' : error ? 'Simulations unavailable' : `${total ? page * limit + 1 : 0}–${Math.min((page + 1) * limit, total)} of ${total} Simulations`}</span><span>|</span><span>{selected.size} selected</span><Button variant="outline" size="sm" disabled={loading || !selected.size} onClick={() => void remove(rows.filter(row => selected.has(row.id)))}><Trash2 className="h-3.5 w-3.5" /> Delete selected</Button><Button variant="ghost" size="sm" disabled={!selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button></div>
+        <div className="flex flex-wrap items-center gap-2"><span>{loading ? 'Loading…' : error ? 'Simulations unavailable' : `${total ? page * limit + 1 : 0}–${Math.min((page + 1) * limit, total)} of ${total} Simulations`}</span><span>|</span><span>{selected.size} selected</span>
+        <CatalogBulkEditButton
+          resource="simulations"
+          rows={selectedRows}
+          disabled={busy || loading || !!error}
+          scope={{ projectId: projectId ? Number(projectId) : undefined }}
+          onSaved={() => { setSelected(new Set()); setRefresh(value => value + 1); }}
+        />
+        <Button variant="outline" size="sm" disabled={loading || !selected.size} onClick={() => void remove(rows.filter(row => selected.has(row.id)))}><Trash2 className="h-3.5 w-3.5" /> Delete selected</Button><Button variant="ghost" size="sm" disabled={!selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button></div>
         <div className="flex flex-wrap items-center gap-1"><select aria-label="Simulations per page" className="h-7 rounded-md border bg-background px-2" value={limit} onChange={event => { setLimit(Number(event.target.value)); reset(); }}>{[25, 50, 100].map(size => <option key={size} value={size}>{size} per page</option>)}</select><Button variant="outline" size="sm" disabled={loading || !page} onClick={() => setPage(0)}>First</Button><Button variant="outline" size="sm" disabled={loading || !page} onClick={() => setPage(page - 1)}>Previous</Button><span className="px-1">Page {page + 1} of {pages}</span><Button variant="outline" size="sm" disabled={loading || page + 1 >= pages} onClick={() => setPage(page + 1)}>Next</Button><Button variant="outline" size="sm" disabled={loading || page + 1 >= pages} onClick={() => setPage(pages - 1)}>Last</Button></div>
       </nav>
       <div className="min-h-0 flex-1 overflow-auto rounded-md border"><Table className="min-w-[850px] [&_td]:py-1 [&_td]:text-xs [&_th]:text-xs">

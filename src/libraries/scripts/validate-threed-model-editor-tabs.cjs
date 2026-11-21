@@ -127,6 +127,7 @@ async function editorChecks() {
     '@/components/admin/threed/animations/CharacterAnimationAssignments': proxy,
     '@/components/settings/ModuleAppearanceProvider': {ModuleIcon:'module-icon'},
     '@/components/admin/layout/AdminWorkspaceHeader': proxy, '@/components/ui/toast': { useToast: () => ({ showToast: () => {}, ToastComponent: null }) },
+    '@/components/admin/threed/CatalogBulkEditButton': proxy,
     '@/components/ui/button': proxy, '@/components/ui/badge': proxy, '@/components/ui/table': proxy,
     '@/components/ui/dialog': proxy, '@/components/ui/dropdown-menu': proxy, '@/components/ui/input': proxy, '@/components/ui/tabs': proxy,
     './model-admin-form-core': form, './ThreeDModelEditorFields': { ...proxy, MODEL_TYPE_OPTIONS: [], MODEL_STATUS_OPTIONS: [], ThreeDModelEditorFields: 'fields', ThreeDModelPreviewImageFields: 'image-fields' },

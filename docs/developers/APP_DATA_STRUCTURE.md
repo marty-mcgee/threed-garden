@@ -2,7 +2,7 @@
 
 [Open the interactive schema explorer](app-data-structure.html) · [Structured schema snapshot](app-data-structure.json) · [Established App architecture](../plans/app-module-architecture.md)
 
-Snapshot: 2026-11-20, App 0.35.8, main / 9bd11ba2 plus working-tree changes. Generated from the actual local Drizzle declarations, without a database connection. This visualizes the existing structure; it does not introduce a new architecture.
+Snapshot: 2026-11-20, App 0.35.9, main / 071a7608 plus working-tree changes. Generated from the actual local Drizzle declarations, without a database connection. This visualizes the existing structure; it does not introduce a new architecture.
 
 ## Explore the structure
 
@@ -12,14 +12,14 @@ Open the HTML file directly in a browser; it needs no server, network or CDN. Se
 
 | Domain | Tables | Columns | Foreign keys |
 | --- | ---: | ---: | ---: |
-| ThreeD | 49 | 704 | 111 |
+| ThreeD | 49 | 706 | 111 |
 | Multimedia | 13 | 136 | 24 |
 | Traffic | 10 | 227 | 10 |
 | Learn | 3 | 32 | 8 |
 | Projects (shared) | 6 | 84 | 15 |
 | Accounts (shared) | 5 | 48 | 2 |
 | Settings (shared) | 5 | 53 | 6 |
-| **Total** | **91** | **1284** | **176** |
+| **Total** | **91** | **1286** | **176** |
 
 Also includes **37 enums**, **161 ORM relation declarations** and **54 reviewed application mappings**. Counts describe source declarations, not verified live database objects. Auth aliases are deduplicated. Composite foreign keys remain single relationships with all participating columns. JSON/JSONB columns are shown without inventing their nested structures.
 
@@ -86,7 +86,7 @@ The interactive explorer expands polymorphic asset/Module links using the actual
 | [`threed_mqtt_events`](../../src/libraries/schema/threed/index.ts) | 21 | 1 |
 | [`threed_mqtt_runtime`](../../src/libraries/schema/threed/index.ts) | 20 | 1 |
 | [`threed_multimedia_albums`](../../src/libraries/schema/threed/album-associations.ts) | 7 | 1 |
-| [`threed_plantings`](../../src/libraries/schema/threed/index.ts) | 24 | 4 |
+| [`threed_plantings`](../../src/libraries/schema/threed/index.ts) | 26 | 4 |
 | [`threed_plants`](../../src/libraries/schema/threed/index.ts) | 36 | 2 |
 | [`threed_scenarios`](../../src/libraries/schema/threed/index.ts) | 11 | 3 |
 | [`threed_simulation_results`](../../src/libraries/schema/threed/index.ts) | 14 | 4 |

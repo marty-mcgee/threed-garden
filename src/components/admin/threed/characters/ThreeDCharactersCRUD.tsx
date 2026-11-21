@@ -12,6 +12,7 @@ import { readModelSource } from '@/libraries/services/threed/models/model-source
 import { useCharacterPageGuard } from './use-character-page-guard';
 import { validateCharacterDraft } from './character-admin-form-core';
 import { AdminWorkspaceHeader, AdminWorkspaceLink } from '@/components/admin/layout/AdminWorkspaceHeader';
+import { CatalogBulkEditButton } from '@/components/admin/threed/CatalogBulkEditButton';
 import {
   ArrowUpDown,
   ArrowUp,
@@ -1153,7 +1154,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
   return (
     <div className={scrollRecords ? 'flex h-full min-h-0 flex-col gap-2' : 'space-y-2'}>
       {ToastComponent}
-      <AdminWorkspaceHeader iconColor="purple" icon={Users} title="Characters" description="Manage your 3D characters and creatures" className="shrink-0 [&>a]:text-[11px]">
+      <AdminWorkspaceHeader iconColor="purple" icon={Users} title="Characters" description="Manage your 3D characters and creatures" showModuleAlbums={!scrollRecords} className="shrink-0 [&>a]:text-[11px]">
         <Badge variant="secondary" className="text-xs">{loading || loadError ? '—' : total}</Badge>
         <Input aria-label="Search Characters" placeholder="Search Characters by name, ID or description…" disabled={bulkBusy} value={searchQuery} onChange={event => { resetList(); setSearchQuery(event.target.value); }} className="h-7 min-w-48 flex-1 text-xs" />
 <Button variant="success" asChild size="sm" disabled={bulkBusy} onClick={event => { if (bulkBusy) event.preventDefault(); }} className="h-7 px-2 text-[11px]"><a href="/admin/threed/characters/new"><Plus className="mr-1 h-3 w-3" />Add Character</a></Button>
@@ -1173,6 +1174,19 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
       </div>
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 text-xs">
         <div className="flex flex-wrap items-center gap-2"><span>{loading ? 'Loading…' : loadError ? 'Characters unavailable' : `${total ? page * pageSize + 1 : 0}–${Math.min((page + 1) * pageSize, total)} of ${total} Characters`}</span><span aria-hidden="true">|</span><span>{selected.size} selected</span>
+          {scrollRecords && <CatalogBulkEditButton
+            resource="characters"
+            rows={characters.filter(character => selected.has(character.id)).map(character => ({
+              id: character.id,
+              updatedAt: character.updatedAt,
+            }))}
+            disabled={loading || bulkBusy || isSubmitting || !!loadError}
+            onSaved={() => {
+              setSelected(new Set());
+              fetchCharacters();
+              onModuleUpdate?.();
+            }}
+          />}
           <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={loading || bulkBusy || isSubmitting || !!loadError || !selected.size} onClick={() => void deleteSelected()}>Delete selected ({selected.size})</Button>
           <Button variant="outline" size="sm" className="h-7 text-[11px]" disabled={bulkBusy || !selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button>
         </div>

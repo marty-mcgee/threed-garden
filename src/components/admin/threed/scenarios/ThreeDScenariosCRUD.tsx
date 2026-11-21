@@ -1,4 +1,5 @@
 'use client';
+import { CatalogBulkEditButton } from '@/components/admin/threed/CatalogBulkEditButton';
 import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { AdminRelationshipBadge } from '@/components/admin/shared/AdminRelationshipBadge';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
@@ -20,7 +21,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { ScenarioContinuationDialog } from './ScenarioContinuationDialog';
 import type { ScenarioSetup } from '@/libraries/services/threed/scenarios/scenario-input';
 
-type Scenario = { id: number; projectId: number; threedId: number; projectName: string; threedName: string; name: string; slug: string; description: string | null; isActive: boolean; createdAt: string; setup: ScenarioSetup | null };
+type Scenario = { id: number; updatedAt: string; projectId: number; threedId: number; projectName: string; threedName: string; name: string; slug: string; description: string | null; isActive: boolean; createdAt: string; setup: ScenarioSetup | null };
 type Project = { id: number; name: string };
 type Module = { id: number; name: string };
 type AssignedAsset = { assetType: string; assetId: number; moduleId: number };
@@ -314,6 +315,7 @@ export function ThreeDScenariosCRUD({ projectId, compact = false, view = 'list',
     return `In Project: ${assignedAssets.length} ThreeD assets`;
   };
   const pages = Math.max(1, Math.ceil(total / pageSize));
+  const selectedRows = rows.filter(row => selected.has(row.id));
   const currentIds = rows.map(row => row.id);
   const allSelected = currentIds.length > 0 && currentIds.every(id => selected.has(id));
   const sortable = (label: string, key: SortKey) => {
@@ -343,7 +345,7 @@ export function ThreeDScenariosCRUD({ projectId, compact = false, view = 'list',
         <p className="text-xs text-muted-foreground">{search ? 'No saved Scenarios match this search.' : 'No saved outlines for this Project yet.'}</p>}
       {total > pageSize && <nav aria-label="Saved Scenarios pages" className="flex items-center justify-between gap-2 text-xs"><span>Page {page + 1} of {pages}</span><div className="flex gap-1"><Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(page - 1)}>Previous</Button><Button variant="outline" size="sm" disabled={page + 1 >= pages} onClick={() => setPage(page + 1)}>Next</Button></div></nav>}
     </section> : <>
-    <AdminWorkspaceHeader icon={BookOpen} title="ThreeD Scenarios" description="Manage Project-scoped ThreeD Scenario definitions.">
+    <AdminWorkspaceHeader showModuleAlbums={false} icon={BookOpen} title="ThreeD Scenarios" description="Manage Project-scoped ThreeD Scenario definitions.">
       <ModelFieldHelp label="Scenarios">Save a purpose and setup outline for this Project. Setup bindings use its Models and Sensor Groups. Saving does not run Actions or start a Simulation.</ModelFieldHelp>
       <span className="rounded border px-2 py-0.5 text-xs">{total} total</span>
       <Input aria-label="Search Scenarios" placeholder="Search Scenarios" className="h-7 min-w-48 flex-1 text-xs" maxLength={120} value={search} onChange={event => { setSearch(event.target.value); resetList(); }} />
@@ -361,7 +363,15 @@ export function ThreeDScenariosCRUD({ projectId, compact = false, view = 'list',
     {visibleProjectError && <p role="alert" className="text-xs text-destructive">{visibleProjectError}</p>}
 
     <nav aria-label="Scenarios pagination" className="flex flex-wrap items-center justify-between gap-2 text-xs">
-      <div className="flex flex-wrap items-center gap-2"><span>{loading ? 'Loading…' : loadError ? 'Scenarios unavailable' : `${total ? page * pageSize + 1 : 0}–${Math.min((page + 1) * pageSize, total)} of ${total} Scenarios`}</span><span aria-hidden="true">|</span><span>{selected.size} selected</span><Button variant="outline" size="sm" disabled={!selected.size || busy} onClick={() => void remove([...selected])}>Delete selected</Button><Button variant="ghost" size="sm" disabled={!selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button></div>
+      <div className="flex flex-wrap items-center gap-2"><span>{loading ? 'Loading…' : loadError ? 'Scenarios unavailable' : `${total ? page * pageSize + 1 : 0}–${Math.min((page + 1) * pageSize, total)} of ${total} Scenarios`}</span><span aria-hidden="true">|</span><span>{selected.size} selected</span>
+        <CatalogBulkEditButton
+          resource="scenarios"
+          rows={selectedRows}
+          disabled={busy || loading || !!loadError}
+          scope={{ projectId: projectFilter ? Number(projectFilter) : undefined }}
+          onSaved={() => { setSelected(new Set()); setRevision(value => value + 1); }}
+        />
+        <Button variant="outline" size="sm" disabled={!selected.size || busy} onClick={() => void remove([...selected])}>Delete selected</Button><Button variant="ghost" size="sm" disabled={!selected.size} onClick={() => setSelected(new Set())}>Clear selection</Button></div>
       <div className="flex flex-wrap items-center gap-1"><select aria-label="Scenarios per page" className="h-8 rounded border bg-background px-2" value={pageSize} onChange={event => { setPageSize(Number(event.target.value)); resetList(); }}>{pageSizes.map(size => <option key={size} value={size}>{size} per page</option>)}</select><Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(0)}>First</Button><Button variant="outline" size="sm" disabled={page === 0} onClick={() => setPage(page - 1)}>Previous</Button><span className="px-2">Page {page + 1} of {pages}</span><Button variant="outline" size="sm" disabled={page + 1 >= pages} onClick={() => setPage(page + 1)}>Next</Button><Button variant="outline" size="sm" disabled={page + 1 >= pages} onClick={() => setPage(pages - 1)}>Last</Button></div>
     </nav>
     <div className="min-h-0 flex-1 overflow-auto rounded-md border">
