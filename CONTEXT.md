@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-The Developer confirmed [v0.36.3 - ThreeD Design Wall and Floor Editing and Object Labels](docs/releases/v0.36.3.md#production-status) reached production. The ThreeD Groups fixture follow-up also reached production. GitHub validation remains open on the public Scene API fixture. The current working tree retires the ThreeD Layers Module and keeps category visibility in the Scene toolbar. Levels organize Design geometry by storey, and ThreeD Groups retain named object membership. The next focus is 2D Canvas Design. Start with the [canvas controls](docs/users/THREED_CONTROLS.md) and the [pointer interaction checks](src/libraries/scripts/validate-threed-design-plan-pointer.cjs).
+The Developer confirmed [v0.36.4 - Retire the ThreeD Layers Module and Keep Scene Visibility Controls](docs/releases/v0.36.4.md#production-status) reached production. Scene Visibility controls runtime categories, Levels organize Design geometry by storey, and ThreeD Groups keep named object selections. The next focus is 2D Canvas Design. Start with the [canvas controls](docs/users/THREED_CONTROLS.md) and the [pointer interaction checks](src/libraries/scripts/validate-threed-design-plan-pointer.cjs).
 
 The Developer confirmed [v0.36.2 - ThreeD Design Roof Editing and Wall and Roof Cutouts](docs/releases/v0.36.2.md#production-status) reached production on November 22, 2026. The Developer also confirmed the release metadata and schema snapshot follow-up reached production.
 
