@@ -2,6 +2,8 @@
 
 ## Current checkpoint
 
+The Developer confirmed [v0.36.3 - ThreeD Design Wall and Floor Editing and Object Labels](docs/releases/v0.36.3.md#production-status) reached production. The next focus is 2D Canvas Design. Start with the [canvas controls](docs/users/THREED_CONTROLS.md) and the [pointer interaction checks](src/libraries/scripts/validate-threed-design-plan-pointer.cjs).
+
 The Developer confirmed [v0.36.2 - ThreeD Design Roof Editing and Wall and Roof Cutouts](docs/releases/v0.36.2.md#production-status) reached production on November 22, 2026. The Developer also confirmed the release metadata and schema snapshot follow-up reached production.
 
 The Developer confirmed [v0.36.1 - ThreeD Design Canvas Selection, Movement and Groups](docs/releases/v0.36.1.md#production-status) reached production on November 21, 2026 after the schema snapshot and release metadata correction. The Developer also confirmed the ThreeD Groups migration and accepted Select + Move before deployment.

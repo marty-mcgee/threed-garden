@@ -91,7 +91,8 @@ vm.runInNewContext(code('src/app/api/map/threed/route.ts'), {
   assert.equal(failed.body.data, undefined);
   assert.equal(queue.length, 0);
   const disconnect = () => new Error('Failed query', { cause: new Error('Connection terminated unexpectedly') });
-  queue = [...prefix(), disconnect(), [], [], []];
+  const emptyMapReads = () => [[], [], [], []]; // Plantings, markers, terrain placements, ThreeD Groups
+  queue = [...prefix(), disconnect(), ...emptyMapReads()];
   const recovered = await api.GET({ url: 'http://localhost/api/map/threed?projectId=5' });
   assert.equal(recovered.status, 200);
   assert.equal(recovered.body.success, true);
@@ -105,7 +106,7 @@ vm.runInNewContext(code('src/app/api/map/threed/route.ts'), {
   const schemaFailure = await api.GET({ url: 'http://localhost/api/map/threed?projectId=5' });
   assert.equal(schemaFailure.status, 500);
   assert.equal(queue.length, 0);
-  queue = [...prefix(), [], [], []];
+  queue = [...prefix(), ...emptyMapReads()];
   const empty = await api.GET({ url: 'http://localhost/api/map/threed?projectId=5' });
   assert.equal(empty.status, 200);
   assert.equal(empty.body.success, true);
