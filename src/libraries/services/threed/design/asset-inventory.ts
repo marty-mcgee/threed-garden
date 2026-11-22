@@ -10,7 +10,7 @@ export function architectureAssets(doc: DesignDocument, search = '', units: 'imp
     const floor = doc.floors.find(item => item.id === entity.id);
     const roof = doc.roofs.find(item => item.id === entity.id);
     const opening = doc.openings.find(item => item.id === entity.id);
-    const type = wall ? 'Wall' : floor ? 'Floor' : roof ? 'Roof' : opening ? (opening.kind === 'door' ? 'Door' : 'Window') : 'kind' in entity && entity.kind === 'skylight' ? 'Skylight' : 'Roof Cutout';
+    const type = wall ? 'Wall' : floor ? 'Floor' : roof ? 'Roof' : opening ? (opening.kind === 'wall-cutout' ? 'Wall Cutout' : opening.kind === 'door' ? 'Door' : 'Window') : 'kind' in entity && entity.kind === 'skylight' ? 'Skylight' : 'Roof Cutout';
     const levelId = entityLevelId(doc, entity.id)!;
     const level = doc.levels.find(item => item.id === levelId)!;
     const points = entityPoints(doc, entity.id);

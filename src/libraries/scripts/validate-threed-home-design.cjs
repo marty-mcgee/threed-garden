@@ -26,7 +26,7 @@ legacyRoom.walls=legacyRoom.walls.map(({levelId,...wall})=>wall);legacyRoom.floo
 for(const key of ['windowHeight','windowWidth','windowSill']) delete (legacyRoom.defaults={...legacyRoom.defaults})[key];
 legacyRoom.version=1;
 assert.deepEqual(D.parseDesign(JSON.stringify(legacyRoom)),room,'Version 1 editable documents upgrade losslessly to version 3 defaults.');
-for (const invalid of [null, [], {...room,version:7}, {...room,units:'cm'}, {...room,unexpected:0}, {...room,nodes:[...room.nodes,room.nodes[0]]},
+for (const invalid of [null, [], {...room,version:9}, {...room,units:'cm'}, {...room,unexpected:0}, {...room,nodes:[...room.nodes,room.nodes[0]]},
   {...room,walls:[{...room.walls[0],end:'a'}]}, {...room,walls:[{...room.walls[0],start:'absent'}]}, {...room,walls:[...room.walls, {...room.walls[0],id:'duplicate'}]},
   {...room,floors:[{...room.floors[0],vertices:['a','c','b','d']}]}, {...room,nodes:room.nodes.map((n,i)=>i===0?{...n,x:Infinity}:n)},
   {...room,defaults:{...room.defaults,doorHeight:-1}}, {...room,floors:[{...room.floors[0],vertices:['a','b','a']}]},
@@ -107,6 +107,32 @@ const cutOwner=new G.DesignGeometryCache();cutOwner.update(opened,null);
 const cutWall=cutOwner.group.children.find(o=>o.name==='ab'), keptFloor=cutOwner.group.children.find(o=>o.name==='floor');
 cutWall.updateMatrixWorld(true);
 const through=(mesh,x,y)=>new THREE.Raycaster(new THREE.Vector3(x*D.INCH,y*D.INCH,-2),new THREE.Vector3(0,0,1)).intersectObject(mesh).length;
+const polygonOpening = {
+  id: 'edge-cutout',
+  wallId: 'ab',
+  kind: 'wall-cutout',
+  offset: 0,
+  sill: 0,
+  width: 1,
+  height: 1,
+  outline: [{ x: 0, z: 0 }, { x: 1, z: 0 }, { x: 0, z: 1 }]
+};
+const polygonDesign = D.validateDesign({
+  ...room,
+  version: 8,
+  walls: room.walls.map(w => w.id === 'ab' ? { ...w, endHeight: w.height + 1 } : w),
+  openings: [polygonOpening]
+});
+assert.throws(() => D.validateDesign({ ...polygonDesign, version: 7 }));
+assert.throws(() => D.validateDesign({ ...polygonDesign, openings: [polygonOpening, { ...polygonOpening, id: 'duplicate-area' }] }));
+const polygonOwner = new G.DesignGeometryCache();
+polygonOwner.update(polygonDesign, null);
+polygonOwner.group.updateMatrixWorld(true);
+const polygonWall = polygonOwner.group.children.find(mesh => mesh.name === 'ab');
+assert.equal(through(polygonWall, 4, 4), 0, 'Edge-touching cutout passes through the wall.');
+assert(through(polygonWall, 32, 32) > 0, 'Wall remains solid outside the triangular outline.');
+assert.equal(polygonOwner.group.getObjectByName('edge-cutout'), undefined);
+polygonOwner.dispose();
 assert.equal(through(cutWall,36,40),0,'Door aperture must contain no covering wall triangles.');
 assert.equal(through(cutWall,84,60),0,'Window aperture must contain no covering wall triangles.');
 assert(through(cutWall,36,90)>0,'Door lintel remains solid.');assert(through(cutWall,84,20)>0,'Wall below a window remains solid.');assert(through(cutWall,60,50)>0,'Pier between openings remains solid.');
@@ -225,7 +251,7 @@ const v4={...roofed,version:4};delete v4.roofOpenings;assert.deepEqual(D.validat
 const cutout={id:'roof-cutout',roofId:'roof',kind:'cutout',along:24*D.INCH,across:48*D.INCH,width:24*D.INCH,length:24*D.INCH};
 const skylight={id:'skylight',roofId:'roof',kind:'skylight',along:60*D.INCH,across:12*D.INCH,width:24*D.INCH,length:36*D.INCH};
 const apertured=D.validateDesign({...roofed,roofOpenings:[cutout,skylight]});assert.deepEqual(D.parseDesign(JSON.stringify(apertured)),apertured);
-for(const patch of [{roofId:'missing'},{kind:'door'},{along:0},{width:0},{length:Infinity},{across:-1},{width:31},{id:'upper-ab'}])assert.throws(()=>D.validateDesign({...roofed,roofOpenings:[{...cutout,...patch}]}));
+for(const patch of [{roofId:'missing'},{kind:'door'},{along:-.1},{width:0},{length:Infinity},{across:-1},{width:31},{id:'upper-ab'}])assert.throws(()=>D.validateDesign({...roofed,roofOpenings:[{...cutout,...patch}]}));
 assert.throws(()=>D.validateDesign({...roofed,roofOpenings:[{...cutout,kind:'skylight'}]}),/one roof plane/);
 assert.throws(()=>D.validateDesign({...roofed,roofOpenings:[cutout,{...cutout,id:'other',along:cutout.along+cutout.width}]}),/overlap/);
 assert.throws(()=>D.validateDesign({...roofed,roofOpenings:Array.from({length:201},(_,i)=>({...cutout,id:'cut'+i}))}),/limit/);
@@ -234,6 +260,26 @@ assert.throws(()=>H.commitDesign(H.designHistory(apertured),D.moveNodes(aperture
 const notchNodes=[[0,0],[4,0],[4,4],[3,4],[3,1],[1,1],[1,4],[0,4]].map(([x,z],i)=>({id:'notch'+i,x,z}));
 const notched={...D.newDesign(),nodes:notchNodes,roofs:[{...roof,id:'notched',levelId:'ground',vertices:notchNodes.map(n=>n.id),kind:'flat'}]};
 assert.throws(()=>D.validateDesign({...notched,roofOpenings:[{...cutout,roofId:'notched',along:.5,across:2,width:3,length:.5}]}),/fit/,'All rectangle corners inside a concave roof is insufficient: crossing the notch must reject.');
+const polygon = {...cutout, outline:[[0,0],[1,0],[1,.4],[.4,.4],[.4,1],[0,1]].map(([x,z])=>({x,z}))};
+const custom = D.validateDesign({...roofed,version:7,roofOpenings:[polygon,skylight]});
+assert.deepEqual(D.parseDesign(JSON.stringify(custom)),custom);
+assert.throws(()=>D.validateDesign({...custom,version:6}));
+assert.throws(()=>D.validateDesign({...custom,roofOpenings:[{...polygon,kind:'skylight'}]}));
+assert.throws(()=>D.validateDesign({...custom,roofOpenings:[{...polygon,outline:[polygon.outline[0],polygon.outline[2],polygon.outline[1],polygon.outline[5]]}]}));
+const customOwner=new G.DesignGeometryCache();
+customOwner.update(custom,null);customOwner.group.updateMatrixWorld(true);
+const customMesh=customOwner.group.children.find(o=>o.name==='roof');
+assert.equal(rayDown(customMesh,28*D.INCH,64*D.INCH).length,0);
+assert(rayDown(customMesh,44*D.INCH,68*D.INCH).length,'The concave notch retains roof material.');
+customOwner.dispose();
+const perimeterOpening = {...cutout,along:0};
+const perimeterDoc = D.validateDesign({...roofed,roofOpenings:[perimeterOpening]});
+const edgeOwner = new G.DesignGeometryCache(); edgeOwner.update(perimeterDoc,null); edgeOwner.group.updateMatrixWorld(true);
+const edgeMesh = edgeOwner.group.children.find(o=>o.name==='roof');
+assert.equal(rayDown(edgeMesh,2*D.INCH,60*D.INCH).length,0);
+assert(rayDown(edgeMesh,2*D.INCH,35*D.INCH).length);
+assert.throws(()=>D.validateDesign({...roofed,roofOpenings:[{...perimeterOpening,kind:'skylight'}]}),/fit/);
+edgeOwner.dispose();
 const apertureOwner=new G.DesignGeometryCache();apertureOwner.update(apertured,null);apertureOwner.group.updateMatrixWorld(true);
 const apertureRoof=apertureOwner.group.children.find(o=>o.name==='roof'), skyGroup=apertureOwner.group.children.find(o=>o.name==='skylight');
 assert.equal(rayDown(apertureRoof,36*D.INCH,60*D.INCH).length,0,'Cutout across ridge must be truly open.');

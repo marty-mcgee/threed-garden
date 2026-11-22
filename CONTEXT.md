@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-The Developer reported that the production release of [v0.36.1 - ThreeD Design Canvas Selection, Movement and Groups](docs/releases/v0.36.1.md#production-status) failed on November 21, 2026. The Developer accepted Select + Move and confirmed applying the ThreeD Groups migration. The Vercel prebuild failed on a stale schema snapshot. The local correction refreshes the snapshots and aligns the package metadata with 0.36.1. A production retry is pending.
+The Developer confirmed [v0.36.1 - ThreeD Design Canvas Selection, Movement and Groups](docs/releases/v0.36.1.md#production-status) reached production on November 21, 2026 after the schema snapshot and release metadata correction. The Developer also confirmed the ThreeD Groups migration and accepted Select + Move before deployment.
 
 The Developer confirmed [v0.36.0 - ThreeD Garden Release Metadata](docs/releases/v0.36.0.md#production-status) reached production on November 21, 2026.
 

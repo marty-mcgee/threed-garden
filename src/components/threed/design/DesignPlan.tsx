@@ -4,11 +4,12 @@ import type { DesignModelSelection, SaveDesignModel } from './DesignModelPropert
 
 import { useEffect, useId, useMemo, useRef, useState, type PointerEvent, type ReactNode, type SetStateAction, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Group, Ungroup, Check, Focus, Maximize, RotateCcw, Ruler, type LucideIcon } from 'lucide-react';
+import { Group, Ungroup, CircleMinus, Check, Focus, Maximize, RotateCcw, Ruler, type LucideIcon } from 'lucide-react';
 import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem, ContextMenuSeparator } from '@/components/ui/context-menu';
+import { WallCutoutEditor } from './WallCutoutEditor';
 import { DesignAction } from './DesignAction';
 import { Button } from '@/components/ui/button';
-import { distance, insidePolygon, roofFrame, roofOpeningFootprint, INCH, levelDocument, visibleLevelsDocument, mergeNodes, moveNodes, openingFootprint, openingMargin, roundMetres, screenToPlan, snapPoint, validateDesign, wallFrame,
+import { nearestRoofEdge, withinRoof, cutoutBounds, distance, insidePolygon, roofFrame, roofOpeningFootprint, INCH, levelDocument, visibleLevelsDocument, mergeNodes, moveNodes, openingFootprint, openingMargin, roundMetres, screenToPlan, snapPoint, validateDesign, wallFrame,
   type DesignDocument, type PlanPoint, type PlanView } from '@/libraries/services/threed/design/document';
 import { formatPlanLength, framePlan, gridFeet as planGridFeet, rulerTicks, RULER_SIZE, zoomPlan } from '@/libraries/services/threed/design/plan-navigation';
 import { entityPoints } from '@/libraries/services/threed/design/object-properties';
@@ -16,7 +17,7 @@ import type { ModelPlanImage } from '@/libraries/services/threed/models/model-pl
 import { terrainHeightAt, terrainPlanCells, type ProjectTerrainSurface } from '@/libraries/services/threed/terrains/terrain-core';
 import { wallFootprint } from '@/libraries/services/threed/design/geometry';
 
-export type DesignTool = 'objects' | 'select' | 'wall' | 'floor' | 'roof' | 'door' | 'window' | 'cutout' | 'skylight' | 'pan';
+export type DesignTool = 'objects' | 'wall-cutout' | 'select' | 'wall' | 'floor' | 'roof' | 'door' | 'window' | 'cutout' | 'skylight' | 'pan';
 type DrawPoint = PlanPoint & { nodeId?: string };
 export interface DesignContextGroup { label: string; color: string; actions: { label: string; icon: LucideIcon; disabled?: boolean; active?: boolean; run: () => void }[] }
 interface Props {
@@ -28,11 +29,11 @@ interface Props {
   onSelect: (id: string | null) => void; onCommit: (doc: DesignDocument) => void;
   onPreview: (doc: DesignDocument | null) => void; onMessage: (text: string) => void;
   onDrawComplete: (id: string) => void; cancelToken: number }
-interface Gesture { pointerId: number; base: DesignDocument; point: PlanPoint; screenStart?: { x: number; y: number }; view: PlanView; nodes: string[]; pan: boolean; boxStart?: PlanPoint; pickedEntity?: string; pickedModel?: string; movableBase?: DesignDocument; wallPress?: { started: boolean; shiftKey: boolean }; pendingClick?: { shiftKey: boolean }; node?: string; opening?: string; roofOpening?: string; merge?: string; latest: DesignDocument }
+interface Gesture { pointerId: number; base: DesignDocument; point: PlanPoint; screenStart?: { x: number; y: number }; view: PlanView; nodes: string[]; pan: boolean; boxStart?: PlanPoint; pickedEntity?: string; pickedModel?: string; movableBase?: DesignDocument; wallPress?: { started: boolean; shiftKey: boolean }; pendingClick?: { shiftKey: boolean }; node?: string; opening?: string; roofOpening?: string; cutoutVertex?: number; merge?: string; latest: DesignDocument }
 const PAN_DRAG_THRESHOLD = 4; // CSS pixels: allow ordinary click jitter without drawing during a pan.
 const makeId = () => crypto.randomUUID();
 
-function addShape(doc: DesignDocument, points: DrawPoint[], tool: 'wall' | 'floor' | 'roof', levelId: string, draft = false): DesignDocument {
+function addShape(doc: DesignDocument, points: DrawPoint[], tool: 'wall' | 'floor' | 'roof', levelId: string, draft = false, oneSidedRoof = false): DesignDocument {
   const nodes = [...doc.nodes];
   const levelNodes = new Set(levelDocument(doc, levelId).nodes.map(node => node.id));
   const used = new Set([...doc.levels, ...doc.nodes, ...doc.walls, ...doc.floors, ...doc.roofs, ...doc.roofOpenings, ...doc.openings].map(entity => entity.id));
@@ -44,7 +45,7 @@ function addShape(doc: DesignDocument, points: DrawPoint[], tool: 'wall' | 'floo
   });
   const id = allocate('preview-entity');
   return { ...doc, nodes, walls: tool === 'wall' ? [...doc.walls, { id, levelId, start: ids[0], end: ids[1], height: doc.defaults.wallHeight, thickness: doc.defaults.wallThickness, elevation: 0 }] : doc.walls,
-    floors: tool === 'floor' ? [...doc.floors, { id, levelId, vertices: ids, thickness: doc.defaults.floorThickness, elevation: 0 }] : doc.floors, roofs: tool === 'roof' ? [...doc.roofs, { id, levelId, vertices: ids, kind: 'gable', pitch: 6, direction: 0, thickness: 6 * INCH, elevation: doc.defaults.wallHeight }] : doc.roofs };
+    floors: tool === 'floor' ? [...doc.floors, { id, levelId, vertices: ids, thickness: doc.defaults.floorThickness, elevation: 0 }] : doc.floors, roofs: tool === 'roof' ? [...doc.roofs, { id, levelId, vertices: ids, kind: oneSidedRoof ? 'shed' : 'gable', pitch: 6, direction: 0, thickness: 6 * INCH, elevation: doc.defaults.wallHeight }] : doc.roofs };
 }
 
 export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixedMove, selectAllRequest = 0, selectedModel, onSaveModel, modelBusy = false, visibleLevelIds, onToggleLevel, contextActions = [], showMeasurements, onShowMeasurementsChange, selectedModelId, modelImages = [], terrain, metersPerSceneUnit = 1, onModelSelect, measurementUnits = 'imperial', frameRequest, drawingActions, planView, onViewChange, toolbarHost, embedded = false, active: enabled = true, disabled = false, document: doc, displayDocument = doc, activeLevelId, selected, tool, gridSnap, onSelect, onCommit, onPreview, onMessage, onDrawComplete, cancelToken }: Props) {
@@ -66,6 +67,8 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
   }, []);
   const [size, setSize] = useState({ width: 600, height: 280 });
   const [points, setPoints] = useState<DrawPoint[]>([]), [hover, setHover] = useState<DrawPoint | null>(null);
+  const [oneSidedRoof, setOneSidedRoof] = useState(false);
+  const cutoutHost = useRef<string | null>(null);
   const [draftOpeningId] = useState(makeId);
   const [boxed, setBoxed] = useState<Set<string>>(() => new Set());
   const [modelIds, setModelIds] = useState<string[]>([]);
@@ -127,6 +130,10 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
   }
   const nodes = new Map(visible.nodes.map(node => [node.id, node]));
   const wall = doc.walls.find(entity => entity.id === selected), floor = doc.floors.find(entity => entity.id === selected);
+  const editableCutout = enabled && !disabled && !editingHidden && tool === 'select' ? active.roofOpenings.find(o => o.id === selected && o.kind === 'cutout') : undefined;
+  const selectedWallCutout = active.openings.find(o => o.id === selected && o.kind === 'wall-cutout');
+  const cutoutWall = tool === 'wall-cutout' && enabled && !disabled && !editingHidden ? active.walls.find(w => w.id === (selectedWallCutout?.wallId ?? selected)) : undefined;
+  const editableRoof = enabled && !disabled && tool === 'select' ? active.roofs.find(roof => roof.id === selected) : undefined;
   const handles = (wall ? [wall.start, wall.end] : floor?.vertices ?? doc.roofs.find(entity => entity.id === selected)?.vertices ?? []).filter(key => nodes.has(key));
   useEffect(() => { const element = svg.current; if (!element) return; const observer = new ResizeObserver(([entry]) => setSize({ width: entry.contentRect.width, height: entry.contentRect.height })); observer.observe(element); return () => observer.disconnect(); }, []);
   useEffect(() => {
@@ -144,10 +151,15 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
     if (active && element?.hasPointerCapture(active.pointerId)) element.releasePointerCapture(active.pointerId);
   }, [cancelToken, tool, activeLevelId, enabled, disabled, onPreview]);
   useEffect(() => {
+    if (tool === 'cutout') {
+      const draft = hover && !points.some(p => distance(p, hover) < .000001) ? [...points, hover] : points;
+      try { onPreview(draft.length >= 3 ? polygonCutout(draft, draftOpeningId) : null); } catch { onPreview(null); }
+      return;
+    }
     if ((tool !== 'wall' && tool !== 'floor' && tool !== 'roof') || !points.length || !hover) { onPreview(null); return; }
     const draft = [...points, hover];
-    try { onPreview(validateDesign(addShape(doc, draft, tool, activeLevelId, true))); } catch { onPreview(null); }
-  }, [points, hover, tool, doc, activeLevelId, onPreview]);
+    try { onPreview(validateDesign(addShape(doc, draft, tool, activeLevelId, true, oneSidedRoof))); } catch { onPreview(null); }
+  }, [points, hover, tool, doc, activeLevelId, oneSidedRoof, onPreview]);
   const local = (event: { clientX: number; clientY: number }) => { const rect = svg.current!.getBoundingClientRect(); return { x: event.clientX - rect.left, y: event.clientY - rect.top }; };
   const pointer = (event: { clientX: number; clientY: number }) => screenToPlan(local(event), view);
   function snapped(point: PlanPoint, exclude: string[] = [], orthogonal = false): DrawPoint {
@@ -161,14 +173,35 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
     }
     return { ...result.point, nodeId: doc.nodes.some(node => node.id === result.nodeId) ? result.nodeId : undefined };
   }
+  function reshapeCutout(base: DesignDocument, id: string, ring: PlanPoint[]) {
+    const opening = base.roofOpenings.find(item => item.id === id)!;
+    const frame = roofFrame(base, base.roofs.find(roof => roof.id === opening.roofId)!);
+    const bounds = cutoutBounds(ring.map(frame.local));
+    return validateDesign({ ...base, version: base.version === 8 ? 8 : 7, roofOpenings: base.roofOpenings.map(item => item.id === id ? { ...item, ...bounds } : item) });
+  }
+  function polygonCutout(corners: PlanPoint[], id: string) {
+    const roof = doc.roofs.find(item => item.id === cutoutHost.current);
+    if (!roof) throw new Error('Choose a host roof.');
+    const opening = { id, roofId: roof.id, kind: 'cutout', ...cutoutBounds(corners.map(roofFrame(doc, roof).local)) };
+    return validateDesign({ ...doc, version: doc.version === 8 ? 8 : 7, roofOpenings: [...doc.roofOpenings, opening] });
+  }
   function finishPolygon() {
+    if (tool === 'cutout') {
+      try {
+        const id = makeId();
+        onCommit(polygonCutout(points, id));
+        setPoints([]); setHover(null); onPreview(null); onDrawComplete(id);
+        onMessage('Cutout finished. Drag its corners or use an edge + to add another.');
+      } catch (error) { onMessage((error as Error).message); }
+      return;
+    }
     if (tool !== 'floor' && tool !== 'roof') return;
-    try { const next = validateDesign(addShape(doc, points, tool, activeLevelId)); const entities = tool === 'roof' ? next.roofs : next.floors; onCommit(next); setPoints([]); setHover(null); onPreview(null); onDrawComplete(entities[entities.length - 1].id); onMessage(`${tool === 'roof' ? 'Roof' : 'Floor'} finished and selected. Drag a corner or edit its properties.`); }
+    try { const next = validateDesign(addShape(doc, points, tool, activeLevelId, false, oneSidedRoof)); const entities = tool === 'roof' ? next.roofs : next.floors; onCommit(next); setPoints([]); setHover(null); onPreview(null); onDrawComplete(entities[entities.length - 1].id); onMessage(`${tool === 'roof' ? 'Roof' : 'Floor'} finished and selected. Drag a corner or edit its properties.`); }
     catch (error) { onMessage((error as Error).message); }
   }
   useEffect(() => {
     const key = (event: KeyboardEvent) => {
-      if (!enabled || disabled || editingHidden || event.key !== 'Enter' || (tool !== 'floor' && tool !== 'roof') || points.length < 3 || event.repeat
+      if (!enabled || disabled || editingHidden || event.key !== 'Enter' || (tool !== 'floor' && tool !== 'roof' && tool !== 'cutout') || points.length < 3 || event.repeat
         || (event.target as Element)?.closest?.('input, textarea, select, button, [contenteditable="true"]')) return;
       event.preventDefault(); finishPolygon();
     };
@@ -189,7 +222,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
     return { next: validateDesign({ ...doc, openings: [...doc.openings, opening] }), id: opening.id };
   }
   function placeRoofOpening(point: PlanPoint, draft: boolean) {
-    if (tool !== 'cutout' && tool !== 'skylight') return null;
+    if (tool !== 'skylight') return null;
     const selectedRoof = doc.roofOpenings.find(opening => opening.id === selected)?.roofId ?? selected;
     const roof = active.roofs.find(roof => roof.id === selectedRoof) ?? [...active.roofs].reverse().find(roof => insidePolygon(point, roof.vertices.map(id => doc.nodes.find(node => node.id === id)!)));
     if (!roof) return null;
@@ -250,6 +283,58 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       { x: node.x + dx, z: node.z + dz },
     ]))));
   }
+  const [activePoint, setActivePoint] = useState<string | null>(null);
+  const [menuPoint, setMenuPoint] = useState<string | null>(null);
+  useEffect(() => { setActivePoint(null); setMenuPoint(null); }, [selected, activeLevelId, tool, cancelToken]);
+  function pointKey(target: Element) {
+    const draft = target.getAttribute('data-draft-corner');
+    if (draft != null) return 'draft:' + draft;
+    const handle = target.closest('[data-cutout-vertex]');
+    const vertex = handle?.getAttribute('data-cutout-vertex');
+    if (vertex != null && !handle?.hasAttribute?.('data-insert')) return 'cutout:' + vertex;
+    const node = target.getAttribute('data-node');
+    return node ? 'node:' + node : null;
+  }
+  function pointRemoval(key: string | null) {
+    if (!key || !enabled || disabled || editingHidden) return null;
+    const draft = key.startsWith('draft:') ? key.slice(6) : null;
+    if (draft != null && ['roof', 'floor', 'cutout'].includes(tool) && points[Number(draft)]) {
+      return { disabled: false, run() {
+        setActivePoint(null);
+        setPoints(points.filter((_, i) => i !== Number(draft)));
+        setHover(null);
+        onPreview(null);
+      } };
+    }
+    const index = key.startsWith('cutout:') ? key.slice(7) : null;
+    const nodeId = key.startsWith('node:') ? key.slice(5) : null;
+    const shape = editableRoof ?? (tool === 'select' ? floor : undefined);
+    let count: number;
+    let update: () => DesignDocument;
+    if (editableCutout && index != null) {
+      const ring = roofOpeningFootprint(doc, editableCutout);
+      if (!ring[Number(index)]) return null;
+      count = ring.length;
+      update = () => reshapeCutout(doc, editableCutout.id, ring.filter((_, i) => i !== Number(index)));
+    } else if (shape && nodeId && shape.vertices.includes(nodeId)) {
+      count = shape.vertices.length;
+      update = () => {
+        const vertices = shape.vertices.filter(id => id !== nodeId);
+        const next = editableRoof
+          ? { ...doc, roofs: doc.roofs.map(r => r.id === shape.id ? { ...r, vertices } : r) }
+          : { ...doc, floors: doc.floors.map(f => f.id === shape.id ? { ...f, vertices } : f) };
+        const stillUsed = next.walls.some(w => w.start === nodeId || w.end === nodeId)
+          || [...next.floors, ...next.roofs].some(polygon => polygon.vertices.includes(nodeId));
+        return validateDesign(stillUsed ? next : { ...next, nodes: next.nodes.filter(n => n.id !== nodeId) });
+      };
+    } else return null;
+    return { disabled: count <= 3, run() {
+      if (count <= 3) { onMessage('Keep at least three corners.'); return; }
+      try { onCommit(update()); setActivePoint(null); } catch (error) { onMessage((error as Error).message); }
+    } };
+  }
+  const menuRemoval = pointRemoval(menuPoint);
+  const toolbarRemoval = pointRemoval(activePoint);
   function down(event: PointerEvent<SVGSVGElement>) {
     if (!enabled || gesture.current || (event.button !== 0 && event.button !== 1) || local(event).x < RULER_SIZE || local(event).y < RULER_SIZE) return;
     event.preventDefault(); svg.current?.focus();
@@ -290,6 +375,16 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       return;
     }
     const explicitPan = editingHidden || tool === 'pan' || event.button === 1 || event.altKey;
+    const clickedPoint = pointKey(event.target as Element);
+    if (!explicitPan) setActivePoint(clickedPoint);
+    if (!explicitPan && !event.shiftKey && clickedPoint?.startsWith('draft:') && (clickedPoint !== 'draft:0' || points.length < 3)) return;
+    if (!explicitPan && event.shiftKey) {
+      const action = pointRemoval(clickedPoint);
+      if (action) {
+        action.run();
+        return;
+      }
+    }
     if (!explicitPan && !disabled && tool === 'wall') {
       const started = points.length === 0;
       if (started) activateTool(point, event.shiftKey);
@@ -305,6 +400,54 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
         wallPress: { started, shiftKey: event.shiftKey },
       };
       svg.current!.setPointerCapture(event.pointerId);
+      return;
+    }
+    const cutoutHandle = (event.target as Element).closest('[data-cutout-vertex]');
+    if (!explicitPan && editableCutout && cutoutHandle?.getAttribute('data-cutout-vertex')?.match(/^\d+$/)) {
+      const ring = roofOpeningFootprint(doc, editableCutout);
+      const index = Number(cutoutHandle.getAttribute('data-cutout-vertex'));
+      const insert = cutoutHandle.hasAttribute('data-insert');
+      const vertex = insert ? index + 1 : index;
+      setActivePoint('cutout:' + vertex);
+      let base = doc;
+      if (insert) {
+        const a = ring[index], b = ring[(index + 1) % ring.length];
+        ring.splice(vertex, 0, { x: (a.x + b.x) / 2, z: (a.z + b.z) / 2 });
+        try { base = reshapeCutout(doc, editableCutout.id, ring); }
+        catch (error) { onMessage((error as Error).message); return; }
+      }
+      gesture.current = { pointerId: event.pointerId, base, latest: base, point, view, nodes: [], pan: false, roofOpening: editableCutout.id, cutoutVertex: vertex };
+      svg.current!.setPointerCapture(event.pointerId);
+      if (insert) onPreview(base);
+      return;
+    }
+    const edge = (event.target as Element).closest('[data-roof-edge]')?.getAttribute('data-roof-edge');
+    if (!explicitPan && editableRoof && edge != null && /^\d+$/.test(edge)) {
+      const index = Number(edge);
+      const vertices = editableRoof.vertices;
+      const a = nodes.get(vertices[index]), b = nodes.get(vertices[(index + 1) % vertices.length]);
+      if (!a || !b) return;
+      const id = makeId();
+      try {
+        const next = validateDesign({
+          ...doc,
+          nodes: [...doc.nodes, { id, x: (a.x + b.x) / 2, z: (a.z + b.z) / 2 }],
+          roofs: doc.roofs.map(roof => roof.id === editableRoof.id ? {
+            ...roof,
+            vertices: [...vertices.slice(0, index + 1), id, ...vertices.slice(index + 1)],
+          } : roof),
+        });
+        gesture.current = { pointerId: event.pointerId, base: next, latest: next, point, view, nodes: [id], node: id, pan: false };
+        svg.current!.setPointerCapture(event.pointerId);
+        setActivePoint('node:' + id);
+        onPreview(next);
+        onMessage('Drag to shape the roof, or release to keep the new corner at the midpoint.');
+      } catch (error) { onMessage((error as Error).message); }
+      return;
+    }
+    if (!explicitPan && !disabled && tool === 'wall-cutout') {
+      if (entityId && (active.walls.some(w=>w.id===entityId) || active.openings.some(o=>o.id===entityId && o.kind==='wall-cutout'))) onSelect(entityId);
+      else onMessage('Click a wall or an existing Wall Cutout.');
       return;
     }
     if (explicitPan || (!entityId && !nodeId)) {
@@ -330,7 +473,28 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       catch (error) { onPreview(null); onMessage((error as Error).message); }
       return;
     }
-    if (tool === 'cutout' || tool === 'skylight') {
+    if (tool === 'cutout') {
+      let hit = snapped(point, [], shiftKey);
+      if (!points.length) {
+        const hosts = active.roofs.filter(roof => nearestRoofEdge(point, roof.vertices.map(id => nodes.get(id)!)).gap <= 6 / view.scale || withinRoof(hit, roof.vertices.map(id => nodes.get(id)!)));
+        const preferred = active.roofOpenings.find(o => o.id === selected)?.roofId ?? selected;
+        cutoutHost.current = (hosts.find(roof => roof.id === preferred) ?? hosts[hosts.length - 1])?.id ?? null;
+        if (!cutoutHost.current) { onMessage('Start the cutout inside a roof.'); return; }
+      }
+      const host = active.roofs.find(item => item.id === cutoutHost.current);
+      const perimeter = host?.vertices.map(id => nodes.get(id)!);
+      const edge = perimeter && nearestRoofEdge(point, perimeter);
+      if (edge && edge.gap <= 6 / view.scale) hit = edge.point;
+      if (points.length >= 3 && distance(hit, points[0]) < 10 / view.scale) { finishPolygon(); return; }
+      if (!perimeter || !withinRoof(hit, perimeter)) {
+        onMessage('Keep every cutout corner inside the same roof.');
+        return;
+      }
+      if (points.length >= 64) { onMessage('A cutout supports up to 64 corners.'); return; }
+      if (!points.some(p => distance(hit, p) < .000001)) { setActivePoint('draft:' + points.length); setPoints([...points, hit]); setHover(hit); }
+      return;
+    }
+    if (tool === 'skylight') {
       try { const placed = placeRoofOpening(point, false); if (!placed) { onMessage('Choose a host roof in the active plan. Draw Roof first if needed.'); return; } onCommit(placed.next); onDrawComplete(placed.id); onMessage('Roof opening placed and selected. Drag within its roof or edit its dimensions.'); }
       catch (error) { onPreview(null); onMessage((error as Error).message); }
       return;
@@ -341,7 +505,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       if (tool === 'wall' && points.length) {
         try { const next = validateDesign(addShape(doc, [points[0], hit], 'wall', activeLevelId)); onCommit(next); setPoints([{ ...hit, nodeId: next.walls[next.walls.length - 1].end }]); setHover(null); onPreview(null); onMessage('Wall added. Click the next endpoint, or Escape to finish.'); }
         catch (error) { onMessage((error as Error).message); }
-      } else if (!points.some(existing => distance(existing, hit) < .000001)) { setPoints([...points, hit]); setHover(hit); onMessage(tool !== 'wall' ? 'Click corners, then Finish, Enter, or the first corner to save. Escape cancels the draft.' : 'Click an endpoint. Escape cancels.'); }
+      } else if (!points.some(existing => distance(existing, hit) < .000001)) { setActivePoint('draft:' + points.length); setPoints([...points, hit]); setHover(hit); onMessage(tool !== 'wall' ? 'Click corners, then Finish, Enter, or the first corner to save. Escape cancels the draft.' : 'Click an endpoint. Escape cancels.'); }
       return;
     }
   }
@@ -373,8 +537,13 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
     if (!enabled || ((disabled || (editingHidden && tool !== 'objects')) && !gesture.current?.pan)) return;
     const active = gesture.current;
     if (!active) {
-      if ((tool === 'wall' || tool === 'floor' || tool === 'roof') && points.length) setHover(snapped(pointer(event), [], event.shiftKey));
-      if (tool === 'cutout' || tool === 'skylight') { try { onPreview(placeRoofOpening(pointer(event), true)?.next ?? null); } catch (error) { onPreview(null); onMessage((error as Error).message); } }
+      if ((tool === 'wall' || tool === 'floor' || tool === 'roof' || tool === 'cutout') && points.length) {
+        const p = pointer(event);
+        const roof = tool === 'cutout' && doc.roofs.find(item => item.id === cutoutHost.current);
+        const edge = roof && nearestRoofEdge(p, roof.vertices.map(id => nodes.get(id)!));
+        setHover(edge && edge.gap <= 6 / view.scale ? edge.point : snapped(p, [], event.shiftKey));
+      }
+      if (tool === 'skylight') { try { onPreview(placeRoofOpening(pointer(event), true)?.next ?? null); } catch (error) { onPreview(null); onMessage((error as Error).message); } }
       if (tool === 'door' || tool === 'window') { try { onPreview(placeOpening(pointer(event), true)?.next ?? null); } catch (error) { onPreview(null); onMessage((error as Error).message); } }
       return;
     }
@@ -400,6 +569,14 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
     const p = screenToPlan(local(event), active.view), baseNodes = new Map(active.base.nodes.map(node => [node.id, node]));
     if (active.roofOpening) {
       const opening = active.base.roofOpenings.find(opening => opening.id === active.roofOpening)!, roof = active.base.roofs.find(roof => roof.id === opening.roofId)!, frame = roofFrame(active.base, roof);
+      if (active.cutoutVertex !== undefined) {
+        const ring = roofOpeningFootprint(active.base, opening);
+        const edge = nearestRoofEdge(p, roof.vertices.map(id => nodes.get(id)!));
+        ring[active.cutoutVertex] = edge.gap <= 6 / view.scale ? edge.point : snapped(p);
+        try { active.latest = reshapeCutout(active.base, opening.id, ring); onPreview(active.latest); }
+        catch (error) { onMessage((error as Error).message); }
+        return;
+      }
       const start = frame.local(active.point), here = frame.local(p), step = 6 * INCH;
       const snap = (value: number) => roundMetres(gridSnap ? Math.round(value / step) * step : value);
       const along = snap(opening.along + here.along - start.along), across = snap(opening.across + here.across - start.across);
@@ -565,16 +742,20 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
     const group = groups.find(item => item.id === event.target.value);
     if (group) { setBoxed(new Set(group.entityIds)); setModelIds(group.markerIds); }
   }}><option value="">ThreeD Groups</option>{groups.map(group => <option key={group.id} value={group.id}>{group.name}</option>)}</select>;
+  const removeButton = <DesignAction label="Remove Point" disabled={!toolbarRemoval || toolbarRemoval.disabled} onClick={() => toolbarRemoval?.run()}><CircleMinus className="size-3.5" aria-hidden="true" /></DesignAction>;
   const groupControls = groupActions.map(action => <DesignAction key={action.label} label={action.label} disabled={action.disabled} onClick={action.run}><action.icon className="size-3.5" aria-hidden="true" /></DesignAction>);
   const viewActions = <div role="group" aria-label={viewGroup.label} className="flex shrink-0 items-center gap-1 rounded-md border border-border bg-muted/40 p-1 [&_svg]:text-cyan-700 dark:[&_svg]:text-cyan-300">{viewGroup.actions.map(action => <DesignAction key={action.label} label={action.label} disabled={action.disabled} aria-pressed={action.active} variant={action.active ? 'secondary' : 'outline'} onClick={action.run}><action.icon className="h-3.5 w-3.5" /></DesignAction>)}</div>;
   return <section aria-label="Design plan canvas" className={`relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-[#091423] ${embedded ? '' : 'rounded-lg border border-white/10'}`}>
-    {embedded && enabled && <div data-testid="design-canvas-tools" role="toolbar" aria-label="Design drawing and view tools" className="threed-workspace-panel threed-scene-panel-surface absolute z-10 flex max-w-[calc(100%-40px)] flex-nowrap items-center gap-1 overflow-x-auto [&>nav]:flex-nowrap [&>nav]:shrink-0 rounded-md border p-1 shadow-md" style={{ right: 8, top: RULER_SIZE + 8 }} onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}>{drawingActions ? drawingActions(groupControls) : groupControls}{groupPicker}{viewActions}</div>}
+    {cutoutWall && <WallCutoutEditor key={cutoutWall.id + (selectedWallCutout?.id ?? '')} doc={doc} wall={cutoutWall} opening={selectedWallCutout} units={measurementUnits}
+      onCancel={() => onDrawComplete(selectedWallCutout?.id ?? cutoutWall.id)}
+      onFinish={(next,id) => { onCommit(next); onDrawComplete(id); onMessage('Wall Cutout finished. Save Project to keep it.'); }} />}
+    {embedded && enabled && <div data-testid="design-canvas-tools" role="toolbar" aria-label="Design drawing and view tools" className="threed-workspace-panel threed-scene-panel-surface absolute z-10 flex max-w-[calc(100%-40px)] flex-nowrap items-center gap-1 overflow-x-auto [&>nav]:flex-nowrap [&>nav]:shrink-0 rounded-md border p-1 shadow-md" style={{ right: 8, top: RULER_SIZE + 8 }} onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}>{drawingActions ? drawingActions(groupControls) : groupControls}{removeButton}{groupPicker}{viewActions}</div>}
     {!embedded && <div data-testid="design-plan-header" className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-white/10 px-3 py-2 text-xs">
       <span className="font-semibold">2D Plan · {doc.levels.find(level => level.id === activeLevelId)?.name} · X / Z · {measurementUnits === 'metric' ? `${Number((gridFeet * 12 * INCH).toFixed(4))} m` : `${gridFeet} ft`} grid</span>
-      <div className="flex items-center gap-2"><span>{Number(view.scale.toFixed(2))} px/m</span>{groupControls}{viewActions}</div>
+      <div className="flex items-center gap-2"><span>{Number(view.scale.toFixed(2))} px/m</span>{groupControls}{removeButton}{viewActions}</div>
     </div>}
     <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
-    <ContextMenu><ContextMenuTrigger asChild><svg ref={svg} data-testid="home-plan" aria-label="ThreeD Design 2D plan" tabIndex={0} width="100%" height="100%" className="block min-h-0 w-full flex-1 touch-none select-none outline-none focus-visible:ring-2 focus-visible:ring-cyan-400" style={{ cursor: tool === 'pan' ? 'grab' : tool === 'select' ? 'default' : 'crosshair' }}
+    <ContextMenu onOpenChange={open => { if (!open) setMenuPoint(null); }}><ContextMenuTrigger asChild><svg onContextMenuCapture={event => { const key = pointKey(event.target as Element); setMenuPoint(key); setActivePoint(key); }} ref={svg} data-testid="home-plan" aria-label="ThreeD Design 2D plan" tabIndex={0} width="100%" height="100%" className="block min-h-0 w-full flex-1 touch-none select-none outline-none focus-visible:ring-2 focus-visible:ring-cyan-400" style={{ cursor: tool === 'pan' ? 'grab' : tool === 'select' ? 'default' : 'crosshair' }}
       onPointerDown={down} onPointerMove={move} onPointerUp={end} onPointerCancel={() => { setMarquee(null); cancelModel(); gesture.current = null; setPoints([]); setHover(null); onPreview(null); onMessage('Gesture cancelled.'); }}
       onLostPointerCapture={() => { setGroupOffset(null); setMarquee(null); if (gesture.current) { if (gesture.current.wallPress?.started) setPoints([]); gesture.current = null; setHover(null); onPreview(null); } }}
       onPointerLeave={() => { if (!gesture.current && (tool === 'door' || tool === 'window' || tool === 'cutout' || tool === 'skylight')) onPreview(null); }}
@@ -657,9 +838,9 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
         {visible.openings.map(opening => {
           const footprint = openingFootprint(displayDocument, opening), host = displayDocument.walls.find(w => w.id === opening.wallId)!, frame = wallFrame(displayDocument, host);
           const a = frame.point(opening.offset), b = frame.point(opening.offset + opening.width), color = (groupSelected(opening.id) || selected === opening.id) ? '#facc15' : opening.kind === 'door' ? '#f0ab65' : '#67e8f9';
-          return <g key={opening.id} data-entity={opening.id} data-opening={opening.kind}><polygon points={polygon(footprint)} fill="#091423" stroke={color} strokeWidth={1.5 / view.scale} /><line x1={a.x} y1={a.z} x2={b.x} y2={b.z} stroke={color} strokeWidth={3 / view.scale} strokeDasharray={opening.kind === 'door' ? `${5 / view.scale} ${3 / view.scale}` : undefined} /><line x1={a.x} y1={a.z} x2={b.x} y2={b.z} stroke="transparent" strokeWidth={Math.max(host.thickness, 12 / view.scale)} /><text x={(a.x + b.x) / 2} y={(a.z + b.z) / 2 + .35} fill={color} fontSize={11 / view.scale} textAnchor="middle" pointerEvents="none">{opening.kind === 'door' ? 'Door' : 'Window'}</text></g>;
+          return <g key={opening.id} data-entity={opening.id} data-opening={opening.kind}><polygon points={polygon(footprint)} fill="#091423" stroke={color} strokeWidth={1.5 / view.scale} /><line x1={a.x} y1={a.z} x2={b.x} y2={b.z} stroke={color} strokeWidth={3 / view.scale} strokeDasharray={opening.kind === 'door' ? `${5 / view.scale} ${3 / view.scale}` : undefined} /><line x1={a.x} y1={a.z} x2={b.x} y2={b.z} stroke="transparent" strokeWidth={Math.max(host.thickness, 12 / view.scale)} /><text x={(a.x + b.x) / 2} y={(a.z + b.z) / 2 + .35} fill={color} fontSize={11 / view.scale} textAnchor="middle" pointerEvents="none">{opening.kind === 'wall-cutout' ? 'Wall Cutout' : opening.kind === 'door' ? 'Door' : 'Window'}</text></g>;
         })}
-        {visible.roofOpenings.map(opening => { const points = roofOpeningFootprint(displayDocument, opening), center = points.reduce((sum, p) => ({ x: sum.x + p.x / 4, z: sum.z + p.z / 4 }), { x: 0, z: 0 }); const color = (groupSelected(opening.id) || selected === opening.id) ? '#facc15' : opening.kind === 'skylight' ? '#67e8f9' : '#fb923c'; return <g key={opening.id} data-entity={opening.id} data-roof-opening={opening.kind}><polygon points={polygon(points)} fill={opening.kind === 'skylight' ? '#164e63' : '#091423'} fillOpacity={opening.kind === 'skylight' ? .65 : .9} stroke={color} strokeWidth={2 / view.scale} /><text x={center.x} y={center.z} fill={color} fontSize={10 / view.scale} textAnchor="middle" pointerEvents="none">{opening.kind === 'skylight' ? 'Skylight' : 'Cutout'}</text></g>; })}
+        {visible.roofOpenings.map(opening => { const points = roofOpeningFootprint(displayDocument, opening), center = points.reduce((sum, p) => ({ x: sum.x + p.x / points.length, z: sum.z + p.z / points.length }), { x: 0, z: 0 }); const color = (groupSelected(opening.id) || selected === opening.id) ? '#facc15' : opening.kind === 'skylight' ? '#67e8f9' : '#fb923c'; return <g key={opening.id} data-entity={opening.id} data-roof-opening={opening.kind}><polygon points={polygon(points)} fill={opening.kind === 'skylight' ? '#164e63' : '#091423'} fillOpacity={opening.kind === 'skylight' ? .65 : .9} stroke={color} strokeWidth={2 / view.scale} /><text x={center.x} y={center.z} fill={color} fontSize={10 / view.scale} textAnchor="middle" pointerEvents="none">{opening.kind === 'skylight' ? 'Skylight' : 'Cutout'}</text></g>; })}
         {measurementsVisible && <g pointerEvents="none" fill="#dde8f6" fontSize={11 / view.scale} textAnchor="middle">
           {[...visible.floors, ...visible.roofs].map(entity => {
             const points = entity.vertices.map(id => nodes.get(id)!);
@@ -671,8 +852,26 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
           {visible.roofOpenings.map(opening => { const points = roofOpeningFootprint(displayDocument, opening); return <text key={opening.id} data-measurement={opening.id} x={points.reduce((sum,p)=>sum+p.x/points.length,0)} y={Math.max(...points.map(p=>p.z))+.3}>{formatPlanLength(opening.width, measurementUnits)} ? {formatPlanLength(opening.length, measurementUnits)}</text>; })}
           {modelImages.map(image => { const [a,b,c] = image.corners; return <text key={image.id} data-measurement={image.id} x={(b.x+c.x)/2*metersPerSceneUnit} y={Math.max(a.z,b.z,c.z,b.z+c.z-a.z)*metersPerSceneUnit+.3}>{formatPlanLength(distance(a,b)*metersPerSceneUnit,measurementUnits)} ? {formatPlanLength(distance(a,c)*metersPerSceneUnit,measurementUnits)}</text>; })}
         </g>}
-        {handles.map(key => <circle key={key} data-node={key} cx={nodes.get(key)!.x} cy={nodes.get(key)!.z} r={6 / view.scale} fill="#facc15" stroke="#101827" strokeWidth={1 / view.scale} />)}
-        {!!points.length && <><polyline points={polygon(hover ? [...points, hover] : points)} fill={tool !== 'wall' ? '#15b8a633' : 'none'} stroke="#2dd4bf" strokeWidth={2 / view.scale} strokeDasharray={`${6 / view.scale} ${4 / view.scale}`} pointerEvents="none" />{points.map((p, index) => <circle key={index} cx={p.x} cy={p.z} r={4 / view.scale} fill="#2dd4bf" pointerEvents="none" />)}{hover && <circle cx={hover.x} cy={hover.z} r={6 / view.scale} fill="none" stroke={hover.nodeId ? '#facc15' : '#2dd4bf'} strokeWidth={2 / view.scale} pointerEvents="none" />}</>}
+        {editableCutout && roofOpeningFootprint(displayDocument, displayDocument.roofOpenings.find(o => o.id === editableCutout.id) ?? editableCutout).map((a, index, ring) => {
+          const b = ring[(index + 1) % ring.length];
+          return <g key={index}>
+            <g data-cutout-vertex={index} data-insert="" transform={`translate(${(a.x + b.x)/2} ${(a.z + b.z)/2}) scale(${1/view.scale})`} style={{cursor:'crosshair'}}>
+              <title>Add cutout corner</title><circle r={7} fill="#172033" stroke="#67e8f9" /><path d="M-4 0h8 M0 -4v8" stroke="#67e8f9" />
+            </g>
+            <circle data-cutout-vertex={index} cx={a.x} cy={a.z} r={5/view.scale} fill={activePoint === 'cutout:' + index ? '#f472b6' : '#facc15'} style={{cursor:'move'}}><title>Drag to move. Shift-click to remove this corner.</title></circle>
+          </g>;
+        })}
+        {editableRoof?.vertices.map((key, index, vertices) => {
+          const a = nodes.get(key), b = nodes.get(vertices[(index + 1) % vertices.length]);
+          if (!a || !b) return null;
+          return <g key={key} data-roof-edge={index} transform={`translate(${(a.x + b.x) / 2} ${(a.z + b.z) / 2}) scale(${1 / view.scale})`} style={{ cursor: 'crosshair' }}>
+            <title>Add a roof corner here. Click or drag to place it.</title>
+            <circle r={8} fill="#172033" stroke="#67e8f9" strokeWidth={1.5} />
+            <path d="M-4 0h8 M0 -4v8" fill="none" stroke="#67e8f9" strokeWidth={2} />
+          </g>;
+        })}
+        {handles.map(key => <circle key={key} data-node={key} cx={nodes.get(key)!.x} cy={nodes.get(key)!.z} r={6 / view.scale} fill={activePoint === 'node:' + key ? '#f472b6' : '#facc15'} stroke="#101827" strokeWidth={1 / view.scale}><title>{wall ? "Drag endpoint" : "Drag to move. Shift-click to remove this corner."}</title></circle>)}
+        {!!points.length && <><polyline points={polygon(hover ? [...points, hover] : points)} fill={tool !== 'wall' ? '#15b8a633' : 'none'} stroke="#2dd4bf" strokeWidth={2 / view.scale} strokeDasharray={`${6 / view.scale} ${4 / view.scale}`} pointerEvents="none" />{points.map((p, index) => <circle key={index} cx={p.x} cy={p.z} r={4 / view.scale} fill={activePoint === 'draft:' + index ? '#f472b6' : '#2dd4bf'} data-draft-corner={index} pointerEvents={tool === "wall" ? "none" : "auto"} />)}{hover && <circle cx={hover.x} cy={hover.z} r={6 / view.scale} fill="none" stroke={hover.nodeId ? '#facc15' : '#2dd4bf'} strokeWidth={2 / view.scale} pointerEvents="none" />}</>}
         {outlines.map((points, index) => <polygon key={index} data-selection-outline="" points={polygon(points)} pointerEvents="none"
           fill="#fbbf24" fillOpacity=".24" stroke="#fde047" strokeWidth="2.5" vectorEffect="non-scaling-stroke" strokeDasharray="7 2" />)}
       </g>
@@ -696,6 +895,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
         fill="#22d3ee" fillOpacity={0.12} stroke="#22d3ee" strokeDasharray="5 3" />}
     </svg></ContextMenuTrigger>
     <ContextMenuContent aria-label="2D Design Tools" className="z-[5000] w-60" onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}>
+      {menuRemoval && <><ContextMenuItem disabled={menuRemoval.disabled} onSelect={menuRemoval.run} aria-label="Remove Point"><CircleMinus className="size-3.5" aria-hidden="true" />Remove Point</ContextMenuItem><ContextMenuSeparator /></>}
       {[...contextActions.map(group => ({ ...group, actions: group.actions.flatMap(action => action.label === 'Select Objects' ? [action, ...groupActions] : [action]) })), viewGroup].map((group, index) => <div key={group.label}>
         {index > 0 && <ContextMenuSeparator className="my-0.5" />}
         {group.actions.map(action => <ContextMenuItem key={action.label} disabled={action.disabled || !enabled} onSelect={action.run} className={`py-0.5 ${action.active ? 'bg-accent/50' : ''}`}>
@@ -707,9 +907,13 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       {[...doc.levels].sort((a,b) => a.elevation-b.elevation).map(level => <Button key={level.id} type="button" size="sm" variant="outline" className={`h-7 shrink-0 px-2 text-xs ${shownLevels.includes(level.id) ? 'border-cyan-600/60 bg-cyan-100 text-cyan-900 hover:bg-cyan-200 dark:border-cyan-400/60 dark:bg-cyan-400/20 dark:text-cyan-200 dark:hover:bg-cyan-400/30' : 'bg-transparent text-muted-foreground'}`} aria-pressed={shownLevels.includes(level.id)} onClick={() => onToggleLevel(level.id)}>{level.name}</Button>)}
     </nav>}
     </div>
-    {((tool === 'floor' || tool === 'roof') && !editingHidden) && <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-white/10 bg-[#111a28] px-3 py-2 pb-6 text-xs" data-testid={`home-${tool}-draft`}>
-      <span>{points.length} corners. Choose at least 3; Enter or the first corner finishes. Escape cancels.</span>
-      <div className="flex gap-2"><Button size="sm" variant="outline" disabled={!points.length} onClick={() => { setPoints([]); setHover(null); onPreview(null); onMessage('Draft cancelled. Completed geometry is retained.'); }}>Cancel Draft</Button><Button size="sm" disabled={points.length < 3} onClick={finishPolygon}>Finish {tool === 'roof' ? 'Roof' : 'Floor'}</Button></div>
+    {((tool === 'floor' || tool === 'roof' || tool === 'cutout') && !editingHidden) && <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-white/10 bg-[#111a28] px-3 py-2 pb-6 text-xs" data-testid={`home-${tool}-draft`}>
+      <span>{points.length} corners. Shift-click a corner to remove it. Choose at least 3; Enter or the first corner finishes. Escape cancels.</span>
+      {tool === 'roof' && <label className="flex items-center gap-2">
+        <input type="checkbox" checked={oneSidedRoof} disabled={!enabled || disabled} onChange={event => setOneSidedRoof(event.target.checked)} />
+        One-sided roof
+      </label>}
+      <div className="flex gap-2"><Button size="sm" variant="outline" disabled={!points.length} onClick={() => { setPoints([]); setHover(null); onPreview(null); onMessage('Draft cancelled. Completed geometry is retained.'); }}>Cancel Draft</Button><Button size="sm" disabled={points.length < 3} onClick={finishPolygon}>Finish {tool === 'cutout' ? 'Cutout' : tool === 'roof' ? 'Roof' : 'Floor'}</Button></div>
     </div>}
   </section>;
 }

@@ -38,6 +38,14 @@ With Wall selected, drag between endpoints or click each endpoint. Click again t
 
 Choose **Design settings → Project measurement units** for Imperial or Metric. Length inputs use inches or centimetres; X/Z rulers use feet or metres. Rotation uses degrees. This is a display/input preference, not a change to object size, Scene calibration or physics.
 
+With **Roof** active, check **One-sided roof** to draw a single slope across the footprint. Leave it unchecked for two slopes meeting at a ridge. On a finished roof, use **Properties > Roof type** to switch between Shed, Gable and Flat.
+
+Choose **Wall Cutout** beside **Door** and **Window**, then click the wall in the plan. Draw at least three corners in the face view and choose **Finish Cutout**. The outline can meet the base, ends or sloped top. Other openings appear as guides. To reshape it later, select the cutout and choose **Edit cutout outline**. Click a corner to highlight it in pink, then choose **Remove Point** (circled minus) in the toolbar. You can also right-click the corner and choose **Remove Point**, or Shift-click it. This also works on selected Roof Cutouts, Roofs and Floors in the plan. Finished polygons need at least three corners. Drag a yellow corner or use an edge **+**, then finish and **Save Project**.
+
+Choose **Roof Cutout** and click at least three corners inside the same roof. Choose **Finish Cutout**, press Enter, or click the first corner to close the shape. With **Select**, drag a yellow cutout corner or an edge **+** to reshape it. To open a notch at the perimeter, place two cutout corners on the roof edge. Corners snap to nearby edges. Leave one inch between openings. Skylights use the rectangular placement tool.
+
+To reshape an existing roof, choose **Select** and click its outline. Click a **+** at an edge midpoint to add a corner, or drag the **+** directly to the desired location. Drag yellow corners to adjust the footprint. You can repeat this on any edge and undo each edit.
+
 Floor and Roof drafts need at least three corners. Finish the draft with its Finish control, Enter or the first corner. Escape cancels unfinished drawing. Shift constrains drawing to X/Z axes. Delete/Backspace removes the selected architectural entity; Ctrl/Cmd-Z undoes, and Ctrl/Cmd-Shift-Z or Ctrl/Cmd-Y redoes. These shortcuts leave text-field editing alone. **Drawing defaults** affect new geometry; **Properties** edits the selected object.
 
 ## Characters

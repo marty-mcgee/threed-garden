@@ -1,4 +1,4 @@
-import { moveNodes, openingFootprint, roofFrame, roofOpeningFootprint, validateDesign, type DesignDocument, type PlanPoint } from './document';
+import { cutoutBounds, moveNodes, openingFootprint, roofFrame, roofOpeningFootprint, validateDesign, type DesignDocument, type PlanPoint } from './document';
 
 export function entityPoints(doc: DesignDocument, id: string | null): PlanPoint[] {
   const wall = doc.walls.find(e => e.id === id), polygon = doc.floors.find(e => e.id === id) ?? doc.roofs.find(e => e.id === id);
@@ -47,6 +47,7 @@ export function editObject(doc: DesignDocument, id: string, edit: ObjectEdit): D
     next = { ...next, roofOpenings: next.roofOpenings.map(hole => {
       if (hole.roofId !== id) return hole;
       const corners = roofOpeningFootprint(doc, hole).map(transform).map(frame.local);
+      if (hole.outline) return { ...hole, ...cutoutBounds(corners) };
       return { ...hole, along: Math.min(...corners.map(p => p.along)), across: Math.min(...corners.map(p => p.across)) };
     }) };
   }

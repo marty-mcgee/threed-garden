@@ -6,11 +6,11 @@ export interface DesignLevel { id: string; name: string; elevation: number }
 export interface DesignWall { id: string; levelId: string; start: string; end: string; height: number; endHeight?: number; thickness: number; elevation: number }
 export interface DesignFloor { id: string; levelId: string; vertices: string[]; thickness: number; elevation: number }
 export interface DesignRoof { id: string; levelId: string; vertices: string[]; kind: 'flat' | 'shed' | 'gable'; pitch: number; direction: number; thickness: number; elevation: number }
-export interface DesignOpening { id: string; wallId: string; kind: 'door' | 'window'; offset: number; width: number; height: number; sill: number }
+export interface DesignOpening { id: string; wallId: string; kind: 'door' | 'window' | 'wall-cutout'; outline?: PlanPoint[]; offset: number; width: number; height: number; sill: number }
 /** Rectangles in the host roof's direction/perpendicular frame, from its first corner. */
-export interface DesignRoofOpening { id: string; roofId: string; kind: 'cutout' | 'skylight'; along: number; across: number; width: number; length: number }
+export interface DesignRoofOpening { id: string; roofId: string; outline?: PlanPoint[]; kind: 'cutout' | 'skylight'; along: number; across: number; width: number; length: number }
 export interface DesignDocument {
-  format: 'threed-home-design'; version: 5 | 6; units: 'metres'; name: string;
+  format: 'threed-home-design'; version: 5 | 6 | 7 | 8; units: 'metres'; name: string;
   levels: DesignLevel[]; nodes: DesignNode[]; walls: DesignWall[]; floors: DesignFloor[]; roofs: DesignRoof[]; openings: DesignOpening[]; roofOpenings: DesignRoofOpening[];
   defaults: { wallHeight: number; wallThickness: number; floorThickness: number; doorHeight: number; doorWidth: number; windowHeight: number; windowWidth: number; windowSill: number };
 }
@@ -57,10 +57,10 @@ function list(value: unknown, max: number): unknown[] { if (!Array.isArray(value
 export function validateDesign(value: unknown): DesignDocument {
   const legacy = !!value && typeof value === 'object' && (value as Record<string, unknown>).version === 1;
   const version = value && typeof value === 'object' ? (value as Record<string, unknown>).version : undefined;
-  const leveled = version === 3 || version === 4 || version === 5 || version === 6, roofed = version === 4 || version === 5 || version === 6;
-  const roofOpened = version === 5 || version === 6;
+  const leveled = version === 3 || version === 4 || version === 5 || version === 6 || version === 7 || version === 8, roofed = version === 4 || version === 5 || version === 6 || version === 7 || version === 8;
+  const roofOpened = version === 5 || version === 6 || version === 7 || version === 8;
   const doc = object(value, ['format', 'version', 'units', 'name', 'nodes', 'walls', 'floors', 'defaults', ...(legacy ? [] : ['openings']), ...(leveled ? ['levels'] : []), ...(roofed ? ['roofs'] : []), ...(roofOpened ? ['roofOpenings'] : [])]);
-  if (doc.format !== 'threed-home-design' || ![1, 2, 3, 4, 5, 6].includes(doc.version as number) || doc.units !== 'metres') fail('Import a ThreeD Design version 1–6 JSON document (metres). Legacy .threed files require a separate converter.');
+  if (doc.format !== 'threed-home-design' || ![1, 2, 3, 4, 5, 6, 7, 8].includes(doc.version as number) || doc.units !== 'metres') fail('Import a ThreeD Design version 1-8 JSON document (metres). Legacy .threed files require a separate converter.');
   if (typeof doc.name !== 'string' || !doc.name.trim() || doc.name.length > 120) fail('Design name must contain 1–120 characters.');
   // Pick a migration ID outside the old global ID namespace, including orphan nodes.
   const oldIds = new Set(['nodes', 'walls', 'floors', 'openings'].flatMap(key => Array.isArray(doc[key]) ? (doc[key] as { id?: unknown }[]).map(entity => entity?.id) : []));
@@ -75,7 +75,7 @@ export function validateDesign(value: unknown): DesignDocument {
   const defaults = object(doc.defaults, ['wallHeight', 'wallThickness', 'floorThickness', 'doorHeight', 'doorWidth', ...(legacy ? [] : ['windowHeight', 'windowWidth', 'windowSill'])]);
   const nodes = list(doc.nodes, 1200).map(value => { const n = object(value, ['id', 'x', 'z']); return { id: id(n.id), x: finite(n.x, -1000, 1000, 'X'), z: finite(n.z, -1000, 1000, 'Z') }; });
   const walls = list(doc.walls, 500).map(value => {
-    const sloped = version === 6 && !!value && typeof value === 'object' && 'endHeight' in value;
+    const sloped = (version === 6 || version === 7 || version === 8) && !!value && typeof value === 'object' && 'endHeight' in value;
     const w = object(value, ['id', 'start', 'end', 'height', 'thickness', 'elevation', ...(leveled ? ['levelId'] : []), ...(sloped ? ['endHeight'] : [])]);
     const height = finite(w.height, sloped ? 0 : INCH, 30, 'Wall start height');
     const endHeight = sloped ? finite(w.endHeight, 0, 30, 'Wall end height') : height;
@@ -90,15 +90,26 @@ export function validateDesign(value: unknown): DesignDocument {
     if (typeof r.direction !== 'number' || !Number.isFinite(r.direction) || r.direction < 0 || r.direction >= 360) fail('Roof direction must be at least 0 and less than 360 degrees.');
     return { id: id(r.id), levelId: id(r.levelId), vertices: list(r.vertices, 100).map(id), kind: r.kind as DesignRoof['kind'], pitch: roundMetres(r.pitch as number), direction: Math.min(359.999999, roundMetres(r.direction as number)), thickness: finite(r.thickness, INCH, 3, 'Roof thickness'), elevation: finite(r.elevation, -100, 100, 'Roof eave offset') };
   });
-  const openings = (legacy ? [] : list(doc.openings, 200)).map(value => {
-    const o = object(value, ['id', 'wallId', 'kind', 'offset', 'width', 'height', 'sill']);
-    if (o.kind !== 'door' && o.kind !== 'window') fail('Choose a Door or Window opening.');
-    return { id: id(o.id), wallId: id(o.wallId), kind: o.kind as 'door' | 'window', offset: finite(o.offset, 0, 3000, 'Opening offset'), width: finite(o.width, INCH, 30, 'Opening width'), height: finite(o.height, INCH, 30, 'Opening height'), sill: finite(o.sill, 0, 30, 'Sill height') };
+  const openings: DesignOpening[] = (legacy ? [] : list(doc.openings, 200)).map(value => {
+    const custom = version === 8 && value !== null && typeof value === 'object' && 'kind' in value && value.kind === 'wall-cutout';
+    const o = object(value, ['id', 'wallId', 'kind', 'offset', 'width', 'height', 'sill', ...(custom ? ['outline'] : [])]);
+    const outline = custom ? list(o.outline, 64).map(vertex => {
+      const p = object(vertex, ['x','z']);
+      return { x: finite(p.x,0,1,'Wall cutout corner'), z: finite(p.z,0,1,'Wall cutout corner') };
+    }) : undefined;
+    if (!custom && o.kind !== 'door' && o.kind !== 'window') fail('Choose a Door or Window opening.');
+    return { ...(outline ? {outline} : {}), id: id(o.id), wallId: id(o.wallId), kind: o.kind as DesignOpening['kind'], offset: finite(o.offset, 0, 3000, 'Opening offset'), width: finite(o.width, INCH, 30, 'Opening width'), height: finite(o.height, INCH, 30, 'Opening height'), sill: finite(o.sill, 0, 30, 'Sill height') };
   });
   const roofOpenings: DesignRoofOpening[] = (roofOpened ? list(doc.roofOpenings, 200) : []).map(value => {
-    const o = object(value, ['id', 'roofId', 'kind', 'along', 'across', 'width', 'length']);
+    const polygonal = (version === 7 || version === 8) && value && typeof value === 'object' && 'outline' in value;
+    const o = object(value, ['id', 'roofId', 'kind', 'along', 'across', 'width', 'length', ...(polygonal ? ['outline'] : [])]);
+    const outline = polygonal ? list(o.outline, 64).map(vertex => {
+      const p = object(vertex, ['x', 'z']);
+      return { x: finite(p.x, 0, 1, 'Cutout corner'), z: finite(p.z, 0, 1, 'Cutout corner') };
+    }) : undefined;
+    if (outline && o.kind !== 'cutout') fail('Only Roof Cutouts support a custom outline.');
     if (o.kind !== 'cutout' && o.kind !== 'skylight') fail('Choose a Roof Cutout or Skylight.');
-    return { id: id(o.id), roofId: id(o.roofId), kind: o.kind as DesignRoofOpening['kind'], along: finite(o.along, -3000, 3000, 'Roof opening along offset'), across: finite(o.across, -3000, 3000, 'Roof opening across offset'), width: finite(o.width, INCH, 30, 'Roof opening width'), length: finite(o.length, INCH, 30, 'Roof opening length') };
+    return { ...(outline ? { outline } : {}), id: id(o.id), roofId: id(o.roofId), kind: o.kind as DesignRoofOpening['kind'], along: finite(o.along, -3000, 3000, 'Roof opening along offset'), across: finite(o.across, -3000, 3000, 'Roof opening across offset'), width: finite(o.width, INCH, 30, 'Roof opening width'), length: finite(o.length, INCH, 30, 'Roof opening length') };
   });
   const ids = [...levels, ...nodes, ...walls, ...floors, ...roofs, ...openings, ...roofOpenings].map(entity => entity.id);
   if (new Set(ids).size !== ids.length) fail('Entity IDs must be unique.');
@@ -130,18 +141,30 @@ export function validateDesign(value: unknown): DesignDocument {
     const wall = walls.find(w => w.id === opening.wallId) ?? fail('An opening references a missing host wall.');
     const length = distance(byId.get(wall.start)!, byId.get(wall.end)!);
     const label = opening.kind === 'door' ? 'Door' : 'Window';
-    if (opening.offset < openingMargin(wall) - EPS || opening.offset + opening.width > length - openingMargin(wall) + EPS)
+    if (opening.kind === 'wall-cutout') {
+      const ring = wallOpeningFace(opening);
+      const issue = polygonIssue(ring);
+      if (issue) fail(issue.replace(/floor/gi, 'Wall Cutout'));
+      if (ring.some(p => p.x < -EPS || p.x > length + .00005 || p.z < -EPS || p.z > wallHeightAt(wall,p.x,length) + .00005)) fail('Keep the cutout within the wall face.');
+    } else if (opening.offset < openingMargin(wall) - EPS || opening.offset + opening.width > length - openingMargin(wall) + EPS)
       fail(`${label} does not fit its host wall. Keep ${formatLength(openingMargin(wall))} clear at both ends; move/resize the opening before shortening the wall.`);
     const clearance = Math.min(wallHeightAt(wall, opening.offset, length), wallHeightAt(wall, opening.offset + opening.width, length));
-    if (opening.sill + opening.height > clearance - INCH + EPS) fail(`${label} is taller than its host wall allows. Keep at least one inch of wall above both opening edges.`);
+    if (opening.kind !== 'wall-cutout' && opening.sill + opening.height > clearance - INCH + EPS) fail(`${label} is taller than its host wall allows. Keep at least one inch of wall above both opening edges.`);
     if (opening.kind === 'door' && opening.sill !== 0) fail('Door sill must be zero relative to its host wall base.');
     if (opening.kind === 'window' && opening.sill < INCH) fail('Window sill must be at least one inch above its host wall base.');
     const hosted = openings.filter(other => other.wallId === opening.wallId);
     if (hosted.length > 20) fail('A wall supports at most 20 openings.');
-    if (hosted.some(other => other.id !== opening.id && opening.offset < other.offset + other.width + INCH - EPS && opening.offset + opening.width + INCH > other.offset + EPS && opening.sill < other.sill + other.height + INCH - EPS && opening.sill + opening.height + INCH > other.sill + EPS)) fail('Openings must not overlap. Keep at least one inch between their edges.');
+    if (hosted.some(other => {
+      if (other.id === opening.id) return false;
+      if (opening.outline || other.outline) {
+        const a = wallOpeningFace(opening), b = wallOpeningFace(other);
+        return insidePolygon(a[0], b) || insidePolygon(b[0], a) || a.some((p,i) => b.some((q,j) => segmentDistance(p,a[(i+1)%a.length],q,b[(j+1)%b.length]) < INCH-EPS));
+      }
+      return opening.offset < other.offset + other.width + INCH - EPS && opening.offset + opening.width + INCH > other.offset + EPS && opening.sill < other.sill + other.height + INCH - EPS && opening.sill + opening.height + INCH > other.sill + EPS;
+    })) fail('Openings must not overlap. Keep at least one inch between their edges.');
   }
   for (const opening of roofOpenings) { const issue = roofOpeningIssue({ nodes, roofs, roofOpenings }, opening); if (issue) fail(issue); }
-  return { format: 'threed-home-design', version: version === 6 ? 6 : 5, units: 'metres', name: (doc.name as string).trim(), levels, nodes, walls, floors, roofs, openings, roofOpenings,
+  return { format: 'threed-home-design', version: version === 8 || version === 7 || version === 6 ? version : 5, units: 'metres', name: (doc.name as string).trim(), levels, nodes, walls, floors, roofs, openings, roofOpenings,
     defaults: { wallHeight: finite(defaults.wallHeight, .0254, 30, 'Default height'), wallThickness: finite(defaults.wallThickness, .0254, 3, 'Default wall thickness'), floorThickness: finite(defaults.floorThickness, .0254, 3, 'Default floor thickness'), doorHeight: finite(defaults.doorHeight, .0254, 30, 'Door height'), doorWidth: finite(defaults.doorWidth, .0254, 30, 'Door width'),
       windowHeight: finite(legacy ? 48 * INCH : defaults.windowHeight, INCH, 30, 'Window height'), windowWidth: finite(legacy ? 36 * INCH : defaults.windowWidth, INCH, 30, 'Window width'), windowSill: finite(legacy ? 36 * INCH : defaults.windowSill, INCH, 30, 'Window sill') } };
 }
@@ -173,9 +196,37 @@ export function roofFrame(doc: Pick<DesignDocument, 'nodes'>, roof: DesignRoof) 
   return { point: (along: number, across: number): PlanPoint => ({ x: origin.x + along * dx - across * dz, z: origin.z + along * dz + across * dx }),
     local: (p: PlanPoint) => ({ along: (p.x - origin.x) * dx + (p.z - origin.z) * dz, across: -(p.x - origin.x) * dz + (p.z - origin.z) * dx }) };
 }
+/** Store the outline relative to its roof-local bounds so the existing size and offset controls still apply. */
+export function cutoutBounds(corners: { along: number; across: number }[]) {
+  const xs = corners.map(p => p.along), zs = corners.map(p => p.across);
+  const along = Math.min(...xs), across = Math.min(...zs);
+  const width = Math.max(...xs) - along, length = Math.max(...zs) - across;
+  if (width < INCH || length < INCH) throw new Error('Draw a cutout at least one inch wide and long.');
+  return { along, across, width, length, outline: corners.map(p => ({ x: (p.along - along) / width, z: (p.across - across) / length })) };
+}
+export function nearestRoofEdge(p: PlanPoint, ring: PlanPoint[]) {
+  let closest = ring[0], gap = Infinity;
+  for (let i = 0; i < ring.length; i++) {
+    const a = ring[i], b = ring[(i + 1) % ring.length];
+    const dx = b.x - a.x, dz = b.z - a.z;
+    const t = Math.max(0, Math.min(1, ((p.x-a.x)*dx + (p.z-a.z)*dz) / (dx*dx + dz*dz)));
+    const point = { x: a.x+t*dx, z: a.z+t*dz };
+    const d = distance(p, point);
+    if (d < gap) { closest = point; gap = d; }
+  }
+  return { point: closest, gap };
+}
+export function withinRoof(p: PlanPoint, ring: PlanPoint[]) {
+  return insidePolygon(p, ring) || nearestRoofEdge(p, ring).gap <= EPS;
+}
 export function roofOpeningFootprint(doc: Pick<DesignDocument, 'nodes' | 'roofs'>, opening: DesignRoofOpening) {
   const roof = doc.roofs.find(roof => roof.id === opening.roofId)!, frame = roofFrame(doc, roof);
-  return [frame.point(opening.along, opening.across), frame.point(opening.along + opening.width, opening.across), frame.point(opening.along + opening.width, opening.across + opening.length), frame.point(opening.along, opening.across + opening.length)];
+  const corners = opening.outline ? opening.outline.map(p => frame.point(opening.along + p.x * opening.width, opening.across + p.z * opening.length)) : [frame.point(opening.along, opening.across), frame.point(opening.along + opening.width, opening.across), frame.point(opening.along + opening.width, opening.across + opening.length), frame.point(opening.along, opening.across + opening.length)];
+  if (opening.kind !== 'cutout') return corners;
+  const nodes = new Map(doc.nodes.map(node => [node.id, node]));
+  const perimeter = roof.vertices.map(id => nodes.get(id)!);
+  // Normalized outline coordinates are stored to six decimal places over spans up to 30 m.
+  return corners.map(p => { const edge = nearestRoofEdge(p, perimeter); return edge.gap <= .000025 ? edge.point : p; });
 }
 function segmentDistance(a: PlanPoint, b: PlanPoint, c: PlanPoint, d: PlanPoint) {
   if (intersects(a, b, c, d)) return 0;
@@ -190,11 +241,42 @@ export function roofOpeningIssue(doc: Pick<DesignDocument, 'nodes' | 'roofs' | '
   const roof = doc.roofs.find(roof => roof.id === opening.roofId);
   if (!roof) return 'A roof opening references a missing host roof.';
   const points = roof.vertices.map(id => doc.nodes.find(node => node.id === id)!), footprint = roofOpeningFootprint(doc, opening);
-  if (footprint.some(p => !insidePolygon(p, points)) || footprint.some((p, i) => points.some((q, j) => segmentDistance(p, footprint[(i + 1) % 4], q, points[(j + 1) % points.length]) < INCH - EPS)))
+  if (opening.outline) {
+    const issue = polygonIssue(footprint);
+    if (issue) return issue.replace(/floor/gi, 'cutout');
+  }
+  if (opening.kind === 'cutout') {
+    if (footprint.some(p => !withinRoof(p, points))) return 'Cutout does not fit within its roof.';
+    // Between successive boundary intersections a straight segment is entirely inside or outside.
+    for (let i = 0; i < footprint.length; i++) {
+      const a = footprint[i], b = footprint[(i + 1) % footprint.length];
+      const dx = b.x-a.x, dz = b.z-a.z;
+      const at = [0, 1];
+      for (let j = 0; j < points.length; j++) {
+        const c = points[j], d = points[(j+1)%points.length];
+        const ex = d.x-c.x, ez = d.z-c.z, det = dx*ez-dz*ex;
+        if (Math.abs(det) > 1e-12) {
+          const u = ((c.x-a.x)*dz-(c.z-a.z)*dx)/det;
+          const t = ((c.x-a.x)*ez-(c.z-a.z)*ex)/det;
+          if (u >= -EPS && u <= 1+EPS && t > 0 && t < 1) at.push(t);
+        }
+      }
+      at.sort((x,y)=>x-y);
+      for (let k=1;k<at.length;k++) {
+        const t = (at[k]+at[k-1])/2;
+        if (!withinRoof({x:a.x+t*dx,z:a.z+t*dz},points)) return 'Cutout does not fit within its roof.';
+      }
+    }
+  } else if (footprint.some(p => !insidePolygon(p, points)) || footprint.some((p, i) => points.some((q, j) => segmentDistance(p, footprint[(i + 1) % footprint.length], q, points[(j + 1) % points.length]) < INCH - EPS)))
     return 'Roof opening does not fit. Keep at least one inch inside every roof edge; move or resize the opening before changing its host.';
   const hosted = doc.roofOpenings.filter(other => other.roofId === roof.id);
   if (hosted.length > 20) return 'A roof supports at most 20 openings.';
-  if (hosted.some(other => other.id !== opening.id && opening.along < other.along + other.width + INCH - EPS && opening.along + opening.width + INCH > other.along + EPS && opening.across < other.across + other.length + INCH - EPS && opening.across + opening.length + INCH > other.across + EPS))
+  if (hosted.some(other => {
+    if (other.id === opening.id) return false;
+    const ring = roofOpeningFootprint(doc, other);
+    return insidePolygon(footprint[0], ring) || insidePolygon(ring[0], footprint)
+      || footprint.some((a, i) => ring.some((b, j) => segmentDistance(a, footprint[(i + 1) % footprint.length], b, ring[(j + 1) % ring.length]) < INCH - EPS));
+  }))
     return 'Roof openings must not overlap. Keep at least one inch between their edges.';
   if (opening.kind === 'skylight' && roof.kind === 'gable' && roof.pitch > 0) {
     const profile = roofProfile(points, roof), projected = footprint.map(profile.project);
@@ -229,6 +311,11 @@ export function wallFrame(doc: DesignDocument, wall: DesignWall) {
   const length = distance(start, end), dx = (end.x - start.x) / length, dz = (end.z - start.z) / length;
   return { start, end, length, dx, dz, project: (p: PlanPoint) => (p.x - start.x) * dx + (p.z - start.z) * dz,
     point: (offset: number): PlanPoint => ({ x: start.x + dx * offset, z: start.z + dz * offset }) };
+}
+/** x is distance along the host; z represents height above its base in this face view. */
+export function wallOpeningFace(o: DesignOpening): PlanPoint[] {
+  const outline = o.outline ?? [{x:0,z:0},{x:1,z:0},{x:1,z:1},{x:0,z:1}];
+  return outline.map(p => ({ x:o.offset+p.x*o.width, z:o.sill+p.z*o.height }));
 }
 export function openingFootprint(doc: DesignDocument, opening: DesignOpening): PlanPoint[] {
   const wall = doc.walls.find(w => w.id === opening.wallId)!;

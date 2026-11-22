@@ -76,6 +76,7 @@ function fixture(overrides = {}) {
     'react-dom': { createPortal: content => content },
     'lucide-react': { Focus: 'focus', Maximize: 'maximize', RotateCcw: 'reset' },
     '@/components/ui/context-menu': Object.fromEntries(['ContextMenu','ContextMenuTrigger','ContextMenuContent','ContextMenuItem','ContextMenuLabel','ContextMenuSeparator'].map(name => [name, name])),
+    './WallCutoutEditor': { WallCutoutEditor: 'wall-cutout-editor' },
     './DesignAction': { DesignAction: 'action' }, '@/components/ui/button': { Button: 'button' }, '@/components/ui/separator': { Separator: 'separator' },
     '@/libraries/services/threed/design/document': document,
     '@/libraries/services/threed/design/plan-navigation': navigation,
@@ -98,8 +99,8 @@ function fixture(overrides = {}) {
     }
   }
   function pointer(name, x = 350, y = 210, options = {}) {
-    const { entity = null, node = null, moveHandle = false, ...values } = options;
-    const target = { closest: selector => moveHandle && selector === '[data-selection-handle]' ? { getAttribute: () => 'move' } : entity ? { getAttribute: () => entity } : null, getAttribute: name => name === 'data-node' ? node : null };
+    const { entity = null, node = null, roofEdge = null, cutoutCorner = null, insert = false, moveHandle = false, ...values } = options;
+    const target = { closest: selector => cutoutCorner !== null && selector === '[data-cutout-vertex]' ? { getAttribute: () => String(cutoutCorner), hasAttribute: () => insert } : roofEdge !== null && selector === '[data-roof-edge]' ? { getAttribute: () => String(roofEdge) } : moveHandle && selector === '[data-selection-handle]' ? { getAttribute: () => 'move' } : entity ? { getAttribute: () => entity } : null, getAttribute: name => name === 'data-node' ? node : null };
     const event = { clientX: x + 100, clientY: y + 50, pointerId: 7, button: 0, altKey: false, shiftKey: false, preventDefault() {}, target, currentTarget: element, ...values };
     svgElement.props[name](event); flush();
   }
@@ -216,6 +217,64 @@ function fixture(overrides = {}) {
   assert.equal(f.calls.select.length,0);
   assert.equal(f.calls.commit.length,0);
 }
+// Inserting a corner on the closing edge retains the roof identity and adjoining floor.
+{
+  const roof = { id:'roof', levelId:'ground', vertices:['a','b','c','d'], kind:'gable', pitch:6, direction:0, thickness:.15, elevation:3 };
+  const f = fixture({document: document.validateDesign({...room, roofs:[roof]}), selected:'roof'});
+  assert.equal(flatten(f.tree).filter(n=>n.props?.['data-roof-edge'] !== undefined).length,4);
+  const start = f.world(0,1), end = f.world(-1,1);
+  f.pointer('onPointerDown',start.x,start.y,{roofEdge:3});
+  assert.equal(f.calls.commit.length,0);
+  f.pointer('onPointerMove',end.x,end.y);
+  f.pointer('onPointerUp',end.x,end.y);
+  assert.equal(f.calls.commit.length,1);
+  const saved = plain(f.props.document), updated = saved.roofs[0];
+  assert.deepEqual({...updated,vertices:updated.vertices.slice(0,4)},roof);
+  assert.deepEqual(saved.nodes.find(n=>n.id===updated.vertices[4]),{id:updated.vertices[4],x:-1,z:1});
+  assert.deepEqual(saved.floors,plain(room.floors));
+  f.pointer('onPointerDown',start.x,start.y,{roofEdge:0});
+  f.pointer('onPointerCancel');
+  assert.equal(f.calls.commit.length,1);
+}
+// Removing a reference preserves shared nodes and the minimum polygon size.
+{
+  const roof = { id:'roof', levelId:'ground', vertices:['a','b','c','d'], kind:'flat', pitch:0, direction:0, thickness:.15, elevation:3 };
+  const f = fixture({document: document.validateDesign({...room, roofs:[roof]}), selected:'roof'});
+  const menuItem = () => flatten(f.tree).find(n => n.type === 'ContextMenuItem' && n.props['aria-label'] === 'Remove Point');
+  f.pointer('onContextMenuCapture',130,80,{node:'a'});
+  assert.equal(menuItem().props.disabled,false);
+  menuItem().props.onSelect();
+  f.flush();
+  f.pointer('onContextMenuCapture',130,80,{node:'b'});
+  assert.equal(menuItem().props.disabled,true);
+  f.pointer('onContextMenuCapture',130,80);
+  assert.equal(menuItem(),undefined);
+  assert.deepEqual(plain(f.props.document.roofs[0].vertices), ['b','c','d']);
+  assert.deepEqual(plain(f.props.document.nodes), plain(room.nodes));
+  f.click(130,80,{node:'b',shiftKey:true});
+  assert.equal(f.calls.commit.length,1);
+}
+// Draw, finish, insert a corner on the closing edge, and reshape a hosted cutout.
+{
+  const roof = { id:'roof', levelId:'ground', vertices:['a','b','c','d'], kind:'flat', pitch:0, direction:0, thickness:.15, elevation:3 };
+  const f = fixture({document: document.validateDesign({...room, roofs:[roof]}), selected:'roof', tool:'cutout'});
+  for (const [x,z] of [[.5,.5],[2,.5],[2,1],[1,1],[1,2],[.5,2],[.5,.5]]) {
+    const p=f.world(x,z); f.click(p.x,p.y);
+  }
+  const cutout=f.props.document.roofOpenings[0];
+  assert.equal(f.props.document.version,7);
+  assert.equal(cutout.outline.length,6);
+  assert.equal(f.calls.commit.length,1);
+  const mid=f.world(.5,1.25), end=f.world(.03,1.25);
+  f.pointer('onPointerDown',mid.x,mid.y,{cutoutCorner:5,insert:true});
+  f.pointer('onPointerMove',end.x,end.y);
+  f.pointer('onPointerUp',end.x,end.y);
+  const edited=f.props.document.roofOpenings[0];
+  assert.equal(edited.id,cutout.id);
+  assert.equal(edited.outline.length,7);
+  assert.equal(f.calls.commit.length,2);
+  assert(Math.abs(document.roofOpeningFootprint(f.props.document,edited)[6].x)<.00001);
+}
 // Both selection gestures feed Group, and a mixed drag is one transaction.
 {
   const model = { id: 'models-42', url: null, corners: [{x:0,z:0},{x:.3,z:0},{x:0,z:.2}] };
@@ -317,6 +376,22 @@ for (const tool of ['wall', 'floor', 'roof']) {
   f.pointer('onPointerDown', 170, 131, { shiftKey: true }); f.pointer('onPointerUp', 172, 132, { shiftKey: false });
   const wall = f.props.document.walls[0], end = f.props.document.nodes.find(n => n.id === wall.end);
   assert.equal(end.x, 2); assert.equal(end.z, 1, 'A jittered click uses the original down coordinate and Shift constraint.');
+}
+for (const oneSided of [false, true]) {
+  const f = fixture({document: document.newDesign(), selected: null, tool: 'roof'});
+  f.click(125,125);
+  f.click(215,125);
+  f.pointer('onPointerMove',215,215);
+  const toggle = flatten(f.tree).find(n=>n.type === 'input' && n.props.type === 'checkbox' && typeof n.props.checked === 'boolean' && n.props.checked === false && n.props.onChange);
+  assert(toggle);
+  toggle.props.onChange({target:{checked:oneSided}});
+  f.flush();
+  const kind = oneSided ? 'shed' : 'gable';
+  assert.equal(f.preview.roofs[0].kind,kind);
+  f.click(215,215);
+  f.click(125,125);
+  assert.equal(f.props.document.roofs[0].kind,kind);
+  assert.equal(f.calls.commit.length,1);
 }
 // Drawing on a real host remains an ordinary placement, not a temporary pan candidate.
 {
@@ -479,3 +554,56 @@ console.log('PASS: Design context menu named/icon actions, active/disabled state
  assert.equal(document.visibleLevelsDocument(f.props.document,[]).walls.length,0);
 }
 console.log('PASS: independent named level toggles, all-off/all-on geometry, stable visibility across tools and Blueprint bottom-left overlay.');
+
+// Exercise the wall face editor separately from the overhead plan.
+{
+  const slots = [];
+  let cursor, tree, saved;
+  const hooks = {
+    useState(initial) {
+      const i = cursor++;
+      if (!(i in slots)) slots[i] = typeof initial === 'function' ? initial() : initial;
+      return [slots[i], next => { slots[i] = typeof next === 'function' ? next(slots[i]) : next; }];
+    },
+    useRef(initial) { return slots[cursor++] ??= { current: initial }; },
+  };
+  const { WallCutoutEditor } = load('src/components/threed/design/WallCutoutEditor.tsx', {
+    react: hooks,
+    'react/jsx-runtime': { jsx, jsxs: jsx },
+    'lucide-react': { CircleMinus: 'icon' },
+    '@/components/ui/button': { Button: 'button' },
+    '@/components/ui/context-menu': {},
+    '@/libraries/services/threed/design/document': document,
+    '@/libraries/services/threed/design/plan-navigation': navigation,
+  });
+  const opening = { id: 'cut', kind: 'wall-cutout', wallId: 'w0', offset: 0, sill: 0, width: 1, height: 1,
+    outline: [{x:0,z:0},{x:1,z:0},{x:1,z:1},{x:0,z:1}] };
+  const doc = document.validateDesign({...room, version:8, openings:[opening]});
+  function render() {
+    cursor = 0;
+    tree = WallCutoutEditor({ doc, wall:room.walls[0], opening, units:'metric', onFinish: next => { saved = next; } });
+  }
+  const svg = () => flatten(tree).find(n => n.type === 'svg');
+  const displayed = () => flatten(tree).find(n => n.type === 'polygon' && n.props.fill === '#155e75').props.points.split(' ');
+  function press(handle, inside = true) {
+    svg().props.onPointerDown({ button:0, pointerId:1, currentTarget:{contains:()=>inside, focus(){}, setPointerCapture(){}},
+      target:{closest:()=>handle} });
+    svg().props.onPointerUp({pointerId:1});
+    render();
+  }
+  render();
+  const original = displayed();
+  press(null);
+  press(null, false);
+  assert.deepEqual(displayed(),original,'Face and portaled menu clicks preserve the existing outline.');
+  press({getAttribute:()=> '1',hasAttribute:()=>false});
+  const remove = flatten(tree).find(n=>n.type==='button' && n.props.children.includes('Remove Point'));
+  assert.equal(remove.props.disabled,false);
+  remove.props.onClick();
+  render();
+  assert.deepEqual(displayed(),original.filter((_,i)=>i!==1),'Removal redraws the face through the surviving corners.');
+  flatten(tree).find(n=>n.type==='button' && n.props.children==='Finish Cutout').props.onClick();
+  assert.equal(saved.openings.length,1);
+  assert.equal(saved.openings[0].id,opening.id);
+  assert.equal(saved.openings[0].outline.length,3);
+}

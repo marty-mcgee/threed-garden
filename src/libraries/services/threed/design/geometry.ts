@@ -1,6 +1,6 @@
 import { BoxGeometry, BufferGeometry, Float32BufferAttribute, ExtrudeGeometry, Group, Mesh, MeshStandardMaterial, Shape, ShapeUtils, Vector2 } from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { distance, entityElevation, entityLevelId, EPS, INCH, polygonIssue, roofOpeningFootprint, roofProfile, signedArea, wallFrame, wallHeightAt, type DesignDocument, type DesignOpening, type DesignRoof, type DesignRoofOpening, type DesignWall, type PlanPoint } from './document';
+import { wallOpeningFace, nearestRoofEdge, distance, entityElevation, entityLevelId, EPS, INCH, polygonIssue, roofOpeningFootprint, roofProfile, signedArea, wallFrame, wallHeightAt, type DesignDocument, type DesignOpening, type DesignRoof, type DesignRoofOpening, type DesignWall, type PlanPoint } from './document';
 /** Same footprint drives SVG and 3D. Two-way corners miter; acute joins cap at 4 half-widths. */
 export function wallFootprint(doc: DesignDocument, wall: DesignWall): PlanPoint[] {
   const nodes = new Map(doc.nodes.map(node => [node.id, node]));
@@ -50,14 +50,35 @@ export function roofGeometry(doc: DesignDocument, roof: DesignRoof): BufferGeome
   const holes = doc.roofOpenings.filter(opening => opening.roofId === roof.id).map(opening => roofOpeningFootprint(doc, opening));
   return roofSolid(points, holes, roofProfile(points, roof), roof.kind === 'gable', entityElevation(doc, roof), roof.thickness);
 }
+/** Even-odd strips also cover cutouts that divide a roof into disconnected pieces. */
+function perimeterCutFaces(rings: PlanPoint[][]) {
+  const xs = [...new Set(rings.flat().map(p => p.x))].sort((a,b) => a-b);
+  const edges = rings.flatMap(ring => ring.map((a,i) => ({a,b:ring[(i+1)%ring.length]})));
+  const faces: PlanPoint[][] = [];
+  for (let i=1;i<xs.length;i++) {
+    const left = xs[i-1], right = xs[i], mid = (left+right)/2;
+    if (right-left < EPS) continue;
+    const crossings = edges.filter(({a,b}) => Math.min(a.x,b.x)<mid && Math.max(a.x,b.x)>mid).map(({a,b}) => {
+      const z = (x:number) => a.z + (x-a.x)*(b.z-a.z)/(b.x-a.x);
+      return { middle:z(mid), left:z(left), right:z(right) };
+    }).sort((a,b)=>a.middle-b.middle);
+    for (let j=0;j+1<crossings.length;j+=2) {
+      const low=crossings[j], high=crossings[j+1];
+      if (high.middle-low.middle <= EPS) continue;
+      faces.push([{x:left,z:low.left},{x:right,z:low.right},{x:right,z:high.right},{x:left,z:high.left}]);
+    }
+  }
+  return faces;
+}
 function roofSolid(outer: PlanPoint[], holes: PlanPoint[][], profile: ReturnType<typeof roofProfile>, splitRidge: boolean, base: number, thickness: number): BufferGeometry {
   let points = outer;
   if (signedArea(points) < 0) points = [...points].reverse();
   const rings = [points, ...holes.map(hole => signedArea(hole) > 0 ? [...hole].reverse() : hole)], vertices = rings.flat(), positions: number[] = [];
   const vertex = (point: PlanPoint, top: boolean) => [point.x, base + profile.height(point) + (top ? thickness : 0), point.z];
   const triangle = (a: number[], b: number[], c: number[]) => positions.push(...a, ...b, ...c);
-  for (const face of ShapeUtils.triangulateShape(rings[0].map(p => new Vector2(p.x, p.z)), rings.slice(1).map(ring => ring.map(p => new Vector2(p.x, p.z))))) {
-    const source = face.map(index => vertices[index]);
+  const touchesEdge = holes.some(hole => hole.some(p => nearestRoofEdge(p, outer).gap <= EPS));
+  const faces = touchesEdge ? perimeterCutFaces(rings) : ShapeUtils.triangulateShape(rings[0].map(p => new Vector2(p.x, p.z)), rings.slice(1).map(ring => ring.map(p => new Vector2(p.x, p.z)))).map(face => face.map(index => vertices[index]));
+  for (const source of faces) {
     const pieces = splitRidge ? [clipFootprint(source, profile.project, profile.ridge, true), clipFootprint(source, profile.project, profile.ridge, false)] : [source];
     for (let piece of pieces) {
       if (piece.length < 3 || Math.abs(signedArea(piece)) < EPS * EPS) continue;
@@ -73,7 +94,15 @@ function roofSolid(outer: PlanPoint[], holes: PlanPoint[][], profile: ReturnType
     const edge: PlanPoint[] = [a];
     if (splitRidge && da * db < 0) { const t = da / (da - db); edge.push({ x: a.x + (b.x - a.x) * t, z: a.z + (b.z - a.z) * t }); }
     edge.push(b);
+    // Split fascia at shared boundary endpoints and omit coincident faces at the open mouth.
+    const others = touchesEdge ? rings.filter(other => other !== ring) : [];
+    for (const p of others.flat()) {
+      if (distance(a,p)>EPS && distance(b,p)>EPS && nearestRoofEdge(p,[a,b]).gap <= EPS) edge.push(p);
+    }
+    if (edge.length > 2) edge.sort((p,q)=>distance(a,p)-distance(a,q));
     for (let j = 0; j < edge.length - 1; j++) {
+      const mid = { x:(edge[j].x+edge[j+1].x)/2, z:(edge[j].z+edge[j+1].z)/2 };
+      if (distance(edge[j],edge[j+1]) <= EPS || others.some(other => nearestRoofEdge(mid,other).gap <= EPS)) continue;
       const lowA = vertex(edge[j], false), lowB = vertex(edge[j + 1], false), highA = vertex(edge[j], true), highB = vertex(edge[j + 1], true);
       triangle(lowA, highA, lowB); triangle(lowB, highA, highB);
     }
@@ -95,6 +124,7 @@ function skylightGroup(doc: DesignDocument, opening: DesignRoofOpening) {
 }
 /** Partition wall solids around rectangular apertures. No CSG or hidden covering planes. */
 export function wallGeometry(doc: DesignDocument, wall: DesignWall): BufferGeometry {
+  if (doc.openings.some(o => o.wallId === wall.id && o.kind === 'wall-cutout')) return cutWallGeometry(doc, wall);
   if (wall.endHeight !== undefined && wall.endHeight !== wall.height) return slopedWallGeometry(doc, wall);
   const points = wallFootprint(doc, wall), hosted = doc.openings.filter(o => o.wallId === wall.id);
   const elevation = entityElevation(doc, wall);
@@ -117,6 +147,46 @@ export function wallGeometry(doc: DesignDocument, wall: DesignWall): BufferGeome
   for (const part of parts) part.dispose();
   if (!merged) throw new Error('Unable to generate the host wall openings.');
   merged.computeBoundingBox(); return merged;
+}
+/** Slice at every opening vertex; the solid height bands vary linearly within each slice. */
+function cutWallGeometry(doc: DesignDocument, wall: DesignWall) {
+  const frame = wallFrame(doc, wall), outline = wallFootprint(doc, wall);
+  const length = distance(doc.nodes.find(n => n.id === wall.start)!, doc.nodes.find(n => n.id === wall.end)!);
+  const base = entityElevation(doc, wall);
+  const holes = doc.openings.filter(o => o.wallId === wall.id).map(wallOpeningFace);
+  const cuts = [...new Set([0, length, ...outline.map(frame.project), ...holes.flat().map(p => p.x)])].sort((a,b) => a-b);
+  const positions: number[] = [];
+  const triangle = (a:number[], b:number[], c:number[]) => positions.push(...a,...b,...c);
+  for (let i=1;i<cuts.length;i++) {
+    const left=cuts[i-1], right=cuts[i], mid=(left+right)/2;
+    if (right-left<EPS) continue;
+    let ring=clipFootprint(clipFootprint(outline,frame.project,left,true),frame.project,right,false);
+    if (ring.length<3 || Math.abs(signedArea(ring))<EPS*EPS) continue;
+    if (signedArea(ring)<0) ring=ring.reverse();
+    const boundaries: ((x:number)=>number)[] = [()=>0, x=>wallHeightAt(wall,x,length)];
+    for (const hole of holes) for (let j=0;j<hole.length;j++) {
+      const a=hole[j], b=hole[(j+1)%hole.length];
+      if (mid>Math.min(a.x,b.x) && mid<Math.max(a.x,b.x)) boundaries.push(x=>a.z+(b.z-a.z)*(x-a.x)/(b.x-a.x));
+    }
+    boundaries.sort((a,b)=>a(mid)-b(mid));
+    for (let j=0;j+1<boundaries.length;j+=2) {
+      const low=boundaries[j], high=boundaries[j+1];
+      if (high(mid)-low(mid)<EPS) continue;
+      const vertices=(height:(x:number)=>number)=>ring.map(p=>[p.x,base+height(frame.project(p)),p.z]);
+      const bottom=vertices(low), top=vertices(high);
+      for (let k=1;k+1<ring.length;k++) {
+        triangle(top[0],top[k+1],top[k]); triangle(bottom[0],bottom[k],bottom[k+1]);
+      }
+      for (let k=0;k<ring.length;k++) {
+        const n=(k+1)%ring.length;
+        triangle(bottom[k],top[k],bottom[n]); triangle(bottom[n],top[k],top[n]);
+      }
+    }
+  }
+  const geometry=new BufferGeometry();
+  geometry.setAttribute('position',new Float32BufferAttribute(positions,3));
+  geometry.computeVertexNormals(); geometry.computeBoundingBox();
+  return geometry;
 }
 /** Bounded axis/height partitions preserve miter ends and real openings without boolean meshes. */
 function slopedWallGeometry(doc: DesignDocument, wall: DesignWall): BufferGeometry {
@@ -223,8 +293,9 @@ export class DesignGeometryCache {
     for (const floor of doc.floors) update(floor.id, floor.vertices.map(id => nodes.get(id)!), floor.thickness, entityElevation(doc, floor) - floor.thickness, true);
     for (const roof of doc.roofs) update(roof.id, roof.vertices.map(id => nodes.get(id)!), roof.thickness, entityElevation(doc, roof), false, undefined, roof);
     for (const [id, entry] of this.entries) if (!desired.has(id)) { this.group.remove(entry.mesh); entry.mesh.geometry.dispose(); entry.mesh.material.dispose(); this.entries.delete(id); }
-    const openingIds = new Set(doc.openings.map(o => o.id));
-    for (const opening of doc.openings) {
+    const framedOpenings = doc.openings.filter(o => o.kind !== 'wall-cutout');
+    const openingIds = new Set(framedOpenings.map(o => o.id));
+    for (const opening of framedOpenings) {
       const wall = doc.walls.find(w => w.id === opening.wallId)!;
       const signature = JSON.stringify([opening, wall, entityElevation(doc, wall), nodes.get(wall.start), nodes.get(wall.end)]);
       let entry = this.openings.get(opening.id);
