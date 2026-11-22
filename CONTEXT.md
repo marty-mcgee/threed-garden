@@ -2,6 +2,8 @@
 
 ## Current checkpoint
 
+The Developer confirmed [v0.36.2 - ThreeD Design Roof Editing and Wall and Roof Cutouts](docs/releases/v0.36.2.md#production-status) reached production on November 22, 2026. Local package metadata now identifies v0.36.2.
+
 The Developer confirmed [v0.36.1 - ThreeD Design Canvas Selection, Movement and Groups](docs/releases/v0.36.1.md#production-status) reached production on November 21, 2026 after the schema snapshot and release metadata correction. The Developer also confirmed the ThreeD Groups migration and accepted Select + Move before deployment.
 
 The Developer confirmed [v0.36.0 - ThreeD Garden Release Metadata](docs/releases/v0.36.0.md#production-status) reached production on November 21, 2026.
