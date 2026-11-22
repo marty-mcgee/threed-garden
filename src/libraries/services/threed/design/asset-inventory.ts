@@ -23,9 +23,9 @@ export function architectureAssets(doc: DesignDocument, search = '', units: 'imp
       : opening ? `${length(opening.width)} wide / ${length(opening.height)} high`
       : 'length' in entity ? `${length(entity.width)} / ${length(entity.length)}`
       : `${length(Math.max(...points.map(p => p.x)) - Math.min(...points.map(p => p.x)))} / ${length(Math.max(...points.map(p => p.z)) - Math.min(...points.map(p => p.z)))}`;
-    const label = `${type} ${entity.id}`;
+    const label = entity.name ?? `${type} ${entity.id}`;
     return { id: entity.id, type, label, levelId, levelName: level.name, dimensions, position: { x, y, z } };
-  }).filter(item => !query || `Architecture ${item.label} ${item.levelName} ${item.dimensions}`.toLocaleLowerCase().includes(query));
+  }).filter(item => !query || `Architecture ${item.type} ${item.id} ${item.label} ${item.levelName} ${item.dimensions}`.toLocaleLowerCase().includes(query));
 }
 
 export type ArchitectureAsset = ReturnType<typeof architectureAssets>[number];

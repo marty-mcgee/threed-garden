@@ -47,6 +47,7 @@ export function WallCutoutEditor({ doc, wall, opening, units, onFinish, onCancel
     try {
       const {along,across,width,length:cutHeight,outline:shape} = cutoutBounds(corners.map(p=>({along:p.x,across:p.z})));
       const cut: DesignOpening = {
+        ...(opening?.name ? { name: opening.name } : {}),
         id: opening?.id ?? crypto.randomUUID(),
         wallId: wall.id,
         kind: 'wall-cutout',
@@ -57,7 +58,7 @@ export function WallCutoutEditor({ doc, wall, opening, units, onFinish, onCancel
         height: cutHeight,
       };
       const openings = opening ? doc.openings.map(o=>o.id===opening.id ? cut : o) : [...doc.openings,cut];
-      onFinish(validateDesign({...doc,version:8,openings}),cut.id);
+      onFinish(validateDesign({...doc,version:Math.max(8,doc.version),openings}),cut.id);
     } catch (cause) { setError((cause as Error).message); }
   }
   return <section aria-label="Wall Cutout elevation editor" className="absolute inset-2 z-20 m-auto h-fit max-h-full max-w-xl overflow-auto rounded-lg border bg-background p-3 text-foreground shadow-xl" onKeyDown={event=>{

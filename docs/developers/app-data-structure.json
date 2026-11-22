@@ -1,7 +1,7 @@
 {
   "generatedAt": "2026-11-22",
   "branch": "main",
-  "head": "6897603819caa1c7733eab5b2f7034d02138c95a",
+  "head": "f2a4dca36d0e3636508758f99a55877d92e315f5",
   "version": "0.36.2",
   "summary": {
     "tables": 94,
@@ -7402,7 +7402,7 @@
         },
         {
           "name": "threed_designs_document_valid",
-          "expression": "coalesce(jsonb_typeof(\"threed_designs\".\"document\") = 'object' AND \"threed_designs\".\"document\"->>'format' = 'threed-home-design' AND \"threed_designs\".\"document\"->>'units' = 'metres' AND \"threed_designs\".\"document\"->'version' = to_jsonb(\"threed_designs\".\"format_version\") AND \"threed_designs\".\"format_version\" IN (5, 6, 7, 8) AND \"threed_designs\".\"document\"->>'name' = \"threed_designs\".\"name\" AND length(trim(\"threed_designs\".\"name\")) > 0, false)"
+          "expression": "coalesce(jsonb_typeof(\"threed_designs\".\"document\") = 'object' AND \"threed_designs\".\"document\"->>'format' = 'threed-home-design' AND \"threed_designs\".\"document\"->>'units' = 'metres' AND \"threed_designs\".\"document\"->'version' = to_jsonb(\"threed_designs\".\"format_version\") AND \"threed_designs\".\"format_version\" IN (5, 6, 7, 8, 9) AND \"threed_designs\".\"document\"->>'name' = \"threed_designs\".\"name\" AND length(trim(\"threed_designs\".\"name\")) > 0, false)"
         }
       ],
       "uniqueConstraints": [],
@@ -24718,7 +24718,7 @@
     }
   ],
   "sourceHashes": {
-    "src/app/api/project/threed-markers/route.ts": "ccb56289605dd860ea25939c2d3bd2b6a5fcf2d339f862d1be610e61029a3bfd",
+    "src/app/api/project/threed-markers/route.ts": "abf1c3dd567ba49c87318780fa5526360950ea48bf0f58844f88dfe20978debd",
     "src/libraries/project-assets/asset-registry.ts": "10cda90f2baf403aa27f5723d7478402f7a1febc8c99a4b1efffccaee72c240b",
     "src/libraries/schema/auth/index.ts": "df98d02c496180eea94d986d92634deee72a10a2bb264cdc073775c1b72374b4",
     "src/libraries/schema/auth/user-role-audit.ts": "9e207990b630615acbe5f77622dbf586275f1777b401e83e46f29c518c3220e7",
@@ -24729,7 +24729,7 @@
     "src/libraries/schema/settings/index.ts": "36c9ce83d70c4517b44952899574a47c68798551b3c1a63992819e89063ced55",
     "src/libraries/schema/threed/album-associations.ts": "f1dfc1d4701a484c1d0b8cd8582768aa61b9585b19a6d3c693ab9c2cc619dff8",
     "src/libraries/schema/threed/groups.ts": "c74c0789eb35c6d2894b5d935d84680b75d50549bc785515afbca6bb46e505f7",
-    "src/libraries/schema/threed/index.ts": "2caf7e2e989a1d090396701b312700a3fc685367d55b5e8bc346520b5e7c9adf",
+    "src/libraries/schema/threed/index.ts": "ed7321ae0c0d6069f4c12a711a6a3ff6b9c1518c9fe35779164e4338376f4e9c",
     "src/libraries/schema/traffic/index.ts": "d15d70e180a2cbacc693fb1c9ea8575585125fe7f7e0fdc7a4daee22d316568e",
     "src/libraries/services/threed/multimedia/album-entity-registry.ts": "24ce57ab3ac472b06fd25590a0090dc1579215a63cedc6eceabbc612034a59e9"
   },

@@ -665,7 +665,7 @@ async function saveSnapshot(request: NextRequest) {
       if (architecture && JSON.stringify(savedArchitecture) !== JSON.stringify(architecture)) throw new Error('Project architecture write was not confirmed');
       // Derived Designs record participates in the same commit/rollback as config and markers.
       try { await saveProjectDesignProjection(tx, userId, projectId); }
-      catch { throw new ProjectDesignProjectionError(`Design synchronization failed. No Project changes were saved. Keep your draft and retry; if this continues, check Designs storage availability.${architecture?.document.version === 8 ? ' Wall Cutouts require the Designs version-8 database constraint update.' : architecture?.document.version === 7 ? ' Polygonal Roof Cutouts require the Designs version-7 database constraint update.' : architecture?.document.version === 6 ? ' Sloped walls require the Designs version-6 database constraint update.' : ''}`); }
+      catch { throw new ProjectDesignProjectionError(`Design synchronization failed. No Project changes were saved. Keep your draft and retry; if this continues, check Designs storage availability.${architecture?.document.version === 9 ? ' Named objects require the Designs version-9 database constraint update.' : architecture?.document.version === 8 ? ' Wall Cutouts require the Designs version-8 database constraint update.' : architecture?.document.version === 7 ? ' Polygonal Roof Cutouts require the Designs version-7 database constraint update.' : architecture?.document.version === 6 ? ' Sloped walls require the Designs version-6 database constraint update.' : ''}`); }
       return { markers: savedRows, architecture: savedArchitecture, terrain: savedTerrain };
     });
 

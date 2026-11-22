@@ -40,6 +40,14 @@ Choose **Design settings → Project measurement units** for Imperial or Metric.
 
 With **Roof** active, check **One-sided roof** to draw a single slope across the footprint. Leave it unchecked for two slopes meeting at a ridge. On a finished roof, use **Properties > Roof type** to switch between Shed, Gable and Flat.
 
+Select a Design object and enter its **Name** in Design Properties. Press Enter or leave the field to apply it. The 2D Canvas and Design Assets display the name. Use **Hide Object Labels** or **Show Object Labels** in the canvas toolbar or right-click menu. **Save Project** keeps the view preference. Clear the field to restore the default label, then **Save Project** to keep the change.
+
+Select a Floor and click or drag an edge **+** to add a corner. **Connect Floor Corners** controls whether new Floors and dragged corners share nodes. **Detach Floor** releases its shared corners in place. To create two Floor objects, select a corner, choose **Split Floor**, then click a non-adjacent corner. The split corners are shared when connections are on and independent when off.
+
+Use **Connect Wall Endpoints** in the Wall toolbar to choose how you draw or split. With it off, each Wall has independent endpoints, even where coordinates coincide. Select an existing Wall and choose **Detach Wall** to release its shared endpoints. To reconnect, turn the toggle on and drag an endpoint onto another Wall endpoint. Use **Create ThreeD Group** for named selection and movement.
+
+Select a Wall and click its midpoint **+** to split it into two Walls. Drag the handle to bend the shared endpoint as you split. **Undo** reverses the split and drag together.
+
 Choose **Wall Cutout** beside **Door** and **Window**, then click the wall in the plan. Draw at least three corners in the face view and choose **Finish Cutout**. The outline can meet the base, ends or sloped top. Other openings appear as guides. To reshape it later, select the cutout and choose **Edit cutout outline**. Click a corner to highlight it in pink, then choose **Remove Point** (circled minus) in the toolbar. You can also right-click the corner and choose **Remove Point**, or Shift-click it. This also works on selected Roof Cutouts, Roofs and Floors in the plan. Finished polygons need at least three corners. Drag a yellow corner or use an edge **+**, then finish and **Save Project**.
 
 Choose **Roof Cutout** and click at least three corners inside the same roof. Choose **Finish Cutout**, press Enter, or click the first corner to close the shape. With **Select**, drag a yellow cutout corner or an edge **+** to reshape it. To open a notch at the perimeter, place two cutout corners on the roof edge. Corners snap to nearby edges. Leave one inch between openings. Skylights use the rectangular placement tool.

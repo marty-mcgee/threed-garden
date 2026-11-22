@@ -99,8 +99,8 @@ function fixture(overrides = {}) {
     }
   }
   function pointer(name, x = 350, y = 210, options = {}) {
-    const { entity = null, node = null, roofEdge = null, cutoutCorner = null, insert = false, moveHandle = false, ...values } = options;
-    const target = { closest: selector => cutoutCorner !== null && selector === '[data-cutout-vertex]' ? { getAttribute: () => String(cutoutCorner), hasAttribute: () => insert } : roofEdge !== null && selector === '[data-roof-edge]' ? { getAttribute: () => String(roofEdge) } : moveHandle && selector === '[data-selection-handle]' ? { getAttribute: () => 'move' } : entity ? { getAttribute: () => entity } : null, getAttribute: name => name === 'data-node' ? node : null };
+    const { entity = null, node = null, wallSplit = null, floorEdge = null, roofEdge = null, cutoutCorner = null, insert = false, moveHandle = false, ...values } = options;
+    const target = { closest: selector => selector === '[data-floor-edge]' ? (floorEdge === null ? null : {getAttribute:()=>String(floorEdge)}) : selector === '[data-wall-split]' ? (wallSplit ? { getAttribute: () => wallSplit } : null) : cutoutCorner !== null && selector === '[data-cutout-vertex]' ? { getAttribute: () => String(cutoutCorner), hasAttribute: () => insert } : roofEdge !== null && selector === '[data-roof-edge]' ? { getAttribute: () => String(roofEdge) } : moveHandle && selector === '[data-selection-handle]' ? { getAttribute: () => 'move' } : entity ? { getAttribute: () => entity } : null, getAttribute: name => name === 'data-node' ? node : null };
     const event = { clientX: x + 100, clientY: y + 50, pointerId: 7, button: 0, altKey: false, shiftKey: false, preventDefault() {}, target, currentTarget: element, ...values };
     svgElement.props[name](event); flush();
   }
@@ -216,6 +216,63 @@ function fixture(overrides = {}) {
   assert(flatten(f.tree).some(n=>n.props?.['data-selection-handle']==='move'));
   assert.equal(f.calls.select.length,0);
   assert.equal(f.calls.commit.length,0);
+}
+// Floor edits retain the host outline and neighbouring Walls.
+for (const connect of [true,false]) {
+  const f = fixture({document:room,selected:'floor'});
+  const button = label => flatten(f.tree).find(n=>n.props?.label===label);
+  if (!connect) { button('Connect Floor Corners').props.onClick(); f.flush(); }
+  f.click(100,100,{node:'a'});
+  button('Split Floor').props.onClick(); f.flush();
+  f.click(220,220,{node:'c'});
+  const [first,second] = f.props.document.floors;
+  assert.equal(first.id,'floor');
+  assert.equal(second.vertices.length,3);
+  assert.equal(second.vertices.filter(id=>first.vertices.includes(id)).length,connect?2:0);
+  assert.deepEqual(plain(f.props.document.walls),plain(room.walls));
+}
+{
+  const f = fixture({document:room,selected:'floor'});
+  f.click(140,80,{floorEdge:0});
+  assert.equal(f.props.document.floors[0].vertices.length,5);
+  flatten(f.tree).find(n=>n.props?.label==='Detach Floor').props.onClick();
+  f.flush();
+  assert(!f.props.document.floors[0].vertices.some(id=>room.floors[0].vertices.includes(id)));
+}
+// Detach preserves the neighbouring objects; a separate split allocates independent points.
+{
+  const f = fixture({ document: room, selected: 'w0' });
+  const action = label => flatten(f.tree).find(n => n.props?.label === label);
+  action('Detach Wall').props.onClick();
+  f.flush();
+  const detached = f.props.document;
+  assert.notEqual(detached.walls[0].start, room.walls[0].start);
+  assert.notEqual(detached.walls[0].end, room.walls[0].end);
+  assert.deepEqual(plain(detached.walls.slice(1)), plain(room.walls.slice(1)));
+  assert.deepEqual(plain(detached.floors), plain(room.floors));
+  action('Connect Wall Endpoints').props.onClick();
+  f.flush();
+  const p = f.world(1.524,0);
+  f.click(p.x,p.y,{wallSplit:'w0'});
+  const [first, second] = f.props.document.walls;
+  assert.notEqual(first.end, second.start);
+}
+// A split is one commit, keeps both Wall objects, and reparents a hosted opening.
+{
+  const opening = { id:'window', kind:'window', wallId:'w0', offset:2, width:.4, height:.5, sill:.6 };
+  const doc = document.validateDesign({...room,version:6,openings:[opening],walls:room.walls.map(w=>w.id==='w0'?{...w,endHeight:3}:w)});
+  const f = fixture({document:doc,selected:'w0'});
+  const p = f.world(1.524,0);
+  f.click(p.x,p.y,{wallSplit:'w0'});
+  assert.equal(f.calls.commit.length,1);
+  const [a,b] = f.props.document.walls;
+  assert.equal(a.id,'w0');
+  assert.equal(a.end,b.start);
+  assert.equal(a.endHeight,b.height);
+  assert.equal(b.endHeight,3);
+  assert.equal(f.props.document.walls.length,5);
+  assert.equal(f.props.document.openings[0].wallId,b.id);
+  assert.equal(f.props.document.openings[0].offset,.476);
 }
 // Inserting a corner on the closing edge retains the roof identity and adjoining floor.
 {
@@ -454,6 +511,18 @@ console.log('PASS: actual DesignPlan blank-click/temporary-pan threshold, tool/s
   f.update({disabled:true});selectedModel=null;flatten(f.tree).find(node=>node.type==='image').props.onPointerDown({button:0,altKey:false,stopPropagation(){}});assert.equal(selectedModel,null);
   f.update({disabled:false,document:document.newDesign()});const fit=flatten(f.tree).find(node=>node.type==='action'&&node.props.label==='Fit Plan');assert.equal(fit.props.disabled,false);fit.props.onClick();assert(f.calls.view.length>0);
 }
+{
+  const named = {...room, version:9, floors:room.floors.map(f=>({...f,name:'Courtyard'}))};
+  const f = fixture({document:named});
+  const label = () => flatten(f.tree).some(n=>n.type==='text' && n.props.children==='Courtyard');
+  for (const [action, expected] of [['Hide Object Labels',false],['Show Object Labels',true]]) {
+    assert.equal(label(),!expected);
+    flatten(f.tree).find(n=>n.type==='action' && n.props.label===action).props.onClick();
+    f.flush();
+    assert.equal(label(),expected);
+  }
+  assert.equal(f.calls.commit.length,0);
+}
 console.log('PASS: actual Model top-view SVG affine calibration, pointer/keyboard selection, busy guards, Fit Plan and no architecture history mutations.');
 
 {
@@ -526,12 +595,12 @@ console.log('PASS: measurement labels default hidden, actual toolbar toggle and 
   let chosen = 0;
   const f = fixture({ contextActions: [{label:'Structures',color:'text-emerald-700',actions:[{label:'Wall',icon:'wall-icon',active:true,run:()=>chosen++},{label:'Undo',icon:'undo-icon',disabled:true,run:()=>{throw Error('Disabled action');}}]}] });
   const items = () => flatten(f.tree).filter(node=>node.type==='ContextMenuItem');
-  assert.deepEqual(items().map(node=>flatten(node).find(child=>child.type==='span')?.props.children), ['Wall','Undo','Show Measurements','Fit Plan','Zoom to Selection','Reset View']);
+  assert.deepEqual(items().map(node=>flatten(node).find(child=>child.type==='span')?.props.children), ['Wall','Undo','Hide Object Labels','Show Measurements','Fit Plan','Zoom to Selection','Reset View']);
   assert(flatten(items()[0]).some(node=>node.type==='wall-icon'));
   assert(flatten(items()[0]).some(node=>node.props?.children==='Selected'));
   assert.equal(items()[1].props.disabled,true);
   items()[0].props.onSelect(); assert.equal(chosen,1);
-  items()[2].props.onSelect();f.flush();assert(flatten(f.tree).some(node=>node.props?.['data-measurement']));
+  items().find(item=>flatten(item).some(n=>n.props?.children==='Show Measurements')).props.onSelect();f.flush();assert(flatten(f.tree).some(node=>node.props?.['data-measurement']));
   f.pointer('onPointerDown',350,210,{button:2});assert.equal(f.captures.size,0);assert.equal(f.calls.commit.length,0);
   const content=flatten(f.tree).find(node=>node.type==='ContextMenuContent');let stopped=false;content.props.onKeyDown({stopPropagation(){stopped=true;}});assert(stopped,'Menu keyboard events must not reach drawing shortcuts.');
 }
