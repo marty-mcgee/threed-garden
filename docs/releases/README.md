@@ -6,6 +6,8 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
+- [v0.36.3 - ThreeD Design Wall and Floor Editing and Object Labels (release and fixture follow-up confirmed in production)](v0.36.3.md#production-status)
+
 - [v0.36.2 - ThreeD Design Roof Editing and Wall and Roof Cutouts (release and metadata follow-up confirmed in production)](v0.36.2.md#production-status)
 
 - [v0.36.1 - ThreeD Design Canvas Selection, Movement and Groups (Developer-confirmed production)](v0.36.1.md#production-status)
