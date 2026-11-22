@@ -42,6 +42,7 @@ const animationMappings = load('src/libraries/services/project/scene-character-a
   'drizzle-orm': orm, '@/libraries/db/client': { db }, '@/libraries/schema/threed': schema,
 });
 const api = load('src/app/api/map/threed/route.ts', {
+  '@/libraries/schema/threed/groups': schema,
   '@/libraries/services/project/measurement-units': load('src/libraries/services/project/measurement-units.ts', {
     '../threed/scene-units': load('src/libraries/services/threed/scene-units.ts', {}),
   }),
@@ -80,6 +81,10 @@ function fixture() {
   const model = { id: 7, userId: 'owner', isActive: true, status: 'active', isPublic: false, isLibraryItem: false, modelType: 'fbx', filePath: 'https://fixture.invalid/current.fbx' };
   records = {
     project: [{ id: 8, userId: 'owner', isPublic: true, name: 'Public garden', originLatitude: null, config: { measurementUnits: 'metric', threeDViewState: { savedAt: '2026-11-11T12:00:00.000Z' } } }],
+    threedGroups: [
+      { id: 3, projectId: 8, name: 'Garden walls', entityIds: ['wall-a'], markerIds: [] },
+      { id: 4, projectId: 9, name: 'Other project', entityIds: [], markerIds: [] },
+    ],
     projectThreed: [{ projectId: 8, userId: 'owner', isActive: true, threedId: 2, name: 'Garden' }],
     projectAssets: [{ projectId: 8, moduleType: 'threed', moduleId: 2, userId: 'owner', isActive: true, assetType: 'threed_models', assetId: 7 }],
     threedModels: [model, { ...model, id: 99, userId: 'stranger' }],
@@ -107,6 +112,9 @@ async function run(extra = '') { return api.GET({ url: `http://localhost/api/map
     assert.deepEqual(Array.from(result.body.data.tasks, task => task.id), viewer === 'owner' ? [21, 22] : [22]);
     assert(!JSON.stringify(result.body).includes('Cross-owner Task'));
     assert.equal(JSON.stringify(result.body).includes('Owner-only Task'), viewer === 'owner');
+    const groups = result.body.projectContext.groups;
+    if (viewer === 'owner') assert.deepEqual(Array.from(groups, group => group.id), [3]);
+    else assert.equal(groups, undefined);
     const model = result.body.data.models[0];
     assert.equal(result.body.projectContext.canEdit, viewer === 'owner');
     assert.equal(result.body.projectContext.viewState, null);

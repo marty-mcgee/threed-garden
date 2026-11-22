@@ -2,7 +2,7 @@
 
 [Open the interactive schema explorer](app-data-structure.html) · [Structured schema snapshot](app-data-structure.json) · [Established App architecture](../plans/app-module-architecture.md)
 
-Snapshot: 2026-11-22, App 0.36.3, main / 654b14e1 plus working-tree changes. Generated from the actual local Drizzle declarations, without a database connection. This visualizes the existing structure; it does not introduce a new architecture.
+Snapshot: 2026-11-22, App 0.36.3, main / be9c2fa2 plus working-tree changes. Generated from the actual local Drizzle declarations, without a database connection. This visualizes the existing structure; it does not introduce a new architecture.
 
 ## Explore the structure
 
@@ -21,7 +21,7 @@ Open the HTML file directly in a browser; it needs no server, network or CDN. Se
 | Settings (shared) | 5 | 53 | 6 |
 | **Total** | **94** | **1296** | **180** |
 
-Also includes **37 enums**, **161 ORM relation declarations** and **54 reviewed application mappings**. Counts describe source declarations, not verified live database objects. Auth aliases are deduplicated. Composite foreign keys remain single relationships with all participating columns. JSON/JSONB columns are shown without inventing their nested structures.
+Also includes **37 enums**, **161 ORM relation declarations** and **52 reviewed application mappings**. Counts describe source declarations, not verified live database objects. Auth aliases are deduplicated. Composite foreign keys remain single relationships with all participating columns. JSON/JSONB columns are shown without inventing their nested structures.
 
 ## Project and Module relationships
 

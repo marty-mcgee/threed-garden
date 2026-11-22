@@ -33,7 +33,7 @@ const request=(body,origin='https://example.test')=>new Request('https://example
 (async()=>{
  const initial=contract.defaultModuleAppearance();
  assert(tryParseInput(contract.parseModuleAppearanceSnapshot, initial).success);
- assert.equal(contract.moduleKeys.length,44);
+ assert.equal(contract.moduleKeys.length,43);
  assert.deepEqual(clone(contract.workspaceSurfaces).map(({label,href,moduleKey})=>({label,href,moduleKey})),[
   {label:'Dashboard',href:'/dashboard',moduleKey:'dashboard'},
   {label:'Admin',href:'/admin',moduleKey:'admin'},
@@ -42,7 +42,7 @@ const request=(body,origin='https://example.test')=>new Request('https://example
  assert.equal(contract.moduleManagementRoutes.learn,'/admin/learn');
  assert.equal(contract.moduleManagementRoutes.dashboard,undefined);
  assert.equal(contract.moduleManagementRoutes.admin,undefined);
- assert.equal(Object.keys(contract.moduleManagementRoutes).length,42);
+ assert.equal(Object.keys(contract.moduleManagementRoutes).length,41);
  for(const definition of Object.values(contract.moduleDefinitions))assert.equal('route' in definition,false,'Appearance metadata must not mix route types');
  assert.deepEqual(clone(contract.moduleDefinitions.learn),{label:'Learn',icon:'BookOpen',color:'green'});
  assert.deepEqual(clone(initial.styles.learn),{icon:'BookOpen',color:'green'});
@@ -51,6 +51,7 @@ const request=(body,origin='https://example.test')=>new Request('https://example
  // Distinct saved choices exercise preservation of every existing Module, including Users.
  contract.moduleKeys.forEach((key,index)=>{previous.styles[key]={icon:contract.moduleIconNames[index%contract.moduleIconNames.length],color:Object.keys(contract.moduleColors)[index%Object.keys(contract.moduleColors).length]};});
  delete previous.styles.dashboard;delete previous.styles.admin;
+ assert.deepEqual(clone(contract.readStoredModuleAppearance({...initial,styles:{...initial.styles,layers:initial.styles.models}})),clone(initial));
  const beforeLearn=clone(previous);delete beforeLearn.styles.learn;
  const legacy=clone(beforeLearn);delete legacy.styles.users;
  const snapshots=[previous,beforeLearn,legacy];
@@ -142,5 +143,5 @@ const request=(body,origin='https://example.test')=>new Request('https://example
   session={user:{id:'admin-id'}};assert.equal((await route.PUT(request(current))).status,503);
   assert.deepEqual(data,original,'malformed stored snapshots must not be overwritten');session=null;
  }
- console.log('PASS Module appearance: strict 44-identity writes; exact 42/41/40-identity read compatibility; Learn defaults/routes; saved-style/revision preservation; public reads, active-Super-Admin writes, conflicts and audit rollback (mock persistence).');
+ console.log('PASS Module appearance: strict 43-identity writes; exact 42/41/40-identity read compatibility; Learn defaults/routes; saved-style/revision preservation; public reads, active-Super-Admin writes, conflicts and audit rollback (mock persistence).');
 })().catch(e=>{console.error(e);process.exitCode=1;});

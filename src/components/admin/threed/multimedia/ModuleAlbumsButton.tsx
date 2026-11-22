@@ -17,7 +17,6 @@ export const moduleAlbumKinds: Partial<Record<ModuleKey, AlbumModuleType>> = {
   farmbots: 'farmbot',
   scenarios: 'scenario',
   simulations: 'simulation',
-  layers: 'layer',
   tasks: 'task',
   harvests: 'harvest',
   waterings: 'watering',

@@ -11,7 +11,6 @@ import {
   threedCharacters,
   threedFarmbots,
   threedHarvests,
-  threedLayers,
   threedModels,
   threedPlantings,
   threedPlants,
@@ -77,10 +76,6 @@ export const ASSIGNABLE_ASSET_REGISTRY: Record<string, AssignableAssetDefinition
   threed_plantings: {
     moduleType: 'threed', policy: 'ownerOnly', table: threedPlantings,
     idColumn: threedPlantings.id, userIdColumn: threedPlantings.userId,
-  },
-  threed_layers: {
-    moduleType: 'threed', policy: 'ownerOnly', table: threedLayers,
-    idColumn: threedLayers.id, userIdColumn: threedLayers.userId,
   },
   threed_models: {
     moduleType: 'threed', policy: 'ownerOnly', table: threedModels,

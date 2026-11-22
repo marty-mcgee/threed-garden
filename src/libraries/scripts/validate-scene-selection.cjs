@@ -130,6 +130,7 @@ console.log('PASS shared Scene selection: actual native/Project callbacks, exact
 (async () => {
   const requests = [];
   let applied = 0;
+  let draft = { modelPositions: { 'tree-instance': {}, 'other-instance': {} } };
   const record = { id: 42, markerId: 'tree-instance', positionX: 8, positionY: 2, positionZ: 3, data: { scaleMultiplier: 2 } };
   const transform = { positionX: 8, positionY: 2, positionZ: 3, scaleMultiplier: 2 };
   const ctx = {
@@ -145,6 +146,7 @@ console.log('PASS shared Scene selection: actual native/Project callbacks, exact
     projectRuntimeMarkers: [{ id: 'tree-instance', type: 'models', data: { id: 42 }, metadata: { source: 'project-marker' } }],
     data: { threed: { raw: { projectThreedMarkers: [record] } } },
     setUpdatingModelInstanceId() {},
+    changeArchitecture(update) { draft = update(draft); },
     fetch: async (url, options) => { requests.push({ url, body: JSON.parse(options.body) }); return { ok: true, json: async () => ({ success: true, data: record }) }; },
     notifyModelPlacement: (saved, project) => { assert.equal(saved, record); assert.equal(project, 17); },
     setData: update => { update({}); },
@@ -159,6 +161,7 @@ console.log('PASS shared Scene selection: actual native/Project callbacks, exact
   assert.equal(await save('tree-instance', transform), true);
   assert.equal(requests[0].url, '/api/project/threed-markers?id=42');
   assert.deepEqual(requests[0].body, { canvasEdit: true, ...transform }, 'Only canvas intent, position and scale are patched');
+  assert.deepEqual(Object.keys(draft.modelPositions), ['other-instance']);
   assert.equal(applied, 1);
   assert.equal(await save('another-instance', transform), false);
   assert.equal(await save('tree-instance', { ...transform, scaleMultiplier: -1 }), false);

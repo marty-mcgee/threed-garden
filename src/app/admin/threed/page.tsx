@@ -12,7 +12,6 @@ import {
   ClipboardList,
   Droplets,
   FolderOpen,
-  Layers3,
   Images,
   ListChecks,
   Package,
@@ -163,14 +162,6 @@ const sections = [
     description: 'Review captured runs, Action outcomes, and Sensor observations.',
     href: '/admin/threed/simulation-results',
     icon: ListChecks,
-  },
-  {
-    title: 'Layers',
-    group: 'assets',
-    iconColor: iconColors.assets,
-    description: 'Organize runtime map and scene content into layers.',
-    href: '/admin/threed/layers',
-    icon: Layers3,
   },
 ] as const;
 

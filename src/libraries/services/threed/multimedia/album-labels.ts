@@ -10,7 +10,6 @@ export const albumModuleLabels: Record<AlbumModuleType, string> = {
   scenario: 'Scenarios',
   simulation: 'Simulations',
   design: 'Designs',
-  layer: 'Layers',
   task: 'Tasks',
   harvest: 'Harvests',
   watering: 'Waterings',

@@ -115,7 +115,6 @@ export const navSections: NavSection[] = [
           { title: 'Simulation Results', href: moduleManagementRoutes.simulationResults, moduleKey: 'simulationResults' },
         ]
       },
-      { title: 'Layers', href: moduleManagementRoutes.layers, moduleKey: 'layers', exact: false },
       { title: 'Plants', href: moduleManagementRoutes.plants, moduleKey: 'plants', exact: false },
       { title: 'Plantings', href: moduleManagementRoutes.plantings, moduleKey: 'plantings', exact: false },
       { title: 'Beds', href: moduleManagementRoutes.beds, moduleKey: 'beds', exact: false },

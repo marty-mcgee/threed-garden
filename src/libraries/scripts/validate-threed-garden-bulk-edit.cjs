@@ -9,7 +9,6 @@ const resources = [
   ['plantings', 'Plantings', 'Planting', 'recordsBusy'],
   ['beds', 'Beds', 'Bed', 'bulkBusy'],
   ['farmbots', 'Farmbots', 'Farmbot', 'listBusy'],
-  ['layers', 'Layers', 'Layer', 'bulkBusy'],
 ];
 
 for (const [resource, componentName, recordName, busyFlag] of resources) {
@@ -85,4 +84,4 @@ for (const [resource, componentName, recordName, busyFlag] of resources) {
   assert.match(notice, /updated/i);
 }
 
-console.log('PASS: All five garden Bulk Edit toolbars select visible rows, retain stamps, guard busy states, and refresh after save.');
+console.log('PASS: All four garden Bulk Edit toolbars select visible rows, retain stamps, guard busy states, and refresh after save.');

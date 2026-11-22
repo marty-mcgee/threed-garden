@@ -41,7 +41,7 @@ function changes(before: Settings, after: Settings): ProjectConfigurationChanges
   if (Object.keys(scene).length) result.threeD = scene;
   return result;
 }
-const layers = [['beds','Beds'],['characters','Characters'],['farmbots','FarmBots'],['models','Models'],['plantings','Plantings'],['layers','Layers'],['designs','Designs']] as const;
+const layers = [['beds','Beds'],['characters','Characters'],['farmbots','FarmBots'],['models','Models'],['plantings','Plantings'],['designs','Designs']] as const;
 
 export function ProjectConfigurations({ project, disabled, onSaved, onCalibrate, details, detailsDirty, onReset, onSave, rightColumnFooter, calibrationFields }: {
   project: { id: number | null; config?: unknown; metersPerSceneUnit: string; headingDegrees: string; originLatitude: string | null; originLongitude: string | null };
@@ -135,7 +135,7 @@ export function ProjectConfigurations({ project, disabled, onSaved, onCalibrate,
           <label className="flex min-h-10 items-center gap-2 rounded-lg border bg-background/50 px-3 py-2 text-sm"><input type="checkbox" checked={draft.groundEnabled} onChange={e=>set('groundEnabled',e.target.checked)} />Extra ground plane</label>
           {sceneUnavailable && <p className="text-xs text-muted-foreground">Save a 3D Scene view to configure its environment.</p>}
         </fieldset>
-        <fieldset disabled={sceneUnavailable} className="rounded-xl border bg-muted/15 p-4"><legend className="px-1 text-sm font-semibold"><Layers aria-hidden="true" className="mr-1 inline h-4 w-4 text-cyan-500" />Scene layers</legend><div className="flex flex-wrap gap-x-5 gap-y-2">{layers.map(([id,label])=>{const available=!scene || (scene?.availableLayers ?? scene?.activeLayers ?? []).includes(id);return <label key={id} className="flex min-h-10 items-center gap-2 rounded-lg border bg-background/50 px-3 py-2 text-sm"><input type="checkbox" disabled={!available} checked={draft.activeLayers.includes(id)} onChange={e=>set('activeLayers',e.target.checked?[...draft.activeLayers,id]:draft.activeLayers.filter(key=>key!==id))} />{label}{!available && <span className="text-xs text-muted-foreground">(not in saved view)</span>}</label>;})}</div></fieldset>
+        <fieldset disabled={sceneUnavailable} className="rounded-xl border bg-muted/15 p-4"><legend className="px-1 text-sm font-semibold"><Layers aria-hidden="true" className="mr-1 inline h-4 w-4 text-cyan-500" />Scene visibility</legend><div className="flex flex-wrap gap-x-5 gap-y-2">{layers.map(([id,label])=>{const available=!scene || (scene?.availableLayers ?? scene?.activeLayers ?? []).includes(id);return <label key={id} className="flex min-h-10 items-center gap-2 rounded-lg border bg-background/50 px-3 py-2 text-sm"><input type="checkbox" disabled={!available} checked={draft.activeLayers.includes(id)} onChange={e=>set('activeLayers',e.target.checked?[...draft.activeLayers,id]:draft.activeLayers.filter(key=>key!==id))} />{label}{!available && <span className="text-xs text-muted-foreground">(not in saved view)</span>}</label>;})}</div></fieldset>
       </fieldset>
     </CardContent>
   </Card>

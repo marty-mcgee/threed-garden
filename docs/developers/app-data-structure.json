@@ -1,7 +1,7 @@
 {
   "generatedAt": "2026-11-22",
   "branch": "main",
-  "head": "654b14e10ab900b7a8b4d2c755cbf70979134f75",
+  "head": "be9c2fa2533d2018ea6362ac1cdceb86f66cbd20",
   "version": "0.36.3",
   "summary": {
     "tables": 94,
@@ -9,7 +9,7 @@
     "foreignKeys": 180,
     "enums": 37,
     "ormRelations": 161,
-    "applicationLinks": 54
+    "applicationLinks": 52
   },
   "domains": [
     {
@@ -23501,22 +23501,6 @@
       "status": "declared"
     },
     {
-      "id": "application:project_assets:asset_id:threed_layers",
-      "from": "project_assets",
-      "fromColumns": [
-        "asset_id"
-      ],
-      "to": "threed_layers",
-      "toColumns": [
-        "id"
-      ],
-      "kind": "application",
-      "label": "module_type = 'threed' AND asset_type = 'threed_layers'",
-      "condition": "module_type = 'threed' AND asset_type = 'threed_layers'",
-      "note": "No asset FK. Assignment requires an owned record and an active matching Project/Module assignment.",
-      "status": "declared"
-    },
-    {
       "id": "application:project_assets:asset_id:threed_models",
       "from": "project_assets",
       "fromColumns": [
@@ -23977,22 +23961,6 @@
       "kind": "application",
       "label": "module_type = 'design'",
       "condition": "module_type = 'design'",
-      "note": "Sub-module discriminator in the current Album registry. Text stores canonical numeric identities; this column does not identify a Top Module instance.",
-      "status": "declared"
-    },
-    {
-      "id": "application:threed_multimedia_albums:entity_id:threed_layers",
-      "from": "threed_multimedia_albums",
-      "fromColumns": [
-        "entity_id"
-      ],
-      "to": "threed_layers",
-      "toColumns": [
-        "id"
-      ],
-      "kind": "application",
-      "label": "module_type = 'layer'",
-      "condition": "module_type = 'layer'",
       "note": "Sub-module discriminator in the current Album registry. Text stores canonical numeric identities; this column does not identify a Top Module instance.",
       "status": "declared"
     },
@@ -24719,7 +24687,7 @@
   ],
   "sourceHashes": {
     "src/app/api/project/threed-markers/route.ts": "abf1c3dd567ba49c87318780fa5526360950ea48bf0f58844f88dfe20978debd",
-    "src/libraries/project-assets/asset-registry.ts": "10cda90f2baf403aa27f5723d7478402f7a1febc8c99a4b1efffccaee72c240b",
+    "src/libraries/project-assets/asset-registry.ts": "11186c7b6bde44bbc5b06a3c5c3aaf0cebfc8ee4fc806dfe4b150ad9308c470d",
     "src/libraries/schema/auth/index.ts": "df98d02c496180eea94d986d92634deee72a10a2bb264cdc073775c1b72374b4",
     "src/libraries/schema/auth/user-role-audit.ts": "9e207990b630615acbe5f77622dbf586275f1777b401e83e46f29c518c3220e7",
     "src/libraries/schema/index.ts": "c4f17192b423f6c85a8e491d7601c01681cdfeb56fbcc895d2e871af0abecbc7",
@@ -24731,7 +24699,7 @@
     "src/libraries/schema/threed/groups.ts": "c74c0789eb35c6d2894b5d935d84680b75d50549bc785515afbca6bb46e505f7",
     "src/libraries/schema/threed/index.ts": "ed7321ae0c0d6069f4c12a711a6a3ff6b9c1518c9fe35779164e4338376f4e9c",
     "src/libraries/schema/traffic/index.ts": "d15d70e180a2cbacc693fb1c9ea8575585125fe7f7e0fdc7a4daee22d316568e",
-    "src/libraries/services/threed/multimedia/album-entity-registry.ts": "24ce57ab3ac472b06fd25590a0090dc1579215a63cedc6eceabbc612034a59e9"
+    "src/libraries/services/threed/multimedia/album-entity-registry.ts": "68fad922b0b7db61f188d68322e8e05437a2e7911dca0b9325fa8e7ee9d9c83b"
   },
   "notes": [
     "Current working-tree Drizzle declarations, including unreleased changes. This is not a live database inventory or a proposal for a new architecture.",

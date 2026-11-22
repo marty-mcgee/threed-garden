@@ -62,7 +62,7 @@ const text = node => Array.isArray(node) ? node.map(text).join('') : node && typ
  },{window:{addEventListener:(key,fn)=>listeners.set(key,fn),removeEventListener:key=>listeners.delete(key),confirm:()=>confirmed}});
  const draw=()=>formHarness.render(()=>form.ModuleAppearanceSettings({editor:form.useModuleAppearanceEditor()}));let tree=draw();
  const iconControls=node=>Array.isArray(node)?node.flatMap(iconControls):node&&typeof node==='object'?[...(node.type==='select'&&node.props['aria-label']?.endsWith(' icon')?[node.props['aria-label']]:[]),...iconControls(node.props?.children)]:[];
- assert.equal(iconControls(tree).length,44);assert.equal(new Set(iconControls(tree)).size,44,'Every identity appears exactly once, including surface groups');
+ assert.equal(iconControls(tree).length,43);assert.equal(new Set(iconControls(tree)).size,43,'Every identity appears exactly once, including surface groups');
  for(const [label,icon] of [['Dashboard','Radio'],['Admin','Settings']]) {
   assert.equal(find(tree,n=>n.type==='select'&&n.props['aria-label']===label+' icon').props.value,icon);
   find(tree,n=>n.type==='select'&&n.props['aria-label']===label+' icon').props.onChange({target:{value:'Star'}});tree=draw();

@@ -46,7 +46,6 @@ import { ThreeDTasksCRUD } from '@/components/admin/threed/tasks/ThreeDTasksCRUD
 import { ThreeDWateringSchedulesCRUD } from '@/components/admin/threed/watering-schedules/ThreeDWateringSchedulesCRUD';
 import { ThreeDHarvestsCRUD } from '@/components/admin/threed/harvests/ThreeDHarvestsCRUD';
 import { ThreeDFarmbotsCRUD } from '@/components/admin/threed/farmbots/ThreeDFarmbotsCRUD';
-import { ThreeDLayersCRUD } from '@/components/admin/threed/layers/ThreeDLayersCRUD';
 
 import { TrafficCHPCADCRUD } from '@/components/admin/traffic/chp-cad/TrafficCHPCADCRUD';
 import { TrafficCHPCentersCRUD } from '@/components/admin/traffic/chp-centers/TrafficCHPCentersCRUD';
@@ -172,7 +171,6 @@ const moduleConfig: Record<ModuleType, {
       { id: 'beds', label: 'Beds', component: ThreeDBedsCRUD, icon: Box },
       { id: 'models', label: 'Models', component: ThreeDModelsCRUD, icon: Package },
       { id: 'characters', label: 'Characters', component: ThreeDCharactersCRUD, icon: User },
-      { id: 'layers', label: 'Layers', component: ThreeDLayersCRUD, icon: Layers },
       { id: 'tasks', label: 'Tasks', component: ThreeDTasksCRUD, icon: Sprout },
       { id: 'harvests', label: 'Harvests', component: ThreeDHarvestsCRUD, icon: User },
       { id: 'watering-schedules', label: 'Watering Schedules', component: ThreeDWateringSchedulesCRUD, icon: Package },
@@ -1089,15 +1087,7 @@ export default function ProjectDetailPage() {
                             const CrudComponent = crud.component;
                             return (
                               <TabsContent key={crud.id} value={crud.id} className="mt-0">
-                                {crud.id === 'layers' ? (
-                                  <ThreeDLayersCRUD
-                                    onModuleUpdate={fetchProject}
-                                    userId={session?.user?.id}
-                                    projectId={projectId}
-                                  />
-                                ) : (
-                                  <CrudComponent onModuleUpdate={fetchProject} />
-                                )}
+                                <CrudComponent onModuleUpdate={fetchProject} />
                               </TabsContent>
                             );
                           })}

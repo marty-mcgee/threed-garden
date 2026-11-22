@@ -35,7 +35,7 @@ const evalArg = text => vm.runInNewContext('(' + text + ')', {
   String,
 });
 (async()=>{
- assert.equal(bindings.length,92,'Every approved list field and Designs search/filter/sort/paging remains connected');
+ assert.equal(bindings.length,88,'Every approved list field and Designs search/filter/sort/paging remains connected');
  const waterings = bindings.filter(binding => binding.path.endsWith('/ThreeDWateringSchedulesCRUD.tsx')).map(binding => binding.args.map(evalArg));
  assert.deepEqual(waterings.slice(-3).map(([route, key, initial]) => [route, key, JSON.parse(JSON.stringify(initial))]), [
   [wateringRoute, 'sort', { field: 'sortOrder', direction: 'asc' }],

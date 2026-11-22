@@ -1,7 +1,5 @@
-'use client';
+import { redirect } from 'next/navigation';
 
-import { ThreeDLayersCRUD } from '@/components/admin/threed/layers/ThreeDLayersCRUD';
-
-export default function AdminThreeDLayersPage() {
-  return <ThreeDLayersCRUD scrollRecords />;
+export default function LegacyLayersPage() {
+  redirect('/admin/threed');
 }

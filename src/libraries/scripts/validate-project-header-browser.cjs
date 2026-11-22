@@ -98,7 +98,7 @@ createRoot(document.getElementById('root')).render(<Fixture/>);`;
         if(menu==='scene'&&width===1440&&fit.scroll)failures.push('Desktop Scene unnecessarily scrolls');
         if(menu==='scene'&&height===320){
           await evaluate(`document.querySelector('[data-testid=scene-menu]').scrollTop=10000`);
-          assert(await evaluate(`(()=>{const m=document.querySelector('[data-testid=scene-menu]');const last=m.querySelector('[aria-label="Scene layers"] button:last-child');const a=m.getBoundingClientRect(),b=last.getBoundingClientRect();return b.bottom<=a.bottom+1&&b.top>=a.top})()`), 'Last layer remains reachable on a short screen');
+          assert(await evaluate(`(()=>{const m=document.querySelector('[data-testid=scene-menu]');const last=m.querySelector('[aria-label="Scene visibility"] button:last-child');const a=m.getBoundingClientRect(),b=last.getBoundingClientRect();return b.bottom<=a.bottom+1&&b.top>=a.top})()`), 'Last layer remains reachable on a short screen');
         }
       }
     }

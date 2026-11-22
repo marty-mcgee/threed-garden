@@ -68,14 +68,6 @@ export const catalogBulkFields = {
     inventoryStatus,
   ],
   farmbots: [active],
-  layers: [
-    active,
-    {
-      key: 'isVisible',
-      label: 'Visible',
-      kind: 'boolean',
-    },
-  ],
   models: [inventoryStatus],
   'model-files': [{
     key: 'loadOrder',

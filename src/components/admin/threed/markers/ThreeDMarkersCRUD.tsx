@@ -34,12 +34,6 @@ import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/components/ui/toast';
 
 // ✅ Types
-interface Layer {
-  id: number;
-  layerId: string;
-  name: string;
-}
-
 interface Model {
   id: number;
   modelName: string;
@@ -92,7 +86,7 @@ interface Marker {
   metadata: any;
   createdAt: string;
   updatedAt: string;
-  layer?: Layer;
+  layer?: { name: string };
   model?: Model;
   character?: Character;
   plant?: Plant;
@@ -118,7 +112,6 @@ interface FormData {
   icon: string;
   label: string;
   content: string;
-  layerId: string;
   parentMarkerId: string;
   modelId: string;
   characterId: string;
@@ -190,7 +183,6 @@ const getTypeColor = (type: string | null) => {
 export function ThreeDMarkersCRUD({ onModuleUpdate }: { onModuleUpdate?: () => void }) {
   const { showToast, ToastComponent } = useToast();
   const [markers, setMarkers] = useState<Marker[]>([]);
-  const [layers, setLayers] = useState<Layer[]>([]);
   const [models, setModels] = useState<Model[]>([]);
   const [characters, setCharacters] = useState<Character[]>([]);
   const [plants, setPlants] = useState<Plant[]>([]);
@@ -223,7 +215,6 @@ export function ThreeDMarkersCRUD({ onModuleUpdate }: { onModuleUpdate?: () => v
     icon: '',
     label: '',
     content: '',
-    layerId: '',
     parentMarkerId: '',
     modelId: '',
     characterId: '',
@@ -240,7 +231,6 @@ export function ThreeDMarkersCRUD({ onModuleUpdate }: { onModuleUpdate?: () => v
   // ✅ Fetch data
   useEffect(() => {
     fetchMarkers();
-    fetchLayers();
     fetchModels();
     fetchCharacters();
     fetchPlants();
@@ -267,18 +257,6 @@ export function ThreeDMarkersCRUD({ onModuleUpdate }: { onModuleUpdate?: () => v
     }
   };
 
-  const fetchLayers = async () => {
-    try {
-      const response = await fetch('/api/threed/layers?isActive=true&limit=100');
-      const data = await response.json();
-      if (data.success) {
-        setLayers(Array.isArray(data.data) ? data.data : []);
-      }
-    } catch (error) {
-      console.error('Error fetching layers:', error);
-      setLayers([]);
-    }
-  };
 
   const fetchModels = async () => {
     try {
@@ -370,7 +348,6 @@ export function ThreeDMarkersCRUD({ onModuleUpdate }: { onModuleUpdate?: () => v
         },
         data: JSON.parse(formData.data),
         metadata: JSON.parse(formData.metadata),
-        layerId: formData.layerId ? parseInt(formData.layerId) : null,
         parentMarkerId: formData.parentMarkerId ? parseInt(formData.parentMarkerId) : null,
         modelId: formData.modelId ? parseInt(formData.modelId) : null,
         characterId: formData.characterId ? parseInt(formData.characterId) : null,
@@ -434,7 +411,6 @@ export function ThreeDMarkersCRUD({ onModuleUpdate }: { onModuleUpdate?: () => v
         },
         data: JSON.parse(formData.data),
         metadata: JSON.parse(formData.metadata),
-        layerId: formData.layerId ? parseInt(formData.layerId) : null,
         parentMarkerId: formData.parentMarkerId ? parseInt(formData.parentMarkerId) : null,
         modelId: formData.modelId ? parseInt(formData.modelId) : null,
         characterId: formData.characterId ? parseInt(formData.characterId) : null,
@@ -507,7 +483,6 @@ export function ThreeDMarkersCRUD({ onModuleUpdate }: { onModuleUpdate?: () => v
       icon: '',
       label: '',
       content: '',
-      layerId: '',
       parentMarkerId: '',
       modelId: '',
       characterId: '',
@@ -547,7 +522,6 @@ export function ThreeDMarkersCRUD({ onModuleUpdate }: { onModuleUpdate?: () => v
       icon: marker.icon || '',
       label: marker.label || '',
       content: marker.content || '',
-      layerId: marker.layerId ? String(marker.layerId) : '',
       parentMarkerId: marker.parentMarkerId ? String(marker.parentMarkerId) : '',
       modelId: marker.modelId ? String(marker.modelId) : '',
       characterId: marker.characterId ? String(marker.characterId) : '',
@@ -916,25 +890,6 @@ export function ThreeDMarkersCRUD({ onModuleUpdate }: { onModuleUpdate?: () => v
               <div className="border-t pt-4">
                 <Label className="text-sm font-medium">Relationships</Label>
                 <div className="space-y-2 mt-2">
-                  <div>
-                    <Label htmlFor="layerId" className="text-xs">Layer</Label>
-                    <Select
-                      value={formData.layerId}
-                      onValueChange={(value) => setFormData({ ...formData, layerId: value })}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a layer" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">None</SelectItem>
-                        {layers.map((layer) => (
-                          <SelectItem key={layer.id} value={String(layer.id)}>
-                            {layer.name} ({layer.layerId})
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
                   <div>
                     <Label htmlFor="parentMarkerId" className="text-xs">Parent Marker</Label>
                     <Select
@@ -1508,25 +1463,6 @@ export function ThreeDMarkersCRUD({ onModuleUpdate }: { onModuleUpdate?: () => v
             <div className="border-t pt-4">
               <Label className="text-sm font-medium">Relationships</Label>
               <div className="space-y-2 mt-2">
-                <div>
-                  <Label htmlFor="edit-layerId" className="text-xs">Layer</Label>
-                  <Select
-                    value={formData.layerId}
-                    onValueChange={(value) => setFormData({ ...formData, layerId: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a layer" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">None</SelectItem>
-                      {layers.map((layer) => (
-                        <SelectItem key={layer.id} value={String(layer.id)}>
-                          {layer.name} ({layer.layerId})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
                 <div>
                   <Label htmlFor="edit-parentMarkerId" className="text-xs">Parent Marker</Label>
                   <Select

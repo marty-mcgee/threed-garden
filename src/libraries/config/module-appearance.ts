@@ -131,11 +131,6 @@ export const moduleDefinitions = {
     icon: "ClipboardList",
     color: "green"
   },
-  layers: {
-    label: "Layers",
-    icon: "Layers",
-    color: "cyan"
-  },
   plants: {
     label: "Plants",
     icon: "Sprout",
@@ -311,7 +306,6 @@ export const moduleManagementRoutes = {
   scenarios: '/admin/threed/scenarios',
   simulations: '/admin/threed/simulations',
   simulationResults: '/admin/threed/simulation-results',
-  layers: '/admin/threed/layers',
   tasks: '/admin/threed/tasks',
   waterings: '/admin/threed/watering-schedules',
   harvests: '/admin/threed/harvests',
@@ -410,7 +404,8 @@ const historicalMissingKeys: readonly (readonly ModuleKey[])[] = [
 export function readStoredModuleAppearance(value: unknown): ModuleAppearanceSnapshot {
   const input = readStrictObject(value, ['styles', 'revision']);
   const revision = input.revision === null ? null : readGuid(input.revision);
-  const styles = readStrictObject(input.styles, moduleKeys);
+  const { layers, ...styles } = readStrictObject(input.styles, [...moduleKeys, 'layers']);
+  if (layers !== undefined) parseModuleStyle(layers);
   const present = Object.keys(styles);
   for (const missing of historicalMissingKeys) {
     const expected = moduleKeys.filter(key => !missing.includes(key));
@@ -422,5 +417,5 @@ export function readStoredModuleAppearance(value: unknown): ModuleAppearanceSnap
       revision,
     };
   }
-  return parseModuleAppearanceSnapshot(value);
+  return { styles: parseModuleAppearance(styles), revision };
 }

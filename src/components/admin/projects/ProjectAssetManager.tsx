@@ -24,7 +24,6 @@ import {
   Link2,
   Building2,
   Camera,
-  Layers,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -125,7 +124,6 @@ const ASSET_TYPES = {
       { value: 'threed_plants', label: 'Plants' },
       { value: 'threed_plantings', label: 'Plantings' },
       { value: 'threed_beds', label: 'Beds' },
-      { value: 'threed_layers', label: 'Layers' },
       { value: 'threed_models', label: 'Models' },
       { value: 'threed_characters', label: 'Characters' },
       { value: 'threed_tasks', label: 'Tasks' },
@@ -187,17 +185,6 @@ const ASSET_TYPES = {
         fetchEndpoint: '/api/threed/characters',
         searchFields: ['name'],
         displayFields: ['name', 'characterType'],
-        idField: 'id',
-        nameField: 'name',
-      },
-      {
-        id: 'threed_layers',
-        label: 'Layers',
-        icon: Layers,
-        assetType: 'threed_layers',
-        fetchEndpoint: '/api/threed/layers',
-        searchFields: ['name', 'layerId'],
-        displayFields: ['layerId', 'layerType', 'category'],
         idField: 'id',
         nameField: 'name',
       },

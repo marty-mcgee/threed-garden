@@ -77,7 +77,6 @@ async function main() {
       plantings: schema.threedPlantings,
       beds: schema.threedBeds,
       farmbots: schema.threedFarmbots,
-      layers: schema.threedLayers,
       models: schema.threedModels,
       characters: schema.threedCharacters,
       'model-categories': schema.threedModelCategories,

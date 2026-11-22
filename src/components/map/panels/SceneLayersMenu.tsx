@@ -19,7 +19,7 @@ export function SceneLayersMenu({ availableLayers, activeLayers, allAvailableLay
       <div className="border-t border-foreground/10 my-1"></div>
       <div className="text-[10px] text-foreground/60 px-2 py-0.5 flex items-center gap-1">
         <Layers className="w-3 h-3" />
-        <span>Scene Layers</span>
+        <span>Scene Visibility</span>
         <button
           onClick={onToggleAllLayers}
           className="ml-auto text-[10px] text-foreground/40 hover:text-foreground/80 transition-colors"
@@ -27,9 +27,10 @@ export function SceneLayersMenu({ availableLayers, activeLayers, allAvailableLay
           {allAvailableLayersVisible ? 'Hide All' : 'Show All'}
         </button>
       </div>
-      <div role="group" aria-label="Scene layers">{availableLayers.map((layer) => (
+      <div role="group" aria-label="Scene visibility">{availableLayers.map((layer) => (
         <button
           key={layer}
+          aria-pressed={activeLayers.has(layer)}
           onClick={() => onToggleLayer(layer)}
           className={`w-full text-left px-2 py-0.5 rounded text-xs transition-colors flex items-center gap-1.5 ${
             activeLayers.has(layer) 

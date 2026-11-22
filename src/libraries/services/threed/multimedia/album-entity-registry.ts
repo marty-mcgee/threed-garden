@@ -9,7 +9,6 @@ export const albumEntityTables = {
   scenario: 'threed_scenarios',
   simulation: 'threed_simulations',
   design: 'threed_designs',
-  layer: 'threed_layers',
   task: 'threed_tasks',
   harvest: 'threed_harvests',
   watering: 'threed_watering_schedules',
