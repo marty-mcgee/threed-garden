@@ -1,6 +1,6 @@
 import { BoxGeometry, BufferGeometry, Float32BufferAttribute, ExtrudeGeometry, Group, Mesh, MeshStandardMaterial, Shape, ShapeUtils, Vector2 } from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { wallOpeningFace, nearestRoofEdge, distance, entityElevation, entityLevelId, EPS, INCH, polygonIssue, roofOpeningFootprint, roofProfile, signedArea, wallFrame, wallHeightAt, type DesignDocument, type DesignOpening, type DesignRoof, type DesignRoofOpening, type DesignWall, type PlanPoint } from './document';
+import { doorIsOpen, wallOpeningFace, nearestRoofEdge, distance, entityElevation, entityLevelId, EPS, INCH, polygonIssue, roofOpeningFootprint, roofProfile, signedArea, wallFrame, wallHeightAt, type DesignDocument, type DesignOpening, type DesignRoof, type DesignRoofOpening, type DesignWall, type PlanPoint } from './document';
 /** Same footprint drives SVG and 3D. Two-way corners miter; acute joins cap at 4 half-widths. */
 export function wallFootprint(doc: DesignDocument, wall: DesignWall): PlanPoint[] {
   const nodes = new Map(doc.nodes.map(node => [node.id, node]));
@@ -243,9 +243,43 @@ function openingGroup(doc: DesignDocument, opening: DesignOpening) {
     box(opening.width - 2 * trim, trim, depth, opening.width / 2, trim / 2);
     box(opening.width - 2 * trim, opening.height - 2 * trim, .008, opening.width / 2, opening.height / 2,
       new MeshStandardMaterial({ color: '#8ed8f1', transparent: true, opacity: .28, depthWrite: false, roughness: .1 }));
+  } else if (opening.operation === 'garage') {
+    const height = opening.height - trim;
+    const width = opening.width - 2 * trim;
+    const panelHeight = height / 4;
+    const thickness = Math.min(.04, wall.thickness / 2);
+    const panelMaterial = new MeshStandardMaterial({ color: '#bfc6cd', roughness: .7 });
+    const open = doorIsOpen(opening);
+    for (let index = 0; index < 4; index++) {
+      const center = (index + .5) * panelHeight;
+      const panel = box(width, panelHeight * .985, thickness, opening.width / 2,
+        open ? height : center, panelMaterial);
+      if (open) {
+        panel.rotation.x = Math.PI / 2;
+        panel.position.z = -center;
+      }
+    }
+  } else if (opening.operation === 'slidingGlass' || opening.operation === 'slidingWood') {
+    const width = (opening.width - 2 * trim) / 2;
+    const height = opening.height - trim;
+    const glass = opening.operation === 'slidingGlass';
+    const panel = new MeshStandardMaterial(glass
+      ? { color: '#8ed8f1', transparent: true, opacity: .32, depthWrite: false, roughness: .1 }
+      : { color: '#925f3c', roughness: .85 });
+    for (const index of [0, 1]) {
+      const x = trim + ((doorIsOpen(opening) ? 0 : index) + .5) * width;
+      const z = (index - .5) * wall.thickness / 2;
+      box(width, height, wall.thickness / 8, x, height / 2, panel).position.z = z;
+      box(trim / 2, height, wall.thickness / 6, x + (index ? -1 : 1) * (width / 2 - trim / 4), height / 2).position.z = z;
+    }
   } else {
     const leaf = box(opening.width - 2 * trim, opening.height - trim, .035, trim, (opening.height - trim) / 2);
-    leaf.rotation.y = Math.PI / 2; leaf.position.z = -(opening.width - 2 * trim) / 2;
+    if (doorIsOpen(opening)) {
+      leaf.rotation.y = Math.PI / 2;
+      leaf.position.z = (opening.operation === 'outward' ? 1 : -1) * (opening.width - 2 * trim) / 2;
+    } else {
+      leaf.position.x = opening.width / 2;
+    }
   }
   return group;
 }

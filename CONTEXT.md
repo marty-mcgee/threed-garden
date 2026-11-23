@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-The Developer confirmed [v0.36.4 - Retire the ThreeD Layers Module and Keep Scene Visibility Controls](docs/releases/v0.36.4.md#production-status) reached production. Scene Visibility controls runtime categories, Levels organize Design geometry by storey, and ThreeD Groups keep named object selections. The next focus is 2D Canvas Design. Start with the [canvas controls](docs/users/THREED_CONTROLS.md) and the [pointer interaction checks](src/libraries/scripts/validate-threed-design-plan-pointer.cjs).
+The Developer confirmed [v0.36.4 - Retire the ThreeD Layers Module and Keep Scene Visibility Controls](docs/releases/v0.36.4.md#production-status) reached production. The Developer also confirmed the metadata and schema snapshot follow-up reached production. Scene Visibility controls runtime categories, Levels organize Design geometry by storey, and ThreeD Groups keep named object selections. The next focus is 2D Canvas Design. Start with the [canvas controls](docs/users/THREED_CONTROLS.md) and the [pointer interaction checks](src/libraries/scripts/validate-threed-design-plan-pointer.cjs).
 
 The Developer confirmed [v0.36.2 - ThreeD Design Roof Editing and Wall and Roof Cutouts](docs/releases/v0.36.2.md#production-status) reached production on November 22, 2026. The Developer also confirmed the release metadata and schema snapshot follow-up reached production.
 

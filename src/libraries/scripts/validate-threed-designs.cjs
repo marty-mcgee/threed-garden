@@ -387,8 +387,9 @@ async function run(){
  workspaceWriteFault=null;
  await checkClientSave(model,view);
  const unnamed=document.validateDesign({...withRoof,version:8,openings:[...withRoof.openings,{id:"upper-cutout",wallId:"upper-wall",kind:"wall-cutout",offset:0,sill:0,width:1,height:1,outline:[{x:0,z:0},{x:1,z:0},{x:0,z:1}]}],roofOpenings:withRoof.roofOpenings.map(o=>({...o,kind:'cutout',outline:[{x:0,z:0},{x:1,z:0},{x:0,z:1}]})),levels:[...withRoof.levels,{id:'upper',name:'Upper',elevation:3.048}],nodes:[...withRoof.nodes,{id:'up-a',x:5,z:0},{id:'up-b',x:8,z:0}],walls:[...withRoof.walls,{...withRoof.walls[0],id:'upper-wall',levelId:'upper',start:'up-a',end:'up-b'}]});
- const labeled = {...unnamed, version:9};
+ const labeled = {...unnamed, version:10};
  for (const key of ["walls","floors","roofs","openings","roofOpenings"]) labeled[key] = unnamed[key].map(item => ({...item,name:"Named " + item.id}));
+ labeled.openings = labeled.openings.map(o => o.kind === 'door' ? {...o,operation:'slidingWood',isOpen:true} : o);
  const complete = document.validateDesign(labeled);
  for (const key of ["walls","floors","roofs","openings","roofOpenings"]) assert(complete[key].every(item => item.name === "Named " + item.id));
  assert.throws(()=>document.validateDesign({...labeled,version:8}));

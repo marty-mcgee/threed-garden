@@ -26,7 +26,7 @@ legacyRoom.walls=legacyRoom.walls.map(({levelId,...wall})=>wall);legacyRoom.floo
 for(const key of ['windowHeight','windowWidth','windowSill']) delete (legacyRoom.defaults={...legacyRoom.defaults})[key];
 legacyRoom.version=1;
 assert.deepEqual(D.parseDesign(JSON.stringify(legacyRoom)),room,'Version 1 editable documents upgrade losslessly to version 3 defaults.');
-for (const invalid of [null, [], {...room,version:10}, {...room,units:'cm'}, {...room,unexpected:0}, {...room,nodes:[...room.nodes,room.nodes[0]]},
+for (const invalid of [null, [], {...room,version:11}, {...room,units:'cm'}, {...room,unexpected:0}, {...room,nodes:[...room.nodes,room.nodes[0]]},
   {...room,walls:[{...room.walls[0],end:'a'}]}, {...room,walls:[{...room.walls[0],start:'absent'}]}, {...room,walls:[...room.walls, {...room.walls[0],id:'duplicate'}]},
   {...room,floors:[{...room.floors[0],vertices:['a','c','b','d']}]}, {...room,nodes:room.nodes.map((n,i)=>i===0?{...n,x:Infinity}:n)},
   {...room,defaults:{...room.defaults,doorHeight:-1}}, {...room,floors:[{...room.floors[0],vertices:['a','b','a']}]},
@@ -91,6 +91,34 @@ console.log('Passed: actual BufferGeometry Y-up extrusion, Imperial bounds, iden
 
 const door={id:'door',wallId:'ab',kind:'door',offset:18*D.INCH,width:36*D.INCH,height:80*D.INCH,sill:0};
 const windowOpening={id:'window',wallId:'ab',kind:'window',offset:66*D.INCH,width:36*D.INCH,height:48*D.INCH,sill:36*D.INCH};
+for (const operation of ['inward','outward','slidingGlass','slidingWood','garage']) {
+  const configured = D.validateDesign({...room,version:10,openings:[{...door,operation}]});
+  assert.equal(D.validateDesign(JSON.parse(JSON.stringify(configured))).openings[0].operation,operation);
+  assert.throws(()=>D.validateDesign({...configured,version:9}));
+  assert.throws(()=>D.validateDesign({...configured,openings:[{...windowOpening,operation}]}));
+  const cache = new G.DesignGeometryCache();
+  cache.update(configured,null);
+  const meshes = cache.group.getObjectByName(door.id).children;
+  if (operation === 'inward' || operation === 'outward') assert.equal(Math.sign(meshes.at(-1).position.z),operation === 'inward' ? -1 : 1);
+  else assert.equal(meshes.filter(mesh => mesh.material.transparent).length,operation === 'slidingGlass' ? 2 : 0);
+  for (const isOpen of [false,true]) {
+    const changed = D.validateDesign({...configured,openings:[{...door,operation,isOpen}]});
+    assert.equal(D.validateDesign(JSON.parse(JSON.stringify(changed))).openings[0].isOpen,isOpen);
+    cache.update(changed,null);
+    const parts = cache.group.getObjectByName(door.id).children;
+    if (operation.startsWith('sliding')) assert.equal(parts[3].position.x === parts[5].position.x,isOpen);
+    else if (operation === 'garage') {
+      const panels = parts.slice(3);
+      assert.equal(panels.length,4);
+      assert(panels.every(panel => panel.rotation.x === (isOpen ? Math.PI/2 : 0)));
+      assert.equal(new Set(panels.map(panel => panel.position.y)).size,isOpen ? 1 : 4);
+      assert.equal(new Set(panels.map(panel => panel.position.z)).size,isOpen ? 4 : 1);
+      if (isOpen) assert(panels.every(panel => panel.position.y >= door.height - 2*D.INCH));
+    } else assert.equal(parts.at(-1).rotation.y !== 0,isOpen);
+  }
+  assert.throws(()=>D.validateDesign({...configured,openings:[{...door,isOpen:'false'}]}));
+  cache.dispose();
+}
 const opened=D.validateDesign({...room,openings:[door,windowOpening]});
 assert.deepEqual(D.parseDesign(JSON.stringify(opened)),opened);
 for(const bad of [{...door,wallId:'missing'},{...door,kind:'roof'},{...door,sill:D.INCH},{...door,offset:0}, {...door,offset:110*D.INCH}, {...door,height:96*D.INCH}, {...windowOpening,sill:0}])assert.throws(()=>D.validateDesign({...room,openings:[bad]}));

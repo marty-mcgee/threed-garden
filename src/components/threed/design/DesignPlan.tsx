@@ -9,7 +9,7 @@ import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem, C
 import { WallCutoutEditor } from './WallCutoutEditor';
 import { DesignAction } from './DesignAction';
 import { Button } from '@/components/ui/button';
-import { nearestRoofEdge, withinRoof, cutoutBounds, distance, insidePolygon, roofFrame, roofOpeningFootprint, INCH, levelDocument, visibleLevelsDocument, mergeNodes, moveNodes, openingFootprint, openingMargin, roundMetres, screenToPlan, snapPoint, validateDesign, signedArea, wallFrame, wallHeightAt,
+import { doorIsOpen, nearestRoofEdge, withinRoof, cutoutBounds, distance, insidePolygon, roofFrame, roofOpeningFootprint, INCH, levelDocument, visibleLevelsDocument, mergeNodes, moveNodes, openingFootprint, openingMargin, roundMetres, screenToPlan, snapPoint, validateDesign, signedArea, wallFrame, wallHeightAt,
   type DesignDocument, type PlanPoint, type PlanView } from '@/libraries/services/threed/design/document';
 import { formatPlanLength, framePlan, gridFeet as planGridFeet, rulerTicks, RULER_SIZE, zoomPlan } from '@/libraries/services/threed/design/plan-navigation';
 import { entityPoints } from '@/libraries/services/threed/design/object-properties';
@@ -939,7 +939,21 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
         {visible.openings.map(opening => {
           const footprint = openingFootprint(displayDocument, opening), host = displayDocument.walls.find(w => w.id === opening.wallId)!, frame = wallFrame(displayDocument, host);
           const a = frame.point(opening.offset), b = frame.point(opening.offset + opening.width), color = (groupSelected(opening.id) || selected === opening.id) ? '#facc15' : opening.kind === 'door' ? '#f0ab65' : '#67e8f9';
-          return <g key={opening.id} data-entity={opening.id} data-opening={opening.kind}><polygon points={polygon(footprint)} fill="#091423" stroke={color} strokeWidth={1.5 / view.scale} /><line x1={a.x} y1={a.z} x2={b.x} y2={b.z} stroke={color} strokeWidth={3 / view.scale} strokeDasharray={opening.kind === 'door' ? `${5 / view.scale} ${3 / view.scale}` : undefined} /><line x1={a.x} y1={a.z} x2={b.x} y2={b.z} stroke="transparent" strokeWidth={Math.max(host.thickness, 12 / view.scale)} />{labelsVisible && <text x={(a.x + b.x) / 2} y={(a.z + b.z) / 2 + .35} fill={color} fontSize={11 / view.scale} textAnchor="middle" pointerEvents="none">{opening.name ?? (opening.kind === 'wall-cutout' ? 'Wall Cutout' : opening.kind === 'door' ? 'Door' : 'Window')}</text>}</g>;
+          const width = opening.width;
+          const sign = opening.operation === 'outward' ? 1 : -1;
+          const hinged = opening.operation !== 'slidingGlass' && opening.operation !== 'slidingWood';
+          const open = doorIsOpen(opening);
+          return <g key={opening.id} data-entity={opening.id} data-opening={opening.kind}><polygon points={polygon(footprint)} fill="#091423" stroke={color} strokeWidth={1.5 / view.scale} /><line x1={a.x} y1={a.z} x2={b.x} y2={b.z} stroke={color} strokeWidth={3 / view.scale} strokeDasharray={opening.kind === 'door' && !opening.operation ? `${5 / view.scale} ${3 / view.scale}` : undefined} /><line x1={a.x} y1={a.z} x2={b.x} y2={b.z} stroke="transparent" strokeWidth={Math.max(host.thickness, 12 / view.scale)} />{opening.kind === 'door' && (opening.operation || opening.isOpen !== undefined) && <g data-door-operation={opening.operation ?? 'inward'} transform={'translate(' + a.x + ' ' + a.z + ') rotate(' + Math.atan2(frame.dz,frame.dx)*180/Math.PI + ')'} fill="none" stroke={color} strokeWidth={1.5/view.scale}>
+            {opening.operation === 'garage' ? <rect x={0} y={open ? -opening.height : -host.thickness/4}
+              width={width} height={open ? opening.height : host.thickness/2}
+              strokeDasharray={open ? 4/view.scale : undefined} /> : hinged ? <>
+              <line x1={0} y1={0} x2={open ? 0 : width} y2={open ? sign * width : 0} />
+              {open && <path d={['M',width,0,'A',width,width,0,0,sign > 0 ? 1 : 0,0,sign*width].join(' ')} strokeDasharray={3/view.scale} />}
+            </> : <g stroke={opening.operation === 'slidingGlass' ? '#8ed8f1' : '#bd8559'} strokeWidth={3/view.scale}>
+              <line x1={0} x2={width/2} y1={-host.thickness/4} y2={-host.thickness/4} />
+              <line x1={open ? 0 : width/2} x2={open ? width/2 : width} y1={host.thickness/4} y2={host.thickness/4} />
+            </g>}
+          </g>}{labelsVisible && <text x={(a.x + b.x) / 2} y={(a.z + b.z) / 2 + .35} fill={color} fontSize={11 / view.scale} textAnchor="middle" pointerEvents="none">{opening.name ?? (opening.kind === 'wall-cutout' ? 'Wall Cutout' : opening.kind === 'door' ? (opening.operation === 'garage' ? 'Garage Door' : 'Door') : 'Window')}</text>}</g>;
         })}
         {visible.roofOpenings.map(opening => { const points = roofOpeningFootprint(displayDocument, opening), center = points.reduce((sum, p) => ({ x: sum.x + p.x / points.length, z: sum.z + p.z / points.length }), { x: 0, z: 0 }); const color = (groupSelected(opening.id) || selected === opening.id) ? '#facc15' : opening.kind === 'skylight' ? '#67e8f9' : '#fb923c'; return <g key={opening.id} data-entity={opening.id} data-roof-opening={opening.kind}><polygon points={polygon(points)} fill={opening.kind === 'skylight' ? '#164e63' : '#091423'} fillOpacity={opening.kind === 'skylight' ? .65 : .9} stroke={color} strokeWidth={2 / view.scale} />{labelsVisible && <text x={center.x} y={center.z} fill={color} fontSize={10 / view.scale} textAnchor="middle" pointerEvents="none">{opening.name ?? (opening.kind === 'skylight' ? 'Skylight' : 'Cutout')}</text>}</g>; })}
         {measurementsVisible && <g pointerEvents="none" fill="#dde8f6" fontSize={11 / view.scale} textAnchor="middle">

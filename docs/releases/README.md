@@ -6,7 +6,7 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.36.4 - Retire the ThreeD Layers Module and Keep Scene Visibility Controls (Developer-confirmed production)](v0.36.4.md#production-status)
+- [v0.36.4 - Retire the ThreeD Layers Module and Keep Scene Visibility Controls (release and metadata follow-up confirmed in production)](v0.36.4.md#production-status)
 
 - [v0.36.3 - ThreeD Design Wall and Floor Editing and Object Labels (release and fixture follow-up confirmed in production)](v0.36.3.md#production-status)
 
