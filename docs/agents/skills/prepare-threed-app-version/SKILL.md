@@ -11,7 +11,9 @@ Use the version the Developer requests, including any prerelease suffix. An expl
 
 Read [AGENTS.md](../../../../AGENTS.md) and [CONTEXT.md](../../../../CONTEXT.md) in full. Inspect the branch, HEAD, package and lockfile versions, staged and unstaged changes, and untracked release inputs. Compare the working tree with the last documented release and any existing draft for the target. Preserve manual edits and the index. Use the Developer’s title when supplied. Otherwise, name the verified App owner and the change that actually ships. If the diff contains only release metadata, describe it that way.
 
-## Prepare the candidate
+## Complete release prerequisites before handoff
+
+For a release-preparation request, complete the following steps in the feature or documentation checkpoint itself. When the Developer specifies the version, apply it immediately. Before presenting a commit-ready title, verify that the manifest, both root lockfile versions, generated snapshots, release record, index and current checkpoint agree. Then run the candidate validation gates below. A later production confirmation records deployment evidence under the released version. If the Developer assigns follow-up documentation its own version, prepare it under that version and retain the original release history.
 
 1. Set `package.json`’s `version`, `package-lock.json`’s `version`, and `packages[""].version` in the lockfile to the same value, without the leading `v`. For a version-only bump, compare with the pre-edit files to verify that only those fields changed. Preserve any intentional dependency edits already in scope.
 2. Run `npm run schema:generate` against the checkout’s source and Git metadata to refresh the Markdown, HTML and JSON schema snapshots. Use the matching isolated dependencies if the checkout has no matching install. Inspect the generated diff. A release version change needs no database operation.
