@@ -1,4 +1,4 @@
-import { BoxGeometry, BufferGeometry, Float32BufferAttribute, ExtrudeGeometry, Group, Mesh, MeshStandardMaterial, Shape, ShapeUtils, Vector2 } from 'three';
+import { TextureLoader, RepeatWrapping, SRGBColorSpace, type Texture, BoxGeometry, BufferGeometry, Float32BufferAttribute, ExtrudeGeometry, Group, Mesh, MeshStandardMaterial, Shape, ShapeUtils, Vector2 } from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { doorIsOpen, wallOpeningFace, nearestRoofEdge, distance, entityElevation, entityLevelId, EPS, INCH, polygonIssue, roofOpeningFootprint, roofProfile, signedArea, wallFrame, wallHeightAt, type DesignDocument, type DesignOpening, type DesignRoof, type DesignRoofOpening, type DesignWall, type PlanPoint } from './document';
 /** Same footprint drives SVG and 3D. Two-way corners miter; acute joins cap at 4 half-widths. */
@@ -303,10 +303,11 @@ function respectVisibility(object: Group | Mesh) {
 /** Retained mesh owners; unchanged signatures keep their geometry and GPU resources. */
 export class DesignGeometryCache {
   readonly group = new Group();
+  private textures = new Map<string, Texture>();
   private entries = new Map<string, { signature: string; mesh: Mesh<BufferGeometry, MeshStandardMaterial> }>();
   private openings = new Map<string, { signature: string; group: Group }>();
   private skylights = new Map<string, { signature: string; group: Group }>();
-  update(doc: DesignDocument, selected: string | null, visibleLevelId?: string | string[], showRoofs = true, transparent = false) {
+  update(doc: DesignDocument, selected: string | null, visibleLevelId?: string | string[], showRoofs = true, transparent = false, transparencyValue = 50) {
     const desired = new Set<string>(), nodes = new Map(doc.nodes.map(node => [node.id, node]));
     const update = (id: string, points: PlanPoint[], height: number, bottom: number, floor: boolean, wall?: DesignWall, roof?: DesignRoof) => {
       if (polygonIssue(points)) return;
@@ -353,21 +354,51 @@ export class DesignGeometryCache {
       entry!.group.traverse(object => { if (object instanceof Mesh) (object.material as MeshStandardMaterial).emissive.set(selected === opening.id ? '#125e69' : '#000000'); });
     }
     for (const [id, entry] of this.skylights) if (!skylightIds.has(id)) { this.group.remove(entry.group); disposeOpening(entry.group); this.skylights.delete(id); }
+    const appearances = new Map([...doc.walls, ...doc.floors, ...doc.roofs, ...doc.openings, ...doc.roofOpenings].map(entity => [entity.id, entity.appearance]));
+    const usedTextures = new Set<string>();
     this.group.traverse(object => {
       if (!(object instanceof Mesh)) return;
+      const appearance = appearances.get(object.userData.designEntityId);
+      let map: Texture | null = null;
+      if (appearance?.texture) {
+        const url = appearance.texture;
+        usedTextures.add(url);
+        map = this.textures.get(url) ?? null;
+        if (!map) {
+          map = new TextureLoader().load(url);
+          map.wrapS = map.wrapT = RepeatWrapping;
+          map.colorSpace = SRGBColorSpace;
+          this.textures.set(url, map);
+        }
+        const geometry = object.geometry;
+        if (!geometry.getAttribute('uv')) {
+          const position = geometry.getAttribute('position'), normal = geometry.getAttribute('normal');
+          const uv: number[] = [];
+          for (let i = 0; i < position.count; i++) {
+            const nx = Math.abs(normal.getX(i)), ny = Math.abs(normal.getY(i)), nz = Math.abs(normal.getZ(i));
+            uv.push(nx > ny && nx > nz ? position.getZ(i) : position.getX(i), ny >= nx && ny >= nz ? position.getZ(i) : position.getY(i));
+          }
+          geometry.setAttribute('uv', new Float32BufferAttribute(uv, 2));
+        }
+      }
       for (const material of Array.isArray(object.material) ? object.material : [object.material]) {
-        material.userData.designAppearance ??= { opacity: material.opacity, transparent: material.transparent, depthWrite: material.depthWrite };
+        material.userData.designAppearance ??= { color: material.color.getHex(), opacity: material.opacity, transparent: material.transparent, depthWrite: material.depthWrite };
         const original = material.userData.designAppearance;
-        const nextTransparent = transparent || original.transparent;
+        material.color.set(appearance?.color ?? (map ? '#ffffff' : original.color));
+        if (material.map !== map) { material.map = map; material.needsUpdate = true; }
+        const defaultOpacity = transparent ? Math.min(original.opacity, 1 - transparencyValue / 100) : original.opacity;
+        material.opacity = appearance?.transparency === undefined ? defaultOpacity : 1 - appearance.transparency / 100;
+        const nextTransparent = material.opacity < 1;
         if (material.transparent !== nextTransparent) material.needsUpdate = true;
         material.transparent = nextTransparent;
-        material.opacity = transparent ? Math.min(original.opacity, .5) : original.opacity;
-        material.depthWrite = transparent ? false : original.depthWrite;
+
+        material.depthWrite = nextTransparent ? false : true;
       }
     });
+    for (const [url, texture] of this.textures) if (!usedTextures.has(url)) { texture.dispose(); this.textures.delete(url); }
     // Visibility is a view choice, not deletion: retain mesh owners and GPU resources.
     const roofIds = new Set([...doc.roofs.map(roof => roof.id), ...doc.roofOpenings.map(opening => opening.id)]);
     for (const child of this.group.children) child.visible = (visibleLevelId === undefined || (Array.isArray(visibleLevelId) ? visibleLevelId.includes(entityLevelId(doc, child.name)!) : entityLevelId(doc, child.name) === visibleLevelId)) && (showRoofs || !roofIds.has(child.name));
   }
-  dispose() { for (const entry of this.entries.values()) { entry.mesh.geometry.dispose(); entry.mesh.material.dispose(); } for (const entry of this.openings.values()) disposeOpening(entry.group); for (const entry of this.skylights.values()) disposeOpening(entry.group); this.skylights.clear(); this.openings.clear(); this.entries.clear(); this.group.clear(); }
+  dispose() { for (const texture of this.textures.values()) texture.dispose(); this.textures.clear(); for (const entry of this.entries.values()) { entry.mesh.geometry.dispose(); entry.mesh.material.dispose(); } for (const entry of this.openings.values()) disposeOpening(entry.group); for (const entry of this.skylights.values()) disposeOpening(entry.group); this.skylights.clear(); this.openings.clear(); this.entries.clear(); this.group.clear(); }
 }

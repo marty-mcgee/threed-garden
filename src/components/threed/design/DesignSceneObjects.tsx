@@ -7,9 +7,9 @@ import type { DesignDocument } from '@/libraries/services/threed/design/document
 import { sceneUnitsPerMetre } from '@/libraries/services/threed/scene-units';
 
 /** Mount inside the existing Scene Canvas. Only this owner's generated resources are changed. */
-export function DesignSceneObjects({ document, projectId, metersPerSceneUnit, selected = null, onSelect, visibleLevelId, showRoofs = true, visible = true, transparent = false }: {
+export function DesignSceneObjects({ document, projectId, metersPerSceneUnit, selected = null, onSelect, visibleLevelId, showRoofs = true, visible = true, transparent = false, transparencyValue = 50 }: {
   document: DesignDocument; projectId: number; metersPerSceneUnit: number;
-  selected?: string | null; onSelect?: (id: string) => void; visibleLevelId?: string | string[]; showRoofs?: boolean; visible?: boolean; transparent?: boolean;
+  selected?: string | null; onSelect?: (id: string) => void; visibleLevelId?: string | string[]; showRoofs?: boolean; visible?: boolean; transparent?: boolean; transparencyValue?: number;
 }) {
   const host = useRef<Group>(null), cache = useRef<DesignGeometryCache | null>(null);
   useLayoutEffect(() => {
@@ -19,14 +19,14 @@ export function DesignSceneObjects({ document, projectId, metersPerSceneUnit, se
   }, [projectId]);
   useLayoutEffect(() => {
     const owner = cache.current; if (!owner) return;
-    owner.update(document, selected, visibleLevelId, showRoofs, transparent);
+    owner.update(document, selected, visibleLevelId, showRoofs, transparent, transparencyValue);
     owner.group.traverse(object => {
       if (typeof object.userData.designEntityId === 'string') {
         object.userData.projectId = projectId;
         object.userData.sceneObjectId = `project:${projectId}:architecture:${object.userData.designEntityId}`;
       }
     });
-  }, [document, selected, visibleLevelId, showRoofs, transparent, projectId]);
+  }, [document, selected, visibleLevelId, showRoofs, transparent, transparencyValue, projectId]);
   const select = (event: ThreeEvent<MouseEvent>) => {
     const id = event.object.userData.designEntityId;
     if (typeof id === 'string') { event.stopPropagation(); onSelect?.(id); }

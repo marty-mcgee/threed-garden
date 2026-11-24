@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.36.6 - Release Documentation and Metadata Preparation (metadata prepared)](v0.36.6.md)
+- [v0.37.0 - ThreeD Design: Canvas Dimensions and Object Appearance (release candidate)](v0.37.0.md)
+
+- [v0.36.6 - ThreeD Design: Hinged, Sliding and Garage Door Operations (Developer-confirmed production)](v0.36.6.md#production-status)
 
 - [v0.36.5 - ThreeD Design: Hinged, Sliding and Garage Door Operations (Developer-confirmed production)](v0.36.5.md#production-status)
 

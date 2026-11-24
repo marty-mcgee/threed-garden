@@ -390,7 +390,14 @@ async function run(){
  const labeled = {...unnamed, version:10};
  for (const key of ["walls","floors","roofs","openings","roofOpenings"]) labeled[key] = unnamed[key].map(item => ({...item,name:"Named " + item.id}));
  labeled.openings = labeled.openings.map(o => o.kind === 'door' ? {...o,operation:'slidingWood',isOpen:true} : o);
- const complete = document.validateDesign(labeled);
+ const appearance = {color:'#804020',transparency:35,texture:'https://demo.public.blob.vercel-storage.com/brick.png'};
+ const styled = {...labeled,version:11};
+ for (const key of ['walls','floors','roofs','openings','roofOpenings']) styled[key] = labeled[key].map(item => ({...item,appearance}));
+ const complete = document.validateDesign(styled);
+ assert.deepEqual({...complete.walls[0].appearance},appearance);
+ assert.throws(() => document.validateDesign({...styled,version:10}));
+ for (const invalid of [{transparency:-1},{transparency:101},{color:'invalid'},{texture:'javascript:invalid'}])
+   assert.throws(() => document.validateDesign({...styled,walls:styled.walls.map(wall => ({...wall,appearance:invalid}))}));
  for (const key of ["walls","floors","roofs","openings","roofOpenings"]) assert(complete[key].every(item => item.name === "Named " + item.id));
  assert.throws(()=>document.validateDesign({...labeled,version:8}));
  assert.equal((await save(request({...input,architecture:{version:1,document:complete}}))).status,200);
@@ -417,6 +424,18 @@ async function run(){
  const cache=new geometry.DesignGeometryCache();cache.update(reopened.session.architecture.document,'door');
  const world=new THREE.Scene(),existing=new THREE.Mesh(new THREE.BoxGeometry(1,1,1));existing.position.set(10,0,5);world.add(existing);cache.group.scale.setScalar(1/reopened.session.metersPerSceneUnit);world.add(cache.group);world.updateMatrixWorld(true);
  const wall=cache.group.getObjectByName('w1');assert(wall);const bounds=new THREE.Box3().setFromObject(wall);assert(Math.abs(bounds.max.x-10.25)<.01,'A 10 ft room must occupy 10 Scene units plus half-wall thickness.');
+ const nativeColor = wall.material.color.getHexString();
+ for (const transparency of [0, 25, 100, undefined]) {
+   const appearance = { color: '#ab3456' };
+   if (transparency !== undefined) appearance.transparency = transparency;
+   const styledDocument = {...source, version:11, walls:source.walls.map(item => item.id === 'w1' ? {...item, appearance} : item)};
+   cache.update(styledDocument, null, undefined, true, true, 75);
+   assert.equal(wall.material.opacity, transparency === undefined ? .25 : 1 - transparency / 100);
+   assert.equal(wall.material.color.getHexString(), 'ab3456');
+ }
+ cache.update(source, null, undefined, true, true, 75);
+ assert.equal(wall.material.color.getHexString(), nativeColor);
+ assert.equal(wall.material.opacity, .25);
  const geometryIdentity=wall.geometry;cache.update(source,'floor');assert.equal(wall.geometry,geometryIdentity);assert.equal(existing.parent,world);assert.equal(existing.position.x,10);cache.dispose();assert.equal(existing.parent,world,'Architecture cleanup must retain the Model owner.');
  console.log('PASS: actual Project snapshot transaction and load roundtrip with existing Model, room/floor/door, owner guards, malformed/oversized input rejection, atomic failure, legacy Save preservation, pending-edit acknowledgment, safe merge/replace IDs and real Scene-unit geometry. No database connection.');
 }

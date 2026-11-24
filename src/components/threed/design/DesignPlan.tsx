@@ -10,7 +10,7 @@ import { WallCutoutEditor } from './WallCutoutEditor';
 import { DesignAction } from './DesignAction';
 import { Button } from '@/components/ui/button';
 import { doorIsOpen, nearestRoofEdge, withinRoof, cutoutBounds, distance, insidePolygon, roofFrame, roofOpeningFootprint, INCH, levelDocument, visibleLevelsDocument, mergeNodes, moveNodes, openingFootprint, openingMargin, roundMetres, screenToPlan, snapPoint, validateDesign, signedArea, wallFrame, wallHeightAt,
-  type DesignDocument, type PlanPoint, type PlanView } from '@/libraries/services/threed/design/document';
+  planObjectColor, type PlanObject, type DesignDocument, type PlanPoint, type PlanView } from '@/libraries/services/threed/design/document';
 import { formatPlanLength, framePlan, gridFeet as planGridFeet, rulerTicks, RULER_SIZE, zoomPlan } from '@/libraries/services/threed/design/plan-navigation';
 import { entityPoints } from '@/libraries/services/threed/design/object-properties';
 import type { ModelPlanImage } from '@/libraries/services/threed/models/model-plan-image';
@@ -48,6 +48,46 @@ function addShape(doc: DesignDocument, points: DrawPoint[], tool: 'wall' | 'floo
     floors: tool === 'floor' ? [...doc.floors, { id, levelId, vertices: ids, thickness: doc.defaults.floorThickness, elevation: 0 }] : doc.floors, roofs: tool === 'roof' ? [...doc.roofs, { id, levelId, vertices: ids, kind: oneSidedRoof ? 'shed' : 'gable', pitch: 6, direction: 0, thickness: 6 * INCH, elevation: doc.defaults.wallHeight }] : doc.roofs };
 }
 
+function planDimensionChains(points: PlanPoint[], scale: number, units: 'imperial' | 'metric') {
+  return (['x', 'z'] as const).map(axis => {
+    const anchors = new Map<number, number>();
+    for (const point of points) {
+      // Rotate the left chain into the same local coordinate system as the top chain.
+      const along = axis === 'x' ? point.x : -point.z;
+      const across = axis === 'x' ? point.z : point.x;
+      const station = Math.round(along * 1000) / 1000;
+      anchors.set(station, Math.min(anchors.get(station) ?? Infinity, across));
+    }
+    const stations = [...anchors.keys()].sort((a, b) => a - b);
+    if (stations.length < 2) return null;
+    const px = 1 / scale;
+    const chain = Math.min(...anchors.values()) - 24 * px;
+    const total = chain - 20 * px;
+    const first = stations[0], last = stations[stations.length - 1];
+    function span(start: number, end: number, row: number) {
+      const label = formatPlanLength(end - start, units);
+      return <g key={start} data-dimension-span={axis}>
+        <line x1={start} x2={end} y1={row} y2={row} />
+        {(end - start) * scale >= label.length * 6 + 4 &&
+          <text x={(start + end) / 2} y={row - 4 * px} stroke="#091423" strokeWidth={3 * px} paintOrder="stroke">{label}</text>}
+      </g>;
+    }
+    return <g key={axis} transform={axis === 'z' ? 'rotate(-90)' : undefined} stroke="#94b8ce" strokeWidth={px}>
+      {stations.map(station => {
+        const outer = stations.length > 2 && (station === first || station === last);
+        const tick = (row: number) => <line x1={station - 3 * px} x2={station + 3 * px} y1={row + 3 * px} y2={row - 3 * px} />;
+        return <g key={station}>
+          <line x1={station} x2={station} y1={anchors.get(station)! - 3 * px} y2={(outer ? total : chain) - 5 * px} opacity=".55" />
+          {tick(chain)}
+          {outer && tick(total)}
+        </g>;
+      })}
+      {stations.slice(1).map((end, index) => span(stations[index], end, chain))}
+      {stations.length > 2 && span(first, last, total)}
+    </g>;
+  });
+}
+
 export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixedMove, selectAllRequest = 0, selectedModel, onSaveModel, modelBusy = false, visibleLevelIds, onToggleLevel, contextActions = [], showObjectLabels, onShowObjectLabelsChange, showMeasurements, onShowMeasurementsChange, selectedModelId, modelImages = [], terrain, metersPerSceneUnit = 1, onModelSelect, measurementUnits = 'imperial', frameRequest, drawingActions, planView, onViewChange, toolbarHost, embedded = false, active: enabled = true, disabled = false, document: doc, displayDocument = doc, activeLevelId, selected, tool, gridSnap, onSelect, onCommit, onPreview, onMessage, onDrawComplete, cancelToken }: Props) {
   const [connectFloors, setConnectFloors] = useState(true);
   const [splitStart, setSplitStart] = useState<string | null>(null);
@@ -56,6 +96,9 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
   const editingHidden = !shownLevels.includes(activeLevelId);
   const [localMeasurements, setLocalMeasurements] = useState(false);
   const [localLabels, setLocalLabels] = useState(true);
+  function paint(entity: PlanObject) {
+    return entity.appearance?.texture ? 'url(#' + patternId + '-' + entity.id + ')' : planObjectColor(entity);
+  }
   const labelsVisible = showObjectLabels ?? localLabels;
   const measurementsVisible = showMeasurements ?? localMeasurements;
   const toggleMeasurements = () => { const next = !measurementsVisible; if (onShowMeasurementsChange) onShowMeasurementsChange(next); else setLocalMeasurements(next); };
@@ -752,7 +795,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
   }, [frameRequest, enabled, activeLevelId, size.width, size.height, doc, setView]);
   const viewGroup: DesignContextGroup = { label: 'Design plan navigation', color: 'text-cyan-700 dark:text-cyan-300', actions: [
     { label: labelsVisible ? 'Hide Object Labels' : 'Show Object Labels', icon: Tags, active: labelsVisible, run: () => (onShowObjectLabelsChange ?? setLocalLabels)(!labelsVisible) },
-    { label: measurementsVisible ? 'Hide Measurements' : 'Show Measurements', icon: Ruler, active: measurementsVisible, run: toggleMeasurements },
+    { label: measurementsVisible ? 'Hide Dimensions' : 'Show Dimensions', icon: Ruler, active: measurementsVisible, run: toggleMeasurements },
     { label: 'Fit Plan', icon: Maximize, disabled: !visible.nodes.length && !modelImages.length, run: () => fitPlan() },
     { label: 'Zoom to Selection', icon: Focus, disabled: !selectionPoints.length, run: () => fitPlan(true) },
     { label: 'Reset View', icon: RotateCcw, run: () => setView({ x: 80, y: 80, scale: 45 }) },
@@ -856,7 +899,11 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       onLostPointerCapture={() => { setGroupOffset(null); setMarquee(null); if (gesture.current) { if (gesture.current.wallPress?.started) setPoints([]); gesture.current = null; setHover(null); onPreview(null); } }}
       onPointerLeave={() => { if (!gesture.current && (tool === 'door' || tool === 'window' || tool === 'cutout' || tool === 'skylight')) onPreview(null); }}
       >
-      <defs><pattern id={patternId} width={grid} height={grid} patternUnits="userSpaceOnUse" x={view.x % grid} y={view.y % grid}><path d={`M ${grid} 0 L 0 0 0 ${grid}`} fill="none" stroke="#204259" strokeWidth=".7" /></pattern></defs>
+      <defs>{[...visible.walls, ...visible.floors, ...visible.roofs, ...visible.openings, ...visible.roofOpenings].filter(entity => entity.appearance?.texture).map(entity =>
+        <pattern key={entity.id} id={patternId + '-' + entity.id} width={1} height={1} patternUnits="userSpaceOnUse">
+          <rect width={1} height={1} fill={entity.appearance?.color ?? '#ffffff'} />
+          <image width={1} height={1} href={entity.appearance?.texture} preserveAspectRatio="none" style={{ mixBlendMode: 'multiply' }} />
+        </pattern>)}<pattern id={patternId} width={grid} height={grid} patternUnits="userSpaceOnUse" x={view.x % grid} y={view.y % grid}><path d={`M ${grid} 0 L 0 0 0 ${grid}`} fill="none" stroke="#204259" strokeWidth=".7" /></pattern></defs>
       <rect width={size.width} height={size.height} fill={`url(#${patternId})`} />
       <g pointerEvents="none" stroke="#4d91a6" strokeWidth="1"><line x1={view.x} x2={view.x} y1={RULER_SIZE} y2={size.height}/><line y1={view.y} y2={view.y} x1={RULER_SIZE} x2={size.width}/></g>
       <g transform={`translate(${view.x} ${view.y}) scale(${view.scale})`}>
@@ -870,7 +917,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
           {active.nodes.some(node => Math.abs(node.x - hover.x) < .000001) && <line x1={hover.x} x2={hover.x} y1={(RULER_SIZE - view.y) / view.scale} y2={(size.height - view.y) / view.scale}/>}
           {active.nodes.some(node => Math.abs(node.z - hover.z) < .000001) && <line y1={hover.z} y2={hover.z} x1={(RULER_SIZE - view.x) / view.scale} x2={(size.width - view.x) / view.scale}/>}
         </g>}
-        {visible.floors.map(floor => <polygon key={floor.id} data-entity={floor.id} points={polygon(floor.vertices.map(id => nodes.get(id)!))} fill={(groupSelected(floor.id) || selected === floor.id) ? '#177986' : '#405a76'} fillOpacity=".55" stroke="#7694b8" strokeWidth={1 / view.scale} />)}
+        {visible.floors.map(floor => <polygon key={floor.id} data-entity={floor.id} points={polygon(floor.vertices.map(id => nodes.get(id)!))} fill={paint(floor)} fillOpacity={.55} stroke={(groupSelected(floor.id) || selected === floor.id) ? '#36b8c8' : '#7694b8'} strokeWidth={1 / view.scale} />)}
         {displayedImages.map(image => {
           const [a,b,c] = image.corners.map(p => ({ x: p.x * metersPerSceneUnit, z: p.z * metersPerSceneUnit }));
           if (![a.x,a.z,b.x,b.z,c.x,c.z].every(Number.isFinite)) return null;
@@ -929,8 +976,8 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
             {selectedModel?.id === image.id && !selectedModel.locked && onSaveModel && !disabled && !modelBusy && <circle data-model-resize={image.id} cx={corners[2].x} cy={corners[2].z} r={6 / view.scale} fill="#facc15" stroke="#101827" strokeWidth={1 / view.scale} style={{ cursor: 'nwse-resize' }} onPointerDown={event => startModel(event, image.id, true)} />}
           </g>;
         })}
-        {visible.roofs.map(roof => { const points = roof.vertices.map(id => nodes.get(id)!); return <g key={roof.id} data-entity={roof.id} data-roof={roof.kind}><polygon points={polygon(points)} fill="#c084fc" fillOpacity={(groupSelected(roof.id) || selected === roof.id) ? .18 : .06} stroke="#c084fc" strokeWidth={3 / view.scale} pointerEvents="stroke" /></g>; })}
-        {visible.walls.map(wall => <g key={wall.id}><polygon data-entity={wall.id} points={polygon(wallFootprint(displayDocument, wall))} fill={(groupSelected(wall.id) || selected === wall.id) ? '#36b8c8' : '#b4c8df'} stroke="#5b8baf" strokeWidth={1 / view.scale} /><line data-entity={wall.id} x1={nodes.get(wall.start)!.x} y1={nodes.get(wall.start)!.z} x2={nodes.get(wall.end)!.x} y2={nodes.get(wall.end)!.z} stroke="transparent" strokeWidth={Math.max(wall.thickness, 10 / view.scale)} />{measurementsVisible && <text data-measurement={wall.id} x={(nodes.get(wall.start)!.x + nodes.get(wall.end)!.x) / 2} y={(nodes.get(wall.start)!.z + nodes.get(wall.end)!.z) / 2 - .2} fill="#dde8f6" fontSize={11 / view.scale} textAnchor="middle" pointerEvents="none">{formatPlanLength(distance(nodes.get(wall.start)!, nodes.get(wall.end)!), measurementUnits)}</text>}</g>)}
+        {visible.roofs.map(roof => { const points = roof.vertices.map(id => nodes.get(id)!); return <g key={roof.id} data-entity={roof.id} data-roof={roof.kind}><polygon points={polygon(points)} fill={paint(roof)} fillOpacity={roof.appearance?.color || roof.appearance?.texture ? 1 : (groupSelected(roof.id) || selected === roof.id) ? .18 : .06} stroke={groupSelected(roof.id) || selected === roof.id ? '#facc15' : planObjectColor(roof)} strokeWidth={3 / view.scale} pointerEvents="stroke" /></g>; })}
+        {visible.walls.map(wall => <g key={wall.id}><polygon data-entity={wall.id} points={polygon(wallFootprint(displayDocument, wall))} fill={paint(wall)} stroke={(groupSelected(wall.id) || selected === wall.id) ? '#36b8c8' : '#5b8baf'} strokeWidth={1 / view.scale} /><line data-entity={wall.id} x1={nodes.get(wall.start)!.x} y1={nodes.get(wall.start)!.z} x2={nodes.get(wall.end)!.x} y2={nodes.get(wall.end)!.z} stroke="transparent" strokeWidth={Math.max(wall.thickness, 10 / view.scale)} />{measurementsVisible && <text data-measurement={wall.id} x={(nodes.get(wall.start)!.x + nodes.get(wall.end)!.x) / 2} y={(nodes.get(wall.start)!.z + nodes.get(wall.end)!.z) / 2 - .2} fill="#dde8f6" fontSize={11 / view.scale} textAnchor="middle" pointerEvents="none">{formatPlanLength(distance(nodes.get(wall.start)!, nodes.get(wall.end)!), measurementUnits)}</text>}</g>)}
         {labelsVisible && [...visible.walls, ...visible.floors, ...visible.roofs].filter(entity => entity.name).map(entity => {
           const ring = ("vertices" in entity ? entity.vertices : [entity.start, entity.end]).map(id => nodes.get(id)!);
           const x = ring.reduce((sum,p) => sum+p.x,0)/ring.length, z = ring.reduce((sum,p) => sum+p.z,0)/ring.length;
@@ -938,34 +985,38 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
         })}
         {visible.openings.map(opening => {
           const footprint = openingFootprint(displayDocument, opening), host = displayDocument.walls.find(w => w.id === opening.wallId)!, frame = wallFrame(displayDocument, host);
-          const a = frame.point(opening.offset), b = frame.point(opening.offset + opening.width), color = (groupSelected(opening.id) || selected === opening.id) ? '#facc15' : opening.kind === 'door' ? '#f0ab65' : '#67e8f9';
+          const a = frame.point(opening.offset), b = frame.point(opening.offset + opening.width), color = planObjectColor(opening);
           const width = opening.width;
           const sign = opening.operation === 'outward' ? 1 : -1;
           const hinged = opening.operation !== 'slidingGlass' && opening.operation !== 'slidingWood';
           const open = doorIsOpen(opening);
-          return <g key={opening.id} data-entity={opening.id} data-opening={opening.kind}><polygon points={polygon(footprint)} fill="#091423" stroke={color} strokeWidth={1.5 / view.scale} /><line x1={a.x} y1={a.z} x2={b.x} y2={b.z} stroke={color} strokeWidth={3 / view.scale} strokeDasharray={opening.kind === 'door' && !opening.operation ? `${5 / view.scale} ${3 / view.scale}` : undefined} /><line x1={a.x} y1={a.z} x2={b.x} y2={b.z} stroke="transparent" strokeWidth={Math.max(host.thickness, 12 / view.scale)} />{opening.kind === 'door' && (opening.operation || opening.isOpen !== undefined) && <g data-door-operation={opening.operation ?? 'inward'} transform={'translate(' + a.x + ' ' + a.z + ') rotate(' + Math.atan2(frame.dz,frame.dx)*180/Math.PI + ')'} fill="none" stroke={color} strokeWidth={1.5/view.scale}>
+          return <g key={opening.id} data-entity={opening.id} data-opening={opening.kind}><polygon points={polygon(footprint)} fill={paint(opening)} stroke={groupSelected(opening.id) || selected === opening.id ? '#facc15' : color} strokeWidth={1.5 / view.scale} /><line x1={a.x} y1={a.z} x2={b.x} y2={b.z} stroke={color} strokeWidth={3 / view.scale} strokeDasharray={opening.kind === 'door' && !opening.operation ? `${5 / view.scale} ${3 / view.scale}` : undefined} /><line x1={a.x} y1={a.z} x2={b.x} y2={b.z} stroke="transparent" strokeWidth={Math.max(host.thickness, 12 / view.scale)} />{opening.kind === 'door' && (opening.operation || opening.isOpen !== undefined) && <g data-door-operation={opening.operation ?? 'inward'} transform={'translate(' + a.x + ' ' + a.z + ') rotate(' + Math.atan2(frame.dz,frame.dx)*180/Math.PI + ')'} fill="none" stroke={color} strokeWidth={1.5/view.scale}>
             {opening.operation === 'garage' ? <rect x={0} y={open ? -opening.height : -host.thickness/4}
               width={width} height={open ? opening.height : host.thickness/2}
               strokeDasharray={open ? 4/view.scale : undefined} /> : hinged ? <>
               <line x1={0} y1={0} x2={open ? 0 : width} y2={open ? sign * width : 0} />
               {open && <path d={['M',width,0,'A',width,width,0,0,sign > 0 ? 1 : 0,0,sign*width].join(' ')} strokeDasharray={3/view.scale} />}
-            </> : <g stroke={opening.operation === 'slidingGlass' ? '#8ed8f1' : '#bd8559'} strokeWidth={3/view.scale}>
+            </> : <g stroke={color} strokeWidth={3/view.scale}>
               <line x1={0} x2={width/2} y1={-host.thickness/4} y2={-host.thickness/4} />
               <line x1={open ? 0 : width/2} x2={open ? width/2 : width} y1={host.thickness/4} y2={host.thickness/4} />
             </g>}
           </g>}{labelsVisible && <text x={(a.x + b.x) / 2} y={(a.z + b.z) / 2 + .35} fill={color} fontSize={11 / view.scale} textAnchor="middle" pointerEvents="none">{opening.name ?? (opening.kind === 'wall-cutout' ? 'Wall Cutout' : opening.kind === 'door' ? (opening.operation === 'garage' ? 'Garage Door' : 'Door') : 'Window')}</text>}</g>;
         })}
-        {visible.roofOpenings.map(opening => { const points = roofOpeningFootprint(displayDocument, opening), center = points.reduce((sum, p) => ({ x: sum.x + p.x / points.length, z: sum.z + p.z / points.length }), { x: 0, z: 0 }); const color = (groupSelected(opening.id) || selected === opening.id) ? '#facc15' : opening.kind === 'skylight' ? '#67e8f9' : '#fb923c'; return <g key={opening.id} data-entity={opening.id} data-roof-opening={opening.kind}><polygon points={polygon(points)} fill={opening.kind === 'skylight' ? '#164e63' : '#091423'} fillOpacity={opening.kind === 'skylight' ? .65 : .9} stroke={color} strokeWidth={2 / view.scale} />{labelsVisible && <text x={center.x} y={center.z} fill={color} fontSize={10 / view.scale} textAnchor="middle" pointerEvents="none">{opening.name ?? (opening.kind === 'skylight' ? 'Skylight' : 'Cutout')}</text>}</g>; })}
+        {visible.roofOpenings.map(opening => { const points = roofOpeningFootprint(displayDocument, opening), center = points.reduce((sum, p) => ({ x: sum.x + p.x / points.length, z: sum.z + p.z / points.length }), { x: 0, z: 0 }); const color = (groupSelected(opening.id) || selected === opening.id) ? '#facc15' : planObjectColor(opening); return <g key={opening.id} data-entity={opening.id} data-roof-opening={opening.kind}><polygon points={polygon(points)} fill={paint(opening)} fillOpacity={opening.kind === 'skylight' ? .65 : .9} stroke={color} strokeWidth={2 / view.scale} />{labelsVisible && <text x={center.x} y={center.z} fill={color} fontSize={10 / view.scale} textAnchor="middle" pointerEvents="none">{opening.name ?? (opening.kind === 'skylight' ? 'Skylight' : 'Cutout')}</text>}</g>; })}
         {measurementsVisible && <g pointerEvents="none" fill="#dde8f6" fontSize={11 / view.scale} textAnchor="middle">
+          {planDimensionChains([
+            ...visible.walls.flatMap(wall => [nodes.get(wall.start)!, nodes.get(wall.end)!]),
+            ...visible.floors.flatMap(floor => floor.vertices.map(id => nodes.get(id)!)),
+          ], view.scale, measurementUnits)}
           {[...visible.floors, ...visible.roofs].map(entity => {
             const points = entity.vertices.map(id => nodes.get(id)!);
             const xs = points.map(p => p.x), zs = points.map(p => p.z);
             const minX = Math.min(...xs), maxX = Math.max(...xs), minZ = Math.min(...zs), maxZ = Math.max(...zs);
-            return <text key={entity.id} data-measurement={entity.id} x={(minX + maxX) / 2} y={maxZ + .3}>{formatPlanLength(maxX-minX, measurementUnits)} ? {formatPlanLength(maxZ-minZ, measurementUnits)}</text>;
+            return <text key={entity.id} data-measurement={entity.id} x={(minX + maxX) / 2} y={maxZ + .3}>{formatPlanLength(maxX-minX, measurementUnits)} × {formatPlanLength(maxZ-minZ, measurementUnits)}</text>;
           })}
-          {visible.openings.map(opening => { const points = openingFootprint(displayDocument, opening); return <text key={opening.id} data-measurement={opening.id} x={points.reduce((sum,p)=>sum+p.x/points.length,0)} y={Math.max(...points.map(p=>p.z))+.65}>{formatPlanLength(opening.width, measurementUnits)} ? {formatPlanLength(opening.height, measurementUnits)}</text>; })}
-          {visible.roofOpenings.map(opening => { const points = roofOpeningFootprint(displayDocument, opening); return <text key={opening.id} data-measurement={opening.id} x={points.reduce((sum,p)=>sum+p.x/points.length,0)} y={Math.max(...points.map(p=>p.z))+.3}>{formatPlanLength(opening.width, measurementUnits)} ? {formatPlanLength(opening.length, measurementUnits)}</text>; })}
-          {modelImages.map(image => { const [a,b,c] = image.corners; return <text key={image.id} data-measurement={image.id} x={(b.x+c.x)/2*metersPerSceneUnit} y={Math.max(a.z,b.z,c.z,b.z+c.z-a.z)*metersPerSceneUnit+.3}>{formatPlanLength(distance(a,b)*metersPerSceneUnit,measurementUnits)} ? {formatPlanLength(distance(a,c)*metersPerSceneUnit,measurementUnits)}</text>; })}
+          {visible.openings.map(opening => { const points = openingFootprint(displayDocument, opening); return <text key={opening.id} data-measurement={opening.id} x={points.reduce((sum,p)=>sum+p.x/points.length,0)} y={Math.max(...points.map(p=>p.z))+.65}>{formatPlanLength(opening.width, measurementUnits)} × {formatPlanLength(opening.height, measurementUnits)}</text>; })}
+          {visible.roofOpenings.map(opening => { const points = roofOpeningFootprint(displayDocument, opening); return <text key={opening.id} data-measurement={opening.id} x={points.reduce((sum,p)=>sum+p.x/points.length,0)} y={Math.max(...points.map(p=>p.z))+.3}>{formatPlanLength(opening.width, measurementUnits)} × {formatPlanLength(opening.length, measurementUnits)}</text>; })}
+          {modelImages.map(image => { const [a,b,c] = image.corners; return <text key={image.id} data-measurement={image.id} x={(b.x+c.x)/2*metersPerSceneUnit} y={Math.max(a.z,b.z,c.z,b.z+c.z-a.z)*metersPerSceneUnit+.3}>{formatPlanLength(distance(a,b)*metersPerSceneUnit,measurementUnits)} × {formatPlanLength(distance(a,c)*metersPerSceneUnit,measurementUnits)}</text>; })}
         </g>}
         {editableCutout && roofOpeningFootprint(displayDocument, displayDocument.roofOpenings.find(o => o.id === editableCutout.id) ?? editableCutout).map((a, index, ring) => {
           const b = ring[(index + 1) % ring.length];

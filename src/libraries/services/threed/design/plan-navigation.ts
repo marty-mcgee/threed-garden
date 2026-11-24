@@ -25,10 +25,13 @@ export function rulerTicks(origin: number, scale: number, extent: number, units:
   });
 }
 
-/** Compact object dimensions; preserve fractional inches without a 12-inch carry error. */
+/** Compact object dimensions; round before splitting feet and inches. */
 export function formatPlanLength(metres: number, units: 'imperial' | 'metric'): string {
-  if (units === 'metric') return `${Number(metres.toFixed(3))} m`;
-  const inches = Math.round(Math.abs(metres / INCH) * 100) / 100;
-  const feet = Math.floor(inches / 12), remainder = Number((inches - feet * 12).toFixed(2));
-  return `${metres < 0 ? '-' : ''}${feet}'${remainder}"`;
+  if (units === 'metric') {
+    if (metres !== 0 && Math.abs(metres) < 1) return Math.round(metres * 100) + ' cm';
+    return Math.round(metres) + ' m';
+  }
+  const inches = Math.round(Math.abs(metres) / INCH);
+  const feet = Math.floor(inches / 12), remainder = inches % 12;
+  return `${metres < 0 && inches > 0 ? '-' : ''}${feet}'${remainder}"`;
 }

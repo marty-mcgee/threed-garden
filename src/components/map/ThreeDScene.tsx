@@ -2222,6 +2222,7 @@ export function ThreeDScene({
   const [showGrid, setShowGrid] = useState(false);
   const [showSensors, setShowSensors] = useState(false);
   const [showSimulations, setShowSimulations] = useState(true);
+  const [designTransparencyValue, setDesignTransparencyValue] = useState(50);
   const [designTransparency, setDesignTransparency] = useState(initialViewState?.designTransparency ?? projectAppearance?.designTransparency ?? false);
   useEffect(() => setDesignTransparency(initialViewState?.designTransparency ?? projectAppearance?.designTransparency ?? false), [projectId, initialViewState?.designTransparency, projectAppearance?.designTransparency]);
   const sensorsOverlay = useProjectOverlayPosition('sensors');
@@ -3621,6 +3622,7 @@ export function ThreeDScene({
               {autoRotate ? 'Pause Rotation' : 'Auto-Rotate'}
             </button>
             <button onClick={() => setDesignTransparency(!designTransparency)} aria-pressed={designTransparency} className="flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs text-foreground/70 hover:bg-foreground/10 hover:text-foreground"><Blend aria-hidden="true" className="h-3.5 w-3.5 shrink-0" />{designTransparency ? 'Hide' : 'Show'} Design Transparency</button>
+            <label className="block px-2 py-1 text-xs">Transparency {designTransparencyValue}% <input type="range" min="0" max="100" disabled={!designTransparency} value={designTransparencyValue} onChange={e => setDesignTransparencyValue(Number(e.target.value))} /></label>
             <button onClick={() => setShowGrid(!showGrid)} aria-pressed={showGrid} className={`flex w-full items-center gap-2 rounded px-2 py-1 text-left text-xs transition-colors ${showGrid ? 'bg-foreground/10 text-foreground' : 'text-foreground/70 hover:bg-foreground/10 hover:text-foreground'}`}>
               <Grid3X3 className="h-3.5 w-3.5" />
               {showGrid ? 'Hide Grid' : 'Show Grid'}
@@ -3774,7 +3776,7 @@ export function ThreeDScene({
         gl={{ antialias: true, alpha: false, toneMapping: THREE.ACESFilmicToneMapping, toneMappingExposure: 1.0 }}
         shadows={{ type: THREE.PCFShadowMap }}
       >
-        {projectId && architecture && <DesignSceneObjects transparent={designTransparency} document={architecture} projectId={projectId} metersPerSceneUnit={metersPerSceneUnit} selected={selectedArchitectureId} onSelect={onArchitectureSelect} visibleLevelId={architectureLevelId} showRoofs={architectureShowRoofs} visible={activeLayers.has('designs')} />}
+        {projectId && architecture && <DesignSceneObjects transparencyValue={designTransparencyValue} transparent={designTransparency} document={architecture} projectId={projectId} metersPerSceneUnit={metersPerSceneUnit} selected={selectedArchitectureId} onSelect={onArchitectureSelect} visibleLevelId={architectureLevelId} showRoofs={architectureShowRoofs} visible={activeLayers.has('designs')} />}
         <SceneHoverTitlePosition markerId={hoveredSceneMarker ? String(hoveredSceneMarker.id) : undefined} point={hoveredSceneMarkerIdentity?.point} labelRef={hoverTitleRef} />
         <SceneFrameReadyNotifier
           key={presentationKey}

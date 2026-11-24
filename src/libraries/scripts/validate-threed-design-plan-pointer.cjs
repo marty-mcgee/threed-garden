@@ -191,8 +191,9 @@ function fixture(overrides = {}) {
   assert(flatten(f.tree).some(n => n.props?.['data-selection-box'] === ''));
   f.pointer('onPointerUp', 60, 60);
   assert.equal(f.calls.commit.length, 0);
-  const highlighted = flatten(f.tree).filter(n => n.props?.fill === '#36b8c8');
+  const highlighted = flatten(f.tree).filter(n => n.props?.stroke === '#36b8c8');
   assert.equal(f.props.selected, null, 'Box selection leaves individual objects inactive.');
+  assert.equal(highlighted[0]?.props.fill, '#b4c8df', 'Selection preserves the Wall base color');
   assert.deepEqual(highlighted.map(n => n.props['data-entity']), ['w0']);
   f.pointer('onPointerDown', 130, 80, {entity:'w0'});
   assert.equal(f.props.selected, null, 'Dragging the group leaves individual objects inactive.');
@@ -578,16 +579,18 @@ console.log('PASS: missing/failed Top View footprints, stable identity, pointer/
 console.log('PASS: locked plan Models retain selection, suppress movement/resize handles and cancel pending gestures without writes.');
 
 {
+  assert.equal(navigation.formatPlanLength(.357,'metric'), '36 cm');
   assert.equal(navigation.formatPlanLength(.762,'imperial'), "2'6\"");
   assert.equal(navigation.formatPlanLength(.3048-.000001,'imperial'), "1'0\"");
   const f = fixture();
   assert.equal(flatten(f.tree).filter(node=>node.props?.['data-measurement']).length,0);
-  flatten(f.tree).find(node=>node.type==='action'&&node.props.label==='Show Measurements').props.onClick();f.flush();
+  flatten(f.tree).find(node=>node.type==='action'&&node.props.label==='Show Dimensions').props.onClick();f.flush();
+  assert(flatten(f.tree).some(node => node.props?.['data-dimension-span'] === 'x'));
   const wallLabel=flatten(f.tree).find(node=>node.props?.['data-measurement']==='w0');assert.equal(wallLabel.props.children,"10'0\"");
   assert(flatten(f.tree).some(node=>node.props?.['data-measurement']==='floor'));
-  const toggle=flatten(f.tree).find(node=>node.type==='action'&&node.props.label==='Hide Measurements');assert.equal(toggle.props['aria-pressed'],true);toggle.props.onClick();f.flush();
+  const toggle=flatten(f.tree).find(node=>node.type==='action'&&node.props.label==='Hide Dimensions');assert.equal(toggle.props['aria-pressed'],true);toggle.props.onClick();f.flush();
   assert.equal(flatten(f.tree).filter(node=>node.props?.['data-measurement']).length,0);assert.equal(f.calls.commit.length,0);
-  const metric=fixture({showMeasurements:true,measurementUnits:'metric'});assert.equal(flatten(metric.tree).find(node=>node.props?.['data-measurement']==='w0').props.children,'3.048 m');
+  const metric=fixture({showMeasurements:true,measurementUnits:'metric'});assert.equal(flatten(metric.tree).find(node=>node.props?.['data-measurement']==='w0').props.children,'3 m');
 }
 console.log('PASS: measurement labels default hidden, actual toolbar toggle and active state, compact Imperial inches carry, Metric labels and no geometry/history mutations.');
 
@@ -595,12 +598,12 @@ console.log('PASS: measurement labels default hidden, actual toolbar toggle and 
   let chosen = 0;
   const f = fixture({ contextActions: [{label:'Structures',color:'text-emerald-700',actions:[{label:'Wall',icon:'wall-icon',active:true,run:()=>chosen++},{label:'Undo',icon:'undo-icon',disabled:true,run:()=>{throw Error('Disabled action');}}]}] });
   const items = () => flatten(f.tree).filter(node=>node.type==='ContextMenuItem');
-  assert.deepEqual(items().map(node=>flatten(node).find(child=>child.type==='span')?.props.children), ['Wall','Undo','Hide Object Labels','Show Measurements','Fit Plan','Zoom to Selection','Reset View']);
+  assert.deepEqual(items().map(node=>flatten(node).find(child=>child.type==='span')?.props.children), ['Wall','Undo','Hide Object Labels','Show Dimensions','Fit Plan','Zoom to Selection','Reset View']);
   assert(flatten(items()[0]).some(node=>node.type==='wall-icon'));
   assert(flatten(items()[0]).some(node=>node.props?.children==='Selected'));
   assert.equal(items()[1].props.disabled,true);
   items()[0].props.onSelect(); assert.equal(chosen,1);
-  items().find(item=>flatten(item).some(n=>n.props?.children==='Show Measurements')).props.onSelect();f.flush();assert(flatten(f.tree).some(node=>node.props?.['data-measurement']));
+  items().find(item=>flatten(item).some(n=>n.props?.children==='Show Dimensions')).props.onSelect();f.flush();assert(flatten(f.tree).some(node=>node.props?.['data-measurement']));
   f.pointer('onPointerDown',350,210,{button:2});assert.equal(f.captures.size,0);assert.equal(f.calls.commit.length,0);
   const content=flatten(f.tree).find(node=>node.type==='ContextMenuContent');let stopped=false;content.props.onKeyDown({stopPropagation(){stopped=true;}});assert(stopped,'Menu keyboard events must not reach drawing shortcuts.');
 }

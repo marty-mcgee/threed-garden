@@ -1,8 +1,8 @@
 {
   "generatedAt": "2026-11-23",
   "branch": "main",
-  "head": "d41ad92c6250c9d0b018c8d0a70fc90352979c46",
-  "version": "0.36.6",
+  "head": "880b1762ff20f731701c2b40016ff778f9ec09fe",
+  "version": "0.37.0",
   "summary": {
     "tables": 94,
     "columns": 1296,
@@ -7402,7 +7402,7 @@
         },
         {
           "name": "threed_designs_document_valid",
-          "expression": "coalesce(jsonb_typeof(\"threed_designs\".\"document\") = 'object' AND \"threed_designs\".\"document\"->>'format' = 'threed-home-design' AND \"threed_designs\".\"document\"->>'units' = 'metres' AND \"threed_designs\".\"document\"->'version' = to_jsonb(\"threed_designs\".\"format_version\") AND \"threed_designs\".\"format_version\" IN (5, 6, 7, 8, 9, 10) AND \"threed_designs\".\"document\"->>'name' = \"threed_designs\".\"name\" AND length(trim(\"threed_designs\".\"name\")) > 0, false)"
+          "expression": "coalesce(jsonb_typeof(\"threed_designs\".\"document\") = 'object' AND \"threed_designs\".\"document\"->>'format' = 'threed-home-design' AND \"threed_designs\".\"document\"->>'units' = 'metres' AND \"threed_designs\".\"document\"->'version' = to_jsonb(\"threed_designs\".\"format_version\") AND \"threed_designs\".\"format_version\" IN (5, 6, 7, 8, 9, 10, 11) AND \"threed_designs\".\"document\"->>'name' = \"threed_designs\".\"name\" AND length(trim(\"threed_designs\".\"name\")) > 0, false)"
         }
       ],
       "uniqueConstraints": [],
@@ -24686,7 +24686,7 @@
     }
   ],
   "sourceHashes": {
-    "src/app/api/project/threed-markers/route.ts": "345c1f4520cc9491c87df43f4f83c2c31af433f240b7bc027b466a797073c6d0",
+    "src/app/api/project/threed-markers/route.ts": "db48b26b7da621ca5c5acdbe4d9bd47ddd0cb8945eab68f481ca4972b694b713",
     "src/libraries/project-assets/asset-registry.ts": "11186c7b6bde44bbc5b06a3c5c3aaf0cebfc8ee4fc806dfe4b150ad9308c470d",
     "src/libraries/schema/auth/index.ts": "df98d02c496180eea94d986d92634deee72a10a2bb264cdc073775c1b72374b4",
     "src/libraries/schema/auth/user-role-audit.ts": "9e207990b630615acbe5f77622dbf586275f1777b401e83e46f29c518c3220e7",
@@ -24697,7 +24697,7 @@
     "src/libraries/schema/settings/index.ts": "36c9ce83d70c4517b44952899574a47c68798551b3c1a63992819e89063ced55",
     "src/libraries/schema/threed/album-associations.ts": "f1dfc1d4701a484c1d0b8cd8582768aa61b9585b19a6d3c693ab9c2cc619dff8",
     "src/libraries/schema/threed/groups.ts": "c74c0789eb35c6d2894b5d935d84680b75d50549bc785515afbca6bb46e505f7",
-    "src/libraries/schema/threed/index.ts": "b607a0bdf56ab9da6cf78b97172b5b13ca2bf925094f72b740ea64ee980a72aa",
+    "src/libraries/schema/threed/index.ts": "0e8ddad39c83a0a27584545f297c9c7d7d7831526d11bcd7ef74add3a1857fc5",
     "src/libraries/schema/traffic/index.ts": "d15d70e180a2cbacc693fb1c9ea8575585125fe7f7e0fdc7a4daee22d316568e",
     "src/libraries/services/threed/multimedia/album-entity-registry.ts": "68fad922b0b7db61f188d68322e8e05437a2e7911dca0b9325fa8e7ee9d9c83b"
   },

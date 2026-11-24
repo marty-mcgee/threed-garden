@@ -2,6 +2,12 @@
 
 Open `/dashboard/scene`, choose a Project, and select a ThreeD marker to open its **DetailsCard**. Sign in and own the Project to edit and save its content. For a first session, start with [Getting Started](GETTING_STARTED.md).
 
+In the Design toolbar, choose **Show Dimensions** beside the object Labels toggle to display measurements in Project units. The top and left dimension lines mark spans between visible Wall endpoints and Floor corners. An outer line gives the total when there are intermediate points. Zoom in to read closely spaced dimensions. Canvas dimensions round to whole inches or metres, with centimetres for metric spans under one metre. Design Properties retains editing precision.
+
+Select a Wall, Floor, Roof, Door, Window, or Skylight and open **Design Properties ? Appearance**. The color picker starts at the object type's plan color. Pick a swatch or enter a six-digit hex color and press Enter. Choose a Color, a saved Texture, or a 3D Scene transparency value from 0% (opaque) to 100% (transparent). Use **Reset appearance** to restore the native material. **Save Project** keeps the finish. Cutouts have a 2D appearance and remain holes in 3D.
+
+In the Scene menu, **Show Design Transparency** sets a temporary transparency percentage for the 3D Scene. Clear **Scene Default** in Appearance to enter an object transparency from 0 to 100. Check it again to inherit the Scene setting. An explicit object transparency takes precedence over the Scene percentage, including 0% (opaque). An explicit object color takes precedence over its type color. Reset appearance restores the defaults.
+
 ## Dashboard workspace header
 
 ![Design combines Scene and editable plan; 3D shows the Scene; 2D shows a map; Combined shows Scene and map.](../../public/learn/illustrations/view-modes.svg)

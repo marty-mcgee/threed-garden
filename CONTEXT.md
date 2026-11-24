@@ -2,9 +2,11 @@
 
 ## Current checkpoint
 
-The current documentation and metadata checkpoint is [v0.36.6 - Release Documentation and Metadata Preparation](docs/releases/v0.36.6.md).
+Preparing [v0.37.0 - ThreeD Design: Canvas Dimensions and Object Appearance](docs/releases/v0.37.0.md). Marty confirmed the Design v11 migration for saved per-object appearance was applied.
 
-The Developer confirmed [v0.36.5 - ThreeD Design: Hinged, Sliding and Garage Door Operations](docs/releases/v0.36.5.md#production-status) reached production. Application of the Design v10 database migration remains unconfirmed.
+The Developer confirmed [v0.36.6 - ThreeD Design: Hinged, Sliding and Garage Door Operations](docs/releases/v0.36.6.md#production-status) reached production on November 23, 2026.
+
+The Developer confirmed [v0.36.5 - ThreeD Design: Hinged, Sliding and Garage Door Operations](docs/releases/v0.36.5.md#production-status) reached production. The Developer subsequently confirmed the Design v10 migration was applied and is working in production.
 
 The Developer confirmed [v0.36.4 - Retire the ThreeD Layers Module and Keep Scene Visibility Controls](docs/releases/v0.36.4.md#production-status) reached production. The Developer also confirmed the metadata and schema snapshot follow-up reached production. Scene Visibility controls runtime categories, Levels organize Design geometry by storey, and ThreeD Groups keep named object selections. The next focus is 2D Canvas Design. Start with the [canvas controls](docs/users/THREED_CONTROLS.md) and the [pointer interaction checks](src/libraries/scripts/validate-threed-design-plan-pointer.cjs).
 
