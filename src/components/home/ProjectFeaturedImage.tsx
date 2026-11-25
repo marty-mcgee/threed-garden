@@ -7,13 +7,17 @@ import { PROJECT_CAPTURES } from '@/libraries/config/project-showcase';
 
 export function ProjectFeaturedImage({ projectId, featured_image }: { projectId: number; featured_image?: string | null }) {
   const capture = PROJECT_CAPTURES.find(project => project.id === projectId);
-  const source = featured_image === undefined ? capture?.featured_image : featured_image;
+  // Project 18 shares the v003 workspace screenshot when its card has no saved image.
+  const useInglenookScreenshot = projectId === 18 && !featured_image;
+  const source = useInglenookScreenshot
+    ? '/learn/screenshots/inglenook-home-design-project-20.webp'
+    : featured_image === undefined ? capture?.featured_image : featured_image;
   const [failedSource, setFailedSource] = useState<string | null>(null);
   return <div className="mb-3 aspect-video overflow-hidden rounded-md border bg-muted/30">
     {source && failedSource !== source ? <Image
       src={source}
       unoptimized
-      alt={source === capture?.featured_image ? capture.alt : 'Project featured image'}
+      alt={useInglenookScreenshot ? 'Inglenook Home Design v003 showing the site plan, 3D home and editable floor plan.' : source === capture?.featured_image ? capture.alt : 'Project featured image'}
       width={1920}
       height={1080}
       sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"

@@ -72,11 +72,35 @@ export const guideIllustrations = {
 
 export type GuideIllustrationTopic = keyof typeof guideIllustrations;
 
+const projectScreenshotCaptions: Partial<Record<GuideIllustrationTopic, string>> = {
+  'draw-room': 'Follow the wall and roof outlines on the plan below, then look at the same home in the Scene above.',
+  'view-modes': 'Design mode shows the editable floor plan below the 3D Scene. The Level controls sit along the bottom of the plan.',
+  'project-multimedia': 'The reference viewer keeps the photographed site plan beside the house while you work. Its bottom toolbar includes zoom and fit controls.'
+};
+
 export function getGuideIllustration(topic: string) {
   if (!Object.hasOwn(guideIllustrations, topic)) return null;
   const key = topic as GuideIllustrationTopic;
+  if (key === 'first-project') return {
+    src: '/learn/screenshots/dashboard-open-project.webp',
+    alt: 'Dashboard cards for Inglenook Home Design and Fun House, each with a featured image and an Open Project button.',
+    label: 'Dashboard, captured November 25, 2026.',
+    caption: 'Under Your available Projects, find Inglenook Home Design and choose Open Project below its image to explore the house.',
+    width: 842,
+    height: 545
+  };
+  const caption = projectScreenshotCaptions[key];
+  if (caption) return {
+    src: '/learn/screenshots/inglenook-home-design-project-20.webp',
+    alt: 'Inglenook Home Design v003 with a site plan photo beside the 3D house and its editable floor plan below.',
+    label: 'Hero Project #20, captured November 25, 2026.',
+    caption,
+    width: 2152,
+    height: 1351
+  };
   return {
     ...guideIllustrations[key],
+    label: 'Conceptual illustration.',
     src: `/learn/illustrations/${key}.svg`,
     width: 1200,
     height: 640

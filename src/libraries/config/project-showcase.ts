@@ -30,6 +30,18 @@ export const PROJECT_SHOWCASE = [
 export const PROJECT_CAPTURES = [
   ...PROJECT_SHOWCASE,
   {
+    id: 18,
+    title: 'Inglenook Home Design',
+    featured_image: '/home/showcase/inglenook-project-18.webp',
+    alt: 'Inglenook house walls positioned over an aerial site image.',
+  },
+  {
+    id: 20,
+    title: 'Inglenook Home Design v003',
+    featured_image: '/home/showcase/inglenook-project-20.webp',
+    alt: 'Inglenook house with intersecting roof planes and a driveway in the 3D Scene.',
+  },
+  {
     id: 16,
     title: 'ThreeD Physics: Bouncy Castle v001',
     featured_image: '/home/showcase/bouncy-castle-project.png',

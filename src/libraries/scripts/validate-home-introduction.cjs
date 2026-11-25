@@ -121,6 +121,11 @@ async function main() {
   assert.equal(find(imageTree, node => Boolean(node.props?.src)).props.src, 'https://example.com/replacement.png');
   assert(text(imageHooks.render(() => ProjectFeaturedImage({ projectId: 17, featured_image: null }))).includes('No featured image'));
   assert(text(imageHooks.render(() => ProjectFeaturedImage({ projectId: 999 }))).includes('No featured image'));
+  for (const featured_image of [null, undefined, '/custom.png']) {
+    const card = imageHooks.render(() => ProjectFeaturedImage({ projectId: 18, featured_image }));
+    assert.equal(find(card, node => Boolean(node.props?.src)).props.src,
+      featured_image ?? '/learn/screenshots/inglenook-home-design-project-20.webp');
+  }
   const intro = load('src/components/home/HomeIntroduction.tsx', modules);
   const html = renderToStaticMarkup(React.createElement(load('src/app/page.tsx', { ...modules, '@/components/home/HomeIntroduction': intro }).default));
   for (const phrase of ['Plan your space.', 'Real Projects.', 'A simple place to start.', 'Before you get started.']) assert(html.includes(phrase), 'Initial HTML includes '+phrase);

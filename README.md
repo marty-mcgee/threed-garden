@@ -1,10 +1,6 @@
 # 🥕 ThreeD App
 
-### Plan your space. Build your world. Bring it to life.
-
-**ThreeD App** is an open-source workspace for planning spaces and creating interactive 3D experiences. Draw a building, arrange a garden, organize reusable Models, and explore your Project through linked plans, maps, and 3D views.
-
-The application is developed in the **ThreeD Garden** repository and is available at [threedgarden.com](https://threedgarden.com/). Characters, supported physical interactions, and Multimedia help bring your Projects to life.
+Draw walls, floors and roofs on the 2D Design Canvas and see them in the 3D Scene. Use reference photos while you draw, place reusable Models, and save a new version to explore another layout. Try [ThreeD App](https://threedgarden.com/) or follow the [first Project guide](docs/users/GETTING_STARTED.md).
 
 [![Repository validation](https://github.com/marty-mcgee/threed-garden/actions/workflows/validation.yml/badge.svg?branch=main)](https://github.com/marty-mcgee/threed-garden/actions/workflows/validation.yml)
 ![License: MIT](https://img.shields.io/badge/License-MIT-22c55e)
@@ -16,28 +12,21 @@ The application is developed in the **ThreeD Garden** repository and is availabl
 
 [Latest features](#latest-features) · [Why build with ThreeD App?](#why-build-with-threed-app) · [Structural basics](#structural-basics) · [Modules](#modules)
 
-![ThreeD Soccer Project showing Farmer Kate selected in DetailsCard, Project Assets, the TRADE Album player paused, and the soccer field in the 3D Scene and 2D Design plan](docs/images/v0.31.11/project-soccer-character-multimedia.png)
+![A site plan photo beside the Inglenook home in the 3D Scene, with its floor plan and roof outlines on the 2D Design Canvas below](docs/images/v0.38.1/inglenook-home-design-project-20.webp)
 
-*Captured November 5, 2026 in the local ThreeD App: explore a soccer Project with Character controls, Project Multimedia, and linked 3D Scene and 2D Design views.*
-
-![ThreeD App Project workspace with the Model Library, locked Model DetailsCard, 3D Scene, and linked 2D Design plan](docs/images/v0.30.2/project-design-workspace.png)
-
-*ThreeD App v0.30.2, captured November 2, 2026: browse reusable Models, inspect a locked placement, and work with a linked 3D Scene and 2D Design plan.*
+*Inglenook Home Design v003, Hero Project #20. Captured November 25, 2026.*
 
 ## Latest features
 
-Developer-confirmed production release: **[v0.32.1](docs/releases/v0.32.1.md)**. Recent releases bring a more consistent Admin experience, account management, shared App styling, and richer content workflows:
+**v0.38.1 - ThreeD Object Duplication and Admin Projects** is in production. Choose where to make a copy based on what you want it to contain.
 
-- **HTML and SEO Settings.** Super Admins manage App-wide metadata, and Project owners can save Project-specific overrides. Learn retains its route-specific description. See the [release record](docs/releases/v0.32.1.md) for released scope and subsequent unreleased refinements.
+| Where | Action | What the copy contains |
+| --- | --- | --- |
+| Project Scene | Save As: New Version | The current Project, including your unsaved Scene edits. Use this to try a different layout. |
+| Admin Projects | Duplicate | The last saved Project. Use this to start from an existing design. |
+| Admin Models, Characters or Terrains | Duplicate from the list or editor | An independently editable copy of the saved record. Model copies reuse stored files, Characters keep their Model links, and Terrains start at revision 1. |
 
-- **Clearer Admin navigation and creation buttons.** An explicit Module hierarchy, **Add User** navigation, consistent **Add + entity** sidebar labels, and distinct current-page highlighting make common tasks easier to find. Creation buttons across Admin Module pages use green styling; sidebar links retain their ordinary navigation styling.
-- **App Settings for Module identity.** Super Admins choose shared colors and Lucide icons for App Modules. Connected Admin headers, sidebar items, and fixed record icons use those saved settings. Personal appearance, navigation visibility, and per-user sidebar expansion remain separate preferences.
-- **Users and account management.** Sign up and sign in through the App's NextAuth integration. Ordinary accounts manage their own content as Admins; Super Admins manage Users and global Settings. Users CRUD supports creation, profile/role editing, and soft deletion that retains records while blocking account access.
-- **Lyrics and connected Multimedia.** Create independent Lyrics records, associate them with owned Projects, Albums, and Tracks, and display eligible Lyrics in the Admin Track player, Dashboard Albums, and Home featured player. Linked relationship badges make related records easier to navigate.
-- **Improved Model workflows.** Organize Files and Materials in the Model editor, inspect embedded GLB/GLTF images, register selected images as reusable assets, and export Model top-view PNGs for the Design plan. URL-backed filters help return to the same Admin asset list.
-- **Project-centered Design.** Inspect architectural summaries in Admin, edit supported plans in the Project workspace, and save architecture, placements, and supported view state through Project Save/load.
-
-See [release history](docs/releases/README.md) for detailed scope and validation, and [current context](CONTEXT.md) for implementation status and remaining acceptance work.
+See the [release record](docs/releases/v0.38.1.md) for copy behavior and verification.
 
 ## Why build with ThreeD App?
 
@@ -194,7 +183,7 @@ A **Project** brings enabled modules and assigned assets into a shared workspace
 
 - Switch between **3D, Design, 2D, and Combined** views of the active Project.
 - Place and inspect Models, Characters, Beds, Plantings, and FarmBots.
-- Use Project Assets and Layers to find content and manage visibility.
+- Find content in Project Assets and use the Scene visibility controls to choose what appears.
 - Open a Model's **DetailsCard** for supported placement, appearance, movement, and inspection controls.
 - Save supported Project content and workspace state through the existing Project Save/load workflow.
 - Work with geographic maps and Ground Map settings alongside the Scene.
@@ -205,6 +194,10 @@ A **Project** brings enabled modules and assigned assets into a shared workspace
 ## 📐 Design and Architecture
 
 Draw a flat plan and see its corresponding architecture in the Project's 3D Scene. Save the architectural content with your Project and reopen it for further editing.
+
+![ThreeD App Project workspace with the Model Library, locked Model DetailsCard, 3D Scene, and linked 2D Design plan](docs/images/v0.30.2/project-design-workspace.png)
+
+*ThreeD App v0.30.2, captured November 2, 2026: browse reusable Models, inspect a locked placement, and work with a linked 3D Scene and 2D Design plan.*
 
 - **Walls and floors:** draw, select, reposition, and edit dimensions.
 - **Doors and windows:** place hosted openings and adjust supported dimensions and sill settings.
@@ -318,6 +311,8 @@ Build a garden context using Plants, Beds, Plantings, and related records, then 
 
 <a id="multimedia"></a>
 ## 🎵 Multimedia
+
+Keep reference photos and videos in Project Assets without assigning them to an Album. Open a reference in a resizable viewer alongside your Design, zoom into an image, and save the Project to restore the open viewer later.
 
 ![Actual Dashboard Multimedia screen showing Album artwork, Track List, waveform, playback controls and available Albums](docs/images/v0.31.3/multimedia-player.png)
 
@@ -463,7 +458,7 @@ See the [validation guide](docs/agents/VALIDATION.md) for task-specific and isol
 
 ## 🤝 Contribute and follow development
 
-The latest Developer-confirmed production release is [v0.32.1](docs/releases/v0.32.1.md). See [release history](docs/releases/README.md) for version-specific scope and checks, and [current context](CONTEXT.md) for active work and known limitations.
+See [release history](docs/releases/README.md) for version-specific scope and checks, and [current context](CONTEXT.md) for active work and known limitations.
 
 Have a reproducible bug or a focused feature idea? [Open an issue](https://github.com/marty-mcgee/threed-garden/issues). Before contributing, review the [contribution workflow](docs/agents/TASK_CHECKLISTS.md), existing ownership boundaries, and applicable checks.
 

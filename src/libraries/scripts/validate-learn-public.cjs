@@ -99,15 +99,26 @@ const respond = (request, body, status = 200) => request.resolve({ ok: status >=
   });
   for (const topic of Object.keys(illustrations.guideIllustrations)) {
     const illustration = illustrations.getGuideIllustration(topic);
-    const svg = fs.readFileSync(`public${illustration.src}`, 'utf8');
+    const svg = fs.readFileSync(`public/learn/illustrations/${topic}.svg`, 'utf8');
     assert.match(svg, /<title id="title">[^<]+<\/title>/);
     assert.match(svg, /<desc id="description">[^<]+<\/desc>/);
     assert.match(svg, /viewBox="0 0 1200 640"/);
     assert.doesNotMatch(svg, /<script|<foreignObject|\bon\w+=|(?:href|src)="(?:https?:|\/\/|data:)/i);
     const figure = renderToStaticMarkup(React.createElement(visual.LearnGuideIllustration, { topic }));
     assert(figure.includes(`src="${illustration.src}"`));
-    assert(figure.includes('width="1200" height="640"'));
-    assert.match(figure, /<figcaption[^>]*>.*Conceptual illustration/);
+    if (topic === 'first-project') {
+      assert(fs.existsSync(`public${illustration.src}`));
+      assert(figure.includes('width="842" height="545"'));
+      assert(figure.includes('Dashboard, captured'));
+    } else if (['draw-room', 'view-modes', 'project-multimedia'].includes(topic)) {
+      const capture = fs.readFileSync("public" + illustration.src);
+      assert.equal(capture.toString('ascii', 8, 12), 'WEBP');
+      assert(figure.includes('width="2152" height="1351"'));
+      assert(figure.includes('Hero Project #20'));
+    } else {
+      assert(figure.includes('width="1200" height="640"'));
+      assert.match(figure, /<figcaption[^>]*>.*Conceptual illustration/);
+    }
     assert.equal(renderToStaticMarkup(React.createElement(visual.LearnGuideIllustration, {
       topic,
       content: `![Author-provided diagram](${illustration.src})`,

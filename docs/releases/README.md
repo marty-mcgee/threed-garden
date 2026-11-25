@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.38.1 - ThreeD Object Duplication and Admin Projects (ready for manual release)](v0.38.1.md)
+- [v0.38.2 - Dashboard Project Images and Learn Examples (candidate)](v0.38.2.md)
+
+- [v0.38.1 - ThreeD Object Duplication and Admin Projects (Developer-confirmed production)](v0.38.1.md#production-status)
 
 - [v0.38.0 - Project Save As: New Version (Developer-confirmed production)](v0.38.0.md)
 
