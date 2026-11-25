@@ -7,6 +7,7 @@ import {
   Boxes,
   BookOpen,
   CloudSun,
+  CopyPlus,
   PencilRuler,
   ChevronDown,
   ChevronUp,
@@ -75,6 +76,8 @@ interface ProjectSceneToolbarProps {
   onOpenProjectTour: () => void;
   savingProject: boolean;
   onSaveProject: () => void;
+  duplicateDisabled: boolean;
+  onDuplicateProject: () => void;
 }
 
 export function ProjectSceneToolbar({
@@ -118,6 +121,8 @@ export function ProjectSceneToolbar({
   onOpenProjectTour,
   savingProject,
   onSaveProject,
+  duplicateDisabled,
+  onDuplicateProject,
 }: ProjectSceneToolbarProps) {
   const addMenuBounds = useToolbarMenuBounds(sceneAddMenuOpen);
   const editHelp = 'Only the Project owner can use this action. Guests can explore this Project.';
@@ -227,6 +232,11 @@ export function ProjectSceneToolbar({
           {workspaceDirty && <span className="absolute right-0 top-0 h-1.5 w-1.5 rounded-full bg-amber-400" aria-hidden="true" />}
         </Button>
         </span></TooltipTrigger><TooltipContent>{!canEditProject ? editHelp : savingProject ? 'Saving Project. Later edits still need Save.' : workspaceSaveMessage}</TooltipContent></Tooltip></TooltipProvider>
+      )}
+      {selectedProjectId && (
+        <Button type="button" variant="outline" size="icon" className="h-7 w-7" disabled={!canEditProject || savingProject || duplicateDisabled} aria-label="Save As: New Version" title={canEditProject ? 'Save As: New Version' : editHelp} onClick={canEditProject ? onDuplicateProject : undefined}>
+          <CopyPlus className="h-3.5 w-3.5" />
+        </Button>
       )}
     </div>
   );

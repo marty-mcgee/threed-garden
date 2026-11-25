@@ -228,7 +228,10 @@ const scope={...tables,...orm,...modelPolicy,db,Buffer,Date,console:{error(){}},
  PROJECT_ASSET_TYPE_BY_MARKER:{models:'threed_models'},getMarkerGeographicValues:()=>({latitude:null,longitude:null}),
 };
 const compile=text=>ts.transpileModule(text,{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText;
-const save=vm.runInNewContext(compile([functionSource(route,'requireOwnedProject'), functionSource(route,'saveSnapshot'), 'saveSnapshot;'].join('\n')),scope);
+const snapshotMarkers='src/libraries/services/project/project-snapshot-markers.ts';
+const save=vm.runInNewContext(compile([functionSource(route,'requireOwnedProject'),
+ ...['buildProjectSnapshotMarkers','resolveSnapshotPlacements'].map(name=>functionSource(snapshotMarkers,name).replace(/^export /,'')),
+ functionSource(route,'saveSnapshot'), 'saveSnapshot;'].join('\n')),scope);
 // Run the real GET route against the SAME in-memory Project row written by PUT.
 const mapRoute='src/app/api/map/threed/route.ts';
 const mapAst=ts.createSourceFile(mapRoute,fs.readFileSync(mapRoute,'utf8'),ts.ScriptTarget.Latest,true);
@@ -263,10 +266,12 @@ async function hydrateDashboard(loaded, drafts, projectId='15', observed={}){
  await vm.runInNewContext(compile('('+clientLoadSource+')'),context)();
  return drafts.current.get(projectId);
 }
-let clientSaveSource, captureWorkspaceSource;
+let clientSaveSource, captureWorkspaceSource, captureSnapshotSource, openCopySource;
 function findClientSave(node) {
  if(ts.isVariableDeclaration(node)&&node.name.getText(sceneAst)==='captureProjectWorkspace') captureWorkspaceSource=node.initializer.arguments[0].getText(sceneAst);
+ if(ts.isVariableDeclaration(node)&&node.name.getText(sceneAst)==='captureProjectSnapshot') captureSnapshotSource=node.initializer.arguments[0].getText(sceneAst);
  if(ts.isVariableDeclaration(node)&&node.name.getText(sceneAst)==='handleSaveThreeDProject') clientSaveSource=node.initializer.arguments[0].getText(sceneAst);
+ if(ts.isVariableDeclaration(node)&&node.name.getText(sceneAst)==='openDuplicatedProject') openCopySource=node.initializer.getText(sceneAst);
  ts.forEachChild(node,findClientSave);
 }
 findClientSave(sceneAst);assert(clientSaveSource);
@@ -293,6 +298,12 @@ const context={projectConfigurationRef:{current:{projectId:'15',stamp:{savedAt:n
  setData:()=>{},applyThreeDProjectClientTransaction:()=>{},renderArchitecture:()=>{},setLastUpdated:()=>{},Date,JSON,console:{error(){}}
  };
  context.captureProjectWorkspace=vm.runInNewContext(compile('('+captureWorkspaceSource+')'),context);
+ context.captureProjectSnapshot=vm.runInNewContext(compile('('+captureSnapshotSource+')'),context);
+ const dormantModelGroup = { entityIds: [], markerIds: ['model-dormant'] };
+ drafts.current.set('15', { ...draft, groups: [dormantModelGroup] });
+ assert.deepEqual(JSON.parse(JSON.stringify(context.captureProjectSnapshot(true).snapshot.groups)), [dormantModelGroup], 'Save As preserves group members from inactive Model placements.');
+ assert.equal(context.captureProjectSnapshot().groups.length, 0, 'Ordinary Save retains its active marker filter.');
+ drafts.current.set('15', draft);
  context.workspaceFeedback={acknowledge:()=>{}};
  const callback=vm.runInNewContext(compile('('+clientSaveSource+')'),context);
  const pending=callback();await callback();assert.equal(transportCount,1,'Duplicate click must not start a second Project Save.');
@@ -324,6 +335,27 @@ const context={projectConfigurationRef:{current:{projectId:'15',stamp:{savedAt:n
  assert.equal(hydration.setMultimediaProjectId,'15','Dashboard restores the saved open Multimedia overlay');
  assert.equal(JSON.stringify(inventory.architectureAssets(restored.history.present)),JSON.stringify(inventory.architectureAssets(source)),'Assets reconstruct from the actual mocked Project Save/GET/hydration roundtrip.');
  assert.equal(JSON.stringify(restored.history.present),JSON.stringify(source));assert(!architecture.architectureIsDirty(restored));
+ const forkedDocument = structuredClone(restored.history.present);
+ const savedX = forkedDocument.nodes[0].x;
+ forkedDocument.nodes[0].x += 12;
+ const forkedDraft = { ...restored, history: { ...restored.history, present: forkedDocument } };
+ fresh.current.set('15', forkedDraft);
+ let allowNavigation = false;
+ const openCopy = vm.runInNewContext(compile('(' + openCopySource + ')'), {
+   selectedProjectId: '15',
+   architectureDrafts: fresh,
+   handleProjectSelect: id => allowNavigation && id === '80',
+ });
+ assert.equal(openCopy(80, forkedDraft), false);
+ assert.equal(fresh.current.get('15'), forkedDraft, 'A veto keeps the original unsaved wall in the editor.');
+ allowNavigation = true;
+ assert.equal(openCopy(80, forkedDraft), true);
+ assert.equal(fresh.current.has('15'), false);
+ const returnedSource = await hydrateDashboard(loaded.session, fresh, '15');
+ assert.equal(returnedSource.history.present.nodes[0].x, savedX, 'Returning to the original after opening the copy shows the saved wall endpoint.');
+ fresh.current.set('15', newer);
+ assert.equal(openCopy(80, forkedDraft), true);
+ assert.equal(fresh.current.get('15'), newer, 'A newer source draft survives confirmed navigation.');
  assert.equal(loaded.session.data.threed.raw.models[0].filePath,'saved.glb');assert.equal(loaded.session.data.threed.raw.projectThreedMarkers[0].markerId,model.markerId);
  assert.equal(stored.config.unrelated.keep,true);
  assert.equal(loaded.session.savedViewState.overlayPositions.details.x,0.7);assert.equal(loaded.session.savedViewState.overlayPositions.details.y,0.2);

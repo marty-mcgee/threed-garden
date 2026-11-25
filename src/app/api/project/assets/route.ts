@@ -246,7 +246,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const serializeAssignment = assetType === 'threed_terrains' || assetType === 'threed_watering_schedules';
+    const serializeAssignment = [
+      'threed_terrains',
+      'threed_watering_schedules',
+      'threed_beds',
+      'threed_plantings',
+    ].includes(assetType);
     async function assignAsset(connection: Pick<typeof db, 'select' | 'update' | 'insert'>) {
       const assetAccessCondition = assetDefinition.policy === 'ownerOrActivePublic'
         ? or(

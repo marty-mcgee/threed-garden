@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useToolbarMenuBounds } from './useToolbarMenuBounds';
 import {
   Clock,
+  CopyPlus,
   ExternalLink,
   FolderOpen,
   ListTree,
@@ -45,6 +46,8 @@ export function ProjectHeaderMenu({
   onChooseProject,
   onCreateProject,
   onSaveProject,
+  duplicateDisabled,
+  onDuplicateProject,
   onOpenProjectAssets,
   onOpenEnvironment,
   onOpenProjectTour,
@@ -69,6 +72,8 @@ export function ProjectHeaderMenu({
   onChooseProject: () => void;
   onCreateProject: () => void;
   onSaveProject: () => void;
+  duplicateDisabled: boolean;
+  onDuplicateProject: () => void;
   onOpenProjectAssets: () => void;
   onOpenEnvironment: (id: string) => void;
   onOpenProjectTour: () => void;
@@ -158,6 +163,9 @@ export function ProjectHeaderMenu({
             <Button type="button" variant="ghost" size="sm" className="h-auto min-h-7 w-full flex-wrap justify-start whitespace-normal px-2 py-1 text-left text-xs" disabled={!canEditProject || savingProject} onClick={canEditProject ? onSaveProject : undefined}>
               {savingProject ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
               Save ThreeD Project
+            </Button>
+            <Button type="button" variant="ghost" size="sm" className="h-auto min-h-7 w-full justify-start px-2 py-1 text-xs" disabled={!canEditProject || duplicateDisabled} onClick={canEditProject ? onDuplicateProject : undefined}>
+              <CopyPlus className="h-3.5 w-3.5" /> Save As: New Version
             </Button>
             <Button type="button" variant="ghost" size="sm" className="h-auto min-h-7 w-full flex-wrap justify-start whitespace-normal px-2 py-1 text-left text-xs" aria-controls="project-assets-panel" aria-expanded={projectAssetsOpen} onClick={onOpenProjectAssets}>
               <ListTree className="h-3.5 w-3.5" />

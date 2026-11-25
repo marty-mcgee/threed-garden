@@ -109,6 +109,7 @@ const savePosition = (ok) => callback('src/app/dashboard/scene/SceneWorkspace.ts
     fetch: async (url, options) => { requests.push({ url, ...options }); return { ok: true, json: async () => ({ success: true, data: { projectId: 5, architecture: JSON.parse(options.body).architecture, markerCount: 1, markers: [] } }) }; },
   };
   projectSaveContext.captureProjectWorkspace = callback('src/app/dashboard/scene/SceneWorkspace.tsx', 'captureProjectWorkspace', projectSaveContext);
+  projectSaveContext.captureProjectSnapshot = callback('src/app/dashboard/scene/SceneWorkspace.tsx', 'captureProjectSnapshot', projectSaveContext);
   projectSaveContext.workspaceFeedback = { acknowledge() {} };
   const projectSave = callback('src/app/dashboard/scene/SceneWorkspace.tsx', 'handleSaveThreeDProject', projectSaveContext);
   await projectSave();

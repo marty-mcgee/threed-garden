@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/libraries/auth';
 import { db } from '@/libraries/db/client';
 import { project, projectThreedMarkers } from '@/libraries/schema/project';
+import { detachGroundMap, lockGroundMapProject, releaseGroundMapImage } from '@/libraries/services/threed/ground-maps/project-ground-map-storage';
 import { eq, and, desc, sql } from 'drizzle-orm';
 import {
   calibrateThreeDGeographicOrigin,
@@ -22,6 +23,11 @@ function calibrationNumber(value: unknown, label: string): number {
 }
 
 type CalibrationPoint = { localX: unknown; localZ: unknown; latitude: unknown; longitude: unknown };
+function projectDetails(row: typeof project.$inferSelect) {
+  const { duplicateRequestHash, duplicateRequestKey, ...details } = row;
+  return details;
+}
+
 type CalibrationInput = { pointA: CalibrationPoint; pointB: CalibrationPoint };
 function calculateCalibration(coordinateCalibration: CalibrationInput, altitude: number) {
   if (!coordinateCalibration?.pointA || !coordinateCalibration.pointB) throw new ThreeDMapCoordinateError('Enter both calibration points.');
@@ -132,7 +138,7 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json({
         success: true,
-        data: singleProject,
+        data: projectDetails(singleProject),
       });
     }
 
@@ -145,7 +151,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: projects,
+      data: projects.map(projectDetails),
     });
   } catch (error) {
     if (error instanceof MeasurementUnitsError) return NextResponse.json({success:false,error:error.message},{status:400});
@@ -206,7 +212,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: newProject,
+      data: projectDetails(newProject),
       message: 'Project created successfully',
     });
   } catch (error) {
@@ -328,7 +334,7 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: result.updatedProject,
+      data: projectDetails(result.updatedProject),
       markerCount: result.markerCount,
       calibrationDiagnostics: calibration?.diagnostics ?? null,
       message: calibration
@@ -376,38 +382,29 @@ export async function DELETE(request: NextRequest) {
 
     const userId = session.user.id;
 
-    // ✅ Verify project exists and belongs to user
-    const [existing] = await db
-      .select()
-      .from(project)
-      .where(
-        and(
-          eq(project.id, parseInt(id)),
-          eq(project.userId, userId)
-        )
-      )
-      .limit(1);
+    const projectId = Number(id);
+    if (!Number.isSafeInteger(projectId) || projectId <= 0) {
+      return NextResponse.json({ success: false, error: 'Invalid Project ID' }, { status: 400 });
+    }
+    let filePath: string | undefined;
+    const deleted = await db.transaction(async tx => {
+      if (!await lockGroundMapProject(tx, userId, projectId)) return null;
+      filePath = await detachGroundMap(tx, userId, projectId);
+      const [deleted] = await tx.delete(project)
+        .where(and(eq(project.id, projectId), eq(project.userId, userId))).returning();
+      return deleted;
+    }).finally(() => releaseGroundMapImage(userId, projectId, filePath));
 
-    if (!existing) {
+    if (!deleted) {
       return NextResponse.json(
         { success: false, error: 'Project not found' },
         { status: 404 }
       );
     }
 
-    const [deleted] = await db
-      .delete(project)
-      .where(
-        and(
-          eq(project.id, parseInt(id)),
-          eq(project.userId, userId)
-        )
-      )
-      .returning();
-
     return NextResponse.json({
       success: true,
-      data: deleted,
+      data: projectDetails(deleted),
       message: 'Project deleted successfully',
     });
   } catch (error) {

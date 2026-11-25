@@ -102,6 +102,11 @@ const tasks = {
   ],
   assets: [node('validate-static-assets.mjs')],
   'project-templates': [ts('validate-project-templates.mts')],
+  'project-duplication': [
+    node('validate-project-duplication.cjs'),
+    node('validate-project-duplicate-dialog.cjs'),
+    ['node', '--import', 'tsx', `${scripts}/validate-project-copy-references.ts`],
+  ],
 
   'farmbot-crypto': [reactServerTs('validate-farmbot-credential-crypto.mts')],
   'farmbot-worker': [['node', '--import', 'tsx', 'src/libraries/services/threed/mqtt/integrations/farmbot/validate.mts']],
@@ -125,8 +130,15 @@ const tasks = {
 
   'threed-hidden-collision-mount': [node('validate-threed-hidden-collision-mount.cjs')],
   'threed-character-introduction': [node('validate-threed-character-introduction.cjs')],
-  'threed-ground-map': [ts('validate-threed-ground-map.mts'), node('validate-ground-map-material.cjs')],
-  'threed-bed-planting-bounds': [ts('validate-threed-bed-planting-bounds.mts')],
+  'threed-ground-map': [
+    ts('validate-threed-ground-map.mts'),
+    node('validate-ground-map-material.cjs'),
+    node('validate-ground-map-storage.cjs'),
+  ],
+  'threed-bed-planting-bounds': [
+    ts('validate-threed-bed-planting-bounds.mts'),
+    node('validate-project-garden-placement-removal.cjs'),
+  ],
   'threed-runtime-markers': [['node', '--import', 'tsx', `${scripts}/validate-threed-runtime-markers.mts`]],
   'threed-overlay-layout': [node('validate-scene-selection.cjs'), node('validate-workspace-save-feedback.cjs'), node('validate-project-overlay-layout.cjs'), node('validate-project-presentation.cjs'), node('validate-scene-view-presets.cjs'), ['node', '--import', 'tsx', `${scripts}/validate-threed-project-settings.mts`]],
   'threed-inspectors': [['node', '--import', 'tsx', `${scripts}/validate-threed-inspectors.mts`]],
@@ -261,6 +273,7 @@ const ci = [
   'repository-maintenance',
   'threed-designs',
   'project-configurations',
+  'project-duplication',
   'admin-sidebar',
   'learn',
   'design-appearance-top-view',

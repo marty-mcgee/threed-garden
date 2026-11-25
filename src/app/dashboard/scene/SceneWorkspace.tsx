@@ -40,6 +40,7 @@ import { SceneMultimediaProvider, type ProjectMultimediaCapture } from '@/compon
 import { ProjectAssetsPanel } from '@/components/map/panels/ProjectAssetsPanel';
 import { ProjectSelectorDialog } from '@/components/map/panels/ProjectSelectorDialog';
 import { ProjectTemplateDialog } from '@/components/map/panels/ProjectTemplateDialog';
+import { ProjectDuplicateDialog, type ProjectDuplicateAttempt } from '@/components/map/panels/ProjectDuplicateDialog';
 import { ProjectHeaderMenu } from '@/components/map/header/ProjectHeaderMenu';
 import { ProjectSceneToolbar } from '@/components/map/header/ProjectSceneToolbar';
 import { AddShapeDialog } from '@/components/map/panels/AddShapeDialog';
@@ -242,6 +243,8 @@ function UnifiedMapPageInner() {
   } = useThreeDProjectSessionLoader();
   const [isProjectSelectorOpen, setIsProjectSelectorOpen] = useState(!projectIdParam);
   const [isProjectTemplateDialogOpen, setIsProjectTemplateDialogOpen] = useState(false);
+  const [duplicateDialogProject, setDuplicateDialogProject] = useState<string | null>(null);
+  const duplicateAttempts = useRef(new Map<number, ProjectDuplicateAttempt>());
   const [isProjectSummaryOpen, setIsProjectSummaryOpen] = useState(false);
   const dismissProjectSummary = useCallback(() => setIsProjectSummaryOpen(false), []);
   const [data, setData] = useState<UnifiedMapData>(getDefaultMapData());
@@ -252,6 +255,7 @@ function UnifiedMapPageInner() {
   const [overlayPositions, setOverlayPositions] = useState<ProjectOverlayPositions>({});
   const saveRequestRef = useRef(0);
   useEffect(() => {
+    setDuplicateDialogProject(null);
     setOverlayPositions({});
     saveRequestRef.current += 1;
     setSavingProjectMarkers(false);
@@ -1068,58 +1072,59 @@ function UnifiedMapPageInner() {
     captureProjectWorkspace,
   );
 
+  const captureProjectSnapshot = useCallback((includeDormantMembers = false) => {
+    if (!selectedProjectId || loading) throw new Error('Project data is still loading. Wait for it to finish before saving.');
+    const provider = projectMarkerSnapshotProviderRef.current;
+    if (!provider) throw new Error('Project Scene data is not ready. Wait for loading to finish before saving.');
+    const configuration = projectConfigurationRef.current;
+    if (configuration?.projectId !== selectedProjectId) throw new Error('Project settings are still loading. Wait before saving.');
+    const capturedDraft = architectureDrafts.current.get(selectedProjectId)!;
+    const document = capturedDraft.history.present;
+    const markers = provider().map(marker => {
+      const moved = capturedDraft.modelPositions?.[marker.markerId];
+      return moved && marker.moduleType === 'models' ? {
+        ...marker,
+        position: { ...marker.position, x: moved.x, z: moved.z },
+        positionSource: 'runtime' as const,
+        data: { ...marker.data, positionX: moved.x, positionZ: moved.z },
+      } : marker;
+    });
+    const currentEntities = new Set([...document.walls, ...document.floors, ...document.roofs, ...document.openings, ...document.roofOpenings, ...(document.stairs ?? [])].map(entity => entity.id));
+    const currentModels = new Set(markers.filter(marker => marker.moduleType === 'models').map(marker => marker.markerId));
+    const groups = (capturedDraft.groups ?? []).map(group => ({
+      ...group,
+      entityIds: group.entityIds.filter(id => currentEntities.has(id)),
+      markerIds: includeDormantMembers ? group.markerIds : group.markerIds.filter(id => currentModels.has(id)),
+    })).filter(group => group.entityIds.length + group.markerIds.length > 0);
+    const groupsChanged = JSON.stringify(groups) !== (capturedDraft.savedGroups ?? '[]');
+    return {
+      capturedDraft,
+      groups,
+      snapshot: {
+        markers,
+        architecture: { version: 1 as const, document },
+        viewState: captureProjectWorkspace(),
+        ...(groupsChanged ? { groups } : {}),
+        terrain: projectTerrain?.placement ?? null,
+        expectedConfiguration: configuration.stamp,
+      },
+    };
+  }, [captureProjectWorkspace, loading, projectTerrain, selectedProjectId]);
+
   const handleSaveThreeDProject = useCallback(async () => {
     if (!selectedProjectId || !canEditProject || savingProjectMarkers || projectSaveBusy.current) return;
-    if (loading) {
-      setArchitectureSaveError('Project data is still loading. Wait for it to finish, then Save Project. If loading failed, reload the Project first.');
-      return;
-    }
-    const provider = projectMarkerSnapshotProviderRef.current;
-    if (!provider) {
-      setArchitectureSaveError('Project Scene data is not ready. Wait for loading to finish, then Save Project.');
-      showToastRef.current('ThreeD Project marker data is not ready to save', 'error');
-      return;
-    }
-
     const requestId = ++saveRequestRef.current;
-    const capturedDraft = architectureDrafts.current.get(selectedProjectId)!;
-    const architecture = { version: 1 as const, document: capturedDraft.history.present };
-    const modelPositions = capturedDraft.modelPositions;
     projectSaveBusy.current = true; setArchitectureSaveError('');
     setSavingProjectMarkers(true);
     try {
-      const markers = provider().map(marker => {
-        const moved = modelPositions?.[marker.markerId];
-        return moved && marker.moduleType === 'models' ? {
-          ...marker,
-          position: { ...marker.position, x: moved.x, z: moved.z },
-          positionSource: 'runtime' as const,
-          data: { ...marker.data, positionX: moved.x, positionZ: moved.z },
-        } : marker;
-      });
-      const document = architecture.document;
-      const currentEntities = new Set([...document.walls, ...document.floors, ...document.roofs, ...document.openings, ...document.roofOpenings, ...(document.stairs ?? [])].map(entity => entity.id));
-      const currentModels = new Set(markers.filter(marker => marker.moduleType === 'models').map(marker => marker.markerId));
-      const groups = (capturedDraft.groups ?? []).map(group => ({
-        ...group,
-        entityIds: group.entityIds.filter(id => currentEntities.has(id)),
-        markerIds: group.markerIds.filter(id => currentModels.has(id)),
-      })).filter(group => group.entityIds.length + group.markerIds.length > 0);
-      const groupsChanged = JSON.stringify(groups) !== (capturedDraft.savedGroups ?? '[]');
-      const viewState = captureProjectWorkspace();
-      const configuration = projectConfigurationRef.current;
-      if (configuration?.projectId !== selectedProjectId) throw new Error('Project settings are still loading. Wait before saving.');
+      const { capturedDraft, groups, snapshot } = captureProjectSnapshot();
+      const { architecture, viewState } = snapshot;
       const response = await fetch('/api/project/threed-markers', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           projectId: Number(selectedProjectId),
-          markers,
-          viewState,
-          architecture,
-          ...(groupsChanged ? { groups } : {}),
-          terrain: projectTerrain?.placement ?? null,
-          expectedConfiguration: configuration.stamp,
+          ...snapshot,
         }),
       });
       const result = await response.json().catch(() => null);
@@ -1131,7 +1136,7 @@ function UnifiedMapPageInner() {
         || JSON.stringify(parseProjectArchitecture(result.data.architecture)) !== JSON.stringify(parseProjectArchitecture(architecture))) {
         throw new Error('Project Save did not confirm the architectural content. Your edits are retained. Retry Save Project; if it repeats, reload the App after checking that its API is up to date.');
       }
-      if (groupsChanged && JSON.stringify(result.data.groups) !== JSON.stringify(groups)) throw new Error('Project Save did not confirm ThreeD Groups.');
+      if (snapshot.groups && JSON.stringify(result.data.groups) !== JSON.stringify(groups)) throw new Error('Project Save did not confirm ThreeD Groups.');
       if (!confirmsTerrainPlacement(projectTerrain?.placement ?? null, result.data?.terrain)) {
         throw new Error('Project Save did not confirm the Terrain placement. Your draft is retained.');
       }
@@ -1152,11 +1157,11 @@ function UnifiedMapPageInner() {
       setData(current => applyThreeDProjectClientTransaction(current, {
         markers: {upsert: result.data.markers as ProjectThreeDMarkerRecord[]},
       }));
-      projectConfigurationRef.current = { projectId: selectedProjectId, stamp: { savedAt: viewState.savedAt, measurementUnits: viewState.design?.measurementUnits ?? configuration.stamp.measurementUnits } };
+      projectConfigurationRef.current = { projectId: selectedProjectId, stamp: { savedAt: viewState.savedAt, measurementUnits: viewState.design?.measurementUnits ?? snapshot.expectedConfiguration.measurementUnits } };
       const current = architectureDrafts.current.get(selectedProjectId)!;
       architectureDrafts.current.set(selectedProjectId, {
         ...acknowledgeArchitecture(current, result.data.architecture, viewState.design),
-        modelPositions: current.modelPositions === modelPositions ? undefined : current.modelPositions,
+        modelPositions: current.modelPositions === capturedDraft.modelPositions ? undefined : current.modelPositions,
         groups: current.groups === capturedDraft.groups ? groups : current.groups,
         savedGroups: JSON.stringify(groups),
       });
@@ -1180,7 +1185,7 @@ function UnifiedMapPageInner() {
     } finally {
       if (saveRequestRef.current === requestId) { projectSaveBusy.current = false; setSavingProjectMarkers(false); }
     }
-  }, [captureProjectWorkspace, workspaceFeedback.acknowledge, canEditProject, loading, cameraMode, initialProjectViewState, panelHeight, savingProjectMarkers, selectedProjectId, viewMode, selectedMarker, sensorInspector, groupInspector, groundMapInspector?.open, isProjectAssetsOpen, isModelLibraryOpen, projectAssetSearch, projectAssetType, scenarioPanelState, isScenariosOpen, isProjectSetupOpen, overlayPositions, projectTerrain]);
+  }, [captureProjectSnapshot, workspaceFeedback.acknowledge, canEditProject, savingProjectMarkers, selectedProjectId, projectTerrain]);
 
   // Phase 5A compatibility bridge: establish the orchestration request
   // lifecycle while preserving immediate animation until proximity is gated.
@@ -1270,7 +1275,7 @@ function UnifiedMapPageInner() {
 
   // ✅ Handle project selection
   const handleProjectSelect = (projectId: string) => {
-    if (!window.dispatchEvent(new Event('threed:design:transition', { cancelable: true }))) return;
+    if (!window.dispatchEvent(new Event('threed:design:transition', { cancelable: true }))) return false;
     // Enter the load boundary in the same React event transaction as the
     // Project identity change. Otherwise a transient Canvas can mount with
     // the new Project ID and previous Project data, then unmount when the
@@ -1325,6 +1330,17 @@ function UnifiedMapPageInner() {
     url.searchParams.set('projectId', projectId);
     url.searchParams.delete('designId');
     window.history.pushState({}, '', url.toString());
+    return true;
+  };
+
+  const openDuplicatedProject = (id: number, capturedDraft?: ProjectArchitectureDraft) => {
+    if (!selectedProjectId || !handleProjectSelect(String(id))) return false;
+    // This draft now lives in the copy. Returning to the source should load
+    // its saved wall positions. Keep edits made during creation or navigation.
+    if (capturedDraft && architectureDrafts.current.get(selectedProjectId) === capturedDraft) {
+      architectureDrafts.current.delete(selectedProjectId);
+    }
+    return true;
   };
 
   // ✅ Handle focus on marker
@@ -1634,6 +1650,7 @@ function UnifiedMapPageInner() {
       } catch (error) {
         console.error('Failed to apply map data:', error);
         setData(getDefaultMapData());
+        setProjectAccess(null);
         showToastRef.current('Failed to load data', 'error');
       }
     });
@@ -2937,6 +2954,14 @@ function UnifiedMapPageInner() {
   const scenarioOverlayLeftOffsetRem = (isLeftSceneWorkspaceOpen ? 18.75 : 0.75)
     + (selectedMarker || selectedIncident || groupInspector !== null || groundMapInspector?.open ? 18.75 : 0);
   const scenarioOverlaysObscured = isScenariosOpen || isProjectSetupOpen || isSetupMenuOpen || isSceneAddMenuOpen || isProjectSummaryOpen;
+  const duplicateDisabled = loading || isDefaultView || savingProjectMarkers || designActionsBusy
+    || (viewMode !== '2d' && !isThreeDPresentationComplete) || !!sensorGroupsWorkspace?.loading
+    || updatingModelInstanceId != null || deletingModelInstanceId != null;
+  const openDuplicateDialog = () => {
+    if (!selectedProjectId || !canEditProject || duplicateDisabled) return;
+    setIsProjectSummaryOpen(false);
+    setDuplicateDialogProject(selectedProjectId);
+  };
 
   return (
     <ProjectPresentationBoundary projectId={selectedProjectId} mapOnly={viewMode === '2d'}>
@@ -3013,6 +3038,32 @@ function UnifiedMapPageInner() {
           setProjectSetupSessionProjectId(projectId);
         }}
       />
+      {selectedProjectId && canEditProject && duplicateDialogProject === selectedProjectId && <ProjectDuplicateDialog
+        key={selectedProjectId}
+        sourceProjectId={Number(selectedProjectId)}
+        sourceName={projectInfo?.name || `Project #${selectedProjectId}`}
+        attempts={duplicateAttempts.current}
+        capture={() => {
+          if (initialProjectViewState && restoredWorkspaceRef.current !== initialProjectViewState
+            || viewMode !== '2d' && !projectThreeDViewStateProviderRef.current
+            || (viewMode === '2d' || viewMode === 'combined') && !projectMapViewStateProviderRef.current
+            || !multimediaWorkspaceProviderRef.current) {
+            throw new Error('Wait for the Project workspace to finish loading before creating a version.');
+          }
+          // Save As also copies dormant Model placements held only by the server.
+          return captureProjectSnapshot(true);
+        }}
+        begin={() => {
+          if (duplicateDisabled || projectSaveBusy.current || designModelSaveBusy.current) throw new Error('Wait for the current Project edit to finish.');
+          const requestId = ++saveRequestRef.current;
+          projectSaveBusy.current = true;
+          return () => {
+            if (saveRequestRef.current === requestId) projectSaveBusy.current = false;
+          };
+        }}
+        onOpenProject={openDuplicatedProject}
+        onClose={() => setDuplicateDialogProject(null)}
+      />}
 
       {!loading && selectedProjectId && weatherProjectId === selectedProjectId && <ProjectWeatherOverlay key={`weather:${selectedProjectId}`} canEdit={canEditProject} projectId={selectedProjectId} onClose={() => { setWeatherProjectId(null); weatherTriggerRef.current?.focus(); }} />}
       {!loading && selectedProjectId && <ProjectMultimediaOverlay key={`multimedia:${selectedProjectId}`} canEdit={canEditProject} projectId={selectedProjectId} open={multimediaProjectId === selectedProjectId} onClose={() => { setMultimediaProjectId(null); multimediaTriggerRef.current?.focus(); }} />}
@@ -3061,6 +3112,8 @@ function UnifiedMapPageInner() {
             setIsProjectTemplateDialogOpen(true);
           }}
           onSaveProject={handleSaveThreeDProject}
+          duplicateDisabled={duplicateDisabled}
+          onDuplicateProject={openDuplicateDialog}
           onOpenProjectAssets={openProjectAssets}
           onOpenEnvironment={(markerId) => {
             const marker = projectEnvironmentMarkers.find((item) => item.id === markerId);
@@ -3088,6 +3141,8 @@ function UnifiedMapPageInner() {
           workspaceDirty={architectureIsDirty(architectureDraft) || workspaceFeedback.dirty || JSON.stringify(projectTerrain?.placement ?? null) !== savedTerrainPlacement}
           designHistoryHostRef={setDesignHistoryHost}
           saveDisabled={loading || !canEditProject || (viewMode === 'design' && designActionsBusy)}
+          duplicateDisabled={duplicateDisabled}
+          onDuplicateProject={openDuplicateDialog}
           selectedProjectId={selectedProjectId}
           viewMode={viewMode}
           onViewModeChange={(mode) => {

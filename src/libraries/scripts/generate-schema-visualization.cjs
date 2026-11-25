@@ -290,7 +290,7 @@ for (const [assetType, definition, parsed] of literalRegistry('src/libraries/pro
     ? 'No asset FK. Assignment requires an owned record and an active matching Project/Module assignment.'
     : 'No asset FK. Assignment permits an owned record or one that is both active and public, within an active matching Project/Module assignment.');
 }
-const markerTargets = Object.fromEntries(literalRegistry('src/app/api/project/threed-markers/route.ts', 'PROJECT_ASSET_TYPE_BY_MARKER').map(([kind, definition]) => {
+const markerTargets = Object.fromEntries(literalRegistry('src/libraries/services/project/project-snapshot-markers.ts', 'PROJECT_ASSET_TYPE_BY_MARKER').map(([kind, definition]) => {
   assert(ts.isStringLiteral(definition));
   return [kind, definition.text];
 }));

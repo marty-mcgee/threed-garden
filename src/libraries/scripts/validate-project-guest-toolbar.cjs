@@ -58,6 +58,9 @@ for (const mode of ['design', '3d', '2d', 'combined']) {
   const save = guest.find(node => node.props['aria-label'] === 'Save ThreeD Project');
   assert.equal(save.props.disabled, true);
   assert.equal(save.props.onClick, undefined);
+  const duplicate = guest.find(node => node.props['aria-label'] === 'Save As: New Version');
+  assert.equal(duplicate.props.disabled, true);
+  assert.equal(duplicate.props.onClick, undefined);
   assert(!guest.some(node => node.type === 'a' && node.props.href?.startsWith('/admin')));
   assert(guest.some(node => node.props.id === 'project-environment-controls-host'));
   assert(guest.find(node => node.props['data-testid'] === 'project-design-history').props.hidden);
@@ -102,7 +105,7 @@ const header = nodes(headerExports.ProjectHeaderMenu({
   environments: [{ id: 'model-1', name: 'Garden' }],
   onOpenProjectAssets: () => calls.push('header-assets'),
 }));
-for (const label of ['Choose Project', 'New Project', 'Save ThreeD Project', 'Project Tour', 'Environment Details', 'Project Settings & Admin']) {
+for (const label of ['Choose Project', 'New Project', 'Save ThreeD Project', 'Save As: New Version', 'Project Tour', 'Environment Details', 'Project Settings & Admin']) {
   const action = header.find(node => node.type === 'Button' && text(node).trim() === label);
   assert(action, label);
   assert.equal(action.props.disabled, true);

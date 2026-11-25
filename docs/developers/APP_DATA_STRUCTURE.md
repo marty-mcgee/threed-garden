@@ -2,7 +2,7 @@
 
 [Open the interactive schema explorer](app-data-structure.html) · [Structured schema snapshot](app-data-structure.json) · [Established App architecture](../plans/app-module-architecture.md)
 
-Snapshot: 2026-11-25, App 0.37.2, main / bf0ccf0b plus working-tree changes. Generated from the actual local Drizzle declarations, without a database connection. This visualizes the existing structure; it does not introduce a new architecture.
+Snapshot: 2026-11-25, App 0.38.0, main / 5ec44930 plus working-tree changes. Generated from the actual local Drizzle declarations, without a database connection. This visualizes the existing structure; it does not introduce a new architecture.
 
 ## Explore the structure
 
@@ -16,10 +16,10 @@ Open the HTML file directly in a browser; it needs no server, network or CDN. Se
 | Multimedia | 14 | 138 | 26 |
 | Traffic | 10 | 227 | 10 |
 | Learn | 3 | 32 | 8 |
-| Projects (shared) | 6 | 84 | 15 |
+| Projects (shared) | 6 | 87 | 16 |
 | Accounts (shared) | 5 | 48 | 2 |
 | Settings (shared) | 5 | 53 | 6 |
-| **Total** | **95** | **1298** | **182** |
+| **Total** | **95** | **1301** | **183** |
 
 Also includes **37 enums**, **161 ORM relation declarations** and **52 reviewed application mappings**. Counts describe source declarations, not verified live database objects. Auth aliases are deduplicated. Composite foreign keys remain single relationships with all participating columns. JSON/JSONB columns are shown without inventing their nested structures.
 
@@ -148,7 +148,7 @@ The interactive explorer expands polymorphic asset/Module links using the actual
 
 | Table | Columns | Outgoing FKs |
 | --- | ---: | ---: |
-| [`project`](../../src/libraries/schema/project/index.ts) | 24 | 1 |
+| [`project`](../../src/libraries/schema/project/index.ts) | 27 | 2 |
 | [`project_assets`](../../src/libraries/schema/project/index.ts) | 11 | 2 |
 | [`project_multimedia`](../../src/libraries/schema/project/index.ts) | 8 | 3 |
 | [`project_threed`](../../src/libraries/schema/project/index.ts) | 8 | 3 |

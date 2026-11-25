@@ -1,12 +1,12 @@
 {
   "generatedAt": "2026-11-25",
   "branch": "main",
-  "head": "bf0ccf0bdace5d3d69a6f62b9ba21acbcf02cb11",
-  "version": "0.37.2",
+  "head": "5ec449308a3e4df215b495b80952082956ba4492",
+  "version": "0.38.0",
   "summary": {
     "tables": 95,
-    "columns": 1298,
-    "foreignKeys": 182,
+    "columns": 1301,
+    "foreignKeys": 183,
     "enums": 37,
     "ormRelations": 161,
     "applicationLinks": 52
@@ -2589,6 +2589,36 @@
           "default": null
         },
         {
+          "name": "source_project_id",
+          "property": "sourceProjectId",
+          "type": "integer",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "duplicate_request_key",
+          "property": "duplicateRequestKey",
+          "type": "uuid",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "duplicate_request_hash",
+          "property": "duplicateRequestHash",
+          "type": "text",
+          "notNull": false,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
           "name": "name",
           "property": "name",
           "type": "text",
@@ -2833,9 +2863,31 @@
           ],
           "unique": false,
           "where": null
+        },
+        {
+          "name": "idx_project_source",
+          "columns": [
+            "source_project_id"
+          ],
+          "unique": false,
+          "where": null
+        },
+        {
+          "name": "idx_project_duplicate_request",
+          "columns": [
+            "user_id",
+            "duplicate_request_key"
+          ],
+          "unique": true,
+          "where": null
         }
       ],
-      "checks": [],
+      "checks": [
+        {
+          "name": "project_duplicate_request_valid",
+          "expression": "(\"project\".\"duplicate_request_key\" IS NULL AND \"project\".\"duplicate_request_hash\" IS NULL) OR (\"project\".\"user_id\" IS NOT NULL AND \"project\".\"duplicate_request_key\" IS NOT NULL AND \"project\".\"duplicate_request_hash\" IS NOT NULL AND \"project\".\"duplicate_request_hash\" ~ '^[0-9a-f]{64}$')"
+        }
+      ],
       "uniqueConstraints": [
         {
           "name": "project_slug_unique",
@@ -2856,7 +2908,7 @@
       "domain": "project",
       "source": "../../src/libraries/schema/project/index.ts",
       "sourcePath": "src/libraries/schema/project/index.ts",
-      "line": 162,
+      "line": 173,
       "columns": [
         {
           "name": "id",
@@ -3060,7 +3112,7 @@
       "domain": "project",
       "source": "../../src/libraries/schema/project/index.ts",
       "sourcePath": "src/libraries/schema/project/index.ts",
-      "line": 143,
+      "line": 154,
       "columns": [
         {
           "name": "id",
@@ -3335,7 +3387,7 @@
       "domain": "project",
       "source": "../../src/libraries/schema/project/index.ts",
       "sourcePath": "src/libraries/schema/project/index.ts",
-      "line": 113,
+      "line": 124,
       "columns": [
         {
           "name": "id",
@@ -3459,7 +3511,7 @@
       "domain": "project",
       "source": "../../src/libraries/schema/project/index.ts",
       "sourcePath": "src/libraries/schema/project/index.ts",
-      "line": 194,
+      "line": 205,
       "columns": [
         {
           "name": "id",
@@ -3785,7 +3837,7 @@
       "domain": "project",
       "source": "../../src/libraries/schema/project/index.ts",
       "sourcePath": "src/libraries/schema/project/index.ts",
-      "line": 128,
+      "line": 139,
       "columns": [
         {
           "name": "id",
@@ -9261,12 +9313,11 @@
           "where": null
         },
         {
-          "name": "idx_threed_ground_maps_owner_path",
+          "name": "idx_threed_ground_maps_file_path",
           "columns": [
-            "user_id",
             "file_path"
           ],
-          "unique": true,
+          "unique": false,
           "where": null
         }
       ],
@@ -18507,6 +18558,22 @@
       "status": "declared"
     },
     {
+      "id": "fk:project:project_source_fk",
+      "from": "project",
+      "fromColumns": [
+        "source_project_id"
+      ],
+      "to": "project",
+      "toColumns": [
+        "id"
+      ],
+      "kind": "foreign-key",
+      "label": "project_source_fk",
+      "onDelete": "set null",
+      "onUpdate": "no action",
+      "status": "declared"
+    },
+    {
       "id": "fk:project_threed:project_threed_user_id_user_id_fk",
       "from": "project_threed",
       "fromColumns": [
@@ -24771,19 +24838,19 @@
     }
   ],
   "sourceHashes": {
-    "src/app/api/project/threed-markers/route.ts": "b9d85acb07bd28e9a49b7b4b5d739f272c0c659786a0680fdbb026c5c677061a",
     "src/libraries/project-assets/asset-registry.ts": "11186c7b6bde44bbc5b06a3c5c3aaf0cebfc8ee4fc806dfe4b150ad9308c470d",
     "src/libraries/schema/auth/index.ts": "df98d02c496180eea94d986d92634deee72a10a2bb264cdc073775c1b72374b4",
     "src/libraries/schema/auth/user-role-audit.ts": "9e207990b630615acbe5f77622dbf586275f1777b401e83e46f29c518c3220e7",
     "src/libraries/schema/index.ts": "c4f17192b423f6c85a8e491d7601c01681cdfeb56fbcc895d2e871af0abecbc7",
     "src/libraries/schema/learn/index.ts": "dd533b5333f11d489963527b0cfd391caefad9c222028df3ece8c4824cce41b8",
     "src/libraries/schema/multimedia/index.ts": "32dc00a422eea666255bc08c0401c7b659659c3383ba16af447f44b2565b3b9d",
-    "src/libraries/schema/project/index.ts": "898e8e6093c73171c24e3e629e16246a5a0ca834bb0330ced1da1b02c1874fd1",
+    "src/libraries/schema/project/index.ts": "fb6d8204ad22602af23e459e75223ea650203030c90af52d68fa89db6f792942",
     "src/libraries/schema/settings/index.ts": "36c9ce83d70c4517b44952899574a47c68798551b3c1a63992819e89063ced55",
     "src/libraries/schema/threed/album-associations.ts": "f1dfc1d4701a484c1d0b8cd8582768aa61b9585b19a6d3c693ab9c2cc619dff8",
     "src/libraries/schema/threed/groups.ts": "c74c0789eb35c6d2894b5d935d84680b75d50549bc785515afbca6bb46e505f7",
-    "src/libraries/schema/threed/index.ts": "8144bb9497320f34001c5ea93b2b924e09c2f68f62f62b375bd113375af9aaa9",
+    "src/libraries/schema/threed/index.ts": "d3a90d7fd71a1b26341f8124e753ef7c43c4aecd6f0f310bd649ff934b1dce8d",
     "src/libraries/schema/traffic/index.ts": "d15d70e180a2cbacc693fb1c9ea8575585125fe7f7e0fdc7a4daee22d316568e",
+    "src/libraries/services/project/project-snapshot-markers.ts": "c0586a5fc71f3a9d7199f5c3dd8db601f86b3384cb75bafaccd473c6f5d0bd0a",
     "src/libraries/services/threed/multimedia/album-entity-registry.ts": "68fad922b0b7db61f188d68322e8e05437a2e7911dca0b9325fa8e7ee9d9c83b"
   },
   "notes": [

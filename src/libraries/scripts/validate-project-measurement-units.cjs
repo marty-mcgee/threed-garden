@@ -71,6 +71,7 @@ const db = {
   transaction:async callback=>callback(tx),
 };
 const route = load('src/app/api/project/route.ts', {
+  '@/libraries/services/threed/ground-maps/project-ground-map-storage': {},
   'next/server':{NextResponse:{json:(body,init={})=>({status:init.status??200,body})}},
   '@/libraries/auth':{auth:async()=>authenticated?{user:{id:'owner'}}:null},
   '@/libraries/db/client':{db},

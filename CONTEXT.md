@@ -4,7 +4,9 @@
 
 Marty confirmed [v0.37.1](docs/releases/v0.37.1.md#production-status) reached production. For [v0.37.2](docs/releases/v0.37.2.md#rollout), he confirmed the Design v12 migration succeeded and verified both outdoor Design tools.
 
-Marty verified the Stairs editing checkpoint and confirmed the Design v13 migration was applied to production. The [v0.37.2 release candidate](docs/releases/v0.37.2.md) is awaiting manual release.
+Marty verified the Stairs editing checkpoint, confirmed the Design v13 migration was applied to production and confirmed [v0.37.2 reached production](docs/releases/v0.37.2.md#production-status).
+
+The [v0.38.0 Project duplication candidate](docs/releases/v0.38.0.md#rollout-and-verification) is ready for manual release. Marty verified **Save As: New Version** in the signed-in App by saving Project 18 as Project 19. Individual catalog and bulk duplication are future work.
 
 The 2D Design Canvas Level strip and Design Properties dropdown share one visible active Level. Hiding it activates the first remaining visible Level in strip order. With every Level hidden, there is no active drawing Level. Saved workspaces with a hidden Level marked active follow the same rule on load.
 

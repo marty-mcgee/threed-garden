@@ -71,6 +71,7 @@ const access = load('src/libraries/services/project/read-access.ts', {
   './scene-read-policy': policy, 'drizzle-orm': orm, '@/libraries/db/client': { db }, '@/libraries/schema/project': schema,
 });
 const ground = load('src/app/api/threed/ground-maps/route.ts', {
+  '@/libraries/services/threed/ground-maps/project-ground-map-storage': {},
   '@/libraries/services/project/read-access': access,
   'next/server': { NextResponse: { json: (body, options) => ({ body, status: options?.status ?? 200 }) } },
   'drizzle-orm': orm, '@vercel/blob': {}, '@/libraries/auth': { auth: async () => viewer ? { user: { id: viewer } } : null },

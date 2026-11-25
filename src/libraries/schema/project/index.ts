@@ -1,6 +1,6 @@
 // lib/schema/projects/index.ts
-import { pgTable, pgEnum, text, timestamp, boolean, jsonb, serial, index, uniqueIndex, integer, decimal } from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
+import { pgTable, pgEnum, text, timestamp, boolean, jsonb, serial, index, uniqueIndex, integer, decimal, uuid, foreignKey, check } from 'drizzle-orm/pg-core';
+import { relations, sql } from 'drizzle-orm';
 // PROJECT OWNER
 import { user } from '../auth';
 // MODULE RELATIONSHIPS
@@ -65,6 +65,9 @@ export const projectThreeDMarkerPositionSourceEnum = pgEnum(
 export const project = pgTable('project', {
   id: serial('id').primaryKey(),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }),
+  sourceProjectId: integer('source_project_id'),
+  duplicateRequestKey: uuid('duplicate_request_key'),
+  duplicateRequestHash: text('duplicate_request_hash'),
   name: text('name').notNull(),
   description: text('description'),
   slug: text('slug').unique().notNull(),
@@ -104,6 +107,14 @@ export const project = pgTable('project', {
   userIdIdx: index('idx_projects_user_id').on(table.userId),
   slugIdx: uniqueIndex('idx_projects_slug').on(table.slug),
   activeIdx: index('idx_projects_active').on(table.isActive),
+  sourceIdx: index('idx_project_source').on(table.sourceProjectId),
+  sourceFk: foreignKey({
+    name: 'project_source_fk',
+    columns: [table.sourceProjectId],
+    foreignColumns: [table.id],
+  }).onDelete('set null'),
+  duplicateRequestIdx: uniqueIndex('idx_project_duplicate_request').on(table.userId, table.duplicateRequestKey),
+  duplicateRequestValid: check('project_duplicate_request_valid', sql`(${table.duplicateRequestKey} IS NULL AND ${table.duplicateRequestHash} IS NULL) OR (${table.userId} IS NOT NULL AND ${table.duplicateRequestKey} IS NOT NULL AND ${table.duplicateRequestHash} IS NOT NULL AND ${table.duplicateRequestHash} ~ '^[0-9a-f]{64}$')`),
 }));
 
 // ============================================

@@ -549,7 +549,7 @@ export const threedGroundMaps = pgTable('threed_ground_maps', {
 }, table => ({
   projectIdx: uniqueIndex('idx_threed_ground_maps_project').on(table.projectId),
   ownerIdx: index('idx_threed_ground_maps_owner').on(table.userId),
-  ownerPathIdx: uniqueIndex('idx_threed_ground_maps_owner_path').on(table.userId, table.filePath),
+  filePathIdx: index('idx_threed_ground_maps_file_path').on(table.filePath),
 }));
 
 // Reusable Terrain definitions are independent of Project placement and flat Ground Map images.
