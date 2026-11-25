@@ -6,7 +6,7 @@ Marty confirmed [v0.37.1](docs/releases/v0.37.1.md#production-status) reached pr
 
 Marty verified the Stairs editing checkpoint, confirmed the Design v13 migration was applied to production and confirmed [v0.37.2 reached production](docs/releases/v0.37.2.md#production-status).
 
-The [v0.38.0 Project duplication candidate](docs/releases/v0.38.0.md#rollout-and-verification) is ready for manual release. Marty verified **Save As: New Version** in the signed-in App by saving Project 18 as Project 19. Individual catalog and bulk duplication are future work.
+Marty confirmed [v0.38.0 Project duplication](docs/releases/v0.38.0.md#rollout-and-verification) reached production after verifying Project 18 → Project 19. The [v0.38.1 checkpoint](docs/releases/v0.38.1.md) is ready for manual release and includes the Admin Projects list and duplication for individual Models, Characters and Terrains. Marty confirmed the unified receipt migration was applied and the database schema is accurate. Marty verified Project Save As with the unified receipt in the signed-in App. Marty also verified the Admin Projects list and confirmed that copied Models, Characters and Terrains can each be edited independently of their originals.
 
 The 2D Design Canvas Level strip and Design Properties dropdown share one visible active Level. Hiding it activates the first remaining visible Level in strip order. With every Level hidden, there is no active drawing Level. Saved workspaces with a hidden Level marked active follow the same rule on load.
 

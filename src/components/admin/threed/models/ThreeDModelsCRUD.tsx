@@ -2,6 +2,7 @@
 // Full CRUD for the ThreeD `threed_models` library with relational file management
 // (model files, textures, and supportive media) backed by Vercel Blob storage.
 'use client';
+import { DuplicateSavedObject } from '@/components/admin/threed/DuplicateSavedObject';
 import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useModelListState } from './use-model-list-state';
@@ -648,6 +649,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
         <Tabs value={view === 'edit' ? tabs.tab : 'details'} onValueChange={value => tabs.requestTab(value === 'files' ? 'files' : 'details')} activationMode="manual" className="min-h-0 flex-1">
         <AdminWorkspaceHeader iconColor="blue" className="shrink-0" icon={Box} title={view === "create" ? "Add Model" : "Edit Model"}
           description={view === "create" ? "Create a reusable ThreeD Model" : "Model #" + linkedModelId + " · Reusable Model details"}>
+          {view === "edit" && editingModel && <DuplicateSavedObject kind="model" sourceId={editingModel.id} disabled={busy || refreshingDetails} />}
           {editingModel && <span className="min-w-0 truncate text-xs text-muted-foreground" title={editingModel.modelName}>{editingModel.modelName} <Badge variant="outline">Model #{editingModel.id}</Badge></span>}
           {<Badge variant="outline" className="text-[10px]">{tabs.tab === 'files' ? editingModel?.modelType : formData.modelType || 'Choose a type'}</Badge>}
           {view === 'edit' && <TabsList className="shrink-0" aria-label="Model workspace"><TabsTrigger value="details" disabled={busy || !editingModel}>Details</TabsTrigger><TabsTrigger value="files" disabled={busy || !editingModel}>Files</TabsTrigger></TabsList>}
@@ -903,6 +905,7 @@ function ThreeDModelsCRUDContent({ onModuleUpdate, scrollRecords = false, syncLi
                     </TableCell>
                     <TableCell className="py-1">
                       <div className="flex items-center justify-end gap-1">
+                        <DuplicateSavedObject compact kind="model" sourceId={model.id} disabled={loading || deleting} onCopied={() => void fetchModels(false)} />
                         <Button type="button" variant="ghost" size="icon"
                           className="h-8 w-8 text-muted-foreground hover:bg-amber-500/10 hover:text-amber-700 focus-visible:bg-amber-500/10 focus-visible:text-amber-700 dark:hover:text-amber-400 dark:focus-visible:text-amber-400"
                           disabled={deleting || loading} onClick={() => router.push("/admin/threed/models/" + model.id)}

@@ -1,5 +1,9 @@
 # Admin ThreeD workspace blueprint
 
+In Models, Characters and Terrains, the list row offers a Duplicate icon beside Edit. The saved record’s editor also offers a labeled Duplicate action in the workspace header.
+
+The standalone Model, Character and Terrain edit routes share the [saved-record duplication action](../releases/v0.38.1.md). It operates on one owner-scoped record and leaves the current editor open.
+
 The Admin Blueprint started with the Models workspace in v0.19.12. The [original ThreeD rollout](v0.19.13.md) established the shared presentation. The current plan extends those conventions across the four Top Modules page by page.
 
 ## Current page audit

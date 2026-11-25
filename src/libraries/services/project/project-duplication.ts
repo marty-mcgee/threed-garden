@@ -10,11 +10,8 @@ import { parseTerrainPlacement } from '@/libraries/services/threed/terrains/terr
 import { assertProjectConfigurationCurrent } from './configuration';
 import { duplicateProjectGraph, type ProjectDuplicateDraft } from './duplicate-project-graph';
 
-export class ProjectDuplicateError extends Error {
-  constructor(message: string, readonly status: number) {
-    super(message);
-  }
-}
+import { completeDuplicate, DuplicateError as ProjectDuplicateError, reserveDuplicate } from '../threed/duplication-receipt';
+export { ProjectDuplicateError };
 
 function fields(value: unknown, allowed: string[]): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)
@@ -90,14 +87,15 @@ export async function duplicateProject(owner: string, input: ReturnType<typeof p
   for (let attempt = 0; ; attempt++) {
     try {
       return await db.transaction(async tx => {
-        const [receipt] = await tx.select({
-          projectId: project.id,
-          hash: project.duplicateRequestHash,
-        }).from(project).where(and(eq(project.userId, owner), eq(project.duplicateRequestKey, input.requestKey))).limit(1);
-        if (receipt) {
-          if (receipt.hash !== input.requestHash) throw new ProjectDuplicateError('This request key was used for different Project content.', 409);
-          return { projectId: receipt.projectId, name: input.name, created: false };
-        }
+        const reservation = await reserveDuplicate(tx, {
+          userId: owner,
+          kind: 'project',
+          sourceId: input.sourceProjectId,
+          requestKey: input.requestKey,
+          name: input.name,
+          requestHash: input.requestHash,
+        });
+        if (reservation.existingId) return { projectId: reservation.existingId, name: input.name, created: false };
         const [source] = await tx.select().from(project)
           .where(and(eq(project.id, input.sourceProjectId), eq(project.userId, owner))).limit(1).for('share');
         if (!source) throw new ProjectDuplicateError('Source Project not found.', 404);
@@ -126,11 +124,9 @@ export async function duplicateProject(owner: string, input: ReturnType<typeof p
           config: source.config,
           metadata: copyProjectMetadata(source.metadata),
           sourceProjectId: source.id,
-          duplicateRequestKey: input.requestKey,
-          duplicateRequestHash: input.requestHash,
-        }).onConflictDoNothing({ target: [project.userId, project.duplicateRequestKey] }).returning({ id: project.id });
-        if (!created) throw new ProjectDuplicateError('A concurrent copy is finishing. Retry the same request.', 503);
+        }).returning({ id: project.id });
         await duplicateProjectGraph(tx, owner, source, created.id, input.draft);
+        await completeDuplicate(tx, reservation, created.id);
         return { projectId: created.id, name: input.name, created: true };
       }, { isolationLevel: 'repeatable read' });
     } catch (error) {

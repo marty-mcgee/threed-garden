@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.38.0 - Project Save As: New Version (ready for manual release)](v0.38.0.md)
+- [v0.38.1 - ThreeD Object Duplication and Admin Projects (ready for manual release)](v0.38.1.md)
+
+- [v0.38.0 - Project Save As: New Version (Developer-confirmed production)](v0.38.0.md)
 
 - [v0.37.2 - ThreeD Design: Deck, Patio, Driveway and Stairs Tools (Developer-confirmed production)](v0.37.2.md#production-status)
 

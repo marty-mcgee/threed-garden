@@ -1,5 +1,6 @@
 // components/admin/threed/characters/ThreeDCharactersCRUD.tsx
 'use client';
+import { DuplicateSavedObject } from '@/components/admin/threed/DuplicateSavedObject';
 import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
@@ -600,6 +601,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
   }
   const renderActions = (character: Character) => (
     <div className="flex items-center justify-end gap-1">
+      <DuplicateSavedObject compact kind="character" sourceId={character.id} disabled={bulkBusy || isSubmitting} onCopied={fetchCharacters} />
       <Button variant="ghost" size="sm" disabled={bulkBusy || isSubmitting} title="Manage and preview Character animations" aria-label={`Manage and preview animations for ${character.name}`} onClick={event => { if (bulkBusy || isSubmitting) event.preventDefault(); }} asChild><a href={'/admin/threed/characters/' + character.id + '/animations'}><Clapperboard className="h-4 w-4" /><span className="ml-1 text-xs">Animations & Preview</span></a></Button>
       <Button variant="ghost" size="sm" disabled={bulkBusy || isSubmitting} aria-label={`Edit ${character.name}`} onClick={event => { if (bulkBusy || isSubmitting) event.preventDefault(); }} asChild>
 <a href={'/admin/threed/characters/' + character.id} aria-label={'Edit ' + character.name}><Edit className="w-4 h-4" /></a>
@@ -651,6 +653,7 @@ export function ThreeDCharactersCRUD({ onModuleUpdate, scrollRecords = false, vi
       {editingCharacter && <Badge variant="outline">#{editingCharacter.id} / {editingCharacter.name}</Badge>}
       <nav className="flex flex-wrap gap-2 lg:ml-auto" aria-label="Character workspace">
         <Button asChild variant="outline" size="sm" className="h-7 text-xs"><a href="/admin/threed/characters">Characters</a></Button>
+        {editingCharacter && !recordLoading && !recordError && <DuplicateSavedObject kind="character" sourceId={editingCharacter.id} disabled={isSubmitting} />}
         {characterId && <><Button asChild variant={view === 'edit' ? 'secondary' : 'outline'} size="sm" className="h-7 text-xs"><a aria-current={view === 'edit' ? 'page' : undefined} href={'/admin/threed/characters/' + characterId}>Details</a></Button><Button asChild variant={view === 'animations' ? 'secondary' : 'outline'} size="sm" className="h-7 text-xs"><a aria-current={view === 'animations' ? 'page' : undefined} href={'/admin/threed/characters/' + characterId + '/animations'}>Animations & Actions</a></Button></>}
         <AdminWorkspaceLink href="/admin/threed/simulations" icon={FlaskConical}>Simulations</AdminWorkspaceLink>
       </nav>

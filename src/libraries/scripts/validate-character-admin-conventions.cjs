@@ -44,7 +44,7 @@ function fixture(view = 'list') {
     '../multimedia/EntityAlbumsSection': proxy,
     './use-character-page-guard': { useCharacterPageGuard: () => () => {} },
     './character-admin-form-core': formCore,
-    '@/components/admin/layout/AdminWorkspaceHeader': proxy,
+    '@/components/admin/threed/DuplicateSavedObject': proxy, '@/components/admin/layout/AdminWorkspaceHeader': proxy,
     '@/components/admin/threed/CatalogBulkEditButton': proxy,
     '@/components/settings/ModuleAppearanceProvider': proxy,
     '@/components/admin/threed/models/ModelFileList': proxy,
@@ -64,6 +64,7 @@ const button = (f, label) => f.find(node => node.type === 'Button' && text(node)
 (async () => {
   const list = fixture(); await list.flush();
   assert(list.find(node => node.type === 'AdminWorkspaceLink' && node.props.href === '/admin/threed/simulations'));
+  assert(list.find(node => node.type === 'DuplicateSavedObject' && node.props.sourceId === 11 && node.props.compact));
   assert.match(text(list.tree), /Active/);
   button(list, 'Next').props.onClick(); list.render(); await list.flush();
   assert(new URLSearchParams(list.requests.at(-1).url.split('?')[1]).get('offset') === '25');

@@ -1,365 +1,133 @@
-// app/admin/projects/page.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import {
-  Plus,
-  Folder,
-  Box,
-  Car,
-  Music,
-  ChevronRight,
-  Trash2,
-  Edit,
-  Eye,
-  EyeOff,
-  Loader2
-} from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ArrowDown, ArrowUp, Box, Folder, Pencil, Plus, RefreshCw, Trash2 } from 'lucide-react';
+import { AdminWorkspaceHeader } from '@/components/admin/layout/AdminWorkspaceHeader';
+import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/components/ui/toast';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { DuplicateSavedObject } from '@/components/admin/threed/DuplicateSavedObject';
 
-interface Project {
+interface ProjectRow {
   id: number;
   name: string;
-  description: string;
-  slug: string;
-  isActive: boolean;
-  isPublic: boolean;
-  createdAt: string;
-  userId: string;
-}
-
-interface ModuleCounts {
+  description: string | null;
+  isPublic: boolean | null;
+  isActive: boolean | null;
   threed: number;
   traffic: number;
   multimedia: number;
 }
 
-export default function AdminProjectsPage() {
-  const router = useRouter();
-  const { showToast, ToastComponent } = useToast();
-  const { data: session, status } = useSession();
-  const [projects, setProjects] = useState<Project[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [moduleCounts, setModuleCounts] = useState<Record<number, ModuleCounts>>({});
+const root = '/admin/projects';
+const pageSize = 25;
+
+function ProjectInventory({ owner }: { owner: string }) {
+  const [data, setData] = useState<ProjectRow[]>([]);
+  const [busy, setBusy] = useState(true);
+  const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
+  const [revision, setRevision] = useState(0);
   const [deleting, setDeleting] = useState<number | null>(null);
-
+  const [search, setSearch] = useAdminListQueryState(root, 'search', '');
+  const [active, setActive] = useAdminListQueryState(root, 'active', 'all', { values: ['all', 'active', 'inactive'] });
+  const [visibility, setVisibility] = useAdminListQueryState(root, 'visibility', 'all', { values: ['all', 'public', 'private'] });
+  const [sort, setSort] = useAdminListQueryState(root, 'sort', { key: 'id', direction: 'desc' }, { values: ['id', 'name'] });
+  const [page, setPage] = useAdminListQueryState(root, 'page', 0);
   useEffect(() => {
-    if (status === 'authenticated') {
-      fetchProjects();
+    const request = new AbortController();
+    setBusy(true);
+    setError('');
+    async function load() {
+      try {
+        const res = await fetch('/api/admin/projects', { cache: 'no-store', signal: request.signal });
+        if (!res.ok) throw Error('Could not load Projects. Use Refresh to retry.');
+        const payload = await res.json();
+        if (!request.signal.aborted) setData(payload.rows);
+      } catch (e) {
+        if (!request.signal.aborted) setError(e instanceof Error ? e.message : 'Could not load Projects.');
+      } finally {
+        if (!request.signal.aborted) setBusy(false);
+      }
     }
-  }, [status]);
+    void load();
+    return () => request.abort();
+  }, [owner, revision]);
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
-
-  // app/admin/page.tsx
-  // The fetchProjects function already gets the correct project IDs
-  // The issue is that fetchModuleCounts is called with the project.id from the response
-
-  const fetchProjects = async () => {
-    setLoading(true);
+  const needle = search.trim().toLowerCase();
+  const matches = data.filter(row =>
+    (active === 'all' || Boolean(row.isActive) === (active === 'active')) &&
+    (visibility === 'all' || Boolean(row.isPublic) === (visibility === 'public')) &&
+    (!needle || [row.name, row.description ?? '', String(row.id)].some(value => value.toLowerCase().includes(needle)))
+  ).sort((a, b) => (sort.direction === 'asc' ? 1 : -1) * ((sort.key === 'name' ? a.name.localeCompare(b.name) : 0) || a.id - b.id));
+  const pages = Math.max(1, Math.ceil(matches.length / pageSize));
+  const current = Math.min(page, pages - 1);
+  const visible = matches.slice(current * pageSize, (current + 1) * pageSize);
+  const refresh = () => setRevision(value => value + 1);
+  async function remove(row: ProjectRow) {
+    if (deleting !== null || !window.confirm(`Delete Project “${row.name}” (#${row.id}) and its Project-owned content?`)) return;
+    setDeleting(row.id);
+    setNotice('');
     try {
-      const response = await fetch('/api/project');
-      if (!response.ok) {
-        throw new Error('Failed to fetch projects');
-      }
-      const data = await response.json();
-      setProjects(data.data || []);
-
-      // ✅ Fetch module counts for each project using the project.id from the response
-      for (const project of data.data || []) {
-        console.log(`🔍 Fetching modules for project ${project.id}:`, project);
-        await fetchModuleCounts(project.id);
-      }
-    } catch (error) {
-      console.error('Error fetching projects:', error);
-      showToast('Failed to load projects', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // app/admin/page.tsx - Updated fetchModuleCounts
-  const fetchModuleCounts = async (projectId: number) => {
-    try {
-      const response = await fetch(`/api/project/modules?projectId=${projectId}`);
-
-      // ✅ If response is not OK (500, 401, etc.), handle gracefully
-      if (!response.ok) {
-        console.warn(`⚠️ Failed to fetch modules for project ${projectId}: ${response.status}`);
-        setModuleCounts(prev => ({
-          ...prev,
-          [projectId]: { threed: 0, traffic: 0, multimedia: 0 }
-        }));
-        return;
-      }
-
-      const data = await response.json();
-
-      // ✅ Handle case where data is empty or missing
-      if (!data.success || !data.data) {
-        console.log(`ℹ️ No module data for project ${projectId}`);
-        setModuleCounts(prev => ({
-          ...prev,
-          [projectId]: { threed: 0, traffic: 0, multimedia: 0 }
-        }));
-        return;
-      }
-
-      const counts = {
-        threed: data.data.threed?.length || 0,
-        traffic: data.data.traffic?.length || 0,
-        multimedia: data.data.multimedia?.length || 0,
-      };
-
-      setModuleCounts(prev => ({ ...prev, [projectId]: counts }));
-    } catch (error) {
-      // ✅ Network errors handled gracefully
-      console.warn(`⚠️ Network error fetching modules for project ${projectId}:`, error);
-      setModuleCounts(prev => ({
-        ...prev,
-        [projectId]: { threed: 0, traffic: 0, multimedia: 0 }
-      }));
-    }
-  };
-
-  const deleteProject = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this project? This will also delete all associated modules.')) return;
-
-    setDeleting(id);
-    try {
-      // ✅ DELETE /api/project?id=1 - Delete a project
-      const response = await fetch(`/api/project?id=${id}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to delete project');
-      }
-
-      showToast('Project deleted successfully', 'success');
-      await fetchProjects();
-    } catch (error) {
-      console.error('Error deleting project:', error);
-      showToast(error instanceof Error ? error.message : 'Failed to delete project', 'error');
+      const res = await fetch(`/api/project?id=${row.id}`, { method: 'DELETE' });
+      if (!res.ok) throw Error((await res.json()).error || 'Could not delete Project.');
+      setData(rows => rows.filter(item => item.id !== row.id));
+      setNotice(`Deleted Project “${row.name}”.`);
+      refresh();
+    } catch (e) {
+      setNotice(e instanceof Error ? e.message : 'Could not confirm deletion. Refresh before retrying.');
     } finally {
       setDeleting(null);
     }
-  };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
   }
-
-    // ✅ Show loading state while checking auth
-  if (status === 'loading' || loading) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
+  function heading(key: string, label: string) {
+    const selected = key === sort.key;
+    const Arrow = sort.direction === 'asc' ? ArrowUp : ArrowDown;
+    return <TableHead aria-sort={selected ? sort.direction === 'asc' ? 'ascending' : 'descending' : 'none'}>
+      <button className="inline-flex items-center gap-1" onClick={() => { setPage(0); setSort({ key, direction: selected && sort.direction === 'asc' ? 'desc' : 'asc' }); }}>{label}{selected && <Arrow className="size-3" />}</button>
+    </TableHead>;
   }
-
-  // ✅ Redirect if not authenticated
-  if (status === 'unauthenticated') {
-    router.push('/auth/sign-in');
-    return null;
-  }
-
-  // ✅ Show empty state if no projects
-  if (projects.length === 0 && !loading) {
-    return (
-      <div className="space-y-6">
-        {ToastComponent}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold">Projects</h1>
-            <p className="text-muted-foreground">
-              Manage your projects and their modules
-            </p>
-          </div>
-          <Button variant="success" onClick={() => router.push('/admin/projects/new')}>
-            <Plus className="w-4 h-4 mr-2" />
-            New Project
-          </Button>
-        </div>
-        <Card>
-          <CardContent className="text-center py-12">
-            <Folder className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
-            <h3 className="text-lg font-medium mb-2">No Projects Yet</h3>
-            <p className="text-muted-foreground mb-4">
-              Create your first project to start managing assets.
-            </p>
-            <Button variant="success" onClick={() => router.push('/admin/projects/new')}>
-              <Plus className="w-4 h-4 mr-2" />
-              Create Project
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      {ToastComponent}
-
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">Projects</h1>
-          <p className="text-muted-foreground">
-            Manage your projects and their modules
-          </p>
-        </div>
-        <Button variant="success" onClick={() => router.push('/admin/projects/new')}>
-          <Plus className="w-4 h-4 mr-2" />
-          New Project
-        </Button>
-      </div>
-
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-2 my-2">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Projects</p>
-                <p className="text-2xl font-bold">{projects.length}</p>
-              </div>
-              <Folder className="w-8 h-8 text-blue-500" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Active</p>
-                <p className="text-2xl font-bold">{projects.filter(p => p.isActive).length}</p>
-              </div>
-              <Eye className="w-8 h-8 text-green-500" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Public</p>
-                <p className="text-2xl font-bold">{projects.filter(p => p.isPublic).length}</p>
-              </div>
-              <EyeOff className="w-8 h-8 text-yellow-500" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total Modules</p>
-                <p className="text-2xl font-bold">
-                  {Object.values(moduleCounts).reduce((sum, counts) =>
-                    sum + counts.threed + counts.traffic + counts.multimedia, 0
-                  )}
-                </p>
-              </div>
-              <Box className="w-8 h-8 text-purple-500" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Projects List */}
-      <Card>
-        <CardContent className="p-0">
-          <div className="space-y-2 p-4">
-            {projects.map((project) => {
-              const counts = moduleCounts[project.id] || { threed: 0, traffic: 0, multimedia: 0 };
-              const totalModules = counts.threed + counts.traffic + counts.multimedia;
-
-              return (
-                <div
-                  key={project.id}
-                  className={`flex items-center justify-between p-4 border rounded-lg transition-colors ${
-                    project.isActive ? 'bg-muted/40 hover:bg-muted/70' : 'opacity-60 bg-muted/20'
-                  }`}
-                >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3">
-                      <Folder className={`w-5 h-5 flex-shrink-0 ${project.isActive ? 'text-blue-500' : 'text-gray-400'}`} />
-                      <div className="min-w-0">
-                        <h3 className="font-semibold flex items-center gap-2 truncate">
-                          {project.name}
-                          {!project.isActive && (
-                            <Badge variant="secondary" className="text-xs flex-shrink-0">Inactive</Badge>
-                          )}
-                          {project.isPublic && (
-                            <Badge variant="outline" className="text-xs flex-shrink-0">Public</Badge>
-                          )}
-                        </h3>
-                        <p className="text-sm text-muted-foreground truncate">
-                          {project.description || 'No description'}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 mt-2 flex-wrap">
-                      <Badge variant="outline" className="flex items-center gap-1">
-                        <Box className="w-3 h-3" />
-                        {counts.threed} ThreeD
-                      </Badge>
-                      <Badge variant="outline" className="flex items-center gap-1">
-                        <Car className="w-3 h-3" />
-                        {counts.traffic} Traffic
-                      </Badge>
-                      <Badge variant="outline" className="flex items-center gap-1">
-                        <Music className="w-3 h-3" />
-                        {counts.multimedia} Music
-                      </Badge>
-                      <Badge variant="secondary">
-                        {totalModules} total modules
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 flex-shrink-0 ml-4">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => router.push(`/admin/projects/${project.id}`)}
-                    >
-                      Manage
-                      <ChevronRight className="w-4 h-4 ml-1" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => deleteProject(project.id)}
-                      disabled={deleting === project.id}
-                    >
-                      {deleting === project.id ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Trash2 className="w-4 h-4 text-red-500" />
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </CardContent>
-      </Card>
+  return <div className="space-y-3">
+    <AdminWorkspaceHeader title="Projects" description="Manage Projects and their assigned Modules" icon={Folder} iconColor="blue" showModuleAlbums={false}>
+      <Button asChild variant="success" size="sm" className="ml-auto h-7 text-xs"><Link href={root + '/new'}><Plus className="size-3.5" />Add Project</Link></Button>
+    </AdminWorkspaceHeader>
+    <div className="flex flex-wrap items-center gap-2 text-xs">
+      <Input aria-label="Search Projects" placeholder="Search name, description or ID" maxLength={200} className="h-8 w-56 text-xs" value={search} onChange={e => { setSearch(e.target.value); setPage(0); }} />
+      <select aria-label="Project activity" className="h-8 rounded-md border bg-background px-2" value={active} onChange={e => { setActive(e.target.value); setPage(0); }}><option value="all">All statuses</option><option value="active">Active</option><option value="inactive">Inactive</option></select>
+      <select aria-label="Project visibility" className="h-8 rounded-md border bg-background px-2" value={visibility} onChange={e => { setVisibility(e.target.value); setPage(0); }}><option value="all">All visibility</option><option value="public">Public</option><option value="private">Private</option></select>
+      <Button size="sm" variant="ghost" disabled={!search && active === 'all' && visibility === 'all'} onClick={() => { setSearch(''); setActive('all'); setVisibility('all'); setPage(0); }}>Reset filters</Button>
+      <Button size="sm" variant="outline" className="ml-auto h-8" disabled={busy} onClick={refresh}><RefreshCw className="size-3.5" />Refresh</Button>
     </div>
-  );
+    {notice && <p role="status" className="text-xs">{notice}</p>}
+    {error ? <p role="alert" className="text-sm text-destructive">{error}</p> : busy ? <p role="status">Loading Projects…</p> : <>
+      <p className="text-xs text-muted-foreground">{data.length} Projects · {data.filter(p => p.isActive).length} active · {data.filter(p => p.isPublic).length} public · {data.reduce((n,p) => n+p.threed+p.multimedia+p.traffic,0)} active Module assignments</p>
+      <div className="overflow-x-auto rounded-md border"><Table className="text-xs"><TableHeader><TableRow>
+        {heading('id', 'ID')}{heading('name', 'Project')}<TableHead>Status</TableHead><TableHead>Visibility</TableHead><TableHead>ThreeD</TableHead><TableHead>Multimedia</TableHead><TableHead>Traffic</TableHead><TableHead className="text-right">Actions</TableHead>
+      </TableRow></TableHeader><TableBody>{visible.map(row => <TableRow key={row.id}>
+        <TableCell>#{row.id}</TableCell><TableCell><Link className="font-medium hover:underline" href={root + '/' + row.id}>{row.name}</Link>{row.description && <p className="max-w-xs truncate text-muted-foreground" title={row.description}>{row.description}</p>}</TableCell>
+        <TableCell><Badge variant={row.isActive ? 'outline' : 'secondary'}>{row.isActive ? 'Active' : 'Inactive'}</Badge></TableCell><TableCell>{row.isPublic ? 'Public' : 'Private'}</TableCell>
+        <TableCell>{row.threed}</TableCell><TableCell>{row.multimedia}</TableCell><TableCell>{row.traffic}</TableCell>
+        <TableCell><div className="flex justify-end gap-1">
+          <Button variant="ghost" size="icon" className="size-8" asChild><Link href={root + '/' + row.id} title="Edit Project" aria-label={`Edit ${row.name}`}><Pencil className="size-4" /></Link></Button>
+          <DuplicateSavedObject compact kind="project" sourceId={row.id} onCopied={refresh} disabled={deleting !== null} />
+          <Button variant="ghost" size="icon" className="size-8" asChild><Link href={`/dashboard/scene?projectId=${row.id}`} title="Open Scene" aria-label={`Open Scene for ${row.name}`}><Box className="size-4" /></Link></Button>
+          <Button variant="ghost" size="icon" className="size-8 text-destructive" title="Delete Project" aria-label={`Delete ${row.name}`} disabled={deleting !== null} onClick={() => void remove(row)}><Trash2 className="size-4" /></Button>
+        </div></TableCell>
+      </TableRow>)}{!visible.length && <TableRow><TableCell colSpan={8}>{data.length ? 'No Projects match these filters.' : 'No Projects yet. Choose Add Project to create one.'}</TableCell></TableRow>}</TableBody></Table></div>
+      <div className="flex items-center justify-end gap-2 text-xs"><span>{matches.length} matching · Page {current + 1} of {pages}</span><Button size="sm" variant="outline" disabled={!current} onClick={() => setPage(current-1)}>Previous</Button><Button size="sm" variant="outline" disabled={current+1 >= pages} onClick={() => setPage(current+1)}>Next</Button></div>
+    </>}
+  </div>;
+}
+
+export default function AdminProjectsPage() {
+  const { data, status } = useSession();
+  const router = useRouter();
+  useEffect(() => { if (status === 'unauthenticated') router.replace('/auth/sign-in'); }, [status, router]);
+  if (status !== 'authenticated' || !data?.user?.id) return <p role="status">Opening Projects…</p>;
+  return <ProjectInventory key={data.user.id} owner={data.user.id} />;
 }

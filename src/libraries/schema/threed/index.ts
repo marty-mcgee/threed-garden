@@ -8,6 +8,21 @@ import {
 import { relations, sql } from 'drizzle-orm';
 import { user } from '../auth';
 import { project } from '../project';
+
+export const threedDuplicateReceipts = pgTable('threed_duplicate_receipts', {
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  requestKey: uuid('request_key').notNull(),
+  kind: text('kind').notNull(),
+  sourceId: integer('source_id'),
+  requestHash: text('request_hash'),
+  name: text('name').notNull(),
+  destinationId: integer('destination_id'),
+}, table => [
+  primaryKey({ columns: [table.userId, table.requestKey] }),
+  check('threed_duplicate_receipts_kind_check', sql`${table.kind} in ('project','model','character','terrain')`),
+  check('threed_duplicate_receipts_content_check', sql`(${table.kind} = 'project' and ${table.requestHash} is not null and ${table.requestHash} ~ '^[0-9a-f]{64}$') or (${table.kind} <> 'project' and ${table.sourceId} is not null and ${table.requestHash} is null)`),
+  check('threed_duplicate_receipts_source_id_check', sql`${table.sourceId} > 0`),
+]);
 import type { ScenarioSetup } from '@/libraries/services/threed/scenarios/scenario-input';
 import type { SimulationResultReport, SimulationResultSnapshot } from '@/libraries/services/threed/simulations/simulation-result-input';
 import type { DesignDocument } from '@/libraries/services/threed/design/document';

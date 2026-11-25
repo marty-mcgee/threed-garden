@@ -1,5 +1,6 @@
 'use client';
 
+import { DuplicateSavedObject } from '@/components/admin/threed/DuplicateSavedObject';
 import { useEffect, useRef, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -322,6 +323,7 @@ export function RankedRecordsList({ workspace }: { workspace: keyof typeof works
             </TableCell>
             <TableCell className="py-1 text-right">
               <div className="flex items-center justify-end gap-1">
+                {workspace === "terrains" && typeof row.id === "number" && <DuplicateSavedObject compact kind="terrain" sourceId={row.id} disabled={busy || refreshing} onCopied={() => setRefresh(value => value + 1)} />}
                 <Button asChild variant="ghost" size="sm"><Link href={`${root}/${row.id}`} aria-label={`Edit ${row.name}`}><Edit className="size-4" /></Link></Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

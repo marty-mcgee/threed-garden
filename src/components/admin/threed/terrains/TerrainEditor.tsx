@@ -1,5 +1,6 @@
 'use client';
 
+import { DuplicateSavedObject } from '@/components/admin/threed/DuplicateSavedObject';
 import { useEffect, useId, useReducer, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -526,6 +527,7 @@ export function TerrainEditor({ recordId }: Props) {
       {!recordUnavailable && (error || message) && <p role={error ? "alert" : "status"} className={`min-w-0 flex-1 ${error ? "text-destructive" : "text-emerald-500"}`}>{error || message}</p>}
       <div className="ml-auto flex flex-wrap gap-1">
         <AdminWorkspaceLink href={root} icon={Mountain}>All Terrains</AdminWorkspaceLink>
+        {recordId && !loading && !recordUnavailable && <DuplicateSavedObject kind="terrain" sourceId={recordId} disabled={busy} />}
         {recordId && <Button asChild variant="success" size="sm"><Link href={`${root}/new`}><Plus className="size-4" />New Terrain</Link></Button>}
       </div>
     </AdminWorkspaceHeader>

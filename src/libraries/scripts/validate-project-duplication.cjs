@@ -14,6 +14,8 @@ async function main() {
   const sql = new DatabaseSync(':memory:');
   sql.exec('pragma foreign_keys = on');
   const tables = [
+    'threedDuplicateReceipts', 'threedModelFiles', 'threedModelMaterialAssignments', 'threedModelCategoryAssignments',
+    'threedModelAnimationAssignments', 'threedCharacters', 'threedCharacterModels', 'threedCharacterAnimationAssignments',
     'project', 'threed', 'projectThreed', 'projectMultimedia', 'projectTraffic', 'multimedia', 'traffic',
     'threedModels', 'threedLayers', 'threedWeatherLogs', 'trafficChpCases',
     'projectAssets', 'projectThreedMarkers', 'threedGroups', 'threedGroupDesignMembers', 'threedGroupModelMembers',
@@ -35,6 +37,7 @@ async function main() {
     sql.exec('create table "' + getTableName(table) + '" (' + columns.join(',') + ')');
   }
   sql.exec(`create unique index receipts on project(user_id, duplicate_request_key);
+    create unique index object_receipts on threed_duplicate_receipts(user_id, request_key);
     create unique index projection on threed_designs(user_id,create_key);
     create trigger placement_id after insert on project_terrain_placements when new.id is null
     begin update project_terrain_placements set id=lower(hex(randomblob(16))) where rowid=new.rowid; end;`);
@@ -163,6 +166,17 @@ async function main() {
     },
   };
   interruptBeforeCommit = true;
+  const { GET: listProjects } = require('@/app/api/admin/projects/route');
+  const inventory = await (await listProjects()).json();
+  assert.equal(inventory.rows.length, 1);
+  assert.equal(inventory.rows[0].threed, 1);
+  assert.equal(inventory.rows[0].multimedia, 0);
+  assert.equal('config' in inventory.rows[0], false);
+  actor = 'visitor';
+  assert.deepEqual((await (await listProjects()).json()).rows, []);
+  actor = null;
+  assert.equal((await listProjects()).status, 401);
+  actor = 'owner';
   const res = await send(input);
   const receipt = await res.json();
   assert.equal(res.status, 201, JSON.stringify(receipt));
@@ -259,6 +273,49 @@ async function main() {
   assert.equal(row('select name from threed where id=?', marker.threed_id).name, 'House module');
   assert.equal(row("select count(*) as n from project_threed_markers where project_id=? and marker_id='house-model'", id).n, 1);
   assert.equal(row('select file_path from threed_ground_maps where project_id=?', id).file_path, 'fixture-ground.png');
+  const { POST: duplicateObject } = require('@/app/api/threed/duplicate/route');
+  // Replay the same request after migrating a renamed v0.38.0 destination
+  // whose original Project has since been deleted.
+  const migrated = row('select request_hash from threed_duplicate_receipts where request_key=?', input.requestKey);
+  assert.equal(migrated.request_hash.length, 64);
+  sql.prepare('delete from threed_duplicate_receipts where request_key=?').run(input.requestKey);
+  sql.prepare('update project set duplicate_request_key=?, duplicate_request_hash=? where id=?').run(input.requestKey, migrated.request_hash, id);
+  const migration = require('node:fs').readFileSync('docs/releases/sql/threed-object-duplication.sql', 'utf8');
+  sql.exec(migration.match(/INSERT INTO threed_duplicate_receipts[\s\S]*?DO NOTHING;/)[0]);
+  assert.equal((await (await send(input)).json()).data.projectId, id);
+  const collision = await duplicateObject(new Request('http://fixture/api/threed/duplicate', {
+    method: 'POST', body: JSON.stringify({ kind: 'terrain', name: input.name, sourceId: 18, requestKey: input.requestKey }),
+  }));
+  assert.equal(collision.status, 409);
+  seed('threed_models', { id: 110, user_id: 'owner', model_name: 'Door', main_model_file_id: 120, is_public: 1 });
+  seed('threed_model_files', { id: 120, model_id: 110, user_id: 'owner', file_path: '/door.glb' });
+  seed('threed_characters', { id: 110, user_id: 'owner', character_id: 'guide', model_id: 110 });
+  seed('threed_character_animation_assignments', { character_id: 110, user_id: 'owner', mode: 'disabled', action_key: 'walk' });
+  seed('threed_terrains', { id: 110, user_id: 'owner' });
+  seed('threed_terrain_revisions', { terrain_id: 110, revision: 5, heights_m: [0, 1, 2, 3] });
+  for (const kind of ['model', 'character', 'terrain']) {
+    const body = { kind, sourceId: 110, name: 'Alternative', requestKey: randomUUID() };
+    const call = () => duplicateObject(new Request('http://fixture/api/threed/duplicate', { method: 'POST', body: JSON.stringify(body) }));
+    const response = await call();
+    assert.equal(response.status, 201);
+    const { id } = await response.json();
+    assert.notEqual(id, 110);
+    assert.equal((await (await call()).json()).id, id);
+    if (kind === 'model') {
+      const file = row('select id, file_path from threed_model_files where model_id=?', id);
+      assert.notEqual(file.id, 120);
+      assert.equal(file.file_path, '/door.glb');
+      assert.equal(row('select main_model_file_id from threed_models where id=?', id).main_model_file_id, file.id);
+    } else if (kind === 'character') {
+      assert.notEqual(row('select character_id from threed_characters where id=?', id).character_id, 'guide');
+      assert.equal(row('select mode from threed_character_animation_assignments where character_id=?', id).mode, 'disabled');
+    } else {
+      assert.equal(row('select revision from threed_terrain_revisions where terrain_id=?', id).revision, 1);
+    }
+    actor = 'visitor';
+    assert.equal((await call()).status, 404);
+    actor = 'owner';
+  }
   sql.close();
   console.log('PASS: Project duplication POST, captured Design and Model, Group, pinned Terrain, Media, Ground Map, projection, source isolation, rollback, retry, access and setup-only copy (offline SQLite fixture).');
 }
