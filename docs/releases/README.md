@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.37.1 - Project Reference Media and Design Level Controls (release candidate)](v0.37.1.md)
+- [v0.37.2 - ThreeD Design: Deck, Patio, Driveway and Stairs Tools (release candidate)](v0.37.2.md)
+
+- [v0.37.1 - Project Reference Media and Design Level Controls (Developer-confirmed production)](v0.37.1.md#production-status)
 
 - [v0.37.0 - ThreeD Design: Canvas Dimensions and Object Appearance (release candidate)](v0.37.0.md)
 

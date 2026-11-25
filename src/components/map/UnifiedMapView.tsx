@@ -5,7 +5,7 @@ import type { ModelPlanImage } from '@/libraries/services/threed/models/model-pl
 import type { ProjectTerrainSurface } from '@/libraries/services/threed/terrains/terrain-core';
 
 import { entityPoints } from '@/libraries/services/threed/design/object-properties';
-import type { DesignDocument } from '@/libraries/services/threed/design/document';
+import { stairFootprint, type PlanPoint, type DesignDocument } from '@/libraries/services/threed/design/document';
 import type { ArchitectureMapLine } from '@/components/map/LeafletMap';
 import type { ScenarioStartRequest } from '@/libraries/services/threed/scenario-core';
 import type { SceneResourceIssue } from '@/components/threed/shared/SceneResourceStatus';
@@ -655,14 +655,15 @@ export function UnifiedMapView({
   const architectureLines = useMemo<ArchitectureMapLine[]>(() => {
     if (!architecture) return [];
     const nodes = new Map(architecture.nodes.map(node => [node.id, node]));
-    const point = (id: string): [number, number] => {
-      const node = nodes.get(id)!;
+    const mapPoint = (node: PlanPoint): [number, number] => {
       const local = { x: node.x / metersPerSceneUnit, y: 0, z: node.z / metersPerSceneUnit };
       if (geographicOrigin) { const geo = projectLocalPositionToGeographicPosition(local, geographicOrigin); return [geo.latitude, geo.longitude]; }
       const geo = projectPlanPositionToMapPosition(local, gpsCenter); return [geo.lat, geo.lng];
     };
+    const point = (id: string) => mapPoint(nodes.get(id)!);
     return [...architecture.walls.map(wall => ({ id: wall.id, positions: [point(wall.start), point(wall.end)], closed: false })),
-      ...[...architecture.floors, ...architecture.roofs].map(entity => ({ id: entity.id, positions: entity.vertices.map(point), closed: true }))];
+      ...[...architecture.floors, ...architecture.roofs].map(entity => ({ id: entity.id, positions: entity.vertices.map(point), closed: true })),
+      ...(architecture.stairs ?? []).map(stair => ({ id: stair.id, positions: stairFootprint(architecture, stair).map(mapPoint), closed: true }))];
   }, [architecture, metersPerSceneUnit, geographicOrigin, gpsCenter]);
   const architectureFocus = useMemo(() => {
     if (!architecture || !architectureFrameRequest) return null;

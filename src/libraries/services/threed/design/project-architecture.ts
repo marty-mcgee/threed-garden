@@ -57,8 +57,8 @@ export function acknowledgeArchitecture(draft: ProjectArchitectureDraft, capture
 /** Imported IDs are local portability references, never overwrite or access authority. */
 export function importProjectArchitecture(current: DesignDocument, input: unknown, mode: 'merge' | 'replace', makeId: () => string): DesignDocument {
   const incoming = validateDesign(input), ids = new Map<string, string>();
-  const used = new Set([current.levels, current.nodes, current.walls, current.floors, current.roofs, current.openings, current.roofOpenings].flatMap(items => items.map(item => item.id)));
-  for (const item of [incoming.levels, incoming.nodes, incoming.walls, incoming.floors, incoming.roofs, incoming.openings, incoming.roofOpenings].flat()) {
+  const used = new Set([current.levels, current.nodes, current.walls, current.floors, current.roofs, current.openings, current.roofOpenings, current.stairs ?? []].flatMap(items => items.map(item => item.id)));
+  for (const item of [incoming.levels, incoming.nodes, incoming.walls, incoming.floors, incoming.roofs, incoming.openings, incoming.roofOpenings, incoming.stairs ?? []].flat()) {
     let next = makeId(); let attempts = 0;
     while (used.has(next)) { if (++attempts > 20) throw new Error('Unable to allocate imported entity IDs.'); next = makeId(); }
     used.add(next); ids.set(item.id, next);
@@ -71,6 +71,12 @@ export function importProjectArchitecture(current: DesignDocument, input: unknow
     names.add(name.toLowerCase()); return { ...level, id: id(level.id), name };
   });
   const imported = { ...incoming, levels,
+    ...(incoming.stairs && { stairs: incoming.stairs.map(stair => ({
+      ...stair,
+      id: id(stair.id),
+      levelId: id(stair.levelId),
+      anchor: id(stair.anchor),
+    })) }),
     nodes: incoming.nodes.map(node => ({ ...node, id: id(node.id) })),
     walls: incoming.walls.map(wall => ({ ...wall, id: id(wall.id), levelId: id(wall.levelId), start: id(wall.start), end: id(wall.end) })),
     floors: incoming.floors.map(floor => ({ ...floor, id: id(floor.id), levelId: id(floor.levelId), vertices: floor.vertices.map(id) })),
@@ -79,7 +85,9 @@ export function importProjectArchitecture(current: DesignDocument, input: unknow
     roofOpenings: incoming.roofOpenings.map(opening => ({ ...opening, id: id(opening.id), roofId: id(opening.roofId) })),
   };
   if (mode === 'replace') return validateDesign(imported);
-  return validateDesign({ ...current, version: Math.max(current.version, incoming.version), levels: [...current.levels, ...imported.levels], nodes: [...current.nodes, ...imported.nodes], walls: [...current.walls, ...imported.walls], floors: [...current.floors, ...imported.floors], roofs: [...current.roofs, ...imported.roofs], openings: [...current.openings, ...imported.openings], roofOpenings: [...current.roofOpenings, ...imported.roofOpenings] });
+  return validateDesign({ ...current, version: Math.max(current.version, incoming.version),
+    ...((current.stairs || imported.stairs) && { stairs: [...(current.stairs ?? []), ...(imported.stairs ?? [])] }),
+    levels: [...current.levels, ...imported.levels], nodes: [...current.nodes, ...imported.nodes], walls: [...current.walls, ...imported.walls], floors: [...current.floors, ...imported.floors], roofs: [...current.roofs, ...imported.roofs], openings: [...current.openings, ...imported.openings], roofOpenings: [...current.roofOpenings, ...imported.roofOpenings] });
 }
 
 /** Keep the current Level and object selection consistent with the visible Design geometry. */

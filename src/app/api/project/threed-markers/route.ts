@@ -635,7 +635,7 @@ async function saveSnapshot(request: NextRequest) {
       if (groups) {
         if (!architecture || !requestBody.expectedConfiguration) throw new ProjectArchitectureError('Group edits require a complete, version-checked Project Save.');
         const doc = architecture.document;
-        const entities = new Set([...doc.walls, ...doc.floors, ...doc.roofs, ...doc.openings, ...doc.roofOpenings].map(entity => entity.id));
+        const entities = new Set([...doc.walls, ...doc.floors, ...doc.roofs, ...doc.openings, ...doc.roofOpenings, ...(doc.stairs ?? [])].map(entity => entity.id));
         const models = new Set(rows.filter(row => row.markerType === 'models').map(row => row.markerId));
         const designMembers = groups.flatMap(group => group.entityIds.map(entityId => ({ projectId, groupId: group.id, entityId })));
         const modelMembers = groups.flatMap(group => group.markerIds.map(markerId => ({ projectId, groupId: group.id, markerId })));
@@ -665,7 +665,23 @@ async function saveSnapshot(request: NextRequest) {
       if (architecture && JSON.stringify(savedArchitecture) !== JSON.stringify(architecture)) throw new Error('Project architecture write was not confirmed');
       // Derived Designs record participates in the same commit/rollback as config and markers.
       try { await saveProjectDesignProjection(tx, userId, projectId); }
-      catch { throw new ProjectDesignProjectionError(`Design synchronization failed. No Project changes were saved. Keep your draft and retry; if this continues, check Designs storage availability.${architecture?.document.version === 11 ? ' Object appearance requires the Designs version-11 database constraint update.' : architecture?.document.version === 10 ? ' Door operations require the Designs version-10 database constraint update.' : architecture?.document.version === 9 ? ' Named objects require the Designs version-9 database constraint update.' : architecture?.document.version === 8 ? ' Wall Cutouts require the Designs version-8 database constraint update.' : architecture?.document.version === 7 ? ' Polygonal Roof Cutouts require the Designs version-7 database constraint update.' : architecture?.document.version === 6 ? ' Sloped walls require the Designs version-6 database constraint update.' : ''}`); }
+      catch {
+        const guidance: Record<number, string> = {
+          6: 'Sloped walls require the Designs version-6 database constraint update.',
+          7: 'Polygonal Roof Cutouts require the Designs version-7 database constraint update.',
+          8: 'Wall Cutouts require the Designs version-8 database constraint update.',
+          9: 'Named objects require the Designs version-9 database constraint update.',
+          10: 'Door operations require the Designs version-10 database constraint update.',
+          11: 'Object appearance requires the Designs version-11 database constraint update.',
+          12: 'For outdoor surfaces, verify that the Designs version-12 database constraint update is installed.',
+          13: 'For Stairs, verify that the Designs version-13 database constraint update is installed.',
+        };
+        const hint = architecture && guidance[architecture.document.version];
+        throw new ProjectDesignProjectionError([
+          'Design synchronization failed. No Project changes were saved. Keep your draft and retry; if this continues, check Designs storage availability.',
+          hint,
+        ].filter(Boolean).join(' '));
+      }
       return { markers: savedRows, architecture: savedArchitecture, terrain: savedTerrain };
     });
 

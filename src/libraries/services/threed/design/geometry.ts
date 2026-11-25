@@ -1,6 +1,6 @@
 import { TextureLoader, RepeatWrapping, SRGBColorSpace, type Texture, BoxGeometry, BufferGeometry, Float32BufferAttribute, ExtrudeGeometry, Group, Mesh, MeshStandardMaterial, Shape, ShapeUtils, Vector2 } from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
-import { doorIsOpen, wallOpeningFace, nearestRoofEdge, distance, entityElevation, entityLevelId, EPS, INCH, polygonIssue, roofOpeningFootprint, roofProfile, signedArea, wallFrame, wallHeightAt, type DesignDocument, type DesignOpening, type DesignRoof, type DesignRoofOpening, type DesignWall, type PlanPoint } from './document';
+import { doorIsOpen, wallOpeningFace, nearestRoofEdge, distance, entityElevation, entityLevelId, EPS, INCH, planObjectColor, polygonIssue, roofOpeningFootprint, roofProfile, signedArea, stairLayout, wallFrame, wallHeightAt, type DesignDocument, type DesignOpening, type DesignRoof, type DesignRoofOpening, type DesignStairs, type DesignWall, type PlanPoint } from './document';
 /** Same footprint drives SVG and 3D. Two-way corners miter; acute joins cap at 4 half-widths. */
 export function wallFootprint(doc: DesignDocument, wall: DesignWall): PlanPoint[] {
   const nodes = new Map(doc.nodes.map(node => [node.id, node]));
@@ -32,6 +32,35 @@ export function extrudePlan(points: PlanPoint[], height: number, bottom: number)
   const geometry = new ExtrudeGeometry(shape, { depth: height, bevelEnabled: false, steps: 1, curveSegments: 1 });
   geometry.rotateX(-Math.PI / 2); geometry.translate(0, bottom, 0); geometry.computeBoundingBox();
   return geometry;
+}
+
+/** Extrude a closed stepped profile, starting at the lower landing in either direction. */
+function stairsGeometry(stairs: DesignStairs, anchor: PlanPoint, levelElevation: number) {
+  const { count, rise, run } = stairLayout(stairs);
+  const profile = new Shape();
+  profile.moveTo(0, 0);
+  for (let i = 0; i < count; i++) {
+    const height = (i + 1) * Math.abs(rise);
+    profile.lineTo(i * stairs.stepLength, height);
+    profile.lineTo((i + 1) * stairs.stepLength, height);
+  }
+  profile.lineTo(run, 0);
+  profile.closePath();
+  const solid = new ExtrudeGeometry(profile, {
+    depth: stairs.width,
+    bevelEnabled: false,
+  });
+  const angle = stairs.direction * Math.PI / 180;
+  const descending = stairs.endY < stairs.startY;
+  solid.translate(0, 0, -stairs.width / 2);
+  solid.rotateY(descending ? Math.PI - angle : -angle);
+  solid.translate(
+    anchor.x + (descending ? run * Math.cos(angle) : 0),
+    levelElevation + Math.min(stairs.startY, stairs.endY),
+    anchor.z + (descending ? run * Math.sin(angle) : 0),
+  );
+  solid.computeBoundingBox();
+  return solid;
 }
 /** Clip the shared miter footprint along the host axis, retaining its actual corner ends. */
 function clipFootprint(points: PlanPoint[], project: (point: PlanPoint) => number, boundary: number, above: boolean) {
@@ -309,24 +338,37 @@ export class DesignGeometryCache {
   private skylights = new Map<string, { signature: string; group: Group }>();
   update(doc: DesignDocument, selected: string | null, visibleLevelId?: string | string[], showRoofs = true, transparent = false, transparencyValue = 50) {
     const desired = new Set<string>(), nodes = new Map(doc.nodes.map(node => [node.id, node]));
-    const update = (id: string, points: PlanPoint[], height: number, bottom: number, floor: boolean, wall?: DesignWall, roof?: DesignRoof) => {
-      if (polygonIssue(points)) return;
+    const updateSolid = (id: string, signature: string, color: string, build: () => BufferGeometry) => {
       desired.add(id);
-      const signature = JSON.stringify([points, height, bottom, wall ? [wall.endHeight, wall.start, wall.end, doc.openings.filter(o => o.wallId === id)] : [], roof, roof ? doc.roofOpenings.filter(o => o.roofId === id) : []]); let entry = this.entries.get(id);
+      let entry = this.entries.get(id);
       if (!entry) {
-        const geometry = roof ? roofGeometry(doc, roof) : wall ? wallGeometry(doc, wall) : extrudePlan(points, height, bottom)!;
-        const mesh = new Mesh(geometry, new MeshStandardMaterial({ color: roof ? '#927b9f' : floor ? '#536b83' : '#ccd4dd', roughness: .85 }));
+        const mesh = new Mesh(build(), new MeshStandardMaterial({ color, roughness: .85 }));
         respectVisibility(mesh);
         mesh.name = id; mesh.userData.designEntityId = id;
         entry = { mesh, signature }; this.entries.set(id, entry); this.group.add(mesh);
       } else if (entry.signature !== signature) {
-        const next = roof ? roofGeometry(doc, roof) : wall ? wallGeometry(doc, wall) : extrudePlan(points, height, bottom)!; entry.mesh.geometry.dispose(); entry.mesh.geometry = next; entry.signature = signature;
+        const next = build();
+        entry.mesh.geometry.dispose();
+        entry.mesh.geometry = next;
+        entry.signature = signature;
       }
       entry.mesh.material.emissive.set(selected === id ? '#125e69' : '#000000');
+    };
+    const update = (id: string, points: PlanPoint[], height: number, bottom: number, floor: boolean, wall?: DesignWall, roof?: DesignRoof) => {
+      if (polygonIssue(points)) return;
+      const signature = JSON.stringify([points, height, bottom, wall ? [wall.endHeight, wall.start, wall.end, doc.openings.filter(o => o.wallId === id)] : [], roof, roof ? doc.roofOpenings.filter(o => o.roofId === id) : []]);
+      updateSolid(id, signature, roof ? '#927b9f' : floor ? '#536b83' : '#ccd4dd',
+        () => roof ? roofGeometry(doc, roof) : wall ? wallGeometry(doc, wall) : extrudePlan(points, height, bottom)!);
     };
     for (const wall of doc.walls) update(wall.id, wallFootprint(doc, wall), wall.height, entityElevation(doc, wall), false, wall);
     for (const floor of doc.floors) update(floor.id, floor.vertices.map(id => nodes.get(id)!), floor.thickness, entityElevation(doc, floor) - floor.thickness, true);
     for (const roof of doc.roofs) update(roof.id, roof.vertices.map(id => nodes.get(id)!), roof.thickness, entityElevation(doc, roof), false, undefined, roof);
+    for (const stairs of doc.stairs ?? []) {
+      const anchor = nodes.get(stairs.anchor)!;
+      const level = doc.levels.find(item => item.id === stairs.levelId)!;
+      const signature = JSON.stringify([anchor, level.elevation, stairs.direction, stairs.startY, stairs.endY, stairs.width, stairs.stepLength, stairs.stepHeight]);
+      updateSolid(stairs.id, signature, planObjectColor({ ...stairs, appearance: undefined }), () => stairsGeometry(stairs, anchor, level.elevation));
+    }
     for (const [id, entry] of this.entries) if (!desired.has(id)) { this.group.remove(entry.mesh); entry.mesh.geometry.dispose(); entry.mesh.material.dispose(); this.entries.delete(id); }
     const framedOpenings = doc.openings.filter(o => o.kind !== 'wall-cutout');
     const openingIds = new Set(framedOpenings.map(o => o.id));
@@ -354,11 +396,12 @@ export class DesignGeometryCache {
       entry!.group.traverse(object => { if (object instanceof Mesh) (object.material as MeshStandardMaterial).emissive.set(selected === opening.id ? '#125e69' : '#000000'); });
     }
     for (const [id, entry] of this.skylights) if (!skylightIds.has(id)) { this.group.remove(entry.group); disposeOpening(entry.group); this.skylights.delete(id); }
-    const appearances = new Map([...doc.walls, ...doc.floors, ...doc.roofs, ...doc.openings, ...doc.roofOpenings].map(entity => [entity.id, entity.appearance]));
+    const entities = new Map([...doc.walls, ...doc.floors, ...doc.roofs, ...doc.openings, ...doc.roofOpenings, ...(doc.stairs ?? [])].map(entity => [entity.id, entity]));
     const usedTextures = new Set<string>();
     this.group.traverse(object => {
       if (!(object instanceof Mesh)) return;
-      const appearance = appearances.get(object.userData.designEntityId);
+      const entity = entities.get(object.userData.designEntityId);
+      const appearance = entity?.appearance;
       let map: Texture | null = null;
       if (appearance?.texture) {
         const url = appearance.texture;
@@ -381,10 +424,11 @@ export class DesignGeometryCache {
           geometry.setAttribute('uv', new Float32BufferAttribute(uv, 2));
         }
       }
+      const surfaceColor = entity && 'surface' in entity && entity.surface ? planObjectColor(entity) : undefined;
       for (const material of Array.isArray(object.material) ? object.material : [object.material]) {
         material.userData.designAppearance ??= { color: material.color.getHex(), opacity: material.opacity, transparent: material.transparent, depthWrite: material.depthWrite };
         const original = material.userData.designAppearance;
-        material.color.set(appearance?.color ?? (map ? '#ffffff' : original.color));
+        material.color.set(appearance?.color ?? (map ? '#ffffff' : surfaceColor ?? original.color));
         if (material.map !== map) { material.map = map; material.needsUpdate = true; }
         const defaultOpacity = transparent ? Math.min(original.opacity, 1 - transparencyValue / 100) : original.opacity;
         material.opacity = appearance?.transparency === undefined ? defaultOpacity : 1 - appearance.transparency / 100;

@@ -8,7 +8,7 @@ import { DesignNameInput } from './DesignNameInput';
 
 import { Fragment, type ReactNode, useCallback, useEffect, useMemo, useRef, useState, type SetStateAction } from 'react';
 import dynamic from 'next/dynamic';
-import { Activity, Eye, Settings2, SlidersHorizontal, Building2, Scissors, SquareDashed, BoxSelect, House, DoorOpen, Download, Layers, LockKeyhole, MousePointer2, Move, PanelsTopLeft, Pentagon, PencilRuler, Plus, Redo2, Trash2, Undo2, Upload, Loader2 } from 'lucide-react';
+import { Activity, Eye, Settings2, SlidersHorizontal, Building2, Scissors, SquareDashed, BoxSelect, House, DoorOpen, Download, Layers, LockKeyhole, MousePointer2, Move, PanelsTopLeft, Pentagon, PencilRuler, Plus, Redo2, Trash2, Undo2, Upload, Loader2, Fence, BrickWall, Footprints } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DetailsSectionScope, PersistentDetails } from '@/components/map/details/PersistentDetails';
@@ -19,8 +19,8 @@ import { DesignFieldHelp } from './DesignFieldHelp';
 import { DesignPlan, type DesignTool } from './DesignPlan';
 import { commitDesign, redoDesign, undoDesign, type DesignHistory } from '@/libraries/services/threed/design/history';
 import { architectureIsDirty, importProjectArchitecture, projectArchitectureDraft, reconcileArchitectureSelection, type ProjectArchitectureDraft } from '@/libraries/services/threed/design/project-architecture';
-import { editObject, objectProperties, type ObjectEdit } from '@/libraries/services/threed/design/object-properties';
-import { planObjectColor, doorIsOpen, doorOperations, type DoorOperation, distance, entityLevelId, formatLength, INCH, moveNodes, parseDesign, removeEntity, removeLevel, signedArea, validateDesign, type DesignAppearance, type DesignDocument, type DesignRoof, type DesignRoofOpening, type DesignOpening } from '@/libraries/services/threed/design/document';
+import { editObject, objectProperties, setStairPosition, type ObjectEdit } from '@/libraries/services/threed/design/object-properties';
+import { stairLayout, floorSurfaceLabel, planObjectColor, doorIsOpen, doorOperations, type DoorOperation, distance, entityLevelId, formatLength, INCH, moveNodes, parseDesign, removeEntity, removeLevel, signedArea, validateDesign, type DesignAppearance, type DesignDocument, type DesignRoof, type DesignRoofOpening, type DesignOpening } from '@/libraries/services/threed/design/document';
 const Preview = dynamic(() => import('./DesignPreview').then(module => module.DesignPreview), { ssr: false, loading: () => <div className="h-full min-h-0 rounded border p-4 text-xs">Loading Live 3D…</div> });
 
 function Dimension({ units, label, value, onChange, positive = true }: { units: 'imperial' | 'metric'; label: string; value: number; onChange: (value: number) => void; positive?: boolean }) {
@@ -204,8 +204,8 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
   }
   function deleteLevel() {
     if (!level) return;
-    const occupied = doc.walls.some(wall => wall.levelId === activeLevelId) || doc.floors.some(floor => floor.levelId === activeLevelId) || doc.roofs.some(roof => roof.levelId === activeLevelId);
-    if (occupied && !window.confirm(`Delete ${level.name} and all of its walls, floors, roofs and all hosted openings? Undo can restore them.`)) return;
+    const occupied = doc.walls.some(wall => wall.levelId === activeLevelId) || doc.floors.some(floor => floor.levelId === activeLevelId) || doc.roofs.some(roof => roof.levelId === activeLevelId) || doc.stairs?.some(stair => stair.levelId === activeLevelId);
+    if (occupied && !window.confirm(`Delete ${level.name} and all its Design objects? Undo can restore them.`)) return;
     cancel(); commit(removeLevel(doc, activeLevelId)); changeWorkspace({ levelId: doc.levels.find(other => other.id !== activeLevelId)!.id, visibleLevelIds: visibleLevelIds.filter(id => id !== activeLevelId) }); setSelected(null); setTool('select'); setMessage('Level removed. Undo restores the level and its geometry together.');
   }
   const [selectAllRequest, setSelectAllRequest] = useState(0);
@@ -271,6 +271,10 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
   const wall = displayed.walls.find(wall => wall.id === selected), floor = displayed.floors.find(floor => floor.id === selected), opening = displayed.openings.find(o => o.id === selected);
   const roof = displayed.roofs.find(roof => roof.id === selected);
   const roofOpening = displayed.roofOpenings.find(opening => opening.id === selected);
+  const stair = displayed.stairs?.find(item => item.id === selected);
+  const flight = stair && stairLayout(stair);
+  const stairStart = stair && displayed.nodes.find(node => node.id === stair.anchor);
+  const collection = stair ? 'stairs' : wall ? 'walls' : floor ? 'floors' : roof ? 'roofs' : opening ? 'openings' : 'roofOpenings';
   const keys = wall ? [wall.start, wall.end] : floor?.vertices ?? roof?.vertices ?? [];
   const [textures, setTextures] = useState<{ filePath: string; textureName: string }[]>([]);
   const [textureMessage, setTextureMessage] = useState('');
@@ -285,21 +289,29 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
   }
   function changeAppearance(appearance?: DesignAppearance) {
     if (!namedObject || !canSave || importing) return;
-    const collection = wall ? 'walls' : floor ? 'floors' : roof ? 'roofs' : opening ? 'openings' : 'roofOpenings';
-    commit({ ...doc, version: 11, [collection]: doc[collection].map(item => {
+    commit({ ...doc, version: doc.version >= 11 ? doc.version : 11, [collection]: (doc[collection] ?? []).map(item => {
       if (item.id !== namedObject.id) return item;
       const { appearance: previous, ...geometry } = item;
       return appearance ? { ...geometry, appearance } : geometry;
     }) });
   }
-  const namedObject = wall ?? floor ?? roof ?? opening ?? roofOpening;
+  const namedObject = wall ?? floor ?? roof ?? opening ?? roofOpening ?? stair;
+  function updateStair(field: 'startY' | 'endY' | 'stepHeight', value: number) {
+    if (!stair || !canSave || importing) return;
+    commit({ ...doc, stairs: doc.stairs?.map(item => item.id === stair.id ? { ...item, [field]: value } : item) });
+  }
+  function positionStair(axis: 'x' | 'z', value: number) {
+    if (!stair || !canSave || importing) return;
+    try { commit(setStairPosition(doc, stair.id, axis, value)); }
+    catch (error) { setError((error as Error).message); }
+  }
   const updateWall = (field: 'height' | 'endHeight' | 'thickness' | 'elevation', value: number) => commit({ ...doc, walls: doc.walls.map(entity => entity.id === selected ? { ...entity, [field]: value } : entity) });
   const updateFloor = (field: 'thickness' | 'elevation', value: number) => commit({ ...doc, floors: doc.floors.map(entity => entity.id === selected ? { ...entity, [field]: value } : entity) });
   const updateRoof = <K extends keyof Pick<DesignRoof, 'kind' | 'pitch' | 'direction' | 'thickness' | 'elevation'>>(field: K, value: DesignRoof[K]) => commit({ ...doc, roofs: doc.roofs.map(entity => entity.id === selected ? { ...entity, [field]: value } : entity) });
   const updateRoofOpening = <K extends keyof Pick<DesignRoofOpening, 'kind' | 'along' | 'across' | 'width' | 'length'>>(field: K, value: DesignRoofOpening[K]) => commit({ ...doc, roofOpenings: doc.roofOpenings.map(item => item.id === selected ? { ...item, [field]: value } : item) });
   function setDoorOperation(operation: DoorOperation | '') {
     if (!opening || opening.kind !== 'door') return;
-    commit({ ...doc, version: doc.version === 11 ? 11 : 10, openings: doc.openings.map(item => {
+    commit({ ...doc, version: doc.version >= 10 ? doc.version : 10, openings: doc.openings.map(item => {
       if (item.id !== opening.id) return item;
       const { operation: previous, ...door } = item;
       return operation ? { ...door, operation } : door;
@@ -323,7 +335,23 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
   }
   const toolGroups = [
       { label: 'Selection and pan', color: 'text-cyan-700 dark:text-cyan-300', tools: [{ key: 'select', title: 'Select', icon: MousePointer2 }, { key: 'objects', title: 'Select Objects', icon: BoxSelect }, { key: 'pan', title: 'Pan', icon: Move }] },
-      { label: 'Structures', color: 'text-emerald-700 dark:text-emerald-300', tools: [{ key: 'wall', title: 'Wall', icon: PencilRuler }, { key: 'floor', title: 'Floor', icon: Pentagon }, { key: 'roof', title: 'Roof', icon: House }] },
+      { label: 'Structures', color: 'text-emerald-700 dark:text-emerald-300', tools: [{ key: 'wall', title: 'Wall', icon: PencilRuler }, { key: 'floor', title: 'Floor', icon: Pentagon }, { key: 'roof', title: 'Roof', icon: House }, { key: 'stairs', title: 'Stairs', icon: Footprints }] },
+      {
+        label: 'Outdoor surfaces',
+        color: 'text-lime-700 dark:text-lime-300',
+        tools: [
+          {
+            key: 'deck',
+            title: 'Deck / Decking',
+            icon: Fence,
+          },
+          {
+            key: 'patio',
+            title: 'Patio / Driveway',
+            icon: BrickWall,
+          },
+        ],
+      },
       { label: 'Wall openings', color: 'text-amber-700 dark:text-amber-300', tools: [{ key: 'door', title: 'Door', icon: DoorOpen }, { key: 'window', title: 'Window', icon: PanelsTopLeft }, { key: 'wall-cutout', title: 'Wall Cutout', icon: Scissors }] },
       { label: 'Roof openings', color: 'text-violet-700 dark:text-violet-300', tools: [{ key: 'skylight', title: 'Skylight', icon: SquareDashed }, { key: 'cutout', title: 'Roof Cutout', icon: Scissors }] },
     ] as const;
@@ -363,10 +391,9 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
         <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={gridSnap} onChange={event => setGridSnap(event.target.checked)} />Snap to 6 in grid + endpoints</label>
 
         </PersistentDetails><PersistentDetails storageId="defaults" className="rounded-lg border border-border bg-card p-2"><summary className="cursor-pointer rounded px-1 py-1 hover:bg-muted focus-visible:outline-ring text-xs font-semibold"><PencilRuler aria-hidden="true" className="mr-1 inline-block h-3.5 w-3.5 align-middle text-amber-600 dark:text-amber-400" />Drawing defaults<DesignFieldHelp label="Drawing defaults">Defaults apply to new geometry. Select an existing object to edit its properties.</DesignFieldHelp></summary><div className="grid grid-cols-2 gap-2">{([{ field: 'wallHeight', label: 'Wall height' }, { field: 'wallThickness', label: 'Wall thickness' }, { field: 'floorThickness', label: 'Floor thickness' }, { field: 'doorHeight', label: 'Door height' }, { field: 'doorWidth', label: 'Door width' }, { field: 'windowHeight', label: 'Window height' }, { field: 'windowWidth', label: 'Window width' }, { field: 'windowSill', label: 'Window sill' }] as const).map(item => <Dimension units={units} key={item.field} label={item.label} value={doc.defaults[item.field]} onChange={value => commit({ ...doc, defaults: { ...doc.defaults, [item.field]: value } })} />)}</div></PersistentDetails>
-        <PersistentDetails storageId="selected-properties" open data-testid="design-selected-properties" className={`${scene ? 'order-first' : ''} space-y-2 rounded-lg border border-border bg-card p-2`}><summary className="cursor-pointer rounded px-1 py-1 hover:bg-muted focus-visible:outline-ring text-xs font-semibold"><SlidersHorizontal aria-hidden="true" className="mr-1 inline-block h-3.5 w-3.5 align-middle text-emerald-600 dark:text-emerald-400" />{selectedModel ? 'Selected Model' : wall ? 'Selected Wall' : floor ? 'Selected Floor' : roof ? 'Selected Roof' : roofOpening ? `Selected ${roofOpening.kind === 'skylight' ? 'Skylight' : 'Roof Cutout'}` : opening ? `Selected ${opening.kind === 'wall-cutout' ? 'Wall Cutout' : opening.kind === 'door' ? 'Door' : 'Window'}` : 'Properties'}{selectedModel?.locked && <LockKeyhole aria-label="Model placement locked" className="ml-1.5 inline-block h-3.5 w-3.5 align-middle text-red-500" />}<DesignFieldHelp label="Object properties">Select in either view. {selectedModel?.locked ? 'This Model is locked for editing. Use Unlock Model in DetailsCard to change its position or size.' : 'Drag objects or corners to edit geometry. Hosted openings move along their host.'}</DesignFieldHelp></summary>
+        <PersistentDetails storageId="selected-properties" open data-testid="design-selected-properties" className={`${scene ? 'order-first' : ''} space-y-2 rounded-lg border border-border bg-card p-2`}><summary className="cursor-pointer rounded px-1 py-1 hover:bg-muted focus-visible:outline-ring text-xs font-semibold"><SlidersHorizontal aria-hidden="true" className="mr-1 inline-block h-3.5 w-3.5 align-middle text-emerald-600 dark:text-emerald-400" />{selectedModel ? 'Selected Model' : stair ? 'Selected Stairs' : wall ? 'Selected Wall' : floor ? `Selected ${floorSurfaceLabel(floor)}` : roof ? 'Selected Roof' : roofOpening ? `Selected ${roofOpening.kind === 'skylight' ? 'Skylight' : 'Roof Cutout'}` : opening ? `Selected ${opening.kind === 'wall-cutout' ? 'Wall Cutout' : opening.kind === 'door' ? 'Door' : 'Window'}` : 'Properties'}{selectedModel?.locked && <LockKeyhole aria-label="Model placement locked" className="ml-1.5 inline-block h-3.5 w-3.5 align-middle text-red-500" />}<DesignFieldHelp label="Object properties">Select in either view. {selectedModel?.locked ? 'This Model is locked for editing. Use Unlock Model in DetailsCard to change its position or size.' : 'Drag objects or corners to edit geometry. Hosted openings move along their host.'}</DesignFieldHelp></summary>
           {namedObject && !selectedModel && <label className="block space-y-1 text-xs">Name<DesignNameInput key={namedObject.id} optional disabled={!canSave || importing} name={namedObject.name ?? ""} onCommit={name => {
-            const collection = wall ? "walls" : floor ? "floors" : roof ? "roofs" : opening ? "openings" : "roofOpenings";
-            commit({ ...doc, version: doc.version >= 9 ? doc.version : 9, [collection]: doc[collection].map(item => {
+            commit({ ...doc, version: doc.version >= 9 ? doc.version : 9, [collection]: (doc[collection] ?? []).map(item => {
               if (item.id !== namedObject.id) return item;
               const { name: previous, ...geometry } = item;
               return name ? { ...geometry, name } : geometry;
@@ -426,25 +453,55 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
             <button type="button" disabled={!namedObject.appearance} onClick={() => changeAppearance()} className="rounded-md border border-input px-2 py-1 hover:bg-muted disabled:opacity-50">Reset appearance</button>
           </fieldset>}
           {selectedModel && onSaveModel && <DesignModelProperties key={selectedModel.id} model={selectedModel} save={onSaveModel} metersPerSceneUnit={metersPerSceneUnit ?? 1} busy={modelBusy} />}
-          {(wall || floor || roof) && properties && <div className="space-y-2">
+          {(wall || floor || roof || stair) && properties && <fieldset disabled={Boolean(stair && (!canSave || importing))} className="min-w-0 space-y-2">
             <p className="break-all text-xs text-muted-foreground">ID: {selected} / Level: {displayed.levels.find(level => level.id === entityLevelId(displayed, selected!))?.name}</p>
-            <DesignFieldHelp label="Object transforms">Position is the footprint center in Project metres, entered in the selected display units. Rotation is the first edge from +X toward +Z. Width/depth are world-axis extents. Shared corners also move connected entities; invalid host/opening changes reject together. Flip mirrors geometry, not a door handing flag.</DesignFieldHelp>
+            <DesignFieldHelp label="Object transforms">{stair ? "Position is the center of the flight. Width is measured across the treads. Run and rotation follow the flight from its start to its end." : "Position is the footprint center in Project metres, entered in the selected display units. Rotation is the first edge from +X toward +Z. Width/depth are world-axis extents. Shared corners also move connected entities; invalid host/opening changes reject together. Flip mirrors geometry, not a door handing flag."}</DesignFieldHelp>
             <div className="grid grid-cols-2 gap-2"><Dimension units={units} label="Position X" positive={false} value={properties.x} onChange={value => changeObject({field:'x',value})}/><Dimension units={units} label="Position Z" positive={false} value={properties.z} onChange={value => changeObject({field:'z',value})}/>
-            {!wall && !(roof && displayed.roofOpenings.some(o => o.roofId === roof.id)) && <><Dimension units={units} label="Width X" value={properties.width} onChange={value => changeObject({field:'width',value})}/><Dimension units={units} label="Depth Z" value={properties.depth} onChange={value => changeObject({field:'depth',value})}/></>}
+            {!wall && !(roof && displayed.roofOpenings.some(o => o.roofId === roof.id)) && <><Dimension units={units} label={stair ? "Width" : "Width X"} value={properties.width} onChange={value => changeObject({field:'width',value})}/><Dimension units={units} label={stair ? "Run" : "Depth Z"} value={properties.depth} onChange={value => changeObject({field:'depth',value})}/></>}
             <Scalar label="Rotation (degrees)" value={Number(properties.rotation.toFixed(4))} max={359.9999} onChange={value => changeObject({field:'rotation',value})}/></div>
             <div className="flex gap-2"><Button size="sm" variant="outline" onClick={() => changeObject({field:'flipX'})}>Flip X</Button><Button size="sm" variant="outline" onClick={() => changeObject({field:'flipZ'})}>Flip Z</Button></div>
-          </div>}
+          </fieldset>}
+          {stair && stairStart && flight && <fieldset disabled={!canSave || importing} className="space-y-2 text-xs">
+            <legend className="font-semibold">Stair dimensions</legend>
+            <p>Start and end Y are measured from the flight’s Level.</p>
+            <div className="grid grid-cols-2 gap-2">
+              <Dimension units={units} label="Start Y" positive={false} value={stair.startY} onChange={value => updateStair('startY', value)} />
+              <Dimension units={units} label="End Y" positive={false} value={stair.endY} onChange={value => updateStair('endY', value)} />
+              <Dimension units={units} label="Step length" value={stair.stepLength} onChange={value => changeObject({ field: 'depth', value: value * flight.count })} />
+              <Dimension units={units} label="Maximum step height" value={stair.stepHeight} onChange={value => updateStair('stepHeight', value)} />
+            </div>
+            <p>{flight.count} {flight.count === 1 ? 'step' : 'steps'} · Rise per step {displayLength(Math.abs(flight.rise))} · Total run {displayLength(flight.run)}</p>
+            <details>
+              <summary className="cursor-pointer">Starting edge position</summary>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                <Dimension units={units} label="Start X" positive={false} value={stairStart.x} onChange={value => positionStair('x', value)} />
+                <Dimension units={units} label="Start Z" positive={false} value={stairStart.z} onChange={value => positionStair('z', value)} />
+              </div>
+            </details>
+          </fieldset>}
           {wall && <><Dimension units={units} label="Length" value={distance(displayed.nodes.find(node => node.id === wall.start)!, displayed.nodes.find(node => node.id === wall.end)!)} onChange={value => changeObject({field: 'length', value})} />
             <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={wall.endHeight !== undefined} onChange={event => commit({ ...doc, version: doc.version === 5 ? 6 : doc.version, walls: doc.walls.map(entity => { if (entity.id !== wall.id) return entity; if (event.target.checked) return { ...entity, endHeight: entity.height }; const { endHeight, ...constant } = entity; return { ...constant, height: Math.max(entity.height, endHeight ?? entity.height) }; }) })} />Sloped top</label>
             <DesignFieldHelp label="Wall endpoint heights">Start and End follow the numbered wall corners below. Heights are relative to the wall base. One endpoint may be zero; the other must be at least one inch. Openings must fit below the slope. Turning Sloped top off keeps the taller height.</DesignFieldHelp>
             <div className="grid grid-cols-2 gap-2"><Dimension units={units} label={wall.endHeight === undefined ? 'Height' : 'Start height'} value={wall.height} positive={wall.endHeight === undefined} onChange={value => updateWall('height', value)} />{wall.endHeight !== undefined && <Dimension units={units} label="End height" value={wall.endHeight} positive={false} onChange={value => updateWall('endHeight', value)} />}<Dimension units={units} label="Thickness" value={wall.thickness} onChange={value => updateWall('thickness', value)} /><Dimension units={units} label="Base offset" value={wall.elevation} positive={false} onChange={value => updateWall('elevation', value)} /></div></>}
-          {floor && <><p className="text-xs">Area: {Number((Math.abs(signedArea(keys.map(key => displayed.nodes.find(node => node.id === key)!))) / (units === 'metric' ? 1 : (12 * INCH) ** 2)).toFixed(2))} {units === 'metric' ? 'm?' : 'sq ft'}</p><div className="grid grid-cols-2 gap-2"><Dimension units={units} label="Thickness" value={floor.thickness} onChange={value => updateFloor('thickness', value)} /><Dimension units={units} label="Top offset" value={floor.elevation} positive={false} onChange={value => updateFloor('elevation', value)} /></div></>}
+          {(floor?.surface === 'patio' || floor?.surface === 'driveway') && <label className="block space-y-1 text-xs">Surface type
+            <select value={floor.surface} disabled={!canSave || importing} className="w-full rounded border bg-background p-1.5" onChange={event => {
+              const surface = event.target.value;
+              if (surface === 'patio' || surface === 'driveway') commit({
+                ...doc,
+                floors: doc.floors.map(item => item.id === floor.id ? { ...item, surface } : item),
+              });
+            }}>
+              <option value="patio">Patio</option>
+              <option value="driveway">Driveway</option>
+            </select>
+          </label>}
+          {floor && <><p className="text-xs">Area: {Number((Math.abs(signedArea(keys.map(key => displayed.nodes.find(node => node.id === key)!))) / (units === 'metric' ? 1 : (12 * INCH) ** 2)).toFixed(2))} {units === 'metric' ? 'm²' : 'sq ft'}</p><div className="grid grid-cols-2 gap-2"><Dimension units={units} label="Thickness" value={floor.thickness} onChange={value => updateFloor('thickness', value)} /><Dimension units={units} label={floor.surface ? "Top elevation above Level" : "Top offset"} value={floor.elevation} positive={false} onChange={value => updateFloor('elevation', value)} /></div></>}
           {roof && <div className="space-y-2"><DesignFieldHelp label="Roof properties">Roof elevation is the underside at its lowest eave, relative to the level. Thickness is vertical. Pitch is rise per 12 inches of run. Direction follows the gable ridge or shed contour from +X toward +Z. New roofs default to two-sided Gable. Choose One-sided roof while drawing for a Shed profile. Both start with 6/12 pitch, 0 degrees, 6 inch thickness and the default wall height. Roof Cutout and Skylight tools add hosted openings. Joins between roofs remain a later stage.</DesignFieldHelp><label className="block text-xs">Roof type<select aria-label="Roof type" className="h-8 w-full rounded border border-input bg-background text-foreground px-2" value={roof.kind} onChange={event => updateRoof('kind', event.target.value as DesignRoof['kind'])}><option value="flat">Flat</option><option value="shed">Shed (one-sided)</option><option value="gable">Gable (two-sided)</option></select></label><div className="grid grid-cols-2 gap-2"><Scalar label="Pitch (rise / 12)" value={roof.pitch} max={24} onChange={value => updateRoof('pitch', value)} /><Scalar label="Direction (degrees)" value={roof.direction} max={359.999999} onChange={value => updateRoof('direction', value)} /><Dimension units={units} label="Roof thickness" value={roof.thickness} onChange={value => updateRoof('thickness', value)} /><Dimension units={units} label="Eave offset" positive={false} value={roof.elevation} onChange={value => updateRoof('elevation', value)} /></div></div>}
           {roofOpening && <div className="space-y-2"><DesignFieldHelp label="Roof opening properties">Width and length are measured in plan, not along the slope. Along/across offsets are from the host roof's first corner in its direction/perpendicular axes. Roof Cutouts can meet the roof perimeter. Keep skylights one inch inside the roof and leave one inch between openings. Skylights also stay one inch from a pitched gable ridge. Drag within the host roof; deleting that roof removes its openings in the same Undo step.</DesignFieldHelp><p className="text-xs text-muted-foreground">Host roof: {displayed.roofs.find(roof => roof.id === roofOpening.roofId)?.kind} / {displayed.levels.find(level => level.id === entityLevelId(displayed, roofOpening.id))?.name}</p><label className="block text-xs">Opening type<select aria-label="Roof opening type" className="h-8 w-full rounded border border-input bg-background text-foreground px-2" value={roofOpening.kind} onChange={event => updateRoofOpening('kind', event.target.value as DesignRoofOpening['kind'])}><option value="cutout">Roof Cutout</option><option value="skylight" disabled={Boolean(roofOpening.outline)}>Skylight</option></select></label><div className="grid grid-cols-2 gap-2">{(['width', 'length', 'along', 'across'] as const).map(field => <Dimension units={units} key={field} label={field === 'along' ? 'Along offset' : field === 'across' ? 'Across offset' : field[0].toUpperCase() + field.slice(1)} positive={field === 'width' || field === 'length'} value={roofOpening[field]} onChange={value => updateRoofOpening(field, value)} />)}</div></div>}
           {opening?.kind === 'door' && <div className="space-y-2">
             <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={doorIsOpen(opening)} disabled={!canSave || importing} onChange={event => {
               const isOpen = event.target.checked;
-              commit({ ...doc, version: doc.version === 11 ? 11 : 10, openings: doc.openings.map(item => item.id === opening.id ? { ...item, isOpen } : item) });
+              commit({ ...doc, version: doc.version >= 10 ? doc.version : 10, openings: doc.openings.map(item => item.id === opening.id ? { ...item, isOpen } : item) });
             }} />Open</label>
             <label className="block text-xs">Door operation
               <select className="block w-full rounded border bg-background p-2" disabled={!canSave || importing} value={opening.operation ?? ''} onChange={event => setDoorOperation(event.target.value as DoorOperation | '')}>
@@ -461,7 +518,7 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
       </aside>;
   const statusPanel = <PersistentDetails storageId="status" open aria-label="Design status" data-testid="design-status-section" className="shrink-0 rounded-lg border border-border bg-card p-2 text-xs">
     <summary className="cursor-pointer px-1 py-2 font-semibold"><Activity aria-hidden="true" className="mr-1 inline h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />Status<DesignFieldHelp label="Design status">Counts describe the whole Design, including hidden levels. Dimensions use the selected display units; 1 in = 0.0254 m. Geometry uses Project coordinates. Save Project retains architecture edits and supported workspace settings.</DesignFieldHelp></summary><div className="space-y-2">
-    <p className="text-xs text-muted-foreground">{doc.walls.length} walls · {doc.floors.length} floors · {doc.nodes.length} nodes · {doc.openings.length} openings / {doc.roofs.length} roofs / {doc.roofOpenings.length} roof openings</p>
+    <p className="text-xs text-muted-foreground">{doc.walls.length} walls · {doc.floors.length} floors · {doc.stairs?.length ?? 0} stair flights · {doc.nodes.length} nodes · {doc.openings.length} openings / {doc.roofs.length} roofs / {doc.roofOpenings.length} roof openings</p>
     {importStatus}
     <p role="status" aria-live="polite">{message}</p>
     {(error || scene?.error) && <p role="alert" className="text-red-400">{error || scene?.error}</p>}

@@ -5,7 +5,7 @@ import { SafeCanvas as Canvas } from '@/components/threed/shared/SafeCanvas';
 import { Grid, OrbitControls } from '@react-three/drei';
 import { Box3, Group, Object3D, Vector3, type PerspectiveCamera } from 'three';
 import { Button } from '@/components/ui/button';
-import { entityElevation, levelDocument, visibleLevelsDocument, pruneNodes, roofProfile, type DesignDocument } from '@/libraries/services/threed/design/document';
+import { entityElevation, levelDocument, visibleLevelsDocument, pruneNodes, roofProfile, stairFootprint, type DesignDocument } from '@/libraries/services/threed/design/document';
 import { DesignGeometryCache } from '@/libraries/services/threed/design/geometry';
 
 function Geometry({ document, selected, onSelect, visibleLevelId, showRoofs = true }: { document: DesignDocument; selected: string | null; onSelect: (id: string) => void; visibleLevelId?: string | string[]; showRoofs?: boolean }) {
@@ -21,11 +21,17 @@ function FitCamera({ document, request, controls }: { document: DesignDocument; 
   useLayoutEffect(() => {
     if (!request || !controls.current || !latest.current.nodes.length) return;
     const doc = latest.current, bounds = new Box3();
-    const low = Math.min(...doc.walls.map(wall => entityElevation(doc, wall)), ...doc.floors.map(floor => entityElevation(doc, floor) - floor.thickness), ...doc.roofs.map(roof => entityElevation(doc, roof)));
-    const high = Math.max(...doc.walls.map(wall => entityElevation(doc, wall) + Math.max(wall.height, wall.endHeight ?? wall.height)), ...doc.floors.map(floor => entityElevation(doc, floor)), ...doc.roofs.map(roof => entityElevation(doc, roof) + roofProfile(roof.vertices.map(id => doc.nodes.find(node => node.id === id)!), roof).rise + roof.thickness + (doc.roofOpenings.some(opening => opening.roofId === roof.id && opening.kind === 'skylight') ? .0254 : 0)));
+    const stairs = doc.stairs ?? [];
+    const landings = stairs.flatMap(flight => {
+      const base = doc.levels.find(level => level.id === flight.levelId)!.elevation;
+      return [base + flight.startY, base + flight.endY];
+    });
+    const low = Math.min(...landings, ...doc.walls.map(wall => entityElevation(doc, wall)), ...doc.floors.map(floor => entityElevation(doc, floor) - floor.thickness), ...doc.roofs.map(roof => entityElevation(doc, roof)));
+    const high = Math.max(...landings, ...doc.walls.map(wall => entityElevation(doc, wall) + Math.max(wall.height, wall.endHeight ?? wall.height)), ...doc.floors.map(floor => entityElevation(doc, floor)), ...doc.roofs.map(roof => entityElevation(doc, roof) + roofProfile(roof.vertices.map(id => doc.nodes.find(node => node.id === id)!), roof).rise + roof.thickness + (doc.roofOpenings.some(opening => opening.roofId === roof.id && opening.kind === 'skylight') ? .0254 : 0)));
     if (!Number.isFinite(low) || !Number.isFinite(high)) return;
     const margin = Math.max(.15, ...doc.walls.map(wall => wall.thickness));
-    for (const node of doc.nodes) { bounds.expandByPoint(new Vector3(node.x - margin, low, node.z - margin)); bounds.expandByPoint(new Vector3(node.x + margin, high, node.z + margin)); }
+    const points = [...doc.nodes, ...stairs.flatMap(flight => stairFootprint(doc, flight))];
+    for (const point of points) { bounds.expandByPoint(new Vector3(point.x - margin, low, point.z - margin)); bounds.expandByPoint(new Vector3(point.x + margin, high, point.z + margin)); }
     const center = bounds.getCenter(new Vector3()), span = bounds.getSize(new Vector3()).length();
     const perspective = camera as PerspectiveCamera, fov = perspective.fov * Math.PI / 180;
     const angle = Math.min(fov, 2 * Math.atan(Math.tan(fov / 2) * size.width / size.height));
@@ -38,6 +44,9 @@ function FitCamera({ document, request, controls }: { document: DesignDocument; 
 export function DesignPreview({ document, selected, onSelect, visibleLevelId, showRoofs = true }: { document: DesignDocument; selected: string | null; onSelect: (id: string) => void; visibleLevelId?: string | string[]; showRoofs?: boolean }) {
   const levelVisible = Array.isArray(visibleLevelId) ? visibleLevelsDocument(document, visibleLevelId) : visibleLevelId ? levelDocument(document, visibleLevelId) : document;
   const visible = showRoofs ? levelVisible : pruneNodes({ ...levelVisible, roofs: [], roofOpenings: [] });
+  const gridLevelIds = typeof visibleLevelId === 'string' ? [visibleLevelId] : visibleLevelId;
+  const gridLevels = document.levels.filter(level => gridLevelIds?.includes(level.id));
+  const gridElevation = gridLevels.length ? Math.min(...gridLevels.map(level => level.elevation)) : 0;
   const [reset, setReset] = useState(0);
   const [fit, setFit] = useState(0);
   const controls = useRef<React.ComponentRef<typeof OrbitControls>>(null);
@@ -47,7 +56,7 @@ export function DesignPreview({ document, selected, onSelect, visibleLevelId, sh
     <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-3 py-2 text-xs"><span className="font-semibold">Live 3D · {typeof visibleLevelId === 'string' ? document.levels.find(level => level.id === visibleLevelId)?.name : 'All levels'} · metres · Y up</span><div className="flex gap-1"><Button variant="outline" size="sm" disabled={!visible.nodes.length} onClick={() => setFit(value => value + 1)}>Fit</Button><Button variant="outline" size="sm" onClick={() => setReset(value => value + 1)}>Reset Camera</Button></div></div>
     <div className="min-h-0 flex-1" data-testid="home-preview"><Canvas camera={{ position: [7, 7, 8], fov: 45, near: .01, far: 4000 }} dpr={[1, 1.5]}>
       <color attach="background" args={['#091423']} /><ambientLight intensity={1.4} /><directionalLight position={[8, 15, 10]} intensity={2} />
-      <Grid infiniteGrid cellSize={.3048} sectionSize={3.048} cellColor="#23485c" sectionColor="#34738c" fadeDistance={80} position={[0, (visibleLevelId ? document.levels.find(level => level.id === visibleLevelId)!.elevation : 0) - .16, 0]} />
+      <Grid infiniteGrid cellSize={.3048} sectionSize={3.048} cellColor="#23485c" sectionColor="#34738c" fadeDistance={80} position={[0, gridElevation - .16, 0]} />
       <Geometry document={document} selected={selected} onSelect={onSelect} visibleLevelId={visibleLevelId} showRoofs={showRoofs} /><OrbitControls ref={controls} makeDefault target={[1.5, 0, 1.5]} maxPolarAngle={Math.PI / 2 - .02} /><FitCamera document={visible} request={fit} controls={controls} />
     </Canvas></div>
   </section>;

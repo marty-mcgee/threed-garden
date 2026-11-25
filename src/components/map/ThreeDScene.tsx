@@ -2996,7 +2996,7 @@ export function ThreeDScene({
   }, {});
 
   if (architecture) availableTypeCounts.designs = architecture.walls.length + architecture.floors.length
-    + architecture.roofs.length + architecture.openings.length + architecture.roofOpenings.length;
+    + architecture.roofs.length + architecture.openings.length + architecture.roofOpenings.length + (architecture.stairs?.length ?? 0);
 
   useEffect(() => {
     const session = transform?.session;

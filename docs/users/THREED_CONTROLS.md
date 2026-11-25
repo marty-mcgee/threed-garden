@@ -52,6 +52,18 @@ Select a Design object and enter its **Name** in Design Properties. Press Enter 
 
 Select a Floor and click or drag an edge **+** to add a corner. **Connect Floor Corners** controls whether new Floors and dragged corners share nodes. **Detach Floor** releases its shared corners in place. To create two Floor objects, select a corner, choose **Split Floor**, then click a non-adjacent corner. The split corners are shared when connections are on and independent when off.
 
+For an outdoor surface, choose **Deck/Decking** or **Patio/Driveway** in the 2D Design toolbar. For paving, choose **Patio** or **Driveway**. Click at least three corners, then press Enter to finish. A Deck starts with its top 24 inches above the active Level. A Patio or Driveway starts 1 inch above it. Choose the ground Level when you want these offsets relative to the ground.
+
+Select the surface to change its thickness, top elevation, Color, Texture, or 3D Scene transparency in Design Properties. Drag a corner or use an edge **+** to reshape it. Use **Save Project** to keep your changes.
+
+Choose **Stairs** and click the center of the first end of the flight. Move the pointer along the direction of travel and click again to finish. The distance between clicks sets the initial number of steps. Each new flight starts with a 10-inch tread, 36-inch width and 7-inch rise.
+
+With **Select**, drag the body of the flight to move it, or drag any corner to resize its rectangular footprint. The opposite corner stays in place. Drag the cyan point at the end to turn the flight around its starting point. Footprint edits preserve both Y elevations and the step count.
+
+In Design Properties, **Position X** and **Position Z** place the center of the footprint, as they do for Floors. **Width** measures across the flight and **Run** measures along it. Resizing or rotating here keeps the footprint centered. Use **Flip X** or **Flip Z** to mirror the flight. Expand **Starting edge position** to enter exact coordinates for that edge.
+
+Under **Stair dimensions**, edit **Start Y**, **End Y**, **Step length**, or **Maximum step height**. Both elevations are relative to the flight's Level. Set End Y below Start Y for descending stairs. The flight uses equal rises to reach End Y exactly. For example, a 30-inch climb with a 7-inch maximum uses five 6-inch rises. Changing the tread length adjusts the total horizontal run. **Save Project** keeps the flight and its settings.
+
 Use **Connect Wall Endpoints** in the Wall toolbar to choose how you draw or split. With it off, each Wall has independent endpoints, even where coordinates coincide. Select an existing Wall and choose **Detach Wall** to release its shared endpoints. To reconnect, turn the toggle on and drag an endpoint onto another Wall endpoint. Use **Create ThreeD Group** for named selection and movement.
 
 Select a Wall and click its midpoint **+** to split it into two Walls. Drag the handle to bend the shared endpoint as you split. **Undo** reverses the split and drag together.

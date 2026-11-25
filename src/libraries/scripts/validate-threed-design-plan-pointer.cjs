@@ -99,8 +99,8 @@ function fixture(overrides = {}) {
     }
   }
   function pointer(name, x = 350, y = 210, options = {}) {
-    const { entity = null, node = null, wallSplit = null, floorEdge = null, roofEdge = null, cutoutCorner = null, insert = false, moveHandle = false, ...values } = options;
-    const target = { closest: selector => selector === '[data-floor-edge]' ? (floorEdge === null ? null : {getAttribute:()=>String(floorEdge)}) : selector === '[data-wall-split]' ? (wallSplit ? { getAttribute: () => wallSplit } : null) : cutoutCorner !== null && selector === '[data-cutout-vertex]' ? { getAttribute: () => String(cutoutCorner), hasAttribute: () => insert } : roofEdge !== null && selector === '[data-roof-edge]' ? { getAttribute: () => String(roofEdge) } : moveHandle && selector === '[data-selection-handle]' ? { getAttribute: () => 'move' } : entity ? { getAttribute: () => entity } : null, getAttribute: name => name === 'data-node' ? node : null };
+    const { entity = null, node = null, wallSplit = null, floorEdge = null, roofEdge = null, stairHandle = null, cutoutCorner = null, insert = false, moveHandle = false, ...values } = options;
+    const target = { closest: selector => selector === '[data-stair-handle]' ? (stairHandle ? { getAttribute: () => stairHandle } : null) : selector === '[data-floor-edge]' ? (floorEdge === null ? null : {getAttribute:()=>String(floorEdge)}) : selector === '[data-wall-split]' ? (wallSplit ? { getAttribute: () => wallSplit } : null) : cutoutCorner !== null && selector === '[data-cutout-vertex]' ? { getAttribute: () => String(cutoutCorner), hasAttribute: () => insert } : roofEdge !== null && selector === '[data-roof-edge]' ? { getAttribute: () => String(roofEdge) } : moveHandle && selector === '[data-selection-handle]' ? { getAttribute: () => 'move' } : entity ? { getAttribute: () => entity } : null, getAttribute: name => name === 'data-node' ? node : null };
     const event = { clientX: x + 100, clientY: y + 50, pointerId: 7, button: 0, altKey: false, shiftKey: false, preventDefault() {}, target, currentTarget: element, ...values };
     svgElement.props[name](event); flush();
   }
@@ -217,6 +217,159 @@ function fixture(overrides = {}) {
   assert(flatten(f.tree).some(n=>n.props?.['data-selection-handle']==='move'));
   assert.equal(f.calls.select.length,0);
   assert.equal(f.calls.commit.length,0);
+}
+{
+  const f = fixture({ document: document.newDesign(), selected: null, tool: 'stairs' });
+  f.click(80, 80);
+  f.pointer('onPointerMove', 80, 194);
+  assert.equal(f.calls.commit.length, 0);
+  assert.equal(f.preview?.stairs?.length, 1, 'The second point previews a single flight.');
+  f.click(80, 194);
+  assert.equal(f.calls.commit.length, 1);
+  const flight = f.props.document.stairs[0];
+  assert.deepEqual(f.calls.complete, [flight.id]);
+  assert.equal(f.props.document.nodes.length, 1, 'A flight stores just its independent start anchor.');
+  assert.equal(flight.direction, 90);
+  assert.equal(flight.stepHeight, .1778);
+  assert.equal(flight.stepLength, .254);
+  assert.equal(flight.width, .9144);
+  assert.equal(document.stairLayout(flight).count, 10);
+  assert(flatten(f.tree).some(node => node.props['data-stairs'] === flight.id));
+  const handle = kind => flatten(f.tree).find(node => node.props['data-stair-handle'] === kind);
+  const handlePoint = kind => f.world(handle(kind).props.cx, handle(kind).props.cy);
+  const beginResize = kind => {
+    const { x, y } = handlePoint(kind);
+    f.pointer('onPointerDown', x, y, { entity: flight.id, stairHandle: kind });
+  };
+  const undoCount = f.calls.commit.length;
+  beginResize('end');
+  f.pointer('onPointerMove', 170, 80);
+  assert.equal(f.preview.stairs[0].direction, 0);
+  assert.equal(f.preview.stairs[0].stepLength, .2);
+  assert.equal(f.calls.commit.length, undoCount);
+  f.pointer('onPointerUp', 215, 80);
+  let resized = f.props.document.stairs[0];
+  assert.equal(resized.stepLength, .3, 'The final pointer position sets the full run.');
+  assert.equal(resized.endY, flight.endY);
+  assert.equal(resized.direction, 0);
+  assert.equal(document.stairLayout(resized).count, 10);
+  assert.equal(f.calls.commit.length, undoCount + 1);
+  beginResize('width');
+  f.pointer('onPointerMove', 148, 125);
+  assert.equal(f.preview.stairs[0].width, 2);
+  f.pointer('onPointerCancel', 148, 125);
+  assert.equal(f.props.document.stairs[0].width, flight.width);
+  assert.equal(f.calls.commit.length, undoCount + 1);
+  beginResize('width');
+  f.pointer('onPointerUp', 148, 116);
+  resized = f.props.document.stairs[0];
+  assert.equal(resized.width, 1.6);
+  assert.equal(resized.stepLength, .3);
+  assert.equal(resized.anchor, flight.anchor);
+  assert.equal(f.calls.commit.length, undoCount + 2);
+  f.update({ disabled: true });
+  assert(!handle('end') && !handle('width'), 'Read-only Stairs do not expose resize handles.');
+  f.update({ disabled: false });
+  f.update({ tool: 'objects' });
+  f.pointer('onPointerDown', 45, 35);
+  f.pointer('onPointerMove', 245, 220);
+  f.pointer('onPointerUp', 245, 220);
+  assert(flatten(f.tree).some(node => node.props['data-selection-handle'] === 'move'));
+  f.pointer('onPointerDown', 80, 110, { moveHandle: true });
+  f.pointer('onPointerMove', 125, 155);
+  f.pointer('onPointerUp', 125, 155);
+  const moved = f.props.document.nodes.find(node => node.id === flight.anchor);
+  assert.equal(moved.x, 1);
+  assert.equal(moved.z, 1);
+  f.update({ tool: 'deck', selected: null });
+  f.click(260, 90);
+  f.click(340, 90);
+  f.click(340, 170);
+  f.click(260, 90);
+  assert.equal(f.props.document.version, 13);
+  assert.equal(f.props.document.floors[0].surface, 'deck');
+  assert.equal(f.props.document.stairs[0].id, flight.id);
+}
+// A corner changes local run and width, preserving the opposite corner even on a rotated descending flight.
+{
+  const stair = {
+    id: 'stairs', levelId: 'ground', anchor: 'a', direction: 30, width: 1,
+    startY: 2, endY: 0, stepLength: .25, stepHeight: .2,
+  };
+  const design = document.validateDesign({ ...room, version: 13, stairs: [stair] });
+  const cornerNames = ['startLeft', 'startRight', 'endRight', 'endLeft'];
+  for (const [index, name] of cornerNames.entries()) {
+    const f = fixture({ document: design, selected: stair.id, planView: { x: 200, y: 180, scale: 60 } });
+    const corners = document.stairFootprint(design, stair);
+    const circle = () => flatten(f.tree).find(node => node.props['data-stair-handle'] === name);
+    const p = corners[index];
+    const start = f.world(p.x, p.z);
+    f.pointer('onPointerDown', start.x, start.y, { entity: stair.id, stairHandle: name });
+    assert.equal(circle().props.fill, '#f472b6');
+    const along = index < 2 ? -.6 : .6;
+    const across = index === 1 || index === 2 ? .4 : -.4;
+    const angle = Math.PI / 6;
+    const target = f.world(p.x + along * Math.cos(angle) - across * Math.sin(angle),
+      p.z + along * Math.sin(angle) + across * Math.cos(angle));
+    f.pointer('onPointerMove', target.x, target.y);
+    assert.equal(f.calls.commit.length, 0);
+    const detached = f.preview.stairs[0].anchor;
+    assert.notEqual(detached, stair.anchor);
+    f.pointer('onPointerUp', target.x, target.y);
+    assert.equal(f.calls.commit.length, 1);
+    const result = f.props.document, resized = result.stairs[0];
+    assert.equal(resized.anchor, detached, 'The detached anchor ID survives preview and release.');
+    assert.equal(resized.id, stair.id);
+    assert.equal(resized.width, 1.4);
+    assert.equal(resized.stepLength, .31);
+    assert.equal(resized.direction, stair.direction);
+    assert.equal(resized.startY, stair.startY);
+    assert.equal(resized.endY, stair.endY);
+    assert.equal(document.stairLayout(resized).count, 10);
+    const fixed = (index + 2) % 4;
+    assert(document.distance(document.stairFootprint(result, resized)[fixed], corners[fixed]) < .000002);
+    assert.deepEqual(plain(result.nodes.slice(0, room.nodes.length)), plain(room.nodes));
+    assert.deepEqual(plain(result.walls), plain(room.walls));
+    assert.deepEqual(plain(result.floors), plain(room.floors));
+  }
+  const f = fixture({ document: design, selected: stair.id });
+  f.pointer('onPointerDown', 100, 100, { entity: stair.id });
+  f.pointer('onPointerUp', 145, 145);
+  const moved = f.props.document.stairs[0];
+  assert.notEqual(moved.anchor, stair.anchor);
+  assert.deepEqual(plain(f.props.document.nodes.find(n => n.id === moved.anchor)), { id: moved.anchor, x: 1, z: 1 });
+  assert.deepEqual(plain(f.props.document.nodes.find(n => n.id === 'a')), { id: 'a', x: 0, z: 0 });
+}
+for (const surface of ['deck', 'patio', 'driveway']) {
+  const f = fixture({
+    document: document.newDesign(),
+    selected: null,
+    tool: surface === 'deck' ? 'deck' : 'patio',
+  });
+  if (surface === 'driveway') {
+    const picker = flatten(f.tree).find(node => node.type === 'select' && node.props.value === 'patio');
+    picker.props.onChange({ target: { value: 'driveway' } });
+    f.flush();
+  }
+  f.click(80, 80);
+  f.click(215, 80);
+  f.pointer('onPointerMove', 215, 215);
+  assert.equal(f.preview.floors[0].surface, surface);
+  assert.equal(f.calls.commit.length, 0);
+  f.click(215, 215);
+  f.click(80, 215);
+  f.click(80, 80);
+  assert.equal(f.calls.commit.length, 1);
+  const shape = f.props.document.floors[0];
+  assert.equal(shape.surface, surface);
+  assert.equal(shape.vertices.length, 4);
+  assert.equal(shape.elevation, surface === 'deck' ? 0.6096 : 0.0254);
+  assert.deepEqual(f.calls.complete, [shape.id]);
+  const polygon = flatten(f.tree).find(node => node.props['data-surface'] === surface);
+  assert.equal(polygon.props.fill, document.planObjectColor(shape));
+  f.click(148, 80, { floorEdge: 0 });
+  assert.equal(f.props.document.floors[0].vertices.length, 5);
+  assert.equal(f.props.document.floors[0].surface, surface);
 }
 // Floor edits retain the host outline and neighbouring Walls.
 for (const connect of [true,false]) {

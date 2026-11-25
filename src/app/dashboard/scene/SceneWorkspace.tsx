@@ -1098,7 +1098,7 @@ function UnifiedMapPageInner() {
         } : marker;
       });
       const document = architecture.document;
-      const currentEntities = new Set([...document.walls, ...document.floors, ...document.roofs, ...document.openings, ...document.roofOpenings].map(entity => entity.id));
+      const currentEntities = new Set([...document.walls, ...document.floors, ...document.roofs, ...document.openings, ...document.roofOpenings, ...(document.stairs ?? [])].map(entity => entity.id));
       const currentModels = new Set(markers.filter(marker => marker.moduleType === 'models').map(marker => marker.markerId));
       const groups = (capturedDraft.groups ?? []).map(group => ({
         ...group,

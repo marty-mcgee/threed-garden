@@ -5,7 +5,38 @@ export interface DesignLevel { id: string; name: string; elevation: number }
 /** height belongs to start; absent endHeight keeps the constant-height workflow. */
 export interface DesignAppearance { color?: string; transparency?: number; texture?: string }
 export interface DesignWall { id: string; appearance?: DesignAppearance; name?: string; levelId: string; start: string; end: string; height: number; endHeight?: number; thickness: number; elevation: number }
-export interface DesignFloor { id: string; appearance?: DesignAppearance; name?: string; levelId: string; vertices: string[]; thickness: number; elevation: number }
+const outdoorSurfaceLabels = {
+  deck: 'Deck',
+  patio: 'Patio',
+  driveway: 'Driveway',
+} as const;
+export type FloorSurface = keyof typeof outdoorSurfaceLabels;
+export interface DesignFloor {
+  id: string;
+  appearance?: DesignAppearance;
+  name?: string;
+  levelId: string;
+  vertices: string[];
+  thickness: number;
+  elevation: number;
+  surface?: FloorSurface;
+}
+export function floorSurfaceLabel(floor: Pick<DesignFloor, 'surface'>): string {
+  return floor.surface ? outdoorSurfaceLabels[floor.surface] : 'Floor';
+}
+export interface DesignStairs {
+  id: string;
+  levelId: string;
+  anchor: string;
+  direction: number;
+  startY: number;
+  endY: number;
+  stepLength: number;
+  width: number;
+  stepHeight: number;
+  name?: string;
+  appearance?: DesignAppearance;
+}
 export interface DesignRoof { id: string; appearance?: DesignAppearance; name?: string; levelId: string; vertices: string[]; kind: 'flat' | 'shed' | 'gable'; pitch: number; direction: number; thickness: number; elevation: number }
 export const doorOperations = {
   inward: "Door Opens Inwards",
@@ -24,6 +55,10 @@ export interface DesignRoofOpening { id: string; appearance?: DesignAppearance; 
 const planColors = {
   wall: '#b4c8df',
   floor: '#405a76',
+  deck: '#ac7852',
+  patio: '#b4a596',
+  driveway: '#66717a',
+  stairs: '#b89170',
   roof: '#c084fc',
   door: '#f0ab65',
   window: '#67e8f9',
@@ -32,15 +67,16 @@ const planColors = {
   skylight: '#38bdf8',
 } as const;
 
-export type PlanObject = DesignWall | DesignFloor | DesignRoof | DesignOpening | DesignRoofOpening;
+export type PlanObject = DesignWall | DesignFloor | DesignRoof | DesignOpening | DesignRoofOpening | DesignStairs;
 export function planObjectColor(entity: PlanObject): string {
   const kind = 'wallId' in entity || 'roofId' in entity ? entity.kind
-    : 'start' in entity ? 'wall' : 'pitch' in entity ? 'roof' : 'floor';
+    : 'start' in entity ? 'wall' : 'pitch' in entity ? 'roof' : 'anchor' in entity ? 'stairs' : entity.surface ?? 'floor';
   return entity.appearance?.color ?? planColors[kind];
 }
 
 export interface DesignDocument {
-  format: 'threed-home-design'; version: 5 | 6 | 7 | 8 | 9 | 10 | 11; units: 'metres'; name: string;
+  format: 'threed-home-design'; version: 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13; units: 'metres'; name: string;
+  stairs?: DesignStairs[];
   levels: DesignLevel[]; nodes: DesignNode[]; walls: DesignWall[]; floors: DesignFloor[]; roofs: DesignRoof[]; openings: DesignOpening[]; roofOpenings: DesignRoofOpening[];
   defaults: { wallHeight: number; wallThickness: number; floorThickness: number; doorHeight: number; doorWidth: number; windowHeight: number; windowWidth: number; windowSill: number };
 }
@@ -50,6 +86,32 @@ export const EPS = 0.000001;
 export const inchesToMetres = (inches: number) => inches * INCH;
 export const legacyCentimetresToMetres = (centimetres: number) => centimetres / 100;
 export const roundMetres = (value: number) => Math.round(value * 1e6) / 1e6;
+/** Work at stored precision so an exact multiple of the riser height keeps its step count. */
+export function stairLayout(stair: Pick<DesignStairs, 'startY' | 'endY' | 'stepHeight' | 'stepLength'>) {
+  const height = Math.round(stair.endY * 1e6) - Math.round(stair.startY * 1e6);
+  const count = Math.max(1, Math.ceil(Math.abs(height) / Math.round(stair.stepHeight * 1e6)));
+  return {
+    count,
+    rise: height / (count * 1e6),
+    run: count * stair.stepLength,
+  };
+}
+/** Start-left, start-right, end-right and end-left corners in the flight's local frame. */
+export function stairFootprint(doc: Pick<DesignDocument, 'nodes'>, stair: DesignStairs): PlanPoint[] {
+  const anchor = doc.nodes.find(node => node.id === stair.anchor) ?? fail('Stairs reference a missing anchor.');
+  const angle = stair.direction * Math.PI / 180;
+  const dx = Math.cos(angle), dz = Math.sin(angle);
+  const half = stair.width / 2;
+  const { run } = stairLayout(stair);
+  const left = { x: anchor.x + dz * half, z: anchor.z - dx * half };
+  const right = { x: anchor.x - dz * half, z: anchor.z + dx * half };
+  return [
+    left,
+    right,
+    { x: right.x + dx * run, z: right.z + dz * run },
+    { x: left.x + dx * run, z: left.z + dz * run },
+  ];
+}
 export const distance = (a: PlanPoint, b: PlanPoint) => Math.hypot(a.x - b.x, a.z - b.z);
 export const newDesign = (): DesignDocument => ({ format: 'threed-home-design', version: 5, units: 'metres', name: 'Untitled ThreeD Design',
   levels: [{ id: 'ground', name: 'Ground', elevation: 0 }], nodes: [], walls: [], floors: [], roofs: [], openings: [], roofOpenings: [], defaults: { wallHeight: 96 * INCH, wallThickness: 6 * INCH, floorThickness: 6 * INCH, doorHeight: 80 * INCH, doorWidth: 36 * INCH, windowHeight: 48 * INCH, windowWidth: 36 * INCH, windowSill: 36 * INCH } });
@@ -87,11 +149,11 @@ function list(value: unknown, max: number): unknown[] { if (!Array.isArray(value
 export function validateDesign(value: unknown): DesignDocument {
   const legacy = !!value && typeof value === 'object' && (value as Record<string, unknown>).version === 1;
   const version = value && typeof value === 'object' ? (value as Record<string, unknown>).version : undefined;
-  if (typeof version !== 'number' || !Number.isInteger(version) || version < 1 || version > 11)
-    return fail('Import a ThreeD Design version 1-11 JSON document (metres). Legacy .threed files require a separate converter.');
+  if (typeof version !== 'number' || !Number.isInteger(version) || version < 1 || version > 13)
+    return fail('Import a ThreeD Design version 1-13 JSON document (metres). Legacy .threed files require a separate converter.');
   const leveled = version >= 3, roofed = version >= 4, roofOpened = version >= 5;
-  const doc = object(value, ['format', 'version', 'units', 'name', 'nodes', 'walls', 'floors', 'defaults', ...(legacy ? [] : ['openings']), ...(leveled ? ['levels'] : []), ...(roofed ? ['roofs'] : []), ...(roofOpened ? ['roofOpenings'] : [])]);
-  if (doc.format !== 'threed-home-design' || doc.units !== 'metres') fail('Import a ThreeD Design version 1-11 JSON document (metres). Legacy .threed files require a separate converter.');
+  const doc = object(value, ['format', 'version', 'units', 'name', 'nodes', 'walls', 'floors', 'defaults', ...(legacy ? [] : ['openings']), ...(leveled ? ['levels'] : []), ...(roofed ? ['roofs'] : []), ...(roofOpened ? ['roofOpenings'] : []), ...(version >= 13 ? ['stairs'] : [])]);
+  if (doc.format !== 'threed-home-design' || doc.units !== 'metres') fail('Import a ThreeD Design version 1-13 JSON document (metres). Legacy .threed files require a separate converter.');
   if (typeof doc.name !== 'string' || !doc.name.trim() || doc.name.length > 120) fail('Design name must contain 1–120 characters.');
   // Pick a migration ID outside the old global ID namespace, including orphan nodes.
   const oldIds = new Set(['nodes', 'walls', 'floors', 'openings'].flatMap(key => Array.isArray(doc[key]) ? (doc[key] as { id?: unknown }[]).map(entity => entity?.id) : []));
@@ -106,9 +168,10 @@ export function validateDesign(value: unknown): DesignDocument {
   const defaults = object(doc.defaults, ['wallHeight', 'wallThickness', 'floorThickness', 'doorHeight', 'doorWidth', ...(legacy ? [] : ['windowHeight', 'windowWidth', 'windowSill'])]);
   const nodes = list(doc.nodes, 1200).map(value => { const n = object(value, ['id', 'x', 'z']); return { id: id(n.id), x: finite(n.x, -1000, 1000, 'X'), z: finite(n.z, -1000, 1000, 'Z') }; });
   const supportsNames = version >= 9;
+  const supportsAppearance = version >= 11;
   function entityRecord(value: unknown, fields: string[]) {
     const named = supportsNames && value !== null && typeof value === "object" && "name" in value;
-    if (version === 11 && value && typeof value === "object" && "appearance" in value) fields = [...fields, "appearance"];
+    if (supportsAppearance && value && typeof value === "object" && "appearance" in value) fields = [...fields, "appearance"];
     return object(value, named ? [...fields, "name"] : fields);
   }
   function entityPresentation(record: Record<string, unknown>): { name?: string; appearance?: DesignAppearance } {
@@ -139,7 +202,43 @@ export function validateDesign(value: unknown): DesignDocument {
     if (Math.max(height, endHeight) < INCH) fail('At least one wall endpoint must be one inch high.');
     return { ...entityPresentation(w), id: id(w.id), levelId: leveled ? id(w.levelId) : groundId, start: id(w.start), end: id(w.end), height, ...(sloped ? { endHeight } : {}), thickness: finite(w.thickness, INCH, 3, 'Wall thickness'), elevation: finite(w.elevation, -100, 100, 'Elevation') };
   });
-  const floors = list(doc.floors, 100).map(value => { const f = entityRecord(value, ['id', 'vertices', 'thickness', 'elevation', ...(leveled ? ['levelId'] : [])]); return { ...entityPresentation(f), id: id(f.id), levelId: leveled ? id(f.levelId) : groundId, vertices: list(f.vertices, 100).map(id), thickness: finite(f.thickness, .0254, 3, 'Floor thickness'), elevation: finite(f.elevation, -100, 100, 'Elevation') }; });
+  const floors: DesignFloor[] = list(doc.floors, 100).map(value => {
+    const hasSurface = version >= 12 && value !== null && typeof value === 'object' && 'surface' in value;
+    const f = entityRecord(value, ['id', 'vertices', 'thickness', 'elevation', ...(leveled ? ['levelId'] : []), ...(hasSurface ? ['surface'] : [])]);
+    const floor: DesignFloor = {
+      ...entityPresentation(f),
+      id: id(f.id),
+      levelId: leveled ? id(f.levelId) : groundId,
+      vertices: list(f.vertices, 100).map(id),
+      thickness: finite(f.thickness, INCH, 3, 'Floor thickness'),
+      elevation: finite(f.elevation, -100, 100, 'Elevation'),
+    };
+    if (hasSurface) {
+      if (typeof f.surface !== 'string' || !Object.hasOwn(outdoorSurfaceLabels, f.surface)) return fail('Choose Deck, Patio or Driveway.');
+      floor.surface = f.surface as FloorSurface;
+    }
+    return floor;
+  });
+  const stairs: DesignStairs[] = (version >= 13 ? list(doc.stairs, 100) : []).map(value => {
+    const s = entityRecord(value, ['id', 'levelId', 'anchor', 'direction', 'startY', 'endY', 'stepHeight', 'stepLength', 'width']);
+    if (typeof s.direction !== 'number' || !Number.isFinite(s.direction) || s.direction < 0 || s.direction >= 360)
+      return fail('Stairs direction must be at least 0 and less than 360 degrees.');
+    const flight = {
+      ...entityPresentation(s),
+      id: id(s.id),
+      levelId: id(s.levelId),
+      anchor: id(s.anchor),
+      direction: Math.min(359.999999, roundMetres(s.direction)),
+      startY: finite(s.startY, -100, 100, 'Start elevation'),
+      endY: finite(s.endY, -100, 100, 'End elevation'),
+      stepLength: finite(s.stepLength, INCH, 30, 'Step length'),
+      width: finite(s.width, INCH, 30, 'Stair width'),
+      stepHeight: finite(s.stepHeight, INCH, 30, 'Step height'),
+    };
+    if (flight.startY === flight.endY) return fail('Stairs need different start and end elevations.');
+    if (stairLayout(flight).count > 256) return fail('Use at most 256 steps per flight.');
+    return flight;
+  });
   const roofs: DesignRoof[] = (roofed ? list(doc.roofs, 100) : []).map(value => {
     const r = entityRecord(value, ['id', 'levelId', 'vertices', 'kind', 'pitch', 'direction', 'thickness', 'elevation']);
     if (r.kind !== 'flat' && r.kind !== 'shed' && r.kind !== 'gable') fail('Choose a Flat, Shed or Gable roof.');
@@ -173,17 +272,21 @@ export function validateDesign(value: unknown): DesignDocument {
     if (o.kind !== 'cutout' && o.kind !== 'skylight') fail('Choose a Roof Cutout or Skylight.');
     return { ...(outline ? { outline } : {}), ...entityPresentation(o), id: id(o.id), roofId: id(o.roofId), kind: o.kind as DesignRoofOpening['kind'], along: finite(o.along, -3000, 3000, 'Roof opening along offset'), across: finite(o.across, -3000, 3000, 'Roof opening across offset'), width: finite(o.width, INCH, 30, 'Roof opening width'), length: finite(o.length, INCH, 30, 'Roof opening length') };
   });
-  const ids = [...levels, ...nodes, ...walls, ...floors, ...roofs, ...openings, ...roofOpenings].map(entity => entity.id);
+  const ids = [...levels, ...nodes, ...walls, ...floors, ...roofs, ...openings, ...roofOpenings, ...stairs].map(entity => entity.id);
   if (new Set(ids).size !== ids.length) fail('Entity IDs must be unique.');
   const byId = new Map(nodes.map(node => [node.id, node]));
   const pairs = new Set<string>();
   const nodeLevels = new Map<string, string>();
-  for (const entity of [...walls, ...floors, ...roofs]) {
-    if (!levels.some(level => level.id === entity.levelId)) fail('A wall, floor or roof references a missing level.');
-    for (const key of 'vertices' in entity ? entity.vertices : [entity.start, entity.end]) {
+  for (const entity of [...walls, ...floors, ...roofs, ...stairs]) {
+    if (!levels.some(level => level.id === entity.levelId)) fail('A Design object references a missing level.');
+    for (const key of 'vertices' in entity ? entity.vertices : 'anchor' in entity ? [entity.anchor] : [entity.start, entity.end]) {
       if (nodeLevels.has(key) && nodeLevels.get(key) !== entity.levelId) fail('Different levels must not share corner nodes.');
       nodeLevels.set(key, entity.levelId);
     }
+  }
+  for (const flight of stairs) {
+    if (stairFootprint({ nodes }, flight).some(p => Math.abs(p.x) > 1000 + EPS || Math.abs(p.z) > 1000 + EPS))
+      fail('Keep Stairs within the plan limits of ±1000 metres.');
   }
   for (const wall of walls) {
     const a = byId.get(wall.start), b = byId.get(wall.end);
@@ -226,7 +329,7 @@ export function validateDesign(value: unknown): DesignDocument {
     })) fail('Openings must not overlap. Keep at least one inch between their edges.');
   }
   for (const opening of roofOpenings) { const issue = roofOpeningIssue({ nodes, roofs, roofOpenings }, opening); if (issue) fail(issue); }
-  return { format: 'threed-home-design', version: Math.max(version, 5) as DesignDocument['version'], units: 'metres', name: (doc.name as string).trim(), levels, nodes, walls, floors, roofs, openings, roofOpenings,
+  return { format: 'threed-home-design', version: Math.max(version, 5) as DesignDocument['version'], units: 'metres', name: (doc.name as string).trim(), levels, nodes, walls, floors, roofs, openings, roofOpenings, ...(version >= 13 && { stairs }),
     defaults: { wallHeight: finite(defaults.wallHeight, .0254, 30, 'Default height'), wallThickness: finite(defaults.wallThickness, .0254, 3, 'Default wall thickness'), floorThickness: finite(defaults.floorThickness, .0254, 3, 'Default floor thickness'), doorHeight: finite(defaults.doorHeight, .0254, 30, 'Door height'), doorWidth: finite(defaults.doorWidth, .0254, 30, 'Door width'),
       windowHeight: finite(legacy ? 48 * INCH : defaults.windowHeight, INCH, 30, 'Window height'), windowWidth: finite(legacy ? 36 * INCH : defaults.windowWidth, INCH, 30, 'Window width'), windowSill: finite(legacy ? 36 * INCH : defaults.windowSill, INCH, 30, 'Window sill') } };
 }
@@ -349,14 +452,16 @@ export function roofOpeningIssue(doc: Pick<DesignDocument, 'nodes' | 'roofs' | '
 }
 export function entityLevelId(doc: DesignDocument, entityId: string) {
   const hostId = doc.openings.find(opening => opening.id === entityId)?.wallId ?? doc.roofOpenings.find(opening => opening.id === entityId)?.roofId ?? entityId;
-  return doc.walls.find(wall => wall.id === hostId)?.levelId ?? doc.floors.find(floor => floor.id === hostId)?.levelId ?? doc.roofs.find(roof => roof.id === hostId)?.levelId;
+  return doc.walls.find(wall => wall.id === hostId)?.levelId ?? doc.floors.find(floor => floor.id === hostId)?.levelId ?? doc.roofs.find(roof => roof.id === hostId)?.levelId ?? doc.stairs?.find(stair => stair.id === hostId)?.levelId;
 }
 /** A view only. Always commit edits against the full document, never against this filtered copy. */
 export function levelDocument(doc: DesignDocument, levelId: string): DesignDocument {
   const walls = doc.walls.filter(wall => wall.levelId === levelId), floors = doc.floors.filter(floor => floor.levelId === levelId);
   const hosts = new Set(walls.map(wall => wall.id));
   const roofs = doc.roofs.filter(roof => roof.levelId === levelId), roofIds = new Set(roofs.map(roof => roof.id));
-  return pruneNodes({ ...doc, walls, floors, roofs, roofOpenings: doc.roofOpenings.filter(opening => roofIds.has(opening.roofId)), openings: doc.openings.filter(opening => hosts.has(opening.wallId)) });
+  return pruneNodes({ ...doc, walls, floors, roofs,
+    ...(doc.stairs && { stairs: doc.stairs.filter(stair => stair.levelId === levelId) }),
+    roofOpenings: doc.roofOpenings.filter(opening => roofIds.has(opening.roofId)), openings: doc.openings.filter(opening => hosts.has(opening.wallId)) });
 }
 export function removeLevel(doc: DesignDocument, levelId: string): DesignDocument {
   if (!doc.levels.some(level => level.id === levelId)) return fail('Missing level.');
@@ -364,6 +469,7 @@ export function removeLevel(doc: DesignDocument, levelId: string): DesignDocumen
   const walls = doc.walls.filter(wall => wall.levelId !== levelId), hosts = new Set(walls.map(wall => wall.id));
   const roofs = doc.roofs.filter(roof => roof.levelId !== levelId), roofIds = new Set(roofs.map(roof => roof.id));
   return pruneNodes({ ...doc, levels: doc.levels.filter(level => level.id !== levelId), walls,
+    ...(doc.stairs && { stairs: doc.stairs.filter(stair => stair.levelId !== levelId) }),
     floors: doc.floors.filter(floor => floor.levelId !== levelId), roofs, roofOpenings: doc.roofOpenings.filter(opening => roofIds.has(opening.roofId)), openings: doc.openings.filter(opening => hosts.has(opening.wallId)) });
 }
 /** Keep rectangular apertures outside the bounded miter corner region. */
@@ -385,11 +491,13 @@ export function openingFootprint(doc: DesignDocument, opening: DesignOpening): P
   return [{ x: a.x - frame.dz * half, z: a.z + frame.dx * half }, { x: b.x - frame.dz * half, z: b.z + frame.dx * half }, { x: b.x + frame.dz * half, z: b.z - frame.dx * half }, { x: a.x + frame.dz * half, z: a.z - frame.dx * half }];
 }
 export function removeEntity(doc: DesignDocument, entityId: string): DesignDocument {
-  return pruneNodes({ ...doc, walls: doc.walls.filter(w => w.id !== entityId), floors: doc.floors.filter(f => f.id !== entityId), roofs: doc.roofs.filter(r => r.id !== entityId), roofOpenings: doc.roofOpenings.filter(o => o.id !== entityId && o.roofId !== entityId), openings: doc.openings.filter(o => o.id !== entityId && o.wallId !== entityId) });
+  return pruneNodes({ ...doc,
+    ...(doc.stairs && { stairs: doc.stairs.filter(stair => stair.id !== entityId) }),
+    walls: doc.walls.filter(w => w.id !== entityId), floors: doc.floors.filter(f => f.id !== entityId), roofs: doc.roofs.filter(r => r.id !== entityId), roofOpenings: doc.roofOpenings.filter(o => o.id !== entityId && o.roofId !== entityId), openings: doc.openings.filter(o => o.id !== entityId && o.wallId !== entityId) });
 }
 export function parseDesign(text: string) { if (new TextEncoder().encode(text).length > 1024 * 1024) fail('Design JSON must be at most 1 MiB.'); return validateDesign(JSON.parse(text)); }
 export function pruneNodes(doc: DesignDocument): DesignDocument {
-  const used = new Set([...doc.walls.flatMap(wall => [wall.start, wall.end]), ...doc.floors.flatMap(floor => floor.vertices), ...doc.roofs.flatMap(roof => roof.vertices)]);
+  const used = new Set([...doc.walls.flatMap(wall => [wall.start, wall.end]), ...doc.floors.flatMap(floor => floor.vertices), ...doc.roofs.flatMap(roof => roof.vertices), ...(doc.stairs ?? []).map(stair => stair.anchor)]);
   return { ...doc, nodes: doc.nodes.filter(node => used.has(node.id)) };
 }
 /** Node identity makes adjacent walls and any snapped floor move together. */
@@ -398,7 +506,9 @@ export function moveNodes(doc: DesignDocument, positions: Map<string, PlanPoint>
 }
 export function mergeNodes(doc: DesignDocument, source: string, target: string): DesignDocument {
   if (source === target) return doc;
-  return pruneNodes({ ...doc, nodes: doc.nodes.filter(node => node.id !== source), walls: doc.walls.map(wall => ({ ...wall, start: wall.start === source ? target : wall.start, end: wall.end === source ? target : wall.end })), floors: doc.floors.map(floor => ({ ...floor, vertices: floor.vertices.map(key => key === source ? target : key) })), roofs: doc.roofs.map(roof => ({ ...roof, vertices: roof.vertices.map(key => key === source ? target : key) })) });
+  return pruneNodes({ ...doc,
+    ...(doc.stairs && { stairs: doc.stairs.map(stair => stair.anchor === source ? { ...stair, anchor: target } : stair) }),
+    nodes: doc.nodes.filter(node => node.id !== source), walls: doc.walls.map(wall => ({ ...wall, start: wall.start === source ? target : wall.start, end: wall.end === source ? target : wall.end })), floors: doc.floors.map(floor => ({ ...floor, vertices: floor.vertices.map(key => key === source ? target : key) })), roofs: doc.roofs.map(roof => ({ ...roof, vertices: roof.vertices.map(key => key === source ? target : key) })) });
 }
 export interface PlanView { x: number; y: number; scale: number }
 export const screenToPlan = (point: { x: number; y: number }, view: PlanView): PlanPoint => ({ x: (point.x - view.x) / view.scale, z: (point.y - view.y) / view.scale });
@@ -415,5 +525,7 @@ export function snapPoint(point: PlanPoint, nodes: DesignNode[], pixelsPerMetre:
 export function visibleLevelsDocument(doc: DesignDocument, ids: readonly string[]): DesignDocument {
   const levels = ids.map(id => levelDocument(doc, id));
   const collect = <T extends { id: string }>(items: T[][]): T[] => [...new Map(items.flat().map(item => [item.id, item])).values()];
-  return { ...doc, nodes: collect(levels.map(level => level.nodes)), walls: collect(levels.map(level => level.walls)), floors: collect(levels.map(level => level.floors)), roofs: collect(levels.map(level => level.roofs)), openings: collect(levels.map(level => level.openings)), roofOpenings: collect(levels.map(level => level.roofOpenings)) };
+  return { ...doc,
+    ...(doc.stairs && { stairs: collect(levels.map(level => level.stairs ?? [])) }),
+    nodes: collect(levels.map(level => level.nodes)), walls: collect(levels.map(level => level.walls)), floors: collect(levels.map(level => level.floors)), roofs: collect(levels.map(level => level.roofs)), openings: collect(levels.map(level => level.openings)), roofOpenings: collect(levels.map(level => level.roofOpenings)) };
 }

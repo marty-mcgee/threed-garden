@@ -10,14 +10,18 @@ import { WallCutoutEditor } from './WallCutoutEditor';
 import { DesignAction } from './DesignAction';
 import { Button } from '@/components/ui/button';
 import { doorIsOpen, nearestRoofEdge, withinRoof, cutoutBounds, distance, insidePolygon, roofFrame, roofOpeningFootprint, INCH, levelDocument, visibleLevelsDocument, mergeNodes, moveNodes, openingFootprint, openingMargin, roundMetres, screenToPlan, snapPoint, validateDesign, signedArea, wallFrame, wallHeightAt,
-  planObjectColor, type PlanObject, type DesignDocument, type PlanPoint, type PlanView } from '@/libraries/services/threed/design/document';
+  stairFootprint, stairLayout, planObjectColor, floorSurfaceLabel, type DesignStairs, type FloorSurface, type PlanObject, type DesignDocument, type PlanPoint, type PlanView } from '@/libraries/services/threed/design/document';
 import { formatPlanLength, framePlan, gridFeet as planGridFeet, rulerTicks, RULER_SIZE, zoomPlan } from '@/libraries/services/threed/design/plan-navigation';
-import { entityPoints } from '@/libraries/services/threed/design/object-properties';
+import { entityPoints, setStairFootprint } from '@/libraries/services/threed/design/object-properties';
 import type { ModelPlanImage } from '@/libraries/services/threed/models/model-plan-image';
 import { terrainHeightAt, terrainPlanCells, type ProjectTerrainSurface } from '@/libraries/services/threed/terrains/terrain-core';
 import { wallFootprint } from '@/libraries/services/threed/design/geometry';
 
-export type DesignTool = 'objects' | 'wall-cutout' | 'select' | 'wall' | 'floor' | 'roof' | 'door' | 'window' | 'cutout' | 'skylight' | 'pan';
+type FloorTool = 'floor' | 'deck' | 'patio';
+export type DesignTool = 'objects' | 'stairs' | 'wall-cutout' | 'select' | 'wall' | FloorTool | 'roof' | 'door' | 'window' | 'cutout' | 'skylight' | 'pan';
+function isFloorTool(tool: DesignTool): tool is FloorTool {
+  return tool === 'floor' || tool === 'deck' || tool === 'patio';
+}
 type DrawPoint = PlanPoint & { nodeId?: string };
 export interface DesignContextGroup { label: string; color: string; actions: { label: string; icon: LucideIcon; disabled?: boolean; active?: boolean; run: () => void }[] }
 interface Props {
@@ -30,23 +34,83 @@ interface Props {
   onSelect: (id: string | null) => void; onCommit: (doc: DesignDocument) => void;
   onPreview: (doc: DesignDocument | null) => void; onMessage: (text: string) => void;
   onDrawComplete: (id: string) => void; cancelToken: number }
-interface Gesture { pointerId: number; base: DesignDocument; point: PlanPoint; screenStart?: { x: number; y: number }; view: PlanView; nodes: string[]; pan: boolean; boxStart?: PlanPoint; pickedEntity?: string; pickedModel?: string; movableBase?: DesignDocument; wallPress?: { started: boolean; shiftKey: boolean }; pendingClick?: { shiftKey: boolean }; node?: string; opening?: string; roofOpening?: string; cutoutVertex?: number; merge?: string; latest: DesignDocument }
+const stairCorners = ['startLeft', 'startRight', 'endRight', 'endLeft'] as const;
+const stairHandleNames = ['end', 'width', ...stairCorners] as const;
+type StairHandle = typeof stairHandleNames[number];
+function isStairHandle(value: unknown): value is StairHandle {
+  return stairHandleNames.some(name => name === value);
+}
+interface Gesture { stairEdit?: { stair: DesignStairs; handle: StairHandle | 'move'; origin: PlanPoint; detachedAnchorId: string }; pointerId: number; base: DesignDocument; point: PlanPoint; screenStart?: { x: number; y: number }; view: PlanView; nodes: string[]; pan: boolean; boxStart?: PlanPoint; pickedEntity?: string; pickedModel?: string; movableBase?: DesignDocument; wallPress?: { started: boolean; shiftKey: boolean }; pendingClick?: { shiftKey: boolean }; node?: string; opening?: string; roofOpening?: string; cutoutVertex?: number; merge?: string; latest: DesignDocument }
 const PAN_DRAG_THRESHOLD = 4; // CSS pixels: allow ordinary click jitter without drawing during a pan.
 const makeId = () => crypto.randomUUID();
 
-function addShape(doc: DesignDocument, points: DrawPoint[], tool: 'wall' | 'floor' | 'roof', levelId: string, draft = false, oneSidedRoof = false, shareNodes = true): DesignDocument {
+function addShape(doc: DesignDocument, points: DrawPoint[], tool: 'wall' | 'stairs' | FloorTool | 'roof', levelId: string, draft = false, oneSidedRoof = false, shareNodes = true, surface?: FloorSurface): DesignDocument {
   const nodes = [...doc.nodes];
   const levelNodes = new Set(levelDocument(doc, levelId).nodes.map(node => node.id));
-  const used = new Set([...doc.levels, ...doc.nodes, ...doc.walls, ...doc.floors, ...doc.roofs, ...doc.roofOpenings, ...doc.openings].map(entity => entity.id));
+  const used = new Set([...doc.levels, ...doc.nodes, ...doc.walls, ...doc.floors, ...doc.roofs, ...doc.roofOpenings, ...doc.openings, ...(doc.stairs ?? [])].map(entity => entity.id));
   const allocate = (prefix: string) => { let candidate = draft ? prefix : makeId(), suffix = 0; while (used.has(candidate)) candidate = draft ? `${prefix}-${++suffix}` : makeId(); used.add(candidate); return candidate; };
-  const ids = points.map((point, index) => {
-    const existing = !shareNodes ? undefined : point.nodeId ?? nodes.find(node => levelNodes.has(node.id) && distance(node, point) < .000001)?.id;
+  // Stairs use one independent anchor. The second click defines their direction and run.
+  const corners = tool === 'stairs' ? points.slice(0, 1) : points;
+  const ids = corners.map((point, index) => {
+    const existing = !shareNodes || tool === 'stairs' ? undefined : point.nodeId ?? nodes.find(node => levelNodes.has(node.id) && distance(node, point) < .000001)?.id;
     if (existing) return existing;
     const id = allocate(`preview-node-${index}`); nodes.push({ id, x: point.x, z: point.z }); return id;
   });
   const id = allocate('preview-entity');
+  if (tool === 'stairs') {
+    const [start, end] = points;
+    const length = distance(start, end);
+    if (length < 0.000001) throw new Error('Click away from the start to set the direction of the Stairs.');
+    const stepLength = 10 * INCH;
+    const stepHeight = 7 * INCH;
+    const count = Math.max(1, Math.round(length / stepLength));
+    return {
+      ...doc,
+      version: 13,
+      nodes,
+      stairs: [...(doc.stairs ?? []), {
+        id,
+        levelId,
+        anchor: ids[0],
+        direction: (Math.atan2(end.z - start.z, end.x - start.x) * 180 / Math.PI + 360) % 360,
+        startY: 0,
+        endY: roundMetres(count * stepHeight),
+        stepLength,
+        stepHeight,
+        width: 36 * INCH,
+      }],
+    };
+  }
+  if (isFloorTool(tool)) {
+    return {
+      ...doc,
+      version: surface && doc.version < 12 ? 12 : doc.version,
+      nodes,
+      floors: [...doc.floors, {
+        id,
+        levelId,
+        vertices: ids,
+        thickness: doc.defaults.floorThickness,
+        elevation: surface === 'deck' ? 24 * INCH : surface ? INCH : 0,
+        ...(surface && { surface }),
+      }],
+    };
+  }
   return { ...doc, nodes, walls: tool === 'wall' ? [...doc.walls, { id, levelId, start: ids[0], end: ids[1], height: doc.defaults.wallHeight, thickness: doc.defaults.wallThickness, elevation: 0 }] : doc.walls,
-    floors: tool === 'floor' ? [...doc.floors, { id, levelId, vertices: ids, thickness: doc.defaults.floorThickness, elevation: 0 }] : doc.floors, roofs: tool === 'roof' ? [...doc.roofs, { id, levelId, vertices: ids, kind: oneSidedRoof ? 'shed' : 'gable', pitch: 6, direction: 0, thickness: 6 * INCH, elevation: doc.defaults.wallHeight }] : doc.roofs };
+    roofs: tool === 'roof' ? [...doc.roofs, { id, levelId, vertices: ids, kind: oneSidedRoof ? 'shed' : 'gable', pitch: 6, direction: 0, thickness: 6 * INCH, elevation: doc.defaults.wallHeight }] : doc.roofs };
+}
+
+function stairHandlePoints(doc: DesignDocument, stair: DesignStairs) {
+  const [startLeft, startRight, endRight, endLeft] = stairFootprint(doc, stair);
+  const midpoint = (a: PlanPoint, b: PlanPoint) => ({ x: (a.x + b.x) / 2, z: (a.z + b.z) / 2 });
+  return {
+    startLeft,
+    startRight,
+    endRight,
+    endLeft,
+    end: midpoint(endRight, endLeft),
+    width: midpoint(startRight, endRight),
+  };
 }
 
 function planDimensionChains(points: PlanPoint[], scale: number, units: 'imperial' | 'metric') {
@@ -117,6 +181,8 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
   const [size, setSize] = useState({ width: 600, height: 280 });
   const [points, setPoints] = useState<DrawPoint[]>([]), [hover, setHover] = useState<DrawPoint | null>(null);
   const [oneSidedRoof, setOneSidedRoof] = useState(false);
+  const [paving, setPaving] = useState<'patio' | 'driveway'>('patio');
+  const surface = tool === 'deck' ? 'deck' : tool === 'patio' ? paving : undefined;
   const cutoutHost = useRef<string | null>(null);
   const [draftOpeningId] = useState(makeId);
   const [boxed, setBoxed] = useState<Set<string>>(() => new Set());
@@ -132,7 +198,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
   useEffect(() => {
     if (selectAllRequest === lastSelectAll.current) return;
     lastSelectAll.current = selectAllRequest;
-    setBoxed(new Set([...doc.walls, ...doc.floors, ...doc.roofs, ...doc.openings, ...doc.roofOpenings].map(item => item.id)));
+    setBoxed(new Set([...doc.walls, ...doc.floors, ...doc.roofs, ...doc.openings, ...doc.roofOpenings, ...(doc.stairs ?? [])].map(item => item.id)));
     setModelIds(placedModelIds ?? modelImages.map(image => image.id));
   }, [selectAllRequest]);
   const groupSelected = (id: string) => tool === 'objects' && boxed.has(id);
@@ -182,9 +248,14 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
   const editableCutout = enabled && !disabled && !editingHidden && tool === 'select' ? active.roofOpenings.find(o => o.id === selected && o.kind === 'cutout') : undefined;
   const selectedWallCutout = active.openings.find(o => o.id === selected && o.kind === 'wall-cutout');
   const cutoutWall = tool === 'wall-cutout' && enabled && !disabled && !editingHidden ? active.walls.find(w => w.id === (selectedWallCutout?.wallId ?? selected)) : undefined;
+  const editableStair = enabled && !disabled && !editingHidden && tool === 'select'
+    ? visible.stairs?.find(stair => stair.id === selected && stair.levelId === activeLevelId)
+    : undefined;
+  const stairHandles = editableStair && stairHandlePoints(displayDocument, editableStair);
   const editableWall = enabled && !disabled && !editingHidden && tool === 'select' ? active.walls.find(w => w.id === selected) : undefined;
   const wallMidpoint = editableWall ? wallFrame(doc, editableWall).point(wallFrame(doc, editableWall).length / 2) : null;
   const editableFloor = enabled && !disabled && !editingHidden && tool === 'select' ? active.floors.find(f => f.id === selected) : undefined;
+  const floorLabel = floorSurfaceLabel(editableFloor ?? { surface });
   const editableRoof = enabled && !disabled && tool === 'select' ? active.roofs.find(roof => roof.id === selected) : undefined;
   const polygonShape = editableFloor ?? editableRoof;
   const handles = (wall ? [wall.start, wall.end] : floor?.vertices ?? doc.roofs.find(entity => entity.id === selected)?.vertices ?? []).filter(key => nodes.has(key));
@@ -209,10 +280,10 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       try { onPreview(draft.length >= 3 ? polygonCutout(draft, draftOpeningId) : null); } catch { onPreview(null); }
       return;
     }
-    if ((tool !== 'wall' && tool !== 'floor' && tool !== 'roof') || !points.length || !hover) { onPreview(null); return; }
+    if ((tool !== 'wall' && tool !== 'stairs' && !isFloorTool(tool) && tool !== 'roof') || !points.length || !hover) { onPreview(null); return; }
     const draft = [...points, hover];
-    try { onPreview(validateDesign(addShape(doc, draft, tool, activeLevelId, true, oneSidedRoof, tool === 'floor' ? connectFloors : tool !== 'wall' || connectWalls))); } catch { onPreview(null); }
-  }, [points, hover, tool, doc, activeLevelId, oneSidedRoof, connectWalls, connectFloors, onPreview]);
+    try { onPreview(validateDesign(addShape(doc, draft, tool, activeLevelId, true, oneSidedRoof, isFloorTool(tool) ? connectFloors : tool !== 'wall' || connectWalls, surface))); } catch { onPreview(null); }
+  }, [points, hover, tool, doc, activeLevelId, oneSidedRoof, connectWalls, connectFloors, surface, onPreview]);
   const local = (event: { clientX: number; clientY: number }) => { const rect = svg.current!.getBoundingClientRect(); return { x: event.clientX - rect.left, y: event.clientY - rect.top }; };
   const pointer = (event: { clientX: number; clientY: number }) => screenToPlan(local(event), view);
   function snapped(point: PlanPoint, exclude: string[] = [], orthogonal = false): DrawPoint {
@@ -248,13 +319,13 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       } catch (error) { onMessage((error as Error).message); }
       return;
     }
-    if (tool !== 'floor' && tool !== 'roof') return;
-    try { const next = validateDesign(addShape(doc, points, tool, activeLevelId, false, oneSidedRoof, tool !== 'floor' || connectFloors)); const entities = tool === 'roof' ? next.roofs : next.floors; onCommit(next); setPoints([]); setHover(null); onPreview(null); onDrawComplete(entities[entities.length - 1].id); onMessage(`${tool === 'roof' ? 'Roof' : 'Floor'} finished and selected. Drag a corner or edit its properties.`); }
+    if (!isFloorTool(tool) && tool !== 'roof') return;
+    try { const next = validateDesign(addShape(doc, points, tool, activeLevelId, false, oneSidedRoof, !isFloorTool(tool) || connectFloors, surface)); const entities = tool === 'roof' ? next.roofs : next.floors; onCommit(next); setPoints([]); setHover(null); onPreview(null); onDrawComplete(entities[entities.length - 1].id); onMessage(`${tool === 'roof' ? 'Roof' : floorLabel} finished and selected. Drag a corner or edit its properties.`); }
     catch (error) { onMessage((error as Error).message); }
   }
   useEffect(() => {
     const key = (event: KeyboardEvent) => {
-      if (!enabled || disabled || editingHidden || event.key !== 'Enter' || (tool !== 'floor' && tool !== 'roof' && tool !== 'cutout') || points.length < 3 || event.repeat
+      if (!enabled || disabled || editingHidden || event.key !== 'Enter' || (!isFloorTool(tool) && tool !== 'roof' && tool !== 'cutout') || points.length < 3 || event.repeat
         || (event.target as Element)?.closest?.('input, textarea, select, button, [contenteditable="true"]')) return;
       event.preventDefault(); finishPolygon();
     };
@@ -269,7 +340,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
     if (!hosts.length) return null;
     const { wall, frame, offset } = hosts[0], width = tool === 'door' ? doc.defaults.doorWidth : doc.defaults.windowWidth;
     const margin = openingMargin(wall), raw = offset - width / 2, snapped = gridSnap ? Math.round(raw / (6 * INCH)) * 6 * INCH : raw;
-    const opening = { id: draft && ![...doc.levels, ...doc.nodes, ...doc.walls, ...doc.floors, ...doc.roofs, ...doc.roofOpenings, ...doc.openings].some(entity => entity.id === draftOpeningId) ? draftOpeningId : makeId(), kind: tool, wallId: wall.id,
+    const opening = { id: draft && ![...doc.levels, ...doc.nodes, ...doc.walls, ...doc.floors, ...doc.roofs, ...doc.roofOpenings, ...doc.openings, ...(doc.stairs ?? [])].some(entity => entity.id === draftOpeningId) ? draftOpeningId : makeId(), kind: tool, wallId: wall.id,
       offset: roundMetres(Math.max(margin, Math.min(frame.length - margin - width, snapped))), width,
       height: tool === 'door' ? doc.defaults.doorHeight : doc.defaults.windowHeight, sill: tool === 'door' ? 0 : doc.defaults.windowSill };
     return { next: validateDesign({ ...doc, openings: [...doc.openings, opening] }), id: opening.id };
@@ -281,7 +352,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
     if (!roof) return null;
     const frame = roofFrame(doc, roof), local = frame.local(point), step = 6 * INCH, width = 24 * INCH, length = 36 * INCH;
     const snap = (value: number) => roundMetres(gridSnap ? Math.round(value / step) * step : value);
-    const opening = { id: draft && ![...doc.levels, ...doc.nodes, ...doc.walls, ...doc.floors, ...doc.roofs, ...doc.openings, ...doc.roofOpenings].some(entity => entity.id === draftOpeningId) ? draftOpeningId : makeId(), roofId: roof.id, kind: tool, along: snap(local.along - width / 2), across: snap(local.across - length / 2), width, length };
+    const opening = { id: draft && ![...doc.levels, ...doc.nodes, ...doc.walls, ...doc.floors, ...doc.roofs, ...doc.openings, ...doc.roofOpenings, ...(doc.stairs ?? [])].some(entity => entity.id === draftOpeningId) ? draftOpeningId : makeId(), roofId: roof.id, kind: tool, along: snap(local.along - width / 2), across: snap(local.across - length / 2), width, length };
     return { next: validateDesign({ ...doc, roofOpenings: [...doc.roofOpenings, opening] }), id: opening.id };
   }
   function finishBox(start: PlanPoint, end: PlanPoint) {
@@ -291,6 +362,9 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
     for (const wall of visible.walls) if (wallFootprint(doc, wall).every(contained)) ids.add(wall.id);
     for (const shape of [...visible.floors, ...visible.roofs]) {
       if (shape.vertices.every(id => contained(nodes.get(id)!))) ids.add(shape.id);
+    }
+    for (const stair of visible.stairs ?? []) {
+      if (stairFootprint(doc, stair).every(contained)) ids.add(stair.id);
     }
     for (const opening of visible.openings) if (ids.has(opening.wallId)) ids.add(opening.id);
     for (const opening of visible.roofOpenings) if (ids.has(opening.roofId)) ids.add(opening.id);
@@ -306,6 +380,9 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       const refs = boxed.has(shape.id) ? moving : stationary;
       for (const id of 'vertices' in shape ? shape.vertices : [shape.start, shape.end]) refs.add(id);
     }
+    for (const stair of doc.stairs ?? []) {
+      (boxed.has(stair.id) ? moving : stationary).add(stair.anchor);
+    }
     // Split shared boundary nodes only for the moving group. Preview and commit reuse the same IDs.
     const replacements = new Map<string, string>();
     for (const id of moving) if (stationary.has(id)) replacements.set(id, makeId());
@@ -315,6 +392,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       nodes: [...doc.nodes, ...doc.nodes.filter(n => replacements.has(n.id)).map(n => ({ ...n, id: remap(n.id) }))],
       walls: doc.walls.map(w => boxed.has(w.id) ? { ...w, start: remap(w.start), end: remap(w.end) } : w),
       floors: doc.floors.map(f => boxed.has(f.id) ? { ...f, vertices: f.vertices.map(remap) } : f),
+      ...(doc.stairs && { stairs: doc.stairs.map(s => boxed.has(s.id) ? { ...s, anchor: remap(s.anchor) } : s) }),
       roofs: doc.roofs.map(r => boxed.has(r.id) ? { ...r, vertices: r.vertices.map(remap) } : r),
     } : doc;
     return { movableBase, nodes: [...moving].map(remap) };
@@ -351,7 +429,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
   function pointRemoval(key: string | null) {
     if (!key || !enabled || disabled || editingHidden) return null;
     const draft = key.startsWith('draft:') ? key.slice(6) : null;
-    if (draft != null && ['roof', 'floor', 'cutout'].includes(tool) && points[Number(draft)]) {
+    if (draft != null && (isFloorTool(tool) || tool === 'roof' || tool === 'cutout') && points[Number(draft)]) {
       return { disabled: false, run() {
         setActivePoint(null);
         setPoints(points.filter((_, i) => i !== Number(draft)));
@@ -393,12 +471,12 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
     event.preventDefault(); svg.current?.focus();
     const point = pointer(event), target = (event.target as Element).closest('[data-entity]'), targetId = target?.getAttribute('data-entity') ?? null;
     // A transient drawing/placement preview is still blank canvas, not a saved object.
-    const entityId = targetId && [...active.walls, ...active.floors, ...active.roofs, ...active.openings, ...active.roofOpenings].some(entity => entity.id === targetId) ? targetId : null;
+    const entityId = targetId && [...active.walls, ...active.floors, ...active.roofs, ...active.openings, ...active.roofOpenings, ...(active.stairs ?? [])].some(entity => entity.id === targetId) ? targetId : null;
     // Rendered levels can differ from the drawing level. Activate a visible saved
     // object first; the editor selects its level before a later editing gesture.
     if (!entityId && targetId && tool === 'select' && event.button === 0 && !event.altKey) {
       const selectable = visibleLevelsDocument(doc, shownLevels);
-      if ([...selectable.walls, ...selectable.floors, ...selectable.roofs, ...selectable.openings, ...selectable.roofOpenings].some(entity => entity.id === targetId)) {
+      if ([...selectable.walls, ...selectable.floors, ...selectable.roofs, ...selectable.openings, ...selectable.roofOpenings, ...(selectable.stairs ?? [])].some(entity => entity.id === targetId)) {
         onSelect(targetId);
         return;
       }
@@ -428,13 +506,34 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       return;
     }
     const explicitPan = editingHidden || tool === 'pan' || event.button === 1 || event.altKey;
+    const stairHandle = (event.target as Element).closest('[data-stair-handle]')?.getAttribute('data-stair-handle');
+    if (!explicitPan && editableStair && stairHandles && entityId === editableStair.id && isStairHandle(stairHandle)) {
+      setActivePoint('stair:' + stairHandle);
+      gesture.current = {
+        pointerId: event.pointerId,
+        base: doc,
+        latest: doc,
+        point,
+        view,
+        nodes: [],
+        pan: false,
+        stairEdit: {
+          detachedAnchorId: makeId(),
+          stair: editableStair,
+          handle: stairHandle,
+          origin: stairHandles[stairHandle],
+        },
+      };
+      svg.current!.setPointerCapture(event.pointerId);
+      return;
+    }
     if (!explicitPan && editableFloor && splitStart && nodeId && editableFloor.vertices.includes(nodeId)) {
       const vertices = editableFloor.vertices;
       const [a, b] = [vertices.indexOf(splitStart), vertices.indexOf(nodeId)].sort((x,y) => x-y);
       const first = vertices.slice(a,b+1), second = [...vertices.slice(b), ...vertices.slice(0,a+1)];
-      if (a < 0 || first.length < 3 || second.length < 3) { onMessage('Choose a non-adjacent Floor corner.'); return; }
+      if (a < 0 || first.length < 3 || second.length < 3) { onMessage(`Choose a non-adjacent ${floorLabel} corner.`); return; }
       const area = (ids: string[]) => signedArea(ids.map(id => nodes.get(id)!));
-      if (area(first) * area(second) <= 0) { onMessage('Keep the split inside the Floor.'); return; }
+      if (area(first) * area(second) <= 0) { onMessage(`Keep the split inside the ${floorLabel}.`); return; }
       const copies = new Map((connectFloors ? [] : [splitStart,nodeId]).map(id => [id, { ...nodes.get(id)!, id:makeId() }]));
       try {
         onCommit(validateDesign({
@@ -447,7 +546,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
         }));
         setSplitStart(null);
         setActivePoint(null);
-        onMessage('Floor split into two Floor objects.');
+        onMessage(`${floorLabel} split into two ${floorLabel} objects.`);
       } catch (error) { onMessage((error as Error).message); }
       return;
     }
@@ -564,8 +663,16 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
     if (nodeId || entityId) {
       if (entityId) onSelect(entityId);
       const entity = doc.walls.find(wall => wall.id === entityId) ?? doc.floors.find(floor => floor.id === entityId) ?? doc.roofs.find(roof => roof.id === entityId);
+      const stair = active.stairs?.find(item => item.id === entityId);
       const keys = nodeId ? [nodeId] : entity ? 'vertices' in entity ? entity.vertices : [entity.start, entity.end] : [];
-      gesture.current = { pointerId: event.pointerId, base: doc, latest: doc, point, view, nodes: keys, pan: false, node: nodeId ?? undefined, opening: doc.openings.some(o => o.id === entityId) ? entityId! : undefined, roofOpening: doc.roofOpenings.some(o => o.id === entityId) ? entityId! : undefined };
+      gesture.current = { pointerId: event.pointerId, base: doc, latest: doc, point, view, nodes: keys, pan: false,
+        ...(stair && !nodeId && { stairEdit: {
+          stair,
+          handle: 'move',
+          origin: nodes.get(stair.anchor)!,
+          detachedAnchorId: makeId(),
+        } as const }),
+        node: nodeId ?? undefined, opening: doc.openings.some(o => o.id === entityId) ? entityId! : undefined, roofOpening: doc.roofOpenings.some(o => o.id === entityId) ? entityId! : undefined };
       svg.current!.setPointerCapture(event.pointerId);
     }
   }
@@ -603,9 +710,30 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       catch (error) { onPreview(null); onMessage((error as Error).message); }
       return;
     }
-    if (tool === 'wall' || tool === 'floor' || tool === 'roof') {
+    if (tool === 'stairs') {
       const hit = snapped(point, [], shiftKey);
-      if ((tool === 'floor' || tool === 'roof') && points.length >= 3 && distance(hit, points[0]) < 10 / view.scale) { finishPolygon(); return; }
+      if (!points.length) {
+        setPoints([hit]);
+        setHover(hit);
+        onMessage('Click the end of the flight to set its direction and length.');
+        return;
+      }
+      try {
+        const next = validateDesign(addShape(doc, [points[0], hit], 'stairs', activeLevelId));
+        const stair = next.stairs?.at(-1);
+        if (!stair) throw new Error('Could not create the Stairs.');
+        onCommit(next);
+        setPoints([]);
+        setHover(null);
+        onPreview(null);
+        onDrawComplete(stair.id);
+        onMessage('Stairs added. Edit the start and end elevations and step dimensions in Design Properties.');
+      } catch (error) { onMessage((error as Error).message); }
+      return;
+    }
+    if (tool === 'wall' || isFloorTool(tool) || tool === 'roof') {
+      const hit = snapped(point, [], shiftKey);
+      if ((isFloorTool(tool) || tool === 'roof') && points.length >= 3 && distance(hit, points[0]) < 10 / view.scale) { finishPolygon(); return; }
       if (tool === 'wall' && points.length) {
         try { const next = validateDesign(addShape(doc, [points[0], hit], 'wall', activeLevelId, false, false, connectWalls)); onCommit(next); setPoints(connectWalls ? [{ ...hit, nodeId: next.walls[next.walls.length - 1].end }] : []); setHover(null); onPreview(null); onMessage(connectWalls ? 'Wall added. Click the next endpoint, or Escape to finish.' : 'Separate Wall added. Click the start of another Wall.'); }
         catch (error) { onMessage((error as Error).message); }
@@ -622,6 +750,62 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
     }
     setView({ ...active.view, x: active.view.x + dx, y: active.view.y + dy });
   }
+  function editStairFromDrag(drag: Gesture, point: PlanPoint): DesignDocument {
+    const edit = drag.stairEdit!;
+    if (distance(point, drag.point) * drag.view.scale < PAN_DRAG_THRESHOLD) return drag.base;
+    const { stair, origin, handle, detachedAnchorId } = edit;
+    if (handle === 'move') {
+      const delta = (v: number) => gridSnap ? Math.round(v / (6 * INCH)) * 6 * INCH : v;
+      const start = {
+        x: origin.x + delta(point.x - drag.point.x),
+        z: origin.z + delta(point.z - drag.point.z),
+      };
+      return setStairFootprint(drag.base, stair.id, start, stair, detachedAnchorId);
+    }
+    const target = {
+      x: origin.x + point.x - drag.point.x,
+      z: origin.z + point.z - drag.point.z,
+    };
+    const { point: hit } = snapPoint(target, active.nodes, drag.view.scale, gridSnap, [stair.anchor]);
+    const anchor = drag.base.nodes.find(node => node.id === stair.anchor)!;
+    const dx = hit.x - anchor.x, dz = hit.z - anchor.z;
+    const angle = stair.direction * Math.PI / 180;
+    const cos = Math.cos(angle), sin = Math.sin(angle);
+    const { count } = stairLayout(stair);
+    let start: PlanPoint = anchor;
+    let resized: DesignStairs;
+    if (handle === 'end') {
+      const run = Math.hypot(dx, dz);
+      if (run < .000001) return drag.base;
+      resized = {
+        ...stair,
+        direction: (Math.atan2(dz, dx) * 180 / Math.PI + 360) % 360,
+        stepLength: Math.max(INCH, run / count),
+      };
+    } else if (handle === 'width') {
+      const halfWidth = -sin * dx + cos * dz;
+      resized = { ...stair, width: Math.max(INCH, 2 * halfWidth) };
+    } else {
+      const index = stairCorners.indexOf(handle);
+      const fixed = stairFootprint(drag.base, stair)[(index + 2) % 4];
+      const fromFixedX = hit.x - fixed.x, fromFixedZ = hit.z - fixed.z;
+      const atStart = index < 2;
+      const rightSide = handle === 'startRight' || handle === 'endRight' ? 1 : -1;
+      const along = (cos * fromFixedX + sin * fromFixedZ) * (atStart ? -1 : 1);
+      const across = (-sin * fromFixedX + cos * fromFixedZ) * rightSide;
+      const width = roundMetres(Math.max(INCH, across));
+      const stepLength = roundMetres(Math.max(INCH, along / count));
+      const startOffset = atStart ? -count * stepLength : 0;
+      const sideOffset = rightSide * width / 2;
+      start = {
+        x: fixed.x + cos * startOffset - sin * sideOffset,
+        z: fixed.z + sin * startOffset + cos * sideOffset,
+      };
+      resized = { ...stair, width, stepLength };
+    }
+    return setStairFootprint(drag.base, stair.id, start, resized, detachedAnchorId);
+  }
+
   function move(event: PointerEvent<SVGSVGElement>) {
     const modelDrag = modelGesture.current;
     if (modelDrag && modelDrag.pointerId === event.pointerId) {
@@ -641,7 +825,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
     if (!enabled || ((disabled || (editingHidden && tool !== 'objects')) && !gesture.current?.pan)) return;
     const active = gesture.current;
     if (!active) {
-      if ((tool === 'wall' || tool === 'floor' || tool === 'roof' || tool === 'cutout') && points.length) {
+      if ((tool === 'wall' || tool === 'stairs' || isFloorTool(tool) || tool === 'roof' || tool === 'cutout') && points.length) {
         const p = pointer(event);
         const roof = tool === 'cutout' && doc.roofs.find(item => item.id === cutoutHost.current);
         const edge = roof && nearestRoofEdge(p, roof.vertices.map(id => nodes.get(id)!));
@@ -652,6 +836,13 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       return;
     }
     if (event.pointerId !== active.pointerId) return;
+    if (active.stairEdit) {
+      if (doc !== active.base || selected !== active.stairEdit.stair.id) { onPreview(null); return; }
+      try {
+        onPreview(editStairFromDrag(active, screenToPlan(local(event), active.view)));
+      } catch (error) { onPreview(null); onMessage((error as Error).message); }
+      return;
+    }
     if (active.boxStart) {
       setMarquee({ start: active.boxStart, end: screenToPlan(local(event), active.view) });
       return;
@@ -731,7 +922,12 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
     if (active.pan) panGesture(active, local(event));
     gesture.current = null;
     try {
-      if (active.boxStart) {
+      if (active.stairEdit) {
+        if (doc === active.base && selected === active.stairEdit.stair.id && enabled && !disabled && !editingHidden) {
+          const next = editStairFromDrag(active, screenToPlan(local(event), active.view));
+          if (next !== active.base) onCommit(next);
+        }
+      } else if (active.boxStart) {
         setMarquee(null);
         if (doc === active.base && enabled && !disabled) {
           const release = local(event);
@@ -784,7 +980,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
   const selectionPoints = selectedModelId ? modelPoints(modelImages.filter(image => image.id === selectedModelId)) : selectedWall ? wallFootprint(doc, selectedWall) : entityPoints(doc, selected);
   const xTicks = rulerTicks(view.x, view.scale, size.width, measurementUnits), zTicks = rulerTicks(view.y, view.scale, size.height, measurementUnits);
   function fitPlan(selection = false) {
-    const next = framePlan(selection ? selectionPoints : [...visible.nodes, ...visible.walls.flatMap(wall => wallFootprint(displayDocument, wall)), ...modelPoints(modelImages)], size); if (next) setView(next);
+    const next = framePlan(selection ? selectionPoints : [...visible.nodes, ...(visible.stairs ?? []).flatMap(stair => stairFootprint(displayDocument, stair)), ...visible.walls.flatMap(wall => wallFootprint(displayDocument, wall)), ...modelPoints(modelImages)], size); if (next) setView(next);
   }
   const framedRequest = useRef<typeof frameRequest>(null);
   useEffect(() => {
@@ -826,6 +1022,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
   }
   const selectionCount = tool === 'objects' ? boxed.size + modelIds.length : 0;
   const outlines = selectionCount ? [
+    ...(visible.stairs ?? []).filter(s => boxed.has(s.id)).map(s => stairFootprint(displayDocument, s)),
     ...visible.walls.filter(w => boxed.has(w.id)).map(w => wallFootprint(displayDocument, w)),
     ...[...visible.floors, ...visible.roofs].filter(shape => boxed.has(shape.id)).map(shape => shape.vertices.map(id => nodes.get(id)!)),
     ...visible.openings.filter(o => boxed.has(o.id)).map(o => openingFootprint(displayDocument, o)),
@@ -849,6 +1046,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
   }}><option value="">ThreeD Groups</option>{groups.map(group => <option key={group.id} value={group.id}>{group.name}</option>)}</select>;
   const sharedEnds = (editableWall ? [editableWall.start, editableWall.end] : editableFloor?.vertices ?? []).filter(id =>
     doc.walls.some(w => w.id !== editableWall?.id && (w.start === id || w.end === id))
+    || doc.stairs?.some(s => s.anchor === id)
     || [...doc.floors, ...doc.roofs].some(shape => shape.id !== editableFloor?.id && shape.vertices.includes(id)));
   function detachShape() {
     if (!sharedEnds.length) return;
@@ -865,20 +1063,20 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
         } : w),
       }));
       setActivePoint(null);
-      onMessage(editableFloor ? 'Floor detached.' : 'Wall detached.');
+      onMessage(editableFloor ? `${floorLabel} detached.` : 'Wall detached.');
     } catch (error) { onMessage((error as Error).message); }
   }
   const wallControls = (tool === 'wall' || editableWall) && <>
     <DesignAction label="Connect Wall Endpoints" aria-pressed={connectWalls} variant={connectWalls ? 'secondary' : 'outline'} onClick={() => setConnectWalls(!connectWalls)}><Link2 aria-hidden="true" className="size-3.5" /></DesignAction>
     {editableWall && <DesignAction label="Detach Wall" disabled={!sharedEnds.length} onClick={detachShape}><Unlink2 aria-hidden="true" className="size-3.5" /></DesignAction>}
   </>;
-  const floorControls = (tool === 'floor' || editableFloor) && <>
-    <DesignAction label="Connect Floor Corners" aria-pressed={connectFloors} onClick={() => setConnectFloors(!connectFloors)}><Link2 className="size-3.5" /></DesignAction>
+  const floorControls = (isFloorTool(tool) || editableFloor) && <>
+    <DesignAction label={`Connect ${floorLabel} Corners`} aria-pressed={connectFloors} onClick={() => setConnectFloors(!connectFloors)}><Link2 className="size-3.5" /></DesignAction>
     {editableFloor && <>
-      <DesignAction label="Detach Floor" disabled={!sharedEnds.length} onClick={detachShape}><Unlink2 className="size-3.5" /></DesignAction>
-      <DesignAction label="Split Floor" aria-pressed={Boolean(splitStart)} disabled={!activePoint?.startsWith('node:') || editableFloor.vertices.length < 4} onClick={() => {
+      <DesignAction label={`Detach ${floorLabel}`} disabled={!sharedEnds.length} onClick={detachShape}><Unlink2 className="size-3.5" /></DesignAction>
+      <DesignAction label={`Split ${floorLabel}`} aria-pressed={Boolean(splitStart)} disabled={!activePoint?.startsWith('node:') || editableFloor.vertices.length < 4} onClick={() => {
         setSplitStart(splitStart ? null : activePoint!.slice(5));
-        if (!splitStart) onMessage('Click a non-adjacent corner to split the Floor.');
+        if (!splitStart) onMessage(`Click a non-adjacent corner to split the ${floorLabel}.`);
       }}><Scissors className="size-3.5" /></DesignAction>
     </>}
   </>;
@@ -900,7 +1098,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       onLostPointerCapture={() => { setGroupOffset(null); setMarquee(null); if (gesture.current) { if (gesture.current.wallPress?.started) setPoints([]); gesture.current = null; setHover(null); onPreview(null); } }}
       onPointerLeave={() => { if (!gesture.current && (tool === 'door' || tool === 'window' || tool === 'cutout' || tool === 'skylight')) onPreview(null); }}
       >
-      <defs>{[...visible.walls, ...visible.floors, ...visible.roofs, ...visible.openings, ...visible.roofOpenings].filter(entity => entity.appearance?.texture).map(entity =>
+      <defs>{[...visible.walls, ...visible.floors, ...visible.roofs, ...visible.openings, ...visible.roofOpenings, ...(visible.stairs ?? [])].filter(entity => entity.appearance?.texture).map(entity =>
         <pattern key={entity.id} id={patternId + '-' + entity.id} width={1} height={1} patternUnits="userSpaceOnUse">
           <rect width={1} height={1} fill={entity.appearance?.color ?? '#ffffff'} />
           <image width={1} height={1} href={entity.appearance?.texture} preserveAspectRatio="none" style={{ mixBlendMode: 'multiply' }} />
@@ -918,7 +1116,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
           {active.nodes.some(node => Math.abs(node.x - hover.x) < .000001) && <line x1={hover.x} x2={hover.x} y1={(RULER_SIZE - view.y) / view.scale} y2={(size.height - view.y) / view.scale}/>}
           {active.nodes.some(node => Math.abs(node.z - hover.z) < .000001) && <line y1={hover.z} y2={hover.z} x1={(RULER_SIZE - view.x) / view.scale} x2={(size.width - view.x) / view.scale}/>}
         </g>}
-        {visible.floors.map(floor => <polygon key={floor.id} data-entity={floor.id} points={polygon(floor.vertices.map(id => nodes.get(id)!))} fill={paint(floor)} fillOpacity={.55} stroke={(groupSelected(floor.id) || selected === floor.id) ? '#36b8c8' : '#7694b8'} strokeWidth={1 / view.scale} />)}
+        {visible.floors.map(floor => <polygon key={floor.id} data-entity={floor.id} data-surface={floor.surface} points={polygon(floor.vertices.map(id => nodes.get(id)!))} fill={paint(floor)} fillOpacity={.55} stroke={(groupSelected(floor.id) || selected === floor.id) ? '#36b8c8' : '#7694b8'} strokeWidth={1 / view.scale} />)}
         {displayedImages.map(image => {
           const [a,b,c] = image.corners.map(p => ({ x: p.x * metersPerSceneUnit, z: p.z * metersPerSceneUnit }));
           if (![a.x,a.z,b.x,b.z,c.x,c.z].every(Number.isFinite)) return null;
@@ -977,10 +1175,29 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
             {selectedModel?.id === image.id && !selectedModel.locked && onSaveModel && !disabled && !modelBusy && <circle data-model-resize={image.id} cx={corners[2].x} cy={corners[2].z} r={6 / view.scale} fill="#facc15" stroke="#101827" strokeWidth={1 / view.scale} style={{ cursor: 'nwse-resize' }} onPointerDown={event => startModel(event, image.id, true)} />}
           </g>;
         })}
+        {(visible.stairs ?? []).map(stair => {
+          const { count, run, rise } = stairLayout(stair);
+          const anchor = nodes.get(stair.anchor)!;
+          const half = stair.width / 2;
+          const ink = selected === stair.id || groupSelected(stair.id) ? '#36b8c8' : '#e2e8f0';
+          const from = rise > 0 ? run * .15 : run * .85;
+          const to = run - from;
+          const head = Math.min(run * .16, half * .42) * Math.sign(rise);
+          return <g key={stair.id} transform={`translate(${anchor.x} ${anchor.z}) rotate(${stair.direction})`} data-entity={stair.id} data-stairs={stair.id}>
+            <rect width={run} y={-half} height={stair.width} fill={paint(stair)} stroke={ink} strokeWidth={1.5 / view.scale} />
+            <g stroke={ink} strokeWidth={1 / view.scale} pointerEvents="none">
+              {Array.from({ length: count - 1 }, (_, index) => {
+                const x = (index + 1) * stair.stepLength;
+                return <line key={index} x1={x} x2={x} y1={-half} y2={half} />;
+              })}
+              <path d={`M ${from} 0 H ${to} m ${-head} ${-Math.abs(head)} l ${head} ${Math.abs(head)} l ${-head} ${Math.abs(head)}`} fill="none" strokeWidth={2 / view.scale} />
+            </g>
+          </g>;
+        })}
         {visible.roofs.map(roof => { const points = roof.vertices.map(id => nodes.get(id)!); return <g key={roof.id} data-entity={roof.id} data-roof={roof.kind}><polygon points={polygon(points)} fill={paint(roof)} fillOpacity={roof.appearance?.color || roof.appearance?.texture ? 1 : (groupSelected(roof.id) || selected === roof.id) ? .18 : .06} stroke={groupSelected(roof.id) || selected === roof.id ? '#facc15' : planObjectColor(roof)} strokeWidth={3 / view.scale} pointerEvents="stroke" /></g>; })}
         {visible.walls.map(wall => <g key={wall.id}><polygon data-entity={wall.id} points={polygon(wallFootprint(displayDocument, wall))} fill={paint(wall)} stroke={(groupSelected(wall.id) || selected === wall.id) ? '#36b8c8' : '#5b8baf'} strokeWidth={1 / view.scale} /><line data-entity={wall.id} x1={nodes.get(wall.start)!.x} y1={nodes.get(wall.start)!.z} x2={nodes.get(wall.end)!.x} y2={nodes.get(wall.end)!.z} stroke="transparent" strokeWidth={Math.max(wall.thickness, 10 / view.scale)} />{measurementsVisible && <text data-measurement={wall.id} x={(nodes.get(wall.start)!.x + nodes.get(wall.end)!.x) / 2} y={(nodes.get(wall.start)!.z + nodes.get(wall.end)!.z) / 2 - .2} fill="#dde8f6" fontSize={11 / view.scale} textAnchor="middle" pointerEvents="none">{formatPlanLength(distance(nodes.get(wall.start)!, nodes.get(wall.end)!), measurementUnits)}</text>}</g>)}
-        {labelsVisible && [...visible.walls, ...visible.floors, ...visible.roofs].filter(entity => entity.name).map(entity => {
-          const ring = ("vertices" in entity ? entity.vertices : [entity.start, entity.end]).map(id => nodes.get(id)!);
+        {labelsVisible && [...visible.walls, ...visible.floors, ...visible.roofs, ...(visible.stairs ?? [])].filter(entity => entity.name).map(entity => {
+          const ring = 'anchor' in entity ? stairFootprint(displayDocument, entity) : ("vertices" in entity ? entity.vertices : [entity.start, entity.end]).map(id => nodes.get(id)!);
           const x = ring.reduce((sum,p) => sum+p.x,0)/ring.length, z = ring.reduce((sum,p) => sum+p.z,0)/ring.length;
           return <text key={entity.id} x={x} y={z + 12/view.scale} fill="#fff" stroke="#101827" strokeWidth={3/view.scale} paintOrder="stroke" fontSize={12/view.scale} textAnchor="middle" pointerEvents="none">{entity.name}</text>;
         })}
@@ -1007,6 +1224,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
         {measurementsVisible && <g pointerEvents="none" fill="#dde8f6" fontSize={11 / view.scale} textAnchor="middle">
           {planDimensionChains([
             ...visible.walls.flatMap(wall => [nodes.get(wall.start)!, nodes.get(wall.end)!]),
+            ...(visible.stairs ?? []).flatMap(stair => stairFootprint(displayDocument, stair)),
             ...visible.floors.flatMap(floor => floor.vertices.map(id => nodes.get(id)!)),
           ], view.scale, measurementUnits)}
           {[...visible.floors, ...visible.roofs].map(entity => {
@@ -1014,6 +1232,10 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
             const xs = points.map(p => p.x), zs = points.map(p => p.z);
             const minX = Math.min(...xs), maxX = Math.max(...xs), minZ = Math.min(...zs), maxZ = Math.max(...zs);
             return <text key={entity.id} data-measurement={entity.id} x={(minX + maxX) / 2} y={maxZ + .3}>{formatPlanLength(maxX-minX, measurementUnits)} × {formatPlanLength(maxZ-minZ, measurementUnits)}</text>;
+          })}
+          {(visible.stairs ?? []).map(stair => {
+            const points = stairFootprint(displayDocument, stair);
+            return <text key={stair.id} data-measurement={stair.id} x={(points[0].x + points[2].x) / 2} y={Math.max(...points.map(p => p.z)) + .3}>{formatPlanLength(stairLayout(stair).run, measurementUnits)} × {formatPlanLength(stair.width, measurementUnits)}</text>;
           })}
           {visible.openings.map(opening => { const points = openingFootprint(displayDocument, opening); return <text key={opening.id} data-measurement={opening.id} x={points.reduce((sum,p)=>sum+p.x/points.length,0)} y={Math.max(...points.map(p=>p.z))+.65}>{formatPlanLength(opening.width, measurementUnits)} × {formatPlanLength(opening.height, measurementUnits)}</text>; })}
           {visible.roofOpenings.map(opening => { const points = roofOpeningFootprint(displayDocument, opening); return <text key={opening.id} data-measurement={opening.id} x={points.reduce((sum,p)=>sum+p.x/points.length,0)} y={Math.max(...points.map(p=>p.z))+.3}>{formatPlanLength(opening.width, measurementUnits)} × {formatPlanLength(opening.length, measurementUnits)}</text>; })}
@@ -1028,6 +1250,15 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
             <circle data-cutout-vertex={index} cx={a.x} cy={a.z} r={5/view.scale} fill={activePoint === 'cutout:' + index ? '#f472b6' : '#facc15'} style={{cursor:'move'}}><title>Drag to move. Shift-click to remove this corner.</title></circle>
           </g>;
         })}
+        {editableStair && stairHandles && stairHandleNames.map(handle => {
+          const point = stairHandles[handle];
+          const label = handle === 'end' ? 'Drag to change Stairs direction and run'
+            : handle === 'width' ? 'Drag to change Stairs width'
+            : 'Drag this corner to resize the Stairs around the opposite corner';
+          return <circle key={handle} data-stair-handle={handle} data-entity={editableStair.id} aria-label={label}
+            cx={point.x} cy={point.z} r={6 / view.scale} stroke="#101827" strokeWidth={1 / view.scale}
+            fill={activePoint === 'stair:' + handle ? '#f472b6' : handle === 'end' ? '#67e8f9' : '#facc15'} style={{ cursor: 'grab' }}><title>{label}</title></circle>;
+        })}
         {editableWall && wallMidpoint && <g data-wall-split={editableWall.id} transform={'translate(' + wallMidpoint.x + ' ' + wallMidpoint.z + ') scale(' + 1 / view.scale + ')'} style={{cursor:'crosshair'}}>
           <title>Add a point to split this Wall. Click or drag the shared point.</title>
           <circle r={8} fill="#172033" stroke="#67e8f9" strokeWidth={1.5} />
@@ -1037,7 +1268,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
           const a = nodes.get(key), b = nodes.get(vertices[(index + 1) % vertices.length]);
           if (!a || !b) return null;
           return <g key={key} data-roof-edge={editableRoof ? index : undefined} data-floor-edge={editableFloor ? index : undefined} transform={`translate(${(a.x + b.x) / 2} ${(a.z + b.z) / 2}) scale(${1 / view.scale})`} style={{ cursor: 'crosshair' }}>
-            <title>Add a {editableFloor ? 'floor' : 'roof'} corner here. Click or drag to place it.</title>
+            <title>Add a {editableFloor ? floorLabel.toLowerCase() : 'roof'} corner here. Click or drag to place it.</title>
             <circle r={8} fill="#172033" stroke="#67e8f9" strokeWidth={1.5} />
             <path d="M-4 0h8 M0 -4v8" fill="none" stroke="#67e8f9" strokeWidth={2} />
           </g>;
@@ -1099,13 +1330,26 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       })}
     </nav>}
     </div>
-    {((tool === 'floor' || tool === 'roof' || tool === 'cutout') && !editingHidden) && <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-white/10 bg-[#111a28] px-3 py-2 pb-6 text-xs" data-testid={`home-${tool}-draft`}>
+    {editableStair && <p className="shrink-0 border-t px-3 py-2 text-xs">
+      Drag a corner to resize the Stairs, the cyan end handle to turn them, or the body to move them.
+    </p>}
+    {tool === 'stairs' && !editingHidden && <p className="shrink-0 border-t px-3 py-2 text-xs">
+      {points.length ? 'Click the end to set the direction and length. Escape cancels.' : 'Click the starting point of the Stairs.'}
+    </p>}
+    {((isFloorTool(tool) || tool === 'roof' || tool === 'cutout') && !editingHidden) && <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-white/10 bg-[#111a28] px-3 py-2 pb-6 text-xs" data-testid={`home-${tool}-draft`}>
       <span>{points.length} corners. Shift-click a corner to remove it. Choose at least 3; Enter or the first corner finishes. Escape cancels.</span>
+      {tool === 'patio' && <label className="flex items-center gap-2">Surface
+        <select className="rounded border border-white/20 bg-[#111a28] px-2 py-1" value={paving} disabled={!enabled || disabled}
+          onChange={event => setPaving(event.target.value === 'driveway' ? 'driveway' : 'patio')}>
+          <option value="patio">Patio</option>
+          <option value="driveway">Driveway</option>
+        </select>
+      </label>}
       {tool === 'roof' && <label className="flex items-center gap-2">
         <input type="checkbox" checked={oneSidedRoof} disabled={!enabled || disabled} onChange={event => setOneSidedRoof(event.target.checked)} />
         One-sided roof
       </label>}
-      <div className="flex gap-2"><Button size="sm" variant="outline" disabled={!points.length} onClick={() => { setPoints([]); setHover(null); onPreview(null); onMessage('Draft cancelled. Completed geometry is retained.'); }}>Cancel Draft</Button><Button size="sm" disabled={points.length < 3} onClick={finishPolygon}>Finish {tool === 'cutout' ? 'Cutout' : tool === 'roof' ? 'Roof' : 'Floor'}</Button></div>
+      <div className="flex gap-2"><Button size="sm" variant="outline" disabled={!points.length} onClick={() => { setPoints([]); setHover(null); onPreview(null); onMessage('Draft cancelled. Completed geometry is retained.'); }}>Cancel Draft</Button><Button size="sm" disabled={points.length < 3} onClick={finishPolygon}>Finish {tool === 'cutout' ? 'Cutout' : tool === 'roof' ? 'Roof' : floorLabel}</Button></div>
     </div>}
   </section>;
 }

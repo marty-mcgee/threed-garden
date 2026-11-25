@@ -181,7 +181,7 @@ export function ProjectAssetsPanel({
             </PersistentDetails>}
             {visibleProjectAssets.length === 0 && visibleArchitecture.length === 0 && !terrainMatchesSearch ? (
               <p className="py-8 text-center text-xs text-muted-foreground">
-                {projectRuntimeMarkers.length === 0 && !terrain && (!architecture || architecture.walls.length + architecture.floors.length + architecture.roofs.length + architecture.openings.length + architecture.roofOpenings.length === 0)
+                {projectRuntimeMarkers.length === 0 && !terrain && (!architecture || architecture.walls.length + architecture.floors.length + architecture.roofs.length + architecture.openings.length + architecture.roofOpenings.length + (architecture.stairs?.length ?? 0) === 0)
                   ? 'This Project has no ThreeD assets.'
                   : 'No Project assets match this search.'}
               </p>

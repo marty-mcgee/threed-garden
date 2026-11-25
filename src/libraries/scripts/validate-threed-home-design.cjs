@@ -14,6 +14,52 @@ const H = require('../services/threed/design/history.ts');
 const G = require('../services/threed/design/geometry.ts');
 if (previous) require.extensions['.ts'] = previous; else delete require.extensions['.ts'];
 const near = (a, b) => assert(Math.abs(a - b) < 1e-5, `${a} differs from ${b}`);
+{
+  const flight = {
+    id: 'flight',
+    levelId: 'ground',
+    anchor: 'entrance',
+    direction: 90,
+    startY: 0,
+    endY: 0.6,
+    stepHeight: 0.21,
+    stepLength: 0.3,
+    width: 1,
+  };
+  const stairDoc = D.validateDesign({
+    ...D.newDesign(),
+    version: 13,
+    levels: [{ id: 'ground', name: 'Ground', elevation: 2 }],
+    nodes: [{ id: 'entrance', x: 3, z: 4 }],
+    stairs: [flight],
+  });
+  const cache = new G.DesignGeometryCache();
+  function hitHeight(mesh, x, z) {
+    const ray = new THREE.Raycaster(new THREE.Vector3(x, 5, z), new THREE.Vector3(0, -1, 0));
+    return ray.intersectObject(mesh)[0]?.point.y;
+  }
+  cache.update(stairDoc, null);
+  const mesh = cache.group.getObjectByName('flight');
+  assert(mesh);
+  const firstGeometry = mesh.geometry;
+  near(firstGeometry.boundingBox.min.x, 2.5);
+  near(firstGeometry.boundingBox.max.x, 3.5);
+  near(firstGeometry.boundingBox.min.y, 2);
+  near(firstGeometry.boundingBox.max.y, 2.6);
+  for (let i = 0; i < 3; i++) near(hitHeight(mesh, 3, 4.15 + i * 0.3), 2.2 + i * 0.2);
+  assert.equal(hitHeight(mesh, 3.51, 4.15), undefined);
+  cache.update(stairDoc, 'flight', []);
+  assert.equal(hitHeight(mesh, 3, 4.15), undefined, 'Hidden Stairs cannot intercept picking.');
+  cache.update({ ...stairDoc, stairs: [{ ...flight, appearance: { color: '#654321', transparency: 25 } }] }, 'flight');
+  assert.equal(mesh.geometry, firstGeometry);
+  assert.equal(mesh.material.color.getHexString(), '654321');
+  near(mesh.material.opacity, 0.75);
+  cache.update({ ...stairDoc, stairs: [{ ...flight, startY: 0.6, endY: 0 }] }, null);
+  assert.equal(cache.group.getObjectByName('flight'), mesh);
+  for (let i = 0; i < 3; i++) near(hitHeight(mesh, 3, 4.15 + i * 0.3), 2.6 - i * 0.2);
+  cache.dispose();
+  console.log('Passed: stepped Stairs geometry, rotation, ascending/descending landing heights, Level visibility and retained per-flight appearance.');
+}
 const room = D.validateDesign({ ...D.newDesign(), nodes: [{ id:'a',x:0,z:0 },{ id:'b',x:120*D.INCH,z:0 },{ id:'c',x:120*D.INCH,z:120*D.INCH },{ id:'d',x:0,z:120*D.INCH }],
   walls: ['ab','bc','cd','da'].map((id,i) => ({ id,levelId:'ground',start:'abcd'[i],end:'abcd'[(i+1)%4],height:96*D.INCH,thickness:6*D.INCH,elevation:0 })),
   floors: [{id:'floor',levelId:'ground',vertices:['a','b','c','d'],thickness:6*D.INCH,elevation:0}] });
@@ -26,7 +72,7 @@ legacyRoom.walls=legacyRoom.walls.map(({levelId,...wall})=>wall);legacyRoom.floo
 for(const key of ['windowHeight','windowWidth','windowSill']) delete (legacyRoom.defaults={...legacyRoom.defaults})[key];
 legacyRoom.version=1;
 assert.deepEqual(D.parseDesign(JSON.stringify(legacyRoom)),room,'Version 1 editable documents upgrade losslessly to version 3 defaults.');
-for (const invalid of [null, [], {...room,version:12}, {...room,units:'cm'}, {...room,unexpected:0}, {...room,nodes:[...room.nodes,room.nodes[0]]},
+for (const invalid of [null, [], {...room,version:14}, {...room,units:'cm'}, {...room,unexpected:0}, {...room,nodes:[...room.nodes,room.nodes[0]]},
   {...room,walls:[{...room.walls[0],end:'a'}]}, {...room,walls:[{...room.walls[0],start:'absent'}]}, {...room,walls:[...room.walls, {...room.walls[0],id:'duplicate'}]},
   {...room,floors:[{...room.floors[0],vertices:['a','c','b','d']}]}, {...room,nodes:room.nodes.map((n,i)=>i===0?{...n,x:Infinity}:n)},
   {...room,defaults:{...room.defaults,doorHeight:-1}}, {...room,floors:[{...room.floors[0],vertices:['a','b','a']}]},

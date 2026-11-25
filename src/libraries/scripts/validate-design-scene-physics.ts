@@ -33,5 +33,37 @@ async function main() {
    }finally{test.free();}
  }
  console.log('PASS: real Rapier sloped solids block below profile and allow door/above-profile passage.');
+ const stairsDoc = validateDesign({
+   ...newDesign(),
+   version: 13,
+   nodes: [{ id: 'anchor', x: 2, z: 1 }],
+   stairs: [{
+     id: 'stairs',
+     levelId: 'ground',
+     anchor: 'anchor',
+     direction: 90,
+     startY: 0,
+     endY: 0.6,
+     width: 1,
+     stepLength: 0.3,
+     stepHeight: 0.2,
+   }],
+ });
+ for (const unit of [1, 0.3048]) {
+   const test = new RAPIER.World({ x: 0, y: 0, z: 0 });
+   try {
+     const fixed = test.createRigidBody(RAPIER.RigidBodyDesc.fixed());
+     const meshes = buildDesignColliders(stairsDoc, unit);
+     assert.equal(meshes.length, 1, 'One fixed solid per flight');
+     test.createCollider(RAPIER.ColliderDesc.trimesh(meshes[0].vertices, meshes[0].indices), fixed);
+     test.step();
+     for (let i = 0; i < 3; i++) {
+       const ray = new RAPIER.Ray({ x: 2 / unit, y: 2 / unit, z: (1.15 + i * 0.3) / unit }, { x: 0, y: -1, z: 0 });
+       const hit = test.castRay(ray, 3 / unit, true);
+       assert(hit && Math.abs(2 - hit.toi * unit - 0.2 * (i + 1)) < 1e-5, 'Stair collider follows each visible tread');
+     }
+   } finally { test.free(); }
+ }
+ console.log('PASS: Rapier raycasts hit all three stair treads at metre and foot Scene scales.');
 }
 void main();

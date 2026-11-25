@@ -6,7 +6,7 @@ const assert = require('node:assert/strict'), fs = require('node:fs'), vm = requ
 function load(file, deps = {}) {
  const exports = {};
  vm.runInNewContext(ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, jsx: ts.JsxEmit.ReactJSX } }).outputText,
-  { exports, Buffer, TextEncoder, URL, Date, AbortController, console, require(name) { assert(name in deps, name); return deps[name]; } }); return exports;
+  { exports, Buffer, TextEncoder, URL, Date, AbortController, crypto: require('node:crypto').webcrypto, console, require(name) { assert(name in deps, name); return deps[name]; } }); return exports;
 }
 const root = 'src/libraries/services/threed/design/';
 const sceneUnits = load('src/libraries/services/threed/scene-units.ts');
@@ -417,6 +417,162 @@ async function run(){
  const fullResponse=await get({url:'http://local/api/map/threed?projectId=15'}),fullSession=session.buildThreeDProjectSession(fullResponse.body,'15');assert(fullSession.success);
  const fullDraft=await hydrateDashboard(fullSession.session,{current:new Map([['15',architecture.projectArchitectureDraft()]])});
  assert.equal(JSON.stringify(fullDraft.history.present),JSON.stringify(complete),'Stable level/entity IDs, dimensions, doors, roofs and roof openings survive PUT/GET/hydration.');assert(!architecture.architectureIsDirty(fullDraft));
+ const outdoorFloors = ['deck', 'patio', 'driveway'].map(surface => ({
+   ...complete.floors[0],
+   id: surface + '-1',
+   name: 'Front ' + surface,
+   surface,
+   elevation: surface === 'deck' ? 0.6096 : 0.0254,
+ }));
+ const outdoorDesign = document.validateDesign({
+   ...complete,
+   version: 12,
+   floors: [...complete.floors, ...outdoorFloors],
+ });
+ assert.equal(document.floorSurfaceLabel(outdoorDesign.floors[0]), 'Floor');
+ assert.throws(() => document.validateDesign({ ...outdoorDesign, version: 11 }), /Unsupported/);
+ for (const surface of ['roof', 'constructor', null]) {
+   assert.throws(() => document.validateDesign({
+     ...outdoorDesign,
+     floors: [{ ...outdoorFloors[0], surface }],
+   }), /Choose Deck, Patio or Driveway/);
+ }
+ assert.equal((await save(request({ ...input, architecture: { version: 1, document: outdoorDesign } }))).status, 200);
+ const outdoorResponse = await get({ url: 'http://local/api/map/threed?projectId=15' });
+ const outdoorSession = session.buildThreeDProjectSession(outdoorResponse.body, '15');
+ assert(outdoorSession.success);
+ assert.equal(JSON.stringify(outdoorSession.session.architecture.document), JSON.stringify(outdoorDesign));
+ for (const mode of ['replace', 'merge']) {
+   let suffix = 0;
+   const imported = architecture.importProjectArchitecture(source, outdoorDesign, mode, () => 'imported-' + ++suffix);
+   assert.equal(imported.version, 12);
+   for (const floor of outdoorFloors) {
+     const restored = imported.floors.find(item => item.surface === floor.surface);
+     assert(restored);
+     assert.notEqual(restored.id, floor.id);
+     assert.equal(restored.name, floor.name);
+     assert.equal(restored.elevation, floor.elevation);
+     assert.deepEqual({ ...restored.appearance }, appearance);
+   }
+ }
+ console.log('PASS: v12 Deck, Patio and Driveway Project Save/reopen, merge/replace imports, existing Floors and strict surface validation (mock persistence).');
+ const stair = {
+   id: 'entry-flight',
+   levelId: outdoorDesign.levels[0].id,
+   anchor: 'stair-origin',
+   direction: 90,
+   startY: 0.0254,
+   endY: 0.5588,
+   stepHeight: 0.1778,
+   stepLength: 0.2794,
+   width: 0.9144,
+   name: 'Entry Stairs',
+   appearance,
+ };
+ const stairDesign = document.validateDesign({
+   ...outdoorDesign,
+   version: 13,
+   nodes: [...outdoorDesign.nodes, { id: stair.anchor, x: 5, z: 10 }],
+   stairs: [stair],
+ });
+ assert.equal(document.stairLayout(stair).count, 3, 'An integral number of risers survives metre conversion.');
+ assert.equal(document.stairLayout({ ...stair, endY: -0.5 }).count, 3);
+ assert(document.stairLayout({ ...stair, endY: -0.5 }).rise < 0);
+ assert.equal(document.stairLayout({ ...stair, endY: 0.6 }).count, 4, 'Partial rises are evenly distributed.');
+ for (const invalid of [{ startY: stair.endY }, { width: 0 }, { stepLength: -1 }, { stepHeight: Infinity }, { endY: 100, stepHeight: 0.0254 }, { anchor: 'missing' }, { id: stair.anchor }, { extra: true }]) {
+   assert.throws(() => document.validateDesign({ ...stairDesign, stairs: [{ ...stair, ...invalid }] }));
+ }
+ assert.throws(() => document.validateDesign({ ...stairDesign, version: 12 }), /Unsupported/);
+ assert.equal(document.entityLevelId(stairDesign, stair.id), stair.levelId);
+ assert(document.levelDocument(stairDesign, stair.levelId).nodes.some(node => node.id === stair.anchor));
+ assert.equal(document.visibleLevelsDocument(stairDesign, []).stairs.length, 0);
+ assert(!document.removeEntity(stairDesign, stair.id).nodes.some(node => node.id === stair.anchor));
+ assert.equal((await save(request({ ...input, architecture: { version: 1, document: stairDesign } }))).status, 200);
+ const stairResponse = await get({ url: 'http://local/api/map/threed?projectId=15' });
+ const stairSession = session.buildThreeDProjectSession(stairResponse.body, '15');
+ assert(stairSession.success);
+ assert.equal(JSON.stringify(stairSession.session.architecture.document), JSON.stringify(stairDesign));
+ for (const mode of ['replace', 'merge']) {
+   let suffix = 0;
+   const imported = architecture.importProjectArchitecture(outdoorDesign, stairDesign, mode, () => 'stair-import-' + ++suffix);
+   const [flight] = imported.stairs;
+   assert.notEqual(flight.id, stair.id);
+   assert.notEqual(flight.levelId, stair.levelId);
+   assert.notEqual(flight.anchor, stair.anchor);
+   assert.deepEqual(Array.from(document.stairFootprint(imported, flight)), Array.from(document.stairFootprint(stairDesign, stair)));
+ }
+ console.log('PASS: Design v13 Stairs validation, equal risers, Level visibility, node cleanup, fresh import IDs and Project Save/reopen (mock persistence).');
+ const originalAnchor = stairDesign.nodes.find(node => node.id === stair.anchor);
+ const movedX = properties.setStairPosition(stairDesign, stair.id, 'x', -12 * document.INCH);
+ const movedXZ = properties.setStairPosition(movedX, stair.id, 'z', 0.45);
+ assert.deepEqual({ ...movedX.nodes.find(node => node.id === stair.anchor) }, {
+   ...originalAnchor,
+   x: -0.3048,
+ });
+ assert.deepEqual({ ...movedXZ.nodes.find(node => node.id === stair.anchor) }, {
+   ...originalAnchor,
+   x: -0.3048,
+   z: 0.45,
+ });
+ assert.deepEqual(movedXZ.stairs, stairDesign.stairs, 'Moving the anchor preserves flight ID, elevations and step dimensions.');
+ const beforePosition = history.designHistory(stairDesign);
+ const afterPosition = history.commitDesign(beforePosition, movedX);
+ assert.deepEqual(history.undoDesign(afterPosition).present, stairDesign);
+ assert.deepEqual(history.redoDesign(history.undoDesign(afterPosition)).present, movedX);
+ assert.throws(() => properties.setStairPosition(stairDesign, stair.id, 'x', 1001));
+ const sharedDesign = {
+   ...stairDesign,
+   stairs: [{ ...stair, anchor: stairDesign.walls[0].start }],
+ };
+ let sharedId = 0;
+ const sharedImport = architecture.importProjectArchitecture(outdoorDesign, sharedDesign, 'replace', () => 'shared-' + ++sharedId);
+ const sharedFlight = sharedImport.stairs[0];
+ const wallBefore = properties.entityPoints(sharedImport, sharedImport.walls[0].id);
+ assert.equal(sharedFlight.anchor, sharedImport.walls[0].start);
+ const sharedAnchor = sharedImport.nodes.find(node => node.id === sharedFlight.anchor);
+ assert.equal(properties.setStairPosition(sharedImport, sharedFlight.id, 'x', sharedAnchor.x), sharedImport);
+ const detached = properties.setStairPosition(sharedImport, sharedFlight.id, 'x', 2.54);
+ assert.equal(detached.stairs[0].id, sharedFlight.id);
+ assert.notEqual(detached.stairs[0].anchor, sharedFlight.anchor);
+ assert.equal(detached.nodes.find(node => node.id === detached.stairs[0].anchor).x, 2.54);
+ assert.deepEqual(properties.entityPoints(detached, sharedImport.walls[0].id), wallBefore);
+ console.log('PASS: Stairs start X/Z metre offsets, preserved flight geometry, isolated shared anchors and Undo/Redo.');
+ const rotatedStairs = document.validateDesign({ ...stairDesign, stairs: [{ ...stair, direction: 33 }] });
+ const flightId = stair.id;
+ const original = properties.objectProperties(rotatedStairs, flightId);
+ const near = (actual, expected) => assert(Math.abs(actual - expected) < 0.000002, `Expected ${actual} to be within two micrometres of ${expected}`);
+ near(original.width, stair.width);
+ near(original.depth, 3 * stair.stepLength);
+ assert.equal(original.rotation, 33);
+ let transformedFlight = rotatedStairs;
+ for (const [field, value] of [['x', -3.25], ['z', 1.72], ['rotation', 123], ['depth', 2.1], ['width', 1.35]]) {
+   const old = properties.objectProperties(transformedFlight, flightId);
+   transformedFlight = properties.editObject(transformedFlight, flightId, { field, value });
+   const current = properties.objectProperties(transformedFlight, flightId);
+   for (const name of ['x', 'z', 'rotation', 'width', 'depth']) near(current[name], name === field ? value : old[name]);
+   assert.equal(document.stairLayout(transformedFlight.stairs[0]).count, 3);
+   assert.equal(transformedFlight.stairs[0].startY, stair.startY);
+   assert.equal(transformedFlight.stairs[0].endY, stair.endY);
+   assert.equal(transformedFlight.stairs[0].anchor, stair.anchor);
+ }
+ for (const [field, axis] of [['flipX', 'x'], ['flipZ', 'z']]) {
+   const before = properties.entityPoints(transformedFlight, flightId);
+   const center = properties.objectProperties(transformedFlight, flightId);
+   const flipped = properties.editObject(transformedFlight, flightId, { field });
+   const after = properties.entityPoints(flipped, flightId);
+   // Reflection reverses left and right on both the starting and ending edges.
+   for (const [from, to] of [[0, 1], [1, 0], [2, 3], [3, 2]]) {
+     for (const coordinate of ['x', 'z']) near(after[to][coordinate], coordinate === axis ? 2 * center[axis] - before[from][axis] : before[from][coordinate]);
+   }
+   assert.equal(flipped.stairs[0].endY, stair.endY);
+   assert.deepEqual(history.undoDesign(history.commitDesign(history.designHistory(transformedFlight), flipped)).present, transformedFlight);
+ }
+ assert.throws(() => properties.editObject(transformedFlight, flightId, { field: 'width', value: 0 }));
+ assert.throws(() => properties.editObject(transformedFlight, flightId, { field: 'depth', value: -2 }));
+ const sharedRotated = properties.editObject(sharedImport, sharedFlight.id, { field: 'rotation', value: 180 });
+ assert.notEqual(sharedRotated.stairs[0].anchor, sharedAnchor.id);
+ assert.deepEqual(properties.entityPoints(sharedRotated, sharedImport.walls[0].id), wallBefore);
+ console.log('PASS: centered Stairs position, rotated local width/run, rotation and world-axis flips, isolated anchors and Undo.');
  for (const units of ['metric','imperial']) {
   const unitInput={...input,viewState:{...view,design:{...workspace.defaultDesignWorkspace(),measurementUnits:units}}};
   assert.equal((await save(request(unitInput))).status,200);
@@ -433,7 +589,15 @@ async function run(){
  assert.equal((await save(request({...input,viewState:{...view,design:{...workspace.defaultDesignWorkspace(),measurementUnits:'yards'}}}))).status,400);
  assert.equal(JSON.stringify(stored),beforeInvalidUnits,'Invalid units leave the complete Project unchanged.');
  const THREE=require('three'),merge=await import('three/examples/jsm/utils/BufferGeometryUtils.js');
- const geometry=load(root+'geometry.ts',{'three':THREE,'three/examples/jsm/utils/BufferGeometryUtils.js':merge,'./document':document});
+ const textureUrl = 'https://demo.public.blob.vercel-storage.com/deck.png';
+ const texture = new THREE.Texture();
+ class FixtureTextureLoader {
+   load(url) {
+     assert.equal(url, textureUrl);
+     return texture;
+   }
+ }
+ const geometry=load(root+'geometry.ts',{'three':{...THREE, TextureLoader:FixtureTextureLoader},'three/examples/jsm/utils/BufferGeometryUtils.js':merge,'./document':document});
  const cache=new geometry.DesignGeometryCache();cache.update(reopened.session.architecture.document,'door');
  const world=new THREE.Scene(),existing=new THREE.Mesh(new THREE.BoxGeometry(1,1,1));existing.position.set(10,0,5);world.add(existing);cache.group.scale.setScalar(1/reopened.session.metersPerSceneUnit);world.add(cache.group);world.updateMatrixWorld(true);
  const wall=cache.group.getObjectByName('w1');assert(wall);const bounds=new THREE.Box3().setFromObject(wall);assert(Math.abs(bounds.max.x-10.25)<.01,'A 10 ft room must occupy 10 Scene units plus half-wall thickness.');
@@ -449,6 +613,51 @@ async function run(){
  cache.update(source, null, undefined, true, true, 75);
  assert.equal(wall.material.color.getHexString(), nativeColor);
  assert.equal(wall.material.opacity, .25);
+ const surfaceMesh = cache.group.getObjectByName('floor');
+ const outdoor = {
+   ...source,
+   levels: [{ ...source.levels[0], elevation: 3 }],
+ };
+ for (const [surface, elevation, color] of [['deck', .6, 'ac7852'], ['patio', .05, 'b4a596'], ['driveway', .05, '66717a']]) {
+   const floor = { ...source.floors[0], surface, elevation };
+   cache.update({ ...outdoor, floors: [floor] }, null);
+   assert.equal(cache.group.getObjectByName('floor'), surfaceMesh);
+   assert.equal(surfaceMesh.material.color.getHexString(), color);
+   assert.ok(Math.abs(surfaceMesh.geometry.boundingBox.max.y - (3 + elevation)) < 1e-5);
+   assert.ok(Math.abs(surfaceMesh.geometry.boundingBox.min.y - (3 + elevation - floor.thickness)) < 1e-5);
+   const solid = surfaceMesh.geometry;
+   const appearance = { color: '#223344', texture: textureUrl, transparency: 40 };
+   cache.update({ ...outdoor, floors: [{ ...floor, appearance }] }, null, undefined, true, true, 75);
+   assert.equal(surfaceMesh.material.color.getHexString(), '223344');
+   assert.equal(surfaceMesh.material.map, texture);
+   assert.equal(surfaceMesh.material.opacity, .6);
+   assert.equal(surfaceMesh.geometry, solid, 'Appearance changes retain outdoor polygon geometry.');
+ }
+ const preview = load('src/components/threed/design/DesignPreview.tsx', {
+   react: {
+     useRef: () => ({ current: null }),
+     useState: value => [value, () => {}],
+     useLayoutEffect() {},
+   },
+   'react/jsx-runtime': { jsx, jsxs: jsx },
+   '@react-three/fiber': {},
+   '@/components/threed/shared/SafeCanvas': { SafeCanvas: 'Canvas' },
+   '@react-three/drei': { Grid: 'Grid', OrbitControls: 'OrbitControls' },
+   three: THREE,
+   '@/components/ui/button': { Button: 'button' },
+   '@/libraries/services/threed/design/document': document,
+   '@/libraries/services/threed/design/geometry': geometry,
+ });
+ for (const [visibleLevelId, elevation] of [[['ground'], 3], [[], 0], ['ground', 3]]) {
+   const tree = preview.DesignPreview({
+     document: outdoor,
+     visibleLevelId,
+     selected: null,
+     onSelect() {},
+   });
+   assert.equal(flatten(tree).find(node => node.type === 'Grid').props.position[1], elevation - .16);
+ }
+ cache.update(source, null);
  const geometryIdentity=wall.geometry;cache.update(source,'floor');assert.equal(wall.geometry,geometryIdentity);assert.equal(existing.parent,world);assert.equal(existing.position.x,10);cache.dispose();assert.equal(existing.parent,world,'Architecture cleanup must retain the Model owner.');
  console.log('PASS: actual Project snapshot transaction and load roundtrip with existing Model, room/floor/door, owner guards, malformed/oversized input rejection, atomic failure, legacy Save preservation, pending-edit acknowledgment, safe merge/replace IDs and real Scene-unit geometry. No database connection.');
 }
