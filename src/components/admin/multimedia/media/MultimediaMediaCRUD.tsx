@@ -43,7 +43,7 @@ interface Media {
   isPublic: boolean;
   isActive: boolean;
   metadata: any;
-  albumId: number;
+  albumId: number | null;
   userId: string;
   createdAt: string;
   updatedAt: string;
@@ -117,8 +117,8 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
   };
 
   const handleCreate = async () => {
-    if (!formData.fileName || !formData.fileUrl || !formData.albumId) {
-      showToast('File name, URL, and album are required', 'error');
+    if (!formData.fileName || !formData.fileUrl) {
+      showToast('File name and URL are required', 'error');
       return;
     }
 
@@ -132,7 +132,7 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
         isPrimary: formData.isPrimary,
         isPublic: formData.isPublic,
         isActive: formData.isActive,
-        albumId: parseInt(formData.albumId),
+        albumId: formData.albumId ? Number(formData.albumId) : null,
       };
 
       if (formData.fileSize && formData.fileSize > 0) {
@@ -174,8 +174,8 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
 
   const handleUpdate = async () => {
     if (!editingMedia) return;
-    if (!formData.fileName || !formData.fileUrl || !formData.albumId) {
-      showToast('File name, URL, and album are required', 'error');
+    if (!formData.fileName || !formData.fileUrl) {
+      showToast('File name and URL are required', 'error');
       return;
     }
 
@@ -189,7 +189,7 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
         isPrimary: formData.isPrimary,
         isPublic: formData.isPublic,
         isActive: formData.isActive,
-        albumId: parseInt(formData.albumId),
+        albumId: formData.albumId ? Number(formData.albumId) : null,
       };
 
       if (formData.fileSize && formData.fileSize > 0) {
@@ -286,7 +286,7 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
       isPrimary: media.isPrimary || false,
       isPublic: media.isPublic === true,
       isActive: media.isActive === true,
-      albumId: String(media.albumId),
+      albumId: String(media.albumId ?? ''),
     });
   };
 
@@ -350,15 +350,16 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
                 />
               </div>
               <div>
-                <Label htmlFor="albumId">Album *</Label>
+                <Label htmlFor="albumId">Album (optional)</Label>
                 <Select
-                  value={formData.albumId}
-                  onValueChange={(value) => setFormData({ ...formData, albumId: value })}
+                  value={formData.albumId || 'none'}
+                  onValueChange={(value) => setFormData({ ...formData, albumId: value === 'none' ? '' : value })}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select album" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="none">No Album</SelectItem>
                     {albumList.map((album) => (
                       <SelectItem key={album.id} value={String(album.id)}>
                         {album.title}
@@ -514,16 +515,17 @@ export function MultimediaMediaCRUD({ onModuleUpdate, pageHeader = false }: Mult
               />
             </div>
             <div>
-              <Label htmlFor="edit-albumId">Album *</Label>
+              <Label htmlFor="edit-albumId">Album (optional)</Label>
               <Select
-                value={formData.albumId}
-                onValueChange={(value) => setFormData({ ...formData, albumId: value })}
+                value={formData.albumId || 'none'}
+                onValueChange={(value) => setFormData({ ...formData, albumId: value === 'none' ? '' : value })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select album" />
                 </SelectTrigger>
                 <SelectContent>
-                  {albumList.map((album) => (
+                  <SelectItem value="none">No Album</SelectItem>
+                    {albumList.map((album) => (
                     <SelectItem key={album.id} value={String(album.id)}>
                       {album.title}
                     </SelectItem>

@@ -14,7 +14,7 @@ Use Admin at `/admin` to manage your Projects and reusable content. Existing use
 | Projects | **All Projects** and **Add Project**; Project details, configuration, Modules and assigned assets. |
 | ThreeD | Models and their Files, Categories, Textures and Animations; Designs, Characters, garden records, Scenarios, Simulations, Layers and FarmBots. |
 | Traffic | CHP, Caltrans, CalFire and Bay Area 511 records. |
-| Multimedia | Albums, Tracks, Lyrics, Speech, Media and Links. |
+| Multimedia | Albums, Tracks, Lyrics, Speech, Media and Links. Media can be saved without an Album. |
 | Learn | Super Admins manage shared Markdown guides through **All Guides** and **Add Guide**. **Learn ThreeD** opens published guides at `/learn`. |
 | Settings | **App Settings** for global Module appearance and personal workspace preferences. |
 

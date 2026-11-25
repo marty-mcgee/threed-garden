@@ -4,7 +4,7 @@ import type { DesignModelSelection, SaveDesignModel } from './DesignModelPropert
 
 import { useEffect, useId, useMemo, useRef, useState, type PointerEvent, type ReactNode, type SetStateAction, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Group, Ungroup, Scissors, Link2, Unlink2, CircleMinus, Check, Focus, Maximize, RotateCcw, Tags, Ruler, type LucideIcon } from 'lucide-react';
+import { Group, Ungroup, Scissors, Link2, Unlink2, CircleMinus, Check, Eye, EyeOff, Focus, Maximize, RotateCcw, Tags, Ruler, type LucideIcon } from 'lucide-react';
 import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem, ContextMenuSeparator } from '@/components/ui/context-menu';
 import { WallCutoutEditor } from './WallCutoutEditor';
 import { DesignAction } from './DesignAction';
@@ -21,6 +21,7 @@ export type DesignTool = 'objects' | 'wall-cutout' | 'select' | 'wall' | 'floor'
 type DrawPoint = PlanPoint & { nodeId?: string };
 export interface DesignContextGroup { label: string; color: string; actions: { label: string; icon: LucideIcon; disabled?: boolean; active?: boolean; run: () => void }[] }
 interface Props {
+  onChooseLevel?: (id: string) => void;
   groups?: ThreeDGroup[];
   onGroupChange?: (groups: ThreeDGroup[]) => void;
   onMixedMove?: (doc: DesignDocument, ids: string[], dx: number, dz: number) => void;
@@ -88,7 +89,7 @@ function planDimensionChains(points: PlanPoint[], scale: number, units: 'imperia
   });
 }
 
-export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixedMove, selectAllRequest = 0, selectedModel, onSaveModel, modelBusy = false, visibleLevelIds, onToggleLevel, contextActions = [], showObjectLabels, onShowObjectLabelsChange, showMeasurements, onShowMeasurementsChange, selectedModelId, modelImages = [], terrain, metersPerSceneUnit = 1, onModelSelect, measurementUnits = 'imperial', frameRequest, drawingActions, planView, onViewChange, toolbarHost, embedded = false, active: enabled = true, disabled = false, document: doc, displayDocument = doc, activeLevelId, selected, tool, gridSnap, onSelect, onCommit, onPreview, onMessage, onDrawComplete, cancelToken }: Props) {
+export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixedMove, selectAllRequest = 0, selectedModel, onSaveModel, modelBusy = false, visibleLevelIds, onChooseLevel, onToggleLevel, contextActions = [], showObjectLabels, onShowObjectLabelsChange, showMeasurements, onShowMeasurementsChange, selectedModelId, modelImages = [], terrain, metersPerSceneUnit = 1, onModelSelect, measurementUnits = 'imperial', frameRequest, drawingActions, planView, onViewChange, toolbarHost, embedded = false, active: enabled = true, disabled = false, document: doc, displayDocument = doc, activeLevelId, selected, tool, gridSnap, onSelect, onCommit, onPreview, onMessage, onDrawComplete, cancelToken }: Props) {
   const [connectFloors, setConnectFloors] = useState(true);
   const [splitStart, setSplitStart] = useState<string | null>(null);
   const [connectWalls, setConnectWalls] = useState(true);
@@ -890,7 +891,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       onFinish={(next,id) => { onCommit(next); onDrawComplete(id); onMessage('Wall Cutout finished. Save Project to keep it.'); }} />}
     {embedded && enabled && <div data-testid="design-canvas-tools" role="toolbar" aria-label="Design drawing and view tools" className="threed-workspace-panel threed-scene-panel-surface absolute z-10 flex max-w-[calc(100%-40px)] flex-nowrap items-center gap-1 overflow-x-auto [&>nav]:flex-nowrap [&>nav]:shrink-0 rounded-md border p-1 shadow-md" style={{ right: 8, top: RULER_SIZE + 8 }} onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}>{drawingActions ? drawingActions(groupControls) : groupControls}{wallControls}{floorControls}{removeButton}{groupPicker}{viewActions}</div>}
     {!embedded && <div data-testid="design-plan-header" className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-white/10 px-3 py-2 text-xs">
-      <span className="font-semibold">2D Plan · {doc.levels.find(level => level.id === activeLevelId)?.name} · X / Z · {measurementUnits === 'metric' ? `${Number((gridFeet * 12 * INCH).toFixed(4))} m` : `${gridFeet} ft`} grid</span>
+      <span className="font-semibold">2D Plan · {doc.levels.find(level => level.id === activeLevelId)?.name ?? 'No active Level'} · X / Z · {measurementUnits === 'metric' ? `${Number((gridFeet * 12 * INCH).toFixed(4))} m` : `${gridFeet} ft`} grid</span>
       <div className="flex items-center gap-2"><span>{Number(view.scale.toFixed(2))} px/m</span>{groupControls}{wallControls}{floorControls}{removeButton}{viewActions}</div>
     </div>}
     <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
@@ -1075,7 +1076,27 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       </div>)}
     </ContextMenuContent></ContextMenu>
     {onToggleLevel && enabled && <nav aria-label="Design levels" className="threed-workspace-panel threed-scene-panel-surface absolute bottom-6 left-9 z-10 flex max-w-[calc(100%-44px)] items-center gap-1 overflow-x-auto rounded-md border p-1 shadow-md" onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}>
-      {[...doc.levels].sort((a,b) => a.elevation-b.elevation).map(level => <Button key={level.id} type="button" size="sm" variant="outline" className={`h-7 shrink-0 px-2 text-xs ${shownLevels.includes(level.id) ? 'border-cyan-600/60 bg-cyan-100 text-cyan-900 hover:bg-cyan-200 dark:border-cyan-400/60 dark:bg-cyan-400/20 dark:text-cyan-200 dark:hover:bg-cyan-400/30' : 'bg-transparent text-muted-foreground'}`} aria-pressed={shownLevels.includes(level.id)} onClick={() => onToggleLevel(level.id)}>{level.name}</Button>)}
+      {[...doc.levels].sort((a, b) => a.elevation - b.elevation).map(level => {
+        const isVisible = shownLevels.includes(level.id);
+        const isActive = isVisible && level.id === activeLevelId;
+        const VisibilityIcon = isVisible ? Eye : EyeOff;
+        return <div key={level.id} role="group" aria-label={level.name}
+          className={`flex shrink-0 items-center rounded-md border ${isActive ? 'border-cyan-600 bg-cyan-100 text-cyan-900 dark:border-cyan-400 dark:bg-cyan-400/20 dark:text-cyan-100' : 'border-border'}`}>
+          <Button type="button" size="sm" variant="ghost" disabled={disabled || !onChooseLevel}
+            className={`h-7 gap-1.5 rounded-r-none px-2 text-xs ${isVisible ? '' : 'text-muted-foreground hover:text-muted-foreground disabled:opacity-100'}`}
+            aria-current={isActive ? 'true' : undefined} aria-label={`Set ${level.name} as active Level`}
+            title={`Edit ${level.name}`} onClick={() => onChooseLevel?.(level.id)}>
+            {level.name}
+            {isActive && <span className="text-[10px] font-semibold">Active</span>}
+          </Button>
+          <Button type="button" size="icon" variant="ghost" className="size-7 rounded-l-none border-l border-current/20"
+            aria-label={`Show ${level.name} in 2D and 3D`} aria-pressed={isVisible}
+            title={`${isVisible ? 'Hide' : 'Show'} ${level.name} in 2D and 3D`}
+            onClick={() => onToggleLevel(level.id)}>
+            <VisibilityIcon aria-hidden="true" className={isVisible ? 'size-3.5' : 'size-3.5 text-muted-foreground'} />
+          </Button>
+        </div>;
+      })}
     </nav>}
     </div>
     {((tool === 'floor' || tool === 'roof' || tool === 'cutout') && !editingHidden) && <div className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-t border-white/10 bg-[#111a28] px-3 py-2 pb-6 text-xs" data-testid={`home-${tool}-draft`}>

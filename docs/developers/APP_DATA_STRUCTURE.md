@@ -2,7 +2,7 @@
 
 [Open the interactive schema explorer](app-data-structure.html) · [Structured schema snapshot](app-data-structure.json) · [Established App architecture](../plans/app-module-architecture.md)
 
-Snapshot: 2026-11-23, App 0.37.0, main / 880b1762 plus working-tree changes. Generated from the actual local Drizzle declarations, without a database connection. This visualizes the existing structure; it does not introduce a new architecture.
+Snapshot: 2026-11-25, App 0.37.1, main / 5d629995 plus working-tree changes. Generated from the actual local Drizzle declarations, without a database connection. This visualizes the existing structure; it does not introduce a new architecture.
 
 ## Explore the structure
 
@@ -13,13 +13,13 @@ Open the HTML file directly in a browser; it needs no server, network or CDN. Se
 | Domain | Tables | Columns | Foreign keys |
 | --- | ---: | ---: | ---: |
 | ThreeD | 52 | 716 | 115 |
-| Multimedia | 13 | 136 | 24 |
+| Multimedia | 14 | 138 | 26 |
 | Traffic | 10 | 227 | 10 |
 | Learn | 3 | 32 | 8 |
 | Projects (shared) | 6 | 84 | 15 |
 | Accounts (shared) | 5 | 48 | 2 |
 | Settings (shared) | 5 | 53 | 6 |
-| **Total** | **94** | **1296** | **180** |
+| **Total** | **95** | **1298** | **182** |
 
 Also includes **37 enums**, **161 ORM relation declarations** and **52 reviewed application mappings**. Counts describe source declarations, not verified live database objects. Auth aliases are deduplicated. Composite foreign keys remain single relationships with all participating columns. JSON/JSONB columns are shown without inventing their nested structures.
 
@@ -114,6 +114,7 @@ The interactive explorer expands polymorphic asset/Module links using the actual
 | [`multimedia_lyrics_projects`](../../src/libraries/schema/multimedia/index.ts) | 3 | 2 |
 | [`multimedia_lyrics_tracks`](../../src/libraries/schema/multimedia/index.ts) | 3 | 2 |
 | [`multimedia_media`](../../src/libraries/schema/multimedia/index.ts) | 14 | 2 |
+| [`multimedia_media_projects`](../../src/libraries/schema/multimedia/index.ts) | 2 | 2 |
 | [`multimedia_playback_history`](../../src/libraries/schema/multimedia/index.ts) | 8 | 3 |
 | [`multimedia_polling_logs`](../../src/libraries/schema/multimedia/index.ts) | 9 | 1 |
 | [`multimedia_speech`](../../src/libraries/schema/multimedia/index.ts) | 13 | 2 |

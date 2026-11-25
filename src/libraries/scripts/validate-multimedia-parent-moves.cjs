@@ -174,6 +174,16 @@ function assertTrackLock(mode) { assert.ok(events.some(e => e.table === 'tracks'
   for(const rank of [-10000,0,10000,null]) {reset();assert.equal((await mediaRoute.PUT(request(10,{sortOrder:rank}))).status,200);assert.equal(state.media[0].sortOrder,rank);assert.equal((await mediaRoute.PUT(request(10,{fileName:'Retain rank'}))).status,200);assert.equal(state.media[0].sortOrder,rank);}
   for(const rank of [-10001,10001,1.5,'1',false]) {reset();assert.equal((await mediaRoute.PUT(request(10,{sortOrder:rank}))).status,400);assertNoWrites();}
   const newMedia = { fileName: 'New primary', fileUrl: 'https://example.invalid/image.png', fileType: 'image/png', albumId: 2, isPrimary: true };
+  reset();
+  const standalone = {...newMedia};
+  delete standalone.albumId;
+  assert.equal((await mediaRoute.POST(request('', standalone))).status, 200);
+  const photo = state.media.at(-1);
+  assert.equal(photo.albumId, null);
+  assert.equal(photo.isPrimary, false);
+  assert.equal((await mediaRoute.PUT(request(photo.id, { albumId: 1 }))).status, 200);
+  assert.equal((await mediaRoute.PUT(request(photo.id, { albumId: null }))).status, 200);
+  assert.equal(state.media.find(row => row.id === photo.id).albumId, null);
   reset(); assert.equal((await mediaRoute.POST(request('', newMedia))).status, 200);
   assert.equal(state.media.filter(row => row.albumId === 2 && row.isPrimary).length, 1);
   assert.equal(state.media.at(-1).fileName, newMedia.fileName);assert.equal(state.media.at(-1).sortOrder,0);

@@ -36,7 +36,7 @@ import { useToast } from '@/components/ui/toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { DetailsCard } from '@/components/map/details/DetailsCard';
-import { SceneMultimediaProvider, type ProjectMultimediaSelection } from '@/components/map/multimedia/SceneMultimediaProvider';
+import { SceneMultimediaProvider, type ProjectMultimediaCapture } from '@/components/map/multimedia/SceneMultimediaProvider';
 import { ProjectAssetsPanel } from '@/components/map/panels/ProjectAssetsPanel';
 import { ProjectSelectorDialog } from '@/components/map/panels/ProjectSelectorDialog';
 import { ProjectTemplateDialog } from '@/components/map/panels/ProjectTemplateDialog';
@@ -229,8 +229,8 @@ function UnifiedMapPageInner() {
   const weatherTriggerRef = useRef<HTMLButtonElement | null>(null);
   const [multimediaProjectId, setMultimediaProjectId] = useState<string | null>(null);
   const multimediaTriggerRef = useRef<HTMLButtonElement | null>(null);
-  const multimediaWorkspaceProviderRef = useRef<(() => ProjectMultimediaSelection) | null>(null);
-  const registerMultimediaWorkspace = useCallback((capture: (() => ProjectMultimediaSelection) | null) => {
+  const multimediaWorkspaceProviderRef = useRef<(() => ProjectMultimediaCapture) | null>(null);
+  const registerMultimediaWorkspace = useCallback((capture: (() => ProjectMultimediaCapture) | null) => {
     multimediaWorkspaceProviderRef.current = capture;
   }, []);
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(projectIdParam);
@@ -662,6 +662,9 @@ function UnifiedMapPageInner() {
   const [initialProjectViewState, setInitialProjectViewState] =
     useState<ThreeDProjectViewState | null>(null);
   const projectConfigurationRef = useRef<{ projectId: string; stamp: ProjectConfigurationStamp } | null>(null);
+  const savedMultimediaWorkspace = projectConfigurationRef.current?.projectId === selectedProjectId
+    ? initialProjectViewState?.multimedia
+    : undefined;
   const runtimeMarkerPositionResolverRef =
     useRef<ThreeDRuntimeMarkerPositionResolver | null>(null);
 
@@ -2936,10 +2939,10 @@ function UnifiedMapPageInner() {
   const scenarioOverlaysObscured = isScenariosOpen || isProjectSetupOpen || isSetupMenuOpen || isSceneAddMenuOpen || isProjectSummaryOpen;
 
   return (
-    <SceneMultimediaProvider projectId={selectedProjectId} initialWorkspace={initialProjectViewState?.multimedia} workspaceSavedAt={initialProjectViewState?.savedAt} onRegisterWorkspace={registerMultimediaWorkspace} onOpenProjectPreview={() => { setWeatherProjectId(null); setMultimediaProjectId(selectedProjectId); }}>
+    <ProjectPresentationBoundary projectId={selectedProjectId} mapOnly={viewMode === '2d'}>
+    <SceneMultimediaProvider projectId={selectedProjectId} initialWorkspace={savedMultimediaWorkspace} workspaceSavedAt={savedMultimediaWorkspace ? initialProjectViewState?.savedAt : undefined} onRegisterWorkspace={registerMultimediaWorkspace} onOpenProjectPreview={() => { setWeatherProjectId(null); setMultimediaProjectId(selectedProjectId); }}>
     <ProjectDetailsSections.Provider value={canEditProject ? { sections: designWorkspace.sections, change: (key, open) => changeArchitecture(draft => { const workspace = draft.workspace ?? defaultDesignWorkspace(); return { ...draft, workspace: { ...workspace, sections: { ...workspace.sections, [key]: open } } }; }) } : null}>
     <ProjectOverlayLayoutContext.Provider value={{ positions: overlayPositions, move: (id, position) => setOverlayPositions(current => ({ ...current, [id]: position })) }}>
-    <ProjectPresentationBoundary projectId={selectedProjectId} mapOnly={viewMode === '2d'}>
       {ToastComponent}
 
       {/* Project Selector Dialog */}
@@ -3012,7 +3015,7 @@ function UnifiedMapPageInner() {
       />
 
       {!loading && selectedProjectId && weatherProjectId === selectedProjectId && <ProjectWeatherOverlay key={`weather:${selectedProjectId}`} canEdit={canEditProject} projectId={selectedProjectId} onClose={() => { setWeatherProjectId(null); weatherTriggerRef.current?.focus(); }} />}
-      {!loading && selectedProjectId && <ProjectMultimediaOverlay key={`multimedia:${selectedProjectId}`} projectId={selectedProjectId} open={multimediaProjectId === selectedProjectId} onClose={() => { setMultimediaProjectId(null); multimediaTriggerRef.current?.focus(); }} />}
+      {!loading && selectedProjectId && <ProjectMultimediaOverlay key={`multimedia:${selectedProjectId}`} canEdit={canEditProject} projectId={selectedProjectId} open={multimediaProjectId === selectedProjectId} onClose={() => { setMultimediaProjectId(null); multimediaTriggerRef.current?.focus(); }} />}
 
       {/* Project controls overlay the persistent Scene canvas. */}
       <div className="pointer-events-none absolute inset-x-0 top-0 z-50">
@@ -3693,9 +3696,9 @@ function UnifiedMapPageInner() {
       </div>
       </div>
       
-    </ProjectPresentationBoundary>
     </ProjectOverlayLayoutContext.Provider>
     </ProjectDetailsSections.Provider>
     </SceneMultimediaProvider>
+    </ProjectPresentationBoundary>
   );
 }

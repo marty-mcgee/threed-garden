@@ -58,7 +58,7 @@ export function multimediaPayload(kind: MultimediaKind, draft: MultimediaDraft, 
   }
   for (const key of kind === 'albums' ? [] : kind === 'links' ? ['albumId', 'trackId'] : ['albumId']) {
     const value = String(draft[key] ?? '');
-    if ((!value && kind !== 'links') || (value && (!/^[1-9]\d*$/.test(value) || !Number.isSafeInteger(Number(value))))) throw Error('Choose an owned Album or Track.');
+    if ((!value && kind === 'tracks') || (value && (!/^[1-9]\d*$/.test(value) || !Number.isSafeInteger(Number(value))))) throw Error('Choose an owned Album or Track.');
     if (!baseline || value !== baseline[key]) payload[key] = value ? Number(value) : null;
   }
   return payload;

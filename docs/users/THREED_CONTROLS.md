@@ -36,6 +36,8 @@ The toolbar separates Project guidance from live Scene presentation: **Project T
 
 In Design mode, the drawing toolbar is inside the upper-right of the 2D canvas, clear of the X/Z rulers. Groups are **Select, Select Objects, Pan | Wall, Floor, Roof | Door, Window | Skylight, Roof Cutout | Fit Plan, Zoom to Selection, Reset View**. Hover or focus a button for its tooltip.
 
+At the bottom-left of the 2D Canvas, click a **Level name** to show it and make it active for drawing. The **Active** label and the **Active level** dropdown in Design Properties mark the same Level. Use the **eye button** to show or hide a Level in both 2D and 3D. Hidden Level names appear gray to match the crossed-out eye. Hiding the active Level switches drawing to the first visible Level in the strip. If you hide every Level, drawing pauses until you show one.
+
 Choose **Select Objects** and click objects one by one to add them, or drag a rectangle in either direction around the walls, floors or roofs you want to move on visible levels. Release to outline fully enclosed objects in yellow. Drag the yellow **Drag to move** handle beside the selection or any highlighted member to move the selection. The **Create ThreeD Group** action sits beside **Select Objects**. To inspect one object in Design Properties, choose **Select** and click it. Openings follow their hosts. If a selected object shares a corner with an unselected one, moving separates that corner so the neighboring object stays in place. Undo restores the original connections.
 
 With the canvas focused, press **Ctrl+A** or **Cmd+A** to select the Design across levels and all placed Models in the Project. Drag a highlighted member to move the selection on X/Z. Choose **Create ThreeD Group**, enter a name, and use **Save Project** to keep its membership. Use the **ThreeD Groups** list in Select Objects to recall it. **Ungroup** removes the group and keeps its members in place.
@@ -136,3 +138,17 @@ Closing an Album editor with unsaved changes asks for confirmation; closing whil
 5. A saved Simulation can use that exact Character/target pair, optional **Run to target**, and Multimedia Actions with a related Project Album. Run it in the Project Scene. Play completes when playback starts; consecutive Play/Pause steps execute immediately. Owner Results capture before commands; failed Result saves can be retried without replay. Public runs remain local.
 
 Live media, collision behavior and save/reopen still need Developer acceptance. See the [current checkpoint and verification outline](../releases/v0.30.0.md#october-29--authorized-integration-implementation).
+
+## Project reference photos and Media
+
+In **Admin > Multimedia > Media**, upload a supported image, audio or video file and save. Album is optional.
+
+As the Project owner, open **Project Assets > Multimedia > Reference Media** or the toolbar's **Multimedia** panel. Both list Media assigned directly to the Project and Media assigned in Admin through an active Multimedia module on that Project. A file assigned both ways appears once.
+
+Select a photo or video to open a floating viewer inside the App. Drag its title bar to move it or its lower-right handle to resize it. You can also focus either handle and use the arrow keys. The viewer stays open while you close the list and work on the Design. Use the viewer's close button, or press Escape while it has focus, to dismiss it.
+
+Choose **Save Project** while the viewer is open to reopen that file with the Project. The photo or video starts loading in the background. Its viewer appears when the Project loading screen clears, with its saved position, size and photo zoom. To keep it closed the next time you open the Project, close the viewer and choose **Save Project** again.
+
+Point at a detail in the photo and roll the mouse wheel up to zoom in or down to zoom out. You can also hold the middle mouse button (button 3) and drag up or down to zoom around the point where you pressed. The **Zoom in** and **Zoom out** buttons change magnification in 25% steps. Use the scrollbars to explore an enlarged photo, or choose **Fit** to see the whole photo again.
+
+Use **Add Media** in Project Assets to attach a library file directly. Removing a direct reference keeps the file in the library. Manage module assignments in the Project's Admin editor. If a module still supplies a file, the file stays visible after its direct reference is removed.

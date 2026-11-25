@@ -6,19 +6,19 @@ import type { ProjectTerrainSurface } from '@/libraries/services/threed/terrains
 import { ProjectMeasurementUnits } from '@/components/project/ProjectMeasurementUnits';
 import { DesignNameInput } from './DesignNameInput';
 
-import { Fragment, type ReactNode, useCallback, useEffect, useRef, useState, type SetStateAction } from 'react';
+import { Fragment, type ReactNode, useCallback, useEffect, useMemo, useRef, useState, type SetStateAction } from 'react';
 import dynamic from 'next/dynamic';
 import { Activity, Eye, Settings2, SlidersHorizontal, Building2, Scissors, SquareDashed, BoxSelect, House, DoorOpen, Download, Layers, LockKeyhole, MousePointer2, Move, PanelsTopLeft, Pentagon, PencilRuler, Plus, Redo2, Trash2, Undo2, Upload, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { DetailsSectionScope, PersistentDetails } from '@/components/map/details/PersistentDetails';
-import { defaultDesignWorkspace, type ProjectDesignWorkspaceState } from '@/libraries/services/threed/markers/project-view-state-core';
+import { defaultDesignWorkspace, reconcileDesignLevels, type ProjectDesignWorkspaceState } from '@/libraries/services/threed/design/workspace-state';
 import { DesignImportDialog } from './DesignImportDialog';
 import { DesignAction } from './DesignAction';
 import { DesignFieldHelp } from './DesignFieldHelp';
 import { DesignPlan, type DesignTool } from './DesignPlan';
 import { commitDesign, redoDesign, undoDesign, type DesignHistory } from '@/libraries/services/threed/design/history';
-import { architectureIsDirty, importProjectArchitecture, projectArchitectureDraft, type ProjectArchitectureDraft } from '@/libraries/services/threed/design/project-architecture';
+import { architectureIsDirty, importProjectArchitecture, projectArchitectureDraft, reconcileArchitectureSelection, type ProjectArchitectureDraft } from '@/libraries/services/threed/design/project-architecture';
 import { editObject, objectProperties, type ObjectEdit } from '@/libraries/services/threed/design/object-properties';
 import { planObjectColor, doorIsOpen, doorOperations, type DoorOperation, distance, entityLevelId, formatLength, INCH, moveNodes, parseDesign, removeEntity, removeLevel, signedArea, validateDesign, type DesignAppearance, type DesignDocument, type DesignRoof, type DesignRoofOpening, type DesignOpening } from '@/libraries/services/threed/design/document';
 const Preview = dynamic(() => import('./DesignPreview').then(module => module.DesignPreview), { ssr: false, loading: () => <div className="h-full min-h-0 rounded border p-4 text-xs">Loading Live 3D…</div> });
@@ -76,7 +76,8 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
   const draft = scene?.draft ?? localDraft, history = draft.history;
   const owner = useRef(scene); owner.current = scene;
   const updateDraft = useCallback((update: (draft: ProjectArchitectureDraft) => ProjectArchitectureDraft) => {
-    if (owner.current) owner.current.onChange(update); else setLocalDraft(update);
+    if (owner.current) owner.current.onChange(update);
+    else setLocalDraft(current => reconcileArchitectureSelection(update(current)));
   }, []);
   const setHistory = useCallback((update: SetStateAction<DesignHistory>) => updateDraft(draft => ({ ...draft, history: typeof update === 'function' ? update(draft.history) : update })), [updateDraft]);
   const selected = draft.selected;
@@ -99,7 +100,10 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
   const [readOnlyLabels, setReadOnlyLabels] = useState(draft.workspace?.showObjectLabels ?? true);
   const [readOnlyMeasurements, setReadOnlyMeasurements] = useState(draft.workspace?.showMeasurements ?? false);
   const [tool, setTool] = useState<DesignTool>('select'), [cancelToken, setCancelToken] = useState(0);
-  const workspace = draft.workspace ?? defaultDesignWorkspace();
+  const workspace = useMemo(
+    () => reconcileDesignLevels(draft.workspace ?? defaultDesignWorkspace(), history.present.levels),
+    [draft.workspace, history.present.levels],
+  );
   const changeWorkspace = useCallback((patch: Partial<ProjectDesignWorkspaceState>) => updateDraft(draft => ({ ...draft, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), ...patch } })), [updateDraft]);
   useEffect(() => {
     if (selectedModel && scene) updateDraft(current => {
@@ -112,7 +116,20 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
   const gridSnap = workspace.gridSnap, showRoofs = workspace.showRoofs, levelChoice = workspace.levelId, showAllLevels = workspace.showAllLevels;
   const setGridSnap = (gridSnap: boolean) => changeWorkspace({ gridSnap });
   const setShowRoofs = (showRoofs: boolean) => changeWorkspace({ showRoofs });
-  const setLevelChoice = (levelId: string) => changeWorkspace({ levelId });
+  const setLevelChoice = useCallback((levelId: string) => {
+    updateDraft(current => {
+      const state = current.workspace ?? defaultDesignWorkspace();
+      const visible = state.visibleLevelIds;
+      return {
+        ...current,
+        workspace: {
+          ...state,
+          levelId,
+          ...(visible && !visible.includes(levelId) ? { visibleLevelIds: [...visible, levelId] } : {}),
+        },
+      };
+    });
+  }, [updateDraft]);
 
 
   const [message, setMessage] = useState('Ready to draw.'), [error, setError] = useState('');
@@ -126,21 +143,21 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
     return () => window.removeEventListener('threed:design:transition', transition);
   }, []);
   const doc = history.present, displayed = preview ?? doc, dirty = architectureIsDirty(draft);
-  const activeLevelId = doc.levels.some(level => level.id === levelChoice) ? levelChoice : doc.levels[0].id;
-  const visibleLevelIds = workspace.visibleLevelIds ?? (showAllLevels ? doc.levels.map(level => level.id) : [activeLevelId]);
+  const visibleLevelIds = workspace.visibleLevelIds ?? (showAllLevels ? doc.levels.map(level => level.id) : [levelChoice]);
+  const activeLevelId = visibleLevelIds.length ? levelChoice : '';
   const toggleLevel = (id: string) => {
     cancel();
     const hiding = visibleLevelIds.includes(id);
-    changeWorkspace({ visibleLevelIds: hiding ? visibleLevelIds.filter(level => level !== id) : [...visibleLevelIds, id], ...(!hiding ? { levelId: id } : {}) });
-    if (!hiding) { setSelected(null); setTool('select'); }
+    if (hiding && id === activeLevelId) setSelected(null);
+    changeWorkspace({ visibleLevelIds: hiding ? visibleLevelIds.filter(level => level !== id) : [...visibleLevelIds, id] });
   };
-  const level = doc.levels.find(level => level.id === activeLevelId)!;
+  const level = doc.levels.find(level => level.id === activeLevelId);
   useEffect(() => {
     const selectedLevel = selected ? entityLevelId(doc, selected) : undefined;
     if (active && selectedLevel && selectedLevel !== activeLevelId) {
       setLevelChoice(selectedLevel); setCancelToken(value => value + 1); setPreview(null); setTool('select');
     }
-  }, [active, selected, doc, activeLevelId]);
+  }, [active, selected, doc, activeLevelId, setLevelChoice]);
   useEffect(() => {
     if (active && selected) controlsHost.current?.scrollTo({ left: 0, top: 0 });
   }, [active, selected]);
@@ -166,15 +183,27 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
       setTool('select');
     }
     setSelected(nextLevel ? id : null);
-  }, [doc, activeLevelId, setSelected]);
+  }, [doc, activeLevelId, setSelected, setLevelChoice]);
   const cancel = useCallback(() => { setCancelToken(value => value + 1); setPreview(null); setMessage('Draft cancelled. Completed design geometry is retained.'); }, []);
-  function chooseLevel(id: string) { cancel(); changeWorkspace({ levelId: id, visibleLevelIds: visibleLevelIds.includes(id) ? visibleLevelIds : [...visibleLevelIds, id] }); setSelected(null); setTool('select'); setMessage('Editing this visible level. Other level visibility is retained.'); }
+  function chooseLevel(id: string) {
+    const visible = visibleLevelIds.includes(id);
+    if (id === activeLevelId && visible) return;
+    cancel();
+    changeWorkspace({
+      levelId: id,
+      visibleLevelIds: visible ? visibleLevelIds : [...visibleLevelIds, id],
+    });
+    setSelected(null);
+    setTool('select');
+    setMessage('Editing this visible level. Other level visibility is retained.');
+  }
   function addLevel() {
     let number = 2; while (doc.levels.some(level => level.name.toLowerCase() === `level ${number}`)) number++;
     const next = { id: crypto.randomUUID(), name: `Level ${number}`, elevation: Math.min(100, Math.max(...doc.levels.map(level => level.elevation)) + 108 * INCH) };
     cancel(); commit({ ...doc, levels: [...doc.levels, next] }); changeWorkspace({ levelId: next.id, visibleLevelIds: [...visibleLevelIds, next.id] }); setSelected(null); setTool('select'); setMessage('Empty level added. Set its elevation, then draw walls and floors. Other levels are retained.');
   }
   function deleteLevel() {
+    if (!level) return;
     const occupied = doc.walls.some(wall => wall.levelId === activeLevelId) || doc.floors.some(floor => floor.levelId === activeLevelId) || doc.roofs.some(roof => roof.levelId === activeLevelId);
     if (occupied && !window.confirm(`Delete ${level.name} and all of its walls, floors, roofs and all hosted openings? Undo can restore them.`)) return;
     cancel(); commit(removeLevel(doc, activeLevelId)); changeWorkspace({ levelId: doc.levels.find(other => other.id !== activeLevelId)!.id, visibleLevelIds: visibleLevelIds.filter(id => id !== activeLevelId) }); setSelected(null); setTool('select'); setMessage('Level removed. Undo restores the level and its geometry together.');
@@ -322,11 +351,13 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
         <PersistentDetails storageId="design-name" open className="rounded-lg border border-border bg-card p-2 space-y-2" aria-label="Design and navigation"><summary className="cursor-pointer rounded px-1 py-1 hover:bg-muted focus-visible:outline-ring text-xs font-semibold"><Settings2 aria-hidden="true" className="mr-1 inline-block h-3.5 w-3.5 align-middle text-sky-500 dark:text-sky-400" />Design settings</summary><ProjectMeasurementUnits value={units} onChange={measurementUnits => changeWorkspace({ measurementUnits })} /><label className="block space-y-1 text-xs">Design name<DesignNameInput name={doc.name} onCommit={name => commit({ ...doc, name })} /></label>
         </PersistentDetails><PersistentDetails storageId="levels" open className="rounded-lg border border-border bg-card p-2 space-y-2" aria-label="Levels">
           <summary className="cursor-pointer rounded px-1 py-1 hover:bg-muted focus-visible:outline-ring text-xs font-semibold"><Layers aria-hidden="true" className="mr-1 inline-block h-3.5 w-3.5 align-middle text-cyan-600 dark:text-cyan-400" />Levels<DesignFieldHelp label="Levels">The 2D plan edits the active level only. Level elevation moves its walls, floors, roofs and openings together. Wall/floor elevations are offsets from that level. New levels start empty; no geometry is copied.</DesignFieldHelp></summary>
-          <label className="block space-y-1 text-xs">Active level<select aria-label="Active level" className="h-8 w-full rounded border border-input bg-background text-foreground px-2" value={activeLevelId} disabled={importing} onChange={event => chooseLevel(event.target.value)}>{[...doc.levels].sort((a, b) => a.elevation - b.elevation).map(level => <option key={level.id} value={level.id}>{level.name} · {displayLength(level.elevation)}</option>)}</select></label>
+          <label className="block space-y-1 text-xs">Active level<select aria-label="Active level" className="h-8 w-full rounded border border-input bg-background text-foreground px-2" value={activeLevelId} disabled={importing} onChange={event => chooseLevel(event.target.value)}>{!level && <option value="" disabled>No visible Level</option>}{[...doc.levels].sort((a, b) => a.elevation - b.elevation).map(level => <option key={level.id} value={level.id}>{level.name} · {displayLength(level.elevation)}</option>)}</select></label>
+          {level && <>
           <label className="block space-y-1 text-xs">Level name<Input aria-label="Level name" maxLength={60} value={level.name} disabled={importing} onChange={event => commit({ ...doc, levels: doc.levels.map(item => item.id === activeLevelId ? { ...item, name: event.target.value } : item) })} /></label>
           <Dimension units={units} label="Level elevation" positive={false} value={level.elevation} onChange={value => commit({ ...doc, levels: doc.levels.map(item => item.id === activeLevelId ? { ...item, elevation: value } : item) })} />
-          <div className="flex gap-1"><Button size="sm" variant="outline" disabled={importing || doc.levels.length >= 20} onClick={addLevel}><Plus className="mr-1 h-3 w-3" />Add Level</Button><Button size="sm" variant="outline" disabled={importing || doc.levels.length === 1} onClick={deleteLevel}><Trash2 className="mr-1 h-3 w-3" />Delete Level</Button></div>
-          <label className="flex items-center gap-2 text-xs"><input type="checkbox" aria-label="Show active level in 2D and 3D" checked={visibleLevelIds.includes(activeLevelId)} onChange={() => toggleLevel(activeLevelId)} />Show active level in 2D and 3D</label>
+          </>}
+          <div className="flex gap-1"><Button size="sm" variant="outline" disabled={importing || doc.levels.length >= 20} onClick={addLevel}><Plus className="mr-1 h-3 w-3" />Add Level</Button><Button size="sm" variant="outline" disabled={importing || !level || doc.levels.length === 1} onClick={deleteLevel}><Trash2 className="mr-1 h-3 w-3" />Delete Level</Button></div>
+          <label className="flex items-center gap-2 text-xs"><input type="checkbox" aria-label="Show active level in 2D and 3D" disabled={!level} checked={Boolean(level)} onChange={() => toggleLevel(activeLevelId)} />Show active level in 2D and 3D</label>
         </PersistentDetails>
         <PersistentDetails storageId="navigation" open className="rounded-lg border border-border bg-card p-2 space-y-2" aria-label="Drawing navigation"><summary className="cursor-pointer rounded px-1 py-1 hover:bg-muted focus-visible:outline-ring text-xs font-semibold"><Eye aria-hidden="true" className="mr-1 inline-block h-3.5 w-3.5 align-middle text-violet-500 dark:text-violet-400" />View settings<DesignFieldHelp label="Drawing navigation">With Wall selected, drag between endpoints or click each endpoint. Use Alt-drag or middle-drag to pan while drawing. Pan works anywhere; wheel zooms at the pointer. Endpoint snapping uses 10 pixels. Shift constrains angles. Fit Plan frames the active level.</DesignFieldHelp></summary><label className="flex items-center gap-2 text-xs"><input type="checkbox" aria-label="Show roofs in 3D" checked={showRoofs} onChange={event => setShowRoofs(event.target.checked)} />Show roofs in 3D</label>
         <label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={gridSnap} onChange={event => setGridSnap(event.target.checked)} />Snap to 6 in grid + endpoints</label>
@@ -436,7 +467,9 @@ export function DesignEditor({ selectedModel, onSaveModel, modelBusy = false, se
     {(error || scene?.error) && <p role="alert" className="text-red-400">{error || scene?.error}</p>}
   </div></PersistentDetails>;
   const controls = <div ref={controlsHost} className="flex min-h-0 min-w-0 flex-col gap-2 overflow-auto overscroll-contain text-foreground [&_input]:min-w-0 [&_label]:min-w-0 [&_select]:max-w-full" data-testid="design-controls"><fieldset disabled={loading || importing || !canSave} className="min-w-0 border-0 p-0">{propertiesPanel}</fieldset>{statusPanel}</div>;
-  const plan = <DesignPlan placedModelIds={scene?.placedModelIds} selectAllRequest={selectAllRequest} groups={draft.groups} onGroupChange={scene && canSave ? changeGroups : undefined} onMixedMove={commitMixedMove} selectedModel={selectedModel} onSaveModel={onSaveModel} modelBusy={modelBusy} visibleLevelIds={visibleLevelIds} onToggleLevel={toggleLevel} contextActions={actionGroups} showObjectLabels={canSave ? workspace.showObjectLabels ?? true : readOnlyLabels} onShowObjectLabelsChange={showObjectLabels => { if (canSave) changeWorkspace({ showObjectLabels }); else setReadOnlyLabels(showObjectLabels); }} showMeasurements={canSave ? workspace.showMeasurements ?? false : readOnlyMeasurements} onShowMeasurementsChange={showMeasurements => { if (canSave) changeWorkspace({ showMeasurements }); else setReadOnlyMeasurements(showMeasurements); }} selectedModelId={selectedModelId} modelImages={modelImages} terrain={terrain} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={onModelSelect} measurementUnits={units} frameRequest={frameRequest} embedded={Boolean(scene)} drawingActions={scene ? drawingActions : undefined} planView={workspace.plan} onViewChange={plan => changeWorkspace({ plan })} active={active} disabled={!canSave || importing} document={doc} displayDocument={displayed} activeLevelId={activeLevelId} selected={selected} tool={tool} gridSnap={gridSnap} onSelect={select} onCommit={commit} onPreview={previewUpdate} onMessage={setMessage} onDrawComplete={id => { setSelected(id); setTool('select'); }} cancelToken={cancelToken} />;
+  const plan = <DesignPlan placedModelIds={scene?.placedModelIds} selectAllRequest={selectAllRequest} groups={draft.groups} onGroupChange={scene && canSave ? changeGroups : undefined} onMixedMove={commitMixedMove} selectedModel={selectedModel} onSaveModel={onSaveModel} modelBusy={modelBusy}
+    visibleLevelIds={visibleLevelIds} onChooseLevel={chooseLevel} onToggleLevel={toggleLevel}
+    contextActions={actionGroups} showObjectLabels={canSave ? workspace.showObjectLabels ?? true : readOnlyLabels} onShowObjectLabelsChange={showObjectLabels => { if (canSave) changeWorkspace({ showObjectLabels }); else setReadOnlyLabels(showObjectLabels); }} showMeasurements={canSave ? workspace.showMeasurements ?? false : readOnlyMeasurements} onShowMeasurementsChange={showMeasurements => { if (canSave) changeWorkspace({ showMeasurements }); else setReadOnlyMeasurements(showMeasurements); }} selectedModelId={selectedModelId} modelImages={modelImages} terrain={terrain} metersPerSceneUnit={metersPerSceneUnit} onModelSelect={onModelSelect} measurementUnits={units} frameRequest={frameRequest} embedded={Boolean(scene)} drawingActions={scene ? drawingActions : undefined} planView={workspace.plan} onViewChange={plan => changeWorkspace({ plan })} active={active} disabled={!canSave || importing} document={doc} displayDocument={displayed} activeLevelId={activeLevelId} selected={selected} tool={tool} gridSnap={gridSnap} onSelect={select} onCommit={commit} onPreview={previewUpdate} onMessage={setMessage} onDrawComplete={id => { setSelected(id); setTool('select'); }} cancelToken={cancelToken} />;
   if (scene) return <div className="threed-design-editor relative flex h-full min-h-0 min-w-0 overflow-hidden" data-testid="home-editor">
     {importDialog}
     <div id={`design-properties-${scene.projectId}`} tabIndex={-1} role="region" aria-label="Design Properties" data-testid="design-properties-panel" className="threed-design-properties threed-workspace-panel threed-scene-panel-surface threed-scene-sidebar-size flex min-h-0 min-w-0 shrink-0 flex-col overflow-hidden rounded-md border p-3 shadow-xl backdrop-blur-md"><DetailsSectionScope.Provider value={`design:${scene.projectId}`}><div className="mb-2 flex shrink-0 flex-wrap items-center gap-2 text-sm font-semibold"><Building2 className="h-4 w-4 text-cyan-600 dark:text-cyan-300" />Design Properties<DesignFieldHelp label="Design Properties">Edit selected geometry and workspace settings. Save Project retains both.</DesignFieldHelp><Button type="button" variant="ghost" className="threed-design-properties-access ml-auto h-11 px-2 text-xs" onClick={() => {

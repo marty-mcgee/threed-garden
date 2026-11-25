@@ -138,6 +138,7 @@ export function MultimediaRecordPage({ kind, id, albumId, trackId }: { kind: Mul
                 </fieldset>
               </section>
               {kind !== 'albums' && <section className="admin-editor-panel space-y-3 rounded-md border p-3"><h2 className="text-xs font-semibold">Owned associations</h2>
+                {kind === 'media' && <p className="text-xs text-muted-foreground">Album is optional. Save Media here, then add it to a Project from Project Assets.</p>}
                 <OwnedMultimediaPicker kind="albums" value={String(draft.albumId)} disabled={blocked} onChange={value => change('albumId', value)} onValidityChange={validateAlbum} />
                 {kind === 'links' && <OwnedMultimediaPicker kind="tracks" value={String(draft.trackId)} albumId={positiveId(draft.albumId) ?? undefined} disabled={blocked} onChange={value => change('trackId', value)} onValidityChange={validateTrack} />}
               </section>}

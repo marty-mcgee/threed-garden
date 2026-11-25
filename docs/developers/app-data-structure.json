@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-11-23",
+  "generatedAt": "2026-11-25",
   "branch": "main",
-  "head": "880b1762ff20f731701c2b40016ff778f9ec09fe",
-  "version": "0.37.0",
+  "head": "5d629995d179067bce0b1091d0f90b5c2aa48ced",
+  "version": "0.37.1",
   "summary": {
-    "tables": 94,
-    "columns": 1296,
-    "foreignKeys": 180,
+    "tables": 95,
+    "columns": 1298,
+    "foreignKeys": 182,
     "enums": 37,
     "ormRelations": 161,
     "applicationLinks": 52
@@ -906,7 +906,7 @@
       "domain": "multimedia",
       "source": "../../src/libraries/schema/multimedia/index.ts",
       "sourcePath": "src/libraries/schema/multimedia/index.ts",
-      "line": 186,
+      "line": 194,
       "columns": [
         {
           "name": "id",
@@ -1240,7 +1240,7 @@
       "domain": "multimedia",
       "source": "../../src/libraries/schema/multimedia/index.ts",
       "sourcePath": "src/libraries/schema/multimedia/index.ts",
-      "line": 168,
+      "line": 176,
       "columns": [
         {
           "name": "id",
@@ -1305,7 +1305,7 @@
       "domain": "multimedia",
       "source": "../../src/libraries/schema/multimedia/index.ts",
       "sourcePath": "src/libraries/schema/multimedia/index.ts",
-      "line": 160,
+      "line": 168,
       "columns": [
         {
           "name": "id",
@@ -1370,7 +1370,7 @@
       "domain": "multimedia",
       "source": "../../src/libraries/schema/multimedia/index.ts",
       "sourcePath": "src/libraries/schema/multimedia/index.ts",
-      "line": 176,
+      "line": 184,
       "columns": [
         {
           "name": "id",
@@ -1461,7 +1461,7 @@
           "name": "album_id",
           "property": "albumId",
           "type": "integer",
-          "notNull": true,
+          "notNull": false,
           "primaryKey": false,
           "unique": false,
           "hasDefault": false,
@@ -1612,13 +1612,66 @@
       "notes": []
     },
     {
+      "id": "multimedia_media_projects",
+      "name": "multimedia_media_projects",
+      "exportName": "multimediaMediaProjects",
+      "domain": "multimedia",
+      "source": "../../src/libraries/schema/multimedia/index.ts",
+      "sourcePath": "src/libraries/schema/multimedia/index.ts",
+      "line": 160,
+      "columns": [
+        {
+          "name": "media_id",
+          "property": "mediaId",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        },
+        {
+          "name": "project_id",
+          "property": "projectId",
+          "type": "integer",
+          "notNull": true,
+          "primaryKey": false,
+          "unique": false,
+          "hasDefault": false,
+          "default": null
+        }
+      ],
+      "indexes": [
+        {
+          "name": "multimedia_media_projects_project_idx",
+          "columns": [
+            "project_id"
+          ],
+          "unique": false,
+          "where": null
+        }
+      ],
+      "checks": [],
+      "uniqueConstraints": [
+        {
+          "name": "multimedia_media_projects_pair",
+          "columns": [
+            "media_id",
+            "project_id"
+          ]
+        }
+      ],
+      "primaryKey": [],
+      "notes": []
+    },
+    {
       "id": "multimedia_playback_history",
       "name": "multimedia_playback_history",
       "exportName": "multimediaPlaybackHistory",
       "domain": "multimedia",
       "source": "../../src/libraries/schema/multimedia/index.ts",
       "sourcePath": "src/libraries/schema/multimedia/index.ts",
-      "line": 230,
+      "line": 238,
       "columns": [
         {
           "name": "id",
@@ -1741,7 +1794,7 @@
       "domain": "multimedia",
       "source": "../../src/libraries/schema/multimedia/index.ts",
       "sourcePath": "src/libraries/schema/multimedia/index.ts",
-      "line": 214,
+      "line": 222,
       "columns": [
         {
           "name": "id",
@@ -1880,7 +1933,7 @@
       "domain": "multimedia",
       "source": "../../src/libraries/schema/multimedia/index.ts",
       "sourcePath": "src/libraries/schema/multimedia/index.ts",
-      "line": 363,
+      "line": 371,
       "columns": [
         {
           "name": "id",
@@ -2048,7 +2101,7 @@
       "domain": "multimedia",
       "source": "../../src/libraries/schema/multimedia/index.ts",
       "sourcePath": "src/libraries/schema/multimedia/index.ts",
-      "line": 388,
+      "line": 396,
       "columns": [
         {
           "name": "id",
@@ -20679,7 +20732,7 @@
       ],
       "kind": "foreign-key",
       "label": "multimedia_media_album_id_multimedia_albums_id_fk",
-      "onDelete": "cascade",
+      "onDelete": "set null",
       "onUpdate": "no action",
       "status": "declared"
     },
@@ -20727,6 +20780,38 @@
       ],
       "kind": "foreign-key",
       "label": "multimedia_lyrics_user_id_user_id_fk",
+      "onDelete": "cascade",
+      "onUpdate": "no action",
+      "status": "declared"
+    },
+    {
+      "id": "fk:multimedia_media_projects:multimedia_media_projects_media_id_multimedia_media_id_fk",
+      "from": "multimedia_media_projects",
+      "fromColumns": [
+        "media_id"
+      ],
+      "to": "multimedia_media",
+      "toColumns": [
+        "id"
+      ],
+      "kind": "foreign-key",
+      "label": "multimedia_media_projects_media_id_multimedia_media_id_fk",
+      "onDelete": "cascade",
+      "onUpdate": "no action",
+      "status": "declared"
+    },
+    {
+      "id": "fk:multimedia_media_projects:multimedia_media_projects_project_id_project_id_fk",
+      "from": "multimedia_media_projects",
+      "fromColumns": [
+        "project_id"
+      ],
+      "to": "project",
+      "toColumns": [
+        "id"
+      ],
+      "kind": "foreign-key",
+      "label": "multimedia_media_projects_project_id_project_id_fk",
       "onDelete": "cascade",
       "onUpdate": "no action",
       "status": "declared"
@@ -24692,7 +24777,7 @@
     "src/libraries/schema/auth/user-role-audit.ts": "9e207990b630615acbe5f77622dbf586275f1777b401e83e46f29c518c3220e7",
     "src/libraries/schema/index.ts": "c4f17192b423f6c85a8e491d7601c01681cdfeb56fbcc895d2e871af0abecbc7",
     "src/libraries/schema/learn/index.ts": "dd533b5333f11d489963527b0cfd391caefad9c222028df3ece8c4824cce41b8",
-    "src/libraries/schema/multimedia/index.ts": "0d454cdeaf38e616125b99340a92e2e26b2b145ab39e87cc7c8f42a281e0f672",
+    "src/libraries/schema/multimedia/index.ts": "32dc00a422eea666255bc08c0401c7b659659c3383ba16af447f44b2565b3b9d",
     "src/libraries/schema/project/index.ts": "898e8e6093c73171c24e3e629e16246a5a0ca834bb0330ced1da1b02c1874fd1",
     "src/libraries/schema/settings/index.ts": "36c9ce83d70c4517b44952899574a47c68798551b3c1a63992819e89063ced55",
     "src/libraries/schema/threed/album-associations.ts": "f1dfc1d4701a484c1d0b8cd8582768aa61b9585b19a6d3c693ab9c2cc619dff8",

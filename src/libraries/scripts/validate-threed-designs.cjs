@@ -270,6 +270,16 @@ function findClientSave(node) {
  ts.forEachChild(node,findClientSave);
 }
 findClientSave(sceneAst);assert(clientSaveSource);
+const savedFileOverlay = {
+  mediaId: 93,
+  view: {
+    left: 120,
+    top: 75,
+    width: 860,
+    height: 520,
+    zoom: 150,
+  },
+};
 async function checkClientSave(model,view) {
  let finish, transportCount=0, body, feedback;
  const drafts={current:new Map([['15',draft]])};
@@ -277,7 +287,7 @@ const context={projectConfigurationRef:{current:{projectId:'15',stamp:{savedAt:n
  projectTerrain:null,confirmsTerrainPlacement:(requested,saved)=>requested===null && saved==null,setSavedTerrainPlacement:()=>{},
  projectMarkerSnapshotProviderRef:{current:()=>[model]},showToastRef:{current:()=>{}},setSavingProjectMarkers:()=>{},setArchitectureSaveError:value=>feedback=value,
  projectThreeDViewStateProviderRef:{current:null},lastProjectThreeDViewStateRef:{current:null},projectMapViewStateProviderRef:{current:null},lastProjectMapViewStateRef:{current:null},initialProjectViewState:null,
- multimediaProjectId:'15',multimediaWorkspaceProviderRef:{current:()=>({albumId:28,trackId:71})},
+ multimediaProjectId:'15',multimediaWorkspaceProviderRef:{current:()=>({albumId:28,trackId:71,reference:savedFileOverlay})},
  PROJECT_VIEW_STATE_VERSION:3,viewMode:'design',panelHeight:50,cameraMode:'stationary',groundMapInspector:null,groupInspector:null,sensorInspector:null,defaultDesignWorkspace:()=>({}),selectedMarker:null,isProjectAssetsOpen:false,isModelLibraryOpen:false,projectAssetSearch:'',projectAssetType:'all',isProjectSetupOpen:false,overlayPositions:{},scenarioPanelState:{},isScenariosOpen:false,
  fetch:async(url,options)=>{assert.equal(url,'/api/project/threed-markers');assert.equal(options.method,'PUT');transportCount++;body=JSON.parse(options.body);return new Promise(resolve=>finish=resolve);},
  setData:()=>{},applyThreeDProjectClientTransaction:()=>{},renderArchitecture:()=>{},setLastUpdated:()=>{},Date,JSON,console:{error(){}}
@@ -287,7 +297,7 @@ const context={projectConfigurationRef:{current:{projectId:'15',stamp:{savedAt:n
  const callback=vm.runInNewContext(compile('('+clientSaveSource+')'),context);
  const pending=callback();await callback();assert.equal(transportCount,1,'Duplicate click must not start a second Project Save.');
  assert.equal(body.projectId,15);assert.equal(body.markers[0].data.filePath,model.data.filePath);assert.equal(body.architecture.document.openings[0].id,'door');
- assert.deepEqual(body.viewState.multimedia,{open:true,albumId:28,trackId:71},'Project Save captures the provider selection and open overlay');
+ assert.deepEqual(body.viewState.multimedia,{open:true,albumId:28,trackId:71,reference:savedFileOverlay},'Project Save captures the selected Track and the open reference file');
  drafts.current.set('15',newer);
  finish({ok:true,json:async()=>({success:true,data:{projectId:15,markers:[model],markerCount:1,architecture:captured}})});await pending;
  assert.equal(feedback,'');assert.equal(drafts.current.get('15').saved,JSON.stringify(source),'Successful Save must acknowledge the captured source.');
@@ -310,14 +320,17 @@ const context={projectConfigurationRef:{current:{projectId:'15',stamp:{savedAt:n
  const loaded=session.buildThreeDProjectSession(response.body,'15');assert(loaded.success);assert.equal(loaded.session.savedViewState.design.showMeasurements,true);
  const fresh={current:new Map([['15',architecture.projectArchitectureDraft()]])};
  const hydration={};const restored=await hydrateDashboard(loaded.session,fresh,'15',hydration);
- assert.equal(JSON.stringify(loaded.session.savedViewState.multimedia),JSON.stringify({open:true,albumId:28,trackId:71}),'Multimedia state survives the actual mocked PUT/GET/session roundtrip');
+ assert.deepEqual(JSON.parse(JSON.stringify(loaded.session.savedViewState.multimedia)),{open:true,albumId:28,trackId:71,reference:savedFileOverlay},'Multimedia state survives the actual mocked PUT/GET/session roundtrip');
  assert.equal(hydration.setMultimediaProjectId,'15','Dashboard restores the saved open Multimedia overlay');
  assert.equal(JSON.stringify(inventory.architectureAssets(restored.history.present)),JSON.stringify(inventory.architectureAssets(source)),'Assets reconstruct from the actual mocked Project Save/GET/hydration roundtrip.');
  assert.equal(JSON.stringify(restored.history.present),JSON.stringify(source));assert(!architecture.architectureIsDirty(restored));
  assert.equal(loaded.session.data.threed.raw.models[0].filePath,'saved.glb');assert.equal(loaded.session.data.threed.raw.projectThreedMarkers[0].markerId,model.markerId);
  assert.equal(stored.config.unrelated.keep,true);
  assert.equal(loaded.session.savedViewState.overlayPositions.details.x,0.7);assert.equal(loaded.session.savedViewState.overlayPositions.details.y,0.2);
- assert.equal(restored.workspace.plan.x,-321);assert.equal(restored.workspace.plan.scale,73);assert.equal(restored.workspace.split,62);assert.equal(restored.selected,'door');assert.equal(restored.workspace.sections['design:properties'],false);
+ assert.equal(restored.workspace.plan.x,-321);assert.equal(restored.workspace.plan.scale,73);assert.equal(restored.workspace.split,62);assert.equal(restored.workspace.sections['design:properties'],false);
+ assert.deepEqual(Array.from(restored.workspace.visibleLevelIds), []);
+ assert.equal(restored.selected, null, 'A saved selection on a hidden Level stays cleared after Project reload');
+ assert.equal(restored.workspace.selectedEntityId, null);
  const workspaceEdit={...restored,workspace:{...restored.workspace,split:55}};assert(architecture.architectureIsDirty(workspaceEdit));assert(architecture.architectureIsDirty(architecture.acknowledgeArchitecture(workspaceEdit,captured,restored.workspace)),'A workspace edit during Save must remain unsaved.');
  fresh.current.set('15',newer);assert.equal(await hydrateDashboard(loaded.session,fresh),newer,'Reload may not overwrite genuine unsaved edits.');
  fresh.current.set('16',architecture.projectArchitectureDraft());await hydrateDashboard({...loaded.session,architecture:undefined},fresh,'16');

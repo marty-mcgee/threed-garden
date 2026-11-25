@@ -1,3 +1,5 @@
+import type { DesignLevel } from './document';
+
 class DesignWorkspaceError extends Error { constructor() { super('invalid_project_design_workspace'); } }
 function record(value: unknown): Record<string, unknown> | null { return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : null; }
 function finite(value: unknown, min: number, max: number): number { if (typeof value !== 'number' || !Number.isFinite(value) || value < min || value > max) throw new DesignWorkspaceError(); return value; }
@@ -23,6 +25,27 @@ export const defaultDesignWorkspace = (): ProjectDesignWorkspaceState => ({
   plan: { x: 80, y: 80, scale: 45 }, levelId: 'ground', selectedEntityId: null,
   showObjectLabels: true, showMeasurements: false, showAllLevels: true, showRoofs: true, gridSnap: true, split: 45, sections: {},
 });
+
+/** Reconcile saved Level IDs against the current Design after load, Undo or replacement. */
+export function reconcileDesignLevels(workspace: ProjectDesignWorkspaceState, levels: readonly DesignLevel[]): ProjectDesignWorkspaceState {
+  const exists = (id: string) => levels.some(level => level.id === id);
+  let levelId = exists(workspace.levelId) ? workspace.levelId : levels[0].id;
+  const saved = workspace.visibleLevelIds;
+  if (saved === undefined) return levelId === workspace.levelId ? workspace : { ...workspace, levelId };
+
+  const visible = saved.every(exists) ? saved : saved.filter(exists);
+  if (visible.length && !visible.includes(workspace.levelId)) {
+    const byElevation = [...levels].sort((a, b) => a.elevation - b.elevation);
+    levelId = byElevation.find(level => visible.includes(level.id))!.id;
+  }
+  if (levelId === workspace.levelId && visible === saved) return workspace;
+  return {
+    ...workspace,
+    levelId,
+    visibleLevelIds: visible,
+  };
+}
+
 export function parseDesignWorkspace(value: unknown): ProjectDesignWorkspaceState {
   const item = record(value), plan = record(item?.plan), sections = record(item?.sections);
   if (!item || !plan || !sections || Object.keys(sections).length > 500) throw new DesignWorkspaceError();

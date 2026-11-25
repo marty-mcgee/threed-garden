@@ -6,6 +6,7 @@ import { ExternalLink, X } from 'lucide-react';
 import { dashboardSelectionUrl } from '@/libraries/services/multimedia/dashboard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ProjectReferenceMedia } from './ProjectReferenceMedia';
 import { useProjectOverlayPosition } from './ProjectOverlayLayout';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { loadProjectMultimediaPreview, ProjectMultimediaPlayback, useSceneMultimedia } from '../multimedia/SceneMultimediaProvider';
@@ -22,7 +23,7 @@ export function ProjectMultimediaToolbarButton({ open, onClick, triggerRef }: {
   </Button>;
 }
 
-export function ProjectMultimediaOverlay({ projectId, onClose, open = true }: { projectId: string; onClose: () => void; open?: boolean }) {
+export function ProjectMultimediaOverlay({ projectId, onClose, open = true, canEdit = false }: { projectId: string; onClose: () => void; open?: boolean; canEdit?: boolean }) {
   const { data: session, status } = useSession();
   const overlay = useProjectOverlayPosition('multimedia');
   const closeRef = useRef<HTMLButtonElement | null>(null);
@@ -37,7 +38,7 @@ export function ProjectMultimediaOverlay({ projectId, onClose, open = true }: { 
       <Button ref={closeRef} type="button" variant="ghost" size="icon" className="h-7 w-7" aria-label="Close Project Multimedia" onClick={onClose}><X className="h-3.5 w-3.5" /></Button>
     </header>
     <div className="min-h-0 overflow-y-auto overscroll-contain p-3 text-xs">
-      {status === 'loading' ? <p role="status">Checking Multimedia access…</p> : <ProjectMultimediaBrowser key={`${projectId}:${status}:${session?.user?.id ?? 'public'}`} projectId={Number(projectId)} />}
+      {status === 'loading' ? <p role="status">Checking Multimedia access…</p> : <ProjectMultimediaBrowser key={`${projectId}:${status}:${session?.user?.id ?? 'public'}`} projectId={Number(projectId)} showReferences={open && canEdit && status === 'authenticated'} />}
     </div>
   </section>;
 }
@@ -47,7 +48,7 @@ type Album = {
   title: string;
   artist: string;
 };
-function ProjectMultimediaBrowser({ projectId }: { projectId: number }) {
+function ProjectMultimediaBrowser({ projectId, showReferences }: { projectId: number; showReferences: boolean }) {
   const multimedia = useSceneMultimedia();
   const [search, setSearch] = useState('');
   const [offset, setOffset] = useState(0);
@@ -160,7 +161,8 @@ function ProjectMultimediaBrowser({ projectId }: { projectId: number }) {
     }
   };
   return <div className="space-y-3">
-    <Input aria-label="Search Project Albums" placeholder="Search Albums or artists…" maxLength={120} value={search} className="h-8 text-xs" onChange={event => { setSearch(event.target.value); setOffset(0); }} />
+    <Input aria-label={showReferences ? "Search Project Multimedia" : "Search Project Albums"} placeholder={showReferences ? "Search Media, Albums or artists…" : "Search Albums or artists…"} maxLength={120} value={search} className="h-8 text-xs" onChange={event => { setSearch(event.target.value); setOffset(0); }} />
+    {showReferences && <ProjectReferenceMedia key={search} projectId={String(projectId)} search={search} manage={false} />}
     {!currentAlbums && <p role="status">Loading Albums…</p>}
     {currentAlbums?.error && <p role="alert">{currentAlbums.error}</p>}
     {currentAlbums && !currentAlbums.error && !currentAlbums.rows.length && <p>{search ? 'No Albums match this search.' : 'No available Albums are assigned to this Project.'}</p>}

@@ -2,6 +2,12 @@
 
 ## Current checkpoint
 
+Preparing [v0.37.1 - Project Reference Media and Design Level Controls](docs/releases/v0.37.1.md).
+
+The 2D Design Canvas Level strip and Design Properties dropdown share one visible active Level. Hiding it activates the first remaining visible Level in strip order. With every Level hidden, there is no active drawing Level. Saved workspaces with a hidden Level marked active follow the same rule on load.
+
+Marty confirmed the [Project reference Media migration](docs/releases/sql/multimedia-project-reference-media.sql) was applied. On November 25, 2026, he reported that three assigned images were missing from the Project Assets and Project Multimedia panels for Project 18. Both panels now read direct and Admin module assignments. Save Project captures the open photo or video, viewer position and size, and photo zoom. Reopening the Project checks file access and starts loading the photo or video metadata in the background. The viewer and its retry prompt wait for the Project loading screen to clear. Offline checks cover the three-image case, viewer save and restore, and file lookups that finish before or after Scene preparation. Marty verified the saved viewer appeared after the loading screen cleared on Project 18.
+
 Preparing [v0.37.0 - ThreeD Design: Canvas Dimensions and Object Appearance](docs/releases/v0.37.0.md). Marty confirmed the Design v11 migration for saved per-object appearance was applied.
 
 The Developer confirmed [v0.36.6 - ThreeD Design: Hinged, Sliding and Garage Door Operations](docs/releases/v0.36.6.md#production-status) reached production on November 23, 2026.

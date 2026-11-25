@@ -105,7 +105,7 @@ function DesignFixture(){
  const [draft,setDraft]=useState(()=>{const d=newDesign();d.nodes=[{id:'a',x:0,z:0},{id:'b',x:3,z:0}];d.walls=[{id:'wall',levelId:'ground',start:'a',end:'b',height:2.4,thickness:.15,elevation:0}];return projectArchitectureDraft({version:1,document:d})});
  const cache=React.useRef(null);if(!cache.current)cache.current=new DesignGeometryCache();
  React.useEffect(()=>{cache.current.update(draft.history.present,draft.selected);window.__designGeometry=cache.current.group},[draft]);
- React.useEffect(()=>()=>cache.current.dispose(),[]);window.__designDraft=draft;window.__hideActiveLevel=()=>{setModelSelected(false);setDraft(current=>({...current,selected:null,history:{...current.history,present:{...current.history.present,levels:current.history.present.levels.some(l=>l.id==='upper')?current.history.present.levels:[...current.history.present.levels,{id:'upper',name:'Upper',elevation:3}]}},workspace:{...current.workspace,levelId:'upper',visibleLevelIds:['ground'],selectedEntityId:null}}))};
+ React.useEffect(()=>()=>cache.current.dispose(),[]);window.__designDraft=draft;window.__activateUpperLevel=()=>{setModelSelected(false);setDraft(current=>({...current,selected:null,history:{...current.history,present:{...current.history.present,levels:current.history.present.levels.some(l=>l.id==='upper')?current.history.present.levels:[...current.history.present.levels,{id:'upper',name:'Upper',elevation:3}]}},workspace:{...current.workspace,levelId:'upper',visibleLevelIds:['ground','upper'],selectedEntityId:null}}))};
  const visibility=useCallback(()=>{},[]),preview=useCallback(()=>{},[]);
  const select=useCallback(selected=>setDraft(current=>({...current,selected,workspace:{...current.workspace,selectedEntityId:selected,sections:{...current.workspace.sections,...(selected?{'threed:details:v1:design:7:selected-properties':true}:{})}}})),[]);
  const DesignProvider=${isolateDesign ? 'React.Fragment' : 'SceneMultimediaProvider'};
@@ -315,7 +315,7 @@ createRoot(document.getElementById('root')).render(<App/>);
         // Native details changes before its queued toggle event updates React state.
         await waitFor(`window.__designDraft.workspace.sections['threed:details:v1:design:7:selected-properties']===false`);
         assert.equal(await evaluate(`window.__designDraft.workspace.sections['threed:details:v1:design:7:selected-properties']`), false);
-        await evaluate('window.__hideActiveLevel()');await waitFor("window.__designDraft.workspace.levelId==='upper'");
+        await evaluate('window.__activateUpperLevel()');await waitFor("window.__designDraft.workspace.levelId==='upper'");
         const point = await evaluate(`(()=>{const s=document.querySelector('[data-testid="home-plan"]'),r=s.getBoundingClientRect(),g=[...s.children].find(e=>e.hasAttribute('transform')),m=g.transform.baseVal.consolidate().matrix;return{x:r.x+m.e+1.5*m.a,y:r.y+m.f}})()`);
         await call('Input.dispatchMouseEvent', { type: 'mousePressed', ...point, button: 'left', clickCount: 1 });
         await call('Input.dispatchMouseEvent', { type: 'mouseReleased', ...point, button: 'left', clickCount: 1 });
@@ -333,7 +333,7 @@ createRoot(document.getElementById('root')).render(<App/>);
         assert.notEqual(await evaluate(`JSON.stringify(Array.from(window.__designGeometry.getObjectByName('wall').geometry.attributes.position.array))`), beforeGeometry, 'Plan dragging updates the same Three wall geometry');
         assert.deepEqual(await evaluate('window.__errors'), []);
         const modelPoint = async selector => evaluate(`(()=>{const e=document.querySelector(${JSON.stringify(selector)}),r=e.getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()`);
-        await evaluate('window.__hideActiveLevel()');await waitFor("window.__designDraft.workspace.levelId==='upper'");
+        await evaluate('window.__activateUpperLevel()');await waitFor("window.__designDraft.workspace.levelId==='upper'");
         await evaluate("window.__setPlanImageMode('none')");
         await waitFor(`!!document.querySelector('[data-model-footprint="tree-instance"]')`);
         assert(await evaluate(`!!document.querySelector('[data-model-footprint="field-instance"]')`), 'An environment without a Top View image remains in the plan');

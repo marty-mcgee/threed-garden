@@ -88,10 +88,25 @@ export interface ProjectMapViewState {
   zoom: number;
 }
 
+export interface ProjectMediaViewerState {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  zoom: number;
+}
+
+export interface ProjectReferenceMediaWorkspaceState {
+  mediaId: number;
+  library?: true;
+  view?: ProjectMediaViewerState;
+}
+
 export interface ProjectMultimediaWorkspaceState {
   open: boolean;
   albumId: number | null;
   trackId: number | null;
+  reference?: ProjectReferenceMediaWorkspaceState;
 }
 
 export interface ThreeDProjectViewState {
@@ -160,6 +175,27 @@ function boolean(value: unknown): boolean {
 function scenarioBindingId(value: unknown): number {
   if (!Number.isSafeInteger(value) || Number(value) <= 0 || Number(value) > 2_147_483_647) throw new ProjectViewStateError();
   return Number(value);
+}
+
+function referenceMediaWorkspace(value: unknown): ProjectReferenceMediaWorkspaceState {
+  const item = record(value);
+  if (!item || Object.keys(item).some(key => !['mediaId', 'library', 'view'].includes(key))
+    || (item.library !== undefined && item.library !== true)) throw new ProjectViewStateError();
+  const result: ProjectReferenceMediaWorkspaceState = { mediaId: scenarioBindingId(item.mediaId) };
+  if (item.library === true) result.library = true;
+  if (item.view !== undefined) {
+    const view = record(item.view);
+    if (!view || Object.keys(view).some(key => !['left', 'top', 'width', 'height', 'zoom'].includes(key))
+      || Object.values(view).some(number => typeof number !== 'number')) throw new ProjectViewStateError();
+    result.view = {
+      left: finite(view.left, 0, 100_000),
+      top: finite(view.top, 0, 100_000),
+      width: finite(view.width, Number.MIN_VALUE, 100_000),
+      height: finite(view.height, Number.MIN_VALUE, 100_000),
+      zoom: finite(view.zoom, 25, 400),
+    };
+  }
+  return result;
 }
 
 function sceneLayers(value: unknown): string[] {
@@ -359,7 +395,7 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
   if (input.projectTourOpen !== undefined) result.projectTourOpen = boolean(input.projectTourOpen);
   if (input.multimedia !== undefined) {
     const multimedia = record(input.multimedia);
-    if (!multimedia || Object.keys(multimedia).some(key => !['open', 'albumId', 'trackId'].includes(key))) throw new ProjectViewStateError();
+    if (!multimedia || Object.keys(multimedia).some(key => !['open', 'albumId', 'trackId', 'reference'].includes(key))) throw new ProjectViewStateError();
     const albumId = multimedia.albumId === null ? null : scenarioBindingId(multimedia.albumId);
     const trackId = multimedia.trackId === null ? null : scenarioBindingId(multimedia.trackId);
     if (trackId !== null && albumId === null) throw new ProjectViewStateError();
@@ -367,6 +403,7 @@ export function parseThreeDProjectViewState(value: unknown): ThreeDProjectViewSt
       open: boolean(multimedia.open),
       albumId,
       trackId,
+      ...(multimedia.reference === undefined ? {} : { reference: referenceMediaWorkspace(multimedia.reference) }),
     };
   }
   if (input.design !== undefined) { try { result.design = parseDesignWorkspace(input.design); } catch { throw new ProjectViewStateError(); } }

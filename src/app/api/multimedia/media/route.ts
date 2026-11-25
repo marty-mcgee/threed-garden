@@ -9,8 +9,9 @@ import { ensureTableSequence } from '@/libraries/db/sequence';
 
 // Serialize all primary writers on their owned Album rows before locking Media.
 // Sorting both parent IDs also gives opposite-direction moves the same lock order.
-async function lockMediaAlbums(tx: Transaction, userId: string, ids: number[]) {
-  const uniqueIds = [...new Set(ids)].sort((a, b) => a - b);
+async function lockMediaAlbums(tx: Transaction, userId: string, ids: (number | null)[]) {
+  const uniqueIds = [...new Set(ids.filter(id => id !== null))].sort((a, b) => a - b);
+  if (!uniqueIds.length) return true;
   const rows = await tx.select({ id: multimediaAlbums.id }).from(multimediaAlbums)
     .where(and(inArray(multimediaAlbums.id, uniqueIds), eq(multimediaAlbums.userId, userId)))
     .orderBy(asc(multimediaAlbums.id)).for('update');
@@ -27,7 +28,7 @@ async function updateOwnedMedia(userId: string, id: number, changes: MediaChange
   for (const key of ['isPublic', 'isActive'] as const) if (changes[key] !== undefined && typeof changes[key] !== 'boolean') return NextResponse.json({ success: false, error: key + ' must be true or false' }, { status: 400 });
   if (changes.sortOrder != null && (!Number.isInteger(changes.sortOrder) || changes.sortOrder < -10000 || changes.sortOrder > 10000)) return NextResponse.json({ success: false, error: 'Sort Order must be an integer from -10000 to 10000' }, { status: 400 });
   const targetId = changes.albumId === undefined ? undefined : positiveId(changes.albumId);
-  if (targetId === null) return NextResponse.json({ success: false, error: 'Invalid album ID' }, { status: 400 });
+  if (changes.albumId != null && targetId === null) return NextResponse.json({ success: false, error: 'Invalid album ID' }, { status: 400 });
   const [snapshot] = await db.select().from(multimediaMedia)
     .where(and(eq(multimediaMedia.id, id), eq(multimediaMedia.userId, userId))).limit(1);
   if (!snapshot) return NextResponse.json({ success: false, error: 'Media not found' }, { status: 404 });
@@ -43,9 +44,9 @@ async function updateOwnedMedia(userId: string, id: number, changes: MediaChange
     if (existing.albumId !== snapshot.albumId) {
       return NextResponse.json({ success: false, error: 'This Media moved to another Album. Reload before saving.' }, { status: 409 });
     }
-    const albumId = targetId ?? existing.albumId;
-    const isPrimary = changes.isPrimary === undefined ? existing.isPrimary : changes.isPrimary;
-    if (isPrimary && (changes.isPrimary === true || albumId !== existing.albumId)) {
+    const albumId = targetId === undefined ? existing.albumId : targetId;
+    const isPrimary = albumId !== null && (changes.isPrimary ?? existing.isPrimary);
+    if (albumId !== null && isPrimary && (changes.isPrimary === true || albumId !== existing.albumId)) {
       await tx.update(multimediaMedia).set({ isPrimary: false })
         .where(and(eq(multimediaMedia.albumId, albumId), eq(multimediaMedia.userId, userId), eq(multimediaMedia.isPrimary, true)));
     }
@@ -206,15 +207,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!albumId) {
-      return NextResponse.json(
-        { success: false, error: 'Missing required field: albumId' },
-        { status: 400 }
-      );
-    }
-
     const parsedAlbumId = positiveId(albumId);
-    if (!parsedAlbumId) {
+    if (albumId != null && !parsedAlbumId) {
       return NextResponse.json(
         { success: false, error: 'Invalid album ID' },
         { status: 400 }
@@ -232,7 +226,7 @@ export async function POST(request: NextRequest) {
       await ensureTableSequence('multimedia_media');
 
       // ✅ If this media is set as primary, unset other primary media for this album
-      if (isPrimary) {
+      if (isPrimary && parsedAlbumId !== null) {
         await tx
           .update(multimediaMedia)
           .set({ isPrimary: false })
@@ -254,7 +248,7 @@ export async function POST(request: NextRequest) {
           fileType,
           fileSize: fileSize || null,
           sortOrder: sortOrder ?? 0,
-          isPrimary: isPrimary ?? false,
+          isPrimary: parsedAlbumId !== null && (isPrimary ?? false),
           isPublic: isPublic ?? false,
           isActive: isActive ?? true,
           albumId: parsedAlbumId,

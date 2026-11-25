@@ -1,7 +1,7 @@
 import type { ThreeDGroup } from './groups';
 import { entityLevelId, newDesign, validateDesign, type DesignDocument } from './document';
 import { designHistory, type DesignHistory } from './history';
-import { defaultDesignWorkspace, parseDesignWorkspace, type ProjectDesignWorkspaceState } from './workspace-state';
+import { defaultDesignWorkspace, parseDesignWorkspace, reconcileDesignLevels, type ProjectDesignWorkspaceState } from './workspace-state';
 
 /** Editable architectural content in project.config; not a separate record or Scene. */
 export interface ProjectArchitecture { version: 1; document: DesignDocument }
@@ -34,9 +34,13 @@ export function projectArchitectureDraft(content?: ProjectArchitecture, preferen
   const document = content ? parseProjectArchitecture(content).document : newDesign();
   const history = designHistory(document);
   const workspace = preferences ? parseDesignWorkspace(preferences) : defaultDesignWorkspace();
-  const ids = [...history.present.walls, ...history.present.floors, ...history.present.roofs, ...history.present.openings, ...history.present.roofOpenings];
-  const selected = ids.some(item => item.id === workspace.selectedEntityId) ? workspace.selectedEntityId : null;
-  return { history, saved: JSON.stringify(history.present), selected, workspace, savedWorkspace: JSON.stringify(workspace) };
+  const draft = reconcileArchitectureSelection({
+    history,
+    saved: JSON.stringify(history.present),
+    selected: workspace.selectedEntityId,
+    workspace,
+  });
+  return { ...draft, savedWorkspace: JSON.stringify(draft.workspace) };
 }
 /** Hydrate clean placeholders/caches only; never erase an actual unsaved edit. */
 export function hydrateArchitectureDraft(draft: ProjectArchitectureDraft | undefined, content?: ProjectArchitecture, preferences?: ProjectDesignWorkspaceState): ProjectArchitectureDraft {
@@ -78,8 +82,21 @@ export function importProjectArchitecture(current: DesignDocument, input: unknow
   return validateDesign({ ...current, version: Math.max(current.version, incoming.version), levels: [...current.levels, ...imported.levels], nodes: [...current.nodes, ...imported.nodes], walls: [...current.walls, ...imported.walls], floors: [...current.floors, ...imported.floors], roofs: [...current.roofs, ...imported.roofs], openings: [...current.openings, ...imported.openings], roofOpenings: [...current.roofOpenings, ...imported.roofOpenings] });
 }
 
-/** Normalize selection after edits, cascading deletions, Undo or document replacement. */
+/** Keep the current Level and object selection consistent with the visible Design geometry. */
 export function reconcileArchitectureSelection(draft: ProjectArchitectureDraft): ProjectArchitectureDraft {
-  if (!draft.selected || entityLevelId(draft.history.present, draft.selected)) return draft;
-  return { ...draft, selected: null, workspace: { ...(draft.workspace ?? defaultDesignWorkspace()), selectedEntityId: null } };
+  const doc = draft.history.present;
+  const workspace = draft.workspace && reconcileDesignLevels(draft.workspace, doc.levels);
+  if (draft.selected) {
+    const levelId = entityLevelId(doc, draft.selected);
+    const shown = workspace?.visibleLevelIds ?? (workspace?.showAllLevels === false ? [workspace.levelId] : undefined);
+    if (!levelId || (shown && !shown.includes(levelId))) return {
+      ...draft,
+      selected: null,
+      workspace: {
+        ...(workspace ?? defaultDesignWorkspace()),
+        selectedEntityId: null,
+      },
+    };
+  }
+  return workspace === draft.workspace ? draft : { ...draft, workspace };
 }

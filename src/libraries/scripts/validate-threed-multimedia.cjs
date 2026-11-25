@@ -150,6 +150,541 @@ function playerFixture() {
   };
 }
 
+async function checkReferenceMedia() {
+  const { DatabaseSync } = require('node:sqlite');
+  const { drizzle } = require('drizzle-orm/pg-proxy');
+  const memory = new DatabaseSync(':memory:');
+  try {
+    memory.exec(`
+      CREATE TABLE project (id INTEGER PRIMARY KEY, user_id TEXT);
+      CREATE TABLE multimedia (id INTEGER PRIMARY KEY, user_id TEXT, is_active INTEGER);
+      CREATE TABLE project_multimedia (project_id INTEGER, multimedia_id INTEGER, user_id TEXT, is_active INTEGER);
+      CREATE TABLE project_assets (id INTEGER PRIMARY KEY, project_id INTEGER, module_id INTEGER, user_id TEXT,
+        module_type TEXT, asset_type TEXT, asset_id INTEGER, is_active INTEGER);
+      CREATE TABLE multimedia_media (id INTEGER PRIMARY KEY, user_id TEXT, file_name TEXT, file_url TEXT,
+        file_type TEXT, is_active INTEGER);
+      CREATE TABLE multimedia_media_projects (project_id INTEGER, media_id INTEGER, UNIQUE(project_id, media_id));
+      INSERT INTO project VALUES (18,'marty'),(19,'other');
+      INSERT INTO multimedia VALUES (1,'marty',1),(2,'marty',0),(3,'marty',1),(4,'marty',1);
+      INSERT INTO project_multimedia VALUES (18,1,'marty',1),(18,2,'marty',1),(18,3,'marty',0),(18,4,'marty',1);
+      INSERT INTO multimedia_media VALUES
+        (1,'marty','A.png','https://media.invalid/a.png','image/png',1),
+        (2,'marty','B.png','https://media.invalid/b.png','image/png',1),
+        (3,'marty','C.png','https://media.invalid/c.png','image/png',1),
+        (4,'marty','D.png','https://media.invalid/d.png','image/png',1),
+        (5,'other','E.png','https://media.invalid/e.png','image/png',1);
+      INSERT INTO project_assets VALUES
+        (1,18,1,'marty','multimedia','multimedia_media',1,1),
+        (2,18,1,'marty','multimedia','multimedia_media',2,1),
+        (3,18,1,'marty','multimedia','multimedia_media',5,1),
+        (4,18,1,'marty','multimedia','multimedia_media',4,0),
+        (5,18,2,'marty','multimedia','multimedia_media',4,1),
+        (6,18,3,'marty','multimedia','multimedia_media',4,1),
+        (7,18,1,'marty','multimedia','multimedia_albums',4,1),
+        (8,18,4,'marty','multimedia','multimedia_media',1,1);
+      INSERT INTO multimedia_media_projects VALUES (18,2),(18,3),(19,4);
+    `);
+    const connection = drizzle(async (sql, params) => {
+      // The same SELECTs run in memory. PostgreSQL row locks and ILIKE syntax are adapted here.
+      const statement = memory.prepare(sql.replace(/ for (share|update)\b/gi, '').replace(/\bilike\b/gi, 'like'));
+      statement.setReturnArrays(true);
+      const bindings = Object.fromEntries(params.map((value, i) => ['$' + (i + 1), typeof value === 'boolean' ? Number(value) : value]));
+      return { rows: statement.all(bindings) };
+    });
+    let userId = 'marty';
+    const api = load('src/app/api/project/reference-media/route.ts', {
+      '@/libraries/auth': { auth: async () => userId ? { user: { id: userId } } : null },
+      '@/libraries/db/client': { db: { transaction: work => work(connection) } },
+      '@/libraries/schema/project': schema,
+      '@/libraries/schema/multimedia': schema,
+    });
+    const get = query => api.GET(new Request('https://fixture.invalid/api?projectId=18&' + query));
+    const assigned = await get('');
+    assert.equal(assigned.status, 200);
+    assert.equal(assigned.headers.get('cache-control'), 'private, no-store');
+    const items = (await assigned.json()).items;
+    assert.deepEqual(items.map(item => item.id), [1, 2, 3], 'Admin and direct assignments must share one deduplicated list');
+    assert.deepEqual(items.map(item => [item.direct, item.viaModule]), [[false,true],[true,true],[true,false]]);
+    assert.equal(items[0].fileUrl, 'https://media.invalid/a.png');
+    for (const item of items) {
+      assert.deepEqual(await (await get('mediaId=' + item.id)).json(), { items: [item], hasMore: false });
+    }
+    assert.deepEqual((await (await get('mediaId=4')).json()).items, [], 'Restoring a Project file requires current assignment');
+    assert.deepEqual((await (await get('mediaId=5')).json()).items, [], 'A foreign-owned Media file cannot be restored');
+    assert.equal((await get('mediaId=invalid')).status, 400);
+    assert.deepEqual((await (await get('offset=2')).json()).items.map(item => item.id), [3], 'Page the deduplicated results');
+    assert.deepEqual((await (await get('search=a.png')).json()).items.map(item => item.id), [1]);
+    const library = (await (await get('library=1')).json()).items;
+    assert.deepEqual(library.map(item => [item.id, Boolean(item.assigned)]), [[1,true],[2,true],[3,true],[4,false]]);
+    assert.deepEqual((await (await get('mediaId=4&library=1')).json()).items, [library[3]], 'Explicit library previews resolve the owned file without assigning it');
+    assert.deepEqual((await (await get('mediaId=5&library=1')).json()).items, [], 'An explicit library preview cannot restore a foreign file');
+    const change = (method, id) => api[method](new Request('https://fixture.invalid/api?projectId=18&mediaId=' + id, { method }));
+    assert.equal((await change('PUT', 1)).status, 200);
+    assert.equal((await change('DELETE', 1)).status, 409, 'A module assignment is managed by its owner');
+    assert.equal((await change('DELETE', 2)).status, 200);
+    assert.equal((await change('DELETE', 3)).status, 200);
+    assert.deepEqual((await (await get('mediaId=3')).json()).items, [], 'A removed assignment cannot reopen a saved viewer');
+    assert.equal((await change('PUT', 4)).status, 200);
+    assert.equal((await change('PUT', 4)).status, 200, 'Adding the same direct reference twice is safe');
+    assert.deepEqual((await (await get('')).json()).items.map(item => item.id), [1, 2, 4]);
+    assert.equal((await change('PUT', 5)).status, 404);
+    userId = 'other';
+    assert.equal((await get('')).status, 404);
+    assert.equal((await get('mediaId=1')).status, 404);
+    assert.equal((await get('mediaId=5&library=1')).status, 404, 'Library restore still requires ownership of this Project');
+    userId = null;
+    assert.equal((await get('')).status, 401);
+    assert.equal((await get('mediaId=1')).status, 401);
+  } finally {
+    memory.close();
+  }
+  console.log('PASS Project reference Media: Admin assignments, direct links, previews, search, library membership and owner isolation (in-memory SQL).');
+}
+
+function renderedNodes(node) {
+  if (Array.isArray(node)) return node.flatMap(renderedNodes);
+  if (!node?.props) return [];
+  return [node, ...renderedNodes(node.props.children)];
+}
+
+function mediaHookFixture() {
+  const slots = [];
+  const effects = [];
+  let slot = 0;
+  const changed = (previous, deps) => !previous || deps.some((dep, i) => dep !== previous.deps[i]);
+  const hooks = {
+    createContext: () => ({ Provider: 'context-provider' }),
+    useId: () => 'media-title',
+    useRef: initial => slots[slot++] ??= { current: initial },
+    useState(initial) {
+      const index = slot++;
+      if (!(index in slots)) slots[index] = typeof initial === 'function' ? initial() : initial;
+      return [slots[index], next => { slots[index] = typeof next === 'function' ? next(slots[index]) : next; }];
+    },
+    useCallback(fn, deps) {
+      const index = slot++;
+      if (changed(slots[index], deps)) slots[index] = { deps, fn };
+      return slots[index].fn;
+    },
+    useEffect(effect, deps) {
+      const index = slot++;
+      const previous = slots[index];
+      if (changed(previous, deps)) effects.push(() => {
+        previous?.cleanup?.();
+        slots[index] = { deps, cleanup: effect() };
+      });
+    },
+  };
+  hooks.useLayoutEffect = hooks.useEffect;
+  return {
+    hooks,
+    render(component) { slot = 0; return component(); },
+    commit() { for (const run of effects.splice(0)) run(); },
+    unmount() { for (const entry of slots) entry?.cleanup?.(); },
+  };
+}
+
+function checkMediaOverlay() {
+  const fixture = mediaHookFixture();
+  let closed = 0;
+  let focused = 0;
+  let capture;
+  const initialView = { left: 125, top: 70, width: 800, height: 410, zoom: 75 };
+  const onRegisterView = read => { capture = read; };
+  const document = { body: {} };
+  const viewport = { clientWidth: 1280, clientHeight: 800 };
+  const listeners = new Map();
+  let capturedPointer = null;
+  const photoViewport = {
+    clientWidth: 640,
+    clientHeight: 320,
+    scrollWidth: 640,
+    scrollHeight: 320,
+    scrollLeft: 0,
+    scrollTop: 0,
+    getBoundingClientRect: () => ({ left: 0, top: 0, width: 640, height: 320 }),
+    addEventListener(type, fn, options) {
+      if (type === 'wheel') assert.equal(options?.passive, false, 'The photo can consume wheel zoom');
+      assert(!listeners.has(type), 'Only one active ' + type + ' listener is needed');
+      listeners.set(type, fn);
+    },
+    removeEventListener(type, fn) {
+      assert.equal(listeners.get(type), fn);
+      listeners.delete(type);
+    },
+    setPointerCapture(id) { capturedPointer = id; },
+    hasPointerCapture(id) { return capturedPointer === id; },
+    releasePointerCapture(id) { assert.equal(capturedPointer, id); capturedPointer = null; },
+  };
+  const jsx = (type, props) => ({ type, props });
+  const { ProjectMediaViewer } = load('src/components/map/panels/ProjectMediaViewer.tsx', {
+    react: fixture.hooks,
+    'react-dom': { createPortal(content, target) { assert.equal(target, document.body); return content; } },
+    'react/jsx-runtime': { jsx, jsxs: jsx },
+    'lucide-react': {},
+    '@/components/ui/button': { Button: 'button' },
+  }, {
+    document,
+    ResizeObserver: class { observe() {} disconnect() {} },
+    HTMLElement: class {},
+  });
+  function render(name, kind, presented = true) {
+    const src = 'https://media.invalid/' + name;
+    const tree = fixture.render(() => ProjectMediaViewer({
+      name,
+      kind,
+      src,
+      presented,
+      initialView,
+      onRegisterView,
+      onClose: () => { closed++; },
+    }));
+    tree.props.ref.current = viewport;
+    const nodes = renderedNodes(tree);
+    const close = nodes.find(node => node.props['aria-label'] === 'Close Media viewer');
+    close.props.ref.current = { focus: () => { focused++; } };
+    const region = nodes.find(node => node.props['aria-label'] === 'Photo viewport');
+    if (region) region.props.ref.current = photoViewport;
+    fixture.commit();
+    const dialog = nodes.find(n => n.props.role === 'dialog');
+    assert(nodes.some(n => n.props.id === dialog.props['aria-labelledby'] && n.props.children === name));
+    return { nodes, dialog, src, portal: tree.props };
+  }
+  const photo = (presented = true) => render('plan.jpg', 'image', presented);
+  function button(view, label) {
+    const control = view.nodes.find(node => node.type === 'button' && node.props['aria-label'] === label);
+    assert(control, 'Expected a button labelled ' + label);
+    return control.props;
+  }
+  function expectZoom(view, percent) {
+    const readout = view.nodes.find(node => node.type === 'output');
+    assert.equal([].concat(readout?.props.children).join(''), percent + '%');
+    const image = view.nodes.find(node => node.type === 'img');
+    assert.equal(image.props.style.width, `min(${percent}cqw, ${percent * 2}cqh)`, 'The rendered image scales from its fitted 2:1 dimensions');
+  }
+  const loading = photo(false);
+  assert(loading.portal.hidden && loading.portal.inert, 'The portalled dialog stays hidden and inactive during Project loading');
+  assert.equal(focused, 0, 'Preloading the photo does not take focus');
+  const image = loading.nodes.find(node => node.type === 'img' && node.props.alt === 'plan.jpg' && node.props.src === loading.src);
+  assert(image, 'The saved image is mounted and can load during Project preparation');
+  image.props.onLoad({ currentTarget: { naturalWidth: 1600, naturalHeight: 800 } });
+  expectZoom(photo(false), 75);
+  assert.deepEqual(clone(capture()), initialView, 'Save preserves geometry and zoom during Project preparation');
+  const released = photo();
+  assert(!released.portal.hidden && !released.portal.inert, 'The dialog becomes visible and interactive when the Project is presented');
+  assert.equal(focused, 1, 'Focus moves to the viewer only when the user can see it');
+  expectZoom(released, 75);
+  assert.deepEqual(clone(capture()), initialView, 'A fresh viewer restores the saved position, size and zoom');
+  button(photo(), 'Fit image').onClick();
+  const initial = photo();
+  expectZoom(initial, 100);
+  button(initial, 'Zoom in').onClick();
+  const zoomed = photo();
+  expectZoom(zoomed, 125);
+  assert.deepEqual(zoomed.dialog.props.style, initial.dialog.props.style, 'Image zoom preserves the viewer frame');
+  const resize = button(zoomed, 'Resize Media viewer');
+  const keyEvent = key => ({ key, preventDefault() {}, stopPropagation() {} });
+  resize.onKeyDown(keyEvent('ArrowRight'));
+  const wider = photo();
+  assert(wider.dialog.props.style.width > initial.dialog.props.style.width, 'Keyboard resizing changes the rendered width');
+  expectZoom(wider, 125);
+  assert.deepEqual(clone(capture()), { ...wider.dialog.props.style, zoom: 125 }, 'Save captures the latest resized and zoomed view');
+  const pointer = {
+    pointerId: 1, isPrimary: true, button: 0, clientX: 0, clientY: 0,
+    currentTarget: { setPointerCapture(id) { assert.equal(id, 1); } },
+  };
+  const handle = wider.nodes.find(n => n.props['aria-label'] === 'Resize Media viewer').props;
+  handle.onPointerDown(pointer);
+  handle.onPointerMove({ ...pointer, clientX: 10000, clientY: 10000 });
+  const enlarged = photo().dialog.props.style;
+  assert.equal(enlarged.left + enlarged.width, viewport.clientWidth);
+  assert.equal(enlarged.top + enlarged.height, viewport.clientHeight);
+  for (let percent = 150; percent <= 400; percent += 25) {
+    button(photo(), 'Zoom in').onClick();
+    expectZoom(photo(), percent);
+  }
+  assert.equal(button(photo(), 'Zoom in').disabled, true);
+  button(photo(), 'Fit image').onClick();
+  expectZoom(photo(), 100);
+  for (const percent of [75, 50, 25]) {
+    button(photo(), 'Zoom out').onClick();
+    expectZoom(photo(), percent);
+  }
+  assert.equal(button(photo(), 'Zoom out').disabled, true);
+  function photoEvent(fields) {
+    return {
+      clientX: 180,
+      clientY: 120,
+      currentTarget: photoViewport,
+      preventDefault() { this.defaultPrevented = true; },
+      stopPropagation() { this.stopped = true; },
+      ...fields,
+    };
+  }
+  function wheel(fields) {
+    const event = photoEvent({ deltaMode: 0, deltaX: 0, deltaY: 100, ...fields });
+    listeners.get('wheel')(event);
+    return event;
+  }
+  const consumed = event => assert(event.defaultPrevented && event.stopped, 'Zoom consumes the photo gesture');
+  consumed(wheel({}));
+  expectZoom(photo(), 25);
+  button(photo(), 'Fit image').onClick();
+  photo();
+  consumed(wheel({ deltaY: -100 }));
+  expectZoom(photo(), 125);
+  consumed(wheel({ deltaMode: 1, deltaY: 3 }));
+  expectZoom(photo(), 100);
+  assert(!wheel({ shiftKey: true }).defaultPrevented);
+  assert(!wheel({ deltaX: 100, deltaY: 0 }).defaultPrevented);
+  expectZoom(photo(), 100);
+  const mouse = {
+    pointerId: 23,
+    pointerType: 'mouse',
+    isPrimary: true,
+    button: 1,
+    buttons: 4,
+  };
+  function pointerEvent(handler, overrides = {}) {
+    const region = photo().nodes.find(node => node.props['aria-label'] === 'Photo viewport');
+    const event = photoEvent({ ...mouse, ...overrides });
+    region.props[handler](event);
+    return event;
+  }
+  assert(!pointerEvent('onPointerDown', { button: 0, buttons: 1 }).defaultPrevented);
+  assert.equal(capturedPointer, null);
+  consumed(pointerEvent('onPointerDown'));
+  assert.equal(capturedPointer, mouse.pointerId);
+  pointerEvent('onPointerMove', { pointerId: 99, clientY: 96, button: -1 });
+  expectZoom(photo(), 100);
+  pointerEvent('onPointerMove', { clientY: 96, button: -1 });
+  expectZoom(photo(), 125);
+  pointerEvent('onPointerMove', { clientY: 120, button: -1 });
+  expectZoom(photo(), 100);
+  pointerEvent('onPointerUp', { buttons: 0 });
+  assert.equal(capturedPointer, null);
+  pointerEvent('onPointerMove', { clientY: 96, button: -1 });
+  expectZoom(photo(), 100);
+  consumed(pointerEvent('onPointerDown'));
+  pointerEvent('onPointerCancel');
+  pointerEvent('onPointerMove', { clientY: 96, button: -1 });
+  expectZoom(photo(), 100);
+  const movie = render('walkthrough.mp4', 'video');
+  assert(!listeners.has('wheel'), 'Closing the photo removes its wheel listener');
+  assert(movie.nodes.some(n => n.type === 'video' && n.props.src === movie.src && n.props.controls && n.props.playsInline));
+  assert(!movie.nodes.some(node => ['Zoom in', 'Zoom out', 'Fit image'].includes(node.props['aria-label'])), 'Zoom is specific to photos');
+  movie.nodes.find(n => n.props['aria-label'] === 'Close Media viewer').props.onClick();
+  movie.dialog.props.onKeyDown(keyEvent('Escape'));
+  assert.equal(closed, 2);
+  console.log('PASS Project Media viewer: hidden and inert preload, deferred focus, saved frame, wheel and middle-button zoom, viewer resizing, native video controls, Close and Escape (offline React fixture).');
+}
+
+async function checkSavedReferenceViewer() {
+  const fixture = mediaHookFixture();
+  const jsx = (type, props) => ({ type, props });
+  let capture;
+  let presentationReleased = true;
+  let session = { status: 'authenticated', data: { user: { id: 'marty' } } };
+  let props = { projectId: 18, onRegisterWorkspace: read => { capture = read; } };
+  const requests = [];
+  const { SceneMultimediaProvider } = load('src/components/map/multimedia/SceneMultimediaProvider.tsx', {
+    react: fixture.hooks,
+    'react/jsx-runtime': { jsx, jsxs: jsx },
+    'next-auth/react': { useSession: () => session },
+    'react-dom': {},
+    'lucide-react': {},
+    '@/components/ui/slider': {},
+    '@/components/ui/button': { Button: 'button' },
+    '../panels/ProjectMediaViewer': { ProjectMediaViewer: 'reference-viewer' },
+    '../presentation/ProjectPresentationBoundary': { useProjectPresentationReleased: () => presentationReleased },
+  }, {
+    window: Object.assign(new EventTarget(), { location: { origin: 'https://fixture.invalid' } }),
+    crypto: require('node:crypto').webcrypto,
+    setInterval: () => 1,
+    clearInterval() {},
+    fetch(url, init) {
+      return new Promise(resolve => requests.push({ url: new URL(url, 'https://fixture.invalid'), init, resolve }));
+    },
+  });
+  function render() {
+    const tree = fixture.render(() => SceneMultimediaProvider(props));
+    fixture.commit();
+    return {
+      actions: tree.props.value,
+      viewer: renderedNodes(tree).find(node => node.type === 'reference-viewer')?.props,
+      alert: renderedNodes(tree).find(node => node.props.role === 'alert'),
+    };
+  }
+  const first = { id: 3, name: 'Plan.jpg', kind: 'image', src: 'https://media.invalid/plan.jpg' };
+  const movie = { id: 4, name: 'Walkthrough.mp4', kind: 'video', src: 'https://media.invalid/tour.mp4' };
+  const view = { left: 125, top: 70, width: 800, height: 410, zoom: 125 };
+  render().actions.openReference(first);
+  const photo = render().viewer;
+  assert.equal(photo.src, first.src);
+  photo.onRegisterView(() => view);
+  const selection = clone(capture());
+  assert.deepEqual(selection.reference, { mediaId: first.id, view }, 'Capture includes only the stable Media ID and presentation');
+  photo.onClose();
+  assert.equal(render().viewer, undefined);
+  assert.equal(capture().reference, undefined, 'Saving a closed file clears the file overlay');
+
+  const saved = { open: false, ...selection };
+  function reopen(projectId, workspace = saved) {
+    props = { ...props, projectId, initialWorkspace: workspace, workspaceSavedAt: 'fixture-save' };
+    render();
+    return render();
+  }
+  function lookup(projectId, mediaId) {
+    const request = requests.shift();
+    assert(request, 'Expected the saved Media lookup');
+    assert.equal(request.url.pathname, '/api/project/reference-media');
+    assert.equal(request.url.searchParams.get('projectId'), String(projectId));
+    assert.equal(request.url.searchParams.get('mediaId'), String(mediaId));
+    return request;
+  }
+  const respond = (request, items) => request.resolve(Response.json({ items, hasMore: false }));
+  const item = { id: first.id, fileName: 'Renamed plan.jpg', fileType: 'image/jpeg', fileUrl: 'https://media.invalid/new-plan.jpg', assigned: 18, direct: true, viaModule: false };
+  reopen(19, { open: false, albumId: null, trackId: null });
+  assert.equal(requests.length, 0, 'A legacy snapshot opens no reference file');
+  presentationReleased = false;
+  reopen(18);
+  const restore = lookup(18, first.id);
+  assert.deepEqual(clone(capture().reference), selection.reference, 'Saving during the lookup preserves the pending reference');
+  respond(restore, [item]);
+  await flush();
+  const preloaded = render().viewer;
+  assert.equal(preloaded.src, item.fileUrl, 'The file can start loading while the Project assets are pending');
+  assert.equal(preloaded.presented, false, 'An early lookup cannot present the restored photo');
+  assert.deepEqual(clone(capture().reference), selection.reference);
+  presentationReleased = true;
+  const restored = render().viewer;
+  assert.equal(restored.presented, true);
+  assert.equal(restored.name, item.fileName);
+  assert.equal(restored.src, item.fileUrl, 'The restored file URL comes from the current Project response');
+  assert.deepEqual(clone(restored.initialView), view);
+
+  presentationReleased = false;
+  const secondProject = reopen(19);
+  assert(!secondProject.viewer, 'Switching Projects clears the previous photo immediately');
+  const late = lookup(19, first.id);
+  presentationReleased = true;
+  assert(!render().viewer, 'Project readiness alone cannot reveal the previous file while the new lookup is pending');
+  secondProject.actions.openReference(movie);
+  render();
+  respond(late, [item]);
+  await flush();
+  assert.equal(render().viewer.kind, 'video', 'Delayed restoration cannot replace a manually chosen video');
+  assert.equal(capture().reference.mediaId, movie.id);
+  reopen(20);
+  const previousProject = lookup(20, first.id);
+  reopen(21);
+  const removed = lookup(21, first.id);
+  respond(previousProject, [item]);
+  respond(removed, []);
+  await flush();
+  assert(!render().viewer, 'An unavailable Media record or stale reply cannot open a file in the new Project');
+  assert.equal(capture().reference, undefined);
+  presentationReleased = false;
+  reopen(18, { ...saved, reference: { mediaId: movie.id, library: true } });
+  const library = lookup(18, movie.id);
+  assert.equal(library.url.searchParams.get('library'), '1');
+  presentationReleased = true;
+  assert(!render().viewer);
+  respond(library, [{ id: movie.id, fileName: movie.name, fileType: 'video/mp4', fileUrl: movie.src, assigned: null, direct: false, viaModule: false }]);
+  await flush();
+  const restoredVideo = render().viewer;
+  assert.equal(restoredVideo.kind, 'video', 'An owner library video is restored as a video');
+  assert.equal(restoredVideo.presented, true, 'A late video lookup can present after Project readiness');
+  render().viewer.onClose();
+  render();
+  const closed = { open: false, ...clone(capture()) };
+  assert(!closed.reference);
+  reopen(19, closed);
+  reopen(18, closed);
+  assert(!render().viewer);
+  assert.equal(requests.length, 0, 'Reopening a Project saved after closing the file skips the lookup');
+  presentationReleased = false;
+  reopen(19);
+  lookup(19, first.id).resolve(Response.json({}, { status: 503 }));
+  await flush();
+  assert(!render().alert, 'A transient lookup failure does not cover the Project loading presentation');
+  presentationReleased = true;
+  const failed = render();
+  assert(failed.alert);
+  assert(!failed.viewer);
+  assert.deepEqual(clone(capture().reference), selection.reference, 'Transient read failure retains the saved reference');
+  const retry = renderedNodes(failed.alert).find(node => node.type === 'button' && node.props.children === 'Retry');
+  retry.props.onClick();
+  render();
+  respond(lookup(19, first.id), [item]);
+  await flush();
+  assert.equal(render().viewer.src, item.fileUrl, 'Retry can open the previously unavailable reference');
+  session = { status: 'unauthenticated', data: null };
+  assert(!render().viewer, 'Signing out immediately hides the owner’s file');
+  assert(!capture().reference);
+  assert.equal(requests.length, 0);
+  fixture.unmount();
+  assert.equal(capture, null);
+  console.log('PASS Project reference overlay: both orders of lookup and Project readiness, scoped restore, capture, close, removed assignments, deferred retry and stale replies (offline provider fixture).');
+}
+
+async function checkReferenceViewer() {
+  const states = [], effects = [];
+  let slot = 0;
+  const jsx = (type, props) => ({ type, props });
+  const items = ['first.jpg', 'second.jpg', 'third.jpg'].map((fileName, i) => ({
+    id: i + 1, fileName, fileType: 'image/jpeg', fileUrl: 'https://media.invalid/' + fileName,
+    direct: i === 1, viaModule: i !== 1, assigned: 18,
+  }));
+  const photos = [...items];
+  items.push({
+    id: 4, fileName: 'walkthrough.mp4', fileType: 'video/mp4', fileUrl: 'https://media.invalid/walkthrough.mp4',
+    direct: true, viaModule: false, assigned: 18,
+  });
+  const opened = [];
+  const viewer = load('src/components/map/panels/ProjectReferenceMedia.tsx', {
+    '../multimedia/SceneMultimediaProvider': { useSceneMultimedia: () => ({ projectId: 18, openReference: item => opened.push(item) }) },
+    react: {
+      useState(initial) {
+        const index = slot++;
+        if (!(index in states)) states[index] = initial;
+        return [states[index], next => { states[index] = typeof next === 'function' ? next(states[index]) : next; }];
+      },
+      useEffect: fn => effects.push(fn),
+    },
+    'react/jsx-runtime': { jsx, jsxs: jsx },
+  }, {
+    fetch: async () => Response.json({ items, hasMore: false }),
+    window: Object.assign(new EventTarget(), { location: { origin: 'https://fixture.invalid' } }),
+  });
+  function render(manage) {
+    slot = 0;
+    const tree = viewer.ProjectReferenceMedia({ projectId: '18', search: '', manage });
+    return renderedNodes(tree);
+  }
+  render(false);
+  const cleanup = effects.map(effect => effect());
+  await flush();
+  const overlay = render(false);
+  assert.deepEqual(overlay.filter(n => n.type === 'img').map(n => n.props.src), photos.map(i => i.fileUrl));
+  assert(!overlay.some(n => n.props.children === 'Add Media' || n.props.children === 'Remove'));
+  function openItem(nodes, item, kind) {
+    const trigger = nodes.find(n => n.type === 'button' && Array.isArray(n.props.children) &&
+      n.props.children.some(child => child?.props?.children === item.fileName));
+    assert(trigger, 'A named button opens ' + item.fileName);
+    trigger.props.onClick({ currentTarget: { focus() {} } });
+    assert.deepEqual(clone(opened.at(-1)), { id: item.id, name: item.fileName, src: item.fileUrl, kind });
+  }
+  openItem(overlay, photos[0], 'image');
+  const assets = render(true);
+  openItem(assets, items[3], 'video');
+  assert(!assets.some(n => n.type === 'a' && n.props.href === items[3].fileUrl));
+  assert(assets.some(n => n.props['aria-label'] === 'Remove: second.jpg'));
+  assert.equal(assets.filter(n => n.props.children === 'Assigned in Admin').length, 2);
+  cleanup.forEach(fn => fn?.());
+  console.log('PASS: assigned photos retain thumbnails and controls; photo and video buttons open the shared Project Media viewer (offline React fixture).');
+}
+
 async function checkProjectPreview() {
   let accessible = true, assigned = true, rank = 50;
   const queries = [];
@@ -530,6 +1065,10 @@ function checkSimulation() {
   assert.throws(() => contract.parseSceneMultimediaCommand({ ...baseCommand, url: 'arbitrary' }));
   await checkReadBoundary();
   await checkProjectPreview();
+  await checkReferenceViewer();
+  checkMediaOverlay();
+  await checkSavedReferenceViewer();
+  await checkReferenceMedia();
   await checkPlayer();
   await checkCollision();
   checkSimulation();

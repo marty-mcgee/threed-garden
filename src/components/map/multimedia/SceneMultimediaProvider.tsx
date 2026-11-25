@@ -6,12 +6,16 @@ import { createPortal } from 'react-dom';
 import { Slider } from '@/components/ui/slider';
 import { Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ProjectMediaViewer } from '../panels/ProjectMediaViewer';
+import { useProjectPresentationReleased } from '../presentation/ProjectPresentationBoundary';
 import { SceneMultimediaPlayer, type MultimediaScene, type ScenePlaybackState } from '@/libraries/services/threed/multimedia/scene-multimedia-player';
 import { parseSceneMultimediaResponse, type SceneMultimediaQuery, type MultimediaAction } from '@/libraries/services/threed/multimedia/scene-multimedia-contract';
 import { parseProjectMultimediaPreview, type ProjectMultimediaPreviewQuery } from '@/libraries/services/project/multimedia-preview-contract';
-import type { ProjectMultimediaWorkspaceState } from '@/libraries/services/threed/markers/project-view-state-core';
+import { referenceMediaFile, type ProjectReferenceFile } from '@/libraries/services/project/reference-media-file';
+import type { ProjectMediaViewerState, ProjectMultimediaWorkspaceState, ProjectReferenceMediaWorkspaceState } from '@/libraries/services/threed/markers/project-view-state-core';
 
 export type ProjectMultimediaSelection = Pick<ProjectMultimediaWorkspaceState, 'albumId' | 'trackId'>;
+export type ProjectMultimediaCapture = Omit<ProjectMultimediaWorkspaceState, 'open'>;
 const emptySelection: ProjectMultimediaSelection = {
   albumId: null,
   trackId: null,
@@ -58,6 +62,12 @@ type View = {
   busy: boolean;
   error: string;
 };
+type OpenReference = {
+  scope: string;
+  saved: ProjectReferenceMediaWorkspaceState;
+  file?: ProjectReferenceFile;
+  failed?: boolean;
+};
 type Context = Omit<View, 'scope'> & {
   scope: string;
   projectId: number;
@@ -67,6 +77,7 @@ type Context = Omit<View, 'scope'> & {
   selection: ProjectMultimediaSelection;
   select: (selection: ProjectMultimediaSelection) => void;
   canOpenPreview: boolean;
+  openReference: (file: ProjectReferenceFile, library?: boolean) => void;
   previewAlbum: (albumId: number, trackId?: number) => void;
   act: (action: MultimediaAction) => void;
   media: HTMLVideoElement | null;
@@ -82,13 +93,27 @@ export function SceneMultimediaProvider({ projectId, children, initialWorkspace,
   children: ReactNode;
   initialWorkspace?: ProjectMultimediaWorkspaceState;
   workspaceSavedAt?: string;
-  onRegisterWorkspace?: (capture: (() => ProjectMultimediaSelection) | null) => void;
+  onRegisterWorkspace?: (capture: (() => ProjectMultimediaCapture) | null) => void;
   onOpenProjectPreview?: () => void;
 }) {
   const { data: session, status } = useSession();
+  const presentationReleased = useProjectPresentationReleased();
   const id = Number(projectId) || 0;
   const scope = `${id}:${status}:${session?.user?.id ?? 'public'}`;
   const currentScope = useRef(scope);
+  const [reference, setReference] = useState<OpenReference | null>(null);
+  const referenceRef = useRef<OpenReference | null>(null);
+  const referenceTouched = useRef('');
+  const [referenceAttempt, setReferenceAttempt] = useState(0);
+  const viewerCapture = useRef<(() => ProjectMediaViewerState) | null>(null);
+  const registerView = useCallback((capture: (() => ProjectMediaViewerState) | null) => {
+    viewerCapture.current = capture;
+  }, []);
+  const showReference = useCallback((entry: OpenReference | null) => {
+    viewerCapture.current = null;
+    referenceRef.current = entry;
+    setReference(entry);
+  }, []);
   currentScope.current = scope;
   const projectRef = useRef(id);
   projectRef.current = id;
@@ -150,6 +175,8 @@ export function SceneMultimediaProvider({ projectId, children, initialWorkspace,
   const scene = useCallback(() => sceneRef.current, []);
   useEffect(() => {
     player.clear();
+    showReference(null);
+    referenceTouched.current = '';
     touched.current = '';
     remember(emptySelection);
     const check = setInterval(() => player.checkScene(), 300);
@@ -160,14 +187,82 @@ export function SceneMultimediaProvider({ projectId, children, initialWorkspace,
       window.removeEventListener('pagehide', stop);
       player.clear();
     };
-  }, [scope, player]);
+  }, [scope, player, showReference]);
   useEffect(() => {
-    onRegisterWorkspace?.(() => selectionRef.current.scope === currentScope.current ? {
-      albumId: selectionRef.current.albumId,
-      trackId: selectionRef.current.trackId,
-    } : emptySelection);
+    onRegisterWorkspace?.(() => {
+      const entry = referenceRef.current;
+      const album = selectionRef.current.scope === currentScope.current ? selectionRef.current : emptySelection;
+      const snapshot: ProjectMultimediaCapture = {
+        albumId: album.albumId,
+        trackId: album.trackId,
+      };
+      if (entry?.scope === currentScope.current) {
+        const view = viewerCapture.current?.();
+        snapshot.reference = view ? { ...entry.saved, view } : entry.saved;
+      }
+      return snapshot;
+    });
     return () => onRegisterWorkspace?.(null);
   }, [onRegisterWorkspace]);
+
+  const savedReference = initialWorkspace?.reference;
+  useEffect(() => {
+    if (status !== 'authenticated' || !id || !workspaceSavedAt || referenceTouched.current === scope) return;
+    if (!savedReference) {
+      showReference(null);
+      return;
+    }
+    const current = referenceRef.current;
+    if (current?.scope === scope && current.file && current.saved.mediaId === savedReference.mediaId
+      && current.saved.library === savedReference.library) return;
+    const abort = new AbortController();
+    const entry = {
+      scope,
+      saved: savedReference,
+    };
+    // Save can capture the intended file while its current URL is being resolved.
+    showReference(entry);
+    const params = new URLSearchParams({
+      projectId: String(id),
+      mediaId: String(savedReference.mediaId),
+    });
+    if (savedReference.library) params.set('library', '1');
+    const stillCurrent = () => !abort.signal.aborted && currentScope.current === scope && referenceRef.current === entry;
+    async function restore() {
+      try {
+        const response = await fetch(`/api/project/reference-media?${params}`, { signal: abort.signal, cache: 'no-store' });
+        if ([401, 403, 404].includes(response.status)) {
+          if (stillCurrent()) showReference(null);
+          return;
+        }
+        if (!response.ok) throw Error('Reference Media lookup failed');
+        const { items } = await response.json();
+        if (!stillCurrent()) return;
+        const item = items.find((row: { id: number }) => row.id === entry.saved.mediaId);
+        const file = item && referenceMediaFile(item, window.location.origin);
+        showReference(file ? { ...entry, file } : null);
+      } catch {
+        if (stillCurrent()) showReference({ ...entry, failed: true });
+      }
+    }
+    void restore();
+    return () => abort.abort();
+  }, [id, scope, status, workspaceSavedAt, savedReference, referenceAttempt, showReference]);
+
+  function openReference(file: ProjectReferenceFile, library = false) {
+    referenceTouched.current = scope;
+    const existing = referenceRef.current;
+    if (existing?.scope === scope && existing.file?.id === file.id) return;
+    showReference({
+      scope,
+      file,
+      saved: library ? { mediaId: file.id, library: true } : { mediaId: file.id },
+    });
+  }
+  function closeReference() {
+    referenceTouched.current = scope;
+    showReference(null);
+  }
   useEffect(() => {
     if (!initialWorkspace || !workspaceSavedAt || status === 'loading' || !id) return;
     const key = `${scope}:${workspaceSavedAt}`;
@@ -242,6 +337,7 @@ export function SceneMultimediaProvider({ projectId, children, initialWorkspace,
     selection: selectionState.scope === scope ? selectionState : emptySelection,
     select,
     canOpenPreview: Boolean(id && onOpenProjectPreview),
+    openReference,
     previewAlbum,
     act,
     setMediaHost,
@@ -249,6 +345,16 @@ export function SceneMultimediaProvider({ projectId, children, initialWorkspace,
     mediaTime,
   }}>
     {children}
+    {reference?.scope === scope && reference.file && <ProjectMediaViewer key={scope + ':' + reference.file.id}
+      name={reference.file.name} src={reference.file.src} kind={reference.file.kind} initialView={reference.saved.view}
+      presented={presentationReleased} onRegisterView={registerView} onClose={closeReference} />}
+    {presentationReleased && reference?.scope === scope && reference.failed && <div role="alert" className="threed-workspace-panel threed-scene-panel-surface fixed bottom-4 right-4 z-[60] rounded-md border p-3 text-sm shadow-lg">
+      <p>The saved Media file could not be loaded.</p>
+      <div className="mt-2 flex gap-2">
+        <Button type="button" size="sm" onClick={() => setReferenceAttempt(value => value + 1)}>Retry</Button>
+        <Button type="button" size="sm" variant="ghost" onClick={closeReference}>Close</Button>
+      </div>
+    </div>}
     {mediaHost ? createPortal(mediaElement, mediaHost) : <div hidden>{mediaElement}</div>}
   </Context.Provider>;
 }

@@ -9,6 +9,31 @@ const saved = {version:1, savedAt:new Date().toISOString(), viewMode:'3d', panel
 assert.deepEqual(parseThreeDProjectViewState(JSON.parse(JSON.stringify(saved))).threeD, saved.threeD);
 const multimedia = { open: true, albumId: 28, trackId: 71 };
 assert.deepEqual(parseThreeDProjectViewState(JSON.parse(JSON.stringify({ ...saved, multimedia }))).multimedia, multimedia);
+const reference = {
+  mediaId: 93,
+  view: {
+    left: 120,
+    top: 75,
+    width: 860,
+    height: 520,
+    zoom: 150,
+  },
+};
+for (const overlay of [reference, { mediaId: 93 }, { ...reference, library: true }]) {
+  const fileWorkspace = { ...multimedia, open: false, reference: overlay };
+  assert.deepEqual(parseThreeDProjectViewState(JSON.parse(JSON.stringify({ ...saved, multimedia: fileWorkspace }))).multimedia, fileWorkspace);
+}
+for (const invalid of [
+  { mediaId: 0 },
+  { mediaId: '93' },
+  { ...reference, library: 'true' },
+  { ...reference, src: 'https://untrusted.invalid/photo.png' },
+  { ...reference, view: { ...reference.view, left: -1 } },
+  { ...reference, view: { ...reference.view, width: 0 } },
+  { ...reference, view: { ...reference.view, zoom: 401 } },
+]) {
+  assert.throws(() => parseThreeDProjectViewState({ ...saved, multimedia: { ...multimedia, reference: invalid } }));
+}
 assert.equal(parseThreeDProjectViewState(saved).multimedia, undefined, 'Legacy workspaces remain valid');
 assert.deepEqual(parseThreeDProjectViewState({ ...saved, multimedia: { open: false, albumId: null, trackId: null } }).multimedia, { open: false, albumId: null, trackId: null });
 for (const bad of [

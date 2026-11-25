@@ -102,7 +102,7 @@ export const multimediaAlbums = pgTable('multimedia_albums', {
 export const multimediaMedia = pgTable('multimedia_media', {
   id: serial('id').primaryKey(),
   userId: text('user_id').references(() => user.id, { onDelete: 'cascade' }).notNull(),
-  albumId: integer('album_id').references(() => multimediaAlbums.id, { onDelete: 'cascade' }).notNull(),
+  albumId: integer('album_id').references(() => multimediaAlbums.id, { onDelete: 'set null' }),
   fileName: text('file_name').notNull(),
   fileUrl: text('file_url').notNull(),
   fileType: text('file_type').notNull(),
@@ -155,6 +155,14 @@ export const multimediaLyrics = pgTable('multimedia_lyrics', {
 }, table => [
   index('multimedia_lyrics_owner_idx').on(table.userId),
   check('multimedia_lyrics_sort_range', sql`${table.sortOrder} BETWEEN -10000 AND 10000`),
+]);
+
+export const multimediaMediaProjects = pgTable('multimedia_media_projects', {
+  mediaId: integer('media_id').notNull().references(() => multimediaMedia.id, { onDelete: 'cascade' }),
+  projectId: integer('project_id').notNull().references(() => project.id, { onDelete: 'cascade' }),
+}, table => [
+  unique('multimedia_media_projects_pair').on(table.mediaId, table.projectId),
+  index('multimedia_media_projects_project_idx').on(table.projectId),
 ]);
 
 export const multimediaLyricsProjects = pgTable('multimedia_lyrics_projects', {

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
+import { ProjectReferenceMedia } from './ProjectReferenceMedia';
 import { ModuleIcon } from '@/components/settings/ModuleAppearanceProvider';
 import { Button } from '@/components/ui/button';
 import { useSceneMultimedia } from '../multimedia/SceneMultimediaProvider';
@@ -12,7 +13,7 @@ type Album = {
   artist: string;
 };
 
-export function ProjectMultimediaAssets({ projectId, search }: { projectId: string; search: string }) {
+export function ProjectMultimediaAssets({ projectId, search, canEdit = false }: { projectId: string; search: string; canEdit?: boolean }) {
   const multimedia = useSceneMultimedia();
   const projectMultimedia = multimedia?.projectId === Number(projectId) ? multimedia : null;
   const { data: session, status } = useSession();
@@ -54,6 +55,7 @@ export function ProjectMultimediaAssets({ projectId, search }: { projectId: stri
       <ModuleIcon moduleKey="multimedia" className="mr-1 inline size-3.5" />Multimedia
     </summary>
     <div className="space-y-2 text-xs" aria-live="polite">
+      {canEdit && status === 'authenticated' && <ProjectReferenceMedia key={scope} projectId={projectId} search={search} />}
       {!current && <p>Loading Albums…</p>}
       {current?.error && <p role="alert">{current.error}</p>}
       {current && !current.error && !current.albums.length && <p>No available Albums{search ? ' match this search' : ' assigned to this Project'}.</p>}

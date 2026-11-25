@@ -610,22 +610,128 @@ console.log('PASS: measurement labels default hidden, actual toolbar toggle and 
 console.log('PASS: Design context menu named/icon actions, active/disabled state, shared callbacks, measurements, right-button guard and keyboard isolation. Radix DOM positioning/focus remains browser verification.');
 
 {
- let toggled=null;
- const f=fixture({visibleLevelIds:[],onToggleLevel:id=>toggled=id});
- const nav=()=>flatten(f.tree).find(node=>node.props?.['aria-label']==='Design levels');
- const buttons=()=>flatten(nav()).filter(node=>node.type==='button');
- assert.equal(buttons().length,f.props.document.levels.length);
- assert(buttons().every(button=>!button.props['aria-pressed']));
- assert(!flatten(f.tree).some(node=>node.props?.['data-entity']==='w0'));
- buttons()[0].props.onClick();assert.equal(toggled,f.props.document.levels[0].id);
- f.update({visibleLevelIds:f.props.document.levels.map(level=>level.id)});
- assert(buttons().every(button=>button.props['aria-pressed']));
- f.update({tool:'floor',cancelToken:1});f.update({tool:'select',cancelToken:2});assert(buttons().every(button=>button.props['aria-pressed']));
- assert(flatten(f.tree).some(node=>node.props?.['data-entity']==='w0'));
- assert(nav().props.className.includes('absolute'));assert(nav().props.className.includes('left-9'));assert(nav().props.className.includes('threed-scene-panel-surface'));
- assert.equal(document.visibleLevelsDocument(f.props.document,[]).walls.length,0);
+  const doc = document.validateDesign({
+    ...room,
+    levels: [...room.levels, { id: 'upper', name: 'Upper', elevation: 3 }],
+  });
+  const editor = ts.createSourceFile('DesignEditor.tsx', fs.readFileSync('src/components/threed/design/DesignEditor.tsx', 'utf8'), ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+  const declarations = editor.statements.find(node => ts.isFunctionDeclaration(node) && node.name?.text === 'DesignEditor').body.statements;
+  const levelHandlers = declarations.filter(node => ts.isFunctionDeclaration(node) && node.name?.text === 'chooseLevel'
+    || ts.isVariableStatement(node) && node.declarationList.declarations.some(decl => decl.name.getText(editor) === 'toggleLevel'));
+  const activeExpression = declarations.filter(ts.isVariableStatement).flatMap(node => Array.from(node.declarationList.declarations))
+    .find(decl => decl.name.getText(editor) === 'activeLevelId').initializer.getText(editor);
+  const { defaultDesignWorkspace, reconcileDesignLevels } = load(service + 'workspace-state.ts');
+  let workspace = { ...defaultDesignWorkspace(), visibleLevelIds: ['ground'] };
+  const normalize = patch => reconcileDesignLevels({ ...workspace, ...patch }, doc.levels);
+  const restored = normalize({ levelId: 'upper', visibleLevelIds: ['ground', 'removed'] });
+  assert.equal(restored.levelId, 'ground', 'Old workspaces with a hidden active Level fall back to a shown Level');
+  assert.deepEqual(plain(restored.visibleLevelIds), ['ground']);
+  const reorderedLevels = [...doc.levels, { id: 'basement', name: 'Basement', elevation: -3 }];
+  assert.equal(reconcileDesignLevels({
+    ...workspace,
+    levelId: 'upper',
+    visibleLevelIds: ['ground', 'basement'],
+  }, reorderedLevels).levelId, 'basement', 'Fallback follows the displayed elevation order');
+  assert.deepEqual(plain(normalize({ visibleLevelIds: [] }).visibleLevelIds), [], 'An explicitly empty view remains empty');
+  const owner = {
+    doc,
+    get activeLevelId() { return f.props.activeLevelId; },
+    get visibleLevelIds() { return f.props.visibleLevelIds; },
+    changeWorkspace(patch) {
+      workspace = normalize(patch);
+      const view = {
+        levelChoice: workspace.levelId,
+        visibleLevelIds: workspace.visibleLevelIds,
+        doc,
+      };
+      f.update({
+        activeLevelId: vm.runInNewContext(activeExpression, view),
+        visibleLevelIds: workspace.visibleLevelIds,
+      });
+    },
+    cancel() { f.update({ cancelToken: f.props.cancelToken + 1 }); },
+    setSelected: selected => f.update({ selected }),
+    setTool: tool => f.update({ tool }),
+    setMessage() {},
+  };
+  const handlers = vm.runInNewContext(compile(levelHandlers.map(node => node.getText(editor)).join('\n') + '\n;({ chooseLevel, toggleLevel })'), owner);
+  const f = fixture({
+    document: doc,
+    visibleLevelIds: ['ground'],
+    onChooseLevel: handlers.chooseLevel,
+    onToggleLevel: handlers.toggleLevel,
+  });
+  const nav = () => flatten(f.tree).find(node => node.props?.['aria-label'] === 'Design levels');
+  const button = label => {
+    const item = flatten(nav()).find(node => node.type === 'button' && node.props['aria-label'] === label);
+    assert(item, 'Expected a canvas Level button labelled ' + label);
+    return item.props;
+  };
+  const name = level => button(`Set ${level} as active Level`);
+  const eye = level => button(`Show ${level} in 2D and 3D`);
+  const ground = doc.levels[0].name;
+  const wallShown = () => flatten(f.tree).some(node => node.props?.['data-entity'] === 'w0');
+  assert.equal(name(ground)['aria-current'], 'true');
+  assert.equal(eye(ground)['aria-pressed'], true);
+  assert.equal(eye('Upper')['aria-pressed'], false);
+  assert(name('Upper').className.split(' ').includes('text-muted-foreground'), 'Hidden Level name uses the muted eye color');
+  name('Upper').onClick();
+  assert.equal(f.props.activeLevelId, 'upper', 'Choose the drawing Level directly from the canvas');
+  assert.equal(name('Upper')['aria-current'], 'true');
+  assert(!name(ground)['aria-current']);
+  assert.equal(eye('Upper')['aria-pressed'], true, 'Activating a hidden Level reveals it');
+  assert(!name('Upper').className.includes('text-muted-foreground'), 'Revealing a Level restores its name color');
+  assert(wallShown(), 'Other visible Levels stay on');
+  f.update({ tool: 'wall' });
+  const beforeReselect = f.props.cancelToken;
+  name('Upper').onClick();
+  assert.equal(f.props.cancelToken, beforeReselect, 'Reselecting the active visible Level preserves the drawing tool and draft');
+  assert.equal(f.props.tool, 'wall');
+  f.click(290, 160);
+  f.click(335, 160);
+  assert.equal(f.calls.commit.length, 1);
+  assert.equal(f.props.document.walls.at(-1).levelId, 'upper', 'A wall drawn after activation belongs to that Level');
+  eye(ground).onClick();
+  assert(!wallShown());
+  eye(ground).onClick();
+  assert(wallShown());
+  assert.equal(f.props.activeLevelId, 'upper', 'Showing another Level preserves the current drawing Level');
+  eye('Upper').onClick();
+  assert.equal(f.props.activeLevelId, 'ground', 'Hiding the active Level transfers editing to a visible Level');
+  assert.equal(name(ground)['aria-current'], 'true');
+  assert.equal(eye(ground)['aria-pressed'], true);
+  assert.equal(eye('Upper')['aria-pressed'], false);
+  eye(ground).onClick();
+  assert(!wallShown());
+  assert.equal(eye(ground)['aria-pressed'], false);
+  assert.equal(f.props.activeLevelId, '', 'Hiding all Levels leaves no drawing Level');
+  assert(!name(ground)['aria-current'] && !name('Upper')['aria-current'], 'All hidden means no active label');
+  const beforeHiddenDraw = f.calls.commit.length;
+  f.update({ tool: 'wall' });
+  f.click(290, 160);
+  f.click(335, 160);
+  assert.equal(f.calls.commit.length, beforeHiddenDraw, 'The all-hidden plan cannot add a Wall');
+  eye(ground).onClick();
+  assert.equal(f.props.activeLevelId, 'ground', 'Showing the first Level also activates it');
+  assert.equal(eye(ground)['aria-pressed'], true);
+  name('Upper').onClick();
+  assert.equal(name('Upper')['aria-current'], 'true');
+  assert.equal(eye('Upper')['aria-pressed'], true);
+  eye(ground).onClick();
+  assert.equal(eye(ground)['aria-pressed'], false);
+  f.update({ tool: 'floor' });
+  assert.equal(eye('Upper')['aria-pressed'], true);
+  assert.equal(eye(ground)['aria-pressed'], false);
+  f.update({ disabled: true });
+  assert.equal(name(ground).disabled, true);
+  assert(nav().props.className.includes('absolute') && nav().props.className.includes('left-9') && nav().props.className.includes('threed-scene-panel-surface'));
+  for (const handler of ['onPointerDown', 'onWheel', 'onKeyDown']) {
+    let stopped = false;
+    nav().props[handler]({ stopPropagation() { stopped = true; } });
+    assert(stopped, 'Level controls isolate canvas input: ' + handler);
+  }
 }
-console.log('PASS: independent named level toggles, all-off/all-on geometry, stable visibility across tools and Blueprint bottom-left overlay.');
+console.log('PASS: canvas Level activation, wall drawing destination, visible fallback after hiding and no active Level when all are hidden.');
 
 // Exercise the wall face editor separately from the overhead plan.
 {

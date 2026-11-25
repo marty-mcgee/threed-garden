@@ -281,7 +281,7 @@ export function ProjectAssetsPanel({
                 {canEditProject && issue.modelId && <a className="mt-1 flex items-center gap-1 underline" href={`/admin/threed/models/${issue.modelId}?tab=files`} target="_blank" rel="noopener noreferrer">{issue.modelName || `Model #${issue.modelId}`} · Model Files <ExternalLink className="h-3 w-3 shrink-0" /><span className="sr-only"> (opens in a new tab)</span></a>}
               </li>)}</ul>
             </PersistentDetails>}
-            <ProjectMultimediaAssets key={`${selectedProjectId}:${projectAssetSearch}`} projectId={selectedProjectId!} search={projectAssetSearch} />
+            <ProjectMultimediaAssets canEdit={canEditProject} key={`${selectedProjectId}:${projectAssetSearch}`} projectId={selectedProjectId!} search={projectAssetSearch} />
           </div>
           {canEditProject && <PersistentDetails storageId="sensor-tools" open className="shrink-0 rounded-md border border-foreground/10 p-1 mt-2 max-h-[30%] overflow-y-auto" aria-label="Sensor Tools">
             <summary className="cursor-pointer px-1 py-2 text-xs font-semibold"><Radio aria-hidden="true" className="mr-1 inline h-3.5 w-3.5 text-cyan-600 dark:text-cyan-300" />Sensor Tools<ModelFieldHelp label="Sensor Tools">Select a Sensor Group to inspect its members, or create a new group. Select a Project asset to add and configure its Sensors.</ModelFieldHelp></summary><div className="space-y-2">

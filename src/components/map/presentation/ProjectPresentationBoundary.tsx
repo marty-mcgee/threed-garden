@@ -11,8 +11,10 @@ interface ProjectPresentationStatus {
 }
 
 const ProjectPresentationReporter = createContext<((status: ProjectPresentationStatus) => void) | null>(null);
+const ProjectPresentationReleased = createContext(true);
 
 export const useProjectPresentationReporter = () => useContext(ProjectPresentationReporter);
+export const useProjectPresentationReleased = () => useContext(ProjectPresentationReleased);
 
 /** A presentation boundary only: children keep their existing mount and resource owners. */
 export function ProjectPresentationBoundary({ projectId, mapOnly, children }: {
@@ -46,15 +48,17 @@ export function ProjectPresentationBoundary({ projectId, mapOnly, children }: {
   const preparing = !mapOnly && !current?.released;
 
   return <ProjectPresentationReporter.Provider value={report}>
-    <div className="relative h-[calc(100dvh-48px)] min-h-0 bg-[var(--threed-surface-color)]" data-testid="project-scene-workspace" aria-busy={preparing}>
-      <div className="relative h-full min-h-0" inert={preparing} aria-hidden={preparing || undefined} style={{ opacity: preparing ? 0 : 1 }}>
-        {children}
+    <ProjectPresentationReleased.Provider value={!preparing}>
+      <div className="relative h-[calc(100dvh-48px)] min-h-0 bg-[var(--threed-surface-color)]" data-testid="project-scene-workspace" aria-busy={preparing}>
+        <div className="relative h-full min-h-0" inert={preparing} aria-hidden={preparing || undefined} style={{ opacity: preparing ? 0 : 1 }}>
+          {children}
+        </div>
+        {preparing && <ThreeDProjectLoadingPresentation
+          progress={current?.progress ?? 35}
+          label={current?.label ?? 'Preparing ThreeD Project…'}
+          className="absolute inset-0 z-[1000]"
+        />}
       </div>
-      {preparing && <ThreeDProjectLoadingPresentation
-        progress={current?.progress ?? 35}
-        label={current?.label ?? 'Preparing ThreeD Project…'}
-        className="absolute inset-0 z-[1000]"
-      />}
-    </div>
+    </ProjectPresentationReleased.Provider>
   </ProjectPresentationReporter.Provider>;
 }
