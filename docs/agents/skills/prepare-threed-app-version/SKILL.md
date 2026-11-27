@@ -9,15 +9,19 @@ Use the version the Developer requests, including any prerelease suffix. An expl
 
 ## Resume an existing release
 
-On “continue” or “run the saved sub-tasks,” recover the target version, completed checks, accepted confirmations and any handoff already delivered from the release record and conversation. Compare that evidence with the current Git state. Resume an in-progress check or perform the first unfinished, authorized step and continue through the remaining preparation. Reuse passing evidence for matching inputs and revalidate affected inputs when they change.
+Treat “run the skill” as an execution request. “Implement this, then run the skill” includes both the workflow edit and the release run. A request to save or review skill instructions by itself ends with the skill work.
+
+On “continue” or “run the saved sub-tasks,” recover the target and progress from the matching release record, Git state and available conversation. Use that same release record to leave a fresh chat enough evidence to resume: which candidate was checked, which gates passed or failed, which confirmations apply, and the first unfinished step. Preserve approved release wording there when later drafts must reproduce it. Resume an in-progress check or perform the first unfinished, authorized step and continue through the remaining preparation. Reuse passing evidence for matching inputs and revalidate affected inputs when they change.
 
 If the Title and Description have already been delivered and only Marty's manual action remains, identify that action once and stop. Repeat completed deliverables when requested. When Marty confirms deployment, proceed directly to recording that confirmation. Ask for clarification only when a missing fact changes the next action and the available evidence cannot resolve it.
+
+The [v0.38.5 release record](../../../releases/v0.38.5.md) is a worked example of the ordering correction, scoped revalidation, final install evidence and production closeout. Use the current candidate's own measurements. While a long check runs, give a short status update from its actual output and keep monitoring it to completion.
 
 ## Establish the release scope
 
 Read [AGENTS.md](../../../../AGENTS.md) and [CONTEXT.md](../../../../CONTEXT.md) in full. Inspect the branch, HEAD, package and lockfile versions, staged and unstaged changes, and untracked release inputs. Compare the working tree with the last documented release and any existing draft for the target. Preserve manual edits and the index. Use the Developer’s title when supplied. Otherwise, name the verified App owner and the change that actually ships. If the diff contains only release metadata, describe it that way.
 
-For a later production-confirmation message, record the Developer's report in the matching release record, index and current checkpoint. Record a subsequent documentation deployment under the same version unless the Developer assigns another. Distinguish the locally observed commit from independently verified deployment and browser evidence.
+“Released to production” completes the deployment-confirmation step. Record it once in the matching release record, index and current checkpoint. Validate those documentation changes and report their Git status. Record a subsequent documentation deployment under the same version unless the Developer assigns another. Distinguish the locally observed commit from independently verified deployment and browser evidence.
 
 ## Assemble the isolated candidate
 
@@ -60,10 +64,10 @@ Draft exactly two copyable fields, each in its own fenced Markdown block with it
 - **Title** — Use the target version’s exact release commit subject from `git show -s --format=%s <release-commit>`, preserving punctuation and capitalization. For a candidate awaiting its first commit, draft the proposed subject as `v<version> - <release title>`. The Title block also serves as the copyable commit title.
 - **Description** — Combine the release entries in one block, oldest first. For a range, use each version’s heading and description, including the target version. Preserve previously accepted headings and prose verbatim, including App terminology. When drafting new entries, use the matching release records and include upgrade instructions only when readers must act.
 
-Keep release status, CI results, working-tree details, Next Steps, internal migration confirmations and the chat sign-off outside both blocks.
+Keep release status, CI results, working-tree details and Next Steps outside both blocks. Keep internal migration confirmations in the release record. Place Marty's sign-off, `-||- done.`, on its own final line after all chat text and copyable fields. Use it only at the end of the response.
 
 ## Final milestone — npm ci
 
 Run a fresh `npm ci` in the isolated candidate as the last execution milestone. Capture the actual console result, exit status and lockfile hashes before and after. A failed install or changed lockfile leaves the milestone open. If candidate content subsequently changes, revalidate affected inputs and finish again with `npm ci`. Appending the observed result to the release record is part of closing this milestone.
 
-After success, record the result. When the evidence satisfies the release criteria, deliver the prepared fields and readiness statement directly. Never ask Marty to certify Codex's tests, completion, or resolution of a testable defect. If a criterion is still unmet, identify the specific missing evidence and continue authorized work. A request solely for historical release notes can use the drafting instructions independently.
+After success, record the result. When the evidence satisfies the release criteria, deliver the prepared fields and readiness statement directly. In the surrounding chat, show the actual final install console line, exit status and lockfile integrity result. Distinguish gates run this time from prior results verified against matching inputs. Never ask Marty to certify Codex's tests, completion, or resolution of a testable defect. If a criterion is still unmet, identify the specific missing evidence and continue authorized work. A request solely for historical release notes can use the drafting instructions independently.
