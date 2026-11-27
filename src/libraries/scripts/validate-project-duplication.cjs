@@ -17,7 +17,7 @@ async function main() {
     'threedDuplicateReceipts', 'threedModelFiles', 'threedModelMaterialAssignments', 'threedModelCategoryAssignments',
     'threedModelAnimationAssignments', 'threedCharacters', 'threedCharacterModels', 'threedCharacterAnimationAssignments',
     'project', 'threed', 'projectThreed', 'projectMultimedia', 'projectTraffic', 'multimedia', 'traffic',
-    'threedModels', 'threedLayers', 'threedWeatherLogs', 'trafficChpCases',
+    'threedModelTextures', 'threedModels', 'threedLayers', 'threedWeatherLogs', 'trafficChpCases',
     'projectAssets', 'projectThreedMarkers', 'threedGroups', 'threedGroupDesignMembers', 'threedGroupModelMembers',
     'projectTerrainPlacements', 'threedTerrains', 'threedTerrainRevisions', 'threedGroundMaps',
     'threedDesigns', 'threedScenarios', 'threedSimulations', 'threedSimulationResults',
@@ -81,6 +81,11 @@ async function main() {
     const id = require.resolve(specifier);
     require.cache[id] = { id, loaded: true, exports };
   }
+  const blobCopies = [];
+  mock('@vercel/blob', { copy: async (source, path) => {
+    blobCopies.push({ source, path });
+    return { url: 'https://fixture.public.blob.vercel-storage.com/' + path };
+  } });
   mock('@/libraries/db/client', { db: driver });
   mock('@/libraries/auth', { auth: async () => actor ? { user: { id: actor } } : null });
   // Next supplies the server-only import marker in the deployed route.
@@ -293,7 +298,9 @@ async function main() {
   seed('threed_character_animation_assignments', { character_id: 110, user_id: 'owner', mode: 'disabled', action_key: 'walk' });
   seed('threed_terrains', { id: 110, user_id: 'owner' });
   seed('threed_terrain_revisions', { terrain_id: 110, revision: 5, heights_m: [0, 1, 2, 3] });
-  for (const kind of ['model', 'character', 'terrain']) {
+  const textureUrl = 'https://fixture.public.blob.vercel-storage.com/threed/users/owner/textures/source/wood.png';
+  seed('threed_model_textures', { id: 110, user_id: 'owner', file_name: 'wood.png', file_path: textureUrl, mime_type: 'image/png' });
+  for (const kind of ['model', 'character', 'terrain', 'texture']) {
     const body = { kind, sourceId: 110, name: 'Alternative', requestKey: randomUUID() };
     const call = () => duplicateObject(new Request('http://fixture/api/threed/duplicate', { method: 'POST', body: JSON.stringify(body) }));
     const response = await call();
@@ -310,7 +317,14 @@ async function main() {
       assert.notEqual(row('select character_id from threed_characters where id=?', id).character_id, 'guide');
       assert.equal(row('select mode from threed_character_animation_assignments where character_id=?', id).mode, 'disabled');
     } else {
-      assert.equal(row('select revision from threed_terrain_revisions where terrain_id=?', id).revision, 1);
+      if (kind === 'texture') {
+        assert.equal(blobCopies.length, 1);
+        assert.equal(blobCopies[0].source, textureUrl);
+        assert.ok(blobCopies[0].path.startsWith('threed/users/owner/textures/copies/'));
+        assert.notEqual(row('select file_path from threed_model_textures where id=?', id).file_path, textureUrl);
+      } else {
+        assert.equal(row('select revision from threed_terrain_revisions where terrain_id=?', id).revision, 1);
+      }
     }
     actor = 'visitor';
     assert.equal((await call()).status, 404);

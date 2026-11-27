@@ -134,3 +134,88 @@ export function editObject(doc: DesignDocument, id: string, edit: ObjectEdit): D
   }
   return validateDesign(next);
 }
+
+/** Copy each referenced node once, including nodes shared across selected shapes. */
+export function duplicateDesignSelection(doc: DesignDocument, selected: ReadonlySet<string>, makeId: () => string) {
+  const nodes = [...doc.nodes];
+  const sourceNodes = new Map(nodes.map(node => [node.id, node]));
+  let dx = .3048;
+  let dz = .3048;
+  const singleWall = selected.size === 1 && doc.walls.find(wall => selected.has(wall.id));
+  if (singleWall) {
+    const start = sourceNodes.get(singleWall.start)!;
+    const end = sourceNodes.get(singleWall.end)!;
+    const length = Math.hypot(end.x - start.x, end.z - start.z);
+    const spacing = Math.max(.3048, singleWall.thickness + .0254);
+    dx = (start.z - end.z) / length * spacing;
+    dz = (end.x - start.x) / length * spacing;
+  }
+  const nodeIds = new Map<string, string>();
+  const copies = new Map<string, string>();
+  function copyId(id: string) {
+    const next = makeId();
+    copies.set(id, next);
+    return next;
+  }
+  function copyNode(id: string) {
+    const known = nodeIds.get(id);
+    if (known) return known;
+    const source = sourceNodes.get(id);
+    if (!source) throw Error('Missing Design point.');
+    const next = makeId();
+    nodeIds.set(id, next);
+    nodes.push({ id: next, x: roundMetres(source.x + dx), z: roundMetres(source.z + dz) });
+    return next;
+  }
+  function polygons<T extends DesignDocument['floors'][number] | DesignDocument['roofs'][number]>(items: T[]) {
+    return items.filter(item => selected.has(item.id)).map(item => ({
+      ...item, id: copyId(item.id), vertices: item.vertices.map(copyNode)
+    }));
+  }
+  const walls = doc.walls.filter(w => selected.has(w.id)).map(w => ({
+    ...w, id: copyId(w.id), start: copyNode(w.start), end: copyNode(w.end)
+  }));
+  const floors = polygons(doc.floors);
+  const roofs = polygons(doc.roofs);
+  const stairs = (doc.stairs ?? []).filter(s => selected.has(s.id)).map(s => ({
+    ...s, id: copyId(s.id), anchor: copyNode(s.anchor)
+  }));
+  const openings = doc.openings.filter(o => copies.has(o.wallId)).map(o => ({
+    ...o, id: copyId(o.id), wallId: copies.get(o.wallId)!
+  }));
+  const roofOpenings = doc.roofOpenings.filter(o => copies.has(o.roofId)).map(o => ({
+    ...o, id: copyId(o.id), roofId: copies.get(o.roofId)!
+  }));
+  let next = validateDesign({
+    ...doc, nodes, walls: [...doc.walls, ...walls], floors: [...doc.floors, ...floors],
+    roofs: [...doc.roofs, ...roofs], openings: [...doc.openings, ...openings],
+    roofOpenings: [...doc.roofOpenings, ...roofOpenings],
+    ...(doc.stairs ? { stairs: [...doc.stairs, ...stairs] } : {})
+  });
+  // Standalone openings stay on their existing host. Try adjacent free positions.
+  for (const o of [...doc.openings, ...doc.roofOpenings]) {
+    if (!selected.has(o.id) || copies.has(o.id)) continue;
+    const id = copyId(o.id);
+    const candidates: DesignDocument[] = [];
+    if ('wallId' in o) {
+      for (const peer of next.openings.filter(p => p.wallId === o.wallId)) {
+        for (const offset of [peer.offset + peer.width + .025401, peer.offset - o.width - .025401]) {
+          candidates.push({ ...next, openings: [...next.openings, { ...o, id, offset }] });
+        }
+      }
+    } else {
+      for (const peer of next.roofOpenings.filter(p => p.roofId === o.roofId)) {
+        for (const [along, across] of [[peer.along + peer.width + .025401, peer.across], [peer.along - o.width - .025401, peer.across], [peer.along, peer.across + peer.length + .025401], [peer.along, peer.across - o.length - .025401]]) {
+          candidates.push({ ...next, roofOpenings: [...next.roofOpenings, { ...o, id, along, across }] });
+        }
+      }
+    }
+    let placed = false;
+    for (const candidate of candidates) {
+      try { next = validateDesign(candidate); placed = true; break; } catch { /* Try the next adjacent location. */ }
+    }
+    if (!placed) throw Error('No suitable adjacent space for this opening. Select its host to duplicate them together.');
+  }
+  if (![...selected].every(id => copies.has(id))) throw Error('Select existing Design objects to duplicate.');
+  return { document: next, copies };
+}

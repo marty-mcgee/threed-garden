@@ -1,4 +1,5 @@
 'use client';
+import { DuplicateSavedObject } from '../DuplicateSavedObject';
 import { EntityAlbumsSection } from '../multimedia/EntityAlbumsSection';
 import { useAdminListQueryState } from '@/components/admin/shared/use-admin-list-query-state';
 
@@ -220,6 +221,7 @@ export function ThreeDModelTexturesCRUD() {
               <TableCell className="py-1">{texture.isActive ? <Check aria-label="Active" className="h-4 w-4 text-green-600" /> : <X aria-label="Inactive" className="h-4 w-4 text-gray-400" />}</TableCell>
               <TableCell className="py-1 text-xs">{formatSize(texture.fileSize)}</TableCell>
               <TableCell className="py-1"><div className="flex justify-end gap-1">
+                <DuplicateSavedObject kind="texture" sourceId={texture.id} compact disabled={busy || editingId !== null} onCopied={loadTextures} />
                 <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={`Rename ${texture.textureName}`} disabled={busy} onClick={() => { setEditingId(texture.id); setEditingName(texture.textureName); }}><Pencil className="h-4 w-4" /></Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={`${texture.isActive ? 'Deactivate' : 'Activate'} ${texture.textureName}`} disabled={busy} onClick={() => void updateTexture(texture.id, { isActive: !texture.isActive })}>{texture.isActive ? <ToggleRight className="h-4 w-4" /> : <ToggleLeft className="h-4 w-4" />}</Button>
                 <Button variant="ghost" size="icon" className="h-8 w-8" aria-label={`Delete ${texture.textureName}`} title={references(texture) ? 'Remove Model references before deleting' : 'Delete Texture'} disabled={busy || references(texture) > 0} onClick={() => void deleteTextures([texture])}><Trash2 className="h-4 w-4" /></Button>

@@ -8,7 +8,7 @@ Draw walls, floors and roofs on the 2D Design Canvas and see them in the 3D Scen
 ![React](https://img.shields.io/badge/React-20232A?logo=react&logoColor=61DAFB)
 ![Three.js](https://img.shields.io/badge/Three.js-111827?logo=threedotjs&logoColor=white)
 
-**[🎮 Explore the demo](https://threedgarden.com/#garden-demo)** · **[📚 Learn ThreeD](https://threedgarden.com/learn)** · **[🚀 Create your first Project](docs/users/GETTING_STARTED.md)** · **[💻 Run locally](#run-locally)**
+**[🎮 Explore the demo](https://threedgarden.com/#garden-demo)** · **[📚 Learn ThreeD](https://threedgarden.com/learn)** · **[🚀 Create your first Project](https://threedgarden.com/learn/first-project)** · **[💻 Run locally](#run-locally)**
 
 [Latest features](#latest-features) · [Why build with ThreeD App?](#why-build-with-threed-app) · [Structural basics](#structural-basics) · [Modules](#modules)
 
@@ -188,7 +188,7 @@ A **Project** brings enabled modules and assigned assets into a shared workspace
 - Save supported Project content and workspace state through the existing Project Save/load workflow.
 - Work with geographic maps and Ground Map settings alongside the Scene.
 
-**Learn more:** [Dashboard guide](docs/users/DASHBOARD_GUIDE.md) · [Ground Maps](docs/users/THREED_GROUND_MAPS.md) · [Scene controls](docs/users/THREED_CONTROLS.md)
+**Learn more:** [Dashboard guide](docs/users/DASHBOARD_GUIDE.md) · [Align a ground map](https://threedgarden.com/learn/guides/ground-map) · [Ground Maps](docs/users/THREED_GROUND_MAPS.md) · [Scene controls](docs/users/THREED_CONTROLS.md)
 
 <a id="design"></a>
 ## 📐 Design and Architecture
@@ -214,7 +214,7 @@ Project measurement preferences support Imperial and Metric presentation. See [C
 
 *Architectural content and reusable Models share a Project workspace. This repository screenshot documents an earlier interface checkpoint; current controls may differ.*
 
-**Learn more:** [ThreeD Designs](docs/developers/THREED_DESIGNS.md) · [Architecture capabilities and planned extensions](docs/plans/design-architecture-capabilities.md)
+**Learn more:** [Draw a room](https://threedgarden.com/learn/guides/draw-room) · [ThreeD Designs](docs/developers/THREED_DESIGNS.md) · [Architecture capabilities and planned extensions](docs/plans/design-architecture-capabilities.md)
 
 <a id="models"></a>
 ## 🧩 Models, Files, and Textures
@@ -242,7 +242,7 @@ Keep reusable **Models** separate from the instances placed in your Projects.
 
 Check file readiness and previews before placing imported assets. Compatibility depends on source geometry, rigs, materials, and available dependencies.
 
-**Learn more:** [Model administration](docs/developers/THREED_MODEL_ADMIN.md) · [Model runtime API](docs/developers/THREED_MODEL_RUNTIME_API.md) · [OBJ/MTL import](docs/developers/THREED_LEGACY_OBJ_IMPORT.md)
+**Learn more:** [Place a Model](https://threedgarden.com/learn/guides/add-model) · [Model administration](docs/developers/THREED_MODEL_ADMIN.md) · [Model runtime API](docs/developers/THREED_MODEL_RUNTIME_API.md) · [OBJ/MTL import](docs/developers/THREED_LEGACY_OBJ_IMPORT.md)
 
 <a id="builder"></a>
 ## 🏗 Model Builder
@@ -273,7 +273,7 @@ Bring Scenes to life with supported rigged Models, assigned animations, and inte
 
 Animation previews and world-changing Actions have different responsibilities. Available behavior depends on the Character, mappings, targets, and runtime support.
 
-**Learn more:** [Character guide](docs/developers/THREED_CHARACTERS.md) · [Animation library](docs/developers/THREED_ANIMATIONS_LIBRARY.md) · [User controls](docs/users/THREED_CONTROLS.md)
+**Learn more:** [Try Character actions](https://threedgarden.com/learn/guides/character-actions) · [Character guide](docs/developers/THREED_CHARACTERS.md) · [Animation library](docs/developers/THREED_ANIMATIONS_LIBRARY.md) · [User controls](docs/users/THREED_CONTROLS.md)
 
 <a id="simulations"></a>
 ## ⚽ Physics, Sensors, Scenarios, and Simulations
@@ -292,7 +292,7 @@ Playable soccer exercises Character movement, targeted kicks, ball interaction, 
 
 Execution is limited to the Actions implemented by the Project runner. See [Current scope](#current-scope) and the Simulation guide for boundaries.
 
-**Learn more:** [Simulation guide](docs/developers/THREED_SIMULATIONS.md) · [Physics and Sensors](docs/developers/THREED_PHYSICS_SENSORS.md)
+**Learn more:** [Explore Scenarios and Simulations](https://threedgarden.com/learn/guides/scenarios-simulations) · [Simulation guide](docs/developers/THREED_SIMULATIONS.md) · [Physics and Sensors](docs/developers/THREED_PHYSICS_SENSORS.md)
 
 <a id="garden"></a>
 ## 🌱 Garden Planning and FarmBot
@@ -339,7 +339,7 @@ Browse a content library and use the shared Dashboard Player for supported audio
 
 Admin provides content management; Dashboard provides discovery and playback. File visibility and delivery follow existing authorization. Playback depends on browser codec support and media availability.
 
-**Learn more:** [Dashboard Multimedia](docs/users/DASHBOARD_GUIDE.md) · [Lyrics workflow](docs/developers/MULTIMEDIA_LYRICS.md) · [Multimedia administration](docs/users/ADMIN_GUIDE.md)
+**Learn more:** [Work with Multimedia Lyrics](https://threedgarden.com/learn/guides/multimedia-lyrics) · [Dashboard Multimedia](docs/users/DASHBOARD_GUIDE.md) · [Lyrics workflow](docs/developers/MULTIMEDIA_LYRICS.md) · [Multimedia administration](docs/users/ADMIN_GUIDE.md)
 
 <a id="traffic"></a>
 ## 🚦 Traffic and Geographic Information
@@ -366,7 +366,7 @@ Coverage and freshness depend on the upstream providers and configured integrati
 
 Super Admins use **Learn > All Guides** and **Add Guide** to manage content. Public visitors use **Learn ThreeD** from the App menu to read Active and Published guides. Learn has its own Module icon/color in App Settings and needs no Project assignment. See [Learn setup and authoring](docs/developers/THREED_LEARN.md) for the scoped SQL prerequisite and import workflow; [v0.29.0 release record](docs/releases/v0.29.0.md) tracks validation and release status.
 
-**Learn more:** [Getting Started](docs/users/GETTING_STARTED.md) · [Documentation index](docs/README.md) · [App Settings](docs/users/SETTINGS.md)
+**Learn more:** [Browse published guides](https://threedgarden.com/learn#how-to) · [Getting Started](docs/users/GETTING_STARTED.md) · [Documentation index](docs/README.md) · [App Settings](docs/users/SETTINGS.md)
 
 <a id="admin"></a>
 ## ⚙ Administration and Workspace Settings
@@ -417,7 +417,7 @@ ThreeD is actively developed. Use the [current context](CONTEXT.md) for acceptan
 | New visitors | [Learn ThreeD](https://threedgarden.com/learn) · [Getting started](docs/users/GETTING_STARTED.md) |
 | Project creators | [Dashboard](docs/users/DASHBOARD_GUIDE.md) · [Controls](docs/users/THREED_CONTROLS.md) |
 | Content managers | [Admin](docs/users/ADMIN_GUIDE.md) · [Models](docs/developers/THREED_MODEL_ADMIN.md) |
-| Developers | [Architecture](docs/developers/ARCHITECTURE.md) · [Data model](docs/developers/DATA_MODEL.md) · [API](docs/developers/API_GUIDE.md) |
+| Developers | [Architecture](docs/developers/ARCHITECTURE.md) · [Explore the App data structure](https://threedgarden.com/learn/data-structure) · [Data model](docs/developers/DATA_MODEL.md) · [API](docs/developers/API_GUIDE.md) |
 | Contributors and coding agents | [Working instructions](AGENTS.md) · [Task checklists](docs/agents/TASK_CHECKLISTS.md) |
 
 ## 🛠 Technology

@@ -1,8 +1,10 @@
-import { randomUUID } from 'node:crypto';
+import { copy as copyBlob } from '@vercel/blob';
+import { createThreeDBlobPath, isOwnedTextureBlob } from '@/libraries/services/threed/models/model-blob-paths';
+import { createHash, randomUUID } from 'node:crypto';
 import { and, desc, eq } from 'drizzle-orm';
 import { auth } from '@/libraries/auth';
 import { db, type Transaction } from '@/libraries/db/client';
-import { threedModels, threedCharacters, threedTerrains, threedTerrainRevisions, threedModelFiles, threedModelMaterialAssignments, threedModelCategoryAssignments, threedModelAnimationAssignments, threedCharacterModels, threedCharacterAnimationAssignments } from '@/libraries/schema/threed';
+import { threedModelTextures, threedModels, threedCharacters, threedTerrains, threedTerrainRevisions, threedModelFiles, threedModelMaterialAssignments, threedModelCategoryAssignments, threedModelAnimationAssignments, threedCharacterModels, threedCharacterAnimationAssignments } from '@/libraries/schema/threed';
 import { copyAssociatedAlbums } from '@/libraries/services/project/duplicate-project-assignments';
 
 import { completeDuplicate, DuplicateError as CopyError, reserveDuplicate } from '@/libraries/services/threed/duplication-receipt';
@@ -71,6 +73,33 @@ async function copyTerrain(tx: Transaction, owner: string, source: number, name:
   return copy.id;
 }
 
+async function copyTexture(tx: Transaction, owner: string, source: number, name: string, requestKey: string) {
+  const [texture] = await tx.select().from(threedModelTextures)
+    .where(and(eq(threedModelTextures.id, source), eq(threedModelTextures.userId, owner))).for('share');
+  if (!texture) throw new CopyError('Texture not found.', 404);
+  if (!isOwnedTextureBlob(texture.filePath, owner)) {
+    throw new CopyError('This Texture uses a legacy or external file. Upload it to your Texture library before duplicating.', 422);
+  }
+  // A retry after an interrupted transaction writes to the same dedicated copy path.
+  const key = createHash('sha256').update(JSON.stringify([source, name, requestKey])).digest('hex');
+  const path = createThreeDBlobPath(owner, 'textures', texture.fileName, requestKey)
+    .replace('/textures/', '/textures/copies/' + key + '/');
+  const blob = await copyBlob(texture.filePath, path, {
+    access: 'public',
+    addRandomSuffix: false,
+    allowOverwrite: true,
+    contentType: texture.mimeType
+  });
+  const { id, createdAt, updatedAt, ...fields } = texture;
+  const [saved] = await tx.insert(threedModelTextures).values({
+    ...fields,
+    textureName: name,
+    filePath: blob.url
+  }).returning({ id: threedModelTextures.id });
+  await copyAssociatedAlbums(tx, owner, 'texture', new Map([[source, saved.id]]));
+  return saved.id;
+}
+
 export async function POST(request: Request) {
   try {
     const owner = (await auth())?.user?.id;
@@ -78,12 +107,12 @@ export async function POST(request: Request) {
     const input = await request.json().catch(() => null);
     const { kind, sourceId, requestKey } = input ?? {};
     const name = typeof input?.name === 'string' ? input.name.trim() : '';
-    if (!['model', 'character', 'terrain'].includes(kind) || !Number.isSafeInteger(sourceId) || sourceId <= 0 || sourceId > 2147483647 || !name || name.length > 120 || typeof requestKey !== 'string' || !/^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}$/i.test(requestKey)) throw new CopyError('Invalid duplication request.', 400);
+    if (!['model', 'character', 'terrain', 'texture'].includes(kind) || !Number.isSafeInteger(sourceId) || sourceId <= 0 || sourceId > 2147483647 || !name || name.length > 120 || typeof requestKey !== 'string' || !/^[\da-f]{8}(?:-[\da-f]{4}){3}-[\da-f]{12}$/i.test(requestKey)) throw new CopyError('Invalid duplication request.', 400);
     const result = await db.transaction(async tx => {
       const reservation = await reserveDuplicate(tx, { userId: owner, requestKey, sourceId, kind, name });
       if (reservation.existingId) return { id: reservation.existingId, created: false };
-      const copy = kind === 'model' ? copyModel : kind === 'character' ? copyCharacter : copyTerrain;
-      const id = await copy(tx, owner, sourceId, name);
+      const copy = kind === 'model' ? copyModel : kind === 'character' ? copyCharacter : kind === 'terrain' ? copyTerrain : copyTexture;
+      const id = await copy(tx, owner, sourceId, name, requestKey);
       await completeDuplicate(tx, reservation, id);
       return { id, created: true };
     }, { isolationLevel: 'repeatable read' });

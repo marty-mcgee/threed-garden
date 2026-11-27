@@ -19,7 +19,7 @@ export const threedDuplicateReceipts = pgTable('threed_duplicate_receipts', {
   destinationId: integer('destination_id'),
 }, table => [
   primaryKey({ columns: [table.userId, table.requestKey] }),
-  check('threed_duplicate_receipts_kind_check', sql`${table.kind} in ('project','model','character','terrain')`),
+  check('threed_duplicate_receipts_kind_check', sql`${table.kind} in ('project','model','character','terrain','texture')`),
   check('threed_duplicate_receipts_content_check', sql`(${table.kind} = 'project' and ${table.requestHash} is not null and ${table.requestHash} ~ '^[0-9a-f]{64}$') or (${table.kind} <> 'project' and ${table.sourceId} is not null and ${table.requestHash} is null)`),
   check('threed_duplicate_receipts_source_id_check', sql`${table.sourceId} > 0`),
 ]);

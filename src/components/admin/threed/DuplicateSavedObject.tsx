@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/compone
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
-export function DuplicateSavedObject({ kind, sourceId, compact = false, disabled = false, onCopied }: { kind: 'project' | 'model' | 'character' | 'terrain'; sourceId: number; compact?: boolean; disabled?: boolean; onCopied?: () => void }) {
+export function DuplicateSavedObject({ kind, sourceId, compact = false, disabled = false, onCopied }: { kind: 'project' | 'model' | 'character' | 'terrain' | 'texture'; sourceId: number; compact?: boolean; disabled?: boolean; onCopied?: () => void }) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [error, setError] = useState('');
@@ -46,8 +46,8 @@ export function DuplicateSavedObject({ kind, sourceId, compact = false, disabled
     <Dialog open={open} onOpenChange={next => { if (!submitting.current) { setOpen(next); if (!next && result) onCopied?.(); } }}>
       <DialogContent>
         <DialogTitle>Duplicate {label} #{sourceId}</DialogTitle>
-        <DialogDescription>{kind === 'project' ? 'Create a private copy of the saved Project. To include unsaved Scene edits, use Save As: New Version in the Scene.' : kind === 'terrain' ? 'Copy the latest saved surface into revision 1 of a new Terrain.' : 'Create an independent record from the last saved settings.'}</DialogDescription>
-        {result ? <Button asChild><a href={kind === 'project' ? '/admin/projects/' + result : '/admin/threed/' + kind + 's/' + result} target="_blank" rel="noopener noreferrer">Open {label} #{result} in a new tab</a></Button> :
+        <DialogDescription>{kind === 'project' ? 'Create a private copy of the saved Project. To include unsaved Scene edits, use Save As: New Version in the Scene.' : kind === 'texture' ? 'Copy this Texture and its stored image. Existing Models keep their current assignments.' : kind === 'terrain' ? 'Copy the latest saved surface into revision 1 of a new Terrain.' : 'Create an independent record from the last saved settings.'}</DialogDescription>
+        {result && kind === 'texture' ? <Button onClick={() => { setOpen(false); onCopied?.(); }}>Done (Texture #{result})</Button> : result ? <Button asChild><a href={kind === 'project' ? '/admin/projects/' + result : '/admin/threed/' + kind + 's/' + result} target="_blank" rel="noopener noreferrer">Open {label} #{result} in a new tab</a></Button> :
           <form className="space-y-3" onSubmit={event => { event.preventDefault(); void duplicate(); }}>
             <Label htmlFor="copy-name">New {label} name</Label>
             <Input id="copy-name" required maxLength={120} value={name} disabled={busy || !!attempt.current} onChange={event => setName(event.target.value)} />

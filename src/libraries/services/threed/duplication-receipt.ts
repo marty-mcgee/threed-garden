@@ -1,7 +1,7 @@
 import { and, eq } from 'drizzle-orm';
 import type { Transaction } from '@/libraries/db/client';
 import { project } from '@/libraries/schema/project';
-import { threedCharacters, threedDuplicateReceipts as receipts, threedModels, threedTerrains } from '@/libraries/schema/threed';
+import { threedCharacters, threedDuplicateReceipts as receipts, threedModels, threedModelTextures, threedTerrains } from '@/libraries/schema/threed';
 
 export class DuplicateError extends Error {
   constructor(message: string, readonly status: number) { super(message); }
@@ -12,6 +12,7 @@ const destinations = {
   model: threedModels,
   character: threedCharacters,
   terrain: threedTerrains,
+  texture: threedModelTextures,
 };
 
 interface CopyIdentity {

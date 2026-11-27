@@ -4,6 +4,8 @@ In **Admin → Projects**, search by name, description or ID and filter by activ
 
 In Models, Characters and Terrains, the list row offers a Duplicate icon beside Edit. The saved record’s editor also offers a labeled Duplicate action in the workspace header.
 
+In Model Textures, choose **Duplicate** beside Rename and enter a name. Uploaded Textures get their own file and retain their Album associations. Legacy or external files must first be uploaded to the Texture library. This action requires the [Texture duplication migration](../releases/sql/threed-texture-duplication.sql).
+
 In a standalone Model, Character or Terrain editor, choose **Duplicate saved Model**, **Duplicate saved Character** or **Duplicate saved Terrain**. Give the copy a name, choose **Create copy**, then open its editor in a new tab. Save any edits you want included before duplicating. A Terrain copy begins at revision 1 using its latest saved surface.
 
 Use Admin at `/admin` to manage your Projects and reusable content. Existing users can sign in at `/auth/sign-in` during the temporary registration pause. An active, non-deleted Super Admin can also manage Users and global Module appearance. That role does not grant ownership of another User's private content.

@@ -63,3 +63,7 @@ export function isOwnedStagedModelBlobUrl(value: unknown, userId: string): value
     return path.startsWith(legacy) && /^\d+\.(?:glb|gltf|fbx|obj|usdz)$/i.test(path.slice(legacy.length));
   } catch { return false; }
 }
+
+export function isOwnedTextureBlob(path: string, userId: string) {
+  return blobPath(path)?.startsWith(owner(userId) + '/textures/') === true;
+}

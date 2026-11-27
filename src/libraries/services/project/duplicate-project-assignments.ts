@@ -71,7 +71,7 @@ export async function validateCopyCatalogAssets(tx: Transaction, owner: string, 
 export async function copyAssociatedAlbums(
   tx: Transaction,
   owner: string,
-  kind: 'ground_map' | 'design' | 'simulation' | 'scenario' | 'model' | 'model_file' | 'character',
+  kind: 'ground_map' | 'design' | 'simulation' | 'scenario' | 'model' | 'model_file' | 'character' | 'texture',
   ids: ReadonlyMap<number, number>,
 ) {
   for (const batch of copyBatches(Array.from(ids.keys(), String))) {

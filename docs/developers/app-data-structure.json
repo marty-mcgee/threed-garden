@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-11-25",
+  "generatedAt": "2026-11-27",
   "branch": "main",
-  "head": "20e5dd9951480ea0e7c6815819ff32830123e8bb",
-  "version": "0.38.2",
+  "head": "968da09a98375fee913a20ca441eff32a9015c6c",
+  "version": "0.38.3",
   "summary": {
     "tables": 96,
     "columns": 1308,
@@ -7602,7 +7602,7 @@
       "checks": [
         {
           "name": "threed_duplicate_receipts_kind_check",
-          "expression": "\"threed_duplicate_receipts\".\"kind\" in ('project','model','character','terrain')"
+          "expression": "\"threed_duplicate_receipts\".\"kind\" in ('project','model','character','terrain','texture')"
         },
         {
           "name": "threed_duplicate_receipts_content_check",
@@ -24966,7 +24966,7 @@
     "src/libraries/schema/settings/index.ts": "36c9ce83d70c4517b44952899574a47c68798551b3c1a63992819e89063ced55",
     "src/libraries/schema/threed/album-associations.ts": "f1dfc1d4701a484c1d0b8cd8582768aa61b9585b19a6d3c693ab9c2cc619dff8",
     "src/libraries/schema/threed/groups.ts": "c74c0789eb35c6d2894b5d935d84680b75d50549bc785515afbca6bb46e505f7",
-    "src/libraries/schema/threed/index.ts": "df9b46083002d6c0720b1c982d53b1784c60413ef59b8fa55c163ac4781ed883",
+    "src/libraries/schema/threed/index.ts": "a00bc7e37faba11ab88a93dbd36878971bf20cc39d90300f43bdb2db53e8853c",
     "src/libraries/schema/traffic/index.ts": "d15d70e180a2cbacc693fb1c9ea8575585125fe7f7e0fdc7a4daee22d316568e",
     "src/libraries/services/project/project-snapshot-markers.ts": "c0586a5fc71f3a9d7199f5c3dd8db601f86b3384cb75bafaccd473c6f5d0bd0a",
     "src/libraries/services/threed/multimedia/album-entity-registry.ts": "68fad922b0b7db61f188d68322e8e05437a2e7911dca0b9325fa8e7ee9d9c83b"

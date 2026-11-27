@@ -4,7 +4,7 @@ import type { DesignModelSelection, SaveDesignModel } from './DesignModelPropert
 
 import { useEffect, useId, useMemo, useRef, useState, type PointerEvent, type ReactNode, type SetStateAction, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Group, Ungroup, Scissors, Link2, Unlink2, CircleMinus, Check, Eye, EyeOff, Focus, Maximize, RotateCcw, Tags, Ruler, type LucideIcon } from 'lucide-react';
+import { Copy, Group, Ungroup, Scissors, Link2, Unlink2, CircleMinus, Check, Eye, EyeOff, Focus, Maximize, RotateCcw, Tags, Ruler, type LucideIcon } from 'lucide-react';
 import { ContextMenu, ContextMenuTrigger, ContextMenuContent, ContextMenuItem, ContextMenuSeparator } from '@/components/ui/context-menu';
 import { WallCutoutEditor } from './WallCutoutEditor';
 import { DesignAction } from './DesignAction';
@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { doorIsOpen, nearestRoofEdge, withinRoof, cutoutBounds, distance, insidePolygon, roofFrame, roofOpeningFootprint, INCH, levelDocument, visibleLevelsDocument, mergeNodes, moveNodes, openingFootprint, openingMargin, roundMetres, screenToPlan, snapPoint, validateDesign, signedArea, wallFrame, wallHeightAt,
   stairFootprint, stairLayout, planObjectColor, floorSurfaceLabel, type DesignStairs, type FloorSurface, type PlanObject, type DesignDocument, type PlanPoint, type PlanView } from '@/libraries/services/threed/design/document';
 import { formatPlanLength, framePlan, gridFeet as planGridFeet, rulerTicks, RULER_SIZE, zoomPlan } from '@/libraries/services/threed/design/plan-navigation';
-import { entityPoints, setStairFootprint } from '@/libraries/services/threed/design/object-properties';
+import { duplicateDesignSelection, entityPoints, setStairFootprint } from '@/libraries/services/threed/design/object-properties';
 import type { ModelPlanImage } from '@/libraries/services/threed/models/model-plan-image';
 import { terrainHeightAt, terrainPlanCells, type ProjectTerrainSurface } from '@/libraries/services/threed/terrains/terrain-core';
 import { wallFootprint } from '@/libraries/services/threed/design/geometry';
@@ -1066,6 +1066,28 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       onMessage(editableFloor ? `${floorLabel} detached.` : 'Wall detached.');
     } catch (error) { onMessage((error as Error).message); }
   }
+  const singleSelection = tool === 'select' && selected && entityPoints(active, selected).length ? [selected] : [];
+  const duplicateIds = tool === 'objects' ? boxed : new Set(singleSelection);
+  const canDuplicate = enabled && !disabled && !editingHidden && duplicateIds.size > 0;
+  const includesModels = tool === 'objects' && modelIds.length > 0;
+  const duplicateLabel = duplicateIds.size === 1 && active.walls.some(w => duplicateIds.has(w.id)) ? 'Duplicate Wall' : 'Duplicate Selection';
+  function duplicateSelection() {
+    if (!canDuplicate) return;
+    if (includesModels) { onMessage('Select only Design objects. Use Admin Models to duplicate a catalog Model.'); return; }
+    try {
+      const result = duplicateDesignSelection(doc, duplicateIds, makeId);
+      onCommit(result.document);
+      setActivePoint(null);
+      if (tool === 'objects') {
+        setBoxed(new Set(result.copies.values()));
+        onSelect(null);
+      } else {
+        onDrawComplete(result.copies.get(selected!)!);
+      }
+      onMessage('Duplicated. Drag the highlighted copy to move it.');
+    } catch (error) { onMessage((error as Error).message); }
+  }
+  const duplicateButton = canDuplicate && <DesignAction label={duplicateLabel} onClick={duplicateSelection}><Copy className="size-3.5" aria-hidden="true" /></DesignAction>;
   const wallControls = (tool === 'wall' || editableWall) && <>
     <DesignAction label="Connect Wall Endpoints" aria-pressed={connectWalls} variant={connectWalls ? 'secondary' : 'outline'} onClick={() => setConnectWalls(!connectWalls)}><Link2 aria-hidden="true" className="size-3.5" /></DesignAction>
     {editableWall && <DesignAction label="Detach Wall" disabled={!sharedEnds.length} onClick={detachShape}><Unlink2 aria-hidden="true" className="size-3.5" /></DesignAction>}
@@ -1087,10 +1109,10 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
     {cutoutWall && <WallCutoutEditor key={cutoutWall.id + (selectedWallCutout?.id ?? '')} doc={doc} wall={cutoutWall} opening={selectedWallCutout} units={measurementUnits}
       onCancel={() => onDrawComplete(selectedWallCutout?.id ?? cutoutWall.id)}
       onFinish={(next,id) => { onCommit(next); onDrawComplete(id); onMessage('Wall Cutout finished. Save Project to keep it.'); }} />}
-    {embedded && enabled && <div data-testid="design-canvas-tools" role="toolbar" aria-label="Design drawing and view tools" className="threed-workspace-panel threed-scene-panel-surface absolute z-10 flex max-w-[calc(100%-40px)] flex-nowrap items-center gap-1 overflow-x-auto [&>nav]:flex-nowrap [&>nav]:shrink-0 rounded-md border p-1 shadow-md" style={{ right: 8, top: RULER_SIZE + 8 }} onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}>{drawingActions ? drawingActions(groupControls) : groupControls}{wallControls}{floorControls}{removeButton}{groupPicker}{viewActions}</div>}
+    {embedded && enabled && <div data-testid="design-canvas-tools" role="toolbar" aria-label="Design drawing and view tools" className="threed-workspace-panel threed-scene-panel-surface absolute z-10 flex max-w-[calc(100%-40px)] flex-nowrap items-center gap-1 overflow-x-auto [&>nav]:flex-nowrap [&>nav]:shrink-0 rounded-md border p-1 shadow-md" style={{ right: 8, top: RULER_SIZE + 8 }} onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}>{drawingActions ? drawingActions(groupControls) : groupControls}{duplicateButton}{wallControls}{floorControls}{removeButton}{groupPicker}{viewActions}</div>}
     {!embedded && <div data-testid="design-plan-header" className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-white/10 px-3 py-2 text-xs">
       <span className="font-semibold">2D Plan · {doc.levels.find(level => level.id === activeLevelId)?.name ?? 'No active Level'} · X / Z · {measurementUnits === 'metric' ? `${Number((gridFeet * 12 * INCH).toFixed(4))} m` : `${gridFeet} ft`} grid</span>
-      <div className="flex items-center gap-2"><span>{Number(view.scale.toFixed(2))} px/m</span>{groupControls}{wallControls}{floorControls}{removeButton}{viewActions}</div>
+      <div className="flex items-center gap-2"><span>{Number(view.scale.toFixed(2))} px/m</span>{groupControls}{duplicateButton}{wallControls}{floorControls}{removeButton}{viewActions}</div>
     </div>}
     <div className="relative flex min-h-0 min-w-0 flex-1 flex-col">
     <ContextMenu onOpenChange={open => { if (!open) setMenuPoint(null); }}><ContextMenuTrigger asChild><svg onContextMenuCapture={event => { const key = pointKey(event.target as Element); setMenuPoint(key); setActivePoint(key); }} ref={svg} data-testid="home-plan" aria-label="ThreeD Design 2D plan" tabIndex={0} width="100%" height="100%" className="block min-h-0 w-full flex-1 touch-none select-none outline-none focus-visible:ring-2 focus-visible:ring-cyan-400" style={{ cursor: tool === 'pan' ? 'grab' : tool === 'select' ? 'default' : 'crosshair' }}
@@ -1298,6 +1320,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
         fill="#22d3ee" fillOpacity={0.12} stroke="#22d3ee" strokeDasharray="5 3" />}
     </svg></ContextMenuTrigger>
     <ContextMenuContent aria-label="2D Design Tools" className="z-[5000] w-60" onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}>
+      {canDuplicate && <ContextMenuItem onSelect={duplicateSelection}><Copy className="size-3.5" aria-hidden="true" />{duplicateLabel}</ContextMenuItem>}
       {menuRemoval && <><ContextMenuItem disabled={menuRemoval.disabled} onSelect={menuRemoval.run} aria-label="Remove Point"><CircleMinus className="size-3.5" aria-hidden="true" />Remove Point</ContextMenuItem><ContextMenuSeparator /></>}
       {[...contextActions.map(group => ({ ...group, actions: group.actions.flatMap(action => action.label === 'Select Objects' ? [action, ...groupActions] : [action]) })), viewGroup].map((group, index) => <div key={group.label}>
         {index > 0 && <ContextMenuSeparator className="my-0.5" />}

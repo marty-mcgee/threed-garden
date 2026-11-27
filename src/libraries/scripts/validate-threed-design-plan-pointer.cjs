@@ -36,6 +36,18 @@ const room = document.validateDesign({
   floors: [{ id: 'floor', levelId: 'ground', vertices: ['a', 'b', 'c', 'd'], thickness: .1524, elevation: 0 }],
 });
 
+{
+  const ids = new Set([...room.walls, ...room.floors].map(item => item.id));
+  const result = properties.duplicateDesignSelection(room, ids, crypto.randomUUID);
+  const reopened = document.validateDesign(plain(result.document));
+  assert.equal(result.copies.size, 5);
+  assert.equal(reopened.nodes.length, 8);
+  const floor = reopened.floors.find(item => item.id === result.copies.get('floor'));
+  const wall = reopened.walls.find(item => item.id === result.copies.get('w0'));
+  assert.deepEqual(plain(floor.vertices.slice(0, 2)), [wall.start, wall.end]);
+  assert.equal(room.nodes.length, 4);
+}
+
 function fixture(overrides = {}) {
   const slots = [], captures = new Set(), events = new Map();
   let cursor = 0, pending = [], dirty = true, tree, svgElement, preview = null;
@@ -393,6 +405,36 @@ for (const connect of [true,false]) {
   f.flush();
   assert(!f.props.document.floors[0].vertices.some(id=>room.floors[0].vertices.includes(id)));
 }
+// Both entry points duplicate the selected wall and its hosted door in one edit.
+{
+  const diagonal = document.validateDesign({
+    ...room,
+    walls: [{ ...room.walls[0], end: 'c', thickness: .4 }]
+  });
+  const result = properties.duplicateDesignSelection(diagonal, new Set(['w0']), crypto.randomUUID);
+  const wall = result.document.walls.at(-1);
+  const start = result.document.nodes.find(node => node.id === wall.start);
+  assert.ok(Math.abs(start.x + start.z) < .0001);
+  assert.ok(Math.hypot(start.x, start.z) > wall.thickness);
+}
+for (const menu of [false, true]) {
+  const source = document.validateDesign({
+    ...room,
+    openings: [{ id: 'door', kind: 'door', wallId: 'w0', offset: .5, width: .8, height: 2, sill: 0 }]
+  });
+  const f = fixture({ document: source, selected: 'w0' });
+  const elements = flatten(f.tree);
+  if (menu) elements.find(n => n.type === 'ContextMenuItem' && n.props.children.includes('Duplicate Wall')).props.onSelect();
+  else elements.find(n => n.props?.label === 'Duplicate Wall').props.onClick();
+  assert.equal(f.calls.commit.length, 1);
+  const copy = f.props.document.walls.at(-1);
+  assert.notEqual(copy.id, 'w0');
+  assert.notEqual(copy.start, source.walls[0].start);
+  assert.notEqual(copy.end, source.walls[0].end);
+  assert.equal(f.props.document.openings[1].wallId, copy.id);
+  assert.notEqual(f.props.document.openings[1].id, 'door');
+  assert.deepEqual(plain(f.props.document.walls.slice(0,-1)), plain(source.walls));
+}
 // Detach preserves the neighbouring objects; a separate split allocates independent points.
 {
   const f = fixture({ document: room, selected: 'w0' });
@@ -749,7 +791,7 @@ console.log('PASS: measurement labels default hidden, actual toolbar toggle and 
 
 {
   let chosen = 0;
-  const f = fixture({ contextActions: [{label:'Structures',color:'text-emerald-700',actions:[{label:'Wall',icon:'wall-icon',active:true,run:()=>chosen++},{label:'Undo',icon:'undo-icon',disabled:true,run:()=>{throw Error('Disabled action');}}]}] });
+  const f = fixture({ selected: null, contextActions: [{label:'Structures',color:'text-emerald-700',actions:[{label:'Wall',icon:'wall-icon',active:true,run:()=>chosen++},{label:'Undo',icon:'undo-icon',disabled:true,run:()=>{throw Error('Disabled action');}}]}] });
   const items = () => flatten(f.tree).filter(node=>node.type==='ContextMenuItem');
   assert.deepEqual(items().map(node=>flatten(node).find(child=>child.type==='span')?.props.children), ['Wall','Undo','Hide Object Labels','Show Dimensions','Fit Plan','Zoom to Selection','Reset View']);
   assert(flatten(items()[0]).some(node=>node.type==='wall-icon'));
