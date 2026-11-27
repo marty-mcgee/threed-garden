@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Preparing [v0.38.3](docs/releases/v0.38.3.md) after Marty verified Canvas Wall duplication and independent Admin Texture copies.
+Preparing [v0.38.4](docs/releases/v0.38.4.md) with Project 20 as the shared App demo destination. Marty confirmed [v0.38.3](docs/releases/v0.38.3.md#production-status) reached production after verifying Canvas Wall duplication and independent Admin Texture copies.
 
 Marty confirmed [v0.38.2](docs/releases/v0.38.2.md#production-status) reached production.
 

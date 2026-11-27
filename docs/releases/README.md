@@ -6,7 +6,9 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.38.3 - ThreeD Design: Canvas Object and Admin Texture Duplication (release candidate)](v0.38.3.md)
+- [v0.38.4 - Point App Demo Links to Project 20 (release candidate)](v0.38.4.md)
+
+- [v0.38.3 - ThreeD Design: Canvas Object and Admin Texture Duplication (Developer-confirmed production)](v0.38.3.md#production-status)
 
 - [v0.38.2 - Dashboard Project Images and Learn Examples (Developer-confirmed production)](v0.38.2.md#production-status)
 
