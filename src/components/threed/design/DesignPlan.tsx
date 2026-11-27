@@ -1068,12 +1068,12 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
   }
   const singleSelection = tool === 'select' && selected && entityPoints(active, selected).length ? [selected] : [];
   const duplicateIds = tool === 'objects' ? boxed : new Set(singleSelection);
-  const canDuplicate = enabled && !disabled && !editingHidden && duplicateIds.size > 0;
   const includesModels = tool === 'objects' && modelIds.length > 0;
-  const duplicateLabel = duplicateIds.size === 1 && active.walls.some(w => duplicateIds.has(w.id)) ? 'Duplicate Wall' : 'Duplicate Selection';
+  const showDuplicate = enabled && !disabled && !editingHidden && (duplicateIds.size > 0 || includesModels);
+  const singleWall = duplicateIds.size === 1 && active.walls.some(wall => duplicateIds.has(wall.id));
+  const duplicateLabel = includesModels ? 'Duplicate Selection (Design objects only)' : singleWall ? 'Duplicate Wall' : 'Duplicate Selection';
   function duplicateSelection() {
-    if (!canDuplicate) return;
-    if (includesModels) { onMessage('Select only Design objects. Use Admin Models to duplicate a catalog Model.'); return; }
+    if (!showDuplicate || includesModels) return;
     try {
       const result = duplicateDesignSelection(doc, duplicateIds, makeId);
       onCommit(result.document);
@@ -1087,7 +1087,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
       onMessage('Duplicated. Drag the highlighted copy to move it.');
     } catch (error) { onMessage((error as Error).message); }
   }
-  const duplicateButton = canDuplicate && <DesignAction label={duplicateLabel} onClick={duplicateSelection}><Copy className="size-3.5" aria-hidden="true" /></DesignAction>;
+  const duplicateButton = showDuplicate && <DesignAction label={duplicateLabel} disabled={includesModels} onClick={duplicateSelection}><Copy className="size-3.5" aria-hidden="true" /></DesignAction>;
   const wallControls = (tool === 'wall' || editableWall) && <>
     <DesignAction label="Connect Wall Endpoints" aria-pressed={connectWalls} variant={connectWalls ? 'secondary' : 'outline'} onClick={() => setConnectWalls(!connectWalls)}><Link2 aria-hidden="true" className="size-3.5" /></DesignAction>
     {editableWall && <DesignAction label="Detach Wall" disabled={!sharedEnds.length} onClick={detachShape}><Unlink2 aria-hidden="true" className="size-3.5" /></DesignAction>}
@@ -1320,7 +1320,7 @@ export function DesignPlan({ groups = [], placedModelIds, onGroupChange, onMixed
         fill="#22d3ee" fillOpacity={0.12} stroke="#22d3ee" strokeDasharray="5 3" />}
     </svg></ContextMenuTrigger>
     <ContextMenuContent aria-label="2D Design Tools" className="z-[5000] w-60" onPointerDown={event => event.stopPropagation()} onWheel={event => event.stopPropagation()} onKeyDown={event => event.stopPropagation()}>
-      {canDuplicate && <ContextMenuItem onSelect={duplicateSelection}><Copy className="size-3.5" aria-hidden="true" />{duplicateLabel}</ContextMenuItem>}
+      {showDuplicate && <ContextMenuItem disabled={includesModels} onSelect={duplicateSelection}><Copy className="size-3.5" aria-hidden="true" />{duplicateLabel}</ContextMenuItem>}
       {menuRemoval && <><ContextMenuItem disabled={menuRemoval.disabled} onSelect={menuRemoval.run} aria-label="Remove Point"><CircleMinus className="size-3.5" aria-hidden="true" />Remove Point</ContextMenuItem><ContextMenuSeparator /></>}
       {[...contextActions.map(group => ({ ...group, actions: group.actions.flatMap(action => action.label === 'Select Objects' ? [action, ...groupActions] : [action]) })), viewGroup].map((group, index) => <div key={group.label}>
         {index > 0 && <ContextMenuSeparator className="my-0.5" />}

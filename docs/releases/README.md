@@ -6,7 +6,11 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
-- [v0.38.6 - Preserve ThreeD Release Progress Across Chats (release candidate)](v0.38.6.md)
+- [v0.38.8 - ThreeD Release Skill Parameters (release candidate)](v0.38.8.md)
+
+- [v0.38.7 - Verify Production Status in ThreeD Release Summaries (validated checkpoint carried into v0.38.8)](v0.38.7.md)
+
+- [v0.38.6 - Preserve ThreeD Release Progress Across Chats (verified production)](v0.38.6.md#production-status)
 
 - [v0.38.5 - Update the ThreeD Release Skill for GitHub Releases (Developer-confirmed production)](v0.38.5.md#production-status)
 

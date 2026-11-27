@@ -7,6 +7,21 @@ description: Prepare a requested ThreeD App version for the Developer's manual r
 
 Use the version the Developer requests, including any prerelease suffix. An explicit increment such as “next patch” can be resolved from the current version. If the target is still ambiguous or the request contains only `v0.x.x`, inspect the checkout and ask for the target before editing. A request for a plan or read-only check ends with the requested information.
 
+## Chat command parameters
+
+Accept a positional version or named parameters in any order after `ThreeD Skill:`. Plain-language requests use the same workflow. For example:
+
+- `ThreeD Skill: v0.38.next`
+- `ThreeD Skill: version=v0.38.8 title="ThreeD Release Skill Parameters" since=v0.38.6`
+
+| Parameter | Meaning |
+| --- | --- |
+| `version` | Target release. Accept an exact version (optional leading `v`), including a prerelease suffix. For `vX.Y.next`, increment the current checkout package's patch when its major and minor match the requested series. If the series differs or the target is ambiguous, resolve the target with Marty before editing. |
+| `title` | Optional release title. Preserve supplied capitalization, spacing and punctuation. Prefix a bare title with the target version once. An existing commit's exact subject remains authoritative for that commit. |
+| `since` | Optional preceding release for the GitHub Description. Exclude it and include the target. With no override, use the last published GitHub Release. Verify actual publication and production separately for the series summary even when a baseline is supplied. |
+
+Treat quoted values as literal text. Resolve conflicting targets, versioned titles or impossible ranges before changing release files. Parameters select release inputs; the standard validation gates and manual publication permissions still apply.
+
 ## Resume an existing release
 
 Treat “run the skill” as an execution request. “Implement this, then run the skill” includes both the workflow edit and the release run. A request to save or review skill instructions by itself ends with the skill work.
@@ -59,15 +74,27 @@ Review the final diff, whitespace and acceptance record. When Marty identifies a
 
 Identify the last published GitHub Release using the Developer-supplied baseline or the repository’s published Releases. Cover the documented versions after that baseline through the target version, inclusive. Resolve an unknown baseline before finalizing the range.
 
-Draft exactly two copyable fields, each in its own fenced Markdown block with its label outside the fence:
+For the GitHub Release form, draft exactly two copyable fields, each in its own fenced Markdown block with its label outside the fence:
 
 - **Title** — Use the target version’s exact release commit subject from `git show -s --format=%s <release-commit>`, preserving punctuation and capitalization. For a candidate awaiting its first commit, draft the proposed subject as `v<version> - <release title>`. The Title block also serves as the copyable commit title.
 - **Description** — Combine the release entries in one block, oldest first. For a range, use each version’s heading and description, including the target version. Preserve previously accepted headings and prose verbatim, including App terminology. When drafting new entries, use the matching release records and include upgrade instructions only when readers must act.
 
-Keep release status, CI results, working-tree details and Next Steps outside both blocks. Keep internal migration confirmations in the release record. Place Marty's sign-off, `-||- done.`, on its own final line after all chat text and copyable fields. Use it only at the end of the response.
+Keep release status, CI results, working-tree details and Next Steps outside both blocks. Keep internal migration confirmations in the release record.
+
+### Prepare the final version-series summary
+
+Gather the evidence for the full minor series (for example, `v0.38.x`) before the final install. For production, check the latest successful deployment to the Production environment and match its exact commit to the release version. Record its timestamp in Pacific time and link the deployment status. If live evidence is unavailable, attribute any production confirmation to Marty and state what remains unverified. Local HEAD, a prepared release record and a published tag alone cannot establish the running version. Verify the latest published GitHub Release separately and preserve the actual tag spelling in its link.
 
 ## Final milestone — npm ci
 
-Run a fresh `npm ci` in the isolated candidate as the last execution milestone. Capture the actual console result, exit status and lockfile hashes before and after. A failed install or changed lockfile leaves the milestone open. If candidate content subsequently changes, revalidate affected inputs and finish again with `npm ci`. Appending the observed result to the release record is part of closing this milestone.
+Run a fresh `npm ci` in the isolated candidate as the last validation check. Monitor it to completion and capture the actual console result, exit status and lockfile hashes before and after. If it fails or the hash changes, diagnose the cause, continue independent work and retry after an authorized correction. Report a blocker only when further progress requires external action. If candidate content changes, revalidate affected inputs and repeat the final clean install. Then carry the work through evidence recording, the handoff, and production closeout when deployment is confirmed.
 
 After success, record the result. When the evidence satisfies the release criteria, deliver the prepared fields and readiness statement directly. In the surrounding chat, show the actual final install console line, exit status and lockfile integrity result. Distinguish gates run this time from prior results verified against matching inputs. Never ask Marty to certify Codex's tests, completion, or resolution of a testable defect. If a criterion is still unmet, identify the specific missing evidence and continue authorized work. A request solely for historical release notes can use the drafting instructions independently.
+
+**Final output rule.** End a completed release handoff with the entire version-series summary in one fenced `markdown` block, after the GitHub form fields. For a request specifically for the summary, provide that block directly. Include all of the following in the block, even when the request corrects only the status:
+
+1. `# ThreeD Garden v<major>.<minor>.x` and a brief overview of the series.
+2. `## Version highlights` with one entry per documented version, oldest first, using its release title and a concrete description of what changed.
+3. `## Release status` with distinct **Production**, **GitHub Releases**, and **v<target> validation** paragraphs. Use the verified deployment and publication evidence above. Report the target candidate's observed CI count, build result, input parity, and final clean-install console result, exit status, and lockfile integrity where available.
+
+The summary is the last copyable artifact. Finish the remaining authorized work, then use Marty's preferred `-||- done.` on its own final line as a conversational cue.

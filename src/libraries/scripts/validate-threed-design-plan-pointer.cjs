@@ -435,6 +435,58 @@ for (const menu of [false, true]) {
   assert.notEqual(f.props.document.openings[1].id, 'door');
   assert.deepEqual(plain(f.props.document.walls.slice(0,-1)), plain(source.walls));
 }
+// A placed Model can move with a Wall, but only a Design-only selection can be duplicated.
+{
+  const moves = [];
+  const f = fixture({
+    tool: 'objects',
+    selected: null,
+    modelImages: [{
+      id: 'tree',
+      url: 'fixture',
+      corners: [{ x: 1, z: 0.1 }, { x: 1.2, z: 0.1 }, { x: 1, z: 0.2 }],
+    }],
+    onMixedMove: (...args) => moves.push(args),
+  });
+  const box = (left, top, right, bottom) => {
+    f.pointer('onPointerDown', left, top);
+    f.pointer('onPointerMove', right, bottom);
+    f.pointer('onPointerUp', right, bottom);
+  };
+  const duplicateControls = () => {
+    const nodes = flatten(f.tree);
+    const button = nodes.find(n => n.type === 'action' && n.props.label.startsWith('Duplicate'));
+    assert.ok(button, 'The toolbar exposes the Duplicate command for this selection');
+    const item = nodes.find(n => n.type === 'ContextMenuItem' && n.props.children.includes(button.props.label));
+    assert.ok(item, 'The context menu has the same Duplicate label as the toolbar');
+    return [button, item];
+  };
+  for (const bounds of [[121, 82, 139, 93], [60, 60, 230, 95]]) {
+    box(...bounds);
+    const [button, item] = duplicateControls();
+    assert.equal(button.props.disabled, true);
+    assert.equal(item.props.disabled, true);
+    assert.match(button.props.label, /Design objects only/);
+    button.props.onClick();
+    item.props.onSelect();
+    assert.equal(f.calls.commit.length, 0);
+  }
+  f.pointer('onPointerDown', 140, 80, { moveHandle: true });
+  f.pointer('onPointerUp', 185, 125);
+  assert.equal(moves.length, 1);
+  assert.deepEqual(plain(moves[0][1]), ['tree']);
+  const wall = moves[0][0].walls.find(item => item.id === 'w0');
+  const start = moves[0][0].nodes.find(node => node.id === wall.start);
+  assert.deepEqual([start.x, start.z], [1, 1]);
+
+  box(60, 60, 230, 84);
+  const [button, item] = duplicateControls();
+  assert.equal(button.props.label, 'Duplicate Wall');
+  assert.ok(!button.props.disabled && !item.props.disabled);
+  button.props.onClick();
+  assert.equal(f.calls.commit.length, 1);
+  console.log('PASS: toolbar and context menu follow Design duplication eligibility. Mixed Wall and Model selections move together.');
+}
 // Detach preserves the neighbouring objects; a separate split allocates independent points.
 {
   const f = fixture({ document: room, selected: 'w0' });

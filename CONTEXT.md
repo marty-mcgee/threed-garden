@@ -2,7 +2,7 @@
 
 ## Current checkpoint
 
-Preparing [v0.38.6](docs/releases/v0.38.6.md) to preserve ThreeD release progress, validation evidence and approved wording across chats.
+Preparing [v0.38.8](docs/releases/v0.38.8.md) for ThreeD release skill parameters, carrying forward the work validated for [v0.38.7](docs/releases/v0.38.7.md). [v0.38.6](docs/releases/v0.38.6.md#production-status) is deployed to Production and published on GitHub.
 
 Marty confirmed [v0.38.5](docs/releases/v0.38.5.md#production-status) reached production with the ThreeD release skill update. [v0.38.4](docs/releases/v0.38.4.md) set Project 20 as the shared App demo destination. Marty confirmed [v0.38.3](docs/releases/v0.38.3.md#production-status) reached production after verifying Canvas Wall duplication and independent Admin Texture copies.
 
