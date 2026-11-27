@@ -7,11 +7,27 @@ description: Prepare a requested ThreeD App version for the Developer's manual r
 
 Use the version the Developer requests, including any prerelease suffix. An explicit increment such as “next patch” can be resolved from the current version. If the target is still ambiguous or the request contains only `v0.x.x`, inspect the checkout and ask for the target before editing. A request for a plan or read-only check ends with the requested information.
 
+## Resume an existing release
+
+On “continue” or “run the saved sub-tasks,” recover the target version, completed checks, accepted confirmations and any handoff already delivered from the release record and conversation. Compare that evidence with the current Git state. Resume an in-progress check or perform the first unfinished, authorized step and continue through the remaining preparation. Reuse passing evidence for matching inputs and revalidate affected inputs when they change.
+
+If the Title and Description have already been delivered and only Marty's manual action remains, identify that action once and stop. Repeat completed deliverables when requested. When Marty confirms deployment, proceed directly to recording that confirmation. Ask for clarification only when a missing fact changes the next action and the available evidence cannot resolve it.
+
 ## Establish the release scope
 
 Read [AGENTS.md](../../../../AGENTS.md) and [CONTEXT.md](../../../../CONTEXT.md) in full. Inspect the branch, HEAD, package and lockfile versions, staged and unstaged changes, and untracked release inputs. Compare the working tree with the last documented release and any existing draft for the target. Preserve manual edits and the index. Use the Developer’s title when supplied. Otherwise, name the verified App owner and the change that actually ships. If the diff contains only release metadata, describe it that way.
 
-## Complete release prerequisites before handoff
+For a later production-confirmation message, record the Developer's report in the matching release record, index and current checkpoint. Record a subsequent documentation deployment under the same version unless the Developer assigns another. Distinguish the locally observed commit from independently verified deployment and browser evidence.
+
+## Assemble the isolated candidate
+
+Inventory the intended inputs first. Assemble a disposable candidate from the baseline and the in-scope changes, including new files. When unrelated changes share a path, include only the release hunks in the disposable copy and preserve the Developer's files and index. Clarify scope if the changes cannot be separated reliably. Exclude environment files, credentials, developer reference files, active dependencies and build output.
+
+Use the Node version in `.nvmrc` and npm version in `package.json`’s `packageManager`. Inspect the scripts and use matching isolated dependencies for preparation and validation. Bootstrap them here if needed, including for schema generation. The final clean-install milestone still runs after the build and handoff drafting.
+
+## Prepare release metadata and verify the assembled inputs
+
+Migration confirmation belongs to the feature checkpoint that introduced the migration. Carry its recorded status into release preparation. If required evidence is missing, track it under that feature’s rollout prerequisites. A later version or a request to draft historical release notes does not reopen a confirmed migration.
 
 For a release-preparation request, complete the following steps in the feature or documentation checkpoint itself. When the Developer specifies the version, apply it immediately. Before presenting a commit-ready title, verify that the manifest, both root lockfile versions, generated snapshots, release record, index and current checkpoint agree. Then run the candidate validation gates below. A later production confirmation records deployment evidence under the released version. If the Developer assigns follow-up documentation its own version, prepare it under that version and retain the original release history.
 
@@ -19,19 +35,35 @@ For a release-preparation request, complete the following steps in the feature o
 2. Run `npm run schema:generate` against the checkout’s source and Git metadata to refresh the Markdown, HTML and JSON schema snapshots. Use the matching isolated dependencies if the checkout has no matching install. Inspect the generated diff. A release version change needs no database operation.
 3. Create or update `docs/releases/v<version>.md` with the scope, rollout prerequisites that apply, and observed checks. Update the [release index](../../../releases/README.md) and the current checkpoint in CONTEXT.md. Preserve earlier acceptance and deployment evidence when resuming preparation.
 
+Sync the prepared metadata and any new release files into the candidate. Now compare the assembled files with the intended inputs. Before validation, report the baseline, target, included changes, verified version fields and documents, carried-forward confirmations, outstanding items and next step.
+
 ## Verify what will ship
 
-Use the Node version in `.nvmrc` and npm version in `package.json`’s `packageManager`. Inspect the current scripts. Follow the [repository validation ladder](../../VALIDATION.md) in a separate candidate directory with its own dependencies and build output.
+Follow the [repository validation ladder](../../VALIDATION.md) in the isolated candidate.
 
-- Assemble the candidate from the release baseline and the changes intended to ship, including in-scope untracked files. If unrelated staged or unstaged work shares a path, apply only the release hunks in the disposable copy and preserve the Developer’s index and files. Clarify scope if those changes cannot be separated reliably. Exclude `.env*`, credentials, developer reference files, active `node_modules` and build output. Run `npm ci` there and compare the lockfile hash before and after installation, or reuse an isolated install whose versions and integrity match the target lockfile. On Windows, use `npm.cmd` if PowerShell blocks the npm launcher. Distinguish a Developer-reported install from one observed during preparation.
 - Run validation and build with scrubbed credentials, mocked persistence and network isolation that blocks live services and the Developer’s server. A prior release’s ignored tools may be reused after inspection. On a fresh checkout, use a disposable copy and an equivalent guarded environment. Leave Developer servers and live systems untouched.
 - Generate fresh route types with the installed Next CLI (`node node_modules/next/dist/bin/next typegen`). Run `npm run typecheck -- --incremental false`, then `npm run validate -- repository-maintenance learn-data-structure` and the checks for the changed features. Include `assets` when production Animation files or their manifest change. Run `npm run validate -- ci`, then the guarded `npm run build`.
 - Compare the built candidate’s source, assets and configuration by hash against the intended release inputs. Record actual exit results, warnings, known audit findings and outstanding checks. Revalidate affected inputs if they change. For a documentation-only evidence update, recheck links and final input parity.
 
-## Hand off
+## Prepare the handoff
 
 Before suggesting a Git commit, review the release record and conversation for each Next Steps confirmation required before commit. Accept explicit Developer confirmations and record them once. While a prerequisite is outstanding, report the pending item under **Next Steps** and omit the suggested commit, including when asked for a title. Deployment and post-deployment checks follow the commit.
 
-Review the final diff and whitespace. Once the required gates pass and all pre-commit Next Steps are confirmed, tell the Developer the candidate is ready to commit and link the release record. End the release handoff with a **Suggested Git Commit** heading and the exact versioned title on its own copyable line: `v<version> - <release title>`. Flag any unrelated staged changes that a plain commit would include. If a gate is blocked or fails, record the specific result and what is pending. Keep preparation edits unstaged. Each Git write, publication or deployment requires explicit authorization for that action.
+Review the final diff, whitespace and acceptance record. When Marty identifies a technical or workflow defect, turn it into an observable check, make the correction, and record the result against the current candidate. Codex owns the conclusion for checks it can perform. Request Developer input only for a genuinely external prerequisite or decision. Prepare the handoff privately, including the release-record link and any unrelated staged changes. Keep preparation edits unstaged. Each Git write, publication or deployment requires explicit authorization for that action.
 
-When the Developer confirms a versioned release reached production, update its release record, index status and current checkpoint. If a subsequent `docs:` commit reaches production, record it as a follow-up under the existing version. Identify any locally observed commit as local evidence. Record independent deployed-commit verification and post-deployment browser checks only when observed.
+### Draft the GitHub Release
+
+Identify the last published GitHub Release using the Developer-supplied baseline or the repository’s published Releases. Cover the documented versions after that baseline through the target version, inclusive. Resolve an unknown baseline before finalizing the range.
+
+Draft exactly two copyable fields, each in its own fenced Markdown block with its label outside the fence:
+
+- **Title** — Use the target version’s exact release commit subject from `git show -s --format=%s <release-commit>`, preserving punctuation and capitalization. For a candidate awaiting its first commit, draft the proposed subject as `v<version> - <release title>`. The Title block also serves as the copyable commit title.
+- **Description** — Combine the release entries in one block, oldest first. For a range, use each version’s heading and description, including the target version. Preserve previously accepted headings and prose verbatim, including App terminology. When drafting new entries, use the matching release records and include upgrade instructions only when readers must act.
+
+Keep release status, CI results, working-tree details, Next Steps, internal migration confirmations and the chat sign-off outside both blocks.
+
+## Final milestone — npm ci
+
+Run a fresh `npm ci` in the isolated candidate as the last execution milestone. Capture the actual console result, exit status and lockfile hashes before and after. A failed install or changed lockfile leaves the milestone open. If candidate content subsequently changes, revalidate affected inputs and finish again with `npm ci`. Appending the observed result to the release record is part of closing this milestone.
+
+After success, record the result. When the evidence satisfies the release criteria, deliver the prepared fields and readiness statement directly. Never ask Marty to certify Codex's tests, completion, or resolution of a testable defect. If a criterion is still unmet, identify the specific missing evidence and continue authorized work. A request solely for historical release notes can use the drafting instructions independently.

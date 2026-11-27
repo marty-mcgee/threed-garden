@@ -6,6 +6,8 @@ Version-specific scope, checks, acceptance and production confirmations live in 
 
 ## Release records
 
+- [v0.38.5 - Update the ThreeD Release Skill for GitHub Releases (release candidate)](v0.38.5.md)
+
 - [v0.38.4 - Point App Demo Links to Project 20 (release candidate)](v0.38.4.md)
 
 - [v0.38.3 - ThreeD Design: Canvas Object and Admin Texture Duplication (Developer-confirmed production)](v0.38.3.md#production-status)
